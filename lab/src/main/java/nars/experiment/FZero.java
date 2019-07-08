@@ -61,7 +61,7 @@ public class FZero extends GameX {
             return new FZero($.the("fz"), n);
 
 
-        }, fps);
+        }, fps*2);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)
@@ -351,7 +351,7 @@ public class FZero extends GameX {
 
         float res = 0.1f;
         float powerScale = 0.1f;
-        float rotSpeed = 0.75f;
+        float rotSpeed = 0.85f;
         final float[] left = new float[1];
         final float[] right = new float[1];
         float fwdSpeed = 75;
@@ -378,7 +378,7 @@ public class FZero extends GameX {
         PreciseTruth bias = $.t(0, 0.001f);
 
         for (GoalActionConcept x : new GoalActionConcept[] { l, r } ) {
-            //x.goalDefault(bias, nar);
+            x.goalDefault(bias, nar);
             x.resolution(res);
         }
 

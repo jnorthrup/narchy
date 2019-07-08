@@ -91,7 +91,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
 
     /** sets the tasklink processor/filter, applied before insert */
-    public void pri(Predicate<TaskLink> each) {
+    public void pre(Predicate<TaskLink> each) {
         this.processor = each;
     }
 

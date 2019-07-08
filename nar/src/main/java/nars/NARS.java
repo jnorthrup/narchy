@@ -187,45 +187,44 @@ public class NARS {
 
         ToIntFunction<Concept> termVolume = c->c.term().volume();
 
+
+        /** shared eternal belief and goal capacity curve */
+        ToIntFunction<Concept> bgEternal = curve(termVolume, new int[] {
+                1, 8,
+                16, 4
+        });
+
+        /** shared temporal belief and goal capacity curve */
+        ToIntFunction<Concept> bgTemporal = curve(termVolume, new int[] {
+                1, 256,
+                8, 64,
+                16, 32,
+                32, 8
+        });
+
+        /** shared question and quest capacity curve */
+        ToIntFunction<Concept> q = curve(termVolume, new int[] {
+                1, 10,
+                12, 6,
+                24, 4
+        });
+
         conceptBuilder = ()->new DefaultConceptBuilder(
-                new ConceptAllocator(
-                        //beliefs ete
-                        curve(termVolume,
-                        1, 8,
-                                16, 5,
-                                18, 3
-                        ),
-                        //beliefs tmp
-                        curve(termVolume,
-                                1, 128,
-                                16, 32,
-                                32, 8
-                        ),
-                        //goals ete
-                        curve(termVolume,
-                                1, 8,
-                                16, 5,
-                                32, 3
-                        ),
-                        //goals tmp
-                        curve(termVolume,
-                                1, 128,
-                                16, 32,
-                                32, 8
-                        ),
-                        //questions
-                        curve(termVolume,
-                          1, 8,
-                                12, 6,
-                                24, 4
-                        ),
-                        //quests
-                        curve(termVolume,
-                                1, 8,
-                                12, 6,
-                                24, 4
-                        )
-                )
+
+            new ConceptAllocator(
+                    //beliefs ete
+                    bgEternal,
+                    //beliefs tmp
+                    bgTemporal,
+                    //goals ete
+                    bgEternal,
+                    //goals tmp
+                    bgTemporal,
+                    //questions
+                    q,
+                    //quests
+                    q
+            )
         );
 
 

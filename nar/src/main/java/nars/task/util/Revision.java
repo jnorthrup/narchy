@@ -69,7 +69,8 @@ public enum Revision {;
                 return null;
 
             int dtDither = n.dtDither();
-            if (a.minTimeTo(b) > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
+            long dt = a.minTimeTo(b);
+            if (dt > 0 && dt > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
 //            long sepThresh = Util.lerp(
 //                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
 //                    //low frequency difference: require large separation (relative to the task ranges)
@@ -90,7 +91,7 @@ public enum Revision {;
             }
         }
 
-        return revise(n, dither, minComponents, tasks);
+        return _merge(n, dither, minComponents, tasks);
     }
 
     /** temporal-induction conjunction merge strategy
@@ -128,7 +129,7 @@ public enum Revision {;
     }
 
     /** truth revision task merge strategy */
-    @Nullable static <T extends TaskRegion> Pair<Task, TruthProjection> revise(NAL nal, boolean dither, int minComponents, T[] tasks) {
+    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
 
         TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(tasks);
 

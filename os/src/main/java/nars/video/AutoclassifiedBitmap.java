@@ -227,7 +227,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
      */
     protected Term coord(@Nullable Term root, int x, int y, int f) {
         Term ff = feature[f];
-        return root!=null ? $.inh($.p(root, $.p(x, y)), ff) : $.inh($.p(x, y), ff);
+        return root!=null ? $.inh(root, $.p($.the(x),$.the(y),ff)) : $.inh($.p(x, y), ff);
 
         //return root!=null ? $.inh($.p(root, $.p(x, y)),feature[f]) : $.inh($.p(x, y), feature[f]);
         //return $.inh(component, feature[f]);

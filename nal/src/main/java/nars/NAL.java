@@ -251,7 +251,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final int SERIES_MATCH_MIN = 2;
 
-        public static final float SENSOR_MIN_SURPRISE_DEFAULT = 0.05f;
+        public static final float SENSOR_MIN_SURPRISE_DEFAULT = 0.1f;
+        public static final float SENSOR_MIN_SURPRISE_DEFAULT_MOTOR = 0.5f;
     }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
@@ -288,14 +289,18 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * when merging dt's, ratio of the maximum difference in dt allowed
      * ratio of the dt difference compared to the smaller dt of the two being merged
-     * probably values <= ~0.5 are safe as this limits stretching within 'octaves'
+     *
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
             //0.618f
+            //0.75f
             1f
             //2f
             , 0, 4);
+
+    /** max tolerance time (in durations) for unification of temporal terms */
+    public final FloatRange unificationTimeToleranceDurs = new FloatRange(1f, 0, 2 );
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
@@ -522,8 +527,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final float TRUTH_EPSILON = 0.01f;
 
-        public static final float CONF_MAX = 1f - NAL.truth.TRUTH_EPSILON;
-        public static final float EVI_MAX = c2wSafe(NAL.truth.CONF_MAX);
+        public static final float CONF_MAX = 1f - TRUTH_EPSILON;
+        public static final double EVI_MAX = c2wSafe(CONF_MAX);
         public static final double EVI_MIN =
                 //c2wSafe(TRUTH_EPSILON);
                 //ScalarValue.EPSILON;
@@ -532,6 +537,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /** switch between soft and hard pre decision truth function */
         public static final boolean preSoft = true;
+
+        /** optimistic maximization of PreciseTruth evidence components when determined equal (by DiscreteTruth's .conf() semantics) */
+        public static final boolean AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth = true;
     }
 
     /**

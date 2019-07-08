@@ -262,8 +262,16 @@ public interface Compound extends Term, IPair, Subterms {
         Subterms yy = y.subterms();
 
         Op o = op();
-        if (o == CONJ)
-            return ConjUnify.unifyConj(x, y, xx, yy, u);
+        if (o.temporal) {
+            if (!u.unifyDT(x, y))
+                return false;
+
+            if (xx.equals(yy))
+                return true; //compound equality would have been true if non-temporal
+
+            if (o == CONJ)
+                return ConjUnify.unifyConj(x, y, xx, yy, u);
+        }
 
 
         int xs = xx.subs();
@@ -272,22 +280,6 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (xs == 1)
             return xx.sub(0).unify(y.sub(0), u);
-
-        if (o.temporal) {
-            if (!u.unifyDT(x, y))
-                return false;
-
-            if (xx.equals(yy))
-                return true; //compound equality would have been true if non-temporal
-
-            /* else if (!xSpecific && !ySpecific) {
-                if (!u.var(xx) && !u.var(yy)) {
-                    //both constant
-                    if (!xx.hasAny(Op.CONJ.bit) && !yy.hasAny(Op.CONJ.bit))
-                        return false; //both constant (excl CONJ); no possibility of unify
-                }
-            } //else: ??? */
-        }
 
         if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits))
             return false;

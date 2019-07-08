@@ -26,6 +26,12 @@ public class ConjUnify {
 
         if ((xdt == XTERNAL || ydt == XTERNAL)) {
 
+            if (((xdt==XTERNAL && !xx.hasAny(CONJ)) || (ydt==XTERNAL && !yy.hasAny(CONJ)))) {
+                //one is a simple XTERNAL (no conj subterms) so will match if equal root
+                if (x.equalsRoot(y))
+                    return true;
+            }
+
             SortedSet<Term> xe = x.eventSet();
             SortedSet<Term> ye = y.eventSet();
             if (xe.equals(ye))

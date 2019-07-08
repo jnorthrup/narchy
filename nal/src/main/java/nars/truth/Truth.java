@@ -368,7 +368,7 @@ public interface Truth extends Truthed {
 
 
 
-    default Truth eternalized(float confFactor, double eviMin, @Nullable NAL n) {
+    default Truth eternalized(double confFactor, double eviMin, @Nullable NAL n) {
         double c = confFactor * w2cSafe(eviEternalized());
         double e = c2wSafe(c);
         if (e < eviMin)

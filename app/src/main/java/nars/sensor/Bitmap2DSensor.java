@@ -3,9 +3,9 @@ package nars.sensor;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.func.IntIntToObjectFunction;
-import jcog.pri.op.PriMerge;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
@@ -201,7 +201,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         //System.out.println(this + " " + surprise);
         if (surprise > Float.MIN_NORMAL) {
-            tl.priMerge(BELIEF, surprise, PriMerge.max /*NAL.tasklinkMerge*/);
+            tl.priMerge(BELIEF, surprise, NAL.tasklinkMerge);
 //            tl.priMax(QUEST, surprise);
 //            tl.priMax(GOAL, surprise*(1/4f));
             ((TaskLinkWhat) (g.what())).links.link(tl);

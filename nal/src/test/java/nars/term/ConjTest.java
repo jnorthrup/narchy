@@ -14,6 +14,7 @@ import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjTree;
 import nars.term.util.transform.Retemporalize;
 import nars.term.var.ellipsis.Ellipsis;
+import nars.unify.SubUnify;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -2225,4 +2226,61 @@ class ConjTest {
         assertEquals("(x &&+1 (--,y))", c.term().toString());
     }
 
+
+    @Test
+    void unifyXternalParallel() {
+        assertUnifies("(&&+-, x, y, z)", "(&&, x, y, z)", true);
+        assertUnifies("(&&+-, --x, y, z)", "(&&, --x, y, z)", true);
+        assertUnifies("(&&+-, --x, y, z)", "(&&, x, y, z)", false);
+        assertUnifies("(&&+-, x, y, z)", "(&&, --x, y, z)", false);
+    }
+    @Test
+    void unifyXternalParallelWithVars() {
+        assertUnifies("(&&+-, x, y, z)", "(&&, #x, y, z)", true);
+        assertUnifies("(&&+-, x, y, z)", "(&&, #x, %y, z)", true);
+    }
+
+    @Test
+    void unifyXternalSequence2() {
+        assertUnifies("(x &&+- y)", "(x &&+1 y)", true);
+        assertUnifies("(x &&+- y)", "(x &&+1 --y)", false);
+        assertUnifies("(--x &&+- y)", "(--x &&+1 y)", true);
+    }
+
+    @Test
+    void unifyXternalSequence2Repeating() {
+        assertUnifies("(x &&+- x)", "(x &&+1 x)", true);
+        assertUnifies("(x &&+- --x)", "(x &&+1 --x)", true);
+        assertUnifies("(x &&+- --x)", "(--x &&+1 x)", true);
+    }
+
+    @Test
+    void unifyXternalXternal_vs_Sequence() {
+
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (y &&+1 z))", true);
+        assertUnifies("(&&+-, x, y, z)", "(z &&+1 (x &&+1 y))", true);
+        assertUnifies("(&&+-, x, --y, z)", "(x &&+1 (--y &&+1 z))", true);
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (--y &&+1 z))", false);
+    }
+    @Test
+    void unifyXternalSequence_repeats() {
+
+        assertUnifies("(x &&+- x)", "(x &&+1 (x &&+1 x))", true);
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (y &&+1 (x &&+1 z)))", true);
+        assertUnifies("(&&+-, x, y, z)", "(x &&+1 (#y &&+1 (x &&+1 z)))", true);
+
+        assertUnifies("(x &&+- x)", "(x &&+1 x)", true);
+    }
+
+    @Test
+    void unifySequence_Sequence_with_vars() {
+        assertUnifies("(x &&+1 (%y &&+1 z))", "(x &&+1 (y &&+1 z))", true);
+        assertUnifies("(%a,(x &&+1 (y &&+1 z)))", "((a,b,c),(x &&+1 (y &&+1 z)))", true); //constant, for sanity test
+        assertUnifies("(x &&+1 (%y &&+1 z))", "(x &&+1 ((y,w) &&+1 z))", true);
+    }
+
+    static void assertUnifies(String x, String y, boolean unifies) {
+        Random rng = new XoRoShiRo128PlusRandom(1);
+        assertEquals(unifies, $$(x).unify($$(y), new SubUnify(rng)));
+    }
 }

@@ -14,6 +14,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
+import nars.unify.SubUnify;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.VAR_DEP;

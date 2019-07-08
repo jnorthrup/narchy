@@ -1,9 +1,8 @@
-package nars.op;
+package nars.unify;
 
 import nars.NAL;
 import nars.Op;
 import nars.term.Term;
-import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -15,7 +14,8 @@ import static nars.term.atom.Bool.Null;
  */
 public class SubUnify extends Unify {
 
-    @Nullable Term transformed;
+    @Nullable
+    protected Term transformed;
 
 
     @Nullable
@@ -26,7 +26,7 @@ public class SubUnify extends Unify {
         this(rng, Op.Variable);
     }
 
-    SubUnify(Random rng, int varBits) {
+    protected SubUnify(Random rng, int varBits) {
         super(varBits, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
     }
 

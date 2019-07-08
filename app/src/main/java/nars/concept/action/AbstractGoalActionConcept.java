@@ -76,7 +76,7 @@ public class AbstractGoalActionConcept extends GameAction {
     protected AbstractGoalActionConcept(Term term, BeliefTable mutableGoals, NAR n) {
         super(term,
                 new SensorBeliefTables(term, true)
-                        .minSurprise(1) //action concept pay constant attention attention even to boring feedback
+                        .minSurprise(NAL.signal.SENSOR_MIN_SURPRISE_DEFAULT_MOTOR) //action concept pay constant attention attention even to boring feedback
                 ,new BeliefTables(),
                 n);
 

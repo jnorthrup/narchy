@@ -190,6 +190,7 @@ public class Derivation extends PreDerivation {
      * or whether to continue deriving during the procedure.
      */
     private transient float priSingle, priDouble;
+    private Term _taskTerm;
 
     {
         premiseUnify.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
@@ -293,7 +294,8 @@ public class Derivation extends PreDerivation {
 
                 if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) && (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || beliefTruth_at_Task==null)) {
 
-                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, eviMin, null /* dont dither */);
+                    double eScale = taskTruth != null ? Math.min(1,beliefTruth_at_Belief.evi()/taskTruth.evi()) : 1;
+                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
                     if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() > eviMin) {
                         if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
 
@@ -321,10 +323,15 @@ public class Derivation extends PreDerivation {
 
 
         Term _beliefTerm;
+        boolean beliefVarShift;
         if (nextBelief != null) {
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
-            this.beliefTerm = anon.putShift(_beliefTerm = nextBelief.term(), taskTerm);
+            _beliefTerm = nextBelief.term();
+            beliefVarShift =
+                    //true;
+                    !_beliefTerm.equals(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
+
         } else {
             this.beliefTruth_at_Belief = this.beliefTruth_at_Task = null;
 
@@ -333,14 +340,16 @@ public class Derivation extends PreDerivation {
             this.beliefStart = this.beliefEnd = TIMELESS;
 
             _beliefTerm = nextBeliefTerm;
-            this.beliefTerm =
-                    !(nextBeliefTerm instanceof Variable) ?
-                            anon.putShift(nextBeliefTerm, taskTerm) :
-                            anon.put(nextBeliefTerm); //unshifted, since the target may be structural
+            beliefVarShift =
+                    //!(nextBeliefTerm instanceof Variable) ?
+                    false; //unshifted, structural only;
         }
+        this.beliefTerm =
+                beliefVarShift ?
+                        anon.putShift(nextBeliefTerm, taskTerm) :
+                        anon.put(nextBeliefTerm);
 
         assertAnon(_beliefTerm, beliefTerm, nextBelief);
-
 
         return nextBelief;
     }
@@ -372,7 +381,7 @@ public class Derivation extends PreDerivation {
             //have to re-anon completely
             anon.clear();
 
-            this.taskTerm = anon.put(nextTaskTerm);
+            this.taskTerm = anon.put(this._taskTerm = nextTaskTerm);
 
             assertAnon(nextTaskTerm, this.taskTerm, nextTask);
 
@@ -502,7 +511,7 @@ public class Derivation extends PreDerivation {
                 //w.dur(); //COARSE
         this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
                 //n.dtDither(); //FINE
-                Math.round(w.dur() * n.intermpolationRangeLimit.floatValue()); //COARSE
+                Math.max(n.dtDither(), Math.round(w.dur() * n.unificationTimeToleranceDurs.floatValue())); //COARSE
 
         this.confMin = n.confMin.floatValue();
         this.eviMin = n.confMin.evi();

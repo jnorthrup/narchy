@@ -27,7 +27,8 @@ public abstract class FingerResize extends Dragging {
 
     @Override
     public @Nullable FingerRenderer cursor() {
-        return mode.cursor();
+        DragEdit m = this.mode;
+        return m!=null ? m.cursor() : null;
     }
 
     public abstract DragEdit mode(Finger finger);

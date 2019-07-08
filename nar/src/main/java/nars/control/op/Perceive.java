@@ -58,8 +58,8 @@ public enum Perceive { ;
         if (Evaluation.canEval(x.term())) {
             FasterList<Task> rt = new TaskEvaluation(x, w).result;
             if (rt!=null) {
-                rt.removeInstance(x); //HACK
-//                rt.add(perceived); //echo
+                rt.removeInstance(x); //something was eval, remove the input HACK
+                rt.add(perceived); //echo
 
                 return task(rt);
             }

@@ -20,7 +20,7 @@ import static nars.truth.func.TruthFunctions.*;
 public final class PreciseTruth extends DiscreteTruth {
 
     private final float f;
-    private final double e;
+    private double e;
 
 
     @Nullable
@@ -59,6 +59,24 @@ public final class PreciseTruth extends DiscreteTruth {
         super(freq, conf);
         this.e = evi;
         this.f = freq;
+    }
+
+    @Override
+    public boolean equals(Object x) {
+        if (this == x) return true;
+        if (super.equals(x)) {
+            if (NAL.truth.AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth && x instanceof PreciseTruth) {
+                if (super.conf() > 0) { //apply only if conf >= ~0.01
+                    PreciseTruth xp = (PreciseTruth) x;
+                    double xe = xp.e;
+                    if (this.e != xe) {
+                        xp.e = this.e = Math.max(this.e, xe);
+                    }
+                }
+            }
+            return true;
+        }
+        return false;
     }
 
     @Override

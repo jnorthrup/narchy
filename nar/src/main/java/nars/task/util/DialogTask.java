@@ -9,7 +9,7 @@ import nars.Op;
 import nars.Task;
 import nars.control.NARPart;
 import nars.derive.Deriver;
-import nars.op.SubUnify;
+import nars.unify.SubUnify;
 import nars.term.Term;
 import nars.term.util.Image;
 

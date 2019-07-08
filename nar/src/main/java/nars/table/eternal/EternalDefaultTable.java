@@ -17,10 +17,14 @@ import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
 /** provides an overriding eternal default answer only if the Answer has found no other options in other tables.
- *  should be added only to the end of BeliefTables */
+ *  should be added only to the end of BeliefTables
+ *  TODO separate the strong,weak functionality into a subclass. leave the superclass use the default functionality
+ *  */
 public class EternalDefaultTable extends DynamicTaskTable {
 
-    private final Task strong, weak;
+    private final Task strong;
+    @Deprecated private final Task weak;
+
 //    boolean applyEternal = true;
 //    boolean applyPast = true;
 //    boolean applyFuture = true;
@@ -37,6 +41,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
             this.strong = tt;
         }
 
+//        this.weak = strong;
         {
             Truth tWeak = //t.eternalized(1, n);
                 PreciseTruth.byEvi(t.freq(), t.evi()/2);
@@ -44,6 +49,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
             tt.pri(n.priDefault(punc));
             this.weak = tt;
         }
+
         //n.input(belief);
         //w.in.put(belief);
 //        assert(!belief.isDeleted());
@@ -71,7 +77,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
 
     @Override
     public void match(Answer a) {
-        boolean weak = false;
+        boolean weak = (strong==this.weak);
         boolean ae = a.time.start == ETERNAL;
         if (ae) {
 //            if (!applyEternal)

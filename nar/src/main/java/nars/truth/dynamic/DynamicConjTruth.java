@@ -42,20 +42,21 @@ public class DynamicConjTruth {
             //TODO generalize beyond n=2
             if (d.size() == 2 && d.get(0).term().equals(d.get(1).term())) {
 
-                if (d.get(0).minTimeTo(d.get(1)) <= d.nar.dtDither()) {
+                long sep = d.get(0).minTimeTo(d.get(1));
+                int dither = sep == 0 ? 0 : d.nar.dtDither();
+                if (sep <= dither) {
                     //collapse to a point smaller than dither time:  same starting time and all terms are the same.
                     //try revision
-                    Pair<Task, TruthProjection> ab = Revision.merge(d.nar, false, 2, new Task[]{d.get(0), d.get(1)});
+                    Pair<Task, TruthProjection> ab = Revision._merge(d.nar, d.ditherTruth, 2, new Task[]{d.get(0), d.get(1)});
                     if (ab != null)
                         return Revision.merge(ab);
+                }
+                if (sep < dither) {
+                    return null; //will yield an invalid result TODO verify if this is always true
                 }
 
             }
 
-//            long sequenceLatestStart = d.latestStart();
-//            if (sequenceLatestStart - sequenceStart < d.nar.dtDither() && Sets.newHashSet(Iterables.transform(d, Termed::term)).size() == 1) {
-//                return null; //will yield an invalid result
-//            }
 
             return super.task(template, earliest, sequenceStart, e, d);
         }

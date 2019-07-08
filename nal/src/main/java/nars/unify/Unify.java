@@ -515,22 +515,14 @@ public abstract class Unify extends Versioning<Term> {
 
     public final boolean unifyDT(Term x, Term y) {
         int xdt = x.dt();
-
-        if ((xdt == XTERNAL))
-            return true;
+        if (xdt == XTERNAL) return true;
+        if (xdt == DTERNAL) xdt = 0; //HACK
 
         int ydt = y.dt();
-        if (xdt == ydt || ydt == XTERNAL)
-            return true;
-
-        if (xdt == DTERNAL) xdt = 0; //HACK
+        if (ydt == XTERNAL) return true;
         if (ydt == DTERNAL) ydt = 0; //HACK
-        if (xdt != ydt) {
-            if (!unifyDT(xdt, ydt))
-                return false;
-        }
 
-        return true;
+        return xdt == ydt || unifyDT(xdt, ydt);
     }
 
     /** xdt and ydt must both not equal either XTERNAL or DTERNAL */

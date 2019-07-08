@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 850;
+    public static final int cycles = 150;
 
     @BeforeEach
     void setTolerance() {
@@ -958,6 +958,7 @@ public class NAL8Test extends NALTest {
 //            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0f, 1f, (long s, long e) -> (e-s > 10));
 //
 //    }
+
     @Test
     void testGoalBeliefDecomposeTimeRangingDiffer() {
         test
