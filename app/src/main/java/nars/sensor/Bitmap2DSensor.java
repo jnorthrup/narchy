@@ -17,8 +17,7 @@ import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.derive.model.Derivation;
 import nars.link.AbstractTaskLink;
-import nars.link.AtomicTaskLink;
-import nars.link.TaskLink;
+import nars.sensor.util.DynamicSensorTaskLink;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.table.dynamic.SensorBeliefTables;
@@ -33,15 +32,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.CONJ;
 
-/**
- * manages reading a camera to a pixel grid of SensorConcepts
- * monochrome
- */
+/** TODO generalize beyond any 2D specific that this class was originally designed for */
 public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     public final Bitmap2DConcepts<P> concepts;
@@ -105,33 +100,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Iterable<Termed> components() {
         return Iterables.transform(concepts, Concept::term);
     }
-
-
-//    public void input() {
-//        input(mode);
-//    }
-//
-//    /**
-//     * manually inputs the contents of the current frame
-//     */
-//    public void input(FloatFloatToObjectFunction<Truth> mode) {
-//        in.input(concepts.stream(mode, nar));
-//    }
-
-//    public Bitmap2DConcepts.Bitmap2DReader readAdaptively() {
-//        return concepts.newReader(in, mode, nar);
-//    }
-//    public Bitmap2DConcepts.Bitmap2DReader readAdaptively(BooleanSupplier enable) {
-//        return concepts.newReader(in, mode, enable, nar);
-//    }
-
-//    public DurService readDirectEachDuration() {
-//        return readDirectEachDuration(mode);
-//    }
-
-//    public DurService readDirectEachDuration(FloatFloatToObjectFunction<Truth> mode) {
-//        return DurService.on(nar, (nn)-> input(nar.dur(), mode));
-//    }
 
     final FloatFloatToObjectFunction<Truth> SET;
     final FloatFloatToObjectFunction<Truth> DIFF;
@@ -208,8 +176,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     public static Term[] coord(int n, int max, int radix) {
-
-
         return $.radixArray(n, radix, max);
     }
 
@@ -219,8 +185,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     final AbstractTaskLink tl =
-            new PixelSelectorTaskLink();
-            //new ConjunctionSuperPixelTaskLink(2, 2);
+            //new PixelSelectorTaskLink();
+            new ConjunctionSuperPixelTaskLink(2, 2);
 
     @Override
     public void update(Game g) {
@@ -247,48 +213,20 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
 
-    public double surprise() {
-        double s = 0;
-        for (Signal c : concepts)
-            s += ((SensorBeliefTables)c.beliefs()).surprise();
-        return s;
-    }
+
 
     @Override
     public final Iterator<Signal> iterator() {
         return concepts.iterator();
     }
 
-    private abstract class DynamicPixelTaskLink extends AtomicTaskLink {
-
-        public DynamicPixelTaskLink() {
-            super(Bitmap2DSensor.this.term());
-        }
-
-        @Override
-        public @Nullable Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
-            Concept t = src(when);
-            return t!=null ? t.beliefs().match(when, null, filter, false) : null;
-        }
-
-        protected abstract Concept src(When<NAR> when);
-
-        @Override
-        abstract public Term target(Task task, Derivation d);
-
-        @Override
-        public @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
-            //return task.term();
-            return null;
+    private class PixelSelectorTaskLink extends DynamicSensorTaskLink {
+        PixelSelectorTaskLink() {
+            super(term());
         }
 
         Signal randomPixel(Random rng) {
             return concepts.get(rng);
-        }
-    }
-
-    private class PixelSelectorTaskLink extends DynamicPixelTaskLink {
-        PixelSelectorTaskLink() {
         }
 
         @Override public Signal src(When<NAR> when) {
@@ -333,12 +271,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
     }
 
-    private class ConjunctionSuperPixelTaskLink extends DynamicPixelTaskLink {
+    private class ConjunctionSuperPixelTaskLink extends DynamicSensorTaskLink {
 
         private final int batchX, batchY;
 
         ConjunctionSuperPixelTaskLink(int batchX, int batchY) {
-            super();
+            super(term());
             this.batchX = batchX; this.batchY = batchY;
         }
 

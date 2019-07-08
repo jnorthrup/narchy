@@ -4,6 +4,7 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
+import jcog.signal.wave2d.ArrayBitmap2D;
 import jcog.table.DataTable;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
@@ -93,7 +94,7 @@ public class TrackXY_NAR extends GameX {
         }
 
         if (targetCam) {
-            Bitmap2DSensor<jcog.signal.wave2d.ArrayBitmap2D> c = new Bitmap2DSensor<>(id, track.grid, nar);
+            Bitmap2DSensor<ArrayBitmap2D> c = new Bitmap2DSensor<>(id, track.grid, nar);
             c.resolution(camResolution);
             addSensor(c);
             /*id*/

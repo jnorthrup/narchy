@@ -180,7 +180,7 @@ public class Derivation extends PreDerivation {
     public DerivationTransform transformDerived;
     private transient short[] parentCause;
     private transient long[] evidenceDouble, evidenceSingle;
-    private transient int taskUniqueAnonTerms;
+    private transient int taskUniqueAnonTermCount;
 
     /**
      * these represent the maximum possible priority of the derivation.
@@ -291,28 +291,28 @@ public class Derivation extends PreDerivation {
                     this.beliefTruth_at_Task = beliefAtTask(nextBelief);
                 }
 
-                if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION && !nextBelief.equals(_task)) {
+                if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) && (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || beliefTruth_at_Task==null)) {
 
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(1, eviMin, null /* dont dither */);
-                    if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task)==beliefTruth_eternalized) {
+                    if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() > eviMin) {
+                        if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
 
-                        if (NAL.ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME)
-                            nextBeliefStart = nextBeliefEnd = ETERNAL;
-                        else
-                            nextBeliefEnd = nextBelief.end();
 
-                        nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
-                                false,
-                                this.beliefTruth_at_Task = beliefTruth_eternalized
-                        );
+                            if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME)
+                                nextBeliefStart = nextBeliefEnd = ETERNAL;
+                            else
+                                nextBeliefEnd = nextBelief.end();
+
+                            nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
+                                    false,
+                                    this.beliefTruth_at_Task = beliefTruth_eternalized
+                            );
+                        }
                     }
 
                 }
 
             }
-
-            if (beliefTruth_at_Task!=null && beliefTruth_at_Task.evi() < eviMin)
-                beliefTruth_at_Task = null;
 
             if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)
                 nextBelief = null;
@@ -347,11 +347,12 @@ public class Derivation extends PreDerivation {
 
     @Nullable
     private Truth beliefAtTask(Task nextBelief) {
-        return !NAL.derive.BELIEF_PROJECTION_CLASSIC ?
+        Truth t = !NAL.derive.BELIEF_PROJECTION_CLASSIC ?
             nextBelief.truth(taskStart, taskEnd, dur()) //integration-calculated
             :
             nextBelief.truth(time(), _task) //classic opennars projection
         ;
+        return t.evi() < eviMin ? null : t;
     }
 
     private Task resetTask(final Task nextTask, Task currentTask) {
@@ -364,7 +365,7 @@ public class Derivation extends PreDerivation {
         if (sameTerm) {
 
             //roll back only as far as the unique task terms. we can re-use them as-is
-            anon.rollback(taskUniqueAnonTerms);
+            anon.rollback(taskUniqueAnonTermCount);
 
 
         } else {
@@ -375,7 +376,7 @@ public class Derivation extends PreDerivation {
 
             assertAnon(nextTaskTerm, this.taskTerm, nextTask);
 
-            this.taskUniqueAnonTerms = anon.uniques();
+            this.taskUniqueAnonTermCount = anon.uniques();
         }
 
 
@@ -560,7 +561,7 @@ public class Derivation extends PreDerivation {
         taskTruth = beliefTruth_at_Task = beliefTruth_at_Belief = null;
 
         ttl = 0;
-        taskUniqueAnonTerms = 0;
+        taskUniqueAnonTermCount = 0;
         temporal = false;
         taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
         nar = null;

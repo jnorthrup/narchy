@@ -11,6 +11,7 @@ import nars.attention.AttnBranch;
 import nars.attention.PriNode;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
+import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;
@@ -85,6 +86,12 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
      */
     abstract public int size();// {return Iterables.size(this);}
 
+    public double surprise() {
+        double s = 0;
+        for (Signal c : this)
+            s += ((SensorBeliefTables)c.beliefs()).surprise();
+        return s;
+    }
 
     @Override
     public void update(Game g) {

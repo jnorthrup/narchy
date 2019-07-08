@@ -49,6 +49,8 @@ import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 public class DynTaskify extends TaskList {
 
 
+
+
     private static class Component implements Function<DynTaskify,Task> {
         final Term term;
         final BeliefTable _concept;
@@ -191,68 +193,8 @@ public class DynTaskify extends TaskList {
 
         }
 
+        return model.task(template, earliest, s, e, this);
 
-        Term y = model.reconstruct(template, s, e, this);
-        if (y==null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
-            if (NAL.DEBUG) {
-                //TEMPORARY for debug
-//                  model.evalComponents(answer, (z,start,end)->{
-//                      System.out.println(z);
-//                      nar.conceptualizeDynamic(z).beliefs().match(answer);
-//                      return true;
-//                  });
-//                  model.reconstruct(template, this, s, e);
-//                throw new TermException("DynTaskify template not reconstructed: " + this, template);
-            }
-            return null;
-        }
-
-
-        boolean absolute = (model!=Impl && model != ConjIntersection) || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
-        for (int i = 0, dSize = size(); i < dSize; i++) {
-            Task x = get(i);
-            long xStart = x.start(); if (xStart!=ETERNAL) {
-                long shift = absolute || (xStart == ETERNAL) ? 0 : xStart - earliest;
-                long ss = s + shift, ee = e + shift;
-                if (xStart != ss || x.end() != ee) {
-                    Task tt = Task.project(x, ss, ee,
-                            NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
-                            false,
-                            1, //no need to dither truth or time here.  maybe in the final calculation though.
-                            dur,
-                            nar);
-                    if (tt == null)
-                        return null;
-                    setFast(i, tt);
-                }
-            }
-        }
-
-
-        Truth t = model.truth(this);
-        if (t == null)
-            return null;
-
-        /** interpret the presence of truth dithering as an indication this is producng something for 'external' usage,
-         *  and in which case, also dither time
-         */
-
-        if (ditherTruth) {
-            //dither and limit truth
-            t = t.dither(nar);
-            if (t == null)
-                return null;
-        }
-
-//        if (ditherTime) {
-//            if (s!= LongInterval.ETERNAL) {
-//                int dtDither = nar.dtDither();
-//                s = Tense.dither(s, dtDither, -1);
-//                e = Tense.dither(e, dtDither, +1);
-//            }
-//        }
-
-        return merge(this, y, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
     }
 
     private boolean components() {
@@ -394,7 +336,7 @@ public class DynTaskify extends TaskList {
 
 
 
-    private Supplier<long[]> stamp(Random rng) {
+    protected Supplier<long[]> stamp(Random rng) {
         if (evi == null) {
             switch(size) {
                 case 1:
@@ -437,4 +379,7 @@ public class DynTaskify extends TaskList {
         return maxValue(Stamp::start);
     }
 
+    public Task merge(Term y, Truth t, long s, long e) {
+        return merge(this, y, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
+    }
 }

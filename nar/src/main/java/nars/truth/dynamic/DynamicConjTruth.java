@@ -1,20 +1,20 @@
 package nars.truth.dynamic;
 
-import com.google.common.collect.Iterables;
-import com.google.common.collect.Sets;
 import jcog.util.ArrayUtil;
 import jcog.util.ObjectLongLongPredicate;
 import nars.Task;
 import nars.subterm.Subterms;
+import nars.task.util.Revision;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjList;
 import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
+import nars.truth.proj.TruthProjection;
+import org.eclipse.collections.api.tuple.Pair;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -33,6 +33,33 @@ public class DynamicConjTruth {
         @Override
         protected boolean negResult() { return false; }
 
+        /**
+            has special support for collapsing the potential sequence to a revision if intersect,
+            especially if the separation is less than NAR's dt dithering which will produce invalid dynamic result
+         */
+        @Override public Task task(Compound template, long earliest, long sequenceStart, long e, DynTaskify d) {
+
+            //TODO generalize beyond n=2
+            if (d.size() == 2 && d.get(0).term().equals(d.get(1).term())) {
+
+                if (d.get(0).minTimeTo(d.get(1)) <= d.nar.dtDither()) {
+                    //collapse to a point smaller than dither time:  same starting time and all terms are the same.
+                    //try revision
+                    Pair<Task, TruthProjection> ab = Revision.merge(d.nar, false, 2, new Task[]{d.get(0), d.get(1)});
+                    if (ab != null)
+                        return Revision.merge(ab);
+                }
+
+            }
+
+//            long sequenceLatestStart = d.latestStart();
+//            if (sequenceLatestStart - sequenceStart < d.nar.dtDither() && Sets.newHashSet(Iterables.transform(d, Termed::term)).size() == 1) {
+//                return null; //will yield an invalid result
+//            }
+
+            return super.task(template, earliest, sequenceStart, e, d);
+        }
+
         @Override
         public Term reconstruct(Compound superterm, long sequenceStart, long startEnd, DynTaskify d) {
 
@@ -43,13 +70,8 @@ public class DynamicConjTruth {
                 end = ETERNAL;
             } else {
                 long sequenceLatestStart = d.latestStart(); assert(sequenceLatestStart!=ETERNAL);
-                int dtDither = d.nar.dtDither();
 
-                if (sequenceLatestStart - sequenceStart < dtDither && Sets.newHashSet(Iterables.transform(d, Termed::term)).size() == 1) {
-                    //collapsed to a point smaller than dither time:  same starting time and all terms are the same.
-                    //TODO try revision (first 2)
-                    return null;
-                }
+
 
                 //sequenceStart = sequenceStart; //dither now for comparisons in loop
 

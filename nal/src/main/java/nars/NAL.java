@@ -140,29 +140,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * TODO make this NAR-specific
      */
     public static final int CAUSE_MAX = 32;
-    public static final IntRange causeCapacity = new IntRange(32, 1, NAL.CAUSE_MAX);
+    public static final IntRange causeCapacity = new IntRange(CAUSE_MAX/2, 1, CAUSE_MAX);
 
 
-    //    /**
-//     * warning: can interfere with expected test results
-//     */
-//    public static boolean ETERNALIZE_FORGOTTEN_TEMPORALS = false;
-    public static final int CURIOSITY_CAPACITY = NAL.STAMP_CAPACITY / 2;
+    public static final int CURIOSITY_CAPACITY = 2; //NAL.STAMP_CAPACITY / 2;
     public static final long CURIOSITY_TASK_RANGE_DURS = 3;
     public static final boolean DEBUG_TASK_LOG= configIs("DEBUG_TASK_LOG");
-    //PriMerge.plus;
-    //PriMerge.max;
-    //Util::mean;
-    //tasklinkMerge::merge;
-    //Util::or;
-
-    //Util::or;
-    //Math::max;
-    //Util::and;
-
-
-    //1.5f;
-    //2f;
 
 
 
@@ -174,7 +157,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 10000; //0.1f;
     public static final boolean PROJECTION_EVIDENCE_INFLATION_DETECT = false;
 
-    public static final int DYN_TASK_MATCH_MODE = 2;
+    public static final int DYN_TASK_MATCH_MODE =
+            2;
+            //1;
 
 
     /**
@@ -232,8 +217,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
 
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION = true;
-    public static boolean ETERNALIZE_BELIEF_PROJECTED_IN_DERIVATION_AND_ETERNALIZE_BELIEF_TIME = false;
 
     /**
      * SignalTask's
@@ -249,18 +232,23 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
          */
-        public static final float SIGNAL_LATCH_LIMIT_DURS =/*0.5f;*/
+        public static final float SIGNAL_LATCH_LIMIT_DURS =
                 2f;
                 //1.5f;
                 //1f;
 
-        /** max tasked matched by series table, in case the answer limit is higher.  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
-        public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR = 1f/SIGNAL_STRETCH_LIMIT_DURS;
+        /**
+         *  max tasked matched by series table, in case the answer limit is higher.
+         *  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
+        public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR =
+                1;
+                //1f/SIGNAL_STRETCH_LIMIT_DURS;
+
         public static final int SERIES_MATCH_MIN = 2;
 
         public static final float SENSOR_MIN_SURPRISE_DEFAULT = 0.05f;
@@ -303,9 +291,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * probably values <= ~0.5 are safe as this limits stretching within 'octaves'
      */
     public final FloatRange intermpolationRangeLimit = new FloatRange(
-            0.5f
+            //0.5f
             //0.618f
-            //1f
+            1f
             //2f
             , 0, 4);
 
@@ -765,6 +753,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         //public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
+        public static boolean ETERNALIZE_BELIEF_PROJECTION = true;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = false;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME;
 
 
     }
@@ -776,9 +767,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * max variable unification recursion depth as a naive cyclic filter
          * includes indirections through common variables so should be at least 3.
          */
-        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 6;
+        public static final int UNIFY_VAR_RECURSION_DEPTH_LIMIT = 8;
         public static final int UNIFY_COMMON_VAR_MAX = UNIFY_VAR_RECURSION_DEPTH_LIMIT;
         public static final int UNIFICATION_STACK_CAPACITY = 128;
+
     }
 
 }

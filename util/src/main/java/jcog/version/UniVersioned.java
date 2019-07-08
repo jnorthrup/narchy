@@ -54,14 +54,15 @@ public class UniVersioned<X> implements Versioned<X> {
                 return true;
             }
         } else {
-            int m = merge(prev, next);
-            if (m == 0)
-                return true;
-            else if (m > 0) {
-                if (m == +1 && valid(next, context))
+            switch (merge(prev, next)) {
+                case 0:
+                    return true;
+                case +1:
+                    //assumes that merge has tested the new value, if necessary: valid(next, context)
                     value = next; //replace
-                return true;
+                    return true;
             }
+
         }
         return false;
     }
@@ -73,9 +74,30 @@ public class UniVersioned<X> implements Versioned<X> {
      *      -1  refuse
      *
      */
-    protected int merge(X prevValue, X nextValue) {
-        return prevValue.equals(nextValue) ? 0 : -1;
+    protected int merge(X prev, X next) {
+        if (prev.equals(next))
+            return 0;
+        else
+            return -1;
     }
+//    @Override
+//    protected int merge(Term prevValue, Term nextValue) {
+//        if (prevValue.equals(nextValue))
+//            return 0;
+//
+////            if (prevValue.unify(nextValue, (Unify) context)) {
+////                if (nextValue.hasAny(Op.Temporal)) {
+////                    //prefer more specific temporal matches, etc?
+////                    if (prevValue.hasXternal() && !nextValue.hasXternal()) {
+////                        return +1;
+////                    }
+////                }
+////                return 0;
+////            } else
+//        else
+//            return -1;
+//    }
+
 
     @Override
     public void pop() {

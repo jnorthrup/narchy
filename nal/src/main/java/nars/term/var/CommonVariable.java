@@ -1,6 +1,7 @@
 package nars.term.var;
 
 import jcog.WTF;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.IntrinSubterms;
@@ -130,9 +131,39 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     public static boolean unify(Variable X, Variable Y, Unify u) {
         //same op: common variable
-        //TODO may be possible to "insert" the common variable between these and whatever result already exists, if only one in either X or Y's slot
+
+        if (X instanceof CommonVariable) {
+            if (((CommonVariable)X).includes(Y))
+                return true;
+        }
+        if (Y instanceof CommonVariable) {
+            if (((CommonVariable)Y).includes(X))
+                return true;
+        }
+
         Variable common = CommonVariable.common(X,Y);
-        return (common.equals(X) || u.putXY(X, common)) && (common.equals(Y) || u.putXY(Y, common));
+        int start = u.size();
+        if (!(common.equals(X) || u.putXY(X, common)))
+            return false;
+        if (!(common.equals(Y) || u.putXY(Y, common))) {
+            u.revert(start);
+            return false;
+        }
+        return true;
+    }
+
+    @Override
+    public boolean unify(Term y, Unify u) {
+        return includes(y) || super.unify(y, u);
+    }
+
+    /** includes but doesnt equal */
+    public boolean includes(Term v) {
+        return v instanceof Variable && v.op()==op() && !this.equals(v) && _includes(v);
+    }
+
+    private boolean _includes(Term v) {
+        return ArrayUtil.contains(this.vars, Intrin.id(v));
     }
 
 }

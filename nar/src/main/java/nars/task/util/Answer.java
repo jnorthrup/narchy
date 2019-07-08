@@ -230,16 +230,24 @@ public final class Answer implements Timed, Predicate<Task> {
     private static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {
 
-            float dtDiff = Intermpolate.dtDiff(template, x.term());
+            Term xt = x.term();
+            float dtDiff = Intermpolate.dtDiff(template, xt);
             if (!Float.isFinite(dtDiff)) {
                 /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
                    TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
                  */
-                if (NAL.DEBUG)
-                    throw new TermException("mismatch for Answer template: " + template, x);
-                else {
-                    return Float.NaN;
+
+                if (template.op() == CONJ && template.containsRecursively(xt)) {
+                    //HACK a dynamic conjunction to revision collapse
+                    dtDiff = template.volume();
+                } else {
+                    if (NAL.DEBUG)
+                        throw new TermException("mismatch for Answer template: " + template, x);
+                    else {
+                        return Float.NaN;
+                    }
                 }
+
             }
 
             float d = 1 / (1 + dtDiff);

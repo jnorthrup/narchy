@@ -4,6 +4,7 @@ import jcog.data.set.MetalLongSet;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.task.TemporalTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -153,6 +154,14 @@ public enum Revision {;
                 )
         );
         return pair(y, p);
+    }
+
+    /** budget a revision result */
+    public static Task merge(Pair<Task, TruthProjection> AB) {
+        Task m = AB.getOne();
+        TruthProjection merge = AB.getTwo();
+        TemporalBeliefTable.budget(merge, m);
+        return m;
     }
 
 

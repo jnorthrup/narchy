@@ -2,7 +2,6 @@ package nars.term;
 
 import jcog.Paper;
 import jcog.Skill;
-import nars.NAL;
 import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
@@ -25,32 +24,33 @@ public interface Variable extends Atomic {
         return (x.op() != FRAG) || (x.subs() == 1); //allow 1-element fragments, since they can be neg safely
     }
 
-    private static boolean unifyConst(Unify u, Term x, Term y) {
-        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
-            u.varDepth++;
-            boolean result = x.unify(y, u); //both constant-like
-            u.varDepth--;
-            return result;
-        } else
-            return false; //recursion limit exceeded
-    }
+//    private static boolean unifyConst(Unify u, Term x, Term y) {
+//        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
+//            u.varDepth++;
+//            boolean result = x.unify(y, u);
+//            u.varDepth--;
+//            return result;
+//        } else
+//            return false; //recursion limit exceeded
+//    }
 
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {
             Op xop = x.op();
-            if (xop!=VAR_PATTERN) {
-                if (y instanceof Variable && !(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
-                    if (u.commonVariables && u.var(xop)) {
-                        Op yop = y.op();
-                        if (xop == yop)
-                            return CommonVariable.unify((Variable) x, (Variable) y, u);
+            if (u.var(xop)) {
+                if (xop != VAR_PATTERN && y instanceof Variable) {
+                    if (u.commonVariables) {
+                        if (!(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
+                            if (xop == y.op())
+                                return CommonVariable.unify((Variable) x, (Variable) y, u);
+                        }
                     }
                 }
-            }
 
-            if (u.canPut(xop, y)) {
-                if( u.putXY((Variable) x, y))
-                    return true;
+                if (u.canPut(xop, y)) {
+                    if (u.putXY((Variable) x, y))
+                        return true;
+                }
             }
         }
 

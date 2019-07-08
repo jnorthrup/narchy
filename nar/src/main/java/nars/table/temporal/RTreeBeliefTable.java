@@ -182,9 +182,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         if (valueMergeLeaf > valueEvictWeakest) {
             //merge leaf
-            Task m = AB.getOne();
             TruthProjection merge = AB.getTwo();
-            TemporalBeliefTable.budget(merge, m);
+
+            Task m = Revision.merge(AB);
             merge.forEachTask(treeRW::remove);
             if (treeRW.add(m)) {
                 r.remember(m);

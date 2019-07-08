@@ -77,7 +77,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
     }
 
     @Nullable private Task transformFromTemplate(Task t) {
-        return t != null ? SpecialTermTask.the(t, transformTermFromTemplate(t), true) : null;
+        return t != null ? SpecialTermTask.the(t, transformTermFromTemplate(t), false) : null;
     }
 
     private Term transformTermFromTemplate(Termed t) {

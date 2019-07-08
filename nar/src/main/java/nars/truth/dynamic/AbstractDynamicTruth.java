@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.Util;
+import jcog.math.LongInterval;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAL;
 import nars.NAR;
@@ -19,6 +20,9 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static nars.time.Tense.ETERNAL;
+import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
+import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 
 /**
  * Created by me on 12/4/16.
@@ -48,11 +52,11 @@ abstract public class AbstractDynamicTruth {
         Task bt;
         switch (NAL.DYN_TASK_MATCH_MODE) {
             case 0:
-                //may be too aggressive in evidence collection, and prevent other components from succeeding
+                //may be too aggressive in evidence collection, preventing other components from succeeding
                 bt = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 1:
-                //may be too aggressive in evidence collection, and prevent other components from succeeding
+                //may be too aggressive in evidence collection, preventing other components from succeeding
                 bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 2:
@@ -73,4 +77,67 @@ abstract public class AbstractDynamicTruth {
 
     /** estimates number of components, for allocation purposes */
     abstract public int componentsEstimate();
+
+    public Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
+        Term y = reconstruct(template, s, e, d);
+        if (y==null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
+            if (NAL.DEBUG) {
+                //TEMPORARY for debug
+//                  model.evalComponents(answer, (z,start,end)->{
+//                      System.out.println(z);
+//                      nar.conceptualizeDynamic(z).beliefs().match(answer);
+//                      return true;
+//                  });
+//                  model.reconstruct(template, this, s, e);
+//                throw new TermException("DynTaskify template not reconstructed: " + this, template);
+            }
+            return null;
+        }
+
+
+        boolean absolute = (this!=Impl && this != ConjIntersection) || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
+        for (int i = 0, dSize = d.size(); i < dSize; i++) {
+            Task x = d.get(i);
+            long xStart = x.start(); if (xStart!=ETERNAL) {
+                long shift = absolute || (xStart == ETERNAL) ? 0 : xStart - earliest;
+                long ss = s + shift, ee = e + shift;
+                if (xStart != ss || x.end() != ee) {
+                    Task tt = Task.project(x, ss, ee,
+                            NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
+                            false,
+                            1, //no need to dither truth or time here.  maybe in the final calculation though.
+                            d.dur,
+                            d.nar);
+                    if (tt == null)
+                        return null;
+                    d.setFast(i, tt);
+                }
+            }
+        }
+
+
+        Truth t = this.truth(d);
+        if (t == null)
+            return null;
+
+        /** interpret the presence of truth dithering as an indication this is producng something for 'external' usage,
+         *  and in which case, also dither time
+         */
+
+        if (d.ditherTruth) {
+            //dither and limit truth
+            t = t.dither(d.nar);
+            if (t == null)
+                return null;
+        }
+
+//        if (ditherTime) {
+//            if (s!= LongInterval.ETERNAL) {
+//                int dtDither = nar.dtDither();
+//                s = Tense.dither(s, dtDither, -1);
+//                e = Tense.dither(e, dtDither, +1);
+//            }
+//        }
+        return d.merge(y, t, s, e);
+    }
 }

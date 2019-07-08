@@ -76,9 +76,9 @@ public abstract class Unify extends Versioning<Term> {
 
     public boolean commonVariables = true;
 
-    /** recursion limiter HACK
-     * TODO use a real stack of arbitrarily length for detecting cycles */
-    public int varDepth = 0;
+//    /** recursion limiter HACK
+//     * TODO use a real stack of arbitrarily length for detecting cycles */
+//    public int varDepth = 0;
 
     private final FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
 
@@ -277,7 +277,7 @@ public abstract class Unify extends Versioning<Term> {
 
         BiConsumer<Term, Term> eachXY = xyPairs::addAll;
         if (clear) {
-            clear(eachXY);
+            clear(versionedToBiConsumer(eachXY));
         } else {
             forEach(eachXY);
         }
@@ -379,15 +379,18 @@ public abstract class Unify extends Versioning<Term> {
         return this;
     }
 
-    public Unify clear(@Nullable BiConsumer<Term,Term> each) {
-
-        revert(0, each);
-
-        termutes.clear();
+    public Unify clear(@Nullable Consumer<Versioned<Term>> each) {
 
         constrained.clear(ConstrainedVersionedTerm::unconstrain);
 
-        varDepth = 0;
+        if (each!=null)
+            revert(0, each);
+        else
+            revert(0);
+
+        termutes.clear();
+
+        //varDepth = 0;
 
         return this;
     }
@@ -469,13 +472,12 @@ public abstract class Unify extends Versioning<Term> {
         forEach(versionedToBiConsumer(each));
     }
 
-    private void revert(int when, BiConsumer<Term, Term> each) {
+    private void revertTerms(int when, BiConsumer<Term, Term> each) {
         if (each==null)
             revert(0);
         else
             revert(when, versionedToBiConsumer(each));
     }
-
 
     static private Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
         return (Versioned<Term> v)->{
@@ -495,8 +497,8 @@ public abstract class Unify extends Versioning<Term> {
 
 
         //Term Y = y;
-        //Term Y = resolveTerm(y, false);
-        Term Y = resolveTerm(y, true);
+        Term Y = resolveTerm(y, false);
+        //Term Y = resolveTerm(y, true);
         if (Y == Null)
             return false;
         else {
@@ -506,13 +508,10 @@ public abstract class Unify extends Versioning<Term> {
 
 
     public final void constrain(UnifyConstraint<?> m) {
-        Variable target = m.x;
-        ConstrainedVersionedTerm targetVersioned = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(target);
-        targetVersioned.constrain(m);
-        constrained.add(targetVersioned);
+        ConstrainedVersionedTerm target = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(m.x);
+        target.constrain(m);
+        constrained.add(target);
     }
-
-
 
     public final boolean unifyDT(Term x, Term y) {
         int xdt = x.dt();
@@ -610,23 +609,6 @@ public abstract class Unify extends Versioning<Term> {
             super(key);
         }
 
-        @Override
-        protected int merge(Term prevValue, Term nextValue) {
-            if (prevValue.equals(nextValue))
-                return 0;
-
-//            if (prevValue.unify(nextValue, (Unify) context)) {
-//                if (nextValue.hasAny(Op.Temporal)) {
-//                    //prefer more specific temporal matches, etc?
-//                    if (prevValue.hasXternal() && !nextValue.hasXternal()) {
-//                        return +1;
-//                    }
-//                }
-//                return 0;
-//            } else
-            else
-                return -1;
-        }
 
         @Override protected boolean valid(Term x, Versioning<Term> context) {
             UnifyConstraint<Unify> c = this.constraint;

@@ -434,19 +434,19 @@ class DynamicConjTest {
     }
 
     @Test
-    void testDynamicConjunction_revertToRevisionOnIntersect() throws Narsese.NarseseException {
+    void testDynamicConjunction_collapseToRevisionOnIntersect() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe($("x"), 0, 2, 1f, 0.9f);
         n.believe($("x"), 0, 2, 0.5f, 0.9f);
         n.time.dur(8);
 
-        {
-            Term xyz = $("(x &&+1 x)");
+        for (String s : new String[] { "(x &&+1 x)", "(x &&+- x)"}){
+            Term xyz = $(s);
             Task t = n.answerBelief(xyz, 0, 2);
             assertNotNull(t);
-            assertEquals(0.75f, t.freq(), 0.05f);
-            assertEquals(0.81f, t.conf(), 0.1f);
             assertEq("x", t.term());
+            assertEquals(0.75f, t.freq(), 0.05f);
+            assertEquals(0.94f, t.conf(), 0.1f);
         }
     }
 
