@@ -444,5 +444,5 @@
 //conj/impl question decomposition
     (A ==> B), B, task("?")             |- A, (Punctuation:Question)
     (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
-    B, (A ==> B), task("?")             |- A, (Punctuation:Question)
-    A, (C ==> B), task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
+    B, (A ==> B)               |- A, (Punctuation:AskAsk)
+    A, (C ==> B), eqPN(A,C)    |- B, (Punctuation:AskAsk)
