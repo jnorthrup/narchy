@@ -26,6 +26,7 @@ public class TruthWave {
     private static final int precision = 8;
 
     private static final int ENTRY_SIZE = 4;
+    public BeliefTable table;
 
     /**
      * start and stop interval (in cycles)
@@ -49,6 +50,7 @@ public class TruthWave {
     private void clear() {
         size = 0;
         start = end = Tense.ETERNAL;
+        table = null;
     }
 
     private void resize(int cap) {
@@ -57,6 +59,7 @@ public class TruthWave {
 
     public TruthWave( BeliefTable b) {
         this(b.taskCount());
+        this.table = b;
         set(b, Long.MIN_VALUE, Long.MAX_VALUE);
         //TODO update range
     }
@@ -66,6 +69,7 @@ public class TruthWave {
      */
     public void set(BeliefTable b, long minT, long maxT) {
         clear();
+        this.table = b;
         this.start = minT; this.end = maxT;
         int s = b.taskCount();
         if (s == 0) {

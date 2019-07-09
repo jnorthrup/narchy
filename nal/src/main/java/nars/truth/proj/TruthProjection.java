@@ -423,9 +423,16 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     public final TruthProjection add(Tasked... tasks) {
-        ensureCapacity(tasks.length);
-        for (Tasked t : tasks)
-            add(t); //if (t != null)
+        return add(tasks.length, tasks);
+    }
+
+    public final TruthProjection add(int n, Tasked... tasks) {
+        ensureCapacity(n);
+        for (int i = 0; i < n; i++) {
+            Tasked t = tasks[i];
+            //if (t != null)
+            add(t);
+        }
         return this;
     }
 

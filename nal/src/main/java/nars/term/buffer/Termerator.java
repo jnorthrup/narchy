@@ -3,6 +3,7 @@ package nars.term.buffer;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
@@ -102,11 +103,24 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public boolean is(Term x, Term y) {
+        if (y == Null)
+            return false;
+
         if (x.equals(y))
             return true;
         else {
             ensureReady();
-            return subs.set(x, y);
+            boolean empty = subs.isEmpty();
+            Term existingAssignment = !empty ? subs.get(x) : null;
+            if (existingAssignment == null) {
+                if (!empty) {
+                    Term z = y.replace(subs); //transform the assignment result preventing loops etc
+                    if (z!=y)
+                        Util.nop();
+                    y = z;
+                } return subs.set(x, y);
+            } else
+                return y.equals(existingAssignment);
         }
 
     }

@@ -4,8 +4,8 @@ import jcog.Util;
 
 abstract public class AbstractNode<V> implements Node<V> {
 
-    public volatile short size;
-    public volatile HyperRegion bounds;
+    public /*volatile*/ short size;
+    public /*volatile*/ HyperRegion bounds;
 
     protected final void grow(HyperRegion b) {
         HyperRegion x = this.bounds;

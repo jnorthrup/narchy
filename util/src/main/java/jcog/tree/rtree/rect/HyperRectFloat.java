@@ -135,7 +135,7 @@ public class HyperRectFloat implements HyperRegion, Serializable, Comparable<Hyp
         float sigma = 1f;
         int dim = dim();
         for (int i = 0; i < dim; i++) {
-            sigma *= rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
+            sigma *= rangeIfFinite(i, 1 /* HACK an infinite dimension can not be compared, so just ignore it */);
         }
         return sigma;
     }

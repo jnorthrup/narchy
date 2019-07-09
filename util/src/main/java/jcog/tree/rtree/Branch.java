@@ -318,7 +318,7 @@ public class Branch<X> extends AbstractNode<X> {
                         (cir != childMbr ? childMbr.cost() - (cir.cost() /* + tCost*/) : 0);
 
                 int dc = Double.compare(nodeEnlargement, leastEnlargement);
-                if (dc == -1) {
+                if (nodeEnlargement < leastEnlargement) {
                     leastEnlargement = nodeEnlargement;
                     leastPerimeter = childMbr.perimeter();
                     bestNode = i;
@@ -449,10 +449,7 @@ public class Branch<X> extends AbstractNode<X> {
 
     @Override
     public Stream<Node<X>> streamNodes() {
-        return ArrayIterator
-                //.streamNonNull(data, size)
-                .stream(data,size)
-                ;
+        return ArrayIterator.streamNonNull(data, size);
     }
 
     @Override

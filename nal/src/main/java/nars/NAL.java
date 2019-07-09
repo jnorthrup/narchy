@@ -293,12 +293,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
             //0.618f
-            //0.75f
-            //1f
-            //2f
-            //4f
-            32f
-            , 0, 64f);
+            1f
+            , 0, 2f);
 
     /** max tolerance time (in durations) for unification of temporal terms */
     public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );

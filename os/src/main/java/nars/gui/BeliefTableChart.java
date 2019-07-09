@@ -8,6 +8,9 @@ import jcog.math.FloatRange;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
 import nars.table.BeliefTable;
+import nars.table.BeliefTables;
+import nars.table.temporal.RTreeBeliefTable;
+import nars.task.util.TaskRegion;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.TruthWave;
@@ -19,6 +22,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.Stacking;
+import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -27,12 +31,13 @@ import spacegraph.video.Draw;
 
 public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, MenuSupplier {
 
-    final Term term;
+    private final Term term;
     private final TruthGrid beliefGrid, goalGrid;
 
     public final FloatRange rangeDurs = new FloatRange(32, 0.5f, 2048f);
 
     public final FloatRange projectDurs;
+
     /**
      * (if > 0): draw additional projection wave to show truthpolation values for a set of evenly spaced points on the visible range
      */
@@ -50,7 +55,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
      *
      * @param y (freq,conf)->y
      */
-    public void renderWaveLine(GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
+    private void renderWaveLine(GL2 gl, TruthWave wave, FloatFloatToFloatFunction y, Colorize colorize) {
 
         gl.glLineWidth(4);
         gl.glBegin(GL.GL_LINE_STRIP);
@@ -130,11 +135,11 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         private static final float taskHeightMin = 0.04f;
         private final int projections;
 
-        public TruthGrid(int projections, boolean beliefOrGoal) {
+        TruthGrid(int projections, boolean beliefOrGoal) {
             super();
             this.projections = projections;
             projected = new TruthWave(projections);
-            tasks = new TruthWave(256);
+            tasks = new TruthWave(1024);
             this.beliefOrGoal = beliefOrGoal;
             this.colorizeLine = beliefOrGoal ?
                     (gl, f, c) -> {
@@ -182,22 +187,61 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         @Override
         protected void paint(GL2 _gl, ReSurface reSurface) {
 
-            float mid = xTime(nar.time());
 
             Draw.bounds(bounds, _gl, gl -> {
 
                 //render present line
                 gl.glColor3f(0.5f, 0.5f, 0.5f);
                 gl.glLineWidth(2f);
+
+                float mid = xTime(nar.time());
                 Draw.line(mid, 0, mid, 1, gl);
 
                 renderTasks(gl, tasks, colorizeFill);
 
+
                 FloatFloatToFloatFunction FtoY = (f, c) -> f;
-                if (beliefOrGoal) {
-                    renderWaveLine(gl, projected, FtoY, colorizeLine);
-                } else {
-                    renderWaveLine(gl, projected, FtoY, colorizeLine);
+
+                renderWaveLine(gl, projected, FtoY, colorizeLine);
+
+                renderNodes(gl, tasks);
+
+            });
+        }
+
+        private void renderNodes(GL2 gl, TruthWave tasks) {
+            BeliefTable table = tasks.table;
+            if (table instanceof BeliefTables) {
+                ((BeliefTables)table).forEach(b -> {
+                    renderBeliefTable(gl, b);
+                });
+            } else
+                renderBeliefTable(gl, table);
+        }
+
+        private void renderBeliefTable(GL2 gl, BeliefTable t) {
+            if (t instanceof RTreeBeliefTable)
+                renderRTreeBeliefTable(gl, ((RTreeBeliefTable)t));
+        }
+
+        private void renderRTreeBeliefTable(GL2 gl, RTreeBeliefTable t) {
+
+            if (t.isEmpty())
+                return;
+
+            gl.glLineWidth(2f);
+            gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
+
+            t.streamNodes().forEach(n -> {
+                if (n!=null) {
+                    TaskRegion b = (TaskRegion) n.bounds();
+                    if (b != null && b.intersects(start, end)) {
+                        float x1 = xTime(b.start());
+                        float x2 = xTime(b.end());
+                        float y1 = b.freqMin();
+                        float y2 = b.freqMax();
+                        Draw.rectStroke(x1, y1, x2-x1, y2-y1, gl);
+                    }
                 }
             });
         }
@@ -205,8 +249,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
         private void renderTasks(GL2 gl, TruthWave wave, Colorize colorize) {
 
-            final float ph =
-                    Math.max(taskHeightMin, nar.freqResolution.floatValue());
+            final float ph = Math.max(taskHeightMin, nar.freqResolution.floatValue());
 
             wave.forEach((freq, conf, s, e) -> {
 
@@ -262,8 +305,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         this.projectDurs = new FloatRange(1, 0, 32);
 
         this.term = term.term();
-        the.add(beliefGrid = new TruthGrid(16, true));
-        the.add(goalGrid = new TruthGrid(16, false));
+        the.add(new Clipped(beliefGrid = new TruthGrid(16, true)));
+        the.add(new Clipped(goalGrid = new TruthGrid(16, false)));
     }
 
     @Override

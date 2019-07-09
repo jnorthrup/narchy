@@ -125,9 +125,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return 1 + (end() - start());
             case 1:
-                return 1 + (freqMax() - freqMin());
+                return (freqMax() - freqMin());
             case 2:
-                return 1 + (confMax() - confMin());
+                return (confMax() - confMin());
             default:
                 throw new UnsupportedOperationException();
         }

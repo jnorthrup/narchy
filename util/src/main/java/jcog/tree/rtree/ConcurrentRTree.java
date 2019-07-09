@@ -263,6 +263,13 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     /**
      * warning: not locked
      */
+    public Stream<Node<X>> streamNodes() {
+        return root().streamNodesRecursively().filter(Objects::nonNull);
+    }
+
+    /**
+     * warning: not locked
+     */
     @Override
     public Iterator<X> iterator() {
         return stream().iterator();

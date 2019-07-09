@@ -177,7 +177,6 @@ public interface HyperRegion {
         for (int d = 0; d < n; d++) {
             a *= cost(d);
         }
-        assert(a==a);
         return a;
     }
 
@@ -190,7 +189,7 @@ public interface HyperRegion {
         double p = 0.0;
         final int n = this.dim();
         for (int d = 0; d < n; d++) {
-            p += /*2.0 * */this.cost(d);
+            p += this.cost(d);
         }
         return p;
     }

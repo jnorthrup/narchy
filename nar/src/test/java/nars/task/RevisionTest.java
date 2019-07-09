@@ -142,7 +142,7 @@ public class RevisionTest {
      */
     @Test
     void testOverlapConflict() throws Narsese.NarseseException {
-        Pair<Task, TruthProjection> rr = Revision.merge(n, true, 2,
+        Pair<Task, TruthProjection> rr = Revision.merge(n, true, 2, 3,
                 new Task[]{
                         t(0, 0.71f, 0, 0).evidence(1, 2).apply(n),
                         t(1, 0.7f, 0, 0).evidence(1).apply(n),
@@ -188,7 +188,7 @@ public class RevisionTest {
     }
 
     private Task merge(Task t01, Task t45, NAR n) {
-        return Revision.merge(n, false, 2, new Task[]{t01, t45}).getOne();
+        return Revision.merge(n, false, 2, 2, new Task[]{t01, t45}).getOne();
     }
 
 

@@ -1,12 +1,11 @@
 package nars.table.temporal;
 
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.tree.rtree.*;
-import jcog.tree.rtree.split.LinearSplitLeaf;
+import jcog.tree.rtree.split.QuadraticSplitLeaf;
 import nars.NAL;
 import nars.Task;
 import nars.control.op.Remember;
@@ -42,9 +41,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * TODO tune
      */
     private static final Split SPLIT =
-            new LinearSplitLeaf();
-//              new QuadraticSplitLeaf();
-//            new AxialSplitLeaf();  //AXIAL SPLIT IS PROBABLY BAD FOR THIS UNLESS A LEAF ENDS UP BEING SPLIT IN A CERTAIN WAY
+            new QuadraticSplitLeaf();
+            //new AxialSplitLeaf();
+            //new LinearSplitLeaf();
 
     protected int capacity;
 
@@ -189,6 +188,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
         return originalitySum;
     }
+    static final ToDoubleFunction<Leaf<TaskRegion>> MostCompactArea = (n) -> {
+        HyperRegion b = n.bounds;
+        return 1.0 / ((b.range(0)) /* time */ * (1 + b.range(1))) /* freq */;
+    };
+
     static final ToDoubleFunction<Leaf<TaskRegion>> MostTemporalDensity = (n) -> {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
         long u = 0;
@@ -223,11 +227,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         public MergeableRegion(long now) {
             super(
-                    MostTemporalDensity, MostOriginality, LeastFreqRange, MostComponents
+                    MostCompactArea, MostTemporalDensity, MostOriginality, MostComponents
                     /*LeastOverlap, LeastTemporalSparsity,*/
                     //, LeastTimeRange
             );
-            weights( 0.25f, 0.25f, 0.25f, 0.1f );
+            weights( 1f, 0.25f, 0.25f, 0.1f );
         }
 
         @Override
@@ -283,7 +287,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Pair<Task, TruthProjection> AB = null;
         if (!mergeableLeaf.isEmpty()) {
             Leaf<TaskRegion> leaf = mergeableLeaf.get();
-            AB = Revision.merge(r.nar, true, 2, Arrays.copyOf(leaf.data, leaf.size)); //HACK type adaptation
+            AB = Revision.merge(r.nar, true, 2, leaf.size, leaf.data);
             if (AB != null) {
                 Task ab = AB.getOne();
 
@@ -301,12 +305,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
         if (mergeOrEvict) {
-//        if (valueMergeLeaf > valueEvictWeakest) {
             //merge leaf
-            TruthProjection merge = AB.getTwo();
-
+            AB.getTwo().forEachTask((rr)->{
+                if (treeRW.remove(rr))
+                    r.forget(rr);
+            });
             Task m = Revision.merge(AB);
-            merge.forEachTask(treeRW::remove);
             if (treeRW.add(m)) {
                 r.remember(m);
             } //else: possibly already contained the merger?

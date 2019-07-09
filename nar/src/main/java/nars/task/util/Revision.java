@@ -57,11 +57,11 @@ public enum Revision {;
      * also cause merge is deferred in the same way
      * @return
      */
-    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR n, boolean dither, int minComponents, T[] tasks) {
+    public static <T extends TaskRegion> Pair<Task, TruthProjection> merge(NAR n, boolean dither, int minComponents, int numTasks, T[] tasks) {
 
-        assert (tasks.length >= minComponents);
+        assert (numTasks >= minComponents);
 
-        if (tasks.length == 2) {
+        if (numTasks == 2) {
             Task a = tasks[0].task(), b = tasks[1].task();
 
             //quick 2-ary stamp pre-filter
@@ -69,29 +69,29 @@ public enum Revision {;
                 return null;
 
 //            int dtDither = n.dtDither();
-            long dt = a.minTimeTo(b);
-            if (dt > 0 && dt > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
-//            long sepThresh = Util.lerp(
-//                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
-//                    //low frequency difference: require large separation (relative to the task ranges)
-//                    ((double)LongInterval.intersectLength(a.start(), a.end(), b.start(), b.end())/
-//                            LongInterval.unionLength(a.start(), a.end(), b.start(), b.end()),
+//            long dt = a.minTimeTo(b);
+//            if (dt > 0 && dt > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
+////            long sepThresh = Util.lerp(
+////                    (Math.abs(a.freq()-b.freq())+Math.abs(a.conf()-b.conf()))/2,
+////                    //low frequency difference: require large separation (relative to the task ranges)
+////                    ((double)LongInterval.intersectLength(a.start(), a.end(), b.start(), b.end())/
+////                            LongInterval.unionLength(a.start(), a.end(), b.start(), b.end()),
+////
+////                            Math.max(dtDither, a.range() + b.range()),
+////                    //high frequency difference: require only some separation
+////                    dtDither);
+////
+////            if (a.minTimeTo(b.start(), b.end()) >= sepThresh) {
+////                @Nullable Pair<Task, TruthProjection> c = conjoin(n, dither, minComponents, tasks);
+////                if (c!=null)
+////                    return c;
+//                return null;
 //
-//                            Math.max(dtDither, a.range() + b.range()),
-//                    //high frequency difference: require only some separation
-//                    dtDither);
-//
-//            if (a.minTimeTo(b.start(), b.end()) >= sepThresh) {
-//                @Nullable Pair<Task, TruthProjection> c = conjoin(n, dither, minComponents, tasks);
-//                if (c!=null)
-//                    return c;
-                return null;
-
-                //else: try default revise strategy (below)
-            }
+//                //else: try default revise strategy (below)
+//            }
         }
 
-        return _merge(n, dither, minComponents, tasks);
+        return _merge(n, dither, minComponents, numTasks, tasks);
     }
 
     /** temporal-induction conjunction merge strategy
@@ -128,10 +128,14 @@ public enum Revision {;
         return pair(y, tp /* TODO */);
     }
 
-    /** truth revision task merge strategy */
     @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
+        return _merge(nal, dither, minComponents, tasks.length, tasks);
+    }
 
-        TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(tasks);
+    /** truth revision task merge strategy */
+    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, int n, T[] tasks) {
+
+        TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(n, tasks);
 
         MetalLongSet stamp = p.commit(true, minComponents, true);
         if (stamp == null)
