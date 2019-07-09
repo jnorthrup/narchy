@@ -36,17 +36,18 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     @Override
     public void match(Answer a) {
         int triesEach = a.ttl;
-        BeliefTable[] z = this.items;
-        if (z == null)
-            return; //?wtf
 
+        BeliefTable[] z = this.items;
+        if (z == null) return; //?wtf
         int thisSize = Math.min(size, z.length);
         for (int i = 0; i < thisSize; i++) {
+
+            BeliefTable t = z[i];
 
             //TODO better TTL distribution system
             a.ttl = triesEach; //restore for next
 
-            BeliefTable t = z[i];
+
 
             t.match(a);
 
@@ -57,9 +58,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** stops after the first table accepts it */
     @Override public void remember(Remember r) {
+        BeliefTable[] z = this.items;
+        if (z == null) return; //?wtf
+        int thisSize = Math.min(size, z.length);
+        for (int i = 0; i < thisSize; i++) {
 
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            BeliefTable t = this.getSafe(i); //HACK items seem to get deleted very rarely.. find why
+            BeliefTable t = z[i];
             if (t==null) //HACK is this when the concept is being deleted while this traverse?
                 return;
 
