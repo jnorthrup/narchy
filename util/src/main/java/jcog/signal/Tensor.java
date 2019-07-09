@@ -352,7 +352,7 @@ public interface Tensor  {
 
 
     /** linearized, shape is lost; forces creation of new instance */
-    default double[] toDoubleArray() {
+    default double[] doubleArray() {
         int v = volume();
         double[] xx = new double[v];
         forEach((i,x)-> xx[i] = x);
@@ -360,9 +360,9 @@ public interface Tensor  {
     }
 
     /** allows possibly shared instance, for read-only purposes only */
-    default double[] toDoubleArrayShared() {
+    default double[] doubleArrayShared() {
         //throw new TODO();
-        return toDoubleArray();
+        return doubleArray();
     }
 
     /** linearized, shape is lost */

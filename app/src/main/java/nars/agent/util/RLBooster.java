@@ -203,7 +203,7 @@ public class RLBooster  {
             ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
         }
 
-        int a = agent.act(actionFeedback(now), (float) reward, Util.toFloat(history.toDoubleArray()));
+        int a = agent.act(actionFeedback(now), (float) reward, Util.toFloat(history.doubleArray()));
 
         float OFFfreq =
                 //0f;

@@ -8,6 +8,8 @@ import jcog.signal.tensor.WritableTensor;
 
 import java.util.Random;
 
+import static jcog.Texts.n2;
+
 /** dead-simple fixed range continuous histogram with fixed # and size of bins. supports PDF sampling */
 public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
@@ -16,17 +18,20 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     private WritableTensor data = AtomicFloatVector.Empty;
 
-    private float rangeMin;
-    private float rangeMax;
-    private float rangeDelta;
+    private volatile float rangeMin, rangeMax;
+    private volatile int mass = AtomicFloatFieldUpdater.iZero;
 
-    private int mass;
+    public ArrayHistogram() {
+        range(0,1);
+    }
 
     public ArrayHistogram(float min, float max, int bins) {
-        clear(min, max, bins);
-        resize(bins);
         range(min, max);
-        mass(0);
+    }
+
+    @Override
+    public String toString() {
+        return rangeMin + ".." + rangeMax + " @ " + mass() + " " + n2(data.floatArray());
     }
 
     private void resize(int bins) {
@@ -41,11 +46,10 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
     private void range(float min, float max) {
         this.rangeMin = min;
         this.rangeMax = max;
-        this.rangeDelta = (rangeMax - rangeMin);
     }
 
     /** note: mass is not affected in this call. you may need to call that separately */
-    public void clear(float min, float max, int bins) {
+    public HistogramWriter write(float min, float max, int bins) {
         if (bins() != bins) {
             //elides subsequent data fill, the new array will be set to zero
             resize(bins);
@@ -53,22 +57,47 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             data.fill(0);
         }
         range(min, max);
+        return new HistogramWriter(bins, max-min);
     }
 
-    public void add(float value, float weight) {
-        addWithoutSettingMass(value, weight);
-        MASS.add(this, weight);
+    public final class HistogramWriter {
+
+        final int bins;
+        final float rangeDelta;
+        float mass = 0;
+
+        HistogramWriter(int bins, float rangeDelta) {
+            this.bins = bins;
+            this.rangeDelta = rangeDelta;
+        }
+
+        public void add(float value, float weight) {
+            mass += weight;
+            data.addAt(weight, Util.bin((value-rangeMin)/rangeDelta, bins));
+        }
+
+        /** returns mass */
+        public float commit() {
+            mass(mass);
+            return mass;
+        }
     }
 
-    public final void addWithoutSettingMass(float value, float weight) {
-        int bin = Util.bin((value-rangeMin)/rangeDelta, bins());
-        data.addAt(weight, bin);
+//    public void add(float value, float weight) {
+//        addWithoutSettingMass(value, weight);
+//        MASS.add(this, weight);
+//    }
+
+    /** mass setter */
+    public final ArrayHistogram mass(float m) {
+        MASS.set(this, m);
+        return this;
     }
+
 
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
-
-        float rangeDelta = this.rangeDelta;
+        float rangeDelta = (rangeMax - rangeMin);
 
         float mass = 0;
         boolean flat;
@@ -118,14 +147,17 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         return data.volume();
     }
 
-    /** mass setter */
-    public final ArrayHistogram mass(float m) {
-        MASS.set(this, m);
-        return this;
-    }
 
     public final float mass() {
         return MASS.getOpaque(this);
     }
 
 }
+//    private static int HistogramBins(int s) {
+//        //TODO refine
+//        int thresh = 4;
+//        if (s <= thresh)
+//            return s;
+//        else
+//            return (int)(thresh + Math.sqrt((s-thresh)));
+//    }

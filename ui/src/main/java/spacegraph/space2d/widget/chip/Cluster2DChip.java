@@ -53,7 +53,7 @@ public class Cluster2DChip extends Bordering {
                 int volume = t.volume();
                 config.update(volume);
                 if (volume >= 2) {
-                    g.put(t.toDoubleArray());
+                    g.put(t.doubleArray());
                 } else if (volume == 1) {
                     g.put(t.getAt(0));
                 }

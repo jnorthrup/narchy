@@ -246,10 +246,6 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                     return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
                 }
 
-                @Override
-                protected int histogramBins() {
-                    return 0; /* since sampling is not used */
-                }
             },
                     new PriMap<>(merge) {
                         /**

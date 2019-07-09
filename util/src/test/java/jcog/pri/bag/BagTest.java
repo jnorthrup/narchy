@@ -104,7 +104,11 @@ public class BagTest {
     }
 
 
-    private static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int batches, int batchSize, int bins) {
+    public static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int samples, int bins) {
+        return samplingPriDist(b, 1, samples, bins);
+    }
+
+    public static Tensor samplingPriDist(@NotNull Bag<PLink<String>, PLink<String>> b, int batches, int batchSize, int bins) {
 
         assert(bins > 1);
 

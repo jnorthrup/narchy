@@ -103,12 +103,14 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public boolean is(Term x, Term y) {
-        if (y == Null)
-            return false;
-
         if (x.equals(y))
             return true;
         else {
+            if (y == Null)
+                return false;
+            if (y.containsRecursively(x))
+                return false; //loop
+
             ensureReady();
             boolean empty = subs.isEmpty();
             Term existingAssignment = !empty ? subs.get(x) : null;
@@ -116,9 +118,10 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
                 if (!empty) {
                     Term z = y.replace(subs); //transform the assignment result preventing loops etc
                     if (z!=y)
-                        Util.nop();
+                        Util.nop(); //TEMPORARY
                     y = z;
-                } return subs.set(x, y);
+                }
+                return subs.set(x, y);
             } else
                 return y.equals(existingAssignment);
         }

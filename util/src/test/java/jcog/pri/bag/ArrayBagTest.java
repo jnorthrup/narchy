@@ -1,6 +1,7 @@
 package jcog.pri.bag;
 
 import com.google.common.base.Joiner;
+import jcog.Texts;
 import jcog.Util;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
@@ -9,12 +10,17 @@ import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
+import jcog.random.XorShift128PlusRandom;
+import jcog.signal.Tensor;
+import org.HdrHistogram.Histogram;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Iterator;
+import java.util.Random;
 
+import static jcog.Texts.n4;
 import static jcog.pri.bag.BagTest.testBasicInsertionRemoval;
 import static jcog.pri.op.PriMerge.plus;
 import static org.junit.jupiter.api.Assertions.*;
@@ -218,7 +224,46 @@ class ArrayBagTest {
 
         */
 
-        int cap = 100;
+        int cap = 32;
+        float dynamicRange = 0.25f;
+        float dynamicFloor = 0;
+        int samples = cap * 1000;
+        int bins = cap/2;
+
         ArrayBag<PLink<String>, PLink<String>> b = newBag(cap, plus);
+        for (int i = 0; i < cap; i++) {
+            float p = i/((float)cap) * dynamicRange + dynamicFloor;
+            b.put(new PLink(String.valueOf(i), p));
+        }
+        b.commit();
+        b.print();
+
+        Random rng = new XorShift128PlusRandom(1);
+
+        {
+            Histogram h = new Histogram(1, cap+1, 3);
+            for (int i = 0; i < samples; i++) {
+                int s = b.sampleHistogram(rng);
+                h.recordValue(s);
+            }
+            Texts.histogramPrint(h, System.out);
+        }
+
+        Tensor d = BagTest.samplingPriDist(b, samples,  60);
+        System.out.println(n4(d.doubleArray()));
+//        {
+//
+//            int scale = 10000;
+//            Histogram h =
+//                    new Histogram(Math.max(1, Math.round(dynamicFloor * scale) - 1),
+//                    Math.round((dynamicFloor + dynamicRange) * scale), 5);
+//            h.setAutoResize(true);
+//            b.sample(rng, samples, x -> {
+//                h.recordValue(Math.round(x.pri() * scale));
+//                return true;
+//            });
+//            Texts.histogramPrint(h, System.out);
+//        }
+
     }
 }

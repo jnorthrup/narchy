@@ -65,8 +65,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public /*volatile*/ X[] items = (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
     protected volatile int size;
 
-    public SortedArray() {
-    }
 
     protected static int grow(int oldSize) {
         return 1 + (int) (oldSize * GROWTH_RATE);

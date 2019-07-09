@@ -13,7 +13,6 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
-import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -37,16 +36,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private final StampedLock lock = new StampedLock();
     private final MySortedListTable table;
 
-
-    private final ArrayHistogram hist = new ArrayHistogram(0, 1, 0);
-
-
     ArrayBag(PriMerge merge, Map<X, Y> map) {
         this(merge, 0, map);
     }
 
     protected ArrayBag(PriMerge merge, @Deprecated int cap, Map<X, Y> map) {
-        table = new MySortedListTable(new SortedArray<>(), map);
+        table = new MySortedListTable(map);
         setCapacity(cap);
         merge(merge);
     }
@@ -59,14 +54,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return b == null ? -2.0f : ((Prioritized) b).priElseNeg1();
     }
 
-    private static int histogramBins(int s) {
-        //TODO refine
-        int thresh = 4;
-        if (s <= thresh)
-            return s;
-        else
-            return (int)(thresh + Math.sqrt((s-thresh)));
-    }
+
 
     /**
      * raw selection by index, with x^2 bias towards higher pri indexed items
@@ -77,6 +65,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return Util.bin(targetIndex * targetIndex, size);
     }
 
+    private static float rngFloat(@Nullable Random rng) {
+        return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();
+    }
 
     @Override
     public void clear() {
@@ -209,32 +200,20 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (s == 0)
             return 0;
 
-        SortedArray<Y> items = table.items;
+        SortedArray items = table.items;
         final Object[] a = items.array();
+        s = Math.min(a.length, s);
 
         float above = Float.POSITIVE_INFINITY;
         boolean sorted = true;
 
         float m = 0;
 
-        int c = capacity();
-
-        ArrayHistogram hist;
-        int bins = histogramBins();
-        if (bins > 0) {
-            hist = this.hist;
-            hist.clear(0, s, bins);
-        } else {
-            hist = null; //disabled
-        }
-
         for (int i = 0; i < s; ) {
-            Y y = (Y) a[i];
+            Object _y = a[i];
 
-            if (y == null) {
-                items.removeFast(y, i);
-                s--;
-            } else {
+            if (_y != null) {
+                Y y = (Y) _y;
 
                 float p = pri(y);
 
@@ -244,9 +223,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                 }
 
                 if (p == p) {
-
-                    if (hist != null)
-                        hist.addWithoutSettingMass(i, p);
 
                     m += p;
 
@@ -276,6 +252,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                     s--;
                     removeFromMap(y);
                 }
+            } else {
+                items.removeFast(_y, i);
+                s--;
             }
         }
 
@@ -284,21 +263,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         massSet(m); //set mass here because removedFromMap will decrement mass
 
+        int c = capacity();
         while (s > c) {
             removeFromMap(table.items.removeLast());
             s--;
         }
 
-        this.hist.mass(mass());
-
         return s;
-    }
-
-    /**
-     * override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed)
-     */
-    protected int histogramBins() {
-        return histogramBins(size());
     }
 
     /**
@@ -432,10 +403,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
     }
 
-    private static float rngFloat(@Nullable Random rng) {
-        return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();
-    }
-
     /**
      * size > 0
      */
@@ -455,26 +422,23 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     public final int sampleHistogram(Random rng) {
-        return (int)hist.sample(rng);
+        return sampleNextLinearNormalized(rng);
     }
 
-//    @Override public ArrayBag sample(Random rng, int max, Consumer<? super Y> each) {
-//
-//    }
+    /**
+     * samples the distribution with the assumption that it is flat
+     */
+    private int sampleNextLinearNormalized(Random rng) {
+        int size = size();
+        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax();
 
-//    /**
-//     * samples the distribution with the assumption that it is flat
-//     */
-//    private int sampleNextLinearNormalized(Random rng, int size) {
-//        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax();
-//
-//        float targetPercentile = rng.nextFloat();
-//
-//        float indexNorm =
-//                Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
-//
-//        return Util.bin(indexNorm, size);
-//    }
+        float targetPercentile = rng.nextFloat();
+
+        float indexNorm =
+                Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
+
+        return Util.bin(indexNorm, size);
+    }
 
 //    /**
 //     * evaluates the median value to model the distribution as 2-linear piecewise function
@@ -841,7 +805,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private void removed(Y y) {
         massAdd(-priElse(y, 0));
         onRemove(y);
-        //y.delete();
     }
 
     public final void clear(Consumer<? super Y> each) {
@@ -1013,13 +976,12 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     private class MySortedListTable implements FloatFunction<Y>, Table<X, Y> {
 
-        private final SortedArray<Y> items;
+        private final SortedArray<Y> items = new SortedArray<>();
 
         private final Map<X, Y> map;
 
-        MySortedListTable(SortedArray<Y> items, Map<X, Y> map) {
+        MySortedListTable(Map<X, Y> map) {
             this.map = map;
-            this.items = items;
         }
 
         @Override
