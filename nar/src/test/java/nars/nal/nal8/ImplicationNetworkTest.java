@@ -150,9 +150,6 @@ class ImplicationNetworkTest {
     @Test
     void testEternal_A_NegBelief_NegToBC_AB_only() {
 
-        n.termVolMax.set(13);
-
-
 
         n.believe(IMPL.the(a.neg(), b));
         n.believe(a.neg());
@@ -174,9 +171,6 @@ class ImplicationNetworkTest {
 
     @Test
     void testEternal_A_NegBelief_NegToBC() {
-
-
-        n.termVolMax.set(16);
 
 
 

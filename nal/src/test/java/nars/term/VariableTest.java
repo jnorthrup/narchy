@@ -3,6 +3,7 @@ package nars.term;
 import nars.$;
 import nars.Narsese;
 import nars.term.atom.Atomic;
+import nars.term.util.transform.VariableTransform;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
@@ -154,5 +155,10 @@ public class VariableTest {
 
     }
 
+    @Test void testVariableTransform1() {
+        Term y = $$("(_3(#1,_1) &&+1 _2(#1,$2))").transform(VariableTransform.indepToQueryVar);
+        assertEq("(_3(#1,_1) &&+1 _2(#1,?$2))", y);
+        assertEq("(_3(#1,_1) &&+1 _2(#1,?2))", y.normalize());
+    }
 
 }

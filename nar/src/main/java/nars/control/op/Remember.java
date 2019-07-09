@@ -122,15 +122,16 @@ public class Remember extends AbstractTask {
 
         TaskConcept c = null;
 
-        Task rawInput = input;
+
+
 
         Term inputTerm = input.term();
         boolean the = (input == this.input);
-        @Deprecated boolean commitProxyOrigin = false;
 
 
-        if (!store || commitProxyOrigin)
-            link(rawInput, w);
+
+        if (!store)
+            link(input, w);
 
         if (store) {
             if (c == null) {

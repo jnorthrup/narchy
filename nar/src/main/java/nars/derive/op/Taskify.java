@@ -14,6 +14,7 @@ import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.util.TermTransformException;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
@@ -27,6 +28,7 @@ import java.util.Arrays;
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
 import static nars.Op.*;
 import static nars.derive.model.DerivationFailure.Success;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
 public class Taskify extends ProxyTerm {
@@ -72,24 +74,24 @@ public class Taskify extends ProxyTerm {
         taskify(x, ETERNAL, ETERNAL, d);
     }
 
-    void temporalTask(Term x, Occurrify.OccurrenceSolver time, Derivation d) {
+    void temporalTask(Term x0, Term x, Derivation d) {
 
+        if (!x0.equals(x))
+            d.retransform.put(x0, x);
 
-        Pair<Term, long[]> timing = time.occurrence(x, d);
+        Pair<Term, long[]> timing = termify.time.occurrence(x, d);
+        Term y = timing!=null ? timing.getOne() : Null;
         if (timing == null) {
+            occurrifyFail(x, y, d);
+            return;
+        }
+        if (!Task.validTaskTerm(y.unneg(), d.concPunc, !NAL.test.DEBUG_OCCURRIFY)) {
             d.nar.emotion.deriveFailTemporal.increment();
             return;
         }
 
         long[] occ = timing.getTwo();
         assertOccValid(d, occ);
-
-
-        Term y = timing.getOne();
-        if (!Task.validTaskTerm(y, d.concPunc, true)) {
-            d.nar.emotion.deriveFailTemporal.increment();
-            return;
-        }
 
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
@@ -120,11 +122,19 @@ public class Taskify extends ProxyTerm {
         taskify(y, occ[0], occ[1], d);
     }
 
+    private void occurrifyFail(Term x, Term y, Derivation d) {
+        if (NAL.test.DEBUG_OCCURRIFY)
+            throw new TermTransformException("occurify failure:\n" + d.toString() + "\n" + d.occ.toString(), x, y);
+        else {
+            d.nar.emotion.deriveFailTemporal.increment();
+        }
+    }
+
     private void assertOccValid(Derivation d, long[] occ) {
         if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
                 (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
                 (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
-            throw new RuntimeException("bad occurrence result: " + Arrays.toString(occ));
+            throw new RuntimeException("invalid occurrence result: " + Arrays.toString(occ));
     }
 
 

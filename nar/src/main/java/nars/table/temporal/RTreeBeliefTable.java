@@ -1,5 +1,6 @@
 package nars.table.temporal;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
@@ -35,7 +36,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             1.0f;
     //2f;
 
-    private static final int MAX_TASKS_PER_LEAF = 3;
+    private static final int MAX_TASKS_PER_LEAF = 4;
 
     /**
      * TODO tune
@@ -174,15 +175,35 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     };
 
     static final ToDoubleFunction<Leaf<TaskRegion>> LeastOriginality = (n) -> {
+        return 1 / (1 + originalitySum(n));
+    };
+    static final ToDoubleFunction<Leaf<TaskRegion>> MostOriginality = (n) -> {
+        return originalitySum(n);
+    };
+
+    private static double originalitySum(Leaf<TaskRegion> n) {
         double originalitySum = 0;
         for (TaskRegion t : n.data) {
             if (t == null) break;
-            originalitySum += ((Task)t).originality();
+            originalitySum += ((Task) t).originality();
         }
-        return 1 / (1 + originalitySum);
+        return originalitySum;
+    }
+    static final ToDoubleFunction<Leaf<TaskRegion>> MostTemporalDensity = (n) -> {
+        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+        long u = 0;
+        for (TaskRegion t : n.data) {
+            if (t==null) break;
+            long ts = t.start();
+            long te = t.end();
+            s = Math.min(s, ts);
+            e = Math.max(e, te);
+            u += (te-ts);
+        }
+        return ((double)u) / (e-s);
     };
 
-//    static final ToDoubleFunction<TaskRegion> LeastOriginal = (t) -> {
+    //    static final ToDoubleFunction<TaskRegion> LeastOriginal = (t) -> {
 //        return 1.0 / (((double)t.range()) * t.confMean());
 //    };
     static final ToDoubleFunction<Task> LeastOriginal = (t) -> {
@@ -202,11 +223,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         public MergeableRegion(long now) {
             super(
-                    MostComponents, LeastOriginality, LeastFreqRange
+                    MostTemporalDensity, MostOriginality, LeastFreqRange, MostComponents
                     /*LeastOverlap, LeastTemporalSparsity,*/
                     //, LeastTimeRange
             );
-            weights( 0.5f, 0.5f, 0.35f);
+            weights( 0.25f, 0.25f, 0.25f, 0.1f );
         }
 
         @Override
@@ -265,7 +286,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             AB = Revision.merge(r.nar, true, 2, Arrays.copyOf(leaf.data, leaf.size)); //HACK type adaptation
             if (AB != null) {
                 Task ab = AB.getOne();
-                mergeOrEvict = !weakest.accepted(ab);
+
+                mergeOrEvict = true;
+
+                //mergeOrEvict = !weakest.accepted(ab);
 
 //                float mergeValue = taskStrength.floatValueOf();
 //                double mergeCost = AB.getTwo().sumOfFloat(t ->

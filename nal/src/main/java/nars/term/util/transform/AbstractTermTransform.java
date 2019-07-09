@@ -107,18 +107,5 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
 
     }
 
-    abstract class FilteredTermTransform extends NegObliviousTermTransform {
-
-        @Override
-        protected final Term applyPosCompound(Compound x) {
-            return preFilter(x) ? applyFilteredPosCompound(x) : x;
-        }
-
-        protected Term applyFilteredPosCompound(Compound x) {
-            return x;
-        }
-
-        abstract public boolean preFilter(Compound x);
-    }
 
 }

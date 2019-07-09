@@ -40,14 +40,50 @@
     <plugins>
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
-        <version>2.22.1</version>
+        <version>3.0.0-M3</version>
         <configuration>
-          <skipTests>true</skipTests>
+          <testFailureIgnore>true</testFailureIgnore>
+          <systemPropertyVariables>
+            <gzoltar-agent.destfile>${project.build.directory}/gzoltar.ser</gzoltar-agent.destfile>
+          </systemPropertyVariables>
+<!--          <skipTests>true</skipTests>-->
           <argLine>--illegal-access=permit</argLine>
+          <forkCount>1C</forkCount>
+          <properties>
+          <property>
+            <name>listener</name>
+            <value>com.gzoltar.internal.core.listeners.JUnitListener</value>
+          </property>
+          </properties>
         </configuration>
+
       </plugin>
+      <!--      https://github.com/GZoltar/gzoltar/tree/master/com.gzoltar.maven-->
       <plugin>
+        <groupId>com.gzoltar</groupId>
+        <artifactId>com.gzoltar.maven</artifactId>
+        <version>1.7.2</version>
+        <executions>
+          <execution>
+            <id>pre-unit-test</id>
+            <goals>
+              <goal>prepare-agent</goal>
+            </goals>
+          </execution>
+          <execution>
+            <id>post-unit-test</id>
+            <phase>test</phase>
+            <goals>
+              <goal>fl-report</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+
+    <plugin>
         <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.1.1</version>
         <executions>
           <execution>
             <phase>install</phase>
@@ -94,7 +130,7 @@
       </plugin>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.0</version>
+        <version>3.8.1</version>
         <configuration>
           <release>12</release>
           <target>12</target>

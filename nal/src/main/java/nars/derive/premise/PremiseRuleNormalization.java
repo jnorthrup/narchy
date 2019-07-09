@@ -11,7 +11,7 @@ public class PremiseRuleNormalization extends VariableNormalization {
 
 
     @Override
-    protected Term applyFilteredPosCompound(Compound x) {
+    protected Term applyPosCompound(Compound x) {
         /** process completely to resolve built-in functors,
          * to override VariableNormalization's override */
         return x.transform(this, x.op(), x.dt());

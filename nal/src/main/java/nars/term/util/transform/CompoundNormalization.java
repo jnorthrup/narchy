@@ -24,13 +24,12 @@ public final class CompoundNormalization extends VariableNormalization {
     }
 
 
-    @Override
     public boolean preFilter(Compound x) {
         return x.hasVars() || (imgPossible && x.hasAll(Image.ImageBits));
     }
 
     @Override
-    protected Term applyFilteredPosCompound(Compound x) {
+    public Term applyPosCompound(Compound x) {
         /* if x is not the root target (ie. a subterm) */
         boolean hasImg = imgPossible && x.hasAll(Image.ImageBits);
         if (hasImg && x!=root && x.op()==INH) {

@@ -10,8 +10,8 @@ import nars.term.Termlike;
 import org.eclipse.collections.api.PrimitiveIterable;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 
 import java.util.List;
 
@@ -55,8 +55,9 @@ public final class VarIndep extends NormalizedVariable {
     private static boolean validIndepBalance(Term t, boolean safe) {
 
 
-        FasterList</* length, */ ByteList> statements = new FasterList<>(4);
-        ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
+        FasterList</* length, */ ByteList> statements = new FasterList<>();
+        //ByteObjectHashMap<List<ByteList>> indepVarPaths = new ByteObjectHashMap<>(4);
+        UnifiedMap<Term,List<ByteList>> indepVarPaths = new UnifiedMap(0, 0.5f);
 
         t.pathsTo(
                 (Term x) -> {
@@ -68,7 +69,10 @@ public final class VarIndep extends NormalizedVariable {
                     if (!path.isEmpty()) {
                         ImmutableByteList p = path.toImmutable();
                         List<ByteList> s = (indepVarOrStatement.op() == VAR_INDEP) ?
-                            indepVarPaths.getIfAbsentPut(((VarIndep) indepVarOrStatement).id(), () -> new FasterList<>(2))
+                            indepVarPaths.getIfAbsentPut(
+                                    //((VarIndep) indepVarOrStatement).id(),
+                                    indepVarOrStatement,
+                                    () -> new FasterList<>(2))
                             :
                             statements;
 

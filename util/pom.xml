@@ -256,7 +256,7 @@
                     <skipFailingTests>true</skipFailingTests>
                     <outputFormats>html</outputFormats>
                     <testPlugin>junit5</testPlugin>
-                    <jvmArgs>-Xmx64m</jvmArgs>
+<!--                    <jvmArgs>-Xmx64m</jvmArgs>-->
                     <targetClasses>
                         <param>jcog.pri.**</param>
                     </targetClasses>

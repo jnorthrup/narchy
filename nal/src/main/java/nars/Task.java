@@ -226,14 +226,14 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (punc != COMMAND) {
 
 
-            if (!t.isNormalized()) {
-
-                @Nullable Term n = t.normalize();
-                if (!n.equals(t))
-                    return fail(t, "task target not a normalized Compound", safe);
-                else
-                    t = n;
-            }
+//            if (!t.isNormalized()) {
+//
+//                @Nullable Term n = t.normalize();
+//                if (!n.equals(t))
+//                    return fail(t, "task target not a normalized Compound", safe);
+//                else
+//                    t = n;
+//            }
         }
 
         Op o = t.op();

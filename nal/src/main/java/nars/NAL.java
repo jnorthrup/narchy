@@ -214,8 +214,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
 
-
-
     protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
 
 
@@ -296,11 +294,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //0.5f
             //0.618f
             //0.75f
-            1f
+            //1f
             //2f
             //4f
-            //100
-            , 0, 1000);
+            32f
+            , 0, 64f);
 
     /** max tolerance time (in durations) for unification of temporal terms */
     public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );
@@ -308,7 +306,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(2 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -679,6 +677,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static boolean DEBUG_ENSURE_DITHERED_TRUTH = DEBUG_EXTRA;
         public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE= DEBUG_EXTRA;
         public static boolean DEBUG_ENSURE_DITHERED_DT = DEBUG_EXTRA;
+        public static final boolean DEBUG_OCCURRIFY = false;
     }
 
     public enum derive {

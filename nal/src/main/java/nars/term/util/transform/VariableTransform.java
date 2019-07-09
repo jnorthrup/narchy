@@ -1,9 +1,9 @@
 package nars.term.util.transform;
 
-import jcog.Texts;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -11,9 +11,16 @@ import nars.term.var.UnnormalizedVariable;
 import static nars.Op.*;
 
 
-public abstract class VariableTransform extends AbstractTermTransform.FilteredTermTransform {
+public abstract class VariableTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
-    @Override public boolean preFilter(Compound x) {
+
+
+    @Override
+    protected Term applyPosCompound(Compound x) {
+        return preFilter(x) ? super.applyPosCompound(x) : x;
+    }
+
+    public boolean preFilter(Compound x) {
         return x.hasVars();
     }
 
@@ -21,8 +28,9 @@ public abstract class VariableTransform extends AbstractTermTransform.FilteredTe
      * change all query variables to dep vars by use of Op.imdex
      */
     public static final TermTransform queryToDepVar = variableTransformN(VAR_QUERY, VAR_DEP);
-    private static final TermTransform indepToDepVar = variableTransformN(VAR_INDEP, VAR_DEP);
-    private static final TermTransform indepToDepVarDirect = variableTransform1(VAR_INDEP, VAR_DEP);
+    public static final TermTransform indepToDepVar = variableTransformN(VAR_INDEP, VAR_DEP);
+    public static final TermTransform indepToQueryVar = variableTransformN(VAR_INDEP, VAR_QUERY);
+
 
     private static TermTransform variableTransform1(Op from, Op to) {
 
@@ -36,8 +44,8 @@ public abstract class VariableTransform extends AbstractTermTransform.FilteredTe
                         //just re-use the ID since the input term is expected to have none of the target type
                         return NormalizedVariable.the(to, ((NormalizedVariable) atomic).id());
                     } else {
-                        //unnormalized, just compute the complete unnormalized form.
-                        return unnormalizedShadow(atomic, to);
+                        //unnormalized, just compute the complete unnormalized form
+                        return unnormalizedShadow((Variable)atomic, to);
                     }
 
                 }
@@ -46,45 +54,64 @@ public abstract class VariableTransform extends AbstractTermTransform.FilteredTe
     }
 
     private static TermTransform variableTransformN(Op from, Op to) {
-        return new OneTypeOfVariableTransform(from,to) {
-            @Override
-            public Term applyAtomic(Atomic atomic) {
-                if (!(atomic instanceof nars.term.Variable) || atomic.op() != from)
-                    return atomic;
-                else
-                    return unnormalizedShadow(atomic, to);
-            }
-        };
+        return new SimpleVariableTransform(from, to);
     }
 
-    private static UnnormalizedVariable unnormalizedShadow(Atomic atomic, Op to) {
-        return new UnnormalizedVariable(to, to.ch + Texts.quote(atomic.toString()));
+    private static UnnormalizedVariable unnormalizedShadow(nars.term.Variable v, Op to) {
+        //return new UnnormalizedVariable(to, atomic.toString());
+        return new SpecialOpVariable(v, to);
     }
 
-    public static Term indepToDepVar(Term x) {
-        if (x.varDep()==0) {
-            return indepToDepVarDirect.apply(x); //optimized case
-        } else if (x.varIndep() >= 1) {
-            return indepToDepVar.apply(x);
-        } else {
-            return x;
+    static class SpecialOpVariable extends UnnormalizedVariable {
+
+        private final Variable v;
+
+        public SpecialOpVariable(nars.term.Variable v, Op overridingType) {
+            super(overridingType, v.bytes());
+            this.v = v;
+        }
+
+        @Override
+        public String toString() {
+            return op().ch + v.toString();
         }
     }
 
+
     private static class OneTypeOfVariableTransform extends VariableTransform {
 
-        private final Op from;
-        private final Op to;
+        final int fromBit;
+        public final Op to;
 
-        public OneTypeOfVariableTransform(Op from, Op to) {
-            this.from = from;
+        OneTypeOfVariableTransform(Op from, Op to) {
+            this(from.bit, to);
+        }
+
+        OneTypeOfVariableTransform(int fromBit, Op to) {
+            this.fromBit = fromBit;
             this.to = to;
         }
 
         @Override
         public boolean preFilter(Compound x) {
-            return x.hasAny(from.bit);
+            return x.hasAny(fromBit);
         }
 
+    }
+
+    /** transforms variables from one type to another */
+    private static final class SimpleVariableTransform extends OneTypeOfVariableTransform {
+
+
+        public SimpleVariableTransform(Op from, Op to) {
+            super(from.bit, to);
+        }
+
+        @Override
+        public Term applyAtomic(Atomic x) {
+            return x instanceof nars.term.Variable && x.opBit() == fromBit ?
+                    unnormalizedShadow((Variable) x, to) :
+                    x;
+        }
     }
 }
