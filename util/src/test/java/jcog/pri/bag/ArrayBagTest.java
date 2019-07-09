@@ -208,4 +208,17 @@ class ArrayBagTest {
         }
     }
 
+    /** should normalize to the utilized range */
+    @Test void testCurveBagDistribution_uneven_partial1() {
+        /*
+
+        |---\
+        |   --\
+        |      _____________
+
+        */
+
+        int cap = 100;
+        ArrayBag<PLink<String>, PLink<String>> b = newBag(cap, plus);
+    }
 }

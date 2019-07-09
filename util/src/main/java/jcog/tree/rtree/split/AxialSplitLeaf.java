@@ -41,7 +41,7 @@ public class AxialSplitLeaf<X> implements Split<X> {
     public AxialSplitLeaf() { }
 
     @Override
-    public Branch<X> split(X x, Leaf<X> leaf, Spatialization<X> model) {
+    public RBranch<X> split(X x, RLeaf<X> leaf, Spatialization<X> model) {
 
 
         HyperRegion rCombined = leaf.bounds.mbr(model.bounds(x));
@@ -79,8 +79,8 @@ public class AxialSplitLeaf<X> implements Split<X> {
             ArrayUtil.sort(obj, 0, size-1, (IntToDoubleFunction) i->strength[i]);
 
         //TODO if size is odd, maybe l1Node should have the 1 extra element rather than l2Node as this will:
-        final Leaf<X> l1Node = model.transfer(obj, 0, size/2);
-        final Leaf<X> l2Node = model.transfer(obj, size / 2, size);
+        final RLeaf<X> l1Node = model.transfer(obj, 0, size/2);
+        final RLeaf<X> l2Node = model.transfer(obj, size / 2, size);
 
         //assert (l1Node.size()+l2Node.size() == size);
 

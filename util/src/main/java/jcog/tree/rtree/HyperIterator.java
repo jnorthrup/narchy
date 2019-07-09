@@ -61,8 +61,8 @@ public class HyperIterator<X>  {
                     r instanceof HyperRegion ?
                         ((HyperRegion) r)
                         :
-                        (r instanceof Node ?
-                            ((Node) r).bounds()
+                        (r instanceof RNode ?
+                            ((RNode) r).bounds()
                             :
                             model.bounds(r)
                         );
@@ -74,7 +74,7 @@ public class HyperIterator<X>  {
         });
     }
 
-    private void start(Node<X> start) {
+    private void start(RNode<X> start) {
         plan.add(start);
     }
 
@@ -91,24 +91,25 @@ public class HyperIterator<X>  {
 
         Object z;
         while ((z = plan.pop()) != null) {
-            if (z instanceof Node) {
-                Node nz = (Node) z;
-                int s = nz.size();
-                for (int i = 0; i < s; i++) {
-                    Object x = nz.get(i);
-                    //inline 1-arity branches for optimization
-                    while (x instanceof Node && (((Node)x).size() == 1)) {
-                        x = ((Node) x).get(0);
-                    }
+            if (!(z instanceof RNode))
+                break;
+
+            RNode nz = (RNode) z;
+            int s = nz.size();
+            for (int i = 0; i < s; i++) {
+                Object x = nz.get(i);
+
+                //inline 1-arity branches for optimization
+                while (x instanceof RLeaf && (((RLeaf)x).size == 1)) {
+                    x = ((RLeaf) x).data[0];
+                }
 
 //        //dont filter root node (traversed while plan is null)
 //        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
 //            return null;
 
-                    plan.add(x);
-                }
-            } else
-                break;
+                plan.add(x);
+            }
         }
 
         return (this.next = (X) z) != null;

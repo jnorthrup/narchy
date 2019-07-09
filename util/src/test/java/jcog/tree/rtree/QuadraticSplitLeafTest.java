@@ -73,23 +73,23 @@ class QuadraticSplitLeafTest {
         
         rTree.add(new RectDouble(0, 2, 1, 4));
 
-        Branch root = (Branch) rTree.root();
-        Node<RectDouble>[] children = root.data;
+        RBranch root = (RBranch) rTree.root();
+        RNode<RectDouble>[] children = root.data;
         int childCount = 0;
-        for(Node c : children) {
+        for(RNode c : children) {
             if (c != null) {
                 childCount++;
             }
         }
         assertEquals(2, childCount, "Expected different number of children after split");
 
-        Node<RectDouble> child1 = children[0];
+        RNode<RectDouble> child1 = children[0];
         RectDouble child1Mbr = (RectDouble) child1.bounds();
         RectDouble expectedChild1Mbr = new RectDouble(0, 0, 4, 4);
         assertEquals(4, child1.size(), "Child 1 size incorrect after split");
         assertEquals(expectedChild1Mbr, child1Mbr, "Child 1 mbr incorrect after split");
 
-        Node<RectDouble> child2 = children[1];
+        RNode<RectDouble> child2 = children[1];
         RectDouble child2Mbr = (RectDouble) child2.bounds();
         RectDouble expectedChild2Mbr = new RectDouble(4, 0, 5, 1);
         assertEquals(1, child2.size(), "Child 2 size incorrect after split");

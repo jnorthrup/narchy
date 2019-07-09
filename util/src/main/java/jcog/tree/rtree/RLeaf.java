@@ -22,7 +22,7 @@ package jcog.tree.rtree;
 
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
-import jcog.tree.rtree.util.CounterNode;
+import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,42 +39,37 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.
  * <p>
  */
-public class Leaf<X> extends AbstractNode<X> {
+public class RLeaf<X> extends AbstractRNode<X> {
 
     public final X[] data;
 
 
-    Leaf(int mMax) {
+    RLeaf(int mMax) {
         this((X[]) new Object[mMax]);
     }
 
-    public Leaf(X[] emptyArray) {
+    public RLeaf(X[] emptyArray) {
         this.data = emptyArray;
-        this.size = 0;
-        this.bounds = null;
     }
 
-    public Leaf(Spatialization<X> model, X[] sortedMbr, int from, int to) {
+    public RLeaf(Spatialization<X> model, X[] sortedMbr, int from, int to) {
         this.data = Arrays.copyOfRange(sortedMbr, from, to);
         this.size = (short) data.length;
         this.bounds = model.mbr(data);
     }
 
     @Override
-    public boolean intersectingNodes(HyperRegion rect, Predicate<Node<X>> t, Spatialization<X> model) {
-        if (rect.intersects(bounds))
-            return t.test(this);
-        else
-            return true;
+    public boolean intersectingNodes(HyperRegion rect, Predicate<RNode<X>> t, Spatialization<X> model) {
+        return !rect.intersects(bounds) || t.test(this);
     }
 
     @Override
-    public Iterator<Node<X>> iterateNodes() {
+    public Iterator<RNode<X>> iterateNodes() {
         return Collections.emptyIterator();
     }
 
     @Override
-    public Stream<Node<X>> streamNodes() {
+    public Stream<RNode<X>> streamNodes() {
         return Stream.empty();
     }
 
@@ -119,10 +114,10 @@ public class Leaf<X> extends AbstractNode<X> {
 
 
     @Override
-    public Node<X> add(/*@NotNull*/RInsertion<X> x) {
-
-        if (size > 0 && x.maybeContainedBy(bounds)) {
-            for (int i = 0, s = size; i < s; i++) {
+    public RNode<X> add(/*@NotNull*/RInsertion<X> x) {
+        int s = size;
+        if (s > 0 && x.maybeContainedBy(bounds)) {
+            for (int i = 0; i < s; i++) {
                 X y = data[i];
                 if (y == x.x) {
                     x.mergeIdentity();
@@ -135,23 +130,28 @@ public class Leaf<X> extends AbstractNode<X> {
             }
         }
 
-        if (!x.isAddOrMerge()) {
-            return this;
-        }
+        return x.isAddOrMerge() ? insert(x) : this;
 
-        return insert(x);
     }
 
     @Nullable
-    private Node<X> merged(X xy, RInsertion<X> x, X y, int i) {
+    private RNode<X> merged(X xy, RInsertion<X> x, X y, int i) {
         if (xy == y)
             return null;
 
         data[i] = xy;
 
-        HyperRegion yb = x.model.bounds(y);
-        if (!yb.equals(x.model.bounds(xy)))
-            bounds = Util.maybeEqual(bounds, HyperRegion.mbr(x.model, data)); //recompute
+        Spatialization<X> m = x.model;
+
+        HyperRegion yb = m.bounds(y);
+        if (!yb.equals(m.bounds(xy))) {
+            HyperRegion newBounds = HyperRegion.mbr(m, data); //recompute bounds
+
+            if (!bounds.equals(newBounds)) {
+                x.stretched = true;
+                this.bounds = newBounds;
+            }
+        }
 
 //                            HyperRegion xtb = model.bounds(xy);
 //                            if (!bounds.contains(xtb)) {
@@ -164,16 +164,16 @@ public class Leaf<X> extends AbstractNode<X> {
         return null;
     }
 
-    Node<X> insert(RInsertion<X> r) {
+    RNode<X> insert(RInsertion<X> r) {
         r.setAdded();
         return insert(r.x, r.bounds, r.model);
     }
 
-    Node<X> insert(X x, Spatialization<X> model) {
+    RNode<X> insert(X x, Spatialization<X> model) {
         return insert(x, model.bounds(x), model);
     }
 
-    Node<X> insert(X x, HyperRegion bounds, Spatialization<X> model) {
+    RNode<X> insert(X x, HyperRegion bounds, Spatialization<X> model) {
         if (size < data.length) {
 
             data[this.size++] = x;
@@ -229,7 +229,7 @@ public class Leaf<X> extends AbstractNode<X> {
 
 
     @Override
-    public Node<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
+    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
 
         final int size = this.size;
         if (size > 1 && !bounds().contains(xBounds))
@@ -267,7 +267,7 @@ public class Leaf<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Node<X> replace(final X told, HyperRegion oldBounds, final X tnew, Spatialization<X> model) {
+    public RNode<X> replace(final X told, HyperRegion oldBounds, final X tnew, Spatialization<X> model) {
         final int s = size;
         if (s > 0 && bounds.contains(oldBounds)) {
             X[] data = this.data;
@@ -363,7 +363,7 @@ public class Leaf<X> extends AbstractNode<X> {
      * @param x     data entry to be added
      * @param model
      */
-    public final void transfer(final Leaf<X> a, final Leaf<X> b, final X x, Spatialization<X> model) {
+    public final void transfer(final RLeaf<X> a, final RLeaf<X> b, final X x, Spatialization<X> model) {
 
         final HyperRegion xReg = model.bounds(x);
         double tCost = xReg.cost();
@@ -378,7 +378,7 @@ public class Leaf<X> extends AbstractNode<X> {
         double bxCost = bMbr.cost();
         final double bCostInc = Math.max(bxCost - ((/*bReg!=null ? */ bReg.cost()/* : 0*/) + tCost), 0.0);
 
-        Leaf<X> target;
+        RLeaf<X> target;
         double eps = model.epsilon();
         if (Util.equals(aCostInc, bCostInc, eps)) {
             if (Util.equals(axCost, bxCost, eps)) {
@@ -405,8 +405,8 @@ public class Leaf<X> extends AbstractNode<X> {
     }
 
     @Override
-    public Node<X> instrument() {
-        return new CounterNode(this);
+    public RNode<X> instrument() {
+        return new CounterRNode(this);
     }
 
     @Override

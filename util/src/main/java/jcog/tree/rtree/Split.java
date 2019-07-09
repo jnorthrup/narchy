@@ -1,12 +1,12 @@
 package jcog.tree.rtree;
 
 @FunctionalInterface public interface Split<X> {
-    Node<X> split(X x, Leaf<X> leaf, Spatialization<X> model);
+    RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> model);
 
     /** used by linear and quadratic splits */
-    default Node<X> newBranch(X x, Leaf<X> leaf, Spatialization<X> model, short size, int r1Max, int r2Max, X[] data) {
-        final Leaf<X> l1Node = model.newLeaf();
-        final Leaf<X> l2Node = model.newLeaf();
+    default RNode<X> newBranch(X x, RLeaf<X> leaf, Spatialization<X> model, short size, int r1Max, int r2Max, X[] data) {
+        final RLeaf<X> l1Node = model.newLeaf();
+        final RLeaf<X> l2Node = model.newLeaf();
 
         l1Node.insert(data[r1Max], model);
         l2Node.insert(data[r2Max], model);

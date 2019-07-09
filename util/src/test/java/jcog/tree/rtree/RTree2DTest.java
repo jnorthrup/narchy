@@ -25,7 +25,7 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.tree.rtree.point.Double2D;
 import jcog.tree.rtree.rect.HyperRectFloat;
 import jcog.tree.rtree.rect.RectDouble;
-import jcog.tree.rtree.util.CounterNode;
+import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -196,10 +196,10 @@ class RTree2DTest {
             RectDouble[] results = new RectDouble[entryCount];
             int foundCount = rTree.containedToArray(searchRect, results);
 
-            CounterNode<RectDouble> root = (CounterNode<RectDouble>) rTree.root();
+            CounterRNode<RectDouble> root = (CounterRNode<RectDouble>) rTree.root();
 
-            System.out.println("[" + type + "] searched " + CounterNode.searchCount + " nodes, returning " + foundCount + " entries");
-            System.out.println("[" + type + "] evaluated " + CounterNode.bboxEvalCount + " b-boxes, returning " + foundCount + " entries");
+            System.out.println("[" + type + "] searched " + CounterRNode.searchCount + " nodes, returning " + foundCount + " entries");
+            System.out.println("[" + type + "] evaluated " + CounterRNode.bboxEvalCount + " b-boxes, returning " + foundCount + " entries");
         }
     }
 

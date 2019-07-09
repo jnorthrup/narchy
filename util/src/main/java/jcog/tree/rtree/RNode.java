@@ -30,7 +30,7 @@ import java.util.stream.Stream;
 /**
  * Created by jcairns on 4/30/15.
  */
-public interface Node<X> extends Nodelike<X> {
+public interface RNode<X> extends Nodelike<X> {
     /**
      * @return boolean - true if this node is a leaf
      */
@@ -43,7 +43,7 @@ public interface Node<X> extends Nodelike<X> {
         return streamValues().iterator();
     }
 
-    Stream<Node<X>> streamNodes();
+    Stream<RNode<X>> streamNodes();
 
     /** the values only in this specific branch or leaf, regardless of type */
     Stream streamLocal();
@@ -56,7 +56,7 @@ public interface Node<X> extends Nodelike<X> {
     }
 
     /** iterate nodes only */
-    default java.util.Iterator<Node<X>> iterateNodes() {
+    default java.util.Iterator<RNode<X>> iterateNodes() {
         return streamNodes().iterator();
     }
 
@@ -76,7 +76,7 @@ public interface Node<X> extends Nodelike<X> {
      * @param i
      * @return null if Leaf merged it with existing item
      */
-    Node<X> add(/*@NotNull */  /*@NotNull */RInsertion<X> i);
+    RNode<X> add(/*@NotNull */  /*@NotNull */RInsertion<X> i);
 
     /**
      * Remove t from the index
@@ -85,7 +85,7 @@ public interface Node<X> extends Nodelike<X> {
      * @param model
      * @param removed
      */
-    @Nullable Node<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed);
+    @Nullable RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed);
 
     /**
      * update an existing t in the index
@@ -94,7 +94,7 @@ public interface Node<X> extends Nodelike<X> {
      * @param tnew - value to update old index to
      * @param model
      */
-    Node<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model);
+    RNode<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model);
 
 
 
@@ -126,7 +126,7 @@ public interface Node<X> extends Nodelike<X> {
      * @return whether to continue visit
      */
     boolean intersecting(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
-    boolean intersectingNodes(HyperRegion rect, Predicate<Node<X>> t, Spatialization<X> model);
+    boolean intersectingNodes(HyperRegion rect, Predicate<RNode<X>> t, Spatialization<X> model);
 
     boolean containing(HyperRegion rect, Predicate<X> t, Spatialization<X> model);
 
@@ -144,13 +144,13 @@ public interface Node<X> extends Nodelike<X> {
      *
      * @return instrumented node wrapper
      */
-    Node<X> instrument();
+    RNode<X> instrument();
 
 
     Object get(int i);
 
-    default Stream<Node<X>> streamNodesRecursively() {
-        return Stream.concat(Stream.of(this), streamNodes().flatMap(Node::streamNodesRecursively));
+    default Stream<RNode<X>> streamNodesRecursively() {
+        return Stream.concat(Stream.of(this), streamNodes().flatMap(RNode::streamNodesRecursively));
     }
 
 

@@ -394,7 +394,7 @@ public interface Stamp {
         return dedupAndTrimmed;
     }
 
-    static boolean overlapsAny(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
+    static boolean overlap(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
         return ((a == b) || overlapsAny(a.stamp(), b.stamp()));
     }
 
@@ -487,7 +487,7 @@ public interface Stamp {
     static boolean overlap(Task x, Task y) {
         return (!NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
                    &&
-               Stamp.overlapsAny(x, y);
+               Stamp.overlap((Stamp)x, y);
     }
 
     static int overlap(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {

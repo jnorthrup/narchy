@@ -65,7 +65,7 @@ public enum Revision {;
             Task a = tasks[0].task(), b = tasks[1].task();
 
             //quick 2-ary stamp pre-filter
-            if (Stamp.overlapsAny(a, b))
+            if (Stamp.overlap(a, b))
                 return null;
 
 //            int dtDither = n.dtDither();

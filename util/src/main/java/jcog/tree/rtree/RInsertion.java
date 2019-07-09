@@ -11,8 +11,10 @@ public class RInsertion<X> {
 
     private boolean addOrMerge;
 
-
     private boolean added;
+
+    /** if merged, whether the merge resulted in stretch (recurse bounds update necessary on return) */
+    public boolean stretched = false;
 
     /** TODO */
 //    public enum State {

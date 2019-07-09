@@ -282,7 +282,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             //assert(a!=b);
             TaskComponent aa = get(a), bb = get(b);
-            if (Stamp.overlapsAny(aa.task.stamp(), bb.task.stamp())) {
+            if (Stamp.overlap(aa.task, bb.task)) {
                 x.clear(1);
                 set(1, null);
                 return aa.evi;

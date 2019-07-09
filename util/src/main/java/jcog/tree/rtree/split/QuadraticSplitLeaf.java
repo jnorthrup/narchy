@@ -32,7 +32,7 @@ import java.util.function.Function;
 public class QuadraticSplitLeaf<X> implements Split<X> {
 
     @Override
-    public Node<X> split(X x, Leaf<X> leaf, Spatialization<X> m) {
+    public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {
 
         double minCost = Double.MIN_VALUE;
         short size = leaf.size;

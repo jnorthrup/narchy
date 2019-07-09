@@ -21,7 +21,7 @@ package jcog.tree.rtree.util;
  */
 
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.Node;
+import jcog.tree.rtree.RNode;
 import jcog.tree.rtree.RInsertion;
 import jcog.tree.rtree.Spatialization;
 
@@ -33,12 +33,12 @@ import java.util.stream.Stream;
 /**
  * Created by jcovert on 6/18/15.
  */
-public final class CounterNode<X> implements Node<X> {
+public final class CounterRNode<X> implements RNode<X> {
     public static int searchCount;
     public static int bboxEvalCount;
-    private final Node<X> node;
+    private final RNode<X> node;
 
-    public CounterNode(final Node<X> node) {
+    public CounterRNode(final RNode<X> node) {
         this.node = node;
     }
 
@@ -54,7 +54,7 @@ public final class CounterNode<X> implements Node<X> {
     }
 
     @Override
-    public Stream<Node<X>> streamNodes() {
+    public Stream<RNode<X>> streamNodes() {
         return node.streamNodes();
     }
 
@@ -75,7 +75,7 @@ public final class CounterNode<X> implements Node<X> {
 
 
     @Override
-    public Iterator<Node<X>> iterateNodes() {
+    public Iterator<RNode<X>> iterateNodes() {
         return node.iterateNodes();
     }
 
@@ -90,17 +90,17 @@ public final class CounterNode<X> implements Node<X> {
     }
 
     @Override
-    public Node<X> add(RInsertion<X> i) {
+    public RNode<X> add(RInsertion<X> i) {
         return this.node.add(i);
     }
 
     @Override
-    public Node<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
+    public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
         return this.node.remove(x, xBounds, model, removed);
     }
 
     @Override
-    public Node<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model) {
+    public RNode<X> replace(X told, HyperRegion oldBounds, X tnew, Spatialization<X> model) {
         return this.node.replace(told, oldBounds, tnew, model);
     }
 
@@ -143,7 +143,7 @@ public final class CounterNode<X> implements Node<X> {
     }
 
     @Override
-    public boolean intersectingNodes(HyperRegion rect, Predicate<Node<X>> t, Spatialization<X> model) {
+    public boolean intersectingNodes(HyperRegion rect, Predicate<RNode<X>> t, Spatialization<X> model) {
         return this.node.intersectingNodes(rect, t, model);
     }
 
@@ -153,7 +153,7 @@ public final class CounterNode<X> implements Node<X> {
     }
 
     @Override
-    public Node<X> instrument() {
+    public RNode<X> instrument() {
         return this;
     }
 

@@ -293,7 +293,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             Term xTerm = x.term();
             Truth xt = x.truth();
 
-            if (Stamp.overlapsAny(input, x)) {
+            if (Stamp.overlap(input, x)) {
 
                 //HACK interpolate truth if only freq differs
                 if ((!x.isCyclic() && !input.isCyclic()) &&

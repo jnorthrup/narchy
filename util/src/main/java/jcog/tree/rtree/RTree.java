@@ -22,7 +22,7 @@ package jcog.tree.rtree;
 
 
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
-import jcog.tree.rtree.util.CounterNode;
+import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 
@@ -47,7 +47,7 @@ public class RTree<X> implements Space<X> {
 
     private static final MetalAtomicIntegerFieldUpdater<RTree> SIZE = new MetalAtomicIntegerFieldUpdater(RTree.class, "_size");
 
-    private volatile Node<X> root;
+    private volatile RNode<X> root;
 
     private volatile int _size;
 
@@ -99,7 +99,7 @@ public class RTree<X> implements Space<X> {
     public final RInsertion<X> insert(/*@NotNull*/ final X x) {
         RInsertion<X> i = model.insertion(x);
 
-        Node<X> nextRoot = root.add(i);
+        RNode<X> nextRoot = root.add(i);
 
         if (nextRoot!=null)
             this.root = nextRoot; //even if not added; in case merge changed something, dunno
@@ -136,7 +136,7 @@ public class RTree<X> implements Space<X> {
             return false;
 
         boolean[] removed = new boolean[1];
-        @Nullable Node<X> nextRoot = root.remove(x, bx, model, removed);
+        @Nullable RNode<X> nextRoot = root.remove(x, bx, model, removed);
         if (removed[0]) {
 
             SIZE.getAndDecrement(this);
@@ -225,8 +225,8 @@ public class RTree<X> implements Space<X> {
 
     void instrumentTree() {
         root = root.instrument();
-        CounterNode.searchCount = 0;
-        CounterNode.bboxEvalCount = 0;
+        CounterRNode.searchCount = 0;
+        CounterRNode.bboxEvalCount = 0;
     }
 
     @Override
@@ -246,7 +246,7 @@ public class RTree<X> implements Space<X> {
     }
 
     @Override
-    public Node<X> root() {
+    public RNode<X> root() {
         return this.root;
     }
 

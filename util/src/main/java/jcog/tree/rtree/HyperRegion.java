@@ -60,10 +60,10 @@ public interface HyperRegion {
         return b;
     }
 
-    static HyperRegion mbr(Node[] h) {
+    static HyperRegion mbr(RNode[] h) {
         HyperRegion b = h[0].bounds();
         for (int k = 1; k < h.length; k++) {
-            Node hk = h[k];
+            RNode hk = h[k];
             if (hk == null)
                 break; //null terminator
             b = b.mbr(hk.bounds());

@@ -294,7 +294,11 @@ public class Derivation extends PreDerivation {
 
                 if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) && (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || beliefTruth_at_Task==null)) {
 
-                    double eScale = taskTruth != null ? Math.min(1,beliefTruth_at_Belief.evi()/taskTruth.evi()) : 1;
+                    double eScale =
+                            taskTruth == null ? 1 :
+                                //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
+                                taskTruth.conf();
+
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
                     if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() > eviMin) {
                         if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
@@ -511,7 +515,8 @@ public class Derivation extends PreDerivation {
                 //w.dur(); //COARSE
         this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
                 //n.dtDither(); //FINE
-                Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
+                Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
+                //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
         this.confMin = n.confMin.floatValue();
         this.eviMin = n.confMin.evi();

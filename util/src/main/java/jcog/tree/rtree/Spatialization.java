@@ -33,23 +33,23 @@ public class Spatialization<X> {
         return bounds.apply(x);
     }
 
-    @Deprecated public final Leaf<X> newLeaf() {
+    @Deprecated public final RLeaf<X> newLeaf() {
         return newLeaf(max);
     }
-    public Leaf<X> newLeaf(int capacity) {
-        return new Leaf<>(capacity);
+    public RLeaf<X> newLeaf(int capacity) {
+        return new RLeaf<>(capacity);
     }
 
-    public Branch<X> newBranch(Leaf<X> a, Leaf<X> b) {
-        return new Branch<>(max, new Node[] { a, b });
+    public RBranch<X> newBranch(RLeaf<X> a, RLeaf<X> b) {
+        return new RBranch<>(max, new RNode[] { a, b });
     }
 
-    public Node<X> split(X x, Leaf<X> leaf) {
+    public RNode<X> split(X x, RLeaf<X> leaf) {
         return split.split(x, leaf, this);
     }
 
-    public Leaf<X> transfer(X[] sortedMbr, int from, int to) {
-        return new Leaf<>(this, sortedMbr, from, to);
+    public RLeaf<X> transfer(X[] sortedMbr, int from, int to) {
+        return new RLeaf<>(this, sortedMbr, from, to);
     }
 
     public double epsilon() {

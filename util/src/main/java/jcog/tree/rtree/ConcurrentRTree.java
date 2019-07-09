@@ -69,7 +69,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
     /** TODO encapsulate. should not be exposed */
     @Deprecated @Override
-    public final Node<X> root() {
+    public final RNode<X> root() {
         return tree.root();
     }
 
@@ -263,7 +263,7 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
     /**
      * warning: not locked
      */
-    public Stream<Node<X>> streamNodes() {
+    public Stream<RNode<X>> streamNodes() {
         return root().streamNodesRecursively().filter(Objects::nonNull);
     }
 

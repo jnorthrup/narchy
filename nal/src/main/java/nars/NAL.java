@@ -60,7 +60,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     @Deprecated
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
-    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= configIs("REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME");
+    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= false;
 
 
     /** can be unfair to new inputs if true, so for fairness leave false */
@@ -143,7 +143,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final IntRange causeCapacity = new IntRange(8, 1, CAUSE_MAX);
 
 
-    public static final int CURIOSITY_CAPACITY = NAL.STAMP_CAPACITY / 2;
+    public static final int CURIOSITY_CAPACITY =
+            1;
+            // NAL.STAMP_CAPACITY / 2;
+
     public static final long CURIOSITY_TASK_RANGE_DURS = 3;
     public static final boolean DEBUG_TASK_LOG= configIs("DEBUG_TASK_LOG");
 

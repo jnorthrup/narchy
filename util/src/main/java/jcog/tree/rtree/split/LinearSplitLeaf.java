@@ -30,7 +30,7 @@ import jcog.tree.rtree.*;
 public class LinearSplitLeaf<X> implements Split<X> {
 
     @Override
-    public Node<X> split(X x, Leaf<X> leaf, Spatialization<X> m) {
+    public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {
 
 
 

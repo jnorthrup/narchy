@@ -169,7 +169,7 @@ public interface Space<X> extends Nodelike<X> {
     }
 
 
-    Node<X> root();
+    RNode<X> root();
 
 
     HyperRegion bounds(X task);
