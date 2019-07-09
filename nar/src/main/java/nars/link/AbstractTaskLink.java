@@ -9,6 +9,7 @@ import jcog.util.FloatFloatToFloatFunction;
 import nars.NAL;
 import nars.Op;
 import nars.task.util.TaskException;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
@@ -47,15 +48,15 @@ public abstract class AbstractTaskLink implements TaskLink {
         source =
                 source.concept();
                 //Image.imageNormalize(source).concept();
-        target = //Image.imageNormalize
-                ((
-                    target != null ?
-                        (NAL.TASKLINK_TARGET_CONCEPT && target.op().conceptualizable ?
-                            target.concept() : target
+        target = target != null ?
+                    (
+                        NAL.TASKLINK_TARGET_CONCEPT && target instanceof Compound && target.op().conceptualizable ?
+                            target.concept()
+                            :
+                            target
                     )
                     : source //loop
-                 ))
-        ;
+                 ;
 
         if (source instanceof Bool)
             throw new TermException("source bool", source);

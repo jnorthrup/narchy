@@ -74,13 +74,6 @@ public class Taskify extends ProxyTerm {
 
     void temporalTask(Term x, Occurrify.OccurrenceSolver time, Derivation d) {
 
-//        boolean neg = false;
-//        if (x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG))) {
-//            //HACK semi-auto-unneg to help occurrify
-//            x = x.unneg();
-//            neg = true;
-//        }
-//.negIf(neg)
 
         Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {

@@ -143,7 +143,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final IntRange causeCapacity = new IntRange(8, 1, CAUSE_MAX);
 
 
-    public static final int CURIOSITY_CAPACITY = 1; //NAL.STAMP_CAPACITY / 2;
+    public static final int CURIOSITY_CAPACITY = NAL.STAMP_CAPACITY / 2;
     public static final long CURIOSITY_TASK_RANGE_DURS = 3;
     public static final boolean DEBUG_TASK_LOG= configIs("DEBUG_TASK_LOG");
 
@@ -195,9 +195,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** override to allow all goal evidence overlap */
     public static final boolean OVERLAP_ALLOW_GOAL = false;
 
-    /** if true then tasklink targets are named by the concept and not a raw term (which could be temporal or not normalized)
+    /** if true then tasklink targets are named by the concept and not a raw term
+     * (which could be temporal or not normalized)
      * */
-    public static final boolean TASKLINK_TARGET_CONCEPT = false;
+    public static final boolean TASKLINK_TARGET_CONCEPT = true;
 
     /** various post-processing of contained variables prior to use in Task content */
     public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;
@@ -295,12 +296,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //0.5f
             //0.618f
             //0.75f
-            //1f
-            2f
-            , 0, 4);
+            1f
+            //2f
+            //4f
+            //100
+            , 0, 1000);
 
     /** max tolerance time (in durations) for unification of temporal terms */
-    public final FloatRange unificationTimeToleranceDurs = new FloatRange(0.5f, 0, 2 );
+    public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);

@@ -157,8 +157,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return 1.0 / (1 + t.confMean());
     };
 
-    static final ToDoubleFunction<? super Task> LeastEvi = (t) -> {
-        return 1.0 / (1 + w2cSafe(t.evi()));
+    static final ToDoubleFunction<? super Task> LeastEviTimesRange = (t) -> {
+        return 1.0 / (1 + (1+w2cSafe(t.evi())) * t.range());
     };
     static final ToDoubleFunction LeastTimeRange = (t) -> {
         if (t instanceof Leaf) t = ((Leaf)t).bounds;
@@ -201,15 +201,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final class MergeableRegion extends Extreme<Leaf<TaskRegion>, Leaf<TaskRegion>> {
 
         public MergeableRegion(long now) {
-            super(/*LeastOverlap, LeastTemporalSparsity,*/ MostComponents,LeastFreqRange,LeastOriginality
+            super(
+                    MostComponents, LeastOriginality, LeastFreqRange
+                    /*LeastOverlap, LeastTemporalSparsity,*/
                     //, LeastTimeRange
             );
+            weights( 0.5f, 0.5f, 0.35f);
         }
 
-
-        @Nullable
         @Override
-        protected Leaf<TaskRegion>  the(Leaf<TaskRegion> t) {
+        protected Leaf<TaskRegion> the(Leaf<TaskRegion> t) {
             return t;
         }
     }
@@ -219,13 +220,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         public WeakestTask(long now) {
             super(//complexity ?
                     //new ToDoubleFunction[] {
-                    new Furthest(now), LeastEvi, LeastPriority, LeastTimeRange, LeastOriginal, MostComplex
+                    LeastEviTimesRange, new Furthest(now), LeastOriginal, MostComplex, LeastPriority
                     //} :
                     //new ToDoubleFunction[] { new Furthest(now), LeastEvi, LeastPriority, LeastRange, LeastOriginal }
                     );
+            weights(1f, 0.5f, 0.25f, 0.1f, 0.05f);
         }
 
-        @Nullable
         @Override
         protected Task the(Task task) {
             return task;

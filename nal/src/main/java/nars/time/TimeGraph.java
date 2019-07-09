@@ -23,7 +23,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjTree;
+import nars.term.util.conj.ConjList;
 import nars.term.var.CommonVariable;
 import org.apache.commons.math3.exception.MathArithmeticException;
 import org.eclipse.collections.api.tuple.Pair;
@@ -774,8 +774,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveDT(Compound x, Predicate<Event> each) {
 
-        if (!termsEvent(x)) return true;
-
+        if (!termsEvent(x))
+            return true;
 
         assert (x.dt() == XTERNAL);
 
@@ -783,80 +783,83 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //assert(!xx.hasXternal()): "dont solveDTTrace if subterms have XTERNAL";
 
-        Op xop = x.op();
-        if (xop == IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
-
-            return solveDT2(x, xx, each);
-
+        if (x.op() == IMPL) { //x.op() == IMPL || (s == 2 && xx.sub(0).unneg().equals(xx.sub(1).unneg()))) { //s == 2) {
+            return solveDT_2(x, xx, each);
         } else {
-            assert (xop == CONJ);
-
-            int s0 = xx.subs();
-            xx = xx.commuted();
-            int s = xx.subs();
-
-            List<Event>[] subEvents = new FasterList[s];
-            int abs = solveAbsolutes(xx, subEvents);
-            if (abs > 0) {
-                if (s == 1) {
-                    //(x &&+- x) so collapse to x
-                    //assert(subEvents.length == 1);
-                    for (Event e : subEvents[0]) {
-                        if (!each.test(e))
-                            return false;
-                    }
-                } else {
-
-                    if (!solveAbsolutePermutations(xx, subEvents, abs, each))
-                        return false;
-
-                    if (abs == s0)
-                        return true; //done
-                }
-
-            }
-
-            if (s0 == 2) {
-                if (!solveDT2(x, xx, each))
-                    return false;
-            }
-
-            if (s0 == 3) {
-
-                Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
-
-                return solveDT((Compound) CONJ.the(XTERNAL, c, b),
-                        bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
-                        ));
-
-            }
-
-            if (s0 == 4) {
-
-                Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2), d = xx.sub(3);
-
-                return solveDT((Compound) CONJ.the(XTERNAL, d, c),
-                        cd -> solveDT((Compound) CONJ.the(XTERNAL, cd.id, b),
-                                bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
-                                )
-                        )
-                );
-
-            }
-
-            //TODO
-
-
-            return true;
+            return solveDTconj(x, xx, each);
         }
-
 
     }
 
-    private boolean solveDT2(Compound x, Subterms xx, Predicate<Event> each) {
+    private boolean solveDTconj(Compound x, Subterms xx, Predicate<Event> each) {
+
+        int s0 = xx.subs();
+        xx = xx.commuted();
+        int s = xx.subs();
+
+        List<Event>[] subEvents = new FasterList[s];
+        int abs = solveAbsolutes(xx, subEvents);
+        if (abs > 0) {
+            if (s == 1) {
+                //(x &&+- x) so collapse to x
+                //assert(subEvents.length == 1);
+                for (Event e : subEvents[0]) {
+                    if (!each.test(e))
+                        return false;
+                }
+            } else {
+
+                if (!solveAbsolutePermutations(xx, subEvents, abs, each))
+                    return false;
+
+                if (abs == s0)
+                    return true; //done
+            }
+
+        }
+
+        if (s0 == 2) {
+            if (!solveDT_2(x, xx, each))
+                return false;
+        }
+
+        if (s0 == 3) {
+
+            Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
+
+            return solveDT((Compound) CONJ.the(XTERNAL, c, b),
+                    bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
+                    ));
+
+        }
+
+        if (s0 == 4) {
+
+            Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2), d = xx.sub(3);
+
+            return solveDT((Compound) CONJ.the(XTERNAL, d, c),
+                    cd -> solveDT((Compound) CONJ.the(XTERNAL, cd.id, b),
+                            bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
+                            )
+                    )
+            );
+
+        }
+
+        //TODO
+
+
+        return true;
+    }
+
+    private boolean solveDT_2(Compound x, Predicate<Event> each) {
+        return solveDT_2(x, x.subterms(), each);
+    }
+
+    private boolean solveDT_2(Compound x, Subterms xx, Predicate<Event> each) {
         Term a = xx.sub(0), b = (xx.subs() > 1 ? xx.sub(1) : a /* repeat */);
 
-        return solveDTAbsolutePair(x, each, a, b) && solveDTpair(x, each, a, b);
+        return solveDTAbsolutePair(x, each, a, b) && solveDTpair(x, a, b, each);
     }
 
     private int solveAbsolutes(Subterms xx, List<Event>[] subEvents) {
@@ -896,14 +899,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             List<Event>[] subEvents2 = ArrayUtil.removeNulls(subEvents);
 
             CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
+
+            ConjBuilder cc =
+                    new ConjList(abs);
+                    //new ConjTree();
+
             nextPermute:
             while (ci.hasNext()) {
                 long start = Long.MAX_VALUE, range = 0;
 
                 Event[] ss = ci.next();
-                ConjBuilder cc =
-                        //new ConjLazy(abs);
-                        new ConjTree();
+                cc.clear();
                 for (int i = 0; i < abs; i++) {
                     Event e = ss[i];
 //                    if (!ii.isEmpty()) {
@@ -920,7 +926,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                 Term nextKnown = cc.term();
                 if (termsEvent(nextKnown))
-                    if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
+                    if (!nextAbsolutePermutation(unknown, start, range, nextKnown, each))
                         return false;
             }
 
@@ -943,7 +949,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 } else {
                     range = 0;
                  }
-                if (!nextAbsolutePermutation(each, unknown, start, range, nextKnown))
+                if (!nextAbsolutePermutation(unknown, start, range, nextKnown, each))
                     return false;
             }
         }
@@ -951,22 +957,28 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return true;
     }
 
-    private boolean nextAbsolutePermutation(Predicate<Event> each, Term unknown, long start, long range, Term nextKnown) {
+    private boolean nextAbsolutePermutation(Term unknown, long start, long range, Term nextKnown, Predicate<Event> each) {
+
         if (nextKnown != False && nextKnown != Null) {
 
             if (unknown != null) {
-                nextKnown = CONJ.the(XTERNAL, nextKnown, unknown);
-            }
 
-            if (validPotentialSolution(nextKnown)) {
-                if (!each.test(event(nextKnown, start, start + range, false)))
-                    return false;
+                return solveDTpair((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu)->{
+                   return each.test(nu instanceof Absolute ? nu : event(nu.id, start, start+range, false));
+                });
+            } else {
+
+                if (validPotentialSolution(nextKnown)) {
+                    if (!each.test(event(nextKnown, start, start + range, false)))
+                        return false;
+                }
+
             }
         }
         return true; //continue
     }
 
-    private boolean solveDTpair(Compound x, Predicate<Event> each, Term a, Term b) {
+    private boolean solveDTpair(Compound x, Term a, Term b, Predicate<Event> each) {
 
         FasterList<Event> ab = null;
 
@@ -1248,7 +1260,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //    }
 
     private final boolean solution(Event y) {
-        if (!(y.start() == TIMELESS && solving.equals(y.id)) && validPotentialSolution(y.id)) {
+        if (y.start() == TIMELESS && solving.equals(y.id))
+            return true; //HACK eliminate when this happens; regurgitated nothing useful
+
+        if (validPotentialSolution(y.id)) {
             if (solutions.add(y)) {
                 return target.test(y);
             }
@@ -1370,7 +1385,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveDTAndOccRecursive(Term x, Predicate<Event> each) {
 
-        Map<Compound, Set<Term>> subSolved = new UnifiedMap(4);
+        Map<Compound, Set<Term>> subSolved = new UnifiedMap();
 
         x.recurseTerms(Term::hasXternal, y -> {
             if (y instanceof Compound && y.dt() == XTERNAL && !y.subterms().hasXternal()) {
@@ -1607,8 +1622,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveLastResort(Event x, Predicate<Event> each) {
 //        if (!(x instanceof Relative))
 //            throw new TODO("should this each.test(x)?");
-        //return !(x instanceof Relative) || each.test(x);
-        return each.test(x);
+        return !(x instanceof Relative) || each.test(x);
+        //return each.test(x);
+        //return true;
     }
 
     protected Random random() {

@@ -530,11 +530,14 @@ public abstract class Unify extends Versioning<Term> {
     /** xdt and ydt must both not equal either XTERNAL or DTERNAL */
     private boolean unifyDT(int xdt, int ydt) {
         //assert(xdt!=DTERNAL && xdt!=XTERNAL && ydt!=DTERNAL && ydt!=XTERNAL);
-        return Math.abs(xdt - ydt) < dtTolerance;
+        return Math.abs(xdt - ydt) <= dtTolerance;
     }
 
     public final Term resolveTerm(Term x) {
         return resolveTerm(x, false);
+    }
+    final Term resolveTermRecurse(Term x) {
+        return resolveTerm(x, true);
     }
 
     /** full resolution of a term */
@@ -564,8 +567,8 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final Subterms resolveSubs(Subterms x) {
-        return x.transformSubs(this::resolveTerm, null);
-        //return x.transformSubs(transform(), null);
+        //return x.transformSubs(this::resolveTerm, null);
+        return x.transformSubs(this::resolveTermRecurse, null);
     }
 
     @Nullable public final TermList resolveListIfChanged(Subterms x) {

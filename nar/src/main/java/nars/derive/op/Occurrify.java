@@ -8,6 +8,7 @@ import nars.Op;
 import nars.Task;
 import nars.derive.model.Derivation;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -342,8 +343,7 @@ public class Occurrify extends TimeGraph {
         if (super.validPotentialSolution(y)) {
             int v = y.volume();
             return
-                    v <= patternVolumeMax &&
-                            v >= patternVolumeMin;
+                    v <= patternVolumeMax && v >= patternVolumeMin;
         } else
             return false;
     }
@@ -677,17 +677,21 @@ public class Occurrify extends TimeGraph {
             if (!x.hasXternal()) {
                 return pair(x, occ);
             } else {
+
+                boolean neg = false;if (preUnneg(x, d)) { x = x.unneg();neg = true; }
+
                 d.occ.clear();
 
                 if (occ != null && occ[0] != TIMELESS && occ[0] != ETERNAL)
                     d.occ.know(x, occ[0], occ[1]);
 
-                return pair(d.occ.solveDT(x, d, decomposeEvents, this), occ);
+                return pair(d.occ.solveDT(x, d, decomposeEvents, this).negIf(neg), occ);
             }
 
         }
 
-        protected @Nullable Pair<Term, long[]> solve(Term x, Derivation d, boolean taskOccurr, boolean beliefOccurr) {
+        protected @Nullable Pair<Term, long[]> solve(Term x0, Derivation d, boolean taskOccurr, boolean beliefOccurr) {
+            Term x = x0;
             if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
                 return pair(x, occurrence(d));
 
@@ -695,6 +699,8 @@ public class Occurrify extends TimeGraph {
                 taskOccurr = true; //allow task occurrence
             if (!beliefOccurr && taskOccurr && (d.taskStart == ETERNAL) && (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS))
                 beliefOccurr = true; //allow belief occurrence
+
+            boolean neg = false;if (preUnneg(x, d)) { x = x.unneg();neg = true; }
 
             d.occ.clear();
             Occurrify o = d.occ.know(x, taskOccurr, beliefOccurr, true, this);
@@ -718,11 +724,11 @@ public class Occurrify extends TimeGraph {
                 if (NAL.OCCURRIFY_STRICT)
                     return null;
 
-                return pair(x, occurrence(d)); //fail-safe
+                return pair(x0, occurrence(d)); //fail-safe
 
             } else {
                 long es = e.start();
-                return pair(e.id,
+                return pair(e.id.negIf(neg),
                         es == TIMELESS ?
                                 occurrence(d) :
                                 new long[]{es, e.end()});
@@ -732,6 +738,11 @@ public class Occurrify extends TimeGraph {
         public BeliefProjection beliefProjection() {
             return BeliefProjection.Task;
         }
+    }
+
+    /** semi-auto-unneg to help occurrify */
+    private static boolean preUnneg(Term x, Derivation d) {
+        return x instanceof Neg && (!d.taskTerm.hasAny(NEG) && !d.beliefTerm.hasAny(NEG));
     }
 
     /** ignores temporal subterms ofof --> and <-> */

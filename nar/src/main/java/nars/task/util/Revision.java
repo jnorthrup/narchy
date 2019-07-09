@@ -68,7 +68,7 @@ public enum Revision {;
             if (Stamp.overlapsAny(a, b))
                 return null;
 
-            int dtDither = n.dtDither();
+//            int dtDither = n.dtDither();
             long dt = a.minTimeTo(b);
             if (dt > 0 && dt > n.intermpolationRangeLimit.floatValue()*Math.min(a.range(), b.range())) {
 //            long sepThresh = Util.lerp(

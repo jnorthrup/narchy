@@ -1,7 +1,7 @@
 package nars.task.util;
 
 import jcog.Skill;
-import jcog.data.bit.MetalBitSet;
+import jcog.Util;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -24,23 +24,32 @@ abstract public class Extreme<X,Y> implements Consumer<X>, Supplier<X> {
     /** evaluation criteria */
     final ToDoubleFunction<? super Y>[] eval;
 
-    final double[] bestVal;
+    /** weights should be ordered largest first for earliest fail opportunity */
+    final float[] evalWeight;
+    private float totalWeight = Float.NaN;
+
+    final double[] vBest;
 
     /** re-cycled for each input */
     private transient double[] v;
-    /** re-cycled for each input */
-    private transient MetalBitSet better;
-    /** re-cycled for each input */
-    private transient MetalBitSet worse;
+
+//    /** re-cycled for each input */
+//    private transient MetalBitSet better;
+//    /** re-cycled for each input */
+//    private transient MetalBitSet worse;
 
     public Extreme(ToDoubleFunction<? super Y>... eval) {
         this.eval = eval;
-        this.bestVal = new double[eval.length];
-        Arrays.fill(bestVal, Double.NEGATIVE_INFINITY);
 
-        v = new double[eval.length];
-        better = MetalBitSet.bits(eval.length);
-        worse = MetalBitSet.bits(eval.length);
+        int n = eval.length;
+        this.vBest = new double[n];
+        this.evalWeight = new float[n];
+        Arrays.fill(vBest, Double.NEGATIVE_INFINITY);
+        Arrays.fill(evalWeight, 1f);
+
+        v = new double[n];
+//        better = MetalBitSet.bits(n);
+//        worse = MetalBitSet.bits(n);
     }
 
 
@@ -55,7 +64,12 @@ abstract public class Extreme<X,Y> implements Consumer<X>, Supplier<X> {
         Y incomingDerived = the(incoming);
         if (incomingDerived == null) return; //invalidated
 
-        better.clear(); worse.clear();
+
+        if (totalWeight!=totalWeight)
+            totalWeight = Util.sum(evalWeight);
+
+//        better.clear(); worse.clear();
+        double score = 0, weightRemain = totalWeight;
         int n = eval.length;
         for (int i = 0; i < n; i++) {
             double vi = eval[i].applyAsDouble(incomingDerived);
@@ -63,30 +77,21 @@ abstract public class Extreme<X,Y> implements Consumer<X>, Supplier<X> {
                 return; //invalidated
             v[i] = vi;
 
-            double ei = this.bestVal[i];
+            double ei = this.vBest[i];
 
-            if (vi > ei) better.set(i);
-            else if (vi < ei) worse.set(i);
+            double w = evalWeight[i];
+            if (vi > ei) score += w;
+            else if (vi < ei) score -= w;
             //else: equal
-        }
-        boolean take;
-        int B = better.cardinality();
-        if (B == n) {
-            take = true; //wins all
-        } else {
-            int W = worse.cardinality();
-            if (W == n) {
-                take = false; //loses all
-            } else {
-                //evaluate
-                //TODO refine and abstract pareto frontier calculation
-                take = (B > W);
-            }
+
+            weightRemain -= w;
+            if (Math.abs(score) > Math.abs(weightRemain + Float.MIN_NORMAL))
+                break; //early exit due to impossible to reach positive
         }
 
-        if (take) {
+        if (score > 0) {
             best = incoming;
-            System.arraycopy(this.v, 0, this.bestVal, 0, n);
+            System.arraycopy(this.v, 0, this.vBest, 0, n);
         }
     }
 
@@ -102,5 +107,23 @@ abstract public class Extreme<X,Y> implements Consumer<X>, Supplier<X> {
         accept(m);
         return best == m;
     }
+
+    public void weights(float... w) {
+        if (w.length!=eval.length)
+            throw new ArrayIndexOutOfBoundsException(w.length);
+
+        System.arraycopy(w, 0, evalWeight, 0, w.length);
+        invalidateWeights();
+    }
+
+    public void weight(int eval, float weight) {
+        evalWeight[eval] = weight;
+        invalidateWeights();
+    }
+
+    private void invalidateWeights() {
+        totalWeight = Float.NaN; //invalidate
+    }
+
 
 }

@@ -21,7 +21,7 @@ public final class ConfRange extends FloatRange {
     @Override
     public void set(float value) {
         super.set(value);
-        _evi = c2wSafe((double)get());
+        _evi = c2wSafe(getAsDouble());
     }
     public final float conf() {
         return floatValue();

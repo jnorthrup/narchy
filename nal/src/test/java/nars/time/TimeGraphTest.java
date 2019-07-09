@@ -269,14 +269,13 @@ class TimeGraphTest {
 
     @Test
     void testConj3_repeat() throws Narsese.NarseseException {
-        TimeGraph C = newTimeGraph(1);
+        TimeGraph C = newTimeGraph(1, true);
         C.know($("(a ==>+1 a)"));
         C.know($("a"), 0);
         C.know($("b"), 2);
         C.know($("c"), 3);
         assertSolved("(&&+-, (a &&+- a),b,c)", C,
-                "(((a &&+1 a) &&+1 b) &&+1 c)@0",
-                        "((a &&+2 b) &&+1 c)@0"
+                "(((a &&+1 a) &&+1 b) &&+1 c)@0", "((a &&+2 b) &&+1 c)@0"
         );
     }
     @Test
@@ -329,17 +328,23 @@ class TimeGraphTest {
 
     }
 
-    @Test
-    void testNoBrainerNegation() {
+    @Test void testNoBrainerNegation_impl() {
 
         TimeGraph C = newTimeGraph(1);
-        C.know($$("x"), 1); //C.autoNeg.add($$("x"));
+        C.know($$("x"), 1);
         C.know($$("y"), 2);
 
-        assertSolved("(--x ==>+- y)", C,
-                "((--,x) ==>+1 y)");
-
+        assertSolved("(--x ==>+- y)", C, "((--,x) ==>+1 y)");
     }
+    @Test void testNoBrainerNegation_conj() {
+
+        TimeGraph C = newTimeGraph(1);
+        C.know($$("x"), 1);
+        C.know($$("y"), 2);
+
+        assertSolved("(--x &&+- y)", C, "((--,x) &&+1 y)");
+    }
+
     @Test
     void testComponentInTwoConjunctionSequences() {
 
@@ -629,6 +634,10 @@ class TimeGraphTest {
     }
 
     private static TimeGraph newTimeGraph(long seed) {
+        return newTimeGraph(seed, false);
+    }
+
+    private static TimeGraph newTimeGraph(long seed, boolean trace) {
         return new TimeGraph() {
             XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(seed);
 
@@ -637,7 +646,17 @@ class TimeGraphTest {
                 return rng;
             }
 
-
+            @Override
+            public boolean solve(Term x, Predicate<Event> target) {
+                return super.solve(x, (y)->{
+                    if (trace) {
+                        System.err.println("SOLUTION: " + y);
+                        Thread.dumpStack();
+                        System.out.println();
+                    }
+                    return target.test(y);
+                });
+            }
         };
     }
 
