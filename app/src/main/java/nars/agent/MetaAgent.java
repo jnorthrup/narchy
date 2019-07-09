@@ -111,13 +111,15 @@ public class MetaAgent extends Game {
         actionCtl($.inh(SELF, exact), new FloatRange(1f, 0, 1) {
             @Override
             public void set(float value) {
-                switch (Util.clamp((int) Math.floor(value * 6),0,5)) {
-                    case 0: value = 0.5f; break; //binary emulation
-                    case 1: value = 0.25f; break;
-                    case 2: value = 0.1f; break;
-                    case 3: value = 0.05f; break;
-                    case 4: value = 0.025f; break;
-                    case 5: value = 0.01f; break;
+                switch (Util.clamp((int) Math.floor(value * 4),0,3)) {
+//                    case 0: value = 0.5f; break; //binary emulation
+//                    case 1: value = 0.25f; break;
+                    case 0: value = 0.1f; break;
+                    case 1: value = 0.05f; break;
+                    case 2: value = 0.025f; break;
+                    case 3: value = 0.01f; break;
+                    default:
+                        throw new UnsupportedOperationException();
                 }
                 nar.freqResolution.set(value);
                 super.set(value);

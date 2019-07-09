@@ -201,7 +201,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private static final class MergeableRegion extends Extreme<Leaf<TaskRegion>, Leaf<TaskRegion>> {
 
         public MergeableRegion(long now) {
-            super(/*LeastOverlap, LeastTemporalSparsity,*/ MostComponents,LeastFreqRange,LeastOriginality, LeastTimeRange);
+            super(/*LeastOverlap, LeastTemporalSparsity,*/ MostComponents,LeastFreqRange,LeastOriginality
+                    //, LeastTimeRange
+            );
         }
 
 
