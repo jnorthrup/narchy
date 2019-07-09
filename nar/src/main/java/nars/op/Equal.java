@@ -78,16 +78,16 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
         Op xOp = x.op(), yOp = y.op();
         boolean xIsVar = xOp.var, yIsVar = yOp.var;
+        boolean xHasVar = xIsVar || x.hasVars(), yHasVar = yIsVar || y.hasVars();
 
 
-        if (xIsVar && !yIsVar) {
+        if (xIsVar && !yHasVar) {
             return e.is(x, y) ? True : Null;
-        } else if (yIsVar && !xIsVar) {
+        } else if (yIsVar && !xHasVar) {
             return e.is(y, x) ? True : Null;
         }
 
 
-        boolean xHasVar = xIsVar || x.hasVars(), yHasVar = yIsVar || y.hasVars();
         if (yHasVar && !xHasVar) {
             //swap
             Term z = x;
@@ -111,11 +111,18 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
                     return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null; //"equal(add(#x,a),b)"
                 else if (xa1.op().var && xa0.op() == INT)
                     throw new TODO();
+
+                //TODO (#x,add(#x,#y)) |- is(#y, 0)
+                //TODO (#x,add(#x,#x)) |- is(#x, 0)
+
             } else if (xf.equals(MathFunc.mul)) {
                 Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
                 if (xa0.op().var && xa1.op() == INT)
                     return e.is(xa0, $.the(((double) ((Int) y).i) / ((Int) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
+
+                //TODO (#x,mul(#x,#y)) |- is(#y, 1)
+                //TODO (#x,mul(#x,#x)) |- is(#x, 1)
             }
         }
 

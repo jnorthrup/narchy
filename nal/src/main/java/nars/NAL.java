@@ -201,7 +201,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** if true then tasklink targets are named by the concept and not a raw term
      * (which could be temporal or not normalized)
      * */
-    public static final boolean TASKLINK_TARGET_CONCEPT = true;
+    public static final boolean TASKLINK_TARGET_CONCEPT = false;
 
     /** various post-processing of contained variables prior to use in Task content */
     public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;

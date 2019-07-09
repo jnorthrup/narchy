@@ -1,7 +1,9 @@
 package nars.derive.op;
 
+import jcog.WTF;
 import nars.derive.model.Derivation;
 import nars.derive.model.DerivationFailure;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.buffer.EvalTermBuffer;
 import nars.term.util.transform.VariableTransform;
@@ -12,6 +14,7 @@ import java.util.function.Predicate;
 import static nars.Op.QUEST;
 import static nars.Op.QUESTION;
 import static nars.derive.model.DerivationFailure.Success;
+import static nars.term.atom.Bool.Null;
 
 public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivation> {
 
@@ -47,15 +50,22 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
     }
 
     private Term postFilter(Term y, Derivation d) {
-        //if ((d.concPunc==QUESTION || d.concPunc==QUEST)  && !VarIndep.validIndep(y, true)) {
-        if (!VarIndep.validIndep(y, true)) {
-            //convert orphaned indep vars to query/dep variables
-            Term z = y.transform(
-                    (d.concPunc==QUESTION || d.concPunc==QUEST) ?
-                        VariableTransform.indepToQueryVar
-                            :
-                        VariableTransform.indepToDepVar
-                    );
+
+        if (y instanceof Compound) {
+
+            if (y.concept() == Null) //TEMPORARY
+                throw new WTF();
+
+            //if ((d.concPunc==QUESTION || d.concPunc==QUEST)  && !VarIndep.validIndep(y, true)) {
+            if (!VarIndep.validIndep(y, true)) {
+                //convert orphaned indep vars to query/dep variables
+                Term z = y.transform(
+                        (d.concPunc == QUESTION || d.concPunc == QUEST) ?
+                                VariableTransform.indepToQueryVar
+                                :
+                                VariableTransform.indepToDepVar
+                );
+            }
         }
         return y;
     }

@@ -127,8 +127,8 @@ public class Premise implements Comparable<Premise> {
             if (taskTerm.equalsRoot(beliefTerm)) {
                 //difference involving XTERNAL etc
                 beliefConceptUnifiesTaskConcept = true;
-//                if (beliefTerm.hasXternal() && !taskTerm.hasXternal())
-//                    beliefTerm = taskTerm;
+                if (beliefTerm.hasXternal() && !taskTerm.hasXternal())
+                    beliefTerm = taskTerm;
 
             } else if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
