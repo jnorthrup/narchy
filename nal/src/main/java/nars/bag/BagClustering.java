@@ -122,7 +122,6 @@ public class BagClustering<X> {
 
             bag.forEach((xx) -> {
                 int c = xx.centroid;
-
                 if (c >= 0) {
                     X xxx = xx.get();
                     if (xxx!=null)

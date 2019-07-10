@@ -167,19 +167,18 @@ public enum Util {
         //return hashFNV(bytes, from, to);
         //return hashBytes(bytes, from, to);
 
-//        {
-//            int result = 1;
-//            byte[] var2 = x;
-//
-//            for (int var4 = from; var4 < to; ++var4) {
-//                result = 31 * result + var2[var4];
-//            }
-//
-//            return result;
-//        }
 
     }
 
+    public static int hashJava(byte[] bytes, int len) {
+        int result = 1;
+
+        for (int i = 0; i < len; ++i) {
+            result = 31 * result + bytes[i];
+        }
+
+        return result;
+    }
 
     public static int hash(byte[] bytes) {
         return hash(bytes, 0, bytes.length);
@@ -220,7 +219,7 @@ public enum Util {
 //        return x | y;
 //    }
 
-    private static int hashFNV(byte[] bytes, int from, int to) {
+    public static int hashFNV(byte[] bytes, int from, int to) {
         int h = 0x811c9dc5;
         for (int i = from; i < to; i++)
             h = (h * 16777619) ^ bytes[i];

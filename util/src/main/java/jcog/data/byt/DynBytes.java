@@ -182,7 +182,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     @Deprecated
     public final byte[] arrayCompactDirect() {
         compact();
-        return arrayDirect();
+        return bytes;
     }
 //    public final byte[] arrayDeflate() {
 //        Deflater d = new Deflater(
@@ -457,7 +457,20 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
     }
 
     public void write(DynBytes b) {
-        write(b.arrayDirect(), 0, b.length());
+        write(b.bytes, 0, b.length());
+    }
+
+    public final int hashJava() {
+        return Util.hashJava(bytes, len);
+    }
+
+    public final int hashFNV() {
+        return hashCode();
+    }
+
+    public long hashMurmur() {
+        //return Murmur3Hash.hash64(bytes, len); //<-- TODO requires any padding at 8 byte boundaries to be zero'd
+        throw new TODO();
     }
 
 //    private final static int MIN_COMPRESSION_BYTES = 64;

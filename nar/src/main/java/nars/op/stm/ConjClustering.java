@@ -5,7 +5,6 @@ import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
-import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
@@ -26,8 +25,10 @@ import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -46,12 +47,13 @@ public class ConjClustering extends How {
     private final byte puncIn, puncOut;
 
     public final FloatRange termVolumeMaxPct = new FloatRange(0.75f, 0, 1f);
+    public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
     private int inputTermVolMax, stampLenMax;
 
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
-    final int learningIterations = 1;
+    final int learningIterations = 4;
     final int minDurationsPerLearning = 1;
 
     private final Predicate<Task> filter;
@@ -69,7 +71,6 @@ public class ConjClustering extends How {
 
 
 
-    public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
     /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
@@ -208,8 +209,10 @@ public class ConjClustering extends How {
         data.forEachCentroid(TaskList::new, tt ->{
             int tts = tt.size();
             if (tts > 1) {
-                if (tts > 2)
-                    ArrayUtil.sort(tt.array(), 0, tts-1, Prioritized::priElseZero);
+                if (tts > 2) {
+                    //ArrayUtil.sort(tt.array(), 0, tts - 1, Prioritized::priElseZero);
+                    tt.sortThis(centroidContentsSort);
+                }
 
                 centroids.add(tt);
             }
@@ -221,6 +224,7 @@ public class ConjClustering extends How {
         if (cc > 1)
             centroids.shuffleThis(w.nar.random());
 
+        //round robin
         do {
 
             centroids.removeIf(i ->
@@ -233,7 +237,13 @@ public class ConjClustering extends How {
 
     }
 
-    @Override
+    static final Comparator<Task> centroidContentsSort = Comparators
+            .byFloatFunction(Task::priElseZero)
+            .thenComparingInt(Task::volume)
+            .reversed();
+            //.thenComparingFloat(Task::originality);
+
+        @Override
     public boolean singleton() {
         //TODO make NeuralGasNet synchronization free then this will be good to set false
         //return true;

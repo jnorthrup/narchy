@@ -18,6 +18,7 @@ package jcog.bloom;
 import com.google.common.primitives.Ints;
 import com.google.common.primitives.Longs;
 import com.google.common.primitives.Shorts;
+import jcog.bloom.hash.Murmur3Hash;
 
 import java.nio.ByteBuffer;
 

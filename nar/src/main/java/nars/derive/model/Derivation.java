@@ -365,7 +365,7 @@ public class Derivation extends PreDerivation {
             :
             nextBelief.truth(time(), _task) //classic opennars projection
         ;
-        return t.evi() < eviMin ? null : t;
+        return t!=null && t.evi() >= eviMin ? t : null;
     }
 
     private Task resetTask(final Task nextTask, Task currentTask) {

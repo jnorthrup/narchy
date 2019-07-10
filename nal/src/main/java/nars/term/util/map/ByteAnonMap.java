@@ -22,6 +22,10 @@ public class ByteAnonMap {
     }
 
 
+    public ByteAnonMap() {
+        this(0);
+    }
+
     public ByteAnonMap(int estSize) {
         this(new ObjectByteHashMap<>(estSize),new FasterList<>(estSize));
 

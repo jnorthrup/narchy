@@ -132,8 +132,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <release>12</release>
-          <target>12</target>
+          <release>13</release>
+          <target>13</target>
           <useIncrementalCompilation>true</useIncrementalCompilation>
         </configuration>
       </plugin>

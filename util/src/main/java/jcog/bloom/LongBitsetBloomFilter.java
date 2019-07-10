@@ -15,6 +15,7 @@
  */
 package jcog.bloom;
 
+import jcog.bloom.hash.Murmur3Hash;
 import jcog.data.bit.MetalBitSet;
 
 import java.util.List;

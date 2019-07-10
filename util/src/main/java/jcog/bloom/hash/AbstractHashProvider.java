@@ -1,7 +1,5 @@
 package jcog.bloom.hash;
 
-import jcog.bloom.Murmur3Hash;
-
 /**
  * Created by jeff on 16/05/16.
  */

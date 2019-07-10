@@ -166,7 +166,7 @@ public abstract class AtomicPri implements ScalarValue {
 
     @Override
     public final void priUpdate(FloatFloatToFloatFunction update, float x) {
-        PRI.update(this, x, update, post());
+        PRI.updateAndGet(this, x, update, post());
     }
 
     private static FloatFloatToFloatFunction post(FloatFloatToFloatFunction update, FloatToFloatFunction post) {

@@ -2,6 +2,7 @@ package nars.table.temporal;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.grammar.evolve.tree.Leaf;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.tree.rtree.*;
@@ -139,7 +140,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
 
-    static final class Furthest implements ToDoubleFunction<TaskRegion> {
+    static final class Furthest implements ToDoubleFunction {
 
         public final long now;
 
@@ -148,8 +149,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public double applyAsDouble(TaskRegion t) {
-            return Math.abs( t.mid() - now );
+        public double applyAsDouble(Object t) {
+            TaskRegion tt;
+            if (t instanceof RLeaf)
+                tt = (TaskRegion)((RLeaf)t).bounds;
+            else
+                tt = (TaskRegion)t;
+
+            return Math.abs( tt.mid() - now );
         }
     }
 
@@ -227,11 +234,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         public MergeableRegion(long now) {
             super(
-                    MostCompactArea, MostOriginality, MostTemporalDensity, MostComponents
+                    MostCompactArea, new Furthest(now), MostOriginality, MostTemporalDensity, MostComponents
                     /*LeastOverlap, LeastTemporalSparsity,*/
                     //, LeastTimeRange
             );
-            weights( 0.75f, 0.5f, 0.25f, 0.1f );
+            weights( 0.75f, 0.75f, 0.5f, 0.25f, 0.1f );
         }
 
         @Override

@@ -9,9 +9,14 @@ public class FNV1aHash {
     private static final int PRIME = 0x01000193;
 
     public static int hash(byte[] data) {
+        return hash(data, data.length);
+    }
+
+    public static int hash(byte[] data, int len) {
         int hash = OFFSET_BASIS;
 
-        for (byte octet : data) {
+        for (int i = 0; i < len; i++) {
+            byte octet = data[i];
             hash ^= octet;
             hash *= PRIME;
         }

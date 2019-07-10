@@ -8845,7 +8845,7 @@ public enum ArrayUtil {
     public static <X> void sort(X[] a, int left, int right /* inclusive */, FloatFunction<X> v) {
         for (int i = left, j = i; i < right; j = ++i) {
             final X ai = a[i + 1];
-            double aid = v.floatValueOf(ai);
+            float aid = v.floatValueOf(ai);
             while (aid > v.floatValueOf(a[j])) {
                 a[j + 1] = a[j];
                 if (j-- == left)

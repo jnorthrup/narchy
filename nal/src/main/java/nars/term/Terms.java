@@ -9,6 +9,7 @@ import nars.Task;
 import nars.io.IO;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
+import nars.task.util.TaskHashProvider;
 import nars.term.atom.Atom;
 import nars.term.compound.PatternCompound;
 import nars.term.util.conj.Conj;
@@ -344,10 +345,12 @@ public enum Terms {
                 new BytesHashProvider<>(IO::termToBytes));
     }
     public static StableBloomFilter<Task> newTaskBloomFilter(Random rng, int cells) {
+
         return new StableBloomFilter<>(
                 cells, 2, 1f / cells, rng,
-                new BytesHashProvider<>(IO::taskToBytes));
+                new TaskHashProvider());
     }
+
 
     /**
      * non-symmetric use only
@@ -526,6 +529,7 @@ public enum Terms {
     public static boolean hasEllipsis(Term x, int xs) {
         return x instanceof Compound && ((xs & Op.VAR_PATTERN.bit)!=0) && ((Compound)x).OR(t -> t instanceof Ellipsislike);
     }
+
 }
 
 

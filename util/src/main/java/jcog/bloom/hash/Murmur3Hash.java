@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package jcog.bloom;
+package jcog.bloom.hash;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
@@ -53,7 +53,11 @@ public enum Murmur3Hash {
      * @return - hashcode
      */
     public static long hash64(byte[] data) {
-        return hash64(data, data.length, DEFAULT_SEED);
+        return hash64(data, data.length);
+    }
+
+    public static long hash64(byte[] data, int len) {
+        return hash64(data, len, DEFAULT_SEED);
     }
 
     /**
