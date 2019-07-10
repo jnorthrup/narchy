@@ -147,8 +147,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                         e.setCreation(inCreation);
                 }
 
-//                if (e.isCyclic() && !i.isCyclic())
-//                    e.setCyclic(false);
+                if (e.isCyclic() && !i.isCyclic())
+                    e.setCyclic(false);
             }
         }
 

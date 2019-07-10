@@ -187,15 +187,43 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             int size = this.size();
             int r = 0, rad = size / 2 + 1;
 
+            long lastLow = Long.MIN_VALUE, lastHigh = Long.MAX_VALUE;
+            boolean increase = true, decrease = true;
             do {
 
-                int vv = center + r;
-                T v = vv < size ? q.peek(head, vv) : null;
+                T u = null, v = null;
+                long um = TIMELESS, vm = TIMELESS;
+
+                if (increase) {
+                    int vv = center + r;
+                    v = vv < size ? q.peek(head, vv) : null;
+
+                    if (v!=null) {
+                        vm = v.mid();
+                        if (vm <= lastLow){
+                            v = null; //wrap-around, stop
+                            increase = false;
+                        } else
+                        lastHigh = vm;
+                    }
+                }
 
                 r++;
 
-                int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
-                T u = uu >= 0 ? q.peek(head, uu) : null;
+                if (decrease) {
+                    int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
+                    u = uu >= 0 ? q.peek(head, uu) : null;
+
+                    if (u!=null) {
+                        um = u.mid();
+                        if (um >= lastHigh) {
+                            u = null; //wrap-around, stop
+                            decrease = false;
+                        } else
+                            lastLow = um;
+                    }
+                }
+
 
                 if (exactRange) {
                     if (u != null && !u.intersectsRaw(minT, maxT))
@@ -206,12 +234,12 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
                 if (u!=null && v!=null) {
                     //swap to the closest one to try first because it may be the last
-                    if (v.meanTimeTo(T) < u.meanTimeTo(T)) {
+                    if (Math.abs(T - vm) < Math.abs(T - um)) {
                         T uv = u;
                         u = v;
                         v = uv;
                     }
-                } else if (u == null && v == null)
+                } else if (!exactRange && u == null && v == null)
                     break;
 
                 if (u!=null && !whle.test(u))

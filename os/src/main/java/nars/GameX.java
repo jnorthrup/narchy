@@ -254,7 +254,7 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                1024,
+                                512,
                                 new PriBuffer.BagTaskBuffer(512, 0.33f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
@@ -531,9 +531,9 @@ abstract public class GameX extends Game {
 
         //tiered
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 4, 64, t->t.isInput()),
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 4, 64, t->t instanceof DerivedTask),
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 4, 64, t->!(t instanceof DerivedTask) && !t.isInput())
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 8, 64, t->t.isInput()),
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 4, 32, t->t instanceof DerivedTask),
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
@@ -594,9 +594,9 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 16;
+        int gHist = 8;
         float momentum = 0.9f;
-        float explorationRate = 0.05f;
+        float explorationRate = 0.2f;
         n.onDur(new Consumer<>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

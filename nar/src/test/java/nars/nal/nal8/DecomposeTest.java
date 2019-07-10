@@ -16,7 +16,7 @@ import static nars.Op.GOAL;
  */
 abstract public class DecomposeTest extends NALTest {
 
-    public static final int cycles = 100;
+    public static final int cycles = 400;
 
 
     @Override
@@ -183,10 +183,10 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void testConjPos1() {
             test
-                    .termVolMax(6)
+                    .termVolMax(4)
                     .input("(&&, a, --b)! %0.9%")
                     .input("a. %0.9%")
-                    .mustGoal(cycles, "b", 0.19f, 0.66f);
+                    .mustGoal(cycles, "b", 0.1f, 0.73f);
         }
 
     }
@@ -245,8 +245,9 @@ abstract public class DecomposeTest extends NALTest {
         @Test
         void decompose_Conj_BeliefNegPos() {
             test
+                    .confMin(0.6f)
                     .termVolMax(3)
-                    .input("(a && b). %0.1;0.9%")
+                    .input("(a && b). %0.1;0.9%") //== (--a || --b)
                     .input("b. %0.9;0.9%")
                     .mustBelieve(cycles, "a", 0.19f, 0.66f);
         }
@@ -255,6 +256,7 @@ abstract public class DecomposeTest extends NALTest {
         void decompose_Conj_Goal_pos_decompose_pos() {
             //adapted form nal3 test
             test.termVolMax(6);
+            test.confMin(0.6f);
             test.input("(a && b)! %0.9;0.9%");
             test.input("b. %0.9;0.9%");
             test.mustGoal(cycles, "a", 0.81f, 0.66f);

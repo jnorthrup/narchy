@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /** TODO move more conceptualization/root tests from TemporalTermTest to here */
 class ConceptualizationTest {
 
-    private static final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
 
     private static Term ceptualStable(String s) throws Narsese.NarseseException {

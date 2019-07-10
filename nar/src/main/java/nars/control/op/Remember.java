@@ -2,6 +2,7 @@ package nars.control.op;
 
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
+import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -10,16 +11,13 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
-import nars.op.stm.ConjClustering;
 import nars.task.AbstractTask;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
-import nars.task.proxy.SpecialTermTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -209,14 +207,19 @@ public class Remember extends AbstractTask {
     }
 
 
-    public void forget(Task x) {
+    public final void forget(Task x) {
+        forget(x, true);
+    }
+
+    public void forget(Task x, boolean delete) {
 
         if (remembered != null && remembered.removeInstance(x)) {
             //throw new TODO();
             //TODO filter next tasks with any involving that task
         }
 
-        x.delete();
+        if (delete)
+            x.delete();
 
         if (input == x) {
             input = null;
@@ -246,43 +249,38 @@ public class Remember extends AbstractTask {
 
         boolean identity = prev == next;
 
-        /** pri(next) - pri(prev) */
-        float dPri;
-
-        if (!identity) {
-
-            //assert (!input.isDeleted()); //dont delete just yet
-
-            //TODO decide how much to re-activate
-            //TODO consider forgetting rate
-
-            if (prev!=null && next!=null) {
-                dPri = next.priElseZero() - prev.priElseZero();
-
-                if (prev instanceof NALTask)
-                    Task.merge(prev, next);
-
-            } else
-                dPri = 0; //TODO?
-
-        } else
-            dPri = 0;
-
         if (next!=null) {
+            boolean forget = false;
 
-            @Nullable Task r = rememberMerged(prev, next);
-            if (r != null) {
-                if (rememberFilter(prev, next, r, dPri, this.nar))
-                    remember(r);
-                else {
-                    if (!identity)
-                        input.delete();
-                    input = null;
-                }
+//            @Nullable Task r = rememberMerged(prev, next);
+//            if (r != null) {
+            if (rememberFilter(prev, next, this.nar)) {
+                remember(next);
+            } else {
+                //remember(prev);
+                forget = true;
+                //            if (!identity)
+                //                forget(next);
             }
 
-            if (!identity && r == null)
-                forget(next);
+
+
+
+            if (!identity && prev instanceof NALTask) {
+
+                //assert (!input.isDeleted()); //dont delete just yet
+
+                //TODO decide how much to re-activate
+                //TODO consider forgetting rate
+
+                Task.merge(prev, next);
+            }
+
+            if (forget) {
+                if (!identity)
+                    next.delete();
+                forget(next, !identity);
+            }
         }
 
         done = true;
@@ -291,22 +289,27 @@ public class Remember extends AbstractTask {
     /**
      * heuristic for determining repeat suppression
      *
-     * @param dCreationDurs (creation(next) - creation(prev))/durCycles
      */
-    private static boolean rememberFilter(Task prev, Task next, Task remembered, float dPri, NAR n) {
+    private static boolean rememberFilter(Task prev, Task next, NAR n) {
 
-        if (dPri >= NAL.belief.REMEMBER_REPEAT_PRI_THRESHOLD)
-            return true;
-
-        if (next == remembered)
+        if (next == prev)
             return next.isInput();
+
+        float np = next.priElseNeg1();
+        float pp = prev.priElseNeg1();
+        float dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
+
+        if (dPriPct >= NAL.belief.REMEMBER_REPEAT_PRI_PCT_THRESHOLD) {
+            //priority enough
+            return true;
+        }
 
         long nextCreation = next.creation();
         long dDurCycles = Math.max(0, nextCreation - prev.creation());
         float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dtDither()));
 
         if (dCreationDurs > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS) {
-            prev.setCreation(nextCreation);
+            //novel enough
             return true;
         }
 
@@ -314,27 +317,27 @@ public class Remember extends AbstractTask {
 
     }
 
-    /**
-     * returns which task, if any, to remember on merge
-     */
-    @Nullable
-    private static Task rememberMerged(Task prev, Task next) {
-
-        if (next instanceof DynamicTruthTask)
-            return null;
-        if (next instanceof ConjClustering.STMClusterTask)
-            return null;
-//        if (next instanceof SignalTask)
-//            return null; //TODO determine if this works
-
-        if (next.isInput())
-            return prev;
-
-        if (next instanceof SpecialTermTask) //Image belief table
-            return ((SpecialTermTask) next).task;
-
-        return prev;
-    }
+//    /**
+//     * returns which task, if any, to remember on merge
+//     */
+//    @Nullable
+//    private static Task rememberMerged(Task prev, Task next) {
+//
+//        if (next instanceof DynamicTruthTask)
+//            return null;
+//        if (next instanceof ConjClustering.STMClusterTask)
+//            return null;
+////        if (next instanceof SignalTask)
+////            return null; //TODO determine if this works
+//
+//        if (next.isInput())
+//            return prev;
+//
+//        if (next instanceof SpecialTermTask) //Image belief table
+//            return ((SpecialTermTask) next).task;
+//
+//        return prev;
+//    }
 
 
 

@@ -206,7 +206,7 @@ public enum Intermpolate {;
                     //estimate difference
                     int ar = a.eventRange(), br = b.eventRange();
                     int av = a.volume(), bv = b.volume();
-                    return (1 + av + bv) / 2f * (1 + Math.abs(av - bv)) * ((1 + Math.abs(ar - br))); //heuristic
+                    return (1 + (av + bv) / 2f) * (1 + Math.abs(av - bv)) * (1 + Math.abs(ar - br)); //heuristic
 
                 }
             }
@@ -216,8 +216,7 @@ public enum Intermpolate {;
                 return Float.POSITIVE_INFINITY;
 
             for (int i = 0; i < len; i++) {
-                Term ai = aa.sub(i);
-                float di = dtDiff(ai, bb.sub(i), depth + 1);
+                float di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
                 if (!Float.isFinite(di)) {
                     return Float.POSITIVE_INFINITY;
                 }

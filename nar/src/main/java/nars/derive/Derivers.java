@@ -54,10 +54,11 @@ public enum Derivers { ;
 
                     f.add(file("nal6.nal"));
                     f.add(file("nal6.decompose.nal"));
+                    f.add(file("nal6.guess.nal"));
 
                     //f.add("equivalence.nal");
 
-                    //f.add("nal6.guess.nal");
+
                     //f.add("nal6.layer2.nal");
                     //f.addAt("nal6.to.nal3.nal");
                     //f.addAt("hol.nal");

@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.math.FloatRangeRounded;
 import jcog.math.IntRange;
-import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.thing.Thing;
 import jcog.util.FloatFloatToFloatFunction;
@@ -583,16 +582,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean DYNAMIC_TRUTH_TASK_LINK = false;
         public static final boolean DYNAMIC_TRUTH_TASK_EMIT = false;
         /**
-         * perceptible priority increase that warrants automatic reactivation.
+         * perceptible priority increase % (over the higher pri of the two merged) that warrants automatic reactivation.
          * used during Remember's merge repeat suppression filter
          */
-        public static final float REMEMBER_REPEAT_PRI_THRESHOLD = ScalarValue.EPSILONcoarse;
+        public static final float REMEMBER_REPEAT_PRI_PCT_THRESHOLD = 0.01f;
         /**
          * memory reconsolidation period - time period for a memory to be refreshed as new
          * useful as a novelty threshold:
          * >=0, higher values decrease the rate at which repeated tasks can be reactivated
          */
-        public static int REMEMBER_REPEAT_THRESH_DITHERS = 1;
+        public static int REMEMBER_REPEAT_THRESH_DITHERS = 2;
 
 
 

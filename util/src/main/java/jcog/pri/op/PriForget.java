@@ -70,7 +70,7 @@ public enum PriForget { ;
         double eachMustForgetPct =
                 rate * (excess / (mass+excess));
 
-            if (eachMustForgetPct >= ScalarValue.EPSILONcoarse) {
+            if (eachMustForgetPct >= ScalarValue.EPSILON) {
                 return new PriMult<>((float)Util.unitize(1-eachMustForgetPct));
             }
 
