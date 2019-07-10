@@ -53,8 +53,8 @@ public class ConjClustering extends How {
 
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
-    final int learningIterations = 4;
-    final int minDurationsPerLearning = 1;
+    int learningIterations = 1;
+    int minDurationsPerLearning = 1;
 
     private final Predicate<Task> filter;
 

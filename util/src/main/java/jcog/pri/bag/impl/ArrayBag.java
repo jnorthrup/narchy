@@ -56,14 +56,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
 
-    /**
-     * raw selection by index, with x^2 bias towards higher pri indexed items
-     */
-    private static int sampleNextLinear(Random rng, int size) {
-        float targetIndex = rng.nextFloat();
 
-        return Util.bin(targetIndex * targetIndex, size);
-    }
 
     private static float rngFloat(@Nullable Random rng) {
         return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();
@@ -336,7 +329,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         Object[] ll = items();
 
         //starting point, sampled from bag histogram
-        int p = sampleHistogram(rng);
+        int p = sampleNext(rng,s);
         if (p >= ll.length) p = ll.length-1;
 
         //scan up then down
@@ -406,30 +399,34 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     /**
      * size > 0
      */
-    private int sampleNext(@Nullable Random rng, int size) {
-        if (rng == null || size == 1)
+    public int sampleNext(@Nullable Random rng, int size) {
+        if (rng == null || size <= 1)
             return 0;
         else {
-            assert (size > 0);
-            int index = sampleHistogram(rng);
-            if (index >= size)
-                index = size - 1; //HACK
-            return index;
+            int index =
+                    sampleNextLinearNormalized(rng,size);
+                    //sampleNextLinear(rng, size);
 
-            //return sampleNextLinear(rng, size);
-            //return sampleNextBiLinear(rng, size);
+//            if (index >= size)
+//                index = size - 1; //HACK
+            return index;
         }
     }
 
-    public final int sampleHistogram(Random rng) {
-        return sampleNextLinearNormalized(rng);
+
+    /**
+     * raw selection by index, with x^2 bias towards higher pri indexed items
+     */
+    private static int sampleNextLinear(Random rng, int size) {
+        float targetIndex = rng.nextFloat();
+
+        return Util.bin(targetIndex * targetIndex, size);
     }
 
     /**
      * samples the distribution with the assumption that it is flat
      */
-    private int sampleNextLinearNormalized(Random rng) {
-        int size = size();
+    private int sampleNextLinearNormalized(Random rng, int size) {
         float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax();
 
         float targetPercentile = rng.nextFloat();

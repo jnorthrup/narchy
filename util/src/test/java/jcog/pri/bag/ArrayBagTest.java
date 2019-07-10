@@ -243,7 +243,7 @@ class ArrayBagTest {
         {
             Histogram h = new Histogram(1, cap+1, 3);
             for (int i = 0; i < samples; i++) {
-                int s = b.sampleHistogram(rng);
+                int s = b.sampleNext(rng, b.size());
                 h.recordValue(s);
             }
             Texts.histogramPrint(h, System.out);

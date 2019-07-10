@@ -378,7 +378,7 @@ public class FZero extends GameX {
         PreciseTruth bias = $.t(0, 0.001f);
 
         for (GoalActionConcept x : new GoalActionConcept[] { l, r } ) {
-            //x.goalDefault(bias, nar);
+            x.goalDefault(bias, nar);
             x.resolution(res);
         }
 
