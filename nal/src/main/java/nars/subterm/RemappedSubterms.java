@@ -1,10 +1,11 @@
 package nars.subterm;
 
+import jcog.Util;
+import jcog.WTF;
 import jcog.util.ArrayUtil;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.util.TermException;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;
@@ -20,23 +21,34 @@ import static nars.Op.NEG;
 abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterms<S> {
 
 
-    public static <S extends Subterms> ArrayRemappedSubterms<S> the(Term[] target, S base) {
+    public static <S extends Subterms> ArrayRemappedSubterms<S> the(Term[] x, S base) {
 
-        byte[] m = new byte[target.length];
-        for (int i = 0, xLength = target.length; i < xLength; i++) {
-            Term xi = target[i];
-            boolean neg = (xi instanceof Neg);
-            if (neg) xi = xi.unneg();
+        byte[] m = new byte[x.length];
+
+        int hash = 1;
+        for (int i = 0, xLength = x.length; i < xLength; i++) {
+            final Term xx = x[i];
+            hash = Util.hashCombine(hash, xx);
+
+            boolean neg = (xx instanceof Neg);
+
+            Term xi = neg ? xx.unneg() : xx;
 
             int mi = base.indexOf(xi)+1;
 
-            if (mi <= 0)
-                throw new TermException(xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass());
+            if (mi <= 0) {
+                String msg = xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass();
+                //throw new TermException(msg);
+                throw new WTF(msg);
+            }
 
 
             m[i] = (byte) (neg ? -mi : mi);
         }
-        return new ArrayRemappedSubterms<>(base, m, Subterms.hash(target));
+
+        //int hash = Subterms.hash(target);
+
+        return new ArrayRemappedSubterms<>(base, m, hash);
     }
 
 

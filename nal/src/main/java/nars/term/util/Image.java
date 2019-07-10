@@ -211,6 +211,6 @@ public enum Image {
             Term y = x.sub(0).sub(normal.sub(0).subIndexFirst(z -> z.equals(subj)));
             return Image.imageExt(x, y);
         } else
-            throw new TermTransformException("could not infer Image transform from template", x, template);
+            throw new TermTransformException(x, template, "could not infer Image transform from template");
     }
 }

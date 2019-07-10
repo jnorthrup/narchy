@@ -6,6 +6,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
+import nars.term.var.SpecialOpVariable;
 import nars.term.var.UnnormalizedVariable;
 
 import static nars.Op.*;
@@ -60,21 +61,6 @@ public abstract class VariableTransform extends AbstractTermTransform.NegOblivio
     private static UnnormalizedVariable unnormalizedShadow(nars.term.Variable v, Op to) {
         //return new UnnormalizedVariable(to, atomic.toString());
         return new SpecialOpVariable(v, to);
-    }
-
-    static class SpecialOpVariable extends UnnormalizedVariable {
-
-        private final Variable v;
-
-        public SpecialOpVariable(nars.term.Variable v, Op overridingType) {
-            super(overridingType, v.bytes());
-            this.v = v;
-        }
-
-        @Override
-        public String toString() {
-            return op().ch + v.toString();
-        }
     }
 
 

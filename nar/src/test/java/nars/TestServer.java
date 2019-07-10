@@ -331,6 +331,7 @@ public class TestServer {
             Table fails = ff.sortDescendingOn(ff.column(3).name());
 
             System.out.println(fails.printAll());
+            System.out.println("failures: " + ff.summary());
         }
 
 

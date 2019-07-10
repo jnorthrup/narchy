@@ -53,9 +53,12 @@ public class ImageBeliefTable extends DynamicTaskTable {
             c.table(normalized.punc()).remember(r);
         }
 
-        r.remember(imaged);
-        r.store = false;
-        r.link = r.notify = true;
+//        if (!r.store || r.remembered!=null) {
+            r.store = false;
+            r.link = r.remembered!=null;
+            r.notify = true; //TODO limit these by storing last notification time and compared like Task.merge creation()
+            r.remember(imaged);
+//        }
     }
 
     /**

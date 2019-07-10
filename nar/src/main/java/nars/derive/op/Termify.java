@@ -43,7 +43,7 @@ public final class Termify extends ProxyTerm {
         this.patternEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(pattern);
 
         if (!(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root())))
-            throw new TermTransformException("pattern eternalization mismatch", pattern, patternEternal);
+            throw new TermTransformException(pattern, patternEternal, "pattern eternalization mismatch");
 
 
         this.truth = truth;

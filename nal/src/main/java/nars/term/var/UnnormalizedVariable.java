@@ -25,7 +25,7 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable, Th
     }
 
     @Override
-    public boolean isNormalized() {
+    public final boolean isNormalized() {
         return false;
     }
 

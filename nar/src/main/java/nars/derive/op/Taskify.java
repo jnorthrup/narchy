@@ -12,9 +12,13 @@ import nars.derive.model.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
+import nars.term.Compound;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
+import nars.term.util.transform.VariableTransform;
+import nars.term.var.VarIndep;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
@@ -56,39 +60,48 @@ public class Taskify extends ProxyTerm {
         return true;
     }
 
-    void eternalTask(Term x, Derivation d) {
 
-//        byte punc = d.concPunc;
-//        if ((punc == BELIEF || punc == GOAL) && x.hasXternal()) { // && !d.taskTerm.hasXternal() && !d.beliefTerm.hasXternal()) {
-//            //HACK this is for deficiencies in the temporal solver that can be fixed
-//
-//            x = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(x);
-//
-//            if (!DerivationFailure.failure(x, d.concPunc)) {
-//                d.nar.emotion.deriveFailTemporal.increment();
-//                spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-//                return;
-//            }
-//        }
+    private Term postFilter(Term y, Derivation d) {
 
-        taskify(x, ETERNAL, ETERNAL, d);
+        if (y instanceof Compound) {
+
+            if (y.concept() == Null) {
+                if (NAL.DEBUG)
+                    throw new TermTransformException(y, y.concept(), "unconceptualizable");
+                else
+                    return Null;
+            }
+
+            //if ((d.concPunc==QUESTION || d.concPunc==QUEST)  && !VarIndep.validIndep(y, true)) {
+            if (!VarIndep.validIndep(y, true)) {
+                //convert orphaned indep vars to query/dep variables
+                Term z = y.transform(
+                        (d.concPunc == QUESTION || d.concPunc == QUEST) ?
+                                VariableTransform.indepToQueryVar
+                                :
+                                VariableTransform.indepToDepVar
+                );
+                y = z;
+            }
+        }
+        return y;
     }
 
-    void temporalTask(Term x0, Term x, Derivation d) {
+    void temporalTask(Term x, Derivation d) {
 
-        if (!x0.equals(x))
-            d.retransform.put(x0, x);
 
         Pair<Term, long[]> timing = termify.time.occurrence(x, d);
-        Term y = timing!=null ? timing.getOne() : Null;
         if (timing == null) {
-            occurrifyFail(x, y, d);
+            if (NAL.test.DEBUG_OCCURRIFY)
+                throw new TermException("occurify failure:\n" + d + '\n' + d.occ, x);
+            else {
+                d.nar.emotion.deriveFailTemporal.increment();
+            }
             return;
         }
-        if (!Task.validTaskTerm(y.unneg(), d.concPunc, !NAL.test.DEBUG_OCCURRIFY)) {
-            d.nar.emotion.deriveFailTemporal.increment();
-            return;
-        }
+
+        Term y = timing.getOne();
+
 
         long[] occ = timing.getTwo();
         assertOccValid(d, occ);
@@ -122,14 +135,6 @@ public class Taskify extends ProxyTerm {
         taskify(y, occ[0], occ[1], d);
     }
 
-    private void occurrifyFail(Term x, Term y, Derivation d) {
-        if (NAL.test.DEBUG_OCCURRIFY)
-            throw new TermTransformException("occurify failure:\n" + d.toString() + "\n" + d.occ.toString(), x, y);
-        else {
-            d.nar.emotion.deriveFailTemporal.increment();
-        }
-    }
-
     private void assertOccValid(Derivation d, long[] occ) {
         if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
                 (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
@@ -147,10 +152,12 @@ public class Taskify extends ProxyTerm {
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
+        Term z = postFilter(x0, d);
+
         /** un-anon */
-        Term x1 = d.anon.get(x0);
+        Term x1 = d.anon.get(z);
         if (x1 == null)
-            throw new NullPointerException("could not un-anonymize " + x0 + " with " + d.anon);
+            throw new NullPointerException("could not un-anonymize " + z + " with " + d.anon);
 
         NAR nar = d.nar();
 
@@ -161,9 +168,6 @@ public class Taskify extends ProxyTerm {
             return;
         }
         Term x = xn.getOne();
-
-//        Op xo = x.op();
-
 
 //        if (punc == GOAL && d.taskPunc == GOAL) {
 //            //check for contradictory goal derivation
@@ -261,15 +265,15 @@ public class Taskify extends ProxyTerm {
 
         int cost;
         Task u = d.add(t);
-        if (u != t) {
-
-            nar.emotion.deriveFailDerivationDuplicate.increment();
-            cost = NAL.derive.TTL_COST_DERIVE_TASK_REPEAT;
-
-        } else {
+        if (u == t) {
 
             nar.emotion.deriveTask.increment();
             cost = NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS;
+
+        } else {
+
+            nar.emotion.deriveFailDerivationDuplicate.increment();
+            cost = NAL.derive.TTL_COST_DERIVE_TASK_REPEAT;
 
         }
 

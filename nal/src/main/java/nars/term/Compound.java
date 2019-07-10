@@ -515,7 +515,7 @@ public interface Compound extends Term, IPair, Subterms {
                                     Term distributed = CONJ.the(what, factor);
 
                                     if (distributed.op() != CONJ)
-                                        throw new TermTransformException("invalid conjunction factorization", Compound.this, distributed
+                                        throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
                                         );
 
                                     return each.accept(when, distributed);

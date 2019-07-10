@@ -16,12 +16,12 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 200;
+    private final int cycles = 250;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6,6);
-        n.termVolMax.set(8);
+        n.termVolMax.set(6);
         n.confMin.set(0.3f);
         return n;
     }
@@ -212,6 +212,7 @@ public class NAL5Test extends NALTest {
     @Test
     void anonymous_analogy1_depvar() {
         test.nar.termVolMax.set(8);
+        test.confMin(0.6f);
         test
                 .believe("(a:#1 && y)")
                 .believe("a:x", 0.80f, 0.9f)
@@ -220,7 +221,8 @@ public class NAL5Test extends NALTest {
 
     @Test
     void anonymous_analogy1_depvar_neg() {
-        test.nar.termVolMax.set(8);
+        test.termVolMax(8);
+        test.confMin(0.6f);
         test
                 .believe("(--(#1-->a) && y)")
                 .believe("(x-->a)", 0.20f, 0.9f)

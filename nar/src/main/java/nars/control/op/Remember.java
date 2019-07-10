@@ -274,8 +274,11 @@ public class Remember extends AbstractTask {
             if (r != null) {
                 if (rememberFilter(prev, next, r, dPri, this.nar))
                     remember(r);
-                else
+                else {
+                    if (!identity)
+                        input.delete();
                     input = null;
+                }
             }
 
             if (!identity && r == null)

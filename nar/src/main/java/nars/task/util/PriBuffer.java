@@ -86,10 +86,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         @Override
         public final T put(T x) {
             each.accept(x);
-            if (x.isDeleted())
-                return null;
-            else
-                return x;
+            return x.isDeleted() ? null : x;
         }
 
         @Override

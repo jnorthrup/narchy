@@ -5,7 +5,6 @@ import jcog.io.SparkLine;
 import nars.*;
 import nars.term.Term;
 import org.eclipse.collections.impl.list.mutable.primitive.FloatArrayList;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -24,19 +23,19 @@ class AIMATests {
     void testAIMAExample(double truthRes) throws Narsese.NarseseException {
         final NAR n = NARS.tmp(6);
 
-        n.termVolMax.set(/*5*/8);
+        n.termVolMax.set(5);
         n.freqResolution.set((float) truthRes);
         n.confMin.set(0.05f);
 //        n.attn.decay.set(0.1f);
 //        n.confResolution.set(0.05f);
 
-//        n.questionPriDefault.amp(0.8f);
+        n.questionPriDefault.amp(0.2f);
 //        n.log();
 
-        ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
-        n.onTask(t -> {
-            terms.addToValue(t.term(), 1);
-        });
+//        ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
+//        n.onTask(t -> {
+//            terms.addToValue(t.term(), 1);
+//        });
 
         n.believe(
                 "(P ==> Q)",
@@ -49,13 +48,13 @@ class AIMATests {
 
         n.question($$("Q"));
 
-        try {
-            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 2500));
-        } finally {
-            terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
-                System.out.println(t);
-            });
-        }
+//        try {
+            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 1500));
+//        } finally {
+//            terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
+//                System.out.println(t);
+//            });
+//        }
 
     }
 
@@ -70,6 +69,8 @@ class AIMATests {
 
 //        n.beliefPriDefault.amp(0.25f);
 //        n.questionPriDefault.amp(0.5f);
+
+//        n.log();
 
         assertEquals(20, $$("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").volume());
 

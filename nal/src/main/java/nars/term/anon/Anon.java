@@ -65,24 +65,28 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
 
     @Override
     public final @Nullable Term applyAtomic(Atomic atomic) {
-        return putOrGet ? put(atomic) : get(atomic);
+        return putOrGet ? putAtomic(atomic) : getAtomic(atomic);
     }
 
     public final Term put(Term x) {
         if (x instanceof Compound) {
             return putCompound((Compound) x);
         } else {
-            if (x instanceof Intrin) {
-                return putAnon(x);
-            } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
-                return x; //HACK is this necessary?
-            }
-
-            if (intern((Atomic)x))
-                return putIntern(x);
-            else
-                return x; //uninterned
+            return putAtomic(x);
         }
+    }
+
+    final Term putAtomic(Term x) {
+        if (x instanceof Intrin) {
+            return putAnon(x);
+        } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
+            return x; //HACK is this necessary?
+        }
+
+        if (intern((Atomic)x))
+            return putIntern(x);
+        else
+            return x; //uninterned
     }
 
     private Anom putIntern(Term x) {
@@ -109,11 +113,15 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
             return getCompound((Compound) x);
 //            }
         } else {
-            if (x instanceof Anom)
-                return map.interned(((Anom) x).id());
-            else
-                return x;
+            return getAtomic((Atomic)x);
         }
+    }
+
+    final Term getAtomic(Atomic x) {
+        if (x instanceof Anom)
+            return map.interned(((Anom) x).id());
+        else
+            return x;
     }
 
     protected Term getCompound(Compound x) {

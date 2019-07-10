@@ -156,7 +156,7 @@ abstract public class MapSubst implements Subst {
     public static TermTransform replace(Term from, Term to) {
 
         if (NAL.DEBUG && from.equals(to))
-            throw new TermTransformException("pointless substitution", from, to);
+            throw new TermTransformException(from, to, "pointless substitution");
 
         return from instanceof Atomic ?
                 new SubstAtomic((Atomic) from, to) :
