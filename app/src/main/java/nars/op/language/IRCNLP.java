@@ -199,9 +199,9 @@ public class IRCNLP extends IRC {
 //        d.timing = new ActionTiming(n);
 
         ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-                Task::isInput,
+                32, 256, Task::isInput
                 //t->true,
-                32, 256);
+        );
         n.start(conjClusterBinput);
 
         /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),

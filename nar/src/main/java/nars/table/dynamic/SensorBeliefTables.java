@@ -65,21 +65,15 @@ public class SensorBeliefTables extends BeliefTables {
 
     @Override
     public final void remember(Remember r) {
+        Task x = r.input;
+        if (x instanceof SeriesTask)
+            return;
 
-        if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS) {
-            Task x = r.input;
-            if (!(x instanceof SeriesTask)) { //shouldnt happen anyway
-                if (!x.isEternal() && !x.isInput() /* explicit overrides from user */) {
-                    long seriesStart = series.start();
-                    if (seriesStart != TIMELESS) {
-                        if (series.absorbNonSignal(x, seriesStart, series.end())) {
-                            r.forget(x);
-                            return;
-                        }
-                    }
-                }
-            } else
-                return; //?
+        if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS && !x.isEternal() && !x.isInput()) {
+            if (series.absorbNonSignal(x)) {
+                r.forget(x);
+                return;
+            }
         }
 
         super.remember(r);
@@ -120,7 +114,9 @@ public class SensorBeliefTables extends BeliefTables {
     private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, float dur, NAL nar) {
 
 
-        SeriesTask nextT = null, last = series.series.last();
+        AbstractTaskSeries<SeriesTask> series = this.series.series;
+
+        SeriesTask nextT = null, last = series.last();
         long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
         long nextStart = Math.max(lastEnd+1, Math.round(now - dur/2));
         long nextEnd = Math.max(now, nextStart); //Math.max(nextStart+1, Math.round( now + dur/2));
@@ -130,11 +126,11 @@ public class SensorBeliefTables extends BeliefTables {
                 return null; //too soon, does this happen?
 
             long gapCycles = (now - lastEnd);
-            if (gapCycles <= series.series.latchDurs() * dur) {
+            if (gapCycles <= series.latchDurs() * dur) {
 
                 if (next!=null) {
                     long stretchCycles = (now - lastStart);
-                    boolean stretchable = stretchCycles <= series.series.stretchDurs() * dur;
+                    boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
                     if (stretchable) {
                         if (last.truth().equals(next)) {
                             //continue, if not excessively long
@@ -167,12 +163,8 @@ public class SensorBeliefTables extends BeliefTables {
         }
 
         if (next != null) {
-
-
-
 //                System.out.println("new " + now + " .. " + nextEnd + " (" + (nextEnd - now) + " cycles)");
-
-            series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
+            this.series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
         }
 
         return nextT;
@@ -190,23 +182,6 @@ public class SensorBeliefTables extends BeliefTables {
         t.setEnd(e);
     }
 
-
-//    @Override
-//    public void match(Answer a) {
-//        if (series.series.contains(a.time)) {
-//            //try to allow the series to be the only authority in reporting
-//            series.match(a);
-//            if (a.tasks.isEmpty()) {
-//                //if nothing was found, then search other tables
-//                tables.each(t -> {
-//                    if (t!=series)
-//                        t.match(a);
-//                });
-//            }
-//        } else {
-//            super.match(a);
-//        }
-//    }
 
     /** link and emit */
     private void remember(Task next, What w, FloatSupplier pri, boolean link, float dur) {

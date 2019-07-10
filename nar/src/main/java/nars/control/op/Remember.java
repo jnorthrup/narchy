@@ -262,14 +262,12 @@ public class Remember extends AbstractTask {
                 if (prev instanceof NALTask)
                     Task.merge(prev, next);
 
-
-            } else {
+            } else
                 dPri = 0; //TODO?
-            }
 
-        } else {
+        } else
             dPri = 0;
-        }
+
         if (next!=null) {
 
             @Nullable Task r = rememberMerged(prev, next);
@@ -297,15 +295,15 @@ public class Remember extends AbstractTask {
         if (dPri >= NAL.belief.REMEMBER_REPEAT_PRI_THRESHOLD)
             return true;
 
-        long dDurCycles = Math.max(0, next.creation() - prev.creation());
+        if (next == remembered)
+            return next.isInput();
+
+        long nextCreation = next.creation();
+        long dDurCycles = Math.max(0, nextCreation - prev.creation());
         float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dtDither()));
 
-        if (next == remembered) {
-            return next.isInput();
-        }
-
         if (dCreationDurs > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS) {
-            prev.setCreation(next.creation());
+            prev.setCreation(nextCreation);
             return true;
         }
 

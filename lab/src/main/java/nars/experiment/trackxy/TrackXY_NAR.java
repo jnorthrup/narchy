@@ -247,8 +247,8 @@ public class TrackXY_NAR extends GameX {
 
         ConjClustering cjB = new ConjClustering(n, BELIEF,
                 //x -> true,
-                Task::isInput,
-                2, 8);
+                2, 8, Task::isInput
+        );
 
 
 //            window(new Gridding(

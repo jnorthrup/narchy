@@ -14,6 +14,7 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 
 import java.util.List;
@@ -104,6 +105,14 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             }
 
         }
+    }
+
+    boolean absorbNonSignal(Task t) {
+        long seriesStart = series.start();
+        if (seriesStart != Tense.TIMELESS)
+            return absorbNonSignal(t, seriesStart, series.end());
+
+        return false;
     }
 
     /**

@@ -45,11 +45,11 @@ public class NARchy extends NARS {
         nar.questPriDefault.amp(0.35f);
 
         nar.start(new ConjClustering(nar, BELIEF,
-                Task::isInput
-                , 16, 64));
+                16, 64, Task::isInput
+        ));
         nar.start(new ConjClustering(nar, BELIEF,
-                t -> !t.isInput()
-                , 16, 64));
+                16, 64, t -> !t.isInput()
+        ));
 
         new BasicDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 

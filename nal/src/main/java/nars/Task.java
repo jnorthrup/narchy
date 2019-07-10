@@ -904,7 +904,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * or if its origin has been forgotten or never known
      */
     default boolean isInput() {
-        return stamp().length <= 1 && !isCyclic();
+        return !isCyclic() && stamp().length <= 1;
     }
 
     default boolean isEternal() {

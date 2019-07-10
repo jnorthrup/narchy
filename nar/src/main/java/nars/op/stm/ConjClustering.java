@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
+import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
@@ -74,18 +75,18 @@ public class ConjClustering extends How {
 
     /** default that configures with belief/goal -> question/quest output mode */
     public ConjClustering(NAR nar, byte punc, int centroids, int capacity) {
-        this(nar, punc, (t) -> true, centroids, capacity);
+        this(nar, punc, centroids, capacity, t -> true);
     }
     public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity) {
-        this(nar, puncIn, puncOut, (t) -> true, centroids, capacity);
+        this(nar, puncIn, puncOut, centroids, capacity, t -> true);
     }
 
     /** default that configures with belief/goal -> question/quest output mode */
-    public ConjClustering(NAR nar, byte punc, Predicate<Task> filter, int centroids, int capacity) {
-        this(nar, punc, punc == BELIEF ? QUESTION : QUEST, filter, centroids, capacity);
+    public ConjClustering(NAR nar, byte punc, int centroids, int capacity, Predicate<Task> filter) {
+        this(nar, punc, punc == BELIEF ? QUESTION : QUEST, centroids, capacity, filter);
     }
 
-    public ConjClustering(NAR nar, byte puncIn, byte puncOut, Predicate<Task> filter, int centroids, int capacity) {
+    public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity, Predicate<Task> filter) {
         super();
 
         this.in = nar.newChannel(this);
@@ -210,8 +211,8 @@ public class ConjClustering extends How {
             int tts = tt.size();
             if (tts > 1) {
                 if (tts > 2) {
-                    //ArrayUtil.sort(tt.array(), 0, tts - 1, Prioritized::priElseZero);
-                    tt.sortThis(centroidContentsSort);
+                    ArrayUtil.sort(tt.array(), 0, tts - 1, Prioritized::priElseZero);
+                    //tt.sortThis(centroidContentsSort); //java.lang.IllegalArgumentException: Comparison method violates its general contract!
                 }
 
                 centroids.add(tt);

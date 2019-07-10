@@ -116,9 +116,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        //(t, b) -> Util.unitize(t + b); //plus, max=1
+        (t, b) -> Util.unitize(t + b); //plus, max=1
         //Util::and;
-        Util::or;
+        //Util::or;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
