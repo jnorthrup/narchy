@@ -7,6 +7,7 @@ import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAR;
+import nars.Task;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.temporal.RTreeBeliefTable;
@@ -197,6 +198,8 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
                 float mid = xTime(nar.time());
                 Draw.line(mid, 0, mid, 1, gl);
 
+                renderNodes(gl, tasks);
+
                 renderTasks(gl, tasks, colorizeFill);
 
 
@@ -204,7 +207,6 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
                 renderWaveLine(gl, projected, FtoY, colorizeLine);
 
-                renderNodes(gl, tasks);
 
             });
         }
@@ -232,14 +234,15 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
             gl.glLineWidth(2f);
             gl.glColor4f(0.5f, 0.5f, 0.5f, 0.75f);
 
+            float fEps = nar.freqResolution.floatValue()/2;
             t.streamNodes().forEach(n -> {
                 if (n!=null) {
                     TaskRegion b = (TaskRegion) n.bounds();
-                    if (b != null && b.intersects(start, end)) {
+                    if (b != null && !(b instanceof Task) && b.intersects(start, end)) {
                         float x1 = xTime(b.start());
                         float x2 = xTime(b.end());
-                        float y1 = b.freqMin();
-                        float y2 = b.freqMax();
+                        float y1 = b.freqMin() - fEps;
+                        float y2 = b.freqMax() + fEps;
                         Draw.rectStroke(x1, y1, x2-x1, y2-y1, gl);
                     }
                 }

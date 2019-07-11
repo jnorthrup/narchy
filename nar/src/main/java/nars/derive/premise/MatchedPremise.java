@@ -5,8 +5,6 @@ import nars.derive.model.Derivation;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.term.atom.Bool.Null;
-
 public class MatchedPremise extends Premise {
 
     public final Task belief;
@@ -16,8 +14,17 @@ public class MatchedPremise extends Premise {
         this.belief = belief;
     }
 
-    public boolean reset(Derivation d) {
+    public void apply(Derivation d) {
         d.reset(this.task, belief, beliefTerm);
-        return d.taskTerm != Null;
+    }
+
+    @Override
+    public String toString() {
+        return "Premise(" +
+                task +
+                " * " + beliefTerm +
+                " : " + belief +
+                ')';
+
     }
 }

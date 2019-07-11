@@ -40,7 +40,7 @@ public class SpecialTermTask extends ProxyTask {
         if (task.term().equals(t)) return task;
 
         if (task.getClass() == SpecialTermTask.class /* but not subclasses! */) {
-            SpecialTermTask et = (SpecialTermTask) t;
+            SpecialTermTask et = (SpecialTermTask) task;
             task = et.task;
         }
 

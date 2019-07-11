@@ -83,7 +83,7 @@ class ArithmeticTest {
         for (int i = 0; i < p.length*4; i++) {
             each.add(Arithmeticize.apply($$(q), rng).toString());
         }
-        assertEquals(each, s);
+        assertEquals(s, each);
     }
 
 
@@ -93,7 +93,9 @@ class ArithmeticTest {
     }
     @Test
     void test2_impl_subj() {
-        assertArith("(x(2,3) ==> y)", "((x(#1,add(#1,1))&&equal(#1,2))==>y)", "((cmp(#1,#2,-1)&&x(#1,#2))==>y)");
+        assertArith("(x(2,3) ==> y)",
+                "((x(#1,add(#1,1))==>y)&&equal(#1,2))",
+                "((x(#1,#2)==>y)&&cmp(#1,#2,-1))");
     }
     @Test
     void testContradictionResultsInFalse() {

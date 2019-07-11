@@ -64,7 +64,7 @@ public class LinearTruthProjection extends TruthProjection {
             //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
             //wSum += w;
 
-            double f = x.task().freq(start, end);
+            double f = x.task.freq(start, end);
             wFreqSum += e * f;
 //            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;
         }

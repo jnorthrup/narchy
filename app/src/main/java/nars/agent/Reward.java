@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttnBranch;
@@ -38,8 +39,6 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     protected final CauseChannel<Task> in;
 
     protected final short[] cause;
-
-    final static boolean goalUnstamped = false;
 
     final PriNode attn;
 
@@ -98,7 +97,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     public void alwaysWantEternally(Term goal, float freq, float conf) {
         @Nullable Truth truth = $.t(goal.op()==NEG ? 1-freq : freq, conf);
-        long[] stamp = goalUnstamped ? Stamp.UNSTAMPED : nar().evidence();
+        long[] stamp = NAL.REWARD_GOAL_UNSTAMPED ? Stamp.UNSTAMPED : nar().evidence();
         Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);

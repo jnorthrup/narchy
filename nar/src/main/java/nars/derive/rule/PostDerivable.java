@@ -6,7 +6,6 @@ import nars.term.control.PREDICATE;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 
-/** TODO */
 public class PostDerivable {
 
     public final PreDerivation d;

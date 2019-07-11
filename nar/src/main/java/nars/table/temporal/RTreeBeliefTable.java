@@ -2,7 +2,6 @@ package nars.table.temporal;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.grammar.evolve.tree.Leaf;
 import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.tree.rtree.*;
@@ -150,38 +149,51 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Override
         public double applyAsDouble(Object t) {
-            TaskRegion tt;
-            if (t instanceof RLeaf)
-                tt = (TaskRegion)((RLeaf)t).bounds;
-            else
-                tt = (TaskRegion)t;
-
-            return Math.abs( tt.mid() - now );
+            TaskRegion tt  = (t instanceof RLeaf) ? (TaskRegion)((RLeaf)t).bounds : (TaskRegion)t;
+            //return Math.abs( tt.mid() - now );
+            return tt.maxTimeTo(now);
         }
     }
+    static final class FurthestWeakest implements ToDoubleFunction<Task> {
 
-    static final ToDoubleFunction<? super TaskRegion> LeastConf = (t) -> {
-        return 1.0 / (1 + t.confMean());
-    };
+        public final long now;
 
-    static final ToDoubleFunction<? super Task> LeastEviTimesRange = (t) -> {
-        return 1.0 / (1 + (1+w2cSafe(t.evi())) * t.range());
-    };
-    static final ToDoubleFunction LeastTimeRange = (t) -> {
-        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
-        return 1.0 / ((TaskRegion)t).range();
-    };
-    static final ToDoubleFunction LeastFreqRange = (t) -> {
-        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
-        return 1.0 / (1+((TaskRegion)t).range(1));
-    };
+        FurthestWeakest(long now) {
+            this.now = now;
+        }
+
+        @Override
+        public double applyAsDouble(Task t) {
+            double dt = 1 + t.maxTimeTo(now);
+            return dt / (1.0+(t.evi() * (t.range()/dt)));
+        }
+    }
+//    static final ToDoubleFunction<? super TaskRegion> LeastConf = (t) -> {
+//        return 1.0 / (1 + t.confMean());
+//    };
+
+//    static final ToDoubleFunction<? super Task> WeakestEviInteg = (t) -> {
+//        double eviRange = t.evi() * t.range();
+//        //return 1.0 / (1+eviRange);
+//        return -eviRange;
+//    };
+//    static final ToDoubleFunction LeastTimeRange = (t) -> {
+//        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
+//        return 1.0 / ((TaskRegion)t).range();
+//    };
+//    static final ToDoubleFunction LeastFreqRange = (t) -> {
+//        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
+//        return 1.0 / (1+((TaskRegion)t).range(1));
+//    };
 
     static final ToDoubleFunction<RLeaf<TaskRegion>> MostComponents = (n) -> {
         return n.size;
     };
 
     static final ToDoubleFunction<RLeaf<TaskRegion>> LeastOriginality = (n) -> {
-        return 1 / (1 + originalitySum(n));
+        double s = originalitySum(n);
+        //return 1 / (1 + s);
+        return -s;
     };
     static final ToDoubleFunction<RLeaf<TaskRegion>> MostOriginality = (n) -> {
         return originalitySum(n);
@@ -195,10 +207,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
         return originalitySum;
     }
-    static final ToDoubleFunction<RLeaf<TaskRegion>> MostCompactArea = (n) -> {
-        HyperRegion b = n.bounds;
-        return 1.0 / ((b.range(0)) /* time */ * (1 + b.range(1))) /* freq */;
-    };
+//    static final ToDoubleFunction<RLeaf<TaskRegion>> MostFreqSpecific = (n) -> {
+//        return -n.bounds.range(1) /* freq */;
+//    };
 
     static final ToDoubleFunction<RLeaf<TaskRegion>> MostTemporalDensity = (n) -> {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
@@ -209,9 +220,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             long te = t.end();
             s = Math.min(s, ts);
             e = Math.max(e, te);
-            u += (te-ts);
+            u += (1+(te-ts));
         }
-        return ((double)u) / (e-s);
+        double df = n.bounds.range(1) /* freq */;
+        return ((double)u) / (1+(e-s) * df);
     };
 
     //    static final ToDoubleFunction<TaskRegion> LeastOriginal = (t) -> {
@@ -234,11 +246,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         public MergeableRegion(long now) {
             super(
-                    MostCompactArea, new Furthest(now), MostOriginality, MostTemporalDensity, MostComponents
+                    MostTemporalDensity, /*new Furthest(now),*/ MostOriginality, MostComponents
                     /*LeastOverlap, LeastTemporalSparsity,*/
                     //, LeastTimeRange
             );
-            weights( 0.75f, 0.75f, 0.5f, 0.25f, 0.1f );
+            weights( 0.75f, 0.25f, 0.25f );
         }
 
         @Override
@@ -247,16 +259,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
     }
 
-    private static final class WeakestTask extends Extreme<Task,Task> {
+    @Deprecated private static final class WeakestTask extends Extreme<Task,Task> {
 
         public WeakestTask(long now) {
             super(//complexity ?
                     //new ToDoubleFunction[] {
-                    LeastEviTimesRange, new Furthest(now), LeastOriginal, MostComplex, LeastPriority
+                    new FurthestWeakest(now) //, LeastOriginal, MostComplex, LeastPriority
                     //} :
                     //new ToDoubleFunction[] { new Furthest(now), LeastEvi, LeastPriority, LeastRange, LeastOriginal }
                     );
-            weights(0.75f, 0.75f, 0.5f, 0.1f, 0.05f);
+            //weights(0.75f, 0.5f, 0.1f, 0.05f);
         }
 
         @Override
@@ -385,15 +397,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         /** buffer removal handling until outside of the locked section */
 
 
-        Task input;
-        if (r.input instanceof ProxyTask) {
-            //dont store TaskProxy's
-            input = ((ProxyTask) r.input).the();
-            if (input == null)
-                throw new WTF();
-        } else {
-            input = r.input;
-        }
+//        Task input;
+//        if (r.input instanceof ProxyTask) {
+//            //dont store TaskProxy's
+//            input = ((ProxyTask) r.input).the();
+//            if (input == null)
+//                throw new WTF();
+//        } else {
+//            input = r.input;
+//        }
 
 //        if (r.input instanceof SpecialTruthAndOccurrenceTask) {
 //            //dont do this for SpecialTermTask coming from Image belief table
@@ -405,16 +417,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //            input = r.input;
 //        }
 
+        Task input = r.input;
 
         /** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
          *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */
-        TaskInsertion insertion = write((Function<Space<TaskRegion>,TaskInsertion>) (treeRW -> {
-            TaskInsertion ii = (TaskInsertion) treeRW.insert(input);
+        TaskInsertion insertion = writeWith(r, (treeRW, R) -> {
+            TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
             if (ii.added()) {
-                ensureCapacity(treeRW, input.isBelief() /* else Goal*/, r);
+                ensureCapacity(treeRW, R);
             }
             return ii;
-        }));
+        });
 
         Task existing = (Task) insertion.mergedWith;
         if (existing != null && existing != input) {
@@ -422,11 +435,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             onReject(input);
         } else {
             if (!input.isDeleted()) {
-                r.remember(input);
                 onRemember(input);
+                r.remember(input);
             } else {
-                r.forget(input);
                 onReject(input);
+                r.forget(input);
             }
         }
 
@@ -442,10 +455,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private boolean ensureCapacity(Space<TaskRegion> treeRW, boolean beliefOrGoal, Remember remember) {
+    private boolean ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
+//        boolean beliefOrGoal = r.input.isBelief();
         int e = 0, cap;
         while (treeRW.size() > (cap = capacity)) {
-            if (!compress(treeRW, remember))
+            if (!compress(treeRW, r))
                 return false;
 
             e++;
@@ -486,7 +500,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     @Override
     public Stream<? extends Task> taskStream() {
-        return stream().map(TaskRegion::task);
+        return stream().map(TaskRegion::_task);
     }
 
     @Override
@@ -541,8 +555,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     @Override
     public boolean removeTask(Task x, boolean delete) {
-        if (x.isEternal())
-            return false;
+        assert(!x.isEternal());
 
         if (remove(x)) {
             if (delete)

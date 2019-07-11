@@ -239,7 +239,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                         u = v;
                         v = uv;
                     }
-                } else if (!exactRange && u == null && v == null)
+                } else if (u == null && v == null)
                     break;
 
                 if (u!=null && !whle.test(u))

@@ -10,4 +10,9 @@ public class CuriosityTask extends SignalTask {
     public CuriosityTask(Term term, Truth goal, long now, long pStart, long pEnd, long[] evi) {
         super(term, GOAL, goal, now, pStart, pEnd, evi);
     }
+
+    @Override
+    public boolean isInput() {
+        return false;
+    }
 }

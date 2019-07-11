@@ -16,7 +16,7 @@ import static nars.Op.GOAL;
  */
 abstract public class DecomposeTest extends NALTest {
 
-    public static final int cycles = 400;
+    public static final int cycles = 1500;
 
 
     @Override
@@ -108,6 +108,7 @@ abstract public class DecomposeTest extends NALTest {
         void testDisjBeliefPosMix() {
 
             test
+                    .confMin(0.5f)
                     .termVolMax(7)
                     .input("(||,--a,b,c). %0.9;0.9%")
                     .input("--(||,--a,b). %0.9;0.9%")

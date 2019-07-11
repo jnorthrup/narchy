@@ -17,6 +17,11 @@ public class SpecialPuncTermAndTruthTask extends SpecialTermTask {
     }
 
     @Override
+    public float freq(long start, long end) {
+        return truth.freq();
+    }
+
+    @Override
     public byte punc() {
         return punc;
     }

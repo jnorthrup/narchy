@@ -31,17 +31,8 @@ public final class TasksRegion extends Longerval implements TaskRegion {
 
     public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
         super(start, end);
-
-//        if (Util.equals(freqMin, freqMax, e)) {
-//            float mid = (freqMin + freqMax)/2;
-//            this.freqMin = mid - e; this.freqMax = mid + e;
-//        } else {
-        if (freqMin == freqMax && confMin == confMax) {
-            a = b = Truth.truthToInt(freqMin, confMin);
-        } else {
-            a = Truth.truthToInt(Math.min(freqMin, freqMax), Math.min(confMin, confMax));
-            b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
-        }
+        a = Truth.truthToInt(Math.min(freqMin, freqMax), Math.min(confMin, confMax));
+        b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
     }
 
     @Override public final float freqMin() { return Truth.freq(a); }
@@ -61,27 +52,22 @@ public final class TasksRegion extends Longerval implements TaskRegion {
     @Override public final int freqMinI() { return Truth.freqI(a); }
     @Override public final int freqMaxI() { return Truth.freqI(b); }
 
-    public static TasksRegion mbr(TaskRegion x, long xs, long xe, float ef, float ec) {
+    public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {
 
-        long rs = x.start();
+        long rs = r.start();
 
         assert(xs!=ETERNAL && xs!=TIMELESS && rs!=ETERNAL && rs!=TIMELESS);
 
-        long re = x.end();
-
-        long s = min(rs, xs), e = max(re, xe);
+        long s = min(rs, xs), e = max(r.end(), xe);
 
         TasksRegion y = new TasksRegion(s, e,
-                min(x.freqMin(), ef),
-                max(x.freqMax(), ef),
-                min(x.confMin(), ec),
-                max(x.confMax(), ec)
+                min(r.freqMin(), ef),
+                max(r.freqMax(), ef),
+                min(r.confMin(), ec),
+                max(r.confMax(), ec)
         );
 
-        if (x instanceof TasksRegion)
-            return Util.maybeEqual((TasksRegion)x, y);
-        else
-            return y;
+        return r instanceof TasksRegion ? Util.maybeEqual((TasksRegion) r, y) : y;
     }
 
     @Override

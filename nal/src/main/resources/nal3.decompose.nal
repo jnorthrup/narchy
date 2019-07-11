@@ -19,8 +19,11 @@
 //(G --> M), (D --> M), eventOf(C,G)     |-  --(conjWithout(D,   G) --> M), (Goal:DesireNN, Time:Compose)
 
 //predicate (intensional, conj)
-(M --> C), (M --> X),  eventOf(C,X)     |-    (M --> conjWithout( C,  X)), (Belief:DecomposePP, Goal:DecomposePP, Time:Compose)
-(M --> C), (M --> X),  eventOfNeg(C,X)  |-    (M --> conjWithout( C,--X)), (Belief:DecomposePN, Goal:DecomposePN, Time:Compose)
+(M --> C), (M --> X),  eventOf(C,X)       |-    (M --> conjWithout(C,  X)), (Belief:DecomposePP, Goal:DecomposePP, Time:Compose)
+(M --> C), (M --> X),  eventOfNeg(C,X)    |-    (M --> conjWithout(C,--X)), (Belief:DecomposePN, Goal:DecomposePN, Time:Compose)
+  (M --> D), (M --> X),  eventOfNeg(D,X)  |-  --(M --> conjWithout(D,--X)), (Belief:DecomposeNN, Goal:DecomposeNN, Time:Compose)
+  (M --> D), (M --> X),  eventOf(D,X)     |-  --(M --> conjWithout(D,  X)), (Belief:DecomposeNP, Goal:DecomposeNP, Time:Compose)
+
 //  (M --> C), (M --> X),  eventOfNeg(C,X)     |-   --(M --> conjWithout( C,--X)), (Belief:DecomposePP, Goal:DecomposePP, Time:Compose)
 //  (M --> C), (M --> X),  eventOf(C,X)  |-   --(M --> conjWithout( C,  X)), (Belief:DecomposePN, Goal:DecomposePN, Time:Compose)
 

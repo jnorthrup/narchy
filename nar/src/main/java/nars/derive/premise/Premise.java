@@ -32,7 +32,7 @@ import static nars.time.Tense.ETERNAL;
  * note: Comparable as implemented here is not 100% consistent with Task.equals and Term.equals.  it is
  * sloppily consistent for its purpose in collating Premises in optimal sorts during hypothesizing
  */
-public class Premise implements Comparable<Premise> {
+public class Premise /*implements Comparable<Premise>*/ {
 
     public static final Premise[] EmptyArray = new Premise[0];
     /**
@@ -45,7 +45,7 @@ public class Premise implements Comparable<Premise> {
             ;
     public final Task task;
     public final Term beliefTerm;
-    public final long hash;
+//    public final long hash;
 
 
     public Premise(Task task, Term beliefTerm) {
@@ -74,9 +74,7 @@ public class Premise implements Comparable<Premise> {
 
         this.beliefTerm = beliefTerm;
 
-        this.hash = premiseHash(task, beliefTerm);
-
-
+//        this.hash = premiseHash(task, beliefTerm);
     }
 
 
@@ -319,13 +317,15 @@ public class Premise implements Comparable<Premise> {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj ||
-                (hashCode() == obj.hashCode() && ((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm.equals(beliefTerm));
+        return this == obj || (
+                //hashCode() == obj.hashCode() &&
+                ((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm.equals(beliefTerm));
     }
 
     @Override
     public final int hashCode() {
-        return (int) (hash >> 10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */;
+        //return (int) (hash >> 10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */;
+        throw new UnsupportedOperationException();
     }
 
     @Override
@@ -337,29 +337,29 @@ public class Premise implements Comparable<Premise> {
     }
 
 
-    @Override
-    public int compareTo(Premise premise) {
-        if (this == premise)
-            return 0;
-
-        int h = Long.compare(hash, premise.hash);
-        if (h != 0)
-            return h;
-
-        if (task.equals(premise.task) && beliefTerm.equals(premise.beliefTerm))
-            return 0;
-
-        //TODO since Task doesnt implement Comparable, they could be compared by their byte[] serialization
-//        int t = Integer.compare(System.identityHashCode(task), System.identityHashCode(premise.task));
-//        if (t!=0)
-//            return t;
+//    @Override
+//    public int compareTo(Premise premise) {
+//        if (this == premise)
+//            return 0;
 //
-//        int b = Integer.compare(System.identityHashCode(beliefTerm.hashCode()), System.identityHashCode(premise.beliefTerm.hashCode()));
-//        if (b!=0)
-//            return b;
-
-        return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
-    }
+////        int h = Long.compare(hash, premise.hash);
+////        if (h != 0)
+////            return h;
+//
+//        if (task.equals(premise.task) && beliefTerm.equals(premise.beliefTerm))
+//            return 0;
+//
+//        //TODO since Task doesnt implement Comparable, they could be compared by their byte[] serialization
+////        int t = Integer.compare(System.identityHashCode(task), System.identityHashCode(premise.task));
+////        if (t!=0)
+////            return t;
+////
+////        int b = Integer.compare(System.identityHashCode(beliefTerm.hashCode()), System.identityHashCode(premise.beliefTerm.hashCode()));
+////        if (b!=0)
+////            return b;
+//
+////        return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
+//    }
 
     public void derive(Derivation d, int matchTTL, int deriveTTL) {
         FastCounter result;
@@ -369,7 +369,11 @@ public class Premise implements Comparable<Premise> {
         int ttlUsed;
 
         @Nullable MatchedPremise m = match(d, matchTTL);
-        if (m!=null && m.reset(d)) {
+        if (m!=null) {
+
+            m.apply(d);
+
+            //System.out.println(m + " " + Arrays.toString(d.deriver.what(d)));
 
             result = PreDerivation.run(d, deriveTTL) ? e.premiseFire : e.premiseUnderivable;
 

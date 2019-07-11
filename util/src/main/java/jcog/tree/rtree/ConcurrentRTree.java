@@ -161,6 +161,15 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
         }
     }
 
+    public final <A,Y> Y writeWith(A a, BiFunction<Space<X>,A,Y> x) {
+        long l = writeLock();
+        try {
+            return x.apply(tree, a);
+        } finally {
+            unlockWrite(l);
+        }
+    }
+
     public final void readOptimistic(Consumer<Space<X>> x) {
         readOptimistic(() -> x.accept(tree));
     }

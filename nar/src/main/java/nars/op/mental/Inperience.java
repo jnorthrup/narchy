@@ -177,6 +177,11 @@ public class Inperience extends How {
         }
 
         @Override
+        public boolean isInput() {
+            return false;
+        }
+
+        @Override
         public Task next(Object n) {
             return Remember.the(this, (NAR)n); //copied from UnevaluatedTask
         }

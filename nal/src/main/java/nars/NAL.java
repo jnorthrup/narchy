@@ -59,7 +59,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     @Deprecated
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
-    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME= false;
+
+    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = false;
+    public final static boolean REWARD_GOAL_UNSTAMPED = true;
 
 
     /** can be unfair to new inputs if true, so for fairness leave false */
@@ -233,7 +235,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 32;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
@@ -252,7 +254,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final int SERIES_MATCH_MIN = 2;
 
-        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.25f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;
     }
 

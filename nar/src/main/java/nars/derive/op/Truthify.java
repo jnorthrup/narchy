@@ -126,7 +126,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 if ((t = f.apply(
                         d.taskTruth,
                         beliefTruth,
-                        d.confMin, d.nar()
+                        d.confMin, d.nar
                 )) == null)
                     return false;
 
@@ -141,8 +141,8 @@ public class Truthify extends AbstractPred<Derivation> {
                 t = null;
                 break;
 
-            case 0:
-                return false;
+//            case 0:
+//                return false;
 
             default:
                 throw new InvalidPunctuationException(punc);

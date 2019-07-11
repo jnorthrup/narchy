@@ -24,20 +24,22 @@ class FunctorTest {
         NAR n = NARS.tmp();
 
 
+        Term y = $$("[a,b]");
 
         final boolean[] got = {false};
         n.onTask(t -> {
-            String s = t.toString();
-            assertFalse(s.contains("union"));
-            if (s.contains("[a,b]"))
+            if (t.isBelief() && t.term().equals(y))
                 got[0] = true;
+            //String s = t.toString();
+            //assertFalse(s.contains("union"));
         }, BELIEF);
         n.input("union([a],[b]).");
 
         n.run(1);
 
         assertTrue(got[0]);
-        assertTrue(n.beliefTruth($$("[a,b]"), ETERNAL)!=null);
+
+        assertTrue(n.beliefTruth(y, ETERNAL)!=null);
     }
 
     @Disabled @Test

@@ -9,6 +9,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Int;
 import nars.term.functor.InlineCommutiveBinaryBidiFunctor;
 import org.jetbrains.annotations.Nullable;
@@ -27,10 +28,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
     public static Term the(Term x, Term y) {
         @Nullable Term p = pretest(x, y);
-        if (p != null)
-            return p;
-        else
-            return $.func(equal, commute(x, y));
+        return p != null ? p : $.func(equal, commute(x, y));
     }
 
     @Nullable
@@ -51,6 +49,18 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         }
 
         return $.func(Cmp.cmp, a, b, Int.the(c));
+    }
+
+    public static Term the(Evaluation e, Term x, Term y) {
+
+        boolean xVar = x instanceof Variable, yVar = y instanceof Variable;
+
+        if (xVar && !yVar && e.is(x,y))
+            return True;
+        if (yVar && !xVar && e.is(y,x))
+            return True;
+
+        return Equal.the(x, y); //reduce to equal
     }
 
     @Override

@@ -204,9 +204,9 @@ public class NARS {
 
         /** shared question and quest capacity curve */
         ToIntFunction<Concept> q = curve(termVolume, new int[] {
-                1, 10,
-                12, 6,
-                24, 4
+                1, 7,
+                12, 5,
+                24, 3
         });
 
         conceptBuilder = ()->new DefaultConceptBuilder(

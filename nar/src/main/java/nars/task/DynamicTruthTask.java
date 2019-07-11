@@ -12,6 +12,8 @@ public class DynamicTruthTask extends TemporalTask implements UnevaluatedTask  {
         super(c, beliefOrGoal ? Op.BELIEF : Op.GOAL, tr, n.time(), start, end, stamp);
     }
 
-
-
+    @Override
+    public boolean isInput() {
+        return false;
+    }
 }

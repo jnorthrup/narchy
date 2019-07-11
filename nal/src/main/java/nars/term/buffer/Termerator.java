@@ -67,14 +67,14 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
         return x instanceof Compound && x.hasAll(Op.FuncBits);
     }
 
-    /**
-     * attempt to assert a substitution
-     */
-    public boolean isTry(Term x, Term y) {
-        assert (!(x.equals(y)));
-        Object y0 = subs.putIfAbsent(x, y);
-        return y0 == null;
-    }
+//    /**
+//     * attempt to assert a substitution
+//     */
+//    public boolean isTry(Term x, Term y) {
+//        assert (!(x.equals(y)));
+//        Object y0 = subs.putIfAbsent(x, y);
+//        return y0 == null;
+//    }
 
     /**
      * assert a termutation
@@ -104,26 +104,26 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     public boolean is(Term x, Term y) {
         if (x.equals(y))
             return true;
-        else {
-            if (y == Null)
-                return false;
-            if (y.containsRecursively(x))
-                return false; //loop
 
-            ensureReady();
-            boolean empty = subs.isEmpty();
+        if (y == Null) return false;
+
+        boolean empty = subs==null || subs.isEmpty();
+
+        if (!empty) {
+            Term z = y.replace(subs);  //transform the assignment result preventing loops etc
+            if (!z.equals(y))
+                return is(x, z); //recurse
+
             Term existingAssignment = !empty ? subs.get(x) : null;
-            if (existingAssignment == null) {
-                if (!empty) {
-                    Term z = y.replace(subs); //transform the assignment result preventing loops etc
-//                    if (z!=y)
-//                        Util.nop(); //TEMPORARY
-                    y = z;
-                }
-                return subs.set(x, y);
-            } else
+            if (existingAssignment!=null)
                 return y.equals(existingAssignment);
         }
+
+        if (y.containsRecursively(x))
+            return false; //loop
+
+        ensureReady();
+        return subs.set(x, y);
 
     }
 

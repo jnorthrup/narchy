@@ -22,7 +22,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     /**
      * proportional value of splitting a node by time
      */
-    float TIME_COST = 1f;
+    float TIME_COST = 2f;
 
     /**
      * proportional value of splitting a node by freq
@@ -34,24 +34,27 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
      */
     float CONF_COST = 0.1f;
 
-
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {
-            Task x = r.task();
-            if (x != null && !x.isDeleted()) each.accept(x);
+            Task x = _task(r);
+            if (x != null) each.accept(x);
         };
     }
 
     static Predicate<TaskRegion> asTask(Predicate<? super Task> each) {
         return r -> {
-            Task x = r.task();
-            if (x != null && !x.isDeleted()) return each.test(x);
-
-            return true;
+            Task x = _task(r);
+            return x == null || each.test(x);
         };
     }
 
-    static TasksRegion mbr(TaskRegion x, Task y) {
+    static Task _task(TaskRegion r) {
+        return r instanceof Task ? (Task) r : r.task();
+    }
+
+    static TaskRegion mbr(TaskRegion x, Task y) {
+        if (x == y)
+            return x;
         return TasksRegion.mbr(x, y.start(), y.end(), y.freq(), y.conf());
     }
 
@@ -112,9 +115,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return Math.log(range(0)) * TIME_COST;
             case 1:
-                return range(1) * FREQ_COST;
+                return 1 + range(1) * FREQ_COST;
             case 2:
-                return range(2) * CONF_COST;
+                return 1 + range(2) * CONF_COST;
         }
         throw new UnsupportedOperationException();
     }
