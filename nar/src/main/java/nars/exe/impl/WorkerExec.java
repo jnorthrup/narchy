@@ -66,7 +66,7 @@ public class WorkerExec extends ThreadedExec {
     @Override
     public void synch() {
         if (this.exe.running() == 0) {
-            in.clear(this::executeNow); //initialize
+            in.drain(this::executeNow); //initialize
         }
     }
 

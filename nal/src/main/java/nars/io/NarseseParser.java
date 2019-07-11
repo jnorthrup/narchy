@@ -35,6 +35,8 @@ import static nars.time.Tense.XTERNAL;
 
 public class NarseseParser extends BaseParser<Object> implements Narsese.INarseseParser {
 
+    public static final Atom termDynamic = Atomic.atom("termDynamic");
+
     @Override
     public Rule Input() {
         return sequence(
@@ -346,7 +348,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             } else {
 
                 QuantityTerm q = (QuantityTerm) timeDelta;
-                return $.func("target", o.strAtom, $.p(subj, pred), q);
+                return $.func(termDynamic, o.strAtom, $.p(subj, pred), q);
             }
         }
     }

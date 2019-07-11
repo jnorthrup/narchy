@@ -104,7 +104,7 @@ abstract public class Functor extends NodeConcept implements PermanentConcept, B
     /**
      * creates a new functor from a target name and a lambda
      */
-    private static LambdaFunctor f(Atom termAtom, Function<Subterms, Term> f) {
+    public static LambdaFunctor f(Atom termAtom, Function<Subterms, Term> f) {
         return new LambdaFunctor(termAtom, f);
     }
 

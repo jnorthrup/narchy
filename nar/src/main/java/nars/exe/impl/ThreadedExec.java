@@ -7,6 +7,7 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import nars.NAR;
+import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Consumer;
@@ -21,7 +22,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     static final int inputQueueCapacityPerThread = 512;
 
-    protected final MetalConcurrentQueue in;
+    protected final MpmcAtomicArrayQueue in;
 
     final boolean affinity;
     final AffinityExecutor exe;
@@ -35,7 +36,7 @@ abstract public class ThreadedExec extends MultiExec {
     public ThreadedExec(int maxThreads, boolean affinity) {
         super(maxThreads);
 
-        in = new MetalConcurrentQueue(inputQueueCapacityPerThread * concurrencyMax());
+        in = new MpmcAtomicArrayQueue(inputQueueCapacityPerThread * concurrencyMax());
 
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;
@@ -44,7 +45,9 @@ abstract public class ThreadedExec extends MultiExec {
 
     @Override
     protected void execute(/*@NotNull */Object x) {
-        in.add(x, this::executeBlocked);
+        if (!in.relaxedOffer(x)) {
+            executeBlocked(x);
+        }
     }
 
     private void executeBlocked(Object x) {
@@ -130,7 +133,7 @@ abstract public class ThreadedExec extends MultiExec {
                         Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
 
 
-                int got = in.remove(buffer, batchSize, 0);
+                int got = in.drain(buffer::addFast,batchSize);
                 if (got > 0) {
                     execute(buffer, 1, execNow);
                 } else
@@ -173,12 +176,6 @@ abstract public class ThreadedExec extends MultiExec {
         return false;
     }
 
-    boolean queueSafe() {
-        float a = alertness.floatValue();
-        return a < 1 - Float.MIN_NORMAL ?
-                in.availablePct(inputQueueCapacityPerThread) >= a :
-                in.isEmpty();
-    }
 
     boolean queueSafe(int size) {
         return size > 0 && MetalConcurrentQueue.availablePct(size, inputQueueCapacityPerThread) >= alertness.floatValue();

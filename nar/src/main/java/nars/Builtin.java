@@ -36,6 +36,7 @@ import java.util.Map;
 import java.util.TreeSet;
 
 import static nars.Op.*;
+import static nars.io.NarseseParser.termDynamic;
 import static nars.op.Cmp.cmp;
 import static nars.term.Functor.f0;
 import static nars.term.atom.Bool.*;
@@ -311,23 +312,22 @@ public class Builtin {
 
 
     private static void registerFunctors(NAR nar) {
-        for (Functor t : Builtin.statik) {
+        for (Functor t : Builtin.statik)
             nar.add(t);
-        }
+
 
         nar.add(SetFunc.sort(nar));
 
         /** dynamic target builder - useful for NAR specific contexts like clock etc.. */
-        nar.add(Functor.f("termDynamic", (Subterms s) -> {
+        nar.add(Functor.f(termDynamic, (Subterms s) -> {
             Op o = Op.stringToOperator.get($.unquote(s.sub(0)));
             Term[] args = s.sub(1).subterms().arrayShared();
             if (args.length == 2) {
                 if (o.temporal) {
 
                     Term dtTerm = s.sub(2);
-                    if (!(dtTerm instanceof QuantityTerm)) {
+                    if (!(dtTerm instanceof QuantityTerm))
                         dtTerm = QuantityTerm.the(dtTerm);
-                    }
 
                     int dt = Tense.occToDT(nar.time.toCycles(((QuantityTerm) dtTerm).quant));
                     return o.the(dt, args);
@@ -365,17 +365,13 @@ public class Builtin {
                     return Null;
 
                 which = $.intValue(index, -1);
-                if (which < 0) {
+                if (which < 0)
                     return Null;
-                }
-            } else {
 
+            } else
                 which = nar.random().nextInt(x.subs());
-            }
 
             return x.sub(which);
-
-
         }));
 
         nar.add(new AbstractInlineFunctor1("negateEvents") {

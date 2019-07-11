@@ -151,7 +151,7 @@ class PremiseRuleTest {
         assertConcPattern("(X,Y), Z |- (Z-->(X||Y)), (Belief:Intersection)", "(--,(%3-->((--,%1)&&(--,%2))))");
 
         assertConcPattern("(X,Y), Z |- (((X&&Y)-->Z),X,Y), (Belief:Intersection)", "(((%1&&%2)-->%3),%1,%2)");
-        assertConcPattern("(X,Y), Z |- (((X||Y)-->Z),X,Y), (Belief:Intersection)", "((--,(((--,%1)&&(--,%2)))-->%3),%1,%2)");
+        assertConcPattern("(X,Y), Z |- (((X||Y)-->Z),X,Y), (Belief:Intersection)", "((--,(((--,%1)&&(--,%2))-->%3),%1,%2)");
 
     }
 

@@ -1,6 +1,5 @@
 package nars.op.stm;
 
-import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
@@ -9,6 +8,7 @@ import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.link.AtomicTaskLink;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
@@ -30,7 +30,8 @@ public class STMLinkage extends NARPart {
 
 //    private final Cause cause;
 
-    private final MetalConcurrentQueue<Pair<Task, Concept>> stm;
+    private final MpmcAtomicArrayQueue<Pair<Task, Concept>> stm;
+    private final int capacity;
 
     @Deprecated
     public STMLinkage(NAR nar, int capacity) {
@@ -41,8 +42,11 @@ public class STMLinkage extends NARPart {
     public STMLinkage(int capacity) {
         super();
 
-        stm = //Util.blockingQueue(capacity + 1 );
-                new MetalConcurrentQueue<>(capacity);
+        this.capacity = capacity;
+        stm = //  new MetalConcurrentQueue<>(capacity);
+                new MpmcAtomicArrayQueue<>(Math.max(2,capacity));
+        for (int i = 0; i < capacity; i++)
+            stm.offer(pair(null,null));
 
 //        cause = nar.newCause(this);
     }
@@ -51,37 +55,19 @@ public class STMLinkage extends NARPart {
     protected void starting(NAR nar) {
         whenDeleted(
             nar.onTask(this::accept, BELIEF, GOAL),
-            nar.eventClear.on((Runnable)stm::clear)
+            nar.eventClear.on(stm::clear)
         );
     }
 
     public static void link(Task at, Concept ac, Pair<Task, Concept> b/*, short cid*/, float factor, NAR nar) {
 
-        //if (a==b) ta.target().equals(tb.target()))
-        //return;
-
-        /** current task's... */
-        //Concept a = nar.concept(ta);
-        //if (a != null) {
-        //Concept b = nar.concept(tb);
-        //if (b != null) {
         Concept bc = b.getTwo();
-        if (ac != bc) {
+        if (ac == bc || bc == null)
+            return;
 
-
-            Task bt = b.getOne();
-            link(ac, bt, factor, nar);
-            link(bc, at, factor, nar);
-
-        }
-
-//                } else {
-//                    a.termlinks().putAsync(/*new CauseLink.PriCauseLink*/new PLink<>(a.target(), pri/*, cid*/));
-//                    //ca.termlinks().putAsync(new CauseLink.PriCauseLink(ca.target(), pri, cid));
-//                }
-        //  }
-        // }
-
+        Task bt = b.getOne();
+        link(ac, bt, factor, nar);
+        link(bc, at, factor, nar);
     }
 
     static void link(Concept target, Task task, float factor, NAR nar) {
@@ -123,13 +109,22 @@ public class STMLinkage extends NARPart {
 
 
             float factor = this.strength.floatValue();
-            stm.forEach(z -> link(y, yc, z, factor, nar));
+
+            if (capacity == 1) {
+                //optimized 1-ary case
+                Pair<Task, Concept> z = stm.peek();
+                link(y, yc, z, factor, nar);
+            } else {
+                int i = 0;
+                for (Pair<Task, Concept> z : stm) {
+                    link(y, yc, z, factor, nar);
+                    if (++i == capacity) break;
+                }
+            }
 
             if (keep(y)) {
-                if (stm.isFull(1))
-                    stm.poll();
-
-                stm.offer(pair(y, yc));
+                stm.relaxedPoll();
+                stm.relaxedOffer(pair(y, yc));
             }
         }
 

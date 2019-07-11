@@ -6,6 +6,8 @@ import nars.Narsese;
 import nars.Task;
 import org.junit.jupiter.api.Test;
 
+import java.util.List;
+
 import static nars.$.$$;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -136,7 +138,7 @@ class NarseseTimeUnitTest {
     void testTimeDeltaUnitsAndOccurrence() throws Narsese.NarseseException {
         StringBuilder sb = new StringBuilder();
         n.log(sb);
-        n.input("(a &&+1day b)! +5m..+2h %1.0;0.90%");
+        List<Task> t = n.input("(a &&+1day b)! +5m..+2h %1.0;0.90%");
         n.run(1);
 
         assertTrue(sb.toString().contains("(a &&+86400000 b)! "));
