@@ -53,7 +53,7 @@ class ArithmeticTest {
 
         String fwd = n.eval($.$("add(#x,1)")).toString();
         String rev = n.eval($.$("add(1,#x)")).toString();
-        assertEquals("add(1,#1)", fwd);
+        assertEquals("add(#1,1)", fwd);
         assertEquals(fwd, rev);
 
     }
@@ -187,8 +187,8 @@ class ArithmeticTest {
     @Test
     void testComparatorOrderingConstant() {
 
-        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(1,2,-1)")));
-        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,1)")));
+        TermTest.assertEq("cmp(#1,2,-1)", n.eval($$("cmp(#1,2,-1)")));
+        TermTest.assertEq("cmp(#1,2,-1)", n.eval($$("cmp(2,#1,1)")));
     }
 
     @Test

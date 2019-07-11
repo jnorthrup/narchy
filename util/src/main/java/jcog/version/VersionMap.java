@@ -1,18 +1,20 @@
 package jcog.version;
 
+import jcog.TODO;
+import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSet;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.AbstractMap;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
 
+import static java.util.stream.Collectors.toList;
 
-public class VersionMap<X, Y> extends AbstractMap<X, Y> {
+
+public class VersionMap<X, Y> implements Map<X, Y> {
 
     protected final Versioning context;
     public final Map<X, Versioned<Y>> map;
@@ -33,17 +35,29 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
 
     @Override
     public void replaceAll(BiFunction<? super X, ? super Y, ? extends Y> function) {
+        throw new UnsupportedOperationException();
+    }
+
+    public boolean replace(BiFunction<? super X, ? super Y, ? extends Y> function) {
+        List<Object[]> replacements = new FasterList();
         map.forEach((v,val)->{
            if (val!=null) {
                Y x = val.get();
                if (x!=null) {
                    Y y = function.apply(v, x);
-                   if (x != y) {
-                       val.replace(y, context);
+                   if (!x.equals(y)) {
+                       replacements.add(new Object[] { v, y });
                    }
                }
            }
         });
+        if (!replacements.isEmpty()) {
+            for (Object[] r : replacements) {
+                if (!set((X)r[0], (Y)r[1]))
+                    return false;
+            }
+        }
+        return true;
     }
 
 //    public boolean tryReplaceAll(BiFunction<? super X, ? super Y, ? extends Y> function) {
@@ -71,6 +85,11 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
     }
 
     @Override
+    public void putAll(Map<? extends X, ? extends Y> map) {
+        throw new TODO();
+    }
+
+    @Override
     public boolean remove(Object key, Object value) {
         throw new UnsupportedOperationException();
     }
@@ -81,20 +100,13 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         throw new UnsupportedOperationException();
     }
 
+    protected Versioned<Y> newEntry(X x) {
+        return new KeyUniVersioned<>(x);
+    }
 
     @Override
-    public final int size() {
-        int cs = context.size;
-//        if (cs <= 1) // || itemVersions == 1)
-            return cs;
-
-
-//        int count = 0;
-//        for (Versioned<Y> e : map.values()) {
-//            if (e.get()!=null)
-//                count++;
-//        }
-//        return count;
+    public int size() {
+        return context.size;
     }
 
     @Override
@@ -102,6 +114,30 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return size() == 0;
     }
 
+    /** copied from AbstractMap.java */
+    @Override public String toString() {
+        Iterator<Entry<X,Y>> i = this.entrySet().iterator();
+        if (!i.hasNext()) {
+            return "{}";
+        } else {
+            StringBuilder sb = new StringBuilder();
+            sb.append('{');
+
+            while(true) {
+                Entry<X, Y> e = i.next();
+                X key = e.getKey();
+                Y value = e.getValue();
+                sb.append(key == this ? "(this Map)" : key);
+                sb.append('=');
+                sb.append(value == this ? "(this Map)" : value);
+                if (!i.hasNext()) {
+                    return sb.append('}').toString();
+                }
+
+                sb.append(',').append(' ');
+            }
+        }
+    }
 
     /**
      * avoid using this if possible because it involves transforming the entries from the internal map to the external form
@@ -111,16 +147,18 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         int s = size();
         if (s == 0)
             return Set.of();
+        else {
 
-        ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>(0, new Entry[s]);
-        map.forEach((k, v) -> {
-            Y vv = v.get();
-            if (vv != null) {
-                e.add(new SimpleEntry<>(k, vv));
-            }
-        });
+            ArrayUnenforcedSet<Entry<X, Y>> e = new ArrayUnenforcedSet<>(0, new Entry[s]);
+            map.forEach((k, v) -> {
+                Y vv = v.get();
+                if (vv != null) {
+                    e.add(new AbstractMap.SimpleImmutableEntry<>(k, vv));
+                }
+            });
 
-        return e;
+            return e;
+        }
     }
 
     @Override
@@ -130,7 +168,7 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
             return Set.of();
         //else if (s == 1) ...
         else {
-            ArrayUnenforcedSet e = new ArrayUnenforcedSet(0, new Object[s]);
+            ArrayUnenforcedSet<X> e = new ArrayUnenforcedSet(0, new Object[s]);
             map.forEach((k, v) -> {
                 if (v!=null)
                     e.add(k);
@@ -139,20 +177,10 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         }
     }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    @Override
+    public Collection<Y> values() {
+        return entrySet().stream().map(Entry::getValue).collect(toList()); //HACK
+    }
 
 
     /**
@@ -176,9 +204,6 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return map.computeIfAbsent(key, this::newEntry);
     }
 
-    protected Versioned<Y> newEntry(X x) {
-        return new KeyUniVersioned<>(x);
-    }
 
     public void forEach(BiConsumer<? super X, ? super Y> each) {
         map.forEach((x,yy)->{
@@ -247,7 +272,10 @@ public class VersionMap<X, Y> extends AbstractMap<X, Y> {
         return map.containsKey(key);
     }
 
-
+    @Override
+    public boolean containsValue(Object o) {
+        throw new TODO();
+    }
 
 
     public static final VersionMap Empty = new VersionMap(new Versioning<>(1)) {

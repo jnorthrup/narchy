@@ -10,6 +10,7 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Int;
+import nars.term.functor.CommutiveBinaryBidiFunctor;
 import nars.term.functor.InlineCommutiveBinaryBidiFunctor;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +29,7 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
 
     public static Term the(Term x, Term y) {
         @Nullable Term p = pretest(x, y);
-        return p != null ? p : $.func(equal, commute(x, y));
+        return p != null ? p : CommutiveBinaryBidiFunctor.the(equal, x, y);
     }
 
     @Nullable
@@ -131,7 +132,6 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
                 }
                 //includes: (#x,add(#x,#x)) |- is(#x, 0)
 
-                return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null;
 
 //                if (xa1 instanceof Variable && xa0.op() == INT) { //shouldnt be necessary if sorted in correct order
 //                    throw new TODO();

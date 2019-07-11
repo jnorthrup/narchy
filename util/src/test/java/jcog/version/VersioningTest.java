@@ -21,7 +21,7 @@ class VersioningTest {
     @Test
     void testRevision() {
         Versioning<Object> w = new Versioning(10, 10);
-        VersionMap<Object,Object> m = new MultiVersionMap(4, w);
+        VersionMap<Object,Object> m = new MultiVersionMap(w, 4);
         m.set("x", "a");
         assertEquals("{x=a}", m.toString());
         assertEquals(1, w.size);

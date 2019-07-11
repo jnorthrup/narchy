@@ -6,13 +6,14 @@ import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
-import jcog.version.VersionMap;
+import jcog.version.MultiVersionMap;
 import jcog.version.Versioning;
 import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
+import nars.term.Variable;
 import nars.term.util.transform.TermTransform;
 
 import java.util.Collection;
@@ -32,11 +33,11 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     /**
      * TODO Set?
      */
-    protected FasterList<Iterable<Predicate<VersionMap<Term, Term>>>> termutes = null;
+    protected FasterList<Iterable<Predicate<Termerator>>> termutes = null;
 
     protected Versioning v = null;
 
-    protected VersionMap<Term, Term> subs = null;
+    protected MultiVersionMap<Term, Term> subs = null;
 
     public Termerator() {
 
@@ -55,12 +56,12 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     /**
      * 2-ary AND
      */
-    public static Predicate<VersionMap<Term, Term>> assign(Term x, Term xx, Term y, Term yy) {
-        return m -> m.set(x, xx) && m.set(y, yy);
+    public static Predicate<Termerator> assign(Term x, Term xx, Term y, Term yy) {
+        return m -> m.is(x, xx) && m.is(y, yy);
     }
 
-    protected static Predicate<VersionMap<Term, Term>> assign(Term x, Term y) {
-        return (subst) -> subst.set(x, y);
+    protected static Predicate<Termerator> assign(Term x, Term y) {
+        return (subst) -> subst.is(x, y);
     }
 
     public static boolean canEval(Termlike x) {
@@ -114,17 +115,33 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
             if (!z.equals(y))
                 return is(x, z); //recurse
 
-            Term existingAssignment = !empty ? subs.get(x) : null;
-            if (existingAssignment!=null)
-                return y.equals(existingAssignment);
+//            Term existingAssignment = !empty ? subs.get(x) : null;
+//            if (existingAssignment!=null)
+//                return y.equals(existingAssignment);
         }
 
         if (y.containsRecursively(x))
             return false; //loop
 
         ensureReady();
-        return subs.set(x, y);
 
+        if (y instanceof Variable) {
+            //check for a reverse assignment from an existing constant
+            Term y0 = subs.get(x);
+            if (y0!=null && !(y0 instanceof Variable)) {
+                return is(y,y0);
+            }
+        }
+
+
+        boolean set = subs.set(x, y);
+        assert(set);
+        return subs.replace((sx, sy)->{
+           if (sx!=x) {
+               sy = sy.replace(x, y);
+           }
+           return sy;
+        });
     }
 
     /**
@@ -135,7 +152,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
         return is(x, xx) && is(y, yy);
     }
 
-    public void canBe(Predicate<VersionMap<Term, Term>> x) {
+    public void canBe(Predicate<Termerator> x) {
         canBe(List.of(x));
     }
 
@@ -143,7 +160,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * OR, forked
      * TODO limit when # termutators exceed limit
      */
-    public final void canBe(Iterable<Predicate<VersionMap<Term, Term>>> x) {
+    public final void canBe(Iterable<Predicate<Termerator>> x) {
         ensureReady();
         termutes.add(x);
     }
@@ -152,8 +169,8 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     private void ensureReady() {
         if (v == null) {
             v = new Versioning<>(NAL.unify.UNIFICATION_STACK_CAPACITY, NAL.TASK_EVALUATION_TTL);
-            subs = new VersionMap<>(v);
-            termutes = new FasterList(1);
+            subs = new MultiVersionMap<>(v, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT);
+            termutes = new FasterList<>(1);
         }
     }
 
@@ -169,10 +186,10 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     }
 
     public void canBePairs(List<Term> y) {
-        canBe((VersionMap<Term, Term> e) -> {
+        canBe((Termerator e) -> {
             int n = y.size();
             for (int i = 0; i < n; ) {
-                if (!e.set(y.get(i++), y.get(i++)))
+                if (!e.is(y.get(i++), y.get(i++)))
                     return false;
             }
             return true;
@@ -222,7 +239,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
             if (nt == 1) {
                 return Iterators.filter(Iterators.transform(termutes.remove(0).iterator(), tt -> {
                     Term y;
-                    if (tt.test(subs)) {
+                    if (tt.test(this)) {
                         int during = v.size();
                         y = term();
                         if (v.size() != during) {
@@ -240,8 +257,8 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
                 return Iterators.filter(Iterators.transform(ci, tt -> {
                     Term y;
                     boolean fail = false;
-                    for (Predicate p : tt) {
-                        if (!p.test(subs)) {
+                    for (Predicate<Termerator> p : tt) {
+                        if (!p.test(this)) {
                             fail = true;
                             break;
                         }

@@ -29,7 +29,7 @@ public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
-    final TermBuffer compoundBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap());
+    private final TermBuffer compoundBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap());
 
 
     public Evaluator(Function<Atom, Functor> funcResolver) {
@@ -45,21 +45,20 @@ public class Evaluator extends HeapTermTransform {
      * discover evaluable clauses in the provided term
      * the result will be a list of unique terms in topologically or at least heuristically sorted order
      */
-    @Nullable
-    protected FasterList<Term> clauses(Compound x, Evaluation e) {
+    @Nullable FasterList<Term> clauses(Compound x, Evaluation e) {
         return !x.hasAny(Op.FuncBits) ? null : clauseFind(x);
     }
 
-    @Nullable
-    protected FasterList<Term> clauseFind(Compound x) {
+    @Nullable FasterList<Term> clauseFind(Compound x) {
         UnifiedSet<Term> clauses = new UnifiedSet(0);
 
         x.recurseTerms(s -> s instanceof Compound && s.hasAll(Op.FuncBits), X -> {
             if (Functor.isFunc(X)) {
-                if (clauses.contains(X))
-                    return true;
+//                if (clauses.contains(X))
+//                    return true;
 
                 compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+                compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
                 TermBuffer y = compoundBuilder.append(X);
                 final int[] functors = {0};
                 y.updateMap(g -> {
@@ -102,12 +101,14 @@ public class Evaluator extends HeapTermTransform {
     }
 
     private static final Comparator<? super Term> complexitySort = (a,b)->{
-        int vars = Integer.compare(a.vars(), b.vars());
-        if (vars!=0)
-            return vars;
         int vol = Integer.compare(a.volume(), b.volume());
         if (vol!=0)
             return vol;
+
+        int vars = Integer.compare(a.vars(), b.vars());
+        if (vars!=0)
+            return vars;
+
         return a.compareTo(b);
     };
 

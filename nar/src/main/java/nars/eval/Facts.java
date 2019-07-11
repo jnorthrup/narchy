@@ -90,7 +90,7 @@ public class Facts implements Function<Term, Stream<Term>> {
     /**
      * whether to accept the given expectation
      */
-    protected boolean exp(float exp) {
+    private boolean exp(float exp) {
         //TODO handle negative expectation
         return exp >= this.expMin;
     }

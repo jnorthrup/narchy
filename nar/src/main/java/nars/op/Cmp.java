@@ -55,20 +55,26 @@ public class Cmp extends SimpleBinaryFunctor {
                 return Null; //conflict with the correct value
         }
 
-        if (!x.hasVars() && !y.hasVars() && !xy.hasVars()) {
-            //check for truth, and canonical ordering
-            int c = x.compareTo(y);
-            if (((Int) xy).i != c)
-                return False;
-            else {
-                if (c > 0) {
-                    //swap parameters
-                    return swap(x, y, c);
-                } else
+        if (!xy.hasVars()) {
+            if (!x.hasVars() && !y.hasVars()) {
+                //check for truth, and canonical ordering
+                int c = x.compareTo(y);
+                if (((Int) xy).i != c)
+                    return False;
+                else {
+//                if (c > 0)
+//                    return swap(x, y, c);
+//                else
                     return True;
-            }
+                }
 
+            } else if (x instanceof Variable || y instanceof Variable) {
+                int c = x.compareTo(y);
+                if (c > 0)
+                    return swap(x, y, c);
+            }
         }
+
 
 
         return super.apply3(e, x, y, xy);

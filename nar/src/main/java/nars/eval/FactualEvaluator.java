@@ -192,7 +192,7 @@ public class FactualEvaluator extends Evaluator {
 //    private final SetMultimap<Term, Term> ifs = MultimapBuilder.hashKeys().linkedHashSetValues().build();
 
 
-    protected FactualEvaluator(Function<Atom, Functor> resolver, Function<Term, Stream<Term>> facts) {
+    private FactualEvaluator(Function<Atom, Functor> resolver, Function<Term, Stream<Term>> facts) {
         super(resolver);
         this.factResolver = facts;
     }

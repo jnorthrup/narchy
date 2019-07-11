@@ -1,8 +1,10 @@
 package nars.term.functor;
 
+import nars.$;
 import nars.eval.Evaluation;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 
 public abstract class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
 
@@ -15,10 +17,14 @@ public abstract class CommutiveBinaryBidiFunctor extends BinaryBidiFunctor {
         super(atom);
     }
 
-    public static Term[] commute(Term x, Term y) {
-        return x.compareTo(y) <= 0 ? new Term[]{x, y} : new Term[]{y, x};
+    public static Term the(Atomic func, Term x, Term y) {
+        if (x.compareTo(y) > 0) {
+            Term z = x;
+            x = y;
+            y = z;
+        }
+        return $.func(func, x, y);
     }
-
 
     @Override
     protected Term apply2(Evaluation e, Term x, Term y) {

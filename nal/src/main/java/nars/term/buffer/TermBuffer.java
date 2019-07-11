@@ -51,7 +51,7 @@ public class TermBuffer {
      *  if a non-deterministic functor evaluation occurrs, it must not propagate
      *  because that will just cause the same value to be assumed when it should not be.
      * */
-    int volRemain;
+    public int volRemain;
     private final TermBuilder builder;
 
     public TermBuffer clone() {

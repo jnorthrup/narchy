@@ -32,10 +32,10 @@ import java.util.concurrent.atomic.AtomicLong;
  */
 public abstract class Term implements Serializable, SubTree {
 
-    protected static final Term[] EmptyTermArray = new Term[0];
+    static final Term[] EmptyTermArray = new Term[0];
     public static final Term TRUE = new Struct("true");
     public static final Term FALSE = new Struct("false");
-    public static final String HALT = "halt.";
+    static final String HALT = "halt.";
     public static final String NO = "no.";
     public static final String YES = "yes.";
 
@@ -138,7 +138,7 @@ public abstract class Term implements Serializable, SubTree {
      *
      * @param idExecCtx Execution Context identified
      */
-    public Term copyGoal(AbstractMap<Var, Var> vars, int idExecCtx) {
+    Term copyGoal(AbstractMap<Var, Var> vars, int idExecCtx) {
         return copy(vars, idExecCtx);
     }
 
@@ -146,7 +146,7 @@ public abstract class Term implements Serializable, SubTree {
     /**
      * gets a copy of this term for the output
      */
-    public Term copyResult(Collection<Var> goalVars, List<Var> resultVars) {
+    Term copyResult(Collection<Var> goalVars, List<Var> resultVars) {
         int s = goalVars.size();
         Map<Var, Var> originals;
         if (s > 0) {
@@ -196,7 +196,7 @@ public abstract class Term implements Serializable, SubTree {
      * @param y the term to unify
      * @return true if the term is unifiable with this one
      */
-    public final boolean _unify(Prolog p, Term y) {
+    private final boolean _unify(Prolog p, Term y) {
 
         if (this ==y)
             return true;
@@ -343,7 +343,7 @@ public abstract class Term implements Serializable, SubTree {
      * Gets an iterator providing
      * a term stream from a source text
      */
-    public static java.util.Iterator<Term> getIterator(String text) {
+    static java.util.Iterator<Term> getIterator(String text) {
         return new Parser(text).iterator();
     }
 

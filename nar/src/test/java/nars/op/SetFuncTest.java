@@ -1,10 +1,12 @@
 package nars.op;
 
+import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.eval.Evaluation;
+import nars.term.Compound;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
@@ -92,6 +94,15 @@ class SetFuncTest {
                 Set.of($$("(a)"),$$("(b)")),
                 Evaluation.eval($$("(member(#x,{a,b}) && (#x))"), n));
 
+    }
+    @Test void testMultiTermute1() {
+        nars.term.Term s = $.$$("(((--,(tetris-->((--,#2)&&left))) &&+4710 (member(#1,{right,#2})&&(tetris-->#1))) &&+4000 member(#1,{2,3}))");
+        assertEquals(
+                Set.of(
+                        $$("((--,(tetris-->((--,2)&&left))) &&+4710 (tetris-->2))"),
+                        $$("((--,(tetris-->((--,3)&&left))) &&+4710 (tetris-->3))")
+                ),
+                Evaluation.eval((Compound)s, n));
     }
 
     @Test void testMember_Combine_Rule() {

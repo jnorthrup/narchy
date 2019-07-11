@@ -39,31 +39,24 @@ public class EqualTest {
         assertSolves("(&&,(#1,add(#2,1)),(#1,#2),equal(#2,3))", "((#1,3)&&(#1,4))");
     }
 
-    @Test public void testEqualSolutionAddInverse1a() {
+    @Test public void testEqualSolutionAddInverse() {
         assertEval($$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
         assertEval($$("x(0)"), "(x(#1) && equal(add(1,#1),1))");
         assertEval($$("x(0)"), "(x(#1) && equal(1,add(#1,1)))");
         assertEval($$("x(0)"), "(x(#1) && equal(1,add(1,#1)))");
     }
 
-    @Test public void testEqualSolutionAddInverse1b() {
-        assertEval($$("x(0)"), "(x(#1) && equal(add(1,#1),1))");
-    }
-    @Test public void testEqualSolutionAddInverse2a() {
-        assertEval($$("x(0)"), "(x(#1) && equal(1,add(#1,1)))");
-    }
-    @Test public void testEqualSolutionAddInverse2b() {
-        assertEval($$("x(0)"), "(x(#1) && equal(1,add(1,#1)))");
-    }
-
-    @Test public void testEqualSolutionMulInverse1a() {
+    @Test public void testEqualSolutionMulInverseA() {
         assertEval($$("x(-2)"), "(x(#1) && equal(mul(#1,-1),2))");
         assertEval($$("x(-2)"), "(x(#1) && equal(mul(-1,#1),2))");
         assertEval($$("x(-2)"), "(x(#1) && equal(2,mul(#1,-1)))");
         assertEval($$("x(-2)"), "(x(#1) && equal(2,mul(-1,#1)))");
     }
-    @Test public void testEqualSolutionMulInverse1b() {
+    @Test public void testEqualSolutionMulInverseB() {
         assertEval($$("x(1)"), "(x(#1) && equal(mul(2,#1),2))");
+        assertEval($$("x(1)"), "(x(#1) && equal(mul(#1,2),2))");
+        assertEval($$("x(1)"), "(x(#1) && equal(2,mul(#1,2)))");
+        assertEval($$("x(1)"), "(x(#1) && equal(2,mul(2,#1)))");
     }
 
     @Test public void testEqualSolutionComplex() {

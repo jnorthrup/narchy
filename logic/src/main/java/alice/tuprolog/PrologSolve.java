@@ -18,7 +18,8 @@
 package alice.tuprolog;
 
 
-import java.util.ArrayList;
+import jcog.data.list.FasterList;
+
 import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -28,7 +29,7 @@ import java.util.List;
  */
 public class PrologSolve {
 
-	
+
 	State  nextState;
 	final Term   query;
 	Struct startGoal;
@@ -98,21 +99,16 @@ public class PrologSolve {
 	 * Methods for spyListeners
 	 */
 
-	public Term getQuery() {
-		return query;
-	}
-
-//	public int getNumDemoSteps() {
-//		return nDemoSteps;
-//	}
 
 	public List<PrologContext> getExecutionStack() {
-		ArrayList<PrologContext> l = new ArrayList<>();
 		PrologContext t = currentContext;
-		while (t != null) {
+		if (t == null) return List.of();
+
+		List<PrologContext> l = new FasterList<>(1);
+		do {
 			l.add(t);
 			t = t.fatherCtx;
-		}
+		} while (t!=null);
 		return l;
 	}
 

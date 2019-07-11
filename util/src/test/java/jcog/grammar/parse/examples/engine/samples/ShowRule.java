@@ -18,7 +18,7 @@ public class ShowRule {
 
 		Variable name = new Variable("Name");
 		Variable alt = new Variable("Alt");
-		Atom fiveThou = new Atom(new Integer(5000));
+		Atom fiveThou = new Atom(5000);
 
 		Rule r = new Rule(new Structure[] { new Structure("highCity", new Term[] { name }), new Structure("city", new Term[] { name, alt }), new Comparison(">", alt, fiveThou) });
 

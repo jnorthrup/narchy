@@ -42,6 +42,8 @@ abstract public class MapSubst implements Subst {
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
                 Map.Entry<? extends Term, Term> e1 = ii.next(), e2 = ii.next();
+                if(e1 == null || e2 == null)
+                    throw new NullPointerException();
                 Term a = e1.getKey(), b = e2.getKey();
 
                 if (x.impossibleSubTerm(a)) {
@@ -53,7 +55,7 @@ abstract public class MapSubst implements Subst {
                     if (x.impossibleSubTerm(b))
                         return x.transform(replace(a, e1.getValue()));
                     else
-                        return x.transform(new MapSubst2(e1, e2));
+                        return x.transform(new MapSubst2(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue()));
                 }
             }
             default: {
@@ -94,10 +96,6 @@ abstract public class MapSubst implements Subst {
 
     private static final class MapSubst2 extends MapSubstWithStructFilter {
         final Term ax, ay, bx, by;
-
-        MapSubst2(Map.Entry<? extends Term, Term> a, Map.Entry<? extends Term, Term> b){
-            this(a.getKey(), a.getValue(), b.getKey(), b.getValue());
-        }
 
         MapSubst2(Term ax, Term ay, Term bx, Term by) {
             this(ax, ay, bx, by, ax.structure() | bx.structure());

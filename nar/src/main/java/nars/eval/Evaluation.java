@@ -2,7 +2,6 @@ package nars.eval;
 
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
-import jcog.version.VersionMap;
 import nars.NAR;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -39,7 +38,7 @@ public class Evaluation extends Termerator {
         this.each = (Predicate<Term>) this;
     }
 
-    public Evaluation(Predicate<Term> each) {
+    Evaluation(Predicate<Term> each) {
         this.each = each;
     }
 
@@ -48,9 +47,9 @@ public class Evaluation extends Termerator {
         int before = v.size();
 
         if (termutes.size() == 1) {
-            Iterable<Predicate<VersionMap<Term, Term>>> t = termutes.remove(0);
-            for (Predicate tt : t) {
-                if (tt.test(subs)) {
+            Iterable<Predicate<Termerator>> t = termutes.remove(0);
+            for (Predicate<Termerator> tt : t) {
+                if (tt.test(this)) {
                     if (!recurse(e, y))
                         break;
                 }
@@ -68,10 +67,10 @@ public class Evaluation extends Termerator {
 
                 Predicate/*<VersionMap<Term,Term>>*/[] c = ci.next();
 
-                for (Predicate<VersionMap<Term, Term>> cc : c) {
+                for (Predicate<Termerator> cc : c) {
                     if (cc == null)
                         break; //null target list
-                    if (!cc.test(subs))
+                    if (!cc.test(this))
                         continue nextProduct;
                 }
 
@@ -118,13 +117,13 @@ public class Evaluation extends Termerator {
         if (clauses != null && !clauses.isEmpty()) {
 
             Term prev;
-            int vStart, tried, mutStart;
+            int vStart, mods, mutStart;
             //iterate until stable
             main:
             do {
                 prev = y;
                 mutStart = termutators();
-                tried = 0;
+                mods = 0;
                 Iterator<Term> ii = clauses.iterator();
                 while (ii.hasNext()) {
                     vStart = now();
@@ -189,7 +188,7 @@ public class Evaluation extends Termerator {
 
 
                     if (substing || (z != null && z != a )) {
-                        tried++;
+                        mods++;
 
                         Term y0 = y;
                         if (z != null) {
@@ -212,14 +211,14 @@ public class Evaluation extends Termerator {
                             break main;
 
                          if (z != null || substing) {
-                             Term finalA = a;
+
 
                              int clausesRemain = clauses.size();
                              for (int i = 0, clausesSize = clausesRemain; i < clausesSize; i++) {
                                  Term o = clauses.get(i);
                                  Term p;
                                  if (z != null)
-                                     p = o.replace(finalA, z);
+                                     p = o.replace(a, z);
                                  else
                                      p = o;
 
@@ -244,15 +243,15 @@ public class Evaluation extends Termerator {
                                          }
                                      }
 
-                                     if (q==Null || !Functor.isFunc(q)) {
+//                                     if (q==Null /*|| !Functor.isFunc(q)*/) {
                                         clauses.setFast(i, null);
                                         clausesRemain--;
-                                     } else {
-
-                                         clauses.setFast(i, q);
-
-
-                                     }
+//                                     } else {
+//
+//                                         clauses.setFast(i, q);
+//
+//
+//                                     }
                                  }
 
 
@@ -268,7 +267,7 @@ public class Evaluation extends Termerator {
 
                 }
 
-            } while ((y != prev) || (tried > 0));
+            } while ((!y.equals(prev)) || (mods > 0));
         }
 
         assert (y != null);
@@ -293,11 +292,11 @@ public class Evaluation extends Termerator {
         }
     }
 
-    protected Term boolTrue(Term x) {
+    Term boolTrue(Term x) {
         return x;
     }
 
-    protected Term boolFalse(Term x) {
+    Term boolFalse(Term x) {
         return x.neg();
     }
 
@@ -332,11 +331,11 @@ public class Evaluation extends Termerator {
         return solveFirst(x, n::axioms);
     }
 
-    public static Set<Term> eval(Compound x, NAR n) {
+    @Deprecated public static Set<Term> eval(Compound x, NAR n) {
         return eval(x, true, false, n);
     }
 
-    public static Set<Term> eval(Compound x, boolean includeTrues, boolean includeFalses, NAR n) {
+    @Deprecated public static Set<Term> eval(Compound x, boolean includeTrues, boolean includeFalses, NAR n) {
         return eval(x, includeTrues, includeFalses, n::axioms);
     }
 

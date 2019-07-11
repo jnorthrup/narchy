@@ -133,6 +133,8 @@ public class Struct extends Term {
 
 
     final static Struct EmptyList = new Struct() {
+
+
         @Override
         public void append(Term t) {
             throw new UnsupportedOperationException();
