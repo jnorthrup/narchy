@@ -2,6 +2,8 @@ package nars.eval;
 
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
+import jcog.math.ShuffledPermutations;
+import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -14,7 +16,9 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
+import java.util.Random;
 import java.util.Set;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -25,9 +29,14 @@ public class Evaluation extends Termerator {
 
     private final Predicate<Term> each;
 
+    public static void eval(Term x, Function<Atom, Functor> resolver, Predicate<Term> each) {
+        if (evalable(x))
+            new Evaluation(each).evalTry((Compound)x, new Evaluator(resolver), false);
+    }
+
     private static void eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver, Predicate<Term> each) {
 
-        if (canEval(x)) {
+        if (evalable(x)) {
             new Evaluator(resolver).eval(each, includeTrues, includeFalses, x);
         } else {
             each.test(x); //didnt need evaluating, just input
@@ -47,52 +56,74 @@ public class Evaluation extends Termerator {
         int before = v.size();
 
         if (termutes.size() == 1) {
-            Iterable<Predicate<Termerator>> t = termutes.remove(0);
-            for (Predicate<Termerator> tt : t) {
-                if (tt.test(this)) {
-                    if (!recurse(e, y))
-                        break;
-                }
-                v.revert(before);
-            }
+            return termute1(e, y, before);
         } else {
-            CartesianIterator<Predicate>/*<VersionMap<Term,Term>>>*/ ci =
-                    new CartesianIterator(
-                            Predicate[]::new, termutes.toArrayRecycled(Iterable[]::new));
-            termutes.clear();
-            nextProduct:
-            while (ci.hasNext()) {
+            return termuteN(e, y, before);
+        }
+    }
 
-                v.revert(before);
+    protected Random random() {
+        return ThreadLocalRandom.current();
+    }
 
-                Predicate/*<VersionMap<Term,Term>>*/[] c = ci.next();
+    private boolean termuteN(Evaluator e, Term y, int start) {
 
-                for (Predicate<Termerator> cc : c) {
-                    if (cc == null)
-                        break; //null target list
-                    if (!cc.test(this))
-                        continue nextProduct;
-                }
+        Iterable<Predicate<Termerator>>[] tt = termutes.toArrayRecycled(Iterable[]::new);
+        for (int i = 0, ttLength = tt.length; i < ttLength; i++)
+            tt[i] = shuffle(tt[i]);
+        ArrayUtil.shuffle(tt, random());
 
-                //all components applied successfully
+        CartesianIterator<Predicate<Termerator>> ci = new CartesianIterator(Predicate[]::new, tt);
 
-                if (!recurse(e, y))
-                    return false;
+        termutes.clear();
 
+        nextProduct: while (ci.hasNext()) {
+
+            v.revert(start);
+
+            Predicate/*<VersionMap<Term,Term>>*/[] c = ci.next();
+
+            for (Predicate<Termerator> cc : c) {
+//                if (cc == null)
+//                    break; //null target list
+                if (!cc.test(this))
+                    continue nextProduct;
             }
+
+            //all components applied successfully
+
+            if (!recurse(e, y))
+                return false;
+
         }
         return true;
     }
 
+
+    private boolean termute1(Evaluator e, Term y, int start) {
+        Iterable<Predicate<Termerator>> t = shuffle(termutes.remove(0));
+        for (Predicate<Termerator> tt : t) {
+            if (tt.test(this)) {
+                if (!recurse(e, y))
+                    return false;
+            }
+            v.revert(start);
+        }
+        return true;
+    }
+
+    private Iterable<Predicate<Termerator>> shuffle(Iterable<Predicate<Termerator>> t) {
+        return ShuffledPermutations.shuffle(t, random());
+    }
+
     private boolean recurse(Evaluator e, Term y) {
         Term z = y.replace(subs);
-        //recurse
-        return z == y || (z instanceof Compound && eval(e, (Compound)z));  //CUT
+        return y.equals(z) || eval(e, z);  //CUT
     }
 
 
-    private boolean eval(Evaluator e, final Compound x) {
-        return eval(e, x, e.clauses(x, this));
+    public boolean eval(Evaluator e, final Term x) {
+        return eval(e, x, x instanceof Compound ? e.clauses((Compound)x, this) : null);
     }
 
     /**
@@ -110,7 +141,7 @@ public class Evaluation extends Termerator {
         return eval(e, x, c);
     }
 
-    private boolean eval(Evaluator e, final Compound x, @Nullable FasterList<Term> clauses) {
+    private boolean eval(Evaluator e, final Term x, @Nullable FasterList<Term> clauses) {
 
         Term y = x;
 
@@ -310,7 +341,7 @@ public class Evaluation extends Termerator {
 
 
 
-    private static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
+    public static Term solveFirst(Term x, Function<Atom, Functor> axioms) {
         Term[] y = new Term[1];
         Evaluation.eval(x, true, true, axioms, (what) -> {
             if (what instanceof Bool) {
@@ -323,13 +354,6 @@ public class Evaluation extends Termerator {
         return y[0];
     }
 
-
-    /**
-     * returns first result. returns null if no solutions
-     */
-    public static Term solveFirst(Compound x, NAR n) {
-        return solveFirst(x, n::axioms);
-    }
 
     @Deprecated public static Set<Term> eval(Compound x, NAR n) {
         return eval(x, true, false, n);

@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
@@ -7,9 +8,12 @@ import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
 import nars.eval.Evaluation;
 import nars.term.Compound;
+import nars.term.Term;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import static nars.$.$$;
@@ -105,6 +109,7 @@ class SetFuncTest {
                 Evaluation.eval((Compound)s, n));
     }
 
+
     @Test void testMember_Combine_Rule() {
         NAR n = NARS.shell();
         new BasicDeriver(Derivers.files(n, "nal2.member.nal"));
@@ -124,5 +129,21 @@ class SetFuncTest {
         int cycles = 500;
         t.mustBelieve(cycles, "(member(#1,{a,c}) && (x(#1), y(#1)))", 1, 0.81f);
         t.run(cycles);
+    }
+
+    @Test void testTermutesShuffled() {
+
+        nars.term.Term s = $.$$("(member(#1,{a,b,c})&&(x-->#1)))");
+
+        Set<List<Term>> permutes = new HashSet();
+
+        for (int i = 0; i < 32; i++) {
+            List<Term> f = new FasterList();
+            Evaluation.eval(s, n::axioms, f::add);
+            permutes.add(f);
+        }
+
+        System.out.println(permutes);
+        assertEquals(6, permutes.size());
     }
 }

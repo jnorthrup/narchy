@@ -1631,7 +1631,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     @Deprecated public Term eval(Term x) {
         if (x instanceof Compound) {
-            Term y = Evaluation.solveFirst((Compound)x, this);
+            Term y = Evaluation.solveFirst((Compound) x, this::axioms);
             return y == null ? x : y;
         } else {
             return x;

@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 
 import java.util.Random;
@@ -46,5 +47,21 @@ public class ShuffledPermutations extends Permutations {
         for (int i = 0; i < l; i++)
             target[i] = permute(i);
         return target;
+    }
+
+
+    /** TODO improve the buffering characteristics of this
+     *  TODO make re-shuffling optional on each new iteration, currently this will shuffle once and it will get repeated if re-iterated
+     * */
+    public static <X> Iterable<X> shuffle(Iterable<X> i, Random rng) {
+        FasterList<X> f = new FasterList<>(i);
+        if (f.size() <= 1)
+            return i; //unchanged
+        else {
+            f.trimToSize();
+            f.shuffleThis(rng);
+            return f;
+        }
+
     }
 }

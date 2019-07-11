@@ -413,7 +413,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
         r.merge(existing);
-        return;
 
     }
 

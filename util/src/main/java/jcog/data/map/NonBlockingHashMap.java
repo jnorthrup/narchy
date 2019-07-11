@@ -536,7 +536,7 @@ public class NonBlockingHashMap<TypeK, TypeV>
    *  appropriate size.  Large numbers here when used with a small count of
    *  elements will sacrifice space for a small amount of time gained.  The
    *  initial size will be rounded up internally to the next larger power of 2. */
-  private NonBlockingHashMap(final int initial_sz) { initialize(initial_sz); }
+  public NonBlockingHashMap(final int initial_sz) { initialize(initial_sz); }
   private void initialize(int initial_sz ) {
     if( initial_sz < 0 ) throw new IllegalArgumentException();
     int i;                      // Convert to next largest power-of-2

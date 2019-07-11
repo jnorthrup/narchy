@@ -25,6 +25,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Deprecated public final Term normal;
 
 
+
     public ImageBeliefTable(Term image, boolean beliefOrGoal) {
         super(image, beliefOrGoal);
 
@@ -53,12 +54,12 @@ public class ImageBeliefTable extends DynamicTaskTable {
             c.table(normalized.punc()).remember(r);
         }
 
+        if (r.remembered!=null && r.remembered.containsInstance(normalized)) {
 //        if (!r.store || r.remembered!=null) {
             r.store = false;
-            r.link = r.remembered!=null;
-            r.notify = true; //TODO limit these by storing last notification time and compared like Task.merge creation()
+            r.link = r.notify = true;
             r.remember(imaged);
-//        }
+        }
     }
 
     /**

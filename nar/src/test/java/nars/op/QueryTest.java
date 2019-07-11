@@ -28,7 +28,7 @@ public class QueryTest {
         n.believe("f(y)");
 
         Set<Term> e = FactualEvaluator.queryAll($$("f(?what)"), n);
-        assertEquals("[f(x), f(y)]", e.toString());
+        assertEquals(Set.of($$("f(x)"), $$("f(y)")), e);
     }
 
     @Test void testFactNeg() throws Narsese.NarseseException {

@@ -1,5 +1,6 @@
 package nars.op;
 
+import nars.$;
 import nars.The;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
@@ -9,8 +10,8 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.transform.InlineFunctor;
 
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.True;
+import static nars.Op.SETe;
+import static nars.term.atom.Bool.*;
 
 /** equivalent to prolog member/2:
  *      member(U,S)  |-   U is in S
@@ -38,28 +39,41 @@ public final class Member extends Functor implements The, InlineFunctor<Evaluati
             return null; //can no be determined
 
         Subterms yy;
+        Term rewrite = null;
         if (y instanceof Compound) {
             yy = y.subterms();
-            if (yy.contains(x))
-                return True;
+            if (yy.contains(x)) {
+                if (evaluation!=null)
+                    return True; //an instance being generated
+                else {
+                    Term[] zz = yy.removing(x);
+                    if (zz.length == 0)
+                        return True;
+                    Term zzz = SETe.the(zz);
+                    rewrite = $.func(member, x, zzz);
+                    yy = zzz.subterms();
+                    y = zzz;
+                }
+            }
         } else {
             yy = null;
-
         }
 
 
         if (xVar) {
-            if (evaluation!=null) { //HACK
+            if (evaluation!=null) {
                 if (y instanceof Compound)
                     evaluation.canBe(x, yy);
-                else
-                    evaluation.is(x, y);
+                else {
+                    if (!evaluation.is(x, y))
+                        return Null;
+                }
             }
-            return null;
+            return rewrite;
         }
 
         if (yVar) {
-            return null; //can no be determined
+            return rewrite; //can no be determined
         }
 
         return False;

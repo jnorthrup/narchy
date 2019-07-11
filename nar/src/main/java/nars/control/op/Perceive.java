@@ -55,7 +55,7 @@ public enum Perceive { ;
         else
             perceived = r;
 
-        if (Evaluation.canEval(x.term())) {
+        if (Evaluation.evalable(x.term())) {
             FasterList<Task> rt = new TaskEvaluation(x, w).result;
             if (rt!=null) {
                 rt.removeInstance(x); //something was eval, remove the input HACK

@@ -1,6 +1,5 @@
 package nars.term.buffer;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
 import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
@@ -14,12 +13,10 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
+import nars.term.util.TermException;
 import nars.term.util.transform.TermTransform;
 
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.Null;
@@ -39,11 +36,11 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
     protected MultiVersionMap<Term, Term> subs = null;
 
-    public Termerator() {
+    protected Termerator() {
 
     }
 
-    public Termerator(Term x) {
+    Termerator(Term x) {
         this();
         append(x);
     }
@@ -57,14 +54,21 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * 2-ary AND
      */
     public static Predicate<Termerator> assign(Term x, Term xx, Term y, Term yy) {
+        if (x.equals(xx))
+            throw new TermException("assign cycle", x);
+        if (y.equals(yy))
+            throw new TermException("assign cycle", y);
+
         return m -> m.is(x, xx) && m.is(y, yy);
     }
 
     protected static Predicate<Termerator> assign(Term x, Term y) {
+        if (x.equals(y))
+            throw new TermException("assign cycle", x);
         return (subst) -> subst.is(x, y);
     }
 
-    public static boolean canEval(Termlike x) {
+    public static boolean evalable(Termlike x) {
         return x instanceof Compound && x.hasAll(Op.FuncBits);
     }
 
@@ -81,10 +85,19 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * assert a termutation
      */
     public void canBe(Term x, Term... y) {
-        if (y.length == 1)
+        if (y.length == 0)
+            throw new NullPointerException();
+        else if (y.length == 1)
             is(x, y[0]);
-        else
+        else {
+
+            //remove duplicates
+            Set<Term> yy = Set.of(y);
+            if (yy.size()!=y.length)
+                y = yy.toArray(Op.EmptyTermArray);
+
             canBe(x, ArrayIterator.iterable(y));
+        }
     }
 
     @Override
@@ -102,46 +115,36 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * assign 1 variable
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
-    public boolean is(Term x, Term y) {
+    public final boolean is(Term x, Term y) {
         if (x.equals(y))
             return true;
 
         if (y == Null) return false;
 
-        boolean empty = subs==null || subs.isEmpty();
+        boolean empty = v==null || v.size()==0;
 
         if (!empty) {
             Term z = y.replace(subs);  //transform the assignment result preventing loops etc
             if (!z.equals(y))
                 return is(x, z); //recurse
-
-//            Term existingAssignment = !empty ? subs.get(x) : null;
-//            if (existingAssignment!=null)
-//                return y.equals(existingAssignment);
         }
 
         if (y.containsRecursively(x))
             return false; //loop
 
-        ensureReady();
-
-        if (y instanceof Variable) {
-            //check for a reverse assignment from an existing constant
-            Term y0 = subs.get(x);
-            if (y0!=null && !(y0 instanceof Variable)) {
-                return is(y,y0);
+        if (!empty) {
+            if (y instanceof Variable) {
+                //check for a reverse assignment from an existing constant
+                Term y0 = subs.get(x);
+                if (y0 != null && !(y0 instanceof Variable))
+                    return is(y, y0);
             }
+        } else {
+            ensureReady();
         }
 
-
-        boolean set = subs.set(x, y);
-        assert(set);
-        return subs.replace((sx, sy)->{
-           if (sx!=x) {
-               sy = sy.replace(x, y);
-           }
-           return sy;
-        });
+        boolean set = subs.set(x, y);     assert(set);
+        return subs.replace((sx, sy)-> !x.equals(sx) ? sy.replace(x, y) : sy);
     }
 
     /**
@@ -152,7 +155,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
         return is(x, xx) && is(y, yy);
     }
 
-    public void canBe(Predicate<Termerator> x) {
+    private void canBe(Predicate<Termerator> x) {
         canBe(List.of(x));
     }
 
@@ -197,18 +200,9 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     }
 
     public void canBe(Term x, Iterable<Term> y) {
-        canBe(Iterables.transform(y, yy -> assign(x, yy)));
+        canBe(()-> new ChoiceIterator(x, y));
     }
 
-    public void canBe(Term a, Term b, Term x, Term y) {
-        if (x.equals(y)) {
-            canBe(a, b);
-        } else if (a.equals(b)) {
-            canBe(x, y);
-        } else {
-            canBe(assign(a, b, x, y));
-        }
-    }
 
     @Override
     protected Term nextTerm(byte[] bytes, int[] range) {
@@ -277,6 +271,27 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
             }
         }
 
+    }
+
+    private static final class ChoiceIterator implements Iterator<Predicate<Termerator>> {
+
+        final Iterator<Term> y;
+        private final Term x;
+
+        ChoiceIterator(Term x, Iterable<Term> y) {
+            this.x = x;
+            this.y = y.iterator();
+        }
+
+        @Override
+        public boolean hasNext() {
+            return y.hasNext();
+        }
+
+        @Override
+        public Predicate<Termerator> next() {
+            return assign(x, y.next());
+        }
     }
 
 

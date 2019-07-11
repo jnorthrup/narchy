@@ -85,8 +85,8 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 
 	/** if true, the value returned by next() will be cloned.  otherwise it is re-used in next iteration */
 	protected boolean cloneNext() {
-		return true;
-		//return false; //<- does this not work? TODO test
+		//return true;
+		return false; //<- does this not work? TODO test
 	}
 
 	/**
@@ -96,8 +96,8 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	private void setNextValue(int index) {
 		Iterator<X> it = iterators[index];
 		//TODO elide singleton iterator replacement
-		if (it.hasNext())
-			values[index] = it.next();
+		//if (it.hasNext())
+		values[index] = it.next();
 	}
 
 	@Override

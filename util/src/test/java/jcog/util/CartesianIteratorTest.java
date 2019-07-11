@@ -12,20 +12,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class CartesianIteratorTest {
 
 
-
-
-
-
-
-
-
-
-
-
     @Test
     void test_0() {
-        CartesianIterator<String> it = new CartesianIterator(String[]::new,
-                List.of(new String[0]));
+        CartesianIterator<String> it = new CartesianIterator(String[]::new, List.of(new String[0]));
 
         assertFalse(it.hasNext());
         try {
@@ -36,8 +25,7 @@ class CartesianIteratorTest {
 
     @Test
     void test_1() {
-        CartesianIterator<String> it = new CartesianIterator(String[]::new,
-                List.of(new String[] {"a"}));
+        CartesianIterator<String> it = new CartesianIterator(String[]::new, List.of(new String[]{"a"}));
 
         assertTrue(it.hasNext());
         assertEquals("a", Joiner.on("").join(it.next()));
@@ -47,7 +35,7 @@ class CartesianIteratorTest {
     @Test
     void test_2() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[] {"a", "b"}));
+                Arrays.asList(new String[]{"a", "b"}));
 
         assertTrue(it.hasNext());
         assertEquals("a", Joiner.on("").join(it.next()));
@@ -59,8 +47,8 @@ class CartesianIteratorTest {
     @Test
     void test_2_0() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[] {"a", "b"}),
-                Arrays.asList(new String[] {}));
+                Arrays.asList(new String[]{"a", "b"}),
+                Arrays.asList(new String[]{}));
 
         assertFalse(it.hasNext());
         try {
@@ -72,8 +60,8 @@ class CartesianIteratorTest {
     @Test
     void test_2_2() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[] {"a", "b"}),
-                Arrays.asList(new String[] {"c", "d"}));
+                Arrays.asList(new String[]{"a", "b"}),
+                Arrays.asList(new String[]{"c", "d"}));
 
         assertTrue(it.hasNext());
         assertEquals("ac", Joiner.on("").join(it.next()));
@@ -89,9 +77,9 @@ class CartesianIteratorTest {
     @Test
     void test_2_3_4() {
         CartesianIterator it = new CartesianIterator(String[]::new,
-                Arrays.asList(new String[] {"a", "b"}),
-                Arrays.asList(new String[] {"c", "d", "e"}),
-                Arrays.asList(new String[] {"f", "g", "h", "i"}));
+                Arrays.asList(new String[]{"a", "b"}),
+                Arrays.asList(new String[]{"c", "d", "e"}),
+                Arrays.asList(new String[]{"f", "g", "h", "i"}));
 
         assertTrue(it.hasNext());
         assertEquals("acf", Joiner.on("").join(it.next()));
