@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.TODO;
 import nars.$;
 import nars.Op;
 import nars.The;
@@ -16,6 +15,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.INH;
 import static nars.Op.INT;
+import static nars.op.Cmp.Zero;
 import static nars.term.atom.Bool.*;
 
 public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The {
@@ -98,8 +98,8 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         }
 
 
-        if (yHasVar && !xHasVar) {
-            //swap
+        if (x.volume() < y.volume()) {
+            //swap for canonical comparison
             Term z = x;
             x = y;
             y = z;
@@ -111,25 +111,40 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
         }
 
 
-        if (xHasVar && xOp == INH && yOp == INT) {
+        if (xHasVar && xOp == INH) {
             //algebraic solutions TODO use symbolic algebra system
             Term xf = Functor.func(x);
             if (xf.equals(MathFunc.add)) {
                 Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
-                if (xa0.op().var && xa1.op() == INT)
-                    return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null; //"equal(add(#x,a),b)"
-                else if (xa1.op().var && xa0.op() == INT)
-                    throw new TODO();
+                if (yOp == INT && xa0 instanceof Variable && xa1.op() == INT) {
+                    return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null; //"equal(add(#x,a),y)"
+                }
 
-                //TODO (#x,add(#x,#y)) |- is(#y, 0)
-                //TODO (#x,add(#x,#x)) |- is(#x, 0)
+                if (xa1 instanceof Variable && xa0.equals(y)) {
+                    //equal(add(#x,#y),#x) |- is(#y, 0)
+                    return e.is(xa1, Zero) ? True : Null;
+                }
+                if (xa0 instanceof Variable && xa1.equals(y)) {
+                    //equal(add(#y,#x),#x) |- is(#y, 0)
+                    return e.is(xa0, Zero) ? True : Null;  //can this happen?
+                }
+                //includes: (#x,add(#x,#x)) |- is(#x, 0)
+
+                return e.is(xa0, Int.the(((Int) y).i - ((Int) xa1).i)) ? True : Null;
+
+//                if (xa1 instanceof Variable && xa0.op() == INT) { //shouldnt be necessary if sorted in correct order
+//                    throw new TODO();
+//                }
 
             } else if (xf.equals(MathFunc.mul)) {
                 Subterms xa = Functor.args((Compound) x, 2);
                 Term xa0 = xa.sub(0), xa1 = xa.sub(1);
-                if (xa0.op().var && xa1.op() == INT)
+                if (yOp == INT && xa0 instanceof Variable && xa1.op() == INT)
                     return e.is(xa0, $.the(((double) ((Int) y).i) / ((Int) xa1).i)) ? True : Null; //"equal(mul(#x,a),b)"
+
+                if (yOp == INT && xa1 instanceof Variable && xa0.op() == INT)
+                    return e.is(xa1, $.the(((double) ((Int) y).i) / ((Int) xa0).i)) ? True : Null; //"equal(mul(a,#x),b)"
 
                 //TODO (#x,mul(#x,#y)) |- is(#y, 1)
                 //TODO (#x,mul(#x,#x)) |- is(#x, 1)

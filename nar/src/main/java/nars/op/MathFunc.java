@@ -21,8 +21,7 @@ public enum MathFunc { ;
 
 
 
-    public final static Functor add =
-            new ArithmeticCommutiveBinaryBidiFunctor("add") {
+    public final static Functor add = new ArithmeticCommutiveBinaryBidiFunctor("add") {
 
                 @Override
                 @Nullable protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
@@ -198,7 +197,7 @@ public enum MathFunc { ;
 
             } else {
                 boolean changed = false;
-                if (y.compareTo(x) < 0) {
+                if (y.compareTo(x) > 0) {
                     
                     Term t = x;
                     x = y;

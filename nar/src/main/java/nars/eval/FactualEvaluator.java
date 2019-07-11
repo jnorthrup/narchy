@@ -202,7 +202,7 @@ public class FactualEvaluator extends Evaluator {
     }
 
     @Override
-    public @Nullable ArrayHashSet<Term> clauses(Compound x, Evaluation e) {
+    public @Nullable FasterList<Term> clauses(Compound x, Evaluation e) {
 
 
         /** actually should be a set but duplicates should not normally be encountered */

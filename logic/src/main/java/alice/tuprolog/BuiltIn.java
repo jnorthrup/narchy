@@ -101,9 +101,9 @@ public final class BuiltIn extends PrologLib {
 
             Struct ss = (Struct) arg0;
             if (ss.name().equals(":-")) {
-                int n = (ss.toList().listSize()) - 1;
-                for (int i = 0; i < n; i++) {
-                    Term argi = ss.sub(i);
+                Iterator<Term> ssi = ss.listIterator();
+                while (ssi.hasNext()) {
+                    Term argi = ssi.next();
                     if (!(argi instanceof Struct)) {
                         if (argi instanceof Var)
                             throw PrologError.instantiation_error(prolog, 1);
@@ -126,9 +126,9 @@ public final class BuiltIn extends PrologLib {
         if (arg0 instanceof Struct) {
             Struct ss = (Struct) arg0;
             if (ss.name().equals(":-")) {
-                int n = (ss.toList().listSize()) - 1;
-                for (int i = 0; i < n; i++) {
-                    Term argi = ss.sub(i);
+                Iterator<Term> ssi = ss.listIterator();
+                while (ssi.hasNext()) {
+                    Term argi = ssi.next();
                     if (!(argi instanceof Struct)) {
                         if (argi instanceof Var)
                             throw PrologError.instantiation_error(prolog, 1);
@@ -414,12 +414,11 @@ public final class BuiltIn extends PrologLib {
     public boolean $tolist_2(Term arg0, Term arg1) throws PrologError {
 
         arg0 = arg0.term();
-        arg1 = arg1.term();
         if (arg0 instanceof Var)
             throw PrologError.instantiation_error(prolog, 1);
         if (arg0 instanceof Struct) {
             Term val0 = ((Struct) arg0).toList();
-            return (val0 != null && unify(arg1, val0));
+            return val0 != null && unify(arg1.term(), val0);
         }
         throw PrologError.type_error(prolog, 1, "struct", arg0);
     }
@@ -428,7 +427,6 @@ public final class BuiltIn extends PrologLib {
     public boolean $fromlist_2(Term arg0, Term arg1) throws PrologError {
 
 
-        arg0 = arg0.term();
         arg1 = arg1.term();
         if (arg1 instanceof Var)
             throw PrologError.instantiation_error(prolog, 2);
@@ -436,10 +434,7 @@ public final class BuiltIn extends PrologLib {
             throw PrologError.type_error(prolog, 2, "list", arg1);
         }
         Term val1 = ((Struct) arg1).fromList();
-        if (val1 == null)
-
-            return false;
-        return (unify(arg0, val1));
+        return val1 != null && unify(arg0.term(), val1);
     }
 
     public boolean copy_term_2(Term arg0, Term arg1) {
@@ -453,14 +448,13 @@ public final class BuiltIn extends PrologLib {
 
     public boolean $append_2(Term arg0, Term arg1) throws PrologError {
 
-        arg0 = arg0.term();
         arg1 = arg1.term();
         if (arg1 instanceof Var)
             throw PrologError.instantiation_error(prolog, 2);
         if (!arg1.isList()) {
             throw PrologError.type_error(prolog, 2, "list", arg1);
         }
-        ((Struct) arg1).append(arg0);
+        ((Struct) arg1).append(arg0.term());
         return true;
     }
 
@@ -469,9 +463,10 @@ public final class BuiltIn extends PrologLib {
 
 
         arg0 = arg0.term();
-        arg1 = arg1.term();
         if (arg0 instanceof Var)
             throw PrologError.instantiation_error(prolog, 1);
+
+        arg1 = arg1.term();
         if (/* !arg0 instanceof Struct || */!arg1.isList())
             throw PrologError.type_error(prolog, 2, "list", arg1);
 
@@ -556,17 +551,23 @@ public final class BuiltIn extends PrologLib {
         String specifier = ((Struct) arg1).name();
 
 
-        if (!specifier.equals("fx") && !specifier.equals("fy")
-                && !specifier.equals("xf") && !specifier.equals("yf")
-                && !specifier.equals("xfx") && !specifier.equals("yfx")
-                && !specifier.equals("xfy"))
-            throw PrologError.domain_error(prolog, 2,
-                    "operator_specifier", arg1);
+        switch (specifier) {
+            case "fx":
+            case "fy":
+            case "xf":
+            case "yf":
+            case "xfx":
+            case "xfy":
+            case "yfx":
+                break;
+            default:
+                throw PrologError.domain_error(prolog, 2,
+                        "operator_specifier", arg1);
+        }
+
         if (arg2.isList()) {
-            for (Iterator<? extends Term> operators = ((Struct) arg2).listIterator(); operators
-                    .hasNext(); ) {
-                Struct operator = (Struct) operators.next();
-                ops.opNew(operator.name(), specifier, priority);
+            for (Iterator<? extends Term> operators = ((Struct) arg2).listIterator(); operators.hasNext(); ) {
+                ops.opNew(((Struct) operators.next()).name(), specifier, priority);
             }
         } else
             ops.opNew(((Struct) arg2).name(), specifier, priority);

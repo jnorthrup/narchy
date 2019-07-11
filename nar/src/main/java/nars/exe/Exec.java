@@ -74,8 +74,11 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
             if (x instanceof AbstractTask) {
                 if (x instanceof AbstractTask.TasksArray) {
                     //HACK
-                    for (Task tt : ((AbstractTask.TasksArray) x).tasks)
+                    for (Task tt : ((AbstractTask.TasksArray) x).tasks) {
+                        if (tt.equals(t0))
+                            throw new WTF();//cycle
                         run(tt, w);
+                    }
                 } else {
                     do {
                         x = x.next(w);

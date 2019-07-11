@@ -847,20 +847,20 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
-    public void removeNulls() {
+    public boolean removeNulls() {
         switch (size) {
             case 0:
-                return;
+                return false;
+
             case 1:
                 if (get(0) == null) {
                     size = 0;
-                    return;
-                }
-                break;
-
+                    return true;
+                } else
+                    return false;
 
             default:
-                removeIf(Objects::isNull);
+                return removeIf(Objects::isNull);
 
         }
     }

@@ -144,6 +144,12 @@ public class Struct extends Term {
         }
 
         @Override
+        public boolean isGround() {
+            return true;
+        }
+
+
+        @Override
         public boolean isEmptyList() {
             return true;
         }
@@ -157,13 +163,18 @@ public class Struct extends Term {
         public boolean isAtomic() {
             return true;
         }
+
+        @Override
+        public Iterator<Term> listIterator() {
+            return Collections.emptyIterator();
+        }
     };
 
     public static Struct emptyList() {
         return EmptyList;
     }
 
-    public static Struct emptyListMutable() {
+    static Struct emptyListMutable() {
         return new Struct();
     }
 
@@ -219,8 +230,8 @@ public class Struct extends Term {
     }
 
     @Override
-    public boolean isAtom() {
-        return subs() == 0;
+    public final boolean isAtom() {
+        return isAtomic();
     }
 
     @Override
@@ -235,7 +246,13 @@ public class Struct extends Term {
 
     @Override
     public boolean isList() {
-        return isEmptyList() || (subs() == 2 && name.equals(".") && subs[1].isList());
+        switch (name) {
+            case ".":
+                return subs() == 2 && subs[1].isList();
+            case "[]":
+                return isAtomic();
+        }
+        return false;
     }
 
     @Override
@@ -493,7 +510,7 @@ public class Struct extends Term {
     private boolean resolvable() {
         if (resolved)
             return false;
-        if (subs() == 0 || isGround()) {
+        if (isAtomic() || isGround()) {
             resolved = true;
             return false;
         }
@@ -555,7 +572,7 @@ public class Struct extends Term {
      */
     @Override
     public boolean isEmptyList() {
-        return subs() == 0 && name.equals("[]");
+        return name.equals("[]") && isAtomic();
     }
 
     /**
@@ -566,7 +583,7 @@ public class Struct extends Term {
      * If the callee structure is not a list, throws an <code>UnsupportedOperationException</code>
      * </p>
      */
-    public Term listHead() {
+    Term listHead() {
         if (!isList())
             throw new UnsupportedOperationException("The structure " + this + " is not a list.");
         return subs[0].term();
@@ -587,7 +604,7 @@ public class Struct extends Term {
      * If the callee structure is not a list, throws an <code>UnsupportedOperationException</code>
      * </p>
      */
-    public Struct listTail() {
+    Struct listTail() {
         if (!isList())
             throw new UnsupportedOperationException("The structure " + this + " is not a list.");
         return (Struct) subs[1].term();

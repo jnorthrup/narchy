@@ -187,7 +187,7 @@ public class Factorize {
 
         Pair<Term, RichIterable<ObjectBytePair<Term>>> rr = r.get(0);
         ByteSet masked = rr.getTwo().collectByte(ObjectBytePair::getTwo).toSet();
-        Set<Term> t = new UnifiedSet<>();//n - masked.size() + 1);
+        Set<Term> t = new UnifiedSet<>(n - masked.size() + 1);
         for (byte i = 0; i < n; i++)
             if (!masked.contains(i)) {
                 t.add(x[i]);

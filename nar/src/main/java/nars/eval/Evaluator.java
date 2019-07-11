@@ -1,6 +1,6 @@
 package nars.eval;
 
-import jcog.data.set.ArrayHashSet;
+import jcog.data.list.FasterList;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -11,8 +11,11 @@ import nars.term.buffer.TermBuffer;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.HeapTermTransform;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -28,6 +31,7 @@ public class Evaluator extends HeapTermTransform {
 
     final TermBuffer compoundBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap());
 
+
     public Evaluator(Function<Atom, Functor> funcResolver) {
         this.funcResolver = funcResolver;
     }
@@ -39,19 +43,20 @@ public class Evaluator extends HeapTermTransform {
 
     /**
      * discover evaluable clauses in the provided term
+     * the result will be a list of unique terms in topologically or at least heuristically sorted order
      */
     @Nullable
-    protected ArrayHashSet<Term> clauses(Compound x, Evaluation e) {
+    protected FasterList<Term> clauses(Compound x, Evaluation e) {
         return !x.hasAny(Op.FuncBits) ? null : clauseFind(x);
     }
 
     @Nullable
-    private ArrayHashSet<Term> clauseFind(Compound x) {
-        final ArrayHashSet<Term>[] clauses = new ArrayHashSet[]{null};
+    protected FasterList<Term> clauseFind(Compound x) {
+        UnifiedSet<Term> clauses = new UnifiedSet(0);
 
         x.recurseTerms(s -> s instanceof Compound && s.hasAll(Op.FuncBits), X -> {
             if (Functor.isFunc(X)) {
-                if (clauses[0] != null && clauses[0].contains(X))
+                if (clauses.contains(X))
                     return true;
 
                 compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
@@ -74,10 +79,7 @@ public class Evaluator extends HeapTermTransform {
 
                     Term yy = y.term();
                     if (yy.sub(1) instanceof Functor) {
-                        if (clauses[0] == null)
-                            clauses[0] = new ArrayHashSet<>(1);
-
-                        clauses[0].add(yy);
+                        clauses.add(yy);
                     }
                 }
 
@@ -85,9 +87,29 @@ public class Evaluator extends HeapTermTransform {
             return true;
         }, null);
 
-        return clauses[0];
+        switch (clauses.size()) {
+            case 0: return null;
+            case 1: return (FasterList<Term>) new FasterList(1).with(clauses.getOnly());
+            default: return sortTopologically(clauses.toArray(Op.EmptyTermArray));
+        }
+
     }
 
+    private FasterList<Term> sortTopologically(Term[] a) {
+        Arrays.sort(a, complexitySort);
+        //HACK more work necessary
+        return new FasterList(a);
+    }
+
+    private static final Comparator<? super Term> complexitySort = (a,b)->{
+        int vars = Integer.compare(a.vars(), b.vars());
+        if (vars!=0)
+            return vars;
+        int vol = Integer.compare(a.volume(), b.volume());
+        if (vol!=0)
+            return vol;
+        return a.compareTo(b);
+    };
 
     @Override
     public @Nullable Term applyAtomic(Atomic x) {

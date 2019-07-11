@@ -205,11 +205,11 @@ public interface Termlike {
 
 
     default boolean hasAll(int structuralVector) {
-        return structuralVector==0 || Op.has(structure(), structuralVector, true);
+        return Op.has(structure(), structuralVector, true);
     }
 
     default boolean hasAny(int structuralVector) {
-        return structuralVector!=0 && Op.has(structure(), structuralVector, false);
+        return Op.has(structure(), structuralVector, false);
     }
 
     default /* final */ boolean hasAny(/*@NotNull*/ Op op) {

@@ -53,22 +53,26 @@ class ArithmeticTest {
 
         String fwd = n.eval($.$("add(#x,1)")).toString();
         String rev = n.eval($.$("add(1,#x)")).toString();
-        assertEquals("add(#1,1)", fwd);
+        assertEquals("add(1,#1)", fwd);
         assertEquals(fwd, rev);
 
     }
 
     @Test
-    void testAddMulIdentity() {
+    void testAddIdentity() {
 
         assertEval($.varDep(1), "add(#1,0)");
         assertEval($.varDep(1), "add(0,#1)");
+    }
+    @Test
+    void testMulIdentity() {
         assertEval(Int.the(0), "mul(x,0)");
         assertEval($$("x"), "mul(x,1)");
         assertEval($.varDep(1), "mul(1,#1)");
         assertEval($.varDep(1), "mul(#1,1)");
 
     }
+
 
     private final Random rng = new XoRoShiRo128PlusRandom(1);
     
@@ -108,11 +112,6 @@ class ArithmeticTest {
         );
     }
 
-    @Test
-    void testEqBackSubstitutionAdd() throws Narsese.NarseseException {
-        assertSolves("(&&,(#1,add(#2,1)),equal(#2,3),(#1,#2))", "((#1,4)&&(#1,3))");
-
-    }
 
     @Disabled
     @Test
@@ -120,10 +119,6 @@ class ArithmeticTest {
         assertSolves("(&&,(#1,#2),(#2 <-> 3))", "(#1,3)");
     }
 
-    @Test
-    void testEqBackSubstitutionAdd2() throws Narsese.NarseseException {
-        assertSolves("(&&,(#1,add(#2,1)),(#1,#2),equal(#2,3))", "((#1,3)&&(#1,4))");
-    }
 
     static void assertSolves(String q, String a) throws Narsese.NarseseException {
         //1.
@@ -136,43 +131,6 @@ class ArithmeticTest {
         t.mustBelieve(16, a, 1f,1f, 0.35f,0.9f);
         n.input(q + ".");
         t.test();
-    }
-
-    @Test public void testEqualSolutionAddInverse1a() {
-        assertEval($$("x(0)"), "(x(#1) && equal(add(#1,1),1))");
-    }
-    @Test public void testEqualSolutionAddInverse1b() {
-        assertEval($$("x(0)"), "(x(#1) && equal(add(1,#1),1))");
-    }
-    @Test public void testEqualSolutionAddInverse2a() {
-        assertEval($$("x(0)"), "(x(#1) && equal(1,add(#1,1)))");
-    }
-    @Test public void testEqualSolutionAddInverse2b() {
-        assertEval($$("x(0)"), "(x(#1) && equal(1,add(1,#1)))");
-    }
-
-    @Test public void testEqualSolutionMulInverse1a() {
-        assertEval($$("x(-2)"), "(x(#1) && equal(mul(#1,-1),2))");
-    }
-    @Test public void testEqualSolutionMulInverse1b() {
-        assertEval($$("x(1)"), "(x(#1) && equal(mul(2,#1),2))");
-    }
-
-    @Test public void testEqualSolutionComplex() {
-        /*
-
-        (&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
-
-        "equal(add(#1,1),1)" ===> (1 == 1+x) ===> (0 == x)
-
-        drastic simplification:
-            (&&,(--,(g(add(#1,1),0,(0,add(#1,10))&&equal(#1, 0)),(--,chronic(add(#1,1))),(--,add(#1,1)),(--,down))
-            etc (&&,(--,(g(add(#1,1),0,(0,10)),(--,chronic(1)),(--,0),(--,down))
-         */
-
-        String t = "(&&,(--,(g(add(#1,1),0,(0,add(add(#1,1),9)))&&equal(add(#1,1),1))),(--,c(add(#1,1))),(--,add(#1,1)),(--,down))";
-
-        assertEval($$("(&&,(--,g(1,0,(0,10))),(--,c(1)),(--,down),(--,1))"), t);
     }
 
     @Test
@@ -229,6 +187,7 @@ class ArithmeticTest {
     @Test
     void testComparatorOrderingConstant() {
 
+        TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(1,2,-1)")));
         TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(2,1,1)")));
     }
 

@@ -273,7 +273,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     public final boolean removeAll(int... indices) {
-        int s = size();
+        int s = size;
         return removeAll(MetalBitSet.bits(s).set(indices), s);
     }
 
@@ -292,19 +292,19 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     }
 
     @Override
-    public final void removeNulls() {
-        removeIf((when,what)->what==null);
+    public final boolean removeNulls() {
+        return removeIf((when,what)->what==null);
     }
 
     @Override
     public X removeLast() {
-        removeThe(size()-1);
+        removeThe(size-1);
         return null; //TODO
     }
 
     @Override
     public void reverse() {
-        int s = size();
+        int s = size;
         if (s > 1) {
             super.reverse();
             ArrayUtil.reverse(when, 0, s);

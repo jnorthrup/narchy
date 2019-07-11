@@ -60,13 +60,13 @@ public class Cmp extends SimpleBinaryFunctor {
             int c = x.compareTo(y);
             if (((Int) xy).i != c)
                 return False;
-            else
-                return True;
-//            if (c > 0) {
-//                //swap parameters
-//                return swap(x, y, c);
-//            } else
-//                return null;
+            else {
+                if (c > 0) {
+                    //swap parameters
+                    return swap(x, y, c);
+                } else
+                    return True;
+            }
 
         }
 

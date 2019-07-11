@@ -2,7 +2,6 @@ package nars.eval;
 
 import jcog.data.iterator.CartesianIterator;
 import jcog.data.list.FasterList;
-import jcog.data.set.ArrayHashSet;
 import jcog.version.VersionMap;
 import nars.NAR;
 import nars.subterm.Subterms;
@@ -15,15 +14,14 @@ import nars.term.buffer.Termerator;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.term.atom.Bool.*;
 
+/** see: https://www.swi-prolog.org/pldoc/man?section=preddesc */
 public class Evaluation extends Termerator {
 
     private final Predicate<Term> each;
@@ -95,15 +93,14 @@ public class Evaluation extends Termerator {
 
 
     private boolean eval(Evaluator e, final Compound x) {
-        ArrayHashSet<Term> c = e.clauses(x, this);
-        return eval(e, x, c != null ? c.list : null);
+        return eval(e, x, e.clauses(x, this));
     }
 
     /**
      * fails fast if no known functors apply
      */
     protected boolean evalTry(Compound x, Evaluator e, boolean includeOriginal) {
-        ArrayHashSet<Term> c = e.clauses(x, this);
+        FasterList<Term> c = e.clauses(x, this);
 
         if ((c == null || c.isEmpty()) && (termutes == null || termutes.isEmpty())) {
             if (includeOriginal)
@@ -111,24 +108,14 @@ public class Evaluation extends Termerator {
             return true;
         }
 
-        return eval(e, x, c != null ? c.list : null);
+        return eval(e, x, c);
     }
 
-    /**
-     * simple complexity heuristic: sorting first by volume naively ensures innermost functors evaluated first
-     */
-    static private final Comparator<Term> byVolume = Comparator.comparingInt(Term::volume).thenComparingInt(Term::vars).thenComparingInt(Term::hashCode).thenComparing(System::identityHashCode);
-
-    private boolean eval(Evaluator e, final Compound x, @Nullable List<Term> clauses) {
+    private boolean eval(Evaluator e, final Compound x, @Nullable FasterList<Term> clauses) {
 
         Term y = x;
 
         if (clauses != null && !clauses.isEmpty()) {
-
-            //TODO topologically sort operations according to variable dependencies; it acts like an evaluation plan so ordering can help */
-            if (clauses.size() > 1) {
-                ((FasterList<Term>) clauses).sortThis(byVolume);
-            }
 
             Term prev;
             int vStart, tried, mutStart;
@@ -226,24 +213,54 @@ public class Evaluation extends Termerator {
 
                          if (z != null || substing) {
                              Term finalA = a;
-                             clauses.replaceAll(o -> {
+
+                             int clausesRemain = clauses.size();
+                             for (int i = 0, clausesSize = clausesRemain; i < clausesSize; i++) {
+                                 Term o = clauses.get(i);
                                  Term p;
-                                 if (z != null) {
+                                 if (z != null)
                                      p = o.replace(finalA, z);
-                                 } else
+                                 else
                                      p = o;
 
                                  Term q;
-                                 if (substing) {
+                                 if (substing)
                                      q = p.replace(subs);
-                                 } else
+                                 else
                                      q = p;
 
-                                 return o != q && !Functor.isFunc(q) ? Null : q;
-                             });
+                                 if (o != q) {
 
-                             if (clauses.removeIf(xxx -> xxx == Null) && clauses.isEmpty())
+                                     if (q instanceof Compound) {
+                                         @Nullable FasterList<Term> qq = e.clauseFind((Compound) q);
+                                         if (!qq.isEmpty()) {
+                                             //merge new sub-clauses into the clause queue
+                                             for (Term qqq : qq) {
+                                                 if (!qqq.equals(a)) {
+                                                     if (clauses.addIfNotPresent(qqq))
+                                                         clausesRemain++;
+                                                 }
+                                             }
+                                         }
+                                     }
+
+                                     if (q==Null || !Functor.isFunc(q)) {
+                                        clauses.setFast(i, null);
+                                        clausesRemain--;
+                                     } else {
+
+                                         clauses.setFast(i, q);
+
+
+                                     }
+                                 }
+
+
+                             }
+                             if (clausesRemain == 0)
                                  break main;
+
+                             clauses.removeNulls();
                          }
 
                         break; //changed so start again
