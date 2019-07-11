@@ -1,7 +1,6 @@
 package nars.op;
 
 import jcog.TODO;
-import jcog.version.VersionMap;
 import nars.$;
 import nars.Op;
 import nars.eval.Evaluation;
@@ -16,8 +15,6 @@ import nars.term.functor.BinaryBidiFunctor;
 import nars.term.functor.UnaryBidiFunctor;
 import nars.term.util.conj.Conj;
 
-import java.util.Collection;
-import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
@@ -87,13 +84,11 @@ public enum ListFunc {
             } else {
                 Subterms xys = xy.subterms();
 
-                Collection<Predicate<VersionMap<Term,Term>>> OR = IntStream.range(-1, l).mapToObj(finalI ->
+                e.canBe( IntStream.range(-1, l).mapToObj(finalI ->
                         Evaluation.assign(
                                 x, $.pFast(xys.terms((xyi, ii) -> xyi <= finalI)),
                                 y, $.pFast(xys.terms((xyi, ii) -> xyi > finalI)))
-                ).collect(toList());
-
-                e.canBe( OR );
+                ).collect(toList()) );
 
                 return null;
             }
@@ -103,48 +98,34 @@ public enum ListFunc {
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            Term yy;
-            if (y.op() != PROD)
-                yy = $.pFast(y);
-            else
-                yy = y;
+            Term yy = y.op() != PROD ? $.pFast(y) : y;
 
             int ys = yy.subs();
 
             int remainderLength = xy.subs() - ys;
-            if (remainderLength >= 0) {
-                if (yy.subterms().ANDi((yi, yii) -> xy.sub(remainderLength + yii).equals(yi))) {
-                    if (remainderLength == 0) {
-                        return e.is(x, Op.EmptyProduct) ? null : Bool.Null;
-                    } else {
-                        return e.is(x, $.pFast(xy.subterms().terms((i, ii) -> i < ys))) ? null : Bool.Null;
-                    }
-                }
-            }
+            if (remainderLength >= 0)
+                if (yy.subterms().ANDi((yi, yii) -> xy.sub(remainderLength + yii).equals(yi)))
+                    return e.is(x, remainderLength == 0 ?
+                            Op.EmptyProduct
+                            :
+                            $.pFast(xy.subterms().terms((i, ii) -> i < ys)))
+                                ? null : Bool.Null;
+
+
             return y.hasAny(Op.Variables) || xy.hasAny(Op.Variables) ? null : Bool.Null;
         }
 
         @Override
         protected Term computeYfromXandXY(Evaluation e, Term x, Term y, Term xy) {
 
-            Term xx;
-            if (x.op() != PROD)
-                xx = $.pFast(x);
-            else
-                xx = x;
+            Term xx = x.op() != PROD ? $.pFast(x) : x;
 
             int xs = xx.subs();
             int remainderLength = xy.subs() - xs;
-            if (remainderLength >= 0) {
-                if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi))) {
+            if (remainderLength >= 0)
+                if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
+                    return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Bool.Null;
 
-                    if (remainderLength == 0) {
-                        return e.is(y, Op.EmptyProduct) ? null : Bool.Null;
-                    } else {
-                        return e.is(y, $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Bool.Null;
-                    }
-                }
-            }
             return x.hasAny(Op.Variables) || xy.hasAny(Op.Variables) ? null : Bool.Null;
         }
     };
@@ -178,28 +159,17 @@ public enum ListFunc {
         }
     };
 
-    public static final Functor sub = Functor.f2("sub", (x, n) -> {
-        if (n.op() == INT) {
-            return x.sub(((Int) n).i, Bool.Null);
-        } else {
-            return null;
-        }
-    });
+    public static final Functor sub = Functor.f2("sub",
+            (x, n) -> n.op() == INT ? x.sub(((Int) n).i, Bool.Null) : null);
 
     public static final Functor subs = Functor.f2Or3("subs", (Subterms args) -> {
         if (args.subs() == 2) {
-
-            Term x = args.sub(0);
             Term n = args.sub(1);
             if (n.op() == INT) {
                 int nn = ((Int) n).i;
-                Subterms xx = x.subterms();
+                Subterms xx = args.sub(0).subterms();
                 int m = xx.subs();
-                if (nn < m) {
-                    return PROD.the(xx.subRangeArray(nn, m));
-                } else {
-                    return Bool.Null;
-                }
+                return nn < m ? PROD.the(xx.subRangeArray(nn, m)) : Bool.Null;
             } else {
                 return null;
             }

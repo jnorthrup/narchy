@@ -5,9 +5,10 @@ import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.node.JsonNodeFactory;
 import com.fasterxml.jackson.databind.node.ObjectNode;
 import jcog.data.list.MetalConcurrentQueue;
-import jcog.exe.realtime.ConcurrentQueueWheelModel;
 import jcog.exe.realtime.HashedWheelTimer;
+import jcog.exe.realtime.QueueWheelModel;
 import jcog.net.UDPeer;
+import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.LoggerFactory;
 
@@ -31,9 +32,17 @@ public enum Exe {;
      */
     private static final HashedWheelTimer timer = new HashedWheelTimer(
             //new AdmissionQueueWheelModel(8, TimeUnit.MILLISECONDS.toNanos(1))
-            new ConcurrentQueueWheelModel(64, 32,
-                    TimeUnit.MILLISECONDS.toNanos(1))
-            ,
+
+//            new MetalConcurrentQueueWheelModel(64, 32,
+//                    TimeUnit.MILLISECONDS.toNanos(1))
+            new QueueWheelModel(128,
+                    ()->
+                        new MpscAtomicArrayQueue<>(32)
+                        //new MpscArrayQueue<>(32)
+                    ,
+                    TimeUnit.MILLISECONDS.toNanos(1)),
+
+
             HashedWheelTimer.WaitStrategy.SleepWait,
             //HashedWheelTimer.WaitStrategy.YieldingWait,
             Exe::invoke);

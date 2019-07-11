@@ -8,6 +8,7 @@ import jcog.learn.gng.NeuralGasMap;
 import jcog.math.FloatRange;
 import jcog.math.StreamingNormalizer;
 import jcog.net.attn.MeshMap;
+import org.jctools.queues.MpscArrayQueue;
 import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.video.Draw;
@@ -37,8 +38,7 @@ public class Dimensionaleyez extends SimpleSpatial {
     final NeuralGasMap n = new NeuralGasMap(IN, 64, THREE_D);
     final FloatRange scale = new FloatRange(10, 0.5f, 300f);
 
-    final Queue<double[]> queue =
-            Util.blockingQueue(1024);
+    final Queue<double[]> queue = new MpscArrayQueue<>(1024);
 
     private final StreamingNormalizer s;
 

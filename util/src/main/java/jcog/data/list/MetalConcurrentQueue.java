@@ -22,7 +22,6 @@ package jcog.data.list;
  * #L%
  */
 
-import com.conversantmedia.util.concurrent.ConcurrentQueue;
 import jcog.TODO;
 import jcog.Util;
 import org.jetbrains.annotations.Nullable;
@@ -55,7 +54,7 @@ import java.util.stream.Stream;
      * <p>
      * Created by jcairns on 5/28/14.
  */
-public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements ConcurrentQueue<X> {
+public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
 
     // the sequence number of the start of the queue
@@ -133,7 +132,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
     }
 
 
-    @Override public boolean offer(X x) {
+    public boolean offer(X x) {
         int spin = 0;
 
         int cap = capacity();
@@ -182,7 +181,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
 
 
-    @Override
+
     @Nullable
     public final X poll() {
         return poll(0);
@@ -224,7 +223,6 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 
 
 
-    @Override
     public final X peek() {
         return peek(0);
     }
@@ -253,7 +251,6 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return i >= 0 ? peek(i) : null;
     }
 
-    @Override
     public int remove(final X[] x) {
         return remove(x, x.length);
     }
@@ -423,7 +420,6 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
      *
      * @return int - possibly the size, or possibly any value less than capacity()
      */
-    @Override
     public final int size() {
         // size of the ring
         // note these values can roll from positive to
@@ -432,17 +428,17 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
         return Math.max((tail() - head()), 0);
     }
 
-    @Override
+
     public final int capacity() {
         return length();
     }
 
-    @Override
+
     public final boolean isEmpty() {
         return head()==tail();
     }
 
-    @Override
+
     public void clear() {
         clear((x) -> {}, Integer.MAX_VALUE, Integer.MAX_VALUE);
 
@@ -478,7 +474,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X> implements 
 //        }
     }
 
-    @Override
+
     public final boolean contains(Object o) {
         int s = size();
         if (s > 0) {

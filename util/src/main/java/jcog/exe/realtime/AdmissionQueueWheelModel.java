@@ -18,7 +18,6 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     final Queue<TimedFuture<?>>[] wheel;
 
-
 //    /** where incoming temporarily drains to */
 //    final TimedFuture[] coming = new TimedFuture[ADMISSION_CAPACITY];
 
@@ -76,28 +75,6 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                     }
                 }
 
-
-                //Unfair:
-//                Iterator<TimedFuture<?>> i = q.iterator();
-//
-//                int remain = n;
-//                while (remain-- > 0) {
-//
-//                    TimedFuture<?> r = i.next();
-//
-//                    switch (r.state()) {
-//                        case CANCELLED:
-//                            i.remove();
-//                            break;
-//                        case READY:
-//                            i.remove();
-//                            r.execute(timer);
-//                            break;
-//                        case PENDING:
-//                            break;
-//                    }
-//
-//                }
             }
         }
 
@@ -128,7 +105,5 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
     @Override public boolean reschedule(int wheel, TimedFuture r) {
         return this.wheel[wheel].offer(r);
     }
-
-
 
 }

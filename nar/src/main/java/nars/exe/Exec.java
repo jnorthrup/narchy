@@ -3,8 +3,6 @@ package nars.exe;
 import com.google.common.flogger.FluentLogger;
 import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
-import jcog.data.list.FasterList;
-import jcog.data.list.MetalConcurrentQueue;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
@@ -16,6 +14,7 @@ import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.AbstractTask;
 import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
+import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 
 import java.io.IOException;
 import java.util.PriorityQueue;
@@ -33,8 +32,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
     public static final FluentLogger logger = FluentLogger.forEnclosingClass();
 
     private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
-    final MetalConcurrentQueue<ScheduledTask> incoming = new MetalConcurrentQueue<>(TIME_QUEUE_CAPACITY);
-    final FasterList<ScheduledTask> intermediate = new FasterList<>(TIME_QUEUE_CAPACITY);
+    final MpscAtomicArrayQueue<ScheduledTask> toSchedule = new MpscAtomicArrayQueue<>(TIME_QUEUE_CAPACITY);
     final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(TIME_QUEUE_CAPACITY /* estimate capacity */);
 
     /**
@@ -210,7 +208,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
     public void clear(NAR n) {
         synchronized (scheduled) {
             synch(n);
-            incoming.clear();
+            toSchedule.clear();
             scheduled.clear();
         }
     }
@@ -223,14 +221,14 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
             s = scheduled.toArray(ScheduledTask[]::new);
         }
         return Stream.concat(
-                incoming.stream(),
+                toSchedule.stream(),
                 ArrayIterator.stream(s) //a copy
         );
     }
 
 
     public final void runAt(ScheduledTask event) {
-        incoming.add(event);
+        toSchedule.add(event);
 //        long w = event.start();
 //        scheduledNext.accumulateAndGet(w, Math::min);
     }
@@ -257,8 +255,9 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
 
                 }
                 {
+                    toSchedule.drain(next -> {
                     //drain incoming queue
-                    incoming.clear(next -> {
+                    //toSchedule.clear(next -> {
                         if (next.start() <= now)
                             each.accept(next);
                         else {

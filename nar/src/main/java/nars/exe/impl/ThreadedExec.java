@@ -20,7 +20,9 @@ import static java.lang.System.nanoTime;
 abstract public class ThreadedExec extends MultiExec {
 
     static final int inputQueueCapacityPerThread = 512;
+
     protected final MetalConcurrentQueue in;
+
     final boolean affinity;
     final AffinityExecutor exe;
     protected int workGranularity = Integer.MAX_VALUE;

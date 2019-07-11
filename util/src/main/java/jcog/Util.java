@@ -1,6 +1,5 @@
 package jcog;
 
-import com.conversantmedia.util.concurrent.DisruptorBlockingQueue;
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
@@ -51,8 +50,6 @@ import java.lang.invoke.MethodHandles;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.*;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.LockSupport;
@@ -2373,16 +2370,6 @@ public enum Util {
 
     public static Object toString(Object x) {
         return x.getClass() + "@" + System.identityHashCode(x);
-    }
-
-    public static BlockingQueue blockingQueue(int capacity) {
-        try {
-            return new DisruptorBlockingQueue<>(capacity);
-
-        } catch (Throwable e) {
-
-            return new ArrayBlockingQueue<>(capacity);
-        }
     }
 
     public static int compare(byte[] a, byte[] b) {

@@ -12,6 +12,6 @@ public class TimerWithBusySpinConcurrentTest extends AbstractTimerTest {
 
     @Override
     protected HashedWheelTimer.WheelModel model(long resolution, int wheels) {
-        return new ConcurrentQueueWheelModel(wheels, 128, resolution);
+        return new MetalConcurrentQueueWheelModel(wheels, 128, resolution);
     }
 }

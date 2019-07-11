@@ -5,14 +5,13 @@ import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.function.ToIntFunction;
 
-/** TODO
- *  where each wheel is simply its own concurrent queue */
-public class ConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
+/** where each wheel is simply its own concurrent queue */
+public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     /** the wheels (array of queues) */
     final MetalConcurrentQueue<TimedFuture>[] q;
 
-    public ConcurrentQueueWheelModel(int wheels, int queueCapacity, long resolution) {
+    public MetalConcurrentQueueWheelModel(int wheels, int queueCapacity, long resolution) {
         super(wheels, resolution);
         assert(wheels > 1);
         q = new MetalConcurrentQueue[wheels];
