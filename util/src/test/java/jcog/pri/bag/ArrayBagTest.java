@@ -232,7 +232,10 @@ class ArrayBagTest {
 
         ArrayBag<PLink<String>, PLink<String>> b = newBag(cap, plus);
         for (int i = 0; i < cap; i++) {
-            float p = i/((float)cap) * dynamicRange + dynamicFloor;
+            float r =
+                    //i / ((float) cap);
+                    Util.cube(i / ((float) cap));
+            float p = (r) * dynamicRange + dynamicFloor;
             b.put(new PLink(String.valueOf(i), p));
         }
         b.commit();

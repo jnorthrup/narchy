@@ -61,7 +61,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
 
     public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = false;
-    public final static boolean REWARD_GOAL_UNSTAMPED = true;
+    public final static boolean REWARD_GOAL_UNSTAMPED = false;
 
 
     /** can be unfair to new inputs if true, so for fairness leave false */

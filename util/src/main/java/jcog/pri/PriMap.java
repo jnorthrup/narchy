@@ -1,7 +1,6 @@
 package jcog.pri;
 
 import jcog.Paper;
-import jcog.data.map.NonBlockingHashMap;
 import jcog.exe.Exe;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
@@ -65,8 +64,8 @@ public class PriMap<Y> {
                 new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
                 :
                 //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
-                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
-                new NonBlockingHashMap()
+                new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
+                //new NonBlockingHashMap()
                 //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f)
                 //new CustomConcurrentHashMap()

@@ -4,11 +4,11 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:Pre, Goal:PreWeak, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$"), (Belief:PreN, Goal:PreWeakN, Time:TaskEvent)
      //if novel, allow recursive
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,novel), (Belief:PreRecursive, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,novel), (Belief:PreRecursiveN, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$",novel), (Belief:PreRecursive, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>") |- unisubst(C,X,B,"$",novel), (Belief:PreRecursiveN, Time:TaskEvent)
 
 //     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |-   unisubst(C,X,B,"$"), (Belief:DeductionRecursivePP, Goal:DeductionWeakPP, Time:TaskEvent)
 //     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- --unisubst(C,X,B,"$"), (Belief:DeductionRecursivePN, Goal:DeductionWeakPN, Time:TaskEvent)
@@ -24,20 +24,20 @@
 //         B, (X ==> (&&,--C,A..+))       |- unisubst(  (&&,X,A..+),C,B), (Belief:PreN)
 
        //questions
-          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,novel), (Punctuation:Question, Time:TaskEvent)
-          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
 
 
 
 
-    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
+    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
 
         //questions
-          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,novel), (Punctuation:Question, Time:TaskEvent)
-          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B), (Time:TaskEvent)
+          B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
 

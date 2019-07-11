@@ -405,6 +405,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         else {
             int index =
                     sampleNextLinearNormalized(rng,size);
+                    //sampleNextBiLinearNormalized(rng,size);
                     //sampleNextLinear(rng, size);
 
 //            if (index >= size)
@@ -427,14 +428,50 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * samples the distribution with the assumption that it is flat
      */
     private int sampleNextLinearNormalized(Random rng, int size) {
-        float min = ArrayBag.this.priMin(), max = ArrayBag.this.priMax();
+        return sampleNextLinearNormalized(rng, 0, size);
+    }
+
+    private float priSafe(int i) {
+        Object[] a = table.items.array();
+        if (i < a.length) {
+            Y v = (Y) a[i];
+            if (v!=null)
+                return priElse(v, 0);
+        }
+        return (i == 0 ? 0 : 1);
+    }
+
+    private int sampleNextLinearNormalized(Random rng, int start, int end) {
+        float max = priSafe(start), min = priSafe(end);
 
         float targetPercentile = rng.nextFloat();
 
         float indexNorm =
                 Util.lerp((max - min), targetPercentile /* flat */, (targetPercentile * targetPercentile) /* curved */);
 
-        return Util.bin(indexNorm, size);
+        return start + Util.bin(indexNorm, (end-start));
+    }
+
+    /** estimates percentile curve with 2-segment linear approximation */
+    private int sampleNextBiLinearNormalized(Random rng, int size) {
+        if (size<=2)
+            return sampleNextLinearNormalized(rng, size);
+
+        float max = priSafe(0), min = priSafe(size-1);
+        if (max - min < 1f/(size*size))
+            return sampleNextLinearNormalized(rng, size); //HACK elide recompute pri
+
+        int mii = size / 2;
+        float mid = priSafe(mii);
+
+
+        float skew = (mid - (max-min)/2)/(max-min);
+        if (rng.nextFloat() > skew) {
+            return sampleNextLinearNormalized(rng, 0, mii);
+        } else {
+            return sampleNextLinearNormalized(rng, mii, size);
+        }
+
     }
 
 //    /**
@@ -924,7 +961,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public float priMax() {
         Y x = table.items.first();
-        return x != null ? priElse(x, -1) : 0;
+        return x != null ? priElse(x, 0) : 0;
     }
 
 //    /**
@@ -945,7 +982,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public float priMin() {
         Y x = table.items.last();
-        return x != null ? priElse(x, -1) : 0;
+        return x != null ? priElse(x, 0) : 0;
     }
 
     public final Iterator<Y> iterator() {
