@@ -46,7 +46,7 @@ public enum Perceive {
         boolean cmd = punc == COMMAND;
 
         Task executionPerceived = (cmd || (x instanceof Task && (punc == GOAL && !x.isEternal()))) ?
-                execute(x, n, cmd) : null;
+                execOperator(x, n, cmd) : null;
 
         Task xPerceived = (!cmd) ? Remember.the(x, n) : null;
 
@@ -193,32 +193,32 @@ public enum Perceive {
         }
     }
 
-    private static Task execute(Task t, NAR n, boolean cmd) {
+    private static Task execOperator(Task t, NAR n, boolean cmd) {
         Term maybeOperator = Functor.func(t.term());
+        if (maybeOperator == Bool.Null)
+            return null;
 
-        if (maybeOperator != Bool.Null) {
-            Concept oo = n.concept(maybeOperator);
-            if (oo instanceof Operator) {
-                FasterList<Task> queue = new FasterList(cmd ? 2 : 1);
+        Concept oo = n.concept(maybeOperator);
+        if (!(oo instanceof Operator))
+            return null;
 
-                Operator o = (Operator) oo;
-                try {
-                    Task yy = o.model.apply(t, n);
-                    if (yy != null && !t.equals(yy)) {
-                        queue.add(yy);
-                    }
-                } catch (Throwable xtt) {
-                    logger.warn("{} operator {} exception {}", t, o, xtt);
-                    //queue.addAt(Operator.error(this, xtt, n.time()));
-                    return null;
-                }
-                if (cmd) {
-                    queue.add(new TaskEvent(t));
-                }
-                return task(queue, false);
-            }
+        FasterList<Task> queue = new FasterList(cmd ? 2 : 1);
+
+        Operator o = (Operator) oo;
+        try {
+            Task yy = o.model.apply(t, n);
+            if (yy != null && !t.equals(yy))
+                queue.add(yy);
+
+        } catch (Throwable xtt) {
+            logger.error("{} operator {} exception {}", t, o, xtt);
+            //queue.addAt(Operator.error(this, xtt, n.time()));
+            return null;
         }
-        return null;
+        if (cmd)
+            queue.add(new TaskEvent(t));
+
+        return task(queue, false);
     }
 
     static final class TaskEvaluation extends Evaluation implements Predicate<Term> {
@@ -272,8 +272,7 @@ public enum Perceive {
             if (result == null)
                 result = new UnifiedSet(1);
 
-            if (result.add(y)) return true;
-            else return false;
+            return result.add(y);
         }
 
         @Override

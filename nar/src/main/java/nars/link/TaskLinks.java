@@ -15,12 +15,14 @@ import jcog.pri.ScalarValue;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
+import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.sort.RankedN;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.term.Term;
@@ -117,10 +119,25 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * updates
      */
-    public final void commit() {
-        links.commit(
-                Forgetting.forget(links, decay.floatValue())
-        );
+    public final void commit(What w) {
+        PriForget.PriMult<TaskLink> f = (PriForget.PriMult) Forgetting.forget(links, decay.floatValue());
+//        Consumer<TaskLink> g;
+//        if (f!=null) {
+//            NAR n = w.nar;
+//            float F = f.mult;
+//            //TODO normalize the components
+//            float beliefForget = F * (1 - n.beliefPriDefault.amp()),
+//                  goalForget = F * (1 - n.goalPriDefault.amp()),
+//                  questionForget = F * (1 - n.questionPriDefault.amp()),
+//                  questForget = F * (1 - n.questPriDefault.amp());
+//            g = t -> {
+//                t.priMult(beliefForget, goalForget, questionForget, questForget);
+//            };
+//        } else
+//            g = null;
+
+
+        links.commit(f /*g*/);
     }
 
     @Override

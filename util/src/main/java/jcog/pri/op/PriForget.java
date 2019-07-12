@@ -61,7 +61,7 @@ public enum PriForget { ;
     }
 
     @Nullable
-    public static Consumer<? extends Prioritizable> forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
+    public static Consumer forgetIdeal(double rate, double idealPri, int size, int cap, double pressure, double mass) {
         double excess = pressure +
                 Math.max(0,
                     mass - (cap /*size*/ * idealPri)

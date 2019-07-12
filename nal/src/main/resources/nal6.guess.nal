@@ -15,16 +15,7 @@
 
 
 
-//TODO check
-//// Conversion
-////  If S can stand for P, P can to a certain low degree also represent the class S
-////  If after S usually P happens, then it might be a good guess that usually before P happens, S happens.
-//
-//    (P ==> S),   (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (P ==> S),   (Belief:ConversionPP, Punctuation:Belief)
-//    (--P ==> S),   (S ==> P),  task("?"), neq(S,P), hasBelief()   |-   (--P ==> S),   (Belief:ConversionPN, Punctuation:Belief)
-////    (--P ==> S), (S ==> P),  task("?"), neq(S,P), hasBelief()   |-     (polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
-////    (P ==> S),   (--S ==> P),  task("?"), neq(S,P), hasBelief() |-   --(polarizeBelief(P) ==> S),   (Belief:ConversionDepolarized, Punctuation:Belief)
-//
+
 //
 ////Contraposition to Disjunction
 //    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)

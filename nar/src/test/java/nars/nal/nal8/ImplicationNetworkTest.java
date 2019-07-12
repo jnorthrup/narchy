@@ -24,7 +24,7 @@ class ImplicationNetworkTest {
     private static final Term b = $.the("b");
     private static final Term c = $.the("c");
 
-    int cycles = 400;
+    int cycles = 800;
 
     NAR n = NARS.tmp(6);
     {

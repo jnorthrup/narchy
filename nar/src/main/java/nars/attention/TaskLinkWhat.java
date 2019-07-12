@@ -76,7 +76,7 @@ public class TaskLinkWhat extends What {
 
                     lastUpdate = now;
 //                    premises.commit();
-                    links.commit();
+                    links.commit(this);
 
                 }
             } finally {

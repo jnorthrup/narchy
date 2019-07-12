@@ -50,6 +50,10 @@ public class PriNode extends PLink<Term> {
 //        return i;
     }
 
+    public final float amp() {
+        return amp.floatValue();
+    }
+
     public enum Branch {
         Equal {
             @Override

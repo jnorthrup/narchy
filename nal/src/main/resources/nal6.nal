@@ -257,9 +257,6 @@
         //TODO disj
 
 
-
-
-
 //        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)
 //        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) && --M) ==> Z), (Belief:InductionPBPN)
 
@@ -271,8 +268,8 @@
 //
 
     //general implication induction
-//    (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>"), --eventOf(A,X)      |- ((A && X) ==> B), (Belief:Induction)
-//    (A ==> B), X, neq(A,X), neq(A,--X), --is(X,"==>"), --eventOfNeg(A,X)   |- ((A && --X) ==> B), (Belief:InductionPN)
+    (A ==> B), X, --eqPN(A,X), --is(X,"==>")  |- polarizeTask(((A && polarizeBelief(X)) ==> B)), (Belief:InductionDepolarized)
+
 
 
 //Union induction

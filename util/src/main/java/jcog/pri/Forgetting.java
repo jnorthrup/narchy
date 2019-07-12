@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 abstract public class Forgetting {
 
 
-    public static @Nullable Consumer forget(Bag b, float temperature) {
+    @Nullable public static <Y> Consumer<Y> forget(Bag<?,Y> b, float temperature) {
         float depressurizationRate = 0.5f;
 
         if (temperature > Float.MIN_NORMAL) {

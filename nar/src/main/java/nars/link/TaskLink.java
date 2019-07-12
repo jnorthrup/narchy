@@ -191,6 +191,9 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         merge(incoming, merge, PriReturn.Void);
     }
 
+    /** multiply by components */
+    void priMult(float belief, float goal, float question, float quest);
+
     float merge(TaskLink incoming, PriMerge merge, PriReturn returning);
 
     float take(byte punc, float howMuch);

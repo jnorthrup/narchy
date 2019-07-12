@@ -34,7 +34,22 @@ import java.util.stream.Stream;
  */
 abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
-    private static final int HISTOGRAM_SUPERSAMPLING = 2;
+    private static final int HISTOGRAM_SUPERSAMPLING = 3;
+    private static final int HISTOGRAM_RESOLUTION_FACTOR = 4;
+    /**
+     * override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed)
+     */
+    protected int histogramBins(int s) {
+        //TODO refine
+        int thresh = 3;
+        if (s <= thresh)
+            return s;
+        else {
+            //return (int) (thresh + Math.sqrt((s - thresh)));
+            return (int)(thresh + Math.log(1 + s - thresh) * HISTOGRAM_RESOLUTION_FACTOR);
+        }
+    }
+
 
     private final StampedLock lock = new StampedLock();
     private final MySortedListTable table;
@@ -61,19 +76,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return b == null ? -2.0f : ((Prioritized) b).priElseNeg1();
     }
 
-    /**
-     * override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed)
-     */
-    protected int histogramBins(int s) {
-        //TODO refine
-        int thresh = 4;
-        if (s <= thresh)
-            return s;
-        else {
-            //return (int) (thresh + Math.sqrt((s - thresh)));
-            return (int)(1 + thresh + Math.log(1 + s - thresh)*2);
-        }
-    }
 
     private static float rngFloat(@Nullable Random rng) {
         return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();

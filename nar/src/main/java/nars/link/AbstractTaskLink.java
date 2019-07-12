@@ -278,6 +278,18 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     @Override
+    public void priMult(float belief, float goal, float question, float quest) {
+        FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
+        boolean changed = false;
+        changed |= merge(0, belief, mult, Delta) != 0;
+        changed |= merge(1, goal, mult, Delta) != 0;
+        changed |= merge(2, question, mult, Delta) != 0;
+        changed |= merge(3, quest, mult, Delta) != 0;
+        if (changed)
+            invalidate();
+    }
+
+    @Override
     public float pri(FloatFloatToFloatFunction update, float scalar) {
         throw new UnsupportedOperationException();
 
