@@ -214,11 +214,11 @@ public class MutableRoulette {
             float wx = w[x];
             if (wx >= EPSILON) {
                 float wy = weightUpdate.valueOf(wx);
-                if (wx!=wy) {
-                    if ((w[x] = wy) < EPSILON) {
-                        w[x] = 0;
-                        remaining = 0;
-                    }
+                if (wy < EPSILON) {
+                    w[x] = 0;
+                    remaining = 0;
+                } else {
+                    w[x] = wy;
                 }
                 return x;
             }

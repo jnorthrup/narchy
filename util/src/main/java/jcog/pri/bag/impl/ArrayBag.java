@@ -34,6 +34,8 @@ import java.util.stream.Stream;
  */
 abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
+    private static final int HISTOGRAM_SUPERSAMPLING = 2;
+
     private final StampedLock lock = new StampedLock();
     private final MySortedListTable table;
 
@@ -67,12 +69,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         int thresh = 4;
         if (s <= thresh)
             return s;
-        else
-            return (int)(thresh + Math.sqrt((s-thresh)));
+        else {
+            //return (int) (thresh + Math.sqrt((s - thresh)));
+            return (int)(1 + thresh + Math.log(1 + s - thresh)*2);
+        }
     }
-
-
-
 
     private static float rngFloat(@Nullable Random rng) {
         return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();
@@ -221,7 +222,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         ArrayHistogram.HistogramWriter hist;
         int bins = histogramBins(s);
         if (bins > 0) {
-            hist = this.hist.write(0, s-0.5f, bins);
+            hist = this.hist.write(0, s, bins);
         } else {
             hist = null; //disabled
         }
@@ -241,10 +242,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
                 if (p == p) {
 
-                    if (hist != null)
-                        hist.add(i, p);
-
-                    m += p;
+                    if (hist != null && p > Float.MIN_NORMAL) {
+                        hist.add(i, p, HISTOGRAM_SUPERSAMPLING);
+                        m += p;
+                    }
 
                     if (sorted) {
                         if (p - above >= ScalarValue.EPSILON / 2) {
@@ -437,7 +438,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     private int sampleHistogram(Random rng) {
-        return (int)(hist.sample(rng));
+        return hist.sampleInt(rng);
     }
 
     /**

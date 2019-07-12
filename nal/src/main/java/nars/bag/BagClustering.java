@@ -69,7 +69,12 @@ public class BagClustering<X> {
 
 
         this.bag = new BufferedBag.SimpleBufferedBag<>(
-                new PriReferenceArrayBag<>(merge, initialCap, PriMap.newMap(false)),
+                new PriReferenceArrayBag<>(merge, initialCap, PriMap.newMap(false)) {
+                    @Override
+                    protected int histogramBins(int s) {
+                        return 0; //disabled
+                    }
+                },
                 new PriMap<>(merge));
 
     }

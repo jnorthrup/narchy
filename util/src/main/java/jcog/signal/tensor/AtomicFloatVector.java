@@ -27,6 +27,7 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
         fill(initialValue);
     }
 
+
     @Override
     public final float getAt(int linearCell) {
         return Float.intBitsToFloat( data.getOpaque(linearCell) );

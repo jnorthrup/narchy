@@ -234,6 +234,10 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         {
             final PriMerge merge = NAL.tasklinkMerge;
             tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
+                @Override
+                protected int histogramBins(int s) {
+                    return 0; //disabled
+                }
 
                 /**
                  * merge in the pre-buffer

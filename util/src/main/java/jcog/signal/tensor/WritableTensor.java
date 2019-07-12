@@ -52,6 +52,15 @@ public interface WritableTensor extends Tensor {
             setAt(i, x);
     }
 
+    default void setAll(float[] values) {
+        int v = volume();
+        if(v!=values.length)
+            throw new ArrayIndexOutOfBoundsException();
+
+        for (int i = 0; i < v; i++)
+            setAt(i, values[i]);
+    }
+
     default void set(Tensor x) {
         x.forEach(this::setAt);
     }

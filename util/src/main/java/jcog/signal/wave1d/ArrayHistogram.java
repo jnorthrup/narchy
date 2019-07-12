@@ -15,7 +15,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     private WritableTensor data = AtomicFloatVector.Empty;
 
-    private volatile float rangeMin, rangeMax;
+    private volatile float lo, hi;
     private volatile int mass = AtomicFloatFieldUpdater.iZero;
 
     private final static AtomicFloatFieldUpdater<ArrayHistogram> MASS =
@@ -32,7 +32,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     @Override
     public String toString() {
-        return rangeMin + ".." + rangeMax + " @ " + mass() + " " + n2(data.floatArray());
+        return lo + ".." + hi + " @ " + mass() + " " + n2(data.floatArray());
     }
 
     private void resize(int bins) {
@@ -44,45 +44,67 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
                 //AtomicFixedPoint4x16bitVector.get(bins);
     }
 
-    private void range(float min, float max) {
-        this.rangeMin = min;
-        this.rangeMax = max;
+    private void range(float lo, float hi) {
+        this.lo = lo;
+        this.hi = hi;
     }
 
-    /** note: mass is not affected in this call. you may need to call that separately */
-    public HistogramWriter write(float min, float max, int bins) {
-        range(0, 0); //force flat sampling for other threads, while writing
-        if (bins() != bins) {
-            //elides subsequent data fill, the new array will be set to zero
-            resize(bins);
-        } else {
-            data.fill(0);
-        }
-        return new HistogramWriter(bins, min, max);
+    /** use sampleInt(rng) with this */
+    public final HistogramWriter write(int lo, int hi, int bins) {
+        return write(lo, hi-0.5f, bins);
     }
+
+    /** use sample(rng) with this */
+    public HistogramWriter write(float lo, float hi, int bins) {
+        return new HistogramWriter(bins, lo, hi);
+    }
+
 
     public final class HistogramWriter {
 
         final int bins;
-        final float min, max, rangeDelta;
-        float mass = 0;
+        final float rangeDelta;
+        private final float lo;
+        final float[] buffer;
+//        float mass = 0;
 
-        HistogramWriter(int bins, float min, float max) {
+        HistogramWriter(int bins, float lo, float hi) {
+            this.buffer = new float[bins];
             this.bins = bins;
-            this.rangeDelta = max-min;
-            this.min = min;
-            this.max = max;
+            this.lo = lo;
+            this.rangeDelta = hi-lo;
+
+            mass(0); //force flat sampling for other threads, while writing
+            range(lo, hi);
+        }
+
+        /** TODO refine this could be more accurate in how it distributes the fraction */
+        public void add(int value, float weight, int superSampling) {
+            float dw = weight / superSampling;
+            float width = 1f; // <= 1
+            float v = value - width/2f;
+            float dv = width / (superSampling-1);
+            for (int i = 0; i < superSampling; v += (++i) * dv)  {
+                int bin = Util.bin((v - lo) / rangeDelta, bins);
+                buffer[bin] += dw;
+            }
         }
 
         public void add(float value, float weight) {
-            mass += weight;
-            data.addAt(weight, Util.bin((value-rangeMin)/rangeDelta, bins));
+//            mass += weight;
+
+            //TODO anti-alias by populating >1 bins with fractions of the weight
+            int bin = Util.bin((value - lo) / rangeDelta, bins);
+            buffer[bin] += weight;
+
+            //data.addAt(weight, bin); //TODO unbuffered mode
         }
 
-        /** returns mass */
         public float commit(float mass) {
+            if (bins() != bins)
+                resize(bins);
+            data.setAll(buffer);
             mass(mass);
-            range(min, max);
             return mass;
         }
     }
@@ -94,10 +116,14 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
     }
 
 
+    public final int sampleInt(Random rng) {
+        return (int)sample(rng);
+    }
+
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
-        float rangeMax = this.rangeMax;
-        float rangeMin = Math.min(rangeMax, this.rangeMin); //incase updated while reading, maintains min <= max
+        float rangeMax = this.hi;
+        float rangeMin = Math.min(rangeMax, this.lo); //incase updated while reading, maintains min <= max
         float rangeDelta = (rangeMax - rangeMin);
 
         float mass = 0;
@@ -116,15 +142,24 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         WritableTensor data = this.data;
         int bins = data.volume();
 
-        float m = u * mass;
-        boolean direction = (Integer.bitCount(Float.floatToRawIntBits(u) ) & 1) != 0; //one RNG call
+        //boolean direction = (Integer.bitCount(Float.floatToRawIntBits(u) ) & 1) != 0; //one RNG call
         //boolean direction = rng.nextBoolean();
 
         int b;
         float ii;
         float B = Float.MAX_VALUE;
+        boolean direction;
+
+        if (u <= 0.5f) {
+            direction = true; //upward
+        } else {
+            direction = false; //downward
+            u = 1 - u;
+        }
+        float m = u * mass;
+
         for (b = 0; b < bins;) {
-            float db = data.getAt(b);
+            float db = data.getAt(direction ? b : (bins - 1 - b));
             if (db > m) {
                 B = b + m / db; //current bin plus fraction traversed
                 break;
@@ -133,7 +168,12 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
                 b++;
             }
         }
-        return (Math.min(bins, B)/bins) * rangeDelta + rangeMin;
+
+        float p = Math.min(bins, B) / bins;
+        if (!direction)
+            p = 1 - p;
+
+        return p * rangeDelta + rangeMin;
     }
 
     public final int bins() {
