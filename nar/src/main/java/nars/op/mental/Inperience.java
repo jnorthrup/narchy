@@ -48,7 +48,7 @@ public class Inperience extends How {
     public static final Atomic want = Atomic.the("want");
     public static final Atomic wonder = Atomic.the("wonder");
     public static final Atomic evaluate = Atomic.the("plan");
-    public final FloatRange priFactor = new FloatRange(0.5f, 0, 2f);
+    public final FloatRange priFactor = new FloatRange(0.1f, 0, 2f);
 
     private final CauseChannel<Task> in;
 

@@ -127,6 +127,7 @@ public class RLeaf<X> extends AbstractRNode<X> {
                 X xy = x.merge(y);
                 if (xy != null)
                     return merged(xy, x, y, i);
+
             }
         }
 
@@ -135,32 +136,22 @@ public class RLeaf<X> extends AbstractRNode<X> {
     }
 
     @Nullable
-    private RNode<X> merged(X xy, RInsertion<X> x, X y, int i) {
-        if (xy == y)
+    private RNode<X> merged(X merged, RInsertion<X> x, X existing, int i) {
+        if (merged == existing)
             return null;
 
-        data[i] = xy;
+        data[i] = merged;
 
         Spatialization<X> m = x.model;
 
-        HyperRegion yb = m.bounds(y);
-        if (!yb.equals(m.bounds(xy))) {
-            HyperRegion newBounds = HyperRegion.mbr(m, data); //recompute bounds
-
+        if (!m.bounds(existing).equals(m.bounds(merged))) {
+            //recompute bounds
+            HyperRegion newBounds = HyperRegion.mbr(m, data);
             if (!bounds.equals(newBounds)) {
-                x.stretched = true;
                 this.bounds = newBounds;
+                x.stretched = true;
             }
         }
-
-//                            HyperRegion xtb = model.bounds(xy);
-//                            if (!bounds.contains(xtb)) {
-////                                //TODO use grow()
-//                            HyperRegion b = i == 0 ? xtb : model.bounds(data[0]);
-//                            for (int k = 1; k < s; k++)
-//                                b = b.mbr(i == k ? xtb : model.bounds(data[k]));
-//                            bounds = b;
-////                            }
         return null;
     }
 

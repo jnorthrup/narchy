@@ -250,21 +250,12 @@ public class Remember extends AbstractTask {
         boolean identity = prev == next;
 
         if (next!=null) {
-            boolean forget = false;
 
 //            @Nullable Task r = rememberMerged(prev, next);
 //            if (r != null) {
             if (rememberFilter(prev, next, this.nar)) {
-                remember(next);
-            } else {
-                //remember(prev);
-                forget = true;
-                //            if (!identity)
-                //                forget(next);
+                remember(prev); //if novel: relink, re-emit (but using existing or identical task)
             }
-
-
-
 
             if (!identity && prev instanceof NALTask) {
 
@@ -276,11 +267,7 @@ public class Remember extends AbstractTask {
                 Task.merge(prev, next);
             }
 
-            if (forget) {
-                if (!identity)
-                    next.delete();
-                forget(next, !identity);
-            }
+            forget(next, !identity);
         }
 
         done = true;

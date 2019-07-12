@@ -42,26 +42,34 @@ public enum Perceive { ;
         byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
-        Task e = (cmd || (x instanceof Task && (punc == GOAL && !x.isEternal()))) ?
+        Task executionPerceived = (cmd || (x instanceof Task && (punc == GOAL && !x.isEternal()))) ?
             execute(x, n, cmd) : null;
 
-        Task r = (!cmd) ? Remember.the(x, n) : null;
+        Task xPerceived = (!cmd) ? Remember.the(x, n) : null;
 
         Task perceived;
-        if (e != null && r != null)
-            perceived = task(new FasterList<Task>(2).with(e, r));
-        else if (e!=null)
-            perceived = e;
-        else
-            perceived = r;
+        if (executionPerceived == null) {
+            perceived = xPerceived;
+        } else {
+            if (xPerceived != null)
+                perceived = task(new FasterList<Task>(2).with(executionPerceived, xPerceived), false);
+            else
+                perceived = executionPerceived;
+        }
 
         if (Evaluation.evalable(x.term())) {
             FasterList<Task> rt = new TaskEvaluation(x, w).result;
             if (rt!=null) {
                 rt.removeInstance(x); //something was eval, remove the input HACK
+
+                //move and share input priority fairly:
+                float xp = x.priGetAndSet(0) / rt.size();
+                for (Task y : rt)
+                    y.pri(xp);
+
                 //rt.add(perceived); //echo
 
-                return task(rt);
+                return task(rt, false);
             }
         }
 
@@ -69,7 +77,7 @@ public enum Perceive { ;
     }
 
     /** deduplicate and bundle to one task */
-    private static Task task(FastList<Task> yy) {
+    private static Task task(FastList<Task> yy, boolean dedup) {
         if (yy == null)
             return null;
 
@@ -80,20 +88,24 @@ public enum Perceive { ;
             case 1:
                 return yy.get(0);
             case 2:
-                if (yy.get(0).equals(yy.get(1)))
+                if (dedup && yy.get(0).equals(yy.get(1)))
                     return yy.get(0);
                 else
                     return multiTask(yy);
             default:
                 //test for deduplication
-                java.util.Set<Task> yyDedup = new UnifiedSet(yys);
-                yyDedup.addAll(yy);
-                int yyDedupSize = yyDedup.size();
-                if (yyDedupSize==1)
-                    return yy.get(0);
-                else
-                    return multiTask(yyDedupSize == yys ?
-                            /*the original list */ yy : /* the deduplicated set */ yyDedup);
+                if (dedup) {
+                    java.util.Set<Task> yyDedup = new UnifiedSet(yys);
+                    yyDedup.addAll(yy);
+                    int yyDedupSize = yyDedup.size();
+                    if (yyDedupSize == 1)
+                        return yy.get(0);
+                    else
+                        return multiTask(yyDedupSize == yys ?
+                                /*the original list */ yy : /* the deduplicated set */ yyDedup);
+                } else {
+                    return multiTask(yy);
+                }
         }
 
     }
@@ -241,7 +253,7 @@ public enum Perceive { ;
                 if (cmd) {
                     queue.add(new TaskEvent(t));
                 }
-                return task(queue);
+                return task(queue, false);
             }
         }
         return null;

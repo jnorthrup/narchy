@@ -37,6 +37,13 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
         return new Longerval(myA, myB).intersection(otherA, otherB);
     }
 
+
+    /** cs,ce = container;   xs,xe = possibly contained */
+    public static boolean contains(long cs, long ce, long xs, long xe) {
+        return xs >= cs && xe <= ce;
+    }
+
+
 //    @Nullable
 //    public static long[] intersectionArray(long myA, long myB, long otherA, long otherB) {
 //        return intersectionArray(myA, myB, otherA, otherB, null);

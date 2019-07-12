@@ -306,7 +306,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -539,8 +539,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /** switch between soft and hard pre decision truth function */
         public static final boolean preSoft = true;
 
-        /** optimistic maximization of PreciseTruth evidence components when determined equal (by DiscreteTruth's .conf() semantics) */
-        public static final boolean AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth = true;
+        /** optimistic maximization of PreciseTruth evidence components when determined equal (by DiscreteTruth's .conf() semantics)
+         * TODO find way to make this work only when evidence ranges are the same otherwise a short range could boost a weaker large range unfairly
+         * */
+        public static final boolean AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth = false;
     }
 
     /**

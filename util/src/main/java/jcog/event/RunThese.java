@@ -1,7 +1,5 @@
 package jcog.event;
 
-import org.eclipse.collections.api.block.predicate.Predicate;
-
 import java.util.Collection;
 
 /**
@@ -60,7 +58,7 @@ public class RunThese extends jcog.data.list.FastCoWList<Runnable> implements Ru
     }
 
     @Override
-    public boolean removeIf(Predicate<? super Runnable> predicate) {
+    public boolean removeIf(java.util.function.Predicate<? super Runnable> predicate) {
         throw new UnsupportedOperationException();
     }
 

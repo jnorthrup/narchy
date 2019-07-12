@@ -860,13 +860,13 @@ public class FasterList<X> extends FastList<X> {
                     return false;
 
             default:
-                return removeIf(Objects::isNull);
+                return removeIf((Predicate)Objects::isNull);
 
         }
     }
 
     @Override
-    public final boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+    @Deprecated public final boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
         return removeIf((Predicate<X>)predicate::test);
 //
 //        int nowFilled = 0;
@@ -892,7 +892,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public boolean removeInstance(X x) {
-        return removeIf(y -> x == y);
+        return removeIf((Predicate)y -> x == y);
     }
 
     public boolean removeFirstInstance(X x) {

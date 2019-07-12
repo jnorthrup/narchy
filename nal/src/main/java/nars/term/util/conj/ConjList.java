@@ -19,6 +19,7 @@ import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.function.BiPredicate;
+import java.util.function.Predicate;
 
 import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
@@ -59,7 +60,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public boolean removeAll(Term x) {
-        return removeIf(x::equals);
+        return removeIf((Predicate)x::equals);
     }
 
     public static ConjList subtract(ConjList from, Term conj, long occOffset) {

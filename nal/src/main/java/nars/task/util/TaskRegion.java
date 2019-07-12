@@ -113,11 +113,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double cost(final int dim) {
         switch (dim) {
             case 0:
-                return Math.log(range(0)) * TIME_COST;
+                //return Math.log(range(0)) * TIME_COST;
+                return Math.sqrt(range(0)) * TIME_COST;
             case 1:
-                return 1 + range(1) * FREQ_COST;
+                return (1 + range(1)) * FREQ_COST;
             case 2:
-                return 1 + range(2) * CONF_COST;
+                return (1 + range(2)) * CONF_COST;
         }
         throw new UnsupportedOperationException();
     }

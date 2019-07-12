@@ -286,7 +286,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         }
     }
 
-    public boolean removeIf(org.eclipse.collections.api.block.predicate.Predicate<? super X> predicate) {
+    public boolean removeIf(Predicate<? super X> predicate) {
         synchronized (list) {
             if (list.removeIf(predicate)) {
                 commit();

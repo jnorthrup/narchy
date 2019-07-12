@@ -228,8 +228,8 @@ public class ConjClustering extends How {
         //round robin
         do {
 
-            centroids.removeIf(i ->
-                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, w) == 0 || i.size() <= 1);
+            centroids.removeIf((Predicate<TaskList>)(i ->
+                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, w) == 0 || i.size() <= 1));
 
         } while (!centroids.isEmpty() && kontinue.getAsBoolean());
 

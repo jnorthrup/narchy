@@ -30,10 +30,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.op.Arithmeticize;
-import nars.op.AutoencodedBitmap;
-import nars.op.Factorize;
-import nars.op.Introduction;
+import nars.op.*;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -63,7 +60,7 @@ import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -502,8 +499,8 @@ abstract public class GameX extends Game {
         BasicDeriver bd2_4 = new BasicDeriver(Derivers.nal(n, 2, 4)
         );
 
-        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8,
-                "motivation.nal"));
+//        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8,
+//                "motivation.nal"));
 
         BasicDeriver bd6_act = new BasicDeriver(Derivers.nal(n, 6, 8,
                 "motivation.nal"));
@@ -524,16 +521,16 @@ abstract public class GameX extends Game {
 
 
         //new StatementLinker(n);
-        //new PuncNoise(n);
+        new PuncNoise(n);
         //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);
 
         //tiered
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 8, 64, t->t.isInput()),
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 4, 32, t->t instanceof DerivedTask),
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 16, 128, t->t.isInput()),
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 8, 64, t->!t.isInput())//t instanceof DerivedTask),
+                //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));

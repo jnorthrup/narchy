@@ -66,13 +66,13 @@ public final class PreciseTruth extends DiscreteTruth {
         if (this == x) return true;
         if (super.equals(x)) {
             if (NAL.truth.AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth && x instanceof PreciseTruth) {
-                if (super.conf() > 0) { //apply only if conf >= ~0.01
+                //if (super.conf() > 0) { //apply only if conf >= ~0.01
                     PreciseTruth xp = (PreciseTruth) x;
                     double xe = xp.e;
                     if (this.e != xe) {
                         xp.e = this.e = Math.max(this.e, xe);
                     }
-                }
+                //}
             }
             return true;
         }
