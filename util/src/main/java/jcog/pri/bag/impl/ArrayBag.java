@@ -13,6 +13,7 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
+import jcog.signal.wave1d.ArrayHistogram;
 import jcog.sort.SortedArray;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
@@ -36,6 +37,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private final StampedLock lock = new StampedLock();
     private final MySortedListTable table;
 
+
+    private final ArrayHistogram hist = new ArrayHistogram(0, 1, 0);
+
+
     ArrayBag(PriMerge merge, Map<X, Y> map) {
         this(merge, 0, map);
     }
@@ -54,6 +59,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return b == null ? -2.0f : ((Prioritized) b).priElseNeg1();
     }
 
+    /**
+     * override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed)
+     */
+    protected int histogramBins(int s) {
+        //TODO refine
+        int thresh = 4;
+        if (s <= thresh)
+            return s;
+        else
+            return (int)(thresh + Math.sqrt((s-thresh)));
+    }
 
 
 
@@ -193,14 +209,22 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (s == 0)
             return 0;
 
-        SortedArray items = table.items;
+        SortedArray<Y> items = table.items;
         final Object[] a = items.array();
-        s = Math.min(a.length, s);
 
         float above = Float.POSITIVE_INFINITY;
         boolean sorted = true;
 
         float m = 0;
+
+
+        ArrayHistogram.HistogramWriter hist;
+        int bins = histogramBins(s);
+        if (bins > 0) {
+            hist = this.hist.write(0, s-0.5f, bins);
+        } else {
+            hist = null; //disabled
+        }
 
         for (int i = 0; i < s; ) {
             Object _y = a[i];
@@ -216,6 +240,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                 }
 
                 if (p == p) {
+
+                    if (hist != null)
+                        hist.add(i, p);
 
                     m += p;
 
@@ -242,11 +269,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
                 } else {
                     items.removeFast(y, i);
-                    s--;
                     removeFromMap(y);
+                    s--;
                 }
             } else {
-                items.removeFast(_y, i);
+                items.removeFast((Y)_y, i);
                 s--;
             }
         }
@@ -262,8 +289,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             s--;
         }
 
+        if (hist!=null)
+            hist.commit(mass());
+
         return s;
     }
+
+
 
     /**
      * chooses a starting index randomly then iterates descending the list
@@ -396,24 +428,17 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
     }
 
-    /**
-     * size > 0
-     */
     public int sampleNext(@Nullable Random rng, int size) {
-        if (rng == null || size <= 1)
-            return 0;
-        else {
-            int index =
-                    sampleNextLinearNormalized(rng,size);
-                    //sampleNextBiLinearNormalized(rng,size);
-                    //sampleNextLinear(rng, size);
-
-//            if (index >= size)
-//                index = size - 1; //HACK
-            return index;
-        }
+        return (rng == null || size <= 1) ? 0 :
+            sampleHistogram(rng);
+            //sampleNextLinearNormalized(rng,size);
+            //sampleNextBiLinearNormalized(rng,size);
+            //sampleNextLinear(rng, size);
     }
 
+    private int sampleHistogram(Random rng) {
+        return (int)(hist.sample(rng));
+    }
 
     /**
      * raw selection by index, with x^2 bias towards higher pri indexed items

@@ -13,13 +13,14 @@ import static jcog.Texts.n2;
 /** dead-simple fixed range continuous histogram with fixed # and size of bins. supports PDF sampling */
 public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
-    private final static AtomicFloatFieldUpdater<ArrayHistogram> MASS =
-            new AtomicFloatFieldUpdater(ArrayHistogram.class, "mass");
-
     private WritableTensor data = AtomicFloatVector.Empty;
 
     private volatile float rangeMin, rangeMax;
     private volatile int mass = AtomicFloatFieldUpdater.iZero;
+
+    private final static AtomicFloatFieldUpdater<ArrayHistogram> MASS =
+            new AtomicFloatFieldUpdater(ArrayHistogram.class, "mass");
+
 
     public ArrayHistogram() {
         range(0,1);
@@ -50,25 +51,27 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     /** note: mass is not affected in this call. you may need to call that separately */
     public HistogramWriter write(float min, float max, int bins) {
+        range(0, 0); //force flat sampling for other threads, while writing
         if (bins() != bins) {
             //elides subsequent data fill, the new array will be set to zero
             resize(bins);
         } else {
             data.fill(0);
         }
-        range(min, max);
-        return new HistogramWriter(bins, max-min);
+        return new HistogramWriter(bins, min, max);
     }
 
     public final class HistogramWriter {
 
         final int bins;
-        final float rangeDelta;
+        final float min, max, rangeDelta;
         float mass = 0;
 
-        HistogramWriter(int bins, float rangeDelta) {
+        HistogramWriter(int bins, float min, float max) {
             this.bins = bins;
-            this.rangeDelta = rangeDelta;
+            this.rangeDelta = max-min;
+            this.min = min;
+            this.max = max;
         }
 
         public void add(float value, float weight) {
@@ -77,16 +80,12 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         }
 
         /** returns mass */
-        public float commit() {
+        public float commit(float mass) {
             mass(mass);
+            range(min, max);
             return mass;
         }
     }
-
-//    public void add(float value, float weight) {
-//        addWithoutSettingMass(value, weight);
-//        MASS.add(this, weight);
-//    }
 
     /** mass setter */
     public final ArrayHistogram mass(float m) {
@@ -97,50 +96,44 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
+        float rangeMax = this.rangeMax;
+        float rangeMin = Math.min(rangeMax, this.rangeMin); //incase updated while reading, maintains min <= max
         float rangeDelta = (rangeMax - rangeMin);
 
         float mass = 0;
         boolean flat;
-        if (rangeDelta < ScalarValue.EPSILON)
+        if (rangeDelta <= 1f) {
             flat = true;
-        else {
+        } else {
             mass = mass();
-            flat = (mass <= ScalarValue.EPSILON);
+            flat = (mass <= ScalarValue.EPSILON * rangeDelta);
         }
+
+        float u = rng.nextFloat();
+        if (flat)
+            return rangeMin + u * rangeDelta; //flat, choose uniform random
 
         WritableTensor data = this.data;
-
         int bins = data.volume();
-        if (flat)
-            return rng.nextFloat() * bins; //flat, choose random
 
-
-        float f0 = rng.nextFloat();
-        float f = f0 * mass;
-        boolean direction = (Integer.bitCount(Float.floatToRawIntBits(f0) ) & 1) != 0; //one RNG call
-
+        float m = u * mass;
+        boolean direction = (Integer.bitCount(Float.floatToRawIntBits(u) ) & 1) != 0; //one RNG call
         //boolean direction = rng.nextBoolean();
 
-        int i;
+        int b;
         float ii;
-        if (direction) {
-            for (i = bins - 1; (i >= 0); ) //downward
-                if ((f -= data.getAt(i--)) < 0)
-                    break;
-            ii = i + 0.5f;
-        } else {
-            for (i = 0; i < bins;) //upward
-                if ((f -= data.getAt(i++)) < 0)
-                    break;
-            ii = i - 0.5f;
+        float B = Float.MAX_VALUE;
+        for (b = 0; b < bins;) {
+            float db = data.getAt(b);
+            if (db > m) {
+                B = b + m / db; //current bin plus fraction traversed
+                break;
+            } else {
+                m -= db;
+                b++;
+            }
         }
-
-        float iii = ii + (rng.nextFloat() - 0.5f);
-
-        //TODO sub-bin interpolate?
-        //randomize within the bin's proximity, naively assuming a normal PDF
-        //TODO use the relative density of the adjacent bin
-        return Util.unitizeSafe( iii/(bins-1) ) * rangeDelta + rangeMin;
+        return (Math.min(bins, B)/bins) * rangeDelta + rangeMin;
     }
 
     public final int bins() {

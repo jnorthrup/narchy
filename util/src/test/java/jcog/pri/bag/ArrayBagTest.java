@@ -11,7 +11,6 @@ import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.random.XorShift128PlusRandom;
-import jcog.signal.Tensor;
 import org.HdrHistogram.Histogram;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Disabled;
@@ -20,7 +19,6 @@ import org.junit.jupiter.api.Test;
 import java.util.Iterator;
 import java.util.Random;
 
-import static jcog.Texts.n4;
 import static jcog.pri.bag.BagTest.testBasicInsertionRemoval;
 import static jcog.pri.op.PriMerge.plus;
 import static org.junit.jupiter.api.Assertions.*;
@@ -251,9 +249,9 @@ class ArrayBagTest {
             }
             Texts.histogramPrint(h, System.out);
         }
-
-        Tensor d = BagTest.samplingPriDist(b, samples,  60);
-        System.out.println(n4(d.doubleArray()));
+//
+//        Tensor d = BagTest.samplingPriDist(b, samples,  60);
+//        System.out.println(n4(d.doubleArray()));
 //        {
 //
 //            int scale = 10000;
