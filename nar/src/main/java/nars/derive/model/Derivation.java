@@ -296,9 +296,9 @@ public class Derivation extends PreDerivation {
 
                     double eScale =
                             taskTruth == null ? 1 :
+                                taskTruth.conf();
+                                //1;
                                 //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
-                                //taskTruth.conf();
-                                1;
 
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
                     if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() > eviMin) {

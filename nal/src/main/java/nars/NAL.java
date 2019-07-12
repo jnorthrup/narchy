@@ -61,7 +61,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
 
     public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = false;
-    public final static boolean REWARD_GOAL_UNSTAMPED = false;
+    public final static boolean REWARD_GOAL_UNSTAMPED = true;
 
 
     /** can be unfair to new inputs if true, so for fairness leave false */
@@ -583,8 +583,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final boolean REVISION_MIN_EVI_FILTER = configIs("REVISION_MIN_EVI_FILTER");
         public static final boolean DYNAMIC_TRUTH_TASK_STORE = configIs("DYNAMIC_TRUTH_TASK_STORE");
-        public static final boolean DYNAMIC_TRUTH_TASK_LINK = false;
-        public static final boolean DYNAMIC_TRUTH_TASK_EMIT = false;
+        public static final boolean DYNAMIC_TRUTH_TASK_LINK = true;
+        public static final boolean DYNAMIC_TRUTH_TASK_EMIT = true;
         /**
          * perceptible priority increase % (over the higher pri of the two merged) that warrants automatic reactivation.
          * used during Remember's merge repeat suppression filter
@@ -595,7 +595,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * useful as a novelty threshold:
          * >=0, higher values decrease the rate at which repeated tasks can be reactivated
          */
-        public static int REMEMBER_REPEAT_THRESH_DITHERS = 2;
+        public static int REMEMBER_REPEAT_THRESH_DITHERS = 1;
 
 
 

@@ -135,7 +135,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
 //        return 1.0 / (1+((TaskRegion)t).range(1));
 //    };
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
     /**
      * TODO tune
      */

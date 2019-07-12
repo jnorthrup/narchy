@@ -60,16 +60,19 @@ public enum Perceive { ;
         if (Evaluation.evalable(x.term())) {
             FasterList<Task> rt = new TaskEvaluation(x, w).result;
             if (rt!=null) {
-                rt.removeInstance(x); //something was eval, remove the input HACK
+                //rt.removeInstance(x); //something was eval, remove the input HACK
+                rt.remove(x);
 
-                //move and share input priority fairly:
-                float xp = x.priGetAndSet(0) / rt.size();
-                for (Task y : rt)
-                    y.pri(xp);
+                if (!rt.isEmpty()) {
+                    //move and share input priority fairly:
+                    float xp = x.priGetAndSet(0) / rt.size();
+                    for (Task y : rt)
+                        y.pri(xp);
 
-                //rt.add(perceived); //echo
+                    //rt.add(perceived); //echo
 
-                return task(rt, false);
+                    return task(rt, false);
+                }
             }
         }
 

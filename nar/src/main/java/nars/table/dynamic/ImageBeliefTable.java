@@ -1,5 +1,6 @@
 package nars.table.dynamic;
 
+import jcog.Util;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -39,22 +40,26 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public void remember(Remember r) {
 
+
         Task imaged = r.input;
         Term normal = Image.imageNormalize(imaged.term());
 
-        TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
-        if (c == null)
-            return;
+
 
         Task normalized = SpecialTermTask.the(imaged, normal, true);
+
 
         if (r.store) {
             r.link = r.notify = false; //proxy store
             r.input = normalized;
+            TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
+            if (c == null)
+                return;
             c.table(normalized.punc()).remember(r);
-        }
+        } else
+            Util.nop();
 
-        if (r.remembered!=null && r.remembered.containsInstance(normalized)) {
+        if (r.remembered!=null && r.remembered.contains(normalized)) {
 //        if (!r.store || r.remembered!=null) {
             r.store = false;
             r.link = r.notify = true;

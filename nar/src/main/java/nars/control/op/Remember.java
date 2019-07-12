@@ -118,42 +118,27 @@ public class Remember extends AbstractTask {
 
         NAR n = w.nar;
 
-        TaskConcept c = null;
-
-
-
-
-        Term inputTerm = input.term();
         boolean the = (input == this.input);
-
-
 
         if (!store)
             link(input, w);
+        else {
+            Concept cc = n.conceptualize(input);
+//            if (!(cc instanceof TaskConcept)) {
+//                //may be an atomic functor term, not sure
+//                //if (NAL.DEBUG)
+//                //throw new WTF();
+//                return;
+//            }
 
-        if (store) {
-            if (c == null) {
-                Concept cc = n.conceptualize(input);
-                if (!(cc instanceof TaskConcept)) {
-                    //may be an atomic functor term, not sure
-                    //if (NAL.DEBUG)
-                    //throw new WTF();
-                    return;
-                }
-                c = (TaskConcept) cc;
-            }
 
-            insert(c, w);
+            insert((TaskConcept) cc, w);
         }
 
     }
 
 
     private void link(Task t, What w) {
-        link(t, w, link, notify);
-    }
-
-    static void link(Task t, What w, boolean link, boolean notify) {
 
         NAR n = w.nar;
 

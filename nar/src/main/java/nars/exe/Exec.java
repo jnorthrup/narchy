@@ -73,8 +73,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
                 if (x instanceof AbstractTask.TasksArray) {
                     //HACK
                     for (Task tt : ((AbstractTask.TasksArray) x).tasks) {
-                        if (tt.equals(t0))
-                            throw new WTF();//cycle
+//                        if (tt.equals(t0))
+//                            throw new WTF();//cycle
                         run(tt, w);
                     }
                 } else {
@@ -220,10 +220,11 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         synchronized (scheduled) {
             s = scheduled.toArray(ScheduledTask[]::new);
         }
-        return Stream.concat(
-                toSchedule.stream(),
+        return //Stream.concat(
+                //toSchedule.stream(),
                 ArrayIterator.stream(s) //a copy
-        );
+        //)
+        ;
     }
 
 

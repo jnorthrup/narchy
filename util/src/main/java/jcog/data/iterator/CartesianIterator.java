@@ -17,7 +17,6 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	private final Iterator<X>[] iterators;
 	private final X[] values;
 
-
 	/**
 	 * Constructor
 	 * @param iterables array of Iterables being the source for the Cartesian product.
@@ -43,7 +42,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 			this.iterators = iterators;
 			this.iterables = iterables;
 			values = arrayBuilder.apply(size);
-			setNextValues(0, size-1);
+			next(0, size-1);
 		} else {
 			this.values = null;
 			this.iterators = null;
@@ -73,31 +72,20 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 		for (int i = cursor+1; i < size; i++)
 			iterators[i] = iterables[i].iterator();
 
-		setNextValues(cursor, size);
+		return next(cursor, size);
+	}
+
+	private X[] next(int cursor, int size) {
+
+		for (int i = cursor; i < size; i++)
+			values[i] = iterators[i].next();
 
 		return cloneNext() ? values.clone() : values;
 	}
 
-	private void setNextValues(int cursor, int size) {
-		for (int i = cursor; i < size; i++)
-			setNextValue(i);
-	}
-
 	/** if true, the value returned by next() will be cloned.  otherwise it is re-used in next iteration */
 	protected boolean cloneNext() {
-		//return true;
-		return false; //<- does this not work? TODO test
-	}
-
-	/**
-	 * Gets the next value provided there is one from the iterator at the given index. 
-	 * @param index
-	 */
-	private void setNextValue(int index) {
-		Iterator<X> it = iterators[index];
-		//TODO elide singleton iterator replacement
-		//if (it.hasNext())
-		values[index] = it.next();
+		return false;
 	}
 
 	@Override

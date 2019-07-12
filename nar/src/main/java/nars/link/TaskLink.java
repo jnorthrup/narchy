@@ -70,7 +70,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
      * returns 0 for none
      */
     default byte priPunc(Random rng) {
-        int i = Roulette.selectRouletteCached(4, (j) -> priPunc(p(j)), rng);
+        int i = Roulette.selectRouletteCached(4, j -> priIndex((byte)j), rng);
         if (i != -1)
             return p(i);
         else
@@ -95,31 +95,24 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
         Term x = from();
 
-        NAR n = when.x;
-
-        boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
         TaskTable table =
                 //n.concept(t);
                 //n.conceptualizeDynamic(x);
                 //beliefOrGoal ? n.conceptualizeDynamic(x) : n.beliefDynamic(x);
-                n.tableDynamic(x, punc);
+                when.x.tableDynamic(x, punc);
 
         if (table == null || table.isEmpty()) {
-
             return null;
         } else {
 
+            Task y = null;
 
-            Task y;
-            if (beliefOrGoal) {
-
+            boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
+            if (beliefOrGoal)
                 y = table.match(when, null, filter, false);
-                if (y == null)
-                    y = table.sample(when, null, filter);
 
-            } else {
+            if (y == null)
                 y = table.sample(when, null, filter);
-            }
 
             if (y == null) {
                 if (!beliefOrGoal) {
