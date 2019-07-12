@@ -266,13 +266,8 @@ public enum Op {
      */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
-    public static final Atom Belief = new Atom(String.valueOf((char) BELIEF));
-    public static final Atom Goal = new Atom(String.valueOf((char) GOAL));
-    public static final Atom Question = new Atom(String.valueOf((char) QUESTION));
-    public static final Atom Quest = new Atom(String.valueOf((char) QUEST));
-    public static final Atom Que = new Atom(String.valueOf((char) QUESTION) + (char) QUEST);
+
     public static final Term[] EmptyTermArray = new Term[0];
-    public static final Task[] EmptyTaskArray = new Task[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Compound EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
     public static final ImmutableMap<String, Op> stringToOperator;
@@ -303,6 +298,13 @@ public enum Op {
      * re-initialized in NAL
      */
     public static TermBuilder terms = HeapTermBuilder.the;
+
+
+    public static final Atom BeliefAtom = Atomic.atom(String.valueOf((char)BELIEF));
+    public static final Atom GoalAtom = Atomic.atom(String.valueOf((char)GOAL));
+    public static final Atom QuestionAtom = Atomic.atom(String.valueOf((char)QUESTION));
+    public static final Atom QuestAtom = Atomic.atom(String.valueOf((char)QUEST));
+    public static final Atom Que = Atomic.atom(String.valueOf((char) QUESTION) + (char) QUEST);
 
 
     static {
@@ -564,10 +566,6 @@ public enum Op {
         return ops[id];
     }
 
-    public static final Atom BeliefAtom = Atomic.atom(".");
-    public static final Atom GoalAtom = Atomic.atom("!");
-    public static final Atom QuestionAtom = Atomic.atom("?");
-    public static final Atom QuestAtom = Atomic.atom("@");
 
     public static Atomic puncAtom(byte b) {
         switch (b) {

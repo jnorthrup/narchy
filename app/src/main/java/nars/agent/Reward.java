@@ -91,35 +91,57 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
     }
 
-    public void alwaysWantEternally(Term goal, float freq) {
+    public void alwaysWantEternally(Termed goal, float freq) {
         alwaysWantEternally(goal, freq, nar().confDefault(GOAL));
     }
 
-    public void alwaysWantEternally(Term goal, float freq, float conf) {
+    public void alwaysWantEternally(Termed g, float freq, float conf) {
+        Term goal = g.term();
         @Nullable Truth truth = $.t(goal.op()==NEG ? 1-freq : freq, conf);
-        long[] stamp = NAL.REWARD_GOAL_UNSTAMPED ? Stamp.UNSTAMPED : nar().evidence();
-        Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 
-        PriNode a = new MyAttnBranch(at, t);
+        long[] stamp = NAL.REWARD_GOAL_UNSTAMPED ? Stamp.UNSTAMPED : nar().evidence();
+        Task[] t = new Task[] { NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp) };
+
+
+//        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
+//        int redundancy = eteTable.capacity();
+//        Task[] t = new Task[redundancy];
+//
+//        for (int i = 0; i < redundancy; i++) {
+//            long[] stamp = nar().evidence();
+//            t[i] = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp); //TODO unevaluated?
+//            eteTable.insert(t[i]); //insert directly, avoid revision
+//        }
+
+
+        PriNode a = new GoalReinforcement(at, t);
 
         nar().control.parent(a, attn);
     }
 
-    private final class MyAttnBranch extends AttnBranch {
-        private final Task t;
+    private final class GoalReinforcement extends AttnBranch {
+        private final Task[] t;
+        private final long start;
 
-        public MyAttnBranch(Term at, Task t) {
+        public GoalReinforcement(Term at, Task... t) {
             super(at, List.of(t));
             this.t = t;
+            start = nar().time();
         }
 
         @Override
         public void update(MapNodeGraph<PriNode,Object> g) {
             super.update(g);
-            t.pri(pri());
-            in.accept(t, game.what());
+
+            float p = pri();
+            for (Task tt : t) {
+                tt.pri(p);
+                tt.setCreation(start); //refresh start time
+            }
+
+            in.acceptAll(t, game.what());
         }
 
     }

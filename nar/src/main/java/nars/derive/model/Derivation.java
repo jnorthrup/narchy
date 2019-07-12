@@ -295,7 +295,7 @@ public class Derivation extends PreDerivation {
                 if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) && (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || beliefTruth_at_Task==null)) {
 
                     double eScale =
-                            taskTruth == null ? 1 :
+                            (taskTruth == null) ? 1 :
                                 taskTruth.conf();
                                 //1;
                                 //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());

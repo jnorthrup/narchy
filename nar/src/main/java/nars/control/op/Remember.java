@@ -252,7 +252,8 @@ public class Remember extends AbstractTask {
                 Task.merge(prev, next);
             }
 
-            forget(next, !identity);
+            if (!identity)
+                forget(next, true);
         }
 
         done = true;

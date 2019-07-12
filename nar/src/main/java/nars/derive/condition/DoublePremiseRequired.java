@@ -15,8 +15,8 @@ public class DoublePremiseRequired extends AbstractPred<PreDerivation> {
 
     public DoublePremiseRequired(boolean ifBelief, boolean ifGoal, boolean ifQuestionOrQuest) {
         super($.func(key,
-                ifBelief ? Belief : Op.EmptyProduct,
-                ifGoal ? Goal : Op.EmptyProduct,
+                ifBelief ? BeliefAtom : Op.EmptyProduct,
+                ifGoal ? GoalAtom : Op.EmptyProduct,
                 ifQuestionOrQuest ? Op.Que : Op.EmptyProduct));
         this.ifBelief = ifBelief;
         this.ifGoal = ifGoal;

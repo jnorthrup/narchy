@@ -176,8 +176,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     }
 
 
-    @Nullable
-    private Task put(Task incoming) {
+    /** direct insert; not ordinarily invoked from external */
+    @Nullable public Task insert(Task incoming) {
 
 
         Task displaced = null;
@@ -423,7 +423,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
      */
     private boolean tryPut(Task x, Remember r) {
 
-        Task displaced = put(x);
+        Task displaced = insert(x);
 
         if (displaced == x) {
             r.forget(x);

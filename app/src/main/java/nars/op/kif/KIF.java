@@ -69,7 +69,7 @@ public class KIF {
         public Stream<Task> apply(InputStream i) {
             try {
                 return new KIF(i).beliefs.stream().map(b ->
-                        new CommandTask($.func(Op.Belief, b)));
+                        new CommandTask($.func(BeliefAtom, b)));
             } catch (Exception e) {
                 e.printStackTrace();
             }

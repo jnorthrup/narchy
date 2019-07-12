@@ -129,12 +129,7 @@ abstract public class GameX extends Game {
 
 
         //initPlugins2(n, g);
-        PremiseRuleSet rules = Derivers.nal(n, 6, 8,
-                "motivation.nal"
-                //"nal6.to.nal3.nal"
-                //"induction.goal.nal"
-                //"nal3.nal",
-        );
+
 
 
         n.synch();
@@ -437,7 +432,7 @@ abstract public class GameX extends Game {
         n.emotion.want(MetaGoal.Futile, -0.0001f);
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
 
-        n.emotion.want(MetaGoal.Believe, 0.0f);
+        n.emotion.want(MetaGoal.Believe, 0.01f);
         n.emotion.want(MetaGoal.Desire, 0.5f);
 
         n.emotion.want(MetaGoal.Action, +1f);
@@ -498,13 +493,19 @@ abstract public class GameX extends Game {
         );
         BasicDeriver bd2_4 = new BasicDeriver(Derivers.nal(n, 2, 4)
         );
-
+        PremiseRuleSet rules = Derivers.nal(n, 6, 8
+//                ,"motivation.nal"
+//                //"nal6.to.nal3.nal"
+//                //"induction.goal.nal"
+//                //"nal3.nal",
+        );
 //        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8,
 //                "motivation.nal"));
 
-        BasicDeriver bd6_act = new BasicDeriver(Derivers.nal(n, 6, 8,
-                "motivation.nal"));
+        BasicDeriver bd6_act = new BasicDeriver(Derivers.nal(n, 6,8,"motivation.nal"));
         bd6_act.timing = new ActionTiming();
+
+        //BasicDeriver bd6_curi = new BasicDeriver(Derivers.files(n, "curiosity.nal"));
 
 //        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
 //                "motivation.nal"

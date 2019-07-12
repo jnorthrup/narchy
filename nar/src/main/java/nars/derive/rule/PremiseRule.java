@@ -669,23 +669,7 @@ public class PremiseRule extends ProxyTerm {
                 }
             }
 
-            //AUTO
             assert (concBelief || concQuest || concQuestion || concGoal);
-//            boolean finalConcBelief = concBelief, finalConcGoal = concGoal, finalConcQuestion = concQuestion, finalConcQuest = concQuest;
-//            concPunc = (p) -> {
-//                switch (p) {
-//                    case BELIEF:
-//                        return finalConcBelief ? BELIEF : 0;
-//                    case GOAL:
-//                        return finalConcGoal ? GOAL : 0;
-//                    case QUESTION:
-//                        return finalConcQuestion ? QUESTION : 0;
-//                    case QUEST:
-//                        return finalConcQuest ? QUEST : 0;
-//                    default:
-//                        return (byte) 0;
-//                }
-//            };
         }
 
         /** infer necessary task punctuation */
@@ -718,11 +702,21 @@ public class PremiseRule extends ProxyTerm {
             }
         }
 
+        PuncMap tp = PuncMap.get(taskPunc, concPunc);
+        if (!tp.all())
+            pre.add(tp); //add filter to allow only the mapped types
+
         if (doubleBelief || doubleGoal) {
             if (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable)
                 throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
 
-            pre.add(new DoublePremiseRequired(doubleBelief, doubleGoal, false));
+            boolean forBelief = doubleBelief && tp.get(BELIEF)==BELIEF;
+            boolean forGoal = doubleGoal && tp.get(GOAL)==GOAL;
+            boolean forQ = (doubleBelief && (tp.get(QUESTION)==BELIEF || tp.get(QUEST)==BELIEF))
+                            ||
+                           (doubleGoal && (tp.get(QUESTION)==GOAL || tp.get(QUEST)==GOAL));
+            if (forBelief || forGoal || forQ)
+                pre.add(new DoublePremiseRequired(forBelief, forGoal, forQ));
         }
 
         /*System.out.println( Long.toBinaryString(
@@ -744,9 +738,6 @@ public class PremiseRule extends ProxyTerm {
         if (concPunc == null)
             throw new UnsupportedOperationException("no concPunc specified");
 
-        PuncMap tp = PuncMap.get(taskPunc, concPunc);
-        if (!tp.all())
-            pre.add(tp); //add filter to allow only the mapped types
 
         if (time == null) {
             if (!doubleBelief && !doubleGoal)

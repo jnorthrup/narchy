@@ -315,7 +315,6 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
 
-            long dt = now - prev;
 
             prev = now;
 
@@ -326,7 +325,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
             int s = b.size();
             if (s != 0) {
-                int n = Math.min(s, batchSize(dt));
+                int n = Math.min(s, batchSize());
                 if (n > 0) {
                     //TODO target.input(tasks, n, target.concurrency());
 
@@ -361,8 +360,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         /**
          * TODO abstract
          */
-        protected int batchSize(long dt) {
-            return Math.max(1, (int) Math.ceil(dt * capacity() * valve.floatValue()));
+        protected int batchSize() {
+            return Math.max(1, (int) Math.ceil(capacity() * valve.floatValue()));
 
             //rateControl.apply(tasks.size(), tasks.capacity());
 

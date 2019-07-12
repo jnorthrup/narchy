@@ -27,7 +27,7 @@ abstract public class ScalarReward extends Reward {
         concept = newConcept();
         if (concept == null)
             throw new NullPointerException("concept null for target: " + id);
-        alwaysWantEternally(id, freq);
+        alwaysWantEternally(concept, freq);
     }
 
     @Override

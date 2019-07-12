@@ -4,9 +4,10 @@
 
 
 //curiosity
-G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal)
-G, B, task("@")  |- (polarize(B,belief)==>G), (Belief:Curiosity, Punctuation:Goal)
-//G, B, task("@")  |- (polarize(G,task) && polarize(B,belief)), (Goal:Curiosity, Punctuation:Goal, Time:Relative)
+//G, B, task("@")  |- B, (Goal:Curiosity, Punctuation:Goal)
+//G, B, task("@")  |- (polarize(B,belief)==>G), (Belief:Curiosity, Punctuation:Goal)
+G, B, task("!")  |- (polarizeTask(G) && polarizeBelief(B)), (Goal:DesireWeak, Punctuation:Goal, Time:TaskEvent)
+  G, B, task("@")  |- (polarizeRandom(G) && polarizeBelief(B)), (Goal:BeliefStructuralReduction, Punctuation:Goal, Time:TaskEvent)
 
 
 

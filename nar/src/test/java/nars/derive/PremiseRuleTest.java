@@ -11,6 +11,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
+import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -151,7 +152,7 @@ class PremiseRuleTest {
         assertConcPattern("(X,Y), Z |- (Z-->(X||Y)), (Belief:Intersection)", "(--,(%3-->((--,%1)&&(--,%2))))");
 
         assertConcPattern("(X,Y), Z |- (((X&&Y)-->Z),X,Y), (Belief:Intersection)", "(((%1&&%2)-->%3),%1,%2)");
-        assertConcPattern("(X,Y), Z |- (((X||Y)-->Z),X,Y), (Belief:Intersection)", "((--,(((--,%1)&&(--,%2))-->%3),%1,%2)");
+        assertConcPattern("(X,Y), Z |- (((X||Y)-->Z),X,Y), (Belief:Intersection)", "((--,(((--,%1)&&(--,%2))-->%3)),%1,%2)");
 
     }
 
@@ -181,12 +182,29 @@ class PremiseRuleTest {
 
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleBeliefOrGoal() {
+        assertRuleContains("X,Y |- (X&&Y), (Belief:Intersection,Goal:Intersection)",
+                "DoublePremise(\".\",\"!\",())");
+    }
+    @Test
+    void testDoubleOnlyForSinglePremiseQuestWithGoalPunc() {
+        String r = "G, B, task(\"@\")  |- (polarize(G,task) && polarize(B,belief)), (Goal:DesireWeak, Punctuation:Goal)";
+        assertRuleContains(r,
+            "DoublePremise((),(),\"?@\")",
+                "DoublePremise((),\"!\",())");
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "X,Y |- (X&&Y), (Belief:Intersection,Goal:Intersection)"));
+    }
 
-        d.printRecursive();
-        assertTrue(d.what.toString().contains("DoublePremise"));
+    static void assertRuleContains(String r, String inc) {
+        assertRuleContains(r, inc, null);
+    }
+    static void assertRuleContains(String r, @Nullable String inc, @Nullable String exc) {
+        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(), r));
+        //d.printRecursive();
+        String rs = d.what.toString();
+        if (inc!=null)
+            assertTrue(rs.contains(inc), ()->rs);
+        if (exc!=null)
+            assertFalse(rs.contains(exc), ()->rs);
     }
 
     @Test
