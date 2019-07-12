@@ -59,22 +59,22 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     //sub-sequence following belief or goal
     //(&/,B,A_1..n), B, task("!") |- (&/,A_1..n), (Truth:Deduction, Desire:Strong, SequenceIntervals:FromPremises)
     C, X, --isVar(X)                    |-     conjAfter(C,  X),      (Belief:DecomposePP, Time:BeliefEvent)
-      C, X, --isVar(X)                    |-     conjAfter(C,  X),      (Goal:DesirePP, Time:TaskEvent)
+      C, X, --isVar(X)                    |-     conjAfter(C,  X),      (Goal:DecomposePP, Time:TaskEvent)
     C, X, --isVar(X)                    |-     conjAfter(C,--X),      (Belief:DecomposePN, Time:BeliefEvent)
-      C, X, --isVar(X)                    |-     conjAfter(C,--X),      (Goal:DesirePN, Time:TaskEvent)
+      C, X, --isVar(X)                    |-     conjAfter(C,--X),      (Goal:DecomposePN, Time:TaskEvent)
 
     D, X, --isVar(X)   |-   --conjAfter(D, --X),     (Belief:DecomposeNN, Time:BeliefEvent)
-      D, X, --isVar(X)   |-   --conjAfter(D, --X),     (Goal:DesireNN, Time:TaskEvent)
+      D, X, --isVar(X)   |-   --conjAfter(D, --X),     (Goal:DecomposeNN, Time:TaskEvent)
     D, X, --isVar(X)   |-   --conjAfter(D,   X),     (Belief:DecomposeNP, Time:BeliefEvent)
-      D, X, --isVar(X)   |-   --conjAfter(D,   X),     (Goal:DesireNP, Time:TaskEvent)
+      D, X, --isVar(X)   |-   --conjAfter(D,   X),     (Goal:DecomposeNP, Time:TaskEvent)
 
 
 
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C     |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
     G, C     |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
-        G, D     |-    --conjBefore(D,   G),  (Goal:DesirePN, Time:TaskEvent)
-        G, D     |-    --conjBefore(D, --G),  (Goal:DesireNN, Time:TaskEvent)
+        G, D     |-      conjBefore(D,   G),  (Goal:DesirePN, Time:TaskEvent)
+        G, D     |-      conjBefore(D, --G),  (Goal:DesireNN, Time:TaskEvent)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case

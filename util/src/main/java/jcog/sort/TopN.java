@@ -245,20 +245,20 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     /**
      * roulette select
      */
-    @Nullable
-    public X getRoulette(FloatSupplier rng, FloatFunction<X> anyRank) {
+    @Nullable public X getRoulette(FloatSupplier rng, FloatFunction<X> anyRank) {
         int n = size();
         if (n == 0)
             return null;
-        if (n == 1)
+        else if (n == 1)
             return get(0);
-
-        IntToFloatFunction select = i -> anyRank.floatValueOf(get(i));
-        return get( //n < 8 ?
-                this instanceof RankedN ?
-                    Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
-                    Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
-        );
+        else {
+            IntToFloatFunction select = i -> anyRank.floatValueOf(get(i));
+            return get(
+                    this instanceof RankedN ?
+                            Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
+                            Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
+            );
+        }
 
     }
 
@@ -294,18 +294,18 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
 
-    @Nullable
-    public X[] toArrayIfSameSizeOrRecycleIfAtCapacity(@Nullable X[] x) {
-        int s = size();
-        if (s == 0)
-            return null;
-
-        int xl = x != null ? x.length : 0;
-        if (xl == s) {
-            System.arraycopy(items, 0, x, 0, s);
-            return x;
-        } else {
-            return items.length == s ? items : Arrays.copyOf(items, s);
-        }
-    }
+//    @Nullable
+//    public X[] toArrayIfSameSizeOrRecycleIfAtCapacity(@Nullable X[] x) {
+//        int s = size();
+//        if (s == 0)
+//            return null;
+//
+//        int xl = x != null ? x.length : 0;
+//        if (xl == s) {
+//            System.arraycopy(items, 0, x, 0, s);
+//            return x;
+//        } else {
+//            return items.length == s ? items : Arrays.copyOf(items, s);
+//        }
+//    }
 }

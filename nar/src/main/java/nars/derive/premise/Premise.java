@@ -181,35 +181,16 @@ public class Premise /*implements Comparable<Premise>*/ {
 
             final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
 
-            boolean answerGoal = task.isQuest();
+            boolean quest = task.isQuest();
 
             if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
 
-                final BeliefTable answerTable = answerGoal ? n.tableDynamic(beliefTerm, false) : beliefTable;
-
+                BeliefTable answerTable = quest ? n.tableDynamic(beliefTerm, false) : beliefTable;
                 if (answerTable != null && !answerTable.isEmpty()) {
                     Task a = tryAnswer(beliefTerm, answerTable, d);
-                    if (a != null) {
-//                        if (a.conf() < d.confMin)
-//                            a = null;
-//                        else {
-                            if (!(((!answerGoal && a.isBelief()) || (answerGoal && a.isGoal()))))
-                                throw new WTF();
-
-                            if (answerGoal)
-                                d.what.accept(a);
-                            else {
-                                //if (task.isInput()) { }
-                                d.what.emit(a);
-                                //d.what.accept(a);
-                            }
-//                        }
-
-                    }
-                    if (!answerGoal)
-                        return a;
+                    if (!quest)
+                        return a; //premise belief
                 }
-
             }
 
             return beliefTable != null && !beliefTable.isEmpty() ?
@@ -247,23 +228,35 @@ public class Premise /*implements Comparable<Premise>*/ {
 
 //        long ts = task.start(), te;
 //        if (ts == ETERNAL) {
-            long[] f = timeFocus(beliefTerm, d);
-            long ts = f[0];
-            long te = f[1];
-            assert (ts != ETERNAL);
+        long[] f = timeFocus(beliefTerm, d);
+        long ts = f[0];
+        long te = f[1];
+//        assert (ts != ETERNAL);
 //        } else {
 //            te = task.end();
 //        }
-        Task match = answerTable.matching(ts, te, beliefTerm,
+        Task a = answerTable.matching(ts, te, beliefTerm,
                 null, d.dur(), d.nar())
                 .task(true, false, false);
 
 
-        if (match != null) {
+        if (a != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-            return task.onAnswered(match);
+            a = task.onAnswered(a);
 
+            if (a == null)
+                return null; //interrupted by question
+
+            boolean answerGoalOrBelief = a.isGoal();
+
+            if (!(((!answerGoalOrBelief && a.isBelief()) || (answerGoalOrBelief && a.isGoal())))) throw new WTF();
+
+            if (answerGoalOrBelief) {
+                d.what.accept(a); //goal
+            } else {
+                d.what.emit(a); //belief
+            }
         }
 
         return null;

@@ -11,8 +11,8 @@
 //  if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DecomposePositiveNegativeNegative
     (M --> G), (M --> C), eventOf(C,G)        |-    (M -->   conjWithout(C,   G)), (Goal:DesirePP, Time:Task)
     (M --> G), (M --> C), eventOfNeg(C,G)     |-    (M -->   conjWithout(C, --G)), (Goal:DesireNP, Time:Task)
-        (M --> G), (M --> C), eventOf(C,G)    |-  --(M -->   conjWithout(C,   G)), (Goal:DesirePN, Time:Task)
-        (M --> G), (M --> C), eventOfNeg(C,G) |-  --(M -->   conjWithout(C, --G)), (Goal:DesireNN, Time:Task)
+        (M --> G), (M --> C), eventOf(C,G)    |-    (M -->   conjWithout(C,   G)), (Goal:DesirePN, Time:Task)
+        (M --> G), (M --> C), eventOfNeg(C,G) |-    (M -->   conjWithout(C, --G)), (Goal:DesireNN, Time:Task)
 //(M --> G), (M --> C), eventOf(C,G)     |-  --(M --> --conjWithout(C,   G)), (Goal:DecomposeNN, Time:Compose)
 //(M --> G), (M --> C), eventOf(C,G)     |-  --(M --> --conjWithout(C, --G)), (Goal:DecomposePN, Time:Compose)
 //(G --> M), (D --> M), eventOfNeg(C,G)     |-  --(conjWithout(D, --G) --> M), (Goal:DesirePN, Time:Compose)

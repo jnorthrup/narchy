@@ -348,7 +348,7 @@ public final class Answer implements Timed, Predicate<Task> {
                 switch (root.punc()) {
                     case BELIEF:
                     case GOAL: {
-                        t = Truth.stronger(newTask(forceProject, ditherTruth, ditherTime), tasks.first(), ss, ee);
+                        t = Truth.stronger(newTask(root.isBelief()), root, ss, ee);
                         break;
                     }
 
@@ -367,36 +367,24 @@ public final class Answer implements Timed, Predicate<Task> {
         if (t.evi() < eviMin)
             return null;
 
-        if (forceProject) { //dont bother sub-projecting eternal here.
+        if (forceProject && ss!=ETERNAL) { //dont bother sub-projecting eternal here.
 
-            if (ss != ETERNAL) { //dont eternalize here
+            t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
 
-                @Nullable Task t2 = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
-                if (t2 == null)
-                    return null;
-                t = t2;
-            }
         }
 
         return t;
 
     }
 
-    private Task newTask(boolean forceProject, boolean ditherTruth, boolean ditherTime) {
-        int n = tasks.size(); assert (n > 0);
-        Task root = tasks.first();
-        if (n == 1 && (!forceProject || (time.start == root.start() && time.end == root.end())) &&
-                !ditherTruth && !ditherTime) {
-            //TODO check if dithering time and truth would change anything, it might not
-            return root; //only valid if the time range matches
-        } else {
-            TruthProjection tp = truthProjection();
-            return tp!=null ? newTask(tp, root.isBelief() ? true : false /* goal */) : null;
-        }
+    private Task newTask(boolean beliefOrGoal) {
+        TruthProjection tp = truthProjection();
+        return tp!=null ? newTask(tp, beliefOrGoal) : null;
     }
 
     public double eviMin() {
-        return ditherTruth ? nar.confMin.evi() : NAL.truth.EVI_MIN;
+        //return ditherTruth ? nar.confMin.evi() : NAL.truth.EVI_MIN;
+        return nar.confMin.evi();
     }
 
     /**

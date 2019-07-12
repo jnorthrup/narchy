@@ -149,8 +149,8 @@ public class NARS {
 
                 n.termVolMax.set(22);
 
-                ((TaskLinkWhat) n.what()).links.linksMax.set(64);
-                ((TaskLinkWhat) n.what()).links.decay.set(0.05f);
+                ((TaskLinkWhat) n.what()).links.linksMax.set(32);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 
 
                 n.beliefPriDefault.amp(0.1f);
@@ -169,7 +169,7 @@ public class NARS {
     public NARS() {
 
         index = () ->
-                new SimpleMemory(8 * 1024)
+                new SimpleMemory(16 * 1024)
                 //new TemporaryConceptIndex()
         ;
 
@@ -179,7 +179,7 @@ public class NARS {
 
         what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectPriBuffer()
-                       //new PriBuffer.BagTaskBuffer(128, 8f)
+                       //new PriBuffer.BagTaskBuffer(128, 0.1f)
                        //new PriBuffer.MapTaskBuffer()
         );
 

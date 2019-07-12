@@ -45,7 +45,7 @@ public class QueryTest {
         n.believe("f(x)");
 
         Set<Term> e = FactualEvaluator.queryAll($$("g(?what)"), n);
-        assertEquals("[g(x)]", e.toString());
+        assertEquals("[f(x)]", e.toString());
     }
 
     @Test void testFactImpliedByConj() throws Narsese.NarseseException {
