@@ -1,7 +1,6 @@
 package nars.concept.action.curiosity;
 
 import jcog.Skill;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import jcog.math.FloatRange;
@@ -87,8 +86,7 @@ public class Curiosity {
             return;
 
         float curiConf =
-                //nar.confMin.floatValue()/2;
-                nar.confMin.floatValue();
+                Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue());
                 //nar.confMin.floatValue() * 2;
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
@@ -100,7 +98,7 @@ public class Curiosity {
                 //w2c(c2w(nar.confDefault(GOAL))/2);
                 //nar.confDefault(GOAL);
 
-        conf.set(Util.clamp(curiConf, nar.confMin.floatValue(), NAL.truth.CONF_MAX));
+        conf.set(Math.min(curiConf, NAL.truth.CONF_MAX));
 
         int cc = curiosity.size();
 

@@ -223,7 +223,6 @@ final class RayTracer extends JPanel {
         for (int i = 0; i < iter; i++) {
 
             int xy = random.nextInt() & ~(1 << 31);
-
             int x = (xy & Short.MAX_VALUE) % W;
             int y = (xy >> 16) % H;
 

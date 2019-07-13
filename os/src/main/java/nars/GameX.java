@@ -134,9 +134,9 @@ abstract public class GameX extends Game {
 
         n.synch();
 
-//        Exe.invokeLater(()->{
-//            initMeta(n,  false, false);
-//        });
+        Exe.invokeLater(()->{
+            initMeta(n,  false, false);
+        });
 
         Exe.invokeLater(()->{
             window(
