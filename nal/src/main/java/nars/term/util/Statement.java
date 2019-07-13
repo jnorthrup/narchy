@@ -23,7 +23,7 @@ import static nars.time.Tense.*;
 public class Statement {
 
 
-    private static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
+//    private static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
 
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
         return statement(B, op, dt, subject, predicate, 3);
@@ -233,16 +233,15 @@ public class Statement {
 //            }
 
         if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-            if (op == INH || op == SIM) {
-                boolean sn = subject instanceof Neg && !subject.unneg().op().isAny(mobiusExcept);
-                boolean pn = predicate instanceof Neg && !predicate.unneg().op().isAny(mobiusExcept);
+            if (op == INH /*|| op == SIM*/) {
+                boolean sn = subject instanceof Neg;// && !subject.unneg().op().isAny(mobiusExcept);
+                boolean pn = predicate instanceof Neg;// && !predicate.unneg().op().isAny(mobiusExcept);
 
                 if (sn) {
                     negate = !negate;
                     subject = subject.unneg();
                 }
                 if (pn) {
-                    //(a --> --b) |- --(a --> b)   but (--a --> b) != --(a --> b)
                     negate = !negate;
                     predicate = predicate.unneg();
                 }

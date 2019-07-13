@@ -296,8 +296,8 @@ public class Derivation extends PreDerivation {
 
                     double eScale =
                             (taskTruth == null) ? 1 :
-                                taskTruth.conf();
-                                //1;
+                                1;
+                                //taskTruth.conf();
                                 //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
 
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
@@ -334,8 +334,8 @@ public class Derivation extends PreDerivation {
             this.beliefEnd = nextBelief.end();
             _beliefTerm = nextBelief.term();
             beliefVarShift =
-                    //true;
-                    !_beliefTerm.equals(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
+                    true;
+                    //!_beliefTerm.equalsRoot(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
 
         } else {
             this.beliefTruth_at_Belief = this.beliefTruth_at_Task = null;

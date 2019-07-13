@@ -26,6 +26,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.task.AbstractTask.multiTask;
+import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.True;
 
 /**
@@ -239,12 +240,21 @@ public enum Perceive {
             evalTry((Compound) (t.term()), w.nar.evaluator.get(), false);
 
             if (result!=null) {
-                result = new FasterList(result);
-                ((FasterList)result).replaceAll(this::termToTask);
-                ((FasterList)result).removeNulls();
-                if (result.isEmpty())
+                if (result.contains(True) && result.contains(False)) {
+                    //explicit contradiction
                     result = null;
+                } else {
+
+                    FasterList f = new FasterList(result);
+                    result = f;
+                    f.replaceAll(this::termToTask);
+                    f.removeNulls();
+
+                    if (result.isEmpty())
+                        result = null;
+                }
             }
+
         }
 
         @Nullable protected Task termToTask(Object yTerm) {

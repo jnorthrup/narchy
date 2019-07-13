@@ -219,6 +219,12 @@ public enum NALTruth implements TruthFunc {
             return TruthFunctions.comparison(T, B, minConf);
         }
     },
+    ComparisonSymmetric() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions2.comparisonSymmetric(T, B, minConf);
+        }
+    },
 
     Conversion() {
         @Override

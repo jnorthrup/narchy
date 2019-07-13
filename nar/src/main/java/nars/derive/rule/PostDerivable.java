@@ -1,5 +1,6 @@
 package nars.derive.rule;
 
+import jcog.Util;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
 import nars.term.control.PREDICATE;
@@ -52,7 +53,9 @@ public class PostDerivable {
     }
 
     public float value(float p) {
-        float boost = concTruth!=null ? ((concSingle ? 1 : 2) * concTruth.conf()) : 0; /* biased against questions */
-        return p + boost;
+        float boost = concTruth!=null ? (/*(concSingle ? 1 : 2) * */ concTruth.conf()) : 0; /* biased against questions */
+        //return p + boost;
+        //return Math.max(ScalarValue.EPSILON, p * boost);
+        return Util.or(p, boost);
     }
 }

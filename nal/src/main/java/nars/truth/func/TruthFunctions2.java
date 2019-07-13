@@ -182,17 +182,18 @@ public enum TruthFunctions2 {
 
 
 
-    //    /**
-//     * strong frequency and confidence the closer in frequency they are
-//     */
-//    public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
-//        float c = confCompose(t, b);
-//        if (c < minConf) return null;
-//        float dF = Math.abs(t.freq() - b.freq());
-//        float sim = 1f - dF;
-//        float cc = /*weak*/(c * sim);
-//        return cc >= minConf ? $.t(sim, cc) : null;
-//    }
+        /**
+     * strong frequency and confidence the closer in frequency they are
+     */
+    public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
+        float c = confCompose(t, b);
+        if (c < minConf) return null;
+        float dF = Math.abs(t.freq() - b.freq());
+        float sim = 1f - dF;
+        float cc = /*weak*/(c * sim);
+        return cc >= minConf ? $.t(sim, cc) : null;
+    }
+
     public static float weak(float c) {
         return w2cSafe(c);
         //return c * w2cSafe(1.0f);
