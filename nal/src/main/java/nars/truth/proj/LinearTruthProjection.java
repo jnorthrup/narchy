@@ -50,7 +50,8 @@ public class LinearTruthProjection extends TruthProjection {
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
 //        double wFreqPos = 0, wFreqNeg = 0;
-        for (TaskComponent x : this) {
+        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+            TaskComponent x = this.get(i);
             double e = x.evi;
             if (e != e)
                 continue;
@@ -81,25 +82,15 @@ public class LinearTruthProjection extends TruthProjection {
         } else {
             long range = 1 + (end - start);
             eAvg = eSum / range;
-
-            if (eAvg < eviMin)
-                return null;
         }
 
+        if (eAvg < eviMin)
+            return null;
 
         double F = wFreqSum / eSum;
-
-//        double F2 = (((wFreqPos - wFreqNeg) / (wFreqPos+wFreqNeg)/ wSum + 1)/2 ) ;
-//        if (!Util.equals(F,F2))
-//            System.out.println(F + " "+ F2);
-
         return dither ? Truth.theDithered((float)F, eAvg, nar) : PreciseTruth.byEvi(F, eAvg);
     }
 
-
-//    public long range() {
-//        return start == ETERNAL ? 1 : (end - start) + 1;
-//    }
 
 }
 

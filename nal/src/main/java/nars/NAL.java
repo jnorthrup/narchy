@@ -581,7 +581,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * eventually raise to above-confMin).  generally, false should be more accurate with a tradeoff
          * for overhead due to increased belief table churn.
          */
-        public static final boolean REVISION_MIN_EVI_FILTER = configIs("REVISION_MIN_EVI_FILTER");
+        public static final boolean REVISION_MIN_EVI_FILTER = true;
         public static final boolean DYNAMIC_TRUTH_TASK_STORE = configIs("DYNAMIC_TRUTH_TASK_STORE");
         public static final boolean DYNAMIC_TRUTH_TASK_LINK = true;
         public static final boolean DYNAMIC_TRUTH_TASK_EMIT = true;
