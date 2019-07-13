@@ -9,7 +9,7 @@ public class CycleTime extends Time {
 
     private final AtomicLong nextStamp = new AtomicLong(0);
 
-    long t;
+    volatile long t;
     final int dt;
 
     float dur;

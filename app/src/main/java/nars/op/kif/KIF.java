@@ -20,11 +20,11 @@ import com.google.common.collect.ForwardingSet;
 import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
+import jcog.data.set.ArrayHashSet;
 import jcog.util.ArrayUtil;
 import nars.*;
 import nars.op.Equal;
 import nars.op.MathFunc;
-import nars.task.CommandTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
@@ -42,7 +42,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Set;
 import java.util.*;
-import java.util.concurrent.ConcurrentSkipListSet;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
@@ -68,8 +67,7 @@ public class KIF {
         @Override
         public Stream<Task> apply(InputStream i) {
             try {
-                return new KIF(i).beliefs.stream().map(b ->
-                        new CommandTask($.func(BeliefAtom, b)));
+                return new KIF(i).tasks();
             } catch (Exception e) {
                 e.printStackTrace();
             }
@@ -77,10 +75,12 @@ public class KIF {
         }
     };
 
+    public Stream<Task> tasks() {
+        return tasks.stream().map(Op::believe);
+    }
 
 
-    public final SortedSet<Term> beliefs =
-            new ConcurrentSkipListSet<>();
+    public final ArrayHashSet<Term> tasks = new ArrayHashSet<>();
             //new TreeSet();
 
     private final KIFParser kif;
@@ -127,7 +127,7 @@ public class KIF {
                 try {
                     Term y = formulaToTerm(x, 0);
                     if (y != null) {
-                        beliefs.add(y);
+                        tasks.add(y);
                     }
                 } catch (Exception e) {
                     logger.error("{} {}", x, e.getMessage());
@@ -164,7 +164,7 @@ public class KIF {
                 if (fxy instanceof Bool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
                 } else {
-                    beliefs.add(fxy);
+                    tasks.add(fxy);
                 }
             }
 
@@ -172,7 +172,7 @@ public class KIF {
 
         if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
             
-            beliefs.removeIf(belief -> {
+            tasks.removeIf(belief -> {
                 if (belief.op() == INH) {
                     Term fn = belief.sub(1);
                     if (symmetricRelations.contains(fn)) {
@@ -186,7 +186,7 @@ public class KIF {
                         Term b = ab.sub(1);
                         Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
                         
-                        beliefs.add(symmetric);
+                        tasks.add(symmetric);
                         return true; 
                     }
                 }
@@ -194,12 +194,12 @@ public class KIF {
             });
         }
 
-        beliefs.removeIf(b -> {
+        tasks.removeIf(b -> {
             if (b.hasAny(BOOL)) {
                 return true;
             }
             Term bb = b.unneg().normalize();
-            if (!Task.validTaskTerm(bb, BELIEF, true)) {
+            if (!Task.validTaskTerm(bb.unneg(), BELIEF, true)) {
                 logger.error("invalid task target: {}\n\t{}", b, bb);
                 return true;
             }

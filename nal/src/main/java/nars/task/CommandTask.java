@@ -26,7 +26,10 @@ public class CommandTask implements Task {
                 ArrayUtil.EMPTY_LONG_ARRAY);
     }
 
-
+    @Override
+    public final boolean isInput() {
+        return true;
+    }
 
     @Override
     public int hashCode() {

@@ -44,6 +44,13 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
         return this;
     }
 
+    public final double max() {
+        return window.maxValue();
+    }
+    public final double min() {
+        return window.minValue();
+    }
+
     private interface AverageStrategy {
         double apply(Tensor window, float alpha);
     }

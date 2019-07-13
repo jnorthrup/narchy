@@ -21,6 +21,25 @@ import static nars.$.$$;
 class KIFTest {
 
     @Test
+    public void test1() throws IOException {
+
+        String I =
+                //"/home/me/sumo/Merge.kif";
+                //"/home/me/sumo/tinySUMO.kif";
+                "/home/me/sumo/ComputerInput.kif";
+
+        //String O = "/home/me/d/sumo_merge.nal";
+        KIF k = KIF.file(I);
+        k.tasks.forEach(bb -> System.out.println(bb));
+
+        NAR n = NARS.tmp();
+        n.log();
+        n.input(k.tasks());
+        n.run(1000);
+
+    }
+
+    @Test
     void testFormulaToArgs1() {
         TermTest.assertEq(
                 "(&&,reflexiveOn(#RELATION,#CLASS),({#RELATION}-->SymmetricRelation),({#RELATION}-->TransitiveRelation))",
@@ -186,35 +205,12 @@ class KIFTest {
 
     }
 
-    @Test
-    public void test1() throws IOException {
-
-        String I =
-                //"/home/me/sumo/Merge.kif";
-                //"/home/me/sumo/tinySUMO.kif";
-                "/home/me/sumo/ComputerInput.kif";
-
-        //String O = "/home/me/d/sumo_merge.nal";
-        KIF k = KIF.file(I);
-        k.beliefs.forEach(bb -> System.out.println(bb));
-//
-//        NAR nar = NARS.tmp();
-//
-//
-//        //nar.inputNarsese(new FileInputStream(O));
-//
-//        nar.log();
-//
-//        nar.run(10000);
-
-
-    }
 
     @Test
     public void testCapabilityExtension() throws IOException {
 
         KIF k = KIF.file("/home/me/sumo/Merge.kif");
-        k.beliefs.forEach(bb -> System.out.println(bb));
+        k.tasks.forEach(bb -> System.out.println(bb));
 
     }
 }

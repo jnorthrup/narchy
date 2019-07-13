@@ -7,6 +7,7 @@ import nars.subterm.ArrayTermVector;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
+import nars.task.CommandTask;
 import nars.term.Compound;
 import nars.term.Img;
 import nars.term.Term;
@@ -575,6 +576,19 @@ public enum Op {
             case QUEST: return QuestAtom;
         }
         return Int.the(0);
+    }
+
+    public static Task believe(Term x) {
+        return new CommandTask($.func(BeliefAtom, x));
+    }
+    public static Task ask(Term x) {
+        return new CommandTask($.func(QuestionAtom, x));
+    }
+    public static Task want(Term x) {
+        return new CommandTask($.func(GoalAtom, x));
+    }
+    public static Task how(Term x) {
+        return new CommandTask($.func(QuestAtom, x));
     }
 
     public final Term the(Subterms s) {
