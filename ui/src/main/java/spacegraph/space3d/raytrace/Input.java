@@ -1,11 +1,13 @@
-package spacegraph.slam.raytrace;
+package spacegraph.space3d.raytrace;
+
+import jcog.math.vv3;
 
 import java.awt.*;
 import java.awt.event.*;
 import java.util.ArrayList;
 import java.util.List;
 
-public final class Input extends ComponentAdapter implements KeyListener, MouseListener, MouseMotionListener {
+final class Input extends ComponentAdapter implements KeyListener, MouseListener, MouseMotionListener {
     public Dimension newSize;
 
     private boolean forward = false;
@@ -52,20 +54,20 @@ public final class Input extends ComponentAdapter implements KeyListener, MouseL
         return dy;
     }
 
-    public Vector3 getKeyboardVector() {
-        Vector3 kbVector = new Vector3(0, 0, 0);
+    public vv3 getKeyboardVector() {
+        vv3 kbVector = new vv3(0, 0, 0);
 
         if (forward) {
-            kbVector = kbVector.plus(new Vector3(0, 1, 0));
+            kbVector = kbVector.add(new vv3(0, 1, 0));
         }
         if (backward) {
-            kbVector = kbVector.plus(new Vector3(0, -1, 0));
+            kbVector = kbVector.add(new vv3(0, -1, 0));
         }
         if (left) {
-            kbVector = kbVector.plus(new Vector3(-1, 0, 0));
+            kbVector = kbVector.add(new vv3(-1, 0, 0));
         }
         if (right) {
-            kbVector = kbVector.plus(new Vector3(1, 0, 0));
+            kbVector = kbVector.add(new vv3(1, 0, 0));
         }
 
         kbVector = kbVector.normalize().scale(0.3);
@@ -85,9 +87,6 @@ public final class Input extends ComponentAdapter implements KeyListener, MouseL
     public void componentResized(ComponentEvent e) {
         newSize = e.getComponent().getSize();
         interrupt();
-        synchronized (this) {
-            notifyAll();
-        }
     }
 
     @Override
@@ -106,9 +105,6 @@ public final class Input extends ComponentAdapter implements KeyListener, MouseL
         }
         if (moving()) {
             interrupt();
-            synchronized (this) {
-                notifyAll();
-            }
         }
     }
 
@@ -139,9 +135,6 @@ public final class Input extends ComponentAdapter implements KeyListener, MouseL
         currentMouseX = e.getX();
         currentMouseY = e.getY();
         interrupt();
-        synchronized (this) {
-            notifyAll();
-        }
     }
 
     @Override

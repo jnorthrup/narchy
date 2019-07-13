@@ -140,19 +140,34 @@ public interface Bitmap2D extends Tensor {
 
 
     static float decode8bRed(int p) {
-        return ((p & 0x00ff0000) >> 16) / 256f;
+        return iDecode8bRed(p) / 256f;
     }
 
     static float decode8bGreen(int p) {
-        return ((p & 0x0000ff00) >> 8) / 256f;
+        return iDecode8bGreen(p) / 256f;
     }
 
     static float decode8bBlue(int p) {
-        return ((p & 0x000000ff)) / 256f;
+        return iDecode8bBlue(p) / 256f;
     }
 
     static float decode8bAlpha(int p) {
-        return ((p & 0xff000000) >> 24) / 256f;
+        return iDecode8bAlpha(p) / 256f;
+    }
+    static int iDecode8bRed(int p) {
+        return ((p & 0x00ff0000) >> 16);
+    }
+
+    static int iDecode8bGreen(int p) {
+        return ((p & 0x0000ff00) >> 8);
+    }
+
+    static int iDecode8bBlue(int p) {
+        return ((p & 0x000000ff));
+    }
+
+    static int iDecode8bAlpha(int p) {
+        return ((p & 0xff000000) >> 24);
     }
 
 
