@@ -131,6 +131,7 @@ abstract public class ThreadedExec extends MultiExec {
                 int batchSize = //Util.lerp(throttle,
                         //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
                         Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
+                buffer.ensureCapacity(batchSize);
 
 
                 int got = in.drain(buffer::addFast,batchSize);

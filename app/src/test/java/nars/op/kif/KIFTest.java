@@ -5,6 +5,8 @@ import jcog.Util;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
+import nars.attention.TaskLinkWhat;
+import nars.attention.What;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.TermTest;
@@ -21,7 +23,7 @@ import static nars.$.$$;
 class KIFTest {
 
     @Test
-    public void test1() throws IOException {
+    public void test1() throws IOException, Narsese.NarseseException {
 
         String I =
                 //"/home/me/sumo/Merge.kif";
@@ -30,12 +32,17 @@ class KIFTest {
 
         //String O = "/home/me/d/sumo_merge.nal";
         KIF k = KIF.file(I);
-        k.tasks.forEach(bb -> System.out.println(bb));
+//        k.tasks.forEach(bb -> System.out.println(bb));
 
         NAR n = NARS.tmp();
-        n.log();
+        n.termVolMax.set(64);
+
+        What w = n.what();
         n.input(k.tasks());
+        n.log();
+        n.input("x.");
         n.run(1000);
+        ((TaskLinkWhat)w).links.links.print();
 
     }
 

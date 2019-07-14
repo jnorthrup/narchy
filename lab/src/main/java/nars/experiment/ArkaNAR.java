@@ -2,6 +2,8 @@ package nars.experiment;
 
 
 import jcog.Util;
+import jcog.exe.Loop;
+import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatRange;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
@@ -10,6 +12,7 @@ import nars.NAR;
 import nars.agent.GameTime;
 import nars.agent.NAct;
 import nars.agent.Reward;
+import nars.agent.util.RLBooster;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
@@ -17,6 +20,7 @@ import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.video.SwingBitmap2D;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 
 import java.awt.*;
@@ -25,6 +29,7 @@ import java.awt.event.KeyListener;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -55,6 +60,32 @@ public class ArkaNAR extends GameX {
 
     private float prevScore;
 
+    public static class RLBoosterOnly {
+
+        public static void main(String[] args) {
+
+            float FPS = 10f;
+            NAR n = GameX.baseNAR(FPS, 4);
+            ArkaNAR a = new ArkaNAR($.$$("(noid,a)"), n, cam, numeric);
+            RLBooster rl = new RLBooster(a, (i, o) -> new DQN3(i, o, Map.of(
+                DQN3.Option.ALPHA, 0.05,
+                DQN3.Option.EPSILON, 0.25
+            )), 2, 3, false);
+
+            window(new Splitting(
+                        NARui.game(a),
+                        0.5f,
+                        new VectorSensorView(a.cc, a).withControls() //TODO RL View
+                    ).resizeable(), 1024, 800);
+
+            Loop loop = n.startFPS(FPS);
+
+
+        }
+
+    }
+
+
     public static class MultiArkaNAR {
         public static void main(String[] args) {
 
@@ -71,8 +102,6 @@ public class ArkaNAR extends GameX {
                         new Gridding( NARui.game(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
 
             }, 40);
-
-
 
         }
     }

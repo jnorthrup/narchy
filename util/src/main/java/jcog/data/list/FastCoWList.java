@@ -14,6 +14,7 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 /** be careful about synchronizing to instances of this class
@@ -53,6 +54,10 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         synchronized(list) {
             with.accept(this);
         }
+    }
+    @Override
+    public String toString() {
+        return "[" + stream().map(Object::toString).collect(Collectors.joining(",")) + "]";
     }
 
     public void synchDirect(Predicate<FasterList<X>> with) {

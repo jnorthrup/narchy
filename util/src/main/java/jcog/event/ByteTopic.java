@@ -3,7 +3,10 @@ package jcog.event;
 import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 
+import java.util.Objects;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /** topic whose transmissions are keyed by a 'byte' selector.  receivers can register for one or more of the channels */
 public class ByteTopic<X> {
@@ -34,8 +37,13 @@ public class ByteTopic<X> {
 
     }
 
+    @Override
+    public String toString() {
+        return Stream.of(chan).filter(Objects::nonNull).map(Object::toString).collect(Collectors.joining(","));
+    }
+
     protected Topic<X> newTopic(byte c) {
-        return new ByteSubTopic<X>(c);
+        return new ByteSubTopic<>(c);
     }
 
 //TODO

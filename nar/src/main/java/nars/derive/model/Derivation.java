@@ -347,7 +347,8 @@ public class Derivation extends PreDerivation {
             _beliefTerm = nextBeliefTerm;
             beliefVarShift =
                     //!(nextBeliefTerm instanceof Variable) ?
-                    false; //unshifted, structural only;
+                    //false; //unshifted, structural only;
+                    true;
         }
         this.beliefTerm =
                 beliefVarShift ?

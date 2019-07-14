@@ -47,7 +47,7 @@ public class ConjClustering extends How {
     private final CauseChannel<Task> in;
     private final byte puncIn, puncOut;
 
-    public final FloatRange termVolumeMaxPct = new FloatRange(0.75f, 0, 1f);
+    public final FloatRange termVolumeMaxPct = new FloatRange(0.5f, 0, 1f);
     public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
     private int inputTermVolMax, stampLenMax;
@@ -260,10 +260,11 @@ public class ConjClustering extends How {
         //Param.STAMP_CAPACITY - 1;
         //Integer.MAX_VALUE;
         this.confMin = nar.confMin.floatValue();
-        this.inputTermVolMax = Math.round(Math.max(1f,
-                (this.volMax = nar.termVolMax.intValue()) * termVolumeMaxPct.floatValue()) +
-                -2 /* for the super-CONJ itself and another term of at least volume 1 */
-        );
+        this.volMax = Math.max(3,Math.round(
+                (nar.termVolMax.intValue() * termVolumeMaxPct.floatValue())
+                //-2 /* for the super-CONJ itself and another term of at least volume 1 */
+        ));
+        this.inputTermVolMax = Math.max(1, volMax - 2);
     }
 
     protected float forgetRate() {
@@ -391,7 +392,7 @@ public class ConjClustering extends How {
 //                            if (null == vv.putIfAbsent(pair(tStart, term), t)) {
 
 
-                        volEstimate += xtv;
+                        volEstimate += (xtv+1);
 
                         stamp.addAll(tStamp);
 

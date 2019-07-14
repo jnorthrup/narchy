@@ -39,6 +39,10 @@ public class DQN3 extends Agent {
     private int currentAction;
     private Graph lastG;
 
+    public DQN3(final int inputs, final int numActions) {
+        this(inputs, numActions, Map.of( /* empty */));
+    }
+
     public DQN3(final int inputs, final int numActions, final Map<Option, Double> config) {
         super(inputs, numActions);
 

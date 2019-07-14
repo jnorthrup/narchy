@@ -58,7 +58,7 @@ public class Remember extends AbstractTask {
 //        assert (xTerm.op().taskable);
 
         boolean input = x.isInput();
-        if ((!input && NAL.VOLMAX_RESTRICTS) || (input && NAL.VOLMAX_RESTRICTS_INPUT)) {
+        if ((NAL.VOLMAX_RESTRICTS) && (input || !NAL.VOLMAX_RESTRICTS_INPUT)) {
             int termVol = xTerm.volume();
             int maxVol = n.termVolMax.intValue();
             if (termVol > maxVol)

@@ -22,6 +22,8 @@ public class ListTopic<V> extends jcog.data.list.FastCoWList<Consumer<V>> implem
         super(capacity, Consumer[]::new);
     }
 
+
+
     @Override
     public void emit(V x) {
         forEachWith(Consumer::accept, x);

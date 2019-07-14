@@ -166,7 +166,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     @Override
     @Deprecated public final void accept(Task x) {
-        in.put(x);
+        put(x);
     }
 
     @Deprecated public final Task put(Task x) {

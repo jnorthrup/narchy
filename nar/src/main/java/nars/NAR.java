@@ -898,6 +898,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
             try {
                 outputEvent(out, previous[0], k, v);
+
             } catch (IOException e) {
                 logger.error("outputEvent: {}", e.toString());
             }

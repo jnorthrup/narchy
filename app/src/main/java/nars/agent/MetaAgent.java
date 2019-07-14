@@ -111,16 +111,22 @@ public class MetaAgent extends Game {
         actionCtl($.inh(SELF, exact), new FloatRange(1f, 0, 1) {
             @Override
             public void set(float value) {
-                switch (Util.clamp((int) Math.floor(value * 4),0,3)) {
-//                    case 0: value = 0.5f; break; //binary emulation
-//                    case 1: value = 0.25f; break;
-                    case 0: value = 0.1f; break;
-                    case 1: value = 0.05f; break;
-                    case 2: value = 0.025f; break;
-                    case 3: value = 0.01f; break;
-                    default:
-                        throw new UnsupportedOperationException();
+                if (value < 0.5f) {
+                    value = 0.01f;
+                } else if (value < 0.75f) {
+                    value = 0.05f;
+                } else {
+                    value = 0.1f;
                 }
+//                switch (Util.clamp((int) Math.floor(value * 4),0,3)) {
+////                    case 0: value = 0.5f; break; //binary emulation
+////                    case 1: value = 0.25f; break;
+//                    case 0: value = 0.1f; break;
+//                    case 1: value = 0.05f; break;
+//                    case 2: value = 0.01f; break;
+//                    default:
+//                        throw new UnsupportedOperationException();
+//                }
                 nar.freqResolution.set(value);
                 super.set(value);
             }
@@ -160,7 +166,7 @@ public class MetaAgent extends Game {
 
         What w = g.what();
 
-        Term gid = w.id;
+        Term gid = $.p(w.nar.self(), w.id);
         //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 

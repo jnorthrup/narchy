@@ -220,7 +220,7 @@ abstract public class GameX extends Game {
 //        return n;
 //    }
 
-    private static NAR baseNAR(float durFPS, int _threads) {
+    public static NAR baseNAR(float durFPS, int _threads) {
     /*
     try {
         Exe.UDPeerProfiler prof = new Exe.UDPeerProfiler();

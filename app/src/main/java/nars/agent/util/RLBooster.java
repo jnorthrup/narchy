@@ -62,10 +62,10 @@ public class RLBooster  {
 //    public RLBooster(NAgent env, IntIntToObjectFunc<Agent> rl, int actionDiscretization) {
 //        this(env, rl, true);
 //    }
-
-    @Deprecated public RLBooster(Game env, IntIntToObjectFunction<Agent> agent, boolean nothingAction) {
-        this(env, agent, 1, 1, nothingAction);
-    }
+//
+//    @Deprecated public RLBooster(Game env, IntIntToObjectFunction<Agent> agent, boolean nothingAction) {
+//        this(env, agent, 1, 1, nothingAction);
+//    }
 
     /**
      * @param g

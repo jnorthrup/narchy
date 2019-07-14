@@ -110,13 +110,20 @@ public class WorkerExec extends ThreadedExec {
 
             //int hPerW = 1; //(int)Util.clamp(granularity/concurrency(), 1, H.size());
 
+            int idle = 0;
             do {
                 What w = W.sample(rng);
                 if (w != null && w.isOn()) {
                     How h = H.sample(rng);
-                    if (h.isOn())
+                    if (h!=null && h.isOn()) {
+                        idle = 0;
                         play(w, h);
+                        continue;
+                    }
                 }
+
+                Util.pauseSpin(idle++);
+
             } while (until > nanoTime());
 
         }
