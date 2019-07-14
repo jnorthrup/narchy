@@ -975,6 +975,28 @@ public class NAL5Test extends NALTest {
             .mustQuestion(cycles, "y")
         ;
     }
+    @Test
+    void testImplQuestion_Induction() {
+        test
+                .termVolMax(9)
+                .input("y(z)?")
+                .input("(x($1) ==> y($1)).")
+                .mustQuestion(cycles, "x(z)")
+        ;
+    }
+
+    @Test void testConjQuestion() {
+        test.termVolMax(4).input("(  x && y).").input("x?").mustQuestion(10, "(  x && y)");
+    }
+    @Test void testConjQuestion_neg() {
+        test.termVolMax(4).input("(--x && y).").input("x?").mustQuestion(10, "(--x && y)");
+    }
+    @Test void testConjQuest() {
+        test.termVolMax(4).input("(  x && y).").input("x@").mustQuest(10, "(  x && y)");
+    }
+    @Test void testConjQuest_neg() {
+        test.termVolMax(4).input("(--x && y).").input("x@").mustQuest(10, "(--x && y)");
+    }
 
     @Test
     void testImplSubj_and_ConditionsQuestioned_fwd() {

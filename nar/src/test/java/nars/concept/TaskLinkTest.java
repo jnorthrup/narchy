@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertNotNull;
 public class TaskLinkTest {
 
     @Test void testTaskLinkComponentPriOverflow() {
-        AtomicTaskLink t = new AtomicTaskLink($$("x"));
+        AtomicTaskLink t = AtomicTaskLink.link($$("x"));
         assertEquals(0, t.pri(), 0.001f);
 
         t.priMergeGetDelta(BELIEF, 0.9f, PriMerge.replace);
@@ -39,7 +39,7 @@ public class TaskLinkTest {
     //    private final NAR n = new NARS().shell();
 
     @Test void testTaskLinkComponentRange() {
-        AtomicTaskLink t = new AtomicTaskLink($$("x"));
+        AtomicTaskLink t = AtomicTaskLink.link($$("x"));
         t.priMergeGetDelta(BELIEF, 0.9f, PriMerge.plus);
         t.priMergeGetDelta(GOAL, 0.9f, PriMerge.plus);
         assertEquals(0.5f, t.pri(), 0.1f);

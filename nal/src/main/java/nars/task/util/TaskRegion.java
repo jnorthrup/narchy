@@ -32,7 +32,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     /**
      * proportional value of splitting a node by conf
      */
-    float CONF_COST = 0.1f;
+    float CONF_COST = 0.25f;
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {
@@ -114,11 +114,11 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         switch (dim) {
             case 0:
                 //return Math.log(range(0)) * TIME_COST;
-                return Math.sqrt(range(0)) * TIME_COST;
+                return (range(0)) * TIME_COST;
             case 1:
-                return (1 + range(1)) * FREQ_COST;
+                return (range(1)) * FREQ_COST;
             case 2:
-                return (1 + range(2)) * CONF_COST;
+                return (range(2)) * CONF_COST;
         }
         throw new UnsupportedOperationException();
     }

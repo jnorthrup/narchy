@@ -8,7 +8,6 @@ import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.math.FloatNormalizer;
 import jcog.math.FloatRange;
-import jcog.pri.ScalarValue;
 import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.TensorRing;
 import jcog.signal.tensor.WritableTensor;
@@ -96,8 +95,10 @@ public class RLBooster  {
 
         input = new float[inD];
 
+        assert(actionDiscretization>=2): "discretization must be least >=2; minimum two states";
+
         this.actions = g.actions().array();
-        this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * actionDiscretization /* pos/neg for each action */;
+        this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * (actionDiscretization-1); /* pos/neg for each action */;
 
         logger.info("{} {} in={}x{} out={}", agent, g, inD, history, outD);
         assert(inD > 0);
@@ -151,10 +152,10 @@ public class RLBooster  {
             float tf = t!=null ? truthFeedback(t) : Float.NaN;
             float y = tf != tf ? noise() : tf;
             //y = (y - 0.5f) * 2; //polarize
-            if (actionDiscretization > 1) {
-                for (int d = 0; d < actionDiscretization; d++) {
+            if (actionDiscretization > 2) {
+                for (int d = 0; d < actionDiscretization-1; d++) {
                     //float yd = ((((float)d)/(actionDiscretization-1)) - 0.5f)*2;
-                    float yd = ((float)d)/(actionDiscretization-1);
+                    float yd = ((float)(d))/(actionDiscretization-1);
                     feedback[k++] = y * Util.sqr(1 - Math.abs(yd - y)); //window
                 }
             } else {
@@ -162,7 +163,7 @@ public class RLBooster  {
             }
         }
 
-        //Util.normalize(feedback); //needs shifted to mid0 and back to mid.5
+        Util.normalize(feedback); //needs shifted to mid0 and back to mid.5
 
         return feedback;
     }
@@ -187,8 +188,11 @@ public class RLBooster  {
 //        //HACK
 //        int dur = nar.dur();
         long now = nar.time();
-        long start = now;
-        long end = env.next;
+
+        int dtDither = nar.dtDither();
+        long start = Tense.dither(env.now, dtDither, -1);
+        long end = Tense.dither(Math.round(env.now + env.durPhysical()), dtDither, +1);
+
         if (end < start)
             return;
 //        long start = now - dur/2;
@@ -204,41 +208,46 @@ public class RLBooster  {
         }
 
         int a = agent.act(actionFeedback(now), (float) reward, Util.toFloat(history.doubleArray()));
+        int buttons = (actionDiscretization-1)*actions.length;
+        if (a >= buttons) {
+            //nothing action, or otherwise beyond range of action buttons
+            return ;
+        }
+        int A = a / (actionDiscretization-1);
+        int level = a % (actionDiscretization-1);
 
-        float OFFfreq =
-                //0f;
-                Float.NaN;
-        float ONfreq = 1f;
+//        float OFFfreq =
+//                //0f;
+//                Float.NaN;
+//        float ONfreq = 1f;
 
 
         float conf = this.conf.floatValue();
 //        Truth off = OFFfreq == OFFfreq ? $.t(OFFfreq, conf) : null;
-        long range = end-start;
-        long nextStart = end;
-        long nextEnd = nextStart + range;
+//        long range = end-start;
+//        long nextStart = end;
+//        long nextEnd = nextStart + range;
         //long nextStart = start, nextEnd = end;
+
 
         List<Task> e = new FasterList(actions.length);
         int aa = 0;
+
         for (int o = 0; o < actions.length; o++ ) {
-
-
-            for (int d = 0; d < actionDiscretization; d++) {
-                if (aa++ != a) { //HACK
-                    continue;
-                }
-
-                float freq = (((float)d)/(actionDiscretization-1));
-                Truth t = $.t(freq, conf);
-
-
-                if (t != null) {
-                    Task tt = new SignalTask(actions[o].term(), GOAL, t, start, nextStart, nextEnd, new long[]{nar.time.nextStamp()});
-                    tt.pri(Math.max(ScalarValue.EPSILON, nar.priDefault(GOAL)));
-                    e.add(tt);
-                }
+            float freq;
+            if (o == A) {
+                freq = actionDiscretization > 2 ? (((float)(level+1))/(actionDiscretization-1)) : 1;
+            } else{
+                freq = 0;
             }
+            Truth t = $.t(freq, conf);
+            Task tt =
+                    new SignalTask(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
+                    //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
+                tt.pri(nar.priDefault(GOAL));
+                e.add(tt);
         }
+
         in.acceptAll(e, w);
     }
 

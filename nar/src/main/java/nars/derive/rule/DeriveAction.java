@@ -55,20 +55,20 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
         return why.rule.toString();
     }
 
-    @Deprecated public boolean test(Derivation d) {
-        if (truth.test(d)) {
+//    @Deprecated public boolean test(Derivation d) {
+//        if (truth.test(d)) {
+//
+//            d.clear();
+//            d.retransform.clear();
+//            d.forEachMatch = null;
+//
+//            conclusion.test(d);
+//        }
+//
+//        return d.use(NAL.derive.TTL_COST_BRANCH);
+//    }
 
-            d.clear();
-            d.retransform.clear();
-            d.forEachMatch = null;
-
-            conclusion.test(d);
-        }
-
-        return d.use(NAL.derive.TTL_COST_BRANCH);
-    }
-
-    public boolean test(PostDerivable p) {
+    public boolean run(PostDerivable p) {
 
         Derivation d = (Derivation) p.d;
         d.clear();

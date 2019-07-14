@@ -351,22 +351,12 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    DecomposeDiff() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.decomposeDiff(T, B, minConf);
-        }
-    },
-
-    Decompose() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return NAL.nal_truth.STRONG_DECOMPOSE ?
-                    Intersection.apply(T, B, minConf, n) :
-                    TruthFunctions.decompose(T, B, true, true, true, minConf);
-        }
-    },
-
+//    DecomposeDiff() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.decomposeDiff(T, B, minConf);
+//        }
+//    },
 
     Divide() {
         @Override

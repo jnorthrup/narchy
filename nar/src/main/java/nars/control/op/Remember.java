@@ -1,5 +1,6 @@
 package nars.control.op;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
@@ -125,12 +126,12 @@ public class Remember extends AbstractTask {
             link(input, w);
         else {
             Concept cc = n.conceptualize(input);
-//            if (!(cc instanceof TaskConcept)) {
+            if (!(cc instanceof TaskConcept)) {
 //                //may be an atomic functor term, not sure
-//                //if (NAL.DEBUG)
-//                //throw new WTF();
+//                if (NAL.DEBUG)
+                    throw new WTF();
 //                return;
-//            }
+            }
 
 
             insert((TaskConcept) cc, w);

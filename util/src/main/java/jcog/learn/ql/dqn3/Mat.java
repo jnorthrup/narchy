@@ -3,11 +3,11 @@ package jcog.learn.ql.dqn3;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 
-class Mat {
-    final double[] w;
-    final double[] dw;
-    final int d;
-    final int n;
+public class Mat {
+    public final double[] w;
+    public final double[] dw;
+    public final int d;
+    public final int n;
 
     Mat(final int n, final int d) {
         this.n = n;
@@ -19,13 +19,13 @@ class Mat {
     Mat(final int n, final int d, final double[] arr) {
         this.n = n;
         this.d = d;
-        this.w = arr;
-        assert(w.length == n*d);
-        this.dw = new double[this.n * this.d];
+        this.w = arr; assert(arr.length == n*d);
+        this.dw = new double[n * d];
     }
 
     void update(final double val) {
         IntStream.range(0, this.w.length).forEach(i -> this.w[i] -= val * this.dw[i]);
         Arrays.fill(this.dw, 0);
+        //Util.mul(0.9f, dw);
     }
 }

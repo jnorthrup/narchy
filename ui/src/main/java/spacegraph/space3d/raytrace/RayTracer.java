@@ -17,14 +17,16 @@ import java.util.Random;
 final class RayTracer extends JPanel {
 
     /** regauge this as a fraction of the screen dimension */
-    public static final float grainMax = 0.01f;
+    public static final float grainMax = 0.1f;
     float grainMin;
-    private int superSampling = 1;
+
+    /** accepts value < 1 and >= 1 */
+    private float superSampling = 0.25f;
 
     double fps = 30;
 
     /** update rate (not alpha chanel) */
-    float alpha = 0.75f;
+    float alpha = 0.8f;
 
     double CAMERA_EPSILON = 0.001;
 
@@ -197,8 +199,8 @@ final class RayTracer extends JPanel {
 
     class Renderer {
 
-        int window = 8;
-        int iter = 16;
+        int window = 32;
+        int iter = 128;
 
         @Deprecated private float eee;
 
@@ -236,7 +238,7 @@ final class RayTracer extends JPanel {
 
 
 
-                grain = Math.max(grainMin, (float) Util.lerp(Math.pow(e.max(), 1f), grainMin, grainMax));
+                grain = e.valueOf(Math.max(grainMin, (float) Util.lerp(Math.pow(ee.asFloat(), 1f), grainMin, grainMax)));
 
                 float grainPixels = Math.max(1,grain * WHmax);
 
@@ -251,7 +253,6 @@ final class RayTracer extends JPanel {
                         alphaEffective,
                         grainPixels, iter);
                 eee = ((float) ePixelAverage);
-                e.next(ee.asFloat());
 
 
             } while (System.nanoTime() - start <= sceneTimeNS);

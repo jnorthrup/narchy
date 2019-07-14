@@ -160,8 +160,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         if (target == null)
             return null;
 
-        Term reverse = reverse(target, link, task, d);
-        if (reverse != null)
+        Term reverse = target.op().conceptualizable ? reverse(target, link, task, d) : null;
+        if (reverse != null && reverse!=target)
             return reverse;
 
         Term forward = link.forward(target, link, task, d);
@@ -228,7 +228,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     protected abstract Term reverse(Term target, TaskLink link, Task task, Derivation d);
 
     private void link(Term s, Term u, byte punc, float p) {
-        link(new AtomicTaskLink(s, u).priSet(punc, p));
+        link(AtomicTaskLink.link(s, u).priSet(punc, p));
     }
 
     public final void link(TaskLink x) {
@@ -247,7 +247,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     }
 
     public void link(Task task, float pri) {
-        link(new AtomicTaskLink(task.term()).priSet(task.punc(), pri));
+        link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri));
     }
 
     @Deprecated
@@ -278,12 +278,14 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      */
     public static class DirectTangentTaskLinks extends TaskLinks {
 
+        public static final DirectTangentTaskLinks the = new DirectTangentTaskLinks();
+
+        private DirectTangentTaskLinks() {
+
+        }
 
         @Override
         protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
-
-            //all atoms and compounds eligible, inversely proportional to their volume
-            if (!target.op().conceptualizable) return null;
 
             //< 1 .. 1.0 isnt good
             float probBase =
@@ -302,7 +304,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             if (d.random.nextFloat() >= probDirect)
                 return null; //term itself
 
+            return sample(target, link, d);
 
+        }
+
+        @Nullable public Term sample(Term target, TaskLink link, Derivation d) {
             final Term[] T = {target};
             sampleUnique(d.random, (ll) ->{
                 if (ll != link) {
@@ -315,7 +321,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                 return true;
             });
             return T[0];
-
         }
     }
 
@@ -326,13 +331,17 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
+        protected boolean cache(Term target) {
+            return target instanceof Atom;
+            //return target.volume() <= 3;
+        }
         @Override
         protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
 
-            if (!(target instanceof Atom)) return null;
 
             float probability =
-                    0.5f;
+                    //0.5f;
+                    (float) (0.5f / Math.pow(target.volume(), 2));
             //1f/Math.max(2,link.from().volume());
             //1-1f/Math.max(2,link.from().volume());
             //1-1f/(Math.max(1,link.from().volume()-1));
@@ -341,17 +350,28 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             //1 - 1f / (1 + s.volume());
             //1 - 1f / (1 + t.volume());
 
-            if (d.random.nextFloat() <= probability) {
-                Concept T = d.nar.conceptualize(target);
-                if (T != null) {
-                    //sample active tasklinks for a tangent match to the atom
-                    //Predicate<TaskLink> filter = x -> !link.equals(x);
-                    Predicate<TaskLink> filter = ((Predicate<TaskLink>) link::equals).negate();
+            if (!(d.random.nextFloat() <= probability))
+                return null;
 
-                    Term z = atomTangent(T, task.punc(), filter, d.time(),
-                            Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), d.random);
-                    return z;
-                }
+            if (cache(target)) {
+                Concept T = d.nar.conceptualize(target);
+                if (T != null)
+                    return sampleCached(T, link, task, d);
+            }
+
+            //default:
+            return DirectTangentTaskLinks.the.sample(target, link, d);
+        }
+
+        @Nullable private Term sampleCached(Concept T, TaskLink link, Task task, Derivation d) {
+
+            //sample active tasklinks for a tangent match to the atom
+            //Predicate<TaskLink> filter = x -> !link.equals(x);
+            Predicate<TaskLink> filter = ((Predicate<TaskLink>) link::equals).negate();
+
+            Term z = atomTangent(T, task.punc(), filter, d.time(),
+                    Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), d.random);
+            return z;
 
 //                        if (u!=null && u.equals(s)) {
 ////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
@@ -363,16 +383,13 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 //
 //                            //link(t, s, punc, p*subRate); //reverse echo
 //                        }
-            }
-
-            return target;
 
         }
 
         /**
          * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
          */
-        final Term atomTangent(Concept src, byte punc, Predicate<TaskLink> filter, long now, int minUpdateCycles, Random rng) {
+        @Nullable final Term atomTangent(Concept src, byte punc, Predicate<TaskLink> filter, long now, int minUpdateCycles, Random rng) {
             return TermLinks.tangent(links,
                     src, punc, filter,
                     false, true,
@@ -419,7 +436,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             }
 
             protected int cap(int bagSize) {
-                return Math.max(2, (int) Math.ceil(1.5f * Math.sqrt(bagSize)) /* estimate */);
+                return Math.max(2, (int) Math.ceil(1f * Math.sqrt(bagSize)) /* estimate */);
                 //return bagSize;
             }
 
@@ -448,7 +465,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                                         if (match == null) {
                                             //                            @Nullable RankedN<TaskLink> existingLinks = this.links;
                                             //                            if (existingLinks==null)
-                                            match = new RankedN<>(new TaskLink[Math.min(itemCount - i, cap)], (FloatFunction<TaskLink>) TaskLink::pri);
+                                            match = new RankedN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
                                             //                            else {
                                             //                                //recycle
                                             //                                //  this will affect other threads that might be reading from it.
@@ -465,13 +482,24 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                             }
 
 
-                            links.clear();
                             if (match != null) {
                                 int ms = match.size();
-                                if (ms > 0) {
-                                    links.ensureCapacity(ms);
-                                    match.forEach(links::addFast);
+
+                                RankedN<TaskLink> mm = match;
+
+                                int toSave = cap - ms;
+                                if (toSave > 0) {
+//                                    float maxPri = match.rank.floatValueOf(match.get(0));
+                                    float minPri = match.rank.floatValueOf(match.get(ms - 1));
+                                    for (int i1 = 0, linksSize = Math.min(toSave, links.size()); i1 < linksSize; i1++) {
+                                        TaskLink z = links.get(i1);
+                                        mm.add(z.clone(Math.max(ScalarValue.EPSILON, minPri)));
+                                    }
                                 }
+
+                                links.clear();
+                                links.addAll(ms, mm.items);
+
                             }
 
                         }

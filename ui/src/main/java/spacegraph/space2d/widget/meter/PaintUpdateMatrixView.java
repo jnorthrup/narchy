@@ -1,13 +1,27 @@
 package spacegraph.space2d.widget.meter;
 
 import com.jogamp.opengl.GL2;
+import jcog.Util;
+import jcog.data.atomic.AtomicCycle;
 import spacegraph.space2d.ReSurface;
+import spacegraph.video.Draw;
+
+import java.util.function.Supplier;
 
 
 /** TODO use TriggeredMatrixView for async which should cause less updates */
 public class PaintUpdateMatrixView extends BitmapMatrixView {
     public PaintUpdateMatrixView(float[] x) {
         super(x);
+    }
+    public PaintUpdateMatrixView(double[] x) {
+        super(x, 1, Draw::colorBipolar);
+    }
+    public PaintUpdateMatrixView(Supplier<double[]> x, int len) {
+        super(x, len, Draw::colorBipolar);
+    }
+    public PaintUpdateMatrixView(Supplier<double[]> x, int len, int stride) {
+        super(x, len, stride, Draw::colorBipolar);
     }
 
     public PaintUpdateMatrixView(float[][] x) {
@@ -20,4 +34,29 @@ public class PaintUpdateMatrixView extends BitmapMatrixView {
         super.paint(gl, reSurface);
     }
 
+    public static PaintUpdateMatrixView scroll(double[] x, boolean normalize, int window, int step) {
+        assert(window >= step && (window % step == 0));
+
+        int max = x.length;
+        assert(max >= window);
+
+        double[] xx = new double[window];
+        AtomicCycle.AtomicCycleN i = new AtomicCycle.AtomicCycleN(max);
+        return new PaintUpdateMatrixView(()->{
+            int start = i.addAndGet(step);
+            int over;
+            int end = start + window;
+            if (end >= max) {
+                over = (end-max); end = max;
+            } else
+                over= 0;
+            System.arraycopy(x, start, xx, 0, (end-start));
+            if (over > 0)
+                System.arraycopy(x, 0, xx, (end-start), over);
+
+            if(normalize)
+                Util.normalize(xx);
+            return xx;
+        }, window, step);
+    }
 }

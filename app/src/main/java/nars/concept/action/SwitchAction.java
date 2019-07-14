@@ -22,12 +22,14 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
     public SwitchAction(NAR nar, IntPredicate action, Term... states) {
         super(null, Needle, nar, states);
+        this.input = value::floatValue;
         this.decider =
                 //new DecideEpsilonGreedy(0.05f, nar.random());
                 new DecideSoftmax(0.5f, nar.random());
         this.action = action;
         exp = new float[states.length];
-        
+
+
     }
 
     protected int decide(long start, long end) {

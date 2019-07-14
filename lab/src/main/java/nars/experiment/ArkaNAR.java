@@ -64,18 +64,35 @@ public class ArkaNAR extends GameX {
 
         public static void main(String[] args) {
 
-            float FPS = 10f;
-            NAR n = GameX.baseNAR(FPS, 4);
-            ArkaNAR a = new ArkaNAR($.$$("(noid,a)"), n, cam, numeric);
-            RLBooster rl = new RLBooster(a, (i, o) -> new DQN3(i, o, Map.of(
-                DQN3.Option.ALPHA, 0.05,
-                DQN3.Option.EPSILON, 0.25
-            )), 2, 3, false);
+            Term id = $$("rl");
+            float FPS = 25f;
+            NAR n = GameX.baseNAR(FPS, 2);
+
+            //GameX a = new FZero(id, n);
+            //GameX a = new ArkaNAR(id, n, true, false);
+            GameX a = new PoleCart(id, n, 0.01f);
+            RLBooster rl = new RLBooster(a,
+                (i, o) -> new DQN3(i, o, Map.of(
+                    DQN3.Option.ALPHA, 0.05,
+                    DQN3.Option.GAMMA, 0.5,
+                    DQN3.Option.EPSILON, 0.1,
+                    DQN3.Option.LEARNING_STEPS_PER_ITERATION, 15.0,
+                    DQN3.Option.NUM_HIDDEN_UNITS, 1024.0
+                ))
+
+//                    (i, o) -> new HaiQae(i, o)
+
+            , 2, 4, false);
+
+            a.curiosity.rate.set(0);
 
             window(new Splitting(
                         NARui.game(a),
                         0.5f,
-                        new VectorSensorView(a.cc, a).withControls() //TODO RL View
+                        new Gridding(
+                            //new VectorSensorView(a.cc, a).withControls(), //TODO RL View
+                            NARui.rlbooster(rl)
+                        )
                     ).resizeable(), 1024, 800);
 
             Loop loop = n.startFPS(FPS);

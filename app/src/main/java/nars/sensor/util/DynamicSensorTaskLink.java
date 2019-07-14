@@ -14,8 +14,6 @@ import java.util.function.Predicate;
 
 public abstract class DynamicSensorTaskLink extends AtomicTaskLink {
 
-
-
     public DynamicSensorTaskLink(Term src) {
         super(src);
     }
@@ -36,6 +34,5 @@ public abstract class DynamicSensorTaskLink extends AtomicTaskLink {
         //return task.term();
         return null;
     }
-
 
 }

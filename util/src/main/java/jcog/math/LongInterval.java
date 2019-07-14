@@ -223,6 +223,10 @@ public interface LongInterval {
         return i == this ? 0 : minTimeTo(i.start(), i.end());
     }
 
+    default long minTimeTo(long a) {
+        return minTimeTo(a,a); //HACK
+    }
+
     /** if the task intersects (ex: occurrs during) the specified interval,
      *  returned time distance is zero, regardless of how far it may extend before or after it */
     default long minTimeTo(long a, long b) {

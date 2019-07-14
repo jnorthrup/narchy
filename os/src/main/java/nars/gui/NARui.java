@@ -11,6 +11,7 @@ import jcog.data.list.table.Table;
 import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
 import jcog.thing.Part;
@@ -877,6 +878,23 @@ public class NARui {
                     new Gridding(VERTICAL,
                             new PaintUpdateMatrixView(q.q),
                             new PaintUpdateMatrixView(q.et)
+                    )
+            );
+        }
+        if (rlb.agent instanceof DQN3) {
+            DQN3 d = (DQN3) rlb.agent;
+            charts.add(
+                    new ObjectSurface(d),
+                    new Gridding(VERTICAL,
+                            //new PaintUpdateMatrixView(d.currentState.w),
+                            new PaintUpdateMatrixView(()->d.input, d.inputs),
+                            PaintUpdateMatrixView.scroll(d.W1.w, false, 96, 4),
+                            PaintUpdateMatrixView.scroll(d.W1.dw, false, 96, 4),
+                            PaintUpdateMatrixView.scroll(d.W2.w, false, 16,4),
+                            PaintUpdateMatrixView.scroll(d.W2.dw, false, 16,4)
+//                            new PaintUpdateMatrixView(d.B1.w),
+//                            new PaintUpdateMatrixView(d.W2.w),
+//                            new PaintUpdateMatrixView(d.B2.w)
                     )
             );
         }

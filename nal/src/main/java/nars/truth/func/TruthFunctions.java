@@ -83,17 +83,19 @@ public final class TruthFunctions {
      * @param v2 Truth value of the second premise
      * @return Truth value of the conclusion
      */
-    @Nullable public static Truth deduction(Truth a, Truth b, boolean strong, float minConf) {
+    @Nullable public static Truth deduction(Truth x, Truth y, boolean strong, float minConf) {
+        float cxy = confCompose(x, y);
+        if (cxy < minConf)
+            return null;
 
-        float f = and(a.freq(), b.freq());
+        float fxy = and(x.freq(), y.freq());
 
-        float c = and(f, confCompose(a.conf(), b.conf()));
+        float c = and(fxy, cxy);
         if (!strong)
             c = weak(c);
 
-        return (c < minConf) ? null : t(f, c);
+        return (c < minConf) ? null : t(fxy, c);
     }
-
 
     /**
      * {<S ==> M>, <M <=> P>} |- <S ==> P>
@@ -202,6 +204,8 @@ public final class TruthFunctions {
 
 
     public static float confCompose(Truth a, Truth b) {
+        //TODO hi-precision conf computation directly from a.evi(), b.evi()
+
         return confCompose(a.conf(), b.conf());
     }
 
@@ -294,28 +298,6 @@ public final class TruthFunctions {
         return v0c < minConf ? null : TruthFunctions.analogy(b, a.freq(), v0c, minConf);
     }
 
-    /**
-     * decompose positive / negative
-     */
-    @Nullable
-    public static Truth decompose(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {
-        float cxy = confCompose(X, Y);
-        if (cxy >= minConf) {
-            float fx = X.freq(), fy = Y.freq();
-            float fxy = and(
-                    x ? fx : 1 - fx,
-                    y ? fy : 1 - fy
-            );
-            float c =
-                    fxy * cxy;
-                    //cxy; //<= = intersection
-
-            if (c >= minConf)
-                return t(z ? fxy : 1 - fxy, c);
-
-        }
-        return null;
-    }
 
     /** soft "sqrt" variation */
     @Nullable public static Truth decomposeSoft(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {

@@ -1082,6 +1082,10 @@ public enum Util {
         float[] minmax = minmax(x);
         return normalize(x, minmax[0], minmax[1]);
     }
+    public static double[] normalize(double[] x) {
+        double[] minmax = minmax(x);
+        return normalize(x, minmax[0], minmax[1]);
+    }
     public static float[] normalizeMargin(float lowerPct, float upperPct, float[] x) {
         float[] minmax = minmax(x);
         float range = minmax[1] - minmax[0];
@@ -1089,9 +1093,10 @@ public enum Util {
     }
 
     public static float[] normalize(float[] x, float min, float max) {
-        int e = x.length;
-        int s = 0;
-        return normalize(x, s, e, min, max);
+        return normalize(x, 0, x.length, min, max);
+    }
+    public static double[] normalize(double[] x, double min, double max) {
+        return normalize(x, 0, x.length, min, max);
     }
 
     public static float[] normalize(float[] x, int s, int e) {
@@ -1103,17 +1108,23 @@ public enum Util {
             x[i] = normalize(x[i], min, max);
         return x;
     }
+    public static double[] normalize(double[] x, int s, int e, double min, double max) {
+        for (int i = s; i < e; i++)
+            x[i] = normalize(x[i], min, max);
+        return x;
+    }
 
     public static double normalize(double x, double min, double max) {
         if (x!=x)
             return Float.NaN;
         assertFinite(min);
         assertFinite(max);
-        assert (max >= min);
         if (max - min <= Double.MIN_NORMAL)
             return 0.5f;
-        else
+        else {
+            assert (max >= min);
             return (x - min) / (max - min);
+        }
     }
 
     public static float normalize(float x, float min, float max) {
@@ -2231,9 +2242,13 @@ public enum Util {
         return result;
     }
 
-    public static void mul(float scale, float[] ff) {
-        for (int i = 0; i < ff.length; i++)
-            ff[i] *= scale;
+    public static void mul(float scale, float[] f) {
+        for (int i = 0; i < f.length; i++)
+            f[i] *= scale;
+    }
+    public static void mul(double scale, double[] f) {
+        for (int i = 0; i < f.length; i++)
+            f[i] *= scale;
     }
 
     public static <X> X[] map(int n, IntFunction<X[]> arrayizer, IntFunction<X> build) {

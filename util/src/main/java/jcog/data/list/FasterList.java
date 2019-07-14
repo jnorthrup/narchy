@@ -686,11 +686,13 @@ public class FasterList<X> extends FastList<X> {
 
     public boolean removeAbove(int index) {
         int s = this.size;
-        if (index >= s)
+        if (index >= s) {
             return false;
-        Arrays.fill(items, index, s, null);
-        this.size = index;
-        return true;
+        } else {
+            Arrays.fill(items, index, s, null);
+            this.size = index;
+            return true;
+        }
     }
 
     public int capacity() {
@@ -716,8 +718,12 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public final void addAll(X... x) {
-        ensureCapacityForAdditional(x.length);
-        addFast(x, x.length);
+        addAll(x.length, x);
+    }
+
+    public final void addAll(int n, X[] x) {
+        ensureCapacityForAdditional(n);
+        addFast(x, n);
     }
 
     public final void addAllFaster(FasterList<X> source) {

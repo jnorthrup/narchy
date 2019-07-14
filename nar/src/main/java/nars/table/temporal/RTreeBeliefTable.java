@@ -5,14 +5,20 @@ import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.sort.FloatRank;
+import jcog.sort.Top;
+import jcog.sort.TopN;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
 import nars.NAL;
 import nars.Task;
 import nars.control.op.Remember;
-import nars.task.util.*;
+import nars.task.util.Answer;
+import nars.task.util.Revision;
+import nars.task.util.TaskRegion;
+import nars.task.util.TimeRange;
 import nars.truth.Truth;
 import nars.truth.proj.TruthProjection;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,6 +28,8 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
+
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -37,20 +45,32 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     static final ToDoubleFunction<RLeaf<TaskRegion>> MostOriginality = (n) -> {
         return originalitySum(n);
     };
-    static final ToDoubleFunction<RLeaf<TaskRegion>> MostTemporalDensity = (n) -> {
+    static FloatFunction<RLeaf<TaskRegion>> WeakestTemporallyDense(long now) { return (n) -> {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
         long u = 0;
+//        long minRange = Long.MAX_VALUE, maxRange = Long.MIN_VALUE;
+//        int stampMin = Integer.MAX_VALUE, stampMax = Integer.MIN_VALUE;
         for (TaskRegion t : n.data) {
             if (t == null) break;
             long ts = t.start();
             long te = t.end();
             s = Math.min(s, ts);
             e = Math.max(e, te);
-            u += (1 + (te - ts));
+            long r = 1 + (te - ts);
+            u += r;
+//            int stampLen = ((Task)t).stamp().length;
+//            stampMin = Math.min(stampLen, stampMin);
+//            stampMax = Math.max(stampLen, stampMax);
         }
-        double df = n.bounds.range(1) /* freq */;
-        return ((double) u) / (1 + (e - s) * df);
-    };
+//        int stampDelta = stampMax - stampMin;
+        //double rangeDeltaMax = ...
+        //double df = (n.bounds.range(1)) /* freq */;
+        double eviMin = c2wSafe(n.bounds.center(2));
+        long range = (1+(e-s));
+//        long timeDist = ((TaskRegion)n.bounds).maxTimeTo(now);
+        return (float)(((double) u  /* * (1 + ((double)timeDist)) */ ) / ( eviMin * range  )); //* (timeToNow/range)
+        };
+    }
     //new AxialSplitLeaf();
     //new LinearSplitLeaf();
     //    static final ToDoubleFunction<TaskRegion> LeastOriginal = (t) -> {
@@ -127,10 +147,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        //return 1.0 / (1+eviRange);
 //        return -eviRange;
 //    };
-//    static final ToDoubleFunction LeastTimeRange = (t) -> {
-//        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
-//        return 1.0 / ((TaskRegion)t).range();
-//    };
+    static final ToDoubleFunction LeastTimeRange = (t) -> {
+        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
+        return 1.0 / ((TaskRegion)t).range();
+    };
 //    static final ToDoubleFunction LeastFreqRange = (t) -> {
 //        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
 //        return 1.0 / (1+((TaskRegion)t).range(1));
@@ -227,9 +247,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             RLeaf<TaskRegion> leaf = mergeableLeaf.get();
             AB = Revision.merge(r.nar, true, 2, leaf.size, leaf.data);
             if (AB != null) {
-                Task ab = AB.getOne();
-
                 mergeOrEvict = true;
+
 
                 //mergeOrEvict = !weakest.accepted(ab);
 
@@ -248,7 +267,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 if (treeRW.remove(rr))
                     r.forget(rr);
             });
-            Task m = Revision.merge(AB);
+            Task m = Revision.afterMerge(AB);
             if (treeRW.add(m)) {
                 r.remember(m);
             } //else: possibly already contained the merger?
@@ -514,7 +533,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
     }
 
-    static final class FurthestWeakest implements ToDoubleFunction<Task> {
+    static final class FurthestWeakest implements FloatFunction<Task> {
 
         public final long now;
 
@@ -523,34 +542,30 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public double applyAsDouble(Task t) {
+        public float floatValueOf(Task t) {
             double dt = 1 + t.maxTimeTo(now);
-            return dt / (1.0 + (t.evi() * (t.range() / dt)));
+            return (float) (dt / (1.0 + (t.evi() * (t.range() / dt))));
         }
     }
 
     //    static final ToDoubleFunction<Task> MostDynamic = (t) -> {
 //        return 1.0 / t.originality();
 //    };
-    private static final class MergeableRegion extends Extreme<RLeaf<TaskRegion>, RLeaf<TaskRegion>> {
+    private static final class MergeableRegion extends Top<RLeaf<TaskRegion>> {
 
         public MergeableRegion(long now) {
             super(
-                    MostTemporalDensity, /*new Furthest(now),*/ MostOriginality, MostComponents
+                    WeakestTemporallyDense(now)
+                    //,  new Furthest(now), LeastOriginality
                     /*LeastOverlap, LeastTemporalSparsity,*/
-                    //, LeastTimeRange
             );
-            weights(0.75f, 0.25f, 0.25f);
+            //weights(0.75f, 0.25f, 0.25f);
         }
 
-        @Override
-        protected RLeaf<TaskRegion> the(RLeaf<TaskRegion> t) {
-            return t;
-        }
     }
 
     @Deprecated
-    private static final class WeakestTask extends Extreme<Task, Task> {
+    private static final class WeakestTask extends Top<Task> {
 
         public WeakestTask(long now) {
             super(//complexity ?
@@ -562,10 +577,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             //weights(0.75f, 0.5f, 0.1f, 0.05f);
         }
 
-        @Override
-        protected Task the(Task task) {
-            return task;
-        }
 
     }
 

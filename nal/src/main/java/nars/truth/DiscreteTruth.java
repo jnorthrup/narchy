@@ -28,7 +28,6 @@ public class DiscreteTruth implements Truth {
     public DiscreteTruth(float f, float c, float res) {
         this(f, c, res, res);
     }
-
     private DiscreteTruth(float f, float c, float freqRes, float confRes) {
         this(
             Truth.freq(f, freqRes),

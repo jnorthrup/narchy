@@ -52,7 +52,8 @@ public abstract class PreDerivation extends Unify {
 
         short[] maybe = d.deriver.what(d);
 
-        if (maybe.length == 0)
+        int n = maybe.length;
+        if (n == 0)
             return false;
 
         d.preReady();
@@ -62,67 +63,54 @@ public abstract class PreDerivation extends Unify {
         float[] pri;
         short[] can;
 
-        if (maybe.length == 1) {
-            if (branch[maybe[0]].value(d) <= 0)
-                return false;
 
-            can = maybe;
-            pri = null; //not used
-
-        } else /* could.length > 1 */ {
-
-            int n = maybe.length;
-            float[] f = new float[n];
-            MetalBitSet toRemove = null;
-            for (int choice = 0; choice < n; choice++) {
-                float fc = branch[maybe[choice]].value(d);
-                if (fc <= 0) {
-                    if (toRemove == null) toRemove = MetalBitSet.bits(n);
-                    toRemove.set(choice);
-                }
-                f[choice] = fc;
+        float[] f = new float[n];
+        MetalBitSet toRemove = null;
+        for (int choice = 0; choice < n; choice++) {
+            float fc = branch[maybe[choice]].value(d);
+            if (fc <= 0) {
+                if (toRemove == null) toRemove = MetalBitSet.bits(n);
+                toRemove.set(choice);
             }
+            f[choice] = fc;
+        }
 
-            if (toRemove == null) {
-                can = maybe; //all
-                pri = maybe.length > 1 ? f : null;
-            } else {
-                int r = toRemove.cardinality();
-                if (r == n)
-                    return false; //all removed; nothing remains
-                /*else if (r == n-1) {*/
-                //TODO all but one
+        if (toRemove == null) {
+            can = maybe; //all
+            pri = f;
+        } else {
+            int r = toRemove.cardinality();
+            if (r == n)
+                return false; //all removed; nothing remains
+            /*else if (r == n-1) {*/
+            //TODO all but one
 
-                int nn = n - r;
+            int nn = n - r;
 
-                pri = new float[nn];
-                can = new short[nn];
-                int nc = 0;
-                for (int i = 0; i < n; i++) {
-                    if (toRemove.getNot(i)) {
-                        pri[nc] = f[i];
-                        can[nc++] = maybe[i];
-                    }
+            pri = new float[nn];
+            can = new short[nn];
+            int nc = 0;
+            for (int i = 0; i < n; i++) {
+                if (toRemove.getNot(i)) {
+                    pri[nc] = f[i];
+                    can[nc++] = maybe[i];
                 }
             }
         }
 
-        d.ready(maybe, deriveTTL);
 
-        d.runPostDerivable(d, branch, pri, can);
+        d.runPostDerivable(d, branch, pri, can, deriveTTL);
 
         return true;
     }
 
-    static void runRoulette(Derivation d, DeriveAction[] branch, float[] pri, short[] can) {
-        MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(d));
-    }
+//    static void runRoulette(Derivation d, DeriveAction[] branch, float[] pri, short[] can) {
+//        MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(d));
+//    }
 
-    void runPostDerivable(Derivation d, DeriveAction[] branch, float[] pri, short[] can) {
-        if (can.length == 1) {
-            branch[can[0]].test(d);
-            return;
-        }
+    void runPostDerivable(Derivation d, DeriveAction[] branch, float[] pri, short[] can, int deriveTTL) {
+
+        d.ready(deriveTTL); //first come first serve, maybe not ideal
 
         int n = can.length;
         int valid = 0, lastValid = -1;
@@ -137,14 +125,15 @@ public abstract class PreDerivation extends Unify {
                 }
             }
         }
+
+
         switch (valid) {
             case 0: break;
             case 1:
-                branch[can[lastValid]].test(post[lastValid]);
+                branch[can[lastValid]].run(post[lastValid]);
                 break;
-            //TODO 1-ary
             default:
-                MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(post[i]));
+                MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].run(post[i]));
                 break;
         }
     }

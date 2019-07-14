@@ -88,11 +88,24 @@ abstract public class AtomicCycle implements IntUnaryOperator {
     public final int incrementAndGet() {
         return I.updateAndGet(this, this);
     }
-
     /** spinner */
     @Override public final int applyAsInt(int x) {
         return ++x >= high() ? low() : x;
     }
+
+    public final int addAndGet(int x) {
+        if (x == 0)
+            return get();
+        assert(x >= 0 && x < (high()-low())): "TODO";
+        return I.accumulateAndGet(this, x, (p,a)->{
+            int n = p + a;
+            int h = high();
+            if (n >= h) n = low() + (n - h);
+            return n;
+        });
+    }
+
+
 
 
 // TODO

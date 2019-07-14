@@ -68,6 +68,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     /** input bag */
     public final PriBuffer<Task> in;
+    private final DurLoop.DurNARConsumer schedule;
 
     /** advised deriver pri model
      *      however, each deriver instance can also be configured individually and dynamically.
@@ -96,9 +97,16 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         this.pri.pri(0.5f);
         this.in = in;
 
-        add(new DurLoop.DurNARConsumer(
-            !in.async(out) ? this::perceiveCommit : this::commit)
-                .durs(0));
+        schedule = new DurLoop.DurNARConsumer(!in.async(out) ? this::perceiveCommit : this::commit);
+        add(schedule);
+    }
+
+    @Override
+    protected void starting(NAR nar) {
+        super.starting(nar);
+
+        //schedule.durs(0);
+        schedule.durs(1f/nar.exe.concurrency());
     }
 
     @Override

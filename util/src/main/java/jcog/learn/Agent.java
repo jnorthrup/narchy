@@ -1,6 +1,5 @@
 package jcog.learn;
 
-import jcog.Util;
 import jcog.signal.Tensor;
 import org.jetbrains.annotations.Nullable;
 
@@ -42,7 +41,7 @@ public abstract class Agent {
             if (lastDecision >= 0)
                 actionFeedback[lastDecision] = +1.0f;
         } else {
-            Util.normalize(actionFeedback);
+//            Util.normalize(actionFeedback);
         }
         int decided = decide(actionFeedback, reward, input);
         this.lastDecision = decided;

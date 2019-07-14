@@ -84,7 +84,7 @@
 
 
     //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DecomposeNP, Time:Compose)
+    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DeductionNP, Time:Compose)
     (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:Desire, Time:Compose)
 
 

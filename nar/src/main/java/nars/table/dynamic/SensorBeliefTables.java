@@ -198,7 +198,7 @@ public class SensorBeliefTables extends BeliefTables {
 
             if (link) {
                 TaskLinkWhat ww = (TaskLinkWhat) w;
-                AbstractTaskLink tl = new AtomicTaskLink(next.term());
+                AbstractTaskLink tl = AtomicTaskLink.link(next.term());
                 tl.priSet(BELIEF, nextPri);
 //        tl.priSet(BELIEF, surprise*2f/3f);
 ////        tl.priSet(GOAL, surprise/3);

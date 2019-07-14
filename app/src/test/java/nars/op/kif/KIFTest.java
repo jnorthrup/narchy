@@ -40,7 +40,7 @@ class KIFTest {
         What w = n.what();
         n.input(k.tasks());
         n.log();
-        n.input("x.");
+        n.input("({#ACT}-->JoystickMotion)?");
         n.run(1000);
         ((TaskLinkWhat)w).links.links.print();
 

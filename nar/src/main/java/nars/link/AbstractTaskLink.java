@@ -7,12 +7,7 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAL;
-import nars.Op;
-import nars.task.util.TaskException;
-import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
-import nars.term.util.TermException;
 
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
@@ -23,61 +18,26 @@ public abstract class AbstractTaskLink implements TaskLink {
     /**
      * source,target as a 2-ary subterm
      */
-    private final Term src;
-    private final Term tgt;
-    private final int hash;
+    public final Term src;
+    public final Term tgt;
+    public final int hash;
     /**
      * cached; NaN means invalidated
      */
     private volatile float pri = 0;
 
-    @Override
-    @Deprecated public AtomicTaskLink clone(float priFactor) {
-        AtomicTaskLink l = new AtomicTaskLink(src, tgt/*, hash*/);
-        l.priMult(priFactor);
-        return l;
-    }
 
-    protected AbstractTaskLink(Term self) {
-        this(self, null);
+    protected AbstractTaskLink(Term source, Term target, int hash) {
+        this.src = source;
+        this.tgt = target;
+        this.hash = hash;
     }
 
     protected AbstractTaskLink(Term source, Term target) {
-
-
-        source =
-                source.concept();
-                //Image.imageNormalize(source).concept();
-        target = target != null ?
-                    (
-                        NAL.TASKLINK_TARGET_CONCEPT && target instanceof Compound && target.op().conceptualizable ?
-                            target.concept()
-                            :
-                            target
-                    )
-                    : source //loop
-                 ;
-
-        if (source instanceof Bool)
-            throw new TermException("source bool", source);
-//        if (target instanceof Bool)
-//            throw new TermException("source bool", target);
-
-        Op so = source.op();
-        if (!so.taskable)
-            throw new TaskException(source, "source term not taskable");
-        if (!so.conceptualizable)
-            throw new TaskException(source, "source term not conceptualizable");
-//        if (NAL.DEBUG) {
-//            if (!source.isNormalized())
-//                throw new TaskException(source, "source term not normalized and can not name a task");
-//        }
-
-        this.src = source;
-        this.tgt = target;
-        this.hash =
-                source==target ? source.hashCode() :
-                    Util.hashCombine(source, target); //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
+        this(source, target,
+            //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
+            source==target ? source.hashCode() : Util.hashCombine(source, target)
+        );
     }
 
     @Override

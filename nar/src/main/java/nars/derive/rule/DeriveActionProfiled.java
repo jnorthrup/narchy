@@ -17,9 +17,9 @@ public class DeriveActionProfiled extends DeriveAction {
     }
 
     @Override
-    public boolean test(Derivation d) {
+    public boolean run(PostDerivable p) {
         long start = System.nanoTime();
-        boolean r = super.test(d);
+        boolean r = super.run(p);
         long end = System.nanoTime();
         meter.recordValue(end-start);
         return r;

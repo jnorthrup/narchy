@@ -2,9 +2,6 @@ package jcog.test;
 
 import com.google.common.collect.Sets;
 import jcog.learn.Agent;
-import jcog.learn.ql.HaiQ;
-import jcog.learn.ql.HaiQae;
-import jcog.learn.ql.dqn3.DQN2;
 import jcog.test.control.CliffWalking;
 import jcog.test.control.InputMatchesChoice;
 import jcog.test.control.OneObviousChoice;
@@ -25,7 +22,9 @@ import java.util.stream.Stream;
 class AgentTests implements AfterAllCallback {
 
     static final IntIntToObjectFunction<?/* Agent */>[] AGENTS = {
-        HaiQ::new, HaiQae::new, DQN2::new, EmbeddedNAgent::new
+//        HaiQ::new, HaiQae::new, DQN2::new,
+        EmbeddedNAgent::new,
+//        DQN3::new
     };
 
     static final Class<? /*AbstractAgentTest*/>[] ENVS = {
@@ -36,6 +35,7 @@ class AgentTests implements AfterAllCallback {
 
     @MethodSource("args")
     @ParameterizedTest() void testAll(Class<? extends AbstractAgentTest> envClass, IntIntToObjectFunction<Agent> agent) {
+
         try {
             env = envClass.getConstructor().newInstance();
         } catch (Throwable t) {

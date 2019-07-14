@@ -2,11 +2,11 @@
 
  //similarity coercion (S==P)! (symmetric: DecomposeNegative....)
  //maybe use ReduceConjunction
- ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DecomposeDiff)
-   //((&,--P,A..+) --> M), ((&,A..+) --> M) |- (P --> M), (Goal:DecomposeDiff,Time:Intersect) //not working yet
- (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DecomposeDiff)
-    ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposeDiff)
-    (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposeDiff)
+ ((S ~ P) --> M), (S --> M) |- (P --> M), (Goal:DeductionDiff)
+   //((&,--P,A..+) --> M), ((&,A..+) --> M) |- (P --> M), (Goal:DeductionDiff,Time:Intersect) //not working yet
+ (M --> (S - P)), (M --> S) |- (M --> P), (Goal:DeductionDiff)
+    ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DeductionDiff)
+    (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DeductionDiff)
 
 
 
@@ -19,17 +19,17 @@
 
 
 ////     //difference --(S==P)! (asymmetric: DecomposePositive... )
-//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DecomposePP,Time:Intersect)
-//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DecomposePP,Time:Intersect)
-//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DecomposePN,Time:Intersect)
-//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DecomposePN,Time:Intersect)
+//     ((S ~ P) --> M), (S --> M) |- --(P --> M), (Goal:DeductionPP,Time:Intersect)
+//     (M --> (S - P)), (M --> S) |- --(M --> P), (Goal:DeductionPP,Time:Intersect)
+//        ((S ~ P) --> M), (P --> M) |- (S --> M), (Goal:DeductionPN,Time:Intersect)
+//        (M --> (S - P)), (M --> P) |- (M --> S), (Goal:DeductionPN,Time:Intersect)
 //
 
 
 
 
-//     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePP,Time:Intersect)
-//     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DecomposePN,Time:Intersect)
+//     (M --> (&,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DeductionPP,Time:Intersect)
+//     (M --> (|,P,S,A..*)), (M --> S) |- (M --> P), (Goal:DeductionPN,Time:Intersect)
 
 
 
@@ -63,16 +63,16 @@
 //Difference Goal Decompose TODO review
 
 //        //DIFFi
-//        (S-->B), (S --> (B - G)) |- (S --> G), (Goal:DecomposeDiff)
-//        (S-->G), (S --> (B - G)) |- (S --> B), (Goal:DecomposeDiffX)
+//        (S-->B), (S --> (B - G)) |- (S --> G), (Goal:DeductionDiff)
+//        (S-->G), (S --> (B - G)) |- (S --> B), (Goal:DeductionDiffX)
 //
 //        //DIFFe
-//        (B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:DecomposeDiff)
-//        (G-->S), ((B ~ G) --> S) |- (B --> S), (Goal:DecomposeDiffX)
+//        (B-->S), ((B ~ G) --> S) |- (G --> S), (Goal:DeductionDiff)
+//        (G-->S), ((B ~ G) --> S) |- (B --> S), (Goal:DeductionDiffX)
 
 //            //Raw DIFFe
-//            B, (B ~ G) |- G, (Goal:DecomposeDiff)
-//            G, (B ~ G) |- B, (Goal:DecomposeDiffX)
+//            B, (B ~ G) |- G, (Goal:DeductionDiff)
+//            G, (B ~ G) |- B, (Goal:DeductionDiffX)
 
 
 //experimental
@@ -88,8 +88,8 @@
         //(X - Y):S, (X - Y):S, task("!") |- (Y:S && (--,X:S)), (Goal:WeakN)
         //(X ~ Y), (X ~ Y), task("!") |- (Y && --X), (Goal:WeakN)
 
-//     (M --> (S - P)), (M --> S), task("!") |- (M --> P), (Goal:DecomposePositiveNegativeNegative)
-//     (M --> (S - P)), (M --> P), task("!") |- (M --> S), (Goal:DecomposeNegativeNegativeNegative)
+//     (M --> (S - P)), (M --> S), task("!") |- (M --> P), (Goal:DeductionPositiveNegativeNegative)
+//     (M --> (S - P)), (M --> P), task("!") |- (M --> S), (Goal:DeductionNegativeNegativeNegative)
 
 //raw product composition, may be redundant because general induction via && does the equivalent
 //  (already in induction.nal)
@@ -101,19 +101,19 @@
 
 
 //     //DIFFi
-     //(M --> S), (M --> (S - P)) |- (M --> P), (Belief:DecomposeDiffX)
-//       (M --> S), (M --> (|,S,--P,A..*)) |- (M --> P), (Belief:DecomposeDiffX,Time:Intersect)
-     //(M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeDiffX)
-//       (M --> P), (M --> (|,S,--P,A..*)) |- (M --> S), (Belief:DecomposeDiffX,Time:Intersect)
-////        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DecomposePP)
-////        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DecomposeNP)
+     //(M --> S), (M --> (S - P)) |- (M --> P), (Belief:DeductionDiffX)
+//       (M --> S), (M --> (|,S,--P,A..*)) |- (M --> P), (Belief:DeductionDiffX,Time:Intersect)
+     //(M --> P), (M --> (S - P)) |- (M --> S), (Belief:DeductionDiffX)
+//       (M --> P), (M --> (|,S,--P,A..*)) |- (M --> S), (Belief:DeductionDiffX,Time:Intersect)
+////        (M --> S), (M --> (S - P)) |- --(M --> P), (Belief:DeductionPP)
+////        (M --> P), (M --> (S - P)) |- (M --> S), (Belief:DeductionNP)
 ////
 //     //DIFFe
-     //(S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DecomposeDiffX)
-//       (S --> M), ((&,S,--P,A..*) --> M) |- (P --> M), (Belief:DecomposeDiffX,Time:Intersect)
-     //(P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeDiffX)
-//       (P --> M), ((&,S,--P,A..*) --> M) |- (S --> M), (Belief:DecomposeDiffX,Time:Intersect)
-////        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DecomposePP)
-////        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DecomposeNP)
+     //(S --> M), ((S ~ P) --> M) |- (P --> M), (Belief:DeductionDiffX)
+//       (S --> M), ((&,S,--P,A..*) --> M) |- (P --> M), (Belief:DeductionDiffX,Time:Intersect)
+     //(P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DeductionDiffX)
+//       (P --> M), ((&,S,--P,A..*) --> M) |- (S --> M), (Belief:DeductionDiffX,Time:Intersect)
+////        (S --> M), ((S ~ P) --> M) |- --(P --> M), (Belief:DeductionPP)
+////        (P --> M), ((S ~ P) --> M) |- (S --> M), (Belief:DeductionNP)
 
 //

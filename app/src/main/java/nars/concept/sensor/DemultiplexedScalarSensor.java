@@ -13,7 +13,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 abstract public class DemultiplexedScalarSensor extends VectorSensor implements FloatSupplier {
 
     public final NumberX value = new AtomicFloat();
-    public final FloatSupplier input;
+    public FloatSupplier input;
     public final FloatFloatToObjectFunction<Truth> truther;
     public final Term term;
 

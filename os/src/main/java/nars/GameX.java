@@ -134,9 +134,9 @@ abstract public class GameX extends Game {
 
         n.synch();
 
-        Exe.invokeLater(()->{
-            initMeta(n,  false, false);
-        });
+//        Exe.invokeLater(()->{
+//            initMeta(n,  false, false);
+//        });
 
         Exe.invokeLater(()->{
             window(
@@ -429,13 +429,13 @@ abstract public class GameX extends Game {
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.75f);
 
-        n.emotion.want(MetaGoal.Futile, -0.0001f);
-        n.emotion.want(MetaGoal.Perceive, -0.0001f);
-
-        n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.5f);
-
-        n.emotion.want(MetaGoal.Action, +1f);
+//        n.emotion.want(MetaGoal.Futile, -0.0001f);
+//        n.emotion.want(MetaGoal.Perceive, -0.0001f);
+//
+//        n.emotion.want(MetaGoal.Believe, 0.01f);
+//        n.emotion.want(MetaGoal.Desire, 0.5f);
+//
+//        n.emotion.want(MetaGoal.Action, +1f);
 
 
 //
@@ -522,7 +522,7 @@ abstract public class GameX extends Game {
 
 
         //new StatementLinker(n);
-        new PuncNoise(n);
+        //new PuncNoise(n);
         //n.start(new Eternalizer(n));
 
 //        new STMLinkage(n, 1);

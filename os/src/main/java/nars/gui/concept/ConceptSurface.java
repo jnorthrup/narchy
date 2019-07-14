@@ -48,7 +48,12 @@ public class ConceptSurface extends TabMenu {
 ////                        }
 //                    });
 //                },
-                "print", ()->new EmptySurface() /* TODO*/,
+                "print", ()->{
+                    //TODO better
+
+                    n.conceptualizeDynamic(x).print();
+                    return new EmptySurface();
+                } /* TODO*/,
                 "beliefs", () -> NARui.beliefChart(n.conceptualizeDynamic(x), n)
 //                        "termlinks", () -> new BagView("TermLinks", n.concept(id).termlinks(), n),
 //                "tasklinks", () -> new LabeledPane("TaskLinks", new BagView(n.concept(x).tasklinks(), n)),

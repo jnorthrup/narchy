@@ -35,9 +35,9 @@ public class TaskLinkWhat extends What {
     public final FloatRange dur = new FloatRange(1, 1, 1024);
 
     public final TaskLinks links =
-            new TaskLinks.DirectTangentTaskLinks();
+            //TaskLinks.DirectTangentTaskLinks.the;
             //new TaskLinks.NullTangentTaskLinks();
-            //new TaskLinks.AtomCachingTangentTaskLinks();
+            new TaskLinks.AtomCachingTangentTaskLinks();
 
 
     private final AtomicBoolean busy = new AtomicBoolean(false);

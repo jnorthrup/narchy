@@ -1,31 +1,33 @@
 package jcog.learn.ql.dqn3;
 
 
+import jcog.Util;
+
 import java.util.ArrayDeque;
 import java.util.Arrays;
-import java.util.Queue;
+import java.util.Deque;
 import java.util.stream.IntStream;
 
 class Graph {
-    private final boolean needsBackprop;
-    private final Queue<Backprop> backpropQueue;
+    private boolean reverse;
+    private final Deque<Backprop> q;
 
-    Graph(final boolean needsBackprop) {
-        this.needsBackprop = needsBackprop;
-        this.backpropQueue = new ArrayDeque<>();
+    Graph(final boolean reverse) {
+        this.reverse = reverse;
+        this.q = new ArrayDeque<>();
     }
 
     void backward() {
         Backprop next;
-        while (((next = this.backpropQueue.poll()))!=null)
+        while (((next = this.q.pollLast()))!=null)
             next.run();
     }
 
     Mat tanh(final Mat mat) {
         final Mat out = new Mat(mat.n, mat.d);
         Arrays.setAll(out.w, i -> Math.tanh(mat.w[i]));
-        if (this.needsBackprop)
-            this.backpropQueue.add(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
+        if (this.reverse)
+            this.q.add(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
         return out;
     }
 
@@ -65,8 +67,8 @@ class Graph {
 //                            .mapToDouble(k -> m1.w[m1i + k] * m2.w[m2d * k + j])
 //                            .sum());
 //        });
-        if (this.needsBackprop) {
-            this.backpropQueue.add(new Backprop(Backprop.BackpropMethod.MUL, m1, m2, out));
+        if (this.reverse) {
+            this.q.add(new Backprop(Backprop.BackpropMethod.MUL, m1, m2, out));
         }
         return out;
     }
@@ -76,11 +78,12 @@ class Graph {
 
         final Mat out = new Mat(mat1.n, mat1.d);
         IntStream.range(0, mat1.w.length).forEach(i -> out.w[i] = mat1.w[i] + mat2.w[i]);
-        if (this.needsBackprop)
-            this.backpropQueue.add(new Backprop(Backprop.BackpropMethod.ADD, mat1, mat2, out));
+        if (this.reverse)
+            this.q.add(new Backprop(Backprop.BackpropMethod.ADD, mat1, mat2, out));
 
         return out;
     }
+
 
     static private class Backprop {
         private final BackpropMethod backpropMethod;
@@ -98,7 +101,7 @@ class Graph {
                     addBack(this.args[0], this.args[1], this.args[2]);
                     break;
                 case MUL:
-                    this.mulBack(this.args[0], this.args[1], this.args[2]);
+                    mulBack(this.args[0], this.args[1], this.args[2]);
                     break;
                 case TANH:
                     tanhBack(this.args[0], this.args[1]);
@@ -115,11 +118,13 @@ class Graph {
                 final int m1di = m1d * i;
                 for (int j = 0; j < m2d; j++) {
                     final double b = out.dw[m2di + j];
-                    for (int k = 0; k < m1d; k++) {
-                        final int mm1 = m1di + k;
-                        final int mm2 = m2d * k + j;
-                        mat1.dw[mm1] += mat2.w[mm2] * b;
-                        mat2.dw[mm2] += mat1.w[mm1] * b;
+                    if (b!=0) {
+                        for (int k = 0; k < m1d; k++) {
+                            final int mm1 = m1di + k;
+                            final int mm2 = m2d * k + j;
+                            mat1.dw[mm1] += mat2.w[mm2] * b;
+                            mat2.dw[mm2] += mat1.w[mm1] * b;
+                        }
                     }
                 }
             }
@@ -128,13 +133,17 @@ class Graph {
         static private void addBack(final Mat mat1, final Mat mat2, final Mat out) {
             IntStream.range(0, mat1.w.length).forEach(i -> {
                 double dwi = out.dw[i];
-                mat1.dw[i] += dwi;
-                mat2.dw[i] += dwi;
+                if (dwi!=0) {
+                    mat1.dw[i] += dwi;
+                    mat2.dw[i] += dwi;
+                }
             });
         }
 
         static private  void tanhBack(final Mat mat, final Mat out) {
-            IntStream.range(0, mat.w.length).forEach(i -> mat.dw[i] += (1 - out.w[i] * out.w[i]) * out.dw[i]);
+            IntStream.range(0, mat.w.length).forEach(i ->
+                    mat.dw[i] += (1 - Util.sqr(out.w[i])) * out.dw[i]
+            );
         }
 
         public enum BackpropMethod {

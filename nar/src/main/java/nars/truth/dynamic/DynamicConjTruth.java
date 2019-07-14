@@ -49,7 +49,7 @@ public class DynamicConjTruth {
                     //try revision
                     Pair<Task, TruthProjection> ab = Revision._merge(d.nar, d.ditherTruth, 2, new Task[]{d.get(0), d.get(1)});
                     if (ab != null)
-                        return Revision.merge(ab);
+                        return Revision.afterMerge(ab);
                 }
                 if (sep < dither) {
                     return null; //will yield an invalid result TODO verify if this is always true

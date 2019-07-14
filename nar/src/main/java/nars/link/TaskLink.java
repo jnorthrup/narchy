@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.graph.path.FromTo;
 import jcog.decide.Roulette;
@@ -256,20 +255,11 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //            return get();
 //        }
 //
-        //@Override
-        default TaskLink clone(float pri) {
-//            Task t = get();
-//            return t!=null ? new DirectTaskLink(t, pri) : null;
-            throw new TODO();
-        }
+
+    TaskLink clone(float pri);
 
     @Nullable default Term reverseMatch(Term term) {
-        if (!isSelf()) {
-            if (to().equals(term)){
-                return from();
-            }
-        }
-        return null;
+        return !isSelf() && to().equals(term) ? from() : null;
     }
 
     /** determines forward growth target. null to disable

@@ -47,7 +47,7 @@ public class ConjClustering extends How {
     private final CauseChannel<Task> in;
     private final byte puncIn, puncOut;
 
-    public final FloatRange termVolumeMaxPct = new FloatRange(0.5f, 0, 1f);
+    public final FloatRange termVolumeMaxPct = new FloatRange(1f, 0, 1f);
     public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
 
     private int inputTermVolMax, stampLenMax;

@@ -26,7 +26,7 @@ class DynamicTruthBeliefTableTest {
         n.believe("x", 0f, 0.50f);
         n.believe("y", 0f, 0.50f);
         n.run(1);
-        AbstractTaskLink tl = new AtomicTaskLink($$("(x && y)"), Op.EmptyProduct).priSet(BELIEF,  1f);
+        AbstractTaskLink tl = AtomicTaskLink.link($$("(x && y)"), Op.EmptyProduct).priSet(BELIEF,  1f);
         Set<Task> tasks = new HashSet();
         When w = WhenTimeIs.eternal(n);
         for (int i = 0; i < 10; i++)
@@ -41,7 +41,7 @@ class DynamicTruthBeliefTableTest {
         n.input("x. +1");
         n.input("y. +2");
         n.run(1);
-        AbstractTaskLink tl = new AtomicTaskLink($$("(x && y)"), Op.EmptyProduct).priSet(BELIEF, 1f);
+        AbstractTaskLink tl = AtomicTaskLink.link($$("(x && y)"), Op.EmptyProduct).priSet(BELIEF, 1f);
         Set<Task> tasks = new HashSet();
         When w = new When(1, 2, 1, n);
         for (int i = 0; i < 100; i++)

@@ -96,7 +96,6 @@ public class BitmapMatrixView extends TexSurface {
         });
     }
 
-
     public BitmapMatrixView(double[] d, int stride, ViewFunction1D view) {
         this((int) Math.floor(((float) d.length) / stride), stride, (x, y) -> {
             int i = y * stride + x;
@@ -111,8 +110,13 @@ public class BitmapMatrixView extends TexSurface {
         });
     }
 
-    public BitmapMatrixView(Supplier<double[]> e, int length, int stride, ViewFunction1D view) {
-        this((int) Math.floor(((float) length) / stride), stride, (x, y) -> {
+
+    public BitmapMatrixView(Supplier<double[]> e, int len, ViewFunction1D view) {
+        this(e, len, Math.max(1, (int) Math.ceil(sqrt(len))), view);
+    }
+
+    public BitmapMatrixView(Supplier<double[]> e, int len, int stride, ViewFunction1D view) {
+        this((int) Math.floor(((float) len) / stride), stride, (x, y) -> {
             double[] d = e.get();
             if (d != null) {
 

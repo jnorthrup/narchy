@@ -28,7 +28,6 @@ import static nars.Op.SETe;
  */
 public class DigitizedScalar extends DemultiplexedScalarSensor {
 
-    public final FloatSupplier input;
 
     /**
      * decides the truth value of a 'digit'. returns frequency float

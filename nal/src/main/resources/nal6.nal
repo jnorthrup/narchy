@@ -94,26 +94,27 @@
     //nature of such a rule."
 
     //If after S M happens, and after M then P happens, so S then P happens
-    (S ==> M),   (M ==> P)    |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
-      //(M ==> P), (S ==> M)    |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
+    (S ==> M),   (M ==> P)    |-     (S ==> P),   (Belief:DeductionPP, Time:Compose)
+      (M ==> P), (S ==> M)      |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
 
     (S ==> M),   (M ==> P)    |-   --(S ==> P), (Belief:DeductionPN, Time:Compose)
-      //(S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
+      (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
 
-    (S ==> M), (--M ==> P)    |-   (S ==> P),   (Belief:DeductionNP, Time:Compose)
-      //(--M ==> P), (S ==> M)  |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
+    (S ==> M), (--M ==> P)    |-     (S ==> P),   (Belief:DeductionNP, Time:Compose)
+      (--M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
 
     (S ==> M), (--M ==> P)    |-   --(S ==> P), (Belief:DeductionNN, Time:Compose)
-      //(--M ==> P), (S ==> M)  |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
+      (--M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
 
 
         //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
             //(S ==> X), (Y ==> P), eqPN(X,Y), task("?") |- (S ==> P), (Punctuation:Question)
-            //(S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
+            (S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
+            (M ==> P), (S ==> M), task("?") |- (S ==> P), (Punctuation:Question)
             //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
             //(S ==> M), (--M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-                //(S ==> M), (--M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
+                (S ==> M), (--M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
                 //(S ==> M), (--M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
 
 
@@ -125,20 +126,20 @@
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction, Time:Compose)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN, Time:Compose)
 
-                //(X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+                (X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB, Time:Compose)
     (S ==> M), (P ==> M) |- (P ==> S), (Belief:AbductionPB, Time:Compose)
 
 
-            //(S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
+            (S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
 
     (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
     (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
 
-            //(X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
+            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question)
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
@@ -190,10 +191,6 @@
         //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P && S),A..+) ==> X), (Belief:IntersectionSym)
         //(--(&&,P,A..+) ==> X), (--(&&,S,A..+) ==> X), neq(P,S) |- (--(&&,(P || S),A..+) ==> X), (Belief:UnionSym)
 
-
-        (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((C ==> X),C,B,"$",novel), (Punctuation:Question)
-          (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,"$",novel), (Punctuation:Question)
-        (X ==> C), B, neq(B,C), task("."), --isVar(B) |- unisubst((X ==> C),C,B,"$",novel), (Punctuation:Question)
 
 
 //            B, ((&&,C,A..+) ==> X), neq(B,C) |- unisubst(((&&,A..+) ==> X),C,B), (Belief:Deduction)
@@ -412,17 +409,17 @@
 ////// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
 //
-//    S, (&/,S,A_1..n) |- (&/,A_1..n), (Truth:DecomposePositiveNegativeNegative, SequenceIntervals:FromPremises)
-//    S, (&|,S,A_1..n) |- (&|,A_1..n), (Truth:DecomposePositiveNegativeNegative)
-//    S, (&&,S,A_1..n) |- (&&,A_1..n), (Truth:DecomposePositiveNegativeNegative)
-//    S, (||,S,A_1..n) |- (||,A_1..n), (Truth:DecomposeNegativePositivePositive)
+//    S, (&/,S,A_1..n) |- (&/,A_1..n), (Truth:DeductionPositiveNegativeNegative, SequenceIntervals:FromPremises)
+//    S, (&|,S,A_1..n) |- (&|,A_1..n), (Truth:DeductionPositiveNegativeNegative)
+//    S, (&&,S,A_1..n) |- (&&,A_1..n), (Truth:DeductionPositiveNegativeNegative)
+//    S, (||,S,A_1..n) |- (||,A_1..n), (Truth:DeductionNegativePositivePositive)
 //
 ////Additional for negation: https://groups.google.com/forum/#!topic/open-nars/g-7r0jjq2Vc
 //
-//    S, (&/,(--,S),A_1..n) |- (&/,A_1..n), (Truth:DecomposeNegativeNegativeNegative, SequenceIntervals:FromPremises)
-//    S, (&|,(--,S),A_1..n) |- (&|,A_1..n), (Truth:DecomposeNegativeNegativeNegative)
-//    S, (&&,(--,S),A_1..n) |- (&&,A_1..n), (Truth:DecomposeNegativeNegativeNegative)
-//    S, (||,(--,S),A_1..n) |- (||,A_1..n), (Truth:DecomposePositivePositivePositive)
+//    S, (&/,(--,S),A_1..n) |- (&/,A_1..n), (Truth:DeductionNegativeNegativeNegative, SequenceIntervals:FromPremises)
+//    S, (&|,(--,S),A_1..n) |- (&|,A_1..n), (Truth:DeductionNegativeNegativeNegative)
+//    S, (&&,(--,S),A_1..n) |- (&&,A_1..n), (Truth:DeductionNegativeNegativeNegative)
+//    S, (||,(--,S),A_1..n) |- (||,A_1..n), (Truth:DeductionPositivePositivePositive)
 
 ////strong unification
 //    (Y ==> X), Z, --is(Z,"==>")     |- unisubst(X,Y,Z), (Belief:Deduction)
@@ -438,8 +435,3 @@
 
 //    (X ==> Y), Z, notImpl(Z)     |- unisubst(X,Y,Z), (Belief:AbductionPB)
 
-//conj/impl question decomposition
-//    (A ==> B), B, task("?")             |- A, (Punctuation:Question)
-//    (C ==> B), A, task("?"), eqPN(A,C)  |- B, (Punctuation:Question)
-    B, (A ==> B)               |- A, (Punctuation:AskAsk)
-    A, (C ==> B), eqPN(A,C)    |- B, (Punctuation:AskAsk)

@@ -126,4 +126,10 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
         return QUAD_16_SHAPE;
     }
 
+    public final long data() {
+        return X.get(this);
+    }
+    public final void data(long y) {
+        X.set(this, y);
+    }
 }

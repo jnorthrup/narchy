@@ -252,15 +252,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 1;
                 //1f/SIGNAL_STRETCH_LIMIT_DURS;
 
-        public static final int SERIES_MATCH_MIN = 2;
+        public static final int SERIES_MATCH_MIN = 1;
 
-        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.25f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;
     }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
     public static class nal_truth {
-        public static final boolean STRONG_DECOMPOSE = false;
+
 
         public static final boolean STRONG_COMPOSITION = false;
     }
@@ -297,7 +297,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final FloatRange intermpolationRangeLimit = new FloatRange(
             //0.5f
             //0.618f
-            1f
+            2f
             , 0, 2f);
 
     /** max tolerance time (in durations) for unification of temporal terms */
@@ -306,7 +306,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it

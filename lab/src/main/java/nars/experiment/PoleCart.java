@@ -1,10 +1,8 @@
 package nars.experiment;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
-import jcog.learn.LivePredictor;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
@@ -15,9 +13,7 @@ import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
-import nars.op.BeliefPredict;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Atomic;
 
 import javax.swing.*;
@@ -55,10 +51,26 @@ public class PoleCart extends GameX {
         int instances = 1; int threadsEach = 4;
         for (int i = 0; i < instances; i++)
             runRTNet((n)-> {
-                        return new PoleCart(
+                        PoleCart p = new PoleCart(
                                 instances > 1 ?
                                         $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
                                         $.the(PoleCart.class.getSimpleName()), n);
+//                        Iterable<? extends Termed> predicting = Iterables.concat(
+//                                p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
+//                        );
+//                        new BeliefPredict(
+//                                predicting,
+////                java.util.List.of(
+////                        x, xVel,
+////                        angVel, angX, angY),
+//                                8,
+//                                Math.round(4 * n.dur()),
+//                                3,
+//                                new LivePredictor.LSTMPredictor(0.1f, 1),
+//                                //new LivePredictor.MLPPredictor(0.01f),
+//                                p.what()
+//                        );
+                        return p;
                     },
                     threadsEach, fps*2, 8);
     }
@@ -112,7 +124,7 @@ public class PoleCart extends GameX {
             //200;
     public final FloatRange tau = new FloatRange(
             //0.007f, 0.001f, 0.02f
-                    0.015f, 0.001f, 0.02f
+                    0.015f, 0.001f, 0.05f
             );
     //0.01;
     //0.005;
@@ -133,6 +145,11 @@ public class PoleCart extends GameX {
 
 
     volatile double action, actionLeft, actionRight;
+
+    public PoleCart(Term id, NAR nar, float tau) {
+        this(id, nar);
+        this.tau.set(tau);
+    }
 
     public PoleCart(Term id, NAR nar) {
         super(id, fps(fps), nar);
@@ -290,21 +307,7 @@ public class PoleCart extends GameX {
 
         //new RewardBooster(r);
 
-        Iterable<? extends Termed> predicting = Iterables.concat(
-                angX.sensors, angY.sensors, angVel.sensors, xVel.sensors, x.sensors
-        );
-        new BeliefPredict(
-                predicting,
-//                java.util.List.of(
-//                        x, xVel,
-//                        angVel, angX, angY),
-                8,
-                Math.round(4 * nar.dur()),
-                3,
-                new LivePredictor.LSTMPredictor(0.1f, 1),
-                //new LivePredictor.MLPPredictor(0.01f),
-                what()
-        );
+
 //        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
         {

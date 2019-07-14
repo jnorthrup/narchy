@@ -254,6 +254,7 @@ public class Derivation extends PreDerivation {
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
+        this.parentCause = null; //invalidate
         this._task = resetTask(nextTask, this._task);
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
     }
@@ -470,10 +471,7 @@ public class Derivation extends PreDerivation {
 
     }
 
-    public void ready(short[] can, int ttl) {
-
-        this.parentCause = null; //invalidate
-
+    public void ready(int ttl) {
         this.forEachMatch = null;
         this.concTruth = null;
         this.concPunc = 0;
@@ -482,10 +480,8 @@ public class Derivation extends PreDerivation {
         this.evidenceDouble = evidenceSingle = null;
 
         setTTL(ttl);
-
-
-
     }
+
 
     @Override
     public final boolean match() {

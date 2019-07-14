@@ -162,7 +162,7 @@ public enum Revision {;
     }
 
     /** budget a revision result */
-    public static Task merge(Pair<Task, TruthProjection> AB) {
+    public static Task afterMerge(Pair<Task, TruthProjection> AB) {
         Task m = AB.getOne();
         TruthProjection merge = AB.getTwo();
         TemporalBeliefTable.budget(merge, m);
