@@ -1,8 +1,8 @@
 package nars.link;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.decide.Roulette;
-import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
@@ -49,14 +49,10 @@ public abstract class DynamicTermLinker implements TermLinker {
             return t; //HACK
 
         u = u.unneg();
-        if (depthRemain <= 1 || !(u instanceof Compound))
+        if (depthRemain <= 1 || !(u instanceof Compound) /* || !u.op().conceptualizable */)
             return u;
-
-        Op uo = u.op();
-        if (!uo.conceptualizable)
-            return u;
-
-        return sampleDynamic((Compound)u, depthRemain-1, rng);
+        else
+            return sampleDynamic((Compound)u, depthRemain-1, rng);
     }
 
     abstract protected int depth(Compound root, Random rng);
@@ -85,26 +81,29 @@ public abstract class DynamicTermLinker implements TermLinker {
 
     /** uses roulette selection on arbitrary subterm weighting function */
     public static final DynamicTermLinker Weighted = new DynamicTermLinker() {
+//        @Override
+//        protected int depth(Compound root, Random rng) {
+//            return 1;
+//        }
         @Override
         protected int depth(Compound root, Random rng) {
-            return 1;
+            /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
+            float fanoutRatio =
+                    //root.volume() / (1f + root.subs());
+                    //1 / (1 + ((float)root.volume())/(1+root.subs()));
+                    1 / (1 + (root.volume()-1f)/(1+root.subs()));
+
+            float w =
+                    fanoutRatio;
+                    //(float)Math.sqrt(fanoutRatio);
+                    //(float)Math.pow(fanoutRatio, 0.75f);
+                    //(float)Math.pow(fanoutRatio, 1.5f);
+
+            float p = rng.nextFloat();
+//            if (p > 1-w*w*w)
+//                return 3;
+            return p < w ? 1 : 2;
         }
-        //        @Override
-//        protected int depth(Compound root, Random rng) {
-//            /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
-//            float fanoutRatio =
-//                    //root.volume() / (1f + root.subs());
-//                    //1 / (1 + ((float)root.volume())/(1+root.subs()));
-//                    1 / (1 + (((float)(root.volume()-1))/(1+root.subs())));
-//
-//            float w =
-//                    fanoutRatio;
-//                    //(float)Math.sqrt(fanoutRatio);
-//                    //(float)Math.pow(fanoutRatio, 0.75f);
-//                    //(float)Math.pow(fanoutRatio, 1.5f);
-//
-//            return rng.nextFloat() < w ? 1 : 2;
-//        }
 
         @Override
         protected Term choose(Subterms _s, int n, Term parent, Random rng) {
@@ -129,10 +128,11 @@ public abstract class DynamicTermLinker implements TermLinker {
                 return 1;
 
             int v =
-                    sub.unneg().volume();
-                    //sub.unneg().complexity();
+                    //sub.unneg().volume();
+                    sub.unneg().complexity();
             return
-                    1f/v; //inverse
+                    //1f/v; //inverse
+                    1f / Util.sqrt(v); //inverse sqrt
                     //Util.sqrt(v);
                     //v;
                     //Util.sqr((float)v);

@@ -36,6 +36,7 @@ public interface RNode<X> extends Nodelike<X> {
      */
     boolean isLeaf();
 
+    /** recursively */
     Stream<X> streamValues();
 
     /** iterate leaves only */
@@ -85,7 +86,7 @@ public interface RNode<X> extends Nodelike<X> {
      * @param model
      * @param removed
      */
-    @Nullable RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed);
+    @Nullable RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, int[] removed);
 
     /**
      * update an existing t in the index

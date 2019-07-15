@@ -99,6 +99,7 @@ public class RTree<X> implements Space<X> {
     public final RInsertion<X> insert(/*@NotNull*/ final X x) {
         RInsertion<X> i = model.insertion(x);
 
+//        i.start(this);
         RNode<X> nextRoot = root.add(i);
 
         if (nextRoot!=null)
@@ -119,6 +120,7 @@ public class RTree<X> implements Space<X> {
 //            }
 
         }
+//        i.end(this);
 
         return i;
     }
@@ -135,11 +137,11 @@ public class RTree<X> implements Space<X> {
         if (!root.bounds().contains(bx))
             return false;
 
-        boolean[] removed = new boolean[1];
+        int[] removed = new int[] { 0 };
         @Nullable RNode<X> nextRoot = root.remove(x, bx, model, removed);
-        if (removed[0]) {
+        if (removed[0] > 0) {
 
-            SIZE.getAndDecrement(this);
+            SIZE.addAndGet(this, -removed[0]);
 
             root = nextRoot!=null ? nextRoot : model.newLeaf();
 

@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.meta;
 
+import com.google.common.collect.Streams;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -9,6 +10,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -22,50 +24,51 @@ import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
+
+import static java.util.stream.Collectors.toList;
 
 /**
  * constructs a representative surface for an object by reflection analysis
  */
-public class ObjectSurface<X> extends MutableUnitContainer {
+public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
 
     private static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
 
         List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
         for (Pair<Object, Iterable<Surface>> p : target) {
-            List<Surface> cx = new FasterList(0, EmptySurfaceArray);
-            p.getTwo().forEach(e -> {
-                assert(e!=null);
-                cx.add(e);
-            });
-            switch (cx.size()) {
-                case 0:
-                    break; //TODO shouldnt happen
-                case 1:
-                    outer.add(cx.get(0));
-                    break;
-                default:
-                    //TODO selector
-                    outer.add(new Gridding(cx));
-                    break;
-            }
+            outer.add(collection(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList())));
         }
 
-        switch (outer.size()) {
-            case 0:
-                return null;
-            case 1:
-                //outer.add(new Scale(cx.get(0), Widget.marginPctDefault));
-                return outer.get(0);
-            default:
-                return new Gridding(outer);
-        }
+        return collection(outer);
 
-        //return new ObjectMetaFrame(obj, y, context);
 
     };
+
+    private static Surface collection(List<Surface> x) {
+        Surface y;
+        switch (x.size()) {
+            case 0:
+                return null; //TODO shouldnt happen
+            case 1:
+                //                //outer.add(new Scale(cx.get(0), Widget.marginPctDefault));
+                y = x.get(0);
+                break;
+            case 2:
+                y = new Splitting(x.get(0), 0.5f, x.get(1)).resizeable();
+                break;
+            default:
+                //TODO selector
+                y = new Gridding(x);
+                break;
+        }
+        return y;
+        //return new ObjectMetaFrame(obj, y, context);
+
+    }
 
     final AutoBuilder<Object, Surface> builder;
 

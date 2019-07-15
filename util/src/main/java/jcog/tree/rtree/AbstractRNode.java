@@ -7,9 +7,9 @@ abstract public class AbstractRNode<V> implements RNode<V> {
     public /*volatile*/ short size = 0;
     public /*volatile*/ HyperRegion bounds = null;
 
-    protected final void grow(HyperRegion b) {
+    protected final void grow(HyperRegion y) {
         HyperRegion x = this.bounds;
-        this.bounds = x != null ? Util.maybeEqual(x, x.mbr(b)) : b;
+        this.bounds = x != null ? Util.maybeEqual(x, x.mbr(y)) : y;
     }
 
     @Override

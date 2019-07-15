@@ -135,10 +135,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         if (i != e && i instanceof Task) {
 
-            if (e instanceof NALTask) {
-                NALTask ee = (NALTask) e;
-                ee.causeMerge(i.why(), cMerge);
-            }
+            mergeCause(e, i, cMerge);
 
             if (e instanceof Task) {
                 if (updateCreationTime) {
@@ -153,6 +150,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         }
 
         return y;
+    }
+
+    static void mergeCause(Task e, Task i, CauseMerge cMerge) {
+        if (e instanceof NALTask) {
+            NALTask ee = (NALTask) e;
+            ee.causeMerge(i.why(), cMerge);
+        }
     }
 
     /**
@@ -817,6 +821,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //        if (!(question.isInput() && question.isEternal()) && !(answer.isInput() && answer.isEternal()) && !Stamp.overlap(question, answer)) {
 //            answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
 //        }
+
+        if(answer instanceof NALTask) {
+            mergeCause(answer, question, CauseMerge.AppendUnique);
+        }
 
 //        n.emotion.onAnswer(this, answer);
 

@@ -33,7 +33,6 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 import static jcog.Util.curve;
-import static nars.control.MetaGoal.Perceive;
 
 /**
  * NAR builder
@@ -133,7 +132,7 @@ public class NARS {
             if (threadSafe)
                 index =
                         //() -> new CaffeineIndex(64 * 1024)
-                        () -> new SimpleMemory(4 * 1024, true)
+                        () -> new SimpleMemory(16 * 1024, true)
             ;
 
 
@@ -160,7 +159,7 @@ public class NARS {
                 n.questionPriDefault.amp(p);
                 n.questPriDefault.amp(p);
 
-                n.emotion.want(Perceive, -0.01f);
+//                n.emotion.want(Perceive, -0.1f);
 
             });
         }

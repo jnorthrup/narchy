@@ -1,20 +1,27 @@
 package nars.unify.constraint;
 
+import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-public final class Smaller extends RelationConstraint {
+/** TODO impl a generic volume comparison constraint to replace both Bigger and Smaller */
+@Deprecated public final class Smaller extends RelationConstraint {
 
-    public Smaller(Variable target, Variable other) {
-        super("smaller", target, other);
+    static final Term[] ONLY_IF_CONSTANT = new Term[] { Atomic.atom("onlyIfConstants") };
+    private final boolean onlyIfConstant;
+
+    public Smaller(Variable target, Variable other, boolean onlyIfConstant) {
+        super("smaller", target, other, onlyIfConstant ? ONLY_IF_CONSTANT : Op.EmptyTermArray);
+        this.onlyIfConstant = onlyIfConstant;
     }
 
 
     @Override
     protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
-        return new Bigger(newX, newY);
+        return new Bigger(newX, newY, onlyIfConstant);
     }
 
     @Override
@@ -24,7 +31,7 @@ public final class Smaller extends RelationConstraint {
 
     @Override
     public boolean invalid(Term x, Term y, Unify context) {
-        return x.volume() >= y.volume();
+        return (!onlyIfConstant || (!x.hasVars() && !y.hasVars())) && x.volume() >= y.volume();
     }
 
 }

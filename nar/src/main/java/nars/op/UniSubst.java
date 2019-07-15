@@ -129,7 +129,9 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
         Term output;
 
-        boolean tryUnify = x.hasAny(var) || y.hasAny(var);
+        boolean hasVar = x.hasAny(var) || y.hasAny(var);
+        //boolean hasXternal = x.hasXternal() || y.hasXternal();
+        boolean tryUnify = hasVar;// || hasXternal;
 
         if (!tryUnify)
             return Null;
@@ -146,7 +148,7 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
         else
             cc = unify(c, x, y, var, strict);
 
-        return (cc == null || (strict && c.equals(cc))) ? Null : cc;
+        return cc == null || (strict && c.equals(cc)) ? Null : cc;
     }
 
     private Term unify(Term c, Term x, Term y, int var, boolean strict) {

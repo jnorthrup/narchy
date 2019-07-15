@@ -155,7 +155,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
 //        return 1.0 / (1+((TaskRegion)t).range(1));
 //    };
-    private static final int MAX_TASKS_PER_LEAF = 3;
+    private static final int MAX_TASKS_PER_LEAF = 4;
     /**
      * TODO tune
      */
@@ -166,9 +166,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
     }
-//    static final ToDoubleFunction<RLeaf<TaskRegion>> MostFreqSpecific = (n) -> {
-//        return -n.bounds.range(1) /* freq */;
-//    };
+
 
     /**
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing

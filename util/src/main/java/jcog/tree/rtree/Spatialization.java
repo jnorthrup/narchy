@@ -40,8 +40,12 @@ public class Spatialization<X> {
         return new RLeaf<>(capacity);
     }
 
-    public RBranch<X> newBranch(RLeaf<X> a, RLeaf<X> b) {
-        return new RBranch<>(max, new RNode[] { a, b });
+    public RBranch<X> newBranch() {
+        return new RBranch(max);
+
+    }
+    public RBranch<X> newBranch(RNode<X>... l) {
+        return new RBranch<>(max, l);
     }
 
     public RNode<X> split(X x, RLeaf<X> leaf) {

@@ -28,6 +28,7 @@ import org.jetbrains.annotations.Nullable;
 import static jcog.Util.and;
 import static jcog.Util.or;
 import static nars.$.t;
+import static nars.NAL.HORIZON;
 import static nars.truth.func.TruthFunctions2.weak;
 
 /**
@@ -70,9 +71,9 @@ public final class TruthFunctions {
      * @param reliance Confidence of the second (analytical) premise
      * @return AnalyticTruth value of the conclusion, because it is structural
      */
-    @Nullable private static Truth deductionR(Truth a, float reliance, float minConf) {
+    @Nullable private static Truth deductionR(Truth a, double reliance, float minConf) {
         float f = a.freq();
-        float c = and(f, confCompose(a.conf(), reliance));
+        float c = and(f, confCompose(a, reliance));
         return (c >= minConf) ? t(f, c) : null;
     }
 
@@ -103,8 +104,8 @@ public final class TruthFunctions {
      * stronger than deduction such that A's frequency does not reduce the output confidence
      */
     @Nullable
-    public static Truth analogy(Truth a, float bf, float bc, float minConf) {
-        float c = and(confCompose(a.conf(), bc), bf);
+    public static Truth analogy(Truth a, float bf, double bc, float minConf) {
+        float c = and(confCompose(a, bc), bf);
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
         //return c >= minConf ? t(a.freq(), c) : null;
     }
@@ -121,7 +122,7 @@ public final class TruthFunctions {
     static Truth resemblance(final Truth  v1, final Truth  v2, float minConf) {
         final float f1 = v1.freq();
         final float f2 = v2.freq();
-        final float c = and(confCompose(v1.conf(), v2.conf()), or(f1, f2));
+        final float c = and(confCompose(v1, v2), or(f1, f2));
         return c >= minConf ? t(and(f1, f2), c) : null;
     }
 
@@ -201,21 +202,24 @@ public final class TruthFunctions {
 //    }
 
 
-
-
-    public static float confCompose(Truth a, Truth b) {
-        //TODO hi-precision conf computation directly from a.evi(), b.evi()
-
-        return confCompose(a.conf(), b.conf());
+    /** TODO return double */
+    public static float confCompose(Truth a, double b) {
+        return confCompose(a.confDouble(), b);
     }
 
-    public static float confCompose(float cx, float cy) {
+    /** TODO return double */
+    public static float confCompose(Truth a, Truth b) {
+        return confCompose(a.confDouble(), b.confDouble());
+    }
+
+    /** TODO return double */
+    public static float confCompose(double cx, double cy) {
         if (NAL.nal_truth.STRONG_COMPOSITION) {
             //convinced
-            return Math.min(cx, cy);
+            return (float) Math.min(cx, cy);
         } else {
             //classic
-            return cx * cy;
+            return (float) (cx * cy);
         }
     }
 
@@ -278,7 +282,7 @@ public final class TruthFunctions {
         Truth i12 = intersection(a, true, b, false, minConf);
         if (i12 == null) return null;
 
-        Truth v11 = deductionR(i12, 1.0f, minConf);
+        Truth v11 = deductionR(i12, 1.0, minConf);
         if (v11 == null) return null;
 
         return v11.neg();
@@ -293,32 +297,31 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     static Truth anonymousAnalogy(Truth a, Truth b, float minConf) {
-        float v0c = w2cSafe(a.conf());
-
+        double v0c = w2cSafe(a.confDouble());
         return v0c < minConf ? null : TruthFunctions.analogy(b, a.freq(), v0c, minConf);
     }
 
 
-    /** soft "sqrt" variation */
-    @Nullable public static Truth decomposeSoft(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {
-        float cxy = confCompose(X, Y);
-        if (cxy >= minConf) {
-            float fx = X.freq(), fy = Y.freq();
-            float fxy = and(
-                    x ? fx : 1 - fx,
-                    y ? fy : 1 - fy
-            );
-            //float fxySqrt = (float)Math.sqrt(fxy);
-            float c =
-                    cxy;
-                    //fxySqrt * cxy;
-
-            if (c >= minConf)
-                return t(z ? fxy : 1 - fxy, c);
-
-        }
-        return null;
-    }
+//    /** soft "sqrt" variation */
+//    @Nullable public static Truth decomposeSoft(Truth X, Truth Y, boolean x, boolean y, boolean z, float minConf) {
+//        float cxy = confCompose(X, Y);
+//        if (cxy >= minConf) {
+//            float fx = X.freq(), fy = Y.freq();
+//            float fxy = and(
+//                    x ? fx : 1 - fx,
+//                    y ? fy : 1 - fy
+//            );
+//            //float fxySqrt = (float)Math.sqrt(fxy);
+//            float c =
+//                    cxy;
+//                    //fxySqrt * cxy;
+//
+//            if (c >= minConf)
+//                return t(z ? fxy : 1 - fxy, c);
+//
+//        }
+//        return null;
+//    }
 
     /** original OpenNARS desire function */
     public static Truth desire(final Truth a, final Truth b, float minConf, boolean strong) {
@@ -326,7 +329,7 @@ public final class TruthFunctions {
         final float f2 = b.freq();
         final float f = and(f1, f2);
         final float c12 = confCompose(a, b);
-        final float c = and(c12, f2) * (strong ? 1 : w2c(1));
+        final float c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
         return c > minConf ? t(f, c) : null;
     }
 
@@ -346,10 +349,10 @@ public final class TruthFunctions {
     }
 
     public static float c2wSafe(float c) {
-        return c2wSafe(c, NAL.HORIZON);
+        return c2wSafe(c, HORIZON);
     }
     public static double c2wSafe(double c) {
-        return c2wSafe(c, NAL.HORIZON);
+        return c2wSafe(c, HORIZON);
     }
 
 
@@ -399,7 +402,7 @@ public final class TruthFunctions {
     }
 
     public static float w2cSafe(float w) {
-        return w2cSafe(w, NAL.HORIZON);
+        return w2cSafe(w, HORIZON);
     }
 
     public static double w2cSafe(double w) {
@@ -407,7 +410,7 @@ public final class TruthFunctions {
     }
     /** high precision */
     public static double w2cSafeDouble(double w) {
-        return w2cSafe(w, NAL.HORIZON);
+        return w2cSafe(w, HORIZON);
     }
 
 

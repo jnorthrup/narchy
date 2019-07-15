@@ -95,7 +95,7 @@ public final class CounterRNode<X> implements RNode<X> {
     }
 
     @Override
-    public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
+    public RNode<X> remove(X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
         return this.node.remove(x, xBounds, model, removed);
     }
 

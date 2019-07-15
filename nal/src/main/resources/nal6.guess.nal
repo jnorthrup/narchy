@@ -38,7 +38,7 @@
 //  originally this only unified depvar (dep var elimination)
 
 //TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogy)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogyPP)
 C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
     //Goal: ?
 

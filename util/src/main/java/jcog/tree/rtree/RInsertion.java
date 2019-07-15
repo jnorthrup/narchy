@@ -11,10 +11,12 @@ public class RInsertion<X> {
 
     private boolean addOrMerge;
 
-    private boolean added;
+    private boolean added, merged;
 
     /** if merged, whether the merge resulted in stretch (recurse bounds update necessary on return) */
     public boolean stretched = false;
+
+//    private Spatialization<X> space;
 
     /** TODO */
 //    public enum State {
@@ -54,9 +56,19 @@ public class RInsertion<X> {
         return added;
     }
 
+    public boolean merged() {
+        return merged;
+    }
+
     void setAdded() {
         added = true;
     }
+
+    public void setMerged() {
+        merged = true;
+    }
+
+    //TODO setMerged() { ...
 
     public void setAdd(boolean addOrMerge) {
         this.addOrMerge = addOrMerge;
@@ -64,14 +76,30 @@ public class RInsertion<X> {
 
     @Nullable
     public X merge(X y) {
-        return model.merge(y, x);
+        X z = model.merge(y, x);
+        if (z!=null)
+            setMerged();
+        return z;
     }
 
     public void mergeIdentity() {
 
     }
 
-    public boolean maybeContainedBy(HyperRegion c) {
+    public final boolean maybeContainedBy(HyperRegion c) {
         return model.mergeCanStretch() ? c.intersects(bounds) : c.contains(bounds);
     }
+
+
+
+//    public final void start(Spatialization<X> t) {
+//        this.space = t;
+//    }
+//    public final void end(Spatialization<X> xrTree) {
+//        this.space = null;
+//    }
+//
+//    public final Spatialization<X> space() {
+//        return space;
+//    }
 }

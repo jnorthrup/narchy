@@ -185,53 +185,66 @@ public class PremiseRule extends ProxyTerm {
             Variable XX = X instanceof Variable ? (Variable) X : null;
             Variable YY = Y instanceof Variable ? (Variable) Y : null;
 
+            /** variables sorted */
+            Variable XS, YS;
+            if (XX==null || YY ==null) {
+                XS = YS = null;
+            } else if (XX.compareTo(YY) <= 0) {
+                XS = XX;
+                YS = YY;
+            } else {
+                XS = YY;
+                YS = XX;
+            }
+
             switch (pred) {
 
 
                 case "neq":
-                    neq(XX, Y);
+                    if (YS!=null)
+                        neq(XS, YS);
+                    else
+                        neq(XX, Y); //???
                     break;
+
                 case "neqRoot":
-                    neqRoot(XX, YY);
+                    neqRoot(XS, YS);
                     break;
 
                 case "subCountEqual":
-                    constraints.add(new NotEqualConstraint.SubCountEqual(XX, YY));
-                    break;
-                case "neqOrInhCommon":
-                    neqRoot(XX, YY);
-                    constraints.add(new NotEqualConstraint.NoCommonInh(XX, YY));
+                    constraints.add(new NotEqualConstraint.SubCountEqual(XS, YS));
                     break;
 
                 case "eqPN":
-                    constraints.add(new EqualPosOrNeg(XX, YY).negIf(negated));
+                    constraints.add(new EqualPosOrNeg(XS, YS).negIf(negated));
                     if (negated) negationApplied = true;
                     break;
 
                 case "eqNeg":
                     //TODO special predicate: either (but not both) is Neg
-                    neq(XX, YY);
-                    constraints.add(new EqualNegConstraint(XX, YY));
+                    neq(XS, YS);
+                    constraints.add(new EqualNegConstraint(XS, YS));
                     break;
 
 
                 case "neqRCom":
-                    neqRoot(XX, YY);
-                    constraints.add(new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(XX, YY));
+                    neqRoot(XS, YS);
+                    constraints.add(new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(XS, YS));
                     break;
 
                 case "setsIntersect":
-                    constraints.add(new NotEqualConstraint.SetsIntersect(XX, YY));
+                    constraints.add(new NotEqualConstraint.SetsIntersect(XS, YS));
                     break;
 
-                case "notSetsOrDifferentSets":
-                    constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XX, YY));
+                case "notSetsOrDifferentSets": {
+                    constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XS, YS));
                     break;
+                }
 
                 case "subOf":
                 case "subOfPN": {
 
-                    SubtermCondition mode = null;
+                    SubtermCondition mode;
 
 //                    if (pred.startsWith("sub"))
 
@@ -389,14 +402,6 @@ public class PremiseRule extends ProxyTerm {
                 case "subsMin":
                     match(X, new TermMatcher.SubsMin((short) $.intValue(Y)));
                     break;
-
-
-                case "equals": {
-                    //is(X, Y.opBit(), !negated);
-                    match(X, new TermMatcher.Equals(Y), !negated);
-                    if (negated) negationApplied = true;
-                    break;
-                }
 
                 case "is": {
                     int struct;
@@ -1244,7 +1249,10 @@ public class PremiseRule extends ProxyTerm {
     }
 
     public void bigger(Variable x, Variable y) {
-        constraints.add(new Bigger(x, y));
+        constraints.add(new Bigger(x, y, false));
+    }
+    public void biggerIffConstant(Variable x, Variable y) {
+        constraints.add(new Bigger(x, y, true));
     }
 
     static class UppercaseAtomsToPatternVariables extends AbstractTermTransform.NegObliviousTermTransform {

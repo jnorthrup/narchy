@@ -220,7 +220,7 @@ public class RLeaf<X> extends AbstractRNode<X> {
 
 
     @Override
-    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
+    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
         final int size = this.size;
         if (size > 1 && !bounds().contains(xBounds))
@@ -245,7 +245,7 @@ public class RLeaf<X> extends AbstractRNode<X> {
             }
 
             this.size--;
-            removed[0] = true;
+            removed[0]++;
 
             if (this.size > 0) {
                 bounds = Util.maybeEqual(bounds, model.mbr(data));

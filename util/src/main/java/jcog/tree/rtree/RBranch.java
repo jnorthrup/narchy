@@ -24,6 +24,7 @@ package jcog.tree.rtree;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
@@ -45,6 +46,9 @@ public class RBranch<X> extends AbstractRNode<X> {
 
     public final RNode<X>[] data;
 
+    protected RBranch(int cap) {
+        this.size = 0; this.bounds = null; this.data = new RNode[cap];
+    }
     protected RBranch(int cap, RNode<X>[] data) {
         //assert (cap >= 2);
         this.data = data.length == cap ? data : Arrays.copyOf(data, cap); //TODO assert all data are unique; cache hash?
@@ -88,7 +92,8 @@ public class RBranch<X> extends AbstractRNode<X> {
     private void addChild(final RNode<X> n) {
         data[this.size++] = n;
         HyperRegion b = this.bounds;
-        this.bounds = Util.maybeEqual(b, b.mbr(n.bounds()));
+        HyperRegion nb = n.bounds();
+        this.bounds = b==null ? nb : Util.maybeEqual(b, b.mbr(nb));
     }
 
 
@@ -153,7 +158,8 @@ public class RBranch<X> extends AbstractRNode<X> {
     @Nullable
     private RNode<X> insert(RInsertion<X> x) {
 
-        if (size < data.length) {
+        int l = data.length;
+        if (size < l) {
 
             addChild(x.model.newLeaf().insert(x));
             grow(x.bounds);
@@ -163,18 +169,19 @@ public class RBranch<X> extends AbstractRNode<X> {
         } else {
 
             final int bestLeaf = chooseLeaf(x.bounds);
+            RNode<X> dbf = data[bestLeaf];
 
-            HyperRegion before = data[bestLeaf].bounds();
-            RNode<X> nextBest = data[bestLeaf].add(x);
+            HyperRegion before = dbf.bounds();
+            RNode nextBest = dbf.add(x);
             if (nextBest == null) {
-                if (!before.equals(data[bestLeaf].bounds()))
+                if (!before.equals(dbf.bounds()))
                     updateBounds();
                 return null; /*merged*/
             }
 
             //inline
-            if (size < data.length && nextBest.size() == 2 && !nextBest.isLeaf()) {
-                RNode<X>[] bc = ((RBranch<X>) nextBest).data;
+            if (size < l && nextBest.size() == 2 && !nextBest.isLeaf()) {
+                RNode[] bc = ((RBranch<X>) nextBest).data;
                 data[bestLeaf] = bc[0];
                 data[size++] = bc[1];
             } else {
@@ -188,30 +195,51 @@ public class RBranch<X> extends AbstractRNode<X> {
     }
 
     @Override
-    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, boolean[] removed) {
+    public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
         if (size > 1 && !bounds().contains(xBounds))
             return this; //not here
 
         int nsize = this.size;
         for (int i = 0; i < nsize; i++) {
-            RNode<X> y = data[i];
-            @Nullable RNode<X> cAfter = y.remove(x, xBounds, model, removed);
+            RNode<X> nBefore = data[i];
 
-            if (removed[0]) {
+            int rBefore = removed[0];
 
-                data[i] = cAfter;
+            @Nullable RNode<X> nAfter = nBefore.remove(x, xBounds, model, removed);
 
-                if (cAfter == null) {
-                    if (i < --size)
-                        Arrays.sort(data, NullCompactingComparator);
+            if (removed[0] == rBefore) {
+                //assert (nAfter == nBefore);
+            } else {
+
+                if (size == 1) {
+                    bounds = null;
+                    data[i] = null;
+                    size = 0;
+                    return nAfter; //reduce to one
                 }
 
+                {
+
+                    data[i] = nAfter;
+
+                    if (nAfter == null) {
+                        //TODO the case where pen-ultimate item is removed then it's a 1-cell copy from last to last-1
+                        if (i < --size)
+                            Arrays.sort(data, NullCompactingComparator);
+                    }
+
+                    //EXPERIMENTAL
+                    if (model.mergeCanStretch() && size > 1 && Util.and(l ->l instanceof RLeaf ,0, size, data))
+                        return reinsert(model, removed);
+
+
+                }
 
                 switch (size) {
                     case 0:
                         bounds = null;
-                        return null;
+                        return null; //gone
                     case 1:
                         bounds = null;
                         return data[0]; //reduce to only leaf
@@ -237,22 +265,71 @@ public class RBranch<X> extends AbstractRNode<X> {
 //                                    }
 //                                }
 
-                        bounds = Util.maybeEqual(bounds, HyperRegion.mbr(data));
-                            updateBounds();
-                            return this;
+
+                        updateBounds();
+                        return this;
 //                            }
 
                     }
 
                 }
 
-            } else {
-                assert (cAfter == y);
             }
         }
 
-
         return this;
+    }
+
+    private RNode<X> reinsert(Spatialization<X> model, int[] removed) {
+//        RNode<X>[] d = data.clone();
+//        Arrays.fill(data, null);
+//        size = 0;
+        RNode<X> t = null;
+
+        Iterator<X> v = iterateValues();
+        while (v.hasNext()) {
+            X x = v.next();
+            /*parent.  ? */
+
+            if (t == null) {
+                t = model.newLeaf();
+                ((RLeaf)t).data[0] = x;  //HACK
+                ((RLeaf)t).size = 1; //HACK
+                ((RLeaf)t).bounds = model.bounds(x);
+            } else {
+                RInsertion reinsertion = new RInsertion(x, true, model);
+                RNode u = t.add(reinsertion);
+                boolean merged = reinsertion.merged();
+                if (merged)
+                    removed[0]++;
+                else {
+
+                    if (!((reinsertion.added() && u != null) || merged))
+                        throw new WTF("unable to add");
+
+                    if (u == null || !reinsertion.added()/* && !reinsertion.merged*/) {
+//                            if (Sets.newHashSet((Iterator<X>) t.iterateValues()).contains(x)) { //HACK
+//                                //throw new WTF("added() value is incorrect because ");
+//                            } else {
+////                            //TEMPORARY for DEBUG
+////                            RInsertion reinsertion2 = new RInsertion(x, true, model);
+////                            /*parent.  ? */
+////                            RNode u2 = t.add(reinsertion);
+                        //     throw new WTF("unable to add");
+//                            }
+                    }
+//                        assert (reinsertion.added());
+                    t = u;
+                }
+
+            }
+
+
+        }
+
+
+        //return ArrayUtil.equalsIdentity(data, t.data) ? this : t;
+        return t;
     }
 
     private void updateBounds() {
@@ -442,11 +519,7 @@ public class RBranch<X> extends AbstractRNode<X> {
 
     @Override
     public Stream<X> streamValues() {
-        return streamNodes().flatMap(RNode::streamValues
-                //x -> x != null ?
-                        //((Node) x).streamValues()
-        //: Stream.empty()
-        );
+        return streamNodes().flatMap(RNode::streamValues);
     }
 
     @Override

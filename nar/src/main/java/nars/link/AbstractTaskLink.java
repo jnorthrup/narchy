@@ -115,8 +115,6 @@ public abstract class AbstractTaskLink implements TaskLink {
         return false;
     }
 
-
-
     public final TaskLink priMerge(byte punc, float pri) {
         mergeComponent(punc, pri, NAL.tasklinkMerge);
         return this;
@@ -150,21 +148,16 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 
     public final AbstractTaskLink priSet(byte punc, float puncPri) {
-        if (puncPri==puncPri && puncPri > Float.MIN_NORMAL)
+        if (puncPri==puncPri && puncPri > ScalarValue.EPSILON)
             priMerge(punc, puncPri, PriMerge.replace);
         return this;
     }
     public final AbstractTaskLink priMax(byte punc, float puncPri) {
-        if (puncPri==puncPri && puncPri > Float.MIN_NORMAL)
+        if (puncPri==puncPri && puncPri > ScalarValue.EPSILON)
             priMerge(punc, puncPri, PriMerge.max);
         return this;
     }
 
-//    private void priSet(byte index, float next) {
-//        float before = merge(index, next, PriMerge.replace, Post);
-//        if (Math.abs(before-next) >= Float.MIN_NORMAL)
-//            invalidate();
-//    }
 
     @Override
     public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {
@@ -220,17 +213,19 @@ public abstract class AbstractTaskLink implements TaskLink {
         throw new TODO();
     }
 
+    static final FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
+
     @Override
     public float priMult(float X) {
         assertFinite(X);
         if (!Util.equals(X, 1)) {
-            //HACK not fully atomic but at least consistent
-            FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
+
+
             boolean changed = false;
-            for (int i = 0; i < 4; i++) {
-                float d = merge(i, X, mult, Delta);
-                changed |= d!=0;
-            }
+            //HACK not fully atomic but at least consistent
+            for (int i = 0; i < 4; i++)
+                changed |= merge(i, X, mult, Delta) != 0;
+
             if (changed)
                 invalidate();
         }
@@ -239,7 +234,6 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public void priMult(float belief, float goal, float question, float quest) {
-        FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
         boolean changed = false;
         changed |= merge(0, belief, mult, Delta) != 0;
         changed |= merge(1, goal, mult, Delta) != 0;

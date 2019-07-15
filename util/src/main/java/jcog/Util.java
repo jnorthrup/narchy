@@ -2101,19 +2101,22 @@ public enum Util {
     }
 
 
-    public static <X> int count(Predicate<X> p, X... xx) {
+    public static <X> int count(Predicate<X> p, X[] xx) {
         int i = 0;
         for (X x : xx)
             if (p.test(x))
                 i++;
         return i;
     }
-
-    public static <X> boolean and(X[] xx, Predicate<X> p) {
-        for (X x : xx)
-            if (!p.test(x))
+    public static <X> boolean and(Predicate<X> p, int from, int to,  X... xx) {
+        for (int i = from; i < to; i++) {
+            if (!p.test(xx[i]))
                 return false;
+        }
         return true;
+    }
+    public static <X> boolean and(X[] xx, Predicate<X> p) {
+        return and(p, 0, xx.length, xx);
     }
 
     public static boolean and(float[] xx, FloatPredicate p) {

@@ -237,9 +237,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         link(AtomicTaskLink.link(s, u).priSet(punc, p));
     }
 
-    public final void link(TaskLink x) {
-        if (processor.test(x))
-            links.putAsync(x);
+    public final TaskLink link(TaskLink x) {
+        return processor.test(x) ? links.put(x) : null;
     }
 
 
@@ -251,18 +250,22 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     public TaskLink link(Task task) {
         TaskLink tl = link(task, task.pri());
 
-        //pre-seed
+//        //pre-seed
 //        double ii = 1 + Math.sqrt(task.term().volume());
 //        for (int i = 0; i < ii; i++)
 //            grow(tl, task, ThreadLocalRandom.current() /* HACK */);
 
+//        if (tl == null && task.isInput()) {
+//            System.err.println("tasklinks rejected input task: " + task);
+//        }
+
+
         return tl;
     }
 
-    protected AbstractTaskLink link(Task task, float pri) {
+    protected TaskLink link(Task task, float pri) {
         AbstractTaskLink link = AtomicTaskLink.link(task.term()).priSet(task.punc(), pri);
-        link(link);
-        return link;
+        return link(link);
     }
 
     @Deprecated

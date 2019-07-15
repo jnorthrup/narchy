@@ -69,7 +69,7 @@ public enum Unifiable { ;
 
 
                 if (unifiable) {
-                    p.bigger((Variable)conj, (Variable)xu /* x */); //TODO
+                    p.biggerIffConstant((Variable)conj, (Variable)xu /* x */); //TODO
                     p.constraints.add(new EventUnifiability((Variable) conj, (Variable) xu, x instanceof Neg));
                 } else {
                     //p.constraints.add(new SubOfConstraint((Variable)conj, (Variable)xu, Event, x instanceof Neg ? -1 : +1));

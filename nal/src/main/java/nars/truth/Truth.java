@@ -274,6 +274,12 @@ public interface Truth extends Truthed {
 
     @Override float freq();
     @Override float conf();
+
+    /** provides high-precision confidence value, if implemented */
+    default double confDouble() {
+        return conf();
+    }
+
     @Override double evi();
 
 

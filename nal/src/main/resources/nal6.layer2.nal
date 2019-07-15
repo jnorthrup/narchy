@@ -1,29 +1,25 @@
-//this needs some cleanup
 
-
-//conditional abduction by dependent variable
-
+////conditional abduction by dependent variable
+//
     ((X --> R) ==> Z), ((&&,(#Y --> B),(#Y --> R),A..*) ==> Z)  |- (X --> B), (Belief:AbductionPB)
         (--(X --> R) ==> Z), ((&&,(#Y --> B),--(#Y --> R),A..*) ==> Z) |- (X --> B), (Belief:AbductionPB)
 
-
-//// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
-//second level variable elimination (termlink level2 growth needed in order for these rules to work)
-
-    (B --> K),     (&&,A..+,   (($Y --> K) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:Deduction)
-        (B --> K), (&&,A..+, (--($Y --> K) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:DeductionN)
-    (K --> B),     (&&,A..+,   ((K --> $Y) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:Deduction)
-        (K --> B), (&&,A..+, (--(K --> $Y) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:DeductionN)
+//
+////// second level variable handling rules ////////////////////////////////////////////////////////////////////////////////////
+////second level variable elimination (termlink level2 growth needed in order for these rules to work)
+//
+//    (B --> K),     (&&,A..+,   (($Y --> K) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:Deduction)
+//        (B --> K), (&&,A..+, (--($Y --> K) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:DeductionN)
+//    (K --> B),     (&&,A..+,   ((K --> $Y) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:Deduction)
+//        (K --> B), (&&,A..+, (--(K --> $Y) ==> C)) |- substitute((C && A..+), $Y, B), (Belief:DeductionN)
       //(K --> B), (&&,(#X --> L),((K --> $Y) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:Deduction)
         //(K --> B), (&&,(#X --> L),((--,(K --> $Y)) ==> A)) |- substitute(((#X --> L) && A), $Y, B), (Belief:DeductionN)
 
-//    (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
-//        (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
-//    (K --> B), ((L --> $X) ==> (&&,(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
-//        (K --> B), ((L --> $X) ==> (&&,--(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
+    (B --> K), (($X --> L) ==> (&&,(#Y --> K),A..+)) |- substitute((($X --> L) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
+        (B --> K), (($X --> L) ==> (&&,--(#Y --> K),A..+)) |- substitute((($X --> L) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
+    (K --> B), ((L --> $X) ==> (&&,(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogy)
+        (K --> B), ((L --> $X) ==> (&&,--(K --> #Y),A..+)) |- substitute(((L --> $X) ==> (&&,A..+)),#Y,B), (Belief:AnonymousAnalogyN)
 
-//    Y, (&&,X,A..+), neq(X,Y) |- unisubst((&&,A..+),X,Y), (Belief:Deduction)
-//        Y, (&&,--X,A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y), (Belief:DeductionN)
 
 //    (Y --> P), (&&,(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,novel), (Belief:Deduction)
 //        (Y --> P), (&&,--(X-->P),A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y,novel), (Belief:DeductionN)

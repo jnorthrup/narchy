@@ -106,7 +106,7 @@ public enum NALTruth implements TruthFunc {
     @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
-            float c = confCompose(T.conf(), NALTruth.confDefault(n));
+            float c = confCompose(T, NALTruth.confDefault(n));
 //            c = weak(c);
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
@@ -332,7 +332,7 @@ public enum NALTruth implements TruthFunc {
     Analogy() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions.analogy(T, B.freq(), B.conf(), minConf);
+            return TruthFunctions.analogy(T, B.freq(), B.confDouble(), minConf);
         }
     },
 

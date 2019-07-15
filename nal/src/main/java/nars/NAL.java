@@ -140,8 +140,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * TODO make this NAR-specific
      */
-    public static final int CAUSE_MAX = 32;
-    public static final IntRange causeCapacity = new IntRange(8, 1, CAUSE_MAX);
+    public static final IntRange causeCapacity = new IntRange(32, 1, 32);
 
 
     public static final int CURIOSITY_CAPACITY =
@@ -305,7 +304,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(8, 1, 32);
+    public final IntRange premiseUnifyTTL = new IntRange(derive.TTL_UNISUBST_MAX, 1, 32);
     public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
@@ -706,7 +705,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
 
 
-        public static final int TTL_UNISUBST_MAX = 8;
+        public static final int TTL_UNISUBST_MAX = 4;
 
         public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
 

@@ -73,6 +73,8 @@ public class FasterList<X> extends FastList<X> {
      */
     public FasterList(int size, X[] x) {
         super(size, x);
+        if (size > x.length)
+            ensureCapacity(size);
     }
 
     public FasterList(X[] x) {
