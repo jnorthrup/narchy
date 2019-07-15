@@ -1,7 +1,6 @@
 package nars.link;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.decide.Roulette;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -100,7 +99,7 @@ public abstract class DynamicTermLinker implements TermLinker {
                     //(float)Math.pow(fanoutRatio, 1.5f);
 
             float p = rng.nextFloat();
-//            if (p > 1-w*w*w)
+//            if (p < 1-w*w*w)
 //                return 3;
             return p < w ? 1 : 2;
         }
@@ -131,8 +130,8 @@ public abstract class DynamicTermLinker implements TermLinker {
                     //sub.unneg().volume();
                     sub.unneg().complexity();
             return
-                    //1f/v; //inverse
-                    1f / Util.sqrt(v); //inverse sqrt
+                    1f/v; //inverse
+                    //1f / Util.sqrt(v); //inverse sqrt
                     //Util.sqrt(v);
                     //v;
                     //Util.sqr((float)v);

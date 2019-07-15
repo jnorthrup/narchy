@@ -10,6 +10,7 @@ import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 
 import static nars.Op.CONJ;
 
+/** TODO */
 public class CauseMap<X> {
 
     public final HijackMemoize<Term, MutableIntSet> cause = new HijackMemoize<>(

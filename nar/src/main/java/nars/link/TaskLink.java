@@ -256,7 +256,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //        }
 //
 
-    TaskLink clone(float pri);
+    TaskLink clone(float priNormalize);
 
     @Nullable default Term reverseMatch(Term term) {
         if (!isSelf() && to().equals(term)) {

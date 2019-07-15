@@ -8,7 +8,7 @@ public class FloatNormalizer implements FloatToFloatFunction {
      * precision threshold
      */
     private static final float epsilon = Float.MIN_NORMAL;
-    protected float min;
+    public float min;
     protected float max;
     /**
      * relaxation rate: brings min and max closer to each other in proportion to the value. if == 0, disables
@@ -72,8 +72,8 @@ public class FloatNormalizer implements FloatToFloatFunction {
             if (range > epsilon * 2) {
                 float mid = (max + min) / 2;
                 float rangeSensitized = Util.lerp(relax, range, epsilon * 2); //shrunk
-                this.min = mid - rangeSensitized / 2;
-                this.max = mid + rangeSensitized / 2;
+                min(mid - rangeSensitized / 2);
+                max(mid + rangeSensitized / 2);
             }
         }
 
@@ -85,7 +85,15 @@ public class FloatNormalizer implements FloatToFloatFunction {
             max = raw;
         }
 
+        return this;
+    }
 
+    public final FloatNormalizer min(float f) {
+        this.min = f;
+        return this;
+    }
+    public final FloatNormalizer max(float f) {
+        this.max = f;
         return this;
     }
 

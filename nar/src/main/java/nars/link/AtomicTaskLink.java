@@ -56,12 +56,12 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
 
     @Override
-    @Deprecated public AtomicTaskLink clone(float normalizationFactor) {
+    @Deprecated public AtomicTaskLink clone(float priNormalize) {
         AtomicTaskLink l = new AtomicTaskLink(src, tgt, hash);
         ((AtomicFixedPoint4x16bitVector)l.punc).data(((AtomicFixedPoint4x16bitVector)this.punc).data());
         float p = l.priElseZero();
-        if (p - normalizationFactor > ScalarValue.EPSILON)
-            l.priMult(normalizationFactor/p); //normalize
+        if (p - priNormalize > ScalarValue.EPSILON)
+            l.priMult(priNormalize /p); //normalize
         return l;
     }
 

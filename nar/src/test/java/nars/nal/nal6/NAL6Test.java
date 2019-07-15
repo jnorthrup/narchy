@@ -219,14 +219,19 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_elimination_impl_rev() {
 
-        TestNAR tester = test;
-
-        tester.believe("<($x --> bird) ==> <$x --> animal>>");
-        tester.believe("<tiger --> animal>");
-        tester.mustBelieve(cycles * 2, "<tiger --> bird>", 1.00f, 0.45f);
+        test.believe("<($x --> bird) ==> <$x --> animal>>");
+        test.believe("<tiger --> animal>");
+        test.mustBelieve(cycles * 2, "<tiger --> bird>", 1.00f, 0.45f);
 
     }
+    @Test
+    void variable_elimination_impl_pred_conj() {
 
+        test.termVolMax(13);
+        test.believe("(accessibleFromMenu($1, $2) ==> (($1-->Entity) && ($2-->ComputerMenu)))");
+        test.believe("(GraphicalComputerMenu-->ComputerMenu)");
+        test.mustBelieve(cycles, "(accessibleFromMenu($1, GraphicalComputerMenu) ==> (($1-->Entity) && (GraphicalComputerMenu-->ComputerMenu)))", 1f, 0.81f);
+    }
 
     @Test
     void variable_elimination_conj() {

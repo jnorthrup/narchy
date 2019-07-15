@@ -46,6 +46,7 @@ class KIFTest {
 //        k.tasks.forEach(bb -> System.out.println(bb));
 
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
+        new BasicDeriver(Derivers.nal(n, 6,8));
         new BasicDeriver(Derivers.nal(n, 1,8));
 
         n.termVolMax.set(24);
@@ -56,7 +57,7 @@ class KIFTest {
         TaskLinks wl = new TaskLinks.AtomCachingTangentTaskLinks() {
             @Override
             protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
-                if (target instanceof Compound && target.hasAny(ATOM)  && !target.hasAny(Op.Variable)) {
+                if (target instanceof Compound && target.hasAny(ATOM)) {
                     FasterList<Term> tangent = d.nar.concepts().filter(c -> {
                         Term ct = c.term();
                         if (ct.equals(target)) {
@@ -78,13 +79,16 @@ class KIFTest {
             {
             }
         });
-        w.links.decay.set(0.25f);
+        w.links.decay.set(0.05f);
 
 
         n.input(k.tasks());
         n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
-        n.input("$1.0 classIntersection(?1,?2)?");
+        //n.input("$1.0 classIntersection(?1,?2)?");
+        //n.clear();
+        w.clear();
+        n.input("$1.0 (#1-->ComputerDisplay)!");
         n.run(1000);
         w.links.links.print();
 

@@ -35,7 +35,25 @@
 
 
 
-    B, (C ==> A), --is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
+    B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
+
+    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((X==>A),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPP, Time:TaskEvent)
+    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((X==>A),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNP, Time:TaskEvent)
+    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((X==>A),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPN, Time:TaskEvent)
+    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((X==>A),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNN, Time:TaskEvent)
+
+    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((A==>X),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPP, Time:TaskEvent)
+    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((A==>X),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNP, Time:TaskEvent)
+    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((A==>X),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPN, Time:TaskEvent)
+    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((A==>X),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNN, Time:TaskEvent)
+        B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((--A==>X),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPP, Time:TaskEvent)
+        B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((--A==>X),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNP, Time:TaskEvent)
+        B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((--A==>X),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPN, Time:TaskEvent)
+        B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((--A==>X),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNN, Time:TaskEvent)
+
+    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:TaskEvent)
+    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:TaskEvent)
+      B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:TaskEvent)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)

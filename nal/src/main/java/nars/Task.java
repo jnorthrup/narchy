@@ -610,7 +610,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         double confFactor;
         if (y.isBeliefOrGoal() && x[0].isBeliefOrGoal()) {
-            double yConf = y.conf();
+            double yConf = y.truth().confDouble();
             double xConfMax = Util.max(Task::conf, x);
             confFactor = Math.min(1, (yConf / xConfMax));
         } else {

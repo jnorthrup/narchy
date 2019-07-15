@@ -322,11 +322,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             if (d.random.nextFloat() >= probDirect)
                 return null; //term itself
 
-            return sample(target, link, d);
+            return sampleReverseMatch(target, link, d);
 
         }
 
-        @Nullable public Term sample(Term target, TaskLink link, Derivation d) {
+        @Nullable public Term sampleReverseMatch(Term target, TaskLink link, Derivation d) {
             final Term[] T = {target};
             sampleUnique(d.random, (ll) ->{
                 if (ll != link) {
@@ -378,7 +378,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             }
 
             //default:
-            return DirectTangentTaskLinks.the.sample(target, link, d);
+            return DirectTangentTaskLinks.the.sampleReverseMatch(target, link, d);
         }
 
         @Nullable private Term sampleCached(Concept T, TaskLink link, Task task, Derivation d) {
@@ -408,53 +408,55 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
          * acts as a virtual tasklink bag associated with an atom concept allowing it to otherwise act as a junction between tasklinking compounds which share it
          */
         @Nullable final Term atomTangent(Concept src, byte punc, Predicate<TaskLink> filter, long now, int minUpdateCycles, Random rng) {
-            return TermLinks.tangent(links,
+            return tangent(links,
                     src, punc, filter,
                     false, true,
                     now, minUpdateCycles, rng);
         }
 
+        @Nullable
+        static Term tangent(TaskLinkBag bag, Concept src, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
+
+            //        System.out.println(src);
+
+            String id = bag.id(in, out);
+
+
+            //        Reference<TermLinks> matchRef = src.meta(id);
+            //        TermLinks match = matchRef != null ? matchRef.get() : null;
+
+            TaskLinkSnapshot match = src.meta(id);
+
+            if (match == null) {
+                //src.meta(id, new SoftReference<>(match));
+                match = new TaskLinkSnapshot(now, minUpdateCycles);
+                src.meta(id, match);
+            }
+
+            return match.sample(src.term(), bag, punc, filter, in, out, now, minUpdateCycles, rng);
+        }
+
+
         /**
          * caches an array of tasklinks tangent to an atom
          */
-        static final class TermLinks {
+        static final class TaskLinkSnapshot {
 
             final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
             private final FasterList<TaskLink> links = new FasterList(0, EmptyTaskLinksArray);
             private final AtomicBoolean busy = new AtomicBoolean(false);
             private volatile long updated;
 
-            private TermLinks(long now, int minUpdateCycles) {
+            private TaskLinkSnapshot(long now, int minUpdateCycles) {
                 this.updated = now - minUpdateCycles;
             }
 
             /**
              * caches an AtomLinks instance in the Concept's meta table, attached by a SoftReference
              */
-            @Nullable
-            static Term tangent(TaskLinkBag bag, Concept src, byte punc, Predicate<TaskLink> filter, boolean in, boolean out, long now, int minUpdateCycles, Random rng) {
-
-                //        System.out.println(src);
-
-                String id = bag.id(in, out);
-
-
-                //        Reference<TermLinks> matchRef = src.meta(id);
-                //        TermLinks match = matchRef != null ? matchRef.get() : null;
-
-                TermLinks match = src.meta(id);
-
-                if (match == null) {
-                    //src.meta(id, new SoftReference<>(match));
-                    match = new TermLinks(now, minUpdateCycles);
-                    src.meta(id, match);
-                }
-
-                return match.sample(src.term(), bag, punc, filter, in, out, now, minUpdateCycles, rng);
-            }
 
             protected int cap(int bagSize) {
-                return Math.max(2, (int) Math.ceil(1f * Math.sqrt(bagSize)) /* estimate */);
+                return Math.max(4, (int) Math.ceil(1f * Math.sqrt(bagSize)) /* estimate */);
                 //return bagSize;
             }
 
@@ -534,7 +536,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
             @Nullable
             public Term sample(Predicate<TaskLink> filter, byte punc, Random rng) {
-                TaskLink l;
                 @Nullable FasterList<TaskLink> ll = links;
                 int lls = ll.size();
                 if (lls == 0)
@@ -543,12 +544,18 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     TaskLink[] lll = ll.array();
                     lls = Math.min(lll.length, lls);
                     if (lls == 0) return null;
-                    else if (lls == 1) l = lll[0];
+
+                    TaskLink l;
+                    if (lls == 1) l = lll[0];
                     else {
                         int li = Roulette.selectRouletteCached(lls, (int i) -> {
+
                             TaskLink x = lll[i];
-                            return (x != null && filter.test(x)) ?
-                                    Math.max(ScalarValue.EPSILON, x.priPunc(punc)) : Float.NaN;
+                            return x != null && filter.test(x) ?
+                                Math.max(ScalarValue.EPSILON, x.priPunc(punc))
+                                :
+                                Float.NaN;
+
                         }, rng::nextFloat);
                         l = li >= 0 ? lll[li] : null;
                     }

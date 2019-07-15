@@ -564,7 +564,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
          */
-        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = configIs("PREMISE_UNIFY_COMMON_VARIABLES");
+        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = true;
 
         /** TODO use Gödel numbering not this HACK */
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");

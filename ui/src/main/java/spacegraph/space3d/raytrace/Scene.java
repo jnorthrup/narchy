@@ -1,20 +1,20 @@
 package spacegraph.space3d.raytrace;
 
+import jcog.data.list.FasterList;
 import jcog.math.vv3;
 
 import java.io.StringReader;
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Scanner;
 
 final class Scene {
 
-    private static final int MAX_REFLECTIONS = 4;
-    static final double Epsilon = 0.00001;
+    private static final int MAX_REFLECTIONS = 3;
+    static final double Epsilon = 0.000001;
 
-    private final Collection<RayTracer.Light> lights = new ArrayList<>();
-    private final List<Entity> entities = new ArrayList<>();
+    private final Collection<RayTracer.Light> lights = new FasterList<>();
+    private final List<Entity> entities = new FasterList<>();
     public Camera camera;
 
     public Scene(String src) {

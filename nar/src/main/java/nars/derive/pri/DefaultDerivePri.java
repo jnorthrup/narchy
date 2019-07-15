@@ -21,6 +21,9 @@ public class DefaultDerivePri implements DerivePri {
      */
     public final FloatRange gain = new FloatRange(1f, 0f, 2f);
 
+    public final FloatRange questionGain = new FloatRange(1f, 0f, 2f);
+
+
     /**
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
@@ -51,7 +54,7 @@ public class DefaultDerivePri implements DerivePri {
             //factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
             factor = factorCmpl * factorEviAbsolute(t, d) * factorPolarity(t.freq());
         } else {
-            factor = factorCmpl * factorCmpl;
+            factor = questionGain.floatValue() * factorCmpl * factorCmpl;
         }
 
         float y = this.gain.floatValue() * postAmp(t, d.parentPri(), factor);

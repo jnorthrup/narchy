@@ -4,7 +4,7 @@ public class FloatNormalized implements FloatSupplier {
 
     private final FloatSupplier in;
 
-    private final FloatNormalizer normalizer;
+    public final FloatNormalizer normalizer;
 
     public FloatNormalized(FloatSupplier in) {
         this(in, -Float.MIN_NORMAL, +Float.MIN_NORMAL);
@@ -46,5 +46,6 @@ public class FloatNormalized implements FloatSupplier {
         normalizer.updateRange(x);
         return this;
     }
+
 
 }
