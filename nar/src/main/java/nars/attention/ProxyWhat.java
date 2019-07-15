@@ -1,6 +1,7 @@
 package nars.attention;
 
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
 import nars.link.TaskLink;
 
@@ -36,6 +37,16 @@ public class ProxyWhat extends What {
     @Override
     public void clear() {
         what.clear();
+    }
+
+    @Override
+    public void link(TaskLink t) {
+        what.link(t);
+    }
+
+    @Override
+    public TaskLink link(Task t) {
+        return what.link(t);
     }
 
     @Override

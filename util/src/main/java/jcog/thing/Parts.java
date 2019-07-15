@@ -12,7 +12,7 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
     protected final ConcurrentFastIteratingHashSet<SubPart<T>> local = new ConcurrentFastIteratingHashSet(Part.EmptyArray);
 
 
-    /** TODO weakref? */
+    /** TODO weakref? volatile? */
     public T nar;
 
     /**

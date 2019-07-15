@@ -112,7 +112,7 @@ public enum ListFunc {
                                 ? null : Bool.Null;
 
 
-            return y.hasAny(Op.Variables) || xy.hasAny(Op.Variables) ? null : Bool.Null;
+            return y.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : Bool.Null;
         }
 
         @Override
@@ -126,7 +126,7 @@ public enum ListFunc {
                 if (xx.subterms().ANDi((xi, xii) -> xy.sub(xii).equals(xi)))
                     return e.is(y, (remainderLength == 0) ? Op.EmptyProduct : $.pFast(xy.subterms().terms((i, ii) -> i >= xs))) ? null : Bool.Null;
 
-            return x.hasAny(Op.Variables) || xy.hasAny(Op.Variables) ? null : Bool.Null;
+            return x.hasAny(Op.Variable) || xy.hasAny(Op.Variable) ? null : Bool.Null;
         }
     };
 

@@ -34,10 +34,7 @@ public class TaskLinkWhat extends What {
      */
     public final FloatRange dur = new FloatRange(1, 1, 1024);
 
-    public final TaskLinks links =
-            //TaskLinks.DirectTangentTaskLinks.the;
-            //new TaskLinks.NullTangentTaskLinks();
-            new TaskLinks.AtomCachingTangentTaskLinks();
+    public final TaskLinks links;
 
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
@@ -45,8 +42,16 @@ public class TaskLinkWhat extends What {
 
 
     public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
-        super(id, in);
+        this(id, new TaskLinks.AtomCachingTangentTaskLinks(), in);
+        //new TaskLinks.AtomCachingTangentTaskLinks();
+        //TaskLinks.DirectTangentTaskLinks.the;
+        //new TaskLinks.NullTangentTaskLinks();
         links.linksMax.set(capacity);
+    }
+
+    public TaskLinkWhat(Term id, TaskLinks links, PriBuffer<Task> in) {
+        super(id, in);
+        this.links = links;
     }
 
 
@@ -83,6 +88,16 @@ public class TaskLinkWhat extends What {
                 busy.set(false);
             }
         }
+    }
+
+    @Override
+    public void link(TaskLink t) {
+        links.link(t);
+    }
+
+    @Override
+    public TaskLink link(Task t) {
+        return links.link(t);
     }
 
     @Override

@@ -33,6 +33,7 @@ import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
 
 import static jcog.Util.curve;
+import static nars.control.MetaGoal.Perceive;
 
 /**
  * NAR builder
@@ -153,10 +154,13 @@ public class NARS {
                 ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 
 
-                n.beliefPriDefault.amp(0.1f);
-                n.goalPriDefault.amp(0.1f);
-                n.questionPriDefault.amp(0.1f);
-                n.questPriDefault.amp(0.1f);
+                float p = 0.1f;
+                n.beliefPriDefault.amp(p);
+                n.goalPriDefault.amp(p);
+                n.questionPriDefault.amp(p);
+                n.questPriDefault.amp(p);
+
+                n.emotion.want(Perceive, -0.01f);
 
             });
         }

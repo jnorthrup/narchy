@@ -44,6 +44,7 @@ import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
+import nars.unify.UnifyAny;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -157,6 +158,34 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
+
+    default boolean unifiesRecursively(Term x) {
+        return unifiesRecursively(x, (y)->true);
+    }
+
+    default boolean unifiesRecursively(Term x, Predicate<Term> preFilter) {
+
+        if (x instanceof Compound) {
+            int xv = x.volume();
+            if (!hasAny(Op.Variable) && xv > volume())
+                return false; //TODO check
+
+            UnifyAny u = new UnifyAny();
+
+            if (u.unifies(this, x)) return true;
+
+            return !subterms().recurseTerms(t->t.volume()>=xv, s->{
+                if (s instanceof Compound) {
+                    if (preFilter.test(s) && ((Compound) s).unifiesRecursively(x, preFilter)) {
+                        return false;
+                    }
+                }
+                return true;
+            }, this);
+        } else {
+            return x instanceof Variable || containsRecursively(x);
+        }
+    }
 
     @Override
     default boolean contains(Term t) {

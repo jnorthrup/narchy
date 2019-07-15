@@ -1598,9 +1598,13 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         What w = active.get();
         if (w == null) {
             Term id = $.identity(Thread.currentThread());
-            fork(w = the(id, true), null);
+            fork(w = the(id, true));
         }
         return w;
+    }
+
+    public final <W extends What> W fork(W next) {
+        return (W) fork(next, null);
     }
 
     /**
@@ -1626,6 +1630,10 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         if (logger.isDebugEnabled())
             logger.debug("fork {} {} <- {}" /* (+{})"*/, Thread.currentThread(), next, prev/*, delta*/);
 
+        What removed = what.put(next, null);
+        if (removed!=null)
+            stop(removed);
+        start(next);
         active.set(next);
         return next;
     }

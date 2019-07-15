@@ -2,6 +2,7 @@ package nars.unify;
 
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.NAL;
+import nars.term.Term;
 
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
@@ -17,10 +18,20 @@ public class UnifyAny extends Unify {
         super(null, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
     }
 
+    @Deprecated private int matches = 0;
+
     @Override
     protected boolean match() {
+        matches++;
         return false; //stop after the first
     }
 
+    public boolean unifies(Term x, Term y) {
+        clear();
+        int matchesBefore = matches;
+        if (!unify(x, y))
+            return false;
+        return (matchesBefore < matches);
+    }
 
 }

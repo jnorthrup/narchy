@@ -950,5 +950,29 @@ public class UnifyTest {
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
 
+    @Test void testXternalConjUnifyWTF() {
+        UnifyAny u = new UnifyAny();
+        Term
+            a = $$("(hasGUEState($1,GUE_MaximizedState) &&+- hasGUEState($1,GUE_UncoveredState))"),
+            b = $$("(agent($1,#2) &&+- ({#2}-->ComputerUser))");
+        assertFalse( u.unifies(a, b) );
+    }
+    @Test void testXternalConjUnifyWTF2() {
+        UnifyAny u = new UnifyAny();
+        Term
+                a = $$("(x-->y)"),
+                b = $$("((x-->y) &&+- (x -->y))");
+        assertFalse( u.unifies(a, b) );
+    }
+    @Test void testXternalConjUnifyWTF3() {
+        UnifyAny u = new UnifyAny();
+        Term
+                a = $$("(x-->y)"),
+                b = $$("(($3-->$1) &&+- ($3 --> $2))");
+        for (int i = 0; i < 10; i++) {
+            assertFalse(u.unifies(a, b));
+            assertFalse(u.unifies(b, a));
+        }
+    }
     //testUnifyNegativeMobiusStrip
 }

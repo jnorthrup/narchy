@@ -247,7 +247,7 @@ public enum Op {
     public static final char STAMP_CLOSER = '}';
     public static final char STAMP_SEPARATOR = ';';
     public static final char STAMP_STARTER = ':';
-    public static final int Variables = Op.or(VAR_PATTERN, VAR_DEP, VAR_QUERY, VAR_INDEP);
+
     public final static char VarAutoSym = '_';
     /**
      * anonymous depvar
@@ -267,7 +267,6 @@ public enum Op {
      */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
-
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Compound EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);

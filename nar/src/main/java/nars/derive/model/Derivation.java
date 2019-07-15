@@ -334,9 +334,6 @@ public class Derivation extends PreDerivation {
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
             _beliefTerm = nextBelief.term();
-            beliefVarShift =
-                    true;
-                    //!_beliefTerm.equalsRoot(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
 
         } else {
             this.beliefTruth_at_Belief = this.beliefTruth_at_Task = null;
@@ -346,11 +343,13 @@ public class Derivation extends PreDerivation {
             this.beliefStart = this.beliefEnd = TIMELESS;
 
             _beliefTerm = nextBeliefTerm;
-            beliefVarShift =
                     //!(nextBeliefTerm instanceof Variable) ?
                     //false; //unshifted, structural only;
-                    true;
+                    //true;
         }
+        beliefVarShift =
+                //true;
+                !_beliefTerm.equalsRoot(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
         this.beliefTerm =
                 beliefVarShift ?
                         anon.putShift(nextBeliefTerm, taskTerm) :

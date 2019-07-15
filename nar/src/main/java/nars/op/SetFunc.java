@@ -131,7 +131,7 @@ public class SetFunc {
                 if (n < 2)
                     return Null; 
 
-                if (x.hasAny(Op.Variables))
+                if (x.hasAny(Op.Variable))
                     return null; 
 
                 FasterList<Term> l = new FasterList<>(n);

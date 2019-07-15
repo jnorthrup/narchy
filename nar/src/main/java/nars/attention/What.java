@@ -184,4 +184,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         return in.put(x);
     }
 
+    public abstract void link(TaskLink t);
+
+    public abstract TaskLink link(Task t);
 }

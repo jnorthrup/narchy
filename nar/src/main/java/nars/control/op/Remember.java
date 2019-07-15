@@ -165,7 +165,7 @@ public class Remember extends AbstractTask {
         }
 
         if (link)
-            ((TaskLinkWhat) w).links.link(t);
+            w.link(t);
 
 
         if (notify)

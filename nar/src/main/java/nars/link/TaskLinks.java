@@ -164,9 +164,20 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             return reverse;
 
         Term forward = link.forward(target, link, task, d);
-        if (forward != null) {
+        if (forward != null)
+            grow(link, task, forward);
 
-//                //TODO abstact activation parameter object
+        return target;
+    }
+
+    void grow(TaskLink link, Task task, Random r) {
+        Term forward = DynamicTermLinker.Weighted.sample(task.term(),r);
+        if (forward != null)
+            grow(link, task, forward);
+    }
+
+    void grow(TaskLink link, Task task, Term forward) {
+        //                //TODO abstact activation parameter object
 //                float subRate =
 //                        1f;
 //                //1f/(t.volume());
@@ -177,28 +188,28 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 //                float want = p * subRate / 2;
 //                float p =
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
-            byte punc = task.punc();
+        byte punc = task.punc();
 
-            float p =
-                    link.priPunc(punc);
-            float pFwd = p * amp.floatValue();
-            Term from = link.from();
+        float p =
+                link.priPunc(punc);
+        float pFwd = p * amp.floatValue();
+        Term from = link.from();
 
-            //CHAIN pattern
-            link(from, forward, punc, pFwd); //forward (hop)
-            //link(u, s, punc, pAmp); //reverse (hop)
-            //link(t, u, punc, pAmp); //forward (adjacent)
-            //link(u, t, punc, pAmp); //reverse (adjacent)
+        //CHAIN pattern
+        link(from, forward, punc, pFwd); //forward (hop)
+        //link(u, s, punc, pAmp); //reverse (hop)
+        //link(t, u, punc, pAmp); //forward (adjacent)
+        //link(u, t, punc, pAmp); //reverse (adjacent)
 
-            float toUnsustain = pFwd * (1 - this.sustain.floatValue());
-            if (toUnsustain>ScalarValue.EPSILON) {
-                float unsustained = link.take(punc, toUnsustain);
-                links.bag.depressurize(unsustained);
-            }
+        float toUnsustain = pFwd * (1 - this.sustain.floatValue());
+        if (toUnsustain> ScalarValue.EPSILON) {
+            float unsustained = link.take(punc, toUnsustain);
+            links.bag.depressurize(unsustained);
+        }
 
 
-            //link(s, t, punc, ); //redundant
-            //link(t, s, punc, pp); //reverse echo
+        //link(s, t, punc, ); //redundant
+        //link(t, s, punc, pp); //reverse echo
 
 //                if (self)
 //                    t = u;
@@ -211,10 +222,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 ////
 //                }
 //            }
-
-        }
-
-        return target;
     }
 
 
@@ -241,12 +248,21 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
      *
      * @return
      */
-    public void link(Task task) {
-        link(task, task.pri());
+    public TaskLink link(Task task) {
+        TaskLink tl = link(task, task.pri());
+
+        //pre-seed
+//        double ii = 1 + Math.sqrt(task.term().volume());
+//        for (int i = 0; i < ii; i++)
+//            grow(tl, task, ThreadLocalRandom.current() /* HACK */);
+
+        return tl;
     }
 
-    public void link(Task task, float pri) {
-        link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri));
+    protected AbstractTaskLink link(Task task, float pri) {
+        AbstractTaskLink link = AtomicTaskLink.link(task.term()).priSet(task.punc(), pri);
+        link(link);
+        return link;
     }
 
     @Deprecated

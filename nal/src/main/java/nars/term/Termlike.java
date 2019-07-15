@@ -188,6 +188,7 @@ public interface Termlike {
     default /* final */boolean containsRecursively(Term t) {
         return containsRecursively(t, null);
     }
+
     boolean impossibleSubTerm(Termlike target);
     boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf);
 

@@ -142,7 +142,7 @@ public enum Unifiable { ;
                 return false; //undecided
             } else {
                 return !conj.eventsOR((when, what) -> {
-                    return Terms.possiblyUnifiable(what, x, false, Op.Variables);
+                    return Terms.possiblyUnifiable(what, x, false, Variable);
                 }, 0, true, conj.dt() == XTERNAL);
             }
 

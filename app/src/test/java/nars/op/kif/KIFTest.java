@@ -4,10 +4,19 @@ import jcog.Texts;
 import jcog.Util;
 import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
+import jcog.data.list.FasterList;
 import nars.*;
 import nars.attention.TaskLinkWhat;
+import nars.derive.BasicDeriver;
+import nars.derive.Derivers;
+import nars.derive.model.Derivation;
+import nars.link.TaskLink;
+import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
+import nars.task.util.PriBuffer;
+import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
@@ -16,8 +25,10 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.stream.Collectors;
 
 import static nars.$.$$;
+import static nars.Op.ATOM;
 
 @Disabled
 class KIFTest {
@@ -35,13 +46,40 @@ class KIFTest {
 //        k.tasks.forEach(bb -> System.out.println(bb));
 
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
+        new BasicDeriver(Derivers.nal(n, 1,8));
+
         n.termVolMax.set(24);
         n.beliefPriDefault.amp(0.01f);
 
 
-        TaskLinkWhat w = (TaskLinkWhat) n.what();
+        //TaskLinkWhat w = (TaskLinkWhat) n.what();
+        TaskLinks wl = new TaskLinks.AtomCachingTangentTaskLinks() {
+            @Override
+            protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
+                if (target instanceof Compound && target.hasAny(ATOM)  && !target.hasAny(Op.Variable)) {
+                    FasterList<Term> tangent = d.nar.concepts().filter(c -> {
+                        Term ct = c.term();
+                        if (ct.equals(target)) {
+                            return false;
+                        } else
+                            return ct instanceof Compound && ct.hasAny(ATOM) && ((Compound) ct).unifiesRecursively(target, z -> z.hasAny(ATOM));
+                    }).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
+                    if (!tangent.isEmpty()) {
+                        //System.out.println(target + "\t" + tangent);
+                        return tangent.get(d.random);
+                    }
+                }
+                return super.reverse(target, link, task, d);
+            }
+        };
+        wl.links.capacity(1024);
+
+        TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), wl, new PriBuffer.DirectPriBuffer<>()) {
+            {
+            }
+        });
         w.links.decay.set(0.25f);
-        w.links.links.capacity(1024);
+
 
         n.input(k.tasks());
         n.log();
@@ -49,6 +87,8 @@ class KIFTest {
         n.input("$1.0 classIntersection(?1,?2)?");
         n.run(1000);
         w.links.links.print();
+
+        n.concepts().forEach(c -> System.out.println(c));
 
     }
 

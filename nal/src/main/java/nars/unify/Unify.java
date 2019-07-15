@@ -261,7 +261,7 @@ public abstract class Unify extends Versioning<Term> {
 //                if (!couldMatch())
 //                    return false;
 //                else
-                    return true;
+            return true;
 //            }
         }
         return false;

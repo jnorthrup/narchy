@@ -259,7 +259,10 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
     TaskLink clone(float pri);
 
     @Nullable default Term reverseMatch(Term term) {
-        return !isSelf() && to().equals(term) ? from() : null;
+        if (!isSelf() && to().equals(term)) {
+            return from();
+        }
+        return null;
     }
 
     /** determines forward growth target. null to disable
