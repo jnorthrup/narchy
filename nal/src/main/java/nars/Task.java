@@ -814,9 +814,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         Task question = this;
 
-        if (!Stamp.overlap(question, answer)) {
-            answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
-        }
+//        if (!(question.isInput() && question.isEternal()) && !(answer.isInput() && answer.isEternal()) && !Stamp.overlap(question, answer)) {
+//            answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
+//        }
 
 //        n.emotion.onAnswer(this, answer);
 

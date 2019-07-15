@@ -30,16 +30,23 @@ import static nars.truth.func.TruthFunctions2.weak;
 public enum NALTruth implements TruthFunc {
 
 
-    /*@AllowOverlap*/ Deduction() {
+    Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.deduction(T, B, true, minConf);
         }
     },
+
     @AllowOverlap DeductionRecursive() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.deduction(T, B, true, minConf);
+        }
+    },
+    @AllowOverlap DeductionWeakRecursive() {
+        @Override
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            return TruthFunctions.deduction(T, B, false, minConf);
         }
     },
     DeductionWeak() {
@@ -57,26 +64,26 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
-    /*@AllowOverlap*/ Pre() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.pre(T, B, false, minConf);
-        }
-    },
-
-    @AllowOverlap PreRecursive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return Pre.apply(T, B, minConf, n);
-        }
-    },
-
-    /*@AllowOverlap*/ PreWeak() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.pre(T, B, true, minConf);
-        }
-    },
+//    /*@AllowOverlap*/ Pre() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.pre(T, B, false, minConf);
+//        }
+//    },
+//
+//    @AllowOverlap PreRecursive() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return Pre.apply(T, B, minConf, n);
+//        }
+//    },
+//
+//    /*@AllowOverlap*/ PreWeak() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.pre(T, B, true, minConf);
+//        }
+//    },
 
     /*@AllowOverlap*/ Post/*Recursive*/() {
         @Override

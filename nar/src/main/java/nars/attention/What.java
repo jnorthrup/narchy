@@ -105,8 +105,11 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
     protected void starting(NAR nar) {
         super.starting(nar);
 
-        //schedule.durs(0);
-        schedule.durs(1f/nar.exe.concurrency());
+        schedule.durs(
+                //0
+                1
+                //1f/nar.exe.concurrency()
+        );
     }
 
     @Override

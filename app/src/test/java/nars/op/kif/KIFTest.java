@@ -6,7 +6,7 @@ import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
 import nars.attention.TaskLinkWhat;
-import nars.attention.What;
+import nars.memory.RadixTreeMemory;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.util.TermTest;
@@ -34,15 +34,21 @@ class KIFTest {
         KIF k = KIF.file(I);
 //        k.tasks.forEach(bb -> System.out.println(bb));
 
-        NAR n = NARS.tmp();
-        n.termVolMax.set(64);
+        NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
+        n.termVolMax.set(24);
+        n.beliefPriDefault.amp(0.01f);
 
-        What w = n.what();
+
+        TaskLinkWhat w = (TaskLinkWhat) n.what();
+        w.links.decay.set(0.25f);
+        w.links.links.capacity(1024);
+
         n.input(k.tasks());
         n.log();
-        n.input("({#ACT}-->JoystickMotion)?");
+        //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
+        n.input("$1.0 classIntersection(?1,?2)?");
         n.run(1000);
-        ((TaskLinkWhat)w).links.links.print();
+        w.links.links.print();
 
     }
 

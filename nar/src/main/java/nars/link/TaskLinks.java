@@ -25,7 +25,6 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.term.Term;
-import nars.term.atom.Atom;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
@@ -332,8 +331,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
         protected boolean cache(Term target) {
-            return target instanceof Atom;
-            //return target.volume() <= 3;
+            //return target instanceof Atom;
+            return target.volume() <= 3;
         }
         @Override
         protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
@@ -341,7 +340,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
             float probability =
                     //0.5f;
-                    (float) (0.5f / Math.pow(target.volume(), 2));
+                    (float) (0.5f / Math.pow(target.volume(), 3));
             //1f/Math.max(2,link.from().volume());
             //1-1f/Math.max(2,link.from().volume());
             //1-1f/(Math.max(1,link.from().volume()-1));
