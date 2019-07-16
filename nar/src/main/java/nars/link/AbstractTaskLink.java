@@ -12,6 +12,7 @@ import nars.term.Term;
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
+import static jcog.signal.tensor.AtomicFixedPoint4x16bitVector.SHORT_TO_FLOAT_SCALE;
 import static nars.Task.i;
 
 public abstract class AbstractTaskLink implements TaskLink {
@@ -205,7 +206,9 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public float pri(float p) {
-        throw new TODO();
+        //TODO fully atomic
+        float e = pri();
+        if (e > 1f/SHORT_TO_FLOAT_SCALE * 4) { return priMult(  p/ e); } else { fill(p); return p; }
     }
 
     @Override
@@ -243,34 +246,34 @@ public abstract class AbstractTaskLink implements TaskLink {
             invalidate();
     }
 
-    @Override
-    public float pri(FloatFloatToFloatFunction update, float scalar) {
-        throw new UnsupportedOperationException();
-
-        //TODO make fully atomic:
-//            float prev = this.pri();
-//            float next = update.apply(prev, x);
-//            if (next == next) {
-//                next = Util.unitizeSafe(next);
-//                if (prev != prev) {
-//                    punc.fill(next); //flat
-//                } else {
-//                    if (!Util.equals(next, prev)) {
-//                        //renormalize
-//                        renormalize(next);
-//                    }
-//                }
-//            } else {
-//                punc.fill(0);
-//                next = 0;
-//            }
-//            invalidate();
-//            return next;
-
-//            }, _x);
-
-//            return y;
-    }
+//    @Override
+//    public float pri(FloatFloatToFloatFunction update, float scalar) {
+//        throw new UnsupportedOperationException();
+//
+//        //TODO make fully atomic:
+////            float prev = this.pri();
+////            float next = update.apply(prev, x);
+////            if (next == next) {
+////                next = Util.unitizeSafe(next);
+////                if (prev != prev) {
+////                    punc.fill(next); //flat
+////                } else {
+////                    if (!Util.equals(next, prev)) {
+////                        //renormalize
+////                        renormalize(next);
+////                    }
+////                }
+////            } else {
+////                punc.fill(0);
+////                next = 0;
+////            }
+////            invalidate();
+////            return next;
+//
+////            }, _x);
+//
+////            return y;
+//    }
 
 //    /** holds value for one punctuation only */
 //    public static class SimpleTaskLink extends AbstractTaskLink {

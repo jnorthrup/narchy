@@ -51,9 +51,6 @@
         B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((--A==>X),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPN, Time:TaskEvent)
         B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- --unisubst((--A==>X),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNN, Time:TaskEvent)
 
-    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:TaskEvent)
-    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:TaskEvent)
-      B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:TaskEvent)
 
         //antigoal:
         //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)

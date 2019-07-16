@@ -4,12 +4,12 @@
 ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized, Time:TaskEvent)
 
     //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:BeliefEvent)
-    (C ==> X), (--E ==> Y), eventOfNeg(C,E) |-    conjWithout(C,--E), (Belief:AbductionPB, Time:BeliefEvent)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:Task)
+    (C ==> X), (--E ==> Y), eventOfNeg(C,E) |-    conjWithout(C,--E), (Belief:AbductionPB, Time:Task)
       //(E ==> Y), (C ==> X), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPBX)
       //(--E ==> Y), (C ==> X), eventOfNeg(C,E)      |-    conjWithout(C,--E), (Belief:AbductionPBX)
 
-    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y,"$"), (Belief:AbductionPB, Time:BeliefEvent)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(conjWithout(C,E),X,Y,"$"), (Belief:AbductionPB, Time:Task)
 
 
 
@@ -21,6 +21,13 @@
   B, (C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
     B, (--C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
   B, (X ==> C), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
+
+    B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
+      B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
+    B, (A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
+      B, (A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
+           B, (--A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
+              B, (--A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
 
   (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
     (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,novel), (Punctuation:Question, Time:Task)

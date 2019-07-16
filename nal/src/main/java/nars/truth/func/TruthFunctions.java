@@ -163,8 +163,8 @@ public final class TruthFunctions {
 //        }
 
         final float f0 = or(f1, f2);
-        final float w = and(f0, confCompose(a,b));
-        final float c = w2cSafe(w);
+        final double w = and(f0, confCompose(a,b));
+        final double c = w2cSafe(w);
         if (c < minConf)
             return null;
 

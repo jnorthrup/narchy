@@ -13,11 +13,11 @@ import jcog.pri.PriMap;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Sampler;
 import jcog.pri.bag.impl.ArrayBag;
+import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
-import jcog.sort.RankedN;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -25,7 +25,7 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.derive.model.Derivation;
 import nars.term.Term;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import nars.term.atom.Atom;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -350,8 +350,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
         protected boolean cache(Term target) {
-            //return target instanceof Atom;
-            return target.volume() <= 3;
+            return target instanceof Atom;
+            //return target.volume() <= 3;
         }
         @Override
         protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
@@ -440,10 +440,11 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         /**
          * caches an array of tasklinks tangent to an atom
          */
-        static final class TaskLinkSnapshot {
+        @Deprecated static final class TaskLinkSnapshot {
 
-            final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
-            private final FasterList<TaskLink> links = new FasterList(0, EmptyTaskLinksArray);
+//            final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
+//            private final FasterList<TaskLink> links = new FasterList(0, EmptyTaskLinksArray);
+            final PriArrayBag<TaskLink> links = new PriArrayBag<TaskLink>(PriMerge.replace, 0);
             private final AtomicBoolean busy = new AtomicBoolean(false);
             private volatile long updated;
 
@@ -463,101 +464,62 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean reverse, long now, int minUpdateCycles) {
                 if (now - updated >= minUpdateCycles) {
 
-                    if (!busy.compareAndSet(false, true))
-                        return false;
-                    try {
-                        /*synchronized (links)*/
-                        {
-                            int cap = cap(itemCount);
-
-                            RankedN<TaskLink> match = null;
-
-                            int i = 0;
-                            for (TaskLink t : items) {
-                                //                if (t == null)
-                                //                    continue; //HACK
-
-                                float xp = t.priElseZero();
-                                if (match == null || /*match instanceof Set ||*/ (match instanceof RankedN && xp > match.minValueIfFull())) {
-                                    Term y = t.other(x, reverse);
-                                    if (y != null) {
-
-                                        if (match == null) {
-                                            //                            @Nullable RankedN<TaskLink> existingLinks = this.links;
-                                            //                            if (existingLinks==null)
-                                            match = new RankedN<>(new TaskLink[cap], (FloatFunction<TaskLink>) TaskLink::pri);
-                                            //                            else {
-                                            //                                //recycle
-                                            //                                //  this will affect other threads that might be reading from it.
-                                            //                                //  so use 'clearWeak' atleast it wont nullify values while they might be reading from the array
-                                            //                                existingLinks.clearWeak();
-                                            //                                match = existingLinks;
-                                            //                            }
-                                        }
-
-                                        match.add(t);
-                                    }
-                                }
-                                i++;
-                            }
-
-
-                            if (match != null) {
-                                int ms = match.size();
-
-                                RankedN<TaskLink> mm = match;
-
-                                int toSave = cap - ms;
-                                if (toSave > 0) {
-//                                    float maxPri = match.rank.floatValueOf(match.get(0));
-                                    float minPri = match.rank.floatValueOf(match.get(ms - 1));
-                                    for (int i1 = 0, linksSize = Math.min(toSave, links.size()); i1 < linksSize; i1++) {
-                                        TaskLink z = links.get(i1);
-                                        mm.add(z.clone(Math.max(ScalarValue.EPSILON, minPri)));
-                                    }
-                                }
-
-                                links.clear();
-                                links.addAll(ms, mm.items);
-
-                            }
-
+                    if (busy.compareAndSet(false, true)) {
+                        try {
+                            commit(x, items, itemCount, reverse);
+                            updated = now;
+                        } finally {
+                            busy.set(false);
                         }
-                    } finally {
-                        busy.set(false);
                     }
 
-                    updated = now;
                 }
 
                 return !links.isEmpty();
             }
 
+            public void commit(Term x, Iterable<TaskLink> items, int itemCount, boolean reverse) {
+
+                links.capacity(cap(itemCount));
+
+                links.commit();
+
+                int i = 0;
+                for (TaskLink t : items) {
+                    //                if (t == null)
+                    //                    continue; //HACK
+
+                    float xp = t.priElseZero();
+
+                    Term y = t.other(x, reverse);
+                    if (y != null)
+                        links.put(t.clone(1));
+
+                    i++;
+                }
+            }
+
 
             @Nullable
             public Term sample(Predicate<TaskLink> filter, byte punc, Random rng) {
-                @Nullable FasterList<TaskLink> ll = links;
-                int lls = ll.size();
+                @Nullable Object[] ll = links.items();
+                int lls = Math.min(links.size(), ll.length);
                 if (lls == 0)
                     return null;
                 else {
-                    TaskLink[] lll = ll.array();
-                    lls = Math.min(lll.length, lls);
-                    if (lls == 0) return null;
-
                     TaskLink l;
-                    if (lls == 1) l = lll[0];
+                    if (lls == 1) l = (TaskLink) ll[0];
                     else {
                         int li = Roulette.selectRouletteCached(lls, (int i) -> {
 
-                            TaskLink x = lll[i];
+                            TaskLink x = (TaskLink) ll[i];
                             return x != null && filter.test(x) ?
                                 Math.max(ScalarValue.EPSILON, x.priPunc(punc))
                                 :
                                 Float.NaN;
 
                         }, rng::nextFloat);
-                        l = li >= 0 ? lll[li] : null;
+                        l = li >= 0 ? (TaskLink)ll[li] : null;
                     }
                     return l != null ? l.from() : null;
                 }

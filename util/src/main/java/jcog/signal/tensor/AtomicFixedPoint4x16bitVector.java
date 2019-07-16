@@ -22,7 +22,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     //TODO atomic addAt methods
     private static final int[] QUAD_16_SHAPE = new int[] { 4 };
-    private static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
+    public static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
     private static final AtomicLongFieldUpdater<AtomicFixedPoint4x16bitVector> X =
             AtomicLongFieldUpdater.newUpdater(AtomicFixedPoint4x16bitVector.class, "x");
     private volatile long x;

@@ -16,6 +16,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
+import nars.time.Tense;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -315,6 +316,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
             if (prev == Long.MIN_VALUE)
                 prev = now - 1;
 
+            long dt = now - prev;
 
             prev = now;
 
@@ -325,7 +327,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
             int s = b.size();
             if (s != 0) {
-                int n = Math.min(s, batchSize());
+                int n = Math.min(s, batchSize(Tense.occToDT(dt)/nar.dur()));
                 if (n > 0) {
                     //TODO target.input(tasks, n, target.concurrency());
 
@@ -360,8 +362,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         /**
          * TODO abstract
          */
-        protected int batchSize() {
-            return Math.max(1, (int) Math.ceil(capacity() * valve.floatValue()));
+        protected int batchSize(float durs) {
+            return (int) Math.ceil( Math.min(durs, 1f) * capacity() * valve.floatValue());
 
             //rateControl.apply(tasks.size(), tasks.capacity());
 
