@@ -53,6 +53,7 @@ public class RLBooster  {
     private final List<Term> inputs;
     private final int actionDiscretization;
     private final WritableTensor history;
+    private final boolean nothingAction;
 
     transient private float[] _in = null;
     public double lastReward = Float.NaN;
@@ -98,6 +99,7 @@ public class RLBooster  {
         assert(actionDiscretization>=2): "discretization must be least >=2; minimum two states";
 
         this.actions = g.actions().array();
+        this.nothingAction = nothingAction;
         this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * (actionDiscretization-1); /* pos/neg for each action */;
 
         logger.info("{} {} in={}x{} out={}", agent, g, inD, history, outD);
@@ -163,14 +165,19 @@ public class RLBooster  {
             }
         }
 
-        Util.normalize(feedback); //needs shifted to mid0 and back to mid.5
+        float feedbackSum = Util.sum(feedback);
+        Util.normalize(feedback, 0, feedbackSum);
+        if (this.nothingAction) {
+            feedback[feedback.length-1] = (1-Util.max(feedback))*1f/(1+Util.variance(feedback)); //HACK TODO estimate better
+            Util.normalize(feedback, 0, Util.sum(feedback)); //normalize again
+        }
 
         return feedback;
     }
 
     private float truthFeedback(Truth t) {
-        //return t.freq();
-        return t.expectation();
+        return t.freq();
+        //return t.expectation();
     }
 
 

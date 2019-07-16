@@ -17,7 +17,7 @@ import java.util.Random;
 final class RayTracer extends JPanel {
 
     /** regauge this as a fraction of the screen dimension */
-    public static final float grainMax = 0.04f;
+    public static final float grainMax = 0.03f;
     float grainMin;
 
     /** accepts value < 1 and >= 1 */
@@ -26,7 +26,7 @@ final class RayTracer extends JPanel {
     double fps = 30;
 
     /** update rate (not alpha chanel) */
-    float alpha = 0.9f;
+    float alpha = 0.75f;
 
     double CAMERA_EPSILON = 0.001;
 
@@ -79,7 +79,12 @@ final class RayTracer extends JPanel {
 
             updateCamera();
 
-            r.forEach(x -> x.render(subSceneTimeNS));
+
+            //r.parallelStream().forEach(x ->
+            r.forEach(x ->
+                x.render(subSceneTimeNS)
+            );
+            repaint();
         }
     }
 
@@ -199,7 +204,7 @@ final class RayTracer extends JPanel {
 
     class Renderer {
 
-        int window = 32;
+        int window = 8;
         int iterPixels;
 
         @Deprecated private float eee;
@@ -236,12 +241,11 @@ final class RayTracer extends JPanel {
 
         private void render(long sceneTimeNS) {
 
-
             boolean moving;
             long start = System.nanoTime();
 
 
-            float iterCoverage = 0.05f;
+            float iterCoverage = 0.03f;
             iterPixels = (int)Math.ceil(iterCoverage * ((x2-x1)*(y2-y1)*W*H));
 
             long timeUsedNS = 0;
@@ -285,7 +289,6 @@ final class RayTracer extends JPanel {
             } while (System.nanoTime() - start <= sceneTimeNS);
 //            System.out.println("eAvg = " + ePixelAverage + " " + ee.toString());
 
-            repaint();
 
 //        System.out.println(Texts.timeStr(timeUsedNS) );
 //        boolean renderComplete = (pixelsRemain == 0);

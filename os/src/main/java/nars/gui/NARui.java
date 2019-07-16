@@ -87,6 +87,7 @@ import java.util.stream.StreamSupport;
 
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
 import static java.util.stream.Collectors.toList;
+import static jcog.Util.sqrt;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.w2cSafe;
@@ -944,9 +945,9 @@ public class NARui {
 
     @NotNull
     public static PaintUpdateMatrixView matrix(double[] dw) {
-        return dw.length > 512 ?
-            PaintUpdateMatrixView.scroll(dw, false, 64, 4) :
-            new PaintUpdateMatrixView(dw);
+        return dw.length > 2048 ?
+            PaintUpdateMatrixView.scroll(dw, false, 64, 8) :
+            new PaintUpdateMatrixView(()->dw, dw.length, dw.length/Math.max(1, (int) Math.ceil(sqrt(dw.length))));
     }
 
 }

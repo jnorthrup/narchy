@@ -21,7 +21,6 @@ package jcog.tree.rtree;
  */
 
 import jcog.Util;
-import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
@@ -39,21 +38,19 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.
  * <p>
  */
-public class RLeaf<X> extends AbstractRNode<X> {
-
-    public final X[] data;
+public class RLeaf<X> extends AbstractRNode<X,X> {
 
 
     RLeaf(int mMax) {
         this((X[]) new Object[mMax]);
     }
 
-    public RLeaf(X[] emptyArray) {
-        this.data = emptyArray;
+    public RLeaf(X[] xx) {
+        super(xx);
     }
 
     public RLeaf(Spatialization<X> model, X[] sortedMbr, int from, int to) {
-        this.data = Arrays.copyOfRange(sortedMbr, from, to);
+        super(Arrays.copyOfRange(sortedMbr, from, to));
         this.size = (short) data.length;
         this.bounds = model.mbr(data);
     }
@@ -75,27 +72,14 @@ public class RLeaf<X> extends AbstractRNode<X> {
 
     @Override
     public Iterator<X> iterateValues() {
-        return ArrayIterator.iterateN(data, size);
+        return iterateLocal();
     }
 
     @Override
     public Stream<X> streamValues() {
-        return ArrayIterator.streamNonNull(data, size); //TODO null-terminator iterator eliding 'size'
+        return streamLocal();
     }
 
-    @Override
-    public Stream<X> streamLocal() {
-        return streamValues();
-    }
-
-    @Override
-    public Iterator<X> iterateLocal() {
-        return iterateValues();
-    }
-
-    public final X get(int i) {
-        return data[i];
-    }
 
 //    public double variance(int dim, Spatialization<X> model) {
 //        int s = size();

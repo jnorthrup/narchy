@@ -77,7 +77,7 @@ class AxialSplitLeafTest {
         
         rTree.add(new RectDouble(0, 2, 1, 4));
 
-        RBranch root = (RBranch) rTree.root();
+        RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
         int childCount = 0;
         for(RNode c : children) {

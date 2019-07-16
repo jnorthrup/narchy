@@ -7,11 +7,11 @@ import java.util.ArrayDeque;
 import java.util.Arrays;
 import java.util.Deque;
 
-class Graph {
+class MatrixTransform {
     private final boolean needsBackprop;
     final Deque<Backprop> q;
 
-    Graph(final boolean needsBackprop) {
+    MatrixTransform(final boolean needsBackprop) {
         this.needsBackprop = needsBackprop;
         this.q = new ArrayDeque<>();
     }

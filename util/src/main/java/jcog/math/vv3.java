@@ -111,8 +111,8 @@ public final class vv3  {
         z = -z;
     }
 
-    public double distanceSquared(vv3 x) {
-        if (this == x) return 0;
-        return minus(x).lengthSquared();
+    public double distanceSquared(vv3 v) {
+        if (this == v) return 0;
+        return Util.sqr(x - v.x) + Util.sqr(y - v.y) + Util.sqr(z - v.z);
     }
 }

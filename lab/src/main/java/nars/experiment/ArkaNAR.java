@@ -71,20 +71,20 @@ public class ArkaNAR extends GameX {
 
             //GameX a = new FZero(id, n);
             //GameX a = new ArkaNAR(id, n, true, false);
-            GameX a = new PoleCart(id, n, 0.05f);
+            GameX a = new PoleCart(id, n, 0.03f);
             RLBooster rl = new RLBooster(a,
                 (i, o) -> new DQN3(i, o, Map.of(
                     DQN3.Option.ALPHA, 0.05,
                     DQN3.Option.GAMMA, 0.5,
-                    DQN3.Option.EPSILON, 0.05,
-                    DQN3.Option.LEARNING_STEPS_PER_ITERATION, 16.0,
-                    DQN3.Option.NUM_HIDDEN_UNITS, 256.0,
+//                    DQN3.Option.EPSILON, 0.05,
+                    DQN3.Option.LEARNING_STEPS_PER_ITERATION, 24.0,
+                    DQN3.Option.NUM_HIDDEN_UNITS, 64.0,
                     TD_ERROR_CLAMP, 1.0
                 ))
 
 //                    (i, o) -> new HaiQae(i, o)
 
-            , 3, 3, false);
+            , 2, 2, true);
 
             a.curiosity.rate.set(0);
 

@@ -822,9 +822,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 //            answer.take(question, answer.priElseZero() * question.priElseZero(), true, false);
 //        }
 
-        if(answer instanceof NALTask) {
-            mergeCause(answer, question, CauseMerge.AppendUnique);
-        }
+//        if(answer instanceof NALTask) {
+//            mergeCause(answer, question, CauseMerge.AppendUnique);
+//        }
 
 //        n.emotion.onAnswer(this, answer);
 

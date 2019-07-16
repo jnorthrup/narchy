@@ -130,7 +130,8 @@ final class Scene {
         double closestCollisionDistanceSquared = Double.POSITIVE_INFINITY;
         Entity closestEntity = null;
         Ray3 closestNormal = null;
-        for (Entity entity : entities) {
+        for (int i = 0, entitiesSize = entities.size(); i < entitiesSize; i++) {
+            Entity entity = entities.get(i);
 
             Ray3 normal = entity.collide(ray);
             if (normal == null)
@@ -202,9 +203,9 @@ final class Scene {
         double intensityB = 0;
         for (RayTracer.Light light : lights) {
             vv3 lightVector = light.position.minus(collision.normal.position);
-            vv3 lightDirection = lightVector.normalize();
-            Collision c = castRay(new Ray3(collision.normal.position, lightDirection));
             double lightVectorLenSq = lightVector.lengthSquared();
+            vv3 lightDirection = lightVector.normalizeThis();
+            Collision c = castRay(new Ray3(collision.normal.position, lightDirection));
             if (c == null || c.normal.position.minus(collision.normal.position).lengthSquared() > lightVectorLenSq || c.entity.surface == Entity.Surface.Transparent) {
                 double intensity = Math.abs(collision.normal.direction.dot(lightDirection)) / lightVectorLenSq;
                 intensityR += (double) (light.color >> 16) / 255 * intensity;

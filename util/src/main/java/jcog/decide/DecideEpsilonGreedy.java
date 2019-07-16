@@ -14,6 +14,8 @@ public class DecideEpsilonGreedy implements Deciding {
     public static final Deciding ArgMax = new DecideEpsilonGreedy(0, new XoRoShiRo128PlusRandom(1));
 
     private final Random random;
+
+    /** TODO FloatRange */
     public float epsilonRandom;
 
     /*

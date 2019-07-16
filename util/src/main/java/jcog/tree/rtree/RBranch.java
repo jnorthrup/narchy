@@ -42,16 +42,16 @@ import java.util.stream.Stream;
  * <p>
  * Created by jcairns on 4/30/15.
  */
-public class RBranch<X> extends AbstractRNode<X> {
+public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
-    public final RNode<X>[] data;
 
     protected RBranch(int cap) {
-        this.size = 0; this.bounds = null; this.data = new RNode[cap];
+        super(new RNode[cap]);
+        this.size = 0; this.bounds = null; ;
     }
     protected RBranch(int cap, RNode<X>[] data) {
+        super(data.length == cap ? data : Arrays.copyOf(data, cap)); //TODO assert all data are unique; cache hash?
         //assert (cap >= 2);
-        this.data = data.length == cap ? data : Arrays.copyOf(data, cap); //TODO assert all data are unique; cache hash?
         this.size = (short) data.length;
         this.bounds = HyperRegion.mbr(data);
     }
@@ -78,10 +78,6 @@ public class RBranch<X> extends AbstractRNode<X> {
         return false;
     }
 
-    @Override
-    public final RNode<X> get(int i) {
-        return data[i];
-    }
 
     /**
      * Add a new node to this branch's list of children
@@ -514,7 +510,7 @@ public class RBranch<X> extends AbstractRNode<X> {
 
     @Override
     public Stream<RNode<X>> streamNodes() {
-        return ArrayIterator.streamNonNull(data, size);
+        return streamLocal();
     }
 
     @Override
@@ -527,15 +523,7 @@ public class RBranch<X> extends AbstractRNode<X> {
         return Iterators.concat(Iterators.transform(iterateLocal(), RNode::iterateValues));
     }
 
-    @Override
-    public Iterator<RNode<X>> iterateLocal() {
-        return ArrayIterator.iterateN(data, size);
-    }
 
-    @Override
-    public Stream<RNode<X>> streamLocal() {
-        return streamNodes();
-    }
 
     @Override
     public void collectStats(Stats stats, int depth) {

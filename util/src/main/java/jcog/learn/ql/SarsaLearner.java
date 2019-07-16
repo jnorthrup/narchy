@@ -25,6 +25,7 @@ import java.util.ArrayList;
  *   SARSA(lambda).
  *
  * @author Marc G. Bellemare
+ * UNTESTED
  */
 public class SarsaLearner {
     /** The number of actions considered by the learner */

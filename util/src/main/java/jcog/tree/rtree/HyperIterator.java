@@ -94,12 +94,12 @@ public class HyperIterator<X>  {
             if (!(z instanceof RNode))
                 break;
 
-            RNode nz = (RNode) z;
+            AbstractRNode<X,?> nz = (AbstractRNode<X,?>) z;
             int s = nz.size();
             for (int i = 0; i < s; i++) {
-                Object x = nz.get(i);
+                Object x = nz.data[i];
 
-                //inline 1-arity branches for optimization
+                //"tail-leaf" optimization: inline 1-arity branches for optimization
                 while (x instanceof RLeaf && (((RLeaf)x).size == 1)) {
                     x = ((RLeaf) x).data[0];
                 }

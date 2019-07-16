@@ -3,8 +3,11 @@ package jcog.learn.ql.dqn3;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.decide.DecideEpsilonGreedy;
+import jcog.decide.Deciding;
 import jcog.learn.Agent;
 import jcog.random.XoRoShiRo128PlusRandom;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -12,18 +15,17 @@ import java.util.Random;
 
 /** untested */
 public class DQN3 extends Agent {
-    private final Random rand = new XoRoShiRo128PlusRandom();
+
 
 
     private final double gamma;
-    private final int experienceAddPeriod;
+    private final float experienceAddProb;
     private final int experienceSize;
     private final int experienceLearnedPerIteration;
     private final double tdErrorClamp;
     private final int numHiddenUnits;
-//    private final int saveInterval;
+
     private final double alpha;
-    private final double epsilon;
     public final Mat W1;
     public final Mat B1;
     public final Mat W2;
@@ -37,8 +39,11 @@ public class DQN3 extends Agent {
 //    private int lastAction;
     private int currentAction;
     public double[] input;
-    private Graph lastG;
+
     public double lastErr;
+
+    final Random rng = new XoRoShiRo128PlusRandom();
+    final Deciding actionDecider = new DecideEpsilonGreedy(0.1f, rng);
 
     public DQN3(final int inputs, final int numActions) {
         this(inputs, numActions, Map.of( /* empty */));
@@ -48,12 +53,11 @@ public class DQN3 extends Agent {
         super(inputs, numActions);
 
         this.gamma = config.getOrDefault(Option.GAMMA, 0.75);
-        this.epsilon = config.getOrDefault(Option.EPSILON, 0.1);
         this.alpha = config.getOrDefault(Option.ALPHA, 0.01);
 
         this.numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, 100.0));
 
-        this.experienceAddPeriod = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
+        this.experienceAddProb = 1f/(int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
         this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 1024.0));
         this.experienceLearnedPerIteration = (int) Math.round(config.getOrDefault(Option.LEARNING_STEPS_PER_ITERATION, 10.0));
         this.tdErrorClamp = config.getOrDefault(Option.TD_ERROR_CLAMP, 1.0);
@@ -63,10 +67,10 @@ public class DQN3 extends Agent {
                 //0.5f;
                 //0.01f;
 
-        this.W1 = DQN3.matRandom(rand, this.numHiddenUnits, this.inputs, rngRange);
-        this.B1 = DQN3.matRandom(rand, this.numHiddenUnits, 1, rngRange);
-        this.W2 = DQN3.matRandom(rand, this.actions, this.numHiddenUnits, rngRange);
-        this.B2 = DQN3.matRandom(rand, this.actions, 1, rngRange);
+        this.W1 = DQN3.matRandom(rng, this.numHiddenUnits, this.inputs, rngRange);
+        this.B1 = DQN3.matRandom(rng, this.numHiddenUnits, 1, rngRange);
+        this.W2 = DQN3.matRandom(rng, this.actions, this.numHiddenUnits, rngRange);
+        this.B2 = DQN3.matRandom(rng, this.actions, 1, rngRange);
 
         this.experience = new FasterList(experienceSize);
         this.experienceIndex = 0;
@@ -89,6 +93,8 @@ public class DQN3 extends Agent {
 //            actionFeedback[i] = (actionFeedback[i]-0.5f)*2;
 
         double err = learn(actionFeedback, reward);
+
+
         lastErr = err;
         //System.out.println(this + " err=" + err);
         return act(Util.toDouble(input));
@@ -100,17 +106,18 @@ public class DQN3 extends Agent {
         return mat;
     }
 
-    private Mat calcQ(final Mat s, final boolean needsBackprop) {
+    private Mat calcQ(final Mat s) {
+        return calcQ(s, null);
+    }
 
-        Graph g = new Graph(needsBackprop);
+    private Mat calcQ(final Mat s, @Nullable MatrixTransform g) {
+
+        if(g==null) g = new MatrixTransform(false);
 
         Mat m = g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
         //Mat m = g.add(g.tanh(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1)))), B2);
         //Mat m = g.add(g.tanh(g.mul(W2, g.add(g.mul(W1, s), B1))), B2);
 
-
-        if (needsBackprop)
-            this.lastG = g;
 
         return m;
     }
@@ -129,10 +136,8 @@ public class DQN3 extends Agent {
     }
 
     protected int decide(Mat state) {
-        //this is greedy epsilon action selector TODO abstract
-        return rand.nextFloat() < this.epsilon ?
-                rand.nextInt(this.actions) :
-                Util.argmax(this.calcQ(state, false).w);
+        double[] qq = this.calcQ(state).w;
+        return actionDecider.applyAsInt(qq);
     }
 
     public double learn(float[] actionFeedback, final double reward) {
@@ -143,8 +148,23 @@ public class DQN3 extends Agent {
 
         Experience x = new Experience(this.lastState, actionFeedback.clone(), this.lastReward, this.currentState);
         double err = this.learn(x);
+        this.lastReward = reward;
 
-        if (this.t++ % this.experienceAddPeriod == 0) {
+        rememberPlayBack(x);
+
+        learnPlayBack(x);
+
+        return err;
+    }
+
+    void learnPlayBack(Experience x) {
+        int e = Math.min(experience.size(), this.experienceLearnedPerIteration);
+        for (int i = 0; i < e; i++)
+            learn(this.experience.get(rng));
+    }
+
+    void rememberPlayBack(Experience x) {
+        if (rng.nextFloat() < this.experienceAddProb) {
 
             if (this.experience.size() > this.experienceIndex)
                 this.experience.set(this.experienceIndex, x);
@@ -154,19 +174,6 @@ public class DQN3 extends Agent {
             if (++this.experienceIndex > this.experienceSize)
                 this.experienceIndex = 0;
         }
-
-
-//        if (this.t % this.saveInterval == 0)
-//            this.saveModel();
-
-        int bound = Math.min(experience.size(), this.experienceLearnedPerIteration);
-        for (int i = 0; i < bound; i++) {
-            learn(this.experience.get(rand));
-        }
-
-        this.lastReward = reward;
-
-        return err;
     }
 
     private boolean isFirstRun() {
@@ -176,16 +183,18 @@ public class DQN3 extends Agent {
     /** returns total error */
     private double learn(final Experience exp) {
 
-        final Mat next = this.calcQ(exp.currentState, false);
+        final Mat next = this.calcQ(exp.currentState);
 
 
         //final double qMax = exp.lastReward + this.gamma * next.w[Util.argmax(next.w)];
 
-        final Mat pred = this.calcQ(exp.lastState, true);
+        MatrixTransform g = new MatrixTransform(true);
+        final Mat pred = this.calcQ(exp.lastState, g);
 
-        float actionNorm = Util.sum(exp.lastAction);
-        if (actionNorm < Float.MIN_NORMAL)
-            actionNorm = 1;
+        float actionNorm = 1; //assume already normalized
+//        float actionNorm = Util.sum(exp.lastAction);
+//        if (actionNorm < Float.MIN_NORMAL)
+//            actionNorm = 1;
 
         double errTotal = 0;
         for (int i = 0; i < exp.lastAction.length; i++) {
@@ -199,7 +208,7 @@ public class DQN3 extends Agent {
             //errTotal += Math.abs(tdError);
         }
 
-        this.lastG.backward();
+        g.backward();
 
         this.W1.update(this.alpha);
         this.W2.update(this.alpha);

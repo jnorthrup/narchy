@@ -48,6 +48,7 @@ import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
@@ -127,7 +128,9 @@ abstract public class GameX extends Game {
 
             n.parts(VectorSensor.class).map((VectorSensor v) -> {
                 if (v instanceof Bitmap2DSensor) {
-                    return new VectorSensorView(v, ((Bitmap2DSensor)v).width, ((Bitmap2DSensor)v).height, n).withControls();
+                    int w = ((Bitmap2DSensor) v).width;
+                    int h = ((Bitmap2DSensor) v).height;
+                    return new AspectAlign(new VectorSensorView(v, w, h, n).withControls(), ((float)h)/w );
                 } else {
                     return SupplierPort.button(v.toString(), () -> new VectorSensorView(v, n).withControls());
                 }

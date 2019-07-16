@@ -16,7 +16,7 @@ public final class Camera extends Ray3 {
 
     
     public Ray3 ray(double x, double y, double aspectRatio) {
-        vv3 xAxis = direction.cross(vv3.Z_AXIS).normalize();
+        vv3 xAxis = direction.cross(vv3.Z_AXIS).normalizeThis();
         vv3 yAxis = xAxis.cross(direction);
 
         double widthNear = size;
@@ -40,7 +40,7 @@ public final class Camera extends Ray3 {
                 add(xAxis.scale(x * widthFar)).
                 add(yAxis.scale(y * heightFar));
 
-        return new Ray3(pointNear, pointFar.minus(pointNear).normalize());
+        return new Ray3(pointNear, pointFar.minus(pointNear).normalizeThis());
     }
 
     public void move(vv3 keyboardVector) {

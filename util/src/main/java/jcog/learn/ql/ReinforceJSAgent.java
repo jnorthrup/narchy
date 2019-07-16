@@ -12,7 +12,7 @@ import java.io.InputStreamReader;
 /**
  * Created by me on 5/27/16.
  */
-public abstract class ReinforceJSAgent extends Agent {
+@Deprecated public abstract class ReinforceJSAgent extends Agent {
     private Invocable js;
 
     ReinforceJSAgent(int inputs, int actions) {

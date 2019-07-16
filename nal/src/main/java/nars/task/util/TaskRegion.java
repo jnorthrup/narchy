@@ -22,7 +22,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     /**
      * proportional value of splitting a node by time
      */
-    float TIME_COST = 2f;
+    float TIME_COST = 1f;
 
     /**
      * proportional value of splitting a node by freq
