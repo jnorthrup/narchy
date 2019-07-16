@@ -16,7 +16,7 @@ public class EmptyBeliefTable implements BeliefTable {
     }
 
     @Override
-    public void match(Answer t) {
+    public void match(Answer a) {
         //nothing
     }
 

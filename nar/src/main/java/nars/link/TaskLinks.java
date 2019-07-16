@@ -80,8 +80,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         int c = linksMax.intValue();
 
         links = new nars.link.TaskLinkBag(
-                new TaskLinkBag.TaskLinkArrayBag(c, merge)
-                //new TaskLinkHijackBag(c, 5)
+                c, merge
+
         );
 
         links.setCapacity(c);
@@ -343,7 +343,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * caches ranked reverse atom termlinks in concept meta table
      */
-    public static class AtomCachingTangentTaskLinks extends TaskLinks {
+    public static class ConceptCachingTangentTaskLinks extends TaskLinks {
 
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
@@ -353,7 +353,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         }
         @Override
         protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
-
 
             float probability =
                     //0.5f;
@@ -375,12 +374,10 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     return sampleCached(T, link, task, d);
             }
 
-            //default:
             return DirectTangentTaskLinks.the.sampleReverseMatch(target, link, d);
         }
 
         @Nullable private Term sampleCached(Concept T, TaskLink link, Task task, Derivation d) {
-
             //sample active tasklinks for a tangent match to the atom
             //Predicate<TaskLink> filter = x -> !link.equals(x);
             Predicate<TaskLink> filter = ((Predicate<TaskLink>) link::equals).negate();
@@ -388,18 +385,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             Term z = atomTangent(T, task.punc(), filter, d.time(),
                     Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), d.random);
             return z;
-
-//                        if (u!=null && u.equals(s)) {
-////                            u = links.atomTangent(ct, ((TaskLink x)->!link.equals(x)), d.time, 1, d.random);//TEMPORARY
-//                            throw new WTF();
-//                        }
-
-//                        } else {
-//
-//
-//                            //link(t, s, punc, p*subRate); //reverse echo
-//                        }
-
         }
 
         /**
@@ -537,25 +522,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         }
     }
 
-    private static class TaskLinkHijackBag extends PriHijackBag<TaskLink, TaskLink> {
-
-        public TaskLinkHijackBag(int initialCap, int reprobes) {
-            super(initialCap, reprobes);
-        }
-
-        @Override
-        public TaskLink key(TaskLink value) {
-            return value;
-        }
-
-        @Override
-        protected TaskLink merge(TaskLink existing, TaskLink incoming, NumberX overflowing) {
-            float o = existing.merge(incoming, merge(), PriReturn.Overflow);
-            if (overflowing != null)
-                overflowing.add(o);
-            return existing;
-        }
-    }
 
 
 }

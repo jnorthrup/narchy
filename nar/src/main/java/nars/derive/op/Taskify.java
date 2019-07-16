@@ -15,6 +15,7 @@ import nars.task.DerivedTask;
 import nars.term.Compound;
 import nars.term.ProxyTerm;
 import nars.term.Term;
+import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.VariableTransform;
@@ -83,6 +84,9 @@ public class Taskify extends ProxyTerm {
                 );
                 y = z;
             }
+
+            if (!d.concSingle)
+                y = Image.imageNormalize(y);
         }
         return y;
     }

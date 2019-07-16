@@ -10,10 +10,10 @@
               B, (--X ==> C), --is(C,"#"), --is(B,"==>")            |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:DeductionWeakNN, Time:TaskEvent)
 
      //if novel, allow recursive
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$",novel), (Belief:DeductionRecursivePP, Goal:DeductionWeakRecursivePP, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$",novel), (Belief:DeductionRecursiveNP, Goal:DeductionWeakRecursiveNP, Time:TaskEvent)
-          B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")  |- --unisubst(C,X,B,"$",novel), (Belief:DeductionRecursivePN, Goal:DeductionWeakRecursivePN, Time:TaskEvent)
-            B, (--X ==> C), --is(C,"#"), --is(B,"==>")              |- --unisubst(C,X,B,"$",novel), (Belief:DeductionRecursiveNN, Goal:DeductionWeakRecursiveNN, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$",novel), (Belief:DeductionRecursivePP, Goal:DeductionWeakPP, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$",novel), (Belief:DeductionRecursiveNP, Goal:DeductionWeakNP, Time:TaskEvent)
+          B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")  |- --unisubst(C,X,B,"$",novel), (Belief:DeductionRecursivePN, Goal:DeductionWeakPN, Time:TaskEvent)
+            B, (--X ==> C), --is(C,"#"), --is(B,"==>")              |- --unisubst(C,X,B,"$",novel), (Belief:DeductionRecursiveNN, Goal:DeductionWeakNN, Time:TaskEvent)
 
 //     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |-   unisubst(C,X,B,"$"), (Belief:DeductionRecursivePP, Goal:DeductionWeakPP, Time:TaskEvent)
 //     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- --unisubst(C,X,B,"$"), (Belief:DeductionRecursivePN, Goal:DeductionWeakPN, Time:TaskEvent)

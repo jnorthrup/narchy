@@ -392,12 +392,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private boolean ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
 //        boolean beliefOrGoal = r.input.isBelief();
         int e = 0, cap;
-        while (treeRW.size() > (cap = capacity)) {
+        while (treeRW.size() > (cap = capacity())) {
+            if (cap == 0) {
+                //became deleted
+                treeRW.clear();
+                return true;
+            }
             if (!compress(treeRW, r))
                 return false;
 
             e++;
-            assert (e < cap);
+            assert (e < cap): this + " compressed " + e + " times (cap=" + cap + ")";
         }
 
         return true;

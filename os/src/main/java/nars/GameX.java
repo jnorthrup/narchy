@@ -25,7 +25,6 @@ import nars.control.NARPart;
 import nars.control.Why;
 import nars.derive.BasicDeriver;
 import nars.derive.Derivers;
-import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
@@ -517,18 +516,12 @@ abstract public class GameX extends Game {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        BasicDeriver bd1 = new BasicDeriver(Derivers.nal(n, 1, 1)
-        );
-        BasicDeriver bd2_4 = new BasicDeriver(Derivers.nal(n, 2, 4)
-        );
-        PremiseRuleSet rules = Derivers.nal(n, 6, 8
-//                ,"motivation.nal"
-//                //"nal6.to.nal3.nal"
-//                //"induction.goal.nal"
-//                //"nal3.nal",
-        );
-//        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8,
-//                "motivation.nal"));
+        BasicDeriver bd1 = new BasicDeriver(Derivers.nal(n, 1, 1));
+        BasicDeriver bd2_4 = new BasicDeriver(Derivers.nal(n, 2, 4));
+        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8));
+
+        BasicDeriver bd3_act = new BasicDeriver(Derivers.nal(n, 3, 3));
+        bd3_act.timing = new ActionTiming();
 
         BasicDeriver bd6_act = new BasicDeriver(Derivers.nal(n, 6,8,"motivation.nal"));
         bd6_act.timing = new ActionTiming();

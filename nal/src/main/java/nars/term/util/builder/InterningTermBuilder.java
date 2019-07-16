@@ -289,35 +289,31 @@ public class InterningTermBuilder extends HeapTermBuilder {
             dt = 0; //HACK temporary normalize
 
         if (!(subject instanceof Bool) && !(predicate instanceof Bool) &&
-                (subject.volume() + predicate.volume() < volInternedMax) &&
                 internableSub(subject) && internableSub(predicate) &&
-                ((op==IMPL) || !subject.equals(predicate))
-        ) {
+                (subject.volume() + predicate.volume() < volInternedMax) &&
+                ((op==IMPL && dt!=0) || !subject.equals(predicate))) {
 
             boolean negate = false;
 
             //quick preparations to reduce # of unique entries
 
-            if (!((op == INH || op == SIM) && ((dt!=0) || subject.equals(predicate)))) {
-
-                if (op == IMPL) {
-                    negate = (predicate instanceof Neg);
-                    if (negate)
-                        predicate = predicate.unneg();
-                }
-
-
-                if (op == SIM) {
-                    //commutive order: pre-sort by swapping to avoid saving redundant mappings
-                    if (subject.compareTo(predicate) > 0) {
-                        Term x = predicate;
-                        predicate = subject;
-                        subject = x;
-                    }
-                }
-
-                return this.terms[op.id].apply(new Intermed.InternedCompoundByComponentsArray(op, dt, subject, predicate)).negIf(negate);
+            if (op == IMPL) {
+                negate = (predicate instanceof Neg);
+                if (negate)
+                    predicate = predicate.unneg();
             }
+
+
+            if (op == SIM) {
+                //commutive order: pre-sort by swapping to avoid saving redundant mappings
+                if (subject.compareTo(predicate) > 0) {
+                    Term x = predicate;
+                    predicate = subject;
+                    subject = x;
+                }
+            }
+
+            return this.terms[op.id].apply(new Intermed.InternedCompoundByComponentsArray(op, dt, subject, predicate)).negIf(negate);
 
             //return statements.apply(InternedCompound.get(op, dt, subject, predicate));
         }
@@ -356,7 +352,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         u = ConjBuilder.preSort(dt,u);
 
-        return u.length > 1 && internable(CONJ, dt, u) ?
+        return u.length > 1 && internable(u) ?
                 terms[CONJ.id].apply(
                         new Intermed.InternedCompoundByComponentsArray(CONJ, dt, u)) :
                 super.conj(true, dt, u);

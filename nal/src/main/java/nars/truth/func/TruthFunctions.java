@@ -422,8 +422,8 @@ public final class TruthFunctions {
         }
     }
 
-    public static float expectation(float frequency, float confidence) {
-        return (confidence * (frequency - 0.5f) + 0.5f);
+    public static double expectation(float frequency, double confidence) {
+        return (confidence * (frequency - 0.5) + 0.5);
     }
 
     public static double eternalize(double evi) {

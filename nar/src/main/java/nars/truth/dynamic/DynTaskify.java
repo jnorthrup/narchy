@@ -143,6 +143,8 @@ public class DynTaskify extends TaskList {
 
     @Nullable
     public Task eval(long start, long end) {
+        if (template == null)
+            throw new NullPointerException();
         return model.evalComponents(template, start, end, this::evalComponent) ? taskify() : null;
     }
 

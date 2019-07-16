@@ -104,8 +104,8 @@ public class BoolTest {
         assertEq(x, IMPL.the(True, x));
         assertEq(x.neg(), IMPL.the(False, x));
 
-        assertEq(Null, IMPL.the(x, True));
-        assertEq(Null, IMPL.the(x, False));
+        assertEq(x /*Null*/, IMPL.the(x, True));
+        assertEq(x.neg() /*Null*/, IMPL.the(x, False));
 
     }
 

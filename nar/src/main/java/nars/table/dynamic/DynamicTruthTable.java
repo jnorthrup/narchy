@@ -22,8 +22,8 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
     @Override
     public final void match(Answer a) {
-        if (a.term() == null && a.tasks.isEmpty())
-            a.template(term); //use default concept term
+        if (a.term() == null)
+            a.term(term); //use default concept term
 
         Task y = new DynTaskify(model, beliefOrGoal, a).eval(a.time.start, a.time.end);
         if (y!=null)

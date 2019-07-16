@@ -94,18 +94,18 @@ public class ImageBeliefTable extends DynamicTaskTable {
     }
 
     @Override
-    public void match(Answer t) {
+    public void match(Answer a) {
 //        if (t.term()==null)
 //            throw new WTF();
 
         //forward to the host concept's appropriate table
-        Concept h = t.nar.conceptualizeDynamic(normal);
+        Concept h = a.nar.conceptualizeDynamic(normal);
         if (h == null)
             return;
         if (!(h instanceof TaskConcept))
             return; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
 
-        (beliefOrGoal ? h.beliefs() : h.goals()).match(t);
+        (beliefOrGoal ? h.beliefs() : h.goals()).match(a);
     }
 
 

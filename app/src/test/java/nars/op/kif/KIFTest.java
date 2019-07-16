@@ -54,7 +54,7 @@ class KIFTest {
 
 
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
-        TaskLinks wl = new TaskLinks.AtomCachingTangentTaskLinks() {
+        TaskLinks wl = new TaskLinks.ConceptCachingTangentTaskLinks() {
             @Override
             protected Term reverse(Term target, TaskLink link, Task task, Derivation d) {
                 if (target instanceof Compound && target.hasAny(ATOM)) {

@@ -86,10 +86,10 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 //    }
 
     @Override
-    public void match(Answer t) {
+    public void match(Answer a) {
         //long r = lock.readLock();
         //try {
-        whileEach(t::test);
+        whileEach(a::test);
 //        } finally {
 //            lock.unlockRead(r);
 //        }

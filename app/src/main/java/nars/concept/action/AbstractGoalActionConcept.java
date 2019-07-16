@@ -208,7 +208,7 @@ public class AbstractGoalActionConcept extends GameAction {
                     TruthProjection p =
                             new LinearTruthProjection(a.time.start, a.time.end, dur);
                             //new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
-                    p.add(atl);
+                    p.addAll(atl);
 
                     //Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);
                     //if (next!=null) {

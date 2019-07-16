@@ -170,7 +170,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
         return new Answer(r, filter, capacity, nar)
                 .time(start, end)
-                .template(template)
+                .term(template)
                 .clear((int) Math.ceil(NAL.ANSWER_COMPLETENESS * capacity));
     }
 
@@ -188,7 +188,7 @@ public final class Answer implements Timed, Predicate<Task> {
             complexTaskStrength(strength, template);
     }
 
-    public Answer template(@Nullable Term template) {
+    public Answer term(@Nullable Term template) {
         if (template!=null && !template.op().taskable)
             throw new TaskException(template, "not Answerable");
 
@@ -382,7 +382,7 @@ public final class Answer implements Timed, Predicate<Task> {
         return tp!=null ? newTask(tp, beliefOrGoal) : null;
     }
 
-    public double eviMin() {
+    private double eviMin() {
         return ditherTruth ? nar.confMin.evi() : NAL.truth.EVI_MIN;
         //return nar.confMin.evi();
     }
@@ -396,7 +396,7 @@ public final class Answer implements Timed, Predicate<Task> {
         if (tp != null) {
             assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
-            return tp.truth(NAL.truth.EVI_MIN, false, true, nar);
+            return tp.truth(NAL.truth.EVI_MIN, false, false, nar);
         }
 
         return null;
@@ -458,7 +458,7 @@ public final class Answer implements Timed, Predicate<Task> {
         }
 
         TruthProjection tp = nar.projection(s, e, dur);
-        tp.add(tt);
+        tp.addAll(tt);
         return tp;
     }
 
@@ -502,10 +502,6 @@ public final class Answer implements Timed, Predicate<Task> {
         } else {
             return true;
         }
-    }
-
-    public boolean active() {
-        return ttl > 0;
     }
 
     @Override

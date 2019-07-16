@@ -45,7 +45,7 @@ public class MRUMapQuestionTable extends MRUMap<Task, Task> implements QuestionT
 
     }
     @Override
-    public void match(Answer m) {
+    public void match(Answer a) {
         //sample(m.nar.random(), size(), m::tryAccept);
         throw new TODO();
     }

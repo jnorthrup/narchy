@@ -1,13 +1,16 @@
 package nars.table;
 
 import jcog.data.list.FasterList;
+import jcog.util.ArrayUtil;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.Random;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -35,25 +38,95 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public void match(Answer a) {
-        int triesEach = a.ttl;
+//        int triesEach = a.ttl;
+        assert(a.ttl > 0);
 
-        BeliefTable[] z = this.items;
-        if (z == null) return; //?wtf
-        int thisSize = Math.min(size, z.length);
-        for (int i = 0; i < thisSize; i++) {
+//        for (int i = 0; i < thisSize; i++) {
+//            BeliefTable t = z[i];
+//
+//            //TODO better TTL distribution system
+//            a.ttl = triesEach; //restore for next
+//
+//            t.match(a);
+//        }
 
-            BeliefTable t = z[i];
-
-            //TODO better TTL distribution system
-            a.ttl = triesEach; //restore for next
-
-
-
+//        a.ttl = triesEach; //restore for next
+        ANDshuffled(a.random(), t->{
+//            a.ttl = triesEach; //restore for next
             t.match(a);
+            //return true;
+            return a.ttl > 0;
+        });
+    }
 
-//            if (!a.active())
-//                return;
+
+    /** visit subtables in shuffled order, while predicate returns true */
+    public boolean ANDshuffled(Random rng, Predicate<BeliefTable> e)  {
+        BeliefTable[] items = this.items;
+        if (items == null)
+            return true; //?wtf
+
+        int n = Math.min(size, items.length);
+        switch (n) {
+            case 0:
+                return true;
+            case 1:
+                return e.test(items[0]);
+            case 2: {
+                int i = rng.nextInt(2);
+                return e.test(items[i])  && e.test(items[1 - i]);
+            }
+            case 3: {
+                int i = rng.nextInt(6);
+                int x, y, z;
+                switch (i) {
+                    case 0:
+                        x = 0;
+                        y = 1;
+                        z = 2;
+                        break;
+                    case 1:
+                        x = 0;
+                        y = 2;
+                        z = 1;
+                        break;
+                    case 2:
+                        x = 1;
+                        y = 0;
+                        z = 2;
+                        break;
+                    case 3:
+                        x = 1;
+                        y = 2;
+                        z = 0;
+                        break;
+                    case 4:
+                        x = 2;
+                        y = 0;
+                        z = 1;
+                        break;
+                    case 5:
+                        x = 2;
+                        y = 1;
+                        z = 0;
+                        break;
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+                return e.test(items[x]) && e.test(items[y]) && e.test(items[z]);
+            }
+            default:
+                int[] order = new int[n];
+                for (int i = 0; i < n; i++)
+                    order[i] = i;
+                ArrayUtil.shuffle(order, rng);
+                for (int i = 0; i < n; i++) {
+                    if (!e.test(items[order[i]]))
+                        return false;
+                }
+                return true;
         }
+
     }
 
     /** stops after the first table accepts it */
@@ -171,79 +244,4 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
 
 
-//    @Override
-//    public void sample(Answer a) {
-//        int n = tables.size();
-//        switch (n) {
-//            case 0:
-//                break;
-//            case 1:
-//                tables.get(0).sample(a);
-//                break;
-//            case 2: {
-//                int i = a.random().nextInt(2);
-//                tables.get(i).sample(a); //match(a);
-//                if (a.active())
-//                    tables.get(1 - i).sample(a);
-//                break;
-//            }
-//            case 3: {
-//                int i = a.random().nextInt(6);
-//                int x, y, z;
-//                switch (i) {
-//                    case 0:
-//                        x = 0;
-//                        y = 1;
-//                        z = 2;
-//                        break;
-//                    case 1:
-//                        x = 0;
-//                        y = 2;
-//                        z = 1;
-//                        break;
-//                    case 2:
-//                        x = 1;
-//                        y = 0;
-//                        z = 2;
-//                        break;
-//                    case 3:
-//                        x = 1;
-//                        y = 2;
-//                        z = 0;
-//                        break;
-//                    case 4:
-//                        x = 2;
-//                        y = 0;
-//                        z = 1;
-//                        break;
-//                    case 5:
-//                        x = 2;
-//                        y = 1;
-//                        z = 0;
-//                        break;
-//                    default:
-//                        throw new UnsupportedOperationException();
-//                }
-//                tables.get(x).sample(a);
-//                if (a.active()) {
-//                    tables.get(y).sample(a);
-//                    if (a.active()) {
-//                        tables.get(z).sample(a);
-//                    }
-//                }
-//                break;
-//            }
-//            default:
-//                int[] order = new int[n];
-//                for (int i = 0; i < n; i++)
-//                    order[i] = i;
-//                ArrayUtils.shuffle(order, a.random());
-//                for (int i = 0; i < n; i++) {
-//                    tables.get(order[i]).sample(a);
-//                    if (!a.active())
-//                        break;
-//                }
-//                break;
-//        }
-//
-//    }
+

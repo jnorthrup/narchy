@@ -141,11 +141,11 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         /* goals */
         layers.add(new Layer() {
 
-            public final MutableBoolean normalize = new MutableBoolean(false);
-            public final MutableBoolean freqOrExp = new MutableBoolean(true);
+            public final MutableBoolean normalize = new MutableBoolean(true);
+            public final MutableBoolean freqOrExp = new MutableBoolean(false);
 
             {
-                opacity.set(0.25f);
+                opacity.set(0.5f);
             }
 
             @Override
@@ -167,8 +167,21 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                     return g != null ? (freqOrExp.booleanValue() ? g.freq() : g.expectation()) : 0.5f;
                 });
 
-                if (normalize.booleanValue())
-                    Util.normalize(value); //TODO balanced bipolar normalize around 0.5
+                if (normalize.booleanValue()) {
+                    //balance bipolar normalize around 0.5
+                    float min = Util.min(value);
+                    float max = Util.max(value);
+                    if (max-min > Float.MIN_NORMAL) {
+                        float max5 = max - 0.5f;
+                        float min5 = 0.5f - min;
+                        if (max5 > min5) {
+                            min = 0.5f - max5;
+                        } else if (min5 > max5) {
+                            max = 0.5f + min5;
+                        }
+                        Util.normalize(value, min, max);
+                    }
+                }
             }
         });
     }

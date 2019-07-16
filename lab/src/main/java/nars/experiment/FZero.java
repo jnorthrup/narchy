@@ -2,6 +2,7 @@ package nars.experiment;
 
 import jcog.Util;
 import jcog.learn.pid.MiniPID;
+import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
@@ -229,16 +230,16 @@ public class FZero extends GameX {
 //            return Util.equals(damage, 0, 0.01f) ? 1 : 0;
 //        });
         Reward race = rewardNormalized("race", -1, +1, (() -> {
-
-//            float bias =
-//                    //0.25f;
-//                    //0.01f;
-//                    0f;
-//            float R = progress - bias;
-
             return Util.clamp(progress * 0.5f, -1, +1);
         }));
         race.resolution().set(0.1f);
+
+        FloatAveragedWindow f = new FloatAveragedWindow(64, 0.5f, 0).mode(FloatAveragedWindow.Mode.Mean);
+        Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> {
+            return f.valueOf(Util.clamp(progress * 0.5f, -1, +1));
+        }));
+        race2.resolution().set(0.1f);
+
 //        rewardNormalized("efficient", 0, +1, (() -> {
 //
 ////            float bias =

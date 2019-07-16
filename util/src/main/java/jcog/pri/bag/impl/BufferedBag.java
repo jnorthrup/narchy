@@ -82,9 +82,21 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
     @Override
     public final Y put(Y x) {
         float pri = ((Prioritized) x).pri();
+
+//        boolean tryBypass = true;
+//        if (tryBypass) {
+//            Y y = bag.get(x);
+//            if (y != null && !y.isDeleted()) {
+//                float delta = pre.merge(y, (B)x, pri, merge());
+//                if (delta > Float.MIN_NORMAL)
+//                    pressurize(delta);
+//                return y;
+//            }
+//        }
+
         return (Y) pre.put((B) x, pri,
                 merge(),
-                bag::pressurize /* TODO maybe collect pressure locally and apply as sum in next commit */
+                this::pressurize /* TODO maybe collect pressure locally and apply as sum in next commit */
         );
     }
 

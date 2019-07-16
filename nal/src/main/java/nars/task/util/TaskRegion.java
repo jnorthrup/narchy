@@ -101,9 +101,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     @Override
     int hashCode();
 
-    default float expectation() {
-        return TruthFunctions.expectation(freqMean(), confMin());
-    }
+//    default float expectation() {
+//        return (float) TruthFunctions.expectation(freqMean(), confMin());
+//    }
 
     default short[] why() {
         return ArrayUtil.EMPTY_SHORT_ARRAY;

@@ -42,7 +42,7 @@ public class TaskLinkWhat extends What {
 
 
     public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
-        this(id, new TaskLinks.AtomCachingTangentTaskLinks(), in);
+        this(id, new TaskLinks.ConceptCachingTangentTaskLinks(), in);
         //new TaskLinks.AtomCachingTangentTaskLinks();
         //TaskLinks.DirectTangentTaskLinks.the;
         //new TaskLinks.NullTangentTaskLinks();

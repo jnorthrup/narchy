@@ -24,7 +24,7 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public Truth truth(double eviMin, boolean dither, boolean shrink, NAL nar) {
+    public Truth truth(double eviMin, boolean dither, boolean shrink, NAL n) {
 
         if (size()==0)
             return null;
@@ -37,16 +37,16 @@ public class LinearTruthProjection extends TruthProjection {
 
 
         double eviFactor = 1f;
-        if (nar != null) {
+//        if (n != null) {
 
-            float c = intermpolateAndCull(nar); assertFinite(c);
+            float c = intermpolateAndCull(n); assertFinite(c);
             eviFactor *= c;
             if (eviFactor < ScalarValue.EPSILON)
                 return null;
 
             if (active() == 0)
                 return null;
-        }
+//        }
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
 //        double wFreqPos = 0, wFreqNeg = 0;
@@ -88,7 +88,7 @@ public class LinearTruthProjection extends TruthProjection {
             return null;
 
         double F = wFreqSum / eSum;
-        return dither ? Truth.theDithered((float)F, eAvg, nar) : PreciseTruth.byEvi(F, eAvg);
+        return dither ? Truth.theDithered((float)F, eAvg, n) : PreciseTruth.byEvi(F, eAvg);
     }
 
 

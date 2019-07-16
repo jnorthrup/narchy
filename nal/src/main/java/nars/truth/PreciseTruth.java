@@ -1,6 +1,7 @@
 package nars.truth;
 
 import nars.NAL;
+import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.func.TruthFunctions.*;
@@ -95,6 +96,10 @@ public final class PreciseTruth extends DiscreteTruth {
     @Override
     public double confDouble() {
         return w2cSafe(e);
+    }
+
+    public final float expectation() {
+        return (float) TruthFunctions.expectation(freq(), confDouble());
     }
 
     /** create a DiscreteTruth instance, shedding the freq,evi floats stored here */

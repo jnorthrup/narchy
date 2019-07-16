@@ -76,7 +76,12 @@ public interface TaskTable {
         return taskStream().toArray(Task[]::new);
     }
 
-    void match(Answer m);
+    void match(Answer a);
+
+    default boolean matchAndContinue(Answer a) {
+        match(a);
+        return a.ttl > 0;
+    }
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);

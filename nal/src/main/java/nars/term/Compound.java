@@ -504,79 +504,75 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean eventsAND(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
 
-        Op o = op();
-        if (o != CONJ)
-            return each.accept(offset, this);
 
-//        boolean decomposeConjParallel = false;
-
-        int dt = dt();
         boolean decompose;
-        switch (dt) {
+        int dt;
+        Op o = op();
+        if (o != CONJ) {
+            decompose = false;
+            dt = DTERNAL;
+        } else {
 
-            case DTERNAL:
-                if (ConjSeq.isFactoredSeq(this)) {
-                    Subterms ss = subterms();
+            dt = dt();
+            switch (dt) {
 
-                    //distribute the factored inner sequence
-                    MetalBitSet eteComponents = ConjSeq.seqEternalComponents(ss);
-                    Term seq = ConjSeq.seqTemporal(ss, eteComponents);
-                    boolean unfactor;
-                    int sdt = seq.dt();
-                    switch (sdt) {
-//                        case 0:
-//                            unfactor = decomposeConjParallel;
-//                            break;
-                        case XTERNAL:
-                            unfactor = decomposeXternal;
-                            break;
-                        default://non-special sequence
-                            unfactor = true;
-                            break;
+                case DTERNAL:
+                    if (ConjSeq.isFactoredSeq(this)) {
+                        Subterms ss = subterms();
+
+                        //distribute the factored inner sequence
+                        MetalBitSet eteComponents = ConjSeq.seqEternalComponents(ss);
+                        Term seq = ConjSeq.seqTemporal(ss, eteComponents);
+
+                        int sdt = seq.dt();
+                        //non-special sequence
+                        boolean unfactor = sdt != XTERNAL || decomposeXternal;
+                        if (unfactor) {
+                            Term factor = ConjSeq.seqEternal(ss, eteComponents);
+
+                            return seq.eventsAND(
+                                    (!decomposeConjDTernal) ?
+                                            (when, what) -> {
+                                                //combine the component with the eternal factor
+                                                Term distributed = CONJ.the(what, factor);
+
+                                                if (distributed.op() != CONJ)
+                                                    throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
+                                                    );
+
+                                                return each.accept(when, distributed);
+                                            }
+                                            :
+                                            (when, what) ->
+                                                    //provide the component and the eternal separately, at the appropriate time
+                                                    each.accept(when, what) && each.accept(when, factor)
+
+                                    , offset, decomposeConjDTernal, decomposeXternal);
+
+                        }
+
                     }
-                    if (unfactor) {
-                        Term factor = ConjSeq.seqEternal(ss, eteComponents);
 
-                        return seq.eventsAND(
-                            (!decomposeConjDTernal) ?
-                                (when, what) -> {
-                                 //combine the component with the eternal factor
-                                    Term distributed = CONJ.the(what, factor);
+                    if (decompose = decomposeConjDTernal)
+                        dt = 0;
 
-                                    if (distributed.op() != CONJ)
-                                        throw new TermTransformException(Compound.this, distributed, "invalid conjunction factorization"
-                                        );
-
-                                    return each.accept(when, distributed);
-                                }
-                                :
-                                (when,what) ->
-                                    //provide the component and the eternal separately, at the appropriate time
-                                    each.accept(when, what) && each.accept(when, factor)
-
-                        , offset, decomposeConjDTernal, decomposeXternal);
-
-                    }
-
-                }
-
-                if (decompose = decomposeConjDTernal)
-                    dt = 0;
-
-                break;
+                    break;
 //            case 0:
 //                decompose = decomposeConjParallel;
 //                break;
-            case XTERNAL:
-                if (decompose = decomposeXternal)
-                    dt = 0;
-                break;
-            default:
-                decompose = true;
-                break;
+                case XTERNAL:
+                    if (decompose = decomposeXternal)
+                        dt = 0;
+                    break;
+                default:
+                    decompose = true;
+                    break;
+            }
         }
 
-        if (decompose) {
+        if (!decompose) {
+            return each.accept(offset, this);
+        } else {
 
             Subterms ee = subterms();
 
@@ -606,8 +602,6 @@ public interface Compound extends Term, IPair, Subterms {
 
 
             return true;
-        } else {
-            return each.accept(offset, this);
         }
     }
 

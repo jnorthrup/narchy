@@ -44,24 +44,24 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
     @Override
-    public final void match(Answer t) {
-        long s = t.time.start, e;
+    public final void match(Answer a) {
+        long s = a.time.start, e;
         Predicate<Task> each;
-        float dur = Math.max(1, t.dur);
-        if (t.time.start == ETERNAL) {
+        float dur = Math.max(1, a.dur);
+        if (a.time.start == ETERNAL) {
             //choose now as the default focus time
-            long now = t.nar.time();
+            long now = a.nar.time();
             s = Math.round(now - dur/2);
             e = Math.round(now + dur/2);
         } else {
-            e = t.time.end;
+            e = a.time.end;
         }
 
         int seriesTTL = (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s)));
-        if (seriesTTL < t.ttl)
-            each = Util.limit(t::test, seriesTTL);
+        if (seriesTTL < a.ttl)
+            each = Util.limit(a::test, seriesTTL);
         else
-            each = t::test;
+            each = a::test;
 
         series.whileEach(s, e, false, each);
     }

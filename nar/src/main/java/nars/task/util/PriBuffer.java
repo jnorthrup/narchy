@@ -254,7 +254,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                          * merge in the post-buffer
                          */
                         @Override
-                        protected float merge(Prioritizable existing, Task incoming, float pri, PriMerge merge) {
+                        public float merge(Prioritizable existing, Task incoming, float pri, PriMerge merge) {
                             return Task.merge((Task) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
                         }
                     }

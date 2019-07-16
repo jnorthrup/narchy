@@ -445,7 +445,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return this;
     }
 
-    public final TruthProjection add(TaskList tasks) {
+    public final TruthProjection addAll(TaskList tasks) {
         ensureCapacity(tasks.size());
         return add((Iterable) tasks);
     }
@@ -703,7 +703,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      */
     @Deprecated
     public static class TaskComponent implements Tasked {
-        final Task task;
+        public final Task task;
 
         /**
          * NaN if not yet computed

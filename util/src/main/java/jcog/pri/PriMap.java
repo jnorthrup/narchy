@@ -113,7 +113,7 @@ public class PriMap<Y> {
     }
 
     /** return the delta of the priority */
-    protected float merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge) {
+    public float merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge) {
         return merge.merge(existing, pri, PriReturn.Delta);
     }
 
