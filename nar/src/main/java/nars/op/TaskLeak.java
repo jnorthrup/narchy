@@ -7,8 +7,8 @@ import jcog.pri.PriMap;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
-import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
+import jcog.pri.bag.impl.SimpleBufferedBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
@@ -60,7 +60,7 @@ public abstract class TaskLeak extends How {
     protected TaskLeak(int capacity, PriMerge merge, @Nullable NAR n, byte... puncs) {
         this(
                 new BufferSource(
-                        new BufferedBag.SimpleBufferedBag<>(
+                        new SimpleBufferedBag<>(
                                 new PriReferenceArrayBag<>(merge, capacity, PriMap.newMap(false)),
                                 new PriMap<>(merge))
                 )

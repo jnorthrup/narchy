@@ -25,7 +25,6 @@ import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.WTF;
-import jcog.data.iterator.ArrayIterator;
 import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
@@ -225,11 +224,11 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                             Arrays.sort(data, NullCompactingComparator);
                     }
 
-                    //EXPERIMENTAL
-                    if (model.mergeCanStretch() && size > 1 && Util.and(l ->l instanceof RLeaf ,0, size, data))
-                        return reinsert(model, removed);
-
-
+//                    //EXPERIMENTAL
+//                    if (model.mergeCanStretch() &&
+//                            size > 1
+//                            && Util.and(l ->l instanceof RLeaf ,0, size, data))
+//                        return reinsert(model, removed);
                 }
 
                 switch (size) {

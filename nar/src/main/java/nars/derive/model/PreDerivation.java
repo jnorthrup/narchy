@@ -1,6 +1,7 @@
 package nars.derive.model;
 
 import jcog.Util;
+import jcog.data.ShortBuffer;
 import jcog.data.bit.MetalBitSet;
 import jcog.decide.MutableRoulette;
 import nars.Op;
@@ -9,7 +10,6 @@ import nars.derive.rule.PostDerivable;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.unify.Unify;
-import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -29,7 +29,7 @@ public abstract class PreDerivation extends Unify {
     /**
      * choices mapping the available post targets
      */
-    public final ShortArrayList canCollector = new ShortArrayList();
+    public final ShortBuffer canCollector = new ShortBuffer(256);
 
 
     static final int MAX_FANOUT = 64;
@@ -46,7 +46,7 @@ public abstract class PreDerivation extends Unify {
         return beliefTruth_at_Belief !=null || beliefTruth_at_Task !=null;
     }
 
-    public abstract short[] preDerive();
+    public abstract ShortBuffer preDerive();
 
     public static boolean run(Derivation d, final int deriveTTL) {
 

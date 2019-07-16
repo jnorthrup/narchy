@@ -32,13 +32,20 @@ public class ByteAnonMap {
     }
 
     public boolean isEmpty() {
-        return termToId.isEmpty() && idToTerm.isEmpty();
+        return idToTerm.isEmpty(); // && termToId.isEmpty();
     }
 
     public void clear() {
-        if (!termToId.isEmpty())
+        int s = termToId.size();
+        if (s > 0) {
             termToId.clear();
-        idToTerm.clear();
+            idToTerm.clear();
+        }
+        int compactThesh = 4;
+        if (s > compactThesh) {
+            termToId.compact();
+            idToTerm.clearCapacity(compactThesh);
+        }
     }
 
     /** put: returns in range 1..Byte.MAX_VALUE (does not issue 0) */

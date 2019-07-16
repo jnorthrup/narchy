@@ -216,7 +216,6 @@ public class BitmapMatrixView extends TexSurface {
      */
     public final boolean updateIfShowing() {
         return showing() && update();
-
     }
 
     private final AtomicBoolean busy = new AtomicBoolean();
@@ -234,7 +233,7 @@ public class BitmapMatrixView extends TexSurface {
                 this.pix = ((DataBufferInt) buf.getRaster().getDataBuffer()).getData();
             }
 
-            view.color(buf, pix);
+            renderView();
 
             return tex.set(buf);
 
@@ -242,6 +241,10 @@ public class BitmapMatrixView extends TexSurface {
             busy.set(false);
         }
 
+    }
+
+    protected void renderView() {
+        view.color(buf, pix);
     }
 
     public boolean alpha() {

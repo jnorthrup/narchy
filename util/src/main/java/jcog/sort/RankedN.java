@@ -80,11 +80,13 @@ public class RankedN<X> extends TopN<X> {
     }
 
     private void insertValue(int i, float elementRank) {
+        float[] v = this.value;
+
         int shift = size-1-i;
         if (shift > 0)
-            System.arraycopy(value, i, value, i+1, shift );
+            System.arraycopy(v, i, v, i+1, shift );
 
-        value[i] = elementRank;
+        v[i] = elementRank;
     }
 
 

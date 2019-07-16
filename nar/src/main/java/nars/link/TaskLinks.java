@@ -9,10 +9,8 @@ import jcog.decide.Roulette;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
-import jcog.pri.PriMap;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Sampler;
-import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import jcog.pri.op.PriForget;
@@ -82,7 +80,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         int c = linksMax.intValue();
 
         links = new nars.link.TaskLinkBag(
-                new TaskLinkArrayBag(c, merge)
+                new TaskLinkBag.TaskLinkArrayBag(c, merge)
                 //new TaskLinkHijackBag(c, 5)
         );
 
@@ -537,28 +535,6 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
 
 
         }
-    }
-
-    private static class TaskLinkArrayBag extends ArrayBag<TaskLink, TaskLink> {
-
-        public TaskLinkArrayBag(int initialCapacity, PriMerge merge) {
-            super(merge, initialCapacity, PriMap.newMap(false));
-        }
-
-        @Override
-        protected float merge(TaskLink existing, TaskLink incoming, float incomingPri) {
-            return existing.merge(incoming, merge(), PriReturn.Overflow);
-        }
-        //        @Override
-//        protected float sortedness() {
-//            return 0.33f;
-//        }
-
-        @Override
-        public TaskLink key(TaskLink value) {
-            return value;
-        }
-
     }
 
     private static class TaskLinkHijackBag extends PriHijackBag<TaskLink, TaskLink> {

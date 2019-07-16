@@ -6,12 +6,10 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatConsumer;
 import org.eclipse.collections.api.block.function.primitive.ObjectFloatToObjectFunction;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.jctools.maps.NonBlockingHashMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.HashMap;
 import java.util.Iterator;
-import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 //import java.util.concurrent.ConcurrentHashMap;
@@ -29,16 +27,13 @@ import java.util.function.Consumer;
  * */
 public class PriMap<Y> {
 
-
     /** pending Y activation collation */
     public final Map<Y, Prioritizable> items;
-            //new ConcurrentHashMapUnsafe<>(512);
-            //new java.util.concurrent.ConcurrentHashMap(512);
 
     public PriMerge merge;
 
     public PriMap(PriMerge merge) {
-        this(merge, newMap());
+        this(merge, newMap(true));
     }
 
 
@@ -47,9 +42,6 @@ public class PriMap<Y> {
         merge(merge);
     }
 
-    public static Map newMap() {
-        return newMap(true);
-    }
 
     /** returns concurrent map for use in bags and buffers
      *
@@ -59,24 +51,26 @@ public class PriMap<Y> {
      * */
     @Paper
     public static <X,Y> Map<X,Y> newMap(boolean linked) {
-        float load = 0.99f;
+        float load = 0.5f;
         if (Exe.concurrent()) {
             return linked ?
                 new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
                 :
-                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
+                new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
-                new NonBlockingHashMap()
-                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
+                //new NonBlockingHashMap() //<- not working right
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f)
                 //new CustomConcurrentHashMap()
                 ;
         } else {
              return
                  linked ?
-                   new LinkedHashMap(0, load)
-                 : new UnifiedMap(0, load);
-                 //new HashMap();
+                    //new LinkedHashMap(0, load)
+                    new HashMap(0, load)
+                    :
+                    //new UnifiedMap(0, load)
+                    new HashMap(0, load)
+             ;
         }
     }
 
@@ -120,11 +114,7 @@ public class PriMap<Y> {
 
     /** return the delta of the priority */
     protected float merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge) {
-//    protected void merge(Prioritizable existing, Y incomingKey, float pri, PriMerge merge, OverflowDistributor<Y> overflow) {
-//        if (overflow!=null) {
-//            overflow.merge(incomingKey, existing, pri, merge);
-//        } else
-            return merge.merge(existing, pri, PriReturn.Delta);
+        return merge.merge(existing, pri, PriReturn.Delta);
     }
 
 
@@ -154,9 +144,7 @@ public class PriMap<Y> {
         }
     }
 
-//    public final void put(OverflowDistributor<Y> overflow, Random random) {
-//        overflow.shuffle(random).redistribute(this::put);
-//    }
+
 
     public final <Z extends Prioritizable> void put(Z x, PriMerge merge) {
         put((Y)x, x.pri(), merge, null);

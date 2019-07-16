@@ -140,15 +140,13 @@ public class AbstractGoalActionConcept extends GameAction {
 
         float sensitivityRange = 1;
 
-        long s = Math.round(now - dur/2 * sensitivityRange), e = Math.round(now + dur/2 * sensitivityRange);
-        //long s = Math.round(now - dur * sensitivityRange), e = now;
+        //long s = Math.round(now - dur/2 * sensitivityRange), e = Math.round(now + dur/2 * sensitivityRange);
+        long s = Math.round(now - dur * sensitivityRange), e = now;
 
         if (!tables.isEmpty()) {
 //            int dither = n.dtDither.intValue();
 
             int limit = componentsMax, tries = limit*2;
-
-
 
             Answer a = Answer.relevance(true, limit, s, e, term,
                     withoutCuriosity
@@ -243,14 +241,13 @@ public class AbstractGoalActionConcept extends GameAction {
         NAR n = g.nar();
         float gameDur =
                 //0;
-                //g.dur();
-                g.durPhysical();
+                g.dur();
+                //g.durPhysical();
 
         int limitBelief = Answer.BELIEF_MATCH_CAPACITY; //high sensitivity
         int limitGoal = limitBelief * 2;
 
-        TruthProjection bt = truth(true, limitBelief, now, gameDur, n);
-        this.beliefTruth = truth(bt);
+        this.beliefTruth = truth(truth(true, limitBelief, now, gameDur, n));
 
         this.actionTruth = actionTruth(limitGoal, now, gameDur, g);
 

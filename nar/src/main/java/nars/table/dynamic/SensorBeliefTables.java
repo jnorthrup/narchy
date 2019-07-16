@@ -20,6 +20,7 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
+import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -70,7 +71,7 @@ public class SensorBeliefTables extends BeliefTables {
             return;
 
         if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS && !x.isEternal() && !x.isInput()) {
-            if (series.absorbNonSignal(x)) {
+            if (absorbNonSignal(r)) {
                 r.forget(x);
                 return;
             }
@@ -79,7 +80,16 @@ public class SensorBeliefTables extends BeliefTables {
         super.remember(r);
     }
 
+    private boolean absorbNonSignal(Remember r) {
+        long seriesStart = series.start();
+        if (seriesStart == Tense.TIMELESS)
+            return false;
 
+        int cleanMargin = cleanMarginCycles(r.nar);
+        long ss = seriesStart + cleanMargin;
+        long ee = series.end() - cleanMargin;
+        return ss < ee && series.absorbNonSignal(r.input, ss, ee);
+    }
 
     public SeriesTask update(Truth value, long now, short[] cause, float dur, What w) {
         NAR n = w.nar;
@@ -92,10 +102,14 @@ public class SensorBeliefTables extends BeliefTables {
                 n);
 
         if (x!=null) {
-            series.clean(this, n);
+            series.clean(this, cleanMarginCycles(n), n);
             x.cause(cause);
         }
         return x;
+    }
+
+    protected int cleanMarginCycles(NAR n) {
+        return Math.round(NAL.signal.CLEAN_MARGIN_DURS * n.dur());
     }
 
     public void input(Truth value, long now, FloatSupplier pri, short[] cause, float dur, What w, @Deprecated boolean link) {

@@ -1,11 +1,11 @@
 package nars.control;
 
 import jcog.Util;
+import jcog.data.ShortBuffer;
 import jcog.util.ArrayUtil;
 import nars.task.util.TaskRegion;
 import org.eclipse.collections.api.set.primitive.ShortSet;
 import org.eclipse.collections.impl.factory.primitive.ShortSets;
-import org.eclipse.collections.impl.list.mutable.primitive.ShortArrayList;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -47,20 +47,20 @@ public enum CauseMerge {
             }
 
             //general case:
-            AwesomeShortArrayList append = null;
+            ShortBuffer append = null;
             ShortSet ee = ShortSets.immutable.of(existing);
             for (int k = 0, incomingLength = incoming.length; k < incomingLength; k++) {
                 short i = incoming[k];
                 if (!ee.contains(i)) {
                     if (append == null)
-                        append = new AwesomeShortArrayList(incoming.length - k);
+                        append = new ShortBuffer(incoming.length - k);
                     append.add(i);
                 }
             }
             if (append == null)
                 return existing;
 
-            int aa = append.size();
+            int aa = append.size;
             if (aa + incoming.length < capacity) {
                 return ArrayUtil.addAll(incoming, append.toArray());
             } else {
@@ -192,7 +192,7 @@ public enum CauseMerge {
             return ArrayUtil.EMPTY_SHORT_ARRAY;
 
 
-        AwesomeShortArrayList ll = new AwesomeShortArrayList(Math.min(maxLen, totalItems));
+        ShortBuffer ll = new ShortBuffer(Math.min(maxLen, totalItems));
         RoaringBitmap r = deduplicate ? new RoaringBitmap() : null;
         int ls = 0;
         int n = 0;
@@ -208,10 +208,10 @@ public enum CauseMerge {
                         if (!r.checkedAdd(next))
                             continue;
 
-                    if (ll.add/*adder.accept*/(next)) {
-                        if (++ls >= maxLen)
-                            break main;
-                    }
+                    ll.add/*adder.accept*/(next);
+                    if (++ls >= maxLen)
+                        break main;
+
                 } else {
                     done++;
                 }
@@ -223,22 +223,6 @@ public enum CauseMerge {
         short[] lll = ll.toArray();
         //assert (lll.length == ls);
         return lll;
-    }
-
-    static final class AwesomeShortArrayList extends ShortArrayList {
-
-        AwesomeShortArrayList(int cap) {
-            super(cap);
-        }
-
-        @Override
-        public short[] toArray() {
-            if (this.size() == items.length)
-                return items;
-            else
-                return super.toArray();
-        }
-
     }
 
 }

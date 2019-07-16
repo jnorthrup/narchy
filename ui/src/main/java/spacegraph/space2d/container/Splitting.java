@@ -207,11 +207,11 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
 
-    public Surface resizeable() {
+    public Splitting resizeable() {
         return resizeable(0.1f, 0.9f);
     }
 
-    public Surface resizeable(float minSplit, float maxSplit) {
+    public Splitting resizeable(float minSplit, float maxSplit) {
         this.minSplit = minSplit;
         this.maxSplit = maxSplit;
         synchronized (this) {

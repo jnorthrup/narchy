@@ -737,7 +737,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
             onReject(incoming);
 
-            incoming.delete();
+            //incoming.delete();
 
             return null;
 
@@ -802,7 +802,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
             lock.unlockWrite(wl);
         }
 
-        incoming.delete();
+        //incoming.delete();
 
         if (over != 0 && overflow != null)
             overflow.add(over);

@@ -69,13 +69,25 @@ public class Statement {
         if (op == IMPL) {
 
             if (subject == True)
-                return Null; //return predicate;
-            if (subject == False)
-                return Null;
+                return predicate;
+            if (subject ==False)
+                return False;
+            if (predicate == True)
+                return subject;
+            if (predicate == False)
+                return subject.neg();
+
+//            if (subject == True)
+//                return Null; //return predicate;
+//            if (subject == False)
+//                return Null;
+
             if (!NAL.IMPLICATION_SUBJECT_CAN_CONTAIN_IMPLICATION && subject.hasAny(IMPL)) {
                 return Null; //throw new TODO();
             }
-            if (!subject.op().eventable)
+            if (!subject.unneg().op().eventable)
+                return Null;
+            if (!predicate.unneg().op().eventable)
                 return Null;
         }
 

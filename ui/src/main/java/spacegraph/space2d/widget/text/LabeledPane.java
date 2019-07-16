@@ -8,7 +8,7 @@ import spacegraph.video.ImageTexture;
 public class LabeledPane extends Splitting {
 
     public LabeledPane(Surface label, Surface content) {
-        super(label, 0.9f, content);
+        super(label, 0.95f, content);
     }
 
     public static Surface awesome(Surface x, String icon) {
@@ -26,4 +26,16 @@ public class LabeledPane extends Splitting {
         return new LabeledPane(new BitmapLabel(label), content);
     }
 
+//    @Override
+//    protected void paintIt(GL2 gl, ReSurface r) {
+//        super.paintIt(gl, r);
+//    }
+//
+//    @Override
+//    public Surface finger(Finger finger) {
+//        Surface s = super.finger(finger);
+//        if (s == this)
+//
+//        return s;
+//    }
 }

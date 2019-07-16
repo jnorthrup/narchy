@@ -7,8 +7,8 @@ import jcog.math.IntRange;
 import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriArrayBag;
+import jcog.pri.bag.impl.SimpleBufferedBag;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.ConsumerX;
@@ -234,7 +234,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
         {
             final PriMerge merge = NAL.tasklinkMerge;
-            tasks = new BufferedBag.SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
+            tasks = new SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
                 @Override
                 protected int histogramBins(int s) {
                     return 0; //disabled

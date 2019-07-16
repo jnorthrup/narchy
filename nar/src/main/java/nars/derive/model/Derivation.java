@@ -1,9 +1,9 @@
 package nars.derive.model;
 
 import jcog.Util;
+import jcog.data.ShortBuffer;
 import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
-import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
@@ -692,10 +692,10 @@ public class Derivation extends PreDerivation {
     }
 
     @Override
-    public short[] preDerive() {
-        if (!canCollector.isEmpty()) canCollector.clear();
+    public ShortBuffer preDerive() {
+        canCollector.clear();
         deriver.rules.what.test(this);
-        return canCollector.isEmpty() ? ArrayUtil.EMPTY_SHORT_ARRAY : canCollector.toArray();
+        return canCollector;
     }
 
     abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {

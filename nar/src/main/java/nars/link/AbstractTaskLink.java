@@ -80,12 +80,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     public float pri() {
         float p = this.pri;
         if (p != p)
-            return this.pri = priMean(); //update cached value
+            return this.pri = priSum() / 4; //update cached value
         return p;
-    }
-
-    private float priMean() {
-        return priSum()/4;
     }
 
     protected void invalidate() {
@@ -149,12 +145,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 
     public final AbstractTaskLink priSet(byte punc, float puncPri) {
-        if (puncPri==puncPri && puncPri > ScalarValue.EPSILON)
+        if (puncPri==puncPri)
             priMerge(punc, puncPri, PriMerge.replace);
         return this;
     }
     public final AbstractTaskLink priMax(byte punc, float puncPri) {
-        if (puncPri==puncPri && puncPri > ScalarValue.EPSILON)
+        if (puncPri==puncPri)
             priMerge(punc, puncPri, PriMerge.max);
         return this;
     }
@@ -227,7 +223,7 @@ public abstract class AbstractTaskLink implements TaskLink {
             boolean changed = false;
             //HACK not fully atomic but at least consistent
             for (int i = 0; i < 4; i++)
-                changed |= merge(i, X, mult, Delta) != 0;
+                changed |= merge(i, X, mult, Changed) != 0;
 
             if (changed)
                 invalidate();
@@ -238,10 +234,10 @@ public abstract class AbstractTaskLink implements TaskLink {
     @Override
     public void priMult(float belief, float goal, float question, float quest) {
         boolean changed = false;
-        changed |= merge(0, belief, mult, Delta) != 0;
-        changed |= merge(1, goal, mult, Delta) != 0;
-        changed |= merge(2, question, mult, Delta) != 0;
-        changed |= merge(3, quest, mult, Delta) != 0;
+        changed |= merge(0, belief, mult, Changed) != 0;
+        changed |= merge(1, goal, mult, Changed) != 0;
+        changed |= merge(2, question, mult, Changed) != 0;
+        changed |= merge(3, quest, mult, Changed) != 0;
         if (changed)
             invalidate();
     }

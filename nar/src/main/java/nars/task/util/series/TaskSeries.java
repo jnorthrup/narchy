@@ -1,5 +1,6 @@
 package nars.task.util.series;
 
+import jcog.TODO;
 import jcog.math.LongInterval;
 import nars.Task;
 
@@ -97,11 +98,16 @@ public interface TaskSeries<T extends Task> {
     /**
      * returns false if there is some data which occurrs inside the given interval
      */
-    @Deprecated default boolean isEmpty(long start, long end) {
+    default boolean isEmpty(long start, long end) {
         return whileEach(start, end, true, (x)->{
             //keep looking
             return !x.intersects(start, end); //found
         });
+    }
+
+    /** returns time density filled by the series for the given interval */
+    default float density(long start, long end) {
+        throw new TODO();
     }
 
     default boolean isEmpty(LongInterval l) {

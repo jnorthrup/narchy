@@ -144,6 +144,11 @@ public class FasterList<X> extends FastList<X> {
         }
     }
 
+    public void clearCapacity(int newCapacity) {
+        items = newArray(newCapacity);
+        size = 0;
+    }
+
     private void transferItemsToNewArrayWithCapacity(int newCapacity) {
         //this.items = (X[]) this.copyItemsWithNewCapacity(newCapacity);
         Object[] newItems = newArray(newCapacity);

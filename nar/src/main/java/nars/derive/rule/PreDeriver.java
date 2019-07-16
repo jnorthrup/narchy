@@ -17,7 +17,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 @FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each */
-    PreDeriver DIRECT_DERIVATION_RUNNER = PreDerivation::preDerive;
+    PreDeriver DIRECT_DERIVATION_RUNNER = p->p.preDerive().toArray(false);
 
 
     final class CentralMemoizer implements PreDeriver {
@@ -27,7 +27,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
-                    bd -> ((PreDerivation) bd.x).preDerive());
+                    bd -> ((PreDerivation) bd.x).preDerive().toArray(true));
         }
 
         @Override
@@ -35,7 +35,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             if (intern(d)) {
                 return whats.apply(new PremiseKey(d));
             } else {
-                return d.preDerive();
+                return d.preDerive().toArray(true);
             }
         }
 
@@ -64,7 +64,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
                     int capacity = 512;
 
-                    return new ByteHijackMemoize<>(k -> ((PreDerivation) k.x).preDerive(),
+                    return new ByteHijackMemoize<>(k -> ((PreDerivation) k.x).preDerive().toArray(true),
                             capacity,
                             DEFAULT_HIJACK_REPROBES, false);
                 }
@@ -74,7 +74,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         }
 
         //failsafe:
-        return preDerivation.preDerive();
+        return preDerivation.preDerive().toArray(false);
     };
 
 }

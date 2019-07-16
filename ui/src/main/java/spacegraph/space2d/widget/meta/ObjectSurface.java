@@ -44,7 +44,8 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
         }
 
         Surface y = collectionSurface(outer);
-//        y = LabeledPane.the(ctx.toString(), y);
+//        if (y!=null && !(obj instanceof Surface))
+//            y = LabeledPane.the(obj.getClass().getSimpleName() + System.identityHashCode(obj), y);
         return y;
 
 

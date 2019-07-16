@@ -2,6 +2,8 @@ package nars.gui.sensor;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.list.FastCoWList;
+import jcog.func.IntIntToFloatFunction;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import jcog.math.IntRange;
@@ -19,6 +21,7 @@ import nars.task.util.Answer;
 import nars.time.Tense;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
+import org.apache.commons.lang3.mutable.MutableBoolean;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Dragging;
 import spacegraph.space2d.container.Splitting;
@@ -29,7 +32,6 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Consumer;
 
@@ -64,16 +66,117 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     /** truth duration */
     public final FloatRange truthDur = new FloatRange(1, 0, 4);
 
-    public final AtomicBoolean beliefs = new AtomicBoolean(true);
-    public final AtomicBoolean goals = new AtomicBoolean(true);
+//    public final AtomicBoolean beliefs = new AtomicBoolean(true);
+//    public final AtomicBoolean goals = new AtomicBoolean(true);
     //public final AtomicBoolean pris = new AtomicBoolean(true);
 
 
+    abstract public static class Layer {
+        float[] value;
+        public final FloatRange opacity = new FloatRange(0.75f, 0, 1);
+
+        public final void doUpdate(VectorSensorView v) {
+            if (value == null)
+                value = new float[v.w * v.h];
+            update(v);
+        }
+
+        abstract public void blend(float v, float opacity, float[] rgbTarget);
+
+        abstract public void update(VectorSensorView v);
+
+        protected void update(VectorSensorView v, IntIntToFloatFunction f) {
+            int w = v.w;
+            int h = v.h;
+            for (int x = 0; x < w; x++) {
+                for (int y = 0; y < h; y++) {
+                    value[y * w + x] = f.value(x, y);
+                }
+            }
+        }
+
+        public float value(int x, int w, int y) {
+            return value[y * w + x];
+        }
+    }
+
+    abstract public static class ColoredLayer extends Layer {
+
+        private final float[] color;
+
+        public ColoredLayer(float r, float g, float b) {
+            this.color = new float[] { r, g, b};
+        }
+
+        @Override
+        public void blend(float v, float opacity, float[] rgb) {
+            VectorSensorView.blend(v * opacity, color, rgb);
+        }
+
+    }
+    static void blend(float v, float[] color, float[] rgb) {
+        rgb[0] += v * color[0];
+        rgb[1] += v * color[1];
+        rgb[2] += v * color[2];
+    }
+
+    final FastCoWList<Layer> layers = new FastCoWList<Layer>(Layer[]::new);
+    {
+        /* beliefs */
+        layers.add(new ColoredLayer(1f, 1f, 1f) {
+            {
+                opacity.set(0.8f);
+            }
+
+            @Override
+            public void update(VectorSensorView v) {
+                update(v, (x,y)->{
+                    TaskConcept c = v.concept[x][y];
+                    Truth b = c!=null ? v.answer.clear(tries).match(c.beliefs()).truth() : null;
+                    return b != null ? b.freq() : noise();
+                });
+                //Util.normalize(value);
+            }
+        });
+        /* goals */
+        layers.add(new Layer() {
+
+            public final MutableBoolean normalize = new MutableBoolean(false);
+            public final MutableBoolean freqOrExp = new MutableBoolean(true);
+
+            {
+                opacity.set(0.25f);
+            }
+
+            @Override
+            public void blend(float vv, float opacity, float[] rgbTarget) {
+                float v = (vv-0.5f)*2 * opacity;
+                if (v == 0) {
+                    //nothing
+                } else if (v < 0)
+                    rgbTarget[0] += -v;
+                else
+                    rgbTarget[1] += v;
+            }
+
+            @Override
+            public void update(VectorSensorView v) {
+                update(v, (x,y)->{
+                    TaskConcept c = v.concept[x][y];
+                    Truth g = c!=null ? v.answer.clear(tries).match(c.goals()).truth() : null;
+                    return g != null ? (freqOrExp.booleanValue() ? g.freq() : g.expectation()) : 0.5f;
+                });
+
+                if (normalize.booleanValue())
+                    Util.normalize(value); //TODO balanced bipolar normalize around 0.5
+            }
+        });
+    }
 
     private TaskConcept touchConcept;
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
-    private final TaskConcept[][] concept;
+    public final TaskConcept[][] concept;
 
     private Answer answer = null;
     transient private int tries;
@@ -254,60 +357,75 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     @Override
+    protected void renderView() {
+        for (Layer l : layers)
+            l.doUpdate(this);
+        super.renderView();
+    }
+
+    @Override
     public int color(int x, int y) {
 
-        float bf = 0;
-        TaskConcept s = concept(x,y);
-        float R, G, B;
-
-        Answer a = this.answer;
-        if (s == null)
-            bf = noise();
-        else {
-            if (beliefs.getOpaque()) {
-                Truth b = a != null ? a.clear(tries).match(s.beliefs()).truth() : null;
-                if (b != null) bf = b.freq();
-                else
-                    bf = noise();
-            }
+        float[] rgb = new float[] { 0, 0, 0 };
+        for (Layer l : layers) {
+            l.blend(l.value(x,w,y), l.opacity.floatValue(), rgb);
         }
-
-        R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
-
-        if (s!=null) {
-            if (goals.getOpaque()) {
-                Truth d = a!=null ? a.clear(tries).match(s.goals()).truth() : null;
-                if (d != null) {
-                    float f = d.expectation();
-
-                    if (f > 0.5f) {
-                        G += 0.25f * (f - 0.5f) * 2f;
-                    } else {
-                        R += 0.25f * (0.5f - f) * 2f;
-                    }
-                }
-            }
-        }
-
-
-
-
-
-
-
-
-//        if (pris.get()) {
-//            float pri = nar.concepts.pri(s, 0);
-//            B += 0.25f * pri;
-//        }
-
         return Draw.rgbInt(
-                Util.unitize(R), Util.unitize(G), Util.unitize(B)
+                Util.unitize(rgb[0]), Util.unitize(rgb[1]), Util.unitize(rgb[2])
                 /*, 0.5f + 0.5f * p*/);
+
+//        float bf = 0;
+//        TaskConcept s = concept(x,y);
+//        float R, G, B;
+//
+//        Answer a = this.answer;
+//        if (s == null)
+//            bf = noise();
+//        else {
+//            if (beliefs.getOpaque()) {
+//                Truth b = a != null ? a.clear(tries).match(s.beliefs()).truth() : null;
+//                if (b != null) bf = b.freq();
+//                else
+//                    bf = noise();
+//            }
+//        }
+//
+//        R = bf * 0.75f; G = bf * 0.75f; B = bf * 0.75f;
+//
+//        if (s!=null) {
+//            if (goals.getOpaque()) {
+//                Truth d = a!=null ? a.clear(tries).match(s.goals()).truth() : null;
+//                if (d != null) {
+//                    float f = d.expectation();
+//
+//                    if (f > 0.5f) {
+//                        G += 0.25f * (f - 0.5f) * 2f;
+//                    } else {
+//                        R += 0.25f * (0.5f - f) * 2f;
+//                    }
+//                }
+//            }
+//        }
+//
+//
+//
+//
+//
+//
+//
+//
+////        if (pris.get()) {
+////            float pri = nar.concepts.pri(s, 0);
+////            B += 0.25f * pri;
+////        }
+//
+//        return Draw.rgbInt(
+//                Util.unitize(R), Util.unitize(G), Util.unitize(B)
+//                /*, 0.5f + 0.5f * p*/);
     }
 
     public Splitting withControls() {
-        return new Splitting(this, 0.1f, new CameraSensorViewControls(this));
+        return new Splitting(this, 0.1f, new Splitting(new ObjectSurface(layers), 0.5f, new CameraSensorViewControls(this)).resizeable()).resizeable();
     }
 
 

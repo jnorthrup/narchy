@@ -2,7 +2,6 @@ package nars.table.dynamic;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.LongInterval;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -14,7 +13,6 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.truth.Truth;
 
 import java.util.List;
@@ -89,31 +87,40 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         series.forEach(action);
     }
 
-    void clean(List<BeliefTable> tables, NAR n) {
+    void clean(List<BeliefTable> tables, int marginCycles, NAR n) {
         if (!NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), sEnd;
         if (sStart != TIMELESS && (sEnd = series.end()) != TIMELESS) {
 
-            TaskFEMABox deleteAfter = new TaskFEMABox(sStart, sEnd);
-            Consumer<Task> cleaner = deleteAfter::add;
-            for (TaskTable b : tables) {
-                if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable))
-                    b.forEachTask(sStart, sEnd, cleaner);
-                deleteAfter.flush(b);
+            long finalEnd = sEnd - marginCycles;
+            long finalStart = sStart + marginCycles;
+            if (finalStart < finalEnd) {
+
+                FasterList<Task> deleteAfter = new FasterList<Task>(0);
+                Consumer<Task> cleaner = (t) -> {
+                    if (absorbNonSignal(t, finalStart, finalEnd))
+                        deleteAfter.add(t);
+                };
+
+                for (int i = 0, tablesSize = tables.size(); i < tablesSize; i++) {
+                    TaskTable b = tables.get(i);
+                    if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
+
+                        b.forEachTask(finalStart, finalEnd, cleaner);
+
+                        if (!deleteAfter.isEmpty()) {
+                            deleteAfter.forEachWith((t, B) -> B.removeTask(t, true), b);
+                            deleteAfter.clear();
+                        }
+                    }
+                }
             }
 
         }
     }
 
-    boolean absorbNonSignal(Task t) {
-        long seriesStart = series.start();
-        if (seriesStart != Tense.TIMELESS)
-            return absorbNonSignal(t, seriesStart, series.end());
-
-        return false;
-    }
 
     /**
      * used for if you can cache seriesStart,seriesEnd for a batch of calls
@@ -124,14 +131,15 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             return true;
 
         long tStart = t.start();
-        if (tStart != ETERNAL) {
+        if (tStart != ETERNAL && seriesStart <= tStart) {
 //            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
             long tEnd = t.end();
             if (seriesEnd >= tEnd) {
-                if (LongInterval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
+
+                //if (LongInterval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
-                    return !series.isEmpty(t);
-                }
+                    return !series.isEmpty(tStart, tEnd);
+                //}
             }
         }
         return false;
@@ -213,25 +221,5 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     }
 
 
-    private final class TaskFEMABox extends FasterList<Task> {
-        private final long sStart, sEnd;
 
-        TaskFEMABox(long sStart, long sEnd) {
-            super(0);
-            this.sStart = sStart;
-            this.sEnd = sEnd;
-        }
-
-        public void flush(TaskTable b) {
-            if (!isEmpty()) {
-                forEachWith((t,B) -> B.removeTask(t, true), b);
-                clear();
-            }
-        }
-
-        @Override
-        public boolean add(Task t) {
-            return absorbNonSignal(t, sStart, sEnd) && super.add(t);
-        }
-    }
 }

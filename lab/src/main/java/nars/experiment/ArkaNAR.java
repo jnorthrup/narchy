@@ -84,7 +84,7 @@ public class ArkaNAR extends GameX {
 
 //                    (i, o) -> new HaiQae(i, o)
 
-            , 2, 2, true);
+            , 4, 2, true);
 
             a.curiosity.rate.set(0);
 

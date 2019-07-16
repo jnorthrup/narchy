@@ -396,14 +396,14 @@ public final class Answer implements Timed, Predicate<Task> {
         if (tp != null) {
             assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
-            return tp.truth(NAL.truth.EVI_MIN, false, false /* give the value at specified range, no matter how sparse */, nar);
+            return tp.truth(NAL.truth.EVI_MIN, false, true, nar);
         }
 
         return null;
     }
 
     @Nullable
-    public TruthProjection truthProjection() {
+    private TruthProjection truthProjection() {
         TaskList tl = taskList();
         return tl!=null ? project(tl) : null;
     }

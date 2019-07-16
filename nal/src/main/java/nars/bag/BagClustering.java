@@ -3,11 +3,10 @@ package nars.bag;
 import jcog.data.list.FasterList;
 import jcog.learn.gng.NeuralGasNet;
 import jcog.learn.gng.impl.Centroid;
-import jcog.pri.PriMap;
 import jcog.pri.VLink;
 import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.BufferedBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
+import jcog.pri.bag.impl.SimpleBufferedBag;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
@@ -62,20 +61,16 @@ public class BagClustering<X> {
 
     public BagClustering(Dimensionalize<X> model, int centroids, int initialCap) {
 
-
         this.model = model;
 
         this.net = new NeuralGasNet(model.dims, centroids, model::distanceSq);
 
-
-        this.bag = new BufferedBag.SimpleBufferedBag<>(
-                new PriReferenceArrayBag<>(merge, initialCap, PriMap.newMap(false)) {
+        this.bag = new SimpleBufferedBag<>(new PriReferenceArrayBag<>(merge, initialCap) {
                     @Override
                     protected int histogramBins(int s) {
                         return 0; //disabled
                     }
-                },
-                new PriMap<>(merge));
+                });
 
     }
 

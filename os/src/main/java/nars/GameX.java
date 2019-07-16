@@ -123,13 +123,18 @@ abstract public class GameX extends Game {
         Exe.invokeLater(()->{
 
             n.parts(Game.class).map((Game g) ->
-                SupplierPort.button(g.toString(), ()->NARui.game(g))
-            ).forEach(l::add);
+                SupplierPort.button(g.toString(), ()->
+//                    new ObjectSurface(List.of(
+                        NARui.game(g)
+//                        g.sensors.list,
+//                        g.actions.list,
+//                        g.rewards.list
+//                    ))
+            )).forEach(l::add);
 
             n.parts(VectorSensor.class).map((VectorSensor v) -> {
                 if (v instanceof Bitmap2DSensor) {
-                    int w = ((Bitmap2DSensor) v).width;
-                    int h = ((Bitmap2DSensor) v).height;
+                    int w = ((Bitmap2DSensor) v).width, h = ((Bitmap2DSensor) v).height;
                     return new AspectAlign(new VectorSensorView(v, w, h, n).withControls(), ((float)h)/w );
                 } else {
                     return SupplierPort.button(v.toString(), () -> new VectorSensorView(v, n).withControls());

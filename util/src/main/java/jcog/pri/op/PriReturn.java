@@ -48,7 +48,17 @@ public enum PriReturn {
 
             return incoming - (pAfter - pBefore);
         }
-    };
+    },
+
+    /** does not test for NaN */
+    Changed {
+        @Override
+        public float apply(float incoming, float pBefore, float pAfter) {
+            return pBefore!=pAfter ? 1 : 0;
+        }
+    },
+
+    ;
 
     /** pBefore will not be NaN but pAfter might. */
     abstract public float apply(float incoming, float pBefore, float pAfter);
