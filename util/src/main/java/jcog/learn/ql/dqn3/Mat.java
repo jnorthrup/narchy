@@ -22,11 +22,12 @@ public class Mat {
         this.dw = new double[n * d];
     }
 
-    void update(final double val) {
+    void update(final double alpha) {
         double[] w = this.w, dw = this.dw;
         for (int i = 0; i < w.length; i++)
-            w[i] -= val * dw[i];
+            w[i] += -alpha * dw[i];
         Arrays.fill(dw, 0);
         //Util.mul(0.9f, dw);
     }
+
 }

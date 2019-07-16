@@ -18,7 +18,7 @@ class Graph {
 
     void backward() {
         Backprop next;
-        while (((next = this.q.pollFirst()))!=null)
+        while (((next = this.q.pollLast()))!=null)
             next.run();
     }
 
@@ -26,7 +26,7 @@ class Graph {
         final Mat out = new Mat(mat.n, mat.d);
         Arrays.setAll(out.w, i -> Math.tanh(mat.w[i]));
         if (this.needsBackprop)
-            this.q.push(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
+            this.q.addLast(new Backprop(Backprop.BackpropMethod.TANH, mat, out));
         return out;
     }
 
@@ -41,7 +41,7 @@ class Graph {
         final int d = m2d;
         final double[] m1w = m1.w;
         final double[] m2w = m2.w;
-        var out = new Mat(n, d);
+        final Mat out = new Mat(n, d);
         final double[] outw = out.w;
 
             for (int  i = 0; i < n; i++) { // loop over rows of m1
@@ -70,7 +70,7 @@ class Graph {
 //        }
 
         if (this.needsBackprop)
-            this.q.push(new Backprop(Backprop.BackpropMethod.MUL, m1, m2, out));
+            this.q.addLast(new Backprop(Backprop.BackpropMethod.MUL, m1, m2, out));
 
         return out;
     }
@@ -80,11 +80,12 @@ class Graph {
 
         final Mat out = new Mat(mat1.n, mat1.d);
         int bound = mat1.w.length;
+        double[] outw = out.w;
         for (int i = 0; i < bound; i++) {
-            out.w[i] = mat1.w[i] + mat2.w[i];
+            outw[i] = mat1.w[i] + mat2.w[i];
         }
         if (this.needsBackprop)
-            this.q.push(new Backprop(Backprop.BackpropMethod.ADD, mat1, mat2, out));
+            this.q.addLast(new Backprop(Backprop.BackpropMethod.ADD, mat1, mat2, out));
 
         return out;
     }
@@ -119,7 +120,6 @@ class Graph {
 
             final int n = m1.n;
             final int m2d = m2.d;
-            final int d = m2d;
             final int m1d = m1.d;
             double[] m1w = m1.w;
             double[] m2w = m2.w;
@@ -128,8 +128,6 @@ class Graph {
             double[] outdw = out.dw;
 
             for (int i = 0; i < n; i++) {
-                final int m2di = m2d * i;
-                final int m1di = m1d * i;
                 for (int j = 0; j < m2d; j++) {
                     final double b = outdw[m2d * i + j];
                     if (b!=0) {
@@ -168,3 +166,25 @@ class Graph {
         }
     }
 }
+//    sigmoid: function (m) {
+//            // sigmoid nonlinearity
+//            var out = new Mat(m.n, m.d);
+//            var n = m.w.length;
+//            for (var i = 0; i < n; i++) {
+//        out.w[i] = sig(m.w[i]);
+//        }
+//
+//        if (this.needs_backprop) {
+//
+//        this.backprop.push(this.sigmoidBack, [m, out]);
+//        }
+//        return out;
+//        },
+//        sigmoidBack: function(m, out) {
+//        var n = m.w.length;
+//        for (var i = 0; i < n; i++) {
+//        // grad for z = tanh(x) is (1 - z^2)
+//        var mwi = out.w[i];
+//        m.dw[i] += mwi * (1.0 - mwi) * out.dw[i];
+//        }
+//        },

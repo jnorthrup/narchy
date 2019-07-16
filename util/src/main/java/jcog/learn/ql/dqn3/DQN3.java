@@ -54,19 +54,19 @@ public class DQN3 extends Agent {
         this.numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, 100.0));
 
         this.experienceAddPeriod = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
-        this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 5000.0));
+        this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 1024.0));
         this.experienceLearnedPerIteration = (int) Math.round(config.getOrDefault(Option.LEARNING_STEPS_PER_ITERATION, 10.0));
         this.tdErrorClamp = config.getOrDefault(Option.TD_ERROR_CLAMP, 1.0);
 
         float rngRange =
-                1f / numHiddenUnits;
+                (float) (this.alpha / numHiddenUnits);
                 //0.5f;
                 //0.01f;
 
         this.W1 = DQN3.matRandom(rand, this.numHiddenUnits, this.inputs, rngRange);
-        this.B1 = new Mat(this.numHiddenUnits, 1);
+        this.B1 = DQN3.matRandom(rand, this.numHiddenUnits, 1, rngRange);
         this.W2 = DQN3.matRandom(rand, this.actions, this.numHiddenUnits, rngRange);
-        this.B2 = new Mat(this.actions, 1);
+        this.B2 = DQN3.matRandom(rand, this.actions, 1, rngRange);
 
         this.experience = new FasterList(experienceSize);
         this.experienceIndex = 0;
@@ -83,6 +83,11 @@ public class DQN3 extends Agent {
 
     @Override
     protected synchronized int decide(float[] actionFeedback /* TODO */, float reward, float[] input) {
+
+        //bipolarize
+//        for (int i = 0, actionFeedbackLength = actionFeedback.length; i < actionFeedbackLength; i++)
+//            actionFeedback[i] = (actionFeedback[i]-0.5f)*2;
+
         double err = learn(actionFeedback, reward);
         lastErr = err;
         //System.out.println(this + " err=" + err);
@@ -100,7 +105,9 @@ public class DQN3 extends Agent {
         Graph g = new Graph(needsBackprop);
 
         Mat m = g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
-        //m = g.tanh(m);
+        //Mat m = g.add(g.tanh(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1)))), B2);
+        //Mat m = g.add(g.tanh(g.mul(W2, g.add(g.mul(W1, s), B1))), B2);
+
 
         if (needsBackprop)
             this.lastG = g;
@@ -172,16 +179,20 @@ public class DQN3 extends Agent {
         final Mat next = this.calcQ(exp.currentState, false);
 
 
-        final double qMax = exp.lastReward + this.gamma * next.w[Util.argmax(next.w)];
+        //final double qMax = exp.lastReward + this.gamma * next.w[Util.argmax(next.w)];
 
         final Mat pred = this.calcQ(exp.lastState, true);
+
+        float actionNorm = Util.sum(exp.lastAction);
+        if (actionNorm < Float.MIN_NORMAL)
+            actionNorm = 1;
 
         double errTotal = 0;
         for (int i = 0; i < exp.lastAction.length; i++) {
             //var qmax = r0 + this.gamma * tmat.w[R.maxi(tmat.w)];
-            //final double qMax = exp.lastReward + this.gamma * next.w[i];
+            final double qMax = exp.lastReward + this.gamma * next.w[i];
 
-            double err = (pred.w[i] * exp.lastAction[i]) - qMax;
+            double err = (pred.w[i] - qMax) * exp.lastAction[i]/actionNorm;
             double tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
             pred.dw[i] = tdError;
             errTotal += Math.abs(err);
