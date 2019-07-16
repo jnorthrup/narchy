@@ -9,13 +9,10 @@ import nars.NAR;
 import nars.NARS;
 import nars.agent.GameTime;
 import nars.concept.action.GoalActionConcept;
-import nars.gui.sensor.VectorSensorView;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.widget.meta.ObjectSurface;
 
 import java.util.Arrays;
 import java.util.Random;
@@ -23,7 +20,6 @@ import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.experiment.Tetris.TetrisState.CW;
-import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 7/28/16.
@@ -153,9 +149,9 @@ public class Tetris extends GameX {
         GameX.runRT(n -> {
 
             Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-            window(Splitting.column(new ObjectSurface(t), 0.9f,
-                    new VectorSensorView(t.pixels, t).withControls())
-                    , 400, 900);
+//            window(Splitting.column(new ObjectSurface(t), 0.9f,
+//                    new VectorSensorView(t.pixels, t).withControls())
+//                    , 400, 900);
 
         },  FPS * 2);
 

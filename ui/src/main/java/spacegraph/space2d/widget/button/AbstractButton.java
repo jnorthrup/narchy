@@ -6,6 +6,7 @@ import spacegraph.input.finger.state.Clicking;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.text.BitmapLabel;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -62,8 +63,8 @@ public abstract class AbstractButton extends Widget {
 
         set(
 
-                new BitmapLabel(s)
-                //s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
+                s.length() < 32 ? new BitmapLabel(s) : new VectorLabel(s)
+                //new BitmapLabel(s)
                 //new VectorLabel(s)
         );
 

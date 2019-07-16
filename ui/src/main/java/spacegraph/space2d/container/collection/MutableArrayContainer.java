@@ -63,7 +63,7 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
 
                 if (s != null) {
                     Surfacelike sParent = s.parent;
-                    assert (sParent == null || sParent == this);
+                    assert (sParent == null || sParent == this): this + " confused that " + s + " already has parent " + sParent;
 
 
 //                        synchronized (this) {

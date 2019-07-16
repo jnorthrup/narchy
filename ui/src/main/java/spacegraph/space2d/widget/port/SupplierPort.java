@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.port;
 
+import jcog.exe.Exe;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -20,27 +21,46 @@ public class SupplierPort<T> extends ConstantPort<T> {
         toggle.set(false);
         toggle.on((boolean tb)->{
             if (tb) {
-                built.updateAndGet(x -> {
-                    if (x == null)
-                        return builder.get();
-                    else
-                        return x;
+                toggle.enabled(false);
+                Exe.invoke(()->{
+                    if (!toggle.on())
+                        return; //toggled off while waiting to execute
+
+                    built.updateAndGet(x -> {
+                        if (x == null)
+                            return builder.get();
+                        else
+                            return x;
+                    });
+//                    if (!toggle.on()) {
+//                        built.set(null);
+//                        return; //toggled off while building
+//                    }
+
+                    T b = built.getOpaque();
+                    set(b);
+                    if (b instanceof Surface) {
+                        toggle.stop();
+                        set(new Splitting(toggle, 0.95f, true, (Surface)b));
+                    }
+                    toggle.set(true);
+                    toggle.enabled(true);
                 });
-                T b = built.getOpaque();
-                set(b);
-                if (b instanceof Surface) {
-                    toggle.stop();
-                    set(new Splitting(toggle, 0.9f, true, (Surface)b));
-                }
             } else {
                 if (built.getAndSet(null)!=null) {
+                    toggle.enabled(false);
+
 //                    toggle.stop();
                     set((T) null);
 //                    set(new Scale(toggle, 1));
                     set(toggle);
+                    toggle.enabled(true);
                 }
             }
         });
     }
 
+    public static Surface button(String label, Supplier<Surface> s) {
+        return new SupplierPort<>(label, Surface.class, s);
+    }
 }

@@ -13,13 +13,13 @@ import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.thing.SubPart;
 import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
 import nars.agent.util.RLBooster;
 import nars.attention.TaskLinkWhat;
+import nars.concept.sensor.VectorSensor;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.control.Why;
@@ -29,8 +29,12 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
+import nars.gui.sensor.VectorSensorView;
 import nars.memory.CaffeineMemory;
-import nars.op.*;
+import nars.op.Arithmeticize;
+import nars.op.AutoencodedBitmap;
+import nars.op.Factorize;
+import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.sensor.Bitmap2DSensor;
@@ -112,6 +116,33 @@ abstract public class GameX extends Game {
 
 
     public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
+        FasterList l = new FasterList();
+        NAR n = runRT(l, init, threads, narFPS);
+
+        Exe.invokeLater(()->{
+
+            n.parts(Game.class).map((Game g) ->
+                SupplierPort.button(g.toString(), ()->NARui.game(g))
+            ).forEach(l::add);
+
+            n.parts(VectorSensor.class).map((VectorSensor v) -> {
+                if (v instanceof Bitmap2DSensor) {
+                    return new VectorSensorView(v, ((Bitmap2DSensor)v).width, ((Bitmap2DSensor)v).height, n).withControls();
+                } else {
+                    return SupplierPort.button(v.toString(), () -> new VectorSensorView(v, n).withControls());
+                }
+            }).forEach(l::add);
+
+            l.add(SupplierPort.button("att", () -> NARui.top(n)));
+            l.add(SupplierPort.button("top", () -> NARui.attentionUI(n)));
+
+            window(l, 1024, 800);
+        });
+
+        return n;
+    }
+
+    public static NAR runRT(List<Object> space, Consumer<NAR> init, int threads, float narFPS) {
 
         NAR n = baseNAR(narFPS / DURATIONs, threads);
 
@@ -138,17 +169,6 @@ abstract public class GameX extends Game {
 //            initMeta(n,  false, false);
 //        });
 
-        Exe.invokeLater(()->{
-            window(
-                new Gridding(
-                new Gridding(n.parts(Game.class).map((SubPart pp) -> {
-                    Game gg = (Game) pp;
-                    return new SupplierPort(gg.term().toString(), Surface.class, () -> NARui.game(gg));
-                }).collect(toList())),
-                new SupplierPort<>("att", Surface.class, () -> NARui.attentionUI(n)),
-                new SupplierPort<>("top", Surface.class, () -> NARui.top(n))
-            ), 1024, 800);
-        });
 
         Loop loop = n.startFPS(narFPS);
 

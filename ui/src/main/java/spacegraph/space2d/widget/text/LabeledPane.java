@@ -16,6 +16,8 @@ public class LabeledPane extends Splitting {
     }
 
     public static Surface the(String label, Surface content) {
+        assert(content!=null);
+
         if (label.isEmpty())
             return content;
 

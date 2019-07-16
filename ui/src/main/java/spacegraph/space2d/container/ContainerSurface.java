@@ -78,8 +78,8 @@ abstract public class ContainerSurface extends Surface {
     @Override
     protected final void render(ReSurface r) {
         if (preRender(r)) {
-            show();
             render(r, MUSTLAYOUT.compareAndSet(this, 1, 0));
+            show();
         } else {
             hide();
         }

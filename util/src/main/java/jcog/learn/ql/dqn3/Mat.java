@@ -1,7 +1,6 @@
 package jcog.learn.ql.dqn3;
 
 import java.util.Arrays;
-import java.util.stream.IntStream;
 
 public class Mat {
     public final double[] w;
@@ -24,8 +23,10 @@ public class Mat {
     }
 
     void update(final double val) {
-        IntStream.range(0, this.w.length).forEach(i -> this.w[i] -= val * this.dw[i]);
-        Arrays.fill(this.dw, 0);
+        double[] w = this.w, dw = this.dw;
+        for (int i = 0; i < w.length; i++)
+            w[i] -= val * dw[i];
+        Arrays.fill(dw, 0);
         //Util.mul(0.9f, dw);
     }
 }

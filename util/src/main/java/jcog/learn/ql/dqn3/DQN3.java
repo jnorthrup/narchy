@@ -38,6 +38,7 @@ public class DQN3 extends Agent {
     private int currentAction;
     public double[] input;
     private Graph lastG;
+    public double lastErr;
 
     public DQN3(final int inputs, final int numActions) {
         this(inputs, numActions, Map.of( /* empty */));
@@ -58,9 +59,9 @@ public class DQN3 extends Agent {
         this.tdErrorClamp = config.getOrDefault(Option.TD_ERROR_CLAMP, 1.0);
 
         float rngRange =
-                //1f / numHiddenUnits;
+                1f / numHiddenUnits;
                 //0.5f;
-                0.01f;
+                //0.01f;
 
         this.W1 = DQN3.matRandom(rand, this.numHiddenUnits, this.inputs, rngRange);
         this.B1 = new Mat(this.numHiddenUnits, 1);
@@ -83,6 +84,7 @@ public class DQN3 extends Agent {
     @Override
     protected synchronized int decide(float[] actionFeedback /* TODO */, float reward, float[] input) {
         double err = learn(actionFeedback, reward);
+        lastErr = err;
         //System.out.println(this + " err=" + err);
         return act(Util.toDouble(input));
     }
@@ -93,9 +95,17 @@ public class DQN3 extends Agent {
         return mat;
     }
 
-    private Mat calcQ(final Mat state, final boolean needsBackprop) {
-        Graph g = this.lastG = new Graph(needsBackprop);
-        return g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, state), B1))), B2);
+    private Mat calcQ(final Mat s, final boolean needsBackprop) {
+
+        Graph g = new Graph(needsBackprop);
+
+        Mat m = g.add(g.mul(W2, g.tanh(g.add(g.mul(W1, s), B1))), B2);
+        //m = g.tanh(m);
+
+        if (needsBackprop)
+            this.lastG = g;
+
+        return m;
     }
 
     public int act(final double[] stateArr) {
@@ -162,17 +172,20 @@ public class DQN3 extends Agent {
         final Mat next = this.calcQ(exp.currentState, false);
 
 
+        final double qMax = exp.lastReward + this.gamma * next.w[Util.argmax(next.w)];
+
         final Mat pred = this.calcQ(exp.lastState, true);
 
         double errTotal = 0;
         for (int i = 0; i < exp.lastAction.length; i++) {
             //var qmax = r0 + this.gamma * tmat.w[R.maxi(tmat.w)];
-            final double qMax = exp.lastReward + this.gamma * next.w[i]; //Util.argmax(tMat.w)];
+            //final double qMax = exp.lastReward + this.gamma * next.w[i];
 
             double err = (pred.w[i] * exp.lastAction[i]) - qMax;
             double tdError = Util.clamp(err, -tdErrorClamp, tdErrorClamp);
             pred.dw[i] = tdError;
             errTotal += Math.abs(err);
+            //errTotal += Math.abs(tdError);
         }
 
         this.lastG.backward();

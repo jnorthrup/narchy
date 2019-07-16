@@ -26,6 +26,7 @@ import java.util.stream.Stream;
  */
 public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
+    /** [y][x] */
     public final Signal[][] matrix;
     public final int width, height, area;
     public final P src;
@@ -49,7 +50,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         this.attn = attn;
         this.src = src;
 
-        this.matrix = new Signal[width][height];
+        this.matrix = new Signal[height][width];
 
         this.pixelTerm = pixelTerm;
 
@@ -67,7 +68,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
                     EternalDefaultTable.add(sc, defaultFreq, n);
                 }
 
-                matrix[x][y] = sc;
+                matrix[y][x] = sc;
             }
         }
 
@@ -106,7 +107,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public void print(PrintStream out) {
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                float b = matrix[i][j].asFloat();
+                float b = matrix[j][i].asFloat();
                 out.print(b >= 0.5f ? '*' : ' ');
             }
             out.println();
@@ -121,15 +122,15 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         return IntStream.range(from, to).mapToObj(this::get);
     }
 
-    public Signal getSafe(int i, int j) {
-        return matrix[i][j];
+    public Signal getSafe(int x, int y) {
+        return matrix[y][x];
     }
 
     @Nullable
-    public Signal get(int i, int j) {
-        if ((i < 0) || (j < 0) || (i >= width || j >= height))
+    public Signal get(int x, int y) {
+        if ((x < 0) || (y < 0) || (x >= width || y >= height))
             return null;
-        return getSafe(i, j);
+        return getSafe(x, y);
     }
 
     public final List<? extends Concept> order() {

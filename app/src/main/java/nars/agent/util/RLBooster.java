@@ -179,7 +179,8 @@ public class RLBooster  {
     public void accept(What w) {
         NAR nar = env.nar();
 
-        double reward = HAPPINESS.valueOf(env.happiness() );
+        double reward = ((HAPPINESS.valueOf(env.happiness() ) - 0.5f) * 2);
+
         //System.out.println(reward);
         lastReward = reward;
 

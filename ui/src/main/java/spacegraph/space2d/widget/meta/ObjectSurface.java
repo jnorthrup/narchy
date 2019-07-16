@@ -18,13 +18,11 @@ import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.port.FloatRangePort;
 import spacegraph.space2d.widget.slider.IntSlider;
+import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiFunction;
 
@@ -40,29 +38,37 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
         List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
         for (Pair<Object, Iterable<Surface>> p : target) {
-            outer.add(collection(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList())));
+            Surface l = collectionSurface(Streams.stream(p.getTwo()).filter(Objects::nonNull).collect(toList()));
+            if (l!=null)
+                outer.add(l);
         }
 
-        return collection(outer);
+        Surface y = collectionSurface(outer);
+//        y = LabeledPane.the(ctx.toString(), y);
+        return y;
 
 
     };
 
-    private static Surface collection(List<Surface> x) {
-        Surface y;
-        switch (x.size()) {
+    private static Surface collectionSurface(List<Surface> x) {
+        Surface y = null;
+        int xs = x.size();
+        switch (xs) {
             case 0:
                 return null; //TODO shouldnt happen
             case 1:
                 //                //outer.add(new Scale(cx.get(0), Widget.marginPctDefault));
                 y = x.get(0);
                 break;
-            case 2:
-                y = new Splitting(x.get(0), 0.5f, x.get(1)).resizeable();
-                break;
+
             default:
+                if (xs == 2) {
+                    y = new Splitting(x.get(0), 0.5f, x.get(1)).resizeable();
+                }
+
                 //TODO selector
-                y = new Gridding(x);
+                if (y == null)
+                    y = new Gridding(x);
                 break;
         }
         return y;
@@ -107,7 +113,10 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
     }
 
 
-    public Surface build(Object x) {
+    public final Surface build(Object x) {
+        if (x instanceof Surface)
+            return ((Surface)x);
+
         return builder.build(x);
     }
 
@@ -127,11 +136,12 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
 
     @Override
     protected void starting() {
-        super.starting();
 
         builder.clear();
 
         set(builder.build(obj));
+
+        super.starting();
     }
 
     protected String label(X obj) {
@@ -162,31 +172,38 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
 
         classer.put(String.class, (String x, Object relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
 
-//        classer.put(Collection.class, (Collection cx, Object relation) -> {
-//            if (cx.isEmpty())
-//                return null;
-//
-//            List<Surface> yy = new FasterList(cx.size());
-//
-//            for (Object cxx : cx) {
-//                if (cxx == null)
-//                    continue;
-//
-//                Surface yyy = builder.build(cxx);
-//                if (yyy != null)
-//                    yy.add(yyy); //TODO depth, parent, ..
-//            }
-//            if (yy.isEmpty())
-//                return null;
-//
-//            Surface xx = yy.size() > 1 ? new Gridding(yy) : yy.get(0);
-//
-//            String l = relationLabel(relation);
-//
-//            if (!l.isEmpty())
-//                return LabeledPane.the(l, xx);
-//            else
-//                return xx;
+        classer.put(Collection.class, (Collection cx, Object relation) -> {
+            if (cx.isEmpty())
+                return null;
+
+            List<Surface> yy = new FasterList(cx.size());
+
+            //return SupplierPort.button(relationLabel(relation), ()-> {
+
+
+                for (Object cxx : cx) {
+                    if (cxx == null)
+                        continue;
+
+                    Surface yyy = build(cxx);
+                    if (yyy != null)
+                        yy.add(yyy); //TODO depth, parent, ..
+                }
+                if (yy.isEmpty())
+                    return null;
+
+                Surface xx = collectionSurface(yy);
+
+                String l = relationLabel(relation);
+
+                if (!l.isEmpty())
+                    return LabeledPane.the(l, xx);
+                else
+                    return xx;
+            //});
+        });
+//        classer.put(Surface.class, (Surface x, Object relation) -> {
+//            return x.parent==null ? LabeledPane.the(relationLabel(relation), x) : x;
 //        });
 
 //        classer.put(Pair.class, (p, rel)->{
@@ -197,13 +214,7 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
 //        if (yLabel == null)
 //            yLabel = x.toString();
 //
-//        if (x instanceof Surface) {
-//            Surface sx = (Surface) x;
-//            if (sx.parent == null) {
-//                target.addAt(new LabeledPane(yLabel, sx));
-//            }
-//            return;
-//        }
+
 //
 //
 //        //TODO rewrite these as pluggable onClass handlers

@@ -39,6 +39,7 @@ import nars.truth.Truth;
 import nars.util.MemorySnapshot;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -431,7 +432,7 @@ public class NARui {
         Iterable<? extends Concept> actions = a.actions;
 
         Menu aa = new TabMenu(Map.of(
-                a.toString(), () -> new ObjectSurface<>(a, 4),
+                a.toString(), () -> new ObjectSurface<>(a, 3),
 
                 "stat", () -> new Gridding(
                     new TriggeredSurface<>(
@@ -886,17 +887,21 @@ public class NARui {
             charts.add(
                     new ObjectSurface(d),
                     new Gridding(VERTICAL,
-                            //new PaintUpdateMatrixView(d.currentState.w),
-                            new PaintUpdateMatrixView(()->d.input, d.inputs),
-                            PaintUpdateMatrixView.scroll(d.W1.w, false, 96, 4),
-                            PaintUpdateMatrixView.scroll(d.W1.dw, false, 96, 4),
-                            PaintUpdateMatrixView.scroll(d.W2.w, false, 16,4),
-                            PaintUpdateMatrixView.scroll(d.W2.dw, false, 16,4)
-//                            new PaintUpdateMatrixView(d.B1.w),
-//                            new PaintUpdateMatrixView(d.W2.w),
-//                            new PaintUpdateMatrixView(d.B2.w)
+                            new PaintUpdateMatrixView(() -> d.input, d.inputs),
+                            matrix(d.W1.w),
+                            matrix(d.B1.w),
+//                            matrix(d.W1.dw),
+                            matrix(d.W2.w),
+                            matrix(d.B2.w)
+//                            matrix(d.W2.dw)
                     )
             );
+            Plot2D dqn3Plot = new Plot2D(200, Plot2D.Line);
+            dqn3Plot.add("DQN3 Err", () -> d.lastErr);
+            charts.add(dqn3Plot);
+            rlb.env.onFrame(() -> {
+                dqn3Plot.commit();
+            });
         }
         AtomicDouble rewardSum = new AtomicDouble();
         plot.add("Reward", ()->{
@@ -935,6 +940,13 @@ public class NARui {
 ////                ).collect(toList()))
 ////            , 800, 800);
 
+    }
+
+    @NotNull
+    public static PaintUpdateMatrixView matrix(double[] dw) {
+        return dw.length > 512 ?
+            PaintUpdateMatrixView.scroll(dw, false, 64, 4) :
+            new PaintUpdateMatrixView(dw);
     }
 
 }

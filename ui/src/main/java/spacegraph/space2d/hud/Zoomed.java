@@ -379,10 +379,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             speed.set(Math.max(W, H) * CAM_RATE);
 
             float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
-            camXmin = 0 + visW;
-            camYmin = 0 + visH;
-            camXmax = bounds.w - visW;
-            camYmax = bounds.h - visH;
+            camXmin = bounds.x + visW;
+            camYmin = bounds.y + visH;
+            camXmax = bounds.x + W - visW;
+            camYmax = bounds.y + H - visH;
         }
 
         @Override
@@ -391,15 +391,15 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         public float camZ(float z) {
-            return Util.clamp(z, camZmin, Math.max(camZmin, camZMax()));
+            return Util.clampSafe(z, camZmin, camZMax());
         }
 
         public float camY(float y) {
-            return Util.clamp(y, camYmin, Math.max(camYmin, camYmax));
+            return Util.clampSafe(y, camYmin, camYmax);
         }
 
         public float camX(float x) {
-            return Util.clamp(x, camXmin, Math.max(camXmin, camXmax));
+            return Util.clampSafe(x, camXmin, camXmax);
         }
 
 //        public float motionSq() {
