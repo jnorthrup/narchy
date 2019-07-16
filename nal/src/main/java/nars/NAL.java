@@ -251,7 +251,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 1;
                 //1f/SIGNAL_STRETCH_LIMIT_DURS;
 
-        public static final int SERIES_MATCH_MIN = 2;
+        public static final int SERIES_MATCH_MIN = 1;
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.75f;
