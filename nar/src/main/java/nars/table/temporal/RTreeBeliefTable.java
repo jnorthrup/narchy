@@ -4,9 +4,7 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
-import jcog.sort.FloatRank;
 import jcog.sort.Top;
-import jcog.sort.TopN;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.QuadraticSplitLeaf;
 import nars.NAL;
@@ -28,8 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
-
-import static nars.truth.func.TruthFunctions.c2wSafe;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
@@ -261,10 +257,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         if (mergeOrEvict) {
             //merge leaf
-            AB.getTwo().forEachTask((rr) -> {
-                if (treeRW.remove(rr))
-                    r.forget(rr);
-            });
+            TruthProjection abab = AB.getTwo();
+            for (TruthProjection.TaskComponent rrr : abab) {
+                if (rrr.valid()) {
+                    Task rr = rrr.task;
+                    if (treeRW.remove(rr))
+                        r.forget(rr);
+                }
+            }
             Task m = Revision.afterMerge(AB);
             if (treeRW.add(m)) {
                 r.remember(m);

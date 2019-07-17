@@ -102,7 +102,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //2f;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 3f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**

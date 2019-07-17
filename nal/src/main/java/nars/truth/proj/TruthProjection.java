@@ -7,7 +7,6 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
-import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -151,38 +150,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             clear(); return null; }
 
 
-         if (NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
-             //HACK temporary strategy
-             boolean disjointOrNonOverlapping = true;
-             int ss = size();
-             for (int i = 1; i < ss; i++) {
-                 TaskComponent I = get(i);
-                 if (!I.valid())
-                     continue;
-                 Task ii = I.task;
-                 for (int j = 0; j < i; j++) {
-                     TaskComponent J = get(j);
-                     if (!J.valid())
-                         continue;
-                     Task jj = J.task;
-                     if (ii.intersects((LongInterval) jj) && Stamp.overlap(ii, jj)) {
-                         disjointOrNonOverlapping = false;
-                         break;
-                     }
-                 }
-             }
-             if (disjointOrNonOverlapping) {
-                 if (needStamp) {
-                     MetalLongSet evi = new MetalLongSet(ss*STAMP_CAPACITY);
-                     for (int i = 0; i < ss; i++)
-                         evi.addAll(get(i).task.stamp());
-                     return evi;
-                 } else {
-                     //done
-                     return null;
-                 }
-             }
-         }
+
 
         int iter = 0;
         MetalLongSet e = null;
@@ -203,24 +171,58 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             }
 
             //optimized special case
-            //TODO generalize; prevent unnecessary MetalLongSet creation
-            if (!needStamp && remain == 2) {
-                if (!Stamp.overlap(get(0).task, get(1).task))
-                    break;
-                else {
-                    if (minComponents < 2) {
-                        //disable the weaker of the two
-                        removeFast(1);
-                        break;
+//            //TODO generalize; prevent unnecessary MetalLongSet creation
+//            if (!needStamp && remain == 2) {
+//                if (!Stamp.overlap(get(0).task, get(1).task))
+//                    break;
+//                else {
+//                    if (minComponents < 2) {
+//                        //disable the weaker of the two
+//                        removeFast(1);
+//                        break;
+//                    } else {
+//                        clear();return null;
+//                    }
+//                }
+//            }
+            int ss = size();
+
+            if (NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
+                //HACK temporary strategy
+                boolean disjointOrNonOverlapping = true;
+                int count = 0;
+                overlapDisjoint: for (int i = 1; i < ss; i++) {
+                    TaskComponent I = get(i);
+                    if (!I.valid())
+                        continue;
+                    Task ii = I.task;
+                    for (int j = 0; j < i; j++) {
+                        TaskComponent J = get(j);
+                        if (!J.valid())
+                            continue;
+                        Task jj = J.task;
+                        if (Stamp.overlap(ii, jj)) {
+                            disjointOrNonOverlapping = false;
+                            break overlapDisjoint;
+                        }
+                    }
+                    count++;
+                }
+                if (disjointOrNonOverlapping && count >= minComponents) {
+                    if (needStamp) {
+                        MetalLongSet evi = new MetalLongSet(ss*STAMP_CAPACITY);
+                        for (int i = 0; i < ss; i++) {
+                            TaskComponent x = this.get(i);
+                            if (x.valid())
+                                evi.addAll(x.task.stamp());
+                        }
+                        return evi;
                     } else {
-                        clear();return null;
+                        //done
+                        return null;
                     }
                 }
             }
-
-            int ss = size();
-
-
 
             if (e == null)
                 e = new MetalLongSet(STAMP_CAPACITY * remain);
