@@ -129,9 +129,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return 1 + (end() - start());
             case 1:
-                return (freqMax() - freqMin());
+                return (freqMaxI() - freqMinI());
             case 2:
-                return (confMax() - confMin());
+                return (confMaxI() - confMinI());
             default:
                 throw new UnsupportedOperationException();
         }
@@ -195,8 +195,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
             case 0: return !maxOrMin ? start() : end();
-            case 1: return !maxOrMin ? freqMin() : freqMax();
-            case 2: return !maxOrMin ? confMin() : confMax();
+            case 1: return !maxOrMin ? freqMinI() : freqMaxI();
+            case 2: return !maxOrMin ? confMinI() : confMaxI();
             default:
                 return Double.NaN;
         }
@@ -205,8 +205,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double center(int dimension) {
         switch (dimension) {
             case 0: return mid();
-            case 1: return (freqMin() + freqMax())/2.0;
-            case 2: return (confMin() + confMax())/2.0;
+            case 1: return (freqMinI() + freqMaxI())/2.0;
+            case 2: return (confMinI() + confMaxI())/2.0;
             default:
                 return Double.NaN;
         }

@@ -58,27 +58,27 @@
         </configuration>
 
       </plugin>
-      <!--      https://github.com/GZoltar/gzoltar/tree/master/com.gzoltar.maven-->
-      <plugin>
-        <groupId>com.gzoltar</groupId>
-        <artifactId>com.gzoltar.maven</artifactId>
-        <version>1.7.2</version>
-        <executions>
-          <execution>
-            <id>pre-unit-test</id>
-            <goals>
-              <goal>prepare-agent</goal>
-            </goals>
-          </execution>
-          <execution>
-            <id>post-unit-test</id>
-            <phase>test</phase>
-            <goals>
-              <goal>fl-report</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
+<!--      &lt;!&ndash;      https://github.com/GZoltar/gzoltar/tree/master/com.gzoltar.maven&ndash;&gt;-->
+<!--      <plugin>-->
+<!--        <groupId>com.gzoltar</groupId>-->
+<!--        <artifactId>com.gzoltar.maven</artifactId>-->
+<!--        <version>1.7.2</version>-->
+<!--        <executions>-->
+<!--          <execution>-->
+<!--            <id>pre-unit-test</id>-->
+<!--            <goals>-->
+<!--              <goal>prepare-agent</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--          <execution>-->
+<!--            <id>post-unit-test</id>-->
+<!--            <phase>test</phase>-->
+<!--            <goals>-->
+<!--              <goal>fl-report</goal>-->
+<!--            </goals>-->
+<!--          </execution>-->
+<!--        </executions>-->
+<!--      </plugin>-->
 
 
     <plugin>

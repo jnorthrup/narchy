@@ -61,18 +61,19 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** NOTE: the true option isnt supported in TruthProjection cyclic overlap yet, but in other places it is */
     public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = true;
 
-    public final static boolean REWARD_GOAL_UNSTAMPED = true;
 
 
     /** can be unfair to new inputs if true, so for fairness leave false */
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = !NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME;
+
+    public final static boolean REWARD_GOAL_UNSTAMPED = false;
 
 
     public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
     public static final boolean VOLMAX_RESTRICTS= configIs("VOLMAX_RESTRICTS"); //all tasks
 
 
-    public static final int TERM_BUFFER_VOL_MIN = Integer.MAX_VALUE;
+//    public static final int TERM_BUFFER_VOL_MIN = Integer.MAX_VALUE;
 
 
 
@@ -93,9 +94,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
     public static final float ANSWER_DETAIL =
-            0.25f;
+            //0.25f;
             //0.333f;
-            //0.5f;
+            0.5f;
             //0.75f;
             //1f;
             //2f;

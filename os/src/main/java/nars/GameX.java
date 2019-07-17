@@ -275,7 +275,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 512,
-                                new PriBuffer.BagTaskBuffer(512, 0.66f))
+                                new PriBuffer.BagTaskBuffer(512, 0.33f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(

@@ -65,10 +65,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        int stampDelta = stampMax - stampMin;
         //double rangeDeltaMax = ...
         //double df = (n.bounds.range(1)) /* freq */;
-        double eviMin = c2wSafe(n.bounds.center(2));
+        double confFactor = (1+n.bounds.center(2));
         long range = (1+(e-s));
 //        long timeDist = ((TaskRegion)n.bounds).maxTimeTo(now);
-        return (float)(((double) u  /* * (1 + ((double)timeDist)) */ ) / ( eviMin * range  )); //* (timeToNow/range)
+        return (float)( Math.sqrt(n.size) * ((double) u  /* * (1 + ((double)timeDist)) */ ) / ( confFactor * range  )); //* (timeToNow/range)
         };
     }
     //new AxialSplitLeaf();
