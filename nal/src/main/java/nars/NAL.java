@@ -256,7 +256,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.75f;
-        public static final float CLEAN_MARGIN_DURS = SIGNAL_LATCH_LIMIT_DURS;
+        public static final float CLEAN_MARGIN_DURS = 1;
     }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
