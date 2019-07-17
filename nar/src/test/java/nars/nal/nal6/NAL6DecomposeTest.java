@@ -49,7 +49,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
             ////If S is the case, and (&&,S,A_1..n) is not the case, it can't be that (&&,A_1..n) is the case
             test
                     .termVolMax(5)
-                    .believe("--(&&,--x,y,z)")
+                    .believe("--(&&,--x,y,z)") // == (||, x, --y, --z)
                     .believe("--x")
                     .mustBelieve(cycles, "(y&&z)", 0f, 0.81f)
             ;

@@ -143,7 +143,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             }
 
             if (stack_pointer==-1)
-                stack = new int[1+(int) Math.ceil(2*Math.log((right - left))/Math.log(2))];
+                stack = new int[2+(int) Math.ceil(2*Math.log((right - left))/Math.log(2))];
             stack[++stack_pointer] = a;
             stack[++stack_pointer] = b;
         }

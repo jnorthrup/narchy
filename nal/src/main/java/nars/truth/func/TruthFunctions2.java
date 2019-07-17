@@ -147,7 +147,7 @@ public enum TruthFunctions2 {
                             Util.lerpSafe(bF, 1- gF, gF)
                             :
                             gF
-                            //Util.lerpSafe(bF, 0.5f, goal.freq())
+                            //Util.lerpSafe(bF, 0.5f, gF)
                         ;
 
                 return $.t(f, cc);

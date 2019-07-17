@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 150;
+    public static final int cycles = 250;
 
     @BeforeEach
     void setTolerance() {
@@ -378,7 +378,7 @@ public class NAL8Test extends NALTest {
     void testInhibition() {
 
 
-        test.termVolMax(4).confMin(0.15f)
+        test.termVolMax(4).confMin(0.75f)
                 .goal("reward")
                 .believe("(  good ==> reward)", 1, 0.9f)
                 .believe("(--bad  ==> reward)", 1, 0.9f)
@@ -581,20 +581,22 @@ public class NAL8Test extends NALTest {
     @ParameterizedTest
     @ValueSource(strings = {"&|", "&&"})
     void testGoalImplComponentEternal(String conj) {
-        test.nar.termVolMax.set(6);
-        test
-                .input("happy!")
-                .input("(in =|> (happy " + conj + " --out)).")
-                .mustBelieve(cycles, "(in =|> happy)", 1f, 0.81f)
-                .mustGoal(cycles, "in", 1f, 0.73f);
+        test.termVolMax(6)
+            .confMin(0.7f)
+            .input("happy!")
+            .input("(in ==> (happy " + conj + " --out)).")
+            .mustBelieve(cycles, "(in ==> happy)", 1f, 0.81f)
+            .mustGoal(cycles, "in", 1f, 0.73f);
     }
 
     @ParameterizedTest
     @ValueSource(strings = {"&&", "&|"})
     void testGoalImplComponentEternalSubjNeg(String conj) {
-        test.input("happy!")
-                .input("(--in =|> (happy " + conj + " --out)).")
-                .mustGoal(cycles, "in", 0f, 0.42f);
+        test.termVolMax(6)
+            .confMin(0.4f)
+            .input("happy!")
+            .input("(--in ==> (happy " + conj + " --out)).")
+            .mustGoal(cycles, "in", 0f, 0.42f);
     }
 
     @Test
@@ -824,6 +826,8 @@ public class NAL8Test extends NALTest {
     @Test
     void implDecomposeGoalBeforeTemporalSameTerm() {
         test
+                .termVolMax(3)
+                .confMin(0.4f)
                 .inputAt(1, "(x ==>-1 x).")
                 .inputAt(2, "x! |")
                 .mustGoal(cycles, "x", 1f, 0.45f, 3)

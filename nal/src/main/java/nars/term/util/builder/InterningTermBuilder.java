@@ -36,7 +36,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 11;
+    public static final int volMaxDefault = 9;
+    private static final int ATOM_INTERNING_LENGTH_MAX = 8;
 
     /**
      * memory-saving
@@ -44,7 +45,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
     static final boolean sortCanonically = true;
     private final static boolean cacheSubtermKeyBytes = false;
 
-    private static final int ATOM_INTERNING_LENGTH_MAX = 8;
 
     private static final boolean resolveNeg = false;
     //    private final static boolean internNegs = false;
@@ -262,16 +262,13 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Term[] subterms) {
+        int volRemain = volInternedMax - subterms.length;
         for (Term x : subterms) {
             if (x == Null)
                 return false;
-        }
-
-        int volRemain = volInternedMax - subterms.length;
-        for (Term x : subterms) {
-            if ((volRemain -= x.volume()) < 0)
-                return false;
             if (!internableSub(x))
+                return false;
+            if ((volRemain -= (x instanceof Atomic ? 1 : x.volume())) < 0)
                 return false;
             volRemain++;
         }
