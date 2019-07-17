@@ -203,6 +203,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
         table.items.sort(ScalarValue::priComparable, from, to);
+        //assert(isSorted(ScalarValue::priComparable)); //TEMPORARY
+
     }
 
     /** update histogram, remove values until under capacity */
@@ -232,7 +234,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         for (int i = 0; i < s; ) {
             Object _y = a[i];
 
-            if (_y != null) {
+            if (_y == null) {
+                a[i] = null;
+                s--;
+            } else {
                 Y y = (Y) _y;
 
                 float p = pri(y);
@@ -271,13 +276,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
                 } else {
+
                     items.removeFast(y, i);
                     removeFromMap(y);
                     s--;
                 }
-            } else {
-                items.removeFast((Y)_y, i);
-                s--;
             }
         }
 
@@ -633,7 +636,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         try {
             if (ii[suspectedPosition] == y) {
-                boolean removed = table.items.removeFast(y, suspectedPosition);
+                boolean removed = table.items.removeFaster(y, suspectedPosition);
                 assert (removed);
                 removeFromMap(y);
             }
@@ -792,7 +795,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                         table.items.reprioritize(existing, posBefore(existing, priBefore), delta, priAfter, table);
                     } else {
                         //got deleted
-                        if (!table.items.removeFast(existing, posBefore(existing, priBefore)))
+                        if (!table.items.removeFaster(existing, posBefore(existing, priBefore)))
                             throw new ConcurrentModificationException();
                         removeFromMap(existing);
                     }

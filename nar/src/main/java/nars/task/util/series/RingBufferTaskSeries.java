@@ -36,16 +36,17 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             return true;
 
         long ls = l.start();
-        if (ls!=ETERNAL) {
-            int head = q.head();
+        if (ls == ETERNAL)
+            return false;
 
-            int mid = indexNear(head, (ls + l.end()) / 2);
-            if (mid != -1) {
-                Task t = q.get(mid);
-                if (t != null && t.intersects(l))
-                    return false;
-            }
+        int head = q.head();
+        int mid = indexNear(head, (ls + l.end()) / 2);
+        if (mid != -1) {
+            Task t = q.peek(head, mid);
+            if (t != null && t.intersects(l))
+                return false;
         }
+
 
         return super.isEmpty(l);
     }
@@ -79,42 +80,46 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
      */
     public int indexNear(int head, long when) {
         int s = size();
-        if (s == 0)
-            return -1;
-        else if (s == 1)
-            return 0;
-        else if (s == 2) {
-            T a = q.peek(head, 0), b = q.peek(head, 1);
-            if (a==null) return 1; else if (b == null) return 0;
-            long at = a.meanTimeTo(when), bt = b.meanTimeTo(when);
-            if (at < bt) return 0;
-            else if (at > bt) return 1;
-            else return ThreadLocalRandom.current().nextBoolean() ? 0 : 1;
+        switch (s) {
+            case 0:
+                return -1;
+            case 1:
+                return 0;
+            case 2: {
+                T a = q.peek(head, 0), b = q.peek(head, 1);
+                if (a == null) return 1;
+                else if (b == null) return 0;
+                long at = a.meanTimeTo(when), bt = b.meanTimeTo(when);
+                if (at < bt) return 0;
+                else if (at > bt) return 1;
+                else return ThreadLocalRandom.current().nextBoolean() ? 0 : 1;
+            }
+            default: {
+                int low = 0, high = s - 1, mid = -1;
+                while (low <= high) {
+
+                    mid = (low + (high + 1)) / 2;
+                    T midVal = q.peek(head, mid);
+                    if (midVal == null) {
+                        low = mid + 1; ///oops ?
+                        continue;
+                    }
+
+                    long a = midVal.start(), b = midVal.end();
+                    if (when >= a && when <= b)
+                        break; //found
+                    else if (when > b) {
+                        //assert(when>a);
+                        low = mid + 1;
+                    } else {//if (when < a)
+                        //assert(when<a);
+                        high = mid - 1;
+                    }
+                }
+                return mid;
+            }
         }
 
-        int low = 0, high = s - 1, mid = -1;
-        while (low <= high) {
-
-            mid = (low + (high+1)) / 2;
-            T midVal = q.peek(head, mid);
-            if (midVal == null) {
-                low = mid + 1; ///oops ?
-                continue;
-            }
-
-            long a = midVal.start(), b = midVal.end();
-            if (when >= a && when <= b)
-                break; //found
-            else if (when > b) {
-                //assert(when>a);
-                low = mid + 1;
-            } else {//if (when < a)
-                //assert(when<a);
-                high = mid - 1;
-            }
-        }
-
-        return mid;
     }
 
 //    /**
@@ -185,9 +190,9 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             int center = indexNear(head, T);
 
             int size = this.size();
-            int r = 0, rad = size / 2 + 1;
+            int r = 0;
 
-            long lastLow = Long.MIN_VALUE, lastHigh = Long.MAX_VALUE;
+            long lastLow = Long.MAX_VALUE, lastHigh = Long.MIN_VALUE;
             boolean increase = true, decrease = true;
             do {
 
@@ -195,28 +200,26 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 long um = TIMELESS, vm = TIMELESS;
 
                 if (increase) {
-                    int vv = center + r;
-                    v = vv < size ? q.peek(head, vv) : null;
+                    v = q.peek(head, center + r);
 
                     if (v!=null) {
-                        vm = v.mid();
-                        if (vm <= lastLow){
+                        vm = v.start();
+                        if (vm < lastHigh){
                             v = null; //wrap-around, stop
                             increase = false;
                         } else
-                        lastHigh = vm;
+                            lastHigh = vm;
                     }
                 }
 
                 r++;
 
                 if (decrease) {
-                    int uu = center - r; //if (uu < 0) uu += cap; //HACK prevent negative value
-                    u = uu >= 0 ? q.peek(head, uu) : null;
+                    u = q.peek(head, center - r);
 
                     if (u!=null) {
-                        um = u.mid();
-                        if (um >= lastHigh) {
+                        um = u.start();
+                        if (um > lastLow) {
                             u = null; //wrap-around, stop
                             decrease = false;
                         } else
@@ -248,18 +251,17 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                     return false;
 
 
-            } while (r < rad);
+            } while (r < size);
 
         } else {
 
 
             //just return the latest items while it keeps asking
             //TODO iterate from oldest to newest if the target time is before or near series start
-            int qs = q.size();
-//            int offset = ThreadLocalRandom.current().nextInt(qs);
-            for (int i = qs - 1; i >= 0; i--) {
-//                T qi = q.get((i + offset)%qs);
-                T qi = q.get(i);
+            //            int offset = ThreadLocalRandom.current().nextInt(qs);
+            int head = q.head();
+            for (int i = q.size() - 1; i >= 0; i--) {
+                T qi = q.peek(head, i);
                 if (qi!=null && !whle.test(qi))
                     return false;
             }

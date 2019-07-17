@@ -266,15 +266,20 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
         return link(link);
     }
 
-    @Deprecated
     public Stream<Term> terms() {
         return links.stream()
-                .flatMap(x -> Stream.of(x.from(), x.to()))
+                .flatMap(x -> Stream.of(x.from(), x.to()).distinct())
+                .distinct();
+    }
+
+    public Stream<Term> terms(Predicate<Term> filter) {
+        return links.stream()
+                .flatMap(x -> Stream.of(x.from(), x.to()).distinct().filter(filter))
                 .distinct();
     }
 
     public final Stream<Concept> concepts(NAR n) {
-        return terms()
+        return terms(x -> x.op().conceptualizable)
                 .map(n::concept)
                 .filter(Objects::nonNull)
                 ;

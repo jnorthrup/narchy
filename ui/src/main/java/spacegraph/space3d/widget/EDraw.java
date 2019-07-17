@@ -40,4 +40,8 @@ public class EDraw<Y extends SimpleSpatial> extends UnitPri {
     public final int hashCode() {
         return hash;
     }
+
+    public final boolean connected() {
+        return src.active() && tgt.active();
+    }
 }

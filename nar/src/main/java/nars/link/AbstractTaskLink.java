@@ -16,12 +16,16 @@ import static jcog.signal.tensor.AtomicFixedPoint4x16bitVector.SHORT_TO_FLOAT_SC
 import static nars.Task.i;
 
 public abstract class AbstractTaskLink implements TaskLink {
+
+    //private static final AtomicFloatFieldUpdater<AbstractTaskLink> PRI = new AtomicFloatFieldUpdater<AbstractTaskLink>(AbstractTaskLink.class, "pri");
+
     /**
      * source,target as a 2-ary subterm
      */
     public final Term src;
     public final Term tgt;
     public final int hash;
+
     /**
      * cached; NaN means invalidated
      */
@@ -81,7 +85,8 @@ public abstract class AbstractTaskLink implements TaskLink {
         float p = this.pri;
         if (p != p)
             return this.pri = priSum() / 4; //update cached value
-        return p;
+        else
+            return p;
     }
 
     protected void invalidate() {

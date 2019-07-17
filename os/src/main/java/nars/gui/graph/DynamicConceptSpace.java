@@ -292,18 +292,18 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 c.edges.write().forEachValue(x -> x.inactive = true);
             });
 
-            edges.commit(ee -> {
-                ConceptWidget src = ee.src();
-                Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
-                ConceptWidget tgt = ee.tgt();
-                if (tgt.active()) {
-                    eee.computeIfAbsent(tgt.id, (t) ->
-                            new ConceptWidget.ConceptEdge(src, tgt, 0)
-                    ).merge(ee);
-                } else {
-                    ee.delete();
-                    eee.remove(tgt.id);
+            edges.commit(e -> {
+                if (!e.active()) {
+                    e.delete();
+                    return;
                 }
+
+                ConceptWidget src = e.src();
+                Map<Concept, ConceptWidget.ConceptEdge> eee = src.edges.write();
+                ConceptWidget tgt = e.tgt();
+                eee.computeIfAbsent(tgt.id, (t) ->
+                    new ConceptWidget.ConceptEdge(src, tgt, 0)
+                ).merge(e);
             });
             float termlinkOpac = termlinkOpacity.floatValue();
             float tasklinkOpac = tasklinkOpacity.floatValue();
@@ -317,10 +317,10 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             pending.forEach(c -> {
                 float srcRad = c.radius();
                 c.edges.write().removeIf(e -> {
-                    if (e.inactive)
+                    if (e.inactive || !e.connected()) {
+                        e.delete();
                         return true;
-
-                    
+                    }
 
                     float edgeSum = (e.termlinkPri + e.tasklinkPri);
 
@@ -343,7 +343,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                         e.b = 0.05f + 0.65f * (termish);
                         e.g = 0.1f * (1f - (e.r + e.g) / 1.5f);
 
-                        e.a = Util.lerp(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
+                        e.a = Util.lerpSafe(p /* * Math.max(taskish, termish) */, lineAlphaMin, lineAlphaMax);
 
                         
 

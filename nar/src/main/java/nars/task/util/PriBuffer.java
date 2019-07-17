@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
@@ -71,7 +70,6 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         put(task);
     }
 
-    abstract public float priMin();
 
     /**
      * pass-thru, no buffering
@@ -113,13 +111,9 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
         @Override
         public final int capacity() {
-            return 1;
+            return Integer.MAX_VALUE;
         }
 
-        @Override
-        public float priMin() {
-            return 0;
-        }
     }
 
 //    /**
@@ -163,11 +157,6 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         @Override
         public int size() {
             return tasks.size();
-        }
-
-        @Override
-        public float priMin() {
-            throw new TODO();
         }
 
         @Override
@@ -282,10 +271,6 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
             this.tasks.setCapacity(capacity);
         }
 
-        @Override
-        public float priMin() {
-            return tasks.isFull() ? tasks.priMin() : 0;
-        }
 
         @Override
         public void clear() {

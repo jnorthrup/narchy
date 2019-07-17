@@ -344,14 +344,14 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
 
     public float priSum() {
-        return priIfyNonDeleted(0, (sum, x) -> (sum + x));
+        return priIfyNonDeleted(0, Float::sum);
     }
 
     /**
      * public slow implementation.
      * returns a value between 0..1.0. if empty, returns 0
      */
-    public float priMin() {
+    @Deprecated public float priMin() {
         float m = priIfyNonDeleted(Float.POSITIVE_INFINITY, Math::min);
         return Float.isFinite(m) ? m : 0;
     }
@@ -360,7 +360,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * public slow implementation.
      * returns a value between 0..1.0. if empty, returns 0
      */
-    public float priMax() {
+    @Deprecated public float priMax() {
         float m = priIfyNonDeleted(Float.NEGATIVE_INFINITY, Math::max);
         return Float.isFinite(m) ? m : 0;
     }

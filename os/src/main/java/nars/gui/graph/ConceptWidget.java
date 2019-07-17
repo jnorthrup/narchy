@@ -117,15 +117,10 @@ public class ConceptWidget extends SpaceWidget<Concept> {
             return id.getOne().getTwo();
         }
 
-        @Override
-        public boolean isDeleted() {
-            if (!src().active() || !tgt().active()) {
-                delete();
-                return true;
-            }
-            return super.isDeleted();
-        }
 
+        public boolean active() {
+            return src().active() && tgt().active();
+        }
     }
 
 
@@ -157,15 +152,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
         }
 
 
-        @Override
-        public boolean isDeleted() {
-            boolean inactive = !src().active() || !tgt().active();
-            if (inactive) {
-                delete();
-                return true;
-            }
-            return super.isDeleted();
-        }
+
 
         public void merge(EdgeComponent e) {
             float p = e.priElseZero();

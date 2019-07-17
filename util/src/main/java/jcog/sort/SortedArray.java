@@ -84,13 +84,13 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
 
 
-    private static void qsort(int[] stack, Object[] c, int left, int right, ToIntFunction pCmp) {
+    private static void qsort(Object[] c, int left, int right, ToIntFunction pCmp) {
+        int[] stack = null;
         int stack_pointer = -1;
-        final int SCAN_THRESH = 3;
+        final int SCAN_THRESH = 8;
         while (right - left > SCAN_THRESH) {
             int median = (left + right) / 2;
             int i = left + 1;
-            int j = right;
 
             swap(c, i, median);
 
@@ -118,6 +118,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             int tempV = pCmp.applyAsInt(temp);
 
             /** safety limit in case the order of the items changes while sorting; external factors could cause looping indefinitely */
+            int j = right;
             int limit = Util.sqr(right-left);
             while (true) {
                 while (i < right && pCmp.applyAsInt(c[++i]) > tempV && --limit > 0) { }
@@ -141,47 +142,55 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 left = i;
             }
 
+            if (stack_pointer==-1)
+                stack = new int[1+(int) Math.ceil(2*Math.log((right - left))/Math.log(2))];
             stack[++stack_pointer] = a;
             stack[++stack_pointer] = b;
         }
 
-        qsortBubble(pCmp, c, left, right, stack, stack_pointer);
+        qsort_bubble(pCmp, c, left, right, stack, stack_pointer);
     }
 
-    private static void qsortBubble(ToIntFunction pCmp, Object[] c, int left, int right, int[] stack, int stack_pointer) {
+    private static void qsort_bubble(ToIntFunction pCmp, Object[] c, int left, int right, int[] stack, int stack_pointer) {
         while (true) {
+
             for (int j = left + 1; j <= right; j++) {
                 int i = j - 1;
-                Object swap = c[j];
-                while (i >= left && pCmp.applyAsInt(c[i]) < pCmp.applyAsInt(swap)) {
-                    swap(c, i + 1, i--);
+                Object pivot = c[j];
+                if (i >= left) {
+                    int swapVal = pCmp.applyAsInt(pivot);
+                    while (i >= left && pCmp.applyAsInt(c[i]) < swapVal) {
+                        swap(c, i + 1, i--);
+                    }
                 }
-                c[i + 1] = swap;
+                c[i + 1] = pivot;
             }
-            if (stack_pointer != -1) {
-                right = stack[stack_pointer--];
-                left = stack[stack_pointer--];
-            } else {
-                return;
-            }
+
+            if (stack_pointer < 0)
+                break;
+
+            right = stack[stack_pointer--];
+            left = stack[stack_pointer--];
+
         }
     }
 
-    /**
-     * TODO find exact requirements
-     */
-    static int sortSize(int size) {
-        if (size < 16)
-            return 4;
-        else if (size < 64)
-            return 6;
-        else if (size < 128)
-            return 8;
-        else if (size < 2048)
-            return 16;
-        else
-            return 32;
-    }
+
+//    /**
+//     * TODO find exact requirements
+//     */
+//    static int sortSize(int size) {
+//        if (size < 16)
+//            return 4;
+//        else if (size < 64)
+//            return 6;
+//        else if (size < 128)
+//            return 8;
+//        else if (size < 2048)
+//            return 16;
+//        else
+//            return 32;
+//    }
 
 //    /** untested, not finished */
 //    public static void qsortAtomic(int[] stack, Object[] c, int left, int right, FloatFunction pCmp) {
@@ -274,8 +283,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         to = Math.max(from, Math.min(size - 1, to));
         if (from == to)
             return;
-        int[] stack = new int[(int) Math.ceil(1+Math.log(1+to - from)/Math.log(2))];
-        qsort(stack, items, from /*dirtyStart - 1*/, to, x);
+        qsort(items, from, to, x);
     }
 
     public final X get(int i) {
@@ -327,6 +335,20 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 //            return previous;
         }
         return null;
+    }
+
+    /** simply swaps the item at the index with the last item */
+    public final boolean removeFaster(X x, int index) {
+        int s = size;
+        if (s > index) {
+            X[] items = this.items;
+            if (items[index] == x) {
+                items[index] = null;
+                items[index] = items[SIZE.decrementAndGet(this)];
+                return true;
+            }
+        }
+        return false;
     }
 
     public final boolean removeFast(X x, int index) {
