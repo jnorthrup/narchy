@@ -475,7 +475,7 @@ public class Opjects extends DefaultTermizer {
         final Memoize<Term, Runnable> runCache;
 
 
-        public MethodExec(String _methodName) {
+        MethodExec(String _methodName) {
             super(null, Opjects.this.exeThresh);
 
             this.methodName = $.the(_methodName);
@@ -522,14 +522,13 @@ public class Opjects extends DefaultTermizer {
 
                     try {
                         mh.invokeWithArguments(instanceAndArgs);
-                        //mh.bindTo(instance).asSpreader(Object[].class, instanceAndArgs.length-1).invokeExact(ArrayUtils.subarray(instanceAndArgs,1, instanceAndArgs.length));
+                        evoked(methodName, instance, instanceAndArgs);
                     } catch (Throwable throwable) {
                         logger.error("{} execution {}", term, throwable);
                     } finally {
                         flag.set(false);
                     }
 
-                    evoked(methodName, instance, instanceAndArgs);
 
                 };
 
@@ -689,7 +688,7 @@ public class Opjects extends DefaultTermizer {
 
 
     @RuntimeType
-    public Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @This Object obj) {
+    public final Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @This Object obj) {
         try {
             return tryInvoked(obj, method, args, method.invoke(obj, args));
         } catch (InvocationTargetException | IllegalAccessException e) {

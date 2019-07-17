@@ -443,9 +443,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * ask question
      */
-    public Task question(String termString) {
+    public Task question(String termString) throws NarseseException {
 
-        return question($$(termString));
+        return question($(termString));
     }
 
     /**

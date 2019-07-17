@@ -1,4 +1,11 @@
 
+//Anonymous Analogy (NAL5)
+//  originally this only unified depvar (dep var elimination)
+//  TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
+    //Goal: ?
+
 
 
 ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized, Time:TaskEvent)
@@ -15,7 +22,8 @@
 
 //Question Induction
 
-  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:Task)
+  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:TaskEvent)
+  X, C, eventOfPN(C,X), task("?@") |- (polarizeRandom(conjWithoutPN(C,X))==>X), (Punctuation:Question, Time:TaskEvent)
     //TODO unified conj question
 
   B, (C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
@@ -30,7 +38,7 @@
               B, (--A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
 
   (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
-    (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
+    (--C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
   (X ==> C), B, neq(B,C), task("."), --isVar(B) |- unisubst((X ==> C),C,B,novel), (Punctuation:Question, Time:Task)
 
 
@@ -39,22 +47,6 @@
 ////Contraposition to Disjunction
 //    (--S ==> P), (--S ==> P) |- (S || P), (Belief:StructuralDeduction)
 //    (S ==> N),   (S ==> P)   |- (S || P), (Belief:StructuralDeductionN)
-
-
-//Anonymous Analogy (NAL5)
-//  originally this only unified depvar (dep var elimination)
-
-//TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogyPP)
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN)
-    //Goal: ?
-
-    //(&&,X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogy)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
-      //C, X, eventOf(C,X)    |- conjWithout(C,X), (Belief:AnonymousAnalogy)
-    //(&&,--X,A..+), Y   |- unisubst((&&,A..+),X,Y,"#"), (Belief:AnonymousAnalogyPN)
-      //accelerated version requiring no second-level unification and allows the general case unisubst to be 'novel'
-      //C, X, eventOfNeg(C,X) |- conjWithout(C,--X), (Belief:AnonymousAnalogyPN)
 
 
 //Hypothesize Subcondition Identity

@@ -1,12 +1,14 @@
 package jcog.sort;
 
+import com.google.common.collect.Iterators;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
-import java.util.function.Consumer;
+import java.util.Collections;
+import java.util.Iterator;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
 
-public class Top<T> implements Consumer<T> {
+public class Top<T> implements TopFilter<T> {
     public final FloatRank<T> rank;
     /* TODO private */ public T the;
     public float score;
@@ -23,6 +25,11 @@ public class Top<T> implements Consumer<T> {
     public void clear() {
         score = NEGATIVE_INFINITY;
         the = null;
+    }
+
+    @Override
+    public int size() {
+        return the==null ? 0 : 1;
     }
 
     public final T get() { return the; }
@@ -46,7 +53,14 @@ public class Top<T> implements Consumer<T> {
 //        return this;
 //    }
 
+    @Override
     public boolean isEmpty() {
         return the==null;
+    }
+
+    @Override
+    public final Iterator<T> iterator() {
+        T t = the;
+        return t == null ? Collections.emptyIterator() : Iterators.singletonIterator(t);
     }
 }

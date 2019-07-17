@@ -16,6 +16,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /** default implementation intended for generic usage */
 public class DefaultScientist<S,E> extends Scientist<S,E> {
 
+    /** TODO TopFilter<..> */
     final Map<String, TopN<FloatObjectPair<String>>> best = new HashMap();
 
     //TODO running PCA aggregation to determine the general relative influence of each variable

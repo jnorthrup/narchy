@@ -3,6 +3,7 @@ package nars.test.condition;
 
 import jcog.Texts;
 import jcog.sort.RankedN;
+import jcog.sort.TopFilter;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
@@ -109,7 +110,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
         public final float confMin;
 
         protected Task firstMatch = null;
-        @Nullable protected RankedN<Task> similar = null;
+        @Nullable protected TopFilter<Task> similar = null;
         protected final NAR nar;
         private final byte punc;
         private final Term term;
@@ -128,7 +129,8 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
         public DefaultTaskCondition(NAR n, long creationStart, long creationEnd, Term term, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) throws RuntimeException {
 
 
-            if (freqMax < freqMin) throw new RuntimeException("freqMax < freqMin");
+            if (freqMax < freqMin)
+                throw new RuntimeException("freqMax < freqMin");
             if (confMax < confMin) throw new RuntimeException("confMax < confMin");
 
             if (creationEnd - creationStart < 1)
@@ -205,7 +207,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
                     firstMatch = t;
             } else {
                 if (similar!=null)
-                    similar.add(t);
+                    similar.accept(t);
             }
             return r;
         }
@@ -238,8 +240,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
         private boolean creationTimeMatches() {
             long now = nar.time();
-            return (((creationStart == -1) || (now >= creationStart)) &&
-                    ((creationEnd == -1) || (now <= creationEnd)));
+            return now >= creationStart && now <= creationEnd;
         }
 
         private boolean occurrenceTimeMatches(Task t) {
@@ -247,8 +248,8 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
         }
 
         private boolean truthMatches(Truthed task) {
-            Truth tt = task.truth();
             if ((punc == Op.BELIEF) || (punc == Op.GOAL)) {
+                Truth tt = task.truth();
 
                 float co = tt.conf();
                 if ((co > confMax) || (co < confMin))
@@ -257,7 +258,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
                 float fr = tt.freq();
                 return (fr <= freqMax && fr >= freqMin);
             } else {
-                return tt == null;
+                return true;
             }
         }
 
@@ -298,7 +299,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 //        if (difference >= worstDiff)
 //            return;
 
-            difference += 0.00001f * ((float) Math.abs(task.hashCode()) / (Integer.MAX_VALUE * 2.0f)); //HACK differentiate by hashcode
+            difference += 0.5f * (Math.abs(task.hashCode()) / (Integer.MAX_VALUE * 2.0f)); //HACK differentiate by hashcode
 
             return -difference;
 

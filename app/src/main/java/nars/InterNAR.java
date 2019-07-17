@@ -170,7 +170,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
     protected float send(Task next) {
 
 
-        logger.debug("{} send {}", peer, next);
+        logger.info("{} send {}", peer, next);
 
         @Nullable byte[] msg = IO.taskToBytes(next);
         assert (msg != null);
@@ -200,17 +200,13 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 //                x = new ActiveQuestionTask(x, 8, nar, (q, a) -> accept(nar, q, a));
 //                ((NALTask.NALTaskX)x).meta("UDPeer", m);
 //            }
-            x.budget(nar);
+            x.budget(incomingPriMult.floatValue(), nar);
 
-            x.priMult(incomingPriMult.floatValue());
-
-            if (logger.isDebugEnabled())
-                logger.debug("recv {} from {}", x, m.from);
+            logger.info("recv {} from {}", x, m.from);
 
             recv.accept(x, what);
         } catch (Exception e) {
             logger.warn("recv {} from {}: {}", m, m.from, e.getMessage());
-            return;
         }
     }
 

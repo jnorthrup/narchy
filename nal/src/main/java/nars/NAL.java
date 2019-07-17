@@ -676,7 +676,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /**
          * how precise unit test results must match expected values to pass
          */
-        public static final float TRUTH_ERROR_TOLERANCE = NAL.truth.TRUTH_EPSILON * 2;
+        public static final float TRUTH_ERROR_TOLERANCE = NAL.truth.TRUTH_EPSILON*2;
         public static boolean DEBUG_EXTRA = false;
         public static boolean DEBUG_ENSURE_DITHERED_TRUTH = DEBUG_EXTRA;
         public static boolean DEBUG_ENSURE_DITHERED_OCCURRENCE= DEBUG_EXTRA;

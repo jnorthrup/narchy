@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 50;
+    private final static int cycles = 450;
 
     @Override
     protected NAR nar() {
@@ -1329,24 +1329,19 @@ public class NAL7Test extends NALTest {
 
     @Test
     void testInductionIntervalMerge1() {
-        /*
-        1: a
-        3: b
-        5: c
-        */
 
-        test.nar.termVolMax.set(5);
-        test
-                .inputAt(1, "(a &&+4 c). :|:")
-                .inputAt(3, "b. :|:")
-                .mustBelieve(cycles, "(a &&+4 c)",
-                        1f, 0.81f, 1)
-                .mustBelieve(cycles, "(b &&+2 c)",
-                        1f, 0.81f, 3)
-                .mustBelieve(cycles, "((a &&+2 b) &&+2 c)",
-                        1f, 0.81f, 1)
-                .mustNotOutput(cycles, "(b &&+3 (a &&+4 c))",
-                        BELIEF, (t) -> t == 1 || t == ETERNAL);
+        test.termVolMax(5)
+            /*
+            1: a
+            3: b
+            5: c
+            */
+            .inputAt(1, "(a &&+4 c). |")
+            .inputAt(3, "b. |")
+            .mustBelieveAtOnly(cycles, "(a &&+4 c)", 1f, 0.81f, 1)
+            .mustBelieveAtOnly(cycles, "(b &&+2 c)", 1f, 0.81f, 3)
+            .mustBelieveAtOnly(cycles, "((a &&+2 b) &&+2 c)", 1f, 0.81f, 1)
+            .mustNotBelieve(cycles, "(b &&+3 (a &&+4 c))",  (t,e) -> t == 1 || t == ETERNAL);
     }
 
     @Test

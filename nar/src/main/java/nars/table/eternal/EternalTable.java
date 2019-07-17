@@ -228,11 +228,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             int index = indexOf(x, this);
 
             if (index != -1) {
-                Task xx = get(index);
+                Task xx = items[index];
 
                 r = Util.readToWrite(r, lock);
 
-                if (get(index) != xx) { //moved while waiting for lock, retry:
+                if (items[index] != xx) { //moved while waiting for lock, retry:
                     index = indexOf(x, this);
                 }
 
@@ -282,6 +282,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         final double ie = input.evi();
 
         NAR nar = r.nar;
+        long[] inputStamp = input.stamp();
 
         for (Object _x : list) {
             if (_x == null) break; //HACK
@@ -293,7 +294,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             Term xTerm = x.term();
             Truth xt = x.truth();
 
-            if (Stamp.overlap(input, x)) {
+            if (Stamp.overlapsAny(inputStamp, x.stamp())) {
 
                 //HACK interpolate truth if only freq differs
                 if ((!x.isCyclic() && !input.isCyclic()) &&

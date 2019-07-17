@@ -9,10 +9,10 @@
 
 //NAL3 double premise decompose
 //  if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DeductionPositiveNegativeNegative
-    (M --> G), (M --> C), eventOf(C,G)        |-    (M -->   conjWithout(C,   G)), (Goal:DeductionPP, Time:Task)
-    (M --> G), (M --> C), eventOfNeg(C,G)     |-    (M -->   conjWithout(C, --G)), (Goal:DeductionNP, Time:Task)
-        (M --> G), (M --> C), eventOf(C,G)    |-    (M -->   conjWithout(C,   G)), (Goal:DeductionPN, Time:Task)
-        (M --> G), (M --> C), eventOfNeg(C,G) |-    (M -->   conjWithout(C, --G)), (Goal:DeductionNN, Time:Task)
+    (M --> G), (M --> C), eventOf(C,G)        |-    (M --> conjWithout(C,   G)), (Goal:DeductionPP, Time:Task)
+    (M --> G), (M --> C), eventOfNeg(C,G)     |-    (M --> conjWithout(C, --G)), (Goal:DeductionNP, Time:Task)
+        (M --> G), (M --> C), eventOf(C,G)    |-    (M --> conjWithout(C,   G)), (Goal:DeductionPN, Time:Task)
+        (M --> G), (M --> C), eventOfNeg(C,G) |-    (M --> conjWithout(C, --G)), (Goal:DeductionNN, Time:Task)
 
     (G --> M), (C --> M), eventOf(C,G)        |-    (conjWithout(C,   G) --> M), (Goal:DeductionPP, Time:Task)
     (G --> M), (C --> M), eventOfNeg(C,G)     |-    (conjWithout(C, --G) --> M), (Goal:DeductionNP, Time:Task)
@@ -20,13 +20,18 @@
         (G --> M), (C --> M), eventOfNeg(C,G) |-    (conjWithout(C, --G) --> M), (Goal:DeductionNN, Time:Task)
 
 //predicate (intensional, conj)
-(M --> C), (M --> X),  eventOf(C,X)       |-    (M --> conjWithout(C,  X)), (Belief:DeductionPP, Goal:DeductionPP, Time:Compose)
-(M --> C), (M --> X),  eventOfNeg(C,X)    |-    (M --> conjWithout(C,--X)), (Belief:DeductionPN, Goal:DeductionPN, Time:Compose)
-  (M --> D), (M --> X),  eventOfNeg(D,X)  |-  --(M --> conjWithout(D,--X)), (Belief:DeductionNN, Goal:DeductionNN, Time:Compose)
-  (M --> D), (M --> X),  eventOf(D,X)     |-  --(M --> conjWithout(D,  X)), (Belief:DeductionNP, Goal:DeductionNP, Time:Compose)
+(M --> C), (M --> X),  eventOf(C,X)       |-    (M-->conjWithout(C,  X)), (Belief:DeductionPP, Goal:DeductionPP, Time:Task)
+(M --> C), (M --> X),  eventOfNeg(C,X)    |-    (M-->conjWithout(C,--X)), (Belief:DeductionPN, Goal:DeductionPN, Time:Task)
+  (M --> D), (M --> X),  eventOfNeg(D,X)  |-  --(M-->conjWithout(D,--X)), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
+  (M --> D), (M --> X),  eventOf(D,X)     |-  --(M-->conjWithout(D,  X)), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)
 
 //subject (extensional, disj)
-(C --> M), (X --> M),  eventOf(C,X)  |-    (conjWithout( C,  X) --> M), (Belief:DeductionNP, Goal:DeductionNP, Time:Compose)
-(C --> M), (X --> M),  eventOfNeg(C,X)     |-    (conjWithout( C,--X) --> M), (Belief:DeductionNN, Goal:DeductionNN, Time:Compose)
-  (D --> M), (X --> M),  eventOfNeg(D,X)  |-  --(conjWithout(D,--X) --> M), (Belief:DeductionNN, Goal:DeductionNN, Time:Compose)
-  (D --> M), (X --> M),  eventOf(D,X)     |-  --(conjWithout(D,  X) --> M), (Belief:DeductionNP, Goal:DeductionNP, Time:Compose)
+//(C --> M), (X --> M),  eventOf(C,X)       |-    (conjWithout(C,  X)-->M), (Belief:DeductionPP, Goal:DeductionPP, Time:Task)
+//(C --> M), (X --> M),  eventOfNeg(C,X)    |-    (conjWithout(C,--X)-->M), (Belief:DeductionPN, Goal:DeductionPN, Time:Task)
+//  (D --> M), (X --> M),  eventOfNeg(D,X)  |-  --(conjWithout(D,--X)-->M), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
+//  (D --> M), (X --> M),  eventOf(D,X)     |-  --(conjWithout(D,  X)-->M), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)
+
+(C --> M), (X --> M),  eventOf(C,X)       |-    (conjWithout(C,  X)-->M), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)
+(C --> M), (X --> M),  eventOfNeg(C,X)    |-    (conjWithout(C,--X)-->M), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
+  (D --> M), (X --> M),  eventOfNeg(D,X)  |-  --(conjWithout(D,--X)-->M), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
+  (D --> M), (X --> M),  eventOf(D,X)     |-  --(conjWithout(D,  X)-->M), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)

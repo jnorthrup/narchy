@@ -21,6 +21,7 @@ import java.util.function.LongPredicate;
 import java.util.function.Predicate;
 
 import static java.lang.Float.NaN;
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -518,8 +519,21 @@ public class TestNAR {
     public TestNAR mustBelieve(long cyclesAhead, String term, float freq, float confidence, long occTimeAbsolute) {
         return mustOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
     }
+
+    public TestNAR mustBelieveAtOnly(long cyclesAhead, String term, float freq, float confidence, long startTime) {
+        return mustBelieveAtOnly(cyclesAhead, term, freq, confidence, startTime, startTime);
+    }
+
+    public TestNAR mustBelieveAtOnly(long cyclesAhead, String term, float freq, float confidence, long startTime, long endTime) {
+        mustBelieve(cyclesAhead, term, freq, confidence, startTime);
+        return mustNotBelieve(cyclesAhead, term, (s,e)->s!=startTime || e!=endTime);
+    }
+
     public TestNAR mustNotBelieve(long cyclesAhead, String term, float freq, float confidence, LongLongPredicate occTimeAbsolute) {
         return mustNotOutput(cyclesAhead, term, BELIEF, freq, freq, confidence, confidence, occTimeAbsolute);
+    }
+    public TestNAR mustNotBelieve(long cyclesAhead, String term, LongLongPredicate occTimeAbsolute) {
+        return mustNotOutput(cyclesAhead, term, BELIEF, 0, 1, 0, 1, occTimeAbsolute);
     }
 
 
@@ -580,13 +594,13 @@ public class TestNAR {
         return mustOutput(cyclesAhead, goalTerm, BELIEF, freq, freq, conf, conf, occ);
     }
 
-    public TestNAR ask(String termString) {
-        nar.question(termString);
+    @Deprecated public TestNAR ask(String termString) {
+        nar.question($$(termString));
         return this;
     }
 
     public TestNAR quest(String termString)  {
-        nar.quest($.$$(termString));
+        nar.quest($$(termString));
         return this;
     }
 

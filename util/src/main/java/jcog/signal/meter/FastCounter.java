@@ -1,9 +1,9 @@
 package jcog.signal.meter;
 
-import java.util.concurrent.atomic.LongAdder;
+import java.util.concurrent.atomic.AtomicLong;
 
-/** could also be LongAdder .. */
-public class FastCounter extends LongAdder /* AtomicLong*/ {
+/** NOTE: this can extend EITHER AtomicLong or LongAdder */
+public class FastCounter extends AtomicLong /*LongAdder*/{
 
     private final String name;
 
@@ -16,11 +16,11 @@ public class FastCounter extends LongAdder /* AtomicLong*/ {
         return name + '=' + super.toString();
     }
 
-//    public final void increment() {
-//        incrementAndGet();
-//    }
-//    public void add(long amount) {
-//        addAndGet(amount);
-//    }
+    public final void add(long x) {
+        addAndGet(x);
+    }
 
+    public final void increment() {
+        incrementAndGet();
+    }
 }

@@ -83,89 +83,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
-//    public void sort(FloatFunction<X> x, int from, int to) {
-//        int[] stack = new int[sortSize(to - from) /* estimate */];
-//        qsort(stack, items, from /*dirtyStart - 1*/, to, x);
-//    }
-//
-//    public static <X> void qsort(int[] stack, X[] c, int left, int right, FloatFunction<X> pCmp) {
-//        int stack_pointer = -1;
-//        int cLenMin1 = c.length - 1;
-//        final int SCAN_THRESH = 7;
-//        while (true) {
-//            int i, j;
-//            if (right - left <= SCAN_THRESH) {
-//                for (j = left + 1; j <= right; j++) {
-//                    X swap = c[j];
-//                    i = j - 1;
-//                    float swapV = pCmp.floatValueOf(swap);
-//                    while (i >= left && pCmp.floatValueOf(c[i]) < swapV) {
-//                        swap(c, i + 1, i--);
-//                    }
-//                    c[i + 1] = swap;
-//                }
-//                if (stack_pointer != -1) {
-//                    right = stack[stack_pointer--];
-//                    left = stack[stack_pointer--];
-//                } else {
-//                    break;
-//                }
-//            } else {
-//
-//                int median = (left + right) / 2;
-//                i = left + 1;
-//                j = right;
-//
-//                swap(c, i, median);
-//
-//                float cl = pCmp.floatValueOf(c[left]);
-//                float cr = pCmp.floatValueOf(c[right]);
-//                if (cl < cr) {
-//                    swap(c, right, left);
-//                    float x = cr;
-//                    cr = cl;
-//                    cl = x;
-//                }
-//                float ci = pCmp.floatValueOf(c[i]);
-//                if (ci < cr) {
-//                    swap(c, right, i);
-//                    ci = cr;
-//                }
-//                if (cl < ci) {
-//                    swap(c, i, left);
-//                }
-//
-//                X temp = c[i];
-//                float tempV = pCmp.floatValueOf(temp);
-//
-//                while (true) {
-//                    while (i < cLenMin1 && pCmp.floatValueOf(c[++i]) > tempV) ;
-//                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(c[--j]) < tempV) ;
-//                    if (j < i) {
-//                        break;
-//                    }
-//                    swap(c, j, i);
-//                }
-//
-//                c[left + 1] = c[j];
-//                c[j] = temp;
-//
-//                int a, b;
-//                if (right - i + 1 >= j - left) {
-//                    a = i;
-//                    b = right;
-//                    right = j - 1;
-//                } else {
-//                    a = left;
-//                    b = j - 1;
-//                    left = i;
-//                }
-//
-//                stack[++stack_pointer] = a;
-//                stack[++stack_pointer] = b;
-//            }
-//        }
-//    }
 
     private static void qsort(int[] stack, Object[] c, int left, int right, ToIntFunction pCmp) {
         int stack_pointer = -1;
@@ -200,10 +117,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             Object temp = c[i];
             int tempV = pCmp.applyAsInt(temp);
 
+            /** safety limit in case the order of the items changes while sorting; external factors could cause looping indefinitely */
+            int limit = Util.sqr(right-left);
             while (true) {
-                while (i < right && pCmp.applyAsInt(c[++i]) > tempV) ;
-                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV) ;
-                if (j <= i)
+                while (i < right && pCmp.applyAsInt(c[++i]) > tempV && --limit > 0) { }
+                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV && --limit > 0) { }
+                if (j <= i || limit <= 0)
                     break;
                 swap(c, j, i);
             }
@@ -348,15 +267,18 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public void sort(ToIntFunction<X> x, int from, int to) {
+        int size = this.size;
+        if (size == 0)
+            return;
         from = Math.max(0, from);
         to = Math.max(from, Math.min(size - 1, to));
         if (from == to)
             return;
-        int[] stack = new int[to - from + 1 /*sortSize(to - from)*/ /* estimate */];
+        int[] stack = new int[(int) Math.ceil(1+Math.log(1+to - from)/Math.log(2))];
         qsort(stack, items, from /*dirtyStart - 1*/, to, x);
     }
 
-    public X get(int i) {
+    public final X get(int i) {
 //        int s = size;
 //        if (s == 0)
 //            throw new NoSuchElementException();

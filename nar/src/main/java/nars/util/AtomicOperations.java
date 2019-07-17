@@ -129,13 +129,14 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
 
         x = y;
 
+        Term xx = x.term();
         if (x.isCommand()) {
 
-            exe.accept(x.term(), n);
+            exe.accept(xx, n);
             return null;
         } else {
 
-            active.put(new PLink(x.term().concept() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
+            active.put(new PLink(xx.concept() /* incase it contains temporal, we will dynamically match task anyway on invocation */,
                     x.priElseZero()
             ));
 
@@ -153,12 +154,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
     protected void enable(NAR n) {
         DurLoop d = onCycle.getOpaque();
         if (d == null) {
-            onCycle.updateAndGet((x)->{
-                if (x == null)
-                    return n.onDur(this::update);
-                else
-                    return x;
-            });
+            onCycle.updateAndGet((x)-> x == null ? n.onDur(this::update) : x);
         } else {
             n.start(d);
         }

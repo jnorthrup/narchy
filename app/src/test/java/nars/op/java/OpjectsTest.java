@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class OpjectsTest {
 
     public static class SimpleClass {
-        protected int v;
+        int v;
 
         public void set(int x) {
             System.err.println("setAt: " + x);
@@ -40,7 +40,7 @@ public class OpjectsTest {
      * self invocation
      */
     @Test
-    public void testEvoke() throws Narsese.NarseseException {
+    void testEvoke() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
         int dur = 1;
@@ -75,13 +75,13 @@ public class OpjectsTest {
 
         assertEquals(2, evokes.size());
 
-        n.run(dur);
+        n.run(dur*4);
 
         assertEquals(2, evokes.size());
     }
 
     @Test
-    public void testObjectMethods() throws Narsese.NarseseException {
+    void testObjectMethods() throws Narsese.NarseseException {
         final NAR n = NARS.tmp();
 
 
@@ -98,17 +98,16 @@ public class OpjectsTest {
         assertTrue(!sb.toString().contains("voke"));
     }
     @Test
-    public void testBoolMethod() {
+    void testBoolMethod() {
         final NAR n = NARS.tmp();
-        n.log();
+//        n.log();
 
 
         final Opjects objs = new Opjects(n);
 
         final SimpleClass x = objs.a("x", SimpleClass.class);
-        StringBuilder sb = new StringBuilder();
-        n.onTask(sb::append);
-
+        StringBuilder sb = new StringBuilder(1024);
+        n.log(sb);
 
         x.bool();
         //n.input("hashCode(x,#h)! :|:");
@@ -125,7 +124,7 @@ public class OpjectsTest {
      * invoked externally (ex: by user)
      */
     @Test
-    public void testInvokeInstanced() {
+    void testInvokeInstanced() {
         final NAR n = NARS.tmp();
 
 
@@ -152,7 +151,7 @@ public class OpjectsTest {
     }
 
     @Test
-    public void testInvokeWrapped() {
+    void testInvokeWrapped() {
         final NAR n = NARS.tmp();
 
 
@@ -162,7 +161,7 @@ public class OpjectsTest {
 
     @Disabled
     @Test
-    public void learnMethodGoal() throws Narsese.NarseseException {
+    void learnMethodGoal() throws Narsese.NarseseException {
 
 
         final NAR n = NARS.tmp();

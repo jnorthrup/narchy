@@ -12,6 +12,7 @@ import nars.table.dynamic.SensorBeliefTables;
 import nars.task.util.series.RingBufferTaskSeries;
 import org.junit.jupiter.api.Test;
 
+import java.util.Comparator;
 import java.util.List;
 
 import static java.util.stream.Collectors.toList;
@@ -45,6 +46,7 @@ class SensorBeliefTablesTest {
 
         {
             List<Task> tt = xb.taskStream().collect(toList());
+            tt.sort(Comparator.comparing(Task::start));
             assertEquals(2, tt.size());
             assertEquals(2, tt.get(0).range());
             assertEquals(2, tt.get(1).range());

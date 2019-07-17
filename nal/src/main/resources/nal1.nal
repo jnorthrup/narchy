@@ -15,8 +15,9 @@
 //                (A --> C)
 
     (A --> B), (B --> C), neqRCom(A,C)     |-   (A --> C), (Belief:Deduction, Time:Compose)
-    (A --> B), (B --> C), neqRCom(A,C)     |-     (A --> C), (Goal:Desire, Time:Task)
-    //(A --> B), (B --> C), neqRCom(A,C)     |-   --(A --> C), (Goal:DeductionNP, Time:Task)
+    //(A --> B), (B --> C), neqRCom(A,C)     |-     (A --> C), (Goal:Desire, Time:Task)
+    (A --> B), (B --> C), neqRCom(A,C)     |-    (A --> C), (Goal:DeductionPP, Time:Task)
+    (A --> B), (B --> C), neqRCom(A,C)     |-  --(A --> C), (Goal:DeductionNP, Time:Task)
 
 
 //        (A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (A --> C), (Punctuation:Quest)

@@ -61,7 +61,7 @@ class TopTest {
 
     }
 
-    private static String str(TopN c) {
+    private static String str(TopFilter c) {
         return new FasterList(c).toString();
     }
 

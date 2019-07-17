@@ -11,7 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.IntFunction;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
@@ -19,10 +18,10 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 /**
  * warning: this keeps duplicate insertions
  */
-public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunction<X> {
+public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilter<X> {
 
 
-    public final static TopN Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
+    public final static TopFilter Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
         @Override
         public void setCapacity(int capacity) {
 
@@ -65,12 +64,12 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
         min = NEGATIVE_INFINITY;
     }
 
-    public TopN<X> rank(FloatRank<X> rank) {
+    public TopFilter<X> rank(FloatRank<X> rank) {
         this.rank = rank;
         return this;
     }
 
-    @Deprecated public final TopN<X> rank(FloatRank<X> rank, int capacity) {
+    @Deprecated public final TopFilter<X> rank(FloatRank<X> rank, int capacity) {
         this.rank = rank;
         //if (capacity > 0)
             setCapacity(capacity);
@@ -190,7 +189,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     public final X top() {
-        return isEmpty() ? null : get(0);
+        return isEmpty() ? null : items[0];
     }
 
     /**

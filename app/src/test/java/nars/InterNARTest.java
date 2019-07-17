@@ -1,6 +1,7 @@
 package nars;
 
 import jcog.Util;
+import nars.attention.What;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -44,7 +45,7 @@ public class InterNARTest {
         final int MAX_CONNECT_INTERVALS = 100;
         final int CONNECT_INTERVAL_MS = 30;
 
-        final float NET_FPS = 10f;
+        final float NET_FPS = 20f;
         final float NAR_FPS = NET_FPS * 2;
         final int INTERACT_TIME = 1500;
 
@@ -59,6 +60,9 @@ public class InterNARTest {
         a.termVolMax.set(volMax);
         b.termVolMax.set(volMax);
 
+        What aa = a.what();
+        What bb = b.what();
+
         for (int i = 0; i < preCycles; i++) {
             a.run(1);
             b.run(1);
@@ -66,8 +70,8 @@ public class InterNARTest {
 
         beforeConnect.accept(a, b);
 
-        InterNAR ai = new InterNAR(0, false, a.what());
-        InterNAR bi = new InterNAR(0, false, b.what());
+        InterNAR ai = new InterNAR(0, false, aa);
+        InterNAR bi = new InterNAR(0, false, bb);
 
         ai.fps(NET_FPS);
         bi.fps(NET_FPS);
@@ -158,6 +162,9 @@ public class InterNARTest {
 
         testAB((a, b) -> {
 
+            a.termVolMax.set(3);
+            b.termVolMax.set(3);
+
             b.onTask(bt -> {
                 if (bt.isBelief() && bt.term().toString().contains("(a-->d)"))
                     recv.set(true);
@@ -170,11 +177,7 @@ public class InterNARTest {
 
             b.believe($$("(a --> b)"));
             b.believe($$("(c --> d)"));
-            try {
-                b.input(("$0.5 (a --> d)?"));
-            } catch (Narsese.NarseseException e) {
-                e.printStackTrace();
-            }
+            b.question($$("(a --> d)"));
 
         });
 
