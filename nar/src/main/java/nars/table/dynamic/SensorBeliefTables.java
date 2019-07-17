@@ -2,8 +2,6 @@ package nars.table.dynamic;
 
 import jcog.Util;
 import jcog.math.FloatSupplier;
-import jcog.math.LongInterval;
-import jcog.sort.FloatRank;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -26,7 +24,6 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
 import static nars.Op.BELIEF;
-import static nars.time.Tense.TIMELESS;
 
 /**
  * special belief tables implementation
@@ -269,41 +266,41 @@ public class SensorBeliefTables extends BeliefTables {
      */
     private final class MyRTreeBeliefTable extends RTreeBeliefTable {
 
-        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, float narDur, int tableDur) {
-            FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, narDur, tableDur);
-
-
-            long _ss = series.start();
-            if (_ss != TIMELESS) {
-                long _se = series.end();
-                if (_se!=TIMELESS) {
-                    float margin = narDur;
-                    long ss = Math.round(_ss + margin);
-                    long se = Math.round(_se - margin);
-                    return (t, min) -> {
-                        float v = base.rank(t, min);
-                        if (v == v && v > min) {
-                            long ts = t.start();
-                            long te = t.end();
-                            long l = LongInterval.intersectLength(ts, te, ss, se);
-                            if (l > 0) {
-                                //discount the rank in proportion to how much of the task overlaps with the series
-                                double range = (te-ts)+1;
-                                float overlap = (float) Util.unitizeSafe(l / range);
-                                float keep =
-                                        //1 - overlap;
-                                        1 - (overlap*overlap); //less intense but still in effect
-                                v *= keep;
-                            }
-                            return v;
-                        }
-                        return Float.NaN;
-                    };
-                }
-            }
-
-            return base;
-
-        }
+//        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, float narDur, int tableDur) {
+//            FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, narDur, tableDur);
+//
+//
+//            long _ss = series.start();
+//            if (_ss != TIMELESS) {
+//                long _se = series.end();
+//                if (_se!=TIMELESS) {
+//                    float margin = narDur;
+//                    long ss = Math.round(_ss + margin);
+//                    long se = Math.round(_se - margin);
+//                    return (t, min) -> {
+//                        float v = base.rank(t, min);
+//                        if (v == v && v > min) {
+//                            long ts = t.start();
+//                            long te = t.end();
+//                            long l = LongInterval.intersectLength(ts, te, ss, se);
+//                            if (l > 0) {
+//                                //discount the rank in proportion to how much of the task overlaps with the series
+//                                double range = (te-ts)+1;
+//                                float overlap = (float) Util.unitizeSafe(l / range);
+//                                float keep =
+//                                        //1 - overlap;
+//                                        1 - (overlap*overlap); //less intense but still in effect
+//                                v *= keep;
+//                            }
+//                            return v;
+//                        }
+//                        return Float.NaN;
+//                    };
+//                }
+//            }
+//
+//            return base;
+//
+//        }
     }
 }

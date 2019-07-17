@@ -135,7 +135,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     static final FloatFunction<TaskRegion> EviAbsolute =
-            x -> x instanceof Task ? (float) TruthIntegration.evi((Task) x) : (x.confMax() * x.range());
+            x -> x instanceof Task ? (float) TruthIntegration.evi((Task) x) : (x.confMean() * x.range());
 
     public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
         long targetStart = target.start;
@@ -165,13 +165,12 @@ public final class Answer implements Timed, Predicate<Task> {
      * for belief or goals (not questions / quests
      */
     public static Answer relevance(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
-
-        FloatRank<Task> r = relevance(beliefOrQuestion, start, end, template);
-
-        return new Answer(r, filter, capacity, nar)
+        return new Answer(
+                relevance(beliefOrQuestion, start, end, template),
+                filter, capacity, nar)
                 .time(start, end)
                 .term(template)
-                .clear((int) Math.ceil(NAL.ANSWER_COMPLETENESS * capacity));
+                .clear((int) Math.ceil(NAL.ANSWER_TRYING * capacity));
     }
 
 
@@ -259,11 +258,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public static FloatRank<Task> beliefStrength(long start, long end) {
-        if (start == ETERNAL) {
-            return eternalTaskStrength();
-        } else {
-            return temporalTaskStrength(start, end);
-        }
+        return start == ETERNAL ? eternalTaskStrength() : temporalTaskStrength(start, end);
     }
 
     public static FloatRank<Task> questionStrength(long start, long end) {
@@ -275,7 +270,7 @@ public final class Answer implements Timed, Predicate<Task> {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return pri / (1f + t.minTimeTo(start, end));
+                                return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
                             return Float.NaN;
                         };
 
@@ -288,26 +283,20 @@ public final class Answer implements Timed, Predicate<Task> {
     public static FloatRank<Task> eternalTaskStrength() {
         //return (x, min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
         //* x.originality()
-
         return (x, min) -> (float) x.evi();
-
     }
 
 
+    /** HACK needs double precision */
     public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-        int dur = Tense.occToDT(1 + (end - start)/2 /*half the range*/ );
-        return temporalTaskStrength(start, end, dur);
+//        float dur = 1f + (end - start)/2f;
+//        return (x, min) -> (float) TruthIntegration.evi(x, start, end, dur)
+//                //* x.originality()
+//                ;
+
+        return (x,min) -> (float) TruthIntegration.eviFast(x, start, end);
     }
 
-    /**
-     * TODO use FloatRank min
-     */
-    public static FloatRank<Task> temporalTaskStrength(long start, long end, int dur) {
-        //HACK needs double precision
-        return (x, min) -> (float) TruthIntegration.evi(x, start, end, dur)
-                //* x.originality()
-                ;
-    }
 
     public Answer ditherTruth(boolean ditherTruth) {
         this.ditherTruth = ditherTruth;
@@ -403,9 +392,26 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     @Nullable
-    private TruthProjection truthProjection() {
-        TaskList tl = taskList();
-        return tl!=null ? project(tl) : null;
+    public TruthProjection truthProjection() {
+        int n = tasks.size();
+        if (n ==0)
+            return null;
+
+        long s = time.start, e = time.end;
+//        if (s == ETERNAL) {
+//            //auto-crop if currently eternal
+//
+//            boolean ditherTime = ditherTruth;
+//            if (ditherTime) {
+//                int dither = nar.dtDither();
+//                s = Tense.dither(((TaskList) null).start(), dither, -1);
+//                e = Tense.dither(((TaskList) null).end(), dither, +1);
+//            }
+//        }
+
+        TruthProjection tp = nar.projection(s, e, dur);
+        tp.add(n, this.tasks.items);
+        return tp;
     }
 
 
@@ -439,29 +445,6 @@ public final class Answer implements Timed, Predicate<Task> {
         int t = tasks.size();
         return t == 0 ? null : new TaskList(tasks.itemsArray(), t);
     }
-
-    /**
-     * this does not filter cyclic; do that separately
-     */
-    private TruthProjection project(TaskList tt) {
-
-        long s = time.start, e = time.end;
-        if (s == ETERNAL) {
-            //auto-crop if currently eternal
-
-            boolean ditherTime = ditherTruth;
-            if (ditherTime) {
-                int dither = nar.dtDither();
-                s = Tense.dither(tt.start(), dither, -1);
-                e = Tense.dither(tt.end(), dither, +1);
-            }
-        }
-
-        TruthProjection tp = nar.projection(s, e, dur);
-        tp.addAll(tt);
-        return tp;
-    }
-
 
 
     public final Answer match(TaskTable t) {

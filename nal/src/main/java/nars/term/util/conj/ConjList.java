@@ -2,7 +2,6 @@ package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.data.set.LongObjectArraySet;
-import nars.NAL;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -103,6 +102,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         Term otherFirst = other.get(0);
         IntArrayList locations = null;
+        long[] when = this.when;
         for (int i = 0; i <= s - os; i++) {
             if (equal.test(otherFirst, get(i))) {
                 if (containsRemainder(other, i, s, equal)) {
@@ -116,10 +116,10 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
     private boolean containsRemainder(ConjList other, int start, int end, BiPredicate<Term,Term> equal) {
         int os = other.size();
-        long shift = when(start);
+        long shift = when[start];
         int next = start;
         for (int i = 1; i < os; i++) {
-            next = indexOfIfSorted(other.when(i)+shift, other.get(i), next+1, end, equal);
+            next = indexOfIfSorted(other.when[i]+shift, other.get(i), next+1, end, equal);
             if (next == -1)
                 return false;
         }
@@ -177,6 +177,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     @Override
     public int eventOccurrences() {
         int s = size();
+        long[] when = this.when;
         switch (s) {
             case 0:
                 return 0;
@@ -210,10 +211,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public int eventCount(long w) {
-        int s = size();
+        int s = size;
         int c = 0;
+        long[] when = this.when;
         for (int i = 0; i < s; i++)
-            if (this.when[i] == w)
+            if (when[i] == w)
                 c++;
         return c;
     }
@@ -234,12 +236,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (n == 0)
             return True;
 
+        Term[] items = this.items;
+
         if (n == 1)
-            return get(0);
+            return items[0];
+
+        long[] when = this.when;
 
 
-
-        if (B instanceof InterningTermBuilder && NAL.CONJ_COMMUTIVE_LOOPBACK) {
+        if (B instanceof InterningTermBuilder) {
             long w0 = when[0];
             boolean allParallel = true;
             for (int i = 1, whenLength = when.length; i < whenLength; i++) {
@@ -260,9 +265,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             //sequence shortcut
             long wa = when[0], wb = when[1];
             if (wa !=ETERNAL && wb !=ETERNAL && when[0]!=when[1]) {
-                Term a = get(0);
+                Term a = items[0];
                 if (!a.hasAny(CONJ)) {
-                    Term b = get(1);
+                    Term b = items[1];
                     if (!b.hasAny(CONJ)) {
                         if (!a.equals(b)) {
                             return B.conjAppend(a, Tense.occToDT(wb - wa), b);
@@ -282,7 +287,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         //failsafe impl:
         ConjBuilder c = new ConjTree();
         for (int i = 0; i < n; i++) {
-            if (!c.add(when[i], this.get(i)))
+            if (!c.add(when[i], items[i]))
                 break;
         }
 
@@ -435,8 +440,10 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     /** counts # of unique occurrence times, assuming that the events have already been sorted by them */
     private int eventOccurrences_if_sorted() {
         int c = 1;
+        long[] when = this.when;
         long x = when[0];
-        for (int i = 1; i < size; i++) {
+        int s = this.size;
+        for (int i = 1; i < s; i++) {
             long y = when[i];
             if (y != x) {
                 assert(y > x);
@@ -456,7 +463,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
             return true;
 
         //sortThis();
-
+        long[] when = this.when;
         int start = 0;
         long last = when[0];
         for (int i = 1; i < s; i++) {
@@ -531,15 +538,17 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         long delta = shiftFrom - currentShift;
         if (delta == 0)
             return;
-        for (int k = 0; k < size; k++)
+        long[] when = this.when;
+        int s = this.size;
+        for (int k = 0; k < s; k++)
             when[k] += delta;
     }
 
-    public boolean removeAllAt(int f, ConjList x) {
+    boolean removeAllAt(int f, ConjList x) {
         int xn = x.size();
         boolean removed = false;
         for (int i = 0; i < xn; i++) {
-            removed |= remove(f!=ETERNAL ? x.when(i) + f : ETERNAL, x.get(i));
+            removed |= remove(f!=ETERNAL ? x.when[i] + f : ETERNAL, x.get(i));
         }
         return removed;
     }

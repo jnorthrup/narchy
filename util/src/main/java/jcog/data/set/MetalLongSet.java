@@ -40,6 +40,7 @@ public class MetalLongSet extends LongOpenHashSet  {
         return any;
     }
 
+    /** unsorted */
     public MutableLongList toList() {
         int s = size();
         LongArrayList l = new LongArrayList(s);

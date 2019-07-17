@@ -53,6 +53,18 @@ public class TruthIntegration {
         }
     }
 
+    /** allows ranking task by projected evidence strength, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation */
+    public static double eviFast(Task t, long qStart, long qEnd) {
+        long range = (qEnd - qStart + 1);
+        long tStart = t.start();
+        double tEvi = t.evi();
+        if (tStart == ETERNAL) {
+            return tEvi * range;
+        } else {
+            return tEvi * Math.min(range, t.range()) / (1 + Math.log(1 + t.minTimeTo(qStart, qEnd)));
+        }
+    }
+
     private static double eviIntegrate(double evi, float dur, long qStart, long qEnd, long tStart, long tEnd) {
 
         EvidenceEvaluator ee = EvidenceEvaluator.of(tStart, tEnd, evi, dur);

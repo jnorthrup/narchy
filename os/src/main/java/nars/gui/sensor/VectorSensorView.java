@@ -66,6 +66,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     /** truth duration */
     public final FloatRange truthDur = new FloatRange(1, 0, 4);
 
+
 //    public final AtomicBoolean beliefs = new AtomicBoolean(true);
 //    public final AtomicBoolean goals = new AtomicBoolean(true);
     //public final AtomicBoolean pris = new AtomicBoolean(true);
@@ -132,7 +133,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             public void update(VectorSensorView v) {
                 update(v, (x,y)->{
                     TaskConcept c = v.concept[x][y];
-                    Truth b = c!=null ? v.answer.clear(tries).match(c.beliefs()).truth() : null;
+                    Truth b = c!=null ? v.answer.clear(answerTries).match(c.beliefs()).truth() : null;
                     return b != null ? b.freq() : noise();
                 });
                 //Util.normalize(value);
@@ -163,7 +164,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             public void update(VectorSensorView v) {
                 update(v, (x,y)->{
                     TaskConcept c = v.concept[x][y];
-                    Truth g = c!=null ? v.answer.clear(tries).match(c.goals()).truth() : null;
+                    Truth g = c!=null ? v.answer.clear(answerTries).match(c.goals()).truth() : null;
                     return g != null ? (freqOrExp.booleanValue() ? g.freq() : g.expectation()) : 0.5f;
                 });
 
@@ -189,10 +190,11 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     private TaskConcept touchConcept;
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
-    public final TaskConcept[][] concept;
+    transient public final TaskConcept[][] concept;
 
-    private Answer answer = null;
-    transient private int tries;
+    transient private Answer answer = null;
+    transient private int answerDetail;
+    transient private int answerTries;
 
     public VectorSensorView(Bitmap2DSensor sensor, Game a) {
         this(sensor, a.what());
@@ -245,17 +247,12 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         this.nar = n;
     }
 
-    public static float idealStride(VectorSensor v) {
+    static float idealStride(VectorSensor v) {
         return (float) Math.ceil(sqrt(v.size()));
     }
 
-
     public VectorSensorView(Bitmap2DSensor sensor, What w) {
         this(sensor, w::dur, w.nar);
-    }
-
-    public VectorSensorView(Bitmap2DSensor sensor, NAR n) {
-        this(sensor, n::dur, n);
     }
 
     public VectorSensorView(Bitmap2DSensor sensor, FloatSupplier baseDur, NAR n) {
@@ -348,11 +345,12 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             this.start = Math.round(now - windowRadius);
             this.end = Math.round(now + windowRadius);
 
-            tries = (int) Math.ceil(truthPrecision.intValue() * NAL.ANSWER_COMPLETENESS);
+            answerDetail = truthPrecision.intValue();
+            this.answerTries = (int)Math.ceil(answerDetail * NAL.ANSWER_TRYING);
 
             if (answer == null) {
                 this.answer = Answer
-                        .relevance(true, tries, start, end, null, null, nar);
+                        .relevance(true, answerDetail, start, end, null, null, nar);
             }
 
             this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));

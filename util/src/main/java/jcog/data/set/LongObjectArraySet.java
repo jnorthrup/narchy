@@ -347,7 +347,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         }
     }
 
-    public long when(int i) {
+    public final long when(int i) {
         return when[i];
     }
 

@@ -23,7 +23,7 @@ import java.util.Arrays;
  */
 public class TruthWave {
 
-    private static final int precision = 8;
+    private static final int answerDetail = 4;
 
     private static final int ENTRY_SIZE = 4;
     public BeliefTable table;
@@ -154,25 +154,26 @@ public class TruthWave {
 
         size(points);
 
-        double dt, t;
+        double dt, tStart;
         if (points <= 1) {
             dt = 0;
-            t = (minT + maxT)/2;
+            tStart = (minT + maxT)/2;
         } else {
-            dt = (maxT - minT) / ((float) (points - 1));
-            t = minT;
+            dt = (maxT - minT) / ((double) (points - 1));
+            tStart = minT;
         }
 
-        int halfDT = (int) Math.round(dt/2);
+
         float[] data = this.truth;
         int j = 0;
-        Answer a = Answer.relevance(true, precision, start, end, term, null, nar)
+        Answer a = Answer.relevance(true, answerDetail, start, end, term, null, nar)
                 .dur(dur);
-        int tries = (int) Math.ceil(precision* NAL.ANSWER_COMPLETENESS);
+        int tries = Math.round(answerDetail * NAL.ANSWER_TRYING);
 
         for (int i = 0; i < points; i++) {
-            long s = Math.round(t - halfDT);
-            long e = Math.round(t + halfDT);
+            double t = tStart + i * dt;
+            long s = Math.round(t - dt/2);
+            long e = Math.round(t + dt/2);
             Truth tr = a.clear(tries).time(s, e).match(table).truth();
             if (tr!=null) {
                 long mid = (s + e) / 2;
@@ -182,8 +183,6 @@ public class TruthWave {
                         tr
                 );
             }
-
-            t += dt;
         }
         this.size = j;
 

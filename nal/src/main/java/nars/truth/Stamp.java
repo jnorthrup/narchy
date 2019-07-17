@@ -49,32 +49,25 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 public interface Stamp {
 
-
     long[] UNSTAMPED = new long[0];
-//    long[] UNSTAMPED_OVERLAPPING = new long[]{Long.MAX_VALUE};
 
-    /*@NotNull*/
     static long[] merge(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB, Random rng) {
-//        return zip(a, b, aToB,
-//                Param.STAMP_CAPACITY,
-//                true);
-
-        final int capacity = NAL.STAMP_CAPACITY;
-        return merge(a, b, rng, aToB, capacity);
+        return merge(a, b, rng, aToB, NAL.STAMP_CAPACITY);
     }
 
     /** applies a fair, random-removal merge of input stamps */
     static long[] merge(long[] a, long[] b, Random rng, float aToB, int capacity) {
-        if (Arrays.equals(a, b) || b.length == 0) {
-            if (a.length > capacity) throw new TODO();
+        int aa = a.length, bb = b.length;
+        if (bb == 0 || (aa == bb && Util.equals(a, b))) {
+            if (aa > capacity) throw new TODO();
             return a;
         }
-        if (a.length == 0) {
-            if (b.length > capacity) throw new TODO();
+        if (aa == 0) {
+            if (bb > capacity) throw new TODO();
             return b;
         }
 
-        int abLength = a.length + b.length;
+        int abLength = aa + bb;
         if (abLength <= capacity) {
             //TODO simple 2-ary case
 
@@ -83,8 +76,8 @@ public interface Stamp {
                 long[] ab = new long[abLength];
                 int ia = 0, ib = 0;
                 for (int i = 0; i < abLength; i++) {
-                    long an = ia < a.length ? a[ia] : Long.MAX_VALUE;
-                    long bn = ib < b.length ? b[ib] : Long.MAX_VALUE;
+                    long an = ia < aa ? a[ia] : Long.MAX_VALUE;
+                    long bn = ib < bb ? b[ib] : Long.MAX_VALUE;
                     long abn;
                     if (an < bn) {
                         abn = an; ia++;
@@ -96,13 +89,29 @@ public interface Stamp {
                 return ab;
             } else {
                 //duplicates, with no contention
-                MetalLongSet ab = new MetalLongSet(a.length + b.length);
-                if (a.length > b.length) {
+                if (aa > bb) {
                     //swap so that 'a' is smaller
                     long[] _a = a;
                     a = b;
                     b = _a;
                 }
+
+                final int preTestThresh = 16;
+                if (aa * bb < preTestThresh) {
+                    //optimistic pre-test for if a (the shorter of the two) is contained entirely in b
+                    boolean aInB = true;
+                    for (long A : a) {
+                        if (!ArrayUtil.contains(b, A)) {
+                            aInB = false;
+                            break;
+                        }
+                    }
+                    if (aInB)
+                        return b;
+                }
+
+                MetalLongSet ab = new MetalLongSet(aa + bb);
+
                 ab.addAll(a);
                 if (!ab.addAll(b))
                     return a; //b is contained entirely within a
@@ -111,10 +120,10 @@ public interface Stamp {
             }
         } else {
             LongArrayList A = Stamp.toList(a);
-            if (a.length > 1)
+            if (aa > 1)
                 ArrayUtil.shuffle(A.elements(), rng);
             LongArrayList B = Stamp.toList(b);
-            if (b.length > 1)
+            if (bb > 1)
                 ArrayUtil.shuffle(B.elements(), rng);
 
             MetalLongSet AB = new MetalLongSet(abLength);
@@ -394,10 +403,6 @@ public interface Stamp {
         return dedupAndTrimmed;
     }
 
-    static boolean overlap(/*@NotNull*/ Stamp a, /*@NotNull*/ Stamp b) {
-        return ((a == b) || overlapsAny(a.stamp(), b.stamp()));
-    }
-
     /**
      * true if there are any common elements;
      * assumes the arrays are sorted and contain no duplicates
@@ -438,44 +443,7 @@ public interface Stamp {
         return false;
     }
 
-    /**
-     * the fraction of components in common divided by the total amount of unique components.
-     * <p>
-     * how much two stamps overlap can be used to estimate
-     * the potential for information gain vs. redundancy.
-     * <p>
-     * == 0 if nothing in common, completely independent
-     * >0 if there is at least one common component;
-     * 1.0 if they are equal, or if one is entirely contained within the other
-     * < 1.0 if they have some component in common
-     * <p>
-     * assumes the arrays are sorted and contain no duplicates
-     */
-    static float overlapFraction(long[] a, long[] b) {
 
-        int al = a.length;
-        int bl = b.length;
-
-        if (al == 1 && bl == 1) {
-            return (a[0] == b[0]) ? 1 : 0;
-        }
-
-        if (al > bl) {
-
-            long[] ab = a;
-            a = b;
-            b = ab;
-        }
-
-        int common = overlap(LongSets.immutable.of(a), b);
-        if (common == 0)
-            return 0f;
-
-        int denom = Math.min(al, bl);
-        assert (denom != 0);
-
-        return Util.unitize(((float) common) / denom);
-    }
 
     static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
         for (long x : b)
@@ -485,31 +453,14 @@ public interface Stamp {
     }
 
     static boolean overlap(Task x, Task y) {
-        return (!NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects(y.start(), y.end()))
+        if (x == y) return true;
+        return (!NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects((LongInterval)y))
                    &&
-               Stamp.overlap((Stamp)x, y);
-    }
-
-    static int overlap(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
-        int common = 0;
-        for (long x : b) {
-            if (aa.contains(x))
-                common++;
-        }
-        return common;
+                overlapsAny(x.stamp(), y.stamp());
     }
 
 
 
-    static int overlapsAdding(/*@NotNull*/ LongHashSet aa,  /*@NotNull*/ long[] b) {
-        int common = 0;
-        for (long x : b) {
-            if (!aa.add(x)) {
-                common++;
-            }
-        }
-        return common;
-    }
 
     long creation();
 
@@ -639,8 +590,10 @@ public interface Stamp {
             int toRemove = nab - capacity;
             for (int i = 0; i < toRemove; i++)
                 x.removeAtIndex(rng.nextInt(nab--));
-            x.sortThis();
-            return x.toArray();
+            long[] aa = x.toArray();
+            if (aa.length > 1)
+                Arrays.sort(aa);
+            return aa;
         }
 
 
@@ -658,6 +611,50 @@ public interface Stamp {
 //
 //        return e;
 //    }
+    /**
+     * the fraction of components in common divided by the total amount of unique components.
+     * <p>
+     * how much two stamps overlap can be used to estimate
+     * the potential for information gain vs. redundancy.
+     * <p>
+     * == 0 if nothing in common, completely independent
+     * >0 if there is at least one common component;
+     * 1.0 if they are equal, or if one is entirely contained within the other
+     * < 1.0 if they have some component in common
+     * <p>
+     * assumes the arrays are sorted and contain no duplicates
+     */
+    static float overlapFraction(long[] a, long[] b) {
 
+        int al = a.length;
+        int bl = b.length;
+
+        if (al == 1 && bl == 1) {
+            return (a[0] == b[0]) ? 1 : 0;
+        }
+
+        if (al > bl) {
+
+            long[] ab = a;
+            a = b;
+            b = ab;
+        }
+
+        int common = overlapCount(LongSets.immutable.of(a), b);
+        if (common == 0)
+            return 0f;
+
+        int denom = Math.min(al, bl);
+        assert (denom != 0);
+
+        return Util.unitize(((float) common) / denom);
+    }
+    private static int overlapCount(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
+        int common = 0;
+        for (long x : b)
+            if (aa.contains(x))
+                common++;
+        return common;
+    }
 
 }

@@ -31,8 +31,10 @@ public final class TasksRegion extends Longerval implements TaskRegion {
 
     public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
         super(start, end);
-        a = Truth.truthToInt(Math.min(freqMin, freqMax), Math.min(confMin, confMax));
-        b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
+        a = Truth.truthToInt(freqMin, confMin);
+        b = Truth.truthToInt(freqMax, confMax);
+//        a = Truth.truthToInt(Math.min(freqMin, freqMax), Math.min(confMin, confMax));
+//        b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
     }
 
     @Override public final float freqMin() { return Truth.freq(a); }

@@ -135,14 +135,12 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
         if (z == null) return; //?wtf
         int thisSize = Math.min(size, z.length);
         for (int i = 0; i < thisSize; i++) {
-
             BeliefTable t = z[i];
-            if (t==null) //HACK is this when the concept is being deleted while this traverse?
-                return;
-
-            t.remember(r);
-            if (!r.active())
-                return;
+            if (t!=null) {
+                t.remember(r);
+                if (!r.active())
+                    return;
+            }
         }
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {

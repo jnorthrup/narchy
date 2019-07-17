@@ -1054,7 +1054,6 @@ public class NAL6Test extends NALTest {
     @Test
     void testMutexBelief() {
         test
-                .logDebug()
                 .confMin(0.7f)
                 .termVolMax(3)
                 .believe("--(x && y)")

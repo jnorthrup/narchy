@@ -408,18 +408,18 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return true;
     }
 
-    /**
-     * decides the value of keeping a task, used in compression decision
-     */
-    protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, float narDur, int tableDur) {
-        //return FloatRank.the(t->t.evi(now, dur));
-        return Answer.temporalTaskStrength(Math.round(now - narDur / 2), Math.round(now + narDur / 2), tableDur);
-
-//        return Answer.taskStrengthWithFutureBoost(now, now - dur,
-//                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
-//                dur
-//        );
-    }
+//    /**
+//     * decides the value of keeping a task, used in compression decision
+//     */
+//    protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, float narDur, int tableDur) {
+//        //return FloatRank.the(t->t.evi(now, dur));
+//        return Answer.temporalTaskStrength(Math.round(now - narDur / 2), Math.round(now + narDur / 2), tableDur);
+//
+////        return Answer.taskStrengthWithFutureBoost(now, now - dur,
+////                beliefOrGoal ? PRESENT_AND_FUTURE_BOOST_BELIEF : PRESENT_AND_FUTURE_BOOST_GOAL,
+////                dur
+////        );
+//    }
 
     /**
      * this is the range as a radius surrounding present moment and optionally further subdivided

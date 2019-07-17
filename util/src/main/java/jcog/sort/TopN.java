@@ -186,7 +186,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
     }
 
     private float _minValueIfFull() {
-        return size() == capacity() ? minValue() : NEGATIVE_INFINITY;
+        return size == capacity ? minValue() : NEGATIVE_INFINITY;
     }
 
     public final X top() {
@@ -221,14 +221,14 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 //    }
 
     public final boolean isFull() {
-        return size() >= capacity();
+        return size >= capacity;
     }
 
     /**
      * 0 < thresh <= 1
      */
     private boolean isFull(float thresh) {
-        return (size() >= capacity() * thresh);
+        return (size >= capacity * thresh);
     }
 
     @Nullable
@@ -246,7 +246,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
      * roulette select
      */
     @Nullable public X getRoulette(FloatSupplier rng, FloatFunction<X> anyRank) {
-        int n = size();
+        int n = size;
         if (n == 0)
             return null;
         else if (n == 1)
@@ -273,7 +273,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
 
 
     public void compact(float thresh) {
-        int s = size();
+        int s = size;
         if (s == 0) {
             items = null;
             capacity = 0;
@@ -290,7 +290,7 @@ public class TopN<X> extends SortedArray<X> implements Consumer<X>, FloatFunctio
      * creates a copy of the array, trimmed
      */
     public X[] toArray() {
-        return Arrays.copyOf(items, size());
+        return Arrays.copyOf(items, size);
     }
 
 

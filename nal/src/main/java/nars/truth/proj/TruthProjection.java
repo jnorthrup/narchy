@@ -7,6 +7,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
+import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
+import static nars.NAL.STAMP_CAPACITY;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.Intermpolate.dtDiff;
 import static nars.time.Tense.ETERNAL;
@@ -144,9 +146,43 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         assert (minComponents >= 1);
 
         final long bs = this.start, be = this.end;
-        int remain = refocus(shrink, true);
+        @Deprecated int remain = refocus(shrink, true);
         if (remain < minComponents) {
             clear(); return null; }
+
+
+         if (NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
+             //HACK temporary strategy
+             boolean disjointOrNonOverlapping = true;
+             int ss = size();
+             for (int i = 1; i < ss; i++) {
+                 TaskComponent I = get(i);
+                 if (!I.valid())
+                     continue;
+                 Task ii = I.task;
+                 for (int j = 0; j < i; j++) {
+                     TaskComponent J = get(j);
+                     if (!J.valid())
+                         continue;
+                     Task jj = J.task;
+                     if (ii.intersects((LongInterval) jj) && Stamp.overlap(ii, jj)) {
+                         disjointOrNonOverlapping = false;
+                         break;
+                     }
+                 }
+             }
+             if (disjointOrNonOverlapping) {
+                 if (needStamp) {
+                     MetalLongSet evi = new MetalLongSet(ss*STAMP_CAPACITY);
+                     for (int i = 0; i < ss; i++)
+                         evi.addAll(get(i).task.stamp());
+                     return evi;
+                 } else {
+                     //done
+                     return null;
+                 }
+             }
+         }
 
         int iter = 0;
         MetalLongSet e = null;
@@ -182,21 +218,22 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 }
             }
 
+            int ss = size();
+
+
+
             if (e == null)
-                e = new MetalLongSet(NAL.STAMP_CAPACITY * remain);
+                e = new MetalLongSet(STAMP_CAPACITY * remain);
             else
                 e.clear(); //2nd iteration, or after
 
 
             MetalBitSet conflict = null;
             boolean invalids = false;
-            int ss = size();
+
             for (int i = 0; i < ss; i++) {
                 TaskComponent c = get(i);
                 if (c == null) {
-//                    if (NAL.DEBUG)
-//                        throw new NullPointerException(); //HACK
-//                    else
                     invalids = true;
                     continue;
                 }
@@ -292,7 +329,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
 
             double ee = 0;
-            MetalLongSet inc = new MetalLongSet(n * NAL.STAMP_CAPACITY);
+            MetalLongSet inc = new MetalLongSet(n * STAMP_CAPACITY);
             MetalBitSet exc = null; //first iteration
             for (int i = 0; i < size && n > 0; i++) {
                 if (x.get(i)) {
@@ -303,7 +340,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                         //overlaps
                         //greedy:
                         if (exc==null)
-                            exc = MetalBitSet.bits(NAL.STAMP_CAPACITY);
+                            exc = MetalBitSet.bits(STAMP_CAPACITY);
                         x.clear(i);
                         exc.set(i);
                     } else {
@@ -426,13 +463,10 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return add(tasks.length, tasks);
     }
 
-    public final TruthProjection add(int n, Tasked... tasks) {
-        ensureCapacity(n);
-        for (int i = 0; i < n; i++) {
-            Tasked t = tasks[i];
-            //if (t != null)
-            add(t);
-        }
+    public final <T extends Tasked> TruthProjection add(int firstN, T... tasks) {
+        ensureCapacity(firstN);
+        for (int i = 0; i < firstN; i++)
+            add(tasks[i]);
         return this;
     }
 
@@ -666,11 +700,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             return () -> {
                 @Nullable MetalLongSet s = Stamp.toMutableSet(
-                    NAL.STAMP_CAPACITY,
+                    STAMP_CAPACITY,
                     i -> get(i).task.stamp(),
                     ss); //calculate stamp after filtering and after intermpolation filtering
-                if (s.size() > NAL.STAMP_CAPACITY) {
-                    return Stamp.sample(NAL.STAMP_CAPACITY, s, rng.get());
+                if (s.size() > STAMP_CAPACITY) {
+                    return Stamp.sample(STAMP_CAPACITY, s, rng.get());
                 } else {
                     return s.toSortedArray();
                 }

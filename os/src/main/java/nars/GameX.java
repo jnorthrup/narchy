@@ -65,6 +65,7 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -274,7 +275,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 512,
-                                new PriBuffer.BagTaskBuffer(512, 0.33f))
+                                new PriBuffer.BagTaskBuffer(512, 0.66f))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -554,6 +555,7 @@ abstract public class GameX extends Game {
                 new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 8, 64, t->!t.isInput())//t instanceof DerivedTask),
                 //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
+                , new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 

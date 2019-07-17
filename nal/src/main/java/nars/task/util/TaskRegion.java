@@ -6,7 +6,6 @@ import jcog.util.ArrayUtil;
 import nars.Task;
 import nars.task.Tasked;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunctions;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -27,12 +26,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     /**
      * proportional value of splitting a node by freq
      */
-    float FREQ_COST = 1f;
+    float FREQ_COST = 2f;
 
     /**
      * proportional value of splitting a node by conf
      */
-    float CONF_COST = 0.25f;
+    float CONF_COST = 0.1f;
 
     static Consumer<TaskRegion> asTask(Consumer<? super Task> each) {
         return r -> {
@@ -114,7 +113,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         switch (dim) {
             case 0:
                 //return Math.log(range(0)) * TIME_COST;
-                return (range(0)) * TIME_COST;
+                return Math.sqrt(range(0)) * TIME_COST;
+                ///return (range(0)) * TIME_COST;
             case 1:
                 return (range(1)) * FREQ_COST;
             case 2:
@@ -195,8 +195,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
             case 0: return !maxOrMin ? start() : end();
-            case 1: return !maxOrMin ? freqMinI() : freqMaxI();
-            case 2: return !maxOrMin ? confMinI() : confMaxI();
+            case 1: return !maxOrMin ? freqMin() : freqMax();
+            case 2: return !maxOrMin ? confMin() : confMax();
             default:
                 return Double.NaN;
         }
@@ -205,8 +205,8 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     default double center(int dimension) {
         switch (dimension) {
             case 0: return mid();
-            case 1: return (freqMinI() + freqMaxI())/2.0;
-            case 2: return (confMinI() + confMaxI())/2.0;
+            case 1: return (freqMin() + freqMax())/2.0;
+            case 2: return (confMin() + confMax())/2.0;
             default:
                 return Double.NaN;
         }

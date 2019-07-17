@@ -17,7 +17,6 @@ import nars.truth.Truth;
 
 import java.util.List;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
@@ -46,8 +45,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
     @Override
     public final void match(Answer a) {
         long s = a.time.start, e;
-        Predicate<Task> each;
-        float dur = Math.max(1, a.dur);
+
+        float dur = a.dur;
         if (a.time.start == ETERNAL) {
             //choose now as the default focus time
             long now = a.nar.time();
@@ -57,13 +56,16 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             e = a.time.end;
         }
 
-        int seriesTTL = (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / dur * (e-s)));
-        if (seriesTTL < a.ttl)
-            each = Util.limit(a::test, seriesTTL);
-        else
-            each = a::test;
-
-        series.whileEach(s, e, false, each);
+        int aTTL = a.ttl; //save
+        {
+            //use at most a specific fraction of the TTL
+            int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1f, dur) * (e - s))));
+            a.ttl = seriesTTL;
+            series.whileEach(s, e, false, a);
+            int ttlUsed = seriesTTL - a.ttl;
+            aTTL -= ttlUsed;
+        }
+        a.ttl = aTTL; //restore
     }
 
 

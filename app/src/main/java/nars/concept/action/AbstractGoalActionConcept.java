@@ -16,13 +16,11 @@ import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalDefaultTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.Answer;
-import nars.task.util.TaskList;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.proj.LinearTruthProjection;
 import nars.truth.proj.TruthProjection;
 import org.jetbrains.annotations.Nullable;
 
@@ -146,11 +144,11 @@ public class AbstractGoalActionConcept extends GameAction {
         if (!tables.isEmpty()) {
 //            int dither = n.dtDither.intValue();
 
-            int limit = componentsMax, tries = limit*2;
+            int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
             Answer a = Answer.relevance(true, limit, s, e, term,
-                    withoutCuriosity
-                    //null
+                    //withoutCuriosity
+                    null
                     , n).dur(dur);
 //            for (int iter = 0; iter < 1; iter++) {
 //
@@ -194,27 +192,31 @@ public class AbstractGoalActionConcept extends GameAction {
 
                 a.clear(tries).time(s, e);
 
-                for (BeliefTable table : (BeliefTables)tables) {
-                    if (table!=curiosityTable) {
-                        a.ttl = tries;
-                        a.match(table);
-                    }
-                }
+                a.ttl = tries;
+                tables.match(a);
+//                for (BeliefTable table : (BeliefTables)tables) {
+//                    if (table!=curiosityTable) {
+//                        a.ttl = tries;
+//                        a.match(table);
+//                    }
+//                }
 
-                TaskList atl = a.taskList();
 
-                if (atl!=null) {
-
-                    TruthProjection p =
-                            new LinearTruthProjection(a.time.start, a.time.end, dur);
-                            //new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
-                    p.addAll(atl);
-
-                    //Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);
-                    //if (next!=null) {
-                    return p;
-                    //}
-                }
+                TruthProjection p = a.truthProjection();
+                return p;
+//
+//                if (atl!=null) {
+//
+//                    TruthProjection p =
+//                            new LinearTruthProjection(a.time.start, a.time.end, dur);
+//                            //new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
+//                    p.addAll(atl);
+//
+//                    //Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);
+//                    //if (next!=null) {
+//                    return p;
+//                    //}
+//                }
                 //TODO my truthpolation .stamp()'s and .cause()'s for clues
 
 //                if ((next = Truth.stronger(a.truth(), next))!=next) {

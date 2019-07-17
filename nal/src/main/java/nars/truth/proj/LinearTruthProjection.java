@@ -24,34 +24,25 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public Truth truth(double eviMin, boolean dither, boolean shrink, NAL n) {
+    public final Truth truth(double eviMin, boolean dither, boolean shrink, NAL n) {
 
-        if (size()==0)
+        if (size==0)
             return null;
-        else {
-            commit(shrink, 1, false);
-            removeNulls();
-            if (active()==0)
-                return null;
-        }
 
+        commit(shrink, 1, false);
 
-        double eviFactor = 1f;
-//        if (n != null) {
-
-            float c = intermpolateAndCull(n); assertFinite(c);
-            eviFactor *= c;
-            if (eviFactor < ScalarValue.EPSILON)
-                return null;
-
-            if (active() == 0)
-                return null;
-//        }
+        float c = intermpolateAndCull(n); assertFinite(c);
+        double eviFactor = c;
+        if (eviFactor < ScalarValue.EPSILON)
+            return null;
+        if (active() == 0)
+            return null;
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
-//        double wFreqPos = 0, wFreqNeg = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            TaskComponent x = this.get(i);
+            TaskComponent x = this.items[i];
+            if (x == null)
+                continue;
             double e = x.evi;
             if (e != e)
                 continue;
@@ -70,9 +61,6 @@ public class LinearTruthProjection extends TruthProjection {
 //            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;
         }
 
-//        if (wSum < Float.MIN_NORMAL)
-//            return null;
-
         if (eSum < eviMin)
             return null;
 
@@ -82,10 +70,9 @@ public class LinearTruthProjection extends TruthProjection {
         } else {
             long range = 1 + (end - start);
             eAvg = eSum / range;
+            if (eAvg < eviMin)
+                return null;
         }
-
-        if (eAvg < eviMin)
-            return null;
 
         double F = wFreqSum / eSum;
         return dither ? Truth.theDithered((float)F, eAvg, n) : PreciseTruth.byEvi(F, eAvg);
