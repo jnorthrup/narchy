@@ -102,7 +102,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //2f;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 3f;
+    public static final float ANSWER_TRYING = 2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
@@ -236,7 +236,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 16;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
@@ -257,7 +257,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.75f;
-        public static final float CLEAN_MARGIN_DURS = 1;
+        public static final float CLEAN_MARGIN_DURS = 0.5f;
     }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */

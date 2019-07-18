@@ -55,6 +55,7 @@ public enum Derivers { ;
                     f.add(file("nal6.nal"));
                     f.add(file("nal6.decompose.nal"));
                     f.add(file("nal6.guess.nal"));
+                    f.add(file("nal6.to.nal3.nal"));
 //                    f.add(file("nal6.guess2.nal"));
 //                    f.add(file("nal6.layer2.nal"));
 
@@ -62,11 +63,11 @@ public enum Derivers { ;
 
 
 
-                    //f.addAt("nal6.to.nal3.nal");
-                    //f.addAt("hol.nal");
 
-                        //files.addAt("nal6.misc.nal"); //<- suspect
-                        //files.addAt("nal6.pedantic.nal"); //<- spam
+                    //f.add("hol.nal");
+
+                        //files.add("nal6.misc.nal"); //<- suspect
+                        //files.add("nal6.pedantic.nal"); //<- spam
 
 
                     break;

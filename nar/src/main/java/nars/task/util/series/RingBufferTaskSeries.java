@@ -39,8 +39,10 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         if (ls == ETERNAL)
             return false;
 
+        long le = l.end();
+
         int head = q.head();
-        int mid = indexNear(head, (ls + l.end()) / 2);
+        int mid = indexNear(head, (ls + le) / 2);
         if (mid != -1) {
             Task t = q.peek(head, mid);
             if (t != null && t.intersects(l))
@@ -48,7 +50,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
         }
 
 
-        return super.isEmpty(l);
+        return super.isEmpty(ls, le);
     }
 
     @Override

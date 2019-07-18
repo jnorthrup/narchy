@@ -60,9 +60,7 @@
             //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
 
     (A --> B), (B --> C), neqRCom(A,C)      |-   (C --> A), (Belief:Exemplification, Time:Compose)
-        //(A --> B), (B --> C), neqRCom(A,C)      |-   (C --> A), (Goal:DesireWeak, Time:Task)
-        (A --> B), (B --> C), neqRCom(A,C)     |-   (C --> A), (Goal:ExemplificationPP, Time:Task)
-        (A --> B), (B --> C), neqRCom(A,C)     |- --(C --> A), (Goal:ExemplificationNP, Time:Task)
+        (A --> B), (B --> C), neqRCom(A,C)      |-   (C --> A), (Goal:DesireWeak, Time:Task)
 
         //(A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (C --> A), (Punctuation:Quest)
 
@@ -89,8 +87,8 @@
 
     //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
     (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Belief:DeductionPP, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:DeductionPP, Time:Task)
+    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:DesirePP, Time:Task)
     (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DeductionNP, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Goal:DeductionNP, Time:Task)
+    //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Goal:DeductionNP, Time:Task)
 
 

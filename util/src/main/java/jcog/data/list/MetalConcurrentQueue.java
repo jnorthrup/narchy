@@ -76,7 +76,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
         int h = head();
         int s = tail() - h;
         if (s > 0) {
-            int c = capacity();
+            int c = length();
             h = i(h, c);
             while(true) {
                 X next = getOpaque(h);
@@ -92,15 +92,12 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
         }
     }
 
-    public final int tail() { return tail.getAcquire(); }
+    final int tail() { return tail.getOpaque(); }
 
     public final int head() {
-        return head.getAcquire();
+        return head.getOpaque();
     }
 
-    public final int headNext() {
-        return nextHead.getAcquire();
-    }
 
 
     /**
@@ -137,11 +134,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
         int cap = capacity();
         while (true) {
-            final int tail = tail();
+            final int tail = this.tail.getAcquire();
             // never offer onto the slot that is currently being polled off
 
             // will this sequence exceed the capacity
-            int h = head();
+            int h = head.getAcquire();
             if (cap > tail - h) {
                 // does the sequence still have the expected
                 // value
@@ -172,7 +169,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
 
     private int i(int x) {
-        return i(x, capacity());
+        return i(x, length());
     }
 
     public int i(int x, int cap) {
@@ -191,9 +188,9 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
         int spin = 0;
         int cap = capacity();
         do {
-            final int head = this.head();
+            final int head = this.head.getAcquire();
             // is there data for us to poll
-            int tail = tail();
+            int tail = this.tail.getAcquire();
             int s = tail - head;
             if (s <= 0)
                 return null; //empty
@@ -366,10 +363,10 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
         int spin = 0;
         int k = 0;
         main: while (true) {
-            int head = head(); // prepare to qualify?
+            int head = this.head.getAcquire(); // prepare to qualify?
             // is there data for us to poll
             // we must take a difference in values here to guard against integer overflow
-            int tail = tail();
+            int tail = this.tail.getAcquire();
             int s = tail - head;
             if (s <= 0)
                 return k; //empty
@@ -435,7 +432,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
 
     public final boolean isEmpty() {
-        return head()==tail();
+        return head() == tail();
     }
 
 
@@ -478,13 +475,10 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
     public final boolean contains(Object o) {
         int s = size();
         if (s > 0) {
-            int cap = capacity();
-
             //TODO use fast iteration method
             int h = head();
             for (int i = 0; i < s; i++) {
-                final int slot = (i(h + i, cap));
-                X b = getOpaque(slot);
+                X b = peek(h, i);
                 if (b != null && b.equals(o)) return true;
             }
         }
@@ -526,7 +520,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
     public void add(X x) {
         add(x, (xx)->{
-            throw new RuntimeException(this + " overflow on add: " + x);
+            throw new RuntimeException(this + " overflow on add: " + xx);
         });
     }
 

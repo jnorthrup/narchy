@@ -32,13 +32,14 @@ import static nars.time.Tense.ETERNAL;
 public final class Answer implements Timed, Predicate<Task> {
 
     public final static int BELIEF_MATCH_CAPACITY =
+            (int)Math.ceil(NAL.STAMP_CAPACITY * NAL.ANSWER_DETAIL);
             //Param.STAMP_CAPACITY - 1;
             //Math.max(1, Param.STAMP_CAPACITY / 2);
-            Math.max(1, 2 * (int) Math.ceil(Math.sqrt(NAL.STAMP_CAPACITY)));
+            //Math.max(1, 2 * (int) Math.ceil(Math.sqrt(NAL.STAMP_CAPACITY)));
             //3;
 
     public static final int BELIEF_SAMPLE_CAPACITY = BELIEF_MATCH_CAPACITY/2;
-    public static final int QUESTION_SAMPLE_CAPACITY = 2;
+    public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
     public final NAR nar;
 

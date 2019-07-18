@@ -1,11 +1,21 @@
 //NAL6 -> NAL3 bridge
 
+  (  (A-->X) &&   (B-->X)),   X, neqRCom(A,B)  |- ((A && B)-->X), (Punctuation:Ask, Time:Task)
+  (  (A-->X) && --(B-->X)),   X, neqRCom(A,B)  |- ((A && --B)-->X), (Punctuation:Ask, Time:Task)
+  (--(A-->X) &&   (B-->X)),   X, neqRCom(A,B)  |- ((--A && B)-->X), (Punctuation:Ask, Time:Task)
+  (--(A-->X) && --(B-->X)),   X, neqRCom(A,B)  |- ((--A && --B)-->X), (Punctuation:Ask, Time:Task)
 
-//drill-down impl/sect induction
-((X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- ((S-->Z) ==> A), (Belief:Induction)
-  (--(X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- (--(S-->Z) ==> A), (Belief:InductionPN)
-((Z-->X) ==> A), (Z-->S), is(S,"&&"), subOf(S,X)  |- ((Z-->S) ==> A), (Belief:Induction)
-  (--(Z-->X) ==> A), (Z-->S), is(S,"&&"), subOf(S,X)  |- (--(Z-->S) ==> A), (Belief:InductionPN)
+  (  (X-->A) &&   (X-->B)),   X, neqRCom(A,B)  |- (X-->(A && B)), (Punctuation:Ask, Time:Task)
+  (  (X-->A) && --(X-->B)),   X, neqRCom(A,B)  |- (X-->(A && --B)), (Punctuation:Ask, Time:Task)
+  (--(X-->A) &&   (X-->B)),   X, neqRCom(A,B)  |- (X-->(--A && B)), (Punctuation:Ask, Time:Task)
+  (--(X-->A) && --(X-->B)),   X, neqRCom(A,B)  |- (X-->(--A && --B)), (Punctuation:Ask, Time:Task)
+
+
+////drill-down impl/sect induction
+//((X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- ((S-->Z) ==> A), (Belief:Induction)
+//  (--(X-->Z) ==> A), (S-->Z), is(S,"||"), subOf(S,X)  |- (--(S-->Z) ==> A), (Belief:InductionPN)
+//((Z-->X) ==> A), (Z-->S), is(S,"&&"), subOf(S,X)  |- ((Z-->S) ==> A), (Belief:Induction)
+//  (--(Z-->X) ==> A), (Z-->S), is(S,"&&"), subOf(S,X)  |- (--(Z-->S) ==> A), (Belief:InductionPN)
 
     //TODO for predicate
 

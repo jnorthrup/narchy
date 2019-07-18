@@ -39,11 +39,11 @@ import static tech.tablesaw.aggregate.AggregateFunctions.countFalse;
 import static tech.tablesaw.aggregate.AggregateFunctions.mean;
 
 /** periodically, or event-triggered: runs unit tests and broadcasts results */
-public class TestServer {
+public class SelfTest {
 
     /** local launcher */
     public static void main(String[] args) {
-        TestServer s = new TestServer();
+        SelfTest s = new SelfTest();
         s.unitTestsByPackage("nars.nal.nal1");
         s.unitTestsByPackage("nars.nal.nal2");
         s.unitTestsByPackage("nars.nal.nal3");
@@ -59,7 +59,7 @@ public class TestServer {
     //TODO make this a Bag
     final CopyOnWriteArrayList<Supplier<DataTable>> experiments = new CopyOnWriteArrayList();
 
-    public TestServer() {
+    public SelfTest() {
 
     }
 
@@ -290,7 +290,7 @@ public class TestServer {
 
     }
 
-    private static final Logger logger = LoggerFactory.getLogger(TestServer.class);
+    private static final Logger logger = LoggerFactory.getLogger(SelfTest.class);
 
     private void save(DataTable d, String filename) throws IOException {
         synchronized (d) {

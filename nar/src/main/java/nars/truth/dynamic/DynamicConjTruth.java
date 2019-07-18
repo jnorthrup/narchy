@@ -72,8 +72,6 @@ public class DynamicConjTruth {
             } else {
                 long sequenceLatestStart = d.latestStart(); assert(sequenceLatestStart!=ETERNAL);
 
-
-
                 //sequenceStart = sequenceStart; //dither now for comparisons in loop
 
                 long range = startEnd - sequenceStart;

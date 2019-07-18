@@ -71,7 +71,7 @@ class SensorBeliefTablesTest {
         assertEquals(2, rb.indexNear(head,6));
         assertEquals(2, rb.indexNear(head,1000));
         assertEquals(0, rb.indexNear(head,-5));
-
+        assertTrue(rb.first().start() < rb.last().start());
 
         //stretch another step
         step(n, xb);

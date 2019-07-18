@@ -1,12 +1,10 @@
 package nars.truth.proj;
 
-import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static jcog.Util.assertFinite;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -24,19 +22,15 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public final Truth truth(double eviMin, boolean dither, boolean shrink, NAL n) {
+    public final Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL n) {
 
-        if (size==0)
-            return null;
+        if (commitFirst) {
+            commit(tShrink, 1, false, n);
 
-        commit(shrink, 1, false);
+            if (active()==0)
+                return null;
+        }
 
-        float c = intermpolateAndCull(n); assertFinite(c);
-        double eviFactor = c;
-        if (eviFactor < ScalarValue.EPSILON)
-            return null;
-        if (active() == 0)
-            return null;
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {

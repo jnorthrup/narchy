@@ -132,8 +132,9 @@ public enum TruthFunctions2 {
                     belief.freq();
                     //(float) Math.sqrt(belief.freq());
 
-            if (!bipolar)
+            if (!bipolar) {
                 cc = Util.and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
+            }
 
             if (!strong)
                 cc = weak(cc);

@@ -59,11 +59,13 @@ public interface Stamp {
     static long[] merge(long[] a, long[] b, Random rng, float aToB, int capacity) {
         int aa = a.length, bb = b.length;
         if (bb == 0 || (aa == bb && Util.equals(a, b))) {
-            if (aa > capacity) throw new TODO();
+            if (aa > capacity)
+                throw new TODO();
             return a;
         }
         if (aa == 0) {
-            if (bb > capacity) throw new TODO();
+            if (bb > capacity)
+                throw new TODO();
             return b;
         }
 

@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
+import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;

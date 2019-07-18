@@ -12,7 +12,6 @@ import static nars.Op.ATOM;
 public final class Anom extends Intrin {
 
     private static final byte ANOM_SUBTYPE = 1;
-    private static final int ANOM_OPX = Term.opX(ATOM, ANOM_SUBTYPE);
     private static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
 
     private final byte[] bytes;

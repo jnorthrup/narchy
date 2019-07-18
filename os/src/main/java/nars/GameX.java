@@ -555,7 +555,7 @@ abstract public class GameX extends Game {
                 new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 8, 64, t->!t.isInput())//t instanceof DerivedTask),
                 //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
-                , new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)
+                //, new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)
         );
         conjClusters.forEach(c -> n.start(c));
 

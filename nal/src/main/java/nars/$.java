@@ -65,14 +65,13 @@ import static nars.term.atom.Bool.Null;
 public enum $ {
     ;
 
+//    static {
+//        Thread.currentThread().setName("$");
+//    }
+
     static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
     private static final Atomic DIV = $.the("div");
 
-    static {
-        Thread.currentThread().setName("$");
-
-
-    }
 
     public static <T extends Term> T $(String term) throws Narsese.NarseseException {
         return (T) Narsese.term(term, true);
@@ -923,25 +922,6 @@ public enum $ {
         return (authority == null || authority.isEmpty()) ?
                 inh(path, scheme) : inh( PROD.the(INH.the(path, /*TODO parse*/the(authority))), scheme);
     }
-
-
-
-
-    /*
-     * Copyright 2006-2009 Odysseus Software GmbH
-     *
-     * Licensed under the Apache License, Version 2.0 (the "License");
-     * you may not use this file except in compliance with the License.
-     * You may obtain a copy of the License at
-     *
-     *     http:
-     *
-     * Unless required by applicable law or agreed to in writing, software
-     * distributed under the License is distributed on an "AS IS" BASIS,
-     * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-     * See the License for the specific language governing permissions and
-     * limitations under the License.
-     */
 
 
 }

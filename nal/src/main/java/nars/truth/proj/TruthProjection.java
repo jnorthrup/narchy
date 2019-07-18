@@ -7,6 +7,7 @@ import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
+import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -28,6 +29,7 @@ import java.util.function.Consumer;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
+import static jcog.Util.assertFinite;
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.Intermpolate.dtDiff;
@@ -53,6 +55,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * intermpolated (and evidence reduction applied as necessary)
      */
     public Term term = null;
+    protected float eviFactor = 1;
 
     TruthProjection(long start, long end, float dur) {
         super(0, Empty_TaskComponent_Array);
@@ -63,11 +66,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         this.dur = dur;
     }
 
+    public final Truth truth(double eviMin, boolean dither, boolean tShrink, NAL nar) {
+        return truth(eviMin, dither, tShrink, true, nar);
+    }
+
     /**
      * computes the final truth value
      */
     @Nullable
-    public abstract Truth truth(double eviMin, boolean dither, boolean tCrop, NAL nar);
+    public abstract Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL nar);
 
     public final boolean add(TaskRegion t) {
         return add(t.task());
@@ -109,7 +116,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
      * @param needStamp whether a stamp result should be returned, or if this can be elided if not necessary
      */
     @Nullable
-    public final MetalLongSet commit(boolean shrink, int minResults, boolean needStamp) {
+    public final MetalLongSet commit(boolean shrink, int minResults, boolean needStamp, NAL n) {
         int s = size();
         if (s < minResults) {
             return null;
@@ -117,6 +124,22 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return only(shrink, needStamp);
         } else {
             MetalLongSet e = filterCyclicN(minResults, shrink, needStamp);
+
+            int activeBefore = active();
+
+            float c = intermpolateAndCull(n); assertFinite(c);
+            eviFactor = c;
+
+            if (eviFactor < ScalarValue.EPSILON)
+                return null;
+
+            int activeAfterIntermpolateCull = active();
+            if (activeAfterIntermpolateCull == 0)
+                return null;
+            else if (shrink && activeAfterIntermpolateCull != activeBefore) {
+                e = filterCyclicN(minResults, shrink, needStamp);
+            }
+
             return needStamp ? e : null;
         }
     }
@@ -441,8 +464,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private MetalLongSet only(boolean shrink, boolean provideStamp) {
-        refocus(shrink, true);
-        return provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
+        return refocus(shrink, true)>0 && provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
     }
 
     private TaskComponent firstValid() {
@@ -693,22 +715,29 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return update(false);
     }
 
+    public long[] stamp(int component) {
+        TaskComponent ii = items[component];
+        if (!ii.valid())
+            throw new WTF();
+        return ii.task.stamp();
+    }
+
     public Supplier<long[]> stamper(Supplier<Random> rng) {
         int ss = size();
         if (ss == 1) {
-            return ()->get(0).task.stamp();
+            return ()->stamp(0);
         } else {
             //TODO optimized 2-ary case?
 
             return () -> {
-                @Nullable MetalLongSet s = Stamp.toMutableSet(
-                    STAMP_CAPACITY,
-                    i -> get(i).task.stamp(),
+                @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
+                    STAMP_CAPACITY * ss,
+                    this::stamp,
                     ss); //calculate stamp after filtering and after intermpolation filtering
-                if (s.size() > STAMP_CAPACITY) {
-                    return Stamp.sample(STAMP_CAPACITY, s, rng.get());
+                if (stampSet.size() > STAMP_CAPACITY) {
+                    return Stamp.sample(STAMP_CAPACITY, stampSet, rng.get());
                 } else {
-                    return s.toSortedArray();
+                    return stampSet.toSortedArray();
                 }
             };
         }

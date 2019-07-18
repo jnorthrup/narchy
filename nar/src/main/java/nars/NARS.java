@@ -199,8 +199,8 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume, new int[] {
-                1, 128,
-                8, 64,
+                1, 512,
+                8, 128,
                 16, 32,
                 32, 8
         });
@@ -287,28 +287,28 @@ public class NARS {
         return tmp(0);
     }
 
-    public NARS memory(String s) {
-        return then(n -> {
-            File f = new File(s);
-
-            try {
-                n.inputBinary(f);
-            } catch (FileNotFoundException ignored) {
-                
-            } catch (IOException e) {
-                logger.error("input: {} {}", s, e);
-            }
-
-            Runnable save = () -> {
-                try {
-                    n.outputBinary(f, false);
-                } catch (IOException e) {
-                    logger.error("output: {} {}", s, e);
-                }
-            };
-            Runtime.getRuntime().addShutdownHook(new Thread(save));
-        });
-    }
+//    public NARS memory(String s) {
+//        return then(n -> {
+//            File f = new File(s);
+//
+//            try {
+//                n.inputBinary(f);
+//            } catch (FileNotFoundException ignored) {
+//
+//            } catch (IOException e) {
+//                logger.error("input: {} {}", s, e);
+//            }
+//
+//            Runnable save = () -> {
+//                try {
+//                    n.outputBinary(f, false);
+//                } catch (IOException e) {
+//                    logger.error("output: {} {}", s, e);
+//                }
+//            };
+//            Runtime.getRuntime().addShutdownHook(new Thread(save));
+//        });
+//    }
 
     /**
      * adds a post-processing step before ready NAR is returned
@@ -319,6 +319,6 @@ public class NARS {
     }
 
 
-    static final Logger logger = Log.logger(NARS.class);
+//    static final Logger logger = Log.logger(NARS.class);
 
 }

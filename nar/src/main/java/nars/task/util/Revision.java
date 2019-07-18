@@ -91,7 +91,7 @@ public enum Revision {;
 //            }
         }
 
-        return _merge(n, dither, minComponents, numTasks, tasks);
+        return _merge(tasks, numTasks, minComponents, dither, n);
     }
 
     /** temporal-induction conjunction merge strategy
@@ -129,15 +129,15 @@ public enum Revision {;
     }
 
     @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
-        return _merge(nal, dither, minComponents, tasks.length, tasks);
+        return _merge(tasks, tasks.length, minComponents, dither, nal);
     }
 
     /** truth revision task merge strategy */
-    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, int n, T[] tasks) {
+    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean dither, NAL nal) {
 
         TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(n, tasks);
 
-        MetalLongSet stamp = p.commit(true, minComponents, true);
+        MetalLongSet stamp = p.commit(true, minComponents, true, nal);
         if (stamp == null)
             return null;
 
@@ -146,7 +146,7 @@ public enum Revision {;
         double eviMin =
                 NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
 
-        Truth truth = p.truth(eviMin, dither, false, nal);
+        Truth truth = p.truth(eviMin, dither, true, false, nal);
         if (truth == null)
             return null;
 

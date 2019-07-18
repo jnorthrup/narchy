@@ -23,7 +23,7 @@ import java.util.Arrays;
  */
 public class TruthWave {
 
-    private static final int answerDetail = 4;
+    private static final int answerDetail = 3;
 
     private static final int ENTRY_SIZE = 4;
     public BeliefTable table;

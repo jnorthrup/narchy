@@ -10,7 +10,7 @@ make clean
 # https://stackoverflow.com/questions/4365980/how-to-use-profile-guided-optimizations-in-g
 
 #  TOOLCHAIN=clang
-CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin/g++" JDK="/home/me/jdk12" ./configure \
+CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin/g++" JDK="/home/me/jdk-12" ./configure \
     --with-toolchain-type="gcc" \
 	--with-boot-jdk="/home/me/jdk-12" \
 	--disable-hotspot-gtest \
