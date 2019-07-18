@@ -182,7 +182,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .termVolMax(8)
                 .believe("(a-->b)", 0.25f, 0.9f)
                 .believe("(a-->(b||c))", 0.25f, 0.9f)
-                .mustBelieve(cycles, "(a-->c)", 0.06f, 0.05f, ETERNAL);
+                .mustBelieve(cycles, "(a-->c)", 0.19f, 0.15f, ETERNAL);
     }
 
     @Test

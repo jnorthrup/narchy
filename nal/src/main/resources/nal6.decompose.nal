@@ -71,14 +71,11 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     D, X, --isVar(X), has(D,"--")       |-   --conjAfter(D, --X),     (Belief:DeductionNN, Time:BeliefEvent)
       D, X, --isVar(X), has(D,"--")     |-   --conjAfter(D, --X),       (Goal:DeductionNN, Time:TaskEvent)
 
-
-
     //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
     G, C                    |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
-     //G, C     |-    --conjBefore(C,   G),  (Goal:DeductionNP, Time:TaskEvent) <- Deduction needs anti
     G, C, has(C,"--")       |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
-        G, D                |-  --conjBefore(D,   G),  (Goal:DesirePN, Time:TaskEvent)
-        G, D, has(D,"--")   |-  --conjBefore(D, --G),  (Goal:DesireNN, Time:TaskEvent)
+        G, D                |-    conjBefore(D,   G),  (Goal:DesirePN, Time:TaskEvent)
+        G, D, has(D,"--")   |-    conjBefore(D, --G),  (Goal:DesireNN, Time:TaskEvent)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case

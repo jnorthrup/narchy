@@ -22,6 +22,7 @@ import nars.time.Tense;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableBoolean;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.state.Dragging;
 import spacegraph.space2d.container.Splitting;
@@ -89,8 +90,8 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         protected void update(VectorSensorView v, IntIntToFloatFunction f) {
             int w = v.w;
             int h = v.h;
-            for (int x = 0; x < w; x++) {
-                for (int y = 0; y < h; y++) {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
                     value[y * w + x] = f.value(x, y);
                 }
             }
@@ -122,70 +123,6 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     }
 
     final FastCoWList<Layer> layers = new FastCoWList<Layer>(Layer[]::new);
-    {
-        /* beliefs */
-        layers.add(new ColoredLayer(1f, 1f, 1f) {
-            {
-                opacity.set(0.8f);
-            }
-
-            @Override
-            public void update(VectorSensorView v) {
-                update(v, (x,y)->{
-                    TaskConcept c = v.concept[x][y];
-                    Truth b = c!=null ? v.answer.clear(answerTries).match(c.beliefs()).truth() : null;
-                    return b != null ? b.freq() : noise();
-                });
-                //Util.normalize(value);
-            }
-        });
-        /* goals */
-        layers.add(new Layer() {
-
-            public final MutableBoolean normalize = new MutableBoolean(true);
-            public final MutableBoolean freqOrExp = new MutableBoolean(false);
-
-            {
-                opacity.set(0.5f);
-            }
-
-            @Override
-            public void blend(float vv, float opacity, float[] rgbTarget) {
-                float v = (vv-0.5f)*2 * opacity;
-                if (v == 0) {
-                    //nothing
-                } else if (v < 0)
-                    rgbTarget[0] += -v;
-                else
-                    rgbTarget[1] += v;
-            }
-
-            @Override
-            public void update(VectorSensorView v) {
-                update(v, (x,y)->{
-                    TaskConcept c = v.concept[x][y];
-                    Truth g = c!=null ? v.answer.clear(answerTries).match(c.goals()).truth() : null;
-                    return g != null ? (freqOrExp.booleanValue() ? g.freq() : g.expectation()) : 0.5f;
-                });
-
-                if (normalize.booleanValue()) {
-                    //balance bipolar normalize around 0.5
-                    float min = Util.min(value);
-                    float max = Util.max(value);
-                    if (max-min > Float.MIN_NORMAL) {
-                        float max5 = max - 0.5f;
-                        float min5 = 0.5f - min;
-                        if (max5 > min5) {
-                            min = 0.5f - max5;
-                        } else if (min5 > max5) {
-                            max = 0.5f + min5;
-                        }
-                        Util.normalize(value, min, max);
-                    }
-                }
-            }
-        });
-    }
 
     private TaskConcept touchConcept;
 
@@ -226,25 +163,99 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         this.sensor = v;
         this.nar = n;
 
-        this.concept = new TaskConcept[w][h];
+        this.concept = new TaskConcept[h][w];
         int x = 0, y = 0;
 
         for (TaskConcept c : v) {
-            concept[x++][y] = c;
+            concept[y][x++] = c;
             if (x == w) {
                 x = 0;
                 y++;
             }
         }
 
+        initLayers();
     }
 
+    @Deprecated protected void initLayers() {
+        /* beliefs */
+        layers.add(new ColoredLayer(1f, 1f, 1f) {
+            {
+                opacity.set(0.8f);
+            }
+
+            @Override
+            public void update(VectorSensorView v) {
+                update(v, new XYConcept() {
+                    @Override protected float floatValue(int x, int y, TaskConcept c) {
+                        Truth b = answer.clear(answerTries).match(c.beliefs()).truth();
+                        if (b != null)
+                            return b.freq();
+
+                        return Float.NaN;
+                    }
+                });
+                //Util.normalize(value);
+            }
+
+        });
+        /* goals */
+        layers.add(new Layer() {
+
+            public final MutableBoolean normalize = new MutableBoolean(true);
+            public final MutableBoolean freqOrExp = new MutableBoolean(false);
+
+            {
+                opacity.set(0.5f);
+            }
+
+            @Override
+            public void blend(float vv, float opacity, float[] rgbTarget) {
+                float v = (vv-0.5f)*2 * opacity;
+                if (v == 0) {
+                    //nothing
+                } else if (v < 0)
+                    rgbTarget[0] += -v;
+                else
+                    rgbTarget[1] += v;
+            }
+
+            @Override
+            public void update(VectorSensorView v) {
+                update(v, new XYConcept() {
+                    @Override
+                    protected float floatValue(int x, int y, TaskConcept c) {
+                        Truth g = answer.clear(answerTries).match(c.goals()).truth();
+                        return g != null ? (freqOrExp.booleanValue() ? g.freq() : g.expectation()) : 0.5f;
+                    }
+                });
+
+                if (normalize.booleanValue()) {
+                    //balance bipolar normalize around 0.5
+                    float min = Util.min(value);
+                    float max = Util.max(value);
+                    if (max-min > Float.MIN_NORMAL) {
+                        float max5 = max - 0.5f;
+                        float min5 = 0.5f - min;
+                        if (max5 > min5) {
+                            min = 0.5f - max5;
+                        } else if (min5 > max5) {
+                            max = 0.5f + min5;
+                        }
+                        Util.normalize(value, min, max);
+                    }
+                }
+            }
+        });
+
+    }
     public VectorSensorView(VectorSensor sensor, Signal[][] matrix, int width, int height, FloatSupplier baseDur, NAR n) {
         super(width, height);
         this.baseDur = baseDur;
         this.sensor = sensor;
         this.concept = matrix;
         this.nar = n;
+        initLayers();
     }
 
     static float idealStride(VectorSensor v) {
@@ -296,23 +307,24 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     };
 
     private void updateTouchedConcept(Finger finger) {
-        if (finger == null) {
-            touchConcept = null;
-        } else {
-            touchConcept = concept(touchPixel.x, height() - 1 - touchPixel.y);
-        }
+        touchConcept = finger == null ? null :
+                concept(touchPixel.x, height() - 1 - touchPixel.y);
     }
 
+    @Nullable
     private TaskConcept concept(int x, int y) {
-        return concept[x][y];
+        //if (x < width() && y < height())
+            return concept[y][x];
+//        else
+//            return null;
     }
 
     public int height() {
-        return concept[0].length;
+        return concept.length;
     }
 
     public int width() {
-        return concept.length;
+        return concept[0].length;
     }
 
 
@@ -510,6 +522,26 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                     next.set(() -> view.nar.want(c.term(), Tense.Present, toValue));
                 });
             });
+        }
+
+    }
+
+    abstract class XYConcept implements IntIntToFloatFunction {
+
+        protected abstract float floatValue(int x, int y, TaskConcept c);
+
+        @Override
+        public float value(int x, int y) {
+            TaskConcept[] cx = concept[y];
+            if (cx != null) {
+                TaskConcept c = cx[x];
+                if (c!=null) {
+                    float b = floatValue(x, y, c);
+                    if (b == b)
+                        return b;
+                }
+            }
+            return noise();
         }
 
     }

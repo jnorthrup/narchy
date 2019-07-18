@@ -60,8 +60,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
-                int xx = x, yy = y;
-
                 Term sid = pixelTerm.apply(x, y);
                 Signal sc = new PixelSignal(sid, x,y, n);
                 if (defaultFreq==defaultFreq) {
