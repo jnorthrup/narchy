@@ -30,6 +30,7 @@ import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
 import nars.memory.CaffeineMemory;
+import nars.memory.HijackMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -65,7 +66,6 @@ import java.util.function.Supplier;
 import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -314,23 +314,23 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 //
-                        ramGB >= 0.5 ?
-                                new CaffeineMemory(
-                                        //8 * 1024
-                                        //16*1024
-                                        //32*1024
-                                        //64 * 1024
-                                        //128*1024
-                                        Math.round(ramGB * 128 * 1024)
-                                )
-                                :
-                                CaffeineMemory.soft()
+//                        ramGB >= 0.5 ?
+//                                new CaffeineMemory(
+//                                        //8 * 1024
+//                                        //16*1024
+//                                        //32*1024
+//                                        //64 * 1024
+//                                        //128*1024
+//                                        Math.round(ramGB * 128 * 1024)
+//                                )
+//                                :
+//                                CaffeineMemory.soft()
 
 
                 //, c -> (int) Math.ceil(c.term().voluplexity()))
 
 
-//                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
+                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
                 )
                 .get(GameX::config);
     }
@@ -618,7 +618,7 @@ abstract public class GameX extends Game {
         int gHist = 8;
         float momentum = 0.9f;
         float explorationRate = 0.2f;
-        n.onDur(new Consumer<>() {
+        n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
 

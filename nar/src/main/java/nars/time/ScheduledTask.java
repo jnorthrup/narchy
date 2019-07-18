@@ -11,6 +11,8 @@ import java.util.function.Consumer;
  * the future */
 public abstract class ScheduledTask extends WhenInternal implements Consumer<NAR>, Comparable<ScheduledTask> {
 
+    public volatile boolean scheduled = false;
+
     /** when or after this task may be run next */
     abstract public long start();
 

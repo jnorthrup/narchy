@@ -6,7 +6,7 @@ import java.util.function.IntSupplier;
 import java.util.function.Supplier;
 
 /**
- * https:
+ * https://www.javaspecialists.eu/archive/Issue215.html
  */
 public class LambdaStampedLock extends StampedLock {
 
@@ -84,29 +84,16 @@ public class LambdaStampedLock extends StampedLock {
         }
     }
 
-    public <T> T readOptimistic(Supplier<T> readProcedure) {
-        long stamp = tryOptimisticRead();
-        T result = readProcedure.get();
-        if (!validate(stamp)) {
-            result = read(readProcedure);
-        }
-        return result;
-    }
     public void readOptimistic(Runnable readProcedure) {
         long stamp = tryOptimisticRead();
-        readProcedure.run();
-        if (!validate(stamp)) {
-            read(readProcedure);
-        }
-    }
 
-    public int readOptimistic(IntSupplier readProcedure) {
-        long stamp = tryOptimisticRead();
-        int result = readProcedure.getAsInt();
-        if (!validate(stamp)) {
-            result = read(readProcedure);
+        if (stamp != 0) {
+            readProcedure.run();
+            if (validate(stamp))
+                return;
         }
-        return result;
+
+        read(readProcedure);
     }
 
     public boolean writeConditional(BooleanSupplier condition, Runnable action) {

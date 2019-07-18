@@ -986,20 +986,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * TODO use a scheduling using r-tree
      */
     public void inputAt(long when, Task... x) {
-        long now = time();
-        if (when <= now) {
-            input(x);
-        } else {
-            runAt(when, (nn) -> nn.input(x));
-        }
+        runAt(when, (nn) -> nn.input(x));
     }
 
-    @Nullable
     public final void runAt(long whenOrAfter, Consumer<NAR> t) {
-        if (time() >= whenOrAfter)
-            exe.input(t); //immediate
-        else
-            runAt(WhenTimeIs.then(whenOrAfter, t));
+        runAt(WhenTimeIs.then(whenOrAfter, t));
     }
 
     /**
@@ -1008,26 +999,13 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * @return
      */
     public final ScheduledTask runAt(long whenOrAfter, Runnable t) {
-        if (time() >= whenOrAfter) {
-            exe.execute(t); //immediate
-            return null;
-        } else
-            return runAt(WhenTimeIs.then(whenOrAfter, t));
+        return runAt(WhenTimeIs.then(whenOrAfter, t));
     }
 
-    @Nullable
-    public final void runAt(long whenOrAfter, ScheduledTask t) {
-        if (time() >= whenOrAfter)
-            exe.input(t); //immediate
-        else
-            runAt(t);
-    }
+
 
     public final ScheduledTask runAt(ScheduledTask t) {
-        if (time() >= t.start())
-            exe.input(t); //immediate
-        else
-            exe.runAt(t);
+        exe.runAt(t);
         return t;
     }
 

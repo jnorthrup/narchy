@@ -33,7 +33,7 @@ import java.util.stream.Stream;
  */
 public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
 
-    private final RTree<X> tree;
+    protected final RTree<X> tree;
 
     public ConcurrentRTree(RTree<X> tree) {
         super();

@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
+import jcog.util.LambdaStampedLock;
 import nars.$;
 import nars.NAL;
 import nars.NAR;
@@ -38,7 +39,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class EternalTable extends SortedArray<Task> implements BeliefTable, FloatFunction<Task> {
 
-    private final StampedLock lock = new StampedLock();
+    private final LambdaStampedLock lock = new LambdaStampedLock();
 
     public EternalTable(int initialCapacity) {
         super();
@@ -47,18 +48,19 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        this.forEach(x);
+        forEachTask(x);
     }
 
     @Override
     public final void forEachTask(Consumer<? super Task> x) {
-//        long r = lock.readLock();
-//        try {
-        this.forEach(x);
-//        } finally {
-//            lock.unlockRead(r);
-//        }
+        forEach(x);
     }
+
+    @Override
+    public void forEach(Consumer<? super Task> x) {
+        lock.readOptimistic(()->super.forEach(x));
+    }
+
 
     @Override
     public final int taskCount() {
@@ -89,7 +91,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     public void match(Answer a) {
         //long r = lock.readLock();
         //try {
-        whileEach(a::test);
+        lock.readOptimistic(()->whileEach(a));
 //        } finally {
 //            lock.unlockRead(r);
 //        }
@@ -177,7 +179,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     /** direct insert; not ordinarily invoked from external */
-    @Nullable public Task insert(Task incoming) {
+    @Nullable private Task insert(Task incoming) {
 
 
         Task displaced = null;
@@ -225,6 +227,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         long r = lock.readLock();
         try {
 
+            Task[] items = this.items;
+
             int index = indexOf(x, this);
 
             if (index != -1) {
@@ -260,9 +264,39 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void remember(Remember r) {
-        if (r.input.isEternal())
-            _add(r);
-        //else: ignore
+        if (!r.input.isEternal())
+            return;
+
+        Task input = r.input, existing = null;
+
+        long l = lock.readLock();
+        try {
+            if (size > 0) {
+
+                //scan list for existing equal task
+                Object[] list = this.items;
+                for (Object aList : list) {
+                    if (aList == null)
+                        break;
+
+                    Task x = (Task) aList;
+                    if (x.equals(input)) {
+                        existing = x;
+                        break;
+                    }
+                }
+            }
+
+            if (existing == null) {
+                l = reviseOrTryInsertion(r, l);
+                return;
+            }
+        } finally {
+            lock.unlock(l);
+        }
+
+        r.merge(existing);
+
     }
 
     /**
@@ -291,7 +325,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             Truth yt = null;
 
             Term nt;
-            Term xTerm = x.term();
             Truth xt = x.truth();
 
             if (Stamp.overlapsAny(inputStamp, x.stamp())) {
@@ -316,7 +349,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
                 if (inputTerm instanceof Compound) {
                     nt =
                             Intermpolate.intermpolate(
-                                    (Compound)inputTerm, (Compound)xTerm,
+                                    (Compound)inputTerm, (Compound)(x.term()),
                                     _aProp,
                                     nar
                             );
@@ -381,40 +414,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         }
 
         return lock;
-    }
-
-    private void _add(Remember r) {
-
-        Task input = r.input, existing = null;
-
-        long l = lock.readLock();
-        try {
-            if (size > 0) {
-
-                //scan list for existing equal task
-                Object[] list = this.items;
-                for (Object aList : list) {
-                    if (aList == null)
-                        break;
-
-                    Task x = (Task) aList;
-                    if (x.equals(input)) {
-                        existing = x;
-                        break;
-                    }
-                }
-            }
-
-            if (existing == null) {
-                l = reviseOrTryInsertion(r, l);
-                return;
-            }
-        } finally {
-            lock.unlock(l);
-        }
-
-        r.merge(existing);
-
     }
 
 

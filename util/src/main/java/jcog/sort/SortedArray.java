@@ -677,12 +677,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return size == 0 ? null : items[size - 1];
     }
 
-    public final void forEach(Consumer<? super X> action) {
-        int s = size;
+    public void forEach(Consumer<? super X> action) {
         X[] items = this.items;
-        for (int i = 0; i < Math.min(items.length, s); i++) {
+        int s = Math.min(items.length, size);
+        for (int i = 0; i < s; i++)
             action.accept(items[i]);
-        }
     }
 
 //    public final void forEach(int n, Consumer<? super X> action) {
@@ -715,12 +714,12 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return true;
     }
 
-    public final void removeRange(int start, int _end, Consumer<? super X> action) {
-        int end = (_end == -1) ? size : Math.min(size, _end);
-        if (start < end) {
-            removeRangeSafe(start, end, action);
-        }
-    }
+//    public final void removeRange(int start, int _end, Consumer<? super X> action) {
+//        int end = (_end == -1) ? size : Math.min(size, _end);
+//        if (start < end) {
+//            removeRangeSafe(start, end, action);
+//        }
+//    }
 
     public void removeRangeSafe(int start, int end, Consumer<? super X> action) {
         X[] l = items;
@@ -774,6 +773,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public void reprioritize(X existing, int posBefore, float delta, float priAfter, FloatFunction<X> cmp) {
 
         //only reindex if exceeds threshold to previous or next item
+
+        X[] items = this.items;
 
         if (delta > 0) {
             if (posBefore > 0) {

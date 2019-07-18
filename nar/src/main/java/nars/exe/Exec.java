@@ -243,25 +243,30 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         if (!busy.compareAndSet(false, true))
             return;
 
-
         try {
-            long now = nar.time();
 
-            //fire previously scheduled
+            long now0 = nar.time();
+            toSchedule.drain(x -> {
+                if (x.scheduled)
+                    return; //ignore
+
+                if (x.start() <= now0)
+                    each.accept(x);
+                else {
+                    x.scheduled = true;
+                    scheduled.offer(x);
+                }
+            });
+
+            long now = nar.time();
             ScheduledTask t;
             while (((t = scheduled.peek()) != null) && (t.start() <= now)) {
-                each.accept(scheduled.poll()); //assert (next == actualNext);
+                ScheduledTask s = scheduled.poll();
+                s.scheduled = false;
+                each.accept(s); //assert (next == actualNext);
             }
 
 
-            toSchedule.drain(s -> {
-                //drain incoming queue
-                if (s.start() <= now)
-                    each.accept(s);
-                else {
-                    scheduled.offer(s);
-                }
-            });
 
 
         } finally {

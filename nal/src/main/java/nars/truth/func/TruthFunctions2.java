@@ -183,14 +183,14 @@ public enum TruthFunctions2 {
 
 
 
-        /**
-     * strong frequency and confidence the closer in frequency they are
+    /**
+     * strong result frequency the closer in frequency they are and the more polarized they are
      */
     public static Truth comparisonSymmetric(Truth t, Truth b, float minConf) {
         float c = confCompose(t, b);
         if (c < minConf) return null;
-        float dF = Math.abs(t.freq() - b.freq());
-        float sim = 1f - dF;
+        float sim =
+            (1f - Math.abs(t.freq() - b.freq())) * Math.max(t.polarity(), b.polarity());
         float cc = /*weak*/(c * sim);
         return cc >= minConf ? $.t(sim, cc) : null;
     }

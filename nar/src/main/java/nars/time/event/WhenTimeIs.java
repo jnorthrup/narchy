@@ -78,14 +78,14 @@ abstract public class WhenTimeIs extends ScheduledTask {
 
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
-    public static When<NAR> now(float dur, Timed nar) {
-        long now = nar.time();
-        return new When(Math.round(now - dur/2), Math.round(now + dur/2), dur, nar);
+    public static <T extends Timed> When<T> now(float dur, T t) {
+        long now = t.time();
+        return new When<T>(Math.round(now - dur/2), Math.round(now + dur/2), dur, t);
     }
-    private static When<NAR> now(FloatSupplier dur, Timed nar) {
-        return now(dur.asFloat(), nar);
+    private static <T extends Timed> When<T> now(FloatSupplier dur, T t) {
+        return now(dur.asFloat(), t);
     }
-    public static When<NAR> now(Timed t) {
+    public static <T extends Timed> When<T> now(T t) {
         return now(t.dur(), t);
     }
     public static When<NAR> now(Derivation d) {

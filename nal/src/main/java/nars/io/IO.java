@@ -143,18 +143,6 @@ public class IO {
         }
     }
 
-//    /**
-//     * warning: result may be RecycledDynBytes
-//     */
-//    public static DynBytes termToDynBytes(Term t) {
-//        if (t instanceof Atomic) {
-//            return new DynBytes(((Atomic) t).bytes()); //dont recycle
-//        } else {
-//            DynBytes d = new DynBytes(termBytesEstimate(t));
-//            t.appendTo((ByteArrayDataOutput) d);
-//            return d;
-//        }
-//    }
 
     public static int termBytesEstimate(Termlike t) {
         return t.volume() * 8;

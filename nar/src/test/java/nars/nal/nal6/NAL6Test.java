@@ -280,13 +280,14 @@ public class NAL6Test extends NALTest {
     void variable_elimination5_neg() {
 
 
+
         test.confMin(0.6f);
         test.termVolMax(16);
         test.believe("({Tweety} --> [withWings])");
         test.believe("((($x --> [chirping]) && ($x --> [withWings])) ==> --($x --> nonBird))");
         test.mustBelieve(cycles,
-                //"((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->nonBird))",
-                "(({Tweety}-->[chirping])==>({Tweety}-->nonBird))",
+                "((({Tweety}-->[chirping])&&({Tweety}-->[withWings]))==>({Tweety}-->nonBird))",
+                //"(({Tweety}-->[chirping])==>({Tweety}-->nonBird))",
                 0.00f,
                 //0.81f
                 0.81f
@@ -337,7 +338,8 @@ public class NAL6Test extends NALTest {
                 .believe("flyer:Tweety")
                 .mustBelieve(cycles, "(bird:Tweety ==> (chirping:Tweety && food:worms))",
                         1.0f,
-                        0.42f
+                        0.73f
+                        //0.42f
                         //0.81f
                 );
 
@@ -662,11 +664,10 @@ public class NAL6Test extends NALTest {
     void abductionBeliefWeakNegativesButNotNegative() {
 
         test
+                .termVolMax(3)
                 .believe("(a==>b)", 0.1f, 0.90f)
                 .believe("b", 0.1f, 0.90f)
-                .mustBelieve(cycles, "a",
-                        0.9f, 0.36f
-                );
+                .mustBelieve(cycles, "a", 1, 0.37f);
     }
 
 
@@ -685,25 +686,25 @@ public class NAL6Test extends NALTest {
     @Test
     void GoalMatchSubjOfImplWithVariable() {
         test
-                .believe("(x($1)==>y($1))", 1.00f, 0.90f)
+                .believe("(x($1)==>y($1))")
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "y(a)", 1.00f, 0.81f);
+                .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
     }
 
     @Test
     void GoalMatchSubjOfImplWithVariableNeg() {
         test
-                .believe("--(x($1)==>y($1))", 1.00f, 0.90f)
+                .believe("--(x($1)==>y($1))")
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "--y(a)", 1.00f, 0.81f);
+                .mustGoal(cycles, "--y(a)", 1.00f, 0.45f);
     }
 
     @Test
     void GoalMatchPredOfImplWithVariable() {
         test
-                .believe("(x($1)==>y($1))", 1.00f, 0.90f)
+                .believe("(x($1)==>y($1))")
                 .goal("y(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "x(a)", 1.00f, 0.40f);
+                .mustGoal(cycles, "x(a)", 1.00f, 0.81f);
     }
 
     @Test
@@ -713,8 +714,8 @@ public class NAL6Test extends NALTest {
                 .termVolMax(13)
                 .believe("((&&,(#1 --> lock),open($2,#1)) ==> ($2 --> key))", 1.00f, 0.90f)
                 .believe("(lock1 --> lock)", 1.00f, 0.90f)
-                //.mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
-                .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.81f)
+                .mustBelieve(cycles, "((open($1,lock1)&&(lock1-->lock))==>($1-->key))", 1.00f, 0.81f)
+                .mustBelieve(cycles, "(open($1,lock1)==>($1-->key))", 1.00f, 0.73f)
         ;
 
     }

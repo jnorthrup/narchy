@@ -1,7 +1,5 @@
 package nars.time;
 
-import nars.NAR;
-
 abstract public class RecurringTask extends ScheduledTask {
 
     public volatile long nextStart = Long.MIN_VALUE;
@@ -12,9 +10,9 @@ abstract public class RecurringTask extends ScheduledTask {
     }
 
 
-    private void runAt(long idealNext, NAR nar) {
-        nextStart = idealNext;
-
-        nar.runAt(this);
-    }
+//    private void runAt(long idealNext, NAR nar) {
+//        nextStart = idealNext;
+//
+//        nar.runAt(this);
+//    }
 }
