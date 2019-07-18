@@ -237,7 +237,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
 
-        @Override public Signal src(When<NAR> when) {
+        @Override public Termed src(When<NAR> when) {
             return randomPixel(when.x.random());
         }
 
@@ -289,10 +289,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
         @Override
-        protected Concept src(When<NAR> when) {
-            NAR n = when.x;
-            Term t = superPixel(n.random());
-            return t!=null ? n.conceptualizeDynamic(t) : null;
+        protected Termed src(When<NAR> when) {
+            return superPixel(when.x.random());
         }
 
         @Override

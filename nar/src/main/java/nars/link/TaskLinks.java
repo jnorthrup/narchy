@@ -164,8 +164,9 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             return reverse;
 
         Term forward = link.forward(target, link, task, d);
-        if (forward != null)
+        if (forward != null) {
             grow(link, task, forward);
+        }
 
         return target;
     }
