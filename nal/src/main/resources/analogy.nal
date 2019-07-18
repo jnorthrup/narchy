@@ -1,37 +1,36 @@
+//// inheritance from similarty
+    //(S <-> P), P         |- (S --> P), (Belief:Identity)
+    //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 ////If P and S are a special case of M, then they might be similar (weak),
 ////also if P and S are a general case of M
 
-    (S --> P), (P --> S), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Intersection, Time:Compose)
-       (P --> S), (S --> P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Intersection, Time:Compose)
-    (S --> P), (P --> S), --isVar(S), --isVar(P) |- (S <-> P), (Goal:Desire, Time:Task)
-       (P --> S), (S --> P), --isVar(S), --isVar(P) |- (S <-> P), (Goal:Desire, Time:Task)
-//    (S --> P), (P --> S), --isVar(S), --isVar(P) |- varIntro((S <-> P)), (Punctuation:AskAll, Time:Task)
-//       (P --> S), (S --> P), --isVar(S), --isVar(P) |- varIntro((S <-> P)), (Punctuation:AskAll, Time:Task)
+      (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
+      (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
+      (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |-   (S <-> P), (Belief:Intersection, Time:Compose)
+      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
 
-    //(M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Goal:Desire, Time:Compose)
-    //(P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Goal:Desire, Time:Compose)
-//    (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Time:Compose)
-    (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |- (S <-> P), (Belief:Intersection, Time:Compose)
-    (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |- (S <-> P), (Goal:DesireWeak, Time:Task)
 
-//    (P --> M), (S --> M), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Time:Compose)
-//    (M --> P), (M --> S), neqRCom(S,P), --isVar(S), --isVar(P) |- (S <-> P), (Belief:Comparison, Time:Compose)
+      (S <-> P),    P                                |-   (S --> P), (Goal:StructuralReduction, Time:Task)
 
-    //(S --> P), (P --> S), --isVar(S), --isVar(P) |-   (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
-    //(S --> P), (P --> S), --isVar(S), --isVar(P) |- --(S <-> P), (Belief:IntersectionNN, Goal:DesireNN)
+      (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |-   (S <-> P), (Goal:Desire, Time:Task)
+      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
+      (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
+      (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
 
-//    (S --> P), (P --> S) |- --(S <-> P), (Belief:ComparisonSymmetric, Time:Compose)
-    //(S --> P), (P --> S) |- (S <-> P), (Belief:Comparison)
+      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
+      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
+
+
 
 //   see:
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 // the similarity beliefs here act as a sort of transistor switch in determining Desire result truth
 
-  X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakPP, Goal:DesireWeak, Time:Task)
+  X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:Desire, Goal:Desire, Time:Task)
     //X, (X <-> Y), task("?@"), --isVar(Y)            |- Y
-  X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakNN, Goal:DesireWeakNN, Time:Task)
+  //X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakNN, Goal:DesireWeakNN, Time:Task)
  //  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakN, Goal:DesireWeakN, Time:TaskEvent)
     //X, (--X <-> Y), task("?@"), --isVar(Y)            |- Y
 

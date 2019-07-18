@@ -87,17 +87,4 @@
 
 
 
-//// inheritance from similarty
-    //(S <-> P), P         |- (S --> P), (Belief:Identity)
-    //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
-
-    //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
-
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Belief:DeductionPN, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DeductionNP, Time:Compose)
-      (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (P --> S), (Goal:Undesire, Time:Task)
-      (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:Desire, Time:Task)
-      (S <-> P),    P                              |-   (S --> P), (Goal:StructuralReduction, Time:Task)
-
-      //(P --> S), (S <-> P), --isVar(S), --isVar(P) |-   (S --> P), (Goal:Desire, Time:Task)
 
