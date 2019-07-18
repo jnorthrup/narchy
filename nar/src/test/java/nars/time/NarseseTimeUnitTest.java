@@ -112,7 +112,7 @@ class NarseseTimeUnitTest {
     void testTimeDeltaUnits() {
 
         assertEquals(
-                "target(\"&&\",(a,b),(day,1))",
+                "termDynamic(\"&&\",(a,b),(day,1))",
                 $$("(a &&+1day b)").toString()
         );
 

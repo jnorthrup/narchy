@@ -442,6 +442,14 @@ public enum NALTruth implements TruthFunc {
         }
     },
 
+    /** wrapper for Desire that inverts the belief truth according to the polarity of the task  truth */
+    Undesire() {
+        @Override
+        public @Nullable Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            return NALTruth.Desire.apply(T, B.negIf(T.isPositive()), minConf, n);
+        }
+    },
+
     DesireWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {

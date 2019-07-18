@@ -17,16 +17,16 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
 
     //question short-circuit answer
-    C, X, task("?"), eventOf(C,X)    |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief, Time:TaskEvent)
-    C, X, task("?"), eventOfNeg(C,X) |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief, Time:TaskEvent)
+    C, X, task("?"), eventOf(C,X)                 |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief, Time:TaskEvent)
+    C, X, task("?"), eventOfNeg(C,X), has(C,"--") |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief, Time:TaskEvent)
         //TODO other short-circuits, involving ==> etc
 
 
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction, Time:Task)
 
-      (A ==> D), X, conjParallel(D), eventOf(D,X), --isVar(X)      |-   (A ==>   X), (Belief:StructuralDeductionN, Time:Task)
-      (A ==> D), X, conjParallel(D), eventOfNeg(D,X), --isVar(X)   |-   (A ==> --X), (Belief:StructuralDeductionN, Time:Task)
+      (A ==> D), X, eventOf(D,X), --isVar(X)                 |-   (A ==> --X), (Belief:StructuralDeductionN, Time:Task)
+      (A ==> D), X, eventOfNeg(D,X), --isVar(X), has(D,"--") |-   (A ==>   X), (Belief:StructuralDeductionN, Time:Task)
 
 
         //(A ==> C), X, eventOfPN(C,X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)
@@ -52,8 +52,8 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
 
 
-    (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y), hasBelief()  |- polarizeTask(unisubst((B ==> (&&,X,A..+)),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent, Time:Task)
-    ((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y), hasBelief()  |- polarizeTask(unisubst(((&&,X,A..+) ==> B),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent, Time:Task)
+//  (B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y), hasBelief()  |- polarizeTask(unisubst((B ==> (&&,X,A..+)),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent, Time:Task)
+//  ((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y), hasBelief()  |- polarizeTask(unisubst(((&&,X,A..+) ==> B),X,polarizeBelief(Y)),novel), (Belief:DeductionDepolarized, Time:BeliefEvent, Time:Task)
       //(B ==> (&&,X,A..+)), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst((B ==> (&&,A..+)),X,polarizeBelief(Y))), (Belief:DeductionDepolarized, Time:BeliefEvent)
       //((&&,X,A..+) ==> B), Y, --isVar(X),--isVar(Y)  |- polarizeTask(unisubst(((&&,A..+) ==> B),X,polarizeBelief(Y))), (Belief:DeductionDepolarized, Time:BeliefEvent)
 
@@ -71,11 +71,11 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
     D, X, --isVar(X), has(D,"--")       |-   --conjAfter(D, --X),     (Belief:DeductionNN, Time:BeliefEvent)
       D, X, --isVar(X), has(D,"--")     |-   --conjAfter(D, --X),       (Goal:DeductionNN, Time:TaskEvent)
 
-    //desire for sub-sequence leading to goal,  truth function may be Desire or Deduction
-    G, C                    |-    conjBefore(C,   G),  (Goal:DesirePP, Time:TaskEvent)
-    G, C, has(C,"--")       |-    conjBefore(C, --G),  (Goal:DesireNP, Time:TaskEvent)
-        G, D                |-  --conjBefore(D,   G),  (Goal:DesirePN, Time:TaskEvent)
-        G, D, has(D,"--")   |-  --conjBefore(D, --G),  (Goal:DesireNN, Time:TaskEvent)
+    //desire for sub-sequence leading to goal
+    G, C                    |-    conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
+    G, C, has(C,"--")       |-    conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
+        G, D, has(D,"--")   |-  --conjBefore(D, --G),  (Goal:DeductionNN, Time:TaskEvent)
+        G, D                |-  --conjBefore(D,   G),  (Goal:DeductionPN, Time:TaskEvent)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case
@@ -174,9 +174,9 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
    (M ==> C), (M ==> S), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DeductionPN, Time:Compose)
      //(M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DeductionNP, Time:TaskEvent)
 
-   (M ==> D), (M ==> S), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DeductionNN, Time:Compose)
+   (M ==> D), (M ==> S), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DeductionNP, Time:Compose)
     //(M ==> S), (M ==> D), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DeductionNN, Time:TaskEvent)
-   (M ==> D), (M ==> S), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DeductionNP, Time:Compose)
+   (M ==> D), (M ==> S), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DeductionNN, Time:Compose)
     //(M ==> S), (M ==> D), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DeductionPN, Time:TaskEvent)
 
 
