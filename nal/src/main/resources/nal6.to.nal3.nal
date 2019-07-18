@@ -1,14 +1,14 @@
 //NAL6 -> NAL3 bridge
 
-  (  (A-->X) &&   (B-->X)),   X, neqRCom(A,B)  |- ((A && B)-->X), (Punctuation:Ask, Time:Task)
-  (  (A-->X) && --(B-->X)),   X, neqRCom(A,B)  |- ((A && --B)-->X), (Punctuation:Ask, Time:Task)
-  (--(A-->X) &&   (B-->X)),   X, neqRCom(A,B)  |- ((--A && B)-->X), (Punctuation:Ask, Time:Task)
-  (--(A-->X) && --(B-->X)),   X, neqRCom(A,B)  |- ((--A && --B)-->X), (Punctuation:Ask, Time:Task)
+  (  (A-->X) &&   (B-->X)), (  (A-->X) &&   (B-->X)), neqRCom(A,B) |- ((A && B)-->X), (Punctuation:Ask, Time:Task)
+  (  (A-->X) && --(B-->X)), (  (A-->X) && --(B-->X)), neqRCom(A,B) |- ((A && --B)-->X), (Punctuation:Ask, Time:Task)
+  (--(A-->X) &&   (B-->X)), (--(A-->X) &&   (B-->X)), neqRCom(A,B) |- ((--A && B)-->X), (Punctuation:Ask, Time:Task)
+  (--(A-->X) && --(B-->X)), (--(A-->X) && --(B-->X)), neqRCom(A,B) |- ((--A && --B)-->X), (Punctuation:Ask, Time:Task)
 
-  (  (X-->A) &&   (X-->B)),   X, neqRCom(A,B)  |- (X-->(A && B)), (Punctuation:Ask, Time:Task)
-  (  (X-->A) && --(X-->B)),   X, neqRCom(A,B)  |- (X-->(A && --B)), (Punctuation:Ask, Time:Task)
-  (--(X-->A) &&   (X-->B)),   X, neqRCom(A,B)  |- (X-->(--A && B)), (Punctuation:Ask, Time:Task)
-  (--(X-->A) && --(X-->B)),   X, neqRCom(A,B)  |- (X-->(--A && --B)), (Punctuation:Ask, Time:Task)
+  (  (X-->A) &&   (X-->B)), (  (X-->A) &&   (X-->B)), neqRCom(A,B) |- (X-->(A && B)), (Punctuation:Ask, Time:Task)
+  (  (X-->A) && --(X-->B)), (  (X-->A) && --(X-->B)), neqRCom(A,B) |- (X-->(A && --B)), (Punctuation:Ask, Time:Task)
+  (--(X-->A) &&   (X-->B)), (--(X-->A) &&   (X-->B)), neqRCom(A,B) |- (X-->(--A && B)), (Punctuation:Ask, Time:Task)
+  (--(X-->A) && --(X-->B)), (--(X-->A) && --(X-->B)), neqRCom(A,B) |- (X-->(--A && --B)), (Punctuation:Ask, Time:Task)
 
 
 ////drill-down impl/sect induction

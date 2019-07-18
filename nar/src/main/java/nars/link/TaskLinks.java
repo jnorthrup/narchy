@@ -424,8 +424,8 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
                     match = (TaskLinkSnapshot) _match;
             } else {
                 match = new TaskLinkSnapshot(now, minUpdateCycles);
-                src.meta(id, new SoftReference<>(match));
-                //src.meta(id, match);
+                //src.meta(id, new SoftReference<>(match));
+                src.meta(id, match);
             }
 
             return match.sample(src.term(), bag, punc, filter, in, out, now, minUpdateCycles, rng);
