@@ -715,11 +715,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return update(false);
     }
 
-    public long[] stamp(int component) {
-        TaskComponent ii = items[component];
-        if (!ii.valid())
-            throw new WTF();
-        return ii.task.stamp();
+    public final long[] stamp(int component) {
+        return items[component].stamp();
     }
 
     public Supplier<long[]> stamper(Supplier<Random> rng) {
@@ -731,7 +728,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
             return () -> {
                 @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
-                    STAMP_CAPACITY * ss,
+                    STAMP_CAPACITY,
                     this::stamp,
                     ss); //calculate stamp after filtering and after intermpolation filtering
                 if (stampSet.size() > STAMP_CAPACITY) {
@@ -800,6 +797,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         final double eviDescending() {
             double e = this.evi;
             return (e == e) ? -e : Double.POSITIVE_INFINITY;
+        }
+
+        public final long[] stamp() {
+            assert(valid());
+//            if (!valid())
+//                throw new WTF();
+            return task.stamp();
         }
     }
 

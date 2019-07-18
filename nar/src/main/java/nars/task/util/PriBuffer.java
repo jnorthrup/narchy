@@ -22,6 +22,8 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
+import static jcog.pri.PriMap.newMap;
+
 /**
  * regulates a flow of supplied tasks to a target consumer
  * TODO some of this can be moved to util/
@@ -141,7 +143,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         private final Map<X, X> tasks;
 
         public MapTaskBuffer() {
-            tasks = PriMap.newMap(true);
+            tasks = newMap(true);
         }
 
         @Override
@@ -238,7 +240,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                 }
 
             },
-                    new PriMap<>(merge) {
+                    new PriMap<>(merge, newMap(false)) {
                         /**
                          * merge in the post-buffer
                          */

@@ -55,13 +55,13 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 
     @Override
     public final void push(T t) {
-        long last = end();
-        if (last!=TIMELESS && last > t.start()) {
-//            if (Param.DEBUG)
-//                throw new RuntimeException(RingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
-//            else
-                return; //?
-        }
+//        long last = end();
+//        if (last!=TIMELESS && last > t.start()) {
+////            if (Param.DEBUG)
+////                throw new RuntimeException(RingBufferTaskSeries.class + " only supports appending in linear, non-overlapping time sequence");
+////            else
+//                return; //?
+//        }
 
         q.add(t);
     }
@@ -172,6 +172,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             return true; //nothing
 
         long e = end();
+        if (e == TIMELESS)
+            e = s; //HACK
 //
 //            if (maxT!=minT) {
 //                if (e == TIMELESS || minT > e) {

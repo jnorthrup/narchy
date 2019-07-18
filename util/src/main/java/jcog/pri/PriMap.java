@@ -6,6 +6,8 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatConsumer;
 import org.eclipse.collections.api.block.function.primitive.ObjectFloatToObjectFunction;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jctools.maps.NonBlockingHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
@@ -56,9 +58,9 @@ public class PriMap<Y> {
             return linked ?
                 new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
                 :
-                new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
+                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
-                //new NonBlockingHashMap() //<- not working right
+                new NonBlockingHashMap()
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f)
                 //new CustomConcurrentHashMap()
                 ;
@@ -68,8 +70,8 @@ public class PriMap<Y> {
                     //new LinkedHashMap(0, load)
                     new HashMap(0, load)
                     :
-                    //new UnifiedMap(0, load)
-                    new HashMap(0, load)
+                    new UnifiedMap(0, load)
+                    //new HashMap(0, load)
              ;
         }
     }

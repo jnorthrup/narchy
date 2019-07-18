@@ -27,6 +27,8 @@ import nars.term.atom.Atom;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.ref.Reference;
+import java.lang.ref.SoftReference;
 import java.util.Iterator;
 import java.util.Objects;
 import java.util.Random;
@@ -348,7 +350,7 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
     /**
      * caches ranked reverse atom termlinks in concept meta table
      */
-    public static class ConceptCachingTangentTaskLinks extends TaskLinks {
+    public static class TangentConceptCachingTaskLinks extends TaskLinks {
 
         int ATOM_TANGENT_REFRESH_DURS = 1;
 
@@ -413,12 +415,17 @@ abstract public class TaskLinks implements Sampler<TaskLink> {
             //        Reference<TermLinks> matchRef = src.meta(id);
             //        TermLinks match = matchRef != null ? matchRef.get() : null;
 
-            TaskLinkSnapshot match = src.meta(id);
-
-            if (match == null) {
-                //src.meta(id, new SoftReference<>(match));
+            Object _match = src.meta(id);
+            TaskLinkSnapshot match;
+            if (_match!=null) {
+                if (_match instanceof Reference)
+                    match = (TaskLinkSnapshot) ((Reference) _match).get();
+                else
+                    match = (TaskLinkSnapshot) _match;
+            } else {
                 match = new TaskLinkSnapshot(now, minUpdateCycles);
-                src.meta(id, match);
+                src.meta(id, new SoftReference<>(match));
+                //src.meta(id, match);
             }
 
             return match.sample(src.term(), bag, punc, filter, in, out, now, minUpdateCycles, rng);

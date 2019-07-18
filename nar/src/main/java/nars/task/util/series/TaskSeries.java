@@ -85,10 +85,10 @@ public interface TaskSeries<T extends Task> {
 
     void forEach(Consumer<? super T> action);
 
-    /** returns Tense.TIMELESS (Long.MAX_VALUE) if empty */
+    /** returns Tense.TIMELESS (Long.MAX_VALUE) if seemingly empty, which may occurr spuriously */
     long start();
 
-    /** returns Tense.TIMELESS (Long.MAX_VALUE) if empty */
+    /** returns Tense.TIMELESS (Long.MAX_VALUE) if seemingly empty, which may occurr spuriously */
     long end();
 
     default boolean isEmpty() {

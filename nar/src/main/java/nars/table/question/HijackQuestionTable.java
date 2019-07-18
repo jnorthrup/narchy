@@ -31,7 +31,7 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
     @Override
     public void match(Answer a) {
-        sample(a.nar.random(), a.tasks.capacity(), a::test);
+        sample(a.nar.random(), a.tasks.capacity(), a);
     }
 
     /** optimized for cases with zero and one stored tasks */

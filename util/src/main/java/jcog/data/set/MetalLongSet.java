@@ -6,19 +6,19 @@ import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
+import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
 import java.util.Arrays;
 import java.util.function.LongConsumer;
 
-public class MetalLongSet extends LongOpenHashSet  {
-
-    private static final float LOAD = Hash.FAST_LOAD_FACTOR;
+@Deprecated public class MetalLongSet extends LongHashSet {
 
     public MetalLongSet(int capacity) {
-        super(capacity, LOAD);
+        super(capacity);
     }
+
     public MetalLongSet(long[] initial) {
-        super(initial, LOAD);
+        super(initial);
     }
 
     public long[] toSortedArray() {
@@ -27,26 +27,12 @@ public class MetalLongSet extends LongOpenHashSet  {
         if (s == 0)
             return ArrayUtil.EMPTY_LONG_ARRAY;
 
-        long[] l = toLongArray();
+        long[] l = toArray();
         if (s > 1)
             Arrays.sort(l);
         return l;
     }
 
-    public boolean addAll(long[] x) {
-        boolean any = false;
-        for (long xx : x)
-            any |= add(xx);
-        return any;
-    }
-
-    /** unsorted */
-    public MutableLongList toList() {
-        int s = size();
-        LongArrayList l = new LongArrayList(s);
-        forEach((LongConsumer) l::add);
-        return l;
-    }
 
 
 //    /** note: this will have trouble with 0 since it is the 'null key' used by the superclass.  stamp 0 shouldnt be expected anyway */

@@ -294,7 +294,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
                 //pre-load curiosity for the future
                 if (curiosity.goal.getOpaque()) {
-                    long lastCuriosity = curiosityTable.series.end();
+                    long lastCuriosity = curiosityTable.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                     long curiEnd = Math.round(curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
 

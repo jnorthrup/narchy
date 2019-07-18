@@ -235,13 +235,13 @@ public interface Stamp {
 //        return new MetalLongSet(task.stamp());
 //    }
     static MetalLongSet toMutableSet(Stamp task) {
-        long[] ts = task.stamp();
-        return toMutableSet(ts);
+        return toMutableSet(task.stamp());
     }
 
     static MetalLongSet toMutableSet(long[] ts) {
         MetalLongSet s = new MetalLongSet(ts);
-        s.trim();
+        //s.trim();
+        //s.compact();
         return s;
     }
 
@@ -255,7 +255,7 @@ public interface Stamp {
             case 0: throw new NullPointerException();
             case 1: return toMutableSet(t.apply(0));
             default:
-                MetalLongSet e = new MetalLongSet(n * expectedCap);
+                MetalLongSet e = new MetalLongSet(n * expectedCap / 2);
                 for (int i = 0; i < n; i++)
                     e.addAll(t.apply(i));
                 //e.trim();

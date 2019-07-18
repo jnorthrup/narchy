@@ -81,10 +81,14 @@ public class SensorBeliefTables extends BeliefTables {
         long seriesStart = series.start();
         if (seriesStart == Tense.TIMELESS)
             return false;
+        long seriesEnd = series.end();
+        if (seriesEnd == Tense.TIMELESS)
+            seriesEnd = seriesStart;
 
         int cleanMargin = cleanMarginCycles(r.nar);
         long ss = seriesStart + cleanMargin;
-        long ee = series.end() - cleanMargin;
+
+        long ee = seriesEnd - cleanMargin;
         return ss < ee && series.absorbNonSignal(r.input, ss, ee);
     }
 
