@@ -51,8 +51,8 @@ public class DefaultDerivePri implements DerivePri {
 
         float factor;
         if (t.isBeliefOrGoal()) {
-            //factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
-            factor = factorCmpl * factorEviAbsolute(t, d) * factorPolarity(t.freq());
+            factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
+            //factor = factorCmpl * factorEviAbsolute(t, d) * factorPolarity(t.freq());
         } else {
             factor = questionGain.floatValue() * factorCmpl * factorCmpl;
         }

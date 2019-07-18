@@ -1,6 +1,6 @@
 package jcog.bloom;
 
-import jcog.bloom.hash.HashProvider;
+import jcog.bloom.hash.Hasher;
 
 import java.util.Random;
 
@@ -28,8 +28,8 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
                              int numberOfHashes,
                              float forget,
                              Random rng,
-                             HashProvider<E> hashProvider) {
-        super(hashProvider, numberOfCells, numberOfHashes);
+                             Hasher<E> hasher) {
+        super(hasher, numberOfCells, numberOfHashes);
         this.forget = forget(forget);
         this.rng = rng;
     }

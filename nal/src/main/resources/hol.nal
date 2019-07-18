@@ -1,18 +1,20 @@
 //Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
 
 //impl/sim
-  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric)
-    (X ==> Z), (Y ==> Z), neq(X,Y) |- ((X,polarizeTask(Z)) <-> (Y,polarizeBelief(Z))), (Belief:ComparisonSymmetricDepolarized)
-
-  (Z ==> X), (Z ==> Y),   neqRCom(X,Y) |-   (polarizeTask(X) <-> polarizeBelief(Y)), (Belief:ComparisonSymmetricDepolarized)
+  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
+    (X ==> Z), (Y ==> Z), neq(X,Y) |- ((X,polarizeTask(Z)) <-> (Y,polarizeBelief(Z))), (Belief:ComparisonSymmetricDepolarized, Time:Compose)
+    (Z ==> X), (Z ==> Y), neq(X,Y) |- ((Z,polarizeTask(X)) <-> (Z,polarizeBelief(Y))), (Belief:ComparisonSymmetricDepolarized, Time:Compose)
+  (Z ==> X), (Z ==> Y),   neqRCom(X,Y) |-   (X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
+     (Z ==> X), (W ==> Y), eqNeg(Z,W), neqRCom(X,Y) |-  --(X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
   //(Z ==> X), (--Z ==> Y), neqRCom(X,Y) |- --(polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)
 
 //sim/impl = impl/sim in reverse
-//  (X <-> Y),   Y, task(".") |- (X ==> Y), (Punctuation:Question)
-//  (X <-> --Y), Y, task(".") |- (X ==> Y), (Punctuation:Question)
+  (X <-> Y), Y, task(all)             |- (polarizeRandom(X) ==> Y), (Punctuation:Question, Time:Task)
+  ((A,X) <-> (B,X)), (A,X), task(all) |- (A ==> X), (Punctuation:Question, Time:Task)
+  ((X,A) <-> (X,B)), (X,A), task(all) |- (X ==> A), (Punctuation:Question, Time:Task)
 
-//distinction - an attempt to elucidate the difference between similar/dissimilar concepts
-  (X <-> Y),   Y |- ((X && ?1) <-> (Y && ?2)), (Punctuation:Ask)
 
-    (X <-> --Y),   Y |- ((X && ?1) <-> (--Y && ?2)), (Punctuation:Ask)
+
+////distinction - an attempt to elucidate the difference between similar/dissimilar concepts
+  (X <-> Y), X |- (X <-> (polarizeRandom(Y) && ?1)), (Punctuation:Ask)
 

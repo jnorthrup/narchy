@@ -9,12 +9,10 @@ import nars.NARS;
 import nars.task.util.Revision;
 import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.t;
 import static nars.NAL.truth.TRUTH_EPSILON;
-import static nars.truth.func.TruthFunctions.w2c;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -199,18 +197,18 @@ class TruthTest {
         assertEquals(1f, t(1f, 0.5f).polarity(), 0.01f);
     }
 
-    @Disabled
-    @Test
-    void testEvidenceHorizonDistortion() {
-        Truth a = t(1f, 0.9f);
-        double eviA = a.evi();
-        Truth b = t(1f, 0.9f);
-        double eviB = b.evi();
-        float eviABintersect = TruthFunctions.c2w(0.81f);
-        double eviABintersectRaw = eviA * eviB;
-        double eviABintersectRawToConf = w2c(eviA * eviB);
-        System.out.println();
-    }
+//    @Disabled
+//    @Test
+//    void testEvidenceHorizonDistortion() {
+//        Truth a = t(1f, 0.9f);
+//        double eviA = a.evi();
+//        Truth b = t(1f, 0.9f);
+//        double eviB = b.evi();
+//        float eviABintersect = TruthFunctions.c2w(0.81f);
+//        double eviABintersectRaw = eviA * eviB;
+//        double eviABintersectRawToConf = w2c(eviA * eviB);
+//        System.out.println();
+//    }
 
 
 //    @Test void testPostFn() {

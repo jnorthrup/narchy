@@ -3,7 +3,7 @@ package jcog.bloom.hash;
 /**
  * Created by jeff on 16/05/16.
  */
-public abstract class AbstractHashProvider<E> implements HashProvider<E> {
+public abstract class AbstractHasher<E> implements Hasher<E> {
 
     @Override
     public int hash1(E element) {

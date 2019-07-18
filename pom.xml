@@ -43,18 +43,18 @@
         <version>3.0.0-M3</version>
         <configuration>
           <testFailureIgnore>true</testFailureIgnore>
-          <systemPropertyVariables>
+          <!--<systemPropertyVariables>
             <gzoltar-agent.destfile>${project.build.directory}/gzoltar.ser</gzoltar-agent.destfile>
-          </systemPropertyVariables>
+          </systemPropertyVariables> -->
 <!--          <skipTests>true</skipTests>-->
           <argLine>--illegal-access=permit</argLine>
           <forkCount>1C</forkCount>
-          <properties>
+         <!-- <properties>
           <property>
             <name>listener</name>
             <value>com.gzoltar.internal.core.listeners.JUnitListener</value>
           </property>
-          </properties>
+              </properties>-->
         </configuration>
 
       </plugin>
@@ -132,8 +132,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <release>13</release>
-          <target>13</target>
+          <release>14</release>
+          <target>14</target>
           <useIncrementalCompilation>true</useIncrementalCompilation>
         </configuration>
       </plugin>

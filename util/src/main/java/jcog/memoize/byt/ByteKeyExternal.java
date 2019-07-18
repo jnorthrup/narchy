@@ -1,8 +1,7 @@
 package jcog.memoize.byt;
 
 import jcog.data.byt.DynBytes;
-
-import static jcog.data.byt.RecycledDynBytes.tmpKey;
+import jcog.data.byt.RecycledDynBytes;
 
 public class ByteKeyExternal implements ByteKey {
 
@@ -11,7 +10,7 @@ public class ByteKeyExternal implements ByteKey {
     protected int hash;
 
     public ByteKeyExternal() {
-        this(tmpKey());
+		this(RecycledDynBytes.get());
     }
 
     public ByteKeyExternal(DynBytes key) {

@@ -23,7 +23,7 @@ public class TermRadixTree<X> extends MyRadixTree<X> {
         int vol = x.volume();
 
         //TermBytes y = new TermBytes(vol * 4 + 64 /* ESTIMATE */);
-        try (RecycledDynBytes y = RecycledDynBytes.tmpKey()) {
+		try (RecycledDynBytes y = RecycledDynBytes.get()) {
 
             y.writeShort(vol);
 

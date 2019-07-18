@@ -487,6 +487,9 @@ public class PremiseRule extends ProxyTerm {
                             taskPunc = t -> t == BELIEF || t == GOAL;
                             concPunc = c -> c;
                             break;
+                        case "all":
+                            taskPunc = t -> true;
+                            break;
 //                        case "\"*\"":
 //                            pre.addAt(new TaskBeliefOp(PROD, true, false));
 //                            break;

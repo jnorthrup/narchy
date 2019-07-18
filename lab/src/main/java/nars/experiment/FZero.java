@@ -48,7 +48,7 @@ public class FZero extends GameX {
     public Bitmap2DSensor c;
 
 
-    static float fps = 25f;
+    static float fps = 20f;
 
     public static void main(String[] args) {
         GameX.runRT(n -> {

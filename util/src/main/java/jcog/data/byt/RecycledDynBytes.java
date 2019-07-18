@@ -40,11 +40,6 @@ public class RecycledDynBytes extends DynBytes {
     }
 
 
-    public static RecycledDynBytes tmpKey() {
-        return get();
-    }
-
-
     @Override
     public byte[] compact() {
         return bytes; //dont compact

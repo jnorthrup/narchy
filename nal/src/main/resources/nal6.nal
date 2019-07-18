@@ -3,26 +3,20 @@
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
+     B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:DeductionWeakPP, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:DeductionWeakNP, Time:TaskEvent)
-           B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>") |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:DeductionWeakPN, Time:TaskEvent)
-              B, (--X ==> C), --is(C,"#"), --is(B,"==>")            |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:DeductionWeakNN, Time:TaskEvent)
+
+
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DesireReversePP, Goal:DesireReverseWeakPP, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DesireReverseNP, Goal:DesireReverseWeakNP, Time:TaskEvent)
 
      //if novel, allow recursive
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$",novel), (Belief:DeductionRecursivePP, Goal:DeductionWeakPP, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$",novel), (Belief:DeductionRecursiveNP, Goal:DeductionWeakNP, Time:TaskEvent)
-          B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")  |- --unisubst(C,X,B,"$",novel), (Belief:DeductionRecursivePN, Goal:DeductionWeakPN, Time:TaskEvent)
-            B, (--X ==> C), --is(C,"#"), --is(B,"==>")              |- --unisubst(C,X,B,"$",novel), (Belief:DeductionRecursiveNN, Goal:DeductionWeakNN, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$",novel), (Belief:DesireReverseRecursivePP, Goal:DesireReverseWeakPP, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$",novel), (Belief:DesireReverseRecursiveNP, Goal:DesireReverseWeakNP, Time:TaskEvent)
 
        //questions
           B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-
-
-
-
-    B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
     B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((X==>A),chooseUnifiableSubEvent(A,B),B,"$",novel), (Belief:DeductionPP, Time:TaskEvent)
     B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((X==>A),chooseUnifiableSubEvent(A,--B),--B,"$",novel), (Belief:DeductionNP, Time:TaskEvent)

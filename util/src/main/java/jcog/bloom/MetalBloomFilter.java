@@ -1,22 +1,22 @@
 package jcog.bloom;
 
-import jcog.bloom.hash.BytesHashProvider;
-import jcog.bloom.hash.HashProvider;
+import jcog.bloom.hash.BytesHasher;
+import jcog.bloom.hash.Hasher;
 
 import java.util.function.Function;
 
 public class MetalBloomFilter<E> {
-    protected final HashProvider<E> hashProvider;
+    protected final Hasher<E> hasher;
     protected final byte[] cells;
     protected final int numberOfCells;
     protected final int numberOfHashes;
 
     public MetalBloomFilter(Function<E,byte[]> hashProvider, int numberOfCells, int numberOfHashes) {
-        this(new BytesHashProvider(hashProvider), numberOfCells, numberOfHashes);
+        this(new BytesHasher(hashProvider), numberOfCells, numberOfHashes);
     }
 
-    public MetalBloomFilter(HashProvider<E> hashProvider, int numberOfCells, int numberOfHashes) {
-        this.hashProvider = hashProvider;
+    public MetalBloomFilter(Hasher<E> hasher, int numberOfCells, int numberOfHashes) {
+        this.hasher = hasher;
         this.cells = new byte[numberOfCells];
         this.numberOfCells = numberOfCells;
         this.numberOfHashes = numberOfHashes;
@@ -50,8 +50,8 @@ public class MetalBloomFilter<E> {
     public int[] hash(E element) {
         int[] hashes = new int[numberOfHashes];
 
-        int h1 = hashProvider.hash1(element);
-        int h2 = hashProvider.hash2(element);
+        int h1 = hasher.hash1(element);
+        int h2 = hasher.hash2(element);
         for (int i = 0; i < numberOfHashes; i++) {
             hashes[i] = Math.abs(((h1 + i * h2) % numberOfCells));
         }

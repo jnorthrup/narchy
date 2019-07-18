@@ -10,18 +10,14 @@ import nars.NAR;
 import nars.agent.Reward;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
-import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.grid.Gridding;
 
 import java.util.List;
 
-import static java.util.stream.Collectors.toList;
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
@@ -113,14 +109,14 @@ public class Gradius extends GameX {
                                     .crop(
                                             (float) i / dx, (float) j / dy,
                                             (float) (i + 1) / dx, (float) (j + 1) / dy))
-                            .resolution(0.01f);
+                            .resolution(0.02f);
 
                     cams.add(c);
                 }
 
-            SpaceGraph.window(new Gridding(
-                            cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
-                    400, 900);
+//            SpaceGraph.window(new Gridding(
+//                            cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
+//                    400, 900);
         }
 
 

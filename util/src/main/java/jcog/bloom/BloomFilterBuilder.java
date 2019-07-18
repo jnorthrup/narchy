@@ -1,7 +1,7 @@
 package jcog.bloom;
 
-import jcog.bloom.hash.DefaultHashProvider;
-import jcog.bloom.hash.HashProvider;
+import jcog.bloom.hash.DefaultHasher;
+import jcog.bloom.hash.Hasher;
 
 import java.util.Random;
 
@@ -16,7 +16,7 @@ import java.util.Random;
     private int size = 1000;
     private int numberOfHashes = 3;
     private float unlearningRate = 0.0005f;
-    private HashProvider<E> hashProvider = new DefaultHashProvider<>();
+    private Hasher<E> hasher = new DefaultHasher<>();
 
     private BloomFilterBuilder() {}
 
@@ -61,12 +61,12 @@ import java.util.Random;
     }
 
     /**
-     * Set a {@link HashProvider} to generate hash fingerprints for elements.
-     * @param hashProvider
+     * Set a {@link Hasher} to generate hash fingerprints for elements.
+     * @param hasher
      * @return {@link BloomFilterBuilder} For chaining.
      */
-    public BloomFilterBuilder withHashProvider(HashProvider<E> hashProvider) {
-        this.hashProvider = hashProvider;
+    public BloomFilterBuilder withHashProvider(Hasher<E> hasher) {
+        this.hasher = hasher;
         return this;
     }
 
@@ -75,7 +75,7 @@ import java.util.Random;
      * @return Standard {@link LeakySet}.
      */
     public StableBloomFilter<E> buildFilter() {
-        return new StableBloomFilter<>(size, numberOfHashes,  unlearningRate, new Random(), hashProvider);
+        return new StableBloomFilter<>(size, numberOfHashes,  unlearningRate, new Random(), hasher);
     }
 
 }

@@ -34,8 +34,8 @@ B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belie
 
 //##################################
 //belief form:
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDepolarized, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDepolarized, Time:Sequence)
+B, A  |-          (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDepolarized, Time:Sequence)
+B, A  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDepolarized, Time:Sequence)
 
 //question + quest form:
 //B, A, --is(A,"==>"), --is(B,"==>"), task("."), hasBelief()  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:Question, Time:Sequence)

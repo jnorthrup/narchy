@@ -1,5 +1,6 @@
 package nars.term.util.builder;
 
+import jcog.data.byt.RecycledDynBytes;
 import nars.Op;
 import nars.io.IO;
 import nars.subterm.RemappedSubterms;
@@ -11,7 +12,6 @@ import nars.term.compound.LightDTCompound;
 import nars.term.util.cache.Intermed;
 import org.junit.jupiter.api.Test;
 
-import static jcog.data.byt.RecycledDynBytes.tmpKey;
 import static nars.$.$$;
 import static nars.Op.CONJ;
 import static nars.Op.PROD;
@@ -71,9 +71,9 @@ class InterningTermBuilderTest {
 
     @Test void testKeyConstructionEquivalence() {
         byte[] a = new Intermed.InternedCompoundByComponentsArray(CONJ, 1, this.a.neg(), this.b).key.arrayCopy();
-        tmpKey().clear();
+		RecycledDynBytes.get().clear();
         byte[] b = new Intermed.InternedCompoundTransform(new LightDTCompound( new LightCompound(CONJ, this.a.neg(), this.b), 1)).key.arrayCopy();
-        tmpKey().clear();
+		RecycledDynBytes.get().clear();
         assertArrayEquals(a, b);
         assertEq(IO.bytesToTerm(a),IO.bytesToTerm(b));
         assertEquals("((--,a) &&+1 b)", IO.bytesToTerm(a).toString());
