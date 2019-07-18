@@ -86,9 +86,12 @@
 
 
     //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- (S --> P), (Belief:ReduceConjunction, Goal:Desire, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Belief:DeductionPP, Time:Compose)
-    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:DesirePP, Time:Task)
+    (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Belief:DeductionPN, Time:Compose)
     (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Belief:DeductionNP, Time:Compose)
-    //(S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(S --> P), (Goal:DeductionNP, Time:Task)
+    //(S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (S --> P), (Goal:DesirePP, Time:Task)
+      (P --> S), (S <-> P), --isVar(S), --isVar(P) |-   (S --> P), (Goal:DesirePP, Time:Task)
+      (S <-> P), (P --> S), --isVar(S), --isVar(P) |-   (P --> S), (Goal:DeductionPN, Time:Task)
+      (S <-> P), (P --> S), --isVar(S), --isVar(P) |- --(P --> S), (Goal:DeductionNP, Time:Task)
+      (S <-> P), P, --isVar(S), --isVar(P) |-   (S --> P), (Goal:StructuralReduction, Time:Task)
 
 
