@@ -60,7 +60,7 @@ abstract public class AbstractDynamicTruth {
                 bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 2:
-                bt = table.sample(new When(subStart, subEnd, dur, nar), subTerm, filter);
+                bt = table.sample(new When<>(subStart, subEnd, dur, nar), subTerm, filter);
                 break;
             default:
                 throw new UnsupportedOperationException();
@@ -98,8 +98,9 @@ abstract public class AbstractDynamicTruth {
         boolean absolute = (this!=Impl && this != ConjIntersection) || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Task x = d.get(i);
-            long xStart = x.start(); if (xStart!=ETERNAL) {
-                long shift = absolute || (xStart == ETERNAL) ? 0 : xStart - earliest;
+            long xStart = x.start();
+            if (xStart!=ETERNAL) {
+                long shift = absolute ? 0 : xStart - earliest;
                 long ss = s + shift, ee = e + shift;
                 if (xStart != ss || x.end() != ee) {
                     Task tt = Task.project(x, ss, ee,
@@ -138,6 +139,6 @@ abstract public class AbstractDynamicTruth {
 //                e = Tense.dither(e, dtDither, +1);
 //            }
 //        }
-        return d.merge(y, t, s, e);
+        return DynTaskify.merge(d::toArrayRecycled, y, t, d.stamp(d.nar.random()), d.beliefOrGoal, s, e, d.nar);
     }
 }

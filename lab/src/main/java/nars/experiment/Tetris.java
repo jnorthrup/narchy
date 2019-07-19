@@ -33,7 +33,7 @@ public class Tetris extends GameX {
 
     private final Bitmap2D grid;
 
-    private final boolean opjects = false;
+    private final boolean opjects = true;
 
     private final boolean canFall = false;
 

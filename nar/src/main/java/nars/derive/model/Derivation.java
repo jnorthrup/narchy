@@ -13,7 +13,6 @@ import nars.control.CauseMerge;
 import nars.derive.Deriver;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
-import nars.derive.premise.PremiseSource;
 import nars.derive.premise.PremiseUnify;
 import nars.eval.Evaluation;
 import nars.op.Replace;
@@ -76,12 +75,6 @@ public class Derivation extends PreDerivation {
     public final UnifyMatchFork termifier =
             new UnifyMatchFork();
             //new UnifyMatchFork.DeferredUnifyMatchFork();
-    /**
-     * short-term premise buffer with novelty filter
-     */
-    public final PremiseSource premises =
-            //new PremiseBuffer();
-            new PremiseSource.DefaultPremiseSource();
 
     public final AnonWithVarShift anon;
     public final UniSubst uniSubstFunctor = new UniSubst(this);
@@ -89,8 +82,7 @@ public class Derivation extends PreDerivation {
      * second layer additional substitutions
      */
     public final Map<Term, Term> retransform = new MapAdapter<>(new UnifiedMap<>()) {
-        @Override
-        public Term put(Term key, Term value) {
+        @Nullable @Override public Term put(Term key, Term value) {
             return key.equals(value) ? null : delegate.put(key, value);
         }
     };
@@ -660,14 +652,14 @@ public class Derivation extends PreDerivation {
      * current NAR time, set at beginning of derivation
      */
     public final long time() {
-        return nar().time();
+        return nar.time();
     }
 
     public final float dur() {
         return what.dur();
     }
 
-    public NAR nar() {
+    public final NAR nar() {
         return nar;
     }
 

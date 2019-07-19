@@ -80,7 +80,7 @@ abstract public class WhenTimeIs extends ScheduledTask {
      *  the equal-length past and future periods comprising the extent of the present moment. */
     public static <T extends Timed> When<T> now(float dur, T t) {
         long now = t.time();
-        return new When<T>(Math.round(now - dur/2), Math.round(now + dur/2), dur, t);
+        return new When<>(Math.round(now - dur / 2), Math.round(now + dur / 2), dur, t);
     }
     private static <T extends Timed> When<T> now(FloatSupplier dur, T t) {
         return now(dur.asFloat(), t);
@@ -95,14 +95,14 @@ abstract public class WhenTimeIs extends ScheduledTask {
         return now(w::dur, w.nar);
     }
 
-    public static When<NAR> since(long when, Timed t) {
+    public static <T extends Timed> When<T> since(long when, T t) {
         long now = t.time();
-        return new When(Math.min(when, now), now, t.dur(), t);
+        return new When<>(Math.min(when, now), now, t.dur(), t);
     }
 
-    public static When<NAR> until(long when, Timed t) {
+    public static <T extends Timed> When<T> until(long when, T t) {
         long now = t.time();
-        return new When(now, Math.max(when, now), t.dur(), t);
+        return new When<>(now, Math.max(when, now), t.dur(), t);
     }
 
     @Override

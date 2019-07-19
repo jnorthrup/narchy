@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.TODO;
 import jcog.decide.Roulette;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -14,21 +13,14 @@ import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
 
 import java.util.Random;
-import java.util.function.Function;
-import java.util.stream.Stream;
 
 import static nars.Op.CONJ;
 
 public abstract class DynamicTermLinker implements TermLinker {
 
-    @Override
-    public Stream<? extends Term> targets() {
-        throw new TODO();
-    }
 
-    @Override
-    public final Term sample(Term t, Random rng) {
-        return t instanceof Compound ? sampleDynamic((Compound)t, t instanceof Compound ? depth((Compound)t, rng) : 1, rng) : t;
+    @Override public final Term sample(Term t, Random rng) {
+        return t instanceof Compound ? sampleDynamic((Compound)t, depth((Compound)t, rng), rng) : t;
     }
 
     private Term sampleDynamic(Compound t, int depthRemain, Random rng) {
@@ -61,11 +53,6 @@ public abstract class DynamicTermLinker implements TermLinker {
 
 
 
-    @Override
-    public void sample(Random rng, Function<? super Term, SampleReaction> each) {
-        throw new TODO();
-    }
-
     public static final DynamicTermLinker Uniform = new DynamicTermLinker() {
         @Override
         protected int depth(Compound root, Random rng) {
@@ -73,8 +60,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
 
         @Override protected Term choose(Subterms tt, int n, Term parent, Random rng) {
-            int s = rng.nextInt(n);
-            return tt.sub(s);
+            return tt.sub(rng.nextInt(n));
         }
     };
 

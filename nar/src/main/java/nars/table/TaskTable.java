@@ -124,7 +124,7 @@ public interface TaskTable {
                 when.start, when.end, template, filter, when.x);
 
         RankedN<Task> tt = answer.match(this).tasks;
-        return tt.isEmpty() ? null : tt.getRoulette(answer.random());
+        return tt.getRoulette(answer.random());
     }
 
     /** clear and fully deallocate if possible */

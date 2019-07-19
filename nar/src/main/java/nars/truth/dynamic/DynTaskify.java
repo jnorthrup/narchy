@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.Paper;
-import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
@@ -9,7 +8,6 @@ import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.table.BeliefTable;
 import nars.task.DynamicTruthTask;
@@ -54,22 +52,20 @@ public class DynTaskify extends TaskList {
 
     private static class Component implements Function<DynTaskify,Task> {
         final Term term;
-        final BeliefTable _concept;
+        final BeliefTable table;
         final long start, end;
-        public int termVolume;
+        final int termVolume;
 
-        Component(Term term, BeliefTable _c, DynTaskify d, int currentComponent, long start, long end) {
-            boolean negated = term.op() == Op.NEG;
-
+        Component(Term term, BeliefTable _c, long start, long end) {
             this.term = term;
             this.termVolume = term.volume();
-            this._concept = _c;
+            this.table = _c;
             this.start = start;
             this.end = end;
         }
 
         @Override public Task apply(DynTaskify d) {
-            return d.model.subTask(_concept, term, start, end, d.filter, d);
+            return d.model.subTask(table, term, start, end, d.filter, d);
         }
     }
 
@@ -114,7 +110,7 @@ public class DynTaskify extends TaskList {
         this(model, beliefOrGoal, a.ditherTruth, true, (Compound)a.term(), a.dur, a.filter, a.nar);
     }
 
-    @Nullable public static Task merge(TaskList tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
+    @Nullable public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
         boolean neg = content instanceof Neg;
         if (neg)
             content = content.unneg();
@@ -137,7 +133,7 @@ public class DynTaskify extends TaskList {
 //              tasks.reapply(TaskList::pri, NAL.DerivationPri)
 //                        // * dyn.originality() //HACK
 //        );
-        Task.fund(y, tasks.toArrayRecycled(), true);
+        Task.fund(y, tasks.get(), true);
 
         return y;
     }
@@ -218,7 +214,7 @@ public class DynTaskify extends TaskList {
                 order[i] = i;
             Component[] cc = c.array();
 
-            IntToFloatFunction smallestFirst = (int j) -> -(cc[j]).termVolume;
+            IntToFloatFunction smallestFirst = (int j) -> -cc[j].termVolume;
             //IntToFloatFunction biggestFirst = (int j) -> (cc[j]).termVolume;
             ArrayUtil.sort(order,
                     smallestFirst
@@ -261,18 +257,12 @@ public class DynTaskify extends TaskList {
             return false;
 
         if (components == null)
-            components = new FasterList(0, new Component[model.componentsEstimate()]);
+            components = new FasterList<>(0, new Component[model.componentsEstimate()]);
 
-        components.add(new Component(c, table,
-                this, components.size(),
-                start, end));
+        components.add(new Component(c, table, start, end));
 
         return true;
     }
-
-
-
-
 
     @Override
     public boolean add(Task x) {
@@ -282,7 +272,7 @@ public class DynTaskify extends TaskList {
     private void setTask(int i, Task x) {
 
         setFast(i, x);
-        int size = ++this.size;
+        ++this.size;
 
         long[] xs = x.stamp();
 
@@ -293,21 +283,21 @@ public class DynTaskify extends TaskList {
     }
 
     private boolean noOverlap(Task t) {
-        return size == 0 || noOverlap(t.stamp());
+        return size == 0 || !anySatisfyWith(Stamp::overlapNullable, t);
     }
 
-    private boolean noOverlap(long[] stamp) {
-        MetalLongSet e = this.evi;
-        if (e != null) {
-            long[] s = stamp;
-            for (long x : s) {
-                if (e.contains(x))
-                    return false;
-            }
-        }
-
-        return true;
-    }
+//    private boolean noOverlap(long[] stamp) {
+//        MetalLongSet e = this.evi;
+//        if (e != null) {
+//            long[] s = stamp;
+//            for (long x : s) {
+//                if (e.contains(x))
+//                    return false;
+//            }
+//        }
+//
+//        return true;
+//    }
 
 
 //    public final Task task(Term target, Truth t, boolean beliefOrGoal, NAR n) {
@@ -382,7 +372,4 @@ public class DynTaskify extends TaskList {
         return maxValue(Stamp::start);
     }
 
-    public Task merge(Term y, Truth t, long s, long e) {
-        return merge(this, y, t, stamp(nar.random()), beliefOrGoal, s, e, nar);
-    }
 }

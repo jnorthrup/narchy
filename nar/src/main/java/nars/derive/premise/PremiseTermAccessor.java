@@ -12,7 +12,7 @@ import java.util.function.Function;
 abstract public class PremiseTermAccessor implements Function<PreDerivation, Term> {
 
     /** root component id: 0=task, 1=belief ... others could be defined later */
-    final int rootID;
+    private final int rootID;
     private final Atom term;
 
     protected PremiseTermAccessor(int id, Atom term) {
@@ -24,7 +24,7 @@ abstract public class PremiseTermAccessor implements Function<PreDerivation, Ter
     public final String toString() { return term.toString(); }
 
     public Function<PreDerivation, Term> path(byte... path) {
-        return (path.length == 0) ? this : new SubRootTermAccessor(path);
+        return path.length == 0 ? this : new SubRootTermAccessor(path);
     }
 
     private class SubRootTermAccessor implements Function<PreDerivation, Term> {

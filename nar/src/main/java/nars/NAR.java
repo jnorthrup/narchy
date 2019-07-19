@@ -1389,10 +1389,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         if (table == null)
             return null;
 
-        Task answer = table.matchExact(start, end,
-                tt, null, dur(), this);
+        Task answer = table.matchExact(start, end, tt, null, dur(), this);
 
-        return Task.negIf(answer, negate);
+        return answer!=null ? Task.negIf(answer, negate) : null;
     }
 
     public SortedMap<String, Object> stats(Appendable out) {

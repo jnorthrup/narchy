@@ -433,18 +433,8 @@ public final class Answer implements Timed, Predicate<Task> {
 //            else
 //                return only; //as-is
 //        } else {
-            return DynTaskify.merge(taskList(), tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
+            return DynTaskify.merge(tasks::itemsArray, tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
 //        }
-    }
-
-
-    /** produces a modifiable copy of the tasks ranked here */
-    @Nullable
-    @Deprecated
-    public TaskList taskList() {
-        RankedN<Task> tasks = this.tasks;
-        int t = tasks.size();
-        return t == 0 ? null : new TaskList(tasks.itemsArray(), t);
     }
 
 

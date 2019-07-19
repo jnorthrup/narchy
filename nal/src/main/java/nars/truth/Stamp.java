@@ -39,6 +39,7 @@ import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
 import org.eclipse.collections.impl.factory.primitive.LongSets;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
+import javax.annotation.Nullable;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
@@ -452,6 +453,10 @@ public interface Stamp {
             if (aa.contains(x))
                 return true;
         return false;
+    }
+
+    static boolean overlapNullable(@Nullable Task x, Task y) {
+        return x!=null && overlap(x, y);
     }
 
     static boolean overlap(Task x, Task y) {

@@ -40,8 +40,6 @@ class RuleInductionTest {
         ));
         new STMLinkage(n, 1);
 
-        d.premisesPerIteration.set(2);
-
         n.time.dur(dur);
 
         //n.log();

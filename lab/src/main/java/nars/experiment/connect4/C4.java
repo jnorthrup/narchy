@@ -8,8 +8,6 @@ import nars.NAR;
 import nars.NARchy;
 import nars.Narsese;
 import nars.concept.Concept;
-import nars.derive.BasicDeriver;
-import nars.derive.Deriver;
 import nars.gui.NARui;
 import nars.op.java.Opjects;
 import nars.term.Term;
@@ -41,8 +39,6 @@ public class C4 {
 //            n.beliefPriDefault.set(0.5f);
 //            n.goalPriDefault.set(0.75f);
             this.n = n;
-
-            Deriver.derivers(n).forEach(d -> ((BasicDeriver) d).premisesPerIteration.set(4));
 
 
             Opjects o = new Opjects(n);

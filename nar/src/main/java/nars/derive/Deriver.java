@@ -9,16 +9,13 @@ import nars.control.How;
 import nars.control.Why;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
+import nars.derive.premise.PremiseSource;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRuleCompiler;
 import nars.derive.rule.PremiseRuleProto;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.link.DynamicTermLinker;
-import nars.link.TermLinker;
 import nars.term.Term;
-import nars.term.atom.Atomic;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Set;
 import java.util.function.BooleanSupplier;
@@ -36,6 +33,10 @@ import java.util.stream.Stream;
 abstract public class Deriver extends How {
 
     public final DeriverRules rules;
+
+    public final PremiseSource premises;
+
+
     /**
      * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation
      * input: premise Task, premise belief target
@@ -53,17 +54,24 @@ abstract public class Deriver extends How {
         this(rules, rules.nar);
     }
 
+    protected Deriver(PremiseRuleSet rules, TriFunction<What, Task, Term, long[]> timing, PremiseSource premises) {
+        this(PremiseRuleCompiler.the(rules), premises, timing, rules.nar);
+    }
 
-    protected Deriver(DeriverRules rules, NAR nar) {
-        super();
-        this.rules = rules;
-//        this.source = source;
-        this.timing =
+    @Deprecated protected Deriver(DeriverRules rules, NAR nar) {
+        this(rules, new PremiseSource.TangentConceptCaching(),
                 //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();
-                new NonEternalTaskOccurenceOrPresentDeriverTiming();
+                new NonEternalTaskOccurenceOrPresentDeriverTiming(),
+                nar);
+    }
 
+    protected Deriver(DeriverRules rules, PremiseSource premises, TriFunction<What, Task, Term, long[]> timing, NAR nar) {
+        super();
+        this.rules = rules;
+        this.premises = premises;
+        this.timing = timing;
 
         nar.start(this);
     }
@@ -112,11 +120,6 @@ abstract public class Deriver extends How {
     }
 
 
-
-    @Nullable
-    public TermLinker linker(Term t) {
-        return t instanceof Atomic ? null : DynamicTermLinker.Weighted;
-    }
 }
 
 

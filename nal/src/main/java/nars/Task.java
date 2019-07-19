@@ -464,7 +464,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     /**
      * creates negated proxy of a task
      */
-    static Task negated(@Nullable Task t) {
+    static Task negated(Task t) {
         if (t instanceof SpecialNegatedTask)
             return ((SpecialNegatedTask) t).task;
         else

@@ -16,7 +16,6 @@ import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.derive.model.Derivation;
 import nars.link.AbstractTaskLink;
-import nars.link.TaskLink;
 import nars.sensor.util.DynamicSensorTaskLink;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
@@ -293,10 +292,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             return superPixel(when.x.random());
         }
 
-        @Override
-        public @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
-            return superPixel(d.random);
-        }
+//        @Override
+//        public @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
+//            return superPixel(d.random);
+//        }
 
         @Override
         public Term target(Task task, Derivation d) {

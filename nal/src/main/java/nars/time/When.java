@@ -1,7 +1,8 @@
 package nars.time;
 
-import jcog.WTF;
 import nars.task.util.TimeRange;
+
+import java.util.function.LongSupplier;
 
 /**
  * reference to a temporal context:
@@ -23,13 +24,20 @@ public class When<X> extends TimeRange {
 
     public When(long start, long end, float dur, X x) {
         super(start, end);
+        assert(dur>=0);
 
-        if (dur < 0)
-            throw new WTF();
+
 
         this.dur = dur;
         this.x = x;
     }
 
+    public When<X> update(LongSupplier clock) {
+        long next = clock.getAsLong();
+        if (start!=next)
+            return new When<>(next, next+(end-start), dur, x);
+        else
+            return this;
+    }
 
 }
