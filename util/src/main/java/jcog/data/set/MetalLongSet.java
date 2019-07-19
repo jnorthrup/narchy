@@ -1,15 +1,10 @@
 package jcog.data.set;
 
 
-import it.unimi.dsi.fastutil.Hash;
-import it.unimi.dsi.fastutil.longs.LongOpenHashSet;
 import jcog.util.ArrayUtil;
-import org.eclipse.collections.api.list.primitive.MutableLongList;
-import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
 
 import java.util.Arrays;
-import java.util.function.LongConsumer;
 
 @Deprecated public class MetalLongSet extends LongHashSet {
 

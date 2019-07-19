@@ -121,7 +121,7 @@ public enum Terms {
                 b = y;
             }
         }
-        if (t[0] == a && t[1] == b && t[2] == c)
+        if (t[0] == a && t[1] == b)
             return t; //already sorted
         else {
             return new Term[]{a, b, c};

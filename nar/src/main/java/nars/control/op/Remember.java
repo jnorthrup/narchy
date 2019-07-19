@@ -7,7 +7,6 @@ import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;

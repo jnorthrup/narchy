@@ -119,7 +119,7 @@ public class DefaultDerivePri implements DerivePri {
             f = t.conf();
         else
             f = 1;
-        return (float) Util.lerp(eviImportance.floatValue(), 1f, f);
+        return Util.lerp(eviImportance.floatValue(), 1f, f);
     }
 
     float factorEviRelative(Task t, Derivation d) {
@@ -166,7 +166,7 @@ public class DefaultDerivePri implements DerivePri {
             float f = (float)(1 - ((eParent - eDerived) / eParent));
 
             Util.assertUnitized(f);
-            return (float) Util.lerp(eviImportance.floatValue(), 1f, f);
+            return Util.lerp(eviImportance.floatValue(), 1f, f);
 
         }
     }

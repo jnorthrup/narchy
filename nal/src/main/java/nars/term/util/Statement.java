@@ -68,10 +68,7 @@ public class Statement {
 
         if (op == IMPL) {
 
-            if (subject == True)
-                return predicate;
-            if (subject ==False)
-                return False;
+
             if (predicate == True)
                 return subject;
             if (predicate == False)
@@ -185,24 +182,21 @@ public class Statement {
                             return newPred.negIf(negate); //collapse
 
 
-                        if (dt != DTERNAL) {
-                            long shift = newPredConj.shift();
-                            if (shift == ETERNAL) {
-                                //??
-                                dt = 0;
-                            } else {
+                        long shift = newPredConj.shift();
+                        if (shift == ETERNAL) {
+                            //??
+                            dt = 0;
+                        } else {
 //
 
-                                dt = Tense.occToDT(shift - subjRange);
+                            dt = Tense.occToDT(shift - subjRange);
 
-                                if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
-                                    //HACK return to dternal
-                                    if (newPred instanceof Compound)
-                                        newPred = ((Compound) newPred).dt(DTERNAL, B);
+                            if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
+                                //HACK return to dternal
+                                if (newPred instanceof Compound)
+                                    newPred = ((Compound) newPred).dt(DTERNAL, B);
 
-                                }
                             }
-
                         }
 
                         if (newPred instanceof Neg) { //attempt to exit infinite loop of negations

@@ -383,10 +383,13 @@ public final class Narsese {
             return extract(range.start, range.end);
         }
 
+        static final Position zero = new Position(0, 0);
+
         @Override
         public Position getPosition(final int index) {
 
-            return new Position(0, 0); //HACK
+
+            return zero; //HACK
             //return Futures.getUnchecked(lineCounter).toPosition(index);
         }
 
@@ -429,7 +432,7 @@ public final class Narsese {
     /**
      * Describes an error that occurred while parsing Narsese
      */
-    public static class NarseseException extends Exception {
+    public static final class NarseseException extends Exception {
 
         @Nullable
         public final ParsingResult result;

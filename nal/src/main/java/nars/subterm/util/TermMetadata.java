@@ -1,6 +1,5 @@
 package nars.subterm.util;
 
-import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -53,8 +52,6 @@ abstract public class TermMetadata implements Termlike {
                 (this.varIndep = (byte) s.varIndep);
 
         this.complexity = (short) ((this.volume = s.vol) - varTot);
-        if (this.volume > NAL.term.COMPOUND_VOLUME_MAX)
-            throw new TermException("complexity overflow");
 
         this.hash = s.hash;
         this.structure = s.structure;

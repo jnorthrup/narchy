@@ -6,13 +6,14 @@ package nars.derive.premise;
 
 import jcog.WTF;
 import jcog.signal.meter.FastCounter;
-import nars.*;
+import nars.Emotion;
+import nars.NAL;
+import nars.NAR;
+import nars.Task;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
 import nars.table.BeliefTable;
-import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.Image;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -233,7 +234,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 
             boolean answerGoalOrBelief = a.isGoal();
 
-            if (!(((!answerGoalOrBelief && a.isBelief()) || (answerGoalOrBelief && a.isGoal())))) throw new WTF();
+            if (!(answerGoalOrBelief || a.isBelief())) throw new WTF();
 
             if (answerGoalOrBelief) {
                 d.what.accept(a); //goal

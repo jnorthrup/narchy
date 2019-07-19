@@ -970,7 +970,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return xx.equals(yy);
             else {
 
-                boolean noConjs = noTemporal || ((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0));
+                boolean noConjs = ((XS & CONJ.bit) == 0 && ((YS & CONJ.bit) == 0));
                 if (noConjs) {
                     if (XS != YS || xx.volume() != yy.volume())
                         return false;
@@ -1403,10 +1403,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 else
                     return null;
             } else {
-                if (out == null)
-                    out = new DisposableTermList(subsTotal - 1 + xes /*estimate */, i);
-                else
-                    out.ensureExtraCapacityExact(xes - 1);
+
+                out.ensureExtraCapacityExact(xes - 1);
                 out.addFast(k);
             }
         }

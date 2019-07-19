@@ -133,20 +133,17 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         float y = merge.merge(e, i.pri(), returning);
 
-        if (i != e && i instanceof Task) {
+        mergeCause(e, i, cMerge);
 
-            mergeCause(e, i, cMerge);
-
-            if (e instanceof Task) {
-                if (updateCreationTime) {
-                    long inCreation = i.creation();
-                    if (inCreation > e.creation())
-                        e.setCreation(inCreation);
-                }
-
-                if (e.isCyclic() && !i.isCyclic())
-                    e.setCyclic(false);
+        if (e instanceof Task) {
+            if (updateCreationTime) {
+                long inCreation = i.creation();
+                if (inCreation > e.creation())
+                    e.setCreation(inCreation);
             }
+
+            if (e.isCyclic() && !i.isCyclic())
+                e.setCyclic(false);
         }
 
         return y;

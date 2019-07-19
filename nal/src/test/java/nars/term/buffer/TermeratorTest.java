@@ -1,14 +1,7 @@
 package nars.term.buffer;
 
 import com.google.common.collect.Lists;
-import jcog.data.list.FasterList;
-import nars.$;
-import nars.term.Term;
 import org.junit.jupiter.api.Test;
-
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
 
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;

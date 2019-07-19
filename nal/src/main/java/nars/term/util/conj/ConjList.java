@@ -93,7 +93,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int s = size();
         int os = other.size();
         if (os > s) return EMPTY_INT_ARRAY;
-        if (s == 0 && os == 0) return new int[] { 0 };
+        if (s == 0) return new int[] { 0 };
 
         other.sortThis();
         sortThis();
@@ -468,7 +468,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         long last = when[0];
         for (int i = 1; i < s; i++) {
             long wi = when[i];
-            if (i < s && last!= wi) {
+            if (last != wi) {
                 last = wi;
                 start = i;
             } else {
@@ -548,7 +548,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int xn = x.size();
         boolean removed = false;
         for (int i = 0; i < xn; i++) {
-            removed |= remove(f!=ETERNAL ? x.when[i] + f : ETERNAL, x.get(i));
+            removed |= remove(x.when[i] + f, x.get(i));
         }
         return removed;
     }

@@ -116,7 +116,7 @@ public enum Conj {
         boolean conjSeq = Conj.isSeq(conj);
         if (!xSeq && !conjSeq && x.op() == CONJ && x.dt() == DTERNAL) {
             for (Term xx : x.subterms()) //parallel
-                if (!__eventOf(conj, xx, when, Conj.isSeq(xx), conjSeq))
+                if (!__eventOf(conj, xx, when, Conj.isSeq(xx), false))
                     return false;
             return true;
         } else {
@@ -303,7 +303,6 @@ public enum Conj {
         if (dt == XTERNAL)
             return true; //TEMPORARY
         switch (dt) {
-            case XTERNAL:
             case DTERNAL:
             case 0:
                 return true;

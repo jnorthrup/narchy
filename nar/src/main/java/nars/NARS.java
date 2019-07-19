@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Log;
 import jcog.data.list.FasterList;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
@@ -20,11 +19,7 @@ import nars.term.Term;
 import nars.time.Time;
 import nars.time.clock.CycleTime;
 import nars.time.clock.RealTime;
-import org.slf4j.Logger;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
@@ -192,25 +187,25 @@ public class NARS {
 
 
         /** shared eternal belief and goal capacity curve */
-        ToIntFunction<Concept> bgEternal = curve(termVolume, new int[] {
+        ToIntFunction<Concept> bgEternal = curve(termVolume,
                 1, 8,
                 16, 4
-        });
+        );
 
         /** shared temporal belief and goal capacity curve */
-        ToIntFunction<Concept> bgTemporal = curve(termVolume, new int[] {
+        ToIntFunction<Concept> bgTemporal = curve(termVolume,
                 1, 512,
                 8, 128,
                 16, 32,
                 32, 8
-        });
+        );
 
         /** shared question and quest capacity curve */
-        ToIntFunction<Concept> q = curve(termVolume, new int[] {
+        ToIntFunction<Concept> q = curve(termVolume,
                 1, 7,
                 12, 5,
                 24, 3
-        });
+        );
 
         conceptBuilder = ()->new DefaultConceptBuilder(
 

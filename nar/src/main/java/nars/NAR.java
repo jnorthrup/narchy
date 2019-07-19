@@ -353,8 +353,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * deallocate as completely as possible
      */
     public void delete() {
+        logger.debug("delete {}", self());
         synchronized (exe) {
-            logger.debug("delete {}", self());
 
             stop();
 
@@ -401,12 +401,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     @Deprecated
     public void clear() {
-        synchronized (exe) {
+//        synchronized (exe) {
 
             logger.info("clear");
             eventClear.emit(this);
 
-        }
+//        }
 
     }
 
@@ -730,7 +730,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             }
         } else {
             if (p.isAssignableFrom(pp.getClass()))
-                return (NARPart) pp; //ok
+                return pp; //ok
             else {
                 remove(key);
             }
@@ -967,7 +967,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         int size = yy.size();
         if (size <= 0)
-            throw new WTF/*NarseseException*/("no tasks parsed from input: " + Joiner.on("\n").join(tt).toString());
+            throw new WTF/*NarseseException*/("no tasks parsed from input: " + Joiner.on("\n").join(tt));
 
 //            assert(yy.allSatisfyWith((y,t)->y.start()==t, time));
         yy.replaceAll(t -> {
@@ -1617,7 +1617,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     @Deprecated public Term eval(Term x) {
         if (x instanceof Compound) {
-            Term y = Evaluation.solveFirst((Compound) x, this::axioms);
+            Term y = Evaluation.solveFirst(x, this::axioms);
             return y == null ? x : y;
         } else {
             return x;

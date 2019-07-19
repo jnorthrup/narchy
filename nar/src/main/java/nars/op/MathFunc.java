@@ -152,7 +152,7 @@ public enum MathFunc {
 
         @Override
         protected Term computeXfromYandXY(Evaluation e, Term x, Term y, Term xy) {
-            if (y instanceof Bool && xy instanceof Bool && y != Null && xy != null) {
+            if (y instanceof Bool && xy instanceof Bool && y != Null) {
                 //TODO assert that if x is not a Bool, it will evaluate to True or False according to xy
             }
             return null;

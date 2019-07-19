@@ -163,7 +163,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             boolean seq = Conj.isSeq(event);
             if (!seq) {
                 return event.contains(subEvent);
-            } else if (seq) {
+            } else {
                 return event.eventFirst().equals(subEvent);
             }
 
@@ -178,9 +178,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     Math.max(ad, bd) //implications are like temporal pointers, not events.  so they shouldnt shrink duration
                     :
                     Math.min(ad, bd);
-        } else if (a instanceof Absolute && !(b instanceof Absolute)) {
+        } else if (a instanceof Absolute) {
             return a.dur();
-        } else if (b instanceof Absolute && !(a instanceof Absolute)) {
+        } else if (b instanceof Absolute) {
             return b.dur();
         } else {
             return 0;
@@ -240,8 +240,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 //dt = ETERNAL; //lock in eternal mode for the duration of the path, but still accumulate duration
                 //no effect but do not set eternable
 
-                if (spanDT != 0)
-                    return null; //crossover from eternal to temporal
+                return null; //crossover from eternal to temporal
 
             } else if (dt != ETERNAL && spanDT != 0) {
                 dt += (spanDT) * (span.getOne() ? +1 : -1);
@@ -388,7 +387,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                         hasNonEternalAbsolutes = true;
                     }
 
-                    if (add && hasNonEternalAbsolutes) {
+                    if (hasNonEternalAbsolutes) {
                         boolean stable;
                         do {
 
@@ -402,31 +401,29 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
                                 Absolute af = (Absolute) f;
 
-                                if (add) {
-                                    if (af.containedIn(start, end)) {
-                                        if (NAL.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
-                                            //absorb existing
+                                if (af.containedIn(start, end)) {
+                                    if (NAL.derive.TIMEGRAPH_ABSORB_CONTAINED_EVENT) {
+                                        //absorb existing
+                                        removeNode(f, relinkIn::add, relinkOut::add);
+                                        ff.remove();
+                                        nte--;
+                                    }
+                                } else {
+                                    if (start != ETERNAL && NAL.derive.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
+                                        long[] merged;
+                                        if ((merged = af.unionIfIntersects(start, end)) != null) {
+
+                                            //stretch
+                                            start = merged[0];
+                                            end = merged[1];
+
                                             removeNode(f, relinkIn::add, relinkOut::add);
                                             ff.remove();
                                             nte--;
-                                        }
-                                    } else {
-                                        if (start != ETERNAL && NAL.derive.TIMEGRAPH_MERGE_INTERSECTING_EVENTS) {
-                                            long[] merged;
-                                            if ((merged = af.unionIfIntersects(start, end)) != null) {
-
-                                                //stretch
-                                                start = merged[0];
-                                                end = merged[1];
-
-                                                removeNode(f, relinkIn::add, relinkOut::add);
-                                                ff.remove();
-                                                nte--;
-                                                stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
+                                            stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
 
 
-                                                break;
-                                            }
+                                            break;
                                         }
                                     }
                                 }
@@ -2055,13 +2052,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     if (SS == ETERNAL && EE == ETERNAL) {
                         start = ETERNAL;
                     } else {
-                        if (SS == ETERNAL && EE != ETERNAL) {
+                        if (SS == ETERNAL) {
                             SS = EE; //collapse eternity
-                        } else if (SS != ETERNAL && EE == ETERNAL) {
+                        } else if (EE == ETERNAL) {
                             EE = SS; //collapse eternity
                         }
 
-                        assert (SS != ETERNAL && EE != ETERNAL);
+                        assert SS != ETERNAL;
                         if (dir) {
                             if (ss instanceof Absolute) {
                                 start = SS;
@@ -2080,14 +2077,13 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 }
             }
 
-            if (dt != ETERNAL && !dir)
+            if (!dir)
                 dt = -dt;
 
             long dur = pt[1];
             if (x.op() == IMPL) {
                 start = TIMELESS; //the start time does not mean the event occurrence time
-                if (dt != ETERNAL)
-                    dt -= a.eventRange();
+                dt -= a.eventRange();
             }
 
             return solveDT(x, start, occToDT(dt), dur, path, dir, each);

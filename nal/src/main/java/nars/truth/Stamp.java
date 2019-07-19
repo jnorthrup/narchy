@@ -537,7 +537,7 @@ public interface Stamp {
         int size = 0;
         boolean halted = false;
         main:
-        while (done < S && size < maxLen) {
+        while (done < S) {
             done = 0;
             for (int i = 0; i < S; i++) {
                 long[] x = stamps.get(i);

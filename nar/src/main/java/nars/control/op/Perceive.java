@@ -46,7 +46,7 @@ public enum Perceive {
         byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
-        Task executionPerceived = (cmd || (x instanceof Task && (punc == GOAL && !x.isEternal()))) ?
+        Task executionPerceived = cmd || punc == GOAL && !x.isEternal() ?
                 execOperator(x, n, cmd) : null;
 
         Task xPerceived = (!cmd) ? Remember.the(x, n) : null;

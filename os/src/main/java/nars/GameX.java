@@ -29,7 +29,6 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
-import nars.memory.CaffeineMemory;
 import nars.memory.HijackMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;

@@ -210,13 +210,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
         Term x = super.nextTerm(bytes, range);
         Term  y = subs.get(x);
         if (y != null) {
-            if (y instanceof Term) {
-                return y;
-            } else {
-                //termutator
-                //TODO remove subs entry, rely on termutator cartesian iterator afterward
-                throw new TODO();
-            }
+            return y;
         }
         return x;
     }

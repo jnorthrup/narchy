@@ -184,7 +184,7 @@ public enum PremiseRuleCompiler {
     static PREDICATE<Derivation> compile(TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> trie) {
         Collection<PREDICATE<Derivation>> bb = compile(trie.root);
 
-        PREDICATE<Derivation> tf = FORK.fork(bb, (Function<PREDICATE<Derivation>[], PREDICATE<Derivation>>) FORK::new);
+        PREDICATE<Derivation> tf = FORK.fork(bb, FORK::new);
 //        if (each != null)
 //            tf = tf.transform(each);
 
@@ -263,9 +263,9 @@ public enum PremiseRuleCompiler {
                         xx.remove();
 
                         if (px instanceof AND) {
-                            Subterms pxSub = ((AND) px).subterms();
+                            Subterms pxSub = px.subterms();
                             if (pxSub.contains(fx.p)) {
-                                px = AND.the((Term[]) pxSub.removing((Term)(fx.p)));
+                                px = AND.the((Term[]) pxSub.removing(fx.p));
                             }
                             if (bundle == null) bundle = new HashSet();
                             bundle.add(px);

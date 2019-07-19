@@ -1,6 +1,7 @@
 package nars.term.buffer;
 
 import com.google.common.primitives.Ints;
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.byt.DynBytes;
@@ -17,7 +18,6 @@ import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.var.ellipsis.Fragment;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -236,7 +236,7 @@ public class TermBuffer {
         Op op = Op.the(ctl);
 
         if (op.atomic)  //alignment error or something
-            throw new TermException(TermBuffer.class + ": atomic found where compound op expected: " + op.atomic);
+            throw new TermException(TermBuffer.class + ": atomic found where compound op expected: " + op);
 
         int dt = op.temporal ? dt(bytes, range) : DTERNAL;
 
@@ -412,10 +412,11 @@ public class TermBuffer {
         FasterList<Term> id2Term = sub.idToTerm;
         int s = id2Term.size();
         if (uniques > s) {
-            ObjectByteHashMap<Term> term2Id = sub.termToId;
-            for (int i = uniques; i < s; i++)
-                term2Id.remove(id2Term.get(i));
-            id2Term.removeAbove(uniques);
+            throw new TODO("check this");
+//            ObjectByteHashMap<Term> term2Id = sub.termToId;
+//            for (int i = uniques; i < s; i++)
+//                term2Id.remove(id2Term.get(i));
+//            id2Term.removeAbove(uniques);
         }
         rewind(codePos);
     }

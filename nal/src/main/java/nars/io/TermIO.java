@@ -193,7 +193,6 @@ public interface TermIO {
             boolean dtSpecial = false;
             if (dt != DTERNAL && o.temporal) {
                 switch (dt) {
-                    case DTERNAL: /* nothing */ break;
                     case XTERNAL: opByte |= TEMPORAL_BIT_0; break;
                     case 0: opByte |= TEMPORAL_BIT_0 | TEMPORAL_BIT_1; break;
                     default: opByte |= TEMPORAL_BIT_0 | TEMPORAL_BIT_1; dtSpecial = true; break;

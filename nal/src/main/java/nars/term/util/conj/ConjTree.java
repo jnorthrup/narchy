@@ -1,6 +1,7 @@
 package nars.term.util.conj;
 
 import jcog.TODO;
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAL;
 import nars.subterm.DisposableTermList;
@@ -289,7 +290,7 @@ public class ConjTree implements ConjBuilder {
                     Term z = Conj.diffAll(x, yy);
                     if (!z.equals(x)) {
                         if (z instanceof Bool)
-                            return z.negIf(nP_or_pN);
+                            return z.neg();
                         x = z;
                         if (x.op()!=CONJ)
                             break;
@@ -343,10 +344,15 @@ public class ConjTree implements ConjBuilder {
 
     Term terminate(Term t) {
         Term x = terminal;
-        if (x == null || x == True || t == Null) return terminal = t;
-        else if (x == False) if (t == Null)
-            return terminal = Null;
-        return terminal;
+        if (t==Null) {
+            x = terminal = Null;
+        } else if (t == False) {
+            if (x == null)
+                x = terminal = False;
+        } else
+            throw new WTF();
+
+        return x;
     }
 
     @Override

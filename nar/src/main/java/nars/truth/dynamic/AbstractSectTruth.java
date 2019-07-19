@@ -21,8 +21,8 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     private Truth apply(DynTaskify d, boolean negComponents, boolean negResult) {
         Truth y = null;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
-            TaskRegion li = d.get(i);
-            Truth x = (((Task) li)).truth();
+            Task li = d.get(i);
+            Truth x = li.truth();
             if (x == null)
                 return null;
 

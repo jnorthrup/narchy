@@ -3,7 +3,6 @@ package nars.unify.constraint;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
 
 public final class EqualPosOrNeg extends RelationConstraint {
 
@@ -13,7 +12,7 @@ public final class EqualPosOrNeg extends RelationConstraint {
 
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+    protected RelationConstraint newMirror(Variable newX, Variable newY) {
         return new EqualPosOrNeg(newX, newY);
     }
 

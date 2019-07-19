@@ -11,7 +11,6 @@ import nars.NAR;
 import nars.Task;
 import nars.derive.model.Derivation;
 import nars.table.TaskTable;
-import nars.task.NALTask;
 import nars.term.Term;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
@@ -117,9 +116,8 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
                 if (!beliefOrGoal) {
                     //form question?
                     float qpri = NAL.TASKLINK_GENERATED_QUESTION_PRI_RATE;
-                    if (qpri > Float.MIN_NORMAL && Task.validTaskTerm(x, punc, true)) {
-                        y = NALTask.the(x, punc, null, when);
-                        y.pri(priPunc(punc) * qpri);
+                    if (qpri > Float.MIN_NORMAL) {
+                        Task.validTaskTerm(x, punc, true);
                     }
                 }
 

@@ -89,8 +89,6 @@ public class DynamicConjTruth {
 
                 if (s == ETERNAL || (sequenceStart!=ETERNAL && s<=sequenceStart && t.end()>=end))
                     when = ETERNAL; //spans entire event
-                else if (s == ETERNAL)
-                    when = ETERNAL;
                 else
                     when = s; //Tense.dither(s, dtDither);
 
@@ -195,7 +193,7 @@ public class DynamicConjTruth {
                         //within range
                         (when, event) -> each.accept(event, when, when),
                     start,
-                    dternal, xternal);
+                    false, false);
             }
 
 

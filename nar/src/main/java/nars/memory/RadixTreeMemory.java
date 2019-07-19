@@ -1,6 +1,5 @@
 package nars.memory;
 
-import com.google.common.collect.Streams;
 import jcog.data.byt.AbstractBytes;
 import jcog.tree.radix.ConcurrentRadixTree;
 import jcog.tree.radix.MyRadixTree;
@@ -16,6 +15,7 @@ import java.util.List;
 import java.util.Random;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * concurrent radix tree index
@@ -30,7 +30,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
     public final ConceptRadixTree concepts;
 
-    private final int sizeLimit;
+
 
     private static AbstractBytes key(Term k) {
         return TermRadixTree.termByVolume(k.concept());
@@ -39,14 +39,12 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
     public RadixTreeMemory(int sizeLimit) {
 
         this.concepts = new ConceptRadixTree(sizeLimit);
-        this.sizeLimit = sizeLimit;
-
 
     }
 
     @Override
     public Stream<Concept> stream() {
-        return Streams.stream(concepts.iterator());
+        return StreamSupport.stream(concepts.spliterator(), false);
     }
 
     @Override

@@ -21,8 +21,8 @@ package jcog.tree.rtree.util;
  */
 
 import jcog.tree.rtree.HyperRegion;
-import jcog.tree.rtree.RNode;
 import jcog.tree.rtree.RInsertion;
+import jcog.tree.rtree.RNode;
 import jcog.tree.rtree.Spatialization;
 
 import java.util.Iterator;

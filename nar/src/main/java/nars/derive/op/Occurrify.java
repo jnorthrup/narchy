@@ -369,13 +369,14 @@ public class Occurrify extends TimeGraph {
     }
 
     private Term solveDT(Term x, Derivation d, boolean decomposeEvents,OccurrenceSolver occ) {
-        Term p;
         Event e = selectSolution(false, d.occ.know(x,  true,true,decomposeEvents,occ).solutions(x));
         if (e == null) {
-            if ((e == null || (e.id.hasXternal())) && (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) ) {
+            if (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) {
 
                 //HACK for deficiencies in TimeGraph, try again solving for the negative
-                Event e2 = selectSolution(false, solutions((e == null ? x : e.id /* some XTERNAL's may have been solved */).neg()));
+                /* some XTERNAL's may have been solved */
+                /* some XTERNAL's may have been solved */
+                Event e2 = selectSolution(false, solutions(x.neg()));
                 if (e2!=null)
                     return e2.id.neg();
             }
@@ -493,7 +494,7 @@ public class Occurrify extends TimeGraph {
                 return BeliefProjection.Belief;
             }
             @Override
-            public @Nullable Predicate<Derivation> filter() {
+            public Predicate<Derivation> filter() {
                 return differentTermsOrTimes;
             }
 
@@ -518,7 +519,7 @@ public class Occurrify extends TimeGraph {
                 return BeliefProjection.Belief;
             }
             @Override
-            public @Nullable Predicate<Derivation> filter() {
+            public Predicate<Derivation> filter() {
                 return differentTermsOrTimes;
             }
 
@@ -560,7 +561,7 @@ public class Occurrify extends TimeGraph {
         Sequence() {
 
             @Override
-            public @Nullable Predicate<Derivation> filter() {
+            public Predicate<Derivation> filter() {
                 return differentTermsOrTimes;
             }
 
@@ -682,7 +683,7 @@ public class Occurrify extends TimeGraph {
 
                 d.occ.clear();
 
-                if (occ != null && occ[0] != TIMELESS && occ[0] != ETERNAL)
+                if (occ[0] != TIMELESS && occ[0] != ETERNAL)
                     d.occ.know(x, occ[0], occ[1]);
 
                 return pair(d.occ.solveDT(x, d, decomposeEvents, this).negIf(neg), occ);

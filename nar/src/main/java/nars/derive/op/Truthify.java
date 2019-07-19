@@ -171,8 +171,9 @@ public class Truthify extends AbstractPred<Derivation> {
         switch (o) {
             case BELIEF: m = beliefMode; break;
             case GOAL: m = goalMode; break;
-            case QUESTION: m = questionMode; break;
-            case QUEST: m = questionMode; break;
+            case QUESTION:
+            case QUEST:
+                m = questionMode; break;
         }
         if(m == -1)
             return 0;

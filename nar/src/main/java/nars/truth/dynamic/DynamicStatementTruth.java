@@ -89,8 +89,8 @@ public enum DynamicStatementTruth { ;
 
                 Term constantCondition = null;
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {
-                    TaskRegion x = d.get(i);
-                    Term xx = ((Task) x).term();
+                    Task x = d.get(i);
+                    Term xx = x.term();
                     if (xx.op()==IMPL) {
 
 

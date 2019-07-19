@@ -12,7 +12,6 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
 
 @Skill("Negativity_bias") public interface Neg extends Term { ;
 
