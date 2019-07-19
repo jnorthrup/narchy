@@ -16,7 +16,7 @@ import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
 import nars.derive.model.Derivation;
 import nars.link.AbstractTaskLink;
-import nars.sensor.util.DynamicSensorTaskLink;
+import nars.link.DynamicTaskLink;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.table.dynamic.SensorBeliefTables;
@@ -230,7 +230,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return concepts.get(rng);
     }
 
-    private class PixelSelectorTaskLink extends DynamicSensorTaskLink {
+    private class PixelSelectorTaskLink extends DynamicTaskLink {
         PixelSelectorTaskLink() {
             super(term());
         }
@@ -278,7 +278,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
     }
 
-    private class ConjunctionSuperPixelTaskLink extends DynamicSensorTaskLink {
+    private class ConjunctionSuperPixelTaskLink extends DynamicTaskLink {
 
         private final int batchX, batchY;
 

@@ -3,10 +3,7 @@ package nars.derive.premise;
 import jcog.math.IntRange;
 import nars.Task;
 import nars.derive.model.Derivation;
-import nars.link.DynamicTermLinker;
-import nars.link.TaskLink;
-import nars.link.TaskLinks;
-import nars.link.TermLinker;
+import nars.link.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.When;
@@ -33,9 +30,10 @@ abstract public class DefaultPremiseSource extends PremiseSource {
 
 					if (target.op().conceptualizable) {
 						Term reverse = reverse(target, tasklink, task, links, d);
-						if (reverse != null && reverse != target)
+						if (reverse != null)
 							target = reverse;
 					}
+
 
 					Term forward = forward(target, tasklink, task, d);
 					if (forward != null)
@@ -59,7 +57,7 @@ abstract public class DefaultPremiseSource extends PremiseSource {
 	/** determines forward growth target. null to disable
 	 *  override to provide a custom termlink supplier */
 	@Nullable protected Term forward(Term target, TaskLink link, Task task, Derivation d) {
-		if (target.op().conceptualizable) {
+		if (!(link instanceof DynamicTaskLink) && target.op().conceptualizable) {
 			TermLinker linker = linker(target); //TODO custom tasklink-provided termlink strategy
 			if (linker != null) {
 				Term forward = linker.sample(target, d.random);

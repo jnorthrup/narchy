@@ -210,7 +210,7 @@ abstract public class PremiseSource {
                     //                if (t == null)
                     //                    continue; //HACK
 
-                    float xp = t.priElseZero();
+                    //float xp = t.priElseZero();
 
                     Term y = t.other(x, reverse);
                     if (y != null)

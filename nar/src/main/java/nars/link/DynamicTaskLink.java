@@ -1,9 +1,8 @@
-package nars.sensor.util;
+package nars.link;
 
 import nars.NAR;
 import nars.Task;
 import nars.derive.model.Derivation;
-import nars.link.AtomicTaskLink;
 import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.Termed;
@@ -14,9 +13,9 @@ import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 
-public abstract class DynamicSensorTaskLink extends AtomicTaskLink {
+public abstract class DynamicTaskLink extends AtomicTaskLink {
 
-    public DynamicSensorTaskLink(Term src) {
+    public DynamicTaskLink(Term src) {
         super(src);
     }
 
