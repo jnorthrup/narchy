@@ -1,6 +1,6 @@
 package nars.exe;
 
-import com.google.common.flogger.FluentLogger;
+import jcog.Log;
 import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.util.ConsumerX;
@@ -15,6 +15,7 @@ import nars.task.AbstractTask;
 import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
 import org.jctools.queues.atomic.MpscAtomicArrayQueue;
+import org.slf4j.Logger;
 
 import java.io.IOException;
 import java.util.PriorityQueue;
@@ -29,7 +30,7 @@ import java.util.stream.Stream;
  */
 abstract public class Exec extends NARPart implements Executor, ConsumerX<AbstractTask> {
 
-    public static final FluentLogger logger = FluentLogger.forEnclosingClass();
+    public static final Logger logger = Log.logger(Exec.class);
 
     private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
     final MpscAtomicArrayQueue<ScheduledTask> toSchedule = new MpscAtomicArrayQueue<>(TIME_QUEUE_CAPACITY);
@@ -147,14 +148,14 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         try {
             t.accept(nar);
         } catch (Throwable e) {
-            logger.atSevere().withCause(e).log(t.toString());
+            logger.warn("{} {}", e, t);
         }
     }
     private void executeNow(Runnable t) {
         try {
             t.run();
         } catch (Throwable e) {
-            logger.atSevere().withCause(e).log(t.toString());
+            logger.warn("{} {}", e, t);
         }
     }
 
@@ -163,15 +164,11 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
      */
     @Override
     public final void accept(AbstractTask x) {
-        executeNow(x, nar);
-    }
-
-    private static void executeNow(/*Abstract*/Task x, NAR nar) {
         Task t = x;
         try {
             Task.run(t, nar);
         } catch (Throwable e) {
-            logger.atSevere().withCause(e).log(t.toString());
+            logger.warn("{} {}", e, t);
         }
     }
 

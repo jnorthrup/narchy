@@ -396,4 +396,7 @@ public enum TruthFunctions2 {
 
         return t(fy, c);
     }
+
+
+
 }

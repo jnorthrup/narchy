@@ -1,5 +1,6 @@
 package jcog.lab.util;
 
+import jcog.Util;
 import org.apache.commons.math3.exception.DimensionMismatchException;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.apache.commons.math3.exception.OutOfRangeException;
@@ -13,13 +14,13 @@ import org.apache.commons.math3.optim.OptimizationData;
 import org.apache.commons.math3.optim.PointValuePair;
 import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.MultivariateOptimizer;
-import org.apache.commons.math3.random.RandomGenerator;
 import org.apache.commons.math3.util.MathArrays;
 
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
 
 /** adapted from Apache Commons Math 3.6 */
 public class MyCMAESOptimizer extends MultivariateOptimizer {
@@ -167,7 +168,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
     private double[] fitnessHistory;
 
     /** Random generator. */
-    private final RandomGenerator random;
+    private final Random random;
 
     /** History of sigma values. */
     private final List<Double> statisticsSigmaHistory = new ArrayList<>();
@@ -200,7 +201,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                             boolean isActiveCMA,
                             int diagonalOnly,
                             int checkFeasableCount,
-                            RandomGenerator random,
+                            Random random,
                             boolean generateStatistics,
                             ConvergenceChecker<PointValuePair> checker, int populationSize, double[] sigma) {
         super(checker);
@@ -389,8 +390,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
                     break generationLoop;
                 }
             }
-            final double historyBest = min(fitnessHistory);
-            final double historyWorst = max(fitnessHistory);
+            final double historyBest = Util.min(fitnessHistory);
+            final double historyWorst = Util.max(fitnessHistory);
             if (iterations > 2 &&
                     Math.max(historyWorst, worstFitness) -
                             Math.min(historyBest, bestFitness) < stopTolFun) {
@@ -796,23 +797,18 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
         /** {@inheritDoc} */
         public int compareTo(MyCMAESOptimizer.DoubleIndex o) {
-            if (this == o)
-                return 0;
-            else
-                return Double.compare(value, o.value);
+            return this == o ? 0 : Double.compare(value, o.value);
         }
 
         /** {@inheritDoc} */
         @Override
         public boolean equals(Object other) {
 
-            if (this == other) {
+            if (this == other)
                 return true;
-            }
 
-            if (other instanceof MyCMAESOptimizer.DoubleIndex) {
+            if (other instanceof MyCMAESOptimizer.DoubleIndex)
                 return Double.compare(value, ((MyCMAESOptimizer.DoubleIndex) other).value) == 0;
-            }
 
             return false;
         }
@@ -887,12 +883,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         boolean isFeasible(final double[] x, double[] lB, double[] uB) {
 
             for (int i = 0; i < x.length; i++) {
-                if (x[i] < lB[i]) {
+                double xi = x[i];
+                if (xi < lB[i])
                     return false;
-                }
-                if (x[i] > uB[i]) {
+                if (xi > uB[i])
                     return false;
-                }
             }
             return true;
         }
@@ -907,13 +902,15 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
             final double[] repaired = new double[x.length];
             for (int i = 0; i < x.length; i++) {
-                if (x[i] < lB[i]) {
-                    repaired[i] = lB[i];
-                } else if (x[i] > uB[i]) {
-                    repaired[i] = uB[i];
+                double xi = x[i], ri;
+                if (xi < lB[i]) {
+                    ri = lB[i];
+                } else if (xi > uB[i]) {
+                    ri = uB[i];
                 } else {
-                    repaired[i] = x[i];
+                    ri = xi;
                 }
+                repaired[i] = ri;
             }
             return repaired;
         }
@@ -926,8 +923,7 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         private double penalty(final double[] x, final double[] repaired) {
             double penalty = 0;
             for (int i = 0; i < x.length; i++) {
-                double diff = Math.abs(x[i] - repaired[i]);
-                penalty += diff;
+                penalty += Math.abs(x[i] - repaired[i]);
             }
             return isMinimize ? penalty : -penalty;
         }
@@ -1020,8 +1016,9 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @return Matrix representing the selected columns.
      */
     private static RealMatrix selectColumns(final RealMatrix m, final int[] cols) {
-        final double[][] d = new double[m.getRowDimension()][cols.length];
-        for (int r = 0; r < m.getRowDimension(); r++) {
+        int rowDimension = m.getRowDimension();
+        final double[][] d = new double[rowDimension][cols.length];
+        for (int r = 0; r < rowDimension; r++) {
             for (int c = 0; c < cols.length; c++) {
                 d[r][c] = m.getEntry(r, cols[c]);
             }
@@ -1035,9 +1032,11 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @return Upper triangular part of matrix.
      */
     private static RealMatrix triu(final RealMatrix m, int k) {
-        final double[][] d = new double[m.getRowDimension()][m.getColumnDimension()];
-        for (int r = 0; r < m.getRowDimension(); r++) {
-            for (int c = 0; c < m.getColumnDimension(); c++) {
+        int R = m.getRowDimension();
+        int C = m.getColumnDimension();
+        final double[][] d = new double[R][C];
+        for (int r = 0; r < R; r++) {
+            for (int c = 0; c < C; c++) {
                 d[r][c] = r <= c - k ? m.getEntry(r, c) : 0;
             }
         }
@@ -1049,12 +1048,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
      * @return Row matrix representing the sums of the rows.
      */
     private static RealMatrix sumRows(final RealMatrix m) {
-        final double[][] d = new double[1][m.getColumnDimension()];
-        for (int c = 0; c < m.getColumnDimension(); c++) {
+        int C = m.getColumnDimension();
+        final double[][] d = new double[1][C];
+        int R = m.getRowDimension();
+        for (int c = 0; c < C; c++) {
             double sum = 0;
-            for (int r = 0; r < m.getRowDimension(); r++) {
+            for (int r = 0; r < R; r++)
                 sum += m.getEntry(r, c);
-            }
             d[0][c] = sum;
         }
         return new Array2DRowRealMatrix(d, false);
@@ -1070,15 +1070,13 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         int r = m.getRowDimension();
         if (c == 1) {
             final double[][] d = new double[r][r];
-            for (int i = 0; i < r; i++) {
+            for (int i = 0; i < r; i++)
                 d[i][i] = m.getEntry(i, 0);
-            }
             return new Array2DRowRealMatrix(d, false);
         } else {
             final double[][] d = new double[r][1];
-            for (int i = 0; i < c; i++) {
+            for (int i = 0; i < c; i++)
                 d[i][0] = m.getEntry(i, i);
-            }
             return new Array2DRowRealMatrix(d, false);
         }
     }
@@ -1184,9 +1182,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         for (int r = 0; r < R; r++) {
             for (int c = 0; c < C; c++) {
                 double e = m.getEntry(r, c);
-                if (max < e) {
+                if (max < e)
                     max = e;
-                }
             }
         }
         return max;
@@ -1203,37 +1200,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
         for (int r = 0; r < R; r++) {
             for (int c = 0; c < C; c++) {
                 double e = m.getEntry(r, c);
-                if (min > e) {
+                if (min > e)
                     min = e;
-                }
-            }
-        }
-        return min;
-    }
-
-    /**
-     * @param m Input array.
-     * @return the maximum of the array values.
-     */
-    private static double max(final double[] m) {
-        double max = Double.NEGATIVE_INFINITY;
-        for (double aM : m) {
-            if (max < aM) {
-                max = aM;
-            }
-        }
-        return max;
-    }
-
-    /**
-     * @param m Input array.
-     * @return the minimum of the array values.
-     */
-    private static double min(final double[] m) {
-        double min = Double.POSITIVE_INFINITY;
-        for (double aM : m) {
-            if (min > aM) {
-                min = aM;
             }
         }
         return min;

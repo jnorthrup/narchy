@@ -7,9 +7,11 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
 import nars.control.How;
+import org.jctools.queues.MessagePassingQueue;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -70,13 +72,17 @@ public class WorkerExec extends ThreadedExec {
         }
     }
 
+    final Consumer execNow = this::executeNow;
+
     private final class WorkPlayLoop implements ThreadedExec.Worker {
 
 
         final Random rng;
-        private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
+
         private final AtomicBoolean alive = new AtomicBoolean(true);
 
+        private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
+        final MessagePassingQueue.Consumer addToSchedule = schedule::addFast;
 
         WorkPlayLoop() {
 
@@ -88,12 +94,43 @@ public class WorkerExec extends ThreadedExec {
 
             do {
 
-                work(workResponsibility, schedule);
+                work(workResponsibility);
 
                 play(threadWorkTimePerCycle);
                 sleep();
 
             } while (alive.get());
+        }
+        protected long work(float responsibility) {
+
+            int available;
+
+
+            if ((available = in.size()) > 0) {
+
+                long workStart = nanoTime();
+                do {
+
+
+                    int batchSize = //Util.lerp(throttle,
+                        //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                        Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
+                    schedule.ensureCapacity(batchSize);
+
+
+                    int got = in.drain(addToSchedule, batchSize);
+                    if (got > 0) {
+                        execute(schedule, 1, execNow);
+                    } else
+                        break;
+
+                } while (!queueSafe((available=in.size())));
+
+                long workEnd = nanoTime();
+                return workEnd - workStart;
+
+            } else
+                return 0;
         }
 
         static final float maxOverUtilization = 2;

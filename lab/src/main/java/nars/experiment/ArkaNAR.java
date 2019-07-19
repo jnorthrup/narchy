@@ -78,7 +78,7 @@ public class ArkaNAR extends GameX {
                     DQN3.Option.GAMMA, 0.5,
 //                    DQN3.Option.EPSILON, 0.05,
                     DQN3.Option.LEARNING_STEPS_PER_ITERATION, 24.0,
-                    DQN3.Option.NUM_HIDDEN_UNITS, 64.0,
+                    DQN3.Option.NUM_HIDDEN_UNITS, 8.0,
                     TD_ERROR_CLAMP, 1.0
                 ))
 

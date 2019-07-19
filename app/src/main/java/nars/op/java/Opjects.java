@@ -232,7 +232,7 @@ public class Opjects extends DefaultTermizer {
         uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
         invokePri = beliefPri = pri.floatValue() * nar.priDefault(BELIEF);
 
-        probing.forEach(p -> p.update(nar));
+        probing.forEachWith(AtomicOperations::update, nar);
     }
 
     @Override

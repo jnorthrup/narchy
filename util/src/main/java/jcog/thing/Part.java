@@ -78,4 +78,5 @@ public abstract class Part<T>  {
     //TODO ifState(..) cmpAndSet
 
     public static final Part[] EmptyArray = new Part[0];
+
 }

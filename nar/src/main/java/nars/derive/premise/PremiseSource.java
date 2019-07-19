@@ -183,17 +183,15 @@ abstract public class PremiseSource {
             }
 
             public boolean refresh(Term x, Iterable<TaskLink> items, int itemCount, boolean reverse, long now, int minUpdateCycles) {
-                if (now - updated >= minUpdateCycles) {
-
-                    if (busy.compareAndSet(false, true)) {
-                        try {
+                if (busy.compareAndSet(false, true)) {
+                    try {
+                        if (now - updated >= minUpdateCycles) {
                             commit(x, items, itemCount, reverse);
                             updated = now;
-                        } finally {
-                            busy.set(false);
                         }
+                    } finally {
+                        busy.set(false);
                     }
-
                 }
 
                 return !links.isEmpty();
@@ -269,7 +267,8 @@ abstract public class PremiseSource {
 
                     Term t = c.term();
 
-                    return t instanceof Compound &&
+                    return
+                        t instanceof Compound &&
                         !t.equals(target) &&
                         t.hasAny(ATOM) &&
                         ((Compound) t).unifiesRecursively(target, z -> z.hasAny(ATOM));

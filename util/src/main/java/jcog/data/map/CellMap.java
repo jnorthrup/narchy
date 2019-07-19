@@ -48,19 +48,19 @@ public class CellMap<K, V> {
     }
 
     public final void forEachValue(Consumer<? super V> each) {
-        forEachCell(e -> {
+        map.forEachValueWith((e, EACH) -> {
             V s = e.value;
             if (s != null)
-                each.accept(s);
-        });
+                EACH.accept(s);
+        }, each);
     }
 
     public void forEachKeyValue(BiConsumer<K,? super V> each) {
-        forEachCell(e -> {
+        map.forEachValueWith((e, EACH) -> {
             V s = e.value;
             if (s != null)
-                each.accept(e.key, s);
-        });
+                EACH.accept(e.key, s);
+        }, each);
     }
 
     @Nullable
@@ -172,15 +172,21 @@ public class CellMap<K, V> {
     }
 
     /** find first corresponding key to the provided value */
-    @Nullable public K firstByValue(Predicate v) {
+    @Nullable public K first(Predicate v) {
         for (CacheCell<K,V> c : map.valueArray()) {
-            if (v.test(c.value)) {
+            if (v.test(c.value))
                 return c.key;
-            }
         }
         return null;
     }
 
+    @Nullable public K firstByIdentity(V x) {
+        for (CacheCell<K,V> c : map.valueArray()) {
+            if (c.value == x)
+                return c.key;
+        }
+        return null;
+    }
 
     /**
      * (key, value, surface) triple

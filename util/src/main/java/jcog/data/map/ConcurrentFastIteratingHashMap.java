@@ -134,7 +134,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
                 action.accept(y);
         }
     }
-    public final <Z> void forEachValueWith(Z z, BiConsumer<? super Y, Z> action) {
+    public final <Z> void forEachValueWith(BiConsumer<? super Y, Z> action, Z z) {
         for (Y y : valueArray()) {
             if (y !=null)
                 action.accept(y, z);

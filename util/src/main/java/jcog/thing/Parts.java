@@ -1,15 +1,18 @@
 package jcog.thing;
 
-import com.google.common.flogger.FluentLogger;
+import jcog.Log;
 import jcog.data.map.ConcurrentFastIteratingHashSet;
 import jcog.event.Off;
 import jcog.event.RunThese;
+import org.slf4j.Logger;
 
 /** a part of a Thing, which also manages a collection of locally contained SubParts */
 public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
 
-    protected static final FluentLogger logger = FluentLogger.forEnclosingClass();
-    protected final ConcurrentFastIteratingHashSet<SubPart<T>> local = new ConcurrentFastIteratingHashSet(Part.EmptyArray);
+    protected static final Logger logger = Log.logger(Parts.class);
+
+    protected final ConcurrentFastIteratingHashSet<SubPart<T>> local =
+        new ConcurrentFastIteratingHashSet<SubPart<T>>(SubPart.EmptyArray);
 
 
     /** TODO weakref? volatile? */

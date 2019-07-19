@@ -29,13 +29,9 @@
 package jcog.data.map;
 
 
-import jcog.random.Rand;
-import org.jetbrains.annotations.Nullable;
-
 import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.IntSupplier;
 import java.util.function.Predicate;
 
 /**
@@ -72,7 +68,7 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
     }
 
     public <Z> void forEachWith(BiConsumer<? super T, Z> action, Z z) {
-        map.forEachValueWith(z, action);
+        map.forEachValueWith(action, z);
     }
 
 
@@ -127,19 +123,9 @@ public class ConcurrentFastIteratingHashSet<T> extends AbstractSet<T> {
         return map.asList();
     }
 
-    public T get(IntSupplier rng) {
-        T[] a = map.valueArray();
-        if (a.length == 0) return null;
-        return a[ Math.abs(rng.getAsInt()) % a.length ];
-    }
-
-    @Nullable
-    public T get(Rand rng) {
-        return get(rng::nextInt);
-    }
-
-    @Nullable
     public T get(Random rng) {
-        return get(rng::nextInt);
+        T[] a = map.valueArray();
+        return a.length == 0 ? null : a[Math.abs(rng.nextInt(a.length))];
     }
+
 }

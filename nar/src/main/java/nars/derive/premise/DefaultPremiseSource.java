@@ -6,6 +6,7 @@ import nars.derive.model.Derivation;
 import nars.link.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.term.util.Image;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -39,6 +40,26 @@ abstract public class DefaultPremiseSource extends PremiseSource {
 					if (forward != null)
 						links.grow(tasklink, task, forward);
 
+
+					//normalize the image if premise doesnt involve Image-specific derivation
+					//TODO check for non-ImageTask images
+//					if (task instanceof ImageTask &&
+//							((beliefTerm instanceof Compound && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit))
+//									||
+//									(beliefTerm instanceof Atomic && task.term().containsRecursively(beliefTerm))
+//							)
+//					) {
+//						task = ((ImageTask) task).task;
+//					}
+//					if (target instanceof Compound) {
+//						if (!task.term().op().isAny(Op.INH.bit | Op.SIM.bit)) {
+//							Term tn = Image.imageNormalize(target);
+//							if (tn != target)
+//								target = tn;
+//						}
+//					}
+					if (!task.term().equals(target))
+						target = Image.imageNormalize(target);
 
 					if (!p.test(new Premise(task, target)))
 						return false; //cut

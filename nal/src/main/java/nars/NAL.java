@@ -223,7 +223,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     /** 1.0 = perfectly sorted each duration (commit); values closer to zero are less accurate but faster */
-    public static float tasklinkSortedness = 0.25f;
+    public static float tasklinkSortedness =
+            1f;
+        //0.25f;
 
 
     /**

@@ -3,7 +3,6 @@ package spacegraph.space2d.container.collection;
 import jcog.data.map.CellMap;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.widget.textedit.TextEdit;
 
 import java.util.Collection;
 import java.util.Objects;
@@ -49,33 +48,17 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
 
     @Override
     public void forEach(Consumer<Surface> each) {
-        cells.forEachCell(e -> {
-//            if (e == null)
-//                throw new NullPointerException();
-
+        cells.map.forEachValueWith((e, EACH) -> {
             Surface s = ((SurfaceCacheCell) e).surface;
-            if ((s == null) && (e.value instanceof Surface))
-                s = (Surface)e.value; //HACK
+            if (s == null) {
+                if (e.value instanceof Surface)
+                    s = (Surface) e.value; //HACK
+            }
             if (s != null)
-                each.accept(s);
-        });
+                EACH.accept(s);
+        }, each);
     }
 
-
-//    public void forEachVisible(Consumer<Surface> each) {
-//        forEach(x -> {
-//            if (x.visible())
-//                each.accept(x);
-//        });
-//    }
-//
-//    public void forEachKeySurface(BiConsumer<? super K, Surface> each) {
-//        cellMap.forEachCell((cell) -> {
-//            Surface ss = ((SurfaceCacheCell) cell).surface;
-//            if (ss != null)
-//                each.accept(cell.key, ss);
-//        });
-//    }
 
     public void forEachValue(Consumer<? super V> each) {
         cells.forEachValue(each);
@@ -98,7 +81,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
     }
 
     @Override
-    protected TextEdit clear() {
+    protected AbstractMutableContainer  clear() {
         cells.clear();
         return null;
     }
@@ -159,12 +142,8 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
 
     @Override
     public boolean detachChild(Surface s) {
-        K k = cells.firstByValue(x -> s == x);
+        K k = cells.firstByIdentity((V)s);
         return k!=null && remove(k)!=null;
-    }
-
-    protected boolean removeSilently(K key) {
-        return cells.removeSilently(key);
     }
 
 
@@ -230,7 +209,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
                 removed = setSurface(null);
             } else {
 
-                if (!Objects.equals(this.value, nextValue) || surface == null) {
+                if (surface == null || !Objects.equals(this.value, nextValue)) {
                     Surface nextSurface = renderer.apply(nextKey, nextValue);
                     set(nextValue);
                     removed = setSurface(nextSurface);

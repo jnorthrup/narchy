@@ -314,23 +314,20 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 //
-                        ramGB >= 0.5 ?
-                                new CaffeineMemory(
-                                        //8 * 1024
-                                        //16*1024
-                                        //32*1024
-                                        //64 * 1024
-                                        //128*1024
-                                        Math.round(ramGB * 128 * 1024)
-                                )
-                                :
-                                CaffeineMemory.soft()
+//                        ramGB >= 0.5 ?
+//                                new CaffeineMemory(
+//                                        //8 * 1024
+//                                        //16*1024
+//                                        //32*1024
+//                                        //64 * 1024
+//                                        //128*1024
+//                                        Math.round(ramGB * 128 * 1024)
+//                                )
+//                                :
+//                                CaffeineMemory.soft()
 
 
-                //, c -> (int) Math.ceil(c.term().voluplexity()))
-
-
-//                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 4)
+                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 3)
                 )
                 .get(GameX::config);
     }

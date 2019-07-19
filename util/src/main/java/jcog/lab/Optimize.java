@@ -6,6 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.lab.util.MyCMAESOptimizer;
 import jcog.lab.var.FloatVar;
 import jcog.learn.decision.RealDecisionTree;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.table.ARFF;
 import jcog.table.DataTable;
 import org.apache.commons.math3.exception.TooManyEvaluationsException;
@@ -17,7 +18,6 @@ import org.apache.commons.math3.optim.nonlinear.scalar.GoalType;
 import org.apache.commons.math3.optim.nonlinear.scalar.ObjectiveFunction;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.NelderMeadSimplex;
 import org.apache.commons.math3.optim.nonlinear.scalar.noderiv.SimplexOptimizer;
-import org.apache.commons.math3.random.MersenneTwister;
 import org.apache.commons.math3.util.MathArrays;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.slf4j.Logger;
@@ -411,7 +411,7 @@ public class Optimize<S, E> extends Lab<E>  {
 
             MyCMAESOptimizer m = new MyCMAESOptimizer(maxIter, Double.NaN,
                     true, 0,
-                    1, new MersenneTwister(System.nanoTime()),
+                    1, new XoRoShiRo128PlusRandom(), //new MersenneTwister(System.nanoTime())
                     true, null, popSize, sigma);
             m.optimize(
                     func,

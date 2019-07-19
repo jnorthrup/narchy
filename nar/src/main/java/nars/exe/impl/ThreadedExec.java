@@ -1,7 +1,6 @@
 package nars.exe.impl;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
@@ -10,17 +9,14 @@ import nars.NAR;
 import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
 
 import java.util.concurrent.ForkJoinPool;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
-
-import static java.lang.System.nanoTime;
 
 /**
  * N independent asynchronously looping worker threads
  */
 abstract public class ThreadedExec extends MultiExec {
 
-    static final int inputQueueCapacityPerThread = 512;
+    static final int inputQueueCapacityPerThread = 256;
 
     protected final MpmcAtomicArrayQueue in;
 
@@ -44,14 +40,14 @@ abstract public class ThreadedExec extends MultiExec {
     }
 
     @Override
-    protected void execute(/*@NotNull */Object x) {
+    protected final void execute(/*@NotNull */Object x) {
         if (!in.relaxedOffer(x)) {
             executeBlocked(x);
         }
     }
 
     private void executeBlocked(Object x) {
-        logger.atWarning().log("{} exe queue blocked on: {}", this, x);
+        logger.warn("{} exe queue blocked on: {}", this, x);
         executeNow(x);
     }
 
@@ -71,7 +67,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     }
 
-    public int queueSize() {
+    public final int queueSize() {
         return in.size();
     }
 
@@ -95,14 +91,14 @@ abstract public class ThreadedExec extends MultiExec {
             if (idealThreads > currentThreads) {
                 //spawn more
                 int demand = idealThreads - currentThreads;
-                logger.atInfo().log("add {} worker threads (ideal: {} )", demand, idealThreads);
+                logger.info("add {} worker threads (ideal: {} )", demand, idealThreads);
                 synchronized (exe) {
                     exe.execute(loop(), demand, affinity);
                 }
             } else if (currentThreads > idealThreads) {
                 //stop some
                 int excess = currentThreads - idealThreads;
-                logger.atInfo().log("stop {} worker threads (ideal: {} )", excess, idealThreads);
+                logger.info("stop {} worker threads (ideal: {} )", excess, idealThreads);
                 synchronized (exe) {
                     int c;
                     while ((c = concurrency()) > idealThreads)
@@ -117,37 +113,6 @@ abstract public class ThreadedExec extends MultiExec {
         return exe.size();
     }
 
-    protected long work(float responsibility, FasterList buffer) {
-
-        int available;
-
-        Consumer execNow = this::executeNow;
-        if ((available = in.size()) > 0) {
-
-            long workStart = nanoTime();
-            do {
-
-
-                int batchSize = //Util.lerp(throttle,
-                        //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                        Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
-                buffer.ensureCapacity(batchSize);
-
-
-                int got = in.drain(buffer::addFast,batchSize);
-                if (got > 0) {
-                    execute(buffer, 1, execNow);
-                } else
-                    break;
-
-            } while (!queueSafe((available=in.size())));
-
-            long workEnd = nanoTime();
-            return workEnd - workStart;
-
-        } else
-            return 0;
-    }
 
     @Override
     public void starting(NAR n) {

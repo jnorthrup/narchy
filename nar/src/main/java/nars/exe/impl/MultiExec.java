@@ -180,7 +180,7 @@ abstract public class MultiExec extends Exec {
             long latencyNS = end - start;
             double cycles = latencyNS / ((double) (n.loop.periodNS() / n.exe.concurrency()));
             if (cycles > 0.5) {
-                Exec.logger.atInfo().log("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
+                Exec.logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
             }
         }
 

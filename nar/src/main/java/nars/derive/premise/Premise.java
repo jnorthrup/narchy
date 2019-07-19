@@ -51,23 +51,6 @@ public class Premise /*implements Comparable<Premise>*/ {
     public Premise(Task task, Term beliefTerm) {
         super();
 
-        //normalize the image if premise doesnt involve Image-specific derivation
-        //TODO check for non-ImageTask images
-//        if (task instanceof ImageTask &&
-//                ((beliefTerm instanceof Compound && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit))
-//                        ||
-//                        (beliefTerm instanceof Atomic && task.term().containsRecursively(beliefTerm))
-//                )
-//        ) {
-//            task = ((ImageTask) task).task;
-//        }
-        if (beliefTerm instanceof Compound) {
-            if (!task.term().op().isAny(Op.INH.bit | Op.SIM.bit)) {
-                Term ib = Image.imageNormalize(beliefTerm);
-                if (ib != beliefTerm)
-                    beliefTerm = ib;
-            }
-        }
 
 
         this.task = task;

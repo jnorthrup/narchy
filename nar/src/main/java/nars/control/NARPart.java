@@ -18,8 +18,6 @@ import org.jetbrains.annotations.Nullable;
  */
 abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPart<NAR> {
 
-    private static final NARPart[] EmptyArray = new NARPart[0];
-
     public final Term id;
 
 
@@ -56,7 +54,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
 
     public boolean delete() {
 
-        logger.atFine().log("delete {}", term());
+        logger.info("delete {}", term());
 
 
         local.removeIf((p) -> {
@@ -73,7 +71,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
             try {
                 stopping(null);
             } catch (Throwable t) {
-                logger.atSevere().withCause(t).log("stop {}", term());
+                logger.warn("stop {} {}", term(), t);
             }
         }
 
@@ -113,7 +111,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
 
 
     public void startIn(NAR nar, Part<NAR> container) {
-        logger.atFine().log("start {} -> {} {}", container, term(), getClass().getName());
+        logger.info("start {} -> {} {}", container, term(), getClass().getName());
 
         this.nar = nar;
 
@@ -128,7 +126,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
 
     public void stopIn(NAR nar, Part<NAR> container) {
 
-        logger.atFine().log(" stop {} -> {} {}", container, term(), getClass().getName());
+        logger.info(" stop {} -> {} {}", container, term(), getClass().getName());
 
         synchronized(this) {
             _state(Thing.ServiceState.OnToOff);
@@ -147,7 +145,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         if (!(prevNar == null || prevNar == nar))
             throw new WTF("NAR mismatch");
 
-        logger.atFine().log("start {}", term());
+        logger.info("start {}", term());
 
         starting(this.nar = nar);
 
@@ -158,7 +156,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
 
     @Override
     protected final void stop(NAR nar) {
-        logger.atFine().log("stop {}", term());
+        logger.info("stop {}", term());
 
         stopLocal(nar);
 
@@ -212,14 +210,14 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         NAR n = this.nar;
         if (n != null) {
             if (n.stop(this)) {
-                logger.atFine().log("pause", this);
+                logger.info("pause", this);
                 return () -> {
                     NAR nn = this.nar;
                     if (nn == null) {
                         //deleted or unstarted
                     } else {
                         if (nn.start(this)) {
-                            logger.atFine().log("resume", this);
+                            logger.info("resume", this);
                         }
                     }
                 };
