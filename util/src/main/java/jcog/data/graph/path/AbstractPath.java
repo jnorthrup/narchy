@@ -78,9 +78,6 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
         }
 
         int andiff = Math.abs(beginIdx - endExc);
-        if (andiff == 0) {
-            return clone().clear();
-        }
 
         if (andiff == 1) {
             int minidx = Math.min(beginIdx, endExc);

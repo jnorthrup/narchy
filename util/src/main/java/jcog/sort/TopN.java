@@ -37,9 +37,6 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         setCapacity(target.length);
     }
 
-    public TopN() {
-        this(null);
-    }
 
     /**
      * try to use the FloatRank if a scoring function can be interrupted

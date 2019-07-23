@@ -233,11 +233,7 @@ public class CellMap<K, V> {
                         create = delete = true;
                     }
                 } else {
-                    if (next == null) {
-                        delete = true;
-                    } else {
-                        create = true;
-                    }
+                    create = true;
                 }
 
                 if (delete) {

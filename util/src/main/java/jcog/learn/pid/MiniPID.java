@@ -242,7 +242,7 @@ public class MiniPID {
      * @return
      */
     public MiniPID reversed() {
-        this.reversed = reversed;
+        this.reversed = true;
         return this;
     }
 

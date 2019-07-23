@@ -36,7 +36,7 @@ class MatrixTransform {
         final int m2d = m2.d;
         final int n = m1.n;
 
-        assert(m1d == m2.n): "matmul dimensions misaligned: " + m1d + " != " + m2.n;
+        //assert(m1d == m2.n): "matmul dimensions misaligned: " + m1d + " != " + m2.n;
 
         final int d = m2d;
         final double[] m1w = m1.w;

@@ -299,10 +299,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                     removed[0]++;
                 else {
 
-                    if (!((reinsertion.added() && u != null) || merged))
+                    if (!((reinsertion.added() && u != null) ))
                         throw new WTF("unable to add");
 
-                    if (u == null || !reinsertion.added()/* && !reinsertion.merged*/) {
+                    if (!reinsertion.added()/* && !reinsertion.merged*/) {
 //                            if (Sets.newHashSet((Iterator<X>) t.iterateValues()).contains(x)) { //HACK
 //                                //throw new WTF("added() value is incorrect because ");
 //                            } else {

@@ -195,7 +195,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public final X[] array() {
         //modified updateAndGet: //return copy.updateAndGet(this);
         X[] prev = copy.getOpaque();
-        return prev != null ? prev : commit(prev);
+        return prev != null ? prev : commit(null);
     }
 
     private X[] commit(X[] prev) {

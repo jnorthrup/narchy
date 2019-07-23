@@ -113,9 +113,9 @@ public class Trie<S, T> implements Map<S, T> {
     public T put(S query, T value) {
         int queryLength = sequencer.lengthOf(query);
 
-        if (value == null || queryLength == 0) {
+        if (value == null || queryLength == 0)
             return null;
-        }
+
 
         int queryOffset = 0;
         TrieNode<S, T> node = root.children.get(sequencer.hashOf(query, 0));
@@ -569,7 +569,7 @@ public class Trie<S, T> implements Map<S, T> {
             }
 
             
-            if (max != nodeLength && matches == max) {
+            if (max != nodeLength) {
                 return (match != TrieMatch.PARTIAL ? null : node);
             }
 

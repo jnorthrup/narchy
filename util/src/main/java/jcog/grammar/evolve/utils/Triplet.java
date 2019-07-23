@@ -52,17 +52,11 @@ public class Triplet<F, S, T> {
         if (obj == null) {
             return false;
         }
-        if (getClass() != obj.getClass()) {
+        if (getClass() != obj.getClass())
             return false;
-        }
+
         final Triplet<F, S, T> other = (Triplet<F, S, T>) obj;
-        if (!Objects.equals(first, first)) {
-            return false;
-        }
-        if (!Objects.equals(second, second)) {
-            return false;
-        }
-        return Objects.equals(third, third);
+        return Objects.equals(first, other.first) && Objects.equals(second, other.second) && Objects.equals(third, other.third);
     }
 
     @Override

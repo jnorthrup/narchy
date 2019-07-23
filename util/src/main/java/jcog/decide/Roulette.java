@@ -67,7 +67,7 @@ public enum Roulette {
                         0.5f : (rx / (rx + ry))) ?
                         0 : 1;
             else if (!bx && !by) return -1;
-            else if (bx && !by) return 0;
+            else if (bx /*&& !by*/) return 0;
             else return 1;
 
         } else {

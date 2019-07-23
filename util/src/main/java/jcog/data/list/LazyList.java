@@ -1,12 +1,10 @@
 package jcog.data.list;
 
-import org.eclipse.collections.api.block.predicate.Predicate;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 
 import java.util.AbstractList;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.function.ToIntFunction;
 
 abstract public class LazyList<X> extends AbstractList<X> {
 
@@ -62,21 +60,21 @@ abstract public class LazyList<X> extends AbstractList<X> {
         return true;
     }
 
-    public int count(Predicate<? super X> predicate) {
-        int s = 0;
-        int c = 0;
-        for (int i = 0; i < s; i++)
-            c += predicate.test(get(i)) ? 1 : 0;
-        return c;
-    }
+//    public int count(Predicate<? super X> predicate) {
+//        int s = 0;
+//        int c = 0;
+//        for (int i = 0; i < s; i++)
+//            c += predicate.test(get(i)) ? 1 : 0;
+//        return c;
+//    }
 
-    public int sumOfInt(ToIntFunction<? super X> predicate) {
-        int s = 0;
-        int c = 0;
-        for (int i = 0; i < s; i++)
-            c += predicate.applyAsInt(get(i));
-        return c;
-    }
+//    public int sumOfInt(ToIntFunction<? super X> predicate) {
+//        int s = 0;
+//        int c = 0;
+//        for (int i = 0; i < s; i++)
+//            c += predicate.applyAsInt(get(i));
+//        return c;
+//    }
 
 
     @Override

@@ -27,7 +27,7 @@ public interface MetaMap {
             if (v != null)
                 return softOrWeak ? new SoftReference(v) : new WeakReference(v);
             else
-                return v;
+                return null;
         })));
         if (r == null)
             return null;

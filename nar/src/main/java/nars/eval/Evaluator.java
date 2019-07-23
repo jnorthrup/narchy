@@ -50,7 +50,7 @@ public class Evaluator extends HeapTermTransform {
     }
 
     @Nullable FasterList<Term> clauseFind(Compound x) {
-        UnifiedSet<Term> clauses = new UnifiedSet(0);
+        UnifiedSet<Term> clauses = new UnifiedSet<>(0);
 
         x.recurseTerms(s -> s instanceof Compound && s.hasAll(Op.FuncBits), X -> {
             if (Functor.isFunc(X)) {

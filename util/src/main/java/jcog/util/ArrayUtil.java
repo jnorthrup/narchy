@@ -8648,7 +8648,6 @@ public enum ArrayUtil {
             }
             if (b > c) break;
             if (b == m) m = d;
-            else if (c == m) m = c;
             swapper.value(b++, c--);
         }
 

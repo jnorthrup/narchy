@@ -310,8 +310,6 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
                                 assert (next != null);
                                 if (next != v) {
-                                    if (next == null)
-                                        throw new NullPointerException();
                                     if (map.compareAndExchangeRelease(i, v, next) != v) {
 //                                        throw new WTF("merge mismatch: " + v);
 //                                        //the previous value likely got hijacked by another thread

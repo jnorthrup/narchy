@@ -496,7 +496,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                             Node cloned = createNode(found.getIncomingEdge(), null, found.getOutgoingEdges(), false);
 
                             parent.updateOutgoingEdge(cloned);
-                        } else if (numChildren == 1) {
+                        } else /*if (numChildren == 1)*/ {
 
 
                             Node child = childEdges.get(0);
@@ -552,7 +552,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
                         Node parentsRemainingChild = newEdgesOfParent.get(0);
 
                         AbstractBytes concatenatedEdges = concatenate(parent.getIncomingEdge(), parentsRemainingChild.getIncomingEdge());
-                        newParent = createNode(concatenatedEdges, parentsRemainingChild.getValue(), parentsRemainingChild.getOutgoingEdges(), parentIsRoot);
+                        newParent = createNode(concatenatedEdges, parentsRemainingChild.getValue(), parentsRemainingChild.getOutgoingEdges(),
+                            false /*parentIsRoot*/);
                     } else {
 
 

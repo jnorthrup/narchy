@@ -72,7 +72,7 @@ public class ExperimentRun<E> implements Runnable {
 
         endTime = System.currentTimeMillis();
 
-        if (data instanceof DataTable) {
+        if (data != null) {
             ((ARFF)data).setComment(experiment + ": " + procedure +
                     "\t@" + startTime + ".." + endTime + " (" + new Date(startTime) + " .. " + new Date(endTime) + ')');
         }

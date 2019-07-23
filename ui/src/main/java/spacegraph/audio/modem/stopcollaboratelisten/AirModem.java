@@ -89,9 +89,7 @@ public class AirModem {
 
                             long tHelp = tWait;
 
-                            if (tHelp > -1)
-                                // start listening when playing is finished
-                                mTimer.schedule(new StatusUpdateTimerTask(SessionStatus.LISTENING), tHelp);
+                            mTimer.schedule(new StatusUpdateTimerTask(SessionStatus.LISTENING), tHelp);
                         }
                     }, tWait);
 
@@ -200,11 +198,9 @@ public class AirModem {
         haveCorrectBroadcast = true;
         amInitiator = true;
 
-        if (mTimer != null) {
-            mTimer.purge();
-        }
+		mTimer.purge();
 
-        long tPlay = playData(correctBroadcast, SessionStatus.PLAYING);
+		long tPlay = playData(correctBroadcast, SessionStatus.PLAYING);
 
         if (tPlay > -1)
             // start listening when playing is finished

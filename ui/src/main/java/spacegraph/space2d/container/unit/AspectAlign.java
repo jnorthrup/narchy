@@ -93,10 +93,8 @@ public class AspectAlign extends UnitContainer {
         if (aspect == aspect /* not NaN */) {
 
             if (otw * tw / aspect >= oth * th * aspect) {
-                tw = otw;
                 th = otw * aspect;
             } else {
-                th = oth;
                 tw = oth / aspect;
             }
 

@@ -191,13 +191,11 @@ public enum Exe {;
                             n = null;
                         }
 
-                        if (s > 0) {
-                            for (; s > 0; s--) {
-                                JsonNode o = out.poll();
-                                if (o == null)
-                                    break;
-                                a.add(o);
-                            }
+                        for (; s > 0; s--) {
+                            JsonNode o = out.poll();
+                            if (o == null)
+                                break;
+                            a.add(o);
                         }
 
                         if (!a.isEmpty()) {

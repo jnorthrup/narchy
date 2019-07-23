@@ -119,10 +119,10 @@ public final class EwmaAnomalyzer {
          */
         private final double initMeanEstimate = 0.0;
 
-        public void validate() {
-            assert(0.0 <= alpha && alpha <= 1.0): "Required: alpha in the range [0, 1]";
-            assert(weakSigmas > 0.0): "Required: weakSigmas > 0.0";
-            assert(strongSigmas > weakSigmas): "Required: strongSigmas > weakSigmas";
-        }
+//        public void validate() {
+//            assert(0.0 <= alpha && alpha <= 1.0): "Required: alpha in the range [0, 1]";
+//            assert(weakSigmas > 0.0): "Required: weakSigmas > 0.0";
+//            assert(strongSigmas > weakSigmas): "Required: strongSigmas > weakSigmas";
+//        }
     }
 }

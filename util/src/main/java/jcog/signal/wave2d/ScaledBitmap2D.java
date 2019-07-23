@@ -6,7 +6,6 @@ import java.awt.image.BufferedImage;
 import java.util.function.Supplier;
 
 import static java.awt.RenderingHints.*;
-import static java.awt.color.ColorSpace.TYPE_RGB;
 
 /**
  * Pan/Zoom filter for a BuferredImage source
@@ -65,7 +64,7 @@ public class ScaledBitmap2D extends MonoBufImgBitmap2D /* TODO extends ArrayBitm
             if (outgfx!=null)
                 outgfx.dispose();
 
-            img = new BufferedImage(pw, ph, in instanceof BufferedImage ? in.getType() : TYPE_RGB);
+            img = new BufferedImage(pw, ph, in.getType());
             raster = img.getRaster();
             outgfx = img.createGraphics();
             outgfx.setRenderingHint(KEY_ANTIALIASING,VALUE_ANTIALIAS_ON);

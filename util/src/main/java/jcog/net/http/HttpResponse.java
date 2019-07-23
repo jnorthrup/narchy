@@ -305,7 +305,6 @@ class HttpResponse {
                     if (range) {
                         long limit = rangeLength - fileBytesSent;
                         if (fileBuffer.limit() > limit) {
-                            assert(limit < java.lang.Integer.MAX_VALUE);
                             fileBuffer.limit((int) limit);
                         }
                     }

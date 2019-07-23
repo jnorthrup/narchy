@@ -31,7 +31,7 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
         if (value == null)
             throw new NullPointerException();
 
-        Y prev = value == null ? map.remove(key) : map.put(key, value);
+        Y prev = map.put(key, value);
         if (prev!=value)
             invalidate();
         return prev;

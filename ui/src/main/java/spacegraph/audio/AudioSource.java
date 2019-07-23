@@ -139,10 +139,8 @@ public abstract class AudioSource implements DigitizedSignal {
         logger.info("stop {} {}", line, line.getLineInfo());
 
         synchronized (this) {
-            if (line != null) {
-                line.stop();
-                line.close();
-            }
+            line.stop();
+            line.close();
         }
     }
 

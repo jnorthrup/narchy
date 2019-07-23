@@ -256,10 +256,6 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
 
             wave.forEach((freq, conf, s, e) -> {
 
-                boolean eternal = (s != s);
-                if (eternal)
-                    return;
-
                 float start = xTime(s);
                 if (start > 1)
                     return;

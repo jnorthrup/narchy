@@ -85,7 +85,7 @@ abstract public class ParentNode extends AbstractNode {
     @Override
     public final List<Node> children() {
         
-        return Collections.unmodifiableList(children);
+        return /*Collections.unmodifiableList*/(children);
     }
 
     @Override

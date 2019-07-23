@@ -233,8 +233,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         switch (state[0]) {
             case COMMENT:
                 if (ll > 1 && line.charAt(0) == '%') {
-                    if (ll >= 2)
-                        collectedComment.append(line.substring(2));
+                    collectedComment.append(line.substring(2));
                     collectedComment.append(NEW_LINE);
                 } else {
                     state[0] = HEADER;
