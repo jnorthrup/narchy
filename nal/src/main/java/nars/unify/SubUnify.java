@@ -45,7 +45,7 @@ public class SubUnify extends Unify {
         if (transformed != null) {
             Term result = apply(transformed);
 //            assert(result!=null); //HACK TEMPORARY
-            if (result != Null && tryMatch(result)) {
+            if (result != Null && accept(result)) {
 
                 use(1);
                 this.result = result;
@@ -57,7 +57,7 @@ public class SubUnify extends Unify {
     }
 
 
-    protected boolean tryMatch(Term result) {
+    protected boolean accept(Term result) {
         return true;
     }
 

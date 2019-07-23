@@ -41,8 +41,8 @@ public class PrologAgent extends Prolog {
      *
      * @param theory the text representing the theory
      */
-    public PrologAgent(String theory, ClauseIndex dyn){
-        super(dyn);
+    public PrologAgent(String theory, ClauseIndex statics, MutableClauseIndex dyn){
+        super(statics, dyn);
         theoryText=theory;
         addOutputListener(defaultOutputListener);
     }

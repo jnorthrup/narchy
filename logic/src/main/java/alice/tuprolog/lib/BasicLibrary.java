@@ -151,27 +151,27 @@ public class BasicLibrary extends PrologLib {
         return unify(arg, list);
     }
 
-    /**
-     * spawns a separate prolog agent providing it a theory text
-     *
-     * @throws PrologError
-     */
-    public boolean agent_1(Term th) throws PrologError {
-        th = th.term();
-        if (th instanceof Var)
-            throw PrologError.instantiation_error(prolog, 1);
-        if (!(th.isAtomic()))
-            throw PrologError.type_error(prolog, 1, "atom",
-                    th);
-        Struct theory = (Struct) th;
-        try {
-            new PrologAgent(alice.util.Tools.removeApostrophes(theory.toString()), new MutableClauseIndex()).spawn();
-            return true;
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            return false;
-        }
-    }
+//    /**
+//     * spawns a separate prolog agent providing it a theory text
+//     *
+//     * @throws PrologError
+//     */
+//    public boolean agent_1(Term th) throws PrologError {
+//        th = th.term();
+//        if (th instanceof Var)
+//            throw PrologError.instantiation_error(prolog, 1);
+//        if (!(th.isAtomic()))
+//            throw PrologError.type_error(prolog, 1, "atom",
+//                    th);
+//        Struct theory = (Struct) th;
+//        try {
+//            new PrologAgent(alice.util.Tools.removeApostrophes(theory.toString()), new ConcurrentHashClauseIndex()).spawn();
+//            return true;
+//        } catch (Exception ex) {
+//            ex.printStackTrace();
+//            return false;
+//        }
+//    }
 
     /**
      * spawns a separate prolog agent providing it a theory text and a goal

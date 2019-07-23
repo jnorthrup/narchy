@@ -33,7 +33,9 @@ class KIFTest {
         String I =
                 //"/home/me/sumo/Merge.kif";
                 //"/home/me/sumo/tinySUMO.kif";
-                "/home/me/sumo/ComputerInput.kif";
+                //"/home/me/sumo/ComputerInput.kif";
+//                "/home/me/sumo/Economy.kif",
+                "/home/me/sumo/FinancialOntology.kif";
 
         //String O = "/home/me/d/sumo_merge.nal";
 //        k.tasks.forEach(bb -> System.out.println(bb));
@@ -62,7 +64,9 @@ class KIFTest {
         //n.input("$1.0 classIntersection(?1,?2)?");
         //n.clear();
         w.clear();
-        n.input("$1.0 (#1-->ComputerDisplay)!");
+        //n.input("$1.0 (#1-->ComputerDisplay)!");
+        n.input("$1.0 possesses(I,#everything)!");
+        n.input("$1.0 benefits(#all, I)!");
         n.run(1000);
 //        w.links.links.print();
 

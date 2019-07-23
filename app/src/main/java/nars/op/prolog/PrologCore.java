@@ -15,6 +15,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.var.NormalizedVariable;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ import static nars.time.Tense.ETERNAL;
  * of a prolog solution (converted to NARS terms), which are input to NARS memory
  * with the hope that this is sooner than NARS can solve it by itself.
  */
-public class PrologCore extends PrologAgent implements Consumer<Task> {
+public class PrologCore extends Prolog implements Consumer<Task> {
 
     final static Logger logger = LoggerFactory.getLogger(PrologCore.class);
 
@@ -88,17 +89,8 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     private final CauseChannel<Task> in;
     private final What what;
 
-
-    /*final ObjectBooleanHashMap<Term> beliefs = new ObjectBooleanHashMap() {
-
-
-    };*/
-
-    public PrologCore(NAR n) {
-        this(n, "");
-    }
-
-    public static class MyClauseIndex extends MutableClauseIndex {
+    /** TODO adapt NAR memory as ClauseIndex */
+    public static class MyClauseIndex extends ConcurrentHashClauseIndex {
 
 
         public MyClauseIndex(Memory t) {
@@ -108,8 +100,8 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
 
     }
 
-    public PrologCore(NAR n, String theory) {
-        super(theory, new MyClauseIndex(n.memory));
+    public PrologCore(NAR n) {
+        super(new MyClauseIndex(n.memory), new ConcurrentHashClauseIndex());
 
         if (NAL.DEBUG)
             setSpy(true);
@@ -119,11 +111,11 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         this.what = nar.what(); //TODO be parameter
 
 
-        n.eventTask.on(this);
+        /*@Deprecated*/ n.eventTask.on(this);
     }
 
     @Override
-    public void accept(Task task) {
+    @Deprecated public void accept(Task task) {
 
         if (task.isBelief()) {
 
@@ -154,17 +146,16 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
     protected void believe(Task t, boolean truth) {
 
 
-        boolean _truth = truth;
         Term ct = t.term();
 
         if (!ct.hasAny(Op.AtomicConstant))
             return;
 
-        beliefs.computeIfAbsent(ct, (pp) -> {
+        beliefs.computeIfAbsent(ct, (pp/*=ct?*/) -> {
 
             Struct next = (Struct) pterm(t.term());
 
-            if (!_truth) {
+            if (!truth) {
                 if (t.op() == IMPL) {
                     next = new Struct(":-", negate(next.subResolve(1)), next.subResolve(0));
                 } else {
@@ -251,6 +242,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         return Util.map(PrologCore::nterm, new Term[t.length], t);
     }
 
+    @Nullable
     private static Term[] nterms(Struct s) {
         int len = s.subs();
         Term[] n = new Term[len];
@@ -347,9 +339,9 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
         return s.array(PrologCore::pterm, alice.tuprolog.Term[]::new);
     }
 
-    public static alice.tuprolog.Term tterm(String punc, final alice.tuprolog.Term nalTerm, boolean isTrue) {
-        return new Struct(punc, nalTerm, isTrue ? ONE : ZERO);
-    }
+//    public static alice.tuprolog.Term tterm(String punc, final alice.tuprolog.Term nalTerm, boolean isTrue) {
+//        return new Struct(punc, nalTerm, isTrue ? ONE : ZERO);
+//    }
 
 
     public static alice.tuprolog.Term pterm(final Term term) {
@@ -379,7 +371,7 @@ public class PrologCore extends PrologAgent implements Consumer<Task> {
                         if (subj.op() == PROD) {
                             alice.tuprolog.Term args = st[0];
                             return new Struct(wrapAtom(pred.toString()),
-                                    args instanceof alice.tuprolog.Term ?
+                                    args != null ?
                                             Iterators.toArray(((Struct) st[0]).listIterator(), alice.tuprolog.Term.class) :
                                             new alice.tuprolog.Term[]{args});
                         }

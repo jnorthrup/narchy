@@ -112,7 +112,7 @@ public final class BuiltIn extends PrologLib {
                     }
                 }
             }
-            theories.assertA(ss, true, null, false);
+            theories.assertA(ss, null);
             return true;
         }
         if (arg0 instanceof Var)

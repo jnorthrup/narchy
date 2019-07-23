@@ -192,7 +192,7 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
         }
 
         @Override
-        protected boolean tryMatch(Term result) {
+        protected boolean accept(Term result) {
 
             if (!strict || !result.equals(transformed)) {
                     //&& !result.normalize().equals(transformed.normalize()))) { //dont actually normalize it ; could destroy common variables since they arent Anon and in the derivation's Anon map

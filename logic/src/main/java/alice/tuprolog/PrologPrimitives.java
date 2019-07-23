@@ -104,17 +104,17 @@ public class PrologPrimitives {
         return term;
     }
 
-    public boolean evalAsDirective(Struct d) throws Throwable {
+    boolean evalAsDirective(Struct d) throws Throwable {
         PrologPrim pd = identifyDirective(d).getPrimitive();
-        if (pd != null) {
-            try {
-                pd.evalAsDirective(d);
-                return true;
-            } catch (InvocationTargetException ite) {
-                throw ite.getTargetException();
-            }
-        } else
+        if (pd == null)
             return false;
+
+        try {
+            pd.evalAsDirective(d);
+            return true;
+        } catch (InvocationTargetException ite) {
+            throw ite.getTargetException();
+        }
     }
 
 

@@ -50,36 +50,36 @@ import static alice.tuprolog.PrologPrim.PREDICATE;
 public class Theories {
 
     public static final Struct TRUE = new Struct("true");
-    private final ClauseIndex dynamicDBase;
-    private final MutableClauseIndex staticDBase;
+    private final MutableClauseIndex dynamicDBase;
+    private final ClauseIndex staticDBase;
 
     private final Prolog engine;
     private final PrologPrimitives prims;
     private final Deque<Term> startGoalStack;
 
 
-    public Theories(Prolog vm, ClauseIndex dynamics) {
+    public Theories(Prolog vm, ClauseIndex statics, MutableClauseIndex dynamics) {
         engine = vm;
         dynamicDBase = dynamics;
-        staticDBase = new MutableClauseIndex();
+        staticDBase = statics;
 
         prims = engine.prims;
-        startGoalStack = new ArrayDeque<>(32);
+        startGoalStack = new ArrayDeque<>(8);
     }
 
     /**
      * inserting of a clause at the head of the dbase
      */
-    public /*synchronized*/ void assertA(Struct clause, boolean dyn, String libName, boolean backtrackable) {
+    public /*synchronized*/ void assertA(Struct clause, String libName) {
         ClauseInfo d = new ClauseInfo(toClause(clause), libName);
         String key = d.head.key();
-        if (dyn) {
+//        if (dyn) {
             dynamicDBase.add(key, d, true);
             if (staticDBase.containsKey(key)) {
                 Prolog.warn("A static predicate with signature " + key + " has been overriden.");
             }
-        } else
-            staticDBase.add(key, d, true);
+//        } else
+//            staticDBase.add(key, d, true);
         if (engine.isSpy())
             engine.spy("INSERTA: " + d.clause + '\n');
     }
@@ -96,7 +96,7 @@ public class Theories {
                 Prolog.warn("A static predicate with signature " + key + " has been overriden.");
             }
         } else
-            staticDBase.add(key, d, false);
+            ((MutableClauseIndex)staticDBase).add(key, d, false); //HACK
         if (engine.isSpy())
             engine.spy("INSERTZ: " + d.clause + '\n');
     }
@@ -140,7 +140,7 @@ public class Theories {
      * predicate indicator passed as a parameter
      */
     public /*synchronized*/ boolean abolish(Struct pi) {
-        if (!(pi instanceof Struct) || !pi.isGround() || pi.subs() != 2)
+        if (pi == null || !pi.isGround() || pi.subs() != 2)
             throw new IllegalArgumentException(pi + " is not a valid Struct");
         if (!pi.name().equals("/"))
             throw new IllegalArgumentException(pi + " has not the valid predicate name. Espected '/' but was " + pi.name());
@@ -282,15 +282,16 @@ public class Theories {
 
 
     private boolean runDirective(Struct c) {
-        if ("':-'".equals(c.name()) ||
-                ((c.subs() == 1) && ":-".equals(c.name()) && (c.subResolve(0) instanceof Struct))) {
+        String cn = c.name();
+        if ("':-'".equals(cn) ||
+                ((c.subs() == 1) && ":-".equals(cn) && (c.subResolve(0) instanceof Struct))) {
             Struct dir = (Struct) c.subResolve(0);
             try {
                 if (!prims.evalAsDirective(dir))
-                    Prolog.warn("The directive " + dir.key() + " is unknown.");
+                    Prolog.warn("Directive " + dir.key() + " unknown");
             } catch (Throwable t) {
-                Prolog.warn("An exception has been thrown during the execution of the " +
-                        dir.key() + " directive.\n" + t.getMessage());
+                Prolog.warn("An exception has been thrown during the execution of directive " +
+                        dir.key() + "\n" + t.getMessage());
             }
             return true;
         }

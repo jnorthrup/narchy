@@ -70,7 +70,7 @@ public class Prolog {
     /* listeners to query events */
     private final List<Consumer<QueryEvent>> onQuery = new CopyOnWriteArrayList<>();
     /*  spying activated ?  */
-    private boolean spy;
+    private boolean spy = false;
     /* exception activated ? */
     private final boolean exception;
     private boolean warning;
@@ -80,7 +80,7 @@ public class Prolog {
     public final static Logger logger = LoggerFactory.getLogger(Prolog.class);
 
     public Prolog() {
-        this(new MutableClauseIndex());
+        this(new ConcurrentHashClauseIndex());
     }
 
     /**
@@ -89,8 +89,8 @@ public class Prolog {
      * The default libraries are BasicLibrary, ISOLibrary,
      * IOLibrary, and  JavaLibrary
      */
-    public Prolog(ClauseIndex dynamics) {
-        this(false, dynamics);
+    public Prolog(MutableClauseIndex dynamics) {
+        this(new ConcurrentHashClauseIndex(), dynamics);
 
         try {
             addLibrary(BasicLibrary.class);
@@ -109,7 +109,7 @@ public class Prolog {
      * @param libs the (class) name of the libraries to be loaded
      */
     public Prolog(String... libs) {
-        this(false, new MutableClauseIndex());
+        this(new ConcurrentHashClauseIndex());
         if (libs != null) {
             for (String lib : libs) {
                 try {
@@ -125,16 +125,10 @@ public class Prolog {
     /**
      * Initialize basic engine structures.
      *
-     * @param spy spying activated
      */
-    private Prolog(boolean spy, ClauseIndex dynamics) {
+    protected Prolog(ClauseIndex statics, MutableClauseIndex dynamics) {
         super();
 
-
-        
-        this.spy = spy;
-
-        
         exception = true;
         
 
@@ -144,7 +138,7 @@ public class Prolog {
         libs = new PrologLibraries();
         ops = new PrologOperators();
         prims = new PrologPrimitives();
-        theories = new Theories(this, dynamics);
+        theories = new Theories(this, statics, dynamics);
 
         libs.start(this);
         prims.start(this);

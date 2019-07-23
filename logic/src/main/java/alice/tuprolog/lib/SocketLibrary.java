@@ -643,7 +643,7 @@ private static class ThreadReader extends Thread {
 				if(this.isInterrupted())return;					
 				Struct s = (Struct) Term.term(msg.term().toString());
 				if (assertA)
-					mainEngine.theories.assertA(s, true, "", false);
+					mainEngine.theories.assertA(s, "");
 				else
 					mainEngine.theories.assertZ(s, true, "", false);
 				assertA = true; 

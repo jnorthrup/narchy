@@ -6,7 +6,7 @@ import java.util.Deque;
 
 /**
  * <code>FamilyClausesIndex</code> enables family clauses indexing
- * in {@link MutableClauseIndex}.
+ * in {@link ConcurrentHashClauseIndex}.
  *
  * @author Paolo Contessi
  * @since 2.2

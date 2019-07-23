@@ -104,32 +104,32 @@ public class BasicPrologLibExceptionsTestCase {
 	}
 
 	
-	@Test public void test_agent_1_1() throws Exception {
-		Prolog engine = new Prolog();
-		String goal = "catch(agent(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
-		Solution info = engine.solve(goal);
-		assertTrue(info.isSuccess());
-		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("agent", new Var("X"))));
-		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
-        assertEquals(1, argNo.intValue());
-	}
+//	@Test public void test_agent_1_1() throws Exception {
+//		Prolog engine = new Prolog();
+//		String goal = "catch(agent(X), error(instantiation_error, instantiation_error(Goal, ArgNo)), true).";
+//		Solution info = engine.solve(goal);
+//		assertTrue(info.isSuccess());
+//		Struct g = (Struct) info.getTerm("Goal");
+//		assertTrue(g.isEqual(new Struct("agent", new Var("X"))));
+//		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
+//        assertEquals(1, argNo.intValue());
+//	}
 
 	
-	@Test public void test_agent_1_2() throws Exception {
-		Prolog engine = new Prolog();
-		String goal = "catch(agent(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
-		Solution info = engine.solve(goal);
-		assertTrue(info.isSuccess());
-		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g.isEqual(new Struct("agent", new NumberTerm.Int(1))));
-		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
-        assertEquals(1, argNo.intValue());
-		Struct validType = (Struct) info.getTerm("ValidType");
-		assertTrue(validType.isEqual(new Struct("atom")));
-		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
-        assertEquals(1, culprit.intValue());
-	}
+//	@Test public void test_agent_1_2() throws Exception {
+//		Prolog engine = new Prolog();
+//		String goal = "catch(agent(1), error(type_error(ValidType, Culprit), type_error(Goal, ArgNo, ValidType, Culprit)), true).";
+//		Solution info = engine.solve(goal);
+//		assertTrue(info.isSuccess());
+//		Struct g = (Struct) info.getTerm("Goal");
+//		assertTrue(g.isEqual(new Struct("agent", new NumberTerm.Int(1))));
+//		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
+//        assertEquals(1, argNo.intValue());
+//		Struct validType = (Struct) info.getTerm("ValidType");
+//		assertTrue(validType.isEqual(new Struct("atom")));
+//		NumberTerm.Int culprit = (NumberTerm.Int) info.getTerm("Culprit");
+//        assertEquals(1, culprit.intValue());
+//	}
 
 	
 	@Test public void test_agent_2_1() throws Exception {
@@ -138,8 +138,7 @@ public class BasicPrologLibExceptionsTestCase {
 		Solution info = engine.solve(goal);
 		assertTrue(info.isSuccess());
 		Struct g = (Struct) info.getTerm("Goal");
-		assertTrue(g
-				.isEqual(new Struct("agent", new Var("X"), new Struct("a"))));
+		assertTrue(g.isEqual(new Struct("agent", new Var("X"), new Struct("a"))));
 		NumberTerm.Int argNo = (NumberTerm.Int) info.getTerm("ArgNo");
         assertEquals(1, argNo.intValue());
 	}

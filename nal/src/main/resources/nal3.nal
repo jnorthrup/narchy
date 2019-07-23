@@ -11,6 +11,9 @@
 (P --> M), (S --> M), --isVar(P), --isVar(S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,  polarizeBelief(S)) --> M), (Punctuation:AskAll, Time:Compose)
         //neqRoot
 
+    (M --> P), (M --> S), --isVar(P), --isVar(S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- unisubst((M --> P), S, P, novel), (Punctuation:AskAll, Time:Compose)
+    (P --> M), (S --> M), --isVar(P), --isVar(S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- unisubst((P --> M), S, P, novel), (Punctuation:AskAll, Time:Compose)
+
     //(P --> M), (S --> M), --isVar(M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized, Time:Compose)
     //(P --> M), (S --> M), --isVar(M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:UnionDepolarized, Time:Compose)
 
