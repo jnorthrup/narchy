@@ -9,135 +9,93 @@ import static nars.time.Tense.ETERNAL;
 
 public class TruthIntegration {
 
-    public static double eviAvg(Task t, int dur) {
-        return eviAvg(t, t.start(), t.end(), dur);
-    }
+	public static double eviAvg(Task t, float dur) {
+		return eviAvg(t, t.start(), t.end(), dur);
+	}
 
-    public static double eviAvg(Task t, long start, long end, float dur) {
-        long range = start == ETERNAL ? 1 : 1 + (end - start);
-        return evi(t, start, end, dur) / range;
-    }
+	public static double eviAvg(Task t, long start, long end, float dur) {
+		long range = start == ETERNAL ? 1 : 1 + (end - start);
+		return evi(t, start, end, dur) / range;
+	}
 
-    public static double evi(Task t) {
-        return evi(t, 0);
-    }
+	public static double evi(Task t) {
+		return evi(t, 0);
+	}
 
-    private static double evi(Task t, int dur) {
-        return evi(t, t.start(), t.end(), dur);
-    }
-
-
-
-    /**
-     * convenience method for selecting evidence integration strategy
-     * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
-     * if qStart==qEnd then it is a point sample
-     */
-    public static double evi(Task t, long qStart, long qEnd, float dur) {
-
-        assert(qStart != ETERNAL && qStart <= qEnd);
-
-        if (qStart == qEnd) {
-            return t.evi(qStart, dur); //point
-        } else {
-            //range
-            long tStart = t.start();
-            double evi = t.evi();
-            if (tStart == ETERNAL) {
-                //eternal task
-                long range = (qEnd - qStart + 1);
-                return evi * range;
-            } else {
-                return eviIntegrate(evi, dur, qStart, qEnd, tStart, t.end()); //temporal task
-            }
-        }
-    }
-
-    /** allows ranking task by projected evidence strength, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation */
-    public static double eviFast(Task t, long qStart, long qEnd) {
-        long range = (qEnd - qStart + 1);
-        long tStart = t.start();
-        double tEvi = t.evi();
-        if (tStart == ETERNAL) {
-            return tEvi * range;
-        } else {
-            return tEvi * Math.min(range, t.range()) / (1 + Math.log(1 + t.minTimeTo(qStart, qEnd)));
-        }
-    }
-
-    private static double eviIntegrate(double evi, float dur, long qStart, long qEnd, long tStart, long tEnd) {
-
-        EvidenceEvaluator ee = EvidenceEvaluator.of(tStart, tEnd, evi, dur);
-
-        if (tStart <= qStart && tEnd >= qEnd) {
-
-            //task contains question
-            return ee.integrate2(qStart, qEnd);
-
-            //return eviInteg(t, dur, qStart, qEnd);
-            //return (qEnd - qStart) * t.evi(); //fast, assumes task evi is uniform between the end-points:
-         } else if (LongInterval.intersectsRaw(tStart, tEnd, qStart, qEnd)) {
-
-            if (qStart <= tStart && qEnd >= tEnd) {
-                //question contains task
-
-//                if (qStart == tStart) {
-//                    //HACK collapse point
-//                    return LongFloatTrapezoidalIntegrator.sumSort(ee,
-//                           qStart,
-//                            tStart, tEnd,   //internal to task.  supersample not necessary unless task is not uniform
-//                            Math.min(tEnd + 1, qEnd),//task edge supersample
-//                            (tEnd + qEnd) / 2, //supersample
-//                            qEnd);
-//
-//                } else {
-                //supersample
-                //task rising edge supersample
-                //internal to task.  supersample not necessary unless task is not uniform
-                //task falling edge supersample
-                //supersample
-                return ee.integrateN(qStart, Math.min(qStart, (qStart + tStart) / 2), Math.max(qStart, tStart - 1), tStart, tEnd, Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd + qEnd) / 2), qEnd);
-                //                }
-
-            } else {
-                //MESSY INTERSECTION
-                if (qStart <= tStart && qEnd >= tEnd) {
-                    //ends before the task
-                    //supersample
-                    //task rising edge supersample
-                    return ee.integrateN(qStart, (qStart+tStart)/2, Math.max(qStart, tStart - 1), tStart, qEnd);
-
-                } else if (qStart >= tStart && qEnd <= tEnd) {
-                    //starts before the task and ends in it
-                    //supersample
-                    //task rising edge supersample
-                    return ee.integrateN(qStart, (qStart+tStart)/2, Math.max(qStart, tStart - 1), tStart, qEnd);
-                } else if (qStart >= tStart && qStart <= tEnd && qEnd >= tEnd) {
-                    //tstart, qstart, qend
-                    //finishes after the task
-                    //task falling edge supersample
-                    //supersample
-                    return ee.integrateN(qStart, tEnd, Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd+qEnd)/2), qEnd);
-                } else { //if (tStart >= qStart && qEnd <= tEnd) {
-                    //assert(tStart >= qStart && qEnd <= tEnd);
-                    //qStart, tstart, qend
-                    //supersample
-                    return ee.integrateN(qStart, (qStart+tStart)/2, tStart, qEnd);
-                } /*else
-                    throw new WTF();*/
+	private static double evi(Task t, float dur) {
+		return evi(t, t.start(), t.end(), dur);
+	}
 
 
-            }
-        } else {
-            //DISJOINT
+	/**
+	 * convenience method for selecting evidence integration strategy
+	 * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
+	 * if qStart==qEnd then it is a point sample
+	 */
+	public static double evi(Task t, long qStart, long qEnd, float dur) {
 
-            //entirely before, or after
-            //return eviInteg(t, dur, qStart, qEnd);
+		assert (qStart != ETERNAL && qStart <= qEnd);
 
-            //supersample
-            return ee.integrate3(qStart, (qStart + qEnd) / 2, qEnd);
-        }
-    }
+		if (qStart == qEnd) {
+			return t.evi(qStart, dur); //point
+		} else {
+			//range
+			long tStart = t.start();
+			double evi = t.evi();
+			if (tStart == ETERNAL) {
+				//eternal task
+				long range = (qEnd - qStart + 1);
+				return evi * range;
+			} else {
+				return eviIntegrate(evi, dur, qStart, qEnd, tStart, t.end()); //temporal task
+			}
+		}
+	}
+
+	/**
+	 * allows ranking task by projected evidence strength, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation
+	 */
+	public static double eviFast(Task t, long qStart, long qEnd) {
+		long range = (qEnd - qStart + 1);
+		long tStart = t.start();
+		double tEvi = t.evi();
+		if (tStart == ETERNAL) {
+			return tEvi * range;
+		} else {
+			return tEvi * Math.min(range, t.range()) / (1 + Math.log(1 + t.minTimeTo(qStart, qEnd)));
+		}
+	}
+
+	private static double eviIntegrate(double evi, float dur, long qs, long qe, long ts, long te) {
+
+		EvidenceEvaluator e = EvidenceEvaluator.of(ts, te, evi, dur);
+
+		if (!LongInterval.intersectsRaw(ts, te, qs, qe)) {
+			//DISJOINT - entirely before, or after
+			return e.integrate3(qs, (qs + qe) / 2, qe);
+		}
+
+		if (ts <= qs && te >= qe) {
+			//task contains question
+			return e.integrate2(qs, qe);
+		}
+
+		if (qs <= ts && qe >= te) {
+			//question contains task
+			//return e.integrateN(qs, Math.min(qs, (qs + ts) / 2), Math.max(qs, ts - 1), ts, te, Math.min(te + 1, qe), Math.max(qe, (te + qe) / 2), qe);
+			return e.integrateN(qs, (qs + ts) / 2, ts, te, (te + qe) / 2, qe);
+		}
+
+		if (qs >= ts && qs <= te) {
+			//question finishes after task
+			//return e.integrateN(qs, te, Math.min(te + 1, qe), (te + qe) / 2, qe);
+			return e.integrateN(qs, te, (te + qe) / 2, qe);
+		} else {
+			//question starts before task
+			return e.integrateN(qs, (qs + ts) / 2, ts, qe);
+		}
+
+	}
 
 //    private static float eviInteg(Task t, int dur, long... when) {
 //        if (when.length == 0)
