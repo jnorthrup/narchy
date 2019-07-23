@@ -22,7 +22,7 @@ public final class NotEqualConstraint extends RelationConstraint {
     }
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+    protected RelationConstraint newMirror(Variable newX, Variable newY) {
         return new NotEqualConstraint(newX, newY);
     }
 
@@ -178,7 +178,7 @@ public final class NotEqualConstraint extends RelationConstraint {
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+        protected RelationConstraint newMirror(Variable newX, Variable newY) {
             return new SubCountEqual(newX, newY);
         }
 

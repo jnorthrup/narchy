@@ -209,7 +209,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
             }
             px = x;
         }
-        return u!=null ? u : t;
+        return u;
     }
 
     private Term resolve(Term _x) {

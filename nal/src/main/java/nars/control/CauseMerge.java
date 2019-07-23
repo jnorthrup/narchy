@@ -129,13 +129,10 @@ public enum CauseMerge {
             //quick test for all being equal
             boolean allEqual = true;
             for (int i = 1; i < ss; i++) {
-                if (!(allEqual &= Arrays.equals(s[i - 1], s[i])))
+                if (!(allEqual = Arrays.equals(s[i - 1], s[i])))
                     break;
             }
-            if (allEqual)
-                y = s[0];
-            else
-                y = apply(capacity, s);
+            y = allEqual ? s[0] : apply(capacity, s);
         }
 
         return limit(y, capacity);
@@ -145,8 +142,8 @@ public enum CauseMerge {
         short[] a = x[0].why();
         short[] y;
         switch (x.length) {
-            case 0:
-                throw new NullPointerException();
+//            case 0:
+//                throw new NullPointerException();
             case 1:
                 y = a;
                 break;

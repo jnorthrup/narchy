@@ -44,10 +44,8 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
             default: {
                 FasterList<PREDICATE<X>> pp = new FasterList<>(p);
 
-                boolean modified;
 
                 restart: do {
-                    modified = false;
                     int ppp = pp.size();
                     for (int i = 0; i < ppp; i++) {
                         if (pp.get(i).reduceIn(pp)) {
@@ -56,7 +54,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
                             continue restart; //modified
                         }
                     }
-                } while (modified && pp.size() > 1);
+                } while (false); //pp.size() > 1);
 
                 return AND.the(pp);
             }

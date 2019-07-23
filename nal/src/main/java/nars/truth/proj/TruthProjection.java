@@ -190,7 +190,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             }
             if (remain == 1) {
                 //throw new WTF();
-                return ((e == null) && needStamp) ? Stamp.toMutableSet(firstValid().task) : e;
+                return needStamp ? Stamp.toMutableSet(firstValid().task) : null;
             }
 
             //optimized special case

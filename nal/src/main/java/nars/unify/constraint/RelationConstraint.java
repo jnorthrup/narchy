@@ -79,7 +79,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+        protected RelationConstraint newMirror(Variable newX, Variable newY) {
             return new NegRelationConstraint(this);
             //return new NegRelationConstraint(r.mirror());
         }

@@ -281,35 +281,19 @@ public enum ConjSeq { ;
 //        }
         int lr = left.compareTo(right);
 
-        if (lr!=0) {
-            //not equal
-            if (dt == 0 || dt == DTERNAL) {
-                if (left.equalsNeg(right))
-                    return False; //contradiction
-            }
-        }
 
         if (lr > 0) {
-            if (dt != DTERNAL)
-                dt = -dt;
+            dt = -dt;
             Term t = right;
             right = left;
             left = t;
         } else if (lr == 0) {
             //equal
-            if (dt == 0 || dt == DTERNAL) {
-                //parallel duplicate
-                return left;
-            } else {
-                //sequence of repeating terms
-                right = left; //share identity
-                if (dt < 0)
-                    dt = Math.abs(dt); //use positive dt only
-            }
+            //sequence of repeating terms
+            right = left; //share identity
+            if (dt < 0)
+                dt = Math.abs(dt); //use positive dt only
         }
-
-        if (dt == 0)
-            dt = DTERNAL; //HACK
 
         return B.newCompound(CONJ, dt, left, right);
 

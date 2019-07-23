@@ -507,7 +507,7 @@ public class ConjTree implements ConjBuilder {
     public boolean removeAll(Term term) {
         boolean removed = removeParallel(term);
 
-        if (seq != null) if (!removed) removed |= seq.countWith(ConjTree::removeAll, term) > 0;
+        if (seq != null) if (!removed) removed = seq.countWith(ConjTree::removeAll, term) > 0;
         else
             seq.forEachWith(ConjTree::removeAll, term);
 
@@ -519,8 +519,8 @@ public class ConjTree implements ConjBuilder {
             throw new UnsupportedOperationException();
 
         boolean removed = false;
-        if (term instanceof Neg) removed |= negRemove(term);
-        else removed |= posRemove(term);
+        if (term instanceof Neg) removed = negRemove(term);
+        else removed = posRemove(term);
         return removed;
     }
 

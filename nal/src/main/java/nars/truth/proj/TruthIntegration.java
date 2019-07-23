@@ -119,7 +119,7 @@ public class TruthIntegration {
                     //supersample
                     return ee.integrateN(qStart, tEnd, Math.min(tEnd + 1, qEnd), Math.max(qEnd, (tEnd+qEnd)/2), qEnd);
                 } else { //if (tStart >= qStart && qEnd <= tEnd) {
-                    assert(tStart >= qStart && qEnd <= tEnd);
+                    //assert(tStart >= qStart && qEnd <= tEnd);
                     //qStart, tstart, qend
                     //supersample
                     return ee.integrateN(qStart, (qStart+tStart)/2, tStart, qEnd);

@@ -577,7 +577,7 @@ public abstract class Unify extends Versioning<Term> {
         if (y == null)
             return new TermList(Bool.Null); //HACK
 //        if (y!=x && y!=null) {
-        if (y!=null && y!=x) {
+        if (y != x) {
             return y instanceof TermList ? (TermList) y : y.toList();
         } else
             return null;

@@ -130,7 +130,7 @@ public class Conceptualization {
 
             int dt = xo.temporal ? XTERNAL : DTERNAL;
 
-            if (x instanceof Compound && x.op() == CONJ) {
+            if (x.op() == CONJ) {
                 Term c = transformConj(x);
                 //if (c!=null)
                     //return c;

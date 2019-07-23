@@ -420,7 +420,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                                             removeNode(f, relinkIn::add, relinkOut::add);
                                             ff.remove();
                                             nte--;
-                                            stable &= nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
+                                            stable = nte <= 1; //try again if other nodes, because it may connect with other ranges further in the iteration
 
 
                                             break;
@@ -914,7 +914,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                     long es = e.start();
                     start = Math.min(es, start);
                     if (es!=ETERNAL) {
-                        range = range > 0 ? Math.min(e.end() - es, range) : 0;
+                        range = Math.min(e.end() - es, range);
                     }
                     if (!cc.add(es, e.id))
                         continue nextPermute;
@@ -1794,7 +1794,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         AbsoluteRange(Term t, long start, long end) {
             super(t, start, end);
-            if (end <= start || start == ETERNAL || start == TIMELESS || end == TIMELESS)
+            if (end <= start || start == ETERNAL || end == TIMELESS)
                 throw new RuntimeException("invalid AbsoluteRange start/end times: " + start + ".." + end);
             this.end = end;
         }
@@ -2058,7 +2058,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             EE = SS; //collapse eternity
                         }
 
-                        assert SS != ETERNAL;
                         if (dir) {
                             if (ss instanceof Absolute) {
                                 start = SS;

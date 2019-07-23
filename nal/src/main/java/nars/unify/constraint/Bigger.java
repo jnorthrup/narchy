@@ -4,7 +4,6 @@ import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
 
 /** TODO impl a generic volume comparison constraint to replace both Bigger and Smaller */
 public final class Bigger extends RelationConstraint {
@@ -18,7 +17,7 @@ public final class Bigger extends RelationConstraint {
 
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+    protected RelationConstraint newMirror(Variable newX, Variable newY) {
         return new Smaller(newX, newY, onlyIfConstant);
     }
 

@@ -20,7 +20,7 @@ import org.jetbrains.annotations.Nullable;
 
 
     @Override
-    protected @Nullable RelationConstraint newMirror(Variable newX, Variable newY) {
+    protected RelationConstraint newMirror(Variable newX, Variable newY) {
         return new Bigger(newX, newY, onlyIfConstant);
     }
 

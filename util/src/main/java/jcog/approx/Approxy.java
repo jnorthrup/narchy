@@ -1,5 +1,7 @@
 package jcog.approx;
 
+import jcog.Paper;
+import jcog.Skill;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.io.BinTxt;
@@ -30,7 +32,8 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 
 /** Approximate Computing Dynmaic Proxy and Runtime System */
-public class Approxy {
+@Paper
+@Skill("Approximate_computing") public class Approxy {
 
     /** inputs and outputs training data pairs; effectively a replay buffer of POJO vectors */
     public static class ActualExecution extends UnitPri {

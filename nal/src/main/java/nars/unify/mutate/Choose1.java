@@ -69,7 +69,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
                     return false; //impossible
                 } else if (a && !b) {
                     return x0.unify(aa, u) && ellipsis.unify(bb, u);
-                } else if (b && !a) {
+                } else if (/*b &&*/ !a) {
                     return x0.unify(bb, u) && ellipsis.unify(aa, u);
                 } //else: continue below
                 break;

@@ -135,7 +135,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         mergeCause(e, i, cMerge);
 
-        if (e instanceof Task) {
+        if (e != null) {
             if (updateCreationTime) {
                 long inCreation = i.creation();
                 if (inCreation > e.creation())
