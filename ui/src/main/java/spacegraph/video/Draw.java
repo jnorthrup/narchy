@@ -530,9 +530,9 @@ public enum Draw {
     }
 
 
-    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, boolean mipmap, float alpha) {
-        rectTex(gl, tt, x, y, z, w, h, repeatScale, alpha, mipmap, false);
-    }
+//    public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, boolean mipmap, float alpha) {
+//        rectTex(gl, tt, x, y, z, w, h, repeatScale, alpha, mipmap, false);
+//    }
 
     public static void rectTex(GL2 gl, Texture tt, float x, float y, float w, float h, float z, float repeatScale, float alpha, boolean mipmap, boolean inverted) {
 
@@ -545,7 +545,7 @@ public enum Draw {
         if (mipmap)  {
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
             gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
+//            gl.glTexParameterf(GL_TEXTURE_2D, GL_TEXTURE_MAX_ANISOTROPY_EXT, 16);
             //gl.glGenerateMipmap(GL_TEXTURE_2D); //<-- seems unnecessary
         } else {
             //gl.glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);

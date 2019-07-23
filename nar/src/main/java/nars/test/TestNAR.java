@@ -67,7 +67,7 @@ public class TestNAR {
     private boolean finished;
     private boolean exitOnAllSuccess = true;
 
-    private final static int maxSimilars = 2;
+    private final static int maxSimilars = 3;
     private boolean reportStats = false;
 
     public TestNAR(NAR nar) {

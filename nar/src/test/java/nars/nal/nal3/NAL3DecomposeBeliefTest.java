@@ -269,7 +269,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
     @Test
     void testDifferenceQuest() {
         test
-            .logDebug()
+
                 .termVolMax(8)
                 .goal("((x&&y)-->a)")
                 .mustQuest(cycles, "((x&&--y)-->a)")

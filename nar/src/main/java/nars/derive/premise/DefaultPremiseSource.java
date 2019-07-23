@@ -15,7 +15,7 @@ import java.util.function.Predicate;
 /** unbuffered */
 abstract public class DefaultPremiseSource extends PremiseSource {
 
-	public final IntRange premisesPerIteration = new IntRange(3, 1, 32);
+	public final IntRange premisesPerIteration = new IntRange(2, 1, 32);
 
 	public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
 

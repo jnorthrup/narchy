@@ -29,7 +29,7 @@ import nars.derive.timing.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
-import nars.memory.HijackMemory;
+import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -313,20 +313,20 @@ abstract public class GameX extends Game {
 
                         //new RadixTreeMemory(64*1024)
 //
-//                        ramGB >= 0.5 ?
-//                                new CaffeineMemory(
-//                                        //8 * 1024
-//                                        //16*1024
-//                                        //32*1024
-//                                        //64 * 1024
-//                                        //128*1024
-//                                        Math.round(ramGB * 128 * 1024)
-//                                )
-//                                :
-//                                CaffeineMemory.soft()
+                        ramGB >= 0.5 ?
+                                new CaffeineMemory(
+                                        //8 * 1024
+                                        //16*1024
+                                        //32*1024
+                                        //64 * 1024
+                                        //128*1024
+                                        Math.round(ramGB * 128 * 1024)
+                                )
+                                :
+                                CaffeineMemory.soft()
 
 
-                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 3)
+//                        new HijackMemory((int)Math.round(ramGB * 128 * 1024), 3)
                 )
                 .get(GameX::config);
     }

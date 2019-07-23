@@ -1,7 +1,7 @@
 package nars.eval;
 
 import jcog.data.iterator.CartesianIterator;
-import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.math.ShuffledPermutations;
 import jcog.util.ArrayUtil;
 import nars.NAR;
@@ -130,7 +130,7 @@ public class Evaluation extends Termerator {
      * fails fast if no known functors apply
      */
     protected boolean evalTry(Compound x, Evaluator e, boolean includeOriginal) {
-        FasterList<Term> c = e.clauses(x, this);
+        @Nullable ArrayHashSet<Term> c = e.clauses(x, this);
 
         if ((c == null || c.isEmpty()) && (termutes == null || termutes.isEmpty())) {
             if (includeOriginal)
@@ -141,7 +141,7 @@ public class Evaluation extends Termerator {
         return eval(e, x, c);
     }
 
-    private boolean eval(Evaluator e, final Term x, @Nullable FasterList<Term> clauses) {
+    private boolean eval(Evaluator e, final Term x, @Nullable ArrayHashSet<Term> clauses) {
 
         Term y = x;
 
@@ -221,7 +221,6 @@ public class Evaluation extends Termerator {
                     if (substing || (z != null && z != a )) {
                         mods++;
 
-                        Term y0 = y;
                         if (z != null) {
                             y = y.replace(a, z); //TODO replace only the first?
 
@@ -246,12 +245,12 @@ public class Evaluation extends Termerator {
 
                              int clausesRemain = clauses.size();
                              for (int i = 0, clausesSize = clausesRemain; i < clausesSize; i++) {
-                                 Term o = clauses.get(i);
+                                 Term ci = clauses.get(i);
                                  Term p;
                                  if (z != null)
-                                     p = o.replace(a, z);
+                                     p = ci.replace(a, z);
                                  else
-                                     p = o;
+                                     p = ci;
 
                                  Term q;
                                  if (substing)
@@ -259,15 +258,15 @@ public class Evaluation extends Termerator {
                                  else
                                      q = p;
 
-                                 if (o != q) {
+                                 if (ci != q) {
 
                                      if (q instanceof Compound) {
-                                         @Nullable FasterList<Term> qq = e.clauseFind((Compound) q);
-                                         if (!qq.isEmpty()) {
+                                         @Nullable ArrayHashSet<Term> qq = e.clauseFind((Compound) q);
+                                         if (qq!=null) {
                                              //merge new sub-clauses into the clause queue
                                              for (Term qqq : qq) {
                                                  if (!qqq.equals(a)) {
-                                                     if (clauses.addIfNotPresent(qqq))
+                                                     if (clauses.add(qqq))
                                                          clausesRemain++;
                                                  }
                                              }
@@ -275,7 +274,7 @@ public class Evaluation extends Termerator {
                                      }
 
 //                                     if (q==Null /*|| !Functor.isFunc(q)*/) {
-                                        clauses.setFast(i, null);
+                                        clauses.remove(ci);
                                         clausesRemain--;
 //                                     } else {
 //
@@ -290,7 +289,6 @@ public class Evaluation extends Termerator {
                              if (clausesRemain == 0)
                                  break main;
 
-                             clauses.removeNulls();
                          }
 
                         break; //changed so start again

@@ -35,7 +35,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class Premise /*implements Comparable<Premise>*/ {
 
-    public static final Premise[] EmptyArray = new Premise[0];
+//    public static final Premise[] EmptyArray = new Premise[0];
     /**
      * variable types unifiable in premise formation
      */
@@ -62,22 +62,22 @@ public class Premise /*implements Comparable<Premise>*/ {
     }
 
 
-    /**
-     * specially constructed hash that is useful for sorting premises by:
-     * a) task equivalency (hash)
-     * a) task target equivalency (hash)
-     * b) belief target equivalency (hash)
-     * <p>
-     * designed to maximize sequential repeat of derived task target
-     */
-    private static long premiseHash(Task task, Term beliefTerm) {
-        //task's lower 23 bits in bits 40..64
-        return (((long) task.hashCode()) << (64 - 24))
-                | //task target's lower 20 bits in bits 20..40
-                (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
-                | //termlink's lower 20 bits in bits 0..20
-                ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
-    }
+//    /**
+//     * specially constructed hash that is useful for sorting premises by:
+//     * a) task equivalency (hash)
+//     * a) task target equivalency (hash)
+//     * b) belief target equivalency (hash)
+//     * <p>
+//     * designed to maximize sequential repeat of derived task target
+//     */
+//    private static long premiseHash(Task task, Term beliefTerm) {
+//        //task's lower 23 bits in bits 40..64
+//        return (((long) task.hashCode()) << (64 - 24))
+//                | //task target's lower 20 bits in bits 20..40
+//                (((long) (task.term().hashCode() & 0b00000000000011111111111111111111)) << 20)
+//                | //termlink's lower 20 bits in bits 0..20
+//                ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
+//    }
 
     /**
      * resolve the most relevant belief of a given target/concept
@@ -118,11 +118,12 @@ public class Premise /*implements Comparable<Premise>*/ {
 
                 if (unifiedBeliefTerm != null) {
 
-                    unifiedBeliefTerm = d.random.nextBoolean() ?
-                            unifiedBeliefTerm
-                            :
-                            unifiedBeliefTerm.normalize();
+//                    unifiedBeliefTerm = //d.random.nextBoolean() ?
+////                            unifiedBeliefTerm
+////                            :
+//                            unifiedBeliefTerm.normalize();
 
+//                    beliefTerm = unifiedBeliefTerm.normalize();
                     beliefTerm = unifiedBeliefTerm;
 
                     beliefConceptUnifiesTaskConcept = true;

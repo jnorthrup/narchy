@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 450;
+    private final int cycles = 250;
 
     @Override
     protected NAR nar() {
@@ -550,7 +550,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction_viaMultiConditionalSyllogism() {
 
         test
-                .termVolMax(11).confMin(0.4f)
+                .termVolMax(11).confMin(0.44f)
                 .believe("(flying:robin ==> bird:robin)")
                 .believe("((swimmer:robin && flying:robin) ==> bird:robin)")
                 .mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f);
@@ -649,6 +649,7 @@ public class NAL5Test extends NALTest {
 
         
         test.termVolMax(16);
+        test.confMin(0.4f);
         test.believe("<(&&,(robin --> [chirping]),(robin --> [flying])) ==> a>");
         test.believe("<(robin --> [flying]) ==> (robin --> [withBeak])>", 0.9f, 0.9f);
         test.mustBelieve(cycles, "<(&&,(robin --> [chirping]),(robin --> [withBeak])) ==> a>",
@@ -774,6 +775,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction_3ary_some_inner_Neg_other() {
         test.termVolMax(12)
+            .confMin(0.4f)
                 .believe("((&&,x1,--x2,a) ==> c)")
                 .believe("((&&,y1,y2,a) ==> c)")
                 .mustBelieve(cycles, "((x1&&--x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -979,6 +981,7 @@ public class NAL5Test extends NALTest {
     void testImplQuestion_Induction() {
         test
                 .termVolMax(9)
+                .confMin(1f)
                 .input("y(z)?")
                 .input("(x($1) ==> y($1)).")
                 .mustQuestion(cycles, "x(z)")

@@ -16,7 +16,7 @@ import static nars.Op.GOAL;
  */
 abstract public class DecomposeTest extends NALTest {
 
-    public static final int cycles = 1500;
+    public static final int cycles = 500;
 
 
     @Override

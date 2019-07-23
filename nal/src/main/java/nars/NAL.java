@@ -267,7 +267,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     }
 
     /** TODO make these dynamic parameters of a NALTruth implementation */
-    public static class nal_truth {
+    @Deprecated public static class nal_truth {
 
 
         public static final boolean STRONG_COMPOSITION = false;
@@ -720,7 +720,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
+        public static final int TIMEGRAPH_ITERATIONS = 1;
 
 
         @Range(min = 0, max = 64)

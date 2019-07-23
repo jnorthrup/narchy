@@ -84,8 +84,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
 
                 //GLProfile.getGL2GL3()
-                //GLProfile.getMaximum(true)
-                GLProfile.getDefault()
+                GLProfile.getMaximum(true)
+                //GLProfile.getDefault()
                 //GLProfile.get(new String[] { GLProfile.GL2ES2 }, true)
                 //GLProfile.getMinimum(true)
 
@@ -468,7 +468,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                     updateWindow(w);
 
                     try {
-                        d.flushGLRunnables();
+//                        d.flushGLRunnables();
                         d.display();
                     } catch (GLException e) {
                         Throwable c = e.getCause();

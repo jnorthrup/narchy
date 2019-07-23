@@ -19,7 +19,7 @@ public class NAL6Test extends NALTest {
 
     @BeforeEach
     void setup() {
-        test.confTolerance(0.3f);
+        test.confTolerance(0.25f);
     }
 
     @Override
