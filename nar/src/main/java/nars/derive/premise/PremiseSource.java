@@ -260,8 +260,7 @@ abstract public class PremiseSource {
 
     public static class IndexExhaustive extends PremiseSource.TangentConceptCaching {
 
-        @Override
-        protected Term reverse(Term target, TaskLink link, Task task, TaskLinks links, Derivation d) {
+        @Nullable protected Term tangentRandom(Term target, Derivation d) {
             if (target instanceof Compound && target.hasAny(ATOM)) {
                 FasterList<Term> tangent = d.nar.concepts().filter(c -> {
 
@@ -269,9 +268,9 @@ abstract public class PremiseSource {
 
                     return
                         t instanceof Compound &&
-                        !t.equals(target) &&
-                        t.hasAny(ATOM) &&
-                        ((Compound) t).unifiesRecursively(target, z -> z.hasAny(ATOM));
+                            !t.equals(target) &&
+//                            t.hasAny(ATOM) &&
+                            ((Compound) t).unifiesRecursively(target, z -> z.hasAny(ATOM));
 
                 }).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
                 if (!tangent.isEmpty()) {
@@ -279,8 +278,22 @@ abstract public class PremiseSource {
                     return tangent.get(d.random);
                 }
             }
-            return super.reverse(target, link, task, links, d);
+            return null;
         }
+
+        @Override
+        protected @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
+            Term t = tangentRandom(target, d);
+            if (t!=null)
+                return t;
+            else
+                return super.forward(target, link, task, d);
+        }
+        //        @Override
+//        protected Term reverse(Term target, TaskLink link, Task task, TaskLinks links, Derivation d) {
+//
+//            return super.reverse(target, link, task, links, d);
+//        }
 
     }
 

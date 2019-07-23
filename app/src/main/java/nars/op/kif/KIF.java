@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.StringReader;
 import java.util.Set;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -75,7 +76,8 @@ public class KIF {
         }
     };
 
-    public Stream<Task> tasks() {
+
+	public Stream<Task> tasks() {
         return tasks.stream().map(Op::believe);
     }
 
@@ -114,11 +116,19 @@ public class KIF {
         this.kif = new KIFParser();
     }
 
+    public KIF(String s)  {
+        this();
+        kif.parse(new StringReader(s));
+        process();
+    }
+
     public KIF(InputStream is) throws IOException {
         this();
-
         kif.read(is);
+        process();
+    }
 
+    private void process() {
         KB kb = KBmanager.getMgr().addKB("preprocess");
 
         kif.formulaMap.values().forEach(xx -> {
@@ -135,12 +145,12 @@ public class KIF {
                 }
             });
 
-            
-            
+
+
             /*Unknown operators: {=>=466, rangeSubclass=5, inverse=1, relatedInternalConcept=7, documentation=128, range=29, exhaustiveAttribute=1, trichotomizingOn=4, subrelation=22, not=2, partition=12, contraryAttribute=1, subAttribute=2, disjoint=5, domain=102, disjointDecomposition=2, domainSubclass=9, <=>=70}*/
         });
 
-        
+
         fn.forEach((f, s) -> {
             int ds = s.domain.isEmpty() ? 0 : s.domain.keySet().max();
             Term[] vt = Util.map(0, ds, Term[]::new, i -> $.varDep(1 + i));
@@ -171,23 +181,23 @@ public class KIF {
         });
 
         if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
-            
+
             tasks.removeIf(belief -> {
                 if (belief.op() == INH) {
                     Term fn = belief.sub(1);
                     if (symmetricRelations.contains(fn)) {
-                        
+
                         Term ab = belief.sub(0);
                         if (ab.op() != PROD) {
-                            return false; 
+                            return false;
                         }
                         assert(ab.subs()==2);
                         Term a = ab.sub(0);
                         Term b = ab.sub(1);
                         Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
-                        
+
                         tasks.add(symmetric);
-                        return true; 
+                        return true;
                     }
                 }
                 return false;
@@ -205,7 +215,6 @@ public class KIF {
             }
             return false;
         });
-
     }
 
     private static Term atomic(String sx) {
@@ -230,18 +239,8 @@ public class KIF {
         return new KIF(new FileInputStream(filePath));
     }
 
-
-    public Term formulaToTerm(String sx, int level) {
-        sx = sx.replace("?", "#"); 
-
-        Formula f = new Formula(sx);
-
-        Term g = formulaToTerm(f, level);
-
-        return g;
-
-
-
+    Term formulaToTerm(String sx, int level) {
+        return formulaToTerm(new Formula(sx.replace("?", "#")), level);
     }
 
     private Term formulaToTerm(final Formula x, int level) {
@@ -677,7 +676,7 @@ public class KIF {
     private static class VarOnlySet extends ForwardingSet<Term> {
         private final MutableSet<Term> _aVars;
 
-        public VarOnlySet(MutableSet<Term> _aVars) {
+        VarOnlySet(MutableSet<Term> _aVars) {
             this._aVars = _aVars;
         }
 

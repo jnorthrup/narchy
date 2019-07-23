@@ -36,17 +36,17 @@
 
 
 
-  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:Task)
-//   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
-//  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
-//   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)
-      //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
-        //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
-      //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Question)
-    //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
+  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:Task)
+    //   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
+    //  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)    |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
+    //   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)
+          //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
+            //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
+          //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Question)
+        //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
 
 //chain:
-  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction)
+  (&&,(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
   //(&&,(X<->Y),(Y<->Z),A..+), (X<->Y) |- substitute((&&,A..+),X,Z,novel), (Belief:StructuralReduction, Goal:StructuralReduction)
 
 

@@ -36,7 +36,6 @@ class KIFTest {
                 "/home/me/sumo/ComputerInput.kif";
 
         //String O = "/home/me/d/sumo_merge.nal";
-        KIF k = KIF.file(I);
 //        k.tasks.forEach(bb -> System.out.println(bb));
 
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
@@ -56,6 +55,7 @@ class KIFTest {
         w.links.links.capacity(1024);
 
 
+        KIF k = KIF.file(I);
         n.input(k.tasks());
         n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
@@ -64,9 +64,42 @@ class KIFTest {
         w.clear();
         n.input("$1.0 (#1-->ComputerDisplay)!");
         n.run(1000);
-        w.links.links.print();
+//        w.links.links.print();
 
-        n.concepts().forEach(c -> System.out.println(c));
+//        n.concepts().forEach(c -> System.out.println(c));
+
+    }
+    @Test void test_TQG2() throws Narsese.NarseseException {
+        String t =
+            "(instance TheKB2_1 ComputerProgram)\n" +
+            "(instance Inconsistent Attribute)\n" +
+            "\n" +
+            "(=>\n" +
+            "  (and\n" +
+            "    (contraryAttribute ?ATTR1 ?ATTR2)\n" +
+            "    (property ?X ?ATTR1)\n" +
+            "    (property ?X ?ATTR2))\n" +
+            "  (property TheKB2_1 Inconsistent))\n" +
+            "\n" +
+            "(instance Entity2_1 Organism)\n" +
+            "(instance Entity2_2 Organism)\n" +
+            "(mother Entity2_1 Entity2_2)\n" +
+            "(father Entity2_1 Entity2_2)";
+        NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
+
+        new BasicDeriver(Derivers.nal(n, 6,8));
+
+        new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
+
+        KIF k = new KIF(t);
+//        n.log();
+        n.input(k.tasks());
+        n.input("$1.0 property(TheKB2_1, Inconsistent)?");
+        n.run(1000);
+
+//(query (property TheKB2_1 Inconsistent))
+//
+//(answer yes)
 
     }
 
