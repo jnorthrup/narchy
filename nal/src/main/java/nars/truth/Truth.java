@@ -325,7 +325,7 @@ public interface Truth extends Truthed {
         return negate ? neg() : this;
     }
 
-    public static @Nullable Truth negIf(@Nullable Truth t, boolean n) {
+    static @Nullable Truth negIf(@Nullable Truth t, boolean n) {
         return n && t!=null ? t.neg() : t;
     }
 

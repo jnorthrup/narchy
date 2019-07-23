@@ -58,10 +58,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
                 return overlay[0];
 
             BeliefTables b = new BeliefTables(overlay.length + 2);
-            for (BeliefTable o : overlay) {
-                //if (o!=null)
-                    b.add(o);
-            }
+            b.addAll(overlay);
             b.add(newTemporalTable(x, beliefOrGoal));
             b.add(newEternalTable(x));
             return b;

@@ -665,7 +665,7 @@ public class Grok implements Serializable {
                 }
 
                 
-                Pattern pattern2 = Pattern.compile("%\\{[^}+]\\}");
+                Pattern pattern2 = Pattern.compile("%\\{[^}+]}");
                 Matcher ma2 = pattern2.matcher(part);
 
                 if (ma2.find()) {
@@ -744,7 +744,7 @@ public class Grok implements Serializable {
         }
 
         static KeyValue convert(String key, Object value) {
-            String[] spec = key.split(";|:", 3);
+            String[] spec = key.split("[;:]", 3);
             try {
                 if (spec.length == 1) {
                     return new KeyValue(spec[0], value);
@@ -1322,7 +1322,7 @@ public class Grok implements Serializable {
             "%\\{" +
                     "(?<name>" +
                     "(?<pattern>[A-z0-9]+)" +
-                    "(?::(?<subname>[A-z0-9_:;\\/\\s\\.]+))?" +
+                    "(?::(?<subname>[A-z0-9_:;/\\s.]+))?" +
                     ')' +
                     "(?:=(?<definition>" +
                     "(?:" +
@@ -1330,7 +1330,7 @@ public class Grok implements Serializable {
                     ")+" +
                     ')' +
                     ")?" +
-                    "\\}");
+                    "}");
 
     private static final java.util.regex.Pattern NAMED_REGEX = java.util.regex.Pattern
             .compile("\\(\\?<([a-zA-Z][a-zA-Z0-9]*)>");

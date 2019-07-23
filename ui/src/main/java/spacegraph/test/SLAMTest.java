@@ -100,10 +100,10 @@ public class SLAMTest extends JPanel {
     AssociateThreeByPairs<BrightFeature> associateThree = new AssociateThreeByPairs<>(associate, BrightFeature.class);
     FastQueue<AssociatedTriple> associated = new FastQueue<>(AssociatedTriple.class, true);
     ThreeViewEstimateMetricScene structureEstimator = new ThreeViewEstimateMetricScene();
-    FastQueue<Point2D_F64> locations[] = new FastQueue[3];
-    FastQueue<BrightFeature> features[] = new FastQueue[3];
-    ImageDimension dimensions[] = new ImageDimension[3];
-    BufferedImage buff[] = new BufferedImage[3];
+	FastQueue<Point2D_F64>[] locations = new FastQueue[3];
+	FastQueue<BrightFeature>[] features = new FastQueue[3];
+	ImageDimension[] dimensions = new ImageDimension[3];
+	BufferedImage[] buff = new BufferedImage[3];
     // Rectify and remove lens distortion for stereo processing
     DMatrixRMaj rectifiedK = new DMatrixRMaj(3, 3);
     DMatrixRMaj rectifiedR = new DMatrixRMaj(3, 3);
@@ -576,7 +576,7 @@ public class SLAMTest extends JPanel {
         Se3_F64 view0_to_2 = w_to_0.invert(null).concat(w_to_2, null);
         Se3_F64 view1_to_2 = w_to_1.invert(null).concat(w_to_2, null);
 
-        Se3_F64 candidates[] = new Se3_F64[]{view0_to_1, view0_to_2, view1_to_2};
+		Se3_F64[] candidates = new Se3_F64[]{view0_to_1, view0_to_2, view1_to_2};
 
         int best = -1;
         double bestScore = Double.MAX_VALUE;

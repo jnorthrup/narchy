@@ -479,7 +479,7 @@ public class FormulaPreprocessor {
         } else if (form.isSimpleClause(kb)) {
             if (isNegativeLiteral == true)
                 return;
-            Pattern p = Pattern.compile("\\(instance (\\?[a-zA-Z0-9\\-_]+) ([\\?a-zA-Z0-9\\-_]+)");
+            Pattern p = Pattern.compile("\\(instance (\\?[a-zA-Z0-9\\-_]+) ([?a-zA-Z0-9\\-_]+)");
             Matcher m = p.matcher(form.theFormula);
             while (m.find()) {
                 String var = m.group(1);
@@ -496,7 +496,7 @@ public class FormulaPreprocessor {
                 varExplicitTypes.put(var, hs);
             }
 
-            p = Pattern.compile("\\(subclass (\\?[a-zA-Z0-9\\-_]+) ([\\?a-zA-Z0-9\\-]+)");
+            p = Pattern.compile("\\(subclass (\\?[a-zA-Z0-9\\-_]+) ([?a-zA-Z0-9\\-]+)");
             m = p.matcher(form.theFormula);
             while (m.find()) {
                 String var = m.group(1);

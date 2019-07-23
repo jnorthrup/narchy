@@ -271,7 +271,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
     private void readAttributeDefinition(int lineno, String line) throws ARFFParseError {
         Scanner s = new Scanner(line);
-        Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^\\}]+\\}|\\'[^\\']+\\'|\\\"[^\\\"]+\\\"");
+        Pattern p = Pattern.compile("[a-zA-Z_][a-zA-Z0-9_]*|\\{[^}]+}|'[^']+'|\"[^\"]+\"");
         String keyword = s.findInLine(p);
         String name = s.findInLine(p);
         String type = s.findInLine(p);

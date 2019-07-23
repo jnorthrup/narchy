@@ -46,8 +46,8 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
     protected RBranch(int cap) {
         super(new RNode[cap]);
-        this.size = 0; this.bounds = null; ;
-    }
+        this.size = 0; this.bounds = null;
+	}
     protected RBranch(int cap, RNode<X>[] data) {
         super(data.length == cap ? data : Arrays.copyOf(data, cap)); //TODO assert all data are unique; cache hash?
         //assert (cap >= 2);

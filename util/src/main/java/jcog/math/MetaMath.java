@@ -160,7 +160,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     private TextArea proof_text;
     private Checkbox[] logic_select = new Checkbox[FAMILIES];
 
-    public static void main(String argv[]) {
+    public static void main(String[] argv) {
         MetaMath m = new MetaMath();
         m.init();
         JFrame j = new JFrame();
@@ -397,7 +397,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         for (int i = 0; i < connectiveArr.length; i++) {
             connectiveLabels = connectiveLabels + connectiveArr[i].label + " ";
             // Only the valueOf will be used; the other characters are placeholders
-            connectiveLabelMap = connectiveLabelMap + String.valueOf((char) i)
+            connectiveLabelMap = connectiveLabelMap + (char) i
                     + connectiveArr[i].label;
         }
 
@@ -1583,7 +1583,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     currentState.pushAssertion(
                             currentState.hypothesisVec.get(-choice - 1),
                             // The proof is one step, just the hypothesis
-                            "$hyp" + String.valueOf(-choice));
+                            "$hyp" + -choice);
                 } else {
 
                     /* [sound] */ // Sound effects
@@ -1789,7 +1789,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // the names in the currentState display for best user info
         if (!axiomInfoModeFlag) {
             for (int i = 0; i < currentState.hypothesisVec.size(); i++) {
-                menuString = "1 $hyp" + String.valueOf(i + 1) + " " +
+                menuString = "1 $hyp" + (i + 1) + " " +
                         PrimFormula.getDisplay(
                                 currentState.hypothesisVec.get(i), false);
                 if (menuString.length() > MAX_AXIOM_CHOICE_LEN) {
@@ -1821,7 +1821,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     VariableName.init(); // Initialize so types don't get mixed up
                     // Show how much stack will grow, name of axiom, & the top of the
                     // stack that would result
-                    menuString = String.valueOf(1 - hyps)
+                    menuString = (1 - hyps)
                             + " " + axiomArr[i].label + " "
                             + PrimFormula.getDisplay(menuFormula, false);
                     if (menuString.length() > MAX_AXIOM_CHOICE_LEN) {
@@ -2469,7 +2469,7 @@ final class PrimFormula {
                 typeNum = MetaMath.connectiveArr[connNum].argtypes[i];
                 // Override the type of the first return char (could be
                 // a variable with type not yet known)
-                typesList = typesList + String.valueOf((char) typeNum)
+                typesList = typesList + (char) typeNum
                         + (new String(getTypes(formula, position))).substring(1);
             }
             return typesList;
@@ -2503,8 +2503,8 @@ final class PrimFormula {
         if ((short) (formula.charAt(start)) > 0) {
             // It's a variable
             if (raw) {
-                return "$" + Integer.toString((int) formula.charAt(start)) + ":"
-                        + Integer.toString((int) typesList.charAt(start));
+                return "$" + (int) formula.charAt(start) + ":"
+                        + (int) typesList.charAt(start);
             } else {
                 return VariableName.name((short) (formula.charAt(start)),
                         (short) typesList.charAt(start));
@@ -2622,7 +2622,7 @@ class Connective {
 
     // Get expression type number for input string; return -1 if bad
     private static short getExprType(String stype) {
-        String TYPE_LIST[] = {"wff", "var", "class", "digit"};
+		String[] TYPE_LIST = {"wff", "var", "class", "digit"};
         for (int i = 0; i < TYPE_LIST.length; i++) {
             if (TYPE_LIST[i].equals(stype)) return (short) i;
         }
@@ -2674,7 +2674,7 @@ class Axiom {
         stCopy.proofVec = trimmedProofVec;
         stCopy.normalize(); // Trim distinct vars
 
-        label = "user-" + String.valueOf(MetaMath.userTheorems.size() + 1);
+        label = "user-" + (MetaMath.userTheorems.size() + 1);
         assertion = stCopy.assertionVec.get(stCopy.assertionVec.size() - 1);
         proof = stCopy.proofVec.get(stCopy.proofVec.size() - 1);
         axiomHypothesisVec = stCopy.hypothesisVec;
@@ -2702,12 +2702,12 @@ class Axiom {
             token = englRPN.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
                 varNum = (short) Integer.parseInt(token.substring(1));
-                numRPNbuf.append(String.valueOf((char) varNum));
+                numRPNbuf.append((char) varNum);
             } else { // Connective
                 i = MetaMath.connectiveLabels.indexOf(" " + token + " ");
                 if (i == -1) System.out.println("Bug: Unknown connective " + token);
                 connNum = (short) (MetaMath.connectiveLabelMap.charAt(i));
-                numRPNbuf.append(String.valueOf((char) (-(connNum + 1))));
+                numRPNbuf.append((char) (-(connNum + 1)));
             }
             position0 = position + 1;
             position = englRPN.indexOf(' ', position0);
@@ -2728,8 +2728,7 @@ class Axiom {
         // Make string for axiom menu when no unification required
         VariableName.init();  // Reset variable vs. variable name & type
         // for PrimFormula.getDisplay(..)
-        menuEntry = String.valueOf(
-                1 - axiomHypothesisVec.size()) // Amt stack increases
+        menuEntry = (1 - axiomHypothesisVec.size()) // Amt stack increases
                 + " " + label + " "                              // Label
                 + PrimFormula.getDisplay(assertion, false);      // ASCII formula
         if (menuEntry.length() > MetaMath.MAX_AXIOM_CHOICE_LEN) {
@@ -2789,7 +2788,7 @@ class State {
                 proofInfoState.pushAssertion(
                         proofInfoState.hypothesisVec.get(hypNum),
                         // Special label for hypothesis step
-                        String.valueOf(proofInfoState.assertionVec.size() + 1) + " "
+                    (proofInfoState.assertionVec.size() + 1) + " "
                                 + label);
             } else {
                 // Find the axiom with this label
@@ -3110,7 +3109,7 @@ final class Unification {
         String newProof = testAxiom.label;
         if (proofInfoFlag) {
             // Format is step#, axiom used, steps used by hypotheses of axiom
-            newProof = String.valueOf(currentStateStackSize + 1) + " " + newProof;
+            newProof = (currentStateStackSize + 1) + " " + newProof;
             for (i = currentStateStackSize - 1;
                  i >= currentStateStackSize - axiomHypSize; i--) {
                 newProof = newProof + "," +
@@ -3202,7 +3201,7 @@ final class Unification {
                         return false;
                     }
                     // Spawn off a new pair
-                    dpair = String.valueOf((char) vsub) + String.valueOf((char) v1);
+                    dpair = String.valueOf((char) vsub) + (char) v1;
                     newDistinctVarVec.add(dpair);
                 }
                 // Remove substituted pair
@@ -3221,7 +3220,7 @@ final class Unification {
                 v1 = (short) (newDistinctVarVec.get(i).charAt(1));
                 if (v0 > v1) {
                     // Swap vars
-                    dpair = String.valueOf((char) v1) + String.valueOf((char) v0);
+                    dpair = String.valueOf((char) v1) + (char) v0;
                     newDistinctVarVec.set(i, dpair);
                 }
             }

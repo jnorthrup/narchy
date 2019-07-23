@@ -191,9 +191,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return this;
     }
 
-    final AbstractTaskLink tl;;
+    final AbstractTaskLink tl;
 
-    @Override
+	@Override
     public void update(Game g) {
         src.updateBitmap();
         super.update(g);

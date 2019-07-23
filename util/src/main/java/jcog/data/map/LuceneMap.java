@@ -229,11 +229,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
     public Object get(Object o) {
 
         Optional<V> val = this.lookup(o, true);
-        if (val.isPresent()) {
-            return val.get();
-        } else {
-            return null;
-        }
+        return val.orElse(null);
     }
 
     @Override
@@ -242,7 +238,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
         K k = (K) o;
         V v = (V) o2;
         this.save(k, v);
-        return val.isPresent() ? val.get() : null;
+        return val.orElse(null);
     }
 
     @Override

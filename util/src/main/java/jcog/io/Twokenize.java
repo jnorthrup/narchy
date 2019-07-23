@@ -77,14 +77,14 @@ public enum Twokenize {
             + "sl|sm|sn|so|sr|ss|st|su|sv|sy|sz|tc|td|tf|tg|th|tj|tk|tl|tm|tn|to|tp|tr|tt|tv|tw|tz|ua|ug|uk|us|uy|uz|"
             + "va|vc|ve|vg|vi|vn|vu|wf|ws|ye|yt|za|zm|zw)";    //TODO: remove obscure country domains?
     static final String urlStart2 = "\\b(?:[A-Za-z\\d-])+(?:\\.[A-Za-z0-9]+){0,3}\\." + "(?:" + commonTLDs + '|' + ccTLDs + ')' + "(?:\\." + ccTLDs + ")?(?=\\W|$)";
-    static final String urlBody = "(?:[^\\.\\s<>][^\\s<>]*?)?";
+    static final String urlBody = "(?:[^.\\s<>][^\\s<>]*?)?";
     static final String urlExtraCrapBeforeEnd = "(?:" + punctChars + '|' + entity + ")+?";
     static final String urlEnd = "(?:\\.\\.+|[<>]|\\s|$)";
     public static String url = "(?:" + urlStart1 + '|' + urlStart2 + ')' + urlBody + "(?=(?:" + urlExtraCrapBeforeEnd + ")?" + urlEnd + ')';
 
     
     static String timeLike = "\\d+(?::\\d+){1,2}";
-    static String numNum = "\\d+[\\.\\d+]";
+    static String numNum = "\\d+[.\\d+]";
     static String numberWithCommas = "(?:(?<!\\d)\\d{1,3},)+?\\d{3}" + "(?=(?:[^,\\d]|$))";
     static String numComb = "\\p{Sc}?\\d+(?:\\.\\d+)+%?";
 
@@ -217,7 +217,7 @@ public enum Twokenize {
     
     
     
-    static final String edgePunctChars = "'\"“”‘’«»{}\\(\\)\\[\\]\\*&"; 
+    static final String edgePunctChars = "'\"“”‘’«»{}\\(\\)\\[]\\*&";
     static final String edgePunct = '[' + edgePunctChars + ']';
     static final String notEdgePunct = "[a-zA-Z0-9]"; 
     static final String offEdge = "(^|$|:|;|\\s|\\.|,)";  

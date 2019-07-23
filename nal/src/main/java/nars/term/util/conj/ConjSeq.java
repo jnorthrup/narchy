@@ -38,8 +38,7 @@ public enum ConjSeq { ;
 
 
         TreeSet<Term> ordered = new TreeSet();
-        for (Term x : list)
-            ordered.add(x);
+        ordered.addAll(list);
 
         ByteAnonMap m = new ByteAnonMap(n);
         for (Term x : ordered)

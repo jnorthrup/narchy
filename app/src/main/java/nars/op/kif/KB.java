@@ -2664,7 +2664,7 @@ public class KB implements Serializable {
 
         if (REGEX_PATTERNS == null) {
             REGEX_PATTERNS = new HashMap<String, ArrayList>();
-            String[][] patternArray = { { "row_var", "\\@ROW\\d*", "0" },
+            String[][] patternArray = { { "row_var", "@ROW\\d*", "0" },
                     
                     
                     { "open_lit", "\\(\\w+\\s+\\?\\w+[a-zA-Z_0-9-?\\s]+\\)", "0" },

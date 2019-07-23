@@ -62,7 +62,7 @@ public class Triplet<F, S, T> {
         if (!Objects.equals(second, second)) {
             return false;
         }
-        return !(!Objects.equals(third, third));
+        return Objects.equals(third, third);
     }
 
     @Override

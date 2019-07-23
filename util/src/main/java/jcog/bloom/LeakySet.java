@@ -6,7 +6,7 @@ import jcog.bloom.hash.Hasher;
  * A {@link LeakySet} is a probabilistic data structure allowing for space-efficient membership tests on
  * large streams of data elements. Negative results are definitive but false positives might occur.
  */
-public interface LeakySet<E extends Object> {
+public interface LeakySet<E> {
 
     /**
      * Add an element to the filter.

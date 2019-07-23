@@ -33,8 +33,10 @@ public abstract class PreDerivation extends Unify {
 
 
     static final int MAX_FANOUT = 64;
-    /** post-derivation lookahead buffer */
-    final PostDerivable post[];
+	/**
+	 * post-derivation lookahead buffer
+	 */
+	final PostDerivable[] post;
 
 
     protected PreDerivation(@Nullable Op type, Random random, int stackMax) {

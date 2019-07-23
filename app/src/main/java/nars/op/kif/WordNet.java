@@ -121,7 +121,7 @@ public class WordNet {
                 
                 "^\\+\\s(\\d\\d)\\s(\\d\\d)\\s?",
                 
-                "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
+                "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?&%\\S+[\\S\\s]+)$",
                 
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$",
                 
@@ -129,17 +129,17 @@ public class WordNet {
                 
                 "(\\S+)\\s+(\\S+)\\s+(\\S+)",
                 
-                "^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
+                "^([0-9]{8})([^|]+)\\|\\s([\\S\\s]+?)\\s(\\(?&%\\S+[\\S\\s]+)$",
                 
-                "^([0-9]{8})([^\\|]+)\\|\\s([\\S\\s]+)$",
+                "^([0-9]{8})([^|]+)\\|\\s([\\S\\s]+)$",
                 
                 "(\\S+)\\s+(\\S+)",
                 
-                "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
+                "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+?)\\s(\\(?&%\\S+[\\S\\s]+)$",
                 
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$",
                 
-                "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)\\s(\\(?\\&\\%\\S+[\\S\\s]+)$",
+                "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)\\s(\\(?&%\\S+[\\S\\s]+)$",
                 
                 "^([0-9]{8})([\\S\\s]+)\\|\\s([\\S\\s]+)$",
                 
@@ -147,19 +147,19 @@ public class WordNet {
                 
                 "([^%]+)%([^:]*):[^:]*:[^:]*:[^:]*:[^ ]* ([^ ]+) ([^ ]+) .*",
                 
-                "(\\w)\\'re",
+                "(\\w)'re",
                 
-                "(\\w)\\'m",
+                "(\\w)'m",
                 
-                "(\\w)n\\'t",
+                "(\\w)n't",
                 
-                "(\\w)\\'ll",
+                "(\\w)'ll",
                 
-                "(\\w)\\'s",
+                "(\\w)'s",
                 
-                "(\\w)\\'d",
+                "(\\w)'d",
                 
-                "(\\w)\\'ve"
+                "(\\w)'ve"
             };
 
     /**
@@ -1233,16 +1233,16 @@ public class WordNet {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        sentence = sentence.replaceAll("\\'", "");
+        sentence = sentence.replaceAll("'", "");
         sentence = sentence.replaceAll("\"", "");
         sentence = sentence.replaceAll("\\.", "");
-        sentence = sentence.replaceAll("\\;", "");
-        sentence = sentence.replaceAll("\\:", "");
+        sentence = sentence.replaceAll(";", "");
+        sentence = sentence.replaceAll(":", "");
         sentence = sentence.replaceAll("\\?", "");
-        sentence = sentence.replaceAll("\\!", "");
-        sentence = sentence.replaceAll("\\, ", " ");
-        sentence = sentence.replaceAll("\\,[^ ]", ", ");
-        sentence = sentence.replaceAll("  ", " ");
+        sentence = sentence.replaceAll("!", "");
+        sentence = sentence.replaceAll(", ", " ");
+        sentence = sentence.replaceAll(",[^ ]", ", ");
+        sentence = sentence.replaceAll(" {2}", " ");
         return sentence;
     }
 

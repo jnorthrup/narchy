@@ -100,9 +100,9 @@ public class RLBooster  {
 
         this.actions = g.actions().array();
         this.nothingAction = nothingAction;
-        this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * (actionDiscretization-1); /* pos/neg for each action */;
+        this.outD = (nothingAction ? 1 : 0) /* nothing */ + actions.length * (actionDiscretization-1); /* pos/neg for each action */
 
-        logger.info("{} {} in={}x{} out={}", agent, g, inD, history, outD);
+		logger.info("{} {} in={}x{} out={}", agent, g, inD, history, outD);
         assert(inD > 0);
         assert(outD > 0);
 

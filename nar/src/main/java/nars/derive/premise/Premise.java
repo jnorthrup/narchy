@@ -208,6 +208,7 @@ public class Premise /*implements Comparable<Premise>*/ {
     }
 
 
+    @Nullable
     private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
 //        long ts = task.start(), te;
@@ -247,10 +248,12 @@ public class Premise /*implements Comparable<Premise>*/ {
     }
 
     private long[] timeFocus(Term beliefTerm, Derivation d) {
+
         long[] l = d.deriver.timing.apply(d.what, task, beliefTerm);
-        if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL) {
+
+        if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
             Tense.dither(l, d.ditherDT);
-        }
+
         return l;
     }
 
@@ -307,10 +310,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 
     @Override
     public String toString() {
-        return "Premise(" +
-                task +
-                " * " + beliefTerm +
-                ')';
+        return "Premise(" + task + " * " + beliefTerm + ')';
     }
 
 

@@ -510,7 +510,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int midIndex = centerByIndex(startIndex, endIndex);
         if (n <= 2)
             return midIndex;
-        int v[] = new int[n];
+        int[] v = new int[n];
 
         for (int i = 0; i < n; i++) {
             v[i] = get(startIndex + i).volume();

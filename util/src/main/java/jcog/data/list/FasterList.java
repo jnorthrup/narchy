@@ -632,8 +632,7 @@ public class FasterList<X> extends FastList<X> {
         int l = x.length;
         if (l > 0) {
             ensureCapacityForAdditional(l);
-            for (X y : x)
-                add(y);
+            addAll(x);
         }
         return this;
     }

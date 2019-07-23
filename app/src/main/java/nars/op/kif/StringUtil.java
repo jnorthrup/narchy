@@ -422,7 +422,7 @@ public class StringUtil {
         Matcher m = null;
         if (StringUtil.emptyString(sentence))
             return sentence;
-        m = Pattern.compile("(\\w)\\'re").matcher(sentence);
+        m = Pattern.compile("(\\w)'re").matcher(sentence);
         
         while (m.find()) {
             
@@ -430,7 +430,7 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        m = Pattern.compile("(\\w)\\'m").matcher(sentence);
+        m = Pattern.compile("(\\w)'m").matcher(sentence);
         
         while (m.find()) {
             
@@ -438,7 +438,7 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        m = Pattern.compile("(\\w)n\\'t").matcher(sentence);
+        m = Pattern.compile("(\\w)n't").matcher(sentence);
         
         while (m.find()) {
             
@@ -446,7 +446,7 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        m = Pattern.compile("(\\w)\\'ll").matcher(sentence);
+        m = Pattern.compile("(\\w)'ll").matcher(sentence);
         
         while (m.find()) {
             
@@ -454,7 +454,7 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        m = Pattern.compile("(\\w)\\'s").matcher(sentence);
+        m = Pattern.compile("(\\w)'s").matcher(sentence);
         
         while (m.find()) {
             
@@ -462,7 +462,7 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        m = Pattern.compile("(\\w)\\'d").matcher(sentence);
+        m = Pattern.compile("(\\w)'d").matcher(sentence);
         
         while (m.find()) {
             
@@ -470,7 +470,7 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        m = Pattern.compile("(\\w)\\'ve").matcher(sentence);
+        m = Pattern.compile("(\\w)'ve").matcher(sentence);
         
         while (m.find()) {
             
@@ -478,16 +478,16 @@ public class StringUtil {
             sentence = m.replaceFirst(group);
             m.reset(sentence);
         }
-        sentence = sentence.replaceAll("\\'", "");
+        sentence = sentence.replaceAll("'", "");
         sentence = sentence.replaceAll("\"", "");
         sentence = sentence.replaceAll("\\.", "");
-        sentence = sentence.replaceAll("\\;", "");
-        sentence = sentence.replaceAll("\\:", "");
+        sentence = sentence.replaceAll(";", "");
+        sentence = sentence.replaceAll(":", "");
         sentence = sentence.replaceAll("\\?", "");
-        sentence = sentence.replaceAll("\\!", "");
-        sentence = sentence.replaceAll("\\, ", " ");
-        sentence = sentence.replaceAll("\\,[^ ]", ", ");
-        sentence = sentence.replaceAll("  ", " ");
+        sentence = sentence.replaceAll("!", "");
+        sentence = sentence.replaceAll(", ", " ");
+        sentence = sentence.replaceAll(",[^ ]", ", ");
+        sentence = sentence.replaceAll(" {2}", " ");
         return sentence;
     }
 

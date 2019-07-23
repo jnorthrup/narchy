@@ -374,7 +374,7 @@ public class MLP2 {
 			layer[0].out[i] = Input[i];
 
 		int nLayers = layer.length;
-		for (int i = 0; i < layer[nLayers - 1].size; i++) 
+		for (int i = 0; i < layer[nLayers - 1].size; i++)
 			Expected[i] = ExpectedOutput[i];
 		
 		for (int i = 0; i < nLayers - 1; i++) {
@@ -445,8 +445,8 @@ public class MLP2 {
 	        for (int sample = 0; sample < nSamples; sample++){
 	            for (int i = 0; i < layer[0].size; i++)
 			        layer[0].out[i] = Input[sample][i];
-		
-		        for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+		        for (int i = 0; i < layer[nLayers - 1].size; i++)
 			        Expected[i] = ExpectedOutput[sample][i];
 			        
 			    Perceptron();
@@ -497,8 +497,8 @@ public class MLP2 {
 			    layer[0].out[i] = Input[sample][i];
 			        
 			Perceptron();
-			
-			for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+			for (int i = 0; i < layer[nLayers - 1].size; i++)
 			    Expected[i] = ExpectedOutput[sample][i];
 			    
 			ReconstructionError += SquareError();
@@ -519,7 +519,7 @@ public class MLP2 {
 
 		int nLayers = layer.length;
 
-		for (int i = 0; i < layer[nLayers - 1].size; i++) 
+		for (int i = 0; i < layer[nLayers - 1].size; i++)
 			PredictedOutput[i] = layer[nLayers - 1].out[i];
 	}
 	
@@ -534,11 +534,11 @@ public class MLP2 {
 			layer[0].out[i] = Input[i];
 		
 		Perceptron();
-		
-		for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+		for (int i = 0; i < layer[nLayers - 1].size; i++)
 			PredictedOutput[i] = layer[nLayers - 1].out[i];
-			
-	    for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+	    for (int i = 0; i < layer[nLayers - 1].size; i++)
 		    Expected[i] = ExpectedOutput[i];
 		    
 		return SquareError();
@@ -556,8 +556,8 @@ public class MLP2 {
 			    layer[0].out[i] = Input[sample][i];
 		
 		    Perceptron();
-		
-		    for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+		    for (int i = 0; i < layer[nLayers - 1].size; i++)
 			    PredictedOutput[sample][i] = layer[nLayers - 1].out[i];
 	    }
 	}
@@ -574,11 +574,11 @@ public class MLP2 {
 			    layer[0].out[i] = Input[sample][i];
 		
 		    Perceptron();
-		
-		    for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+		    for (int i = 0; i < layer[nLayers - 1].size; i++)
 			    PredictedOutput[sample][i] = layer[nLayers - 1].out[i];
-			    
-			for (int i = 0; i < layer[nLayers - 1].size; i++) 
+
+			for (int i = 0; i < layer[nLayers - 1].size; i++)
 		        Expected[i] = ExpectedOutput[sample][i];
 		        
 		    ReconstructionError += SquareError();

@@ -48,7 +48,7 @@ public interface Termutator {
     };
 
     /** constant result for return from preprocess() call */
-    public static Termutator result(boolean b) {
+    static Termutator result(boolean b) {
         if (b)
             return Termutator.NullTermutator; //success
         else

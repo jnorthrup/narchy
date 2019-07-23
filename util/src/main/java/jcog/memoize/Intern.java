@@ -1053,7 +1053,7 @@ public final class Intern {
      * subsequence. Requires that the sequence be interned. Used for interning the repeated finding of
      * subsequences on the same sequence.
      */
-    private static final class SequenceAndIndices<T extends /*@Interned*/ Object> {
+    private static final class SequenceAndIndices<T /*@Interned*/> {
         public T seq;
         public int start;
         public int end;
@@ -1111,7 +1111,7 @@ public final class Intern {
      *
      * @see Hasher
      */
-    private static final class SequenceAndIndicesHasher<T extends /*@Interned*/ Object>
+    private static final class SequenceAndIndicesHasher<T /*@Interned*/>
             implements Hasher {
         @Override
         public boolean equal(Object a1, Object a2) {

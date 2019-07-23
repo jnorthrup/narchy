@@ -50,11 +50,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     Task[] EmptyArray = new Task[0];
     Logger logger = Log.logger(Task.class);
-    static final Term VAR_DEP_1 = $.varDep(1);
-    static final Term VAR_DEP_2 = $.varDep(2);
-    static final Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
-    static final Term VAR_INDEP_1 = $.varIndep(1);
-    static final Term VAR_INDEP_1_NEG = VAR_INDEP_1.neg();
+    Term VAR_DEP_1 = $.varDep(1);
+    Term VAR_DEP_2 = $.varDep(2);
+    Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
+    Term VAR_INDEP_1 = $.varIndep(1);
+    Term VAR_INDEP_1_NEG = VAR_INDEP_1.neg();
     /**
      * fast, imprecise sort.  for cache locality and concurrency purposes
      */
@@ -600,7 +600,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             Task.logger.error("{}->{} {}", t, x, ee);
     }
 
-    public static void fund(Task y, Task[] x, boolean priCopyOrMove) {
+    static void fund(Task y, Task[] x, boolean priCopyOrMove) {
         int volSum = Util.sum(TermedDelegate::volume, x);
         double volFactor =
                 Math.min(1, ((double)volSum) / y.volume() );

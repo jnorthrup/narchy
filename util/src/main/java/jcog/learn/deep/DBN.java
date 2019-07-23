@@ -1,6 +1,7 @@
 package jcog.learn.deep;
 
 import jcog.Util;
+import jcog.util.ArrayUtil;
 
 import java.util.Random;
 
@@ -59,7 +60,7 @@ public class DBN {
     }
 
     public void pretrain(double[][] train_X, double lr, int k, int epochs) {
-        double[] layer_input = new double[0];
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
         int prev_layer_input_size;
         double[] prev_layer_input;
 
@@ -92,9 +93,9 @@ public class DBN {
     }
 
     public void finetune(double[][] train_X, double[][] train_Y, double lr, int epochs) {
-        double[] layer_input = new double[0];
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
         
-        double[] prev_layer_input = new double[0];
+        double[] prev_layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
 
         for(int epoch=0; epoch<epochs; epoch++) {
             for(int n=0; n<N; n++) {
@@ -120,7 +121,7 @@ public class DBN {
     }
 
     public void predict(double[] x, double[] y) {
-        double[] layer_input = new double[0];
+        double[] layer_input = ArrayUtil.EMPTY_DOUBLE_ARRAY;
         
         double[] prev_layer_input = new double[n_ins];
         System.arraycopy(x, 0, prev_layer_input, 0, n_ins);
