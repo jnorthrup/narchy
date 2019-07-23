@@ -85,6 +85,8 @@ class KIFTest {
             "(instance Entity2_2 Organism)\n" +
             "(mother Entity2_1 Entity2_2)\n" +
             "(father Entity2_1 Entity2_2)";
+        //(query (property TheKB2_1 Inconsistent))
+        //(answer yes)
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
         new BasicDeriver(Derivers.nal(n, 6,8));
@@ -92,14 +94,45 @@ class KIFTest {
         new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
 
         KIF k = new KIF(t);
-//        n.log();
         n.input(k.tasks());
+
         n.input("$1.0 property(TheKB2_1, Inconsistent)?");
         n.run(1000);
 
-//(query (property TheKB2_1 Inconsistent))
-//
-//(answer yes)
+
+    }
+
+    @Test void test_TQG4() throws Narsese.NarseseException {
+        String t =
+            "(instance Entity4_1 Human)\n" +
+            "\n" +
+            "(instance DoingSomething4_1 IntentionalProcess)\n" +
+            "\n" +
+            "(agent DoingSomething4_1 Entity4_1)\n" +
+            "\n" +
+            "(=>\n" +
+            "  (and\n" +
+            "    (agent ?PROC ?AGENT)\n" +
+            "    (instance ?PROC IntentionalProcess))\n" +
+            "  (and\n" +
+            "    (instance ?AGENT CognitiveAgent)\n" +
+            "    (not\n" +
+            "      (Dead ?PROC ?AGENT ) )))";
+//            "(query (not (holdsDuring (WhenFn DoingSomething4-1) (attribute Entity4-1 Dead))))\n" +
+//            "(answer yes)\n";
+        NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
+
+        new BasicDeriver(Derivers.nal(n, 5,8));
+
+        new BasicDeriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
+        n.log();
+
+        KIF k = new KIF(t);
+        n.input(k.tasks());
+
+        n.input("$1.0 Dead(DoingSomething4_1,Entity4_1)?");
+        n.run(3000);
+
 
     }
 
