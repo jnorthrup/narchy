@@ -72,4 +72,12 @@ public final class Camera extends Ray3 {
         direction.addThis(vRotRadius);
         direction.normalizeThis();
     }
+
+    public boolean update(Input input, double CAMERA_EPSILON) {
+        vv3 cameraPos = position.clone(), cameraDir = direction.clone();
+        rotate(input.getDeltaMouseX() / 2.0, -input.getDeltaMouseY() / 2.0);
+        move(input.getKeyboardVector());
+
+        return !cameraPos.equals(position, CAMERA_EPSILON) || !cameraDir.equals(direction, CAMERA_EPSILON);
+    }
 }

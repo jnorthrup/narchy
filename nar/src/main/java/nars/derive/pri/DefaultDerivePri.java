@@ -153,8 +153,8 @@ public class DefaultDerivePri implements DerivePri {
         }
 
         double eParent =
-                //Math.max(eParentTask, eParentBelief);
-                eParentTask + eParentBelief;
+                Math.max(eParentTask, eParentBelief);
+                //eParentTask + eParentBelief;
         if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
@@ -163,7 +163,7 @@ public class DefaultDerivePri implements DerivePri {
 //            double cParent = w2cSafeDouble(eParent);
 //            double lossFactor = 1 - ((cParent - cDerived) / cParent);
 
-            float f = (float)(1 - ((eParent - eDerived) / eParent));
+            float f = (float) (1 - ((eParent - eDerived) / eParent));
 
             Util.assertUnitized(f);
             return Util.lerp(eviImportance.floatValue(), 1f, f);

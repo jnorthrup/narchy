@@ -13,7 +13,7 @@ final class Scene {
     private static final int MAX_REFLECTIONS = 3;
     static final double Epsilon = 0.000001;
 
-    private final Collection<RayTracer.Light> lights = new FasterList<>();
+    private final Collection<Light> lights = new FasterList<>();
     private final List<Entity> entities = new FasterList<>();
     public Camera camera;
 
@@ -118,7 +118,7 @@ final class Scene {
                                 break;
                         }
                     }
-                    lights.add(new RayTracer.Light(position, color));
+                    lights.add(new Light(position, color));
                     break;
                 }
             }
@@ -201,7 +201,7 @@ final class Scene {
         double intensityR = 0;
         double intensityG = 0;
         double intensityB = 0;
-        for (RayTracer.Light light : lights) {
+        for (Light light : lights) {
             vv3 lightVector = light.position.minus(collision.normal.position);
             double lightVectorLenSq = lightVector.lengthSquared();
             vv3 lightDirection = lightVector.normalizeThis();
@@ -335,4 +335,14 @@ final class Scene {
             return new vv3(parsedCoords[0], parsedCoords[1], parsedCoords[2]);
         }
     }
+
+	public static final class Light {
+		public final vv3 position;
+		public final int color;
+
+		public Light(vv3 position, int color) {
+			this.position = position;
+			this.color = color;
+		}
+	}
 }
