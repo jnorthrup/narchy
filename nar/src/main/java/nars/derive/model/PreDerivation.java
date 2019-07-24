@@ -2,7 +2,7 @@ package nars.derive.model;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
-import jcog.decide.Roulette;
+import jcog.decide.MutableRoulette;
 import nars.Op;
 import nars.derive.rule.DeriveAction;
 import nars.derive.rule.PostDerivable;
@@ -80,7 +80,8 @@ public abstract class PreDerivation extends Unify {
         switch (valid) {
             case 1:
                 //optimized 1-option case
-                while (post[lastValid].run()) { }
+                //while (post[lastValid].run()) { }
+                post[lastValid].run();
                 break;
             default:
                 if (valid < can.length) {
@@ -88,12 +89,15 @@ public abstract class PreDerivation extends Unify {
                     Arrays.sort(post, 0, can.length, sortByPri);
                 } //otherwise any order here is valid
 
-                int j;
-                do {
-                    j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);
-                } while (post[j].run());
+//                int j;
+//                do {
+//                    j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);
+//                } while (post[j].run());
 
-                //MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].run(post[i]));
+                float[] pri = new float[valid];
+                for (int i = 0; i < valid; i++)
+                    pri[i] = post[i].pri;
+                MutableRoulette.run(pri, d.random, wi -> 0, i -> post[i].run());
                 break;
         }
         return true;

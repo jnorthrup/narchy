@@ -9,8 +9,6 @@ public class PostDerivable {
 
     public final PreDerivation d;
 
-
-
     public float pri;
     public byte concPunc;
     public Truth concTruth;
@@ -20,14 +18,6 @@ public class PostDerivable {
 
     public PostDerivable(PreDerivation d) {
         this.d = d;
-//        this.d = d;
-//        this.c = c;
-//        punc = d.concPunc;
-//        t = d.concTruth;
-//        tf = d.truthFunction;
-//        single = d.concSingle;
-//        this.conclusion = cc;
-//        this.value = v + ( t != null ? t.conf() : 0 /* biased against questions */);
     }
 
     /** returns <= 0 for impossible */

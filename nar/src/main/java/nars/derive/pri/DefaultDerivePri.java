@@ -175,7 +175,7 @@ public class DefaultDerivePri implements DerivePri {
 
     @Override public float prePri(float priBase, Truth concTruth) {
         float boost = concTruth!=null ? (/*(concSingle ? 1 : 2) * */ concTruth.conf()) : 0; /* biased against questions */
-        //return p + boost;
+        //return priBase + boost;
         //return Math.max(ScalarValue.EPSILON, p * boost);
         return Util.or(priBase, boost);
     }
