@@ -11,7 +11,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.derive.model.Derivation;
-import nars.derive.model.PreDerivation;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.time.Tense;
@@ -351,9 +350,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 
             m.apply(d);
 
-            //System.out.println(m + " " + Arrays.toString(d.deriver.what(d)));
-
-            result = PreDerivation.run(d, deriveTTL) ? e.premiseFire : e.premiseUnderivable;
+            result = d.run(deriveTTL) ? e.premiseFire : e.premiseUnderivable;
 
             ttlUsed = Math.max(0, deriveTTL - d.ttl);
 

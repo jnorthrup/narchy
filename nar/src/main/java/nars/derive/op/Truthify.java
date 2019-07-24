@@ -141,8 +141,8 @@ public class Truthify extends AbstractPred<Derivation> {
                 t = null;
                 break;
 
-//            case 0:
-//                return false;
+            case 0:
+                return false;
 
             default:
                 throw new InvalidPunctuationException(punc);

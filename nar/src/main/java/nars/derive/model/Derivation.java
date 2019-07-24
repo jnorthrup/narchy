@@ -558,6 +558,7 @@ public class Derivation extends PreDerivation {
 
     private Derivation reset() {
         _task = _belief = null;
+        taskPunc = 0;
         parentCause = null;
         concTruth = null;
         taskTerm = beliefTerm = null;

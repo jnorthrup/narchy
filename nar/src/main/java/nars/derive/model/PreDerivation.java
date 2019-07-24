@@ -51,53 +51,52 @@ public abstract class PreDerivation extends Unify {
 
     public abstract ShortBuffer preDerive();
 
-    public static boolean run(Derivation d, final int deriveTTL) {
+
+    public boolean run(int deriveTTL) {
+
+        Derivation d = (Derivation) this; //HACK
 
         short[] can = d.deriver.what(d);
-
-        int n = can.length;
-        if (n == 0)
+        if (can.length == 0)
             return false;
 
         d.preReady();
 
-        d.runPostDerivable(d, can, deriveTTL);
-
-        return true;
-    }
-
-    void runPostDerivable(Derivation d, short[] can, int deriveTTL) {
-
-        d.ready(deriveTTL); //first come first serve, maybe not ideal
 
         DeriveAction[] branch = d.deriver.rules.branch;
         int valid = 0, lastValid = -1;
         for (int i = 0; i < can.length; i++) {
-            if ((post[i].priSet(branch[can[i]], d)) > 0) {
+            if ((post[i].priSet(branch[can[i]], d)) > Float.MIN_NORMAL) {
                 lastValid = i;
                 valid++;
             }
         }
+        if (valid == 0)
+            return false;
+
+        d.ready(deriveTTL); //first come first serve, maybe not ideal
 
 
         switch (valid) {
-            case 0: break;
             case 1:
                 //optimized 1-option case
-                //while (branch[can[lastValid]].run(post[lastValid])) { }
                 while (post[lastValid].run()) { }
                 break;
             default:
-                Arrays.sort(post, sortByPri);
-                int n = valid;
+                if (valid < can.length) {
+                    //sort the valid to the first slots for fastest roulette iteration on the contiguous valid subset
+                    Arrays.sort(post, 0, can.length, sortByPri);
+                } //otherwise any order here is valid
+
                 int j;
                 do {
-                    j = Roulette.selectRoulette(n, i -> post[i].pri, d.random);
+                    j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);
                 } while (post[j].run());
 
                 //MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].run(post[i]));
                 break;
         }
+        return true;
     }
 
     private static final Comparator<? super PostDerivable> sortByPri = (a, b)->{

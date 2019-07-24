@@ -33,26 +33,28 @@ public class PostDerivable {
     /** returns <= 0 for impossible */
     private float pri(DeriveAction a, Derivation d) {
 
-
         float p = a.pri(d);
-        if (p <= 0)
+        if (p <= Float.MIN_NORMAL || !a.truth.test(d))
             return 0;
-
-        if (!a.truth.test(d))
-            return 0;
-
-        this.action = a;
-        this.concTruth = d.concTruth;
-        this.concPunc = d.concPunc;
-        this.concSingle = d.concSingle;
-        this.truthFunction = d.truthFunction;
 
         return d.what.derivePri.prePri(p, concTruth);
     }
 
     public float priSet(DeriveAction a, Derivation d) {
         float p = pri(a, d);
-        this.pri = Math.max(0,p);
+        if ((this.pri = p) > Float.MIN_NORMAL) {
+            this.action = a;
+            this.concTruth = d.concTruth;
+            this.concPunc = d.concPunc;
+            this.concSingle = d.concSingle;
+            this.truthFunction = d.truthFunction;
+        } else {
+            this.action = null;
+            this.concTruth = null;
+            this.concPunc = 0;
+            this.concSingle = false;
+            this.truthFunction = null;
+        }
         return p;
     }
 
