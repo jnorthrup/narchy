@@ -154,6 +154,7 @@ public class DefaultDerivePri implements DerivePri {
 
         double eParent =
                 Math.max(eParentTask, eParentBelief);
+                //Util.mean(eParentTask, eParentBelief);
                 //eParentTask + eParentBelief;
         if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually

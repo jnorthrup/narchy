@@ -351,16 +351,18 @@ public class FZero extends GameX {
     private void initTankContinuous() {
 
         float res = 0.04f;
-        float powerScale = 0.1f;
+        float powerScale = 0.2f;
         float rotSpeed = 0.85f;
         final float[] left = new float[1];
         final float[] right = new float[1];
         float fwdSpeed = 75;
 
         final Atom TANK = Atomic.atom("tank");
+
+
         GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK, NAct.NEG)), (x) -> {
-            if (x <= 0.5f) return 0;
-            float power = 2 * (x - 0.5f) * powerScale;
+            if (x!=x || x <= 0.5f) x = 0.5f;
+            float power = (x - 0.5f) * powerScale;
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
@@ -368,8 +370,8 @@ public class FZero extends GameX {
         });
 
         GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK, NAct.POS)), (x) -> {
-            if (x <= 0.5f) return 0;
-            float power = 2 * (x - 0.5f) * powerScale;
+            if (x!=x || x <= 0.5f) x = 0.5f;
+            float power = (x - 0.5f) * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;

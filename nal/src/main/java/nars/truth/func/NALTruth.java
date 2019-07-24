@@ -235,7 +235,7 @@ public enum NALTruth implements TruthFunc {
 
     Conversion() {
         @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+        public Truth apply(@Nullable final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions.conversion(B, minConf);
         }
     },

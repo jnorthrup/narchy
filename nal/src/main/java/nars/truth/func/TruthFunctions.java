@@ -45,7 +45,7 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion
      */
     public static Truth conversion(Truth t, float minConf) {
-        float c = w2cSafe(t.freq() * t.conf());
+        float c = (float) w2cSafe(t.freq() * t.confDouble());
         return c >= minConf ? t(1, c) : null;
     }
 
