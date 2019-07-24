@@ -3,6 +3,10 @@
      (M --> C), M, is(C,"&&"), task("!")  |- (M-->negateRandomSubterm(C)), (Punctuation:Quest, Time:Task)
      (C --> M), M, is(C,"&&"), task("!")  |- (negateRandomSubterm(C)-->M), (Punctuation:Quest, Time:Task)
 
+
+//    (M --> P), (M --> S), --isVar(P), --isVar(S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- unisubst((M --> P), S, P, novel), (Punctuation:AskAll, Time:Compose)
+//    (P --> M), (S --> M), --isVar(P), --isVar(S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- unisubst((P --> M), S, P, novel), (Punctuation:AskAll, Time:Compose)
+
 ////composition on both sides of a statement:
 
 //    ((&,X,A..+) --> (&,Y,A..+)), (X --> Y), task("?") |- ((&,X,A..+) --> (&,Y,A..+)), (Belief:BeliefStructuralDeduction, Punctuation:Belief)

@@ -73,10 +73,11 @@ C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
       D, X, --isVar(X), has(D,"--")     |-   --conjAfter(D, --X),       (Goal:DeductionNN, Time:TaskEvent)
 
     //desire for sub-sequence leading to goal
-    G, C                    |-    conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
-    G, C, has(C,"--")       |-    conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
-        G, D, has(D,"--")   |-  --conjBefore(D, --G),  (Goal:DeductionNN, Time:TaskEvent)
-        G, D                |-  --conjBefore(D,   G),  (Goal:DeductionPN, Time:TaskEvent)
+    G, C                    |-  polarizeBelief(conjBefore(C, polarizeTask(G))),  (Goal:DeductionDepolarized, Time:TaskEvent)
+//    G, C                    |-    conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
+//    G, C, has(C,"--")       |-    conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
+//        G, D, has(D,"--")   |-  --conjBefore(D, --G),  (Goal:DeductionNN, Time:TaskEvent)
+//        G, D                |-  --conjBefore(D,   G),  (Goal:DeductionPN, Time:TaskEvent)
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case

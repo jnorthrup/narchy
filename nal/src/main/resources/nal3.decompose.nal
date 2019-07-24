@@ -9,6 +9,9 @@
 
 //NAL3 double premise decompose
 //  if (S --> M) is the case, and ((|,S,A..+) --> M) is not the case, then ((|,A..+) --> M) is not the case, hence Belief:DeductionPositiveNegativeNegative
+
+//    (M-->G), (M-->C), eventOf..                    |-  polarizeBelief((M-->conjWithout(C, polarizeTask(G)))),  (Goal:DeductionDepolarized, Time:TaskEvent)
+//    (G-->M), (C-->M)                    |-  polarizeBelief((conjWithout(C, polarizeTask(G))-->M)),  (Goal:DeductionDepolarized, Time:TaskEvent)
     (M --> G), (M --> C), eventOf(C,G)        |-    (M --> conjWithout(C,   G)), (Goal:DeductionPP, Time:Task)
     (M --> G), (M --> C), eventOfNeg(C,G)     |-    (M --> conjWithout(C, --G)), (Goal:DeductionNP, Time:Task)
         (M --> G), (M --> D), eventOfNeg(D,G) |-  --(M --> conjWithout(D, --G)), (Goal:DeductionNN, Time:Task)
