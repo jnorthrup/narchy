@@ -1,5 +1,6 @@
 package nars.subterm.util;
 
+import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -66,40 +67,30 @@ abstract public class TermMetadata implements Termlike {
         if (Image.imageNormalizable(x))
             return false;
 
-//        if (!x.hasVars())
-//            return true;
+        int vars = x.vars();
+        if (vars==0)
+            return true;
 
         //depth first traversal, determine if variables encountered are monotonically increasing
 
-        final int[] minID = {0};
-        final byte[] typeToMatch = {-1};
+        final ByteArrayList types = new ByteArrayList(vars);
         return x.recurseTermsOrdered(Term::hasVars, (v) -> {
-            if (v instanceof Variable) {
-                if (v instanceof NormalizedVariable) {
+            if (!(v instanceof Variable))
+                return true;
 
-                    NormalizedVariable nv = (NormalizedVariable) v;
-                    byte varID = nv.id();
-                    if (varID <= minID[0]) {
-                        //same order, ok
-                        byte type = nv.anonType();
-                        if (typeToMatch[0] == -1)
-                            typeToMatch[0] = type;
-                        else {
-                            return typeToMatch[0] == type; //same # differnt type, needs normalized
-                        }
-                    } else if (varID == minID[0] + 1) {
-                        //increase the order, ok, set new type
-                        typeToMatch[0] = nv.anonType();
-                        minID[0]++;
-                    } else {
-                        return false;
-                    }
-                } else {
-                    return false;
+            if (v instanceof NormalizedVariable) {
+                NormalizedVariable nv = (NormalizedVariable) v;
+                byte varID = nv.id();
+                int nTypes = types.size();
+                if (varID <= nTypes) {
+                    return types.get(varID-1) == nv.anonType();
+                } else if (varID == 1 + nTypes) {
+                    types.add(nv.anonType());
+                    return true;
                 }
             }
 
-            return true;
+            return false;
 
         }, null);
     }

@@ -42,7 +42,7 @@ class KIFTest {
 
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
-        new BasicDeriver(Derivers.nal(n, 1,8));
+        new BasicDeriver(Derivers.nal(n, 1,8, "motivation.nal"));
 
         new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
 

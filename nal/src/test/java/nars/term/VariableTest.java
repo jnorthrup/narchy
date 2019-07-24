@@ -6,8 +6,7 @@ import nars.term.atom.Atomic;
 import nars.term.util.transform.VariableTransform;
 import org.junit.jupiter.api.Test;
 
-import static nars.$.$;
-import static nars.$.$$;
+import static nars.$.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -161,4 +160,15 @@ public class VariableTest {
         assertEq("(_3(#1,_1) &&+1 _2(#1,?2))", y.normalize());
     }
 
+    @Test void testNormalizationComplex() {
+        assertEq("(#1,$2)", $$("(#1,$1)").normalize());
+        assertEq("(#1,?2)", $$("(#1,?1)").normalize());
+        assertEq("(#1,($2==>($2)))", $$("(#1,($1==>($1)))").normalize());
+        assertEq("(($1==>($1)),#2)", $$("(($1==>($1)),#1)").normalize());
+    }
+    @Test void testNormalizationComplex2() {
+        Term x = $$$("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#1}-->Investment))");
+        assertFalse(x.isNormalized());
+        assertEq("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#3}-->Investment))", x.normalize());
+    }
 }

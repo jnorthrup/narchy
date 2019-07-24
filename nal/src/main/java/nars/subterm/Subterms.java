@@ -1238,7 +1238,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms reversed() {
-        return subs() > 1 ? RemappedSubterms.reverse(this) : this;
+        return RemappedSubterms.reverse(this);
     }
 
 

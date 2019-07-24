@@ -162,7 +162,7 @@ public class FZero extends GameX {
         senseNumberDifferenceBi($.p(id,$.the("d"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
 
 
-        int angles = 6;
+        int angles = 8;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"),
                 a->$.inh(id, $.p($.the("ang"), $.the(a))));
         ang.resolution(r);
