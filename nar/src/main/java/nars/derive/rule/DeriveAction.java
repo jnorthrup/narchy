@@ -33,7 +33,7 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
      * compute probabilistic throttle value, in consideration of the premise's task and the punctuation outcome
      * with respect to the deriver's punctuation equalization
      */
-    public final float value(Derivation d) {
+    public final float pri(Derivation d) {
 
         byte punc = truth.preFilter(d);
         if (punc == 0)

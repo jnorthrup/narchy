@@ -2,8 +2,7 @@ package nars.derive.model;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
-import jcog.data.bit.MetalBitSet;
-import jcog.decide.MutableRoulette;
+import jcog.decide.Roulette;
 import nars.Op;
 import nars.derive.rule.DeriveAction;
 import nars.derive.rule.PostDerivable;
@@ -12,6 +11,8 @@ import nars.truth.Truth;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Random;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
@@ -52,79 +53,29 @@ public abstract class PreDerivation extends Unify {
 
     public static boolean run(Derivation d, final int deriveTTL) {
 
-        short[] maybe = d.deriver.what(d);
+        short[] can = d.deriver.what(d);
 
-        int n = maybe.length;
+        int n = can.length;
         if (n == 0)
             return false;
 
         d.preReady();
 
-        DeriveAction[] branch = d.deriver.rules.branch;
-
-        float[] pri;
-        short[] can;
-
-
-        float[] f = new float[n];
-        MetalBitSet toRemove = null;
-        for (int choice = 0; choice < n; choice++) {
-            float fc = branch[maybe[choice]].value(d);
-            if (fc <= 0) {
-                if (toRemove == null) toRemove = MetalBitSet.bits(n);
-                toRemove.set(choice);
-            }
-            f[choice] = fc;
-        }
-
-        if (toRemove == null) {
-            can = maybe; //all
-            pri = f;
-        } else {
-            int r = toRemove.cardinality();
-            if (r == n)
-                return false; //all removed; nothing remains
-            /*else if (r == n-1) {*/
-            //TODO all but one
-
-            int nn = n - r;
-
-            pri = new float[nn];
-            can = new short[nn];
-            int nc = 0;
-            for (int i = 0; i < n; i++) {
-                if (toRemove.getNot(i)) {
-                    pri[nc] = f[i];
-                    can[nc++] = maybe[i];
-                }
-            }
-        }
-
-
-        d.runPostDerivable(d, branch, pri, can, deriveTTL);
+        d.runPostDerivable(d, can, deriveTTL);
 
         return true;
     }
 
-//    static void runRoulette(Derivation d, DeriveAction[] branch, float[] pri, short[] can) {
-//        MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].test(d));
-//    }
-
-    void runPostDerivable(Derivation d, DeriveAction[] branch, float[] pri, short[] can, int deriveTTL) {
+    void runPostDerivable(Derivation d, short[] can, int deriveTTL) {
 
         d.ready(deriveTTL); //first come first serve, maybe not ideal
 
-        int n = can.length;
+        DeriveAction[] branch = d.deriver.rules.branch;
         int valid = 0, lastValid = -1;
         for (int i = 0; i < can.length; i++) {
-            PostDerivable p = post[i];
-            if (!p.set(branch[can[i]], d))
-                pri[i] = 0;
-            else {
-                if ((pri[i] = p.value(pri[i])) > 0) {
-                    lastValid = i;
-                    valid++;
-                }
+            if ((post[i].priSet(branch[can[i]], d)) > 0) {
+                lastValid = i;
+                valid++;
             }
         }
 
@@ -132,11 +83,28 @@ public abstract class PreDerivation extends Unify {
         switch (valid) {
             case 0: break;
             case 1:
-                branch[can[lastValid]].run(post[lastValid]);
+                //optimized 1-option case
+                //while (branch[can[lastValid]].run(post[lastValid])) { }
+                while (post[lastValid].run()) { }
                 break;
             default:
-                MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].run(post[i]));
+                Arrays.sort(post, sortByPri);
+                int n = valid;
+                int j;
+                do {
+                    j = Roulette.selectRoulette(n, i -> post[i].pri, d.random);
+                } while (post[j].run());
+
+                //MutableRoulette.run(pri, d.random, wi -> 0, i -> branch[can[i]].run(post[i]));
                 break;
         }
     }
+
+    private static final Comparator<? super PostDerivable> sortByPri = (a, b)->{
+        if (a==b) return 0;
+        int i = Float.compare(a.pri, b.pri);
+        if (i != 0) return -i;
+        else return Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+    };
+
 }

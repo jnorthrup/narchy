@@ -1,9 +1,7 @@
 package nars.derive.rule;
 
-import jcog.Util;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
-import nars.term.control.PREDICATE;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunc;
 
@@ -11,12 +9,14 @@ public class PostDerivable {
 
     public final PreDerivation d;
 
-    public PREDICATE<Derivation> conclusion;
 
+
+    public float pri;
     public byte concPunc;
     public Truth concTruth;
     public TruthFunc truthFunction;
     public boolean concSingle;
+    private DeriveAction action;
 
     public PostDerivable(PreDerivation d) {
         this.d = d;
@@ -30,32 +30,42 @@ public class PostDerivable {
 //        this.value = v + ( t != null ? t.conf() : 0 /* biased against questions */);
     }
 
-    public boolean set(DeriveAction a, Derivation d) {
-        if (a.truth.test(d)) {
-            this.conclusion = a.conclusion;
-            this.concTruth = d.concTruth;
-            this.concPunc = d.concPunc;
-            this.concSingle = d.concSingle;
-            this.truthFunction = d.truthFunction;
-            return true;
-        } else {
-            this.conclusion = null;
-            return false;
-        }
+    /** returns <= 0 for impossible */
+    private float pri(DeriveAction a, Derivation d) {
+
+
+        float p = a.pri(d);
+        if (p <= 0)
+            return 0;
+
+        if (!a.truth.test(d))
+            return 0;
+
+        this.action = a;
+        this.concTruth = d.concTruth;
+        this.concPunc = d.concPunc;
+        this.concSingle = d.concSingle;
+        this.truthFunction = d.truthFunction;
+
+        return d.what.derivePri.prePri(p, concTruth);
     }
 
-    @Deprecated public boolean apply(Derivation dd) {
-        dd.concTruth = concTruth;
-        dd.concPunc = concPunc;
-        dd.concSingle = concSingle;
-        dd.truthFunction = truthFunction;
+    public float priSet(DeriveAction a, Derivation d) {
+        float p = pri(a, d);
+        this.pri = Math.max(0,p);
+        return p;
+    }
+
+    @Deprecated public boolean apply(Derivation d) {
+        d.concTruth = concTruth;
+        d.concPunc = concPunc;
+        d.concSingle = concSingle;
+        d.truthFunction = truthFunction;
         return true;
     }
 
-    public float value(float p) {
-        float boost = concTruth!=null ? (/*(concSingle ? 1 : 2) * */ concTruth.conf()) : 0; /* biased against questions */
-        //return p + boost;
-        //return Math.max(ScalarValue.EPSILON, p * boost);
-        return Util.or(p, boost);
+
+    public final boolean run() {
+        return action.run(this);
     }
 }

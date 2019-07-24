@@ -2,6 +2,7 @@ package nars.derive.pri;
 
 import nars.Task;
 import nars.derive.model.Derivation;
+import nars.truth.Truth;
 
 /** stateless, storing any state information in the Derivation instance */
 public interface DerivePri {
@@ -28,4 +29,6 @@ public interface DerivePri {
         return 1; //flat
     }
 
+    /** derive action prioritization weight */
+	float prePri(float priBase, Truth concTruth);
 }

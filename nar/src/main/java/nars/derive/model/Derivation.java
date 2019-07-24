@@ -432,7 +432,7 @@ public class Derivation extends PreDerivation {
     /**
      * called after protoderivation has returned some possible Try's
      */
-    public void preReady() {
+    void preReady() {
 
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         if (eternalCompletely) {
@@ -443,7 +443,7 @@ public class Derivation extends PreDerivation {
         } else if ((_belief == null) || beliefStart == ETERNAL) {
             this.taskBelief_TimeIntersection[0] = taskStart;
             this.taskBelief_TimeIntersection[1] = taskEnd;
-        } else if (_belief != null) {
+        } else /*if (_belief != null)*/ {
             if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBelief_TimeIntersection)) {
                 this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = TIMELESS; //no intersection
             }
