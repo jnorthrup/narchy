@@ -45,6 +45,7 @@ import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -66,6 +67,7 @@ import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -547,8 +549,8 @@ abstract public class GameX extends Game {
 
         //tiered
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 16, 128, t->t.isInput()),
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 8, 64, t->!t.isInput())//t instanceof DerivedTask),
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->t.isInput())
+                ,new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->!t.isInput())//t instanceof DerivedTask),
                 //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
                 //, new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)

@@ -62,12 +62,7 @@ import static nars.term.atom.Bool.Null;
  *                                              NARquery
  *                                          Core Utility Class
  */
-public enum $ {
-    ;
-
-//    static {
-//        Thread.currentThread().setName("$");
-//    }
+public enum $ { ;
 
     static final Atom emptyQuote = (Atom) Atomic.the("\"\"");
     private static final Atomic DIV = $.the("div");
@@ -102,18 +97,11 @@ public enum $ {
     public static Atom quote(Object text) {
         String s = text.toString();
 
-        if (s.isEmpty())
-            return emptyQuote;
-        else
-            return (Atom) Atomic.the(Texts.quote(s));
+        return s.isEmpty() ? emptyQuote : (Atom) Atomic.the(Texts.quote(s));
     }
 
     public static Term[] the(String... id) {
-        int l = id.length;
-        Term[] x = new Term[l];
-        for (int i = 0; i < l; i++)
-            x[i] = Atomic.the(id[i]);
-        return x;
+        return Util.map(Atomic::the, new Term[id.length], id);
     }
 
     public static Atom the(char c) {

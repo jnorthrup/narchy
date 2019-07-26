@@ -10,9 +10,9 @@ make clean
 # https://stackoverflow.com/questions/4365980/how-to-use-profile-guided-optimizations-in-g
 
 #  TOOLCHAIN=clang
-CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin/g++" JDK="/home/me/jdk-12" ./configure \
+CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin/g++" JDK="/home/me/jdk-14" ./configure \
     --with-toolchain-type="gcc" \
-	--with-boot-jdk="/home/me/jdk-12" \
+	--with-boot-jdk="/home/me/jdk-14" \
 	--disable-hotspot-gtest \
 	--disable-warnings-as-errors \
 	--enable-ccache \
