@@ -77,8 +77,8 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     final Term putAtomic(Term x) {
-        if (x instanceof Intrin) {
-            return putAnon(x);
+        if (Intrin.intrin(x)) {
+            return putIntrin(x);
         } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
             return x; //HACK is this necessary?
         }
@@ -99,7 +99,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     /** anon filter in which subclasses can implement variable shifting */
-    Term putAnon(Term x) {
+    Term putIntrin(Term x) {
         return x;
     }
 

@@ -729,19 +729,19 @@ public enum $ { ;
                 return Op.EmptySubterms;
             case 1: {
                 Term a = t[0];
-                if (a.unneg() instanceof Intrin)
+                if (Intrin.intrin(a.unneg()))
                     return new IntrinSubterms(a);
                 break;
             }
             case 2: {
                 Term a = t[0], b = t[1];
-                if (a.unneg() instanceof Intrin && b.unneg() instanceof Intrin)
+                if (Intrin.intrin(a.unneg()) && Intrin.intrin(b.unneg()))
                     return new IntrinSubterms(a, b);
                 break;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
-                if (a.unneg() instanceof Intrin && b.unneg() instanceof Intrin && c.unneg() instanceof Intrin)
+                if (Intrin.intrin(a.unneg()) && Intrin.intrin(b.unneg()) && Intrin.intrin(c.unneg()))
                     return new IntrinSubterms(a, b, c);
                 break;
             }

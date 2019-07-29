@@ -39,7 +39,7 @@ public class AnonWithVarShift extends CachedAnon {
     }
 
     @Override
-    protected Term putAnon(Term x) {
+    protected Term putIntrin(Term x) {
         if (shifting && (x instanceof NormalizedVariable)) {
             Op o = x.op();
             if (o.isAny(mask)) {
@@ -65,7 +65,7 @@ public class AnonWithVarShift extends CachedAnon {
                 }
             }
         }
-        return super.putAnon(x);
+        return super.putIntrin(x);
     }
 
 

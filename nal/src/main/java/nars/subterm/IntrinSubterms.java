@@ -2,10 +2,12 @@ package nars.subterm;
 
 import jcog.util.ArrayUtil;
 import nars.Op;
+import nars.subterm.util.SubtermMetadataCollector;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.AnonArrayIterator;
 import nars.term.anon.Intrin;
+import nars.term.anon.IntrinAtomic;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -24,7 +26,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     public final short[] subterms;
 
     public IntrinSubterms(short[] s) {
-        super(Intrin.subtermMetadata(s));
+        super(subtermMetadata(s));
         this.subterms = s;
     }
 
@@ -42,11 +44,18 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             boolean neg = hasNeg && ss instanceof Neg;
             if (neg)
                 ss = ss.unneg();
-            short tt = (short) ((Intrin) ss).i;
+            short tt = Intrin.id(ss);
             t[i] = neg ? ((short)-tt) : tt;
         }
 
         this.normalized = preNormalize();
+    }
+
+    public static SubtermMetadataCollector subtermMetadata(short[] s) {
+        SubtermMetadataCollector c = new SubtermMetadataCollector();
+        for (short x : s)
+            c.collectMetadata(term(x));
+        return c;
     }
 
     private boolean preNormalize() {
@@ -239,8 +248,8 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 //        return ArrayUtils.indexOf(subterms, id, after+1);
 //    }
 
-    public int indexOf(Intrin t) {
-        return indexOf((short)t.i);
+    public int indexOf(IntrinAtomic t) {
+        return indexOf(t.i);
     }
 
     @Override
@@ -298,13 +307,13 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         if (x instanceof Neg) {
             if (hasNeg()) {
                 Term tt = x.unneg();
-                if (tt instanceof Intrin) {
-                    return indexOf((short) -(((Intrin) tt).i)) != -1;
-                }
+                short ttu = Intrin.id(tt);
+                if (ttu!=0)
+                    return indexOf((short) -ttu) != -1;
             }
         } else {
-            if (x instanceof Intrin) {
-                short aid = (short) ((Intrin) x).i;
+            short aid = Intrin.id(x);
+            if (aid!=0) {
                 boolean hasNegX = false;
                 for (short xx : this.subterms) {
                     if (xx == aid)

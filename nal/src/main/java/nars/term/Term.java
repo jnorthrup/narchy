@@ -27,7 +27,7 @@ import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.anon.Anom;
-import nars.term.anon.Intrin;
+import nars.term.anon.IntrinAtomic;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -526,7 +526,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             if (this instanceof Int /*&& t instanceof Int*/) {
                 return Integer.compare(((Int) this).i, ((Int) t).i);
             }
-            if (this instanceof Intrin && t instanceof Intrin) {
+            if (this instanceof IntrinAtomic && t instanceof IntrinAtomic) {
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
             }
 

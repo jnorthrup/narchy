@@ -1,13 +1,14 @@
 package nars.term;
 
 import nars.Op;
-import nars.term.anon.Intrin;
+import nars.The;
+import nars.term.anon.IntrinAtomic;
 import nars.unify.Unify;
 
 import java.io.IOException;
 
 /** the / and \ Image operators */
-public final class Img extends Intrin {
+public final class Img extends IntrinAtomic  {
 
     private final String str;
     private final char symChar;

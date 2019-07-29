@@ -9,6 +9,8 @@ import nars.subterm.*;
 import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonWithVarShift;
+import nars.term.anon.Intrin;
+import nars.term.atom.Int;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermConstructor;
@@ -78,7 +80,6 @@ public class IntrinTest {
     void testAtoms() {
         assertAnon("_1", "a");
         assertAnon("#1", $.varDep(1));
-        assertAnon("_1", $.the(2));
 
         assertNotEquals(Anom.the(0), $.the(0));
         assertNotEquals(Anom.the(2), $.the(2));
@@ -114,6 +115,15 @@ public class IntrinTest {
         assertAnon("(_1-->#1)", "(a-->#1)");
     }
     @Test void testIntegers() {
+        assertEquals((Intrin.INT_POSs<<8) | 0, Intrin.id(Int.the(0)));
+        assertEquals((Intrin.INT_POSs<<8) | 1, Intrin.id(Int.the(1)));
+        assertEquals((Intrin.INT_POSs<<8) | 254, Intrin.id(Int.the(254)));
+        assertEquals((Intrin.INT_POSs<<8) | 255, Intrin.id(Int.the(255)));
+        assertEquals(0, Intrin.id(Int.the(256)));
+        assertEquals((Intrin.INT_NEGs<<8) | 1, Intrin.id(Int.the(-1)));
+        assertEquals((Intrin.INT_NEGs<<8) | 254, Intrin.id(Int.the(-254)));
+        assertEquals((Intrin.INT_NEGs<<8) | 255, Intrin.id(Int.the(-255)));
+
         assertAnon("(_1-->1)", "(a-->1)");
         assertAnon("(_1-->0)", "(a-->0)");
         assertAnon("(_1-->-1)", "(a-->-1)");
@@ -121,6 +131,11 @@ public class IntrinTest {
         assertAnon("(--,0)", "(--,0)");
         assertAnon("(--,-1)", "(--,-1)");
         assertAnon("(--,1)", "(--,1)");
+
+        assertTrue( $$("(--,1)") instanceof Neg.NegIntrin );
+        assertTrue( $$("(1,2,3)").subterms() instanceof IntrinSubterms );
+        assertTrue( $$("(1,-2,3)").subterms() instanceof IntrinSubterms );
+        assertTrue( $$("((--,1),-2,3)").subterms() instanceof IntrinSubterms );
     }
 
     @Test
@@ -202,10 +217,10 @@ public class IntrinTest {
     void testAnonSorting() {
         assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,x1,x2,--x3,x4,x5)");
         assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,--x1,x2,x3,x4,x5)");
-        assertAnon("(_2(_1)&&_3)", "(&&,1(2),x3)");
-        assertAnon("(_2(_1)&&_3)", "(&&,3(2),x1)");
-        assertAnon("((_2(_1)&&_3) &&+- _4)", "((&&,x3(2),x1) &&+- x4)");
-        assertAnon("((_2(_1)&&_3) &&+- _4)", "(x1 &&+- (&&,3(2),x4))");
+        assertAnon("(_2(_1)&&_3)", "(&&,b(a),x3)");
+        assertAnon("(_2(_1)&&_3)", "(&&,b(a),x1)");
+        assertAnon("((_2(_1)&&_3) &&+- _4)", "((&&,x3(a),x1) &&+- x4)");
+        assertAnon("((_2(_1)&&_3) &&+- _4)", "(x1 &&+- (&&,b(a),x4))");
     }
 
     @Test

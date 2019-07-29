@@ -1,7 +1,7 @@
 package nars.subterm;
 
 import nars.$;
-import nars.term.anon.Anom;
+import nars.term.anon.Intrin;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -11,7 +11,7 @@ class MaskedIntrinSubtermsTest {
 
     @Test
     void test1() {
-        IntrinSubterms a = new IntrinSubterms(Anom.term(1), Anom.term(2));
+        IntrinSubterms a = new IntrinSubterms(Intrin.term(1), Intrin.term(2));
         MaskedIntrinSubterms.SubtermsMaskedIntrinSubterms ab = new MaskedIntrinSubterms.SubtermsMaskedIntrinSubterms(a, new ArrayTermVector($.the("a"), $.the("b")));
         MaskedIntrinSubterms.SubtermsMaskedIntrinSubterms xy = new MaskedIntrinSubterms.SubtermsMaskedIntrinSubterms(a, new ArrayTermVector($.the("x"), $.the("y")));
         assertEquals("(a,b)", ab.toString());

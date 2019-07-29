@@ -387,4 +387,11 @@ public interface Atomic extends Term {
     default Term transform(TermTransform t, TermBuffer b, int volMax) {
         return t.apply(this); //force unbuffered transform
     }
+
+    /** returns non-zero, positive value if this term has an INTrinsic representation */
+	default short intrin() {
+        return 0;
+    }
+
+
 }

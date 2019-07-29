@@ -5,6 +5,7 @@ import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.term.anon.Intrin;
+import nars.term.atom.Atomic;
 import nars.term.compound.SemiCachedUnitCompound;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermException;
@@ -41,12 +42,13 @@ import static nars.term.atom.Bool.False;
                 return u; //return Null;
         }
 
-        if (u instanceof Intrin)
-            return new NegIntrin(((Intrin)u).i);
-        else {
-            return NAL.NEG_CACHE_VOL_THRESHOLD <= 0 || (u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD) ?
-                    new NegLight(u) : new NegCached(u);
-        }
+        short i = Intrin.id(u);
+        if (i!=0)
+            return new NegIntrin(i);
+
+        return NAL.NEG_CACHE_VOL_THRESHOLD <= 0 || (u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD) ?
+                new NegLight(u) : new NegCached(u);
+
     }
 
     Term sub();
@@ -126,14 +128,16 @@ import static nars.term.atom.Bool.False;
     /** TODO refine */
     final class NegIntrin extends UnitCompound implements The, Neg {
 
-        public final int sub;
+        public final short sub;
 
-        public NegIntrin(Intrin i) {
-            this(i.i);
+        public NegIntrin(Atomic i) {
+            this(i.intrin());
         }
 
-        public NegIntrin(int negated) {
+        public NegIntrin(short negated) {
+            //assert(negated!=0);
             this.sub = negated;
+
         }
 
         @Override
@@ -170,8 +174,12 @@ import static nars.term.atom.Bool.False;
 
         @Override
         public final boolean equalsNeg(Term t) {
-            //return t instanceof Atomic && sub().equals(t);
-            return t instanceof Intrin && ((Intrin)t).i == sub;
+            if (t instanceof Atomic) {
+                int i = ((Atomic)t).intrin();
+                if (i!=0)
+                    return sub==i;
+            }
+            return false;
         }
 
     }

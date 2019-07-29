@@ -9,7 +9,7 @@ import nars.term.Term;
 import static nars.Op.ATOM;
 
 /* indexed anonymous target */
-public final class Anom extends Intrin {
+public final class Anom extends IntrinAtomic {
 
     private final byte[] bytes;
 
