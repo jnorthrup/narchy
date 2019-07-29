@@ -107,7 +107,7 @@ class ConjTest {
         c.add(ETERNAL, $$("(--,(((--,(g-->input)) &&+40 (g-->forget))&&((g-->happy) &&+40 (g-->happy))))"));
         boolean addTemporal = c.add(1, $$("happy:g")); //shouldnt cancel since it's temporal, only at 1
         assertTrue(addTemporal);
-        assertEq("((--,((--,(g-->input)) &&+40 (g-->forget)))&&(g-->happy))", c.term());
+        assertEq("((--,((--,(g1-->input)) &&+40 (g1-->forget)))&&(g1-->happy))", c.term());
         assertEq("((--,((--,(_1-->_2)) &&+40 (_1-->_3)))&&(_1-->_4))", c.term().anon());
 
     }

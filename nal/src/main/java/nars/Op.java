@@ -300,10 +300,10 @@ public enum Op {
     public static TermBuilder terms = HeapTermBuilder.the;
 
 
-    public static final Atom BeliefAtom = Atomic.atom(String.valueOf((char)BELIEF));
-    public static final Atom GoalAtom = Atomic.atom(String.valueOf((char)GOAL));
-    public static final Atom QuestionAtom = Atomic.atom(String.valueOf((char)QUESTION));
-    public static final Atom QuestAtom = Atomic.atom(String.valueOf((char)QUEST));
+    public static final Atom BeliefAtom = new Atom.AtomChar((char)BELIEF); //HACK
+    public static final Atom GoalAtom =  new Atom.AtomChar((char)GOAL); //HACK
+    public static final Atom QuestionAtom =  new Atom.AtomChar((char)QUESTION); //HACK
+    public static final Atom QuestAtom =  new Atom.AtomChar((char)QUEST); //HACK
     public static final Atom Que = Atomic.atom(String.valueOf((char) QUESTION) + (char) QUEST);
 
 

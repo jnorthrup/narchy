@@ -20,17 +20,24 @@ import static nars.Op.ImgInt;
  */
 @Skill({"G%C3%B6del_numbering_for_sequences"}) public enum Intrin  { ;
 
-    /** TODO these dont need to be their own bits.
-     * these are categories of 8-bit numerically indexable items.
-     * use some flexible code page mapping */
+    /** code pages: categories of 8-bit numerically indexable items. */
     public static final short ANOMs = 0;
+
     public static final short VARDEPs = 1;
     public static final short VARINDEPs = 2;
     public static final short VARQUERYs = 3;
     public static final short VARPATTERNs = 4;
+
     public static final short IMGs = 5; // TODO make this a misc category
+
+    /** 0..255 */
     public static final short INT_POSs = 6;
+
+    /** -1..-255 */
     public static final short INT_NEGs = 7;
+
+    /** ASCII 0..255 */
+    public static final short CHARs = 8;
 
 
 
@@ -54,6 +61,8 @@ import static nars.Op.ImgInt;
                 return Int.the(num);
             case INT_NEGs:
                 return Int.the(-num);
+            case CHARs:
+                return Atomic.the((char)num);
             default:
                 throw new UnsupportedOperationException();
         }

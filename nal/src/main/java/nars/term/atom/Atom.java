@@ -2,6 +2,7 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
+import nars.term.anon.Intrin;
 
 import static nars.Op.*;
 
@@ -10,6 +11,7 @@ import static nars.Op.*;
  * ideally this string is stored encoded in UTF8 byte[]'s
  */
 public class Atom extends AbstractAtomic implements The {
+
 
 
 //    /** use with caution */
@@ -154,5 +156,28 @@ public class Atom extends AbstractAtomic implements The {
         }
         return false;
     }
+
+    static final AtomChar[] chars = new AtomChar[256];
+    static {
+        for (char i = 0; i < 256; i++) {
+            chars[i] = new AtomChar(i);
+        }
+    }
+
+    public static final class AtomChar extends Atom {
+
+        private final short intrin;
+
+        public AtomChar(char c) {
+            super(String.valueOf(c));
+            this.intrin = (short)((Intrin.CHARs << 8) | c);
+        }
+
+        @Override
+        public short intrin() {
+            return intrin;
+        }
+    }
+
 }
 

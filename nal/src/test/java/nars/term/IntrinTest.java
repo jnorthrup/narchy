@@ -10,6 +10,7 @@ import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.anon.Intrin;
+import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
@@ -22,8 +23,7 @@ import java.util.Random;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.Op.CONJ;
-import static nars.Op.PROD;
+import static nars.Op.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -78,7 +78,7 @@ public class IntrinTest {
 
     @Test
     void testAtoms() {
-        assertAnon("_1", "a");
+        assertAnon("_1", "abc");
         assertAnon("#1", $.varDep(1));
 
         assertNotEquals(Anom.the(0), $.the(0));
@@ -87,32 +87,32 @@ public class IntrinTest {
 
     @Test
     void testThatAnonDoesntEatEllipsis() throws Narsese.NarseseException {
-        assertEquals("(_1,%1..*)", UnifyTest.pattern("(a, %X..*)").anon().toString());
+        assertEquals("(_1,%1..*)", UnifyTest.pattern("(abc, %X..*)").anon().toString());
     }
 
     @Test
     void testCompounds() {
-        assertAnon("(_1-->_2)", "(a-->b)");
+        assertAnon("(_1-->_2)", "(abc-->bcd)");
 
 
 
-        assertAnon("{_1}", "{a}");
-        assertAnon("{_1,_2}", "{a,b}");
-        assertAnon("{_1,_2,_3}", "{a,b,c}");
-        assertAnon("(_1 ==>+- _2)", "(x ==>+- y)");
+        assertAnon("{_1}", "{abc}");
+        assertAnon("{_1,_2}", "{abc,b1}");
+        assertAnon("{_1,_2,_3}", "{abc,b1,c1}");
+        assertAnon("(_1 ==>+- _2)", "(x1 ==>+- y1)");
         {
-            Anon a = assertAnon("((_1&&_2) ==>+- _3)", "((x&&y) ==>+- z)");
-            assertEquals("(x&&y)", a.get(CONJ.the(Anom.the(1), Anom.the(2))).toString());
+            Anon a = assertAnon("((_1&&_2) ==>+- _3)", "((x1&&y1) ==>+- z1)");
+            assertEquals("(x1&&y1)", a.get(CONJ.the(Anom.the(1), Anom.the(2))).toString());
         }
 
 
         assertAnon("(((_1-->(_2,_3,#1))==>(_4,_5)),?2)",
-                "(((a-->(b,c,#2))==>(e,f)),?1)");
+                "(((a1-->(b1,c1,#2))==>(e1,f1)),?1)");
 
     }
 
     @Test void testNormalizedVariables() {
-        assertAnon("(_1-->#1)", "(a-->#1)");
+        assertAnon("(_1-->#1)", "(abc-->#1)");
     }
     @Test void testIntegers() {
         assertEquals((Intrin.INT_POSs<<8) | 0, Intrin.id(Int.the(0)));
@@ -124,9 +124,9 @@ public class IntrinTest {
         assertEquals((Intrin.INT_NEGs<<8) | 254, Intrin.id(Int.the(-254)));
         assertEquals((Intrin.INT_NEGs<<8) | 255, Intrin.id(Int.the(-255)));
 
-        assertAnon("(_1-->1)", "(a-->1)");
-        assertAnon("(_1-->0)", "(a-->0)");
-        assertAnon("(_1-->-1)", "(a-->-1)");
+        assertAnon("(_1-->1)", "(abc-->1)");
+        assertAnon("(_1-->0)", "(abc-->0)");
+        assertAnon("(_1-->-1)", "(abc-->-1)");
 
         assertAnon("(--,0)", "(--,0)");
         assertAnon("(--,-1)", "(--,-1)");
@@ -137,11 +137,34 @@ public class IntrinTest {
         assertTrue( $$("(1,-2,3)").subterms() instanceof IntrinSubterms );
         assertTrue( $$("((--,1),-2,3)").subterms() instanceof IntrinSubterms );
     }
+    @Test void testChars() {
+        assertEquals((Intrin.CHARs << 8) | 'a', Intrin.id(Atomic.the('a')));
+        assertEquals((Intrin.CHARs << 8) | 'A', Intrin.id(Atomic.the('A')));
+        assertEquals((Intrin.CHARs << 8) | 'z', Intrin.id(Atomic.the('z')));
+
+        assertAnon("(a-->1)", "(a-->1)");
+        assertAnon("(a-->0)", "(a-->0)");
+        assertAnon("(a-->-1)", "(a-->-1)");
+
+        assertAnon("(--,a)", "(--,a)");
+        assertAnon("(--,b)", "(--,b)");
+        assertAnon("(--,c)", "(--,c)");
+
+        assertTrue($$("(--,a)") instanceof Neg.NegIntrin);
+    }
+    @Test void testChars_Subterms() {
+        assertTrue(
+            $.p(Op.puncAtom(BELIEF), Op.puncAtom(GOAL), Op.puncAtom(QUESTION), Op.puncAtom(QUEST)).subterms()
+            instanceof IntrinSubterms
+        );
+        assertTrue($$("(a,b,c)").subterms() instanceof IntrinSubterms);
+        assertTrue($$("((--,a),b,c)").subterms() instanceof IntrinSubterms);
+    }
 
     @Test
     void testCompoundsWithNegations() {
-        assertAnon("((--,_1),_1,_2)", "((--,a), a, c)");
-        assertAnon("(--,((--,_1),_1,_2))", "--((--,a), a, c)");
+        assertAnon("((--,_1),_1,_2)", "((--,a1), a1, c1)");
+        assertAnon("(--,((--,_1),_1,_2))", "--((--,a1), a1, c1)");
     }
 
     @Test
@@ -217,10 +240,10 @@ public class IntrinTest {
     void testAnonSorting() {
         assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,x1,x2,--x3,x4,x5)");
         assertAnon("(&&,(--,_1),_2,_3,_4,_5)", "(&&,--x1,x2,x3,x4,x5)");
-        assertAnon("(_2(_1)&&_3)", "(&&,b(a),x3)");
-        assertAnon("(_2(_1)&&_3)", "(&&,b(a),x1)");
-        assertAnon("((_2(_1)&&_3) &&+- _4)", "((&&,x3(a),x1) &&+- x4)");
-        assertAnon("((_2(_1)&&_3) &&+- _4)", "(x1 &&+- (&&,b(a),x4))");
+        assertAnon("(_2(_1)&&_3)", "(&&,b1(a1),x3)");
+        assertAnon("(_2(_1)&&_3)", "(&&,b1(a1),x1)");
+        assertAnon("((_2(_1)&&_3) &&+- _4)", "((&&,x3(a0),x1) &&+- x4)");
+        assertAnon("((_2(_1)&&_3) &&+- _4)", "(x1 &&+- (&&,b1(a2),x4))");
     }
 
     @Test

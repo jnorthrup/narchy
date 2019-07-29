@@ -62,7 +62,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     /** used for quickly determining if op type is internable */
     private final MetalBitSet termsInterned;
 
-    private final HijackMemoize<String, Atom> atoms;
+    private final HijackMemoize<String, Atomic> atoms;
 
 
     public InterningTermBuilder() {
@@ -340,8 +340,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     @Override
-    public Atom atom(String id) {
-        return (id.length() < ATOM_INTERNING_LENGTH_MAX) ? atoms.apply(id) : super.atom(id);
+    public Atomic atom(String id) {
+        int l = id.length();
+        return (l > 1 && l < ATOM_INTERNING_LENGTH_MAX) ? atoms.apply(id) : super.atom(id);
     }
 
     @Override

@@ -32,6 +32,9 @@ import static nars.term.atom.Bool.Null;
 public interface Atomic extends Term {
 
 
+
+
+
     @Override
     default boolean containsRecursively(Term t) {
         return false;
@@ -149,6 +152,42 @@ public interface Atomic extends Term {
         return (Atom)the(id);
     }
 
+    @Nullable static Atomic the(char c) {
+        switch (c) {
+            case Op.VarAutoSym:
+                return Op.VarAuto;
+            case Op.NullSym:
+                return Null;
+
+            case Op.imIntSym:
+                return Op.ImgInt;
+            case Op.imExtSym:
+                return Op.ImgExt;
+            case '0':
+                return Int.pos[0];
+            case '1':
+                return Int.pos[1];
+            case '2':
+                return Int.pos[2];
+            case '3':
+                return Int.pos[3];
+            case '4':
+                return Int.pos[4];
+            case '5':
+                return Int.pos[5];
+            case '6':
+                return Int.pos[6];
+            case '7':
+                return Int.pos[7];
+            case '8':
+                return Int.pos[8];
+            case '9':
+                return Int.pos[9];
+        }
+
+        return Atom.chars[c];
+    }
+
     /*@NotNull*/
     static Atomic the(String id) {
         int l = id.length();
@@ -157,37 +196,8 @@ public interface Atomic extends Term {
 
         if (l == 1) {
             char c = id.charAt(0);
-            switch (c) {
-                case Op.VarAutoSym:
-                    return Op.VarAuto;
-                case Op.NullSym:
-                    return Null;
-
-                case Op.imIntSym:
-                    return Op.ImgInt;
-                case Op.imExtSym:
-                    return Op.ImgExt;
-                case '0':
-                    return Int.pos[0];
-                case '1':
-                    return Int.pos[1];
-                case '2':
-                    return Int.pos[2];
-                case '3':
-                    return Int.pos[3];
-                case '4':
-                    return Int.pos[4];
-                case '5':
-                    return Int.pos[5];
-                case '6':
-                    return Int.pos[6];
-                case '7':
-                    return Int.pos[7];
-                case '8':
-                    return Int.pos[8];
-                case '9':
-                    return Int.pos[9];
-            }
+            Atomic ac = the(c);
+            /*if (ac!=null)*/ return ac;
         }
 
         switch (id) {

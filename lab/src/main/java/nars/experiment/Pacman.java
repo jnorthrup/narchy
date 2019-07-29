@@ -8,10 +8,8 @@ import nars.GameX;
 import nars.NAR;
 import nars.agent.GameTime;
 import nars.experiment.pacman.PacmanGame;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.SwingBitmap2D;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.container.grid.Gridding;
 
 
@@ -50,11 +48,11 @@ public class Pacman extends GameX {
 //        }
         {
             Bitmap2DSensor c = senseCamera((x, y)->$.inh(id,$.p(x,y)), camScale/*, 0*/);
-            VectorSensorView v = new VectorSensorView(c, this);
-            gg.add(v/*.withControls()*/);
+//            VectorSensorView v = new VectorSensorView(c, this);
+//            gg.add(v/*.withControls()*/);
             c.resolution(0.02f);
         }
-        SpaceGraph.window(gg, 300, 300);
+//        SpaceGraph.window(gg, 300, 300);
 
 //        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), ()->{
 //            g.keys[1] = true;

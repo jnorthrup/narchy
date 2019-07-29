@@ -4,7 +4,7 @@ import jcog.WTF;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.util.TermTest;
 import org.jetbrains.annotations.Nullable;
 
@@ -65,9 +65,9 @@ public class VerifyingTermBuilder extends TermBuilder {
     }
 
     @Override
-    public Atom atom(String id) {
-        Atom aa = a.atom(id);
-        Atom bb = b.atom(id);
+    public Atomic atom(String id) {
+        Atomic aa = a.atom(id);
+        Atomic bb = b.atom(id);
         if (!aa.equals(bb))
             throw new WTF("atoms inequal: " + aa + " " + bb);
         return aa;

@@ -4,6 +4,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 
 /** stateless implementation */
 public class HeapTermBuilder extends TermBuilder {
@@ -24,7 +25,7 @@ public class HeapTermBuilder extends TermBuilder {
     }
 
     @Override
-    public Atom atom(String id) {
+    public Atomic atom(String id) {
         return new Atom(id);
     }
 }
