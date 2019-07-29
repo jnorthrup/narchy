@@ -62,7 +62,11 @@ public class TermBuffer {
     }
 
     public TermBuffer() {
-        this(Op.terms, new ByteAnonMap());
+        this(Op.terms);
+    }
+
+    public TermBuffer(TermBuilder builder) {
+        this(builder, new ByteAnonMap() );
     }
 
     public TermBuffer(TermBuilder builder, ByteAnonMap sub) {

@@ -12,7 +12,6 @@ import nars.subterm.Subterms;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Intrin;
-import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;

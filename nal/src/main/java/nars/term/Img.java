@@ -1,7 +1,6 @@
 package nars.term;
 
 import nars.Op;
-import nars.The;
 import nars.term.anon.IntrinAtomic;
 import nars.unify.Unify;
 

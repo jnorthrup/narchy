@@ -25,7 +25,6 @@ import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.term.Variable;
-import nars.term.anon.Intrin;
 import nars.term.anon.IntrinAtomic;
 import org.jetbrains.annotations.Nullable;
 

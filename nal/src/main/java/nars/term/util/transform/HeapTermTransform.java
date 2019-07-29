@@ -9,16 +9,16 @@ import nars.term.util.builder.TermBuilder;
 /** bypasses interning */
 public abstract class HeapTermTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
-    final static TermBuilder localBuilder = HeapTermBuilder.the;
+    final static TermBuilder termBuilder = HeapTermBuilder.the;
 
     @Override
-    public Term compound(Op op, int dt, Term[] t) {
-        return op.the(localBuilder, dt, t);
+    public final Term compound(Op op, int dt, Term[] t) {
+        return op.the(termBuilder, dt, t);
     }
 
     @Override
-    public Term compound(Op op, int dt, Subterms t) {
-        return op.the(localBuilder, dt, t);
+    public final Term compound(Op op, int dt, Subterms t) {
+        return op.the(termBuilder, dt, t);
     }
 
 }

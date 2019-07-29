@@ -15,7 +15,6 @@ import nars.term.buffer.Termerator;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Iterator;
 import java.util.Random;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
@@ -40,6 +39,14 @@ public class Evaluation extends Termerator {
 
 		if (evalable(x)) {
 			new Evaluator(resolver).eval(each, includeTrues, includeFalses, x);
+		} else {
+			each.test(x); //didnt need evaluating, just input
+		}
+	}
+
+	private static void eval(Term x, boolean includeTrues, boolean includeFalses, Evaluator e, Predicate<Term> each) {
+		if (evalable(x)) {
+			e.eval(each, includeTrues, includeFalses, x);
 		} else {
 			each.test(x); //didnt need evaluating, just input
 		}
@@ -157,75 +164,75 @@ public class Evaluation extends Termerator {
 			main:
 			do {
 				prev = y;
-//				mutStart = termutators();
-				Iterator<Term> ii = clauses.iterator();
-				while (ii.hasNext()) {
+                for (Term a : clauses) {
 
-					Term a = ii.next();
+                    //run the functor resolver for any new functor terms which may have appeared
 
-					//run the functor resolver for any new functor terms which may have appeared
-
-					Term aFunc_Pre = Functor.func(a);
-					if (!(aFunc_Pre instanceof Functor)) {
-						//try resolving
-						Term aa = e.apply(a);
-						if (aa == a) {
-							//no change. no such functor Exception?
-						} else {
-							a = aa;
-						}
-					}
+                    Term aFunc_Pre = Functor.func(a);
+                    if (!(aFunc_Pre instanceof Functor)) {
+                        //try resolving
+                        Term aa = e.apply(a);
+                        if (aa == a) {
+                            //no change. no such functor Exception?
+                        } else {
+                            a = aa;
+                        }
+                    }
 
 
-					final int vStart = now();
+                    final int vStart = now();
 
-					Functor aFunc = (Functor) a.sub(1);
-					Subterms aArgs = a.sub(0).subterms();
-					Term b = aFunc.apply(this, aArgs);
+                    Functor aFunc = (Functor) a.sub(1);
+                    Subterms aArgs = a.sub(0).subterms();
+                    Term b = aFunc.apply(this, aArgs);
 
-					boolean newSubsts = now() != vStart;
+                    boolean newSubsts = now() != vStart;
 
-					if (b instanceof Bool && !newSubsts) {
-						if (b == True) {
-							//continue
+                    if (b instanceof Bool && !newSubsts) {
+                        if (b == True) {
+                            //continue
                             y = x.equals(y) ? True : a;
                             break main;
-						} else if (b == False) {
-							y = x.equals(y) ? False : a.neg();
-							break main;
-						} else {
-							y = Null;
-							break main;
-						}
-					}
+                        } else if (b == False) {
+                            y = x.equals(y) ? False : a.neg();
+                            break main;
+                        } else {
+                            y = Null;
+                            break main;
+                        }
+                    }
 
-					Term y0 = y;
+                    Term y0 = y;
 
-					if (b != null && b != a) {
-						y = y.replace(a, b); //TODO replace only the first?
-						if (!(y instanceof Compound))
-							break main;
-					}
+                    if (b != null && b != a) {
+                        y = y.replace(a, b); //TODO replace only the first?
+                        if (!(y instanceof Compound))
+                            break main;
+                    }
 
-					if (newSubsts) {
-						y = y.replace(subs);
-						if (!(y instanceof Compound))
-							break main;
-					}
+                    if (newSubsts) {
+                        y = y.replace(subs);
+                        if (!(y instanceof Compound))
+                            break main;
+                    }
 
-					if (!y.equals(y0)) {
-						//re-clausify
+                    if (!y.equals(y0)) {
+                        //re-clausify
                         //TODO this may only be helpful if y changes significantly (ex: entire sub-trees get removed, this can eliminate useless evals)
-						clauses.clear();
-						clauses = e.clauseFind((Compound) y, clauses);
-						if (clauses == null || clauses.isEmpty())
-							break main; //done
+                        if (evalable(y)) {
+                            clauses.clear();
+                            clauses = e.clauseFind((Compound) y, clauses);
+                        } else
+                            clauses = null;
+
+                        if (clauses == null || clauses.isEmpty())
+                            break main; //done
 
                         continue main;
-					}
+                    }
 
 
-				}
+                }
 
 			} while (!y.equals(prev));
 		}
@@ -307,12 +314,20 @@ public class Evaluation extends Termerator {
 			return true;
 		});
 
-		if (ee.isEmpty()) {
-			//java.util.Set.of($.func(Inperience.wonder, x))
-			return Set.of();
-		} else
-			return ee;
+		return ee.isEmpty() ? Set.of() : ee;
+		//java.util.Set.of($.func(Inperience.wonder, x))
 	}
+	public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Evaluator e) {
 
+		UnifiedSet ee = new UnifiedSet(0, 0.5f);
+
+		Evaluation.eval(x, includeTrues, includeFalses, e, t -> {
+			if (t != Null)
+				ee.add(t);
+			return true;
+		});
+
+		return ee.isEmpty() ? Set.of() : ee;
+	}
 
 }

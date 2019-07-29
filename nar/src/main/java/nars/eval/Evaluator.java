@@ -9,7 +9,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.buffer.TermBuffer;
 import nars.term.util.builder.HeapTermBuilder;
-import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.HeapTermTransform;
 import org.jetbrains.annotations.Nullable;
 
@@ -28,7 +27,8 @@ public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
-    private final TermBuffer compoundBuilder = new TermBuffer(HeapTermBuilder.the, new ByteAnonMap());
+    private TermBuffer compoundBuilder =
+        new TermBuffer(HeapTermBuilder.the);
 
 
     public Evaluator(Function<Atom, Functor> funcResolver) {
@@ -48,7 +48,7 @@ public class Evaluator extends HeapTermTransform {
         return !x.hasAny(Op.FuncBits) ? null : clauseFind(x);
     }
 
-    @Nullable ArrayHashSet<Term> clauseFind(Compound x) {
+    @Nullable final ArrayHashSet<Term> clauseFind(Compound x) {
         return clauseFind(x, new ArrayHashSet<>(0));
     }
 
@@ -58,8 +58,8 @@ public class Evaluator extends HeapTermTransform {
             if (Functor.isFunc(X)) {
 //                if (clauses.contains(X))
 //                    return true;
-
                 compoundBuilder.clear(); //true, compoundBuilder.sub.termCount() >= 64 /* HACK */);
+
                 compoundBuilder.volRemain = Integer.MAX_VALUE; //HACK
                 TermBuffer y = compoundBuilder.append(X);
                 final int[] functors = {0};
@@ -67,10 +67,10 @@ public class Evaluator extends HeapTermTransform {
                     if (g instanceof Functor)
                         functors[0]++;
                     else if (g instanceof Atom) {
-                        Functor f = funcResolver.apply((Atom) g);
-                        if (f != null) {
+                        Functor h = funcResolver.apply((Atom) g);
+                        if (h != null) {
                             functors[0]++;
-                            return f;
+                            return h;
                         }
                     }
                     return g;
@@ -164,4 +164,16 @@ public class Evaluator extends HeapTermTransform {
         }
     }
 
+//    private static final class MyDirectTermBuffer extends TermBuffer {
+//        @Override
+//        protected Term newCompound(Op o, int dt, Term[] subterms) {
+//            if (o == CONJ || o == IMPL) {
+//                return super.newCompound(o, dt, subterms);
+//            } else{
+//                //direct term buffer:
+//                Term y = HeapTermBuilder.the.newCompoundN(o, dt, subterms, null);
+//                return y;
+//            }
+//        }
+//    }
 }

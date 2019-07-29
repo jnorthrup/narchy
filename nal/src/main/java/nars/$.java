@@ -692,15 +692,15 @@ public enum $ { ;
         return sFast(true, x);
     }
 
-    public static Term sFast(SortedSet<Term> x) {
+    public static Compound sFast(SortedSet<Term> x) {
         return sFast(false, x.toArray(EmptyTermArray));
     }
 
-    public static Term sFast(Collection<Term> x) {
+    public static Compound sFast(Collection<Term> x) {
         return sFast(false, Terms.commute(x));
     }
 
-    public static Term sFast(boolean sort, Term[] x) {
+    public static Compound sFast(boolean sort, Term[] x) {
         if (x.length == 0) throw new UnsupportedOperationException();
         if (sort && x.length > 1)
             x = Terms.commute(x);

@@ -721,8 +721,7 @@ public class Derivation extends PreDerivation {
             Term b;
             if (a instanceof Variable) {
 
-                b = Derivation.this.resolveTerm(a, true);
-                //b = resolveVar((Variable)a);
+                b = Derivation.this.resolveTermRecurse(a);
 
             } else if (a instanceof Atom) {
 

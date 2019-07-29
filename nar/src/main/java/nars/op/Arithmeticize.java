@@ -8,6 +8,7 @@ import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
 import nars.*;
 import nars.eval.Evaluation;
+import nars.eval.Evaluator;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termlike;
@@ -116,17 +117,18 @@ public class Arithmeticize {
         return apply(x, null, NAL.term.COMPOUND_VOLUME_MAX, true, random);
     }
 
+    private static final ThreadLocal<Evaluator> evaluator = ThreadLocal.withInitial(() ->
+        new Evaluator(ArithFunctors)
+    );
 
     public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean preEval, Random random) {
         if (anon == null && !x.hasAny(INT))
             return null;
 
-
-
         //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
         //Term xx = Evaluation.solveFirst(x, ArithFunctors);
         if (preEval) {
-            Set<Term> xx = Evaluation.eval(x, true, false, ArithFunctors);
+            Set<Term> xx = Evaluation.eval(x, true, false, evaluator.get());
             if (!xx.isEmpty()) {
                 xx.removeIf(z -> !z.hasAny(INT));
 

@@ -105,7 +105,7 @@ public interface Variable extends Atomic {
         if (x != this && x.equals(y0))
             return true;
 
-        Term y = u.resolveTerm(y0, false);
+        Term y = u.resolveTerm(y0);
         //Term y = u.resolveTerm(y0, true);
         if (y != y0 && x.equals(y))
             return true;

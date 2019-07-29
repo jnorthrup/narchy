@@ -15,11 +15,13 @@ import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
+import nars.unify.mutate.Termutator;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.SortedSet;
+import java.util.function.Function;
 
 import static nars.Op.CONJ;
 import static nars.Op.FRAG;
@@ -124,7 +126,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                 if (x instanceof Ellipsis) {
                     int available = ysize - yi;
 
-                    Term xResolved = u.resolveTerm(x,false);
+                    Term xResolved = u.resolveTerm(x);
                     if (xResolved == x) {
 
 
@@ -215,7 +217,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             if (seq) {
                 yFree = Y.eventSet();
             } else {
-                yFree = Y.subterms().toSetSorted((Term zz) -> u.resolveTerm(zz,false));
+                yFree = Y.subterms().toSetSorted((Function<Term, Term>) u::resolveTerm);
             }
 
             Subterms xx = subterms();
@@ -226,7 +228,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             for (int k = 0; k < s; k++) {
 
                 Term xk = xx.sub(k);
-                Term xxk = u.resolveTerm(xk,false);
+                Term xxk = u.resolveTerm(xk);
 
                 if (xk.equals(ellipsis)) {
                     if (xxk.equals(xk))
@@ -323,11 +325,29 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                         return xMatch.getFirst().unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u);
                     } else {
                         //no matches possible but need one
-                        return ys >= 1 && Choose1.choose1(ellipsis, xMatch, yFree, u);
+                        if (ys >= 1) {
+                            @Nullable Termutator t1 = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
+                            if (t1 == null)
+                                return false;
+                            else {
+                                u.termutes.add(t1);
+                                return true;
+                            }
+                        }
+                        return false;
                     }
 
-                case 2:
-                    return ys >= 2 && Choose2.choose2(ellipsis, xMatch, yFree, u);
+                case 2: {
+                    if (ys >= 2) {
+                        @Nullable Termutator t1 = Choose2.choose2(ellipsis, xMatch, yFree, u);
+                        if (t1 == null)
+                            return false;
+                        else {
+                            u.termutes.add(t1);
+                            return true;
+                        }
+                    }
+                }
 
                 default:
                     throw new RuntimeException("unimpl: " + xs + " arity combination unimplemented");

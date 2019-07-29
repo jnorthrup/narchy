@@ -751,31 +751,31 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 m.set(i);
             }
         }
-        if (m!=null) {
-            //process remaining non-constant subterms
+        if (m == null)
+            return true;
 
-            int nonconst = m.cardinality();
-            if (nonconst ==1) {
-                int which = m.next(true,-1, n);
-                return x.sub(which).unify(y.sub(which), u);
-            } else {
+        //process remaining non-constant subterms
 
-                int[] c = new int[nonconst];
-                int k = 0;
-                //sort based on heuristic of estimated simplicity
-                for (int i = 0; i < n && k < nonconst; i++) {
-                    if (m.get(i))
-                        c[k++] = i;
-                }
-                ArrayUtil.sort(c,cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
-                for (int cc : c) {
-                    if (!x.sub(cc).unify(y.sub(cc), u))
-                        return false;
-                }
-                return true;
+        int nonconst = m.cardinality();
+        if (nonconst ==1) {
+            int which = m.next(true,-1, n);
+            return x.sub(which).unify(y.sub(which), u);
+        } else {
+
+            int[] c = new int[nonconst];
+            int k = 0;
+            //sort based on heuristic of estimated simplicity
+            for (int i = 0; i < n && k < nonconst; i++) {
+                if (m.get(i))
+                    c[k++] = i;
             }
+            ArrayUtil.sort(c,cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
+            for (int cc : c) {
+                if (!x.sub(cc).unify(y.sub(cc), u))
+                    return false;
+            }
+            return true;
         }
-        return true;
     }
 
 //    static boolean unifyLinearN_TwoPhase0(Subterms x, Subterms y, int n, Unify u) {

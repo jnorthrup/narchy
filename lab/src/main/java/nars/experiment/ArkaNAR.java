@@ -15,7 +15,6 @@ import nars.agent.Reward;
 import nars.agent.util.RLBooster;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -116,9 +115,9 @@ public class ArkaNAR extends GameX {
                 ArkaNAR b = new ArkaNAR($$("(noid,b)"), nn, cam, numeric);
                 b.ballSpeed.set( 0.33f * a.ballSpeed.floatValue() );
 
-                window(new Gridding(
-                        new Gridding(NARui.game(a), new VectorSensorView(a.cc, a).withControls()),
-                        new Gridding( NARui.game(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
+//                window(new Gridding(
+//                        new Gridding(NARui.game(a), new VectorSensorView(a.cc, a).withControls()),
+//                        new Gridding( NARui.game(b), new VectorSensorView(b.cc, b).withControls())), 800, 800);
 
             }, 40);
 

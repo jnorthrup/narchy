@@ -30,7 +30,7 @@ public class UnifyTest {
 
     @Test void testResolvePosNeg() {
         Unify u = new UnifyAny(new XoRoShiRo128PlusRandom(1));
-        Term y = u.resolveTerm($$("--x"),true);
+        Term y = u.resolveTermRecurse($$("--x"));
         assertEq("(--,x)", y);
     }
     @Test void testPossiblyUnifiable() {
@@ -843,8 +843,39 @@ public class UnifyTest {
     void testConjInConj() {
         test(Op.VAR_PATTERN,
                 "((_2(_1,%1) &&+- _3(%1)) &&+1 _4(%1))",
-                "((_2(_1,_1) &| _3(_1)) &&+- _4(_1))",
+                "((_2(_1,_1) && _3(_1)) &&+- _4(_1))",
                 true);
+    }
+    @Test
+    void testConj_3aryXternal() {
+        test(Op.VAR_DEP,
+            "(&&+-, x(#1), y(#2), z(#3))",
+            "((x(1) &&+1 y(2)) &&+1 z(3))",
+            true);
+        test(Op.VAR_DEP,
+            "(&&+-, x(#1), y(#2), z(#3))",
+            "((y(1) &&+1 x(2)) &&+1 z(3))",
+            true);
+
+        test(Op.VAR_DEP,
+            "(&&+-, x(#1), y(#2), z(#3))",
+            "((y(1) &&+1 y(2)) &&+1 z(3))",
+            false);
+    }
+    @Test
+    void testConj_3aryXternal_Partial() {
+        test(Op.VAR_DEP,
+            "(&&+-, x(#1), y(#2), z(#3))",
+            "((y(1) &&+1 x(2)) &&+- z(3))",
+            true);
+        test(Op.VAR_DEP,
+            "(&&+-, x(#1), y(#2), z(#3))",
+            "((y(1) &&+- x(2)) &&+1 z(3))",
+            true);
+        test(Op.VAR_DEP,
+            "(&&+-, x(#1), y(#1), z(#1))",
+            "((y(1) &&+- x(2)) &&+1 z(3))",
+            false);
     }
 
     @Test

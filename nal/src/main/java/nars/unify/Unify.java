@@ -518,10 +518,11 @@ public abstract class Unify extends Versioning<Term> {
     public final boolean unifyDT(Term x, Term y) {
         int xdt = x.dt();
         if (xdt == XTERNAL) return true;
-        if (xdt == DTERNAL) xdt = 0; //HACK
 
         int ydt = y.dt();
-        if (ydt == XTERNAL) return true;
+        if (ydt == XTERNAL || ydt==xdt) return true;
+
+        if (xdt == DTERNAL) xdt = 0; //HACK
         if (ydt == DTERNAL) ydt = 0; //HACK
 
         return xdt == ydt || unifyDT(xdt, ydt);
@@ -536,7 +537,7 @@ public abstract class Unify extends Versioning<Term> {
     public final Term resolveTerm(Term x) {
         return resolveTerm(x, false);
     }
-    final Term resolveTermRecurse(Term x) {
+    public final Term resolveTermRecurse(Term x) {
         return resolveTerm(x, true);
     }
 
@@ -567,19 +568,23 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final Subterms resolveSubs(Subterms x) {
-        //return x.transformSubs(this::resolveTerm, null);
+        return x.transformSubs(this::resolveTerm, null);
+    }
+    public final Subterms resolveSubsRecurse(Subterms x) {
         return x.transformSubs(this::resolveTermRecurse, null);
     }
 
     @Nullable public final TermList resolveListIfChanged(Subterms x) {
-        Subterms y = resolveSubs(x);
-        //Subterms y = x.transformSubs(transform(), null);
+        return resolveListIfChanged(x, false);
+    }
+
+    @Nullable public final TermList resolveListIfChanged(Subterms x, boolean recurse) {
+        Subterms y = recurse ? resolveSubsRecurse(x) : resolveSubs(x);
         if (y == null)
             return new TermList(Bool.Null); //HACK
-//        if (y!=x && y!=null) {
-        if (y != x) {
+        else if (y != x)
             return y instanceof TermList ? (TermList) y : y.toList();
-        } else
+        else
             return null;
     }
 

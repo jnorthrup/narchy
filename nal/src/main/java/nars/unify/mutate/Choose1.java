@@ -12,7 +12,6 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.SortedSet;
 
 import static nars.Op.FRAG;
@@ -50,33 +49,33 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
     }
 
-    public static boolean choose1(Ellipsis ellipsis, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
-        Term x0 = xFixed.get(0);
+    @Nullable public static Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
+
         int ys = yFree.size();
         switch (ys) {
             case 1:
                 assert (ellipsis.minArity == 0);
-                return x0.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u);
+                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? NullTermutator : null;
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
                 //TODO include volume pre-test
                 Term aa = yFree.first();
-                boolean a = Subterms.possiblyUnifiable(x0, aa, u.varBits);
+                boolean a = Subterms.possiblyUnifiable(x, aa, u.varBits);
                 Term bb = yFree.last();
-                boolean b = Subterms.possiblyUnifiable(x0, bb, u.varBits);
+                boolean b = Subterms.possiblyUnifiable(x, bb, u.varBits);
                 if (!a && !b) {
-                    return false; //impossible
+                    return null; //impossible
                 } else if (a && !b) {
-                    return x0.unify(aa, u) && ellipsis.unify(bb, u);
+                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? NullTermutator : null;
                 } else if (/*b &&*/ !a) {
-                    return x0.unify(bb, u) && ellipsis.unify(aa, u);
+                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? NullTermutator : null;
                 } //else: continue below
                 break;
 //                            default:
 //                                throw new TODO();
         }
-        return u.termutes.add(new Choose1(ellipsis, x0, yFree));
+        return new Choose1(ellipsis, x, yFree);
     }
 
     @Override
@@ -87,23 +86,19 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public @Nullable Termutator preprocess(Unify u) {
         //resolve to constant if possible
-        Term xEllipsis = u.resolveTerm(this.xEllipsis, true);
-        if (this.xEllipsis != xEllipsis) {
-            if (this.xEllipsis instanceof Ellipsis) {
-                if (!(xEllipsis instanceof Ellipsis)) {
-                    //became non-ellipsis
-                    int es = xEllipsis.op() == FRAG ? xEllipsis.subs() : 1;
-                    if (((Ellipsis) this.xEllipsis).minArity > es) {
-                        return null; //assigned to less arity than required
-                    }
-                }
+        Term xEllipsis = u.resolveTermRecurse(this.xEllipsis);
+        if (this.xEllipsis != xEllipsis && this.xEllipsis instanceof Ellipsis && !(xEllipsis instanceof Ellipsis)) {
+            //became non-ellipsis
+            int es = xEllipsis.op() == FRAG ? xEllipsis.subs() : 1;
+            if (((Ellipsis) this.xEllipsis).minArity > es) {
+                return null; //assigned to less arity than required
             }
         }
 
-        Term x = u.resolveTerm(this.x, true);
+        Term x = u.resolveTermRecurse(this.x);
 
         TermList yy = new TermList(this.yy);
-        Subterms yy2 = u.resolveSubs(yy);
+        Subterms yy2 = u.resolveSubsRecurse(yy);
         if (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2) {
             yy2 = yy2.commuted();
             int ys = yy2.subs();

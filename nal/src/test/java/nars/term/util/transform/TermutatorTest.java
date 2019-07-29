@@ -88,17 +88,16 @@ class TermutatorTest {
 
 
         assertTermutatorProducesUniqueResults(
-                new Choose2(e1, unifier,
-                        p2p3,
-                        ((Compound)p("a", "b")).toSetSorted()), 2);
+                new Choose2(e1, p2p3, ((Compound)p("a", "b")).toSetSorted()
+                ), 2);
     }
 
     @Test
     void testChoose2_3() {
 
         assertTermutatorProducesUniqueResults(
-                new Choose2(e1, unifier, p2p3,
-                        ((Compound)p("a", "b", "c")).toSetSorted()), 6);
+                new Choose2(e1, p2p3, ((Compound)p("a", "b", "c")).toSetSorted()
+                ), 6);
     }
     @Test
     void testChoose2_4() {
@@ -107,9 +106,8 @@ class TermutatorTest {
         for (int i = 0; i < 5; i++) {
             series.add(
                     assertTermutatorProducesUniqueResults(
-                            new Choose2(e1, unifier,
-                                    p2p3,
-                                    ((Compound)p("a", "b", "c", "d")).toSetSorted()), 12)
+                            new Choose2(e1, p2p3, ((Compound)p("a", "b", "c", "d")).toSetSorted()
+                            ), 12)
             );
         }
 
