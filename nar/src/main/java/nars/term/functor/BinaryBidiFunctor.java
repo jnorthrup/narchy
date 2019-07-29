@@ -66,7 +66,7 @@ public abstract class BinaryBidiFunctor extends Functor implements The {
                 return computeXfromYandXY(e, x, y, xy);
             } else if (yVar && !xVar) {
                 return computeYfromXandXY(e, x, y, xy);
-            } else if (!yVar && !xVar) {
+            } else if (!yVar /*&& !xVar*/) {
 
                 Term XY = compute(e, x, y);
                 if (XY == null)

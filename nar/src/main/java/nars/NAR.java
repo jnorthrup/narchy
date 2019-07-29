@@ -471,7 +471,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * desire goal
      */
-    @Nullable
     public Task want(Term goalTerm, Tense tense, float freq, float conf) {
         long now = time(tense);
         return want(

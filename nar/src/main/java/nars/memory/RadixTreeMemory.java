@@ -23,219 +23,216 @@ import java.util.stream.StreamSupport;
  */
 public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
-    private final float maxIterationRemovalPct = 0.05f;
-    private final float descentRate = 0.618f;
-    private final float overflowSafetyPct = 0.1f;
+	private final float maxIterationRemovalPct = 0.05f;
+	private final float descentRate = 0.618f;
+	private final float overflowSafetyPct = 0.1f;
 
 
-    public final ConceptRadixTree concepts;
+	public final ConceptRadixTree concepts;
 
 
+	private static AbstractBytes key(Term k) {
+		return TermRadixTree.termByVolume(k.concept());
+	}
 
-    private static AbstractBytes key(Term k) {
-        return TermRadixTree.termByVolume(k.concept());
-    }
+	public RadixTreeMemory(int sizeLimit) {
 
-    public RadixTreeMemory(int sizeLimit) {
+		this.concepts = new ConceptRadixTree(sizeLimit);
 
-        this.concepts = new ConceptRadixTree(sizeLimit);
+	}
 
-    }
+	@Override
+	public Stream<Concept> stream() {
+		return StreamSupport.stream(concepts.spliterator(), false);
+	}
 
-    @Override
-    public Stream<Concept> stream() {
-        return StreamSupport.stream(concepts.spliterator(), false);
-    }
+	@Override
+	public void start(NAR nar) {
+		super.start(nar);
 
-    @Override
-    public void start(NAR nar) {
-        super.start(nar);
-
-        nar.onCycle(this);
-    }
-
+		nar.onCycle(this);
+	}
 
 
-    /**
-     * since the terms are sorted by a volume-byte prefix, we can scan for removals in the higher indices of this node
-     */
-    private MyRadixTree.Node volumeWeightedRoot(Random rng) {
+	/**
+	 * since the terms are sorted by a volume-byte prefix, we can scan for removals in the higher indices of this node
+	 */
+	private MyRadixTree.Node volumeWeightedRoot(Random rng) {
 
-        List<MyRadixTree.Node> l = concepts.root.getOutgoingEdges();
-        int levels = l.size();
-
-
-        float r = rng.nextFloat();
-        r = (r * r);
+		List<MyRadixTree.Node> l = concepts.root.getOutgoingEdges();
+		int levels = l.size();
 
 
-        return l.get(Math.round((levels - 1) * (1 - r)));
-    }
-
-    private int sizeEst() {
-        return concepts.sizeEst();
-    }
+		float r = rng.nextFloat();
+		r = (r * r);
 
 
-    private static boolean removeable(Concept c) {
-        return !(c instanceof PermanentConcept);
-    }
+		return l.get(Math.round((levels - 1) * (1 - r)));
+	}
+
+	private int sizeEst() {
+		return concepts.sizeEst();
+	}
 
 
-    @Override
-    public @Nullable Concept get(Term t, boolean createIfMissing) {
-        AbstractBytes k = key(t);
-
-        ConceptRadixTree c = this.concepts;
-
-        return createIfMissing ?
-                c.putIfAbsent(k, () -> nar.conceptBuilder.apply(t, null))
-                :
-                c.get(k);
-    }
-
-    @Override
-    public void set(Term src, Concept target) {
-
-        AbstractBytes k = key(src);
-
-        concepts.acquireWriteLock();
-        try {
-            Termed existing = concepts.get(k);
-            if (existing != target && !(existing instanceof PermanentConcept)) {
-                concepts.put(k, target);
-            }
-        } finally {
-            concepts.releaseWriteLock();
-        }
-    }
-
-    @Override
-    public void clear() {
-        concepts.clear();
-    }
-
-    @Override
-    public void forEach(Consumer<? super Concept> c) {
-        concepts.forEach(c);
-    }
-
-    @Override
-    public int size() {
-        return concepts.size();
-    }
+	private static boolean removeable(Concept c) {
+		return !(c instanceof PermanentConcept);
+	}
 
 
-    @Override
-    public String summary() {
+	@Override
+	public @Nullable Concept get(Term t, boolean createIfMissing) {
+		AbstractBytes k = key(t);
 
-        return concepts.sizeEst() + " concepts";
-    }
+		ConceptRadixTree c = this.concepts;
+
+		return createIfMissing ?
+			c.putIfAbsent(k, () -> nar.conceptBuilder.apply(t, null))
+			:
+			c.get(k);
+	}
+
+	@Override
+	public void set(Term src, Concept target) {
+
+		AbstractBytes k = key(src);
+
+		concepts.acquireWriteLock();
+		try {
+			Termed existing = concepts.get(k);
+			if (existing != target && !(existing instanceof PermanentConcept)) {
+				concepts.put(k, target);
+			}
+		} finally {
+			concepts.releaseWriteLock();
+		}
+	}
+
+	@Override
+	public void clear() {
+		concepts.clear();
+	}
+
+	@Override
+	public void forEach(Consumer<? super Concept> c) {
+		concepts.forEach(c);
+	}
+
+	@Override
+	public int size() {
+		return concepts.size();
+	}
 
 
-    @Override
-    public @Nullable Concept remove(Term entry) {
-        AbstractBytes k = key(entry);
-        Concept result = concepts.get(k);
-        if (result != null) {
-            boolean removed = concepts.remove(k);
-            if (removed)
-                return result;
-        }
-        return null;
-    }
+	@Override
+	public String summary() {
+
+		return concepts.sizeEst() + " concepts";
+	}
 
 
-    private void onRemoval(Concept value) {
-        onRemove(value);
-    }
+	@Override
+	public @Nullable Concept remove(Term entry) {
+		AbstractBytes k = key(entry);
+		Concept result = concepts.get(k);
+		if (result != null) {
+			boolean removed = concepts.remove(k);
+			if (removed)
+				return result;
+		}
+		return null;
+	}
 
-    @Override
-    public void accept(NAR eachFrame) {
-        concepts.forgetNext();
-    }
+
+	private void onRemoval(Concept value) {
+		onRemove(value);
+	}
+
+	@Override
+	public void accept(NAR eachFrame) {
+		concepts.forgetNext();
+	}
 
 
-    public class ConceptRadixTree extends ConcurrentRadixTree<Concept> {
+	public class ConceptRadixTree extends ConcurrentRadixTree<Concept> {
 
-        private final int sizeLimit;
+		private final int sizeLimit;
 
-        ConceptRadixTree(int sizeLimit) {
-            this.sizeLimit = sizeLimit;
-        }
+		ConceptRadixTree(int sizeLimit) {
+			this.sizeLimit = sizeLimit;
+		}
 
-        @Override
-        public final Concept put(Concept value) {
-            return super.put(key(value.term()), value);
-        }
+		@Override
+		public final Concept put(Concept value) {
+			return super.put(key(value.term()), value);
+		}
 
-        @Override
-        public boolean onRemove(Concept r) {
-            if (r instanceof Concept) {
-                Concept c = r;
-                if (removeable(c)) {
-                    onRemoval(r);
-                    return true;
-                } else {
-                    return false;
-                }
-            }
-            return false;
-        }
+		@Override
+		public boolean onRemove(Concept r) {
 
-        private void forgetNext() {
+			Concept c = r;
+			if (removeable(c)) {
+				onRemoval(r);
+				return true;
+			} else {
+				return false;
+			}
 
-            int sizeBefore = sizeEst();
+		}
 
-            int overflow = sizeBefore - sizeLimit;
+		private void forgetNext() {
 
-            if (overflow < 0)
-                return;
+			int sizeBefore = sizeEst();
 
-            int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
+			int overflow = sizeBefore - sizeLimit;
+
+			if (overflow < 0)
+				return;
+
+			int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
 //        if (overflow < maxConceptsThatCanBeRemovedAtATime)
 //            return;
 
-            if ((((float)overflow)/ sizeLimit) > overflowSafetyPct) {
-                //major collection, strong
-                concepts.acquireWriteLock();
-            } else {
-                //minor collection, weak
-                if (!concepts.tryAcquireWriteLock())
-                    return;
-            }
+			if ((((float) overflow) / sizeLimit) > overflowSafetyPct) {
+				//major collection, strong
+				concepts.acquireWriteLock();
+			} else {
+				//minor collection, weak
+				if (!concepts.tryAcquireWriteLock())
+					return;
+			}
 
-            try {
-                SearchResult s = null;
+			try {
+				SearchResult s = null;
 
-                while (/*(iterationLimit-- > 0) &&*/ ((sizeEst() - sizeLimit) > maxConceptsThatCanBeRemovedAtATime)) {
+				while (/*(iterationLimit-- > 0) &&*/ ((sizeEst() - sizeLimit) > maxConceptsThatCanBeRemovedAtATime)) {
 
-                    Random rng = nar.random();
+					Random rng = nar.random();
 
-                    Node subRoot = volumeWeightedRoot(rng);
+					Node subRoot = volumeWeightedRoot(rng);
 
-                    if (s == null)
-                        s = concepts.random(subRoot, descentRate, rng);
+					if (s == null)
+						s = concepts.random(subRoot, descentRate, rng);
 
-                    Node f = s.found;
+					Node f = s.found;
 
-                    if (f != null && f != subRoot) {
-                        int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
+					if (f != null && f != subRoot) {
+						int subTreeSize = concepts.sizeIfLessThan(f, maxConceptsThatCanBeRemovedAtATime);
 
-                        if (subTreeSize > 0) {
-                            concepts.removeWithWriteLock(s, true);
-                        }
+						if (subTreeSize > 0) {
+							concepts.removeWithWriteLock(s, true);
+						}
 
-                        s = null;
-                    }
+						s = null;
+					}
 
-                }
-            } finally {
-                concepts.releaseWriteLock();
-            }
+				}
+			} finally {
+				concepts.releaseWriteLock();
+			}
 
 
-        }
+		}
 
-    }
+	}
 }

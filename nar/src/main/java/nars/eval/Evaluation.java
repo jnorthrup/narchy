@@ -237,59 +237,51 @@ public class Evaluation extends Termerator {
 
                         }
 
-                        if (clauses == null || clauses.isEmpty())
+                        if (clauses.isEmpty())
                             break main;
 
-                         if (z != null || substing) {
 
+                        int clausesRemain = clauses.size();
+                        for (int i = 0; i < clausesRemain; i++) {
+                            Term ci = clauses.get(i);
+                            Term p;
+                            if (z != null)
+                                p = ci.replace(a, z);
+                            else
+                                p = ci;
 
-                             int clausesRemain = clauses.size();
-                             for (int i = 0, clausesSize = clausesRemain; i < clausesSize; i++) {
-                                 Term ci = clauses.get(i);
-                                 Term p;
-                                 if (z != null)
-                                     p = ci.replace(a, z);
-                                 else
-                                     p = ci;
+                            Term q = substing ? p.replace(subs) : p;
 
-                                 Term q;
-                                 if (substing)
-                                     q = p.replace(subs);
-                                 else
-                                     q = p;
+                            if (ci != q) {
 
-                                 if (ci != q) {
-
-                                     if (q instanceof Compound) {
-                                         @Nullable ArrayHashSet<Term> qq = e.clauseFind((Compound) q);
-                                         if (qq!=null) {
-                                             //merge new sub-clauses into the clause queue
-                                             for (Term qqq : qq) {
-                                                 if (!qqq.equals(a)) {
-                                                     if (clauses.add(qqq))
-                                                         clausesRemain++;
-                                                 }
-                                             }
-                                         }
-                                     }
+                                if (q instanceof Compound) {
+                                    @Nullable ArrayHashSet<Term> qq = e.clauseFind((Compound) q);
+                                    if (qq!=null) {
+                                        //merge new sub-clauses into the clause queue
+                                        for (Term qqq : qq) {
+                                            if (!qqq.equals(a)) {
+                                                if (clauses.add(qqq))
+                                                    clausesRemain++;
+                                            }
+                                        }
+                                    }
+                                }
 
 //                                     if (q==Null /*|| !Functor.isFunc(q)*/) {
-                                        clauses.remove(ci);
-                                        clausesRemain--;
+                                   clauses.remove(ci);
+                                   clausesRemain--;
 //                                     } else {
 //
 //                                         clauses.setFast(i, q);
 //
 //
 //                                     }
-                                 }
+                            }
 
 
-                             }
-                             if (clausesRemain == 0)
-                                 break main;
-
-                         }
+                        }
+                        if (clausesRemain == 0)
+                            break main;
 
                         break; //changed so start again
                     }

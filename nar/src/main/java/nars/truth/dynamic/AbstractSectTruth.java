@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import nars.Task;
-import nars.task.util.TaskRegion;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 

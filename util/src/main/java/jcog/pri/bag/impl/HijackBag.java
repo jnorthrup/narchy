@@ -516,7 +516,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 //        p.priSub(CACHE_SURVIVE_COST);
 //    }
 
-    abstract public void priAdd(V entry, float amount);
+//    abstract public void priAdd(V entry, float amount);
 
     @Nullable
     @Override

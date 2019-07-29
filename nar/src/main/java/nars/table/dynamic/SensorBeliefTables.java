@@ -241,9 +241,9 @@ public class SensorBeliefTables extends BeliefTables {
         if (stretched)
             return 0;
 
-        float deltaFreq = prev != next ? Math.abs(prev.freq() - next.freq()) : 0; //TODO use a moving average or other anomaly/surprise detection
+        float deltaFreq = Math.abs(prev.freq() - next.freq()); //TODO use a moving average or other anomaly/surprise detection
 
-        long sepCycles  = stretched ? 0 : Math.abs(next.start() - prev.end());
+        long sepCycles  = Math.abs(next.start() - prev.end());
         double deltaTime = 1 - NAL.evi(1, sepCycles, dur);
 
         return Util.or(deltaFreq , deltaTime);

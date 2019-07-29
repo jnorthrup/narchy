@@ -129,16 +129,13 @@ public class HijackMemory extends Memory {
 
     public @Nullable Concept create(Term key) {
         Concept kc = nar.conceptBuilder.apply(key);
-        if (kc != null) {
-            PLink<Concept> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, kc)));
-            if (inserted == null) {
-                return kc;
-            } else {
-                boost(inserted, getBoost);
-                return inserted.get();
-            }
+        PLink<Concept> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, kc)));
+        if (inserted == null) {
+            return kc;
+        } else {
+            boost(inserted, getBoost);
+            return inserted.get();
         }
-        return null;
     }
 
     private float priPut(Term key, Concept kc) {

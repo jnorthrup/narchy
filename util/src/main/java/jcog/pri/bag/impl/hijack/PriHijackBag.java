@@ -35,9 +35,5 @@ abstract public class PriHijackBag<K,V extends UnitPrioritizable> extends Hijack
         return key.pri();
     }
 
-    @Override
-    public void priAdd(V entry, float amount) {
-        entry.priAdd(amount);
-    }
 
 }

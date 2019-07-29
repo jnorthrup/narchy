@@ -39,7 +39,6 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
             extractXterm = $.p($.p(xInTask), Derivation.Task);
             costPath += xInTask.length;
         } else {
-            assert(xInTask==null);
             extractX = xInBelief.length == 0 ? BELIEF : (t, b) -> b.subPath(xInBelief);
             extractXterm = $.p($.p(xInBelief), Derivation.Belief);
             costPath += xInBelief.length;

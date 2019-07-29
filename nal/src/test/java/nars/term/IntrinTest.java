@@ -152,10 +152,11 @@ public class IntrinTest {
 
     }
 
+    static final Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
+
     @Test
     void testAnomVectorNegations() {
 
-        Term[] x = {Anom.the(3), Anom.the(1), Anom.the(2).neg()};
 
         IntrinSubterms av = new IntrinSubterms(x);
         ArrayTermVector bv = new ArrayTermVector(x);

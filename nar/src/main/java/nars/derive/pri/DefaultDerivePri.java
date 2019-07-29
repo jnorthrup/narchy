@@ -3,6 +3,7 @@ package nars.derive.pri;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
+import nars.NAL;
 import nars.Task;
 import nars.derive.model.Derivation;
 import nars.truth.Truth;
@@ -40,7 +41,7 @@ public class DefaultDerivePri implements DerivePri {
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
-    public final FloatRange polarityImportance = new FloatRange(0f, 0f, 1f);
+    public final FloatRange polarityImportance = new FloatRange(0.05f, 0f, 1f);
 
     @Override
     public float pri(Task t, Derivation d) {
@@ -174,7 +175,11 @@ public class DefaultDerivePri implements DerivePri {
 
 
     @Override public float prePri(float priBase, Truth concTruth) {
-        float boost = concTruth!=null ? (/*(concSingle ? 1 : 2) * */ concTruth.conf()) : 0; /* biased against questions */
+        float boost = concTruth!=null ?
+            (/*(concSingle ? 1 : 2) * */ concTruth.conf())
+            :
+            NAL.truth.TRUTH_EPSILON; /* biased against questions */
+
         //return priBase + boost;
         //return Math.max(ScalarValue.EPSILON, p * boost);
         return Util.or(priBase, boost);

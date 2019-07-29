@@ -238,8 +238,8 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public void priMult(float belief, float goal, float question, float quest) {
-        boolean changed = false;
-        changed |= merge(0, belief, mult, Changed) != 0;
+        boolean changed;
+        changed = merge(0, belief, mult, Changed) != 0;
         changed |= merge(1, goal, mult, Changed) != 0;
         changed |= merge(2, question, mult, Changed) != 0;
         changed |= merge(3, quest, mult, Changed) != 0;

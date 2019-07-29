@@ -11,15 +11,12 @@ import static nars.Op.ATOM;
 /* indexed anonymous target */
 public final class Anom extends Intrin {
 
-    private static final byte ANOM_SUBTYPE = 1;
-    private static final byte ANOM_HEADER = IO.opAndSubType(ATOM, ANOM_SUBTYPE);
-
     private final byte[] bytes;
 
 
     private Anom(byte i) {
         super(i);
-        this.bytes = new byte[] { ANOM_HEADER, i };
+        this.bytes = new byte[] {IO.opAndSubType(ATOM, (byte) 1), i };
     }
 
     @Override

@@ -5,7 +5,6 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
 
 /** TODO impl a generic volume comparison constraint to replace both Bigger and Smaller */
 @Deprecated public final class Smaller extends RelationConstraint {

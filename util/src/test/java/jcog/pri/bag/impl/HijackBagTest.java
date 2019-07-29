@@ -6,7 +6,7 @@ import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.BagTest;
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
+import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import org.junit.jupiter.api.Test;
 
@@ -34,7 +34,7 @@ class HijackBagTest {
         for (int reprobes : new int[] { 2, 4, 8 }) {
             for (int capacity : new int[] { 2, 4, 8, 16, 32, 64, 96 }) {
                 testPutMinMaxAndUniqueness(
-                        new DefaultHijackBag(max, capacity, reprobes));
+                        new PLinkHijackBag(max, capacity, reprobes));
             }
         }
     }
@@ -47,7 +47,7 @@ class HijackBagTest {
     void testGrowToCapacity() {
         int cap = 16;
         int reprobes = 3;
-        DefaultHijackBag<String> b = new DefaultHijackBag<>(max, cap, reprobes);
+        PLinkHijackBag<String> b = new PLinkHijackBag<>(max, cap, reprobes);
         assertEquals(0, b.size());
 //        assertEquals(b.spaceMin(), b.space());
         assertEquals(cap, b.capacity());
@@ -85,12 +85,12 @@ class HijackBagTest {
 
     @Test
     void testRemoveByKey() {
-        BagTest.testRemoveByKey(new DefaultHijackBag(plus, 2, 3));
+        BagTest.testRemoveByKey(new PLinkHijackBag(plus, 2, 3));
     }
 
     @Test
     void testBasicInsertionRemovalHijack() {
-        testBasicInsertionRemoval(new DefaultHijackBag(max, 1, 1));
+        testBasicInsertionRemoval(new PLinkHijackBag(max, 1, 1));
     }
 
     @Test
@@ -98,7 +98,7 @@ class HijackBagTest {
 
         int n = 256;
 
-        Bag<String,PriReference<String>> a = new DefaultHijackBag(max, n, 4);
+        Bag<String,PriReference<String>> a = new PLinkHijackBag(max, n, 4);
         for (int i = 0; i < n*8; i++) {
             a.put(new PLink('x' + Integer.toString(Float.floatToIntBits(1f/i),5), ((float)(i))/(n)));
         }
@@ -139,7 +139,7 @@ class HijackBagTest {
             int rep = 4;
             int batch = 4;
             int extraSpace = Math.round(cap *0.4f);
-            DefaultHijackBag bag = new DefaultHijackBag(plus, cap * extraSpace, rep) {
+            PLinkHijackBag bag = new PLinkHijackBag(plus, cap * extraSpace, rep) {
 
                 @Override
                 public void onRemove(Object value) {
@@ -165,7 +165,7 @@ class HijackBagTest {
     @Test
     void testHijackResize() {
         Random rng = rng();
-        DefaultHijackBag b = new DefaultHijackBag(PriMerge.max, 0, 7);
+        PLinkHijackBag b = new PLinkHijackBag(PriMerge.max, 0, 7);
         BagTest.populate(b, rng, 10, 20, 0f, 1f, 0.5f);
         
 

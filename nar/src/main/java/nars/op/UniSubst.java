@@ -143,7 +143,7 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
             cc = c.replace(x, y); //result can be determined by substitution
         else if (yv && !xv)
             cc = c.replace(y, x); //result can be determined by substitution
-        else if (!xv && !yv && x.op()!=y.op())
+        else if (!xv && x.op()!=y.op())
             cc = null; //impossible TODO check if this is always the case, and whether Terms.possiblyUnifiable(x, y) hel
         else
             cc = unify(c, x, y, var, strict);

@@ -182,8 +182,8 @@ public class DynTaskify extends TaskList {
             } else {
 
                 long[] u = Tense.union(0, this);
-                if (u == null)
-                    return null;
+//                if (u == null)
+//                    return null;
 
                 s = u[0];
                 e = u[1];

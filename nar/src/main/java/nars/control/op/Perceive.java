@@ -157,22 +157,16 @@ public enum Perceive {
 //                    if (it.hasXternal())
 //                        it = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(it);
 
-            t = Task.clone(x,
+            return Task.clone(x,
                     it,
                     $.t(y == True ? 1 : 0, w.nar.confDefault(answerPunc)),
                     answerPunc,
                     x.start(), x.end());
 
-            if (t == null) {
-                //throw new WTF();
-                return null;
-            }
-
         } else {
             //throw new WTF();
             return null;
         }
-        return t;
     }
 
     private static Task rememberTransformed(Task input, Term y, byte punc) {

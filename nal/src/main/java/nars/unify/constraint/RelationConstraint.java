@@ -7,7 +7,6 @@ import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 

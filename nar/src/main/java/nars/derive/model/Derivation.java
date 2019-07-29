@@ -224,7 +224,7 @@ public class Derivation extends PreDerivation {
     static private void assertAnon(Term x, @Nullable Term y, @Nullable nars.Task cause) {
         TermTransformException e = null;
         if (y == null)
-            e = new TermTransformException(x, y, "invalid Derivation Anon: null");
+            e = new TermTransformException(x, null, "invalid Derivation Anon: null");
         else if (y instanceof Bool)
             e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");
         else if (NAL.DEBUG && x instanceof Compound && x.op() != y.op())

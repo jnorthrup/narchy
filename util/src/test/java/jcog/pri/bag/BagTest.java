@@ -6,7 +6,7 @@ import jcog.pri.*;
 import jcog.pri.bag.impl.ArrayBag;
 import jcog.pri.bag.impl.HijackBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
-import jcog.pri.bag.impl.hijack.DefaultHijackBag;
+import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ArrayTensor;
@@ -34,7 +34,7 @@ public class BagTest {
 
 
         assertEquals(1, c.capacity());
-        if (!(c instanceof DefaultHijackBag)) {
+        if (!(c instanceof PLinkHijackBag)) {
             assertEquals(0, c.size());
             assertTrue(c.isEmpty());
         }

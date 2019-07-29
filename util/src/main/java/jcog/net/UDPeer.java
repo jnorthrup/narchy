@@ -23,7 +23,6 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.util.ArrayUtil;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
@@ -158,13 +157,6 @@ public class UDPeer extends UDP {
             }
 
             @Override
-            public void priAdd(UDProfile entry, float amount) {
-
-            }
-
-
-            @NotNull
-            @Override
             public Integer key(UDProfile value) {
                 return value.id;
             }
@@ -175,7 +167,6 @@ public class UDPeer extends UDP {
 
         seen = new PriHijackBag<>(SEEN_CAPACITY, 3) {
 
-            @NotNull
             @Override
             public UDPeer.Msg key(Msg x) {
                 return x;

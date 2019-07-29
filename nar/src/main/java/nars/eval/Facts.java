@@ -74,7 +74,7 @@ public class Facts implements Function<Term, Stream<Term>> {
                                 return null;
 
                             Term ct = c.term();
-                            if (t && !f) {
+                            if (t) {
                                 return ct;
                             } else /*if (!t && f)*/ {
                                 return ct.neg();
