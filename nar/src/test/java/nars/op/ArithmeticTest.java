@@ -160,12 +160,23 @@ class ArithmeticTest {
     }
 
     @Test
-    void testComparator() {
+    void testComparator_Inline() {
         TermTest.assertEq("-1", n.eval($$("cmp(1,2)")));
+    }
+    @Test
+    void testComparator1() {
         TermTest.assertEq("cmp(1,2,-1)", n.eval($$("cmp(1,2,#x)")));
+    }
+    @Test
+    void testComparator2() {
         TermTest.assertEq("cmp(#1,2,#2)", n.eval($$("cmp(#1,2,#x)")));
-
+    }
+    @Test
+    void testComparator3() {
         assertArithmetic("(f(1)==>f(2))", "[((f(#1)==>f(#2))&&cmp(#1,#2,-1)), ((f(#1)==>f(add(#1,1)))&&equal(#1,1))]");
+    }
+    @Test
+    void testComparator4() {
         assertArithmetic("(f(2)==>f(1))", "[((f(#1)==>f(#2))&&cmp(#2,#1,-1)), ((f(add(#1,1))==>f(#1))&&equal(#1,1))]");
     }
 

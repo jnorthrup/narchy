@@ -56,11 +56,11 @@ public class MappedSubtermsTest {
 
     @Test void testRepeatedSubterms() {
         {
-            Term s = $$("(0,0,0,0)");
+            Term s = $$("(abc,abc,abc,abc)");
             assertEquals(RemappedSubterms.RepeatedSubterms.class, s.subterms().getClass());
             assertEquals(4, s.subs());
             assertEquals(5, s.volume());
-            assertEquals("(0,0,0,0)", s.toString());
+            assertEquals("(abc,abc,abc,abc)", s.toString());
         }
         {
             Subterms s = new RemappedSubterms.RepeatedSubterms($$$("#a"), 3);

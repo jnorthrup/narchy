@@ -70,7 +70,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
                 x = y;
             }
 
-            {
+
                 if (x instanceof AbstractTask.TasksArray) {
                     //HACK
                     for (Task tt : ((AbstractTask.TasksArray) x).tasks) {
@@ -78,12 +78,12 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
 //                            throw new WTF();//cycle
                         run(tt, w);
                     }
-                } else {
+                } else if (x!=null) {
                     do {
                         x = x.next(w);
                     } while (x != null);
                 }
-            } /*else if (x != null) {
+            /* } else if (x != null) {
                 throw new WTF("unrecognized task type: " + x.getClass() + '\t' + x);
             }*/
 //        } catch (Throwable e) {

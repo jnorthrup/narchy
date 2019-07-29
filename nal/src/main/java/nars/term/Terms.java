@@ -24,6 +24,7 @@ import java.io.PrintStream;
 import java.util.Collection;
 import java.util.Random;
 import java.util.SortedSet;
+import java.util.TreeSet;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -530,6 +531,42 @@ public enum Terms {
         return x instanceof Compound && ((xs & Op.VAR_PATTERN.bit)!=0) && ((Compound)x).OR(t -> t instanceof Ellipsislike);
     }
 
+	public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
+		if (a instanceof Term && a.equals(b))
+			return (Term) a;
+
+		if (Term.commonStructure(a,b)) {
+
+			TreeSet<Term> ab = a.collect(b.subs() > 3 ? (b.toSet()::contains) : b::contains, new TreeSet());
+			int ssi = ab == null ? 0 : ab.size();
+			switch (ssi) {
+				case 0: return Null;
+				case 1: return ab.first();
+				default:
+					return o.the(ab);
+			}
+
+		} else
+			return Null;
+	}
+
+	public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
+		boolean bothTerms = a instanceof Term && b instanceof Term;
+		if (bothTerms && a.equals(b))
+			return (Term) a;
+
+		TreeSet<Term> t = new TreeSet<>();
+		a.addAllTo(t);
+		b.addAllTo(t);
+		if (bothTerms) {
+			int as = a.subs(), bs = b.subs();
+			int maxSize = Math.max(as, bs);
+			if (t.size() == maxSize) {
+				return (Term) (as > bs ? a : b);
+			}
+		}
+		return o.the(t);
+	}
 }
 
 

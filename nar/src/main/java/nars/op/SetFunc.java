@@ -9,6 +9,7 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.functor.UnaryParametricBidiFunctor;
 import nars.term.util.SetSectDiff;
@@ -17,7 +18,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
-import java.util.TreeSet;
 
 import static nars.term.atom.Bool.Null;
 
@@ -33,7 +33,7 @@ public class SetFunc {
         @Nullable
         @Override public Term apply(Term a, Term b) {
 
-            return union(a.op(), a.subterms(), b.subterms() );
+            return Terms.union(a.op(), a.subterms(), b.subterms() );
         }
 
     };
@@ -75,47 +75,10 @@ public class SetFunc {
 
         @Override
         public Term apply(Term a, Term b) {
-            return intersect(a.op(), a.subterms(), b.subterms());
+            return Terms.intersect(a.op(), a.subterms(), b.subterms());
         }
 
     };
-
-    public static Term intersect(/*@NotNull*/ Op o, Subterms a, Subterms b) {
-        if (a instanceof Term && a.equals(b))
-            return (Term) a;
-
-        if (Term.commonStructure(a,b)) {
-
-            TreeSet<Term> ab = a.collect(b.subs() > 3 ? (b.toSet()::contains) : b::contains, new TreeSet());
-            int ssi = ab == null ? 0 : ab.size();
-            switch (ssi) {
-                case 0: return Null;
-                case 1: return ab.first();
-                default:
-                    return o.the(ab);
-            }
-
-        } else
-            return Null;
-    }
-
-    public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
-        boolean bothTerms = a instanceof Term && b instanceof Term;
-        if (bothTerms && a.equals(b))
-            return (Term) a;
-
-        TreeSet<Term> t = new TreeSet<>();
-        a.addAllTo(t);
-        b.addAllTo(t);
-        if (bothTerms) {
-            int as = a.subs(), bs = b.subs();
-            int maxSize = Math.max(as, bs);
-            if (t.size() == maxSize) {
-                return (Term) (as > bs ? a : b);
-            }
-        }
-        return o.the(t);
-    }
 
     /**
      * sort(input, [mappingFunction=identity], output)

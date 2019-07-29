@@ -49,8 +49,11 @@ public class Evaluator extends HeapTermTransform {
     }
 
     @Nullable ArrayHashSet<Term> clauseFind(Compound x) {
-        ArrayHashSet<Term> clauses = new ArrayHashSet<>(0);
+        return clauseFind(x, new ArrayHashSet<>(0));
+    }
 
+    @Nullable
+    public ArrayHashSet<Term> clauseFind(Compound x, ArrayHashSet<Term> clauses) {
         x.recurseTerms(s -> s instanceof Compound && s.hasAll(Op.FuncBits), X -> {
             if (Functor.isFunc(X)) {
 //                if (clauses.contains(X))
@@ -90,7 +93,6 @@ public class Evaluator extends HeapTermTransform {
             case 1: return clauses;
             default: return sortTopologically(clauses);
         }
-
     }
 
     private ArrayHashSet<Term> sortTopologically(ArrayHashSet<Term> a) {

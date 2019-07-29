@@ -48,9 +48,9 @@ class InterningTermBuilderTest {
 
         InterningTermBuilder t = new InterningTermBuilder();
         assertTrue(InterningTermBuilder.sortCanonically);
-        Subterms s = t.subterms((Op)null, $$("x").neg(), $$("y"));
+        Subterms s = t.subterms((Op)null, $$("x1").neg(), $$("y1"));
         assertTrue(s instanceof RemappedSubterms, ()->s.getClass().toString());
-        assertEquals("((--,x),y)", s.toString());
+        assertEquals("((--,x1),y1)", s.toString());
     }
 
 //    @Test
