@@ -152,12 +152,12 @@ public class Evaluation extends Termerator {
 		if (clauses != null && !clauses.isEmpty()) {
 
 			Term prev;
-			int mutStart;
+//			int mutStart;
 			//iterate until stable
 			main:
 			do {
 				prev = y;
-				mutStart = termutators();
+//				mutStart = termutators();
 				Iterator<Term> ii = clauses.iterator();
 				while (ii.hasNext()) {
 
@@ -170,7 +170,7 @@ public class Evaluation extends Termerator {
 						//try resolving
 						Term aa = e.apply(a);
 						if (aa == a) {
-							//no change. no such functor
+							//no change. no such functor Exception?
 						} else {
 							a = aa;
 						}
@@ -183,11 +183,13 @@ public class Evaluation extends Termerator {
 					Subterms aArgs = a.sub(0).subterms();
 					Term b = aFunc.apply(this, aArgs);
 
-					boolean newSubs = now() != vStart;
+					boolean newSubsts = now() != vStart;
 
-					if (b instanceof Bool && !newSubs) {
+					if (b instanceof Bool && !newSubsts) {
 						if (b == True) {
 							//continue
+                            y = x.equals(y) ? True : a;
+                            break main;
 						} else if (b == False) {
 							y = x.equals(y) ? False : a.neg();
 							break main;
@@ -205,7 +207,7 @@ public class Evaluation extends Termerator {
 							break main;
 					}
 
-					if (newSubs) {
+					if (newSubsts) {
 						y = y.replace(subs);
 						if (!(y instanceof Compound))
 							break main;
