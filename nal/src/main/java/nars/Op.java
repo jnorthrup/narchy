@@ -210,6 +210,7 @@ public enum Op {
 
     ;
 
+    private static final Op[] ops = Op.values();
 
     public static final String DISJstr = "||";
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
@@ -274,12 +275,12 @@ public enum Op {
     /**
      * True wrapped in a subterm as the only element
      */
-    public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(True);
+//    public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(True);
     /**
      * False wrapped in a subterm as the only element
      */
     public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
-    public static final Compound[] EmptyCompoundArray = new Compound[0];
+//    public static final Compound[] EmptyCompoundArray = new Compound[0];
     public static final Predicate<Term> statementLoopyContainer = (x) -> !x.op().isAny(Op.PROD.bit | Op.INH.bit | Op.SIM.bit | Op.IMPL.bit);
     @Deprecated
     public static final String DIFFe = "~";
@@ -288,7 +289,6 @@ public enum Op {
      * does this help?  Op.values() bytecode = INVOKESTATIC
      * but accessing this is GETSTATIC
      */
-    private static final Op[] ops = Op.values();
     private static final int[] NALLevelEqualAndAbove = new int[8 + 1];
     /**
      * specifier for any NAL level

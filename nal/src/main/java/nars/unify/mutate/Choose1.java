@@ -49,13 +49,16 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
     }
 
-    @Nullable public static Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
-
+    @Nullable public static Termutator choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree, Unify u) {
         int ys = yFree.size();
+
+        if (xEllipsis.minArity < ys - 1)
+            return null; //impossible
+
         switch (ys) {
             case 1:
-                assert (ellipsis.minArity == 0);
-                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? NullTermutator : null;
+                assert (xEllipsis.minArity == 0);
+                return x.unify(yFree.first(), u) && xEllipsis.unify(Fragment.empty, u) ? NullTermutator : null;
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
@@ -67,15 +70,15 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 if (!a && !b) {
                     return null; //impossible
                 } else if (a && !b) {
-                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? NullTermutator : null;
+                    return x.unify(aa, u) && xEllipsis.unify(bb, u) ? NullTermutator : null;
                 } else if (/*b &&*/ !a) {
-                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? NullTermutator : null;
+                    return x.unify(bb, u) && xEllipsis.unify(aa, u) ? NullTermutator : null;
                 } //else: continue below
                 break;
 //                            default:
 //                                throw new TODO();
         }
-        return new Choose1(ellipsis, x, yFree);
+        return new Choose1(xEllipsis, x, yFree);
     }
 
     @Override
@@ -100,23 +103,26 @@ public class Choose1 extends Termutator.AbstractTermutator {
         TermList yy = new TermList(this.yy);
         Subterms yy2 = u.resolveSubsRecurse(yy);
         if (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2) {
-            yy2 = yy2.commuted();
-            int ys = yy2.subs();
+
             if (xEllipsis instanceof Ellipsis) {
-                //TODO check for arity constraint
-                if (((Ellipsis)xEllipsis).minArity < ys - 1)
-                    return null; //impossible
-               if (ys == 1)
-                   return Termutator.result(xEllipsis.unify(Fragment.empty, u) && x.unify(yy.sub(0), u));
+
+                return Choose1.choose1((Ellipsis)xEllipsis, x, yy2.toSetSorted(), u);
 
             } else {
+                //can this happen?
+                yy2 = yy2.commuted();
+                int ys = yy2.subs();
+
                 //TODO reduce to Subterms.unifyCommutive test
                 if (ys == 1 && xEllipsis.op()==FRAG && xEllipsis.subs()==0) {
                     return Termutator.result(x.unify(yy.sub(0), u));
                 }
+
+                //TODO test any other non-choice cases
+                return new Choose1(xEllipsis, x, yy2.arrayShared());
             }
-            //TODO test any other non-choice cases
-            return new Choose1(xEllipsis, x, yy2.arrayShared());
+
+
         }
 
         return this;
