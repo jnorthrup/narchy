@@ -66,8 +66,6 @@ public class HullDesc {
 		this.vcount = vcount;
 		this.vertices = vertices;
 		this.vertexStride = stride;
-		this.normalEpsilon = 0.001f;
-		this.maxVertices = 4096;
 	}
 
 	public boolean hasHullFlag(int flag) {

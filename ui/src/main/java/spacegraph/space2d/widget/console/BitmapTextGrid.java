@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget.console;
 
-import com.googlecode.lanterna.TextCharacter;
-import com.googlecode.lanterna.terminal.virtual.VirtualTerminal;
+
 import com.jogamp.opengl.GL2;
 import jcog.Log;
 import jcog.tree.rtree.rect.RectFloat;
@@ -286,20 +285,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     protected abstract boolean renderText();
 
 
-    @Deprecated
-    void redraw(VirtualTerminal.BufferLine bufferLine, int column, int row) {
-        redraw(bufferLine.getCharacterAt(column), column, row);
-    }
 
-    @Deprecated
-    public void redraw(TextCharacter character, int columnIndex, int rowIndex) {
-        Color backgroundColor = character.getBackgroundColor().toColor();
-        Color foregroundColor = character.getForegroundColor().toColor();
-        redraw(character.getCharacter(), columnIndex, rowIndex, foregroundColor, backgroundColor,
-                character.isUnderlined(),
-                character.isCrossedOut()
-        );
-    }
 
 //    public void redraw(char c, int columnIndex, int rowIndex, Color3f foregroundColor, Color3f backgroundColor) {
 //        redraw(c, columnIndex, rowIndex, foregroundColor.toAWT(), backgroundColor.toAWT(), false, false);

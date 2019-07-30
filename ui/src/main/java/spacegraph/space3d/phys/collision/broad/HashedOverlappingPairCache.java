@@ -421,7 +421,7 @@ public class HashedOverlappingPairCache extends OverlappingPairCache {
 			return null;
 		}
 
-		assert (index < overlappingPairArray.size());
+		//assert (index < overlappingPairArray.size());
 
 		return overlappingPairArray.get(index);
 		

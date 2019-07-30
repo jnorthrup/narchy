@@ -68,7 +68,7 @@ public class Color3f {
 
 
     public Color3f() {
-        x = y = z = 0;
+
     }
 
     public Color3f(float r, float g, float b) {

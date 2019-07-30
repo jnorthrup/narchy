@@ -787,8 +787,8 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         int child2 = m_child2[node];
 
         if (child1 == NULL_NODE) {
-            assert (child1 == NULL_NODE);
-            assert (child2 == NULL_NODE);
+            //assert (child1 == NULL_NODE);
+            //assert (child2 == NULL_NODE);
             assert (m_height[node] == 0);
             return;
         }
@@ -812,7 +812,7 @@ public class DynamicTreeFlatNodes implements BroadPhaseStrategy {
         int child2 = m_child2[node];
 
         if (child1 == NULL_NODE) {
-            assert (child1 == NULL_NODE);
+            //assert (child1 == NULL_NODE);
             assert (child2 == NULL_NODE);
             assert (m_height[node] == 0);
             return;

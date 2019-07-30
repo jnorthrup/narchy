@@ -84,7 +84,6 @@ public class ManifoldPoint {
      */
     public ManifoldPoint() {
         localPoint = new v2();
-        normalImpulse = tangentImpulse = 0f;
         id = new ContactID();
     }
 

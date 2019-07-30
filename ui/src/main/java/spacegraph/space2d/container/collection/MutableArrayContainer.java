@@ -43,7 +43,8 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
     public final S setAt(int index, S s) {
         if (s != setAt(index, s, true)) {
             layout();
-        } return s;
+        }
+        return s;
     }
 
     /** returns the removed element */

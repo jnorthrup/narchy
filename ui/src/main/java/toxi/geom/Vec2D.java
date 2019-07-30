@@ -165,7 +165,6 @@ import java.util.Random;
      * Creates a new zero vector
      */
     public Vec2D() {
-        x = y = 0;
     }
 
     /**

@@ -14,7 +14,6 @@ import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 

@@ -231,7 +231,7 @@ public class HeightfieldTerrainShape extends ConcaveShape
 		
 		assert minHeight <= maxHeight : "bad min/max height";
 		assert upAxis >= 0 && upAxis < 3 : "bad upAxis--should be in range [0,2]";
-		assert hdt != PHY_ScalarType.PHY_UCHAR || hdt != PHY_ScalarType.PHY_FLOAT || hdt != PHY_ScalarType.PHY_SHORT : "Bad height data type enum";
+		//assert hdt != PHY_ScalarType.PHY_UCHAR || hdt != PHY_ScalarType.PHY_FLOAT || hdt != PHY_ScalarType.PHY_SHORT : "Bad height data type enum";
 
 		
 

@@ -14,7 +14,10 @@ import nars.term.atom.Atomic;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.DataInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.function.Consumer;
 
 import static nars.Op.COMMAND;

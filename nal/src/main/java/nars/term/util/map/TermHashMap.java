@@ -25,8 +25,8 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
     public TermHashMap() {
         this(new ShortObjectHashMap<>(16),
-                new UnifiedMap<>(16)
-                //new HashMap<>(16, 0.99f)
+                //new UnifiedMap<>(16)
+                new HashMap<>(16)
         );
     }
 
@@ -51,6 +51,10 @@ public class TermHashMap<X> extends AbstractMap<Term, X> {
 
 
         other.clear();
+        if (other instanceof UnifiedMap) {
+            ((UnifiedMap)other).trimToSize();
+        }
+
         //other = null;
     }
 

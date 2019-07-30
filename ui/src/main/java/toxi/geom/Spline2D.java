@@ -284,7 +284,7 @@ public class Spline2D {
 
     public void updateCoefficients() {
         final int numP = getNumPoints();
-        if (points == null || (points != null && points.length != numP)) {
+        if (points == null || points.length != numP) {
             coeffA = new Vec2D[numP];
             delta = new Vec2D[numP];
             bi = new float[numP];

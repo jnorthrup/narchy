@@ -213,7 +213,7 @@ public class Simplify2D {
 		FasterList<v2> oldVertices = new FasterList<>(vertices);
 		vertices.clear();
 		for (int i = 0; i < oldVertices.size(); ++i) {
-			if (mergeMe[i] || newNVertices == 0 || currIndex == newNVertices) continue;
+			if (mergeMe[i] || currIndex == newNVertices) continue;
 			
 			vertices.add(oldVertices.get(i));
 			++currIndex;

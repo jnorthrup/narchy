@@ -93,20 +93,13 @@ public enum MatrixOps { ;
 			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
 			str.append(rowPref).append(": [");
 			for (int j = 0; j < m[i].length - 1 && j < collim; j++) {
-				String formatted = formatDouble(m[i][j]);
-				str = str.append(formatted);
-				str = str.append(colDelimiter);
+				str.append(formatDouble(m[i][j])).append(colDelimiter);
 			}
-			str = str.append(formatDouble(m[i][m[i].length - 1]));
+			str.append(formatDouble(m[i][m[i].length - 1])).append(collim == Integer.MAX_VALUE ? "]" : "...]");
 
-			if( collim == Integer.MAX_VALUE) {
-				str.append(']');
-			} else {
-				str.append("...]");
-			}
-			if (i < m.length - 1) {
-				str = str.append(sentenceDelimiter);
-			}
+			if (i < m.length - 1)
+				str.append(sentenceDelimiter);
+
 		}
 		if(btmrowlim<0) return str.toString();
 		while(i<(m.length-btmrowlim)) i++;
@@ -115,18 +108,14 @@ public enum MatrixOps { ;
 			String rowPref = i < 1000 ? String.format("%03d", i) : String.format("%04d", i);
 			str.append(rowPref).append(": [");
 			for (int j = 0; j < m[i].length - 1 && j < collim; j++) {
-				str = str.append(formatDouble(m[i][j]));
-				str = str.append(colDelimiter);
+				str.append(formatDouble(m[i][j])).append(colDelimiter);
 			}
-			str = str.append(formatDouble(m[i][m[i].length - 1]));
+			str.append(formatDouble(m[i][m[i].length - 1]));
 
-			if( collim > m[i].length ) { 
-				str.append(']');
-			} else {
-				str.append(", ...]");
-			}
+			str.append( collim > m[i].length ? "]" : ", ...]");
+
 			if (i < m.length - 1) {
-				str = str.append(sentenceDelimiter);
+				str.append(sentenceDelimiter);
 			}
 		}
 		return str.toString();

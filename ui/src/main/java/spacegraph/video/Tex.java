@@ -161,9 +161,9 @@ public class Tex {
                 data.setBuffer(buffer);
             } else {
 
-                TextureData dataBefore = this.data;
-                if (dataBefore != null)
-                    dataBefore.destroy();
+                TextureData dataBefore = null;
+//                if (dataBefore != null)
+//                    dataBefore.destroy();
 
                 if (color.getNumColorComponents()==1) {
                     //grayscale

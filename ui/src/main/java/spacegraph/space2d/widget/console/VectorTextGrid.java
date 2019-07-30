@@ -1,6 +1,6 @@
 package spacegraph.space2d.widget.console;
 
-import com.googlecode.lanterna.TextCharacter;
+
 import com.jogamp.opengl.GL2;
 import jcog.TODO;
 import spacegraph.space2d.ReSurface;
@@ -15,7 +15,20 @@ import java.awt.*;
  * */
 @Deprecated public abstract class VectorTextGrid extends AbstractConsoleSurface {
 
-    private Color bg;
+    @Deprecated
+    protected static class TextCharacter {
+
+        static final float[] WHITE = new float[] { 1, 1, 1};
+
+        public char c;
+        public float[] fgColor, bgColor;
+
+        public TextCharacter(char c) {
+            this.c = c;
+            this.fgColor = WHITE;
+        }
+    }
+    private float[] bg;
 
     private static final float fontThickness = 3f;
     private static final Color TRANSLUCENT = new Color(Transparency.TRANSLUCENT);
@@ -70,7 +83,7 @@ import java.awt.*;
         gl.glLineWidth(fontThickness);
 
         
-        bg = TRANSLUCENT;
+        bg = null;
 
         for (int row = 0; row < rows; row++) {
 
@@ -102,7 +115,7 @@ import java.awt.*;
                 
 
 
-                char cc = visible(c.getCharacter());
+                char cc = visible(c.c);
 
 
                 if (cc != 0) {
@@ -112,8 +125,8 @@ import java.awt.*;
                     
                     
 
-                    Color fg = c.getForegroundColor().toColor();
-                    gl.glColor4f(fg.getRed() / 256f, fg.getGreen() / 256f, fg.getBlue() / 256f, fgAlpha);
+                    float[] fg = c.fgColor;
+                    gl.glColor4f(fg[0], fg[1], fg[2], fgAlpha);
 
                     HersheyFont.textNext(gl, cc, col / charScaleX);
 
@@ -183,11 +196,9 @@ import java.awt.*;
      */
     protected boolean setBackgroundColor(GL2 gl, TextCharacter ch, int col, int row) {
         if (ch != null) {
-            bg = ch.getBackgroundColor().toColor();
-
-
-            gl.glColor3f(bg.getRed() / 256f, bg.getGreen() / 256f, bg.getBlue() / 256f);
-            
+            bg = ch.bgColor;
+            if (bg!=null)
+                gl.glColor3f(bg[0], bg[1], bg[2]);
             return true;
         }
 

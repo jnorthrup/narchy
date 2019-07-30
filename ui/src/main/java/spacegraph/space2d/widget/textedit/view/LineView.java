@@ -138,9 +138,6 @@ public class LineView extends TextEditRenderable implements BufferLineListener, 
 
         gl.glTranslatef(position.x - x1 + dx, dy, position.z);
 
-        if (scale!=null)
-            gl.glScalef(scale.x, scale.y, scale.z);
-
         gl.glColor4f(color.x, color.y, color.z, color.w);
 
         //TODO line height, margin etc

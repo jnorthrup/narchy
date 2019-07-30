@@ -60,7 +60,7 @@ public class MassData {
     /**
      * The position of the shape's centroid relative to the shape's origin.
      */
-    public final v2 center;
+    public final v2 center = new v2();
     /**
      * The rotational inertia of the shape about the local origin.
      */
@@ -70,8 +70,6 @@ public class MassData {
      * Blank mass data
      */
     public MassData() {
-        mass = I = 0f;
-        center = new v2();
     }
 
     /**
@@ -82,7 +80,7 @@ public class MassData {
     private MassData(MassData md) {
         mass = md.mass;
         I = md.I;
-        center = md.center.clone();
+        center.set(md.center);
     }
 
     public void set(MassData md) {

@@ -25,6 +25,7 @@ package spacegraph.space3d.phys.collision.narrow;
 
 import jcog.math.v3;
 import spacegraph.space3d.phys.BulletGlobals;
+import spacegraph.space3d.phys.collision.ContactDestroyedCallback;
 import spacegraph.space3d.phys.collision.ContactProcessedCallback;
 import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
@@ -179,20 +180,9 @@ public class PersistentManifold {
 		if (oldPtr != null) {
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-			if (pt.userPersistentData != null && globals.getContactDestroyedCallback() != null) {
-				globals.getContactDestroyedCallback().contactDestroyed(pt.userPersistentData);
+			ContactDestroyedCallback cb = globals.getContactDestroyedCallback();
+			if (cb != null) {
+				cb.contactDestroyed(pt.userPersistentData);
 				pt.userPersistentData = null;
 			}
 

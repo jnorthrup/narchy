@@ -109,9 +109,6 @@ final class Scene {
                         switch (s.next()) {
                             case "position:":
                                 position = Utils.readVector3(s);
-                                if (position == null) {
-                                    return;
-                                }
                                 break;
                             case "color:":
                                 color = s.nextInt(16);

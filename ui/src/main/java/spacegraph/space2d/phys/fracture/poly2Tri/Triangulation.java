@@ -5,11 +5,11 @@ import jcog.math.v2;
 import java.util.ArrayList;
 
 public class Triangulation {
-    /**
-     * Set this to TRUE to obtain file with name debugFileName with the
-     * log about triangulation
-     */
-    private static final boolean debug = false;
+//    /**
+//     * Set this to TRUE to obtain file with name debugFileName with the
+//     * log about triangulation
+//     */
+//    private static final boolean debug = false;
 
     /**
      * If debug == true file with this name will be created during triangulation.
@@ -50,15 +50,12 @@ public class Triangulation {
      */
     private static ArrayList<int[]> triangulate(int numContures, int[] numVerticesInContures, v2[] vertices) {
         Polygon p = new Polygon(numContures, numVerticesInContures, vertices);
-        if (debug) {
-            
-            p.setDebugOption(debug);
-        } else {
-            p.setDebugOption(false);
-        }
-        if (p.triangulation())
-            return p.triangles();
-        else
-            return null;
+//        if (debug) {
+//
+//            p.setDebugOption(debug);
+//        } else {
+//            p.setDebugOption(false);
+//        }
+        return p.triangulation() ? p.triangles() : null;
     }
 }

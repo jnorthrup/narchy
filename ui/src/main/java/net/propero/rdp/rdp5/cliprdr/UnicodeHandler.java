@@ -80,10 +80,6 @@ public class UnicodeHandler extends TypeHandler {
                 s = e.toString();
             }
 
-            
-            s = s.replace('\n', (char) 0x0a);
-            
-            
             s = Utilities_Localised.strReplaceAll(s, "" + (char) 0x0a, ""
                     + (char) 0x0d + (char) 0x0a);
             byte[] sBytes = s.getBytes();

@@ -175,7 +175,7 @@ abstract public class Surface implements Surfacelike {
         if (p == parent)
             return false; //no change
 
-        assert(p == null || p == parent);
+        assert p == null;
 
 
         //if (p != null) {  throw new WTF(); }

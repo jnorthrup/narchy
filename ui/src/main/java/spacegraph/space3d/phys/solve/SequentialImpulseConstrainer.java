@@ -1077,7 +1077,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                     cpd.persistentLifeTime = cp.lifeTime;
                     
                 }
-                assert (cpd != null);
+                //assert (cpd != null);
 
                 cpd.jacDiagABInv = 1f / jacDiagAB;
 

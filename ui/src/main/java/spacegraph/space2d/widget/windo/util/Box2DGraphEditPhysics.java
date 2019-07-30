@@ -696,11 +696,11 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
                 RevoluteJoint rj = (RevoluteJoint) ((Snake.this.joints).get(finalI - 1));
                 if (rj != null) {
-                    if (finalI != 0) {
+//                    if (finalI != 0) {
                         rj.getLocalAnchorB().set(+eleLen, 0);
-                    } else {
-                        rj.getLocalAnchorB().set(0, 0);
-                    }
+//                    } else {
+//                        rj.getLocalAnchorB().set(0, 0);
+//                    }
                 }
 
                 RevoluteJoint rk = (RevoluteJoint) ((Snake.this.joints).get(finalI));

@@ -598,7 +598,7 @@ public enum Draw {
 
         Transform st = src.transform;
 
-        tmpQ = st.getRotation(tmpQ);
+        st.getRotation(tmpQ);
 
         if (twist != 0)
             tmpQ.setAngle(0, 1, 0, twist);

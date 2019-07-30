@@ -103,11 +103,13 @@ public class MetaFrame extends Bordering  {
 
     @Override
     public boolean attachChild(Surface s) {
-        return setAt(C, s)!=s;
+        setAt(C, s);
+        return true;
     }
     @Override
     public boolean detachChild(Surface s) {
-        return setAt(C, null) != null;
+        setAt(C, null);
+        return true;
     }
 
 

@@ -55,9 +55,9 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
 
 
                     if (outerAction != null)
-                        outerAction.value(bb, e);
+                        outerAction.value(bb, true);
                     if (action!=null)
-                        action.value((T)bb, e);
+                        action.value((T)bb, true);
                 } else {
 
                     if (this.buttons.AND(cc -> cc==bb || !cc.on())) {

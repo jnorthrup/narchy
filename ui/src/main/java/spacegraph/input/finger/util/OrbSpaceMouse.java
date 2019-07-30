@@ -157,7 +157,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         Spatial prevPick = pickedSpatial;
         Spatial pickedSpatial = null;
 
-        picked = cray != null ? cray.collidable : null;
+        picked = cray.collidable;
         if (picked != null) {
             Object t = picked.data();
             if (t instanceof Spatial) {

@@ -1094,7 +1094,7 @@ public class Dynamics2D {
                     }
 
 
-                    float alpha0 = bA.sweep.alpha0;
+                    float alpha0;
 
                     if (bA.sweep.alpha0 < bB.sweep.alpha0) {
                         alpha0 = bB.sweep.alpha0;
@@ -1102,6 +1102,8 @@ public class Dynamics2D {
                     } else if (bB.sweep.alpha0 < bA.sweep.alpha0) {
                         alpha0 = bA.sweep.alpha0;
                         bB.sweep.advance(alpha0);
+                    } else {
+                        alpha0 = bA.sweep.alpha0;
                     }
 
                     assert (alpha0 < 1.0f);

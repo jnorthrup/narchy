@@ -177,7 +177,7 @@ class FNMatch {
                             matched = true;
                             break;
                         }
-                        if (c == ']' && !matched)
+                        if (c == ']')
                             break;
                     }
                     if (!not && !matched)

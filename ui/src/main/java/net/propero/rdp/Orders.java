@@ -247,18 +247,12 @@ public class Orders {
 
         if (Bpp == 1) {
             byte[] pixel = Bitmap.decompress(width, height, size, data, 1);
-            if (pixel != null)
-                cache.putBitmap(cache_id, cache_idx, new Bitmap(Bitmap
-                        .convertImage(pixel, 1), width, height, 0, 0), 0);
-            else
-                logger.warn("Failed to decompress bitmap");
+            cache.putBitmap(cache_id, cache_idx, new Bitmap(Bitmap
+                    .convertImage(pixel, 1), width, height, 0, 0), 0);
         } else {
             int[] pixel = Bitmap.decompressInt(width, height, size, data, Bpp);
-            if (pixel != null)
-                cache.putBitmap(cache_id, cache_idx, new Bitmap(pixel, width,
-                        height, 0, 0), 0);
-            else
-                logger.warn("Failed to decompress bitmap");
+            cache.putBitmap(cache_id, cache_idx, new Bitmap(pixel, width,
+                    height, 0, 0), 0);
         }
     }
 
@@ -321,11 +315,6 @@ public class Orders {
                 bmpdataInt = Bitmap.decompressInt(width, height, bufsize, data,
                         Bpp);
 
-            if (bmpdataInt == null) {
-                logger.debug("Failed to decompress bitmap data");
-                
-                return;
-            }
             bitmap = new Bitmap(bmpdataInt, width, height, 0, 0);
         } else {
             for (y = 0; y < height; y++)
@@ -349,19 +338,14 @@ public class Orders {
                     height, 0, 0);
         }
 
-        
 
-        if (bitmap != null) {
-            cache.putBitmap(cache_id, cache_idx, bitmap, 0);
-            
-            if ((flags & PERSIST) != 0)
-                PstCache.pstcache_put_bitmap(cache_id, cache_idx, bitmap_id,
-                        width, height, width * height * Bpp, bmpdata);
-        } else {
-            logger.debug("process_bmpcache2: ui_create_bitmap failed");
-        }
+        cache.putBitmap(cache_id, cache_idx, bitmap, 0);
 
-        
+        if ((flags & PERSIST) != 0)
+            PstCache.pstcache_put_bitmap(cache_id, cache_idx, bitmap_id,
+                    width, height, width * height * Bpp, bmpdata);
+
+
     }
 
     /**

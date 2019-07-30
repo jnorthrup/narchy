@@ -127,25 +127,21 @@ public class Wiring extends Dragging {
                 Class tb = ((TypedPort) end).type;
                 if (!ta.equals(tb) /* TODO && direct ancestor comparison */ ) {
                     Class aa = ta, bb = tb;
-                    if (aa.equals(bb)) {
-                        //ok
-                    } else {
 
-                        List<Function> ab = CAST.applicable(aa, bb), ba = CAST.applicable(bb, aa);
+                    List<Function> ab = CAST.applicable(aa, bb), ba = CAST.applicable(bb, aa);
 
-                        if (!ab.isEmpty() || !ba.isEmpty()) {
-                            //wire with adapter
-                            PortAdapter adapter = new PortAdapter(aa, ba, bb, ab);
-                            g.addUndecorated(adapter).pos(start.bounds.mean(end.bounds).scale(0.5f));
+                    if (!ab.isEmpty() || !ba.isEmpty()) {
+                        //wire with adapter
+                        PortAdapter adapter = new PortAdapter(aa, ba, bb, ab);
+                        g.addUndecorated(adapter).pos(start.bounds.mean(end.bounds).scale(0.5f));
 
-                            TypedPort ax = adapter.port(true);
-                            TypedPort ay = adapter.port(false);
+                        TypedPort ax = adapter.port(true);
+                        TypedPort ay = adapter.port(false);
 
-                            g.addWire(new Wire(start, ax));
-                            g.addWire(new Wire(ay, end));
+                        g.addWire(new Wire(start, ax));
+                        g.addWire(new Wire(ay, end));
 
-                            return true;
-                        }
+                        return true;
                     }
                 }
             }

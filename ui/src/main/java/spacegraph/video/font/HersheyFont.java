@@ -29,7 +29,7 @@ public final class HersheyFont {
         String[] lines = null;
 
 
-        for (int tries = 0; tries < 2 && lines == null; tries++) {
+        for (int tries = 0; tries < 2; tries++) {
             try {
                 String font =
                         "futural";
@@ -102,7 +102,7 @@ public final class HersheyFont {
         rightPos = (hspec.charAt(9)) - offsetR;
 
         int curX, curY;
-        boolean penUp = true;
+//        boolean penUp = true;
         ByteArrayList currentSeg = new ByteArrayList(8);
 
         int ss = spec.length() - 1;
@@ -111,7 +111,7 @@ public final class HersheyFont {
             char ci = spec.charAt(i), cii = spec.charAt(i + 1);
 
             if (cii == 'R' && ci == ' ') {
-                penUp = true;
+//                penUp = true;
                 segments.add(currentSeg.toArray());
                 currentSeg = new ByteArrayList(8);
                 continue;

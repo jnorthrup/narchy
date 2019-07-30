@@ -176,9 +176,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
     }
 
     public float getLength() {
-        if (arcLenIndex == null
-                || (arcLenIndex != null && arcLenIndex.length != vertices
-                        .size())) {
+        if (arcLenIndex == null || arcLenIndex.length != vertices.size()) {
             arcLenIndex = new float[vertices.size()];
         }
         float arcLen = 0;
