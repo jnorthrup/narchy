@@ -63,10 +63,14 @@
 
 
     //anti-conjunction containing anti-goal
-//     G, C, is(C,"&&"), eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-//     G, C, is(C,"&&"), eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjWithout(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
-//    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjWithout(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
-//    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjWithout(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:Task)
+    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:Task)
+//        G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+//        G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:Task)
+    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Punctuation:Ask, Time:Task)
+    //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
+    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
 
     //conjunction goal induction
 //    G, C, eventOf(C,G), --eventOfNeg(C,G), task("!") |- C, (Goal:DeductionWeak, Time:TaskEvent)
