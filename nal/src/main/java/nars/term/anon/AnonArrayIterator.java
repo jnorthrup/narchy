@@ -20,7 +20,6 @@ public class AnonArrayIterator implements Iterator<Term> {
 
     @Override
     public Term next() {
-
         return Intrin.term(values[this.current++]);
     }
 

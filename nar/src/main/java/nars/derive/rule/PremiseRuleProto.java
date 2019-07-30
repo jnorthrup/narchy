@@ -71,7 +71,7 @@ public class PremiseRuleProto extends PremiseRule {
             boolean te = Terms.hasEllipsisRecurse(taskPattern), be = Terms.hasEllipsisRecurse(beliefPattern);
             if (te || be) {
                 if (te && !be) dir = +1;
-                else if (be && !te) dir = -1;
+                else if (!te && be) dir = -1;
             }
         }
         if (dir == 0) {

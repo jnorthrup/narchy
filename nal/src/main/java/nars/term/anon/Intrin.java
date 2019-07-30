@@ -1,6 +1,7 @@
 package nars.term.anon;
 
 import jcog.Skill;
+import jcog.Util;
 import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
@@ -88,51 +89,20 @@ import static nars.Op.ImgInt;
         return (i & 0xff00)>>8;
     }
 
-
     /** returns 0 if the target is not anon ID or a negation of one */
     public static short id(Term t) {
-//
-//        if (t instanceof Int) {
-//            int i = ((AnonID)t).i;
-//            if (!Int.isAnon(i))
-//                return 0;
-//        }
-        if (t instanceof Atomic) {
-            return ((Atomic)t).intrin();
-        }
-        if (t instanceof Neg.NegIntrin) {
+
+        if (t instanceof Neg.NegIntrin)
             return (short) -((Neg.NegIntrin)t).sub;
-        }
 
-//        if (t instanceof Neg) {
-//
-//
-//            t = t.unneg();
-//            if (t instanceof Intrin)
-//                return (short) -((Intrin)t).i;
-//            //else: continue
-//        }
+        if (t instanceof Neg)
+            t = t.unneg();
 
-        return 0;
+        return t instanceof Atomic ? ((Atomic) t).intrin() : 0;
     }
 
     public static boolean intrinsic(Term[] t) {
-        for (Term x : t) {
-            //assert (!(x instanceof EllipsisMatch)) : "ellipsis match should not be a subterm of ANYTHING";
-            if (Intrin.intrin(x))
-                continue;
-
-            if (!(x instanceof Neg /*Compound*/))
-                return false; //not a NEG
-            if (!Intrin.intrin(x.unneg()))
-                return false;
-//            //HACK
-//            if (y instanceof Int) {
-//                if (!Int.isAnon(((Int) y).i))
-//                    return false;
-//            }
-        }
-        return true;
+        return Util.and(Intrin::intrin, t);
     }
 
     public static boolean intrin(Term x) {

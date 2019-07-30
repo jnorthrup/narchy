@@ -31,7 +31,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     /**
-     * assumes the array contains only AnonID instances
+     * assumes the array contains only Intrin-able terms
      */
     public IntrinSubterms(Term... s) {
         super(s);
@@ -44,7 +44,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             boolean neg = hasNeg && ss instanceof Neg;
             if (neg)
                 ss = ss.unneg();
-            short tt = Intrin.id(ss);
+            short tt = Intrin.id(ss); //assert(tt!=0);
             t[i] = neg ? ((short)-tt) : tt;
         }
 
@@ -190,31 +190,41 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     @Override
     public int count(Op matchingOp) {
-        short match;
         switch (matchingOp) {
             case NEG:
                 return subsNeg();
+
             case ATOM:
-                match = Intrin.ANOMs;
-                break;
+                return countByGroup(Intrin.ANOMs) + countByGroup(Intrin.CHARs);
+
             case VAR_PATTERN:
-                match = Intrin.VARPATTERNs;
-                break;
+                return countByGroup(Intrin.VARPATTERNs);
+
             case VAR_QUERY:
-                match = Intrin.VARQUERYs;
-                break;
+                return countByGroup(Intrin.VARQUERYs);
+
             case VAR_DEP:
-                match = Intrin.VARDEPs;
-                break;
+                return countByGroup(Intrin.VARDEPs);
+
             case VAR_INDEP:
-                match = Intrin.VARINDEPs;
-                break;
+                return countByGroup(Intrin.VARINDEPs);
+
+            case IMG:
+                return countByGroup(Intrin.IMGs);
+
+            case INT:
+                return countByGroup(Intrin.INT_POSs) + countByGroup(Intrin.INT_NEGs);
+
             default:
                 return 0;
         }
+
+    }
+
+    public int countByGroup(short group) {
         int count = 0;
         for (short s: subterms) {
-            if (s > 0 && Intrin.group(s) == match)
+            if (s > 0 && Intrin.group(s) == group)
                 count++;
         }
         return count;
@@ -222,10 +232,9 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     private int subsNeg() {
         int count = 0;
-        for (short s: subterms) {
+        for (short s: subterms)
             if (s < 0)
                 count++;
-        }
         return count;
     }
 

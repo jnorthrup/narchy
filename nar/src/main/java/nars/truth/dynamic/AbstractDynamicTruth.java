@@ -68,7 +68,6 @@ abstract public class AbstractDynamicTruth {
         return bt;
     }
 
-    @Nullable
     public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> table(AbstractDynamicTruth... models) {
         return (Term t, boolean beliefOrGoal) ->
                 Util.map(m -> new DynamicTruthTable(t, m, beliefOrGoal), new BeliefTable[models.length], models);
