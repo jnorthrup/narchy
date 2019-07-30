@@ -49,16 +49,16 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
     }
 
-    @Nullable public static Termutator choose1(Ellipsis xEllipsis, Term x, SortedSet<Term> yFree, Unify u) {
+    @Nullable public static Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
         int ys = yFree.size();
 
-        if (xEllipsis.minArity < ys - 1)
+        if (ellipsis.minArity > ys - 1)
             return null; //impossible
 
         switch (ys) {
             case 1:
-                assert (xEllipsis.minArity == 0);
-                return x.unify(yFree.first(), u) && xEllipsis.unify(Fragment.empty, u) ? NullTermutator : null;
+                assert (ellipsis.minArity == 0);
+                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? NullTermutator : null;
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
@@ -70,15 +70,15 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 if (!a && !b) {
                     return null; //impossible
                 } else if (a && !b) {
-                    return x.unify(aa, u) && xEllipsis.unify(bb, u) ? NullTermutator : null;
+                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? NullTermutator : null;
                 } else if (/*b &&*/ !a) {
-                    return x.unify(bb, u) && xEllipsis.unify(aa, u) ? NullTermutator : null;
+                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? NullTermutator : null;
                 } //else: continue below
                 break;
 //                            default:
 //                                throw new TODO();
         }
-        return new Choose1(xEllipsis, x, yFree);
+        return new Choose1(ellipsis, x, yFree);
     }
 
     @Override

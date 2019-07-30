@@ -36,7 +36,7 @@
 
 
  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
- Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, polarizeRandom(Y), novel), (Punctuation:AskAll, Time:Task)
+ Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y), hasBelief()   |- substitute(Z, X, polarizeBelief(Y), novel), (Punctuation:AskAll, Time:Task)
  //Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:Task)
     //   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
     //   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)

@@ -63,16 +63,21 @@ public class Choose2 extends Termutator.AbstractTermutator {
     }
 
     @Nullable public static Termutator choose2(Ellipsis ellipsis, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
-        Term[] xx = Terms.commute(xFixed);
-        if (!u.var(xx[0]) || !u.var(xx[1])) {
-            assert (xx.length == 2);
+//        int ys = yFree.size();
+//        if (ellipsis.minArity > ys - 2)
+//            return null; //impossible
+
+        Term a = xFixed.get(0), b = xFixed.get(1);
+        boolean av = u.var(a), bv = u.var(b);
+        if (!av || !bv) {
             Compound yy = $.sFast(yFree);
-            if (!Subterms.possiblyUnifiable(xx[0], yy, u.varBits) ||
-                !Subterms.possiblyUnifiable(xx[1], yy, u.varBits)) {
+            if (!av && !Subterms.possiblyUnifiableAssumingNotEqual(a, yy, u.varBits) ||
+                (!bv && !Subterms.possiblyUnifiableAssumingNotEqual(b, yy, u.varBits))) {
                 return null;
             }
         }
-        return new Choose2(ellipsis, xx, yFree);
+
+        return new Choose2(ellipsis, Terms.commute(xFixed), yFree);
     }
 
     @Override

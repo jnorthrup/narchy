@@ -326,11 +326,12 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                     } else {
                         //no matches possible but need one
                         if (ys >= 1) {
-                            @Nullable Termutator t1 = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
-                            if (t1 == null)
+                            @Nullable Termutator t = Choose1.choose1(ellipsis, xMatch.get(0), yFree, u);
+                            if (t == null)
                                 return false;
                             else {
-                                u.termutes.add(t1);
+                                if (t!=Termutator.NullTermutator)
+                                    u.termutes.add(t);
                                 return true;
                             }
                         }
@@ -339,11 +340,12 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
 
                 case 2: {
                     if (ys >= 2) {
-                        @Nullable Termutator t1 = Choose2.choose2(ellipsis, xMatch, yFree, u);
-                        if (t1 == null)
+                        @Nullable Termutator t = Choose2.choose2(ellipsis, xMatch, yFree, u);
+                        if (t == null)
                             return false;
                         else {
-                            u.termutes.add(t1);
+                            if (t!=Termutator.NullTermutator)
+                                u.termutes.add(t);
                             return true;
                         }
                     }
