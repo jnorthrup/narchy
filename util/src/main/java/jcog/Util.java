@@ -2260,10 +2260,12 @@ public enum Util {
 
     public static <X> X[] map(int from, int to, IntFunction<X[]> arrayizer, IntFunction<X> build) {
         assert (to >= from);
-        X[] x = arrayizer.apply(to - from);
-        for (int i = from, j = 0; i < to; ) {
+        return map(from, to, build, arrayizer.apply(to - from));
+    }
+
+    private static <X> X[] map(int from, int to, IntFunction<X> build, X[] x) {
+        for (int i = from, j = 0; i < to; )
             x[j++] = build.apply(i++);
-        }
         return x;
     }
 

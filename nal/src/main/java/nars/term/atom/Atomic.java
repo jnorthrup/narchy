@@ -1,6 +1,5 @@
 package nars.term.atom;
 
-import jcog.Texts;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -21,7 +20,6 @@ import java.util.function.BiPredicate;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
-import static java.lang.Integer.MIN_VALUE;
 import static nars.Op.EmptySubterms;
 import static nars.term.atom.Bool.Null;
 
@@ -210,12 +208,12 @@ public interface Atomic extends Term {
             default: {
                 if (quoteable(id, l)) {
 
-                    if (l > 1 /* already handled single digit cases in the above switch */ && Character.isDigit(id.charAt(0))) {
-
-                        int i = Texts.i(id, MIN_VALUE);
-                        if (i != MIN_VALUE)
-                            return Int.the(i);
-                    }
+//                    if (l > 1 /* already handled single digit cases in the above switch */ && Character.isDigit(id.charAt(0))) {
+//
+//                        int i = Texts.i(id, MIN_VALUE);
+//                        if (i != MIN_VALUE)
+//                            return Int.the(i);
+//                    }
 
                     return $.quote(id);
                 } else {

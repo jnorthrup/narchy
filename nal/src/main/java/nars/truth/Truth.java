@@ -20,6 +20,7 @@
  */
 package nars.truth;
 
+import com.google.common.io.ByteArrayDataOutput;
 import jcog.Texts;
 import jcog.Util;
 import nars.NAL;
@@ -29,7 +30,6 @@ import nars.truth.proj.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInput;
-import java.io.DataOutput;
 import java.io.IOException;
 
 import static jcog.WTF.WTF;
@@ -261,7 +261,7 @@ public interface Truth extends Truthed {
         return confSafe(w2cSafeDouble(evi), confRes);
     }
 
-    static void write(Truth t, DataOutput out) throws IOException {
+    static void write(Truth t, ByteArrayDataOutput out)  {
         out.writeFloat(t.freq());
         out.writeFloat(t.conf());
     }

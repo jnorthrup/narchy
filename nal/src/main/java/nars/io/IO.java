@@ -77,7 +77,7 @@ public class IO {
     /**
      * with Term first
      */
-    private static void bytes(ByteArrayDataOutput out, Task t) throws IOException {
+    private static void bytes(ByteArrayDataOutput out, Task t)  {
 
 
         byte p = t.punc();
@@ -105,15 +105,15 @@ public class IO {
     }
 
 
-    private static void writePriority(DataOutput out, Prioritized t) throws IOException {
+    private static void writePriority(ByteArrayDataOutput out, Prioritized t)  {
         out.writeFloat(t.priElseZero());
     }
 
-    private static void writeBudget(DataOutput out, Prioritized t) throws IOException {
+    private static void writeBudget(ByteArrayDataOutput out, Prioritized t)  {
         writePriority(out, t);
     }
 
-    public static void writeEvidence(DataOutput out, long[] evi) throws IOException {
+    public static void writeEvidence(ByteArrayDataOutput out, long[] evi)  {
         int evil = evi.length;
         out.writeByte(evil);
         //TODO use zigzag delta encoding
@@ -165,19 +165,11 @@ public class IO {
         return bytes(x, dos).arrayCopy();
     }
 
-    @Nullable
     public static DynBytes bytes(Task x, DynBytes dos) {
-        try {
 
+        dos.clear();
+        IO.bytes(dos, x);
 
-            dos.clear();
-            IO.bytes(dos, x);
-
-
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
         return dos;
     }
 

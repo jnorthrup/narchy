@@ -302,7 +302,6 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                         break; //done
                     }
 
-                    e = null;
                     //done but recycle to get the stamp
                 }
             } else {
@@ -313,8 +312,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
                 setFast(0, null); //pop the top, and retry with remaining
                 invalids = true;
-                e = null;
             }
+            //e = null;
+            e.clear();
 
             if (invalids || conflicts > 0)
                 removeNulls();

@@ -76,8 +76,6 @@ public final class ClassNodeInitializer
 
 
                 in = getInputStream(ownerClass);
-                if (in == null)
-                    throw new IOException(ownerClass + " not found");
                 reader = new ClassReader(closer.register(in));
                 reader.accept(this, ClassReader.SKIP_FRAMES);
 

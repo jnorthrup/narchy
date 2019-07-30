@@ -610,7 +610,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
 
                         zeroOrMore(sequence(
                                 sepArgSep(),
-                                allowInternalOp ? AnyOperatorOrTerm() : Term()
+                                /*allowInternalOp ? AnyOperatorOrTerm() :*/ Term()
                         )),
 
                 s(),
