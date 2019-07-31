@@ -211,13 +211,8 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
                 z() + dz);
     }
 
-    public void scale(float sx, float sy, float sz) {
+    public SimpleSpatial scale(float sx, float sy, float sz) {
 
-
-        
-
-
-                    
 
         if (shape instanceof SimpleBoxShape) {
             ((SimpleBoxShape)shape).setSize(sx, sy, sz);
@@ -244,6 +239,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
 
         reactivate();
+        return this;
     }
 
     

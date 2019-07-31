@@ -267,7 +267,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
         tHv.disable(video.gl);    ////TTTTTTTTTTTTTTT
     }
 
-    private DynamicListSpace<X> add(Spatial<X>... s) {
+    public DynamicListSpace<X> add(Spatial<X>... s) {
         DynamicListSpace<X> l = new DynamicListSpace<>() {
 
             final List<Spatial<X>> ls = new FasterList<Spatial<X>>().with(s);
@@ -281,7 +281,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
         return l;
     }
 
-    private SpaceDisplayGraph3D<X> add(AbstractSpace<X> c) {
+    public SpaceDisplayGraph3D<X> add(AbstractSpace<X> c) {
         if (inputs.add(c))
             c.start(this);
         return this;

@@ -1,6 +1,5 @@
 package nars.term.anon;
 
-import jcog.data.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -8,7 +7,6 @@ import nars.term.atom.Interval;
 import nars.term.util.map.ByteAnonMap;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.var.UnnormalizedVariable;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 /**

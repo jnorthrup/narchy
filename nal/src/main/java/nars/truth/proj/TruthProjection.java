@@ -214,13 +214,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 //HACK temporary strategy
                 boolean disjointOrNonOverlapping = true;
                 int count = 0;
-                overlapDisjoint: for (int i = 1; i < ss; i++) {
-                    TaskComponent I = get(i);
+                overlapDisjoint: for (int i = 0; i < ss; i++) {
+                    TaskComponent I = items[i];
                     if (!I.valid())
                         continue;
                     Task ii = I.task;
-                    for (int j = 0; j < i; j++) {
-                        TaskComponent J = get(j);
+                    for (int j = i; j < ss; j++) {
+                        TaskComponent J = items[j];
                         if (!J.valid())
                             continue;
                         Task jj = J.task;

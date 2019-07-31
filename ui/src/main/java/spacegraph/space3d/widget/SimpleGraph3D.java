@@ -24,18 +24,10 @@ import java.util.stream.StreamSupport;
  */
 public class SimpleGraph3D<X> extends DynamicListSpace<X> {
 
-
-
-
     /** default */
     protected static final SpaceWidget.SimpleNodeVis<SpaceWidget<?>> defaultVis = w -> {
 
-
-
         w.scale(16, 16, 2);
-
-        
-        
 
         Draw.colorHash(w.id, w.shapeColor);
 
@@ -46,8 +38,8 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
             x.a = 1;
             x.width = x.pri()*4;
             
-            x.attraction = 1;
-            x.attractionDist = 1;
+            x.attraction = 0.1f;
+            x.attractionDist = 8;
         });
     };
 
@@ -146,20 +138,12 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         List<Spatial<X>> n2 = new FasterList();
 
         nodes.forEach((x)->{
-        
-            
-            
-
-            DefaultSpaceWidget<X> src =
-                    
-                    cache.computeIfAbsent(x, DefaultSpaceWidget::new);
+            DefaultSpaceWidget<X> src = cache.computeIfAbsent(x, DefaultSpaceWidget::new);
 
             edges.apply(x).forEach((X edge) ->
             
                     src.edges.add(new EDraw<>(
-                            src,
-                            
-                            cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
+                            src, cache.computeIfAbsent(edge, DefaultSpaceWidget::new)
                             , 0.5f))
             );
 

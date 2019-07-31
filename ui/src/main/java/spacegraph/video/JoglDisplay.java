@@ -132,7 +132,7 @@ abstract public class JoglDisplay extends SpaceGraph {
 
 
 
-    protected void perspective(GL2 gl) {
+    public void perspective(GL2 gl) {
 
 
         gl.glMatrixMode(GL_PROJECTION);
