@@ -321,7 +321,6 @@ public class Derivation extends PreDerivation {
 
 
         Term _beliefTerm;
-        boolean beliefVarShift;
         if (nextBelief != null) {
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
@@ -339,9 +338,11 @@ public class Derivation extends PreDerivation {
                     //false; //unshifted, structural only;
                     //true;
         }
-        beliefVarShift =
-                //true;
-                !_beliefTerm.equalsRoot(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
+
+        //TODO not whether to shift, but which variable (0..n) to shift against
+        boolean beliefVarShift =
+            //true;
+            !_beliefTerm.equalsRoot(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
         this.beliefTerm =
                 beliefVarShift ?
                         anon.putShift(nextBeliefTerm, taskTerm) :

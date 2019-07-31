@@ -24,7 +24,7 @@
     //G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //bifurcate plan
-    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (&&,polarizeRandom(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
+    G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (polarizeRandom(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //implication look-ahead
     (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
@@ -45,12 +45,12 @@
 
 
     //conj quest to impl question
-    (G && C), B, eqNeg(C,B), task("@"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:Task)
+    (G && C), B, eqNeg(C,B), task("@"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:BeliefRelative)
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-   B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:Task)
+    B, X, task("@"), --is(B,"==>"), neq(X,B), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication

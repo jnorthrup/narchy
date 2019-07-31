@@ -109,6 +109,10 @@ abstract class AbstractUnitSubterm implements Subterms {
                         (sub().equals(s.sub(0)));
     }
 
+//    @Override
+//    public boolean equalTerms(Term[] c) {
+//        return c.length == 1 && sub().equals(c[0]);
+//    }
 
     @Override
     public int hashCode() {

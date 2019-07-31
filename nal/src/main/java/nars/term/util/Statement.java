@@ -51,10 +51,9 @@ public class Statement {
             else if (subject.equalsNeg(predicate))
                 return False;
 
-
             if (op == INH || op == SIM) {
                 if (subject.unneg().equalsRoot(predicate.unneg()))
-                    return Null; //dont support non-temporal statements where the root is equal because they cant be conceptualized
+                    return Null; //HACK dont support non-temporal statements where the root is equal because they arent conceptualized
             }
         }
 
@@ -88,10 +87,8 @@ public class Statement {
                 return Null;
         }
 
-        if (dtConcurrent) {
-            if (subject instanceof Bool || predicate instanceof Bool)
-                return Null;
-        }
+        if (subject instanceof Bool || predicate instanceof Bool)
+            return Null;
 
         boolean negate = false;
 

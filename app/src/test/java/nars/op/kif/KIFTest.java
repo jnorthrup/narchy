@@ -46,7 +46,7 @@ class KIFTest {
 
         new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
 
-        n.termVolMax.set(24);
+        n.termVolMax.set(64);
         n.beliefPriDefault.amp(0.01f);
 
 

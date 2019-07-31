@@ -240,7 +240,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                 }
 
             },
-                    new PriMap<>(merge, newMap(false)) {
+                    new PriMap<>(merge) {
                         /**
                          * merge in the post-buffer
                          */

@@ -268,44 +268,8 @@ public enum Util {
 //    }
 //    /* End Of  P. J. Weinberger Hash Function */
 
-    public static int fastCompare(float f1, float f2) {
 
-        if (f1 < f2)
-            return -1;
-        if (f1 > f2)
-            return 1;
-        if (f1 == f2)
-            return 0;
 
-        boolean nan1 = f1!=f1, nan2 = f2!=f2;
-        if (nan1==nan2)
-            return 0;
-        else if (nan1)
-            return -1;
-        else
-            return +1;
-    }
-
-    public static <K, V> void assertNotEmpty(Map<K, V> test, String varName) {
-        if (test == null) {
-            throw new NullPointerException(varName);
-        }
-        if (test.isEmpty()) {
-            throw new IllegalArgumentException("empty " + varName);
-        }
-    }
-
-    public static boolean equalsNullAware(Object obj1, Object obj2) {
-        if (obj1 == null) {
-            return obj2 == null;
-
-        }
-        if (obj2 == null) {
-            return false;
-        }
-
-        return obj1.equals(obj2);
-    }
 
     public static String globToRegEx(String line) {
 
@@ -313,11 +277,11 @@ public enum Util {
         int strLen = line.length();
         StringBuilder sb = new StringBuilder(strLen);
 
-        if (line.length() > 0 && line.charAt(0) == '*') {
+        if (strLen > 0 && line.charAt(0) == '*') {
             line = line.substring(1);
             strLen--;
         }
-        if (line.length() > 0 && line.charAt(line.length() - 1) == '*') {
+        if (strLen > 0 && line.charAt(strLen - 1) == '*') {
             line = line.substring(0, strLen - 1);
             strLen--;
         }

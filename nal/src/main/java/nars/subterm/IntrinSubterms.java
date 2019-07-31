@@ -245,13 +245,11 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
     }
 
     private int indexOf(short id) {
-
-//        if (id < 0 && !anyNeg())
-//            return -1;
-
-        return ArrayUtil.indexOf(subterms, id);
+        return indexOf(id, -1);
     }
-
+    private int indexOf(short id, int after) {
+        return ArrayUtil.indexOf(subterms, id, after+1);
+    }
 // TODO TEST
 //    private int indexOf(short id, int after) {
 //        return ArrayUtils.indexOf(subterms, id, after+1);
@@ -263,11 +261,16 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 
     @Override
     public int indexOf(Term t) {
-        short tid = Intrin.id(t);
-        return tid != 0 ? indexOf(tid) : -1;
+        return indexOf(t, -1);
     }
 
-// TODO TEST
+    @Override
+    public int indexOf(Term t, int after) {
+        short tid = Intrin.id(t);
+        return tid != 0 ? indexOf(tid,after) : -1;
+    }
+
+    // TODO TEST
 //    @Override
 //    public int indexOf(Term t, int after) {
 //        throw new TODO();
@@ -365,7 +368,7 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
             if (ss.subs() != s)
                 return false;
             for (int i = 0; i < s; i++) {
-                if (!sub(i).equals(ss.sub(i)))
+                if (!subEquals(i, ss.sub(i)))
                     return false;
             }
             return true;
@@ -374,6 +377,11 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         return false;
     }
 
+    @Override
+    public boolean subEquals(int i, Term x) {
+        short xx = Intrin.id(x);
+        return xx!=0 ? subterms[i]==xx : sub(i).equals(x);
+    }
 
     //private transient byte[] bytes = null;
 

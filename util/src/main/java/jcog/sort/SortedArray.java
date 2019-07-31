@@ -636,8 +636,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     protected int compare(int item, float score, FloatFunction<X> cmp) {
-        float itemScore = cmp.floatValueOf(items[item]);
-        return Util.fastCompare(itemScore, score);
+        return Float.compare(cmp.floatValueOf(items[item]), score);
     }
 
     /**

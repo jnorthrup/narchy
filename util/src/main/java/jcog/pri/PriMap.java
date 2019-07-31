@@ -56,10 +56,10 @@ public class PriMap<Y> {
         float load = 0.5f;
         if (Exe.concurrent()) {
             return linked ?
-                new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
+                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
+                new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
                 :
                 //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
-                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
                 new NonBlockingHashMap()
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f)
                 //new CustomConcurrentHashMap()
@@ -132,18 +132,29 @@ public class PriMap<Y> {
 
     /** drains the bufffer while applying a transformation to each item */
     public <X> void drain(Consumer<X> each, ObjectFloatToObjectFunction<Y,X> f) {
-        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
-        while (ii.hasNext()) {
-            Map.Entry<Y, Prioritizable> e = ii.next();
-            ii.remove();
+//        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
+//        while (ii.hasNext()) {
+//            Map.Entry<Y, Prioritizable> e = ii.next();
+//            ii.remove();
+//
+//            float pp = e.getValue().pri();
+//            if (pp == pp) {
+//                X x = f.valueOf(e.getKey(), pp);
+//                if (x!=null)
+//                    each.accept(x);
+//            }
+//        }
 
+        items.entrySet().removeIf(e ->{
             float pp = e.getValue().pri();
             if (pp == pp) {
                 X x = f.valueOf(e.getKey(), pp);
                 if (x!=null)
                     each.accept(x);
             }
-        }
+            return true;
+        });
+
     }
 
 

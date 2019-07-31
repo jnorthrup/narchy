@@ -209,6 +209,7 @@ public enum TermTest { ;
         boolean bNorm = b.isNormalized();
         assertEquals(aNorm, bNorm,  a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm );
         assertEquals(a.isSorted(), b.isSorted());
+        assertEquals(a.isCommuted(), b.isCommuted());
 
         {
             byte[] bytesExpected = IO.termToBytes($.pFast(a));

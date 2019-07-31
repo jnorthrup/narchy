@@ -61,7 +61,7 @@ public abstract class TaskLeak extends How {
         this(
                 new BufferSource(
                         new SimpleBufferedBag<>(
-                                new PriReferenceArrayBag<>(merge, capacity, PriMap.newMap(false)),
+                                new PriReferenceArrayBag<>(merge, capacity),
                                 new PriMap<>(merge))
                 )
                 , n, puncs

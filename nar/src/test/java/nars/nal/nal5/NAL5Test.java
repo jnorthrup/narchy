@@ -1129,4 +1129,12 @@ public class NAL5Test extends NALTest {
         ;
     }
 
+    @Test void testEquivEmulationNegatingBoth() {
+        test.termVolMax(5)
+            .believe("(x==>y)")
+            .believe("(y==>x)")
+            .mustBelieve(cycles, "(--x ==> --y)", 1f, 0.81f)
+            .mustBelieve(cycles, "(--y ==> --x)", 1f, 0.81f)
+        ;
+    }
 }

@@ -1,6 +1,5 @@
 package jcog.sort;
 
-import jcog.Util;
 import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
@@ -71,7 +70,7 @@ public class RankedN<X> extends TopN<X> {
 
     @Override
     protected int compare(int item, float value, FloatFunction<X> cmp) {
-        return Util.fastCompare(this.value[item], value);
+        return Float.compare(this.value[item], value);
     }
 
     private void insertValue(int i, float elementRank) {

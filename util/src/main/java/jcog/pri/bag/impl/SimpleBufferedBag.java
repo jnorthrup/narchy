@@ -7,7 +7,7 @@ import jcog.pri.bag.Bag;
 public class SimpleBufferedBag<X, Y extends Prioritizable> extends BufferedBag<X, Y, Y> {
 
     public SimpleBufferedBag(Bag<X, Y> activates) {
-        this(activates, new PriMap(activates.merge(), PriMap.newMap(false)));
+        this(activates, new PriMap(activates.merge()));
     }
 
     public SimpleBufferedBag(Bag<X, Y> activates, PriMap<Y> conceptPriMap) {

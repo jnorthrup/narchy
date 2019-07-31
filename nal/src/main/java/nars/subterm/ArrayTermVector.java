@@ -27,6 +27,10 @@ public class ArrayTermVector extends TermVector {
         return Subterms.toString(terms);
     }
 
+    @Override
+    public boolean equalTerms(Term[] c) {
+        return Arrays.equals(terms, c);
+    }
 
     @Override
     public final boolean equals(/*@NotNull*/ Object obj) {

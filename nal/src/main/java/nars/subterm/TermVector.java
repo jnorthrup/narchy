@@ -29,7 +29,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
         the = Util.and(terms, Term::the);
     }
 
-    public int indexOf(/*@NotNull*/ Term t) {
+    @Override public int indexOf(/*@NotNull*/ Term t) {
         return impossibleSubTerm(t) ? -1 : Subterms.super.indexOf(t);
     }
 

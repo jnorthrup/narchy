@@ -218,6 +218,12 @@
 //        ((&&,--X,A..+) ==> Z), (Y ==> X)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionPN)
 //         (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
+    //Negate Both Sides (Equivalence emulation):  (x <=> y) |- (--x <=> --y)
+    (X==>Y), (Y==>X) |- (--X ==> --Y), (Belief:Intersection, Time:Compose)
+    (X==>Y), (Y==>X) |- (--Y ==> --X), (Belief:Intersection, Time:Compose)
+      (--X==>Y), (Y==>X) |- (X ==> --Y), (Belief:IntersectionPN, Time:Compose)
+      (--X==>Y), (Y==>X) |- (--Y ==> X), (Belief:IntersectionPN, Time:Compose)
+
     //Primary Inverting Sub-Condition (Equivalence emulation)
 //    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:IntersectionPN, Time:Compose)
 //    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:IntersectionNP, Time:Compose)

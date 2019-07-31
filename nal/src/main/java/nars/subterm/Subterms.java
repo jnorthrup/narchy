@@ -1,6 +1,7 @@
 package nars.subterm;
 
 import com.google.common.base.Joiner;
+import com.google.common.collect.Streams;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
@@ -254,19 +255,31 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     /** sorted and deduplicated */
     default Subterms commuted() {
-        if (isSorted())
-            return this;
-        else {
-            return new TermList(Terms.commute(arrayShared()));
-        }
+        return isCommuted() ? this : new TermList(Terms.commute(arrayShared()));
     }
 
     default boolean isSorted() {
         int s = subs();
         if (s < 2) return true;
-        for (int i = 1; i < s; i++)
-            if (sub(i - 1).compareTo(sub(i)) >= 0)
+        Term p = sub(0);
+        for (int i = 1; i < s; i++) {
+            Term n = sub(i);
+            if (p.compareTo(n) > 0)
                 return false;
+            p = n;
+        }
+        return true;
+    }
+    default boolean isCommuted() {
+        int s = subs();
+        if (s < 2) return true;
+        Term p = sub(0);
+        for (int i = 1; i < s; i++) {
+            Term n = sub(i);
+            if (p.compareTo(n) >= 0)
+                return false;
+            p = n;
+        }
         return true;
     }
 
@@ -528,32 +541,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return structure();
     }
 
-//
-//    /**
-//     * if subterms are already sorted, returns arrayShared().
-//     * otherwise a sorted clone is returned.
-//     */
-//    default Term[] arraySharedSorted(boolean dedup) {
-//        Term[] aa = arrayShared();
-//        if (dedup) {
-//            Term[] ss = Terms.sorted();
-//            if (ss == aa)
-//                return aa;
-//            else
-//                return ss;
-//        } else {
-//            if (Util.isSorted(aa))
-//                return aa;
-//            else {
-//                Term[] ss = aa.clone();
-//                Arrays.sort(ss);
-//                return ss;
-//            }
-//        }
-//    }
 
-
-    /*@NotNull*/
     default Term[] terms(/*@NotNull*/ IntObjectPredicate<Term> filter) {
         TermList l = null;
         int s = subs();
@@ -586,23 +574,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * first index of; follows normal indexOf() semantics; -1 if not found
      */
     default int indexOf(/*@NotNull*/ Term t) {
-        return first(t::equals);
+        return indexOf(t, -1);
     }
 
     default int indexOf(/*@NotNull*/ Term t, int after) {
-
-        int s = subs();
-        int i = after + 1;
-        if (i >= s)
-            return -1;
-
-        for (; i < s; i++) {
-            if (t.equals(sub(i)))
-                return i;
-        }
-
-        return -1;
+        return indexOf(t::equals, after);
     }
+
+
 
     default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return containsRecursively(t, false, inSubtermsOf);
@@ -622,41 +601,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return impossibleSubStructure(structure) || impossibleSubVolume(volume);
     }
 
-
-//    /**
-//     * if it's larger than this target it can not be equal to this.
-//     * if it's larger than some number less than that, it can't be a subterm.
-//     */
-//    default boolean impossibleSubTermOrEqualityVolume(int otherTermsVolume) {
-//        return otherTermsVolume > volume();
-//    }
-
-//    default boolean impossibleSubTermOrEquality(/*@NotNull*/Term target) {
-//        return ((!hasAll(target.structure())) ||
-//                (impossibleSubTermOrEqualityVolume(target.volume())));
-//    }
-
-
     /**
      * stream of each subterm
      */
     default Stream<Term> subStream() {
-        int subs = subs();
-        switch (subs) {
-            case 0:
-                return Stream.empty();
-            case 1:
-                return Stream.of(sub(0));
-            case 2:
-                return Stream.of(sub(0), sub(1));
-            case 3:
-                return Stream.of(sub(0), sub(1), sub(2));
-            default:
-                return IntStream.range(0, subs).mapToObj(this::sub);
-        }
+        return Streams.stream(this);
     }
-
-
 
     /**
      * allows the subterms to hold a different hashcode than hashCode when comparing subterms
@@ -739,7 +689,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         for (int i = 0; i < n; i++) {
             Term xi = x.sub(i), yi = y.sub(i);
 
-            if (xi == yi)
+            if (xi.equals(yi))
                 continue;
 
             boolean now = (i==n-1 && m==null /* last one anyway so just do it */) || (!u.varIn(xi) && !u.varIn(yi));
@@ -1077,10 +1027,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
 
-    default int first(/*@NotNull*/ Predicate<Term> p) {
+    default int indexOf(/*@NotNull*/ Predicate<Term> p) {
+        return indexOf(p, -1);
+    }
+
+    default int indexOf(/*@NotNull*/ Predicate<Term> p, int after) {
         int s = subs();
         Term prev = null;
-        for (int i = 0; i < s; i++) {
+        for (int i = after+1; i < s; i++) {
             Term next = sub(i);
             if ((different(prev, next)) && p.test(next))
                 return i;
