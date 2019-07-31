@@ -100,8 +100,10 @@ class ImplTest {
     @Test
     void testReducibleImplParallelNeg() {
         assertEq("(--,((--,x)==>y))", "(--x ==> (--y && --x))");
+    }
+    @Test
+    void testReducibleImplParallelNeg2() {
         assertEq(Bool.True, "((--y && --x) ==> --x)");
-
     }
 
     @Test
@@ -172,28 +174,43 @@ class ImplTest {
                 x.toString());
     }
 
+    @Test void implicatoinInSubj() {
+        assertEq("((R==>P)==>Q)", "((R==>P)==>Q)"); //unchanged
+        assertEq("((--,(R==>P))==>Q)", "(--(R==>P)==>Q)"); //unchanged
+    }
 
-    @Test void testDoubleImplication() {
+    @Test void implicationInPred() {
         assertEq("((P&&R)==>Q)", "(R==>(P==>Q))");
         assertEq("((R &&+2 P) ==>+1 Q)", "(R ==>+2 (P ==>+1 Q))");
         assertEq("(((S &&+1 R) &&+2 P) ==>+1 Q)", "((S &&+1 R) ==>+2 (P ==>+1 Q))");
+        assertEq("((x&&y) ==>+1 z)", "(x==>(y ==>+1 z))");
+        assertEq("((x &&+1 y)==>z)", "(x ==>+1 (y==>z))");
+        assertEq("((x &&+1 y) ==>+1 z)", "(x ==>+1 (y ==>+1 z))");
     }
-
-    @Test void testDoubleImplicationTemporal() {
-        assertEq("((x&&y)==>z)", "(x==>(y==>z))"); //eternal
-        assertEq("((x&&y) ==>+1 z)", "(x==>(y ==>+1 z))"); //eternal
-        assertEq("((x &&+1 y)==>z)", "(x ==>+1 (y==>z))"); //temporal
-        assertEq("((x &&+1 y) ==>+1 z)", "(x ==>+1 (y ==>+1 z))"); //temporal
+    @Test void implicationInPred_xternal() {
+        assertEq("((P&&R) ==>+- Q)", "(R==>(P ==>+- Q))");
+        assertEq("(R ==>+- (P==>Q))", "(R ==>+- (P==>Q))"); //unchanged
     }
-
-
     @Test
-    void testReducedAndInvalidImplications3() {
+    void testImplXternalDternalPredicateImpl() {
+
+        assertEq("((x &&+1 y) ==>+- z)", "(x ==>+1 (y ==>+- z))");
+        assertEq("((x &&+- y) ==>+- z)", "(x ==>+- (y ==>+- z))");
+        assertEq("((x &&+1 (y&&z)) ==>+1 w)", "((x &&+1 y) ==> (z ==>+1 w))");
+
+        assertEq("(((x &&+1 y) &&+1 z) ==>+1 w)", "((x &&+1 y) ==>+1 (z ==>+1 w))");
+
+        //assertEq("((x &&+- y) ==>+1 z)", "(x ==>+- (y ==>+1 z))");
+        //assertEq("(((x &&+1 y) &&+- z) ==>+1 w)", "((x &&+1 y) ==>+- (z ==>+1 w))");
+    }
+    
+    @Test
+    void implicationInPred_Collapse() {
         assertEq(Bool.True, "(R==>(P==>R))");
     }
 
     @Test
-    void testReducedAndInvalidImplications4() {
+    void implicationInPred_Reduce() {
         assertEq("(R==>P)", "(R==>(R==>P))");
     }
 

@@ -104,8 +104,8 @@ class ConjTest {
     @Test
     void disjunctifySeq2() {
         ConjBuilder c = new ConjTree();
-        c.add(ETERNAL, $$("(--,(((--,(g-->input)) &&+40 (g-->forget))&&((g-->happy) &&+40 (g-->happy))))"));
-        boolean addTemporal = c.add(1, $$("happy:g")); //shouldnt cancel since it's temporal, only at 1
+        c.add(ETERNAL, $$("(--,(((--,(g1-->input)) &&+40 (g1-->forget))&&((g1-->happy) &&+40 (g1-->happy))))"));
+        boolean addTemporal = c.add(1, $$("happy:g1")); //shouldnt cancel since it's temporal, only at 1
         assertTrue(addTemporal);
         assertEq("((--,((--,(g1-->input)) &&+40 (g1-->forget)))&&(g1-->happy))", c.term());
         assertEq("((--,((--,(_1-->_2)) &&+40 (_1-->_3)))&&(_1-->_4))", c.term().anon());

@@ -109,28 +109,35 @@ public class Statement {
                         return Null;
 
                 case IMPL: {
-                    boolean bothXternal = (dt == XTERNAL) && (predicate.dt() == XTERNAL);
-                    Term inner = predicate.sub(0);
-                    Term newPred = predicate.sub(1);
-                    Term newSubj;
-                    int newDT;
-                    if (bothXternal) {
-                        newSubj = CONJ.the(B, XTERNAL, subject, inner);
-                        newDT = XTERNAL;
-                    } else {
-                        newSubj = B.conjAppend(subject, dt, inner);
-                        if (newSubj == Null)
-                            return Null;
-                        newDT = predicate.dt();
-                        if (newDT == DTERNAL) newDT = 0; //HACK temporary
-                    }
+                    boolean predXternal = predicate.dt() == XTERNAL;
+                    boolean xternal = dt == XTERNAL;
+                    boolean bothXternal = xternal && predXternal;
+                    if ((!xternal && !predXternal) || bothXternal || (predXternal && !xternal)) {
 
-                    if (newPred instanceof Neg) {
-                        newPred = newPred.unneg();
-                        negate = !negate;
+                        //not when only inner xternal, since that transformation destroys temporal information
+
+                        Term inner = predicate.sub(0);
+                        Term newPred = predicate.sub(1);
+                        Term newSubj;
+                        int newDT;
+                        if (bothXternal) {
+                            newSubj = CONJ.the(B, XTERNAL, subject, inner);
+                            newDT = XTERNAL;
+                        } else {
+                            newSubj = B.conjAppend(subject, dt, inner);
+                            if (newSubj == Null)
+                                return Null;
+                            newDT = predicate.dt();
+                            if (newDT == DTERNAL) newDT = 0; //HACK temporary
+                        }
+
+                        if (newPred instanceof Neg) {
+                            newPred = newPred.unneg();
+                            negate = !negate;
+                        }
+                        if (dt != newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
+                            return statement(B, IMPL, newDT, newSubj, newPred, depth - 1).negIf(negate); //recurse
                     }
-                    if (dt != newDT || !newSubj.equals(subject) || !newPred.equals(predicate))
-                        return statement(B, IMPL, newDT, newSubj, newPred, depth - 1).negIf(negate); //recurse
                     break;
                 }
 
@@ -168,7 +175,7 @@ public class Statement {
                     int removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
                     Term newPred;
                     switch (removed) {
-                        case -1: return False;
+                        case -1: return False.negIf(negate);
                         case +1: newPred = newPredConj.term(B); break;
                         default: newPred = null; break;
                     }
