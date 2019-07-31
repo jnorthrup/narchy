@@ -13,6 +13,7 @@ import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.FuncGen;
 import net.beadsproject.beads.ugens.Gain;
 import net.beadsproject.beads.ugens.RecordToSample;
+import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
 import spacegraph.audio.Audio;
 import spacegraph.audio.SoundSource;
 
@@ -21,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Queue;
 import java.util.Set;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
  * TODO this needs stereo support for the SoNAR sound system
@@ -93,7 +93,7 @@ public class AudioContext {
 
 
     private Queue newQueue() {
-        return new ConcurrentLinkedQueue();
+        return new MpmcAtomicArrayQueue<>(64);
     }
 
     /**

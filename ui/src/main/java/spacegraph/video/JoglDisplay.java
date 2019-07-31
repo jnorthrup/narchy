@@ -6,6 +6,7 @@ import com.jogamp.opengl.GLAutoDrawable;
 import com.jogamp.opengl.math.FloatUtil;
 import jcog.event.Off;
 import jcog.math.v3;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.SpaceGraph;
 import spacegraph.input.key.KeyXYZ;
 import spacegraph.input.key.WindowKeyControls;
@@ -97,7 +98,7 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     }
 
-    protected void renderVolume(float dtS, GL2 gl) {
+    protected void renderVolume(float dtS, GL2 gl, float aspect) {
 
     }
 
@@ -132,25 +133,31 @@ abstract public class JoglDisplay extends SpaceGraph {
 
 
 
-    public void perspective(GL2 gl) {
+
+    /**
+     *
+     * @param gl
+     * @param invAspect - 1/aspect ratio, ie. width/height
+     */
+    public void perspective(GL2 gl, float invAspect) {
 
 
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
 
 
-        float aspect = ((float) video.getWidth()) / video.getHeight();
+
 
 
         tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
 
         top = tanFovV * zNear;
-        right = aspect * top;
+        right = invAspect * top;
         bottom = -top;
         left = -right;
 
 
-        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, aspect, zNear, zFar), 0);
+        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, invAspect, zNear, zFar), 0);
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,
@@ -184,6 +191,12 @@ abstract public class JoglDisplay extends SpaceGraph {
         video.off();
     }
 
+    public void renderVolumeEmbedded(float dtS, GL2 gl, RectFloat bounds) {
+        video.dtS = dtS;
+        video.onUpdate.emit(video); //HACK
+        renderVolume(dtS, gl, bounds.w/bounds.h);
+    }
+
 
     private class MyJoglWindow extends JoglWindow {
 
@@ -194,11 +207,9 @@ abstract public class JoglDisplay extends SpaceGraph {
         @Override
         protected void init(GL2 gl) {
 
+            JoglDisplay.this.enable(gl);
+
             initInput();
-
-            JoglDisplay.this.init(gl);
-
-            JoglDisplay.this.init();
         }
 
         @Override
@@ -220,7 +231,7 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     }
 
-    public void init(GL2 gl) {
+    public void enable(GL2 gl) {
         gl.glEnable(GL_STENCIL);
 
         gl.glEnable(GL_LINE_SMOOTH);
@@ -262,16 +273,11 @@ abstract public class JoglDisplay extends SpaceGraph {
     public void render(float dtS, GL2 gl) {
         clear(gl);
 
-        renderVolume(dtS, gl);
+        renderVolume(dtS, gl, ((float)video.getWidth())/video.getHeight());
 
         renderOrthos(dtS);
     }
 
 
 
-    /** for misc init tasks */
-    protected void init() {
-
-
-    }
 }

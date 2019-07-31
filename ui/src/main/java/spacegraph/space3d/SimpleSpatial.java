@@ -49,9 +49,11 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         
 
         
-        
-        
 
+    }
+
+    public SimpleSpatial() {
+        this((X)Util.uuid64()); //HACK
     }
 
     @Override
@@ -140,7 +142,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         move(p.x, p.y, p.z);
     }
 
-    protected SimpleSpatial move(float x, float y, float z) {
+    public SimpleSpatial move(float x, float y, float z) {
 
 
 
@@ -209,6 +211,10 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
                 x() + dx,
                 y() + dy,
                 z() + dz);
+    }
+
+    public SimpleSpatial scale(float s) {
+        return scale(s, s, s);
     }
 
     public SimpleSpatial scale(float sx, float sy, float sz) {

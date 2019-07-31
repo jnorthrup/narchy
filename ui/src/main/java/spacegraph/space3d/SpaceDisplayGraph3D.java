@@ -31,6 +31,7 @@ import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
+import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.DefaultCollisionConfiguration;
@@ -48,8 +49,6 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
 import static com.jogamp.opengl.GL2.*;
@@ -67,18 +66,19 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
     private final int maxSubsteps =
             0;
 
-
     public final Dynamics3D<X> dyn;
 
-
     @Deprecated
-    private final Queue<Spatial> toRemove = new ConcurrentLinkedQueue<>();
+    private final MpscAtomicArrayQueue<Spatial> toRemove = new MpscAtomicArrayQueue<>(1024);
 
     private final FasterList<AbstractSpace<X>> inputs = new FasterList<>(1);
 
-
     public SpaceDisplayGraph3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
+        return this;
+    }
+    public SpaceDisplayGraph3D<X> camFwd(float x, float y, float z) {
+        camFwd.set(x, y, z);
         return this;
     }
 
@@ -89,7 +89,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 //        inputs.clear();
 //    }
 
-    private SpaceDisplayGraph3D() {
+    public SpaceDisplayGraph3D() {
         super();
 
 
@@ -102,10 +102,9 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
         dyn = new Dynamics3D<>(dispatcher, broadphase, this);
 
-        video.onUpdate((dt) -> {
-            update(Math.round(video.dtS * 1000.0));
-            return true;
-        });
+//        video.onUpdate((dt) -> {
+//            return true;
+//        });
     }
 
     public SpaceDisplayGraph3D(AbstractSpace<X>... cc) {
@@ -162,13 +161,9 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     private void update(long dtMS) {
 
-        toRemove.removeIf(x -> {
-            x.delete(dyn);
-            return true;
-        });
+        toRemove.drain(x-> x.delete(dyn));
 
         inputs.forEach((anIi) -> anIi.update(this, dtMS));
-
 
         if (simulating) {
 
@@ -183,15 +178,15 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     }
 
-    protected void updateCamera(float dtS, GL2 gl) {
-        perspective(gl);
-    }
+    public void renderVolume(float dtS, GL2 gl, float aspect) {
 
-    protected void renderVolume(float dtS, GL2 gl) {
+        perspective(gl, aspect);
 
-        updateCamera(dtS, gl);
+
 
         int dtMS = Math.max(1, Math.round(1000 * dtS));
+
+        update(dtMS);
 
         forEach(s -> s.renderAbsolute(gl, dtMS));
 
@@ -201,7 +196,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
             Draw.transform(gl, body.transform);
 
-            s.renderRelative(gl, body, dtMS);
+            s.renderRelative(gl, body, dtS);
 
             gl.glPopMatrix();
 
@@ -287,7 +282,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
         return this;
     }
 
-    public void removeSpace(AbstractSpace<X> c) {
+    private void removeSpace(AbstractSpace<X> c) {
         if (inputs.remove(c)) {
             c.stop();
         }

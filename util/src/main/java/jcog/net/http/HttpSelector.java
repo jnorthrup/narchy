@@ -2,6 +2,7 @@ package jcog.net.http;
 
 import jcog.net.http.HttpConnection.ConnectionStateChangeListener;
 import jcog.net.http.HttpConnection.STATE;
+import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -9,6 +10,7 @@ import java.io.IOException;
 import java.nio.ByteBuffer;
 import java.nio.channels.*;
 import java.util.Iterator;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 /**
@@ -22,7 +24,7 @@ class HttpSelector implements ConnectionStateChangeListener {
     private static final Logger logger = LoggerFactory.getLogger(HttpSelector.class);
     private final WebSocketSelector.UpgradeWebSocketHandler upgradeWebSocketHandler;
     private final ByteBuffer buf = ByteBuffer.allocateDirect(HttpServer.BUFFER_SIZE);
-    private final ConcurrentLinkedQueue<SocketChannel> newChannels = new ConcurrentLinkedQueue<>();
+    private final Queue<SocketChannel> newChannels = new MpmcAtomicArrayQueue<>(64);
     private final HttpModel model;
 
 

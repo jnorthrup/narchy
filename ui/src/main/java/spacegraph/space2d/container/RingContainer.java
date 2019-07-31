@@ -108,7 +108,7 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
     protected void renderContent(ReSurface r) {
         forEach((z, b)->{
             z.pos(b);
-            z.tryRender(r);
+            z.renderIfVisible(r);
         });
     }
 

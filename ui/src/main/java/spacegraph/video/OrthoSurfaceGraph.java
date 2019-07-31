@@ -185,10 +185,10 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         g.glOrtho(0, w, 0, h, -1.5, 1.5);
         g.glMatrixMode(GLMatrixFunc.GL_MODELVIEW);
 
-        rendering.retime(dtS, video.renderFPS);
-        rendering.resolution(g, w, h);
+        rendering.start(g, w, h, dtS, video.renderFPS);
 
-        layers.tryRender(rendering);
+        layers.renderIfVisible(rendering);
+
         rendering.end();
 
 //        g.glDisable(GL.GL_DEPTH_TEST);

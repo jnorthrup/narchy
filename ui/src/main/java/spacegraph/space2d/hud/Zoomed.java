@@ -174,7 +174,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
         });
 
-        the().tryRender(render);
+        the().renderIfVisible(render);
 
         render.on((gl)->{
             gl.glPopMatrix();

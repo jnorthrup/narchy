@@ -101,7 +101,7 @@ public abstract class Spatial<X> implements Active {
 
     public abstract void renderAbsolute(GL2 gl, int dtMS);
 
-    public abstract void renderRelative(GL2 gl, Collidable body, int dtMS);
+    public abstract void renderRelative(GL2 gl, Collidable body, float dtS);
 
     public void delete(Dynamics3D dyn) {
         order = -1;

@@ -141,8 +141,8 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
 
 
     @Override
-    public final void renderRelative(GL2 gl, Collidable body, int dtMS) {
-        super.renderRelative(gl, body, dtMS);
+    public final void renderRelative(GL2 gl, Collidable body, float dtS) {
+        super.renderRelative(gl, body, dtS);
 
 
         if (front != null) {
@@ -150,11 +150,11 @@ public class CuboidSurfaceGraph<X> extends SimpleSpatial<X> implements SurfaceGr
 
             gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0) + zOffset);
 
-
             gl.glDepthMask(false);
 
-            //float pixelScale = 1;
-            //front.rerender(gl, rendering.restart(1, 1, dtMS).set(pixelScale/2, pixelScale/2, pixelScale, pixelScale));
+            float pixelScale = 1;
+            rendering.start(gl, 1,1, dtS , 1);
+            front.renderIfVisible(rendering);
 
             gl.glDepthMask(true);
 

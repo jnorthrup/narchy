@@ -111,7 +111,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
         }
 
         position(bmp);
-        bmp.tryRender(r);
+        bmp.renderIfVisible(r);
     }
 
     private void position(BitmapMatrixView bmp) {

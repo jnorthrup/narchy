@@ -47,22 +47,19 @@ public class ReSurface extends SurfaceCamera {
 
 
     /** ortho restart */
-    public ReSurface resolution(GL2 gl, float pw, float ph) {
-        this.gl = gl;
-        this.pw = pw;
-        this.ph = ph;
-        set(pw/2, ph/2, 1, 1);
-        return this;
-    }
-
-    public ReSurface retime(float dtS, float fps) {
+    public ReSurface start(GL2 gl, float pw, float ph, float dtS, float fps) {
         this.frameDT = dtS;
         this.frameNS = System.nanoTime();
         this.frameUnixTime = System.currentTimeMillis();
         //this.frameDTms = Math.max(1, Math.round(1000 * frameDT));
         this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
         this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
-        //return restart(pw, ph);
+
+        this.gl = gl;
+        this.pw = pw;
+        this.ph = ph;
+        set(pw/2, ph/2, 1, 1);
+
         return this;
     }
 

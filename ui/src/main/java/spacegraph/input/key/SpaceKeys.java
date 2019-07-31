@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.JoglWindow;
 
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Consumer;
 
@@ -19,7 +20,7 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     final JoglDisplay space;
 
-    private final ConcurrentLinkedQueue<Consumer<SpaceKeys>> pending = new ConcurrentLinkedQueue<>();
+    private final Queue<Consumer<SpaceKeys>> pending = new ConcurrentLinkedQueue<>();
     private final MetalConcurrentQueue<Short> queue = new MetalConcurrentQueue<>(64);
 
 

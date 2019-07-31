@@ -241,10 +241,13 @@ abstract public class Surface implements Surfacelike {
     /**
      * prepares the rendering procedures in the rendering context
      */
-    public final void tryRender(ReSurface r) {
+    public final void renderIfVisible(ReSurface r) {
         if (this.showing = visible(r))
             render(r);
     }
+
+    /** actual render implementation */
+    abstract protected void render(ReSurface r);
 
     /**
      * test visibility in the current rendering context
@@ -257,7 +260,7 @@ abstract public class Surface implements Surfacelike {
                r.visibleByPixels(b);
     }
 
-    abstract protected void render(ReSurface r);
+
 
     public final Surface hide() {
         visible = false;

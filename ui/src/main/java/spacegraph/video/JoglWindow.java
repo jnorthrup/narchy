@@ -34,7 +34,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     public final GLWindow window;
     public final Topic<JoglWindow> eventClosed = new ListTopic<>();
-    final Topic<JoglWindow> onUpdate = new ListTopic<>();
+    public final Topic<JoglWindow> onUpdate = new ListTopic<>();
     /**
      * render loop
      */
@@ -460,12 +460,12 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 GLAutoDrawable d = drawables.get(0);
                 if (d != null) {
 
+
+                    updateWindow(w);
+
                     dtS = (float) renderer.loop.cycleTimeS;
 
                     onUpdate.emit(JoglWindow.this);
-
-
-                    updateWindow(w);
 
                     try {
 //                        d.flushGLRunnables();

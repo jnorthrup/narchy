@@ -105,7 +105,7 @@ abstract public class ContainerSurface extends Surface {
 
     @Deprecated protected void renderContent(ReSurface r) {
         //TODO forEachWith
-        forEach(c -> c.tryRender(r));
+        forEach(c -> c.renderIfVisible(r));
     }
 
     /** post-visibility render guard */
