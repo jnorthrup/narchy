@@ -25,12 +25,11 @@ class AIMATests {
 
         n.termVolMax.set(5);
         n.freqResolution.set((float) truthRes);
-        n.confMin.set(0.05f);
+        n.confMin.set(0.1f);
 //        n.attn.decay.set(0.1f);
 //        n.confResolution.set(0.05f);
 
-        n.questionPriDefault.amp(0.2f);
-//        n.log();
+        n.questionPriDefault.amp(0.8f);
 
 //        ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
 //        n.onTask(t -> {
@@ -49,7 +48,7 @@ class AIMATests {
         n.question($$("Q"));
 
 //        try {
-            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 1500));
+            assertBelief(n, true, "Q", (int) (NAL.test.TIME_MULTIPLIER * 500));
 //        } finally {
 //            terms.keyValuesView().toSortedListBy(x -> -x.getTwo()).forEach(t -> {
 //                System.out.println(t);

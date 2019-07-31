@@ -42,26 +42,7 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
         return map.termCount();
     }
 
-    /**
-     * returns true if anything changed
-     */
-    boolean rollback(int toUniques) {
-        if (toUniques == 0) {
-            clear();
-            return true;
-        }
 
-        int max;
-        if (toUniques < (max = uniques())) {
-            ObjectByteHashMap<Term> termToId = map.termToId;
-            FasterList<Term> idToTerm = map.idToTerm;
-            for (int i = toUniques; i < max; i++)
-                termToId.removeKey(idToTerm.get(i));
-            idToTerm.removeAbove(toUniques);
-            return true;
-        }
-        return false;
-    }
 
     @Override
     public final @Nullable Term applyAtomic(Atomic atomic) {

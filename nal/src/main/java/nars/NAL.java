@@ -314,9 +314,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );
 
     @Deprecated
-    public final FloatRange questionForgetRate = new FloatRange(0.5f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(2 * derive.TTL_UNISUBST_MAX, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
+    public final IntRange premiseUnifyTTL = new IntRange(4 * derive.TTL_UNISUBST_MAX, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -573,9 +573,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean PREMISE_FOCUS_TIME_DITHER= configIs("PREMISE_FOCUS_TIME_DITHER");
 
         /**
-         * disable common variables for the query variables matched in premise formation; since the task target is not transformed like the belief target is.
+         *common variables for the variables matched in premise formation; since the task target is not transformed like the belief target is.
          */
-        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = false;
+        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = true;
 
         /** TODO use Gödel numbering not this HACK */
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");

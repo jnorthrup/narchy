@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 75;
+    private final static int cycles = 150;
 
     @Override
     protected NAR nar() {
@@ -37,10 +37,12 @@ public class NAL7Test extends NALTest {
 
     @BeforeEach
     void setTolerance() {
-        test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.termVolMax(13);
         test.confMin(0.3f);
+
+        test.freqTolerance(0.1f);
         test.nar.freqResolution.set(0.1f);
+        test.confTolerance(CONF_TOLERANCE_FOR_PROJECTIONS);
         test.nar.confResolution.set(0.05f);
     }
 
@@ -250,7 +252,6 @@ public class NAL7Test extends NALTest {
     void testDropAnyEventSimple2ba() {
 
         test
-
                 .inputAt(1, "(happy &&+4120 (i &&+1232 (--,i))). |")
                 .mustBelieve(cycles, "(happy &&+4120 i)", 1f, 0.81f, 1)
                 .mustBelieve(cycles, "(happy &&+5352 --i)", 1f, 0.81f, 1)

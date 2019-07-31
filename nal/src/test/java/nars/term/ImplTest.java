@@ -203,7 +203,7 @@ class ImplTest {
         //assertEq("((x &&+- y) ==>+1 z)", "(x ==>+- (y ==>+1 z))");
         //assertEq("(((x &&+1 y) &&+- z) ==>+1 w)", "((x &&+1 y) ==>+- (z ==>+1 w))");
     }
-    
+
     @Test
     void implicationInPred_Collapse() {
         assertEq(Bool.True, "(R==>(P==>R))");

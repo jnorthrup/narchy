@@ -1,8 +1,10 @@
 package nars.term.anon;
 
+import jcog.data.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 
 /** TODO implement these as CachedTransform-wrapped sub-implementations of the Anon.GET and PUT transforms, each with their own cache */
 public class CachedAnon extends Anon {
@@ -26,13 +28,21 @@ public class CachedAnon extends Anon {
         invalidate();
     }
 
-    @Override
-    public boolean rollback(int toUniques) {
-        if (super.rollback(toUniques)) {
-            invalidate();
-            return true;
+    public void rollback(int toUniques) {
+        if (toUniques == 0) {
+            clear();
+        } else {
+            int max;
+            if (toUniques < (max = uniques())) {
+                ObjectByteHashMap<Term> termToId = map.termToId;
+                FasterList<Term> idToTerm = map.idToTerm;
+                for (int i = toUniques; i < max; i++)
+                    termToId.removeKey(idToTerm.get(i));
+                idToTerm.removeAbove(toUniques);
+
+                invalidate(); //not full clear() just invalidate()
+            }
         }
-        return false;
     }
 
     protected void invalidate() {

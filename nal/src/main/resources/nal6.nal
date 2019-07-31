@@ -382,8 +382,6 @@
         //((&&,X,A..+) && (--,%Z)), Z |- (X && (--,%Z)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
         //((--,%Z) && (&&,X,A..+)), Z |- ((--,%Z) && X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
-//     (&&,X,A..+), B, task("!") |- unisubst((&&,A..+),X,B), (Goal:Desire)
-//        (&&,(--,%X),A..+), B,  task("!") |- unisubst((&&,A..+),X,B), (Goal:DesirePN)
 
      //X, (&&,X,A..+),            task("?@") |- (&&,A..+), ()
      //   X, (&&,(--,%X),A..+),   task("?@") |- (&&,A..+), ()

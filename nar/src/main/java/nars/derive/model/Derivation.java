@@ -198,7 +198,12 @@ public class Derivation extends PreDerivation {
                 , null, NAL.unify.UNIFICATION_STACK_CAPACITY
         );
 
-        this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY, Op.VAR_DEP.bit | Op.VAR_QUERY.bit) {
+        this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY,
+            Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_QUERY.bit
+            //Op.VAR_DEP.bit | Op.VAR_QUERY.bit
+            //Op.VAR_QUERY.bit
+            //0
+        ) {
 
             @Override
             protected boolean intern(Atomic x) {
@@ -340,18 +345,15 @@ public class Derivation extends PreDerivation {
         }
 
         //TODO not whether to shift, but which variable (0..n) to shift against
-        boolean beliefVarShift =
-            //true;
-            !_beliefTerm.equalsRoot(_taskTerm) && !_taskTerm.containsRecursively(_beliefTerm);
-        this.beliefTerm =
-                beliefVarShift ?
-                        anon.putShift(nextBeliefTerm, taskTerm) :
-                        anon.put(nextBeliefTerm);
+
+        this.beliefTerm = deriver.loadBelief(nextBeliefTerm, anon, _taskTerm, _beliefTerm, random);
 
         assertAnon(_beliefTerm, beliefTerm, nextBelief);
 
         return nextBelief;
     }
+
+
 
     @Nullable
     private Truth beliefAtTask(Task nextBelief) {

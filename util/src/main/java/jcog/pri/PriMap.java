@@ -10,8 +10,8 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jctools.maps.NonBlockingHashMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 //import java.util.concurrent.ConcurrentHashMap;
@@ -56,21 +56,24 @@ public class PriMap<Y> {
         float load = 0.5f;
         if (Exe.concurrent()) {
             return linked ?
-                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
-                new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
+                new java.util.concurrent.ConcurrentHashMap<>(0, load,
+                    1
+                    //Runtime.getRuntime().availableProcessors()
+                )
+                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
                 :
                 //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
-                new NonBlockingHashMap()
+                new NonBlockingHashMap<>()
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f)
                 //new CustomConcurrentHashMap()
                 ;
         } else {
              return
                  linked ?
-                    //new LinkedHashMap(0, load)
-                    new HashMap(0, load)
+                    new LinkedHashMap(0, load)
+                    //new HashMap<>(0, load)
                     :
-                    new UnifiedMap(0, load)
+                    new UnifiedMap<>(0, load)
                     //new HashMap(0, load)
              ;
         }
@@ -132,28 +135,28 @@ public class PriMap<Y> {
 
     /** drains the bufffer while applying a transformation to each item */
     public <X> void drain(Consumer<X> each, ObjectFloatToObjectFunction<Y,X> f) {
-//        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
-//        while (ii.hasNext()) {
-//            Map.Entry<Y, Prioritizable> e = ii.next();
-//            ii.remove();
-//
-//            float pp = e.getValue().pri();
-//            if (pp == pp) {
-//                X x = f.valueOf(e.getKey(), pp);
-//                if (x!=null)
-//                    each.accept(x);
-//            }
-//        }
+        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
+        while (ii.hasNext()) {
+            Map.Entry<Y, Prioritizable> e = ii.next();
+            ii.remove();
 
-        items.entrySet().removeIf(e ->{
             float pp = e.getValue().pri();
             if (pp == pp) {
                 X x = f.valueOf(e.getKey(), pp);
                 if (x!=null)
                     each.accept(x);
             }
-            return true;
-        });
+        }
+
+//        items.entrySet().removeIf(e ->{
+//            float pp = e.getValue().pri();
+//            if (pp == pp) {
+//                X x = f.valueOf(e.getKey(), pp);
+//                if (x!=null)
+//                    each.accept(x);
+//            }
+//            return true;
+//        });
 
     }
 

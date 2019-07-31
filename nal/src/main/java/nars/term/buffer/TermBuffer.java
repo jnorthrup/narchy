@@ -140,7 +140,7 @@ public class TermBuffer {
         return this;
     }
 
-    private final static byte MAX_CONTROL_CODES = (byte) Op.unique();
+    private final static byte MAX_CONTROL_CODES = (byte) ops.length;
 
 
     private final TermBuffer negStart() {

@@ -209,8 +209,8 @@ public enum Op {
      */
 
     ;
+    public static final Op[] ops = Op.values();
 
-    private static final Op[] ops = Op.values();
 
     public static final String DISJstr = "||";
     public static final int StatementBits = Op.or(Op.INH, Op.SIM, Op.IMPL);
@@ -552,10 +552,6 @@ public enum Op {
 
     public static Term DISJ(Term... x) {
         return DISJ(Op.terms, DTERNAL, x);
-    }
-
-    public static int unique() {
-        return ops.length;
     }
 
     public static Stream<Op> all() {

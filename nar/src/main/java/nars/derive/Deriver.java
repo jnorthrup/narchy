@@ -3,6 +3,7 @@ package nars.derive;
 import jcog.Util;
 import jcog.func.TriFunction;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.How;
@@ -16,7 +17,9 @@ import nars.derive.rule.PremiseRuleProto;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.timing.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.term.Term;
+import nars.term.anon.AnonWithVarShift;
 
+import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 import java.util.stream.Stream;
@@ -36,6 +39,11 @@ abstract public class Deriver extends How {
 
     public final PremiseSource premises;
 
+    //shift heuristic condition probabalities TODO refine
+    float PREMISE_SHIFT_EQUALS_ROOT = 0.1f;
+    float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.5f;
+    float PREMISE_SHIFT_OTHER = 0.9f;
+    float PREMISE_SHIFT_RANDOM = 0.75f;
 
     /**
      * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation
@@ -119,7 +127,27 @@ abstract public class Deriver extends How {
         return rules.pre.apply(d);
     }
 
+    public Term loadBelief(Term b, AnonWithVarShift anon, Term taskTerm, Term beliefTerm, Random random) {
 
+
+        boolean shift, shiftRandomOrCompletely;
+        if (!b.hasAny(Op.Variable & taskTerm.structure())) {
+            shift = shiftRandomOrCompletely = false; //unnecessary
+        } else {
+            if (beliefTerm.equalsRoot(taskTerm)) {
+                shift = random.nextFloat() < PREMISE_SHIFT_EQUALS_ROOT; //structural identity
+            } else if (beliefTerm.containsRecursively(taskTerm) || taskTerm.containsRecursively(beliefTerm)) {
+                shift = random.nextFloat() < PREMISE_SHIFT_CONTAINS_RECURSIVELY;
+            } else {
+                shift = random.nextFloat() < PREMISE_SHIFT_OTHER;
+            }
+            shiftRandomOrCompletely =  random.nextFloat() < PREMISE_SHIFT_RANDOM;
+        }
+
+        return shift ?
+            anon.putShift(b, taskTerm, shiftRandomOrCompletely ? random : null) :
+            anon.put(b);
+    }
 }
 
 

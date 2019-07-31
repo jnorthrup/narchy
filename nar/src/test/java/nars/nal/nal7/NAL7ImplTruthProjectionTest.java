@@ -15,6 +15,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NAL7ImplTruthProjectionTest {
 
+    static final Term y = $.the("y");
+
     @Test
     void test1() {
 
@@ -26,7 +28,6 @@ class NAL7ImplTruthProjectionTest {
         for (int implTime = 0; implTime < 3; implTime+= ts) {
             for (int eventTime = 0; eventTime < 3; eventTime+= ts) {
 
-                Term y = $.the("y");
 
 
                 NAR n = NARS.tmp();

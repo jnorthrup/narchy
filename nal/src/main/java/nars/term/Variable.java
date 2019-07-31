@@ -100,13 +100,14 @@ public interface Variable extends Atomic {
         if (equals(y0))
             return true;
 
-        Term x = u.resolveVar(this);
+        //Term x = u.resolveVar(this);
         //Term x = u.resolveTerm(this, false);
+        Term x = u.resolveTermRecurse(this);
         if (x != this && x.equals(y0))
             return true;
 
-        Term y = u.resolveTerm(y0);
-        //Term y = u.resolveTerm(y0, true);
+        Term y = u.resolveTermRecurse(y0);
+        //Term y = u.resolveTerm(y0);
         if (y != y0 && x.equals(y))
             return true;
 

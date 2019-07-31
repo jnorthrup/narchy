@@ -61,7 +61,7 @@ public class TestNAR {
      */
     private final boolean trace = false;
     private final int temporalTolerance = 0;
-    private final float freqTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
+    public float freqTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private float confTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private final ByteTopic<Tasked>[] taskEvents;
     private boolean finished;
@@ -82,6 +82,10 @@ public class TestNAR {
     public TestNAR confTolerance(float t) {
         this.confTolerance = t;
         return this;
+    }
+
+    public void freqTolerance(float f) {
+        this.freqTolerance = f;
     }
 
     public static class TestNARResult implements Serializable {

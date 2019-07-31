@@ -128,7 +128,7 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
     }
 
     @Override
-    public final void pressurize(float f) {
+    public void pressurize(float f) {
         bag.pressurize(f);
     }
 

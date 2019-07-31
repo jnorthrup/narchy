@@ -1100,7 +1100,6 @@ public class NAL6Test extends NALTest {
 //        @Test
 //        void testMutexDiffGoal1NegNAary() {
 //            test
-//                    .logDebug()
 //                    .input("--((&,a,b,--c)-->g)!")
 //                    .input("((a&b)-->g).")
 //                    .mustGoal(cycles, "(c-->g)", 1f, 0.81f);
@@ -1218,6 +1217,50 @@ public class NAL6Test extends NALTest {
                 .believe("((Sells($1,#2,#3) && z) ==> Criminal($1))")
                 .ask("Criminal(?x)")
                 .mustQuestion(cycles, "(Sells(?1,#2,#3) && z)")
+        ;
+    }
+
+    /** fair "variable" var-shifting */
+    @Test void testVarShifts_Belief() {
+        test
+            .termVolMax(9)
+            .believe("((a)-->#1)")
+            .believe("(x(#1) && y(#2))")
+            .mustBelieve(cycles, "x(#1)", 1f, 0.81f)
+            .mustBelieve(cycles, "y(#1)", 1f, 0.81f)
+            .mustBelieve(cycles, "(x(a) && y(#1))", 1f, 0.43f) //anonymous analogy
+            .mustBelieve(cycles, "(x(#1) && y(a))", 1f, 0.43f) //anonymous analogy
+            .mustBelieve(cycles, "(x(a) && y(x))", 1f, 0.43f) //anonymous analogy
+            .mustBelieve(cycles, "(y(a) && x(y))", 1f, 0.43f) //anonymous analogy
+        ;
+    }
+
+    /** fair "variable" var-shifting */
+    @Test void testVarShifts_Question() {
+        test
+            .termVolMax(9)
+            .confMin(0.9f)
+            .believe("((a)-->#1)")
+            .ask("(x(#1) && y(#2))")
+            .mustQuestion(cycles, "x(#1)")
+            .mustQuestion(cycles, "y(#1)")
+            .mustQuestion(cycles, "(x(a) && y(#1))")
+            .mustQuestion(cycles, "(x(#1) && y(a))")
+        ;
+    }
+    @Test void testConjBelief_2DepVars_Decompose() {
+        test
+            .believe("(x(#1) && y(#2))")
+            .mustBelieve(cycles, "x(#1)", 1f, 0.81f)
+            .mustBelieve(cycles, "y(#1)", 1f, 0.81f)
+        ;
+    }
+
+    @Test void testConjQuestion_2DepVars_Decompose() {
+        test
+            .ask("(x(#1) && y(#2))")
+            .mustQuestion(cycles, "x(#1)")
+            .mustQuestion(cycles, "y(#1)")
         ;
     }
 

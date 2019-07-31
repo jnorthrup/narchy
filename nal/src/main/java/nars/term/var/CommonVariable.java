@@ -142,13 +142,11 @@ public final class CommonVariable extends UnnormalizedVariable {
         }
 
         Variable common = CommonVariable.common(X,Y);
-        int start = u.size();
         if (!(common.equals(X) || u.putXY(X, common)))
             return false;
-        if (!(common.equals(Y) || u.putXY(Y, common))) {
-            u.revert(start);
+        if (!(common.equals(Y) || u.putXY(Y, common)))
             return false;
-        }
+
         return true;
     }
 

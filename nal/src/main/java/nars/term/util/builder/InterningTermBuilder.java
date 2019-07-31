@@ -76,17 +76,18 @@ public class InterningTermBuilder extends HeapTermBuilder {
         this.id = id;
         this.deep = deep;
         this.volInternedMax = volInternedMax;
-        Op[] ops = values();
-        terms = new Function[ops.length];
 
         atoms = new HijackMemoize<>(super::atom, cacheSizePerOp, 3);
 
         subterms = newOpCache("subterms",
                 x -> super.subterms(null, resolve(x.subs)), cacheSizePerOp * 2);
+
         anonSubterms = newOpCache("intrinSubterms",
                 x -> new IntrinSubterms(x.subs), cacheSizePerOp);
 
         Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
+
+        terms = new Function[ops.length];
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];

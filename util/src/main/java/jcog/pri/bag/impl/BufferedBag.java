@@ -1,6 +1,7 @@
 package jcog.pri.bag.impl;
 
 import jcog.data.NumberX;
+import jcog.data.atomic.AtomicFloat;
 import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
@@ -18,70 +19,71 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
 //    final AtomicBoolean busy = new AtomicBoolean(false);
 
-    /**
-     * pre-bag accumulating buffer
-     */
-    public final PriMap<B> pre;
+	/**
+	 * pre-bag accumulating buffer
+	 */
+	public final PriMap<B> pre;
 
-    public BufferedBag(Bag<X, Y> bag, PriMap<B> pre) {
-        super(bag);
-        this.pre = pre;
-        merge(bag.merge()); //by default.  changing this later will set pre and bag's merges
-    }
+	public BufferedBag(Bag<X, Y> bag, PriMap<B> pre) {
+		super(bag);
+		this.pre = pre;
+		merge(bag.merge()); //by default.  changing this later will set pre and bag's merges
+	}
 
 
-    @Override
-    public void clear() {
-        pre.clear();
-        super.clear();
-    }
+	@Override
+	public void clear() {
+		pre.clear();
+		super.clear();
+	}
 
-    @Override
-    public final Bag<X, Y> commit(@Nullable Consumer<Y> update) {
+	@Override
+	public final Bag<X, Y> commit(@Nullable Consumer<Y> update) {
 
 //        if (busy.compareAndSet(false, true)) {
 //            try {
 
-                bag.commit(update);
+		bag.commit(update);
 
-                if (!pre.isEmpty()) {
+        bag.pressurize(prePressure.getAndZero());
+		if (!pre.isEmpty()) {
 
-                    //before
+			//before
 //                    boolean growDuringMerge = bag instanceof ArrayBag;
 //                    int cap = bag.capacity();
 //                    if (growDuringMerge) {
 //                        bag.setCapacity(Math.max(cap, Math.min(cap * OVER_CAPACITY_FACTOR, bag.size() + pre.size()))); //expand before
 //                    }
 
-                    //merge
-                    pre.drain(bag::putAsync, this::valueInternal);
+			//merge
+			pre.drain(bag::putAsync, this::valueInternal);
 
-                    //after
+			//after
 //                    if (growDuringMerge) {
 //                        bag.setCapacity(cap); //contract after
 //                    }
 
-                    //bag.commit(after); //force sort after
-                }
+			//bag.commit(after); //force sort after
+		}
 
 //            } finally {
 //                busy.set(false);
 //            }
 //        }
 
-        return this;
-    }
+		return this;
+	}
 
-    protected abstract Y valueInternal(B b, float pri);
+	protected abstract Y valueInternal(B b, float pri);
 
-    @Override
-    public int size() {
-        return Math.max(bag.size(), pre.size());
-    }
+	@Override
+	public int size() {
+		return Math.max(bag.size(), pre.size());
+	}
 
-    @Override
-    public final Y put(Y x) {
-        float pri = ((Prioritized) x).pri();
+	@Override
+	public final Y put(Y x) {
+		float pri = ((Prioritized) x).pri();
 
 //        boolean tryBypass = true;
 //        if (tryBypass) {
@@ -94,28 +96,35 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 //            }
 //        }
 
-        return (Y) pre.put((B) x, pri,
-                merge(),
-                this::pressurize /* TODO maybe collect pressure locally and apply as sum in next commit */
-        );
-    }
+		return (Y) pre.put((B) x, pri,
+			merge(),
+			prePressure::add
+		);
+	}
 
-    @Override
-    public final Y put(Y b, @Nullable NumberX overflowingIgnored) {
-        return put(b);
-    }
+	private final AtomicFloat prePressure = new AtomicFloat();
 
-    @Override
-    public final boolean isEmpty() {
-        return bag.isEmpty() && pre.isEmpty();
-    }
+	@Override
+	public void pressurize(float f) {
+		prePressure.add(f);
+	}
+
+	@Override
+	public final Y put(Y b, @Nullable NumberX overflowingIgnored) {
+		return put(b);
+	}
+
+	@Override
+	public final boolean isEmpty() {
+		return bag.isEmpty() && pre.isEmpty();
+	}
 
 
-    public void merge(PriMerge nextMerge) {
-        super.merge(nextMerge);
-        pre.merge(nextMerge);
-        bag.merge(nextMerge);
-    }
+	public void merge(PriMerge nextMerge) {
+		super.merge(nextMerge);
+		pre.merge(nextMerge);
+		bag.merge(nextMerge);
+	}
 
 
 }

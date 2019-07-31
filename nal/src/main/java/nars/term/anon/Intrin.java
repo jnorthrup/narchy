@@ -2,6 +2,7 @@ package nars.term.anon;
 
 import jcog.Skill;
 import jcog.Util;
+import nars.NAL;
 import nars.Op;
 import nars.term.Neg;
 import nars.term.Term;
@@ -95,8 +96,12 @@ import static nars.Op.ImgInt;
         if (t instanceof Neg.NegIntrin)
             return (short) -((Neg.NegIntrin)t).sub;
 
-        if (t instanceof Neg)
-            t = t.unneg();
+        if (NAL.DEBUG) {
+            if (t instanceof Neg) {
+                t = t.unneg();
+                assert (!(t instanceof Atomic) || ((Atomic) t).intrin() == 0) : "should have been wrapped in NegIntrin";
+            }
+        }
 
         return t instanceof Atomic ? ((Atomic) t).intrin() : 0;
     }

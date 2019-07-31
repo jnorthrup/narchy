@@ -5,12 +5,12 @@
 // Y, (&&,--X,A..+), neq(X,Y) |- unisubst((&&,A..+), X,Y), (Belief:DeductionN, Time:TaskEvent)
 
 //free structural Conjunction/Disjunction decomposition
-C, X,  conjParallel(C), eventOfPN(C,X)   |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Time:TaskEvent)
-  C, X, conjParallel(C), eventOfPN(C,X)  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction, Time:TaskEvent)
+C, X, --isVar(X), eventOfPN(C,X)                     |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Time:TaskEvent)
+  C, X, --isVar(X), eventOfPN(C,X), conjParallel(C)  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction, Time:TaskEvent)
 
-C, X, eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
+//C, X, conjParallel(C), --isVar(X), eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
-  C, X, --isVar(X), hasBelief(), conjSequence(C) |- conjBefore(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
+  C, X, --isVar(X), hasBelief()                  |- conjBefore(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
   C, X, --isVar(X), hasBelief(), conjSequence(C) |- conjAfter(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 
 
