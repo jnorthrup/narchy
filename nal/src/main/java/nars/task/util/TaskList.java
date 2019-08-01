@@ -101,9 +101,6 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         return true;
     }
 
-    public Task[] toArrayRecycled() {
-        return toArrayRecycled(Task[]::new);
-    }
     public Supplier<long[]> stamp(Random rng) {
         int ss = size();
         switch (ss) {
@@ -112,6 +109,9 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
             case 2:
                 return ()-> {
                     long[] a = stamp(0), b = stamp(1);
+//                    if (a == null && b == null) throw new NullPointerException();
+//                    if (a == null) return b;
+//                    if (b == null) return a;
                     return Stamp.sample(STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
                 };
             default:
@@ -122,6 +122,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
                         STAMP_CAPACITY,
                         this::stamp,
                         ss); //calculate stamp after filtering and after intermpolation filtering
+                    //assert(!stampSet.isEmpty());
                     if (stampSet.size() > STAMP_CAPACITY) {
                         return Stamp.sample(STAMP_CAPACITY, stampSet, rng);
                     } else {
@@ -131,8 +132,9 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         }
     }
 
-    public final long[] stamp(int component) {
-        return items[component].stamp();
+    @Nullable public final long[] stamp(int component) {
+        Task t = items[component];
+        return t!=null ? t.stamp() : null;
     }
 
 

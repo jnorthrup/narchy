@@ -13,6 +13,7 @@ import nars.table.BeliefTable;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
 import nars.task.ProxyTask;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
@@ -123,15 +124,20 @@ public class DynTaskify extends TaskList {
             return null;
 
         Task[] tt = tasks.get();
-        Term yc = r.getOne();
+
+        Truth yt = t.negIf(neg != r.getTwo());
 
         if (tt.length == 1 && !(tt[0] instanceof ProxyTask)) {
-            //TODO wrap the only task wtih Special proxy task
+            //wrap the only task wtih Special proxy task
+            //TODO check if truth and occurence are in fact different
+            Task only = tt[0];
+            return new SpecialTruthAndOccurrenceTask(only, start, end, false, yt);
         }
 
+
         NALTask y = new DynamicTruthTask(
-            yc, beliefOrGoal,
-                t.negIf(neg != r.getTwo()),
+            r.getOne(), beliefOrGoal,
+            yt,
                 w, start, end,
                 stamp.get());
 

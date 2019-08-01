@@ -24,9 +24,11 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Objects;
 import java.util.function.IntPredicate;
 import java.util.stream.IntStream;
 
+import static java.lang.System.arraycopy;
 import static jcog.Util.assertFinite;
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.term.atom.Bool.Null;
@@ -74,12 +76,9 @@ abstract public class TruthProjection extends TaskList {
     @Nullable
     public abstract Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL nar);
 
-    public final boolean add(TaskRegion t) {
-        return add(t.task());
-    }
-
     private boolean update(int i) {
-        return valid(evi[i] = evi(get(i)));
+        Task t = items[i];
+        return t!=null && valid(evi[i] = evi(t));
     }
 
     private double evi(Task task) {
@@ -124,6 +123,8 @@ abstract public class TruthProjection extends TaskList {
             else if (shrink && activeAfterIntermpolateCull != activeBefore) {
                 e = filterCyclicN(minResults, shrink, needStamp);
             }
+
+            activeUpdate(shrink); //just ensure updated
 
             return needStamp ? e : null;
         }
@@ -181,7 +182,8 @@ abstract public class TruthProjection extends TaskList {
 
         @Deprecated int remain = refocus(shrink, true);
         if (remain < minComponents) {
-            clear(); return null; }
+            clear(); return null;
+        }
 
         int iter = 0;
         MetalLongSet e = null;
@@ -191,14 +193,15 @@ abstract public class TruthProjection extends TaskList {
                 remain = refocus(shrink, false);
 
             if (remain < minComponents) {
-                clear();
                 //OOPS
                 // TODO undo
+                clear();
                 return null;
             }
             if (remain == 1) {
                 //throw new WTF();
-                return needStamp ? Stamp.toMutableSet(firstValid()) : null;
+                e = needStamp ? Stamp.toMutableSet(firstValid()) : null;
+                break;
             }
 
             //optimized special case
@@ -218,6 +221,7 @@ abstract public class TruthProjection extends TaskList {
 //            }
             int ss = size();
 
+            Task[] items = this.items;
             if (NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
                 //HACK temporary strategy
                 boolean disjointOrNonOverlapping = true;
@@ -244,10 +248,11 @@ abstract public class TruthProjection extends TaskList {
                             if (valid(i))
                                 evi.addAll(stamp(i));
                         }
-                        return evi;
+                        e = evi;
+                        break;
                     } else {
                         //done
-                        return null;
+                        break;
                     }
                 }
             }
@@ -259,19 +264,14 @@ abstract public class TruthProjection extends TaskList {
 
 
             MetalBitSet conflict = null;
-            boolean invalids = false;
 
             for (int i = 0; i < ss; i++) {
                 if (!valid(i)) {
-                    invalids = true;
                     continue;
                 }
                 Task c = items[i];
-                if (c == null) {
-                    set(i, null);
-                    invalids = true;
-                    continue;
-                }
+//                if (c == null)
+//                    continue;
 
                 long[] iis = c.stamp();
 
@@ -302,7 +302,6 @@ abstract public class TruthProjection extends TaskList {
                 } else {
                     nullAll(conflict);
                     if (!needStamp) {
-                        removeNulls();
                         break; //done
                     }
 
@@ -314,22 +313,15 @@ abstract public class TruthProjection extends TaskList {
                     return null;  //impossible: nothing else to remove
                 }
 
-                setFast(0, null); //pop the top, and retry with remaining
-                invalids = true;
+                remove(0);  //pop the top, and retry with remaining
             }
             //e = null;
             e.clear();
 
-            if (invalids || conflicts > 0)
-                removeNulls();
 
         }
 
-//        if (this.time(bs, be)) {
-//            int sss = refocus(tCrop, false);
-//            assert(sss >= minComponents);
-//        }
-
+        removeNulls();
         return e;
     }
 
@@ -341,11 +333,34 @@ abstract public class TruthProjection extends TaskList {
 
     @Override
     public boolean removeNulls() {
-        if (super.removeNulls()) {
-            evi = null; //invalidate
-            return true;
+        int sizeBefore = size;
+        if (evi!=null) {
+            //verify that all zero evidence slots also have null tasks, if not then nullify the corresponding task slot
+            for (int i= 0; i < sizeBefore; i++) {
+                if (!valid(evi[i])) {
+                    //assert(items[i] == null);
+                    items[i] = null;
+                    evi[i] = 0;
+                }
+            }
         }
-        return false;
+
+        boolean result = false;
+        if (super.removeNulls()) {
+            if (evi!=null) {
+                for (int i = 0; i < sizeBefore; ) {
+                    if (evi[i] == 0 && i < sizeBefore-1) {
+                        arraycopy(evi, i+1, evi, i, sizeBefore-1-i);
+                        evi[sizeBefore-1] = 0;
+                        sizeBefore--;
+                    } else
+                        i++;
+                }
+            }
+            result = true;
+        }
+        trimToSize();
+        return result;
     }
 
     private double conflictedEvi(MetalBitSet x) {
@@ -456,14 +471,7 @@ abstract public class TruthProjection extends TaskList {
 
 
     private double eviSum(MetalBitSet b, boolean what) {
-        switch (b.cardinality()) {
-            case 0: return 0;
-            case 1: {
-                int a = b.first(what);
-                return a < size ? evi[a] : 0;
-            }
-            default: return eviSum(what ? b::get : ((IntPredicate)b::get).negate());
-        }
+        return eviSum(what ? b::get : ((IntPredicate)b::get).negate());
     }
 
     private double eviSum(IntPredicate each) {
@@ -496,7 +504,7 @@ abstract public class TruthProjection extends TaskList {
     }
 
     public final boolean valid(int i) {
-        return valid(evi[i]);
+        return items[i]!=null && valid(evi[i]);
     }
 
     /** test for whether an amount of evidence is valid */
@@ -546,9 +554,9 @@ abstract public class TruthProjection extends TaskList {
 
     float intermpolateAndCull(NAL nar) {
 
-        final int root = firstValidIndex();
         int thisSize;
         main: while ((thisSize = size()) >= 1) {
+            final int root = firstValidIndex();
             Task rootComponent = get(root);
             Term first = rootComponent.term();
             this.term = first;
@@ -572,9 +580,8 @@ abstract public class TruthProjection extends TaskList {
                     //exact matches are present.  remove those which are not
                     for (int i = firstValidIndex() + 1; i < thisSize; i++)
                         if (!matchesFirst.get(i))
-                            setFast(i, null);
+                            remove(i);
                 }
-                removeNulls();
                 return 1f;
             } else {
 
@@ -613,9 +620,9 @@ abstract public class TruthProjection extends TaskList {
                                 for (int i = 0; i < size; i++)
                                     if (i != root && i != tryB) {
                                         if (get(i) != null && !get(i).term().equals(ab))
-                                            setFast(i, null);
+                                            remove(i);
                                     }
-                                removeNulls();
+
                                 //return 1 - dtDiff * 0.5f; //half discounted
                                 //return 1 - dtDiff;
                                 return 1; //no discount for difference
@@ -625,7 +632,7 @@ abstract public class TruthProjection extends TaskList {
                         }
                     }
                 }
-                removeNulls(); //HACK
+                //removeNulls(); //HACK
                 if (size() == 2) {
                     //stronger
                     remove(1);
@@ -703,7 +710,11 @@ abstract public class TruthProjection extends TaskList {
             if (changed || ((all ? size() : active()) > 1)) {
                 long[] union = Tense.union(changed||all ?
                     this :
-                    ()->IntStream.range(0, size()).filter(this::valid).mapToObj(this::get).map(x -> (TaskRegion)x).iterator());
+                    ()->IntStream.range(0, size())
+                        .filter(this::valid)
+                        .mapToObj(this::get)
+                        .filter(Objects::nonNull) //HACK
+                        .map(x -> (TaskRegion)x).iterator());
 
                 u0 = union[0]; u1 = union[1];
             } else {

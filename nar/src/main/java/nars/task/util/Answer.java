@@ -422,7 +422,6 @@ public final class Answer implements Timed, Predicate<Task> {
         if (tt == null)
             return null;
 
-        tp.trimToSize(); // HACK
         return DynTaskify.merge(tp::array, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
     }
 

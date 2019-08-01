@@ -342,7 +342,8 @@ public class FasterList<X> extends FastList<X> {
     @Override
     public X[] toArray() {
         int s = this.size;
-        return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
+        //return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
+        return Arrays.copyOf(items, s);
     }
 
 
