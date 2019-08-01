@@ -308,10 +308,10 @@ public class Derivation extends PreDerivation {
                             else
                                 nextBeliefEnd = nextBelief.end();
 
-                            nextBelief = new SpecialTruthAndOccurrenceTask(nextBelief, nextBeliefStart, nextBeliefEnd,
-                                    false,
-                                    this.beliefTruth_at_Task = beliefTruth_eternalized
-                            );
+                            nextBelief = SpecialTruthAndOccurrenceTask.the(nextBelief,
+                                this.beliefTruth_at_Task = beliefTruth_eternalized,
+                                nextBeliefStart, nextBeliefEnd
+							);
                         }
                     }
 

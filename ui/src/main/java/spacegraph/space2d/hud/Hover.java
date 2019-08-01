@@ -6,6 +6,7 @@ import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.SurfaceGraph;
 import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.video.OrthoSurfaceGraph;
@@ -72,15 +73,18 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
 
 
     protected boolean show() {
-        Stacking root = ((OrthoSurfaceGraph) source.root()).layers;
+        SurfaceGraph r = source.root();
+        if (r instanceof OrthoSurfaceGraph) {
+            Stacking root = ((OrthoSurfaceGraph) r).layers;
 
-        Surface t = target = targetBuilder.apply(source);
+            Surface t = target = targetBuilder.apply(source);
 
-        if (t != null) {
-            t.hide();
-            root.add(new WeakContainer(t));
-            //updatePos();
-            return true;
+            if (t != null) {
+                t.hide();
+                root.add(new WeakContainer(t));
+                //updatePos();
+                return true;
+            }
         }
         return false;
     }

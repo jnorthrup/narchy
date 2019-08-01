@@ -455,7 +455,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             tt = null;
         }
 
-        return new SpecialTruthAndOccurrenceTask(t, start, end, false, tt);
+        return SpecialTruthAndOccurrenceTask.the(t, tt, start, end);
     }
 
     /**

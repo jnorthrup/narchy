@@ -11,8 +11,6 @@ import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 
-import static java.lang.Math.tan;
-
 /**
  * 3D camera control
  */
@@ -137,9 +135,9 @@ public abstract class SpaceMouse extends MouseAdapter {
         right.normalize();
 
 
-        double nearScale = tan((space.fov * Math.PI / 180) / 2) * space.zNear;
-        double vLength = nearScale;
-        double hLength = nearScale * (space.right - space.left)/(space.top - space.bottom);
+//        double nearScale = tan((space.fov * Math.PI / 180) / 2) * space.zNear;
+//        double vLength = nearScale;
+//        double hLength = nearScale * (space.right - space.left)/(space.top - space.bottom);
 
 
         v3 origin = space.camPos.clone();
@@ -168,7 +166,7 @@ public abstract class SpaceMouse extends MouseAdapter {
         hitPoint = null;
 
         if (r.hasHit()) {
-            System.out.println("ray: " + x + "," + y  + "\t => " + target + " " + r.hitPointWorld);
+//            System.out.println("ray: " + x + "," + y  + "\t => " + target + " " + r.hitPointWorld);
             Body3D body = Body3D.ifDynamic(r.collidable);
             if (body != null && (!(body.isStaticObject() || body.isKinematicObject()))) {
                 pickedBody = body;

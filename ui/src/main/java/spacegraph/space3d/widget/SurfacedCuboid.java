@@ -24,7 +24,7 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
     @Nullable
     public volatile Surface front;
-    private static final float zOffset = 0.05f;
+    private static final float zOffset = 0.1f;
 
 //    @Nullable
 //    private Finger finger;
@@ -61,13 +61,18 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
                     prevFront.stop();
                 this.front = front;
                 if (front != null) {
-                    front.start(this);
                     front.resize(1, 1);
+                    front.start(this);
                 }
             }
         }
         return this;
     }
+
+//    @Override
+//    public SurfaceGraph root() {
+//        throw new TODO();
+//    }
 
     @Override
     public boolean onKey(Collidable body, v3 hitPoint, char charCode, boolean pressed) {

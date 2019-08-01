@@ -123,15 +123,22 @@ public class DynTaskify extends TaskList {
         if (r==null)
             return null;
 
-        Task[] tt = tasks.get();
-
         Truth yt = t.negIf(neg != r.getTwo());
 
-        if (tt.length == 1 && !(tt[0] instanceof ProxyTask)) {
-            //wrap the only task wtih Special proxy task
-            //TODO check if truth and occurence are in fact different
+        Task[] tt = tasks.get();
+        if (tt.length == 1) {
             Task only = tt[0];
-            return new SpecialTruthAndOccurrenceTask(only, start, end, false, yt);
+
+            //wrap the only task wtih Special proxy task
+            if (only.start() == start && only.end() == end && only.truth().equals(yt))
+                //direct
+                return only; //
+            else {
+                if (only instanceof SpecialTruthAndOccurrenceTask || !(only instanceof ProxyTask)) { //TODO other special proxy types
+                    return SpecialTruthAndOccurrenceTask.the(only, yt, start, end);
+                } //else: continue below
+            }
+
         }
 
 

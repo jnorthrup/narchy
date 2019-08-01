@@ -10,6 +10,8 @@ import nars.task.util.TaskRegion;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Iterator;
+
 import static java.lang.Long.MAX_VALUE;
 
 
@@ -174,10 +176,11 @@ public enum Tense {
 //        return union(ArrayIterator.iterable(tt));
 //    }
 
-    public static long[] union(Iterable<? extends TaskRegion> t) {
+    public static long[] union(Iterator<? extends TaskRegion> t) {
         long start = MAX_VALUE, end = Long.MIN_VALUE;
-        
-        for (TaskRegion x : t) {
+
+        for (Iterator<? extends TaskRegion> it = t; it.hasNext(); ) {
+            TaskRegion x = it.next();
             if (x == null) continue;
             long xs = x.start();
             if (xs != ETERNAL) {
@@ -250,7 +253,7 @@ public enum Tense {
      * assumes that at least one of the items is non-eternal.
      * */
     public static long[] union(int dtDither, Iterable<? extends TaskRegion> tasks) {
-        long[] u = Tense.union(tasks);
+        long[] u = Tense.union(tasks.iterator());
 //        long unionRange = u[1] - u[0];
 //        float rangeThreshold = Param.REVISION_UNION_THRESHOLD;
 //        if (unionRange > Math.ceil(rangeThreshold * Util.max(t -> t.start()==ETERNAL ?  0 : t.range(), tasks))) {

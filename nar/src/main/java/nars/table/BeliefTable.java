@@ -56,7 +56,7 @@ public interface BeliefTable extends TaskTable {
 
     /** precision = max # of tasks to include in the sample */
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, int precision, float dur, NAR n) {
-        assert(precision < NAL.STAMP_CAPACITY);
+        assert(precision <= NAL.STAMP_CAPACITY);
         if (isEmpty())
             return null;
         return Answer.relevance(true, precision, start, end, template, filter, n)

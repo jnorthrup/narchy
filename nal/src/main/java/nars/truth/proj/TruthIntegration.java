@@ -62,8 +62,8 @@ public class TruthIntegration {
 		if (tStart == ETERNAL) {
 			return tEvi * range;
 		} else {
-			//return tEvi * Math.min(range, t.range()) / (1 + Math.log(1 + t.minTimeTo(qStart, qEnd)));
-			return tEvi * Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd));
+			return tEvi * Math.min(range, t.range()) / (1 + Math.log(1 + t.minTimeTo(qStart, qEnd)));
+			//return tEvi * Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd));
 		}
 	}
 

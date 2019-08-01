@@ -166,19 +166,22 @@ abstract public class GameX extends Game {
 
         n.synch();
 
-        Exe.invokeLater(()->{
+        boolean initMeta = false;
+        if (initMeta) {
+            Exe.invokeLater(() -> {
 
-            float _fps = 24;
-            new MetaAgent.SelfMetaAgent(n, _fps).pri(0.1f);
+                float _fps = 24;
+                new MetaAgent.SelfMetaAgent(n, _fps).pri(0.1f);
 
-            n.parts(Game.class).forEach(g -> {
-                if (!(g instanceof MetaAgent)) {
-                    float fps = 12;
-                    boolean allowPause = false;
-                    new MetaAgent.GameMetaAgent(g, fps, allowPause).pri(0.05f);
-                }
+                n.parts(Game.class).forEach(g -> {
+                    if (!(g instanceof MetaAgent)) {
+                        float fps = 12;
+                        boolean allowPause = false;
+                        new MetaAgent.GameMetaAgent(g, fps, allowPause).pri(0.05f);
+                    }
+                });
             });
-        });
+        }
 
         Loop loop = n.startFPS(narFPS);
 

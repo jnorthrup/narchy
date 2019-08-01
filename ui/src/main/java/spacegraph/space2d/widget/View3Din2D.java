@@ -5,15 +5,11 @@ import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.math.v3;
-import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.util.SpaceMouse;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.collision.ClosestRay;
@@ -27,43 +23,7 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
  */
 public class View3Din2D extends PaintSurface {
 
-	public static void main(String[] args) {
-		SpaceDisplayGraph3D s = new SpaceDisplayGraph3D().camPos(0, 0, 5);
-//        for (int x = -10; x < 10; x++) {
-//            for (int y = -10; y < 10; y++) {
-//                s.add(
-//                    new SimpleSpatial().move(x, y, 0).scale(0.75f).color(1, 1, 1)
-//                );
-//            }
-//        }
 
-		s.add(new SurfacedCuboid("x",
-			//new BitmapLabel("y"),
-			new Sketch2DBitmap(128, 128),
-			//new MetaFrame(new Sketch2DBitmap(32,32)),
-			2, 2)
-			//.rotate(0, 0, 1, 0.5f, 1f)
-			.move(0, 0, 0)
-		);
-//		s.add(new SurfacedCuboid("y",
-//			//new BitmapLabel("y"),
-//			new Sketch2DBitmap(128, 128),
-//			//new MetaFrame(new Sketch2DBitmap(32,32)),
-//			1, 1)
-//			.move(0, 1, 0)
-//		);
-//		s.add(new SurfacedCuboid("z",
-//			//new BitmapLabel("y"),
-//			new XYSlider(new FloatRange(0, 1, 1), new FloatRange(0, 1, 1)),
-//			//new Sketch2DBitmap(128, 128),
-//			//new MetaFrame(new Sketch2DBitmap(32,32)),
-//			1, 1)
-//			.move(1, 0, 0)
-//		);
-		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f, new Splitting(
-			new View3Din2D(s),
-			0.1f, new PushButton("x")).resizeable()).resizeable(), 1280, 1024);
-	}
 
 
 	private final SpaceDisplayGraph3D space;
