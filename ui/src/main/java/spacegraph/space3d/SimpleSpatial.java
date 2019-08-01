@@ -182,10 +182,11 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
         reactivate();
     }
 
-    public void rotate(float tx, float ty, float tz, float angle, float speed) {
+    public SimpleSpatial rotate(float tx, float ty, float tz, float angle, float speed) {
         Quaternion q = transform.getRotation(new Quaternion());
         q.rotateByAngleNormalAxis(angle, tx, ty, tz);
         rotate(q, speed);
+        return this;
     }
 
 

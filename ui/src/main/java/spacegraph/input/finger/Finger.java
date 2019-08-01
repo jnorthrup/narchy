@@ -359,9 +359,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
         v2 p = posGlobal.clone();
         transforms.add(t);
         try {
-            Zoomed.Camera z = (Zoomed.Camera) t;
-            posGlobal.set(z.pixelToGlobal(posGlobal.x, posGlobal.y));
-
+            t.pixelToGlobal(posGlobal.x, posGlobal.y, posGlobal);
             return fingering.apply(this);
         } finally {
             posGlobal.set(p);

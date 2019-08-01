@@ -5,7 +5,7 @@ import jcog.math.vv3;
 import static jcog.math.vv3.Z_AXIS;
 
 public final class Camera extends Ray3 {
-    private double fov;
+    public double fov;
     private double size;
 
     public Camera(vv3 position, vv3 direction, double fov, double size) {

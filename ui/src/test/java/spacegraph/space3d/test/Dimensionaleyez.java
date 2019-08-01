@@ -99,11 +99,6 @@ public class Dimensionaleyez extends SimpleSpatial {
 
             float last = ((float) n.getEntry(n.getDimension() - 1) + 1f) / 2f;
 
-            
-            
-
-            
-
             gl.glPushMatrix();
             gl.glTranslatef(x, y, z);
             float p = 0.3f + (float) (0.7f / (1f + n.localDistance()));

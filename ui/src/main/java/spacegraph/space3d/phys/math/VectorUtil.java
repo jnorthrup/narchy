@@ -108,12 +108,12 @@ public class VectorUtil {
 		}
 	}
 
-	public static void setInterpolate3(v3 dest, v3 v0, v3 v1, float rt) {
-		float s = 1f - rt;
-		dest.set(
-		s * v0.x + rt * v1.x,
-		s * v0.y + rt * v1.y,
-		s * v0.z + rt * v1.z);
+	public static void lerp(v3 ab, v3 a, v3 b, float x) {
+		float y = 1f - x;
+		ab.set(
+		y * a.x + x * b.x,
+		y * a.y + x * b.y,
+		y * a.z + x * b.z);
 
 		
 		

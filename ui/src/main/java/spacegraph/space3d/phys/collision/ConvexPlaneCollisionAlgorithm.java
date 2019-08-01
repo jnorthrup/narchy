@@ -90,11 +90,11 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 
 		Transform planeInConvex = new Transform();
 		convexObj.getWorldTransform(planeInConvex);
-		planeInConvex.inverse();
+		planeInConvex.invert();
 		planeInConvex.mul(planeObj.getWorldTransform(tmpTrans));
 
 		Transform convexInPlaneTrans = new Transform();
-		convexInPlaneTrans.inverse(planeObj.getWorldTransform(tmpTrans));
+		convexInPlaneTrans.invert(planeObj.getWorldTransform(tmpTrans));
 		convexInPlaneTrans.mul(convexObj.getWorldTransform(tmpTrans));
 
 		v3 tmp = new v3();

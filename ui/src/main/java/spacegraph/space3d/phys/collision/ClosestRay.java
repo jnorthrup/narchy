@@ -2,18 +2,30 @@ package spacegraph.space3d.phys.collision;
 
 import jcog.math.v3;
 import spacegraph.space3d.phys.Collisions;
-import spacegraph.space3d.phys.math.Transform;
 import spacegraph.space3d.phys.math.VectorUtil;
 
 /**
  * Created by me on 7/22/16.
  */
 public class ClosestRay extends Collisions.RayResultCallback {
-    private final v3 rayFromWorld = new v3();
+    public final v3 rayFromWorld = new v3();
     public final v3 rayToWorld = new v3();
 
-    private final v3 hitNormalWorld = new v3();
+    public final v3 hitNormalWorld = new v3();
     public final v3 hitPointWorld = new v3();
+
+    @Override
+    public String toString() {
+        return "ClosestRay{" +
+            "rayFromWorld=" + rayFromWorld +
+            ", rayToWorld=" + rayToWorld +
+            ", hitNormalWorld=" + hitNormalWorld +
+            ", hitPointWorld=" + hitPointWorld +
+            ", closestHitFraction=" + closestHitFraction +
+            ", collidable=" + collidable +
+            ", collisionFilterGroup=" + collisionFilterGroup +
+            '}';
+    }
 
     public ClosestRay(short group) {
         collisionFilterGroup = group;
@@ -45,11 +57,10 @@ public class ClosestRay extends Collisions.RayResultCallback {
 
         hitNormalWorld.set(rayResult.hitNormal);
         if (!normalInWorldSpace) {
-            
-            collidable.getWorldTransform(new Transform()).transform(hitNormalWorld);
+            collidable.transform.transform(hitNormalWorld);
         }
 
-        VectorUtil.setInterpolate3(hitPointWorld, rayFromWorld, rayToWorld, f);
+        VectorUtil.lerp(hitPointWorld, rayFromWorld, rayToWorld, f);
         return f;
     }
 }

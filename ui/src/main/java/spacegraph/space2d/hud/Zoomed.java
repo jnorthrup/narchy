@@ -409,10 +409,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 //        }
 
 
-        public final v2 pixelToGlobal(v2 xy) {
-            return pixelToGlobal(xy.x, xy.y);
-        }
-
         public v2 globalToPixel(float gx, float gy) {
             return new v2(
                     ((gx - cam.x) * scale.x) + (w() / 2),
@@ -420,14 +416,11 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             );
         }
 
-        public v2 pixelToGlobal(float px, float py) {
-            v2 g = new v2(
+        public void pixelToGlobal(float px, float py, v2 target) {
+            target.set(
                     ((px - (w() / 2)) / scale.x + cam.x),
                     ((py - (h() / 2)) / scale.y + cam.y)
             );
-
-            //System.out.println("px=" + px + "," + py + "\tcam=" + cam + "\tscale=" + scale + "\t" + g);
-            return g;
         }
 
 

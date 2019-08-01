@@ -403,6 +403,8 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
         set(t1.x + t2.x, t1.y + t2.y, t1.z + t2.z);
     }
 
+
+
     /**
      * Sets the value of this tuple to the vector sum of itself and tuple t1.
      *
@@ -435,20 +437,21 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param t1 the first tuple
      * @param t2 the second tuple
      */
-    public final void sub(v3 t1, v3 t2) {
+    public final v3 sub(v3 t1, v3 t2) {
         set(t1.x - t2.x,
                 t1.y - t2.y,
                 t1.z - t2.z);
+        return this;
     }
 
     /**
      * Sets the value of this tuple to the vector difference of
      * itself and tuple t1 (this = this - t1) .
      *
-     * @param t1 the other tuple
+     * @param v the other tuple
      */
-    public final void sub(v3 t1) {
-        set(this.x - t1.x, this.y - t1.y, this.z - t1.z);
+    public final void sub(v3 v) {
+        set(this.x - v.x, this.y - v.y, this.z - v.z);
     }
 
     /**
@@ -545,12 +548,8 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param s  the scalar value
      * @param t1 the tuple to be added
      */
-    public final void scaleAdd(float s, v3 t1) {
-        set(s * this.x + t1.x, s * this.y + t1.y, s * this.z + t1.z);
-    }
-
-    public final v3 addScaled(v3 t1, float s) {
-        set(this.x + s * t1.x, this.y + s * t1.y, this.z + s * t1.z);
+    public final v3 addScaled(v3 v, float s) {
+        add( s * v.x,  s * v.y,  s * v.z);
         return this;
     }
 

@@ -16,14 +16,14 @@ import java.util.List;
 import java.util.function.Consumer;
 
 /** a spatial holding a Surface, implementing an interface between 3d and 2d UI dynamics */
-abstract public class SpaceWidget<T> extends CuboidSurfaceGraph<T> {
+abstract public class SpaceWidget<T> extends SurfacedCuboid<T> {
 
     private boolean touched = false;
 
     public SpaceWidget(T x) {
         super(x, 1, 1);
 
-        setFront(
+        front(
             
                 
                 new PushButton(x.toString()).clicked(this::onClicked)
@@ -44,25 +44,25 @@ abstract public class SpaceWidget<T> extends CuboidSurfaceGraph<T> {
     abstract public Iterable<? extends EDraw<?>> edges();
 
 
-    @Override
-    public void onUntouch(JoglWindow space) {
-        touched = false;
-    }
+//    @Override
+//    public void onUntouch(JoglWindow space) {
+//        touched = false;
+//    }
 
-    @Override
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceDisplayGraph3D space) {
-        Surface s = super.onTouch(finger, body, hitPoint, buttons, space);
-
-
-
-        touched = true;
-
-
-
-
-
-        return s;
-    }
+//    @Override
+//    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceDisplayGraph3D space) {
+//        Surface s = super.onTouch(finger, body, hitPoint, buttons, space);
+//
+//
+//
+//        touched = true;
+//
+//
+//
+//
+//
+//        return s;
+//    }
 
 
     private static void render(GL2 gl, SimpleSpatial src, float twist, Iterable<? extends EDraw> ee) {
@@ -97,14 +97,14 @@ abstract public class SpaceWidget<T> extends CuboidSurfaceGraph<T> {
 
 
 
-        if (touched) {
-            gl.glPushMatrix();
-            gl.glTranslatef(x(), y(), z());
-            float r = radius() * 2f;
-            gl.glScalef(r, r, r);
-            Draw.drawCoordSystem(gl);
-            gl.glPopMatrix();
-        }
+//        if (touched) {
+//            gl.glPushMatrix();
+//            gl.glTranslatef(x(), y(), z());
+//            float r = radius() * 2f;
+//            gl.glScalef(r, r, r);
+//            Draw.drawCoordSystem(gl);
+//            gl.glPopMatrix();
+//        }
     }
 
     public interface TermVis<X extends SpaceWidget> extends Consumer<List<X>> {

@@ -244,7 +244,7 @@ public class Islands {
         System.err.println("error in island management, maybe spatial is in the display list multiple times: " + colObj0 + ' ' + colObj0.data());
     }
 
-    public <X> void buildAndProcessIslands(Intersecter intersecter, List<Collidable> collidables, IslandCallback callback) {
+    public void buildAndProcessIslands(Intersecter intersecter, List<Collidable> collidables, IslandCallback callback) {
         buildIslands(intersecter, collidables);
 
         int endIslandIndex = 1;

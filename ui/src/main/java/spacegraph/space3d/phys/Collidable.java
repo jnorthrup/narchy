@@ -47,12 +47,12 @@ public class Collidable<X> {
 	public static final int ISLAND_SLEEPING = 2;
 	public static final int WANTS_DEACTIVATION = 3;
 	public static final int DISABLE_DEACTIVATION = 4;
-	public static final int DISABLE_SIMULATION = 5;
+	static final int DISABLE_SIMULATION = 5;
 	public final Transform transform;
 
 	
 	
-	public final Transform interpolationWorldTransform = new Transform();
+	final Transform interpolationWorldTransform = new Transform();
 	
 	
 

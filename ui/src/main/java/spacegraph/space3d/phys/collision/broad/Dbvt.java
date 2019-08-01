@@ -332,7 +332,7 @@ public final class Dbvt {
 
 	public static void collideTT(Node root0, Transform xform0, Node root1, Transform xform1, ICollide policy) {
 		Transform xform = new Transform();
-		xform.inverse(xform0);
+		xform.invert(xform0);
 		xform.mul(xform1);
 		collideTT(root0, root1, xform, policy);
 	}

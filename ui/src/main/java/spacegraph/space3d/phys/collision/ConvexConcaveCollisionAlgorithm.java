@@ -116,7 +116,7 @@ public class ConvexConcaveCollisionAlgorithm extends CollisionAlgorithm {
 		
 
 		Transform triInv = triBody.getWorldTransform(new Transform());
-		triInv.inverse();
+		triInv.invert();
 
 		Transform convexFromLocal = new Transform();
 		convexFromLocal.mul(triInv, convexbody.getWorldTransform(tmpTrans));

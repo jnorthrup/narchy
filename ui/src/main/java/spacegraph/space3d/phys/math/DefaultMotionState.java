@@ -71,7 +71,7 @@ public class DefaultMotionState extends MotionState {
 
 	@Override
 	public Transform getWorldTransform(Transform out) {
-		out.inverse(centerOfMassOffset);
+		out.invert(centerOfMassOffset);
 		out.mul(graphicsWorldTrans);
 		return out;
 	}

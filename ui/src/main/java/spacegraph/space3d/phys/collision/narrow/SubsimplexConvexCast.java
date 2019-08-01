@@ -142,8 +142,8 @@ public class SubsimplexConvexCast extends ConvexCast {
 					
 					
 					
-					VectorUtil.setInterpolate3(interpolatedTransA, fromA, toA, lambda);
-					VectorUtil.setInterpolate3(interpolatedTransB, fromB, toB, lambda);
+					VectorUtil.lerp(interpolatedTransA, fromA, toA, lambda);
+					VectorUtil.lerp(interpolatedTransB, fromB, toB, lambda);
 					
 					
 					w.sub(supVertexA, supVertexB);

@@ -339,7 +339,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 		Transform gimpactInConcaveSpace = body1.transform; /*new Transform();
 
 		body1.getWorldTransform(gimpactInConcaveSpace);*/
-		gimpactInConcaveSpace.inverse();
+		gimpactInConcaveSpace.invert();
 		gimpactInConcaveSpace.mul(body0.transform);
 
 		v3 minAABB = new v3(), maxAABB = new v3();
@@ -555,7 +555,7 @@ public class GImpactCollisionAlgorithm extends CollisionAlgorithm {
 
 		if (shape0.hasBoxSet()) {
 			Transform trans1to0 = new Transform();
-			trans1to0.inverse(trans0);
+			trans1to0.invert(trans0);
 			trans1to0.mul(trans1);
 
 			shape1.getAabb(trans1to0, boxshape.min, boxshape.max);

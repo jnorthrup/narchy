@@ -46,12 +46,12 @@ public abstract class ConvexCast {
 	 * to decide about closest/all results.
 	 */
 	public static class CastResult {
-		public final Transform hitTransformA = new Transform();
-		public final Transform hitTransformB = new Transform();
+//		public final Transform hitTransformA = new Transform();
+//		public final Transform hitTransformB = new Transform();
 		
 		public final v3 normal = new v3();
 		public final v3 hitPoint = new v3();
-		public float fraction = 1e30f; 
+		public float fraction = Float.POSITIVE_INFINITY;
 		public float allowedPenetration;
 		
 		public IDebugDraw debugDrawer;

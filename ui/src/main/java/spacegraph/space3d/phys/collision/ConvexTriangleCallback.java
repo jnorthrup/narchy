@@ -89,7 +89,7 @@ class ConvexTriangleCallback extends TriangleCallback {
 		Transform convexInTriangleSpace = new Transform();
 
 		triBody.getWorldTransform(convexInTriangleSpace);
-		convexInTriangleSpace.inverse();
+		convexInTriangleSpace.invert();
 		convexInTriangleSpace.mul(convexBody.getWorldTransform(new Transform()));
 
 		CollisionShape convexShape = convexBody.shape();

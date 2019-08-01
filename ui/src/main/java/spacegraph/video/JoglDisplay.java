@@ -29,6 +29,9 @@ import static jcog.math.v3.v;
 /** JOGL display implementation */
 abstract public class JoglDisplay extends SpaceGraph {
 
+    /** field of view, in degrees */
+    public float fov = 45;
+
     /**
      * the hardware input/output implementation
      */
@@ -41,10 +44,8 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     public float top;
     public float bottom;
-    private float left;
-    private float right;
-
-    private float tanFovV;
+    public float left;
+    public float right;
 
     public float zNear = 0.5f, zFar = 1200;
 
@@ -149,7 +150,7 @@ abstract public class JoglDisplay extends SpaceGraph {
 
 
 
-        tanFovV = (float) Math.tan(45 * FloatUtil.PI / 180.0f / 2f);
+        float tanFovV = (float) Math.tan(fov * Math.PI / 180.0f / 2f);
 
         top = tanFovV * zNear;
         right = invAspect * top;
@@ -157,7 +158,7 @@ abstract public class JoglDisplay extends SpaceGraph {
         left = -right;
 
 
-        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, 45 * FloatUtil.PI / 180.0f, invAspect, zNear, zFar), 0);
+        gl.glMultMatrixf(FloatUtil.makePerspective(mat4f, 0, true, fov * FloatUtil.PI / 180.0f, invAspect, zNear, zFar), 0);
 
 
         Draw.glu.gluLookAt(camPos.x - camFwd.x, camPos.y - camFwd.y, camPos.z - camFwd.z,

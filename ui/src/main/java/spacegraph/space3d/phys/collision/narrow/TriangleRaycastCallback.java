@@ -82,7 +82,7 @@ public abstract class TriangleRaycastCallback extends TriangleCallback {
 			float edge_tolerance = triangleNormal.lengthSquared();
 			edge_tolerance *= -0.0001f;
 			v3 point = new v3();
-			VectorUtil.setInterpolate3(point, from, to, distance);
+			VectorUtil.lerp(point, from, to, distance);
             v3 v0p = new v3();
             v0p.sub(vert0, point);
             v3 v1p = new v3();

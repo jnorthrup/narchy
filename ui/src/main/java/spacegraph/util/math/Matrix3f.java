@@ -2097,11 +2097,18 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
      * @param t the tuple to be multiplied by this matrix and then replaced
      */
     public final void transform(v3 t) {
+        float tx = t.x, ty = t.y, tz = t.z;
+        t.set(m00 * tx + m01 * ty + m02 * tz,
+              m10 * tx + m11 * ty + m12 * tz,
+              m20 * tx + m21 * ty + m22 * tz);
+    }
 
-        float tx = t.x;
-        float ty = t.y;
-        float tz = t.z;
-
+    /** transform using the transpose (inverse) */
+    public void untransform(v3 t) {
+        float tx = t.x, ty = t.y, tz = t.z;
+        float m01 = this.m10, m10 = this.m01; //m01 <-> m10
+        float m02 = this.m20, m20 = this.m02; //m02 <-> m20
+        float m12 = this.m21, m21 = this.m12; //m12 <-> m21
         t.set(m00 * tx + m01 * ty + m02 * tz,
               m10 * tx + m11 * ty + m12 * tz,
               m20 * tx + m21 * ty + m22 * tz);
@@ -2342,10 +2349,6 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
     public final void setM22(float m22) {
         this.m22 = m22;
     }
-
-
-
-
 
 
 

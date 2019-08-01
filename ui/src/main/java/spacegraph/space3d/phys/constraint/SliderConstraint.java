@@ -772,7 +772,7 @@ public class SliderConstraint extends TypedConstraint {
 		v3 ancorInA = out;
 		ancorInA.scaleAdd((lowerLinLimit + upperLinLimit) * 0.5f, sliderAxis, realPivotAInW);
 		rbA.getCenterOfMassTransform(tmpTrans);
-		tmpTrans.inverse();
+		tmpTrans.invert();
 		tmpTrans.transform(ancorInA);
 		return ancorInA;
 	}

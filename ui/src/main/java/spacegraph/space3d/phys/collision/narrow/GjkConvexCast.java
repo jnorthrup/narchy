@@ -141,8 +141,8 @@ public class GjkConvexCast extends ConvexCast {
 
                 
                 result.debugDraw(lambda);
-                VectorUtil.setInterpolate3(input.transformA, fromA, toA, lambda);
-                VectorUtil.setInterpolate3(input.transformB, fromB, toB, lambda);
+                VectorUtil.lerp(input.transformA, fromA, toA, lambda);
+                VectorUtil.lerp(input.transformB, fromB, toB, lambda);
 
                 gjk.getClosestPoints(input, pointCollector);
                 if (pointCollector.hasResult) {

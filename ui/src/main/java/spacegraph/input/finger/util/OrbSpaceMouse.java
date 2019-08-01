@@ -10,7 +10,6 @@ import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
-import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 import spacegraph.space3d.phys.constraint.Point2PointConstraint;
 import spacegraph.space3d.phys.constraint.TypedConstraint;
 import spacegraph.space3d.phys.math.Transform;
@@ -22,7 +21,6 @@ import static jcog.math.v3.v;
  */
 public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
-    private final ClosestRay rayCallback = new ClosestRay(((short) (1 << 7)));
 
     private int mouseDragPrevX, mouseDragPrevY;
     private int mouseDragDX, mouseDragDY;
@@ -31,11 +29,9 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
     private TypedConstraint pickConstraint;
 
-    private Body3D pickedBody;
     private Spatial pickedSpatial;
     private Collidable picked;
-    private v3 hitPoint;
-    private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
+
     private final Finger finger;
 
     public OrbSpaceMouse(SpaceDisplayGraph3D g, Finger finger) {
@@ -46,6 +42,17 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         g.video.addKeyListener(this);
     }
 
+    boolean mouseClick(int button, float x, float y) {
+
+        switch (button) {
+            case MouseEvent.BUTTON3:
+                Collidable co = pickCollidable(x, y);
+                if (co!=null)
+                    space.camera(co.transform, co.shape().getBoundingRadius() * 2.5f);
+                break;
+        }
+        return false;
+    }
     @Override
     public void mouseWheelMoved(MouseEvent e) {
 
@@ -55,25 +62,6 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
         }
     }
 
-    private boolean mouseClick(int button, int x, int y) {
-
-        switch (button) {
-            case MouseEvent.BUTTON3:
-                ClosestRay c = mousePick(x, y);
-                if (c.hasHit()) {
-                    Collidable co = c.collidable;
-
-
-                    space.camera(co.transform, co.shape().getBoundingRadius() * 2.5f);
-                    return true;
-
-                }
-                break;
-
-
-        }
-        return false;
-    }
 
     private void pickConstrain(int button, int state, int x, int y) {
 
@@ -117,7 +105,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
             v3 pickPos = new v3(rayCallback.hitPointWorld);
 
             Transform tmpTrans = body.transform;
-            tmpTrans.inverse();
+            tmpTrans.invert();
             v3 localPivot = new v3(pickPos);
             tmpTrans.transform(localPivot);
 
@@ -147,7 +135,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     @Deprecated /* TODO probably rewrite */ private boolean mouseMotionFunc(int px, int py, short[] buttons) {
 
 
-        ClosestRay cray = mousePick(px, py);
+        ClosestRay cray = pickRay(px, py);
 
 
         /*System.out.println(mouseTouch.collisionObject + " touched with " +
@@ -195,78 +183,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
     }
 
-    private ClosestRay mousePick(int x, int y) {
 
-
-        float tanFov = (space.top - space.bottom) * 0.5f / space.zNear;
-        float fov = 2f * (float) Math.atan(tanFov);
-
-        v3 rayFrom = new v3(space.camPos);
-        v3 rayForward = new v3(space.camFwd);
-
-        rayForward.scaled(space.zFar);
-
-
-        v3 vertical = new v3(space.camUp);
-
-        v3 hor = new v3();
-
-        hor.cross(rayForward, vertical);
-        hor.normalize();
-
-        vertical.cross(hor, rayForward);
-        vertical.normalize();
-
-        float tanfov = (float) Math.tan(0.5f * fov);
-        float ww = space.video.getWidth();
-        float hh = space.video.getHeight();
-
-        float aspect = hh / ww;
-
-        hor.scaled(2f * space.zFar * tanfov);
-        vertical.scaled(2f * space.zFar * tanfov);
-
-        if (aspect < 1f) {
-            hor.scaled(1f / aspect);
-        } else {
-            vertical.scaled(aspect);
-        }
-
-        v3 rayToCenter = new v3();
-        rayToCenter.add(rayFrom, rayForward);
-        v3 dHor = new v3(hor);
-        dHor.scaled(1f / ww);
-        v3 dVert = new v3(vertical);
-        dVert.scaled(1f / hh);
-
-        v3 tmp1 = new v3();
-        v3 tmp2 = new v3();
-        tmp1.scale(0.5f, hor);
-        tmp2.scale(0.5f, vertical);
-
-        v3 rayTo = new v3();
-        rayTo.sub(rayToCenter, tmp1);
-        rayTo.add(tmp2);
-
-        tmp1.scale(x, dHor);
-        tmp2.scale(y, dVert);
-
-        rayTo.add(tmp1);
-        rayTo.sub(tmp2);
-
-        ClosestRay r = new ClosestRay(space.camPos, rayTo);
-        space.dyn.rayTest(space.camPos, rayTo, r, simplexSolver);
-
-        if (rayCallback.hasHit()) {
-            Body3D body = Body3D.ifDynamic(rayCallback.collidable);
-            if (body != null && (!(body.isStaticObject() || body.isKinematicObject()))) {
-                pickedBody = body;
-                hitPoint = r.hitPointWorld;
-            }
-        }
-
-        return r;
-    }
 
 
     @Override

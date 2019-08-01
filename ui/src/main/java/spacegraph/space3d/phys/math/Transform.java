@@ -63,6 +63,9 @@ public final class Transform extends v3 {
 	}
 
 
+	public Transform clone() {
+		return new Transform(this);
+	}
 
 	public static Transform t() {
 		return new Transform();
@@ -119,22 +122,31 @@ public final class Transform extends v3 {
 		return v;
 	}
 
+	public v3 untransform(v3 v) {
+		basis.untransform(v);
+		v.sub(this);
+		return v;
+	}
+
 	public Transform setIdentity() {
 		basis.setIdentity();
 		this.set(0f, 0f, 0f);
 		return this;
 	}
-	
-	public Transform inverse() {
-		basis.transpose();
+
+	/** wraning: mutates */
+	public Transform invert() {
 		this.scaled(-1f);
+		basis.transpose();
 		basis.transform(this);
 		return this;
 	}
 
-	public Transform  inverse(Transform tr) {
+
+	/** wraning: mutates */
+	public Transform invert(Transform tr) {
 		set(tr);
-		return inverse();
+		return invert();
 	}
 	
 	public void mul(Transform tr) {

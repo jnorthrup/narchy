@@ -126,7 +126,7 @@ public class BoxCollision {
 		 */
 		public void calc_from_homogenic(Transform trans0, Transform trans1) {
 			Transform temp_trans = new Transform();
-			temp_trans.inverse(trans0);
+			temp_trans.invert(trans0);
 			temp_trans.mul(trans1);
 
 			T1to0.set(temp_trans);

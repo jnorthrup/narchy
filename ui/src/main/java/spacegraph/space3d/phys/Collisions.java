@@ -23,6 +23,7 @@
 
 package spacegraph.space3d.phys;
 
+import jcog.Util;
 import jcog.math.v3;
 import spacegraph.space3d.phys.collision.broad.*;
 import spacegraph.space3d.phys.collision.narrow.*;
@@ -220,7 +221,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
 
-    private final static ConvexShape pointShape = (ConvexShape) new SphereShape(0f).setMargin(0);
+    private final static ConvexShape pointShape = (ConvexShape) new SphereShape(Util.sqrt(Float.MIN_NORMAL)).setMargin(Float.MIN_NORMAL);
 
     public static void rayTestSingle(Transform rayFromTrans, Transform rayToTrans,
                                      Collidable collidable,
@@ -245,11 +246,11 @@ public abstract class Collisions<X> extends BulletGlobals {
 
             if (convexCaster.calcTimeOfImpact(rayFromTrans, rayToTrans, colObjWorldTransform, colObjWorldTransform, castResult)) {
                 
-                if (castResult.normal.lengthSquared() > 0.0001f) {
+                if (castResult.normal.lengthSquared() > Float.MIN_NORMAL) {
                     if (castResult.fraction < resultCallback.closestHitFraction) {
                         
                         
-                        rayFromTrans.basis.transform(castResult.normal);
+                        rayFromTrans.transform(castResult.normal);
                         
 
                         castResult.normal.normalize();
@@ -270,7 +271,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     
                     BvhTriangleMeshShape triangleMesh = (BvhTriangleMeshShape) collisionShape;
                     Transform worldTocollisionObject = new Transform();
-                    worldTocollisionObject.inverse(colObjWorldTransform);
+                    worldTocollisionObject.invert(colObjWorldTransform);
                     v3 rayFromLocal = new v3(rayFromTrans);
                     worldTocollisionObject.transform(rayFromLocal);
                     v3 rayToLocal = new v3(rayToTrans);
@@ -283,7 +284,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     ConcaveShape triangleMesh = (ConcaveShape) collisionShape;
 
                     Transform worldTocollisionObject = new Transform();
-                    worldTocollisionObject.inverse(colObjWorldTransform);
+                    worldTocollisionObject.invert(colObjWorldTransform);
 
                     v3 rayFromLocal = new v3(rayFromTrans);
                     worldTocollisionObject.transform(rayFromLocal);
@@ -394,7 +395,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                 if (collisionShape.getShapeType() == BroadphaseNativeType.TRIANGLE_MESH_SHAPE_PROXYTYPE) {
                     BvhTriangleMeshShape triangleMesh = (BvhTriangleMeshShape) collisionShape;
                     Transform worldTocollisionObject = new Transform();
-                    worldTocollisionObject.inverse(colObjWorldTransform);
+                    worldTocollisionObject.invert(colObjWorldTransform);
 
                     v3 convexFromLocal = new v3();
                     convexFromLocal.set(convexFromTrans);
@@ -421,7 +422,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                 } else {
                     ConcaveShape triangleMesh = (ConcaveShape) collisionShape;
                     Transform worldTocollisionObject = new Transform();
-                    worldTocollisionObject.inverse(colObjWorldTransform);
+                    worldTocollisionObject.invert(colObjWorldTransform);
 
                     v3 convexFromLocal = new v3();
                     convexFromLocal.set(convexFromTrans);

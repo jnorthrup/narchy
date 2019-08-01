@@ -1,16 +1,102 @@
 package spacegraph.input.finger.util;
 
 import com.jogamp.newt.event.MouseAdapter;
+import jcog.TODO;
+import jcog.math.v3;
+import org.jetbrains.annotations.Nullable;
 import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.Spatial;
+import spacegraph.space3d.phys.Body3D;
+import spacegraph.space3d.phys.Collidable;
+import spacegraph.space3d.phys.collision.ClosestRay;
+import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
+
+import static java.lang.Math.tan;
 
 /**
  * 3D camera control
  */
-abstract class SpaceMouse extends MouseAdapter {
+public abstract class SpaceMouse extends MouseAdapter {
 
     final SpaceDisplayGraph3D space;
+    protected final ClosestRay rayCallback = new ClosestRay(((short) (1 << 7)));
+    public v3 hitPoint;
+    private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
+    public Body3D pickedBody;
 
-    SpaceMouse(SpaceDisplayGraph3D g) {
+    protected SpaceMouse(SpaceDisplayGraph3D g) {
         this.space = g;
     }
+
+
+
+    public Spatial pickSpatial(float x, float y) {
+        throw new TODO();
+    }
+
+    @Nullable
+    public Collidable pickCollidable(float x, float y) {
+        ClosestRay c = pickRay(x, y);
+        if (c.hasHit()) {
+            Collidable co = c.collidable;
+            return co;
+        }
+
+        return null;
+    }
+
+//    public ClosestRay pickRay(float x, float y) {
+//        float ww = space.video.getWidth(), hh = space.video.getHeight();
+//        float res = Math.min(ww, hh);
+//        return pickRay(x/res, y/res);
+//    }
+
+    public ClosestRay pickRay(float x, float y) {
+
+        v3 in = space.camFwd.clone();
+        in.normalize();
+
+        v3 up = space.camUp.clone();
+        up.normalize();
+
+        v3 right = new v3();
+        right.cross(space.camFwd, up);
+        right.normalize();
+
+
+        double nearScale = tan((space.fov * Math.PI / 180) / 2) * space.zNear;
+        double vLength = nearScale;
+        double hLength = nearScale * (space.right - space.left)/(space.top - space.bottom);
+
+
+        v3 origin = space.camPos;
+        //v3 target = origin + in*space.zNear + right*x*hLength + up*y*vLength
+        v3 target = new v3();
+        target.addScaled(in, space.zNear);
+        target.addScaled(right, (float) (x*hLength));
+        target.addScaled(up, (float) (y*vLength));
+        target.normalize();
+        target.scale(space.zFar/space.zNear);
+        target.add(origin);
+
+        //System.out.println("ray: " + x + "," + y  + "\tdelta=" + new v3().sub(target, origin));
+        //System.out.println(origin + " " + target);
+
+        ClosestRay r = new ClosestRay(origin, target);
+        space.dyn.rayTest(origin, target, r, simplexSolver);
+
+        pickedBody = null;
+        hitPoint = null;
+
+        if (r.hasHit()) {
+            Body3D body = Body3D.ifDynamic(r.collidable);
+            if (body != null && (!(body.isStaticObject() || body.isKinematicObject()))) {
+                pickedBody = body;
+                hitPoint = r.hitPointWorld;
+            }
+        }
+
+        return r;
+    }
+
 }
