@@ -1,6 +1,5 @@
 package nars;
 
-import com.google.common.collect.Streams;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -8,7 +7,6 @@ import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.ql.HaiQae;
-import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
@@ -17,7 +15,6 @@ import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
-import nars.agent.util.RLBooster;
 import nars.attention.TaskLinkWhat;
 import nars.concept.sensor.VectorSensor;
 import nars.control.MetaGoal;
@@ -57,12 +54,10 @@ import spacegraph.video.OrthoSurfaceGraph;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
@@ -169,13 +164,21 @@ abstract public class GameX extends Game {
         //initPlugins2(n, g);
 
 
-
         n.synch();
 
-//        Exe.invokeLater(()->{
-//            initMeta(n,  false, false);
-//        });
+        Exe.invokeLater(()->{
 
+            float _fps = 24;
+            new MetaAgent.SelfMetaAgent(n, _fps).pri(0.1f);
+
+            n.parts(Game.class).forEach(g -> {
+                if (!(g instanceof MetaAgent)) {
+                    float fps = 12;
+                    boolean allowPause = false;
+                    new MetaAgent.GameMetaAgent(g, fps, allowPause).pri(0.05f);
+                }
+            });
+        });
 
         Loop loop = n.startFPS(narFPS);
 
@@ -355,29 +358,28 @@ abstract public class GameX extends Game {
         //Impiler.init(n);
     }
 
-    private static void initMeta(NAR n, boolean rl, boolean allowPause) {
+//    private static void initMeta(Game g, boolean rl, boolean allowPause) {
 
-        Gridding g = new Gridding();
-        MetaAgent meta = new MetaAgent(allowPause, 8f, n.parts(Game.class).toArray(Game[]::new));
-        g.add(NARui.game(meta));
-        meta.what().pri(0.05f);
 
-        if (rl) {
-            meta.what().pri(0.05f);
-            RLBooster metaBoost = new RLBooster(meta, (i, o) ->
-                    //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
-                    new DQN3(i, o, Map.of(
-
-                    )),
-                    2, 3, false);
-            meta.curiosity.rate.set(0);
-            g.add(NARui.rlbooster(metaBoost));
-        }
+//        Gridding g = new Gridding();
+//        g.add(NARui.game(meta));
+//
+//        if (rl) {
+//            meta.what().pri(0.05f);
+//            RLBooster metaBoost = new RLBooster(meta, (i, o) ->
+//                    //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+//                    new DQN3(i, o, Map.of(
+//
+//                    )),
+//                    4, 4, false);
+//            meta.curiosity.rate.set(0);
+//            g.add(NARui.rlbooster(metaBoost));
+//        }
 
 
         //n.start(new SpaceGraphPart(() -> g, 500, 500));
 
-        window(NARui.beliefCharts(n, meta.sensors.stream().flatMap(x -> Streams.stream(x.components())).collect(toList())), 400, 300);
+//        window(NARui.beliefCharts(n, meta.sensors.stream().flatMap(x -> Streams.stream(x.components())).collect(toList())), 400, 300);
 
 //        window(AttentionUI.attentionGraph(n), 600, 600);
 
@@ -429,7 +431,7 @@ abstract public class GameX extends Game {
 //                e.printStackTrace();
 //            }
 //        }));
-    }
+//    }
 
 
     public static void config(NAR n) {

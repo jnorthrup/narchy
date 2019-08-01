@@ -66,13 +66,14 @@ public class ExeCharts {
 
     private static Surface metaGoalControls(NAR n) {
         CheckBox auto = new CheckBox("Auto");
-        auto.on(false);
+        auto.on(true);
 
         float min = -1f;
         float max = +1f;
 
         float[] want = n.emotion.want;
-        Gridding g = grid( IntStream.range(0, want.length).mapToObj(
+        //return DurSurface.get(
+         return grid( IntStream.range(0, want.length).mapToObj(
                         w -> new FloatSlider(want[w], min, max) {
 
                             @Override
@@ -90,8 +91,6 @@ public class ExeCharts {
                             want[w] = v;
                     })
                 ));
-
-        return g;
     }
 
     static Surface exePanel(NAR n) {

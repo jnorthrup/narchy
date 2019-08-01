@@ -432,6 +432,11 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     }
 
+    public Game pri(float v) {
+        pri.amp(v);
+        return this;
+    }
+
     public interface NAgentCycle {
         /**
          * in each iteration,

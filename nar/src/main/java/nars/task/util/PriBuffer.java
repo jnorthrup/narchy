@@ -45,7 +45,6 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
      */
     public abstract T put(T x);
 
-    //public abstract void commit(long now, Consumer<ITask> target);
     public abstract void commit(ConsumerX<T> target, NAR n);
 
     public abstract void clear();
