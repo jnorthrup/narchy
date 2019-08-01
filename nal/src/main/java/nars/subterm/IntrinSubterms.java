@@ -72,6 +72,20 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
 //            return s;
 //    }
 
+
+    /** since IntrinSubterms is flat, the structureSurface is equal to the structure if no NEG present */
+    @Override public final int structureSurface() {
+        int s = structure;
+        if ((s & NEG.bit) == 0)
+            return structure;
+        else {
+            int x = 0;
+            for (short t : subterms)
+                x |= (t < 0) ? NEG.bit : Intrin.term(t).opBit();
+            return x;
+        }
+    }
+
     public final boolean AND(/*@NotNull*/ Predicate<Term> p) {
         int s = subs();
         short prev = 0;

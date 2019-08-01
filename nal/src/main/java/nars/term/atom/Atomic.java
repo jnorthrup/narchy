@@ -143,7 +143,7 @@ public interface Atomic extends Term {
 
     @Override
     default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
-        return reduce.intValueOf(v, this);
+        return intifyShallow(reduce, v);
     }
 
     static Atom atom(String id) {

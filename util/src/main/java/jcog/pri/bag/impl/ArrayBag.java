@@ -1017,8 +1017,8 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     public final Iterator<Y> iterator() {
-        //return table.iterator();
-        return stream().iterator(); //has null and deletion filtering
+        return table.iterator();
+        //return stream().iterator(); //has null and deletion filtering
     }
 
     public final boolean isSorted() {
@@ -1068,7 +1068,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         @Override
         public final Iterator<Y> iterator() {
-            return items.iterator();
+            return items.iteratorNonNull();
         }
 
         public final Y get(int i) {

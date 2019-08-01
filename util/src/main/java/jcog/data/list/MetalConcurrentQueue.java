@@ -231,6 +231,11 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
     public final X peek(int head, int delta) {
         return getOpaque(i( head + delta) );
     }
+    
+    /** if capacity is known it can be provided here to elide method call */
+    public final X peek(int head, int delta, int length) {
+        return getOpaque(i( head + delta, length) );
+    }
 
     /** oldest element */
     public final X first() {

@@ -117,7 +117,6 @@ public class Centroid extends ArrayRealVector {
     public void lerp(final double[] x, final double rate) {
         final double[] d = getDataRef();
         final double ir = (1.0 - rate);
-        int k = 0;
         for (int i = 0; i < d.length; i++) {
             d[i] = (ir * d[i]) + (rate * x[i]);
         }
@@ -125,10 +124,8 @@ public class Centroid extends ArrayRealVector {
 
     public void add(final double[] x) {
         final double[] d = getDataRef();
-        for (int i = 0; i < d.length; i++) {
-            
+        for (int i = 0; i < d.length; i++)
             d[i] += x[i];
-        }
     }
 
     @Override

@@ -766,7 +766,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public Iterator<X> iterator() {
-        return ArrayIterator.iterateN(items, size());
+        return ArrayIterator.iterateN(items, size);
+    }
+
+    public Iterator<X> iteratorNonNull() {
+        return ArrayIterator.iterateNonNullN(items, size);
     }
 
     public void reprioritize(X existing, int posBefore, float delta, float priAfter, FloatFunction<X> cmp) {

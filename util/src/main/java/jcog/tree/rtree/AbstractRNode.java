@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 
 import java.util.Iterator;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 abstract public class AbstractRNode<V,D> implements RNode<V> {
@@ -46,4 +47,24 @@ abstract public class AbstractRNode<V,D> implements RNode<V> {
         return size;
     }
 
+    public final void drainLayer(Consumer each) {
+        int s = size();
+        for (int i = 0; i < s; i++) {
+            Object x = data[i];
+
+            //"tail-leaf" optimization: inline 1-arity branches for optimization
+            while (x instanceof RLeaf) {
+                RLeaf lx = (RLeaf) x;
+                if (lx.size != 1)
+                    break;
+                x = lx.data[0];
+            }
+
+//        //dont filter root node (traversed while plan is null)
+//        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
+//            return null;
+
+            each.accept(x);
+        }
+    }
 }

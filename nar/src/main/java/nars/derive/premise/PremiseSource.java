@@ -165,7 +165,7 @@ abstract public class PremiseSource {
 
             //            final static TaskLink[] EmptyTaskLinksArray = new TaskLink[0];
 //            private final FasterList<TaskLink> links = new FasterList(0, EmptyTaskLinksArray);
-            final PriArrayBag<TaskLink> links = new PriArrayBag<TaskLink>(PriMerge.replace, 0);
+            final PriArrayBag<TaskLink> links = new PriArrayBag<>(PriMerge.replace, 0);
             private final AtomicBoolean busy = new AtomicBoolean(false);
             private volatile long updated;
 
@@ -203,18 +203,10 @@ abstract public class PremiseSource {
 
                 links.commit();
 
-                int i = 0;
                 for (TaskLink t : items) {
-                    //                if (t == null)
-                    //                    continue; //HACK
-
-                    //float xp = t.priElseZero();
-
                     Term y = t.other(x, reverse);
                     if (y != null)
                         links.put(t.clone(1));
-
-                    i++;
                 }
             }
 

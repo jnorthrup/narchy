@@ -3,6 +3,7 @@ package jcog.tree.rtree;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 /**
@@ -13,6 +14,7 @@ import java.util.function.Predicate;
  * TODO generalize for non-rtree uses, subclass that specifically for RTree and implement an abstract growth method for its lazy Node<> iteration
  */
 public class HyperIterator<X>  {
+
 
     /**
      * next available item
@@ -27,11 +29,12 @@ public class HyperIterator<X>  {
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
     private final RankedN plan;
+    private final Consumer planAdd;
 
     public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<X> rank, Predicate whle) {
 
-        tree.readOptimistic(
-        //tree.read(
+        //tree.readOptimistic(
+        tree.read(
             t -> {
             int s = t.size();
             switch (s) {
@@ -73,6 +76,7 @@ public class HyperIterator<X>  {
             else
                 return rank.floatValueOf(y);
         });
+        this.planAdd = plan::add;
     }
 
     private void start(RNode<X> start) {
@@ -95,22 +99,7 @@ public class HyperIterator<X>  {
             if (!(z instanceof RNode))
                 break;
 
-            AbstractRNode<X,?> nz = (AbstractRNode<X,?>) z;
-            int s = nz.size();
-            for (int i = 0; i < s; i++) {
-                Object x = nz.data[i];
-
-                //"tail-leaf" optimization: inline 1-arity branches for optimization
-                while (x instanceof RLeaf && (((RLeaf)x).size == 1)) {
-                    x = ((RLeaf) x).data[0];
-                }
-
-//        //dont filter root node (traversed while plan is null)
-//        if ((x instanceof Node) && nodeFilter != null && !plan.isEmpty() && !nodeFilter.tryVisit((Node)x))
-//            return null;
-
-                plan.add(x);
-            }
+            ((AbstractRNode) z).drainLayer(planAdd);
         }
 
         return (this.next = (X) z) != null;

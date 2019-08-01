@@ -97,11 +97,12 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 else return ThreadLocalRandom.current().nextBoolean() ? 0 : 1;
             }
             default: {
+                int len = q.length();
                 int low = 0, high = s - 1, mid = -1;
                 while (low <= high) {
 
                     mid = (low + (high + 1)) / 2;
-                    T midVal = q.peek(head, mid);
+                    T midVal = q.peek(head, mid, len);
                     if (midVal == null) {
                         low = mid + 1; ///oops ?
                         continue;
@@ -187,9 +188,11 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 return true; //nothing
         }
 
+        int len = q.length();
+        int head = q.head();
+
         if (minT != ETERNAL && minT != TIMELESS) {
             long T = (minT+maxT)/2;
-            int head = q.head();
 
             int center = indexNear(head, T);
 
@@ -204,7 +207,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 long um = TIMELESS, vm = TIMELESS;
 
                 if (increase) {
-                    v = q.peek(head, center + r);
+                    v = q.peek(head, center + r, len);
 
                     if (v!=null) {
                         vm = v.start();
@@ -219,7 +222,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 r++;
 
                 if (decrease) {
-                    u = q.peek(head, center - r);
+                    u = q.peek(head, center - r, len);
 
                     if (u!=null) {
                         um = u.start();
@@ -263,9 +266,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             //just return the latest items while it keeps asking
             //TODO iterate from oldest to newest if the target time is before or near series start
             //            int offset = ThreadLocalRandom.current().nextInt(qs);
-            int head = q.head();
             for (int i = q.size() - 1; i >= 0; i--) {
-                T qi = q.peek(head, i);
+                T qi = q.peek(head, i, len);
                 if (qi!=null && !whle.test(qi))
                     return false;
             }

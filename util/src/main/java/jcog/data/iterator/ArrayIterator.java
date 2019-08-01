@@ -37,23 +37,6 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         //throw new NoSuchElementException();
     }
 
-    /** TODO test, may need a pre-buffering stategy to absolutely contain any Null's */
-    public static class ArrayIteratorNonNull<X> extends ArrayIterator<X> {
-
-        public ArrayIteratorNonNull(X[] array) {
-            super(array);
-        }
-
-        @Override
-        public X next() {
-            X x = super.next();
-            assert(x!=null);
-            while (hasNext() && array[index]==null)
-                index++; //skip past any next null's
-            return x;
-        }
-    }
-
     @Override
     public void remove() {
         throw new UnsupportedOperationException();
@@ -120,10 +103,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
                 E ee = e[0];
                 return ee!=null ? Iterators.singletonIterator(ee) : emptyIterator();
             default:
-                if (size == e.length) return
-                        new ArrayIterator(e);
-                else
-                        throw new TODO(); //new PartialArrayIterator(e, size);
+                return new ArrayIteratorNonNull<>(e, size);
         }
     }
 

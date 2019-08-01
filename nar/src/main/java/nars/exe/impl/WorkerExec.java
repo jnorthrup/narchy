@@ -1,7 +1,6 @@
 package nars.exe.impl;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.exe.Exe;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.AntistaticBag;
@@ -11,7 +10,6 @@ import org.jctools.queues.MessagePassingQueue;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -72,7 +70,8 @@ public class WorkerExec extends ThreadedExec {
         }
     }
 
-    final Consumer execNow = this::executeNow;
+    //final Consumer execNow = this::executeNow;
+    final MessagePassingQueue.Consumer executeNow = WorkerExec.this::executeNow;
 
     private final class WorkPlayLoop implements ThreadedExec.Worker {
 
@@ -81,8 +80,8 @@ public class WorkerExec extends ThreadedExec {
 
         private final AtomicBoolean alive = new AtomicBoolean(true);
 
-        private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
-        final MessagePassingQueue.Consumer addToSchedule = schedule::addFast;
+//        private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
+//        final MessagePassingQueue.Consumer addToSchedule = schedule::addFast;
 
         WorkPlayLoop() {
 
@@ -106,31 +105,36 @@ public class WorkerExec extends ThreadedExec {
             int available;
 
 
-            if ((available = in.size()) > 0) {
-
-                long workStart = nanoTime();
-                do {
-
-
-                    int batchSize = //Util.lerp(throttle,
-                        //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                        Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
-                    schedule.ensureCapacity(batchSize);
-
-
-                    int got = in.drain(addToSchedule, batchSize);
-                    if (got > 0) {
-                        execute(schedule, 1, execNow);
-                    } else
-                        break;
-
-                } while (!queueSafe((available=in.size())));
-
-                long workEnd = nanoTime();
-                return workEnd - workStart;
-
-            } else
+            if ((available = in.size()) <= 0)
                 return 0;
+
+
+            long workStart = nanoTime();
+            do {
+                int batchSize = //Util.lerp(throttle,
+                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                    Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
+
+                //BUFFERED
+//                    schedule.ensureCapacity(batchSize);
+//                    int got = in.drain(addToSchedule, batchSize);
+//                    if (got > 0)
+//                        execute(schedule, 1, execNow);
+//                    else
+//                        break;
+
+                //UNBUFFERED
+                    Object next = in.relaxedPoll();
+                    if (next == null)
+                        break;
+                    executeNow(next);
+                    if (--batchSize <= 0) break;
+
+            } while (!queueSafe((available=in.size())));
+
+            long workEnd = nanoTime();
+            return workEnd - workStart;
+
         }
 
         static final float maxOverUtilization = 2;
@@ -197,12 +201,12 @@ public class WorkerExec extends ThreadedExec {
         @Override
         public void close() {
             if (alive.compareAndSet(true, false)) {
-                //execute remaining tasks in callee's thread
-                schedule.removeIf(x -> {
-                    if (x != null)
-                        executeNow(x);
-                    return true;
-                });
+//                //execute remaining tasks in callee's thread
+//                schedule.removeIf(x -> {
+//                    if (x != null)
+//                        executeNow(x);
+//                    return true;
+//                });
             }
         }
     }
