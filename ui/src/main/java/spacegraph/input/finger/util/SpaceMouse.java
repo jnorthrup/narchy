@@ -45,12 +45,85 @@ public abstract class SpaceMouse extends MouseAdapter {
         return null;
     }
 
-//    public ClosestRay pickRay(float x, float y) {
-//        float ww = space.video.getWidth(), hh = space.video.getHeight();
-//        float res = Math.min(ww, hh);
-//        return pickRay(x/res, y/res);
-//    }
+    public ClosestRay pickRay0(float x, float y) {
+        float ww = space.video.getWidth(), hh = space.video.getHeight();
+        float res = Math.min(ww, hh);
+        return pickRay0(x/res, y/res, ww, hh);
+    }
 
+    public ClosestRay pickRay0(float x, float y, float ww, float hh) {
+
+
+        float tanFov = (space.top - space.bottom) * 0.5f / space.zNear;
+        float fov = 2f * (float) Math.atan(tanFov);
+
+        v3 rayFrom = new v3(space.camPos);
+        v3 rayForward = new v3(space.camFwd);
+
+        rayForward.scaled(space.zFar);
+
+
+        v3 vertical = new v3(space.camUp);
+
+        v3 hor = new v3();
+
+        hor.cross(rayForward, vertical);
+        hor.normalize();
+
+        vertical.cross(hor, rayForward);
+        vertical.normalize();
+
+        float tanfov = (float) Math.tan(0.5f * fov);
+
+
+        float aspect = hh / ww;
+
+        hor.scaled(2f * space.zFar * tanfov);
+        vertical.scaled(2f * space.zFar * tanfov);
+
+        if (aspect < 1f) {
+            hor.scaled(1f / aspect);
+        } else {
+            vertical.scaled(aspect);
+        }
+
+        v3 rayToCenter = new v3();
+        rayToCenter.add(rayFrom, rayForward);
+        v3 dHor = new v3(hor);
+        dHor.scaled(1f / ww);
+        v3 dVert = new v3(vertical);
+        dVert.scaled(1f / hh);
+
+        v3 tmp1 = new v3();
+        v3 tmp2 = new v3();
+        tmp1.scale(0.5f, hor);
+        tmp2.scale(0.5f, vertical);
+
+        v3 rayTo = new v3();
+        rayTo.add(rayToCenter, tmp1);
+        rayTo.add(tmp2);
+
+        tmp1.scale(x, dHor);
+        tmp2.scale(y, dVert);
+
+        rayTo.add(tmp1);
+        rayTo.sub(tmp2);
+
+        System.out.println("ray: " + x + "," + y  + "\t => " + rayTo);
+
+        ClosestRay r = new ClosestRay(space.camPos, rayTo);
+        space.dyn.rayTest(space.camPos, rayTo, r, simplexSolver);
+
+        if (r.hasHit()) {
+            Body3D body = Body3D.ifDynamic(r.collidable);
+            if (body != null && (!(body.isStaticObject() || body.isKinematicObject()))) {
+                pickedBody = body;
+                hitPoint = r.hitPointWorld;
+            }
+        }
+
+        return r;
+    }
     public ClosestRay pickRay(float x, float y) {
 
         v3 in = space.camFwd.clone();
@@ -69,17 +142,23 @@ public abstract class SpaceMouse extends MouseAdapter {
         double hLength = nearScale * (space.right - space.left)/(space.top - space.bottom);
 
 
-        v3 origin = space.camPos;
-        //v3 target = origin + in*space.zNear + right*x*hLength + up*y*vLength
+        v3 origin = space.camPos.clone();
         v3 target = new v3();
-        target.addScaled(in, space.zNear);
-        target.addScaled(right, (float) (x*hLength));
-        target.addScaled(up, (float) (y*vLength));
-        target.normalize();
-        target.scale(space.zFar/space.zNear);
+        target.add(in);
+        target.addScaled(right, x*(space.right-space.left)/2);
+        target.addScaled(up, y*(space.top-space.bottom)/2);
+        target.scale(space.zFar);
         target.add(origin);
 
-        //System.out.println("ray: " + x + "," + y  + "\tdelta=" + new v3().sub(target, origin));
+//        //v3 target = origin + in*space.zNear + right*x*hLength + up*y*vLength
+//        v3 target = new v3();
+//        target.addScaled(in, space.zNear);
+//        target.addScaled(right, (float) (x*hLength));
+//        target.addScaled(up, (float) (y*vLength));
+//        target.normalize();
+//        target.scale(space.zFar/space.zNear);
+//        target.add(origin);
+
         //System.out.println(origin + " " + target);
 
         ClosestRay r = new ClosestRay(origin, target);
@@ -89,6 +168,7 @@ public abstract class SpaceMouse extends MouseAdapter {
         hitPoint = null;
 
         if (r.hasHit()) {
+            System.out.println("ray: " + x + "," + y  + "\t => " + target + " " + r.hitPointWorld);
             Body3D body = Body3D.ifDynamic(r.collidable);
             if (body != null && (!(body.isStaticObject() || body.isKinematicObject()))) {
                 pickedBody = body;
