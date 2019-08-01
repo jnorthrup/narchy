@@ -422,7 +422,7 @@ public final class Answer implements Timed, Predicate<Task> {
         if (tt == null)
             return null;
 
-        return DynTaskify.merge(tp::array, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
+        return DynTaskify.merge(tp::arrayCommit, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
     }
 
 

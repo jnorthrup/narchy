@@ -32,7 +32,10 @@ public class LinearTruthProjection extends TruthProjection {
 
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
+        double[] evi = this.evi;
+        Task[] items = this.items;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+
 
             double e = evi[i];
             if (e != e)
@@ -46,7 +49,8 @@ public class LinearTruthProjection extends TruthProjection {
             //e * (0.5f + Math.abs(f-0.5f)); /* polarity partial weighting */
             //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
             //wSum += w;
-            Task x = this.items[i];
+
+            Task x = items[i];
             if (x == null)
                 continue;
             double f = x.freq(start, end);

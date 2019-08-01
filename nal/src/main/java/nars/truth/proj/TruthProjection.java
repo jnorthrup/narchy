@@ -109,26 +109,29 @@ abstract public class TruthProjection extends TaskList {
         } else {
             MetalLongSet e = filterCyclicN(minResults, shrink, needStamp);
 
-            int activeBefore = activeUpdate(shrink);
+            int activeBefore = active();
 
             float c = intermpolateAndCull(n); assertFinite(c);
             eviFactor = c;
 
-            if (eviFactor < ScalarValue.EPSILON)
-                return null;
-
-            int activeAfterIntermpolateCull = activeUpdate(shrink);
-            if (activeAfterIntermpolateCull == 0)
-                return null;
-            else if (shrink && activeAfterIntermpolateCull != activeBefore) {
-                e = filterCyclicN(minResults, shrink, needStamp);
+            if (eviFactor < ScalarValue.EPSILON) {
+                e = null;
+            } else {
+                int activeAfterIntermpolateCull = activeUpdate(shrink);
+                if (activeAfterIntermpolateCull < minResults) {
+                    e = null;
+                } else if (shrink && activeAfterIntermpolateCull != activeBefore) {
+                    e = filterCyclicN(minResults, shrink, needStamp);
+                }
             }
 
-            activeUpdate(shrink); //just ensure updated
+            //activeUpdate(shrink); //just ensure updated
 
             return needStamp ? e : null;
         }
     }
+
+
 
     @Deprecated private int activeUpdate(boolean shrink) {
         return evi!=null ? active() : refocus(shrink, true);
@@ -187,7 +190,7 @@ abstract public class TruthProjection extends TaskList {
 
         int iter = 0;
         MetalLongSet e = null;
-        while (!isEmpty()) {
+        main: while (!isEmpty()) {
 
             if (evi == null || (iter++ > 0 && shrink))
                 remain = refocus(shrink, false);
@@ -222,101 +225,99 @@ abstract public class TruthProjection extends TaskList {
             int ss = size();
 
             Task[] items = this.items;
-            if (NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME) {
-                //HACK temporary strategy
-                boolean disjointOrNonOverlapping = true;
-                int count = 0;
-                overlapDisjoint: for (int i = 0; i < ss; i++) {
+
+                overlapDisjoint: for (int i = 0; i < ss; i++) { //descending
                     if (!valid(i))
                         continue;
                     Task ii = items[i];
-                    for (int j = i; j < ss; j++) {
+                    for (int j = ss-1; j > i; j--) { //ascending
                         if (!valid(j))
                             continue;
                         Task jj = items[j];
                         if (Stamp.overlap(ii, jj)) {
-                            disjointOrNonOverlapping = false;
-                            break overlapDisjoint;
+                            remove(j);
+                            if (--remain < minComponents) {
+                                clear();
+                                return null;
+                            }
+                            continue main;
                         }
                     }
-                    count++;
                 }
-                if (disjointOrNonOverlapping && count >= minComponents) {
-                    if (needStamp) {
-                        MetalLongSet evi = new MetalLongSet(ss*STAMP_CAPACITY);
-                        for (int i = 0; i < ss; i++) {
-                            if (valid(i))
-                                evi.addAll(stamp(i));
-                        }
-                        e = evi;
-                        break;
-                    } else {
-                        //done
-                        break;
-                    }
+            if (needStamp) {
+                if (e!=null) e.clear();
+                else e = new MetalLongSet(remain * STAMP_CAPACITY);
+                for (int i = 0; i < ss; i++) {
+                    if (valid(i))
+                        e.addAll(stamp(i));
                 }
-            }
-
-            if (e == null)
-                e = new MetalLongSet(STAMP_CAPACITY * remain);
-            else
-                e.clear(); //2nd iteration, or after
-
-
-            MetalBitSet conflict = null;
-
-            for (int i = 0; i < ss; i++) {
-                if (!valid(i)) {
-                    continue;
-                }
-                Task c = items[i];
-//                if (c == null)
-//                    continue;
-
-                long[] iis = c.stamp();
-
-                if (i > 0 && Stamp.overlapsAny(e, iis)) {
-                    if (conflict == null)
-                        conflict = MetalBitSet.bits(size());
-
-                    conflict.set(i);
-                } else {
-                    e.addAll(iis);
-                }
-            }
-
-            int conflicts = conflict!=null ? conflict.cardinality() : 0;
-
-            //1. test if they are all independent.  then all may be combined.
-            if (conflicts == 0)
-                break; //all ok
-
-            //something must be removed
-            //sum the non-conflicting only if that subset is itself non-conflicting and thus revisable
-            double valueOK  = eviSum(conflict, false);
-            double valueConflicting = conflictedEvi(conflict);
-            if (valueOK > valueConflicting) {
-                if (remain - conflicts < minComponents) {
-                    clear();
-                    return null; //impossible: nothing else to remove
-                } else {
-                    nullAll(conflict);
-                    if (!needStamp) {
-                        break; //done
-                    }
-
-                    //done but recycle to get the stamp
-                }
+                break;
             } else {
-                if (remain - 1 < minComponents) {
-                    clear();
-                    return null;  //impossible: nothing else to remove
-                }
-
-                remove(0);  //pop the top, and retry with remaining
+                //done
+                break;
             }
-            //e = null;
-            e.clear();
+
+
+//            if (e == null)
+//                e = new MetalLongSet(STAMP_CAPACITY * remain);
+//            else
+//                e.clear(); //2nd iteration, or after
+
+
+//            MetalBitSet conflict = null;
+//
+//            for (int i = 0; i < ss; i++) {
+//                if (!valid(i)) {
+//                    continue;
+//                }
+//                Task c = items[i];
+////                if (c == null)
+////                    continue;
+//
+//                long[] iis = c.stamp();
+//
+//                if (i > 0 && Stamp.overlapsAny(e, iis)) {
+//                    if (conflict == null)
+//                        conflict = MetalBitSet.bits(size());
+//
+//                    conflict.set(i);
+//                } else {
+//                    e.addAll(iis);
+//                }
+//            }
+//
+//            int conflicts = conflict!=null ? conflict.cardinality() : 0;
+//
+//            //1. test if they are all independent.  then all may be combined.
+//            if (conflicts == 0)
+//                break; //all ok
+//
+//            //something must be removed
+//            //sum the non-conflicting only if that subset is itself non-conflicting and thus revisable
+//            double valueOK  = eviSum(conflict, false);
+//            double valueConflicting = conflictedEvi(conflict);
+//            if (valueOK > valueConflicting) {
+//                if (remain - conflicts < minComponents) {
+//                    clear();
+//                    return null; //impossible: nothing else to remove
+//                } else {
+//                    nullAll(conflict);
+//                    if (!needStamp) {
+//                        break; //done
+//                    }
+//
+//                    //done but recycle to get the stamp
+//                }
+//            } else {
+//                if (remain - 1 < minComponents) {
+//                    clear();
+//                    return null;  //impossible: nothing else to remove
+//                }
+//
+//                remove(0);  //pop the top, and retry with remaining
+//            }
+//            //e = null;
+//            e.clear();
 
 
         }
@@ -359,7 +360,7 @@ abstract public class TruthProjection extends TaskList {
             }
             result = true;
         }
-        trimToSize();
+
         return result;
     }
 
@@ -633,22 +634,13 @@ abstract public class TruthProjection extends TaskList {
                     }
                 }
                 //removeNulls(); //HACK
-                if (size() == 2) {
-                    //stronger
-                    remove(1);
-                    return 1;
+                if (eviSum(i -> i != root) >= evi[root]) {
+                    // if value of remainder > value(0):
+                    remove(root);  //abdicate current root and continue remaining
+                    continue main;
                 } else {
-                    assert (size() > 2);
-
-
-                    if (eviSum(i -> i > 0) >= evi[0]) {
-                        // if value of remainder > value(0):
-                        remove(0);  //abdicate current root and continue remaining
-                        continue main;
-                    } else {
-                        size = 1;
-                        return 1;
-                    }
+                    size = 1;
+                    return 1;
                 }
 
 //            //last option: remove all except the first
@@ -702,6 +694,7 @@ abstract public class TruthProjection extends TaskList {
      * @param all - true if applying to the entire set of tasks; false if applying only to those remaining active
      */
     private int refocus(boolean shrink, boolean all) {
+        removeNulls();
         if (isEmpty())
             return 0;
         if (shrink || start == ETERNAL || evi==null) {
@@ -718,7 +711,7 @@ abstract public class TruthProjection extends TaskList {
 
                 u0 = union[0]; u1 = union[1];
             } else {
-                Task only = all ? getFirst() : firstValid();
+                Task only = firstValid();
                 u0 = only.start(); u1 = only.end();
             }
 

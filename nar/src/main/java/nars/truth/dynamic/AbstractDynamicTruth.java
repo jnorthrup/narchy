@@ -137,7 +137,6 @@ abstract public class AbstractDynamicTruth {
 //                e = Tense.dither(e, dtDither, +1);
 //            }
 //        }
-        d.trimToSize();
-        return DynTaskify.merge(d::array, y, t, d.stamp(d.nar.random()), d.beliefOrGoal, s, e, d.nar);
+        return DynTaskify.merge(d::arrayCommit, y, t, d.stamp(d.nar.random()), d.beliefOrGoal, s, e, d.nar);
     }
 }

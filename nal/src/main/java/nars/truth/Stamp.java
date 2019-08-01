@@ -464,13 +464,8 @@ public interface Stamp {
 
     static boolean overlap(Task x, Task y) {
         if (x == y) return true;
-        return (!NAL.REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME || x.intersects((LongInterval)y))
-                   &&
-                overlapsAny(x.stamp(), y.stamp());
+        return (x.intersects((LongInterval)y) && overlapsAny(x.stamp(), y.stamp()));
     }
-
-
-
 
     long creation();
 

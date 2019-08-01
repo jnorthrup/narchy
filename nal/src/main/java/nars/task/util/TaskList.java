@@ -12,6 +12,7 @@ import nars.control.CauseMerge;
 import nars.truth.Stamp;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Random;
 import java.util.function.Supplier;
@@ -42,6 +43,16 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
     public static float pri(TaskRegion x) {
         return ((Prioritized) x).priElseZero();
+    }
+
+    public final Task[] arrayCommit() {
+        int s = size;
+        if (s == 0)
+            return Task.EmptyArray;
+        else if (s == items.length)
+            return items;
+        else
+            return items = Arrays.copyOf(items, s);
     }
 
     @Override

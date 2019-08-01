@@ -134,10 +134,9 @@ public enum Revision {;
         TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(n, tasks);
 
         MetalLongSet stamp = p.commit(true, minComponents, true, nal);
-        if (stamp == null)
+        if (stamp == null || p.size() < minComponents /* HACK */)
             return null;
 
-        assert(p.size()>=2);
 
         double eviMin =
                 NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;

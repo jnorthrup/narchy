@@ -69,13 +69,8 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
 
-//    @Override
-//    public Term[] arrayShared() {
-//        throw new TODO("did you mean to use .arrayKeep");
-//    }
-
     @Override
-    public int subs() {
+    public final int subs() {
         return size;
     }
 

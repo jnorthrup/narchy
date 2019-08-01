@@ -58,8 +58,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
 
-    /** NOTE: the true option isnt supported in TruthProjection cyclic overlap yet, but in other places it is */
-    public static final boolean REVISION_ALLOW_OVERLAP_IF_DISJOINT_TIME = true;
 
 
 
