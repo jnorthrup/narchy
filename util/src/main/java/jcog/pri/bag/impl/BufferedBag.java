@@ -1,7 +1,6 @@
 package jcog.pri.bag.impl;
 
 import jcog.data.NumberX;
-import jcog.data.atomic.AtomicFloat;
 import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
@@ -16,8 +15,6 @@ import java.util.function.Consumer;
  * concurrent buffering bag wrapper
  */
 abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBag<X, Y> {
-
-//    final AtomicBoolean busy = new AtomicBoolean(false);
 
 	/**
 	 * pre-bag accumulating buffer
@@ -37,6 +34,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 		super.clear();
 	}
 
+
 	@Override
 	public final Bag<X, Y> commit(@Nullable Consumer<Y> update) {
 
@@ -45,7 +43,6 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
 		bag.commit(update);
 
-        bag.pressurize(prePressure.getAndZero());
 		if (!pre.isEmpty()) {
 
 			//before
@@ -74,7 +71,8 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 		return this;
 	}
 
-	protected abstract Y valueInternal(B b, float pri);
+	protected abstract Y valueInternal(B b);
+//	protected abstract Y valueInternal(B b, float pri);
 
 	@Override
 	public int size() {
@@ -98,16 +96,10 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
 		return (Y) pre.put((B) x, pri,
 			merge(),
-			prePressure::add
+			null
 		);
 	}
 
-	private final AtomicFloat prePressure = new AtomicFloat();
-
-	@Override
-	public void pressurize(float f) {
-		prePressure.add(f);
-	}
 
 	@Override
 	public final Y put(Y b, @Nullable NumberX overflowingIgnored) {

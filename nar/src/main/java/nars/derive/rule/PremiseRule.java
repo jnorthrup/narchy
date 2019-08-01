@@ -1251,11 +1251,13 @@ public class PremiseRule extends ProxyTerm {
         constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
-    public void bigger(Variable x, Variable y) {
-        constraints.add(new Bigger(x, y, false));
+    private void bigger(Variable x, Variable y) {
+        constraints.add(new VolumeCompare(x, y, false, +1 /* X > Y */));
     }
+
     public void biggerIffConstant(Variable x, Variable y) {
-        constraints.add(new Bigger(x, y, true));
+        //TODO dangerous, check before using
+        constraints.add(new VolumeCompare(x, y, true, +1));
     }
 
     static class UppercaseAtomsToPatternVariables extends AbstractTermTransform.NegObliviousTermTransform {

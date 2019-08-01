@@ -257,8 +257,11 @@ public interface Stamp {
             case 1: return toMutableSet(t.apply(0));
             default:
                 MetalLongSet e = new MetalLongSet(n * expectedCap / 2);
-                for (int i = 0; i < n; i++)
-                    e.addAll(t.apply(i));
+                for (int i = 0; i < n; i++) {
+                    long[] s = t.apply(i);
+                    if (s!=null)
+                        e.addAll(s);
+                }
                 //e.trim();
                 return e;
         }

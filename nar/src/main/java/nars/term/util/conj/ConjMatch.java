@@ -12,6 +12,7 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import org.eclipse.collections.impl.factory.Sets;
@@ -28,27 +29,26 @@ import static nars.time.Tense.XTERNAL;
 public enum ConjMatch { ;
 
 
+    static final int varBits =
+        VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit;
+
+    //VAR_DEP.bit | VAR_INDEP.bit;
+    //VAR_DEP.bit;
     public static final Atom BEFORE = Atomic.atom("conjBefore");
     public static final Atom AFTER = Atomic.atom("conjAfter");
 
     /**
      * returns the prefix or suffix sequence of a specific matched subevent
      */
-    public static Term beforeOrAfter(Compound conj, Term x, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-        if (conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(x))
+    public static Term beforeOrAfter(Term conj, Term x, boolean beforeOrAfter, Derivation d, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
+        if (!(conj instanceof Compound) || conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(x))
             return Null;
 
         if (!x.op().eventable)
             return Null;
 
-        //x = Image.imageNormalize(x);
+        x = Image.imageNormalize(x);
 
-        int varBits =
-                VAR_DEP.bit | VAR_INDEP.bit;
-                //VAR_DEP.bit;
-
-        if (x.volume() >= conj.volume()-1 || x.eventRange() > conj.eventRange())
-            return Null;
         if (!Term.commonStructure( (x.structure()&(~varBits)),(conj.subStructure()&(~varBits))))
             return Null;
 

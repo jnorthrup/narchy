@@ -684,7 +684,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         X key = key(x);
 
-        long l = 0;
+        long l;
 
         Map<X, Y> map = table.map;
 //        if (map instanceof ConcurrentMap) {

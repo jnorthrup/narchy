@@ -163,8 +163,7 @@ public class DefaultDerivePri implements DerivePri {
         else {
 //            double cDerived = w2cSafeDouble(eDerived);
 //            double cParent = w2cSafeDouble(eParent);
-//            double lossFactor = 1 - ((cParent - cDerived) / cParent);
-
+//            float f = (float) (1 - ((cParent - cDerived) / cParent));
             float f = (float) (1 - ((eParent - eDerived) / eParent));
 
             Util.assertUnitized(f);

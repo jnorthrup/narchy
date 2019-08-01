@@ -759,6 +759,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }, each);
     }
 
+    public Task[] taskArray() {
+        int a = active();
+        Task[] x = new Task[a];
+        int i = 0;
+        for (TaskComponent tc : this) {
+            if (tc.valid())
+                x[i++] = tc.task;
+        }
+        return x;
+    }
+
 
     /**
      * TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[]
@@ -790,9 +801,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             return task;
         }
 
-        void invalidate() {
-            evi = Double.NaN;
-        }
+//        void invalidate() {
+//            evi = Double.NaN;
+//        }
 
         final double eviDescending() {
             double e = this.evi;

@@ -600,6 +600,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             Task.logger.error("{}->{} {}", t, x, ee);
     }
 
+    /** TODO make Iterable<Task> x version so that callee's avoid constructing Task[] only for this */
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {
         int volSum = Util.sum(TermedDelegate::volume, x);
         double volFactor =

@@ -433,7 +433,7 @@ public final class Answer implements Timed, Predicate<Task> {
 //            else
 //                return only; //as-is
 //        } else {
-            return DynTaskify.merge(tasks::itemsArray, tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
+            return DynTaskify.merge(tp::taskArray, tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
 //        }
     }
 

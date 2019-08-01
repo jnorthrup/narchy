@@ -489,35 +489,42 @@ public enum Terms {
         if (x.equals(y))
             return true;
 
+        boolean xc = x instanceof Compound;
+        boolean yc = y instanceof Compound;
+        if (!xc && !yc)
+            return false; //done
+
 //        if (Term.coRecursiveStructure(x.structure(), y.structure()) != Term.commonStructure(x, y))
 //            Util.nop();
 
-        if (!Term.coRecursiveStructure(x.structure() & ~(Op.CONJ.bit), y.structure() & ~(Op.CONJ.bit)))
+        if (!Term.commonStructure(x.structure() & ~(Op.CONJ.bit), y.structure() & ~(Op.CONJ.bit)))
             return false;
 
-        if (y instanceof Compound && y.op() == CONJ) {
+        if (yc && y.op() == CONJ) {
             return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
-        } else if (x instanceof Compound && x.op() == CONJ) {
-            return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
         } else {
+            if (xc && x.op() == CONJ) {
+                return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
+            } else {
 
-            if (x instanceof Compound || y instanceof Compound) {
-                int av = x.volume(), bv = y.volume();
+                if (xc || yc) {
+                    int av = x.volume(), bv = y.volume();
 
-                //a > b |- a contains b?
-                if (av < bv) {
-                    Term c = x;
-                    x = y;
-                    y = c;
-                }
+                    //a > b |- a contains b?
+                    if (av < bv) {
+                        Term c = x;
+                        x = y;
+                        y = c;
+                    }
 
 
-                if (av == bv)
-                    return false; //both atomic or same size (cant contain each other)
+                    if (av == bv)
+                        return false; //both atomic or same size (cant contain each other)
 
-                return rCom(x, y, true);
-            } else
-                return false;
+                    return rCom(x, y, true);
+                } else
+                    return false;
+            }
         }
 
 

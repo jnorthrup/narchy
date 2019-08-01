@@ -14,6 +14,7 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 //import java.util.concurrent.ConcurrentHashMap;
 
 /** accumulates/buffers/collates a stream of Y activations and termlinkages
@@ -56,13 +57,11 @@ public class PriMap<Y> {
         float load = 0.5f;
         if (Exe.concurrent()) {
             return linked ?
-                new java.util.concurrent.ConcurrentHashMap<>(0, load,
-                    1
-                    //Runtime.getRuntime().availableProcessors()
-                )
-                //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
+                new org.eclipse.collections.impl.map.mutable.ConcurrentHashMapUnsafe<>(0)
+                //new java.util.concurrent.ConcurrentHashMap<>(0, load, 1)
+                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())
+                //new NonBlockingHashMap<>() //<- weird behavior, especially after clear(). maybe a defect in NBHM wrt clear() while an iteration is occurring
                 :
-                //new java.util.concurrent.ConcurrentHashMap<>(0, load, Runtime.getRuntime().availableProcessors())//
                 new NonBlockingHashMap<>()
                 //new org.eclipse.collections.impl.map.mutable.ConcurrentHashMap(0, 0.5f)
                 //new CustomConcurrentHashMap()
@@ -102,10 +101,16 @@ public class PriMap<Y> {
         if (pri != pri)
             return null;
 
-        Prioritizable y = items.compute(x, x instanceof Prioritizable ?
-                (xx, px) -> px != null ? px : (Prioritizable) xx :
-                (xx, px) -> px != null ? px : new UnitPri(Float.NaN)
-        );
+        Prioritizable y;
+
+        if (x instanceof Prioritizable) {
+            Prioritizable px = (Prioritizable) x;
+            y = items.putIfAbsent(x, px);
+            if (y == null) y = px;
+        } else {
+            //TODO accelerated version, especially if items.compute invokes the default Map or ConcurrentMap impl which is likely suboptimal
+            y = items.compute(x, (xx, px) -> px != null ? px : new UnitPri(Float.NaN));
+        }
 
         if (y != x) {
             float delta = merge(y, x, pri, merge);
@@ -130,6 +135,18 @@ public class PriMap<Y> {
             Y e = ii.next();
             ii.remove();
             each.accept(e);
+        }
+    }
+    /** drains the bufffer while applying a transformation to each item */
+    public <X> void drain(Consumer<X> each, Function<Y,X> f) {
+        Iterator<Map.Entry<Y, Prioritizable>> ii = items.entrySet().iterator();
+        while (ii.hasNext()) {
+            Map.Entry<Y, Prioritizable> e = ii.next();
+            ii.remove();
+
+            X x = f.apply(e.getKey());
+            if (x != null)
+                each.accept(x);
         }
     }
 

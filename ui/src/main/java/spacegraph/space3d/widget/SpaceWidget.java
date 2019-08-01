@@ -1,16 +1,10 @@
 package spacegraph.space3d.widget;
 
 import com.jogamp.opengl.GL2;
-import spacegraph.input.finger.Finger;
-import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space3d.SimpleSpatial;
-import spacegraph.space3d.SpaceDisplayGraph3D;
-import spacegraph.space3d.phys.Collidable;
-import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.util.math.Quat4f;
 import spacegraph.video.Draw;
-import spacegraph.video.JoglWindow;
 
 import java.util.List;
 import java.util.function.Consumer;

@@ -262,7 +262,7 @@ public class Statement {
                 //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
                 || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
-            if ((Terms.eqRCom(subject.unneg(), predicate.unneg())))
+            if ((Terms.eqRCom(subject, predicate)))
                 return Null;
         }
 
@@ -276,7 +276,7 @@ public class Statement {
         }
 
 
-        if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG)) && !NAL.term.INH_IMAGE_RECURSION) {
+        if (!NAL.term.INH_IMAGE_RECURSION && op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
             Term inhCollapsed = Image.recursionFilter(subject, predicate, B);
             if (inhCollapsed instanceof Bool)
                 return inhCollapsed;
