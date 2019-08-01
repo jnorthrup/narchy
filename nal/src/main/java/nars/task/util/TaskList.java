@@ -3,14 +3,20 @@ package nars.task.util;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
 import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
+import nars.truth.Stamp;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Random;
+import java.util.function.Supplier;
+
+import static nars.NAL.STAMP_CAPACITY;
 
 /**
  * A List of Task's which can be used for various purposes, including dynamic truth and evidence calculations (as utility methods)
@@ -97,6 +103,36 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 
     public Task[] toArrayRecycled() {
         return toArrayRecycled(Task[]::new);
+    }
+    public Supplier<long[]> stamp(Random rng) {
+        int ss = size();
+        switch (ss) {
+            case 1:
+                return () -> stamp(0);
+            case 2:
+                return ()-> {
+                    long[] a = stamp(0), b = stamp(1);
+                    return Stamp.sample(STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
+                };
+            default:
+                //TODO optimized 2-ary case?
+
+                return () -> {
+                    @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
+                        STAMP_CAPACITY,
+                        this::stamp,
+                        ss); //calculate stamp after filtering and after intermpolation filtering
+                    if (stampSet.size() > STAMP_CAPACITY) {
+                        return Stamp.sample(STAMP_CAPACITY, stampSet, rng);
+                    } else {
+                        return stampSet.toSortedArray();
+                    }
+                };
+        }
+    }
+
+    public final long[] stamp(int component) {
+        return items[component].stamp();
     }
 
 

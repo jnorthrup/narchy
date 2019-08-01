@@ -40,8 +40,7 @@ abstract public class Deriver extends How {
     public final PremiseSource premises;
 
     //shift heuristic condition probabalities TODO refine
-    float PREMISE_SHIFT_EQUALS_ROOT = 0.1f;
-    float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.5f;
+    float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
     float PREMISE_SHIFT_OTHER = 0.9f;
     float PREMISE_SHIFT_RANDOM = 0.75f;
 
@@ -136,9 +135,9 @@ abstract public class Deriver extends How {
         } else {
             if (beliefTerm.equalsRoot(taskTerm)) {
                 shift = random.nextFloat() < PREMISE_SHIFT_EQUALS_ROOT; //structural identity
-            } else if (beliefTerm.containsRecursively(taskTerm) || taskTerm.containsRecursively(beliefTerm)) {
+            } /*else if (beliefTerm.containsRecursively(taskTerm) || taskTerm.containsRecursively(beliefTerm)) {
                 shift = random.nextFloat() < PREMISE_SHIFT_CONTAINS_RECURSIVELY;
-            } else {
+            } */ else {
                 shift = random.nextFloat() < PREMISE_SHIFT_OTHER;
             }
             shiftRandomOrCompletely =  random.nextFloat() < PREMISE_SHIFT_RANDOM;

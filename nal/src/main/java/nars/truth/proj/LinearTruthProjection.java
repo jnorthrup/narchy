@@ -1,11 +1,10 @@
 package nars.truth.proj;
 
 import nars.NAL;
+import nars.Task;
 import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-
-import static nars.time.Tense.ETERNAL;
 
 /**
  * result truth:
@@ -34,10 +33,8 @@ public class LinearTruthProjection extends TruthProjection {
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            TaskComponent x = this.items[i];
-            if (x == null)
-                continue;
-            double e = x.evi;
+
+            double e = evi[i];
             if (e != e)
                 continue;
 
@@ -49,8 +46,10 @@ public class LinearTruthProjection extends TruthProjection {
             //e * (0.5f + Math.abs(f-0.5f)); /* polarity partial weighting */
             //e * (1 + (2*Math.abs(f-0.5f))); /* 2:1 compression polarity partial weighting */
             //wSum += w;
-
-            double f = x.task.freq(start, end);
+            Task x = this.items[i];
+            if (x == null)
+                continue;
+            double f = x.freq(start, end);
             wFreqSum += e * f;
 //            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;
         }

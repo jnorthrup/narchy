@@ -1324,6 +1324,21 @@ public enum Util {
             y += value.applyAsInt(x);
         return y;
     }
+    public static <X> float sum(FloatFunction<X> value, Iterable<X> xx) {
+        float y = 0;
+        for (X x : xx)
+            y += value.floatValueOf(x);
+        return y;
+    }
+    public static <X> float avg(FloatFunction<X> value, Iterable<X> xx) {
+        float y = 0;
+        int count = 0;
+        for (X x : xx) {
+            y += value.floatValueOf(x);
+            count++;
+        }
+        return y/count;
+    }
 
     public static <X> int sum(ToIntFunction<X> value, X... xx) {
         return sum(value, 0, xx.length, xx);
@@ -1420,6 +1435,12 @@ public enum Util {
     }
 
     public static <X> float max(FloatFunction<X> value, X... xx) {
+        float y = Float.NEGATIVE_INFINITY;
+        for (X x : xx)
+            y = Math.max(y, value.floatValueOf(x));
+        return y;
+    }
+    public static <X> float max(FloatFunction<X> value, Iterable<X> xx) {
         float y = Float.NEGATIVE_INFINITY;
         for (X x : xx)
             y = Math.max(y, value.floatValueOf(x));

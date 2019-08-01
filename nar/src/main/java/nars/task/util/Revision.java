@@ -6,14 +6,10 @@ import nars.NAR;
 import nars.Task;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.TemporalTask;
-import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
-import nars.truth.dynamic.DynTaskify;
-import nars.truth.dynamic.DynamicConjTruth;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -94,39 +90,39 @@ public enum Revision {;
         return _merge(tasks, numTasks, minComponents, dither, n);
     }
 
-    /** temporal-induction conjunction merge strategy
-     * TODO needs tested probably sequence term template constructed
-     * */
-    @Nullable private static <T extends TaskRegion> Pair<Task, TruthProjection> conjoin(NAR nar, boolean dither, int minComponents, T[] x) {
-        final int dur = 0;
-
-        DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].task().isBeliefOrGoal(), true, true, dur, nar);
-        for (int i = 0, xx = x.length; i < xx; i++) {
-            T t = x[i];
-            Task tt = t.task();
-            if (tt.isNegative()) {
-                d.componentPolarity.clear(i);
-            }
-            d.add(tt);
-        }
-
-        Task y = d.taskify();
-        if (y==null)
-            return null;
-
-        Term term = y.term(); //d.model.reconstruct(null, d, ETERNAL, ETERNAL);
-        if (term instanceof Bool || term.volume() > d.nar.termVolMax.intValue())
-            return null;
-
-        //HACK this tp is dummy
-        TruthProjection tp = d.nar.projection(y.start(), term.eventRange()+y.end(), dur);
-        d.forEach(tp::add);
-        int active = tp.update(true);
-        if (active!=x.length)
-            return null;
-
-        return pair(y, tp /* TODO */);
-    }
+//    /** temporal-induction conjunction merge strategy
+//     * TODO needs tested probably sequence term template constructed
+//     * */
+//    @Nullable private static <T extends TaskRegion> Pair<Task, TruthProjection> conjoin(NAR nar, boolean dither, int minComponents, T[] x) {
+//        final int dur = 0;
+//
+//        DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].task().isBeliefOrGoal(), true, true, dur, nar);
+//        for (int i = 0, xx = x.length; i < xx; i++) {
+//            T t = x[i];
+//            Task tt = t.task();
+//            if (tt.isNegative()) {
+//                d.componentPolarity.clear(i);
+//            }
+//            d.add(tt);
+//        }
+//
+//        Task y = d.taskify();
+//        if (y==null)
+//            return null;
+//
+//        Term term = y.term(); //d.model.reconstruct(null, d, ETERNAL, ETERNAL);
+//        if (term instanceof Bool || term.volume() > d.nar.termVolMax.intValue())
+//            return null;
+//
+//        //HACK this tp is dummy
+//        TruthProjection tp = d.nar.projection(y.start(), term.eventRange()+y.end(), dur);
+//        d.forEach(tp::add);
+//        int active = tp.update(true);
+//        if (active!=x.length)
+//            return null;
+//
+//        return pair(y, tp /* TODO */);
+//    }
 
     @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(NAL nal, boolean dither, int minComponents, T[] tasks) {
         return _merge(tasks, tasks.length, minComponents, dither, nal);
@@ -164,8 +160,7 @@ public enum Revision {;
     /** budget a revision result */
     public static Task afterMerge(Pair<Task, TruthProjection> AB) {
         Task m = AB.getOne();
-        TruthProjection merge = AB.getTwo();
-        TemporalBeliefTable.budget(merge, m);
+        TemporalBeliefTable.budget(AB.getTwo(), m);
         return m;
     }
 

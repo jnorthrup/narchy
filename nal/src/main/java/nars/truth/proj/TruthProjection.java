@@ -1,13 +1,12 @@
 package nars.truth.proj;
 
-import com.google.common.collect.Iterables;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.ScalarValue;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
@@ -23,17 +22,15 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Random;
-import java.util.function.Consumer;
 import java.util.function.IntPredicate;
-import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 import static jcog.Util.assertFinite;
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.Intermpolate.dtDiff;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * Truth Interpolation and Extrapolation of Temporal Beliefs/Goals
@@ -43,9 +40,7 @@ import static nars.time.Tense.ETERNAL;
  */
 @Paper
 @Skill({"Interpolation", "Extrapolation"})
-abstract public class TruthProjection extends FasterList<TruthProjection.TaskComponent> {
-
-    private static final TaskComponent[] Empty_TaskComponent_Array = new TaskComponent[0];
+abstract public class TruthProjection extends TaskList {
 
     long start, end;
     float dur;
@@ -57,8 +52,11 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     public Term term = null;
     protected float eviFactor = 1;
 
+    /** active evidence cache */
+    @Nullable double[] evi = null;
+
     TruthProjection(long start, long end, float dur) {
-        super(0, Empty_TaskComponent_Array);
+        super(0);
         this.start = start;
         this.end = end;
 
@@ -80,22 +78,9 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return add(t.task());
     }
 
-    public boolean add(Task t) {
-        if (t == null)
-            throw new NullPointerException();
-        return add(new TaskComponent(t));
+    private boolean update(int i) {
+        return valid(evi[i] = evi(get(i)));
     }
-
-
-
-    private boolean update(TaskComponent tc, boolean force) {
-        double e = tc.evi;
-        if (force || (e!=e)) {
-            tc.evi = e = evi(tc.task);
-        }
-        return e==e;
-    }
-
 
     private double evi(Task task) {
         double e;
@@ -106,7 +91,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
             e = TruthIntegration.evi(task, start, end, dur);
         }
-        return e < NAL.truth.EVI_MIN ? Double.NaN : e;
+        return e < NAL.truth.EVI_MIN ? 0 : e;
     }
 
 
@@ -125,7 +110,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         } else {
             MetalLongSet e = filterCyclicN(minResults, shrink, needStamp);
 
-            int activeBefore = active();
+            int activeBefore = activeUpdate(shrink);
 
             float c = intermpolateAndCull(n); assertFinite(c);
             eviFactor = c;
@@ -133,7 +118,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             if (eviFactor < ScalarValue.EPSILON)
                 return null;
 
-            int activeAfterIntermpolateCull = active();
+            int activeAfterIntermpolateCull = activeUpdate(shrink);
             if (activeAfterIntermpolateCull == 0)
                 return null;
             else if (shrink && activeAfterIntermpolateCull != activeBefore) {
@@ -144,22 +129,49 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         }
     }
 
-    int active() {
-        return count(TaskComponent::valid);
+    @Deprecated private int activeUpdate(boolean shrink) {
+        return evi!=null ? active() : refocus(shrink, true);
     }
 
-    public int update(boolean force) {
+    int active() {
+        if (size==0)
+            return 0;
+        double[] a = evi;
+        if (a==null)
+            throw new NullPointerException("evi cache is uncalculated");
+        int y = 0;
+        for (double aa : a) {
+            if (valid(aa))
+                y++;
+        }
+        return y;
+    }
+
+    public int update() {
         int s = size();
         if (s <= 0)
             return 0;
 
         int count = 0;
+        if (evi == null || evi.length < s)
+            evi = new double[s];
         for (int i = 0; i < s; i++) {
-            if (update(get(i), force))
+            if (update(i))
                 count++;
         }
-        if (size() > 1)
-            sortThisByDouble(TaskComponent::eviDescending); //TODO also sort by occurrence and/or stamp to ensure oldest task is always preferred
+        if (count == 0) {
+            Arrays.fill(evi, 0);
+            return 0;
+        }
+        if (size() > 1) {
+            //descending
+            ArrayUtil.quickSort(0, s, (a,b)->
+                 Double.compare(evi[b], evi[a])
+            , (a,b)->{
+                ArrayUtil.swap(items, a, b);
+                ArrayUtil.swap(evi, a, b);
+            });
+        }
         return count;
     }
 
@@ -167,19 +179,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         assert (minComponents >= 1);
 
-        final long bs = this.start, be = this.end;
         @Deprecated int remain = refocus(shrink, true);
         if (remain < minComponents) {
             clear(); return null; }
-
-
-
 
         int iter = 0;
         MetalLongSet e = null;
         while (!isEmpty()) {
 
-            if (iter++ > 0 && shrink)
+            if (evi == null || (iter++ > 0 && shrink))
                 remain = refocus(shrink, false);
 
             if (remain < minComponents) {
@@ -190,7 +198,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             }
             if (remain == 1) {
                 //throw new WTF();
-                return needStamp ? Stamp.toMutableSet(firstValid().task) : null;
+                return needStamp ? Stamp.toMutableSet(firstValid()) : null;
             }
 
             //optimized special case
@@ -215,15 +223,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 boolean disjointOrNonOverlapping = true;
                 int count = 0;
                 overlapDisjoint: for (int i = 0; i < ss; i++) {
-                    TaskComponent I = items[i];
-                    if (!I.valid())
+                    if (!valid(i))
                         continue;
-                    Task ii = I.task;
+                    Task ii = items[i];
                     for (int j = i; j < ss; j++) {
-                        TaskComponent J = items[j];
-                        if (!J.valid())
+                        if (!valid(j))
                             continue;
-                        Task jj = J.task;
+                        Task jj = items[j];
                         if (Stamp.overlap(ii, jj)) {
                             disjointOrNonOverlapping = false;
                             break overlapDisjoint;
@@ -235,9 +241,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     if (needStamp) {
                         MetalLongSet evi = new MetalLongSet(ss*STAMP_CAPACITY);
                         for (int i = 0; i < ss; i++) {
-                            TaskComponent x = this.get(i);
-                            if (x.valid())
-                                evi.addAll(x.task.stamp());
+                            if (valid(i))
+                                evi.addAll(stamp(i));
                         }
                         return evi;
                     } else {
@@ -257,19 +262,18 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             boolean invalids = false;
 
             for (int i = 0; i < ss; i++) {
-                TaskComponent c = get(i);
-                if (c == null) {
+                if (!valid(i)) {
                     invalids = true;
                     continue;
                 }
-                if (!c.valid()) {
+                Task c = items[i];
+                if (c == null) {
                     set(i, null);
                     invalids = true;
                     continue;
                 }
 
-
-                long[] iis = c.task.stamp();
+                long[] iis = c.stamp();
 
                 if (i > 0 && Stamp.overlapsAny(e, iis)) {
                     if (conflict == null)
@@ -329,6 +333,21 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return e;
     }
 
+    @Override
+    public void clear() {
+        super.clear();
+        evi = null;
+    }
+
+    @Override
+    public boolean removeNulls() {
+        if (super.removeNulls()) {
+            evi = null; //invalidate
+            return true;
+        }
+        return false;
+    }
+
     private double conflictedEvi(MetalBitSet x) {
         int n = x.cardinality();
         if (n < 2)
@@ -343,13 +362,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             } else { a = 0; b = 1; }
 
             //assert(a!=b);
-            TaskComponent aa = get(a), bb = get(b);
-            if (Stamp.overlap(aa.task, bb.task)) {
+            Task aa = get(a), bb = get(b);
+            if (Stamp.overlap(aa, bb)) {
                 x.clear(1);
                 set(1, null);
-                return aa.evi;
+                return evi[a];
             } else {
-                return aa.evi + bb.evi;
+                return evi[a] + evi[b];
             }
         } else {
 
@@ -358,8 +377,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             MetalBitSet exc = null; //first iteration
             for (int i = 0; i < size && n > 0; i++) {
                 if (x.get(i)) {
-                    TaskComponent tti = get(i);
-                    long[] iis = tti.task.stamp();
+                    long[] iis = stamp(i);
 
                     if (i > 0 && Stamp.overlapsAny(inc, iis)) {
                         //overlaps
@@ -371,7 +389,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     } else {
                         //include
                         inc.addAll(iis);
-                        ee += tti.evi;
+                        ee += evi[i];
                         n--;
                     }
 
@@ -442,7 +460,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             case 0: return 0;
             case 1: {
                 int a = b.first(what);
-                return a < size ? get(a).evi : 0;
+                return a < size ? evi[a] : 0;
             }
             default: return eviSum(what ? b::get : ((IntPredicate)b::get).negate());
         }
@@ -453,9 +471,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         int n = size();
         for (int i = 0; i < n; i++) {
             if (each.test(i)) {
-                TaskComponent c = get(i);
-                if (c == null) continue; //HACK
-                double ce = c.evi;
+                double ce = evi[i];
                 if (ce == ce)
                     e += ce;
             }
@@ -464,23 +480,28 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     }
 
     private MetalLongSet only(boolean shrink, boolean provideStamp) {
-        return refocus(shrink, true)>0 && provideStamp ? Stamp.toMutableSet(firstValid().task) : null;
+        return refocus(shrink, true)>0 && provideStamp ? Stamp.toMutableSet(firstValid()) : null;
     }
 
-    private TaskComponent firstValid() {
+    private Task firstValid() {
         int i = firstValidIndex();
         return i!=-1 ? get(i) : null;
     }
 
     private int firstValidIndex() {
-        return indexOf(TaskComponent::valid);
+        return indexOf((IntPredicate) this::valid);
     }
     private int firstValidIndex(int after) {
-        return indexOf(after, TaskComponent::valid);
+        return indexOf(after, (IntPredicate) this::valid);
     }
 
     public final boolean valid(int i) {
-        return get(i).valid();
+        return valid(evi[i]);
+    }
+
+    /** test for whether an amount of evidence is valid */
+    public final boolean valid(double e) {
+         return e > Double.MIN_NORMAL;
     }
 
     public final TruthProjection add(Tasked... tasks) {
@@ -528,8 +549,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         final int root = firstValidIndex();
         int thisSize;
         main: while ((thisSize = size()) >= 1) {
-            TaskComponent rootComponent = get(root);
-            Term first = rootComponent.task.term();
+            Task rootComponent = get(root);
+            Term first = rootComponent.term();
             this.term = first;
             if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
                 //assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
@@ -540,8 +561,8 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             MetalBitSet matchesFirst = MetalBitSet.bits(thisSize);
             matchesFirst.set(root);
             for (int i = firstValidIndex() + 1; i < thisSize; i++) {
-                TaskComponent t = this.get(i);
-                if (t.valid() && first.equals(t.task.term()))
+                Task t = this.get(i);
+                if (valid(i) && first.equals(t.term()))
                     matchesFirst.set(i);
             }
             int mc = matchesFirst.cardinality();
@@ -561,16 +582,16 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                 for (int next = root + 1; next < size; next++) {
                     int tryB = firstValidIndex(next);
                     if (tryB != -1) {
-                        TaskComponent B = get(tryB);
+                        Task B = get(tryB);
                         Term a = first;
-                        Term b = B.task.term();
-                        final double e2Evi = B.evi;
+                        Term b = B.term();
+                        final double e2Evi = evi[tryB];
 
                         float dtDiff;
                         //HACK this chooses the first available 2+-ary match, there may be better
                         if ((Float.isFinite(dtDiff = dtDiff(a, b)))) {
 
-                            final double e1Evi = rootComponent.evi;
+                            final double e1Evi = evi[root];
 
                             Term ab;
                             try {
@@ -591,7 +612,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                                 this.term = ab;
                                 for (int i = 0; i < size; i++)
                                     if (i != root && i != tryB) {
-                                        if (get(i) != null && !get(i).task.term().equals(ab))
+                                        if (get(i) != null && !get(i).term().equals(ab))
                                             setFast(i, null);
                                     }
                                 removeNulls();
@@ -613,7 +634,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
                     assert (size() > 2);
 
 
-                    if (eviSum(i -> i > 0) >= get(0).evi) {
+                    if (eviSum(i -> i > 0) >= evi[0]) {
                         // if value of remainder > value(0):
                         remove(0);  //abdicate current root and continue remaining
                         continue main;
@@ -635,12 +656,17 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
         return 1; //?
     }
 
+    @Override
+    public Task remove(int index) {
+        items[index] = null;
+        evi[index] = 0;
+        return null; //HACK
+    }
 
     public byte punc() {
         if (isEmpty()) throw new RuntimeException();
-        return get(0).task.punc();
+        return get(0).punc();
     }
-
 
     @Nullable
     public final Truth truth() {
@@ -649,7 +675,7 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
 
     public void print() {
-        forEach(t -> System.out.println(t.task.proof()));
+        forEach(t -> System.out.println(t.proof()));
     }
 
     public final long start() {
@@ -671,20 +697,20 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
     private int refocus(boolean shrink, boolean all) {
         if (isEmpty())
             return 0;
-        if (shrink || start == ETERNAL) {
+        if (shrink || start == ETERNAL || evi==null) {
             final long u0, u1;
-            if ((all ? size() : active()) > 1) {
-                long[] union = Tense.union(Iterables.transform(this,
-                    all ?
-                        ((TaskComponent x) -> x.task) :
-                        ((TaskComponent x) -> x.valid() ? x.task : null)));
+            boolean changed = (evi==null);
+            if (changed || ((all ? size() : active()) > 1)) {
+                long[] union = Tense.union(changed||all ?
+                    this :
+                    ()->IntStream.range(0, size()).filter(this::valid).mapToObj(this::get).map(x -> (TaskRegion)x).iterator());
+
                 u0 = union[0]; u1 = union[1];
             } else {
-                TruthProjection.TaskComponent only = all ? getFirst() : firstValid();
-                u0 = only.task.start(); u1 = only.task.end();
+                Task only = all ? getFirst() : firstValid();
+                u0 = only.start(); u1 = only.end();
             }
 
-            boolean changed = false;
             if (u0 != ETERNAL) {
                 if (start == ETERNAL) {
                     //override eternal range with the entire calculated union
@@ -709,114 +735,15 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
             }
 
             if (changed)
-                return update(true);
+                return update();
         }
 
-        return update(false);
-    }
-
-    public final long[] stamp(int component) {
-        return items[component].stamp();
-    }
-
-    public Supplier<long[]> stamper(Supplier<Random> rng) {
-        int ss = size();
-        if (ss == 1) {
-            return ()->stamp(0);
-        } else {
-            //TODO optimized 2-ary case?
-
-            return () -> {
-                @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
-                    STAMP_CAPACITY,
-                    this::stamp,
-                    ss); //calculate stamp after filtering and after intermpolation filtering
-                if (stampSet.size() > STAMP_CAPACITY) {
-                    return Stamp.sample(STAMP_CAPACITY, stampSet, rng.get());
-                } else {
-                    return stampSet.toSortedArray();
-                }
-            };
-        }
-    }
-
-    @Deprecated
-    public TaskList list() {
-        int thisSize;
-        TaskList t = new TaskList(thisSize = this.size());
-        for (int i = 0; i < thisSize; i++) {
-            TaskComponent x = this.get(i);
-            if (x.valid())
-                t.add(x.task);
-        }
-        return t;
-    }
-
-    public final void forEachTask(Consumer<Task> each) {
-        forEachWith((x, e) -> {
-            if (x.valid())
-                e.accept(x.task);
-        }, each);
-    }
-
-    public Task[] taskArray() {
-        int a = active();
-        Task[] x = new Task[a];
-        int i = 0;
-        for (TaskComponent tc : this) {
-            if (tc.valid())
-                x[i++] = tc.task;
-        }
-        return x;
+        return active();
     }
 
 
-    /**
-     * TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[]
-     */
-    @Deprecated
-    public static class TaskComponent implements Tasked {
-        public final Task task;
 
-        /**
-         * NaN if not yet computed
-         */
-        double evi = Double.NaN;
 
-        TaskComponent(Task task) {
-            this.task = task;
-        }
-
-        @Override
-        public String toString() {
-            return task + "=" + evi;
-        }
-
-        public boolean valid() {
-            return evi == evi;
-        }
-
-        @Override
-        public @Nullable Task task() {
-            return task;
-        }
-
-//        void invalidate() {
-//            evi = Double.NaN;
-//        }
-
-        final double eviDescending() {
-            double e = this.evi;
-            return (e == e) ? -e : Double.POSITIVE_INFINITY;
-        }
-
-        public final long[] stamp() {
-            assert(valid());
-//            if (!valid())
-//                throw new WTF();
-            return task.stamp();
-        }
-    }
 
     /** Truth Coherency Metric
      *  inversely proportional to the statistical variance of the contained truth's frequency components
@@ -830,13 +757,13 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         double avg = 0;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            avg += this.get(i).task.freq();
+            avg += this.items[i].freq();
         }
         avg /= s;
 
         double variance = 0.0;
         for (int i = 0; i < s; i++) {
-            double p = get(i).task.freq();
+            double p = items[i].freq();
             double d = p - avg;
             variance += d * d;
         }
@@ -844,5 +771,52 @@ abstract public class TruthProjection extends FasterList<TruthProjection.TaskCom
 
         return 1 - variance;
     }
+
+    @Deprecated public boolean valid() {
+        return (active()==size());
+    }
+
+//    /**
+//     * TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[]
+//     */
+//    @Deprecated
+//    public static class TaskComponent implements Tasked {
+//        public final Task task;
+//
+//        /**
+//         * NaN if not yet computed
+//         */
+//        double evi = Double.NaN;
+//
+//        TaskComponent(Task task) {
+//            this.task = task;
+//        }
+//
+//        @Override
+//        public String toString() {
+//            return task + "=" + evi;
+//        }
+//
+//        public boolean valid() {
+//            return evi == evi;
+//        }
+//
+//        @Override
+//        public @Nullable Task task() {
+//            return task;
+//        }
+//
+////        void invalidate() {
+////            evi = Double.NaN;
+////        }
+//
+//
+//        public final long[] stamp() {
+//            assert(valid());
+////            if (!valid())
+////                throw new WTF();
+//            return task.stamp();
+//        }
+//    }
 
 }

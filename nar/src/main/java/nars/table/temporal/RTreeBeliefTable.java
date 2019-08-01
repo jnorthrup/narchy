@@ -258,9 +258,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (mergeOrEvict) {
             //merge leaf
             TruthProjection abab = AB.getTwo();
-            for (TruthProjection.TaskComponent rrr : abab) {
-                if (rrr.valid()) {
-                    Task rr = rrr.task;
+            for (int i = 0, ababSize = abab.size(); i < ababSize; i++) {
+                if (abab.valid(i)) {
+                    Task rr = abab.get(i);
                     if (treeRW.remove(rr))
                         r.forget(rr);
                 }

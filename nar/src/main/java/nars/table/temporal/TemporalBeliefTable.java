@@ -41,7 +41,7 @@ public interface TemporalBeliefTable extends BeliefTable {
 
     static void budget(TruthProjection sources, Task xy) {
 
-        Task[] tr = Util.map(TruthProjection.TaskComponent::task, new Task[sources.size()], sources.array());
+        Task[] tr = sources.array();
 
         ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), tr));
 

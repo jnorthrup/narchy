@@ -1,6 +1,7 @@
 package jcog.data.list;
 
 import jcog.Util;
+import jcog.util.ArrayUtil;
 import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -268,6 +269,21 @@ public class FasterList<X> extends FastList<X> {
         return -1;
     }
 
+    public final int indexOf(IntPredicate p) {
+        return indexOf(0, p);
+    }
+
+    public int indexOf(int atOrAfter, IntPredicate p) {
+        int s = size;
+        if (s > 0) {
+            for (int i = Math.max(0,atOrAfter); i < s; i++) {
+                if (p.test(i))
+                    return i;
+            }
+        }
+        return -1;
+    }
+
     @Override
     public int indexOf(/*@NotNull*/ Object object) {
 
@@ -315,18 +331,18 @@ public class FasterList<X> extends FastList<X> {
         return items;
     }
 
-    public final FasterList<X> compact() {
-        X[] i = items;
-        int s = size;
-        if (i.length != s) {
-            items = Arrays.copyOf(i, s);
+    @Override
+    public void trimToSize() {
+        int s = this.size;
+        if (items.length!= s) {
+            this.items = s == 0 ? (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY : Arrays.copyOf(this.items, s);
         }
-        return this;
     }
 
     @Override
     public X[] toArray() {
-        return Arrays.copyOf(items, size);
+        int s = this.size;
+        return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
     }
 
 
@@ -345,9 +361,6 @@ public class FasterList<X> extends FastList<X> {
         return (Y[]) i;
     }
 
-    public float meanValue(FloatFunction<? super X> function) {
-        return (float) (sumOfFloat(function) / size());
-    }
 
     protected final long longify(LongObjectToLongFunction<X> f, long l) {
         int thisSize = this.size;
@@ -865,7 +878,7 @@ public class FasterList<X> extends FastList<X> {
                 return false;
 
             case 1:
-                if (get(0) == null) {
+                if (items[0] == null) {
                     size = 0;
                     return true;
                 } else

@@ -12,6 +12,7 @@ import nars.Task;
 import nars.table.BeliefTable;
 import nars.task.DynamicTruthTask;
 import nars.task.NALTask;
+import nars.task.ProxyTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
@@ -121,19 +122,25 @@ public class DynTaskify extends TaskList {
         if (r==null)
             return null;
 
+        Task[] tt = tasks.get();
+        Term yc = r.getOne();
+
+        if (tt.length == 1 && !(tt[0] instanceof ProxyTask)) {
+            //TODO wrap the only task wtih Special proxy task
+        }
+
         NALTask y = new DynamicTruthTask(
-                r.getOne(), beliefOrGoal,
+            yc, beliefOrGoal,
                 t.negIf(neg != r.getTwo()),
                 w, start, end,
                 stamp.get());
-
 
 
 //        y.pri(
 //              tasks.reapply(TaskList::pri, NAL.DerivationPri)
 //                        // * dyn.originality() //HACK
 //        );
-        Task.fund(y, tasks.get(), true);
+        Task.fund(y, tt, true);
 
         return y;
     }
@@ -329,24 +336,14 @@ public class DynTaskify extends TaskList {
 
 
 
-    protected Supplier<long[]> stamp(Random rng) {
+    @Override public Supplier<long[]> stamp(Random rng) {
         if (evi == null) {
-            switch(size) {
-                case 1:
-                    return get(0)::stamp;
-                case 2:
-                    return ()-> {
-                        long[] a = get(0).stamp(), b = get(1).stamp();
-                        return Stamp.sample(STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
-                    };
-                case 0:
-                default:
-                    throw new UnsupportedOperationException();
-            }
+            return super.stamp(rng);
         } else {
             return ()->Stamp.sample(STAMP_CAPACITY, this.evi, rng);
         }
     }
+
 
 
     @Override

@@ -418,23 +418,12 @@ public final class Answer implements Timed, Predicate<Task> {
 
     @Nullable
     private Task newTask(TruthProjection tp, boolean beliefOrGoal) {
-
         @Nullable Truth tt = tp.truth(eviMin(), ditherTruth, true, nar);
         if (tt == null)
             return null;
 
-        //HACK TODO do this without creating a temporary TaskList
-//        if (tp.size() == 1) {
-//            //proxy to the individual task being projected
-//            Task only = tp.get(0).task();
-//            if (!only.isEternal() && (only.start() != tp.start() || only.end() != tp.end()))
-//                return new SpecialTruthAndOccurrenceTask(only,
-//                        tp.start(), tp.end(), false, tt);
-//            else
-//                return only; //as-is
-//        } else {
-            return DynTaskify.merge(tp::taskArray, tp.term, tt, tp.stamper(nar::random), beliefOrGoal, tp.start(), tp.end(), nar);
-//        }
+        tp.trimToSize(); // HACK
+        return DynTaskify.merge(tp::array, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
     }
 
 

@@ -218,7 +218,7 @@ public class StackProfiler2 implements InternalProfiler {
         }
 
         void commit() {
-            compact();
+            trimToSize();
             this.hash = super.hashCode();
         }
 

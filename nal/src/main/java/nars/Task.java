@@ -607,12 +607,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 Math.min(1, ((double)volSum) / y.volume() );
 
         double confFactor;
-        if (y.isBeliefOrGoal() && x[0].isBeliefOrGoal()) {
+        boolean xHasTruth = x[0].isBeliefOrGoal();
+        if (y.isBeliefOrGoal() && xHasTruth) {
             double yConf = y.truth().confDouble();
             double xConfMax = Util.max(Task::conf, x);
             confFactor = Math.min(1, (yConf / xConfMax));
         } else {
-            if (x[0].isBeliefOrGoal()) {
+            if (xHasTruth) {
                 //question formation
                 double xConfAvg = Util.sum(Task::conf, x) / x.length;
                 confFactor = Math.pow(1 - xConfAvg, 2);
