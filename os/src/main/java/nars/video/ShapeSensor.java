@@ -257,7 +257,7 @@ public class ShapeSensor extends NARPart {
             long now = n.time();
             for (Term x : image) {
                 Task xx = new SignalTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                        last, now, n.time.nextStamp()).priSet(n.priDefault(BELIEF));
+                        now, last, now, new long[] { n.time.nextStamp() }).priSet(n.priDefault(BELIEF));
                 t.accept(xx, what);
             }
         }

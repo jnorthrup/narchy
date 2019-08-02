@@ -10,10 +10,9 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
-import nars.control.op.Remember;
 import nars.link.TaskLink;
 import nars.table.dynamic.SeriesBeliefTable;
-import nars.task.proxy.SpecialPuncTermAndTruthTask;
+import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atomic;
@@ -171,8 +170,8 @@ public class Inperience extends How {
         return in.value();
     }
 
-    private static class InperienceTask extends SpecialPuncTermAndTruthTask {
-        InperienceTask(Term r, @Nullable Truth tr, Task t) {
+    private static final class InperienceTask extends SignalTask {
+        InperienceTask(Term r, Truth tr, Task t) {
             super(r, Op.BELIEF, tr, t);
         }
 
@@ -181,10 +180,6 @@ public class Inperience extends How {
             return false;
         }
 
-        @Override
-        public Task next(Object n) {
-            return Remember.the(this, (NAR)n); //copied from UnevaluatedTask
-        }
     }
 }
 //abstract public class Inperience extends TaskLeakTransform {

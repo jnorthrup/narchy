@@ -1,32 +1,34 @@
 
+    //how goal
+    G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
+
+//    //result of goal
+//    G, G, task("!") |-          (G ==> ?1), (Punctuation:Question, Time:Task)
+
+//    //result of non-goal
+//    G, G, task("!") |-        (--G ==> ?1), (Punctuation:Question, Time:Task)
+
+//    //is what with goal/non-goal
+//    G, G, task("!") |-           (?1 && polarizeRandom(G)), (Punctuation:Question, Time:Task)
+
     //hypothesize goal cause (bridge from Goal to Belief)
     G, G, task("!") |- (#X ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
 
     //hypothesize goal consequence (bridge from Goal to Belief)
     //G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
 
-    //hypothesize goal co-occurrence (bridge from Goal to Belief)
-    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
-    G, G, task("!") |- --(--polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
-    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Goal, Goal:StructuralDeductionDepolarized, Time:Task)
-    G, G, task("!") |- --(--polarizeTask(G) && #X), (Punctuation:Goal, Goal:StructuralDeductionDepolarized, Time:Task)
+//    //hypothesize goal co-occurrence (bridge from Goal to Belief)
+//    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+//    G, G, task("!") |- --(--polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+//    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Goal, Goal:StructuralDeductionDepolarized, Time:Task)
+//    G, G, task("!") |- --(--polarizeTask(G) && #X), (Punctuation:Goal, Goal:StructuralDeductionDepolarized, Time:Task)
 
     //sustain goal
     //G, G, task("!") |-         ((  polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)
     //correct goal
     //G, G, task("!") |-         ((--polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)
 
-    //how goal
-    //G, Y, task("!") |-         (?1 ==> G) , (Punctuation:Question)
-    //result of goal
-    //G, Y, task("!") |-          (G ==> ?1), (Punctuation:Question)
-    //result of non-goal
-    //G, Y, task("!") |-        (--G ==> ?1), (Punctuation:Question)
 
-    //is what with goal
-    //G, B, task("!") |-           (?1 && G), (Punctuation:Question)
-    //is what with non-goal
-    //G, B, task("!") |-         (?1 && --G), (Punctuation:Question)
 
     //result of achieving/non-achieving goal and current belief
     //G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)

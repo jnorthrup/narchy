@@ -591,9 +591,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * for overhead due to increased belief table churn.
          */
         public static final boolean REVISION_MIN_EVI_FILTER = false;
-        public static final boolean DYNAMIC_TRUTH_TASK_STORE = configIs("DYNAMIC_TRUTH_TASK_STORE");
-        public static final boolean DYNAMIC_TRUTH_TASK_LINK = true;
-        public static final boolean DYNAMIC_TRUTH_TASK_EMIT = true;
         /**
          * perceptible priority increase % (over the higher pri of the two merged) that warrants automatic reactivation.
          * used during Remember's merge repeat suppression filter

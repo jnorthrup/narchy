@@ -449,11 +449,11 @@ abstract public class GameX extends Game {
         n.beliefConfDefault.set(0.5f);
         n.goalConfDefault.set(0.5f);
 
-//        n.emotion.want(MetaGoal.Futile, -0.0001f);
-//        n.emotion.want(MetaGoal.Perceive, -0.0001f);
+        n.emotion.want(MetaGoal.Futile, -0.001f);
+        n.emotion.want(MetaGoal.Perceive, -0.0001f);
 //
 //        n.emotion.want(MetaGoal.Believe, 0.01f);
-//        n.emotion.want(MetaGoal.Desire, 0.5f);
+        n.emotion.want(MetaGoal.Desire, 0.5f);
 //
 //        n.emotion.want(MetaGoal.Action, +1f);
 
@@ -608,7 +608,7 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 4;
-        float momentum = 0.66f;
+        float momentum = 0.25f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 

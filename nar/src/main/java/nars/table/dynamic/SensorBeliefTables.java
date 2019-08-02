@@ -65,7 +65,7 @@ public class SensorBeliefTables extends BeliefTables {
     public final void remember(Remember r) {
         Task x = r.input;
         if (x instanceof SeriesTask)
-            return;
+            return; //already inserted when constructed, dont allow any other way
 
         if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS && !x.isEternal() && !x.isInput()) {
             if (absorbNonSignal(r)) {
@@ -203,7 +203,6 @@ public class SensorBeliefTables extends BeliefTables {
 
         Task prev = this.current;
 
-        float p;
         if (prev!=next) {
             float nextPri = pri.asFloat() *
                     lerp((float) SensorBeliefTables.surprise(prev, next, dur),

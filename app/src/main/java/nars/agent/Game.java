@@ -82,7 +82,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 
     /** the context representing the experience of the game */
-    private final What what;
+    @Deprecated private final What what;
 
     public final Term id;
 
@@ -139,8 +139,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         add(time.clock(this));
     }
 
-    @Override
-    public final What what() {
+    @Deprecated @Override public final What what() {
         return what;
     }
 
@@ -226,11 +225,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
 
-            nar.control.input(((VectorSensor) s).attn, target);
+            nar.control.input(((VectorSensor) s).pri, target);
         } else if (s instanceof Signal) {
 
             if (s instanceof ScalarSignal)
-                nar.control.input(((ScalarSignal) s).attn, target);
+                nar.control.input(((ScalarSignal) s).pri, target);
             else
                 throw new TODO();
 

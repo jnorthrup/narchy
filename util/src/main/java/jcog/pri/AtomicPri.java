@@ -118,7 +118,7 @@ public abstract class AtomicPri implements ScalarValue {
         return _pri();
     }
 
-    public boolean isDeleted() {
+    public final boolean isDeleted() {
         return _pri() == iNaN;
     }
 

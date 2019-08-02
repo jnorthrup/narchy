@@ -54,10 +54,12 @@ public enum MetaGoal {
 //     */
 //    Answer,
 
-    /**
-     * pos: actuated a goal concept
-     */
-    Action;
+//    /**
+//     * pos: actuated a goal concept
+//     */
+//    Action,
+
+    ;
 
 
 

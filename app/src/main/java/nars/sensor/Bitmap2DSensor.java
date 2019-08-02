@@ -25,6 +25,7 @@ import nars.term.atom.Int;
 import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -63,20 +64,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         this.width = src.width();
         this.height = src.height();
 
-
-        //HACK
-        this.tl = this.width > 2 && this.height > 2 ?
-                new ConjunctionSuperPixelTaskLink(2, 2) :
-                new PixelSelectorTaskLink();
-
-
-        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, attn, defaultFreq, n);
+        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, pri, defaultFreq, n);
         this.src = concepts.src;
 
 
         if (src instanceof PixelBag) {
             //HACK steal the actions for this attn group
-            ((PixelBag)src).actions.forEach(aa -> n.control.input(aa.attn, attn));
+            ((PixelBag)src).actions.forEach(aa -> n.control.input(aa.attn, pri));
         }
 
         /** modes */
@@ -90,6 +84,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         mode = SET;
         n.start(this);
+    }
+
+    @NotNull
+    public AbstractTaskLink newLink() {
+        return this.width > 2 && this.height > 2 ?
+                new ConjunctionSuperPixelTaskLink(2, 2) :
+                new PixelSelectorTaskLink();
     }
 
     public Bitmap2DSensor<P> mode(FloatFloatToObjectFunction<Truth> mode) {
@@ -190,8 +191,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return this;
     }
 
-    final AbstractTaskLink tl;
-
 	@Override
     public void update(Game g) {
         src.updateBitmap();
@@ -200,12 +199,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     public void link(Game g) {
-        float surprise = (float)(surprise());
+        float pri = (float)(surprise()) * this.pri.pri();
         //System.out.println(tl + " <- " + surprise);
 
         //System.out.println(this + " " + surprise);
-        if (surprise > Float.MIN_NORMAL) {
-            tl.priMerge(BELIEF, surprise, NAL.tasklinkMerge);
+        if (pri > Float.MIN_NORMAL) {
+            @NotNull AbstractTaskLink tl = newLink();
+            tl.priMerge(BELIEF, pri, NAL.tasklinkMerge);
 //            tl.priMax(QUEST, surprise);
 //            tl.priMax(GOAL, surprise*(1/4f));
             g.what().link(tl);

@@ -29,7 +29,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected final short[] cause;
 
     /** used and shared by all components */
-    public final AttnBranch attn;
+    public final AttnBranch pri;
 
 
     @Override
@@ -49,7 +49,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         super(rootID, n);
 
         //HACK
-        attn = new AttnBranch(this.id, this) {
+        pri = new AttnBranch(this.id, this) {
 
             int size = -1;
 
@@ -75,7 +75,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
                 return priComponent;
             }
         };
-        attn.output(PriNode.Branch.One_div_sqrtN);
+        pri.output(PriNode.Branch.One_div_sqrtN);
 
         this.in = n.newChannel(id != null ? id : this);
         this.cause = new short[] { in.id };
@@ -104,7 +104,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         };
 
 
-        FloatSupplier aPri = attn::priComponent;
+        FloatSupplier aPri = pri::priComponent;
         //float quality = Util.sqrt(attn.amp.floatValue());
         //Random rng = g.random();
         for (Signal s : this) {

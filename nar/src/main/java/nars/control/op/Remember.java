@@ -12,7 +12,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.task.AbstractTask;
-import nars.task.DynamicTruthTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
@@ -43,11 +42,7 @@ public class Remember extends AbstractTask {
     public final NAR nar;
 
     public static Remember the(Task x, NAR n) {
-        return the(x,
-                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_STORE,
-                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_LINK,
-                !(x instanceof DynamicTruthTask) || NAL.belief.DYNAMIC_TRUTH_TASK_EMIT,
-            n);
+        return the(x, true, true, true, n);
     }
 
     public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
@@ -295,29 +290,6 @@ public class Remember extends AbstractTask {
 
         return false;
     }
-
-//    /**
-//     * returns which task, if any, to remember on merge
-//     */
-//    @Nullable
-//    private static Task rememberMerged(Task prev, Task next) {
-//
-//        if (next instanceof DynamicTruthTask)
-//            return null;
-//        if (next instanceof ConjClustering.STMClusterTask)
-//            return null;
-////        if (next instanceof SignalTask)
-////            return null; //TODO determine if this works
-//
-//        if (next.isInput())
-//            return prev;
-//
-//        if (next instanceof SpecialTermTask) //Image belief table
-//            return ((SpecialTermTask) next).task;
-//
-//        return prev;
-//    }
-
 
 
     private static boolean add(Prioritizable x, FasterList f) {

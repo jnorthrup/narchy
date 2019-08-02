@@ -14,7 +14,7 @@ public class ScalarSignal extends Signal {
     private final FloatRange res;
 
     private final short[] cause;
-    public final AttnBranch attn;
+    public final AttnBranch pri;
 
     public ScalarSignal(Term term, FloatSupplier signal, NAR n) {
         this(term, new short[] { n.newCause(term).id }, signal, n);
@@ -35,12 +35,12 @@ public class ScalarSignal extends Signal {
 
         this.cause = cause;
 
-        this.attn = newAttn(term);
+        this.pri = newAttn(term);
     }
 
     @Override
     public float pri() {
-        return attn.pri();
+        return pri.pri();
     }
 
     protected AttnBranch newAttn(Term term) {

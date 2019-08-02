@@ -95,10 +95,8 @@ public class ProxyTask extends UnitPri implements Task {
     @Override
     public int hashCode() {
         int h = this.hash;
-        if (h == 0)
-            return this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp());
-        else
-            return h;
+        return h != 0 ? h :
+            (this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp()));
     }
 
     @Override
@@ -110,10 +108,6 @@ public class ProxyTask extends UnitPri implements Task {
     public short[] why() {
         return task.why();
     }
-
-
-
-
 
     @Override
     public long creation() {

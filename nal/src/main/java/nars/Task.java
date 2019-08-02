@@ -186,6 +186,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (stamp.length > 0)
             h = Util.hashCombine(h, stamp);
 
+        if (h == 0)
+            h = 1; //keep 0 as a special non-hashed indicator value
+
         return h;
     }
 

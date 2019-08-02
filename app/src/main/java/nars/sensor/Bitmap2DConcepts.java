@@ -36,10 +36,10 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     private final float defaultFreq;
     private final short[] cause;
     private final FloatRange res;
-    private final AttnBranch attn
+    private final AttnBranch pri
             ;
 
-    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, AttnBranch attn, float defaultFreq, NAR n) {
+    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, AttnBranch pri, float defaultFreq, NAR n) {
 
         this.width = src.width();
         this.height = src.height();
@@ -47,7 +47,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
         assert (area > 0);
 
         this.res = res;
-        this.attn = attn;
+        this.pri = pri;
         this.src = src;
 
         this.matrix = new Signal[height][width];
@@ -167,7 +167,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
         @Override
         public float pri() {
-            return attn.pri();
+            return pri.pri();
         }
 
         @Override

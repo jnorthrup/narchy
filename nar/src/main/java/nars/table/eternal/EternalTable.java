@@ -13,7 +13,6 @@ import nars.control.CauseMerge;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
-import nars.task.ProxyTask;
 import nars.task.util.Answer;
 import nars.task.util.Revision;
 import nars.term.Compound;
@@ -197,10 +196,9 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             }
         }
 
-
-        if (incoming instanceof ProxyTask) {
-            incoming = ((ProxyTask) incoming).the();
-        }
+//        if (incoming instanceof ProxyTask) {
+//            incoming = ((ProxyTask) incoming).the();
+//        }
 
         int r = add(incoming, this);
         assert (r != -1);
