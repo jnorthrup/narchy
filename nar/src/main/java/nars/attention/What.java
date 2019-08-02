@@ -1,13 +1,14 @@
 package nars.attention;
 
 import jcog.Paper;
+import jcog.math.FloatRange;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.util.ConsumerX;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.NARPart;
+import nars.control.PriNARPart;
 import nars.control.op.TaskEvent;
 import nars.derive.pri.DefaultDerivePri;
 import nars.derive.pri.DerivePri;
@@ -62,13 +63,20 @@ import java.util.stream.Stream;
  *  be conceptualized and self-executed.
   */
 @Paper
-abstract public class What extends NARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
+abstract public class What extends PriNARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
-    public final PriNode pri;
 
     /** input bag */
     public final PriBuffer<Task> in;
-    private final DurLoop.DurNARConsumer schedule;
+
+    private final DurLoop.DurNARConsumer loop;
+
+
+    /**
+     * present-moment perception duration, in global clock cycles,
+     * specific to this What, and freely adjustable
+     */
+    public final FloatRange dur = new FloatRange(1, 1, 1024);
 
     /** advised deriver pri model
      *      however, each deriver instance can also be configured individually and dynamically.
@@ -93,12 +101,20 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
 
     protected What(Term id, PriBuffer<Task> in) {
         super(id);
-        this.pri = new PriNode(this.id).branch(PriNode.Branch.Equal);
-        this.pri.pri(0.5f);
         this.in = in;
 
-        schedule = new DurLoop.DurNARConsumer(!in.async(out) ? this::perceiveCommit : this::commit);
-        add(schedule);
+        loop = new DurLoop.DurNARConsumer(!in.async(out) ? this::perceiveCommit : this::commit);
+        add(loop);
+    }
+
+    /** update period (in cycles) */
+    public long durUpdate() {
+        return loop.durCycles();
+    }
+
+    /** perceptual duration (cycles) */
+    @Override public float dur() {
+        return dur.floatValue();
     }
 
     @Override
@@ -106,7 +122,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         super.starting(nar);
 
         int concurrency = nar.exe.concurrency();
-        schedule.durs(
+        loop.durs(
                 1
                 //0
                 //1f / (Math.max(1, concurrency-1))
@@ -159,8 +175,7 @@ abstract public class What extends NARPart implements Prioritizable, Sampler<Tas
         TaskEvent.emit(t, nar);
     }
 
-    /** cycles duration window */
-    @Override public abstract float dur();
+
 
     /* TODO other temporal focus parameters */
 

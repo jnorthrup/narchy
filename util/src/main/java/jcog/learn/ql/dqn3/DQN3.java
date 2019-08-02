@@ -55,7 +55,7 @@ public class DQN3 extends Agent {
         this.gamma = config.getOrDefault(Option.GAMMA, 0.75);
         this.alpha = config.getOrDefault(Option.ALPHA, 0.01);
 
-        this.numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, 100.0));
+        this.numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double)inputs*numActions /* estimate */));
 
         this.experienceAddProb = 1f/(int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
         this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 1024.0));

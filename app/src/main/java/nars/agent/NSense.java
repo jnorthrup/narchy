@@ -312,11 +312,11 @@ public interface NSense {
         g.addAction(pn.neg);
         g.onFrame(aa->pn.update(g));
 
-        nar.control.parent(pn.attn, new PriNode[]{g.attnAction});
+        nar.control.input(pn.attn, g.attnAction);
 
-        nar.control.parent(pn.pos.attn, new PriNode[]{pn.attn});
+        nar.control.input(pn.pos.attn, pn.attn);
 
-        nar.control.parent(pn.neg.attn, new PriNode[]{pn.attn});
+        nar.control.input(pn.neg.attn, pn.attn);
 
         return pn;
     }

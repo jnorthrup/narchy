@@ -1,7 +1,6 @@
 package nars.attention;
 
 import jcog.TODO;
-import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -25,21 +24,7 @@ import java.util.stream.Stream;
  */
 public class TaskLinkWhat extends What {
 
-    /** measured in nar.dur()'s */
-    private static final int MIN_UPDATE_DURS = 1;
-
-    /**
-     * present-moment perception duration, in global clock cycles,
-     * specific to this What, and freely adjustable
-     */
-    public final FloatRange dur = new FloatRange(1, 1, 1024);
-
     public final TaskLinks links;
-
-
-    private final AtomicBoolean busy = new AtomicBoolean(false);
-    private volatile long lastUpdate;
-
 
     public TaskLinkWhat(Term id, int capacity, PriBuffer<Task> in) {
         this(id, new TaskLinks(), in);
@@ -57,37 +42,16 @@ public class TaskLinkWhat extends What {
 
     @Override
     protected void starting(NAR nar) {
-
         float narDUR = nar.dur();
 
-        lastUpdate = Math.round(nar.time() - narDUR - 1);
         this.dur.set(narDUR); //initializes value
 
         super.starting(nar);
     }
 
     @Override
-    public float dur() {
-        return dur.floatValue();
-    }
-
-    @Override
     protected void commit(NAR nar) {
-
-        if (busy.compareAndSet(false, true)) {
-            try {
-                long now = nar.time();
-                if (now - lastUpdate >= nar.dur() * MIN_UPDATE_DURS) {
-
-                    lastUpdate = now;
-//                    premises.commit();
-                    links.commit(this);
-
-                }
-            } finally {
-                busy.set(false);
-            }
-        }
+        links.commit(this);
     }
 
     @Override

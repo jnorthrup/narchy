@@ -3,12 +3,15 @@ package nars.agent;
 import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
+import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
+import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
+import nars.agent.util.RLBooster;
 import nars.attention.PriNode;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
@@ -20,6 +23,8 @@ import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
+
+import java.util.Map;
 
 import static nars.$.$$;
 
@@ -81,6 +86,18 @@ abstract public class MetaAgent extends Game {
         super(id, GameTime.fps(fps), nar);
     }
 
+    public MetaAgent addRLBoost() {
+//        meta.what().pri(0.05f);
+        RLBooster metaBoost = new RLBooster(this, (i, o) ->
+                //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+                new DQN3(i, o, Map.of(
+                )),
+                4, 5, true);
+        curiosity.rate.set(0);
+//        window(grid(NARui.rlbooster(metaBoost), 800, 800);
+        return this;
+    }
+
     /** core metavisor */
     public static class SelfMetaAgent extends MetaAgent {
 
@@ -100,12 +117,8 @@ abstract public class MetaAgent extends Game {
                 new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.durLoopLag::floatValue)), 0, 1));
 
         for (MetaGoal mg : MetaGoal.values()) {
-            actionCtl($.inh(SELF, $.the(mg.name())), new FloatRange(0, -1, 1) {
-                @Override
-                public void set(float value) {
-                    super.set(value);
-                    nar.emotion.want(mg, floatValue());
-                }
+            actionUnipolar($.inh(SELF, $.the(mg.name())), (x)-> {
+                nar.emotion.want(mg, Util.lerp(x, -1, +1));
             });
         }
 
@@ -114,9 +127,7 @@ abstract public class MetaAgent extends Game {
 //        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
-            actionCtl($.inh(SELF, exact), new FloatRange(1f, 0, 1) {
-                @Override
-                public void set(float value) {
+            actionUnipolar($.inh(SELF, exact), (value) -> {
                     if (value < 0.5f) {
                         value = 0.01f;
                     } else if (value < 0.75f) {
@@ -124,6 +135,7 @@ abstract public class MetaAgent extends Game {
                     } else {
                         value = 0.1f;
                     }
+                nar.freqResolution.set(value);
 //                switch (Util.clamp((int) Math.floor(value * 4),0,3)) {
 ////                    case 0: value = 0.5f; break; //binary emulation
 ////                    case 1: value = 0.25f; break;
@@ -133,9 +145,7 @@ abstract public class MetaAgent extends Game {
 //                    default:
 //                        throw new UnsupportedOperationException();
 //                }
-                    nar.freqResolution.set(value);
-                    super.set(value);
-                }
+
             });
 
             reward("happy", ()->{
@@ -344,11 +354,14 @@ abstract public class MetaAgent extends Game {
     }
 
     protected void actionCtl(Term t, FloatRange r) {
+        actionCtl(t, r.min, r.max, r::set);
+    }
+    protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
         //FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
         FloatToFloatFunction f = (z)->z;
         actionUnipolar(t, true, (v)->v, (x)->{
             float y = f.valueOf(x);
-            r.set(Util.lerp(y, r.min, r.max));
+            r.accept(Util.lerp(y, min, max));
             return y;
         });
         //.resolution(0.1f);

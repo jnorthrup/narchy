@@ -24,7 +24,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class TemporalTermTest {
 
 
-    private static final NAR n = NARS.shell();
+    private final NAR n = NARS.shell();
 
     @Test
     void testSortingTemporalImpl() {

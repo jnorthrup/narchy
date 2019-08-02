@@ -4,7 +4,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.*;
 
-public abstract class GamePanel extends JPanel implements Game, MouseListener, MouseMotionListener, KeyListener, Runnable {
+public abstract class GamePanel extends JPanel implements MouseListener, MouseMotionListener, KeyListener, Runnable {
 	
 	protected volatile boolean running = true;
 	protected boolean continuousRepaint;
@@ -20,8 +20,7 @@ public abstract class GamePanel extends JPanel implements Game, MouseListener, M
 		this(false);
 	}
 	
-	@Override
-    public void start() {
+	public void start() {
 		if (continuousRepaint) {
 			new Thread(this).start();
 		} else {
@@ -29,8 +28,7 @@ public abstract class GamePanel extends JPanel implements Game, MouseListener, M
 		}
 	}
 	
-	@Override
-    public void stop() {
+	public void stop() {
 		running = false;
 	}
 	
@@ -92,12 +90,10 @@ public abstract class GamePanel extends JPanel implements Game, MouseListener, M
 		processAWTEvent(e);
 	}
 	
-	@Override
 	public JPanel getPanel() {
 		return this;
 	}
 	
-	@Override
 	public void processAWTEvent(AWTEvent e) {
 		
 	}

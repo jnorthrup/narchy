@@ -9,7 +9,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
-import nars.attention.PriNode;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.Signal;
@@ -77,7 +76,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         if (src instanceof PixelBag) {
             //HACK steal the actions for this attn group
-            ((PixelBag)src).actions.forEach(aa -> n.control.parent(aa.attn, new PriNode[]{attn}));
+            ((PixelBag)src).actions.forEach(aa -> n.control.input(aa.attn, attn));
         }
 
         /** modes */

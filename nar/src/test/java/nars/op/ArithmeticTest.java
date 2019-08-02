@@ -23,7 +23,7 @@ import static org.junit.jupiter.api.Assertions.assertNull;
 
 /** arithmetic operators and arithmetic introduction tests */
 class ArithmeticTest {
-    static final NAR n = NARS.shell();
+    final NAR n = NARS.shell();
 
     @Test
     void testAddSolve() throws Narsese.NarseseException {

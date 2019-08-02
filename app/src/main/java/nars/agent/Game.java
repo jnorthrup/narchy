@@ -57,7 +57,7 @@ import static nars.time.Tense.ETERNAL;
  *
  */
 @Paper @Skill({"Game_studies", "Game_theory"})
-public class Game extends NARPart implements NSense, NAct, Timed {
+public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit when it updates */ implements NSense, NAct, Timed {
 
     private final Topic<NAR> eventFrame = new ListTopic();
 
@@ -79,7 +79,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
     public final PriNode attnReward, attnAction, attnSensor;
-    @Deprecated private final PriNode pri;
+
 
     /** the context representing the experience of the game */
     private final What what;
@@ -105,25 +105,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     }
 
     public Game(Term id, GameTime time, NAR nar) {
-        super(env(id));
-
-        this.nar = nar;
-//        this.nar = experience.nar;
-
-        this.id = id;
-
-        this.what = nar.the(id, true);
-
-        this.time = time;
-
-        this.pri = what.pri;
-        this.attnAction = new PriNode($.inh(id,ACTION)).branch(PriNode.Branch.Equal).merge(PriNode.Merge.Multiply);
-        this.attnSensor = new PriNode($.inh(id,SENSOR)).branch(PriNode.Branch.Equal).merge(PriNode.Merge.Multiply);
-        this.attnReward = new PriNode($.inh(id,REWARD)).branch(PriNode.Branch.Equal).merge(PriNode.Merge.Multiply);
-
-        add(time.clock(this));
-
-        //experience.add(this);
+        this(time, id ,nar);
         nar.start(this);
     }
 
@@ -145,14 +127,16 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
         this.time = time;
 
-        this.pri = new PriNode(this.id).branch(PriNode.Branch.Equal);
-        this.attnAction = new PriNode($.inh(id,ACTION)).merge(PriNode.Merge.Multiply);
-        this.attnSensor = new PriNode($.inh(id,SENSOR)).merge(PriNode.Merge.Multiply);
-        this.attnReward = new PriNode($.inh(id,REWARD)).merge(PriNode.Merge.Multiply);
+        PriNode pri = what.pri;
+
+        this.attnAction = nar.control.input((Term)$.inh(id,ACTION), PriNode.Merge.Plus,
+            pri, nar.goalPriDefault);
+        this.attnSensor = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.Plus,
+            pri, nar.beliefPriDefault);
+        this.attnReward = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.Plus,
+            pri, nar.beliefPriDefault, nar.goalPriDefault);
 
         add(time.clock(this));
-
-        //experience.add(this);
     }
 
     @Override
@@ -242,25 +226,25 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     private void addAttention(PriNode target, Object s) {
         if (s instanceof VectorSensor) {
 
-            nar.control.parent(((VectorSensor) s).attn, target);
+            nar.control.input(((VectorSensor) s).attn, target);
         } else if (s instanceof Signal) {
 
             if (s instanceof ScalarSignal)
-                nar.control.parent(((ScalarSignal) s).attn, target);
+                nar.control.input(((ScalarSignal) s).attn, target);
             else
                 throw new TODO();
 
         } else if (s instanceof Reward) {
 
-            nar.control.parent(((Reward) s).attn, target);
+            nar.control.input(((Reward) s).attn, target);
         } else if (s instanceof GameAction) {
 
-            nar.control.parent(((GameAction) s).attn, target);
+            nar.control.input(((GameAction) s).attn, target);
         } else if (s instanceof BiPolarAction) {
 
-            nar.control.parent(((BiPolarAction) s).attn, target);
+            nar.control.input(((BiPolarAction) s).attn, target);
         } else if (s instanceof PriNode)
-            nar.control.parent(((PriNode) s), target);
+            nar.control.input(((PriNode) s), target);
         else
             throw new TODO();
     }
@@ -292,15 +276,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
      */
     //@Override
     protected void starting(NAR nar) {
-        nar.control.add(pri);
 
-        nar.control.parent(attnAction, this.pri, nar.goalPriDefault);
-
-        nar.control.parent(attnSensor, this.pri, nar.beliefPriDefault);
-
-        /* TODO avg */
-
-        nar.control.parent(attnReward, this.pri, nar.goalPriDefault);
 
         sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.start((NARPart) s));
 
@@ -317,10 +293,7 @@ public class Game extends NARPart implements NSense, NAct, Timed {
     @Override
     public boolean delete() {
         if (super.delete()) {
-            nar.control.remove(pri);
-            nar.control.remove(attnAction);
-            nar.control.remove(attnSensor);
-            nar.control.remove(attnReward);
+            nar.control.removeAll(attnAction, attnSensor, attnReward);
             return true;
         }
         return false;
@@ -432,8 +405,8 @@ public class Game extends NARPart implements NSense, NAct, Timed {
 
     }
 
-    public Game pri(float v) {
-        pri.amp(v);
+    @Deprecated public Game pri(float v) {
+        what.pri.amp(v);
         return this;
     }
 

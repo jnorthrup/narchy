@@ -143,7 +143,7 @@ public class AttentionUI {
             }
 
             public void commit() {
-                float nextPri = p.pri();
+                float nextPri = p.pri.amp();
                 //System.out.println(p + " "+ nextPri);
                 set(nextPri);
             }

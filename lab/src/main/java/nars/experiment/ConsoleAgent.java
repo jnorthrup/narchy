@@ -188,14 +188,14 @@ public class ConsoleAgent extends GameX {
 
             PriNode charAttn = new PriNode(id);
 
-            nar().control.parent(charAttn, attnSensor);
+            input(charAttn, attnSensor);
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Term XY = $.p($.the(x), $.the(y));
                     PriNode xy = new PriNode(XY);
 
-                    nar().control.parent(xy, charAttn);
+                    input(xy, charAttn);
 
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
@@ -206,11 +206,9 @@ public class ConsoleAgent extends GameX {
                         int yy = y;
 
                         //HACK
-                        nar().control.parent(
-                                (((ScalarSignal)(charMatrix[x][y][i] = sense(
-                                    xya,
-                                    () -> chars[xx][yy] == a))).attn),
-                                xy);
+                        input((PriNode) (((ScalarSignal)(charMatrix[x][y][i] = sense(
+                            xya,
+                            () -> chars[xx][yy] == a))).attn), xy);
 
                     }
                 }

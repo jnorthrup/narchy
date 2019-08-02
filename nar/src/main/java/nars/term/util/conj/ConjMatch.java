@@ -31,9 +31,9 @@ public enum ConjMatch { ;
 
     static final int varBits =
         VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit;
+        //VAR_DEP.bit | VAR_INDEP.bit;
+        //VAR_DEP.bit;
 
-    //VAR_DEP.bit | VAR_INDEP.bit;
-    //VAR_DEP.bit;
     public static final Atom BEFORE = Atomic.atom("conjBefore");
     public static final Atom AFTER = Atomic.atom("conjAfter");
 

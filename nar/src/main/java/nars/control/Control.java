@@ -20,8 +20,10 @@ import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
 import nars.task.NALTask;
+import nars.term.Term;
 import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Arrays;
@@ -79,21 +81,12 @@ import java.util.Arrays;
 
     private final NAR nar;
 
-
-
-    private final float updatePeriods =
-            1;
-            //2;
-
-    private final DurLoop updater;
+    public final DurLoop loop;
 
     public Control(NAR nar) {
         this.nar = nar;
 
-
-
-        updater = nar.onDur(this::update);
-        updater.durs(updatePeriods);
+        loop = nar.onDur(this::update);
     }
 
     private void update() {
@@ -221,6 +214,10 @@ import java.util.Arrays;
     public boolean remove(PriNode p) {
         return graph.removeNode(p);
     }
+    public void removeAll(PriNode... p) {
+        for (PriNode pp:p)
+            remove(pp);
+    }
 
 
     public Why newCause(Object name) {
@@ -243,15 +240,24 @@ import java.util.Arrays;
         }
     }
 
-    @Deprecated public PriNode parent(PriNode attn, PriNode... parent) {
-        assert(parent.length>0);
-        //    public PriNode parent(NAR n, PriNode... parent) {
+    /** attach a target to a source directly */
+    public final PriNode input(PriNode target, PriNode source) {
+        return input(target, null, source);
+    }
+
+    /** attach a target to multiple source through a merge function */
+    public final PriNode input(Term target, PriNode.Merge mode, PriNode... sources) {
+        return input(new PriNode(target), mode, sources);
+    }
+
+    private PriNode input(PriNode target, @Nullable PriNode.Merge mode, PriNode... sources) {
+        if (mode!=null)
+            target.input(mode);
+
         MapNodeGraph<PriNode, Object> g = graph;
-
-        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(attn);
-        attn.parent(parent, g, thisNode);
-
-        return attn;
+        NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(target);
+        target.parent(sources, g, thisNode);
+        return target;
     }
 
     static final class TaskChannel extends CauseChannel<Task> {

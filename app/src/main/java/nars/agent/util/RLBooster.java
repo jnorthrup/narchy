@@ -45,7 +45,7 @@ public class RLBooster  {
 
     public final Game env;
     public final Agent agent;
-    public final FloatRange conf = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange conf = new FloatRange(0.1f, 0f, 1f);
     public final float[] input;
     final int inD, outD;
     final GameAction[] actions;
@@ -195,11 +195,11 @@ public class RLBooster  {
 //        long end = env.now(); //+ dur/2;
 //        //HACK
 //        int dur = nar.dur();
-        long now = nar.time();
+        long now = env.now;
 
         int dtDither = nar.dtDither();
-        long start = Tense.dither(env.now, dtDither, -1);
-        long end = Tense.dither(Math.round(env.now + env.durPhysical()), dtDither, +1);
+        long start = Tense.dither(now, dtDither, -1);
+        long end = Tense.dither(Math.round(now + env.durPhysical()), dtDither, +1);
 
         if (end < start)
             return;
@@ -221,8 +221,8 @@ public class RLBooster  {
             //nothing action, or otherwise beyond range of action buttons
             return ;
         }
-        int A = a / (actionDiscretization-1);
-        int level = a % (actionDiscretization-1);
+        int A = a / (actionDiscretization);
+        int level = a % (actionDiscretization);
 
 //        float OFFfreq =
 //                //0f;
@@ -237,23 +237,26 @@ public class RLBooster  {
 //        long nextEnd = nextStart + range;
         //long nextStart = start, nextEnd = end;
 
+        //TODO modify Agent API to provide a continuous output vector and use that to interpolate across the different states
 
         List<Task> e = new FasterList(actions.length);
-        int aa = 0;
-
         for (int o = 0; o < actions.length; o++ ) {
             float freq;
             if (o == A) {
-                freq = actionDiscretization > 2 ? (((float)(level+1))/(actionDiscretization-1)) : 1;
+                freq = actionDiscretization > 2 ? (((float)level)/(actionDiscretization-1)) : 1;
             } else{
-                freq = 0;
+                //freq = 0;
+                freq = actionDiscretization > 2 ? Float.NaN : 0;
             }
-            Truth t = $.t(freq, conf);
-            Task tt =
+
+            if (freq==freq) {
+                Truth t = $.t(freq, conf);
+                Task tt =
                     new SignalTask(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
-                    //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
+                //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
                 tt.pri(nar.priDefault(GOAL));
                 e.add(tt);
+            }
         }
 
         in.acceptAll(e, w);

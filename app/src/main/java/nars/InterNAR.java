@@ -185,7 +185,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
 
 
     private static byte ttl(Task x) {
-        return (byte) (1 + Util.lerp(x.priElseZero() /* * (1f + x.qua())*/, 2, 5));
+        return (byte) (1 + Util.lerpInt(x.priElseZero() /* * (1f + x.qua())*/, 2, 5));
     }
 
 

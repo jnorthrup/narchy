@@ -20,9 +20,6 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class ImplicationNetworkTest {
 
-    private static final Term a = $.the("a");
-    private static final Term b = $.the("b");
-    private static final Term c = $.the("c");
 
     int cycles = 800;
 
@@ -32,8 +29,13 @@ class ImplicationNetworkTest {
         new BeliefContradictionDetector(n);
     }
 
+    final Term a = $.the("a");
+    final Term b = $.the("b");
+    final Term c = $.the("c");
+
     @Test
     void testEternal_A_PosBelief_ToBC() {
+
 
 
 
@@ -220,3 +222,4 @@ class ImplicationNetworkTest {
     }
 
 }
+

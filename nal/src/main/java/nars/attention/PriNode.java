@@ -1,5 +1,6 @@
 package nars.attention;
 
+import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
@@ -7,6 +8,7 @@ import jcog.math.FloatRange;
 import jcog.pri.PLink;
 import nars.$;
 import nars.term.Term;
+import org.eclipse.collections.api.block.function.primitive.DoubleDoubleToDoubleFunction;
 
 public class PriNode extends PLink<Term> {
 
@@ -14,7 +16,7 @@ public class PriNode extends PLink<Term> {
      * amplitude, factor, boost, relative priority among peers
      * TODO use separate PriNode as the factor
      * */
-    public final FloatRange amp = new FloatRange(1f, 0.01f, 1f /* 2f */);
+    public final FloatRange amp = new FloatRange(0.5f, 0, 1f);
 
     @Deprecated transient private Node<PriNode, Object> _node;
 
@@ -78,46 +80,48 @@ public class PriNode extends PLink<Term> {
     }
 
     public enum Merge {
-        Add {
+        Plus {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
-                final double[] pSum = {0};
-
-                in.forEach((Node<PriNode, Object> n) -> {
-                    PriNode nn = n.id();
-                    float p = nn.priComponent();
-                    if (p == p) {
-                        pSum[0] += p;
-                    }
-                });
-                return pSum[0];
+                return reduce(in, 0, Double::sum);
             }
         },
-        Multiply {
+        And {
             @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
-                final double[] p = {1};
-
-                in.forEach((Node<PriNode, Object> n) -> {
-                    PriNode nn = n.id();
-                    float c = nn.priComponent();
-                    if (c == c) {
-                        p[0] *= c;
-                    }
-                });
-                return p[0];
+                return reduce(in, 1, (p, c) -> p * c);
             }
-        };
+        },
+        Or {
+            @Override public double merge(Iterable<? extends Node<PriNode, Object>> in) {
+                return reduce(in, 0, Util::or);
+            }
+        }
+        ;
+
+        /** @param f f(accumulator, nodePri) */
+        protected static double reduce(Iterable<? extends Node<PriNode, Object>> in, double accum, DoubleDoubleToDoubleFunction f) {
+            for (Node<PriNode, Object> n : in) {
+                PriNode nn = n.id();
+                float c = nn.priComponent();
+                if (c == c)
+                    accum = f.applyAsDouble(accum, c);
+            }
+            return accum;
+        }
 
         abstract public double merge(Iterable<? extends Node<PriNode, Object>> in);
     }
 
-    Merge merge = Merge.Add;
+    Merge input = Merge.Plus;
     protected Branch branch = Branch.One_Div_N;
 
-    public PriNode merge(Merge m) {
-        this.merge = m;
+    /** how the incoming priority is combined from sources */
+    public PriNode input(Merge m) {
+        this.input = m;
         return this;
     }
-    public PriNode branch(Branch b) {
+
+    /** how the priority will be shared/distributed to children */
+    public PriNode output(Branch b) {
         this.branch = b;
         return this;
     }
@@ -130,7 +134,7 @@ public class PriNode extends PLink<Term> {
         float pri;
         if (node.edgeCount(true,false) > 0) {
             Iterable<? extends Node<PriNode, Object>> in = neighbors(graph, true, false);
-            pri = (float)merge.merge(in);
+            pri = (float) input.merge(in);
         } else {
             pri = 0; //disconnected
         }
@@ -190,7 +194,7 @@ public class PriNode extends PLink<Term> {
         public Constant(String name, float value) {
             super(name, value);
             this.value = value;
-            branch(Branch.Equal);
+            output(Branch.Equal);
         }
 
         @Override

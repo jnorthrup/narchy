@@ -1,8 +1,15 @@
 
-    //imagine hypothetical goal cause (bridge from Goal to Belief)
+    //hypothesize goal cause (bridge from Goal to Belief)
     G, G, task("!") |- (#X ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
-    //imagine hypothetical goal consequence (bridge from Goal to Belief)
-    G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+
+    //hypothesize goal consequence (bridge from Goal to Belief)
+    //G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+
+    //hypothesize goal co-occurrence (bridge from Goal to Belief)
+    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+    G, G, task("!") |- --(--polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Goal, Goal:StructuralDeductionDepolarized, Time:Task)
+    G, G, task("!") |- --(--polarizeTask(G) && #X), (Punctuation:Goal, Goal:StructuralDeductionDepolarized, Time:Task)
 
     //sustain goal
     //G, G, task("!") |-         ((  polarizeTask(G) && ?1) ==> G) , (Punctuation:Question)

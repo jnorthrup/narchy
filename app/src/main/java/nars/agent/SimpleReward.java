@@ -3,6 +3,7 @@ package nars.agent;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.attention.AttnBranch;
+import nars.attention.PriNode;
 import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
@@ -68,7 +69,7 @@ public class SimpleReward extends ScalarReward {
             }
         };
         if (!concept.attn.equals(attn))
-            nar().control.parent(concept.attn, attn);
+            input((PriNode) concept.attn, attn);
         return concept;
     }
 

@@ -6,7 +6,6 @@ import jcog.Texts;
 import jcog.math.FloatAveragedWindow;
 import jcog.pri.Prioritizable;
 import nars.NAR;
-import nars.attention.PriNode;
 import nars.attention.What;
 import nars.term.Term;
 import nars.time.event.WhenInternal;
@@ -51,7 +50,7 @@ import static nars.time.Tense.TIMELESS;
     "Action_axiom",
     "Norm_(artificial_intelligence)"
 })
-abstract public class How extends NARPart implements Prioritizable {
+abstract public class How extends PriNARPart implements Prioritizable {
 
     public static final Logger logger = Log.logger(How.class);
 
@@ -62,7 +61,6 @@ abstract public class How extends NARPart implements Prioritizable {
      * TODO varHandle
      */
     public final AtomicBoolean busy;
-    public final PriNode pri;
 
     FloatAveragedWindow utilization = new FloatAveragedWindow(8, 0.5f).clear(1);
 //    final AtomicHistogram utilizationPct = new AtomicHistogram(1, 100000, 3);
@@ -105,24 +103,13 @@ abstract public class How extends NARPart implements Prioritizable {
 
     protected How(Term id, NAR nar) {
         super(id);
-        this.pri = new PriNode(this.id);
         this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
                 singleton() ? new AtomicBoolean(false) : null;
         if (nar != null)
             nar.start(this);
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-        nar.control.add(pri);
-    }
 
-    @Override
-    protected void stopping(NAR nar) {
-        nar.control.remove(pri);
-        super.stopping(nar);
-    }
 
 
     /** by default, causable are singleton.

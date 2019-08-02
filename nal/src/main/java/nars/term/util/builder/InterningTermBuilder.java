@@ -35,7 +35,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 12;
+    public static final int volMaxDefault = 10;
     private static final int ATOM_INTERNING_LENGTH_MAX = 10;
 
     /**
@@ -54,7 +54,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     protected final int volInternedMax;
 
     final Function<InternedSubterms, Subterms> subterms, anonSubterms;
-    final Function<InternedCompoundByComponents, Term>[] terms;
+    final Function<InternedCompoundByComponents, Term>[] terms = new Function[ops.length];
 
     private final String id;
 
@@ -87,7 +87,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
 
-        terms = new Function[ops.length];
+
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];

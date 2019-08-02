@@ -171,7 +171,8 @@ abstract public class GameX extends Game {
             Exe.invokeLater(() -> {
 
                 float _fps = 24;
-                new MetaAgent.SelfMetaAgent(n, _fps).pri(0.1f);
+                MetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps).addRLBoost();
+                self.pri(0.1f);
 
                 n.parts(Game.class).forEach(g -> {
                     if (!(g instanceof MetaAgent)) {
@@ -279,8 +280,8 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                512,
-                                new PriBuffer.BagTaskBuffer(1024, 0.33f /* valve */))
+                                1024,
+                                new PriBuffer.BagTaskBuffer(1024, 0.5f /* valve */))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -367,17 +368,7 @@ abstract public class GameX extends Game {
 //        Gridding g = new Gridding();
 //        g.add(NARui.game(meta));
 //
-//        if (rl) {
-//            meta.what().pri(0.05f);
-//            RLBooster metaBoost = new RLBooster(meta, (i, o) ->
-//                    //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
-//                    new DQN3(i, o, Map.of(
-//
-//                    )),
-//                    4, 4, false);
-//            meta.curiosity.rate.set(0);
-//            g.add(NARui.rlbooster(metaBoost));
-//        }
+
 
 
         //n.start(new SpaceGraphPart(() -> g, 500, 500));
@@ -616,9 +607,9 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 8;
-        float momentum = 0.9f;
-        float explorationRate = 0.2f;
+        int gHist = 4;
+        float momentum = 0.66f;
+        float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

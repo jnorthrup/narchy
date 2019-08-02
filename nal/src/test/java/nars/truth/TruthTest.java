@@ -1,10 +1,13 @@
 package nars.truth;
 
 import jcog.Util;
+import jcog.random.XoRoShiRo128PlusRandom;
 import jcog.random.XorShift128PlusRandom;
 import nars.NAL;
 import nars.truth.func.TruthFunctions;
 import org.junit.jupiter.api.Test;
+
+import java.util.Random;
 
 import static nars.$.t;
 import static nars.NAL.truth.TRUTH_EPSILON;
@@ -189,4 +192,22 @@ class TruthTest {
 ////                        TruthFunctions2.post(t(1, 0.9f), t(0.65f, 0.9f), true, 0).expectation()
 ////        );
 //    }
+
+    /** a sanity test, but an algebraic proof would suffice instead */
+    @Test void testAssociativityOfOrFunction() {
+        Random rng = new XoRoShiRo128PlusRandom(1);
+        for (int i = 0; i < 100; i++) {
+            float a = rng.nextFloat(), b = rng.nextFloat(), c = rng.nextFloat();
+            assertEquals(
+                Util.or(Util.or(a, b), c),
+                Util.or(Util.or(a, c), b),
+                0.01f
+            );
+            assertEquals(
+                Util.or(Util.or(a, b), c),
+                Util.or(Util.or(a, c), b),
+                0.01f
+            );
+        }
+    }
 }
