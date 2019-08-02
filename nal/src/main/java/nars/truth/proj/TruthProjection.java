@@ -187,6 +187,8 @@ abstract public class TruthProjection extends TaskList {
 
 		//assert (minComponents >= 1);
 
+		MetalBitSet conflict = MetalBitSet.bits(32); //assert(size() < 32);
+
 		MetalLongSet e = null;
 		main: while (!isEmpty()) {
 
@@ -208,25 +210,57 @@ abstract public class TruthProjection extends TaskList {
 
 			Task[] items = this.items;
 
-			overlapDisjoint:
+
 			for (int i = 0; i < ss; i++) { //descending
-				if (!valid(i))
+				double ie = evi[i];
+				if (!valid(ie))
 					continue;
 				Task ii = items[i];
+
+				conflict.clear();
+				double eviConflict = 0;  //double eviWith = 0;
 				for (int j = ss - 1; j > i; j--) { //ascending, j will be weaker
-					if (!valid(j))
+					double je = evi[j];
+					if (!valid(je))
 						continue;
 					Task jj = items[j];
 					if (Stamp.overlap(ii, jj)) {
-						remove(j);
-						if (--remain < minComponents) {
-							clear();
-							return null;
+						conflict.set(j);
+						eviConflict += je;
+					} /*else
+						eviWith += je;*/
+				}
+				if (eviConflict > 0) {
+
+					//cost benefit analysis of keeping I or removing the J's that conflict
+					if (eviConflict > ie) {
+
+						//remove i
+						if (--remain >= minComponents) {
+							remove(i);
+							continue main;
+						} else {
+							clear(); return null; //fail
 						}
-						continue main;
+
+					} else {
+						//remove the conflicts
+						remain -= conflict.cardinality();
+						if (remain >= minComponents) {
+							for (int k = ss-1; k > i; k--) {
+								if (conflict.get(k)) {
+									remove(k);
+								}
+							}
+							continue main;
+						} else {
+							clear(); return null; //fail
+						}
 					}
+
 				}
 			}
+
 			if (needStamp) {
 				if (e != null) e.clear();
 				else e = new MetalLongSet(remain * STAMP_CAPACITY);
@@ -659,7 +693,7 @@ abstract public class TruthProjection extends TaskList {
 			if (u0 != ETERNAL) {
 				if (start == ETERNAL) {
 					//override eternal range with the entire calculated union
-					start = u0;
+					this.start = u0;
 					this.end = u1;
 					changed = true;
 				} else {
