@@ -580,7 +580,7 @@ public class Builtin {
     private static void registerOperators(NAR nar) {
 
 
-        nar.addOp(BeliefAtom, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence()).priSet(nn.priDefault(BELIEF)))
+        nar.addOp(Task.BeliefAtom, (x, nn) -> Task.tryTask(x.term().sub(0).sub(0), BELIEF, $.t(1f, nn.confDefault(BELIEF)), (term, truth) -> NALTask.the(term, BELIEF, truth, nn.time(), ETERNAL, ETERNAL, nn.evidence()).priSet(nn.priDefault(BELIEF)))
         );
 
 

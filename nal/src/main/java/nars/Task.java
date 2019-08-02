@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.Log;
 import jcog.TODO;
 import jcog.Util;
 import jcog.math.LongInterval;
@@ -21,6 +20,8 @@ import nars.task.util.TaskRegion;
 import nars.task.util.TasksRegion;
 import nars.term.Variable;
 import nars.term.*;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.TermedDelegate;
 import nars.term.var.VarIndep;
@@ -33,7 +34,6 @@ import nars.truth.proj.TruthIntegration;
 import nars.truth.util.EvidenceEvaluator;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Comparator;
@@ -49,7 +49,12 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable {
 
     Task[] EmptyArray = new Task[0];
-    Logger logger = Log.logger(Task.class);
+    Atom BeliefAtom = new Atom.AtomChar((char)BELIEF);
+    Atom GoalAtom =  new Atom.AtomChar((char)GOAL);
+    Atom QuestionAtom =  new Atom.AtomChar((char)QUESTION);
+    Atom QuestAtom =  new Atom.AtomChar((char)QUEST);
+    Atom Que = Atomic.atom(String.valueOf((char) QUESTION) + (char) QUEST);
+
     Term VAR_DEP_1 = $.varDep(1);
     Term VAR_DEP_2 = $.varDep(2);
     Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
@@ -64,8 +69,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                     x.term().concept()
                             .hashCode())
             .thenComparing((Task x) -> -x.priElseZero());
+;
 
-    static boolean equal(Task thiz, Object that) {
+	static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
                 ((that instanceof Task && thiz.hashCode() == that.hashCode() && Task.equal(thiz, (Task) that)));
     }
@@ -593,12 +599,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         } while (x != null);
     }
 
-    static void error(Prioritizable t, Prioritizable x, Throwable ee) {
-        if (t == x)
-            Task.logger.error("{} {}", x, ee);
-        else
-            Task.logger.error("{}->{} {}", t, x, ee);
-    }
+
 
     /** TODO make Iterable<Task> x version so that callee's avoid constructing Task[] only for this */
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {

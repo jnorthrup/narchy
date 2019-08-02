@@ -302,13 +302,6 @@ public enum Op {
     public static TermBuilder terms = HeapTermBuilder.the;
 
 
-    public static final Atom BeliefAtom = new Atom.AtomChar((char)BELIEF); //HACK
-    public static final Atom GoalAtom =  new Atom.AtomChar((char)GOAL); //HACK
-    public static final Atom QuestionAtom =  new Atom.AtomChar((char)QUESTION); //HACK
-    public static final Atom QuestAtom =  new Atom.AtomChar((char)QUEST); //HACK
-    public static final Atom Que = Atomic.atom(String.valueOf((char) QUESTION) + (char) QUEST);
-
-
     static {
         for (Op o : Op.values()) {
             int l = o.minLevel;
@@ -567,25 +560,25 @@ public enum Op {
 
     public static Atomic puncAtom(byte b) {
         switch (b) {
-            case BELIEF: return BeliefAtom;
-            case QUESTION: return QuestionAtom;
-            case GOAL: return GoalAtom;
-            case QUEST: return QuestAtom;
+            case BELIEF: return Task.BeliefAtom;
+            case QUESTION: return Task.QuestionAtom;
+            case GOAL: return Task.GoalAtom;
+            case QUEST: return Task.QuestAtom;
         }
         return Int.the(0);
     }
 
     public static Task believe(Term x) {
-        return new CommandTask($.func(BeliefAtom, x));
+        return new CommandTask($.func(Task.BeliefAtom, x));
     }
     public static Task ask(Term x) {
-        return new CommandTask($.func(QuestionAtom, x));
+        return new CommandTask($.func(Task.QuestionAtom, x));
     }
     public static Task want(Term x) {
-        return new CommandTask($.func(GoalAtom, x));
+        return new CommandTask($.func(Task.GoalAtom, x));
     }
     public static Task how(Term x) {
-        return new CommandTask($.func(QuestAtom, x));
+        return new CommandTask($.func(Task.QuestAtom, x));
     }
 
     public final Term the(Subterms s) {

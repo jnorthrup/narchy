@@ -3,7 +3,6 @@ package nars.nal.nal7;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.term.Term;
 import nars.truth.Truth;
 import org.apache.commons.math3.exception.NotStrictlyPositiveException;
 import org.apache.commons.math3.exception.NumberIsTooSmallException;
@@ -14,8 +13,6 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NAL7ImplTruthProjectionTest {
-
-    static final Term y = $.the("y");
 
     @Test
     void test1() {
@@ -40,7 +37,7 @@ class NAL7ImplTruthProjectionTest {
                 n.run(end + 1);
 
                 double[] max = new MyBrentOptimizer(0.001f, 0.01, 0, end, (t) -> {
-                    Truth u = n.beliefTruth(y, Math.round(t));
+                    Truth u = n.beliefTruth($.the("y"), Math.round(t));
                     if (u == null)
                         return -1f;
                     return u.conf();

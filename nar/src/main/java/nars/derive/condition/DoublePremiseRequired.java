@@ -2,6 +2,7 @@ package nars.derive.condition;
 
 import nars.$;
 import nars.Op;
+import nars.Task;
 import nars.derive.model.PreDerivation;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
@@ -15,9 +16,9 @@ public class DoublePremiseRequired extends AbstractPred<PreDerivation> {
 
     public DoublePremiseRequired(boolean ifBelief, boolean ifGoal, boolean ifQuestionOrQuest) {
         super($.func(key,
-                ifBelief ? BeliefAtom : Op.EmptyProduct,
-                ifGoal ? GoalAtom : Op.EmptyProduct,
-                ifQuestionOrQuest ? Op.Que : Op.EmptyProduct));
+                ifBelief ? Task.BeliefAtom : Op.EmptyProduct,
+                ifGoal ? Task.GoalAtom : Op.EmptyProduct,
+                ifQuestionOrQuest ? Task.Que : Op.EmptyProduct));
         this.ifBelief = ifBelief;
         this.ifGoal = ifGoal;
         this.ifQuestionOrQuest = ifQuestionOrQuest;
