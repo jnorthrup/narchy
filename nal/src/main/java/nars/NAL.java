@@ -93,13 +93,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
     public static final float ANSWER_DETAIL =
             //0.25f;
-            0.333f;
-            //0.5f;
+            //0.333f;
+            0.5f;
             //0.75f;
             //1f;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 3f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
@@ -721,7 +721,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 1;
+        public static final int TIMEGRAPH_ITERATIONS = 4;
 
 
         @Range(min = 0, max = 64)

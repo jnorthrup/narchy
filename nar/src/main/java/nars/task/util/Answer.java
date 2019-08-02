@@ -271,7 +271,8 @@ public final class Answer implements Timed, Predicate<Task> {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
+                                return (float) (pri / (1 + t.minTimeTo(start, end)));
+                                //return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
                             return Float.NaN;
                         };
 
