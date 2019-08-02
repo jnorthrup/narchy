@@ -2,6 +2,7 @@ package nars.derive.op;
 
 import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
+import jcog.decide.Roulette;
 import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Op;
@@ -15,13 +16,10 @@ import nars.term.util.Image;
 import nars.time.Tense;
 import nars.time.TimeGraph;
 import nars.truth.Truth;
-import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -66,10 +64,10 @@ public class Occurrify extends TimeGraph {
     }
 
     private final Derivation d;
-    int absolutePoints = 6;
-    int novelPoints = 1;
-    int noXternalPoints = 3;
-    int sameAsPatternRootPoints = 1;
+    int absolutePoints = 10;
+    int noXternalPoints = 10;
+    //    int novelPoints = 1;
+//    int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;
     private transient int patternVolumeMin, patternVolumeMax;
 
@@ -176,36 +174,27 @@ public class Occurrify extends TimeGraph {
         if (ss == 1)
             return s0;
 
-        ObjectIntHashMap<Event> e = new ObjectIntHashMap(ss);
-        int maxPoints = 0;
-        for (int i = 0; i < ss; i++) {
-            Event si = s.get(i);
-            Term st = si.id;
-            int points = 0;
-            if (occ && si instanceof Absolute) {
-                points += occ ? absolutePoints : (absolutePoints/2);
-                if (node(s)==null)
-                    points += novelPoints;
-            }
-            if (st.equalsRoot(pattern)) {
-                points += sameAsPatternRootPoints;
-            }
-            if (!st.hasXternal()) {
-                points += occ ? noXternalPoints : (noXternalPoints*2);
-            }
+        float[] score = new float[ss];
+        for (int i = 0; i < ss; i++)
+            score[i] = score(s.get(i), occ);
+        return solutions.get(Roulette.selectRoulette(ss, i->score[i], random()));
+    }
 
-            if (points >= maxPoints) {
-                e.put(si, points);
-                maxPoints = points;
-            }
+    private float score(Event e, boolean occ) {
+        Term st = e.id;
+        float points = 1;
+        if (e instanceof Absolute) {
+            points += occ ? (absolutePoints*2) : absolutePoints;
+//            if (node(st)==null)
+//                points += novelPoints;
         }
-
-        int finalMaxPoints = maxPoints;
-        MutableList<ObjectIntPair<Event>> l = e.keyValuesView().select(x -> x.getTwo() == finalMaxPoints).toList();
-        int ls = l.size();
-        return l.get(ls > 1 ? random().nextInt(ls) : 0).getOne();
-
-
+//        if (st.equalsRoot(pattern)) {
+//            points += sameAsPatternRootPoints;
+//        }
+        if (!st.hasXternal()) {
+            points += occ ? noXternalPoints : (noXternalPoints*2f);
+        }
+        return points;
     }
 
     @Override

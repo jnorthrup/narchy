@@ -1049,7 +1049,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         UnifiedSet<Event> ae = new UnifiedSet(2);
         //solveExact(a, ax -> {
-        solveOccurrence(shadow(a), false, ax -> {
+        solveOcc(a, false, ax -> {
             if (ax instanceof Absolute) ae.add(ax);
             return true;
         });
@@ -1084,7 +1084,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
             } else {
                 ae.clear();
 
-                solveOccurrence(shadow(b), false, bx -> {
+                solveOcc(b, false, bx -> {
                     if ((bx instanceof Absolute) && ae.add(bx)) {
                         for (Event ax : aa) {
                             if (!solveDTAbsolutePair(x, ax, bx, each))
@@ -1142,7 +1142,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         long dur = durMerge(a, b);
 
         if (o == CONJ) {
-            return solveOccurrence(terms.conjMerge(a.id, dt, b.id), aWhen, dur, each);
+            return solveOcc(terms.conjMerge(a.id, dt, b.id), aWhen, dur, each);
         } else {
             //for impl and other types cant assume occurrence corresponds with subject
 
@@ -1156,17 +1156,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
     private boolean solveDT(Compound x, long start, int dt, long dur,
                             @Nullable List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, boolean dir, Predicate<Event> each) {
 
-        return solveOccurrence(dt(x, dir, dt), start, dur, each);
+        return solveOcc(dt(x, dir, dt), start, dur, each);
     }
 
-    private boolean solveOccurrence(Term y, long start, long dur, Predicate<Event> each) {
+    private boolean solveOcc(Term y, long start, long dur, Predicate<Event> each) {
         if (!termsEvent(y))
             return true; //keep trying
 
         return start != TIMELESS ?
                 each.test(event(y, start, (start != ETERNAL) ? start + dur : start, false))
                 :
-                solveOccurrence(y, true, each);
+                solveOcc(y, true, each);
     }
 
     /**
@@ -1310,21 +1310,15 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     private boolean solveAll(Term x, Predicate<Event> each) {
 
-        if (!x.hasXternal()) {
+        if (x.hasXternal()) {
 
-            return
-                solveRootMatches(x, false, each) &&
-                solveRootMatches(x, true, each) &&
-                solveOccurrence(x, true, each);
-
+            return x.subterms().hasXternal() ? solveDTAndOccRecursive(x, each) //inner XTERNAL
+                   :
+                   solveDtAndOccTop(x, each)  //top-level XTERNAL
+            ;
         } else {
 
-            return (!x.subterms().hasXternal() ||
-                           solveDTAndOccRecursive(x, each)) //inner XTERNAL
-                   &&
-                   solveDtAndOccTop(x, each)  //top XTERNAL
-                   &&
-                   solveRootMatches(x, false, each); //last resort for xternal
+            return solveOcc(x, true, each);
 
         }
     }
@@ -1550,30 +1544,28 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
     /* solve xternal occurring at the root of a compound (without any internal xternal remaining) */
     private boolean solveDtAndOccTop(Term x, Predicate<Event> each) {
-        if (!validPotentialSolution(x)) return true;
-
         return ((x instanceof Compound && x.dt() == XTERNAL) ?
                 solveDT((Compound) x, y -> !validPotentialSolution(y.id) ||
                         (y instanceof Absolute ?
                                 each.test(y)
                                 :
-                                solveOccurrence(y, true, each)))
+                                solveOcc(y.id, true, each)))
                 :
                 //dont solve if more specific dt solved further in previous solveDT call
-                solveOccurrence(x, true, each)
+                solveOcc(x, true, each)
         );
     }
 
     /**
      * solves the start time for the given Unsolved event.  returns whether callee should continue iterating
      */
-    private boolean solveOccurrence(Term x, boolean finish, Predicate<Event> each) {
-        if (!validPotentialSolution(x)) return true;
-
-        return solveOccurrence(shadow(x), finish, each);
+    private boolean solveOcc(Term x, boolean finish, Predicate<Event> each) {
+        return solveRootMatches(x, false, each) &&
+               solveRootMatches(x, true, each) &&
+               solveOcc(shadow(x), finish, each);
     }
 
-    private boolean solveOccurrence(Event x, boolean finish, Predicate<Event> each) {
+    private boolean solveOcc(Event x, boolean finish, Predicate<Event> each) {
         assert (!(x instanceof Absolute));
 
         int solutionsBefore = solutions.size();
@@ -1598,7 +1590,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         if (!solutions.isEmpty()) {
             Term t = x.id;
             /** clone the list because modifying solutions while iterating will cause infinite loop */
-            return new FasterList(Iterables.filter(solutions.list, s ->
+            return new FasterList<>(Iterables.filter(solutions.list, s ->
                     (s instanceof Absolute && (s.start() != ETERNAL) && s.id.equals(t) && !s.equals(x)))
             ).allSatisfy(s -> {
 
@@ -1612,17 +1604,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                             for (Iterator<FromTo<Node<Event, TimeSpan>, TimeSpan>> iterator = ne.edgeIterator(false, true); iterator.hasNext(); ) {
                                 FromTo<Node<Event, TimeSpan>, TimeSpan> ee = iterator.next();
                                 long dt = ee.id().dt;
-                                if (dt != 0 && dt != ETERNAL && dt != TIMELESS) {
-                                    if (ee.loop()) {
-//                                        if (random().nextBoolean())
-//                                            dt = -dt;
-                                        Absolute as = (Absolute) s;
-                                        if (!each.test(as.shift(+dt)))
-                                            return false;
-                                        if (!each.test(as.shift(-dt)))
-                                            return false;
+                                if (dt != 0 && dt != ETERNAL && dt != TIMELESS && ee.loop()) {
 
-                                    }
+                                    if (random().nextBoolean())
+                                        dt = -dt; //vary order
+
+                                    Absolute as = (Absolute) s;
+                                    if (!each.test(as.shift(+dt)))
+                                        return false;
+                                    if (!each.test(as.shift(-dt)))
+                                        return false;
+
                                 }
                             }
                         }
