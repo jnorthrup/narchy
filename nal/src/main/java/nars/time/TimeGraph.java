@@ -1312,7 +1312,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         if (!x.hasXternal()) {
 
-            return solveRootMatches(x, each) && solveOccurrence(x, true, each);
+            return
+                solveRootMatches(x, false, each) &&
+                solveRootMatches(x, true, each) &&
+                solveOccurrence(x, true, each);
 
         } else {
 
@@ -1321,12 +1324,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                    &&
                    solveDtAndOccTop(x, each)  //top XTERNAL
                    &&
-                   solveRootMatches(x, each); //last resort for xternal
+                   solveRootMatches(x, false, each); //last resort for xternal
 
         }
     }
 
-    private boolean solveRootMatches(Term x, Predicate<Event> each) {
+    private boolean solveRootMatches(Term x, boolean root, Predicate<Event> each) {
 
 //        Op xop = x.op();
         //boolean xVar = xop.var;
@@ -1338,15 +1341,22 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
         //if (xop == et.op() && (x.equals(et))) { //|| (!xVar && !et.op().var && x.unify(et, u.clear())))) {
 
+        Term y;
+        if (!root) {
+            y = x;
+        } else {
+            Term xr = x.root();
+            if (x.equals(xr))
+                return true; //useless
+            y = xr;
+        }
 
-        Collection<Event> s = events(x);
+        Collection<Event> s = events(y);
         if (s != null) {
             int ss = s.size();
             if (ss == 1) {
                 Event z = s.iterator().next();
-                if (isRootMatch(x, z))
-                    if (!each.test(z))
-                        return false;
+                if (!tryRootMatch(x, z, root, each)) return false;
             } else {
 
                 //w/ fair shuffle
@@ -1354,7 +1364,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 FasterList<Event> toTry = null; //buffer to avoid concurrent modification exception
 
                 for (Event z : s) {
-                    if (isRootMatch(x, z)) {
+                    if (z instanceof Absolute) {
                         if (toTry == null) toTry = new FasterList(ss);
                         toTry.add(z);
                     }
@@ -1364,7 +1374,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
                 if (toTry != null) {
                     if (toTry.size() > 1)
                         toTry.shuffleThis(random());
-                    return toTry.allSatisfy(each::test);
+                    return toTry.allSatisfy(z -> tryRootMatch(x, z, root, each));
                 }
             }
         }
@@ -1376,9 +1386,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
         return true;
     }
 
-    private boolean isRootMatch(Term x, Event z) {
-        return z instanceof Absolute || !z.id.equals(x);
+    private boolean tryRootMatch(Term x, Event z, boolean isRoot, Predicate<Event> each) {
+        if (z instanceof Absolute) {
+            if (!each.test(!isRoot ?
+                    z //solution as-is
+                    :
+                    //put 'x' (with no xternals) where 'z' (has xternals) is
+                    event(x, z.start(), z.end())))
+                return false;
+        }
+        return true;
     }
+
 
     private boolean solveDTAndOccRecursive(Term x, Predicate<Event> each) {
 

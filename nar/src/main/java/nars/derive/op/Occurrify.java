@@ -5,7 +5,6 @@ import jcog.data.set.ArrayHashSet;
 import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Op;
-import nars.Task;
 import nars.derive.model.Derivation;
 import nars.term.Compound;
 import nars.term.Neg;
@@ -67,7 +66,7 @@ public class Occurrify extends TimeGraph {
     }
 
     private final Derivation d;
-    int absolutePoints = 5;
+    int absolutePoints = 6;
     int novelPoints = 1;
     int noXternalPoints = 3;
     int sameAsPatternRootPoints = 1;
@@ -75,12 +74,7 @@ public class Occurrify extends TimeGraph {
     private transient int patternVolumeMin, patternVolumeMax;
 
 
-//    /**
-//     * re-used
-//     */
-//    private final transient UnifiedSet<Term>
-//            nextNeg = new UnifiedSet<>(8, 0.99f),
-//            nextPos = new UnifiedSet(8, 0.99f);
+
     private int ttl = 0;
     private Term pattern;
 
@@ -172,31 +166,24 @@ public class Occurrify extends TimeGraph {
         }
     }
 
-    private static long[] occ(Task t) {
-        return new long[]{t.start(), t.end()};
-    }
 
     @Nullable
-    private Event selectSolution(boolean occ, ArrayHashSet<Event> solutions) {
-        int ss = solutions.size();
+    private Event selectSolution(boolean occ, ArrayHashSet<Event> s) {
+        int ss = s.size();
         if (ss == 0)
             return null;
+        Event s0 = s.get(0);
         if (ss == 1)
-            return solutions.get(0);
-        if (ss == 2) {
-            //quick test
-            if ((solutions.get(0) instanceof Absolute) && (solutions.get(1) instanceof Relative))
-                return solutions.get(0);
-        }
+            return s0;
 
         ObjectIntHashMap<Event> e = new ObjectIntHashMap(ss);
         int maxPoints = 0;
         for (int i = 0; i < ss; i++) {
-            Event s = solutions.get(i);
-            Term st = s.id;
+            Event si = s.get(i);
+            Term st = si.id;
             int points = 0;
-            if (occ && s instanceof Absolute) {
-                points += absolutePoints;
+            if (occ && si instanceof Absolute) {
+                points += occ ? absolutePoints : (absolutePoints/2);
                 if (node(s)==null)
                     points += novelPoints;
             }
@@ -204,11 +191,11 @@ public class Occurrify extends TimeGraph {
                 points += sameAsPatternRootPoints;
             }
             if (!st.hasXternal()) {
-                points += noXternalPoints;
+                points += occ ? noXternalPoints : (noXternalPoints*2);
             }
 
             if (points >= maxPoints) {
-                e.put(s, points);
+                e.put(si, points);
                 maxPoints = points;
             }
         }
