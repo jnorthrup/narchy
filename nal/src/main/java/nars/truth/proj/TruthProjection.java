@@ -104,41 +104,37 @@ abstract public class TruthProjection extends TaskList {
 	@Nullable
 	public final MetalLongSet commit(boolean shrink, int minResults, boolean needStamp, NAL n) {
 		int s = size();
-		if (s < minResults) {
-			return null;
-		} else if (s == 1) {
-			return only(shrink, needStamp);
+		if (s < minResults) return null;
+
+		int r = refocus(shrink);
+		if (r < minResults) return null;
+
+		if (r == 1) return commit1(needStamp);
+		else return commitN(shrink, minResults, needStamp, n);
+	}
+
+	public @Nullable MetalLongSet commitN(boolean shrink, int minResults, boolean needStamp, NAL n) {
+		MetalLongSet e = filter(minResults, shrink, needStamp);
+
+		int activePreCull = active();
+
+		float eviFactor = intermpolateAndCull(n); assertFinite(eviFactor);
+		if (eviFactor < ScalarValue.EPSILONcoarse) {
+			e = null;
 		} else {
-			MetalLongSet e = filterCyclicN(minResults, shrink, needStamp);
-
-			int activeBefore = active();
-
-			float c = intermpolateAndCull(n);
-			assertFinite(c);
-			eviFactor = c;
-
-			if (eviFactor < ScalarValue.EPSILON) {
+			this.eviFactor = eviFactor;
+			int activePostCull = active();
+			if (activePostCull < minResults) {
 				e = null;
-			} else {
-				int activeAfterIntermpolateCull = activeUpdate(shrink);
-				if (activeAfterIntermpolateCull < minResults) {
-					e = null;
-				} else if (shrink && activeAfterIntermpolateCull != activeBefore) {
-					e = filterCyclicN(minResults, shrink, needStamp);
-				}
+			} else if (shrink && activePostCull != activePreCull) {
+				refocus(shrink);
+				e = filter(minResults, shrink, needStamp);
 			}
-
-			//activeUpdate(shrink); //just ensure updated
-
-			return needStamp ? e : null;
 		}
+
+		return needStamp ? e : null;
 	}
 
-
-	@Deprecated
-	private int activeUpdate(boolean shrink) {
-		return evi != null ? active() : refocus(shrink);
-	}
 
 	int active() {
 		if (size == 0)
@@ -182,36 +178,26 @@ abstract public class TruthProjection extends TaskList {
 		return count;
 	}
 
-	@Nullable
-	private MetalLongSet filterCyclicN(int minComponents, boolean shrink, boolean needStamp) {
+	/** removes weakest tasks having overlapping evidence with stronger ones */
+	@Nullable private MetalLongSet filter(int minComponents, boolean shrink, boolean needStamp) {
 
 		//assert (minComponents >= 1);
 
 		MetalBitSet conflict = MetalBitSet.bits(32); //assert(size() < 32);
 
 		MetalLongSet e = null;
-		main: while (!isEmpty()) {
+		int remain = active();
 
-			int remain = refocus(shrink);
+		@Nullable double[] evi = this.evi;
+		Task[] items = this.items;
 
-			if (remain < minComponents) {
-				//OOPS
-				// TODO undo
-				clear();
-				return null;
-			}
-			if (remain == 1) {
-				//throw new WTF();
-				e = needStamp ? Stamp.toMutableSet(firstValid()) : null;
-				break;
-			}
+		int ss;
+		main: while (remain > 0 && (ss=size()) > 0) {
 
-			int ss = size();
-
-			Task[] items = this.items;
 
 
 			for (int i = 0; i < ss; i++) { //descending
+
 				double ie = evi[i];
 				if (!valid(ie))
 					continue;
@@ -261,15 +247,30 @@ abstract public class TruthProjection extends TaskList {
 				}
 			}
 
+			remain = refocus(shrink);
+
+			if (remain < minComponents) {
+				//OOPS
+				// TODO undo
+				clear();
+				return null;
+			}
+
+			if (remain == 1) {
+				//throw new WTF();
+				e = needStamp ? Stamp.toMutableSet(firstValid()) : null;
+				break;
+			}
+
 			if (needStamp) {
-				if (e != null) e.clear();
+				if (e!=null) e.clear();
 				else e = new MetalLongSet(remain * STAMP_CAPACITY);
 				for (int i = 0; i < ss; i++) {
 					if (valid(i))
 						e.addAll(stamp(i));
 				}
-			} else
-			    e = null;
+			}
+
             break; //done
 
 		}
@@ -444,8 +445,8 @@ abstract public class TruthProjection extends TaskList {
 		return e;
 	}
 
-	private MetalLongSet only(boolean shrink, boolean provideStamp) {
-		return refocus(shrink) > 0 && provideStamp ? Stamp.toMutableSet(firstValid()) : null;
+	private MetalLongSet commit1(boolean provideStamp) {
+		return provideStamp ? Stamp.toMutableSet(firstValid()) : null;
 	}
 
 	private Task firstValid() {
@@ -699,11 +700,11 @@ abstract public class TruthProjection extends TaskList {
 				} else {
 					boolean stretch = false; //TODO param
 					if (stretch) {
-						if (start < u0 && u0 < this.end) {
+						if (start < u0) {
 							start = u0;
 							changed = true;
 						}
-						if (this.end > u1 && u1 > start) {
+						if (this.end > u1) {
 							this.end = u1;
 							changed = true;
 						}
@@ -716,14 +717,10 @@ abstract public class TruthProjection extends TaskList {
 				}
 			}
 
-			if (changed)
-				return update();
+			return changed || evi == null ? update() : s;
+		} else {
+			return evi == null ? update() : s;
 		}
-
-		if (evi == null)
-		    return update();
-        else
-		    return active();
 	}
 
 

@@ -341,7 +341,8 @@ public class PoleCart extends GameX {
     }
 
     float power(float a) {
-        return Util.sqrt(a);
+        return a;
+        //return Util.sqrt(a);
     }
 
     public void initUnipolar() {
