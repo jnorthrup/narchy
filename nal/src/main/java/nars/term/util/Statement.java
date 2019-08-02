@@ -26,7 +26,7 @@ public class Statement {
 //    private static final int mobiusExcept = Op.or(/*CONJ, */VAR_PATTERN);
 
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate) {
-        return statement(B, op, dt, subject, predicate, 3);
+        return statement(B, op, dt, subject, predicate, 6);
     }
 
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate, int depth) {

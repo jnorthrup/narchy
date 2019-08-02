@@ -30,6 +30,7 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,13 +70,13 @@ public enum Op {
     INH("-->", 1, Args.Two) {
         @Override
         public Term the(TermBuilder b, int dt, Term[] u) {
-            return b.statement(this, dt, u);
+            return statement(b, this, dt, u);
         }
     },
     SIM("<->", true, 2, Args.Two) {
         @Override
         public Term the(TermBuilder b, int dt, Term[] u) {
-            return b.statement(this, dt, u);
+            return statement(b, this, dt, u);
         }
     },
 
@@ -172,7 +173,7 @@ public enum Op {
     IMPL("==>", 5, Args.Two) {
         @Override
         public Term the(TermBuilder b, int dt, Term... u) {
-            return b.statement(this, dt, u);
+            return statement(b, this, dt, u);
         }
     },
 
@@ -736,4 +737,11 @@ public enum Op {
             super("Invalid punctuation: " + c);
         }
     }
+    public final Term statement(TermBuilder b, Op op, int dt, Term[] u) {
+        if (u.length != 2)
+            throw new TermException(op + " requires 2 arguments, but got: " + Arrays.toString(u), op, dt, u);
+
+        return b.statement(op, dt, u[0], u[1]);
+    }
+
 }

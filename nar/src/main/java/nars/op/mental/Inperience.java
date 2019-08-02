@@ -2,10 +2,7 @@ package nars.op.mental;
 
 import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatRange;
-import nars.$;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
@@ -20,13 +17,13 @@ import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableTransform;
+import nars.time.Tense;
 import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 
@@ -47,6 +44,9 @@ public class Inperience extends How {
     public static final Atomic want = Atomic.the("want");
     public static final Atomic wonder = Atomic.the("wonder");
     public static final Atomic evaluate = Atomic.the("plan");
+
+    private static final int VOL_SAFETY_MARGIN = 4;
+
     public final FloatRange priFactor = new FloatRange(0.1f, 0, 2f);
 
     private final CauseChannel<Task> in;
@@ -96,44 +96,47 @@ public class Inperience extends How {
         float dur = w.dur();
         double window = 1.0;
 
-        //int dither = n.dtDither();
-        long start = /*Tense.dither*/((long)Math.floor(now - window * dur/2));//, dither);
-        long end = /*Tense.dither*/((long)Math.ceil(now + window * dur/2));//, dither);
+        int dither = n.dtDither();
+        long start = Tense.dither((long)Math.floor(now - window * dur/2), dither);
+        long end = Tense.dither((long)Math.ceil(now + window * dur/2), dither);
         When when = new When(start, end, dur, nar);
 
         int volMax = n.termVolMax.intValue();
-        int volMaxPre = (int) Math.max(1, Math.ceil(volMax * 0.5f));
+        int volMaxPre = volMax-VOL_SAFETY_MARGIN;
         float beliefConf = n.confDefault(BELIEF);
         Random rng = w.random();
 
-        Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
+        //Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
+        //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+        StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
 
-        StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+        w.sampleUnique(rng, (TaskLink l) -> {
 
-        w.sampleUnique(rng, (TaskLink tl) -> {
+            Term x = l.from();
+            if (x.volume() <= volMaxPre && filter.addIfMissing(x)) {
 
-            Task t = tl.get(when, taskFilter);
-            if (t != null && filter.addIfMissing(t)) {
+                Task t = l.get(when);
+                if (t != null) {
 
-                Task u = null;
-                if (t.isBeliefOrGoal()) {
-                    Term r = reifyBeliefOrGoal(t, n);
+                    Task u = null;
+                    if (t.isBeliefOrGoal()) {
+                        Term r = reifyBeliefOrGoal(t, n);
 
-                    if ((r = validReification(r, volMax))!=null) {
-                        u = new InperienceTask(r, $.t(1,
-                                beliefConf * (t.isNegative()?
-                                        t.truth().expectationNeg() : t.truth().expectation())), t);
+                        if ((r = validReification(r, volMax)) != null) {
+                            u = new InperienceTask(r, $.t(1,
+                                beliefConf * (t.isNegative() ?
+                                    t.truth().expectationNeg() : t.truth().expectation())), t);
+                        }
+                    } else {
+                        Term r = reifyQuestion(t.term(), t.punc(), n);
+                        if ((r = validReification(r, volMax)) != null)
+                            u = new InperienceTask(r, $.t(1, Math.max(NAL.truth.TRUTH_EPSILON, beliefConf * t.priElseZero())), t);
                     }
-                } else {
-                    Term r = reifyQuestion(t.term(), t.punc(), n);
-                    if ((r = validReification(r, volMax))!=null)
-                        u = new InperienceTask(r, $.t(1, beliefConf * 0.5f), t);
-                }
 
-                if (u != null) {
-                    u.pri(0); //HACK
-                    Task.fund(u, t, priFactor.floatValue(), true);
-                    w.accept(u);
+                    if (u != null) {
+                        Task.fund(u, t, priFactor.floatValue(), true);
+                        w.accept(u);
+                    }
                 }
             }
 

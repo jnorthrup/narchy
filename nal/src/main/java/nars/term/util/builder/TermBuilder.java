@@ -195,7 +195,7 @@ public abstract class TermBuilder implements TermConstructor {
         return term;
     }
 
-    protected Term statement(Op op, int dt, Term subject, Term predicate) {
+    public Term statement(Op op, int dt, Term subject, Term predicate) {
 //        try {
             return Statement.statement(this, op, dt, subject, predicate);
 //        } catch (StackOverflowError e) {
@@ -204,12 +204,6 @@ public abstract class TermBuilder implements TermConstructor {
 
     }
 
-    public final Term statement(Op op, int dt, Term[] u) {
-        if (u.length != 2)
-            throw new TermException(op + " requires 2 arguments, but got: " + Arrays.toString(u), op, dt, u);
-
-        return statement(op, dt, u[0], u[1]);
-    }
 
     /**
      * TODO option for instantiating CompoundLight base's in the bottom part of this
