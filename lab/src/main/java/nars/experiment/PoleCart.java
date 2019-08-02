@@ -124,7 +124,7 @@ public class PoleCart extends GameX {
             //200;
     public final FloatRange tau = new FloatRange(
             //0.007f, 0.001f, 0.02f
-                    0.015f, 0.001f, 0.05f
+                    0.025f, 0.001f, 0.05f
             );
     //0.01;
     //0.005;

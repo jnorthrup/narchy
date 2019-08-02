@@ -27,25 +27,31 @@ public class PostDerivable {
         if (p <= Float.MIN_NORMAL || !a.truth.test(d))
             return 0;
 
-        return d.what.derivePri.prePri(p, concTruth);
+        return d.what.derivePri.prePri(
+            p,
+            d.concTruth /* important: not this.concTruth which has not been set yet */
+        );
     }
 
     public float priSet(DeriveAction a, Derivation d) {
         float p = pri(a, d);
-        if ((this.pri = p) > Float.MIN_NORMAL) {
+        if (p > Float.MIN_NORMAL) {
             this.action = a;
             this.concTruth = d.concTruth;
             this.concPunc = d.concPunc;
             this.concSingle = d.concSingle;
             this.truthFunction = d.truthFunction;
+            return this.pri = p;
         } else {
+            this.pri = 0;
             this.action = null;
-            this.concTruth = null;
-            this.concPunc = 0;
-            this.concSingle = false;
-            this.truthFunction = null;
+            return 0;
+            //shouldnt be necessary to keep setting:
+//            this.concTruth = null;
+//            this.concPunc = 0;
+//            this.concSingle = false;
+//            this.truthFunction = null;
         }
-        return p;
     }
 
     @Deprecated public boolean apply(Derivation d) {

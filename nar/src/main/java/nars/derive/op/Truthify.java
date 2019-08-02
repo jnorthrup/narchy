@@ -106,6 +106,11 @@ public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
+        d.concTruth = null;
+        d.concSingle = false;
+        d.concPunc = 0;
+        d.truthFunction = null;
+
         boolean single;
         Truth t;
 

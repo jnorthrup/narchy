@@ -22,7 +22,6 @@ public class Pacman extends GameX {
                 //GameTime.durs(0.5f),
                 GameTime.fps(20f),
                 nar);
-        Gridding gg = new Gridding();
 
         this.g = new PacmanGame();
 

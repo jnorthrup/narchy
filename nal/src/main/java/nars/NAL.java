@@ -214,6 +214,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** probability of unifying subterms randomly (not using deterministic complexity heuristic ordering) */
     public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.05f;
 
+    /** seems safe and will reduce equivalent permutations cluttering tasklink bags */
+    public static final boolean TASKLINK_NORMALIZE_IMAGES = true;
 
 
     protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;

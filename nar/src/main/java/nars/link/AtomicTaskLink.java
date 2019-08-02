@@ -11,6 +11,7 @@ import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
+import nars.term.util.Image;
 import nars.term.util.TermException;
 
 
@@ -19,17 +20,18 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     public static AtomicTaskLink link(Term source, Term target) {
 
-        source =
-                source.concept();
-        //Image.imageNormalize(source).concept();
-        target = target != null ?
-                (
-                        NAL.TASKLINK_TARGET_CONCEPT && target instanceof Compound && target.op().conceptualizable ?
-                                target.concept()
-                                :
-                                target
-                )
-                : source //loop
+        if (NAL.TASKLINK_NORMALIZE_IMAGES) {
+            source = Image.imageNormalize(source);
+            if (target instanceof Compound)
+                target = Image.imageNormalize(target);
+        }
+
+        source = source.concept();
+        target = target == null ? source /* loop */ :
+            NAL.TASKLINK_TARGET_CONCEPT && target instanceof Compound && target.op().conceptualizable ?
+                    target.concept()
+                    :
+                    target
         ;
 
         if (source instanceof Bool)

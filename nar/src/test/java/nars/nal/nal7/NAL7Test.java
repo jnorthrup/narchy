@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 150;
+    private final static int cycles = 250;
 
     @Override
     protected NAR nar() {
@@ -225,7 +225,7 @@ public class NAL7Test extends NALTest {
     @Test
     void testShiftPlus() {
         test
-                .termVolMax(6)
+                .termVolMax(5)
                 .inputAt(1, "((x &&+1 y) ==>+1 z).")
                 .inputAt(3, "z. |")
                 .mustBelieve(cycles, "(x &&+1 y)", 1, 0.81f, 1)

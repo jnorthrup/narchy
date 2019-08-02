@@ -96,7 +96,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
 		return (Y) pre.put((B) x, pri,
 			merge(),
-			null
+			this::pressurize
 		);
 	}
 

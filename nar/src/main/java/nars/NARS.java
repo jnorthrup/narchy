@@ -148,7 +148,7 @@ public class NARS {
                 ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 
 
-                float p = 0.1f;
+                float p = 0.5f;
                 n.beliefPriDefault.amp(p);
                 n.goalPriDefault.amp(p);
                 n.questionPriDefault.amp(p);

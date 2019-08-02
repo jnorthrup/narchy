@@ -16,13 +16,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 250;
+    private final int cycles = 400;
 
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(6,6);
         n.termVolMax.set(6);
-        n.confMin.set(0.3f);
+        n.confMin.set(0.25f);
         return n;
     }
 
@@ -397,6 +397,7 @@ public class NAL5Test extends NALTest {
     @Test
     void contrapositionNeg() {
         test
+            .confMin(0.4f)
                 .believe("(--B ==> A)", 0.1f, 0.9f)
                 .mustBelieve(cycles, " (--A ==> B)",
                         0.1f, 0.42f /*0.36f*/);
@@ -436,11 +437,12 @@ public class NAL5Test extends NALTest {
 
         test
                 .termVolMax(12)
-                .confMin(0.75f)
+                .confMin(0.8f)
                 .believe("<(&&,(#x --> [flying]),(#x --> [withWings])) ==> a>")
                 .believe("(robin --> [flying])")
-                .mustBelieve(cycles, " ((robin-->[withWings])==>a)", 1.00f, 0.81f);
-        //.mustBelieve(cycles, " (((robin-->[flying])&&(robin-->[withWings]))==>a)", 1.00f, 0.81f);
+                //.mustBelieve(cycles, " ((robin-->[withWings])==>a)", 1.00f, 0.81f)
+                .mustBelieve(cycles, " (((robin-->[flying])&&(robin-->[withWings]))==>a)", 1.00f, 0.81f)
+        ;
 
     }
 
@@ -950,7 +952,7 @@ public class NAL5Test extends NALTest {
     void testConversionNeg() {
 
         test
-                .termVolMax(4).confMin(0.4f)
+                .termVolMax(4).confMin(0.45f)
                 .input("(x ==> y)?")
                 .input("(--y ==> x).")
                 .mustBelieve(cycles, "(x ==> y)", 0.0f, 0.47f)
@@ -961,7 +963,7 @@ public class NAL5Test extends NALTest {
     @Test
     void testConversionNeg3() {
         test
-                .termVolMax(5).confMin(0.4f)
+                .termVolMax(4).confMin(0.45f)
                 .input("(--x ==> y)?")
                 .input("(y ==> --x).")
                 .mustBelieve(cycles, "(--x ==> y)", 1f, 0.47f)

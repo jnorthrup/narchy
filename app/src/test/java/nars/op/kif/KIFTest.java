@@ -46,7 +46,7 @@ class KIFTest {
 
         new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
 
-        n.termVolMax.set(64);
+        n.termVolMax.set(32);
         n.beliefPriDefault.amp(0.01f);
 
 
@@ -62,13 +62,13 @@ class KIFTest {
         n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
         //n.input("$1.0 classIntersection(?1,?2)?");
+        //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-        //n.input("$1.0 (#1-->ComputerDisplay)!");
         n.input("$1.0 possesses(I,#everything)!");
         n.input("$1.0 benefits(#all, I)!");
-        n.run(1000);
-//        w.links.links.print();
+        n.run(100);
+        w.links.links.print();
 
 //        n.concepts().forEach(c -> System.out.println(c));
 

@@ -466,11 +466,7 @@ public class Derivation extends PreDerivation {
     }
 
     public void ready(int ttl) {
-        this.forEachMatch = null;
-        this.concTruth = null;
-        this.concPunc = 0;
-        this.concSingle = false;
-        this.truthFunction = null;
+
         this.evidenceDouble = evidenceSingle = null;
 
         setTTL(ttl);

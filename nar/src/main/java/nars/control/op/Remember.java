@@ -13,7 +13,6 @@ import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.task.AbstractTask;
 import nars.task.DynamicTruthTask;
-import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
@@ -243,7 +242,7 @@ public class Remember extends AbstractTask {
                 remember(prev); //if novel: relink, re-emit (but using existing or identical task)
             }
 
-            if (!identity && prev instanceof NALTask) {
+            if (!identity) {
 
                 //assert (!input.isDeleted()); //dont delete just yet
 
@@ -266,29 +265,35 @@ public class Remember extends AbstractTask {
      */
     private static boolean rememberFilter(Task prev, Task next, NAR n) {
 
-        if (next == prev)
-            return next.isInput();
+        boolean priChange = false;
+        if (next!=prev) {
+            float np = next.priElseNeg1();
+            float pp = prev.priElseNeg1();
+            float dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
 
-        float np = next.priElseNeg1();
-        float pp = prev.priElseNeg1();
-        float dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
-
-        if (dPriPct >= NAL.belief.REMEMBER_REPEAT_PRI_PCT_THRESHOLD) {
-            //priority enough
-            return true;
+            //priority change significant enough
+            if (dPriPct >= NAL.belief.REMEMBER_REPEAT_PRI_PCT_THRESHOLD) {
+                priChange = true;
+            }
         }
 
-        long nextCreation = next.creation();
-        long dDurCycles = Math.max(0, nextCreation - prev.creation());
-        float dCreationDurs = dDurCycles == 0 ? 0 : (dDurCycles / ((float) n.dtDither()));
 
-        if (dCreationDurs > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS) {
-            //novel enough
+        long prevCreation = prev.creation();
+        long nextCreation = prev != next ? next.creation() : n.time();
+
+        boolean novel = false;
+        if (!priChange) { //dont compare time if pri already detected changed
+            long dCycles = Math.max(0, nextCreation - prevCreation);
+            float dDithers = dCycles == 0 ? 0 : (dCycles / ((float) n.dtDither()));
+            novel = dDithers > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS;
+        }
+
+        if (priChange || novel) {
+            prev.setCreation(nextCreation); //renew creation
             return true;
         }
 
         return false;
-
     }
 
 //    /**
