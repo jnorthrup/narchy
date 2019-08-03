@@ -27,6 +27,8 @@ import java.util.function.Predicate;
 import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
+import static nars.truth.proj.TruthIntegration.eviFast;
+
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
     static final ToDoubleFunction<RLeaf<TaskRegion>> MostComponents = (n) -> {
@@ -229,79 +231,63 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
-                                         WeakestTask weakest,
+                                         WeakestTask theWeakest,
                                          MergeableRegion mergeableLeaf,
                                          Remember r) {
 
-        Task W = weakest.get();
+        Task weakest = theWeakest.get();
+        TruthProjection merging = null;
+        Task merged = null;
 
-        boolean mergeOrEvict = false;
-        Pair<Task, TruthProjection> AB = null;
         if (!mergeableLeaf.isEmpty()) {
-            RLeaf<TaskRegion> leaf = mergeableLeaf.get();
-            AB = Revision.merge(r.nar, true, 2, leaf.size, leaf.data);
+            Pair<Task, TruthProjection> AB = mergeLeaf(mergeableLeaf, r);
             if (AB != null) {
-                mergeOrEvict = true;
-
-
-                //mergeOrEvict = !weakest.accepted(ab);
-
-//                float mergeValue = taskStrength.floatValueOf();
-//                double mergeCost = AB.getTwo().sumOfFloat(t ->
-//                    (!t.valid()) ? 0 : taskStrength.floatValueOf(t.task()) //0 for a task not included in revision
-//                );
-//                valueMergeLeaf = (float) (+mergeValue - mergeCost);
+                if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), r))
+                    merged = null;
             }
         }
 
+        if (merged!=null)
+            merge(merged, merging, r, treeRW);
+        else
+            evict(weakest, r, treeRW);
 
-        if (mergeOrEvict) {
-            //merge leaf
-            TruthProjection abab = AB.getTwo();
+        return true;
+    }
 
-            Task m = Revision.afterMerge(AB); //call this before removing because it deletes the component's budgets
+    private static Pair<Task, TruthProjection> mergeLeaf(MergeableRegion mergeableLeaf, Remember r) {
+        RLeaf<TaskRegion> leaf = mergeableLeaf.get();
+        return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
+    }
 
-            for (int i = 0, ababSize = abab.size(); i < ababSize; i++) {
-                if (abab.valid(i)) {
-                    Task rr = abab.get(i);
-                    if (treeRW.remove(rr))
-                        r.forget(rr);
-                }
+    private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
+        long now = r.nar.time();
+        double weakEvictionValue = -eviFast(weakest, now);
+        double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
+
+        return mergeValue > weakEvictionValue;
+    }
+
+    private static void merge(Task merged, TruthProjection merging, Remember r, Space<TaskRegion> treeRW) {
+        for (int i = 0, ababSize = merging.size(); i < ababSize; i++) {
+            if (merging.valid(i)) {
+                Task rr = merging.get(i);
+                if (treeRW.remove(rr))
+                    r.forget(rr);
             }
-            if (treeRW.add(m)) {
-                r.remember(m);
-            } //else: possibly already contained the merger?
-            return true;
+        }
+        if (treeRW.add(merged)) {
+            r.remember(merged);
+        } //else: possibly already contained the merger?
+    }
+
+    private static void evict(Task weakest, Remember r, Space<TaskRegion> treeRW) {
+        if (treeRW.remove(weakest)) {
+            r.forget(weakest);
         } else {
-            //evict weakest
-            if (treeRW.remove(W)) {
-                r.forget(W);
-                return true;
-            } else {
-
-//            Spatialization model = ((RTree) treeRW).model;
-//            HyperRegion ww = model.bounds(W);
-//            List<Node<TaskRegion>> containingNodes = treeRW.root().streamNodesRecursively().filter((Node n) -> {
-//                return n.contains(W, ww, model);
-//            }).sorted(Comparators.byFloatFunction( w -> (float)w.bounds().cost())).collect(toList());
-//            if (!containingNodes.isEmpty()) {
-//
-//                HyperRegion tb = treeRW.root().bounds();
-//                System.out.println("tree bounds=" + tb);
-//                for (Node n : containingNodes) {
-//                    System.out.println("\t" + n + " bounds contained: " + tb.contains(n.bounds()));
-//                }
-//                treeRW.remove(W);
-//            }
-                if (treeRW.isEmpty())
-                    return true; //got deleted while compressing
-
-                throw new
-                        WTF();
-                //UnsupportedOperationException();
-            }
+            //tree may have been cleared/deleted while compressing.  if this isnt the case then someting unexpected happened
+            if (!treeRW.isEmpty()) throw new WTF();
         }
-
     }
 
     @Override

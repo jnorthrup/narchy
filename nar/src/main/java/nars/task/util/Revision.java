@@ -129,7 +129,7 @@ public enum Revision {;
     }
 
     /** truth revision task merge strategy */
-    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean dither, NAL nal) {
+    @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean ditherTruth, NAL nal) {
 
         TruthProjection p = nal.newProjection(ETERNAL, ETERNAL, 0).add(n, tasks);
 
@@ -141,7 +141,7 @@ public enum Revision {;
         double eviMin =
                 NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
 
-        Truth truth = p.truth(eviMin, dither, true, false, nal);
+        Truth truth = p.truth(eviMin, ditherTruth, true, false, nal);
         if (truth == null)
             return null;
 

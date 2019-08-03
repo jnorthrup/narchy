@@ -187,17 +187,16 @@ abstract public class TruthProjection extends TaskList {
 	/** removes weakest tasks having overlapping evidence with stronger ones */
 	@Nullable private MetalLongSet filter(int minComponents, boolean shrink, boolean needStamp) {
 
-		//assert (minComponents >= 1);
-
-		MetalBitSet conflict = MetalBitSet.bits(32); //assert(size() < 32);
 
 
-		int remain = active();
+		MetalBitSet.IntBitSet conflict = new MetalBitSet.IntBitSet(); //max 32
 
 
+		int remain;
+		int iterations = 0;
 
+		main: while ((remain = (iterations++ > 0 ? refocus(shrink) : active())) >= minComponents) {
 
-		main: while (remain >= minComponents) {
 			@Nullable double[] evi = this.evi;
 			Task[] items = this.items;
 
@@ -209,20 +208,20 @@ abstract public class TruthProjection extends TaskList {
 					continue;
 				Task ii = items[i];
 
-				conflict.clear();
-				double eviConflict = 0;  //double eviWith = 0;
+				conflict.x = 0;
+
+				double eviConflict = 0;
 				for (int j = ss - 1; j > i; j--) { //ascending, j will be weaker
 					double je = evi[j];
 					if (!valid(je))
 						continue;
-					Task jj = items[j];
-					if (Stamp.overlap(ii, jj)) {
-						conflict.set(j);
+					if (Stamp.overlap(ii, items[j])) {
+						conflict.setFast(j);
 						eviConflict += je;
-					} /*else
-						eviWith += je;*/
+					}
 				}
-				if (conflict.cardinality() > 0) {
+
+				if (conflict.x != 0) {
 
 					//cost benefit analysis of keeping I or removing the J's that conflict
 					if (eviConflict > ie) {
@@ -233,7 +232,6 @@ abstract public class TruthProjection extends TaskList {
 						}
 
 						evi[i] = 0;
-						remain = refocus(shrink);
 						continue main;
 					} else {
 						//remove the conflicts
@@ -243,22 +241,13 @@ abstract public class TruthProjection extends TaskList {
 						}
 
 						for (int k = ss-1; k > i; k--) {
-							if (conflict.get(k))
+							if (conflict.getFast(k))
 								evi[k] = 0;
 						}
-						remain = refocus(shrink);
 						continue main;
 					}
 
 				}
-			}
-
-
-			if (remain < minComponents) {
-				//OOPS
-				// TODO undo
-				clearFast();
-				return null;
 			}
 
             break; //done

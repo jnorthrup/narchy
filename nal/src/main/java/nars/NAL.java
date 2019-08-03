@@ -220,7 +220,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = false;
-    public static final boolean TASKLINK_ANSWER_GOAL = true;
+    public static final boolean TASKLINK_ANSWER_GOAL = false;
 
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;

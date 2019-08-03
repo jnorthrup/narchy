@@ -282,7 +282,7 @@ abstract public class MetalBitSet {
 
     public static final class IntBitSet extends MetalBitSet {
 
-        private int x;
+        public int x;
 
         public final int intValue() {
             return x;
@@ -315,18 +315,30 @@ abstract public class MetalBitSet {
         @Override
         public boolean get(int i) {
             assert(i < 32);
+            return getFast(i);
+        }
+
+        public boolean getFast(int i) {
             return (x & (1 << i)) != 0;
         }
 
         @Override
         public void set(int i) {
             assert(i < 32);
+            setFast(i);
+        }
+
+        public void setFast(int i) {
             x |= (1 << i);
         }
 
         @Override
         public void clear(int i) {
             assert(i < 32);
+            clearFast(i);
+        }
+
+        public void clearFast(int i) {
             x &= ~(1 << i);
         }
 

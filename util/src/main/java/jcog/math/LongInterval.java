@@ -1,5 +1,6 @@
 package jcog.math;
 
+import jcog.TODO;
 import jcog.WTF;
 
 import static java.lang.Math.max;
@@ -224,7 +225,8 @@ public interface LongInterval {
     }
 
     default long minTimeTo(long a) {
-        return minTimeTo(a,a); //HACK
+        //return minTimeTo(a,a); //HACK
+        throw new TODO("optimized impl");
     }
 
     /** if the task intersects (ex: occurrs during) the specified interval,
