@@ -5,6 +5,7 @@ import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
+import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Builtin;
 import nars.Narsese;
@@ -32,7 +33,8 @@ import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.TermTransform;
 import nars.truth.func.NALTruth;
-import nars.truth.func.TruthFunc;
+import nars.truth.func.TruthFunction;
+import nars.truth.func.TruthModel;
 import nars.unify.Unify;
 import nars.unify.constraint.*;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
@@ -100,33 +102,16 @@ public class PremiseRule extends ProxyTerm {
     final ImmutableSet<UnifyConstraint> CONSTRAINTS;
     final PREDICATE[] PRE;
     final Termify termify;
-    /**
-     * conclusion post-processing
-     */
-    private final TermTransform ConcTransform = new AbstractTermTransform.NegObliviousTermTransform() {
-        @Override
-        public Term applyPosCompound(Compound c) {
-
-            Term f = Functor.func(c);
-            if (f != Null) {
-                Subterms a = Functor.args(c);
-                if (f.equals(UniSubst.unisubst)) {
-                    Unifiable.constrainUnifiable(a, PremiseRule.this);
-                } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
-                    Unifiable.constraintEvent(a, PremiseRule.this, true);
-                } else if (f.equals(Derivation.SUBSTITUTE)) {
-                    Unifiable.constrainSubstitute(a, PremiseRule.this);
-                } else if (f.equals(Derivation.CONJ_WITHOUT)) {
-                    Unifiable.constraintEvent(a, PremiseRule.this, false);
-                }
-            }
-            return super.applyPosCompound(c);
-        }
-
-    };
 
 
-    public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
+    private final TermTransform ConcTransform = new ConclusionTransformer();
+
+
+    @Deprecated public PremiseRule(String ruleSrc) throws Narsese.NarseseException {
+        this(ruleSrc, NALTruth.the);
+    }
+
+    public PremiseRule(String ruleSrc, TruthModel truths) throws Narsese.NarseseException {
         super(
                 rule(ruleSrc)
         );
@@ -635,11 +620,11 @@ public class PremiseRule extends ProxyTerm {
         }
 
 
-        TruthFunc beliefTruthOp = NALTruth.get(beliefTruth);
+        TruthFunction beliefTruthOp = truths.get(beliefTruth);
         if (beliefTruth != null && beliefTruthOp == null)
             throw new RuntimeException("unknown BeliefFunction: " + beliefTruth);
 
-        TruthFunc goalTruthOp = NALTruth.get(goalTruth);
+        TruthFunction goalTruthOp = truths.get(goalTruth);
         if (goalTruth != null && goalTruthOp == null)
             throw new RuntimeException("unknown GoalFunction: " + goalTruth);
 
@@ -1119,41 +1104,45 @@ public class PremiseRule extends ProxyTerm {
         return y;
     }
 
-    /**
-     * untested
-     */
-    private void guardOpVolStruct(PremiseTermAccessor r, Term root) {
-        guardOpVolStruct(r, root, new ByteArrayList(6));
-    }
 
-    /**
-     * untested
-     */
-    private void guardOpVolStruct(PremiseTermAccessor r, Term root, ByteArrayList p) {
+    private void guardOpVolStruct(PremiseTermAccessor r, Term root) {
         if (root.op() == VAR_PATTERN)
             return;
 
-        byte[] pp = p.toByteArray(); //HACK
-        int depth = pp.length;
-        Term t = p.isEmpty() ? root : root.subPath(pp);
+        guardOpVolStruct(r, root, null);
+    }
+
+
+    private void guardOpVolStruct(PremiseTermAccessor r, Term root, @Nullable ByteArrayList p) {
+        Term t;
+        int depth;
+        byte[] pp;
+        if (p == null) {
+            pp = ArrayUtil.EMPTY_BYTE_ARRAY;
+            t = root;
+            depth = 0;
+        } else {
+            pp = p.toByteArray();
+            t = root.subPath(pp);
+            depth = pp.length;
+        }
 
         Op o = t.op();
         if (o == Op.VAR_PATTERN)
             return;
 
         Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
-//        int ts = t.structure() & (~Op.VAR_PATTERN.bit);
-//        pre.addAt(new TermMatchPred<>(new TermMatch.Is(to),  rr));
-//        pre.addAt(new TermMatchPred<>(new TermMatch.Has(ts, false /* all */, t.complexity()), rr));
+
         pre.add(new TermMatch<>(TermMatcher.matchTerm(t, depth), rr, depth));
 
         int n = t.subs();
         if (!o.commutative || (n == 1 && o!=CONJ)) {
+            if (p == null)
+                p = new ByteArrayList(8);
+
             for (byte i = 0; i < n; i++) {
                 p.add(i);
-                {
-                    guardOpVolStruct(r, root, p);
-                }
+                guardOpVolStruct(r, root, p);
                 p.popByte();
             }
         }
@@ -1297,6 +1286,30 @@ public class PremiseRule extends ProxyTerm {
 
     }
 
+    /**
+     * conclusion post-processing
+     */
+    private class ConclusionTransformer extends AbstractTermTransform.NegObliviousTermTransform {
+        @Override
+        public Term applyPosCompound(Compound c) {
+
+            Term f = Functor.func(c);
+            if (f != Null) {
+                Subterms a = Functor.args(c);
+                if (f.equals(UniSubst.unisubst)) {
+                    Unifiable.constrainUnifiable(a, PremiseRule.this);
+                } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
+                    Unifiable.constraintEvent(a, PremiseRule.this, true);
+                } else if (f.equals(Derivation.SUBSTITUTE)) {
+                    Unifiable.constrainSubstitute(a, PremiseRule.this);
+                } else if (f.equals(Derivation.CONJ_WITHOUT)) {
+                    Unifiable.constraintEvent(a, PremiseRule.this, false);
+                }
+            }
+            return super.applyPosCompound(c);
+        }
+
+    }
 }
 
 

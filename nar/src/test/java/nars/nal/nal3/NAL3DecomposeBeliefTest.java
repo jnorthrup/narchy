@@ -51,12 +51,12 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .believe(composed, 0.0f, 0.9f)
         ;
 
-        if (freq == 0 || freq == 1) {
-            //0.81 conf
-            test.mustBelieve(cycles, unknown, freq, 0.81f);
-        } else {
+//        if (freq == 0 || freq == 1) {
+//            //0.81 conf
+//            test.mustBelieve(cycles, unknown, freq, 0.81f);
+//        } else {
             test.mustBelieve(cycles, unknown, freq, freq, 0, 0.81f); //up to 0.81 conf
-        }
+//        }
 
 //        float confThresh = 0.15f;
 //        if (freq > 0)

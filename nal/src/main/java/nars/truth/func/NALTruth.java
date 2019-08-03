@@ -8,8 +8,6 @@ import nars.truth.Truth;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
 import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.map.MutableMap;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -27,7 +25,7 @@ import static nars.truth.func.TruthFunctions2.weak;
  * <patham9> if you look at the graph you see why
  * <patham9> its both rules which allow the conclusion to be stronger than the premises
  */
-public enum NALTruth implements TruthFunc {
+public enum NALTruth implements TruthFunction {
 
 
     Deduction() {
@@ -376,7 +374,7 @@ public enum NALTruth implements TruthFunc {
     Identity() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunc.identity(T, minConf);
+            return TruthFunction.identity(T, minConf);
         }
     },
 
@@ -384,7 +382,7 @@ public enum NALTruth implements TruthFunc {
     BeliefIdentity() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunc.identity(B, minConf);
+            return TruthFunction.identity(B, minConf);
         }
     },
 
@@ -495,41 +493,22 @@ public enum NALTruth implements TruthFunc {
 
     ;
 
-    private static final ImmutableMap<Term, TruthFunc> funcs;
+    public final static TruthModel the = new TruthModel(NALTruth.values());
 
-    static {
-        MutableMap<Term, TruthFunc> h = new UnifiedMap<>(NALTruth.values().length);
-        TruthFunc.permuteTruth(NALTruth.values(), h);
-        funcs = h.toImmutable();
-    }
 
-    private final boolean single;
-    private final boolean overlap;
+
+
+    private final boolean single, overlap;
+
     NALTruth() {
         Field f = Reflect.on(getClass()).field(name()).get();
         this.single = f.isAnnotationPresent(SinglePremise.class);
         this.overlap = f.isAnnotationPresent(AllowOverlap.class);
     }
 
-    /** polarity symmetry, determined by task */
-    private static Truth pt(Truth T, Truth B, NAL n, float minConf, NALTruth which) {
-        boolean neg = T.isNegative();
-        if (neg) {
-            T = T.neg();
-            B = B.neg();
-        }
-        Truth tb = which.apply(T, B, minConf, n);
-        return tb != null ? neg ? tb.neg() : tb : null;
-    }
-
     private static float confDefault(NAL m) {
         //TODO choose this according to belief/goal
         return m.confDefault(BELIEF);
-    }
-
-    @Nullable
-    public static TruthFunc get(Term a) {
-        return funcs.get(a);
     }
 
     @Override
@@ -543,7 +522,7 @@ public enum NALTruth implements TruthFunc {
     }
 
 
-    final public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL m) {
+    public final @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL m) {
         return apply(task, belief, NAL.truth.TRUTH_EPSILON, m);
     }
 
@@ -552,6 +531,7 @@ public enum NALTruth implements TruthFunc {
     }
 
 }
+
 //    IntersectionSym() {
 //        @Override
 //        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {

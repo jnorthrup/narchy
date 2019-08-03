@@ -11,7 +11,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunc;
+import nars.truth.func.TruthFunction;
 
 import java.util.function.Predicate;
 
@@ -24,7 +24,7 @@ import static nars.Op.*;
  */
 public class Truthify extends AbstractPred<Derivation> {
 
-    private final TruthFunc belief;
+    private final TruthFunction belief;
 
     /**
      * mode:
@@ -35,7 +35,7 @@ public class Truthify extends AbstractPred<Derivation> {
     transient final byte beliefMode, goalMode, questionMode;
     boolean beliefOverlap, goalOverlap;
 
-    private final TruthFunc goal;
+    private final TruthFunction goal;
     public final BeliefProjection beliefProjection;
 
     /**
@@ -47,7 +47,7 @@ public class Truthify extends AbstractPred<Derivation> {
     private final Predicate<Derivation> timeFilter;
 
 
-    private Truthify(Term id, PuncMap punc, TruthFunc belief, TruthFunc goal, boolean questionSingle, Occurrify.OccurrenceSolver time) {
+    private Truthify(Term id, PuncMap punc, TruthFunction belief, TruthFunction goal, boolean questionSingle, Occurrify.OccurrenceSolver time) {
         super(id);
         this.punc = punc;
         this.timeFilter = time.filter();
@@ -76,7 +76,7 @@ public class Truthify extends AbstractPred<Derivation> {
 
     private static final Atomic TRUTH = Atomic.the("truth");
 
-    public static Truthify the(PuncMap punc, TruthFunc beliefTruthOp, TruthFunc goalTruthOp, boolean questionSingle, Occurrify.OccurrenceSolver time) {
+    public static Truthify the(PuncMap punc, TruthFunction beliefTruthOp, TruthFunction goalTruthOp, boolean questionSingle, Occurrify.OccurrenceSolver time) {
 
         FasterList<Term> args = new FasterList(4);
 
@@ -127,7 +127,7 @@ public class Truthify extends AbstractPred<Derivation> {
                         return false;
                 }
 
-                TruthFunc f = punc == BELIEF ? belief : goal;
+                TruthFunction f = punc == BELIEF ? belief : goal;
                 if ((t = f.apply(
                         d.taskTruth,
                         beliefTruth,

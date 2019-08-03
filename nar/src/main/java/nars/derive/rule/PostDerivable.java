@@ -3,7 +3,7 @@ package nars.derive.rule;
 import nars.derive.model.Derivation;
 import nars.derive.model.PreDerivation;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunc;
+import nars.truth.func.TruthFunction;
 
 public class PostDerivable {
 
@@ -12,7 +12,7 @@ public class PostDerivable {
     public float pri;
     public byte concPunc;
     public Truth concTruth;
-    public TruthFunc truthFunction;
+    public TruthFunction truthFunction;
     public boolean concSingle;
     private DeriveAction action;
 

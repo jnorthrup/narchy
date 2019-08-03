@@ -35,7 +35,7 @@ import nars.term.util.transform.InstantFunctor;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunc;
+import nars.truth.func.TruthFunction;
 import org.eclipse.collections.impl.map.mutable.MapAdapter;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
@@ -166,7 +166,7 @@ public class Derivation extends PreDerivation {
     @Deprecated public transient boolean concSingle;
     @Deprecated public transient Truth concTruth;
     @Deprecated public transient byte concPunc;
-    @Deprecated public transient TruthFunc truthFunction;
+    @Deprecated public transient TruthFunction truthFunction;
 
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;

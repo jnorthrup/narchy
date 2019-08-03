@@ -1,71 +1,27 @@
 package nars.truth.func;
 
 import nars.NAL;
-import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Map;
 
-
-public interface TruthFunc {
-
-    static void permuteTruth(TruthFunc[] values, Map<Term, TruthFunc> table) {
-        for (TruthFunc t : values) {
-
-            NegatedTaskTruth negatedTask = new NegatedTaskTruth(t);
-
-            add(table, t, "");
-            add(table, t, "PP");
-
-            add(table, negatedTask, /*N*/ "");
-            add(table, negatedTask, /**/"P");
-
-            if (!t.single()) {
-                add(table, new NegatedBeliefTruth(t),"" /*PN*/);
-                add(table, new NegatedTaskBeliefTruth(t), "" /*NN*/);
-            }
-
-            DepolarizedTruth dpt = new DepolarizedTruth(t);
-            table.put(Atomic.the(t + "Depolarized"), dpt);
-//            table.put(Atomic.the(t + "DepolarizedX"), new SwappedTruth(dpt));
-
-
-
-        }
-    }
-
-    /** addss it and the swapped */
-    static void add(Map<Term, TruthFunc> table, TruthFunc t, String postfix) {
-        String name = t + postfix;
-        table.put(Atomic.the(name), t);
-//        table.put(Atomic.the(name + "X"), new SwappedTruth(t));
-    }
+public interface TruthFunction {
 
     /**
-     *
-     * @param task
-     * @param belief
      * @param minConf if confidence is less than minConf, it can return null without creating the Truth instance;
      *                if confidence is equal to or greater, then it is valid
-     * @param n
-     * @return
      */
     @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n);
 
-   
-
-
     boolean allowOverlap();
+
     boolean single();
 
-    abstract class ProxyTruthFunc implements TruthFunc {
-        final TruthFunc o;
+    abstract class ProxyTruthFunction implements TruthFunction {
+        final TruthFunction o;
         private final boolean allowOverlap, single;
 
-        ProxyTruthFunc(TruthFunc o) {
-
+        ProxyTruthFunction(TruthFunction o) {
             this.o = o;
             this.allowOverlap = o.allowOverlap();
             this.single = o.single();
@@ -81,32 +37,29 @@ public interface TruthFunc {
 
     }
 
-//    /** swaps the task truth and belief truth */
-//    final class SwappedTruth extends ProxyTruthFunc {
-//
-//        public SwappedTruth(TruthFunc o) {
-//            super(o);
-//        }
-//
-//        @Override
-//        public
-//        @Nullable
-//        Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL n, float minConf) {
-//            return o.apply(belief, task, n, minConf);
-//        }
-//
-//
-//        @Override
-//        public String toString() {
-//            return o.toString() + 'X';
-//        }
-//
-//    }
+    /** swaps the task truth and belief truth */
+    final class SwappedTruth extends ProxyTruthFunction {
+
+        SwappedTruth(TruthFunction o) {
+            super(o);
+        }
+
+        @Nullable @Override
+        public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
+            return o.apply(belief, task, minConf, n);
+        }
+
+        @Override
+        public String toString() {
+            return o.toString() + 'X';
+        }
+
+    }
 
     /** ____N , although more accurately it would be called: 'NP' */
-    final class NegatedTaskTruth extends ProxyTruthFunc {
+    final class NegatedTaskTruth extends ProxyTruthFunction {
 
-        NegatedTaskTruth(TruthFunc o) {
+        NegatedTaskTruth(TruthFunction o) {
             super(o);
         }
 
@@ -119,9 +72,9 @@ public interface TruthFunc {
         }
     }
 
-    final class NegatedBeliefTruth extends ProxyTruthFunc {
+    final class NegatedBeliefTruth extends ProxyTruthFunction {
 
-        NegatedBeliefTruth(TruthFunc o) {
+        NegatedBeliefTruth(TruthFunction o) {
             super(o);
         }
 
@@ -134,9 +87,9 @@ public interface TruthFunc {
         }
 
     }
-    final class NegatedTaskBeliefTruth extends ProxyTruthFunc {
+    final class NegatedTaskBeliefTruth extends ProxyTruthFunction {
 
-        NegatedTaskBeliefTruth(TruthFunc o) {
+        NegatedTaskBeliefTruth(TruthFunction o) {
             super(o);
         }
 
@@ -157,9 +110,9 @@ public interface TruthFunc {
             
             
      */
-    final class DepolarizedTruth extends ProxyTruthFunc {
+    final class DepolarizedTruth extends ProxyTruthFunction {
 
-        DepolarizedTruth(TruthFunc o) {
+        DepolarizedTruth(TruthFunction o) {
             super(o);
         }
 
@@ -195,9 +148,9 @@ public interface TruthFunc {
 //    }
 
     /** negates both task and belief frequency */
-    final class NegatedTruths extends ProxyTruthFunc {
+    final class NegatedTruths extends ProxyTruthFunction {
 
-        NegatedTruths(TruthFunc o) {
+        NegatedTruths(TruthFunction o) {
             super(o);
         }
 
