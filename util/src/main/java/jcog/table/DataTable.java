@@ -1,7 +1,6 @@
 package jcog.table;
 
 import com.google.common.collect.ImmutableList;
-import com.google.common.collect.Streams;
 import jcog.TODO;
 import jcog.data.list.FasterList;
 import jcog.learn.decision.FloatTable;
@@ -16,7 +15,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Stream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -232,10 +230,6 @@ public class DataTable extends Table implements Externalizable {
         return rowCount();
     }
 
-    public Stream<Instance> stream() {
-        return Streams.stream(iterator()).map(this::instance);
-    }
-
 
     public void printCSV() {
         printCSV(new FilterOutputStream(System.out) {
@@ -319,8 +313,8 @@ public class DataTable extends Table implements Externalizable {
         return this;
     }
 
-    @Deprecated
-    private Instance instance(Row x) {
+
+    public Instance instance(Row x) {
 
         ColumnType[] ct = columnTypes();
         List<Double> d = new FasterList<>(ct.length);

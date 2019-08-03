@@ -220,14 +220,17 @@ public class NARio extends GameX {
         });
         alive.setDefault($.t(1, 0.75f));
 
-//        game.paused = false;
+        game.paused = false;
         game.thread.start();
     }
 
     @Override
     protected void starting(NAR nar) {
+
         super.starting(nar);
-        game.paused = false;
+
+        if (game!=null)
+            game.paused = false;
     }
 
     @Override
@@ -394,6 +397,7 @@ public class NARio extends GameX {
 
 
         BiPolarAction X = actionBipolarFrequencyDifferential($.p(id, $.the("x")), false, (x) -> {
+            if (game == null || game.scene == null) return Float.NaN; //HACK
 
             float boostThresh = 0.75f;
             if (x <= -thresh) {
@@ -419,6 +423,7 @@ public class NARio extends GameX {
             }
         });
         BiPolarAction Y = actionBipolarFrequencyDifferential($.p(id, $.the("y")), false, (y) -> {
+            if (game == null || game.scene == null) return Float.NaN; //HACK
 
             if (y <= -thresh) {
                 game.scene.key(Mario.KEY_DOWN, true);

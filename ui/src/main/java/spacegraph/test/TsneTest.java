@@ -49,7 +49,7 @@ public class TsneTest {
                                 Draw.rect(surface.bounds, gl);
                             }
                         }).
-                        set(data.stream()).widget();
+                        set(data.stream().map(data::instance)).widget();
 
         //Util.sleepMS(1000000);
 
