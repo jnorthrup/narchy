@@ -45,24 +45,23 @@ import static nars.time.Tense.TIMELESS;
  */
 public final class Narsese {
 
-    static final String NARSESE_TASK_TAG = "Narsese";
-    private static final Class parser;
     private static final ThreadLocal<Narsese> parsers;
 
     static {
+        Class<? extends NarseseParser> parserClass;
 
         try {
 //            ParserClassNode node = ParserTransformer.extendParserClass(NarseseParser.class);
 //            parser = node.getExtendedClass();
 
-            parser = ParserTransformer.transformParser(NarseseParser.class);
+            parserClass = ParserTransformer.transformParser(NarseseParser.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
 
         parsers = ThreadLocal.withInitial(() -> {
                     try {
-                        return new Narsese((INarseseParser) (parser.getConstructor().newInstance()));
+                        return new Narsese(parserClass.getConstructor().newInstance());
                     } catch (Exception e) {
                         throw new RuntimeException(e);
                     }
@@ -70,11 +69,22 @@ public final class Narsese {
         );
     }
 
-    private final MyParseRunner inputParser, termParser;
+    private final INarseseParser parser;
+    private MyParseRunner inputParser;
+    private MyParseRunner termParser;
 
     private Narsese(INarseseParser p) {
-        this.inputParser = new MyParseRunner(p.Input());
-        this.termParser = new MyParseRunner(p.Term());
+        this.parser = p;
+    }
+    private MyParseRunner inputParser() {
+        if (inputParser == null)
+            this.inputParser = new MyParseRunner(parser.Input());
+        return inputParser;
+    }
+    private MyParseRunner termParser() {
+        if (termParser == null)
+            this.termParser = new MyParseRunner(parser.Term());
+        return termParser;
     }
 
     public static Narsese the() {
@@ -89,7 +99,7 @@ public final class Narsese {
 
         int parsedTasks = 0;
 
-        ParsingResult r = p.inputParser.run(input);
+        ParsingResult r = p.inputParser().run(input);
         ValueStack rv = r.getValueStack();
 
         int size = rv.size();
@@ -248,7 +258,7 @@ public final class Narsese {
         try {
 
 
-            ParsingResult r = termParser.run(s);
+            ParsingResult r = termParser().run(s);
 
             ValueStack stack = r.getValueStack();
 
