@@ -3,11 +3,9 @@ package nars.truth.func;
 import jcog.util.Reflect;
 import nars.$;
 import nars.NAL;
-import nars.term.Term;
 import nars.truth.Truth;
 import nars.truth.func.annotation.AllowOverlap;
 import nars.truth.func.annotation.SinglePremise;
-import org.eclipse.collections.api.map.ImmutableMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.reflect.Field;
@@ -17,16 +15,10 @@ import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions2.weak;
 
 /**
- * NAL Truth Functions
- * the original set of NAL truth functions, preserved as much as possible
- *
- * <patham9> only strong rules are allowing overlap
- * <patham9> except union and revision
- * <patham9> if you look at the graph you see why
- * <patham9> its both rules which allow the conclusion to be stronger than the premises
+ * NAL Truth Model
+ *      derivative of the original set of NAL truth functions, preserved as much as possible
  */
 public enum NALTruth implements TruthFunction {
-
 
     Deduction() {
         @Override
@@ -41,6 +33,7 @@ public enum NALTruth implements TruthFunction {
             return TruthFunctions.deduction(T, B, true, minConf);
         }
     },
+
     @AllowOverlap DeductionWeakRecursive() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {

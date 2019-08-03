@@ -105,14 +105,6 @@ public interface Truth extends Truthed {
         return Math.abs(freq - 0.5f) * 2f;
     }
 
-    static DiscreteTruth the(Truth truth) {
-
-        if (truth instanceof PreciseTruth)
-            return ((PreciseTruth)truth).raw();
-        else
-            return (DiscreteTruth) truth;
-    }
-
     static void assertDithered(@Nullable Truth t, NAL n) {
         if (t != null) {
             Truth d = t.dither(n);

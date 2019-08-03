@@ -79,10 +79,9 @@ public final class TruthFunctions {
 
 
     /**
-     * {<S ==> M>, <M ==> P>} |- <S ==> P>
-     * @param v1 Truth value of the first premise
-     * @param v2 Truth value of the second premise
-     * @return Truth value of the conclusion
+     * commutative
+     * {<M --> P>, <S --> M>} |- <S --> P>
+     * {<S --> M>, <M --> P>} |- <P --> S>
      */
     @Nullable public static Truth deduction(Truth x, Truth y, boolean strong, float minConf) {
         float cxy = confCompose(x, y);
@@ -140,11 +139,8 @@ public final class TruthFunctions {
 
 
     /**
+     * commutative
      * {<M ==> S>, <P ==> M>} |- <S ==> P>
-     *
-     * @param a Truth value of the first premise
-     * @param b Truth value of the second premise
-     * @return Truth value of the conclusion
      */
     static Truth exemplification(Truth a, Truth b, float minConf) {
         float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));

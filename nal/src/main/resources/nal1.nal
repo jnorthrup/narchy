@@ -7,40 +7,50 @@
 //               \         /
 //                (A --> C)
 
+//TODO additional comparison-based goal derivation rules
+
 //DEDUCTION ---------------------------
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Time:Compose)
-      (A --> B), (B --> C), neqRCom(A,C)  |- (A --> C), (Goal:Desire, Time:Task)
+    (M --> P), (S --> M), neqRCom(S,P)    |- (S --> P), (Belief:Deduction, Time:Compose)
+    (P --> M), (M --> S), neqRCom(S,P)    |- (P --> S), (Belief:Deduction, Time:Compose)
 
-        (A --> B), (B --> C), neqRCom(A,C), hasBelief()  |- (C --> A), (Punctuation:AskAsk, Time:Task)
+      (M --> P), (S --> M), neqRCom(S,P)  |- (S --> P), (Goal:Desire, Time:Task)
+      (P --> M), (M --> S), neqRCom(S,P)  |- (P --> S), (Goal:Desire, Time:Task)
 
-        (A --> B), (B --> C), task("!"), neqRCom(A,C)   |- (B --> C), (Punctuation:Quest, Time:Task)
+       (S --> P), (S --> M), neqRCom(S,P), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (M --> P), neqRCom(S,P), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
+       (P --> S), (P --> M), neqRCom(S,P), hasBelief()  |- (M --> S), (Punctuation:AskAsk, Time:Task)
+        (P --> S), (M --> S), neqRCom(S,P), hasBelief()  |- (P --> M), (Punctuation:AskAsk, Time:Task)
+
+//       (M --> P), (S --> M), task("!"), neqRCom(S,P)   |- (S --> M), (Punctuation:Quest, Time:Task)
+//       (P --> M), (M --> S), task("!"), neqRCom(S,P)   |- (M --> S), (Punctuation:Quest, Time:Task)
+
+//EXEMPLIFICATION
+    (S --> M), (M --> P), neqRCom(S,P)      |- (P --> S), (Belief:Exemplification, Time:Compose)
+      (S --> M), (M --> P), neqRCom(S,P)  |- (P --> S), (Goal:DesireWeak, Time:Task)
+
+        (S --> M), (M --> P), neqRCom(S,P), hasBelief()  |- (S --> P), (Punctuation:AskAsk, Time:Task)
+
+//        (S --> M), (M --> P), task("!"), neqRCom(S,P)   |- (M --> P), (Punctuation:Quest, Time:Task)
 
 
 //ABDUCTION ---------------------------
-    (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Time:Compose)
+    (S --> M), (S --> P), neqRCom(M,P)      |- (P --> M), (Belief:Abduction, Time:Compose)
       //(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Goal:DesireWeak, Time:Task)
 
-        (A --> B), (A --> C), neqRCom(B,C), hasBelief()  |- (B --> C), (Punctuation:AskAsk, Time:Task)
+        (S --> M), (S --> P), neqRCom(M,P), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
-        (A --> B), (A --> C), task("!"), neqRCom(B,C)   |- (A --> C), (Punctuation:Quest, Time:Task)
+//        (S --> M), (S --> P), task("!"), neqRCom(M,P)   |- (S --> P), (Punctuation:Quest, Time:Task)
 
 
 //INDUCTION ---------------------------
 
-    (A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Time:Compose)
+    (S --> P), (M --> P), neqRCom(S,M)      |- (M --> S), (Belief:Induction, Time:Compose)
       //(A --> C), (B --> C), neqRCom(B,C)      |- (B --> A), (Goal:DesireWeak, Time:Task)
 
-        (A --> C), (B --> C), neqRCom(A,B), hasBelief()  |- (A --> B), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (M --> P), neqRCom(S,M), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
 
-        (A --> C), (B --> C), task("!"), neqRCom(A,B)  |- (B --> C), (Punctuation:Quest, Time:Task)
+//        (S --> P), (M --> P), task("!"), neqRCom(S,M)  |- (M --> P), (Punctuation:Quest, Time:Task)
 
 
-//EXEMPLIFICATION  ---------------------------
 
-    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Time:Compose)
-      (A --> B), (B --> C), neqRCom(A,C)  |- (C --> A), (Goal:DesireWeak, Time:Task)
-
-        (A --> B), (B --> C), neqRCom(A,C), hasBelief()  |- (A --> C), (Punctuation:AskAsk, Time:Task)
-
-        (A --> B), (B --> C), task("!"), neqRCom(A,C)   |- (B --> C), (Punctuation:Quest, Time:Task)
