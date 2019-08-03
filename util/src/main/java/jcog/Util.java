@@ -2094,14 +2094,22 @@ public enum Util {
         return i;
     }
     public static <X> boolean and(Predicate<X> p, int from, int to,  X... xx) {
-        for (int i = from; i < to; i++) {
+        for (int i = from; i < to; i++)
             if (!p.test(xx[i]))
                 return false;
-        }
         return true;
+    }
+    public static <X> boolean or(Predicate<X> p, int from, int to,  X... xx) {
+        for (int i = from; i < to; i++)
+            if (p.test(xx[i]))
+                return true;
+        return false;
     }
     public static <X> boolean and(X[] xx, Predicate<X> p) {
         return and(p, 0, xx.length, xx);
+    }
+    public static <X> boolean or(X[] xx, Predicate<X> p) {
+        return or(p, 0, xx.length, xx);
     }
 
     public static boolean and(float[] xx, FloatPredicate p) {

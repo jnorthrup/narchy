@@ -26,8 +26,7 @@ import java.util.ListIterator;
 import java.util.Set;
 import java.util.function.Function;
 
-import static nars.Op.CONJ;
-import static nars.Op.SETe;
+import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -226,8 +225,12 @@ public class Factorize {
             if (y.length == 0)
                 return x; //unchanged
 
+            if (Util.and(y, yy -> yy.hasAny(BOOL)))
+                return x; //something collapsed, maybe an interaction with a prior member application
+
             if (Util.sum(Term::volume, y) > volMax - 1)
                 return x; //excessively complex result
+
 
             //        Term[] yy = Terms.sorted(y);
 //        if (xx.equalTerms(yy))

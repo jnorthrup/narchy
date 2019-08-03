@@ -24,25 +24,13 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-import java.util.function.ToDoubleFunction;
 import java.util.stream.Stream;
 
 import static nars.truth.proj.TruthIntegration.eviFast;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    static final ToDoubleFunction<RLeaf<TaskRegion>> MostComponents = (n) -> {
-        return n.size;
-    };
-    static final ToDoubleFunction<RLeaf<TaskRegion>> LeastOriginality = (n) -> {
-        double s = originalitySum(n);
-        //return 1 / (1 + s);
-        return -s;
-    };
-    //2f;
-    static final ToDoubleFunction<RLeaf<TaskRegion>> MostOriginality = (n) -> {
-        return originalitySum(n);
-    };
+
     static FloatFunction<RLeaf<TaskRegion>> WeakestTemporallyDense(long now) { return (n) -> {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
         long u = 0;
@@ -66,99 +54,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         double confFactor = (1+n.bounds.center(2));
         long range = (1+(e-s));
 //        long timeDist = ((TaskRegion)n.bounds).maxTimeTo(now);
-        return (float)( Math.sqrt(n.size) * ((double) u  /* * (1 + ((double)timeDist)) */ ) / ( confFactor * range  )); //* (timeToNow/range)
+        return (float)( Math.sqrt(n.size) * ( u  /* * (1 + ((double)timeDist)) */ ) / ( confFactor * range  )); //* (timeToNow/range)
         };
     }
-    //new AxialSplitLeaf();
-    //new LinearSplitLeaf();
-    //    static final ToDoubleFunction<TaskRegion> LeastOriginal = (t) -> {
-//        return 1.0 / (((double)t.range()) * t.confMean());
-//    };
-    static final ToDoubleFunction<Task> LeastOriginal = (t) -> {
-        return 1.0 / (1 + t.originality());
-    };
-    static final ToDoubleFunction<Task> MostComplex = (t) -> {
-        return t.volume();
-    };
-    static final ToDoubleFunction<Task> LeastPriority = (t) -> {
-        return 1.0 / (1 + t.priElseZero());
-    };
-
-//    /**
-//     * TODO use the same heuristics as task strength
-//     */
-//    private static FloatRank<TaskRegion> regionWeakness(long now, float futureFactor, float dur) {
-//
-//
-//        float pastDiscount = 1.0f - (futureFactor - 1.0f);
-//
-//        return (TaskRegion r, float min) -> {
-//
-//            float y =
-//                    //(float)Math.log(1+r.meanTimeTo(now));
-//                    (1 + r.maxTimeTo(now)) / dur;
-//
-//            if (y < min)
-//                return Float.NaN;
-//
-//            float conf =
-//                    r.confMin();
-//
-//            y = (1+y) * (1+(1 - conf));
-//            if (y < min)
-//                return Float.NaN;
-//
-//            if (pastDiscount != 1 && r.end() < now)
-//                y *= pastDiscount;
-//
-//            return (float) y;
-//
-////            long regionTimeDist = r.midTimeTo(when);
-////
-////            float timeDist = (regionTimeDist) / ((float) perceptDur);
-////
-////
-////            float evi =
-////                    c2wSafe((float) r.coord(true, 2));
-////
-////
-////            float antivalue = 1f / (1f + evi);
-////
-////            if (PRESENT_AND_FUTURE_BOOST != 1 && r.end() >= when - perceptDur)
-////                antivalue /= PRESENT_AND_FUTURE_BOOST;
-////
-////
-////            return (float) ((antivalue) * (1 + timeDist));
-//        };
-//    }
-    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF =
-            1.0f;
-    //1.5f;
-    private static final float PRESENT_AND_FUTURE_BOOST_GOAL =
-            1.0f;
-//    static final ToDoubleFunction<? super TaskRegion> LeastConf = (t) -> {
-//        return 1.0 / (1 + t.confMean());
-//    };
-
-//    static final ToDoubleFunction<? super Task> WeakestEviInteg = (t) -> {
-//        double eviRange = t.evi() * t.range();
-//        //return 1.0 / (1+eviRange);
-//        return -eviRange;
-//    };
-    static final ToDoubleFunction LeastTimeRange = (t) -> {
-        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
-        return 1.0 / ((TaskRegion)t).range();
-    };
-//    static final ToDoubleFunction LeastFreqRange = (t) -> {
-//        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
-//        return 1.0 / (1+((TaskRegion)t).range(1));
-//    };
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
     /**
      * TODO tune
      */
-    private static final Split SPLIT =
-            new QuadraticSplitLeaf();
+    private static final Split SPLIT = new QuadraticSplitLeaf();
     protected int capacity;
 
     public RTreeBeliefTable() {
@@ -170,7 +73,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, WeakestTask weakest, MergeableRegion mergeableLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
         if (next instanceof RLeaf) {
 
             RLeaf l = (RLeaf) next;
@@ -204,35 +107,28 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return true;
     }
 
-    private static double originalitySum(RLeaf<TaskRegion> n) {
-        double originalitySum = 0;
-        for (TaskRegion t : n.data) {
-            if (t == null) break;
-            originalitySum += ((Task) t).originality();
-        }
-        return originalitySum;
-    }
 
     /**
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, Remember remember) {
+    private boolean compress(Space<TaskRegion> tree, Remember remember) {
 
         long now = remember.nar.time();
+        long tableDur = tableDur(now);
 
-        MergeableRegion weakestLeaf = new MergeableRegion(now);
+		Top<Task> weakest = new Top<>(new FurthestWeakest(now, tableDur));
 
-        WeakestTask weakest = new WeakestTask(now/*, complex(remember)*/);
+		Top<RLeaf<TaskRegion>> weakestLeaf = new Top<>(WeakestTemporallyDense(now));
 
         return !findEvictable(tree, tree.root(), weakest, weakestLeaf)
                 ||
-                mergeOrDelete(tree, weakest, weakestLeaf, remember);
+               mergeOrDelete(tree, weakest, weakestLeaf, remember);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
-                                         WeakestTask theWeakest,
-                                         MergeableRegion mergeableLeaf,
+										 Top<Task> theWeakest,
+										 Top<RLeaf<TaskRegion>> mergeableLeaf,
                                          Remember r) {
 
         Task weakest = theWeakest.get();
@@ -255,7 +151,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return true;
     }
 
-    private static Pair<Task, TruthProjection> mergeLeaf(MergeableRegion mergeableLeaf, Remember r) {
+    private static Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
         RLeaf<TaskRegion> leaf = mergeableLeaf.get();
         return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
     }
@@ -504,68 +400,29 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return (TaskRegion) root().bounds();
     }
 
-    static final class Furthest implements ToDoubleFunction {
-
-        public final long now;
-
-        Furthest(long now) {
-            this.now = now;
-        }
-
-        @Override
-        public double applyAsDouble(Object t) {
-            TaskRegion tt = (t instanceof RLeaf) ? (TaskRegion) ((RLeaf) t).bounds : (TaskRegion) t;
-            //return Math.abs( tt.mid() - now );
-            return tt.maxTimeTo(now);
-        }
-    }
 
     static final class FurthestWeakest implements FloatFunction<Task> {
 
         public final long now;
+		public final double dur;
 
-        FurthestWeakest(long now) {
+        FurthestWeakest(long now, double dur) {
             this.now = now;
+            this.dur = dur;
         }
 
         @Override
         public float floatValueOf(Task t) {
-            double dt = 1 + t.maxTimeTo(now);
-            return (float) (dt / (1.0 + (t.evi() * (t.range() / dt))));
+
+            return (float)
+                -((t.evi() * t.range()/dur)
+                        /
+                 ((1 + t.minTimeTo(now)/dur)))
+                ;
         }
     }
 
-    //    static final ToDoubleFunction<Task> MostDynamic = (t) -> {
-//        return 1.0 / t.originality();
-//    };
-    private static final class MergeableRegion extends Top<RLeaf<TaskRegion>> {
 
-        public MergeableRegion(long now) {
-            super(
-                    WeakestTemporallyDense(now)
-                    //,  new Furthest(now), LeastOriginality
-                    /*LeastOverlap, LeastTemporalSparsity,*/
-            );
-            //weights(0.75f, 0.25f, 0.25f);
-        }
-
-    }
-
-    @Deprecated
-    private static final class WeakestTask extends Top<Task> {
-
-        public WeakestTask(long now) {
-            super(//complexity ?
-                    //new ToDoubleFunction[] {
-                    new FurthestWeakest(now) //, LeastOriginal, MostComplex, LeastPriority
-                    //} :
-                    //new ToDoubleFunction[] { new Furthest(now), LeastEvi, LeastPriority, LeastRange, LeastOriginal }
-            );
-            //weights(0.75f, 0.5f, 0.1f, 0.05f);
-        }
-
-
-    }
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 
@@ -920,6 +777,116 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
 
+    //    static final ToDoubleFunction<RLeaf<TaskRegion>> MostComponents = (n) -> {
+//        return n.size;
+//    };
+//    static final ToDoubleFunction<RLeaf<TaskRegion>> LeastOriginality = (n) -> {
+//        double s = originalitySum(n);
+//        //return 1 / (1 + s);
+//        return -s;
+//    };
+//    //2f;
+//    static final ToDoubleFunction<RLeaf<TaskRegion>> MostOriginality = (n) -> {
+//        return originalitySum(n);
+//    };
+//    //new AxialSplitLeaf();
+//    //new LinearSplitLeaf();
+//    //    static final ToDoubleFunction<TaskRegion> LeastOriginal = (t) -> {
+////        return 1.0 / (((double)t.range()) * t.confMean());
+////    };
+//    static final ToDoubleFunction<Task> LeastOriginal = (t) -> {
+//        return 1.0 / (1 + t.originality());
+//    };
+//    static final ToDoubleFunction<Task> MostComplex = (t) -> {
+//        return t.volume();
+//    };
+//    static final ToDoubleFunction<Task> LeastPriority = (t) -> {
+//        return 1.0 / (1 + t.priElseZero());
+//    };
+//    /**
+//     * TODO use the same heuristics as task strength
+//     */
+//    private static FloatRank<TaskRegion> regionWeakness(long now, float futureFactor, float dur) {
+//
+//
+//        float pastDiscount = 1.0f - (futureFactor - 1.0f);
+//
+//        return (TaskRegion r, float min) -> {
+//
+//            float y =
+//                    //(float)Math.log(1+r.meanTimeTo(now));
+//                    (1 + r.maxTimeTo(now)) / dur;
+//
+//            if (y < min)
+//                return Float.NaN;
+//
+//            float conf =
+//                    r.confMin();
+//
+//            y = (1+y) * (1+(1 - conf));
+//            if (y < min)
+//                return Float.NaN;
+//
+//            if (pastDiscount != 1 && r.end() < now)
+//                y *= pastDiscount;
+//
+//            return (float) y;
+//
+////            long regionTimeDist = r.midTimeTo(when);
+////
+////            float timeDist = (regionTimeDist) / ((float) perceptDur);
+////
+////
+////            float evi =
+////                    c2wSafe((float) r.coord(true, 2));
+////
+////
+////            float antivalue = 1f / (1f + evi);
+////
+////            if (PRESENT_AND_FUTURE_BOOST != 1 && r.end() >= when - perceptDur)
+////                antivalue /= PRESENT_AND_FUTURE_BOOST;
+////
+////
+////            return (float) ((antivalue) * (1 + timeDist));
+//        };
+//    }
+//    private static final float PRESENT_AND_FUTURE_BOOST_BELIEF =
+//        1.0f;
+//    //1.5f;
+//    private static final float PRESENT_AND_FUTURE_BOOST_GOAL =
+//        1.0f;
+//    static final ToDoubleFunction<? super TaskRegion> LeastConf = (t) -> {
+//        return 1.0 / (1 + t.confMean());
+//    };
+
+    //    static final ToDoubleFunction<? super Task> WeakestEviInteg = (t) -> {
+//        double eviRange = t.evi() * t.range();
+//        //return 1.0 / (1+eviRange);
+//        return -eviRange;
+//    };
+//    static final ToDoubleFunction LeastTimeRange = (t) -> {
+//        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
+//        return 1.0 / ((TaskRegion)t).range();
+//    };
+//    static final ToDoubleFunction LeastFreqRange = (t) -> {
+//        if (t instanceof RLeaf) t = ((RLeaf)t).bounds;
+//        return 1.0 / (1+((TaskRegion)t).range(1));
+//    };
+//    static final class Furthest implements ToDoubleFunction {
+//
+//        public final long now;
+//
+//        Furthest(long now) {
+//            this.now = now;
+//        }
+//
+//        @Override
+//        public double applyAsDouble(Object t) {
+//            TaskRegion tt = (t instanceof RLeaf) ? (TaskRegion) ((RLeaf) t).bounds : (TaskRegion) t;
+//            //return Math.abs( tt.mid() - now );
+//            return tt.maxTimeTo(now);
+//        }
+//    }
 
 
 
