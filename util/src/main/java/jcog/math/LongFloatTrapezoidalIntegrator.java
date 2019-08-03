@@ -43,10 +43,11 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
     }
 
     public double integrateN(long... x) {
-        double yPrev = Double.NaN;
         double sum = Double.NaN;
-        long xPrev = Long.MIN_VALUE;
-        for (long xNext : x) {
+        long xPrev = x[0];
+        double yPrev = applyAsDouble(xPrev);
+        for (int i = 1, xLength = x.length; i < xLength; i++) {
+            long xNext = x[i];
             if (xPrev != xNext) {
                 double yNext = applyAsDouble(xNext);
                 sum = sample(xPrev, yPrev, xNext, yNext, sum);
@@ -54,10 +55,10 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
                 xPrev = xNext;
             }
         }
-        if (sum != sum)
-            return yPrev; //zero or 1 points
-        else
-            return sum;
+        return sum != sum ?
+            yPrev //zero or 1 points
+            :
+            sum;
     }
 
     //

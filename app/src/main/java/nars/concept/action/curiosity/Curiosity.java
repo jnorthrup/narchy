@@ -85,7 +85,7 @@ public class Curiosity {
         if (!enable.getOpaque())
             return;
 
-        float factor = 1;
+        float factor = 4;
         float curiConf =
                 Math.max(nar.confMin.floatValue() * factor, nar.confResolution.floatValue())*factor;
                 //nar.confMin.floatValue() * 2;

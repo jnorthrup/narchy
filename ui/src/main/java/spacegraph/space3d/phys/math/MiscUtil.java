@@ -265,7 +265,7 @@ public class MiscUtil {
 			while (x[0] < list[j][0]) j--;
 
 			if (i <= j) {
-				ArrayUtil.swap(list, i, j);
+				ArrayUtil.swapObj(list, i, j);
 				i++;
 				j--;
 			}

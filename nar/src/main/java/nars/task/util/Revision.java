@@ -131,10 +131,10 @@ public enum Revision {;
     /** truth revision task merge strategy */
     @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean dither, NAL nal) {
 
-        TruthProjection p = nal.projection(ETERNAL, ETERNAL, 0).add(n, tasks);
+        TruthProjection p = nal.newProjection(ETERNAL, ETERNAL, 0).add(n, tasks);
 
         MetalLongSet stamp = p.commit(true, minComponents, true, nal);
-        if (stamp == null || p.size() < minComponents /* HACK */)
+        if (stamp == null)
             return null;
 
 

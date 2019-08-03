@@ -760,7 +760,6 @@ public class PremiseRule extends ProxyTerm {
         this.beliefTruth = beliefTruth;
         this.goalTruth = goalTruth;
 
-
         this.termify = new Termify(conclusion(postcon[0]), truthify, time);
 
         this.CONSTRAINTS = constraints(constraints);

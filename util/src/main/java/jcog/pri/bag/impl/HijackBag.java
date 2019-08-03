@@ -672,8 +672,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                         wPri[which] = 0;
                     } else {
                         //compact the array by swapping the empty cell with the entry cell's (TODO or any other non-null)
-                        ArrayUtil.swap(wVal, windowSize - 1, which);
-                        ArrayUtil.swap(wPri, windowSize - 1, which);
+						ArrayUtil.swapObj(wVal, windowSize - 1, which);
+						ArrayUtil.swapFloat(wPri, windowSize - 1, which);
                     }
                     windowSize--;
                     remove(key(v));

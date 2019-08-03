@@ -146,9 +146,9 @@ public class PadSynthetizer {
             for ( int i=1; i<dataReal.length-1; i++) {
                 iRev = reverseBits ( i, nBits );
                 if ( iRev > i) {
-                    ArrayUtil.swap( dataReal, i, iRev );
-                    ArrayUtil.swap( dataImag, i, iRev );
-                }
+					ArrayUtil.swapDouble(dataReal, i, iRev);
+					ArrayUtil.swapDouble(dataImag, i, iRev);
+				}
             }
         }
         /**

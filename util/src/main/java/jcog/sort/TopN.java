@@ -229,7 +229,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 
     @Nullable
     public final X getRoulette(Random rng) {
-        return getRoulette(rng::nextFloat);
+        return size > 0 ? getRoulette(rng::nextFloat) : null;
     }
 
     @Nullable

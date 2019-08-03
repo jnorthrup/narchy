@@ -44,22 +44,29 @@ abstract public class CauseChannel<X extends Prioritizable>  {
             case 1: {
                 if (xx instanceof List) {
                     accept(((List<X>) xx).get(0), target);
-                    return;
                 } else {
                     accept(xx.iterator().next(), target);
                 }
                 break;
             }
+            default: {
+                acceptAll((Iterable)xx, target);
+                break;
+            }
         }
-
-        xx.forEach(this::preAccept);
-        target.acceptAll(xx);
     }
 
     public final void acceptAll(X[] xx, ConsumerX<? super X> target) {
-        for (X x : xx)
-            preAccept(x);
-        target.acceptAll(xx);
+        switch (xx.length) {
+            case 0: return;
+            case 1: accept(xx[0], target); break;
+            default: {
+                for (X x : xx)
+                    preAccept(x);
+                target.acceptAll(xx);
+                break;
+            }
+        }
     }
 
 

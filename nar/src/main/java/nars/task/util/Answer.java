@@ -394,26 +394,10 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     @Nullable
-    public TruthProjection truthProjection() {
+    public final TruthProjection truthProjection() {
         int n = tasks.size();
-        if (n ==0)
-            return null;
-
-        long s = time.start, e = time.end;
-//        if (s == ETERNAL) {
-//            //auto-crop if currently eternal
-//
-//            boolean ditherTime = ditherTruth;
-//            if (ditherTime) {
-//                int dither = nar.dtDither();
-//                s = Tense.dither(((TaskList) null).start(), dither, -1);
-//                e = Tense.dither(((TaskList) null).end(), dither, +1);
-//            }
-//        }
-
-        TruthProjection tp = nar.projection(s, e, dur);
-        tp.add(n, this.tasks.items);
-        return tp;
+        return n == 0 ? null :
+            nar.newProjection(time.start, time.end, dur).add(n, this.tasks.items);
     }
 
 

@@ -67,6 +67,7 @@ class TemporalInductionTest {
         int cycles = dt * 20;
         boolean bNeg = b.startsWith("--");
         TestNAR t = new TestNAR(NARS.tmp())
+            .logDebug()
                 .input(a + ". |")
                 .inputAt(dt, b + ". |")
                 .mustBelieve(cycles, '(' + a + " &&+" + dt + ' ' + b + ')', 1.00f, 0.81f /*intersectionConf*/, 0)

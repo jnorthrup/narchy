@@ -38,25 +38,30 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public void match(Answer a) {
-//        int triesEach = a.ttl;
-        assert(a.ttl > 0);
+        int size = this.size;
+        if (size == 0) return;
+        if (size == 1) { items[0].match(a); return; }
 
-//        for (int i = 0; i < thisSize; i++) {
-//            BeliefTable t = z[i];
-//
-//            //TODO better TTL distribution system
-//            a.ttl = triesEach; //restore for next
-//
-//            t.match(a);
-//        }
-
-//        a.ttl = triesEach; //restore for next
+        //first come first serve
         ANDshuffled(a.random(), t->{
-//            a.ttl = triesEach; //restore for next
             t.match(a);
-            //return true;
             return a.ttl > 0;
         });
+
+        //fair round robin
+//        int ttlStart = a.ttl; assert(ttlStart > 0);
+//        int ttlFair = Math.max(1,
+//            //ttlStart /size
+//            ttlStart
+//        );
+//        int[] ttlUsed = new int[1];
+//        ANDshuffled(a.random(), t->{
+//            a.ttl = ttlFair; //restore for next
+//            t.match(a);
+//            ttlUsed[0] += ttlFair - a.ttl;
+//            return true;
+//        });
+//        a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
     }
 
 
@@ -116,8 +121,8 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
                 return e.test(items[x]) && e.test(items[y]) && e.test(items[z]);
             }
             default:
-                int[] order = new int[n];
-                for (int i = 0; i < n; i++)
+                byte[] order = new byte[n];
+                for (byte i = 0; i < n; i++)
                     order[i] = i;
                 ArrayUtil.shuffle(order, rng);
                 for (int i = 0; i < n; i++) {

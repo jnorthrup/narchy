@@ -1,6 +1,5 @@
 package jcog.util;
 
-import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
@@ -51,19 +50,26 @@ import java.util.stream.Stream;
     }
 
     default void acceptAll(List<? extends X> x) {
-        if (x.size() == 1) {
-            accept(x.get(0));
-        } else {
-            acceptAll((Collection)x);
+        switch (x.size()) {
+            case 0:
+                return;
+            case 1:
+                accept(x.get(0));
+                break;
+            default:
+                acceptAll((Collection) x);
+                break;
         }
     }
 
     default void acceptAll(X[] xx) {
-        switch (xx.length) {
-            case 0:  break;
-            case 1:  accept(xx[0]); break;
-            default: acceptAll(ArrayIterator.iterator(xx)); break;
-        }
+//        switch (xx.length) {
+//            case 0:  break;
+//            case 1:  accept(xx[0]); break;
+//            default: acceptAll(ArrayIterator.iterator(xx)); break;
+//        }
+        for (X x : xx)
+            accept(x);
     }
 
     /** override for multithreading hints */

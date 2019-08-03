@@ -99,7 +99,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //1f;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 3f;
+    public static final float ANSWER_TRYING = 4f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
@@ -315,7 +315,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(4 * derive.TTL_UNISUBST_MAX, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -477,7 +477,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     }
 
-    public final TruthProjection projection(final long start, final long end, final float dur) {
+    public final TruthProjection newProjection(final long start, final long end, final float dur) {
         return new LinearTruthProjection(start, end, dur);
     }
 

@@ -32,8 +32,6 @@ import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
 
-import static com.google.common.math.IntMath.factorial;
-
 /**
  * <p>Operations on arrays, primitive arrays (like {@code int[]}) and
  * primitive wrapper arrays (like {@code Integer[]}).
@@ -140,7 +138,29 @@ public enum ArrayUtil {
 
     private static final int SMALL = 7;
     private static final int MEDIUM = 40;
-
+    /**
+     * The number of distinct byte values.
+     */
+    private static final int NUM_BYTE_VALUES = 1 << 8;
+    private static final byte[] BYTE_ZERO = new byte[] { 0 };
+    private static final byte[] BYTE_ONE = new byte[] { 1 };
+    private static final byte[] BYTE_TWO = new byte[] { 2 };
+    private static final byte[] BYTE_THREE = new byte[] { 3 };
+    private static final byte[] BYTE_ZERO_ZERO = new byte[] { 0, 0 };
+    private static final byte[] BYTE_ZERO_ONE = new byte[] { 0, 1 };
+    private static final byte[] BYTE_ONE_ZERO = new byte[] { 1, 0 };
+    private static final byte[] BYTE_ONE_ONE = new byte[] { 1, 1 };
+    private static final byte[] BYTE_ONE_TWO = new byte[] { 1, 2 };
+    private static final byte[] BYTE_ONE_NEGONE = new byte[] { 1, -1 };
+    private static final byte[] BYTE_ONE_NEGTWO = new byte[] { 1, -2 };
+    private static final byte[] BYTE_TWO_ONE = new byte[] { 2, 1 };
+    private static final byte[] BYTE_TWO_TWO = new byte[] { 2, 2 };
+    private static final byte[] BYTE_TWO_NEGONE = new byte[] { 2, -1 };
+    private static final byte[] BYTE_TWO_NEGTWO = new byte[] { 2, -2 };
+    private static final byte[] BYTE_NEGONE_ONE = new byte[] { -1, 1 };
+    private static final byte[] BYTE_NEGONE_TWO = new byte[] { -1, 2 };
+    private static final byte[] BYTE_NEGONE_NEGONE = new byte[] { -1, -1 };
+    private static final byte[] BYTE_NEGONE_NEGTWO = new byte[] { -1, -2 };
 
     /**
      * <p>Shallow clones an array returning a typecast result and handling
@@ -190,12 +210,6 @@ public enum ArrayUtil {
         }
         return array.clone();
     }
-
-    /**
-     * The number of distinct byte values.
-     */
-    private static final int NUM_BYTE_VALUES = 1 << 8;
-
 
     /**
      * <p>Clones an array returning a typecast result and handling
@@ -293,7 +307,6 @@ public enum ArrayUtil {
         return array.clone();
     }
 
-
     /**
      * <p>Defensive programming technique to change a {@code null}
      * reference to an empty one.
@@ -318,7 +331,6 @@ public enum ArrayUtil {
         return array;
     }
 
-
     /**
      * <p>Defensive programming technique to change a {@code null}
      * reference to an empty one.
@@ -333,7 +345,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Object[] nullToEmpty(final Object[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_OBJECT_ARRAY;
         }
         return array;
@@ -353,7 +365,7 @@ public enum ArrayUtil {
      * @since 3.2
      */
     public static Class<?>[] nullToEmpty(final Class<?>[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_CLASS_ARRAY;
         }
         return array;
@@ -373,7 +385,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static String[] nullToEmpty(final String[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_STRING_ARRAY;
         }
         return array;
@@ -393,7 +405,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static long[] nullToEmpty(final long[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_LONG_ARRAY;
         }
         return array;
@@ -413,7 +425,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static int[] nullToEmpty(final int[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_INT_ARRAY;
         }
         return array;
@@ -433,7 +445,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static short[] nullToEmpty(final short[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_SHORT_ARRAY;
         }
         return array;
@@ -453,7 +465,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static char[] nullToEmpty(final char[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_CHAR_ARRAY;
         }
         return array;
@@ -473,7 +485,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static byte[] nullToEmpty(final byte[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_BYTE_ARRAY;
         }
         return array;
@@ -493,7 +505,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static double[] nullToEmpty(final double[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_DOUBLE_ARRAY;
         }
         return array;
@@ -513,7 +525,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static float[] nullToEmpty(final float[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_FLOAT_ARRAY;
         }
         return array;
@@ -533,7 +545,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static boolean[] nullToEmpty(final boolean[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_BOOLEAN_ARRAY;
         }
         return array;
@@ -553,7 +565,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Long[] nullToEmpty(final Long[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_LONG_OBJECT_ARRAY;
         }
         return array;
@@ -573,7 +585,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Integer[] nullToEmpty(final Integer[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_INTEGER_OBJECT_ARRAY;
         }
         return array;
@@ -593,7 +605,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Short[] nullToEmpty(final Short[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_SHORT_OBJECT_ARRAY;
         }
         return array;
@@ -613,7 +625,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Character[] nullToEmpty(final Character[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_CHARACTER_OBJECT_ARRAY;
         }
         return array;
@@ -633,7 +645,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Byte[] nullToEmpty(final Byte[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_BYTE_OBJECT_ARRAY;
         }
         return array;
@@ -653,7 +665,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Double[] nullToEmpty(final Double[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_DOUBLE_OBJECT_ARRAY;
         }
         return array;
@@ -673,7 +685,7 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Float[] nullToEmpty(final Float[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_FLOAT_OBJECT_ARRAY;
         }
         return array;
@@ -693,12 +705,11 @@ public enum ArrayUtil {
      * @since 2.5
      */
     public static Boolean[] nullToEmpty(final Boolean[] array) {
-        if (isEmpty(array)) {
+        if (array.length == 0) {
             return EMPTY_BOOLEAN_OBJECT_ARRAY;
         }
         return array;
     }
-
 
     /**
      * <p>Produces a new array containing the elements between
@@ -1090,127 +1101,6 @@ public enum ArrayUtil {
         return subarray;
     }
 
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * <p>Any multi-dimensional aspects of the arrays are ignored.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final Object[] array1, final Object[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final long[] array1, final long[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final int[] array1, final int[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final short[] array1, final short[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final char[] array1, final char[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final byte[] array1, final byte[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final double[] array1, final double[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final float[] array1, final float[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-    /**
-     * <p>Checks whether two arrays are the same length, treating
-     * {@code null} arrays as length {@code 0}.
-     *
-     * @param array1 the first array, may be {@code null}
-     * @param array2 the second array, may be {@code null}
-     * @return {@code true} if length of arrays matches, treating
-     * {@code null} as an empty array
-     */
-    public static boolean isSameLength(final boolean[] array1, final boolean[] array2) {
-        return getLength(array1) == getLength(array2);
-    }
-
-
     /**
      * <p>Returns the length of the specified array.
      * This method can deal with {@code Object} arrays and with primitive arrays.
@@ -1232,9 +1122,6 @@ public enum ArrayUtil {
      * @since 2.1
      */
     public static int getLength(final Object array) {
-        if (array == null) {
-            return 0;
-        }
         return Array.getLength(array);
     }
 
@@ -1253,7 +1140,6 @@ public enum ArrayUtil {
         }
         return array1.getClass().getName().equals(array2.getClass().getName());
     }
-
 
     /**
      * <p>Reverses the order of the given array.
@@ -1658,259 +1544,6 @@ public enum ArrayUtil {
         }
     }
 
-
-    /**
-     * Swaps two elements in the given array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap(["1", "2", "3"], 0, 2) -&gt; ["3", "2", "1"]</li>
-     * <li>ArrayUtils.swap(["1", "2", "3"], 0, 0) -&gt; ["1", "2", "3"]</li>
-     * <li>ArrayUtils.swap(["1", "2", "3"], 1, 0) -&gt; ["2", "1", "3"]</li>
-     * <li>ArrayUtils.swap(["1", "2", "3"], 0, 5) -&gt; ["1", "2", "3"]</li>
-     * <li>ArrayUtils.swap(["1", "2", "3"], -1, 1) -&gt; ["2", "1", "3"]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final Object[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given long array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([true, false, true], 0, 2) -&gt; [true, false, true]</li>
-     * <li>ArrayUtils.swap([true, false, true], 0, 0) -&gt; [true, false, true]</li>
-     * <li>ArrayUtils.swap([true, false, true], 1, 0) -&gt; [false, true, true]</li>
-     * <li>ArrayUtils.swap([true, false, true], 0, 5) -&gt; [true, false, true]</li>
-     * <li>ArrayUtils.swap([true, false, true], -1, 1) -&gt; [false, true, true]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final long[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given int array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final int[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given short array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final short[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given char array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final char[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given byte array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final byte[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given double array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final double[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given float array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final float[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
-    /**
-     * Swaps two elements in the given boolean array.
-     *
-     * <p>There is no special handling for multi-dimensional arrays. This method
-     * does nothing for a {@code null} or empty input array or for overflow indices.
-     * Negative indices are promoted to 0(zero).</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 2) -&gt; [3, 2, 1]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 0) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 1, 0) -&gt; [2, 1, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], 0, 5) -&gt; [1, 2, 3]</li>
-     * <li>ArrayUtils.swap([1, 2, 3], -1, 1) -&gt; [2, 1, 3]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element to swap
-     * @param offset2 the index of the second element to swap
-     * @since 3.5
-     */
-    public static void swap(final boolean[] array, final int offset1, final int offset2) {
-        if (array == null || array.length == 0) {
-            return;
-        }
-        swap(array, offset1, offset2, 1);
-    }
-
     /**
      * Swaps a series of elements in the given boolean array.
      *
@@ -1978,20 +1611,146 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void swap(final byte[] array, int offset1, int offset2, int len) {
-        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
+        if (len == 1) {
+            swapByte(array, offset1, offset2);
+        } else {
+            int alen = array.length;
+            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (offset1 < 0) offset1 = 0;
+            if (offset2 < 0) offset2 = 0;
+            len = Math.min(Math.min(len, alen - offset1), alen - offset2);
+            for (int i = 0; i < len; i++, offset1++, offset2++)
+                swapByte(array, offset1, offset2);
+        }
+    }
+
+    public static void swapByte(byte[] array, int offset1, int offset2) {
+        if (offset1==offset2)
             return;
+        final byte aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapLong(long[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final long aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapInt(int[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final int aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapDouble(double[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final double aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapFloat(float[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final float aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapBool(boolean[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final boolean aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapObj(Object[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final Object aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    public static void swapShort(short[] array, int offset1, int offset2) {
+        if (offset1==offset2)
+            return;
+        final short aux = array[offset1];
+        array[offset1] = array[offset2];
+        array[offset2] = aux;
+    }
+
+    /**
+     * Swaps a series of elements in the given long array.
+     *
+     * <p>This method does nothing for a {@code null} or empty input array or
+     * for overflow indices. Negative indices are promoted to 0(zero). If any
+     * of the sub-arrays to swap falls outside of the given array, then the
+     * swap is stopped at the end of the array and as many as possible elements
+     * are swapped.</p>
+     * <p>
+     * Examples:
+     * <ul>
+     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -&gt; [3, 2, 1, 4]</li>
+     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -&gt; [1, 2, 3, 4]</li>
+     * <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -&gt; [3, 4, 1, 2]</li>
+     * <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -&gt; [3, 4, 1, 2]</li>
+     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -&gt; [4, 2, 3, 1]</li>
+     * </ul>
+     *
+     * @param array   the array to swap, may be {@code null}
+     * @param offset1 the index of the first element in the series to swap
+     * @param offset2 the index of the second element in the series to swap
+     * @param len     the number of elements to swap starting with the given indices
+     * @since 3.5
+     */
+    public static void swap(final long[] array, int offset1, int offset2, int len) {
+        if (len == 1) {
+            swapLong(array, offset1, offset2);
+        } else {
+            int alen = array.length;
+            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (offset1 < 0) offset1 = 0;
+            if (offset2 < 0) offset2 = 0;
+            len = Math.min(Math.min(len, alen - offset1), alen - offset2);
+            for (int i = 0; i < len; i++, offset1++, offset2++)
+                swapLong(array, offset1, offset2);
         }
-        if (offset1 < 0) {
-            offset1 = 0;
+    }
+
+    public static void swap(final int[] array, int offset1, int offset2, int len) {
+        if (len == 1) {
+            swapInt(array, offset1, offset2);
+        } else {
+            int alen = array.length;
+            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (offset1 < 0) offset1 = 0;
+            if (offset2 < 0) offset2 = 0;
+            len = Math.min(Math.min(len, alen - offset1), alen - offset2);
+            for (int i = 0; i < len; i++, offset1++, offset2++)
+                swapInt(array, offset1, offset2);
         }
-        if (offset2 < 0) {
-            offset2 = 0;
-        }
-        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (int i = 0; i < len; i++, offset1++, offset2++) {
-            final byte aux = array[offset1];
-            array[offset1] = array[offset2];
-            array[offset2] = aux;
+    }
+
+    public static void swap(final short[] array, int offset1, int offset2, int len) {
+        if (len == 1) {
+            swapShort(array, offset1, offset2);
+        } else {
+            int alen = array.length;
+            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (offset1 < 0) offset1 = 0;
+            if (offset2 < 0) offset2 = 0;
+            len = Math.min(Math.min(len, alen - offset1), alen - offset2);
+            for (int i = 0; i < len; i++, offset1++, offset2++)
+                swapShort(array, offset1, offset2);
         }
     }
 
@@ -2123,90 +1882,6 @@ public enum ArrayUtil {
     }
 
     /**
-     * Swaps a series of elements in the given int array.
-     *
-     * <p>This method does nothing for a {@code null} or empty input array or
-     * for overflow indices. Negative indices are promoted to 0(zero). If any
-     * of the sub-arrays to swap falls outside of the given array, then the
-     * swap is stopped at the end of the array and as many as possible elements
-     * are swapped.</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -&gt; [3, 2, 1, 4]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -&gt; [1, 2, 3, 4]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -&gt; [3, 4, 1, 2]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -&gt; [3, 4, 1, 2]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -&gt; [4, 2, 3, 1]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element in the series to swap
-     * @param offset2 the index of the second element in the series to swap
-     * @param len     the number of elements to swap starting with the given indices
-     * @since 3.5
-     */
-    public static void swap(final int[] array, int offset1, int offset2, int len) {
-        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
-            return;
-        }
-        if (offset1 < 0) {
-            offset1 = 0;
-        }
-        if (offset2 < 0) {
-            offset2 = 0;
-        }
-        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (int i = 0; i < len; i++, offset1++, offset2++) {
-            final int aux = array[offset1];
-            array[offset1] = array[offset2];
-            array[offset2] = aux;
-        }
-    }
-
-    /**
-     * Swaps a series of elements in the given long array.
-     *
-     * <p>This method does nothing for a {@code null} or empty input array or
-     * for overflow indices. Negative indices are promoted to 0(zero). If any
-     * of the sub-arrays to swap falls outside of the given array, then the
-     * swap is stopped at the end of the array and as many as possible elements
-     * are swapped.</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -&gt; [3, 2, 1, 4]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -&gt; [1, 2, 3, 4]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -&gt; [3, 4, 1, 2]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -&gt; [3, 4, 1, 2]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -&gt; [4, 2, 3, 1]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element in the series to swap
-     * @param offset2 the index of the second element in the series to swap
-     * @param len     the number of elements to swap starting with the given indices
-     * @since 3.5
-     */
-    public static void swap(final long[] array, int offset1, int offset2, int len) {
-        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
-            return;
-        }
-        if (offset1 < 0) {
-            offset1 = 0;
-        }
-        if (offset2 < 0) {
-            offset2 = 0;
-        }
-        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (int i = 0; i < len; i++, offset1++, offset2++) {
-            final long aux = array[offset1];
-            array[offset1] = array[offset2];
-            array[offset2] = aux;
-        }
-    }
-
-    /**
      * Swaps a series of elements in the given array.
      *
      * <p>This method does nothing for a {@code null} or empty input array or
@@ -2231,68 +1906,18 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void swap(final Object[] array, int offset1, int offset2, int len) {
-        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
-            return;
-        }
-        if (offset1 < 0) {
-            offset1 = 0;
-        }
-        if (offset2 < 0) {
-            offset2 = 0;
-        }
-        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (int i = 0; i < len; i++, offset1++, offset2++) {
-            final Object aux = array[offset1];
-            array[offset1] = array[offset2];
-            array[offset2] = aux;
+        if (len == 1) {
+            swapObj(array, offset1, offset2);
+        } else {
+            int alen = array.length;
+            if (alen <=1 || offset1 >= alen || offset2 >= alen) return;
+            if (offset1 < 0) offset1 = 0;
+            if (offset2 < 0) offset2 = 0;
+            len = Math.min(Math.min(len, alen - offset1), alen - offset2);
+            for (int i = 0; i < len; i++, offset1++, offset2++)
+                swapObj(array, offset1, offset2);
         }
     }
-
-    /**
-     * Swaps a series of elements in the given short array.
-     *
-     * <p>This method does nothing for a {@code null} or empty input array or
-     * for overflow indices. Negative indices are promoted to 0(zero). If any
-     * of the sub-arrays to swap falls outside of the given array, then the
-     * swap is stopped at the end of the array and as many as possible elements
-     * are swapped.</p>
-     * <p>
-     * Examples:
-     * <ul>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 2, 1) -&gt; [3, 2, 1, 4]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 0, 1) -&gt; [1, 2, 3, 4]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 2, 0, 2) -&gt; [3, 4, 1, 2]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], -3, 2, 2) -&gt; [3, 4, 1, 2]</li>
-     * <li>ArrayUtils.swap([1, 2, 3, 4], 0, 3, 3) -&gt; [4, 2, 3, 1]</li>
-     * </ul>
-     *
-     * @param array   the array to swap, may be {@code null}
-     * @param offset1 the index of the first element in the series to swap
-     * @param offset2 the index of the second element in the series to swap
-     * @param len     the number of elements to swap starting with the given indices
-     * @since 3.5
-     */
-    public static void swap(final short[] array, int offset1, int offset2, int len) {
-        if (array == null || array.length == 0 || offset1 >= array.length || offset2 >= array.length) {
-            return;
-        }
-        if (offset1 < 0) {
-            offset1 = 0;
-        }
-        if (offset2 < 0) {
-            offset2 = 0;
-        }
-        if (offset1 == offset2) {
-            return;
-        }
-        len = Math.min(Math.min(len, array.length - offset1), array.length - offset2);
-        for (int i = 0; i < len; i++, offset1++, offset2++) {
-            final short aux = array[offset1];
-            array[offset1] = array[offset2];
-            array[offset2] = aux;
-        }
-    }
-
 
     /**
      * Shifts the order of the given array.
@@ -2306,9 +1931,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final Object[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2324,9 +1946,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final long[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2342,9 +1961,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final int[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2360,9 +1976,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final short[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2378,9 +1991,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final char[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2396,9 +2006,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final byte[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2414,9 +2021,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final double[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2432,9 +2036,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final float[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2450,9 +2051,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final boolean[] array, final int offset) {
-        if (array == null) {
-            return;
-        }
         shift(array, 0, array.length, offset);
     }
 
@@ -2472,9 +2070,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final boolean[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2528,9 +2123,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final byte[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2584,9 +2176,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final char[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2640,9 +2229,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final double[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2696,9 +2282,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final float[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2752,9 +2335,6 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final int[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2808,9 +2388,7 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final long[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
+
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2864,9 +2442,7 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final Object[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
+
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2920,9 +2496,7 @@ public enum ArrayUtil {
      * @since 3.5
      */
     public static void shift(final short[] array, int startIndexInclusive, int endIndexExclusive, int offset) {
-        if (array == null) {
-            return;
-        }
+
         if (startIndexInclusive >= array.length - 1 || endIndexExclusive <= 0) {
             return;
         }
@@ -2960,7 +2534,6 @@ public enum ArrayUtil {
         }
     }
 
-
     /**
      * <p>Finds the index of the given object in the array.
      *
@@ -2990,9 +2563,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final Object[] array, final Object objectToFind, int startIndex) {
-//        if (array == null) {
-//            return INDEX_NOT_FOUND;
-//        }
+
         if (startIndex < 0) {
             startIndex = 0;
         }
@@ -3027,6 +2598,7 @@ public enum ArrayUtil {
 
         return INDEX_NOT_FOUND;
     }
+
     /**
      * <p>Finds the last index of the given object within the array.
      *
@@ -3093,7 +2665,6 @@ public enum ArrayUtil {
     public static boolean contains(final Object[] array, final Object objectToFind) {
         return indexOf(array, objectToFind) != INDEX_NOT_FOUND;
     }
-
 
     /**
      * <p>Finds the index of the given value in the array.
@@ -3196,7 +2767,6 @@ public enum ArrayUtil {
     public static boolean contains(final long[] array, final long valueToFind) {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
-
 
     /**
      * <p>Finds the index of the given value in the array.
@@ -3312,7 +2882,6 @@ public enum ArrayUtil {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3411,7 +2980,6 @@ public enum ArrayUtil {
     public static boolean contains(final short[] array, final short valueToFind) {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
-
 
     /**
      * <p>Finds the index of the given value in the array.
@@ -3520,7 +3088,6 @@ public enum ArrayUtil {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3624,7 +3191,6 @@ public enum ArrayUtil {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
 
-
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3671,7 +3237,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final double[] array, final double valueToFind, int startIndex) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3703,7 +3269,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final double[] array, final double valueToFind, int startIndex, final double tolerance) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3765,7 +3331,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final double[] array, final double valueToFind, int startIndex) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3800,7 +3366,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final double[] array, final double valueToFind, int startIndex, final double tolerance) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3849,7 +3415,6 @@ public enum ArrayUtil {
         return indexOf(array, valueToFind, 0, tolerance) != INDEX_NOT_FOUND;
     }
 
-
     /**
      * <p>Finds the index of the given value in the array.
      *
@@ -3879,7 +3444,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int indexOf(final float[] array, final float valueToFind, int startIndex) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3922,7 +3487,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final float[] array, final float valueToFind, int startIndex) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -3951,7 +3516,6 @@ public enum ArrayUtil {
     public static boolean contains(final float[] array, final float valueToFind) {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
-
 
     /**
      * <p>Finds the index of the given value in the array.
@@ -3983,7 +3547,7 @@ public enum ArrayUtil {
      * array input
      */
     public static int indexOf(final boolean[] array, final boolean valueToFind, int startIndex) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -4027,7 +3591,7 @@ public enum ArrayUtil {
      * {@link #INDEX_NOT_FOUND} ({@code -1}) if not found or {@code null} array input
      */
     public static int lastIndexOf(final boolean[] array, final boolean valueToFind, int startIndex) {
-        if (ArrayUtil.isEmpty(array)) {
+        if (array.length == 0) {
             return INDEX_NOT_FOUND;
         }
         if (startIndex < 0) {
@@ -4056,7 +3620,6 @@ public enum ArrayUtil {
     public static boolean contains(final boolean[] array, final boolean valueToFind) {
         return indexOf(array, valueToFind) != INDEX_NOT_FOUND;
     }
-
 
     /**
      * <p>Converts an array of object Characters to primitives.
@@ -4127,7 +3690,6 @@ public enum ArrayUtil {
         return result;
     }
 
-
     /**
      * <p>Converts an array of object Longs to primitives.
      *
@@ -4196,7 +3758,6 @@ public enum ArrayUtil {
         }
         return result;
     }
-
 
     /**
      * <p>Converts an array of object Integers to primitives.
@@ -4267,7 +3828,6 @@ public enum ArrayUtil {
         return result;
     }
 
-
     /**
      * <p>Converts an array of object Shorts to primitives.
      *
@@ -4336,7 +3896,6 @@ public enum ArrayUtil {
         }
         return result;
     }
-
 
     /**
      * <p>Converts an array of object Bytes to primitives.
@@ -4407,7 +3966,6 @@ public enum ArrayUtil {
         return result;
     }
 
-
     /**
      * <p>Converts an array of object Doubles to primitives.
      *
@@ -4476,7 +4034,6 @@ public enum ArrayUtil {
         }
         return result;
     }
-
 
     /**
      * <p>Converts an array of object Floats to primitives.
@@ -4547,7 +4104,6 @@ public enum ArrayUtil {
         return result;
     }
 
-
     /**
      * <p>Converts an array of object Booleans to primitives.
      *
@@ -4615,207 +4171,6 @@ public enum ArrayUtil {
             result[i] = (array[i] ? Boolean.TRUE : Boolean.FALSE);
         }
         return result;
-    }
-
-
-    /**
-     * <p>Checks if an array of Objects is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final Object[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive longs is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final long[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive ints is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final int[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive shorts is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final short[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive chars is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final char[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive bytes is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final byte[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive doubles is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final double[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive floats is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final float[] array) {
-        return getLength(array) == 0;
-    }
-
-    /**
-     * <p>Checks if an array of primitive booleans is empty or {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is empty or {@code null}
-     * @since 2.1
-     */
-    public static boolean isEmpty(final boolean[] array) {
-        return getLength(array) == 0;
-    }
-
-
-    /**
-     * <p>Checks if an array of Objects is not empty and not {@code null}.
-     *
-     * @param <T>   the component type of the array
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static <T> boolean isNotEmpty(final T[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive longs is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final long[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive ints is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final int[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive shorts is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final short[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive chars is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final char[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive bytes is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final byte[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive doubles is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final double[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive floats is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final float[] array) {
-        return !isEmpty(array);
-    }
-
-    /**
-     * <p>Checks if an array of primitive booleans is not empty and not {@code null}.
-     *
-     * @param array the array to test
-     * @return {@code true} if the array is not empty and not {@code null}
-     * @since 2.5
-     */
-    public static boolean isNotEmpty(final boolean[] array) {
-        return !isEmpty(array);
     }
 
     /**
@@ -5411,7 +4766,6 @@ public enum ArrayUtil {
     private static int[] copyArrayGrow1(final int[] array) {
         return array != null ? Arrays.copyOf(array, array.length + 1) : new int[1];
     }
-
 
     /**
      * <p>Inserts the specified element at the specified position in the array.
@@ -6472,7 +5826,7 @@ public enum ArrayUtil {
      */
     @SafeVarargs
     public static <T> T[] removeElements(final T[] array, final T... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<T, MutableInt> occurrences = new HashMap<>(values.length);
@@ -6497,39 +5851,6 @@ public enum ArrayUtil {
         }
         @SuppressWarnings("unchecked") final T[] result = (T[]) removeAll(array, toRemove);
         return result;
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([1], 0)             = []
-     * ArrayUtils.removeAll([2, 6], 0)          = [6]
-     * ArrayUtils.removeAll([2, 6], 0, 1)       = []
-     * ArrayUtils.removeAll([2, 6, 3], 1, 2)    = [2]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 2)    = [6]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 1, 2) = []
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static byte[] removeAll(final byte[] array, final int... indices) {
-        return (byte[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -6560,7 +5881,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static byte[] removeElements(final byte[] array, final byte... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Byte, MutableInt> occurrences = new HashMap<>(values.length);
@@ -6648,7 +5969,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static short[] removeElements(final short[] array, final short... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Short, MutableInt> occurrences = new HashMap<>(values.length);
@@ -6673,39 +5994,6 @@ public enum ArrayUtil {
             }
         }
         return (short[]) removeAll(array, toRemove);
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([1], 0)             = []
-     * ArrayUtils.removeAll([2, 6], 0)          = [6]
-     * ArrayUtils.removeAll([2, 6], 0, 1)       = []
-     * ArrayUtils.removeAll([2, 6, 3], 1, 2)    = [2]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 2)    = [6]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 1, 2) = []
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static int[] removeAll(final int[] array, final int... indices) {
-        return (int[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -6736,7 +6024,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static int[] removeElements(final int[] array, final int... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Integer, MutableInt> occurrences = new HashMap<>(values.length);
@@ -6761,39 +6049,6 @@ public enum ArrayUtil {
             }
         }
         return (int[]) removeAll(array, toRemove);
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([1], 0)             = []
-     * ArrayUtils.removeAll([2, 6], 0)          = [6]
-     * ArrayUtils.removeAll([2, 6], 0, 1)       = []
-     * ArrayUtils.removeAll([2, 6, 3], 1, 2)    = [2]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 2)    = [6]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 1, 2) = []
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static char[] removeAll(final char[] array, final int... indices) {
-        return (char[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -6824,7 +6079,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static char[] removeElements(final char[] array, final char... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Character, MutableInt> occurrences = new HashMap<>(values.length);
@@ -6849,39 +6104,6 @@ public enum ArrayUtil {
             }
         }
         return (char[]) removeAll(array, toRemove);
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([1], 0)             = []
-     * ArrayUtils.removeAll([2, 6], 0)          = [6]
-     * ArrayUtils.removeAll([2, 6], 0, 1)       = []
-     * ArrayUtils.removeAll([2, 6, 3], 1, 2)    = [2]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 2)    = [6]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 1, 2) = []
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static long[] removeAll(final long[] array, final int... indices) {
-        return (long[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -6912,7 +6134,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static long[] removeElements(final long[] array, final long... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Long, MutableInt> occurrences = new HashMap<>(values.length);
@@ -6937,39 +6159,6 @@ public enum ArrayUtil {
             }
         }
         return (long[]) removeAll(array, toRemove);
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([1], 0)             = []
-     * ArrayUtils.removeAll([2, 6], 0)          = [6]
-     * ArrayUtils.removeAll([2, 6], 0, 1)       = []
-     * ArrayUtils.removeAll([2, 6, 3], 1, 2)    = [2]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 2)    = [6]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 1, 2) = []
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static float[] removeAll(final float[] array, final int... indices) {
-        return (float[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -7000,7 +6189,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static float[] removeElements(final float[] array, final float... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Float, MutableInt> occurrences = new HashMap<>(values.length);
@@ -7025,39 +6214,6 @@ public enum ArrayUtil {
             }
         }
         return (float[]) removeAll(array, toRemove);
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([1], 0)             = []
-     * ArrayUtils.removeAll([2, 6], 0)          = [6]
-     * ArrayUtils.removeAll([2, 6], 0, 1)       = []
-     * ArrayUtils.removeAll([2, 6, 3], 1, 2)    = [2]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 2)    = [6]
-     * ArrayUtils.removeAll([2, 6, 3], 0, 1, 2) = []
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static double[] removeAll(final double[] array, final int... indices) {
-        return (double[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -7088,7 +6244,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static double[] removeElements(final double[] array, final double... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Double, MutableInt> occurrences = new HashMap<>(values.length);
@@ -7113,35 +6269,6 @@ public enum ArrayUtil {
             }
         }
         return (double[]) removeAll(array, toRemove);
-    }
-
-    /**
-     * <p>Removes the elements at the specified positions from the specified array.
-     * All remaining elements are shifted to the left.
-     *
-     * <p>This method returns a new array with the same elements of the input
-     * array except those at the specified positions. The component
-     * type of the returned array is always the same as that of the input
-     * array.
-     *
-     * <p>If the input array is {@code null}, an IndexOutOfBoundsException
-     * will be thrown, because in that case no valid index can be specified.
-     *
-     * <pre>
-     * ArrayUtils.removeAll([true, false, true], 0, 2) = [false]
-     * ArrayUtils.removeAll([true, false, true], 1, 2) = [true]
-     * </pre>
-     *
-     * @param array   the array to remove the element from, may not be {@code null}
-     * @param indices the positions of the elements to be removed
-     * @return A new array containing the existing elements except those
-     * at the specified positions.
-     * @throws IndexOutOfBoundsException if any index is out of range
-     *                                   (index &lt; 0 || index &gt;= array.length), or if the array is {@code null}.
-     * @since 3.0.1
-     */
-    public static boolean[] removeAll(final boolean[] array, final int... indices) {
-        return (boolean[]) removeAll((Object) array, indices);
     }
 
     /**
@@ -7172,7 +6299,7 @@ public enum ArrayUtil {
      * @since 3.0.1
      */
     public static boolean[] removeElements(final boolean[] array, final boolean... values) {
-        if (isEmpty(array) || isEmpty(values)) {
+        if (array.length == 0 || values.length == 0) {
             return clone(array);
         }
         final Map<Boolean, MutableInt> occurrences = new HashMap<>(2);
@@ -7211,12 +6338,15 @@ public enum ArrayUtil {
     @Deprecated
     static Object removeAll(final Object array, final int... indices) {
         final int length = getLength(array);
+        if (length == 0)
+            return array;
+
         int diff = 0;
         final int[] clonedIndices = clone(indices);
         Arrays.sort(clonedIndices);
 
 
-        if (isNotEmpty(clonedIndices)) {
+        {
             int i = clonedIndices.length;
             int prevIndex = length;
             while (--i >= 0) {
@@ -7253,6 +6383,39 @@ public enum ArrayUtil {
         }
         return result;
     }
+
+//    /**
+//     * Removes the occurrences of the specified element from the specified array.
+//     *
+//     * <p>
+//     * All subsequent elements are shifted to the left (subtracts one from their indices).
+//     * If the array doesn't contains such an element, no elements are removed from the array.
+//     * <code>null</code> will be returned if the input array is <code>null</code>.
+//     * </p>
+//     *
+//     * @param <T>     the type of object in the array
+//     * @param element the element to remove
+//     * @param array   the input array
+//     * @return A new array containing the existing elements except the occurrences of the specified element.
+//     * @since 3.5
+//     */
+//    public static <T> T[] removeAllOccurences(final T[] array, final T element) {
+//        int index = indexOf(array, element);
+//        if (index == INDEX_NOT_FOUND) {
+//
+//            return array;
+//        }
+//
+//        final MetalBitSet indices = MetalBitSet.bits(array.length);
+//        indices[0] = index;
+//        int count = 1;
+//
+//        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
+//            indices[count++] = index;
+//        }
+//
+//        return removeAll(array, Arrays.copyOf(indices, count));
+//    }
 
     /**
      * Removes multiple array elements specified by indices.
@@ -7311,6 +6474,7 @@ public enum ArrayUtil {
     public static <X> X[] removeAll(final X[] x, final MetalBitSet keep) {
         return removeAll(x, keep, false);
     }
+
     public static <X> X[] removeAll(final X[] x, final MetalBitSet indices, boolean iff) {
         int toRemove = indices.cardinality();
         if (toRemove == 0)
@@ -7368,7 +6532,6 @@ public enum ArrayUtil {
         return isSorted(array, Comparator.naturalOrder());
     }
 
-
     /**
      * <p>This method checks whether the provided array is sorted according to the provided {@code Comparator}.
      *
@@ -7399,7 +6562,6 @@ public enum ArrayUtil {
         }
         return true;
     }
-
 
     /**
      * <p>This method checks whether the provided array is sorted according to natural ordering.
@@ -7445,6 +6607,7 @@ public enum ArrayUtil {
         }
         return true;
     }
+
     public static boolean isSorted(final long[] array) {
         if (array == null || array.length < 2)
             return true;
@@ -7458,68 +6621,6 @@ public enum ArrayUtil {
             previous = current;
         }
         return true;
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified boolean array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static boolean[] removeAllOccurences(final boolean[] array, final boolean element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified char array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static char[] removeAllOccurences(final char[] array, final char element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
     }
 
     /**
@@ -7557,161 +6658,6 @@ public enum ArrayUtil {
         return array;
     }
 
-    /**
-     * Removes the occurrences of the specified element from the specified short array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static short[] removeAllOccurences(final short[] array, final short element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified int array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static int[] removeAllOccurences(final int[] array, final int element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified long array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static long[] removeAllOccurences(final long[] array, final long element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified float array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static float[] removeAllOccurences(final float[] array, final float element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified double array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static double[] removeAllOccurences(final double[] array, final double element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
-    }
-
 
     public static <T> T[] removeNulls(final T[] array) {
         int nulls = 0;
@@ -7736,39 +6682,6 @@ public enum ArrayUtil {
             }
         }
     }
-
-//    /**
-//     * Removes the occurrences of the specified element from the specified array.
-//     *
-//     * <p>
-//     * All subsequent elements are shifted to the left (subtracts one from their indices).
-//     * If the array doesn't contains such an element, no elements are removed from the array.
-//     * <code>null</code> will be returned if the input array is <code>null</code>.
-//     * </p>
-//     *
-//     * @param <T>     the type of object in the array
-//     * @param element the element to remove
-//     * @param array   the input array
-//     * @return A new array containing the existing elements except the occurrences of the specified element.
-//     * @since 3.5
-//     */
-//    public static <T> T[] removeAllOccurences(final T[] array, final T element) {
-//        int index = indexOf(array, element);
-//        if (index == INDEX_NOT_FOUND) {
-//
-//            return array;
-//        }
-//
-//        final MetalBitSet indices = MetalBitSet.bits(array.length);
-//        indices[0] = index;
-//        int count = 1;
-//
-//        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-//            indices[count++] = index;
-//        }
-//
-//        return removeAll(array, Arrays.copyOf(indices, count));
-//    }
 
     /**
      * <p>Returns an array containing the string representation of each element in the argument array.</p>
@@ -8220,43 +7133,19 @@ public enum ArrayUtil {
     /**
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
      *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(Object[] array) {
-        shuffle(array, new Random());
-    }
-
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
      * @param array  the array to shuffle
      * @param random the source of randomness used to permute the elements
      * @see <a href="https:
      * @since 3.6
      */
     public static void shuffle(Object[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
+        for (int i = array.length; i > 1; i--)
+            swapObj(array, i - 1, random.nextInt(i));
     }
 
     public static void shuffle(Object[] array, Rand random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
-    }
-
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(boolean[] array) {
-        shuffle(array, new Random());
+        for (int i = array.length; i > 1; i--)
+            swapObj(array, i - 1, random.nextInt(i));
     }
 
     /**
@@ -8268,11 +7157,9 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(boolean[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
+        for (int i = array.length; i > 1; i--)
+            swapBool(array, i - 1, random.nextInt(i));
     }
-
 
     /**
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
@@ -8283,11 +7170,9 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(byte[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
+        for (int i = array.length; i > 1; i--)
+            swapByte(array, i - 1, random.nextInt(i));
     }
-
 
     /**
      * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
@@ -8298,20 +7183,8 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(char[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
+        for (int i = array.length; i > 1; i--)
             swap(array, i - 1, random.nextInt(i), 1);
-        }
-    }
-
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(short[] array) {
-        shuffle(array, new Random());
     }
 
     /**
@@ -8323,32 +7196,8 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(short[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
-    }
-
-//    /**
-//     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-//     *
-//     * @param array the array to shuffle
-//     * @see <a href="https:
-//     * @since 3.6
-//     */
-//    public static void shuffle(int[] array) {
-//        shuffle(array, new Random());
-//    }
-
-
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(long[] array) {
-        shuffle(array, new Random());
+        for (int i = array.length; i > 1; i--)
+            swapShort(array, i - 1, random.nextInt(i));
     }
 
     /**
@@ -8360,20 +7209,8 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(long[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
-    }
-
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(float[] array) {
-        shuffle(array, new Random());
+        for (int i = array.length; i > 1; i--)
+            swapLong(array, i - 1, random.nextInt(i));
     }
 
     /**
@@ -8385,20 +7222,8 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(float[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
-    }
-
-    /**
-     * Randomly permutes the elements of the specified array using the Fisher-Yates algorithm.
-     *
-     * @param array the array to shuffle
-     * @see <a href="https:
-     * @since 3.6
-     */
-    public static void shuffle(double[] array) {
-        shuffle(array, new Random());
+        for (int i = array.length; i > 1; i--)
+            swapFloat(array, i - 1, random.nextInt(i));
     }
 
     /**
@@ -8410,9 +7235,8 @@ public enum ArrayUtil {
      * @since 3.6
      */
     public static void shuffle(double[] array, Random random) {
-        for (int i = array.length; i > 1; i--) {
-            swap(array, i - 1, random.nextInt(i), 1);
-        }
+        for (int i = array.length; i > 1; i--)
+            swapDouble(array, i - 1, random.nextInt(i));
     }
 
     /**
@@ -8704,35 +7528,13 @@ public enum ArrayUtil {
     }
 
     public static void shuffle(int[] array, int len, Random random) {
-
-
-        if (random.nextInt(factorial(len)) == 0) return;
-
-        for (int i = len; i > 1; i--) {
-            int a = i - 1;
-            int b = random.nextInt(i);
-            if (b != a) {
-                int t = array[b];
-                array[b] = array[a];
-                array[a] = t;
-            }
-        }
+        for (int i = len; i > 1; i--)
+            swapInt(array, i - 1, random.nextInt(i));
     }
 
     public static void shuffle(byte[] array, int len, Random random) {
-
-
-        if (random.nextInt(factorial(len)) == 0) return;
-
-        for (int i = len; i > 1; i--) {
-            int a = i - 1;
-            int b = random.nextInt(i);
-            if (b != a) {
-                byte t = array[b];
-                array[b] = array[a];
-                array[a] = t;
-            }
-        }
+        for (int i = len; i > 1; i--)
+            swapByte(array, i - 1, random.nextInt(i));
     }
 
     public static void sort(int[] a, int left, int right, IntToShortFunction v) {
@@ -8760,7 +7562,6 @@ public enum ArrayUtil {
     public static void sort(int[] a, IntToFloatFunction v) {
         sort(a, 0, a.length - 1, v);
     }
-
 
     /**
      * sorts descending
@@ -8812,13 +7613,13 @@ public enum ArrayUtil {
 
     }
 
-
     /**
      * sorts descending
      */
     public static <X> void sort(X[] a, DoubleFunction<X> v) {
         sort(a, 0, a.length - 1, v);
     }
+
     public static <X> void sort(X[] a, FloatFunction<X> v) {
         sort(a, 0, a.length - 1, v);
     }
@@ -8838,6 +7639,7 @@ public enum ArrayUtil {
             a[j + 1] = ai;
         }
     }
+
     /**
      * sorts descending, left and right BOTH inclusive
      */
@@ -8900,7 +7702,6 @@ public enum ArrayUtil {
 
     }
 
-
     /**
      * modifies input
      */
@@ -8925,37 +7726,6 @@ public enum ArrayUtil {
             }
         }
         return tt;
-    }
-
-    /**
-     * Removes the occurrences of the specified element from the specified byte array.
-     *
-     * <p>
-     * All subsequent elements are shifted to the left (subtracts one from their indices).
-     * If the array doesn't contains such an element, no elements are removed from the array.
-     * <code>null</code> will be returned if the input array is <code>null</code>.
-     * </p>
-     *
-     * @param element the element to remove
-     * @param array   the input array
-     * @return A new array containing the existing elements except the occurrences of the specified element.
-     * @since 3.5
-     */
-    public static byte[] removeAllOccurences(final byte[] array, final byte element) {
-        int index = indexOf(array, element);
-        if (index == INDEX_NOT_FOUND) {
-            return clone(array);
-        }
-
-        final int[] indices = new int[array.length - index];
-        indices[0] = index;
-        int count = 1;
-
-        while ((index = indexOf(array, element, indices[count - 1] + 1)) != INDEX_NOT_FOUND) {
-            indices[count++] = index;
-        }
-
-        return removeAll(array, Arrays.copyOf(indices, count));
     }
 
     public static int nextIndexOf(byte[] array, int startingAt, int endingAt, byte[] target, int targetFrom, int targetTo) {
@@ -9006,28 +7776,6 @@ public enum ArrayUtil {
             }
         };
     }
-
-
-    private static final byte[] BYTE_ZERO = new byte[] { 0 };
-    private static final byte[] BYTE_ONE = new byte[] { 1 };
-    private static final byte[] BYTE_TWO = new byte[] { 2 };
-    private static final byte[] BYTE_THREE = new byte[] { 3 };
-
-    private static final byte[] BYTE_ZERO_ZERO = new byte[] { 0, 0 };
-    private static final byte[] BYTE_ZERO_ONE = new byte[] { 0, 1 };
-    private static final byte[] BYTE_ONE_ZERO = new byte[] { 1, 0 };
-    private static final byte[] BYTE_ONE_ONE = new byte[] { 1, 1 };
-    private static final byte[] BYTE_ONE_TWO = new byte[] { 1, 2 };
-    private static final byte[] BYTE_ONE_NEGONE = new byte[] { 1, -1 };
-    private static final byte[] BYTE_ONE_NEGTWO = new byte[] { 1, -2 };
-    private static final byte[] BYTE_TWO_ONE = new byte[] { 2, 1 };
-    private static final byte[] BYTE_TWO_TWO = new byte[] { 2, 2 };
-    private static final byte[] BYTE_TWO_NEGONE = new byte[] { 2, -1 };
-    private static final byte[] BYTE_TWO_NEGTWO = new byte[] { 2, -2 };
-    private static final byte[] BYTE_NEGONE_ONE = new byte[] { -1, 1 };
-    private static final byte[] BYTE_NEGONE_TWO = new byte[] { -1, 2 };
-    private static final byte[] BYTE_NEGONE_NEGONE = new byte[] { -1, -1 };
-    private static final byte[] BYTE_NEGONE_NEGTWO = new byte[] { -1, -2 };
 
     /** simple byte[] interner for low-count elements */
     public static byte[] intern(byte[] map) {

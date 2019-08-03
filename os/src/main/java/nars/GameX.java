@@ -436,15 +436,15 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.termVolMax.set(32);
+        n.termVolMax.set(40);
 
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 
-        n.beliefPriDefault.amp(0.05f);
-        n.goalPriDefault.amp(0.05f);
-        n.questionPriDefault.amp(0.02f);
-        n.questPriDefault.amp(0.02f);
+        n.beliefPriDefault.amp(0.5f);
+        n.goalPriDefault.amp(0.5f);
+        n.questionPriDefault.amp(0.2f);
+        n.questPriDefault.amp(0.2f);
 
         n.beliefConfDefault.set(0.5f);
         n.goalConfDefault.set(0.5f);

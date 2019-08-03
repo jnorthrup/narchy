@@ -51,7 +51,7 @@ abstract public class TruthProjection extends TaskList {
 	 * intermpolated (and evidence reduction applied as necessary)
 	 */
 	public Term term = null;
-	protected float eviFactor = 1;
+	float eviFactor = 1;
 
 	/**
 	 * active evidence cache
@@ -109,12 +109,14 @@ abstract public class TruthProjection extends TaskList {
 		int r = refocus(shrink);
 		if (r < minResults) return null;
 
-		if (r == 1) return commit1(needStamp);
-		else return commitN(shrink, minResults, needStamp, n);
+		return r == 1 ? commit1(needStamp) : commitN(shrink, minResults, needStamp, n);
 	}
 
-	public @Nullable MetalLongSet commitN(boolean shrink, int minResults, boolean needStamp, NAL n) {
+	@Nullable
+	private MetalLongSet commitN(boolean shrink, int minResults, boolean needStamp, NAL n) {
 		MetalLongSet e = filter(minResults, shrink, needStamp);
+		if (needStamp && e == null)
+			return null;
 
 		int activePreCull = active();
 
@@ -127,6 +129,7 @@ abstract public class TruthProjection extends TaskList {
 			if (activePostCull < minResults) {
 				e = null;
 			} else if (shrink && activePostCull != activePreCull) {
+
 				refocus(shrink);
 				e = filter(minResults, shrink, needStamp);
 			}
@@ -166,13 +169,13 @@ abstract public class TruthProjection extends TaskList {
 			Arrays.fill(evi, 0);
 			return 0;
 		}
-		if (size() > 1) {
+		if (count > 1) {
 			//descending
 			ArrayUtil.quickSort(0, s, (a, b) ->
 					Double.compare(evi[b], evi[a])
 				, (a, b) -> {
-					ArrayUtil.swap(items, a, b);
-					ArrayUtil.swap(evi, a, b);
+					ArrayUtil.swapObj(items, a, b);
+					ArrayUtil.swapDouble(evi, a, b);
 				});
 		}
 		return count;
@@ -188,15 +191,16 @@ abstract public class TruthProjection extends TaskList {
 		MetalLongSet e = null;
 		int remain = active();
 
-		@Nullable double[] evi = this.evi;
-		Task[] items = this.items;
-
-		int ss;
-		main: while (remain > 0 && (ss=size()) > 0) {
 
 
 
-			for (int i = 0; i < ss; i++) { //descending
+		main: while (remain >= minComponents) {
+			@Nullable double[] evi = this.evi;
+			Task[] items = this.items;
+
+
+			int ss = size;
+			for (int i = 0; i < ss-1; i++) { //descending
 
 				double ie = evi[i];
 				if (!valid(ie))
@@ -216,7 +220,7 @@ abstract public class TruthProjection extends TaskList {
 					} /*else
 						eviWith += je;*/
 				}
-				if (eviConflict > 0) {
+				if (conflict.cardinality() > 0) {
 
 					//cost benefit analysis of keeping I or removing the J's that conflict
 					if (eviConflict > ie) {
@@ -224,6 +228,8 @@ abstract public class TruthProjection extends TaskList {
 						//remove i
 						if (--remain >= minComponents) {
 							remove(i);
+							removeNulls();
+							remain = refocus(shrink);
 							continue main;
 						} else {
 							clear(); return null; //fail
@@ -238,6 +244,8 @@ abstract public class TruthProjection extends TaskList {
 									remove(k);
 								}
 							}
+							removeNulls();
+							remain = refocus(shrink);
 							continue main;
 						} else {
 							clear(); return null; //fail
@@ -247,7 +255,6 @@ abstract public class TruthProjection extends TaskList {
 				}
 			}
 
-			remain = refocus(shrink);
 
 			if (remain < minComponents) {
 				//OOPS
@@ -259,15 +266,15 @@ abstract public class TruthProjection extends TaskList {
 			if (remain == 1) {
 				//throw new WTF();
 				e = needStamp ? Stamp.toMutableSet(firstValid()) : null;
-				break;
-			}
+			} else {
 
-			if (needStamp) {
-				if (e!=null) e.clear();
-				else e = new MetalLongSet(remain * STAMP_CAPACITY);
-				for (int i = 0; i < ss; i++) {
-					if (valid(i))
-						e.addAll(stamp(i));
+				if (needStamp) {
+					if (e != null) e.clear();
+					else e = new MetalLongSet(remain * STAMP_CAPACITY);
+					for (int i = 0; i < ss; i++) {
+						if (valid(i))
+							e.addAll(stamp(i));
+					}
 				}
 			}
 
@@ -275,7 +282,6 @@ abstract public class TruthProjection extends TaskList {
 
 		}
 
-		removeNulls();
 		return e;
 	}
 
@@ -290,14 +296,18 @@ abstract public class TruthProjection extends TaskList {
 		int sizeBefore = size;
 		if (evi != null) {
 			//verify that all zero evidence slots also have null tasks, if not then nullify the corresponding task slot
+			int newSize = 0;
 			for (int i = 0; i < sizeBefore; i++) {
 				if (!valid(evi[i])) {
 					//assert(items[i] == null);
 					items[i] = null;
-					evi[i] = 0;
-				}
+				} else
+					newSize++;
 			}
+			this.size = newSize;
 		}
+
+
 
 		boolean result = false;
 		if (super.removeNulls()) {
@@ -317,97 +327,6 @@ abstract public class TruthProjection extends TaskList {
 		return result;
 	}
 
-	private double conflictedEvi(MetalBitSet x) {
-		int n = x.cardinality();
-		if (n < 2)
-			return eviSum(x, true);
-
-		if (n == 2) {
-			//optimized 2-ary case
-			int a, b;
-			if (size > 2) {
-				a = x.first(true);
-				b = x.next(true, a + 1, Integer.MAX_VALUE);
-			} else {
-				a = 0;
-				b = 1;
-			}
-
-			//assert(a!=b);
-			Task aa = get(a), bb = get(b);
-			if (Stamp.overlap(aa, bb)) {
-				x.clear(1);
-				set(1, null);
-				return evi[a];
-			} else {
-				return evi[a] + evi[b];
-			}
-		} else {
-
-			double ee = 0;
-			MetalLongSet inc = new MetalLongSet(n * STAMP_CAPACITY);
-			MetalBitSet exc = null; //first iteration
-			for (int i = 0; i < size && n > 0; i++) {
-				if (x.get(i)) {
-					long[] iis = stamp(i);
-
-					if (i > 0 && Stamp.overlapsAny(inc, iis)) {
-						//overlaps
-						//greedy:
-						if (exc == null)
-							exc = MetalBitSet.bits(STAMP_CAPACITY);
-						x.clear(i);
-						exc.set(i);
-					} else {
-						//include
-						inc.addAll(iis);
-						ee += evi[i];
-						n--;
-					}
-
-				}
-			}
-
-			if (exc != null)
-				nullAll(exc);
-
-			return ee;
-		}
-		//return eviSum(x); //all
-	}
-
-	private void nullAll(MetalBitSet x) {
-		int c = x.cardinality();
-		if (c == 0) {
-
-		} else if (c == 1) {
-			int a = x.first(true);
-			setFast(a, null);
-		} else {
-			int ss = size();
-			for (int i = 0; i < ss; i++) {
-				if (x.get(i))
-					setFast(i, null);
-			}
-		}
-
-	}
-
-	private boolean time(long bs, long be) {
-		if (this.start != bs || this.end != be) {
-			this.start = bs;
-			this.end = be;
-			return true;
-		}
-		return false;
-	}
-
-//    private void cull(int minComponents, int conflict) {
-//        if (minComponents <= 1)
-//            oneForAll(conflict);
-//        else
-//            removeFast(conflict);
-//    }
 
 	//    /**
 //     * a one-for-all and all-for-one decision
@@ -428,9 +347,6 @@ abstract public class TruthProjection extends TaskList {
 //    }
 
 
-	private double eviSum(MetalBitSet b, boolean what) {
-		return eviSum(what ? b::get : ((IntPredicate) b::get).negate());
-	}
 
 	private double eviSum(IntPredicate each) {
 		double e = 0;
@@ -458,14 +374,14 @@ abstract public class TruthProjection extends TaskList {
 	    return firstValidIndex(0);
     }
     private int firstValidIndex(int after) {
-        return indexOf(after, (IntPredicate)(i -> valid(i)));
+        return indexOf(after, (IntPredicate)(this::valid));
     }
 
 	private int firstValidOrNonNullIndex(int after) {
 		return indexOf(after,
             evi!=null ?
-                (IntPredicate)(i -> valid(i)) :
-                (IntPredicate)(i -> items[i]!=null) /* first non-null */);
+				(IntPredicate)(i -> valid(i)) :
+				(IntPredicate)(i -> items[i]!=null) /* first non-null */);
 	}
 
 
@@ -484,14 +400,14 @@ abstract public class TruthProjection extends TaskList {
 		return e > Double.MIN_NORMAL;
 	}
 
-	public final TruthProjection add(Tasked... tasks) {
+	public final TruthProjection add(Task... tasks) {
 		return add(tasks.length, tasks);
 	}
 
 	public final <T extends Tasked> TruthProjection add(int firstN, T... tasks) {
 		ensureCapacity(firstN);
 		for (int i = 0; i < firstN; i++)
-			add(tasks[i]);
+			addFast(tasks[i]);
 		return this;
 	}
 
@@ -500,24 +416,12 @@ abstract public class TruthProjection extends TaskList {
 		return this;
 	}
 
-	private TruthProjection addTasks(Iterable<? extends Task> tasks) {
-		tasks.forEach(this::add);
-		return this;
-	}
-
-	public final TruthProjection addAll(TaskList tasks) {
-		ensureCapacity(tasks.size());
-		return add((Iterable) tasks);
-	}
+	private void addFast(Tasked t) { addFast(t.task()); }
 
 	public final TruthProjection add(Collection<? extends Tasked> tasks) {
 		ensureCapacity(tasks.size());
-		return add((Iterable) tasks);
-	}
-
-	public final TruthProjection addTasks(Collection<? extends Task> tasks) {
-		ensureCapacity(tasks.size());
-		return add((Iterable) tasks);
+		tasks.forEach(this::addFast);
+		return this;
 	}
 
 	private TruthProjection add(Tasked tt) {
@@ -526,7 +430,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 
-	float intermpolateAndCull(NAL nar) {
+	private float intermpolateAndCull(NAL nar) {
 
 		int thisSize;
 		main:
@@ -669,10 +573,10 @@ abstract public class TruthProjection extends TaskList {
 	 * @param all - true if applying to the entire set of tasks; false if applying only to those remaining active
 	 */
 	private int refocus(boolean shrink) {
-		removeNulls(); //HACK
+		removeNulls();
 
-        int s = size();
-        if (s == 0)
+		int s = size;
+		if (s == 0)
 			return 0;
 		if (shrink || start == ETERNAL) {
 			final long u0, u1;
@@ -698,13 +602,12 @@ abstract public class TruthProjection extends TaskList {
 					this.end = u1;
 					changed = true;
 				} else {
-					boolean stretch = false; //TODO param
-					if (stretch) {
-						if (start < u0) {
+					if (shrink) {
+						if (start < u0 && u0 < this.end) {
 							start = u0;
 							changed = true;
 						}
-						if (this.end > u1) {
+						if (this.end > u1 && u1 > start) {
 							this.end = u1;
 							changed = true;
 						}

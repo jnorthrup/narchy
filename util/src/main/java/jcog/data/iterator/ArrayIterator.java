@@ -2,11 +2,11 @@ package jcog.data.iterator;
 
 import com.google.common.collect.Iterators;
 import jcog.TODO;
-import org.jetbrains.annotations.NotNull;
 
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -22,9 +22,6 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
         this.array = array;
     }
 
-
-
-
     @Override
     public boolean hasNext() {
         return index < array.length;
@@ -38,11 +35,19 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     }
 
     @Override
+    public void forEachRemaining(Consumer<? super E> action) {
+        throw new TODO();
+    }
+    @Override
+    public void forEach(Consumer<? super E> action) {
+        throw new TODO();
+    }
+
+    @Override
     public void remove() {
         throw new UnsupportedOperationException();
     }
 
-    @NotNull
     @Override
     public Iterator<E> iterator() {
         if (index != 0)

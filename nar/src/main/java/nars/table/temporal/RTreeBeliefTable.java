@@ -258,6 +258,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (mergeOrEvict) {
             //merge leaf
             TruthProjection abab = AB.getTwo();
+
+            Task m = Revision.afterMerge(AB); //call this before removing because it deletes the component's budgets
+
             for (int i = 0, ababSize = abab.size(); i < ababSize; i++) {
                 if (abab.valid(i)) {
                     Task rr = abab.get(i);
@@ -265,7 +268,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                         r.forget(rr);
                 }
             }
-            Task m = Revision.afterMerge(AB);
             if (treeRW.add(m)) {
                 r.remember(m);
             } //else: possibly already contained the merger?

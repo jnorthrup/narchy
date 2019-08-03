@@ -145,6 +145,6 @@ class HalfIntMatrix {
 	}
 
 	private void swap(final int r1, final int c1, final int r2, final int c2) {
-	    ArrayUtil.swap(matrix,  idx(r1, c1), idx(r2, c2));
+	    ArrayUtil.swapInt(matrix,  idx(r1, c1), idx(r2, c2));
 	}
 }

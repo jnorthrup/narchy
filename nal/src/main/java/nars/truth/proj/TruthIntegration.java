@@ -1,10 +1,11 @@
 package nars.truth.proj;
 
 
-import jcog.math.LongInterval;
 import nars.Task;
 import nars.truth.util.EvidenceEvaluator;
 
+import static java.lang.Math.max;
+import static java.lang.Math.min;
 import static nars.time.Tense.ETERNAL;
 
 public class TruthIntegration {
@@ -71,40 +72,29 @@ public class TruthIntegration {
 
 		EvidenceEvaluator e = EvidenceEvaluator.of(ts, te, evi, dur);
 
-		if (!LongInterval.intersectsRaw(ts, te, qs, qe)) {
-			//DISJOINT - entirely before, or after
-			//return e.integrate3(qs, (qs + qe) / 2, qe);
+ 		if (max(qs, ts) > min(qe, te)) {
+			//DISJOINT - entirely before, or after //!LongInterval.intersectsRaw(ts, te, qs, qe)) {
 			return e.integrate2(qs, qe);
-		}
-
-		if (ts <= qs && te >= qe) {
-			//task contains question
+		} else if (ts <= qs && te >= qe) {
+			//task equals or contains question
 			return e.integrate2(qs, qe);
-		}
-
-		if (qs <= ts && qe >= te) {
-			//question contains task
-			//return e.integrateN(qs, Math.min(qs, (qs + ts) / 2), Math.max(qs, ts - 1), ts, te, Math.min(te + 1, qe), Math.max(qe, (te + qe) / 2), qe);
-//			return e.integrateN(
-//			qs, (qs + ts) / 2,
-//				ts, te,
-//				(te + qe) / 2, qe);
-			return e.integrateN(
-				qs, Math.max(qs, ts-1),
-				ts, te,
-				Math.min(te+1, qe), qe);
-		}
-
-		if (qs >= ts && qs <= te) {
+		} else if (qs >= ts && qe > te) {
 			//question starts during and ends after task
 			//return e.integrateN(qs, te, Math.min(te + 1, qe), (te + qe) / 2, qe);
 			//return e.integrateN(qs, te, (te + qe) / 2, qe);
 			return e.integrateN(qs, te, Math.min(te+1, qe), qe);
-		} else {
+		} else if (qs < ts && qe <= te) {
 			//question starts before task and ends during task
 			return e.integrateN(qs, Math.max(qs, ts-1), ts, qe);
-		}
+		} else {
+			assert(qs <= ts && qe >= te);
 
+			//question surrounds task
+			return e.integrateN(
+				qs, Math.max(qs, ts - 1),
+				ts, te,
+				Math.min(te + 1, qe), qe);
+		}
 	}
 
 //    private static float eviInteg(Task t, int dur, long... when) {

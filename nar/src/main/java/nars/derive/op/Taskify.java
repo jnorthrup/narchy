@@ -104,12 +104,12 @@ public class Taskify extends ProxyTerm {
             return;
         }
 
-        Term y = timing.getOne();
 
 
         long[] occ = timing.getTwo();
         assertOccValid(d, occ);
 
+        Term y = timing.getOne();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
             if (DerivationFailure.failure(y, d.concPunc)) {

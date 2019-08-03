@@ -946,37 +946,43 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public NAR inputNarsese(InputStream inputStream) throws IOException, NarseseException {
-        String x = new String(inputStream.readAllBytes());
-        input(x);
+        input(new String(inputStream.readAllBytes()));
         return this;
     }
 
-    public NAR inputAt(long time, String... tt) {
+    @Deprecated public NAR inputAt(long time, String... tt) {
 
-        assert (tt.length > 0);
-        FasterList<Task> yy = new FasterList(tt.length);
-        for (String s : tt) {
+//        assert (tt.length > 0);
+//        FasterList<Task> yy = new FasterList<>(tt.length);
+//        for (String s : tt) {
+//            try {
+//                yy.addAll(Narsese.tasks(s, this));
+//            } catch (NarseseException e) {
+//                logger.error("{} for: {}", e, s);
+//                e.printStackTrace();
+//            }
+//        }
+
+//        int size = yy.size();
+//        if (size <= 0)
+//            throw new WTF/*NarseseException*/("no tasks parsed from input: " + Joiner.on("\n").join(tt));
+//
+////            assert(yy.allSatisfyWith((y,t)->y.start()==t, time));
+//        yy.replaceAll(t -> {
+//            if (!t.isEternal() && t.start() != time) {
+//                return new SpecialOccurrenceTask(t, time, time + (t.range() - 1));
+//            } else
+//                return t;
+//        });
+
+        runAt(time, (nn) -> {
+            //nn.input(yy.toArray(new Task[size]))
             try {
-                yy.addAll(Narsese.tasks(s, this));
+                nn.input(tt);
             } catch (NarseseException e) {
-                logger.error("{} for: {}", e, s);
                 e.printStackTrace();
             }
-        }
-
-        int size = yy.size();
-        if (size <= 0)
-            throw new WTF/*NarseseException*/("no tasks parsed from input: " + Joiner.on("\n").join(tt));
-
-//            assert(yy.allSatisfyWith((y,t)->y.start()==t, time));
-        yy.replaceAll(t -> {
-            if (!t.isEternal() && t.start() != time) {
-                return new SpecialOccurrenceTask(t, time, time + (t.range() - 1));
-            } else
-                return t;
         });
-
-        runAt(time, (nn) -> nn.input(yy.toArray(new Task[size])));
 
         return this;
     }
