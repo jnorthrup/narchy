@@ -398,7 +398,7 @@ public final class Answer implements Timed, Predicate<Task> {
     public final TruthProjection truthProjection() {
         int n = tasks.size();
         return n == 0 ? null :
-            nar.newProjection(time.start, time.end, dur).add(n, this.tasks.items);
+            nar.newProjection(time.start, time.end, dur).ditherDT(n).add(n, this.tasks.items);
     }
 
 
@@ -409,7 +409,7 @@ public final class Answer implements Timed, Predicate<Task> {
             return null;
 
         if (tp.active()==1) {
-            return SpecialTruthAndOccurrenceTask.the(tp.firstValid(), tt, tp.start, tp.end);
+            return SpecialTruthAndOccurrenceTask.the(tp.firstValid(), tt, tp.start(), tp.end());
         } else {
             return DynTaskify.merge(tp::arrayCommit, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
         }

@@ -26,7 +26,7 @@ public class FocusingLinearTruthProjection extends LinearTruthProjection {
 
             if (dur > minDur) {
                 if (!t.isEternal()) {
-                    dur = Math.max(minDur, Math.min(dur, (int) t.minTimeTo(start, end)));
+                    dur(Math.max(minDur, Math.min(dur, (int) t.minTimeTo(start, end))));
                 }
             }
             return true;

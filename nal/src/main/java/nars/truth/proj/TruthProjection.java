@@ -43,9 +43,7 @@ import static nars.term.util.Intermpolate.dtDiff;
 @Skill({"Interpolation", "Extrapolation"})
 abstract public class TruthProjection extends TaskList {
 
-	public long start;
-	public long end;
-	float dur;
+	protected long start, end;
 
 	/**
 	 * content target, either equal in all the tasks, or the result is
@@ -54,6 +52,10 @@ abstract public class TruthProjection extends TaskList {
 	public Term term = null;
 	float eviFactor = 1;
 
+	/** used in final calculation of to start/end time intervals */
+	int ditherDT = 1;
+	float dur = 0;
+
 	/**
 	 * active evidence cache
 	 */
@@ -61,11 +63,22 @@ abstract public class TruthProjection extends TaskList {
 
 	TruthProjection(long start, long end, float dur) {
 		super(0);
-		this.start = start;
-		this.end = end;
+		time(start, end);
+		dur(dur);
+	}
 
-		assert (dur >= 0);
+	public TruthProjection dur(float dur) {
+		assert(dur >= 0);
 		this.dur = dur;
+		return this;
+	}
+
+	public TruthProjection ditherDT(int ditherDT) {
+		this.ditherDT = ditherDT;
+		return this;
+	}
+	public TruthProjection ditherDT(NAL nal) {
+		return ditherDT(nal.dtDither());
 	}
 
 	public final Truth truth(double eviMin, boolean dither, boolean tShrink, NAL nar) {
@@ -187,17 +200,14 @@ abstract public class TruthProjection extends TaskList {
 	/** removes weakest tasks having overlapping evidence with stronger ones */
 	@Nullable private MetalLongSet filter(int minComponents, boolean shrink, boolean needStamp) {
 
-
-
 		MetalBitSet.IntBitSet conflict = new MetalBitSet.IntBitSet(); //max 32
-
 
 		int remain;
 		int iterations = 0;
 
 		main: while ((remain = (iterations++ > 0 ? refocus(shrink) : active())) >= minComponents) {
 
-			@Nullable double[] evi = this.evi;
+			double[] evi = this.evi;
 			Task[] items = this.items;
 
 			int ss = size;
@@ -581,25 +591,20 @@ abstract public class TruthProjection extends TaskList {
 			if (u0 != ETERNAL) {
 				if (start == ETERNAL) {
 					//override eternal range with the entire calculated union
-					this.start = u0;
-					this.end = u1;
-					changed = true;
+					changed = time(u0, u1);
 				} else {
 					if (shrink) {
 						if (start < u0 && u0 < this.end) {
-							start = u0;
-							changed = true;
+							changed = time(u0, end);
 						}
 						if (this.end > u1 && u1 > start) {
-							this.end = u1;
-							changed = true;
+							changed = time(start, u1);
 						}
 					}
 				}
 			} else {
 				if (start != ETERNAL) {
-					start = end = ETERNAL;
-					changed = true;
+					changed = time(ETERNAL, ETERNAL);
 				}
 			}
 
@@ -609,6 +614,22 @@ abstract public class TruthProjection extends TaskList {
 		}
 	}
 
+	/** returns true if the start, end times have changed */
+	public boolean time(long s, long e) {
+		if (s!=ETERNAL) {
+			int dith = this.ditherDT;
+			if (dith > 1) {
+				s = Tense.dither(s, dith, -1);
+				e = Tense.dither(e, dith, +1);
+			}
+		}
+		if (this.start!=s || this.end!=e) {
+			this.start = s;
+			this.end = e;
+			return true;
+		} else
+			return false;
+	}
 
 	/**
 	 * Truth Coherency Metric
@@ -644,6 +665,8 @@ abstract public class TruthProjection extends TaskList {
 	public boolean valid() {
 		return (active() == size());
 	}
+
+
 
 //    /**
 //     * TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[]
