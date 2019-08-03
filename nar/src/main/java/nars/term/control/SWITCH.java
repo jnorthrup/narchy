@@ -2,15 +2,15 @@ package nars.term.control;
 
 import nars.$;
 import nars.Op;
-import nars.derive.model.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.EnumMap;
 import java.util.function.Function;
 
-import static nars.derive.model.Derivation.Belief;
-import static nars.derive.model.Derivation.Task;
+import static nars.derive.Derivation.Belief;
+import static nars.derive.Derivation.Task;
 
 /**
  * TODO generify key/value

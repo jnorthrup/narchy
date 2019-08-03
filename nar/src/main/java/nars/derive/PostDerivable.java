@@ -1,7 +1,5 @@
-package nars.derive.rule;
+package nars.derive;
 
-import nars.derive.model.Derivation;
-import nars.derive.model.PreDerivation;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunction;
 

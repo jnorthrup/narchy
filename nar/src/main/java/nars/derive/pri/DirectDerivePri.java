@@ -4,7 +4,7 @@ import jcog.TODO;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.truth.Truth;
 
 public class DirectDerivePri implements DerivePri {

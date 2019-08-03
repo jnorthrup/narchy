@@ -13,7 +13,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.link.AbstractTaskLink;
 import nars.link.DynamicTaskLink;
 import nars.subterm.Subterms;

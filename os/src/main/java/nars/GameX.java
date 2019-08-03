@@ -20,9 +20,9 @@ import nars.concept.sensor.VectorSensor;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.control.Why;
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.timing.ActionTiming;
+import nars.derive.time.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorView;
@@ -69,6 +69,8 @@ import static spacegraph.SpaceGraph.window;
  * --cameras (Swing and OpenGL)
  */
 abstract public class GameX extends Game {
+
+    static final boolean initMeta = true;
 
     /**
      * determines memory strength
@@ -166,20 +168,20 @@ abstract public class GameX extends Game {
 
         n.synch();
 
-        boolean initMeta = false;
+
         if (initMeta) {
             Exe.invokeLater(() -> {
 
                 float _fps = 24;
                 MetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps).addRLBoost();
-                self.pri(0.1f);
+                self.pri(0.3f);
 
-                n.parts(Game.class).forEach(g -> {
-                    if (!(g instanceof MetaAgent)) {
-                        float fps = 12;
-                        boolean allowPause = false;
-                        new MetaAgent.GameMetaAgent(g, fps, allowPause).pri(0.05f);
-                    }
+
+                n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
+                    float fps = 12;
+                    boolean allowPause = false;
+                    MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, allowPause);
+                    gm.pri(0.1f);
                 });
             });
         }
@@ -509,17 +511,17 @@ abstract public class GameX extends Game {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        BasicDeriver bd1 = new BasicDeriver(Derivers.nal(n, 1, 1));
-        BasicDeriver bd2_4 = new BasicDeriver(Derivers.nal(n, 2, 4));
-        BasicDeriver bd6 = new BasicDeriver(Derivers.nal(n, 6, 8));
+        Deriver bd1 = new Deriver(Derivers.nal(n, 1, 1));
+        Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
+        Deriver bd6 = new Deriver(Derivers.nal(n, 6, 8));
 
-        BasicDeriver bd3_act = new BasicDeriver(Derivers.nal(n, 3, 3));
-        bd3_act.timing = new ActionTiming();
+        Deriver bd3_act = new Deriver(Derivers.nal(n, 3, 3));
+        bd3_act.time(new ActionTiming());
 
-        BasicDeriver bd6_act = new BasicDeriver(Derivers.nal(n, 6,8,"motivation.nal"));
-        bd6_act.timing = new ActionTiming();
+        Deriver bd6_act = new Deriver(Derivers.nal(n, 6,8,"motivation.nal"));
+        bd6_act.time(new ActionTiming());
 
-        //BasicDeriver bd6_curi = new BasicDeriver(Derivers.files(n, "curiosity.nal"));
+        //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
 
 //        BatchDeriver bdExtra = new BatchDeriver(Derivers.files(n,
 //                "motivation.nal"

@@ -1,10 +1,10 @@
-package nars.derive.premise;
+package nars.derive.util;
 
 import jcog.memoize.byt.ByteKeyExternalWithParameter;
 import nars.NAL;
 import nars.Task;
-import nars.derive.model.Derivation;
-import nars.derive.model.PreDerivation;
+import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.io.TermIO;
 import nars.unify.Unify;
 

@@ -3,6 +3,7 @@ package nars.concept.snapshot;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.term.Term;
+import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
 import java.lang.ref.Reference;
@@ -47,14 +48,15 @@ public class Snapshot<X> {
 		return x;
 	}
 
-	/** ttl = cycles of cached value before next expiration ( >= 0 ) */
+	/** ttl = cycles of cached value before next expiration ( >= 0 )
+	 * 			or -1 to never expire */
 	public X get(long now, int ttl, Function<X,X> updater) {
 		long e = expires;
 		X current = get();
 		if ((now >= e || current == null) && busy.compareAndSet(false, true)) {
 			try {
 				X nextX = updater.apply(current);
-				this.expires = now + ttl;
+				this.expires = ttl >= 0 ? now + ttl : Tense.TIMELESS /* forever */;
 				this.value = wrap(nextX);
 				return nextX;
 			} finally {

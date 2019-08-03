@@ -1,8 +1,8 @@
-package nars.derive.premise;
+package nars.derive.util;
 
 import jcog.Util;
 import nars.$;
-import nars.derive.model.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.atom.Atom;
 

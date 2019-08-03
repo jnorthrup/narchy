@@ -4,7 +4,7 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.eval.Evaluation;
 import nars.term.Compound;
@@ -112,7 +112,7 @@ class SetFuncTest {
 
     @Test void testMember_Combine_Rule() {
         NAR n = NARS.shell();
-        new BasicDeriver(Derivers.files(n, "nal2.member.nal"));
+        new Deriver(Derivers.files(n, "nal2.member.nal"));
         TestNAR t = new TestNAR(n);
         t.believe("(member(#1,{a,b}) && (x(#1), y(#1)))");
         t.believe("(member(#1,{c,d}) && (x(#1), y(#1)))");
@@ -122,7 +122,7 @@ class SetFuncTest {
     }
     @Test void testMember_Diff_Rule() {
         NAR n = NARS.shell();
-        new BasicDeriver(Derivers.files(n, "nal2.member.nal"));
+        new Deriver(Derivers.files(n, "nal2.member.nal"));
         TestNAR t = new TestNAR(n);
         t.believe("  (member(#1,{a,b,c}) && (x(#1), y(#1)))");
         t.believe("--(member(#1,{b,d  }) && (x(#1), y(#1)))");

@@ -1,11 +1,11 @@
-package nars.derive.timing;
+package nars.derive.time;
 
 
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
-import nars.derive.TimeFocus;
+import nars.derive.util.TimeFocus;
 import nars.term.Term;
 import nars.time.When;
 import nars.time.event.WhenTimeIs;
@@ -18,8 +18,7 @@ public class ActionTiming implements TimeFocus {
 
     public final FloatRange focusDurs = new FloatRange(2, 0, 32);
 
-    public final FloatRange horizonDurs = new FloatRange(4, 0, 32);
-    //public final FloatRange widthDurs = new FloatRange(2, 0, 8);
+    public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
 
     float past = 1;
     float future = 2;
@@ -30,7 +29,7 @@ public class ActionTiming implements TimeFocus {
 
     @Override
     public When<NAR> task(What what) {
-        float dur = what.dur() * focusDurs.floatValue();
+        float dur = what.dur() * horizonDurs.floatValue()/2;
         NAR nar = what.nar;
         return WhenTimeIs.now(nar, 0, nar.time(), dur*past, dur*future, nar.dtDither());
     }

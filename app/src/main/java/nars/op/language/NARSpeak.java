@@ -6,7 +6,7 @@ import jcog.event.Topic;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.op.java.Opjects;
 
@@ -139,7 +139,7 @@ public class NARSpeak {
     public static void main(String[] args) throws Narsese.NarseseException {
         NAR n = NARS.realtime(10f).get();
 
-        new BasicDeriver(Derivers.nal(n, 1, 8
+        new Deriver(Derivers.nal(n, 1, 8
                 //"curiosity.nal"
                 , "motivation.nal"));
 

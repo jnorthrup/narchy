@@ -14,7 +14,7 @@ import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.io.IO;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;

@@ -1,8 +1,9 @@
-package nars.derive.model;
+package nars.derive.util;
 
 import nars.Builtin;
 import nars.NAL;
 import nars.NAR;
+import nars.derive.Derivation;
 import nars.op.Cmp;
 import nars.op.Equal;
 import nars.op.SetFunc;

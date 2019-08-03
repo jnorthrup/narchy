@@ -1,6 +1,6 @@
 package nars.derive.op;
 
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.term.Term;
 
 /**

@@ -1,7 +1,9 @@
 package nars.derive.rule;
 
 import nars.control.Why;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
+import nars.derive.DeriveAction;
+import nars.derive.PreDeriver;
 import nars.term.control.PREDICATE;
 
 import java.io.PrintStream;

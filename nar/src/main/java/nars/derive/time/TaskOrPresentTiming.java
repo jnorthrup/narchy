@@ -1,4 +1,4 @@
-package nars.derive.timing;
+package nars.derive.time;
 
 import jcog.func.TriFunction;
 import nars.Task;

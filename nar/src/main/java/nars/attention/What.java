@@ -121,7 +121,7 @@ abstract public class What extends PriNARPart implements Prioritizable, Sampler<
     protected void starting(NAR nar) {
         super.starting(nar);
 
-        int concurrency = nar.exe.concurrency();
+//        int concurrency = nar.exe.concurrency();
         loop.durs(
                 1
                 //0

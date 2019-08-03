@@ -1,13 +1,13 @@
 package nars.derive.op;
 
-import nars.derive.model.Derivation;
-import nars.derive.model.DerivationFailure;
+import nars.derive.Derivation;
+import nars.derive.util.DerivationFailure;
 import nars.term.Term;
 import nars.term.buffer.EvalTermBuffer;
 
 import java.util.function.Predicate;
 
-import static nars.derive.model.DerivationFailure.Success;
+import static nars.derive.util.DerivationFailure.Success;
 import static nars.time.Tense.ETERNAL;
 
 public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivation> {

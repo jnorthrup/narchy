@@ -1,7 +1,7 @@
 package nars.derive.op;
 
 import nars.$;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;

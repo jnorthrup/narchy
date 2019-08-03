@@ -1,8 +1,10 @@
-package nars.derive.premise;
+package nars.derive.hypothesis;
 
 import jcog.math.IntRange;
+import nars.NAR;
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
+import nars.derive.premise.Premise;
 import nars.link.*;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -13,13 +15,13 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 /** unbuffered */
-abstract public class DefaultPremiseSource extends PremiseSource {
+abstract public class AbstractHypothesizer implements Hypothesizer {
 
 	public final IntRange premisesPerIteration = new IntRange(2, 1, 32);
 
 	public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
 
-	@Override public void premises(Predicate<Premise> p, When when, TaskLinks links, Derivation d) {
+	@Override public void premises(Predicate<Premise> p, When<NAR> when, TaskLinks links, Derivation d) {
 		int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
 
 		links.sample(d.random, (int) Math.max(1, premisesPerIteration.floatValue() / termLinksPerTaskLink), tasklink -> {

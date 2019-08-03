@@ -1,7 +1,7 @@
 package nars.derive.pri;
 
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.truth.Truth;
 
 /** stateless, storing any state information in the Derivation instance */

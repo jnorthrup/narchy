@@ -12,7 +12,6 @@ import nars.*;
 import nars.agent.GameTime;
 import nars.attention.TaskLinkWhat;
 import nars.control.MetaGoal;
-import nars.derive.BasicDeriver;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
@@ -219,7 +218,7 @@ public class TrackXY_NAR extends GameX {
         //n.dtDither.set(Math.max(1, durMS));
 
 
-        Deriver d = new BasicDeriver(Derivers.nal(n,
+        Deriver d = new Deriver(Derivers.nal(n,
                 //6, 8
                 //"induction.goal.nal"
                 1, 8

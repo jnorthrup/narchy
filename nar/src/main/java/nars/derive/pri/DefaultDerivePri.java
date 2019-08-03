@@ -5,7 +5,7 @@ import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
 

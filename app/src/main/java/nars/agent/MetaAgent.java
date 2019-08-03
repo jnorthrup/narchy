@@ -84,6 +84,7 @@ abstract public class MetaAgent extends Game {
 
     protected MetaAgent(Term id, float fps, NAR nar) {
         super(id, GameTime.fps(fps), nar);
+        this.nar = nar;
     }
 
     public MetaAgent addRLBoost() {
@@ -148,6 +149,14 @@ abstract public class MetaAgent extends Game {
 
             });
 
+            float priFactorMin = 0.1f, priFactorMax = 4f;
+            actionUnipolar($.inh(SELF, beliefPri), nar.beliefPriDefault.amp.subRange(
+                Math.max(nar.beliefPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+                nar.beliefPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
+            actionUnipolar($.inh(SELF, goalPri), nar.goalPriDefault.amp.subRange(
+                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
+
             reward("happy", ()->{
                 float dur = dur();
                 return (float)nar.parts(Game.class)
@@ -171,13 +180,13 @@ abstract public class MetaAgent extends Game {
         private final boolean allowPause;
 
         public GameMetaAgent(Game g, float fps, boolean allowPause) {
-            super($.inh(g.term(), $$("meta")), fps, g.nar);
+            super($.inh(g.what().id, $$("meta")), fps, g.nar);
 
             this.allowPause = allowPause;
 
             What w = g.what();
 
-            Term gid = $.p(w.nar.self(), w.id);
+            Term gid = w.id; //$.p(w.nar.self(), w.id);
             //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 
@@ -191,13 +200,7 @@ abstract public class MetaAgent extends Game {
             //actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
 
 
-            float priFactorMin = 0.1f, priFactorMax = 4f;
-            actionUnipolar($.inh(id, beliefPri), nar.beliefPriDefault.amp.subRange(
-                Math.max(nar.beliefPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-                nar.beliefPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
-            actionUnipolar($.inh(id, goalPri), nar.goalPriDefault.amp.subRange(
-                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
+
 
 
 

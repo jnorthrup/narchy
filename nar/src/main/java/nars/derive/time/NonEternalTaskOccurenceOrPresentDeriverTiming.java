@@ -1,9 +1,9 @@
-package nars.derive.timing;
+package nars.derive.time;
 
 import jcog.math.FloatRange;
 import nars.Task;
 import nars.attention.What;
-import nars.derive.TimeFocus;
+import nars.derive.util.TimeFocus;
 import nars.term.Term;
 
 import static nars.time.Tense.ETERNAL;

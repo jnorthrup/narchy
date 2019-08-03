@@ -1,7 +1,8 @@
-package nars.derive.model;
+package nars.derive.util;
 
 import nars.NAR;
 import nars.Op;
+import nars.derive.Derivation;
 import nars.term.Term;
 import nars.term.util.TermException;
 

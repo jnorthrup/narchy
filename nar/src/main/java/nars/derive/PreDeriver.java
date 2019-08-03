@@ -1,19 +1,17 @@
-package nars.derive.rule;
+package nars.derive;
 
 import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
-import nars.concept.Concept;
-import nars.derive.model.Derivation;
-import nars.derive.model.PreDerivation;
-import nars.derive.premise.PremiseKey;
+import nars.concept.snapshot.Snapshot;
+import nars.derive.util.PremiseKey;
 import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Function;
 
 import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
-/** determines the valid conclusions of a particular Pre-derivation.
- * this is returned as a short[] of conclusions id's. */
+/** winnows the subset of valid conclusion pathways applicable to a particular Pre-derivation.
+ *  this is returned as a short[] of conclusions id's. */
 @FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each */
@@ -49,32 +47,27 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
 
     /** experimental: caches the memoizations in Concept meta maps.
-     *  this is likely wasteful even though it attempts to use Soft ref's */
-    PreDeriver ConceptMetaMemoizer = preDerivation -> {
+     *  this is likely wasteful even though it attempts to use Soft ref's
+     *  TODO use Concept Snapshot API
+     *  */
+    PreDeriver SnapshotMemoizer = preDerivation -> {
         Derivation d = (Derivation) preDerivation;
 
+        ByteHijackMemoize<PremiseKey, short[]> whats = Snapshot.get(preDerivation.taskTerm, d.nar,
+            "ConceptMetaMemoizer" + d.deriver.id.toString(), d.time(), -1, (c, w) -> {
+            if (w == null) {
+                int capacity = 512;
+                w = new ByteHijackMemoize<>(k -> ((PreDerivation) k.x).preDerive().toArray(true),
+                    capacity,
+                    DEFAULT_HIJACK_REPROBES, false);
+            }
+            return w;
+        } );
 
-        Concept c = d.nar.conceptualize(preDerivation.taskTerm);
-        if (c!=null) {
-            //NodeConcept.memoize(c, d.deriver.id + "ConceptMetaMemoizer", )
-            ByteHijackMemoize<PremiseKey, short[]> whats =
-                c.metaWeak("ConceptMetaMemoizer" + d.deriver.id, true, () -> {
-
-                    //int cv = c.term().volume();
-
-                    int capacity = 512;
-
-                    return new ByteHijackMemoize<>(k -> ((PreDerivation) k.x).preDerive().toArray(true),
-                            capacity,
-                            DEFAULT_HIJACK_REPROBES, false);
-                }
-            );
-            if (whats!=null)
-                return whats.apply(new PremiseKey(d));
-        }
-
-        //failsafe:
-        return preDerivation.preDerive().toArray(false);
+        if (whats!=null)
+            return whats.apply(new PremiseKey(d));
+        else
+            return preDerivation.preDerive().toArray(false); //failsafe
     };
 
 }

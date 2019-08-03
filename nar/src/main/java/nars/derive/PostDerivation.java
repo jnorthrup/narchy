@@ -1,4 +1,4 @@
-package nars.derive.model;
+package nars.derive;
 
 import jcog.pri.UnitPri;
 import nars.Task;

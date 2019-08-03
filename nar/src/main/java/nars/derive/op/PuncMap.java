@@ -1,8 +1,8 @@
-package nars.derive.condition;
+package nars.derive.op;
 
 import nars.$;
 import nars.Op;
-import nars.derive.model.PreDerivation;
+import nars.derive.PreDerivation;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;

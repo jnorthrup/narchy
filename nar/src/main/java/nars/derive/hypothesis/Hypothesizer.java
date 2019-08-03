@@ -1,12 +1,14 @@
-package nars.derive.premise;
+package nars.derive.hypothesis;
 
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
+import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.concept.snapshot.TaskLinkSnapshot;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
+import nars.derive.premise.Premise;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.term.Compound;
@@ -22,15 +24,16 @@ import java.util.stream.Collectors;
 
 import static nars.Op.ATOM;
 
-abstract public class PremiseSource {
+/** generator of hypotheses */
+public interface Hypothesizer {
 
-	public abstract void premises(Predicate<Premise> p, When when, TaskLinks links, Derivation d);
+	void premises(Predicate<Premise> p, When<NAR> when, TaskLinks links, Derivation d);
 
 	/**
 	 * samples the tasklink bag for a relevant reversal
 	 * memoryless, determined entirely by tasklink bag, O(n)
 	 */
-	public static class DirectTangent extends DefaultPremiseSource {
+	class DirectTangent extends AbstractHypothesizer {
 
 		public static final DirectTangent the = new DirectTangent();
 
@@ -81,8 +84,9 @@ abstract public class PremiseSource {
 
 	/**
 	 * caches ranked reverse atom termlinks in concept meta table
+	 * stateless
 	 */
-	public static class TangentConceptCaching extends DefaultPremiseSource {
+	class TangentSnapshotter extends AbstractHypothesizer {
 
 		int ATOM_TANGENT_REFRESH_DURS = 1;
 
@@ -129,12 +133,13 @@ abstract public class PremiseSource {
 
 	}
 
-	public static class IndexExhaustive extends PremiseSource.TangentConceptCaching {
+	/** caches results of an exhaustive search (ex: of all or some concepts in memory) and supplies tangents using this */
+	class IndexExhaustive extends TangentSnapshotter {
 
 		static final String id = IndexExhaustive.class.getSimpleName();
 
 		public int ttl(Derivation d) {
-			return Integer.MAX_VALUE; //effectively permanent
+			return -1; //permanent
 		}
 
 		@Nullable
@@ -169,12 +174,6 @@ abstract public class PremiseSource {
 			Term t = tangentRandom(target, d);
 			return t != null ? t : super.forward(target, link, task, d);
 		}
-
-		//        @Override
-//        protected Term reverse(Term target, TaskLink link, Task task, TaskLinks links, Derivation d) {
-//
-//            return super.reverse(target, link, task, links, d);
-//        }
 
 	}
 

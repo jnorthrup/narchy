@@ -1,11 +1,11 @@
-package nars.derive.timing;
+package nars.derive.time;
 
 import jcog.func.TriFunction;
 import nars.Task;
 import nars.attention.What;
 import nars.term.Term;
 
-import static nars.derive.timing.TaskOrPresentTiming.taskTime;
+import static nars.derive.time.TaskOrPresentTiming.taskTime;
 import static nars.time.Tense.ETERNAL;
 
 /** naively applies a variety of methods for calculating time focus targets */

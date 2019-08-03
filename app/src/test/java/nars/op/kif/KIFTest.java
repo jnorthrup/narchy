@@ -6,9 +6,9 @@ import jcog.data.graph.AdjGraph;
 import jcog.data.graph.GraphMeter;
 import nars.*;
 import nars.attention.TaskLinkWhat;
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.premise.PremiseSource;
+import nars.derive.hypothesis.Hypothesizer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.util.PriBuffer;
@@ -42,9 +42,9 @@ class KIFTest {
 
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
-        new BasicDeriver(Derivers.nal(n, 1,8, "motivation.nal"));
+        new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
 
-        new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new Hypothesizer.IndexExhaustive()); // ~= PROLOG
 
         n.termVolMax.set(32);
         n.beliefPriDefault.amp(0.01f);
@@ -92,9 +92,9 @@ class KIFTest {
         //(answer yes)
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
-        new BasicDeriver(Derivers.nal(n, 6,8));
+        new Deriver(Derivers.nal(n, 6,8));
 
-        new BasicDeriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new Hypothesizer.IndexExhaustive()); // ~= PROLOG
 
         KIF k = new KIF(t);
         n.input(k.tasks());
@@ -125,9 +125,9 @@ class KIFTest {
 //            "(answer yes)\n";
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
-        new BasicDeriver(Derivers.nal(n, 5,8));
+        new Deriver(Derivers.nal(n, 5,8));
 
-        new BasicDeriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new PremiseSource.IndexExhaustive()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new Hypothesizer.IndexExhaustive()); // ~= PROLOG
         n.log();
 
         KIF k = new KIF(t);

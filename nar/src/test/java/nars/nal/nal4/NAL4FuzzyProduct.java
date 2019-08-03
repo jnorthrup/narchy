@@ -2,7 +2,7 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.term.Term;
 import nars.term.util.Image;
@@ -24,7 +24,7 @@ public class NAL4FuzzyProduct extends NALTest {
     @Override
     protected NAR nar() {
         NAR n = NARS.tmp(4);
-        new BasicDeriver(Derivers.files(n, "nal4.sect.nal")); //add-on deriver
+        new Deriver(Derivers.files(n, "nal4.sect.nal")); //add-on deriver
         n.termVolMax.set(10);
         return n;
     }

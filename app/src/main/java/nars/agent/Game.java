@@ -404,9 +404,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     }
 
-    @Deprecated public Game pri(float v) {
-        what.pri.amp(v);
-        return this;
+    public void pri(float v) {
+        what.pri(v);
     }
 
     public interface NAgentCycle {

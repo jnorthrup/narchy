@@ -6,7 +6,7 @@ import jcog.decide.Roulette;
 import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Op;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;

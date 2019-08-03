@@ -7,8 +7,8 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.MetaGoal;
-import nars.derive.model.Derivation;
-import nars.derive.model.DerivationFailure;
+import nars.derive.Derivation;
+import nars.derive.util.DerivationFailure;
 import nars.derive.rule.PremiseRuleProto;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
@@ -32,7 +32,7 @@ import java.util.Arrays;
 
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
 import static nars.Op.*;
-import static nars.derive.model.DerivationFailure.Success;
+import static nars.derive.util.DerivationFailure.Success;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 

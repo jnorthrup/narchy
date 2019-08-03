@@ -1,4 +1,4 @@
-package nars.derive;
+package nars.derive.util;
 
 import nars.NAR;
 import nars.Task;

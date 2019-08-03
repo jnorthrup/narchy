@@ -1,11 +1,9 @@
-package nars.derive.model;
+package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
 import jcog.decide.MutableRoulette;
 import nars.Op;
-import nars.derive.rule.DeriveAction;
-import nars.derive.rule.PostDerivable;
 import nars.term.Term;
 import nars.truth.Truth;
 import nars.unify.Unify;

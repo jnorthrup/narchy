@@ -1,5 +1,6 @@
-package nars.derive.premise;
+package nars.derive.util;
 
+import nars.derive.premise.Premise;
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
@@ -15,7 +16,8 @@ public class PremiseUnify extends UnifySubst {
     }
 
 
-    @Nullable Term unified(Term taskTerm, Term beliefTerm, int ttl) {
+    @Nullable
+    public Term unified(Term taskTerm, Term beliefTerm, int ttl) {
 
         clear();
 

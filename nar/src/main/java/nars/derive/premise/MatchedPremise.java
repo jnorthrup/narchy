@@ -1,7 +1,7 @@
 package nars.derive.premise;
 
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 

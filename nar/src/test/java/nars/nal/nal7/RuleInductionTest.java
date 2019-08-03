@@ -4,7 +4,7 @@ import com.google.common.math.PairedStatsAccumulator;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.rule.PremiseRuleSet;
 import nars.op.stm.STMLinkage;
 import nars.term.Term;
@@ -32,7 +32,7 @@ class RuleInductionTest {
         NAR n = NARS.shell();
         n.termVolMax.set(8);
 
-        BasicDeriver d = new BasicDeriver(new PremiseRuleSet(n,
+        Deriver d = new Deriver(new PremiseRuleSet(n,
 
                 "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Sequence)"
 

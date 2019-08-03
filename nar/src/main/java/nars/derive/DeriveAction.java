@@ -1,9 +1,9 @@
-package nars.derive.rule;
+package nars.derive;
 
 import jcog.pri.ScalarValue;
 import nars.NAL;
-import nars.derive.model.Derivation;
 import nars.derive.op.Truthify;
+import nars.derive.rule.PremiseRuleProto;
 import nars.term.control.PREDICATE;
 
 /** branch in the derivation fork.  first runs truth.test() before conclusion.test() */
@@ -13,7 +13,7 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
     public final Truthify truth;
     public final PREDICATE<Derivation> conclusion;
 
-    DeriveAction(PremiseRuleProto.RuleWhy cause, Truthify pre, PREDICATE<Derivation> post) {
+    public DeriveAction(PremiseRuleProto.RuleWhy cause, Truthify pre, PREDICATE<Derivation> post) {
         this.why = cause;
         this.conclusion = post;
         this.truth = pre;

@@ -1,6 +1,6 @@
 package nars;
 
-import nars.derive.BasicDeriver;
+import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.impl.WorkerExec;
 import nars.memory.CaffeineMemory;
@@ -51,7 +51,7 @@ public class NARchy extends NARS {
                 16, 64, t -> !t.isInput()
         ));
 
-        new BasicDeriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
+        new Deriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 
         //new Arithmeticize.ArithmeticIntroduction(nar, );
 

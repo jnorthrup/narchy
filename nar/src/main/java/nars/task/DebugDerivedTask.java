@@ -1,7 +1,7 @@
 package nars.task;
 
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;

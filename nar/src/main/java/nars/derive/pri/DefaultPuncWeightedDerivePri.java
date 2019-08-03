@@ -4,7 +4,7 @@ import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.NAR;
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;

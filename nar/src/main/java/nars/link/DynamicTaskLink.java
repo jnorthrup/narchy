@@ -2,7 +2,7 @@ package nars.link;
 
 import nars.NAR;
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.Termed;

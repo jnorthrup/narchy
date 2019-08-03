@@ -6,7 +6,7 @@ import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import nars.Task;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.truth.Truth;
 
 /** wraps another DeriverBudgeting implementation and ensures that

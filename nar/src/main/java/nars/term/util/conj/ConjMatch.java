@@ -5,7 +5,7 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.op.UniSubst;
 import nars.term.Compound;
 import nars.term.Term;

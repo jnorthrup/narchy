@@ -1,4 +1,4 @@
-package nars.derive.model;
+package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
@@ -10,10 +10,10 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
-import nars.derive.Deriver;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
-import nars.derive.premise.PremiseUnify;
+import nars.derive.util.DerivationFunctors;
+import nars.derive.util.PremiseUnify;
 import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
@@ -88,7 +88,7 @@ public class Derivation extends PreDerivation {
     };
     public final Occurrify occ = new Occurrify(this);
     public final long[] taskBelief_TimeIntersection = new long[2];
-    final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
+    public final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.taskTruth;
@@ -98,7 +98,7 @@ public class Derivation extends PreDerivation {
             return arg.negIf(t.isNegative());
         }
     };
-    final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
+    public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
             Truth b = Derivation.this.beliefTruth_at_Belief;
@@ -112,7 +112,7 @@ public class Derivation extends PreDerivation {
      * cant be inline since the value will be cached and repeated
      */
 //    final Functor polarizeRandom = Functor.f1("polarizeRandom", (arg)->random.nextBoolean() ? arg : arg.neg());
-    final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
+    public final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
         @Override
         protected Term apply1(Term arg) {
             return arg.negIf(random.nextBoolean());
@@ -121,7 +121,7 @@ public class Derivation extends PreDerivation {
     /**
      * populates retransform map
      */
-    final Replace substituteFunctor = new Replace(Derivation.SUBSTITUTE) {
+    public final Replace substituteFunctor = new Replace(Derivation.SUBSTITUTE) {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {

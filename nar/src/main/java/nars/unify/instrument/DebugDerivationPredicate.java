@@ -1,7 +1,7 @@
 package nars.unify.instrument;
 
 import jcog.Texts;
-import nars.derive.model.Derivation;
+import nars.derive.Derivation;
 import nars.derive.op.Premisify;
 import nars.term.control.AND;
 import nars.term.control.FORK;
