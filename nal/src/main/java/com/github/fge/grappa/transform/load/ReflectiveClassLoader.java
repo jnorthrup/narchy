@@ -3,6 +3,8 @@ package com.github.fge.grappa.transform.load;
 import com.github.fge.grappa.transform.ParserTransformException;
 
 import javax.annotation.Nullable;
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.Objects;
@@ -21,7 +23,7 @@ public final class ReflectiveClassLoader
     private static final String DEFINE_CLASS = "defineClass";
 
     private final ClassLoader loader;
-    private final Method findClass;
+    private final MethodHandle findClass;
     private final Method loadClass;
 
     /**
@@ -35,11 +37,13 @@ public final class ReflectiveClassLoader
 
         try {
             final Class<?> loaderClass = Class.forName(CLASSLOADER);
-            findClass = loaderClass.getDeclaredMethod(FIND_LOADED_CLASS,
+            Method fcm = loaderClass.getDeclaredMethod(FIND_LOADED_CLASS,
                 String.class);
+            fcm.trySetAccessible();
+            findClass = MethodHandles.publicLookup().unreflect(fcm).bindTo(loader);
             loadClass = loaderClass.getDeclaredMethod(DEFINE_CLASS,
                 String.class, byte[].class, int.class, int.class);
-        } catch (ClassNotFoundException | NoSuchMethodException e) {
+        } catch (ClassNotFoundException | NoSuchMethodException | IllegalAccessException e) {
             throw new ParserTransformException(
                 "unable to find the needed methods", e);
         }
@@ -47,14 +51,15 @@ public final class ReflectiveClassLoader
         final ParserTransformException exception = new ParserTransformException(
             "could not change the necessary access modifiers");
 
-        try {
-            findClass.setAccessible(true);
-        } catch (SecurityException e) {
-            exception.addSuppressed(e);
-        }
+//        try {
+//            //findClass.trySetAccessible();//setAccessible(true);
+//
+//        } catch (SecurityException e) {
+//            exception.addSuppressed(e);
+//        }
 
         try {
-            loadClass.setAccessible(true);
+            loadClass.trySetAccessible();//setAccessible(true);
         } catch (SecurityException e) {
             exception.addSuppressed(e);
         }
@@ -76,11 +81,11 @@ public final class ReflectiveClassLoader
     @Nullable
     public Class<?> findClass(final String className)
     {
-        Objects.requireNonNull(className);
+//        Objects.requireNonNull(className);
 
         try {
-            return (Class<?>) findClass.invoke(loader, className);
-        } catch (IllegalAccessException | InvocationTargetException e) {
+            return (Class<?>) findClass.invokeWithArguments(className);
+        } catch (Throwable e) {
             throw new ParserTransformException("unable to find class by name ("
                 + className + ')', e);
         }
@@ -122,11 +127,11 @@ public final class ReflectiveClassLoader
     {
         final ParserTransformException exception = new ParserTransformException(
             "could not close classloader properly");
-        try {
-            findClass.setAccessible(false);
-        } catch (SecurityException e) {
-            exception.addSuppressed(e);
-        }
+//        try {
+//            findClass.setAccessible(false);
+//        } catch (SecurityException e) {
+//            exception.addSuppressed(e);
+//        }
 
         try {
             loadClass.setAccessible(false);

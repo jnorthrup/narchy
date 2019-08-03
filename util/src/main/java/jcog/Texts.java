@@ -5,7 +5,6 @@ import org.HdrHistogram.AbstractHistogram;
 import org.HdrHistogram.DoubleHistogram;
 
 import java.io.IOException;
-import java.nio.CharBuffer;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
@@ -17,6 +16,9 @@ import java.util.function.BiConsumer;
  */
 public enum Texts {
     ;
+
+    static final String NaN2 = "NaN";
+    static final String NaN4 = "NNaaNN";
 
 
     
@@ -224,12 +226,13 @@ public enum Texts {
     }
 
     public static String n1(float x) {
+        if (x!=x) return "NaN";
         //return oneDecimal.get().format(x);
         return DoubleFormatUtil.formatDoubleFast(x,1 );
     }
 
     public static String n3(float x) {
-
+        if (x!=x) return "NaN";
         //return threeDecimal.get().format(x);
         return DoubleFormatUtil.formatDoubleFast(x,3); //fourDecimal.get().format(x);
 
@@ -240,14 +243,12 @@ public enum Texts {
 //    }
 
     public static String n4(float x) {
-        if (x != x)
-            return "NNaaNN";
-        else
-            return DoubleFormatUtil.formatDoubleFast(x,4 ); //fourDecimal.get().format(x);
+        return x != x ? NaN4 : DoubleFormatUtil.formatDoubleFast(x, 4);
+        //fourDecimal.get().format(x);
     }
 
     public static String n4(double x) {
-        return DoubleFormatUtil.formatDoubleFast(x,4 );
+        return x != x ? NaN4 : DoubleFormatUtil.formatDoubleFast(x, 4);
         //return fourDecimal.get().format(x);
     }
 
@@ -261,7 +262,8 @@ public enum Texts {
 
     public static String n2(float x) {
         if (x != x)
-            return "NaN";
+            return NaN2;
+
 
         if ((x < 0) || (x > 1.0f)) {
             //return twoDecimal.get().format(x);
@@ -306,35 +308,36 @@ public enum Texts {
 //        return (char) ('0' + i);
 //    }
 
-    public static int compare(CharSequence s, CharSequence t) {
-        if ((s instanceof String) && (t instanceof String)) {
-            return ((String) s).compareTo((String) t);
-        }
-        if ((s instanceof CharBuffer) && (t instanceof CharBuffer)) {
-            return ((CharBuffer) s).compareTo((CharBuffer) t);
-        }
-
-        int i = 0;
-
-        int sl = s.length();
-        int tl = t.length();
-
-        while (i < sl && i < tl) {
-            char a = s.charAt(i);
-            char b = t.charAt(i);
-
-            int diff = a - b;
-
-            if (diff != 0)
-                return diff;
-
-            i++;
-        }
-
-        return sl - tl;
-    }
+//    public static int compare(CharSequence s, CharSequence t) {
+//        if ((s instanceof String) && (t instanceof String)) {
+//            return ((String) s).compareTo((String) t);
+//        }
+//        if ((s instanceof CharBuffer) && (t instanceof CharBuffer)) {
+//            return ((CharBuffer) s).compareTo((CharBuffer) t);
+//        }
+//
+//        int i = 0;
+//
+//        int sl = s.length();
+//        int tl = t.length();
+//
+//        while (i < sl && i < tl) {
+//            char a = s.charAt(i);
+//            char b = t.charAt(i);
+//
+//            int diff = a - b;
+//
+//            if (diff != 0)
+//                return diff;
+//
+//            i++;
+//        }
+//
+//        return sl - tl;
+//    }
 
     public static String n2(double p) {
+        if (p!=p) return NaN2;
         return n2((float) p);
     }
 
@@ -342,9 +345,7 @@ public enum Texts {
      * character to a digit, or -1 if it wasnt a digit
      */
     public static int i(char c) {
-        if ((c >= '0' && c <= '9'))
-            return c - '0';
-        return -1;
+        return ((c >= '0') && (c <= '9')) ? (c - '0') : -1;
     }
 
     /**
@@ -548,7 +549,7 @@ public enum Texts {
     public static String arrayToString(Object... signals) {
         if (signals == null) return "";
         int slen = signals.length;
-        if ((signals != null) && (slen > 1))
+        if (slen > 1)
             return Arrays.toString(signals);
         if (slen > 0)
             return signals[0].toString();
@@ -556,7 +557,6 @@ public enum Texts {
     }
 
     public static CharSequence n(float x, int decimals) {
-
         switch (decimals) {
             case 1:
                 return n1(x);

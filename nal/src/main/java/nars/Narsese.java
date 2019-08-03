@@ -13,7 +13,6 @@ import com.github.fge.grappa.stack.ValueStack;
 import com.github.fge.grappa.support.IndexRange;
 import com.github.fge.grappa.support.Position;
 import com.github.fge.grappa.transform.ParserTransformer;
-import com.github.fge.grappa.transform.base.ParserClassNode;
 import com.google.common.annotations.VisibleForTesting;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -53,8 +52,10 @@ public final class Narsese {
     static {
 
         try {
-            ParserClassNode node = ParserTransformer.extendParserClass(NarseseParser.class);
-            parser = node.getExtendedClass();
+//            ParserClassNode node = ParserTransformer.extendParserClass(NarseseParser.class);
+//            parser = node.getExtendedClass();
+
+            parser = ParserTransformer.transformParser(NarseseParser.class);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }

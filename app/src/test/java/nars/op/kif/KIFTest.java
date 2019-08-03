@@ -30,12 +30,12 @@ class KIFTest {
     @Test
     public void test1() throws IOException, Narsese.NarseseException {
 
-        String I =
-                //"/home/me/sumo/Merge.kif";
-                //"/home/me/sumo/tinySUMO.kif";
-                //"/home/me/sumo/ComputerInput.kif";
-//                "/home/me/sumo/Economy.kif",
-                "/home/me/sumo/FinancialOntology.kif";
+
+        KIF k = KIF.file("/home/me/sumo/FinancialOntology.kif");
+//                //"/home/me/sumo/Merge.kif";
+//                //"/home/me/sumo/tinySUMO.kif";
+//                //"/home/me/sumo/ComputerInput.kif";
+////                "/home/me/sumo/Economy.kif",
 
         //String O = "/home/me/d/sumo_merge.nal";
 //        k.tasks.forEach(bb -> System.out.println(bb));
@@ -57,7 +57,6 @@ class KIFTest {
         w.links.links.capacity(1024);
 
 
-        KIF k = KIF.file(I);
         n.input(k.tasks());
         n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
@@ -67,7 +66,7 @@ class KIFTest {
         w.clear();
         n.input("$1.0 possesses(I,#everything)!");
         n.input("$1.0 benefits(#all, I)!");
-        n.run(100);
+        n.run(1000);
         w.links.links.print();
 
 //        n.concepts().forEach(c -> System.out.println(c));

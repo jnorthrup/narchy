@@ -69,11 +69,11 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     @Override
     public String toString() {
-        return getAtStr(0) + ',' + getAtStr(1) + ',' + getAtStr(2) + ',' + getAtStr(3);
+        return toString(0) + ',' + toString(1) + ',' + toString(2) + ',' + toString(3);
     }
 
-    private String getAtStr(int i) {
-        return n4(getAt(i));
+    private String toString(int component) {
+        return n4(getAt(component));
     }
 
     @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, PriReturn returning) {

@@ -35,6 +35,7 @@ import javax.annotation.Nullable;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.EnumSet;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 
@@ -82,7 +83,9 @@ public final class ClassNodeInitializer
                 ownerClass = ownerClass.getSuperclass();
             }
 
-            for (final RuleMethod method : classNode.getRuleMethods().values()) {
+            Map<String, RuleMethod> ruleMethods = classNode.getRuleMethods();
+
+            for (final RuleMethod method : ruleMethods.values()) {
                 // move all flags from the super methods to their overriding methods
                 if (!method.isSuperMethod())
                     continue;
@@ -91,7 +94,7 @@ public final class ClassNodeInitializer
                         = method.name.substring(1) + method.desc;
 
                 final RuleMethod overridingMethod
-                        = classNode.getRuleMethods().get(overridingMethodName);
+                        = ruleMethods.get(overridingMethodName);
 
                 method.moveFlagsTo(overridingMethod);
             }
@@ -170,9 +173,13 @@ public final class ClassNodeInitializer
         // check, whether we do not already have a method with that name and
         // descriptor; if we do we add the method with a "$" prefix in order
         // to have it processed and be able to reference it later if we have to
+        Map<String, RuleMethod> ruleMethods = classNode.getRuleMethods();
+
         String methodKey = name + desc;
         StringBuilder nameBuilder = new StringBuilder(name);
-        while (classNode.getRuleMethods().containsKey(methodKey)) {
+        while (true) {
+
+            if (!ruleMethods.containsKey(methodKey)) break;
             nameBuilder.insert(0, '$');
             methodKey = nameBuilder + desc;
         }
@@ -180,7 +187,7 @@ public final class ClassNodeInitializer
 
         final RuleMethod method = new RuleMethod(ownerClass, access, name, desc,
                 signature, exceptions, annotations);
-        classNode.getRuleMethods().put(methodKey, method);
+        ruleMethods.put(methodKey, method);
         // return the newly created method in order to have it "filled" with the
         // actual method code
         return method;

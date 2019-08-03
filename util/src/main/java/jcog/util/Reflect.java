@@ -1,6 +1,5 @@
 package jcog.util;
 
-import java.lang.invoke.MethodHandles;
 import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
@@ -130,7 +129,9 @@ public class Reflect {
 
         
         if (!accessible.isAccessible()) {
-            accessible.setAccessible(true);
+            //accessible.setAccessible(true);
+            if (!accessible.trySetAccessible())
+                throw new ReflectException("could not set accessible: " + accessible);
         }
 
         return accessible;
@@ -140,21 +141,21 @@ public class Reflect {
     
     
 
-    /* [java-8] */
-    private static final Constructor<MethodHandles.Lookup> CACHED_LOOKUP_CONSTRUCTOR;
-
-    static {
-        try {
-            CACHED_LOOKUP_CONSTRUCTOR = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class);
-
-            if (!CACHED_LOOKUP_CONSTRUCTOR.isAccessible())
-                CACHED_LOOKUP_CONSTRUCTOR.setAccessible(true);
-        }
-        catch (Exception e) {
-            throw new IllegalStateException(e);
-        }
-    }
-    /* [/java-8] */
+//    /* [java-8] */
+//    private static final Constructor<MethodHandles.Lookup> CACHED_LOOKUP_CONSTRUCTOR;
+//
+//    static {
+//        try {
+//            CACHED_LOOKUP_CONSTRUCTOR = MethodHandles.Lookup.class.getDeclaredConstructor(Class.class);
+//
+//            if (!CACHED_LOOKUP_CONSTRUCTOR.isAccessible())
+//                CACHED_LOOKUP_CONSTRUCTOR.setAccessible(true);
+//        }
+//        catch (Exception e) {
+//            throw new IllegalStateException(e);
+//        }
+//    }
+//    /* [/java-8] */
 
     /**
      * The type of the wrapped object.
@@ -225,7 +226,7 @@ public class Reflect {
             Field field = field0(name);
             if ((field.getModifiers() & Modifier.FINAL) == Modifier.FINAL) {
                 Field modifiersField = Field.class.getDeclaredField("modifiers");
-                modifiersField.setAccessible(true);
+                modifiersField.setAccessible(true); //TODO trySetAccessible
                 modifiersField.setInt(field, field.getModifiers() & ~Modifier.FINAL);
             }
             field.set(object, unwrap(value));
@@ -285,10 +286,7 @@ public class Reflect {
         
         try {
             return accessible(t.getField(name));
-        }
-
-        
-        catch (NoSuchFieldException e) {
+        } catch (NoSuchFieldException e) {
             do {
                 try {
                     return accessible(t.getDeclaredField(name));
@@ -562,58 +560,58 @@ public class Reflect {
         }
     }
 
-    /**
-     * Create a proxy for the wrapped object allowing to typesafely invoke
-     * methods on it using a custom interface
-     *
-     * @param proxyType The interface type that is implemented by the proxy
-     * @return A proxy for the wrapped object
-     */
-    @SuppressWarnings("unchecked")
-    public <P> P as(final Class<P> proxyType) {
-        final boolean isMap = (object instanceof Map);
-        final InvocationHandler handler = (proxy, method, args) -> {
-            String name = method.getName();
-
-
-            try {
-                return on(type, object).call(name, args).get();
-            }
-
-
-            catch (ReflectException e) {
-                if (isMap) {
-                    Map<String, Object> map = (Map<String, Object>) object;
-                    int length = (args == null ? 0 : args.length);
-
-                    if (length == 0 && name.startsWith("get")) {
-                        return map.get(property(name.substring(3)));
-                    }
-                    else if (length == 0 && name.startsWith("is")) {
-                        return map.get(property(name.substring(2)));
-                    }
-                    else if (length == 1 && name.startsWith("setAt")) {
-                        map.put(property(name.substring(3)), args[0]);
-                        return null;
-                    }
-                }
-
-                /* [java-8] */
-                if (method.isDefault()) {
-                    return CACHED_LOOKUP_CONSTRUCTOR
-                            .newInstance(proxyType)
-                            .unreflectSpecial(method, proxyType)
-                            .bindTo(proxy)
-                            .invokeWithArguments(args);
-                }
-                /* [/java-8] */
-
-                throw e;
-            }
-        };
-
-        return (P) as(proxyType, handler);
-    }
+//    /**
+//     * Create a proxy for the wrapped object allowing to typesafely invoke
+//     * methods on it using a custom interface
+//     *
+//     * @param proxyType The interface type that is implemented by the proxy
+//     * @return A proxy for the wrapped object
+//     */
+//    @SuppressWarnings("unchecked")
+//    public <P> P as(final Class<P> proxyType) {
+//        final boolean isMap = (object instanceof Map);
+//        final InvocationHandler handler = (proxy, method, args) -> {
+//            String name = method.getName();
+//
+//
+//            try {
+//                return on(type, object).call(name, args).get();
+//            }
+//
+//
+//            catch (ReflectException e) {
+//                if (isMap) {
+//                    Map<String, Object> map = (Map<String, Object>) object;
+//                    int length = (args == null ? 0 : args.length);
+//
+//                    if (length == 0 && name.startsWith("get")) {
+//                        return map.get(property(name.substring(3)));
+//                    }
+//                    else if (length == 0 && name.startsWith("is")) {
+//                        return map.get(property(name.substring(2)));
+//                    }
+//                    else if (length == 1 && name.startsWith("setAt")) {
+//                        map.put(property(name.substring(3)), args[0]);
+//                        return null;
+//                    }
+//                }
+//
+//                /* [java-8] */
+//                if (method.isDefault()) {
+//                    return CACHED_LOOKUP_CONSTRUCTOR
+//                            .newInstance(proxyType)
+//                            .unreflectSpecial(method, proxyType)
+//                            .bindTo(proxy)
+//                            .invokeWithArguments(args);
+//                }
+//                /* [/java-8] */
+//
+//                throw e;
+//            }
+//        };
+//
+//        return (P) as(proxyType, handler);
+//    }
 
     public Object as(Class proxyType, InvocationHandler handler) {
         return Proxy.newProxyInstance(proxyType.getClassLoader(), new Class[] { proxyType }, handler);
@@ -644,13 +642,16 @@ public class Reflect {
      * Check whether two arrays of types match, converting primitive types to
      * their corresponding wrappers.
      */
-    private boolean match(Class<?>[] declaredTypes, Class<?>[] actualTypes) {
-        if (declaredTypes.length == actualTypes.length) {
-            for (int i = 0; i < actualTypes.length; i++) {
-                if (actualTypes[i] == NULL.class)
+    private boolean match(Class<?>[] declared, Class<?>[] actual) {
+        if (declared == actual)
+            return true;
+
+        if (declared.length == actual.length) {
+            for (int i = 0; i < actual.length; i++) {
+                if (actual[i] == NULL.class)
                     continue;
 
-                if (wrapper(declaredTypes[i]).isAssignableFrom(wrapper(actualTypes[i])))
+                if (wrapper(declared[i]).isAssignableFrom(wrapper(actual[i])))
                     continue;
 
                 return false;
@@ -851,9 +852,13 @@ public class Reflect {
 //     *
 //     * @author Lukas Eder
 //     */
-    public final static class ReflectException extends RuntimeException {
+    final static class ReflectException extends RuntimeException {
 
-        public ReflectException(Throwable cause) {
+        ReflectException(String msg) {
+            super(msg);
+        }
+
+        ReflectException(Throwable cause) {
             super(cause);
         }
     }

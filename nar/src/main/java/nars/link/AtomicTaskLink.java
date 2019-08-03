@@ -96,9 +96,9 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     @Override
     public String toString() {
-        return toBudgetString() + ':' + punc + ' ' + from() + ' ' + to();
+        Term f = from(), t = to();
+        return toBudgetString() + ':' + punc + ' ' + (f.equals(t) ? f : (f + " " + t));
     }
-
 
     private AtomicTaskLink(Term source, Term target, int hash) {
         super(source, target, hash);
