@@ -146,7 +146,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
             int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
-            Answer a = Answer.relevance(true, limit, s, e, term,
+            Answer a = Answer.taskStrength(true, limit, s, e, term,
                     //withoutCuriosity
                     null
                     , n).dur(dur);
@@ -314,7 +314,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
             //use existing curiosity
             Answer a = Answer.
-                    relevance(true, 2, s, e, term, null, n)
+				taskStrength(true, 2, s, e, term, null, n)
                     .dur(gameDur)
                     .match(curiosityTable);
             actionCuri = a.truth();

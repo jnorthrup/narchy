@@ -110,8 +110,8 @@ public class PriNode extends PLink<Term> {
         abstract public double merge(Iterable<? extends Node<PriNode, Object>> in);
     }
 
-    Merge input = Merge.Plus;
-    protected Branch branch = Branch.One_Div_N;
+    protected Merge input = Merge.Plus;
+    protected Branch branch = Branch.Equal;
 
     /** how the incoming priority is combined from sources */
     public PriNode input(Merge m) {

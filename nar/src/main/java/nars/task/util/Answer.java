@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.math.LongInterval;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAL;
@@ -120,55 +119,40 @@ public final class Answer implements Timed, Predicate<Task> {
 ////        };
 //    }
 
-    /**
-     * sorts nearest to the end of a list
-     */
-    public FloatFunction<TaskRegion> temporalDistanceFn() {
 
-//        TimeRange target;
-//        if (time.start == ETERNAL) {
-//            //target = new TimeRange(nar.time()); //prefer closer to the current time
-//            throw new WTF();
-//        } else
-//            target = time;
-
-        return temporalDistanceFn(time);
-
+    /** for use only in temporal belief tables; eternal tasks not supported since i dont know how to directly compare them with temporals for the purposes of this interface */
+    public static FloatFunction<TaskRegion> beliefStrength(long targetStart, long targetEnd, double dur) {
+        return t -> beliefStrength(t, targetStart, targetEnd, dur);
     }
 
-    static final FloatFunction<TaskRegion> EviAbsolute =
-            x -> x instanceof Task ? (float) TruthIntegration.evi((Task) x) : (x.confMean() * x.range());
-
-    public static FloatFunction<TaskRegion> temporalDistanceFn(TimeRange target) {
-        long targetStart = target.start;
-        if (targetStart == ETERNAL) {
-            return EviAbsolute;
-        } else if (targetStart != target.end) {
-            long targetEnd = target.end;
-            //return b -> -(Util.mean(b.minTimeTo(a.start), b.minTimeTo(a.end))) -b.range()/tableDur;
-            //return b -> -(Util.mean(b.midTimeTo(a.start), b.minTimeTo(a.end))); // -b.range()/tableDur;
-            // -b.minTimeTo(a.start, a.end); // -b.range()/tableDur;
-            return x -> -LongInterval.minTimeTo(x, targetStart, targetEnd);//-target.minTimeTo(x);
-//            return b -> {
-//
-//                return a.minTimeTo(b);
-//long bs = b.start(), be = b.end();
-//                long abs = a.minTimeTo(bs);
-//                float r = -(bs!=be ? Util.mean(abs, a.minTimeTo(be)) : abs);
-//                return r; //TODO make sure that the long cast to float is ok
-//            };
-        } else {
-            return x -> -LongInterval.minTimeTo(x, targetStart); // -b.range()/tableDur;
-        }
+    public static float beliefStrength(TaskRegion t, long now, double dur) {
+        return beliefStrength(t, now, now, dur);
     }
 
+    public static float beliefStrength(TaskRegion t, long qStart, long qEnd, double dur) {
+        return (float)(evidence(t, dur) / (1 + distance(t, qStart, qEnd, dur)));
+    }
+
+    /** temporal distance to point magnitude */
+    private static double distance(TaskRegion t, long now, double dur) {
+        return t.minTimeTo(now)/dur;
+    }
+    /** temporal distance to range magnitude */
+    private static double distance(TaskRegion t, long qStart, long qEnd, double dur) {
+        return t.minTimeTo(qStart, qEnd)/dur;
+    }
+
+    /** evidence magnitude */
+    private static double evidence(TaskRegion t, double dur) {
+        return (t.eviMean() * t.range()/dur);
+    }
 
     /**
      * for belief or goals (not questions / quests
      */
-    public static Answer relevance(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
+    public static Answer taskStrength(boolean beliefOrQuestion, int capacity, long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, NAR nar) {
         return new Answer(
-                relevance(beliefOrQuestion, start, end, template),
+                taskStrength(beliefOrQuestion, start, end, template),
                 filter, capacity, nar)
                 .time(start, end)
                 .term(template)
@@ -176,17 +160,22 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
 
-    static FloatRank<Task> relevance(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
+    static FloatRank<Task> taskStrength(boolean beliefOrQuestion, long start, long end, @Nullable Term template) {
 
         FloatRank<Task> strength =
                 beliefOrQuestion ?
-                        beliefStrength(start, end) : questionStrength(start, end);
+                    (start == ETERNAL ?
+                        beliefStrengthInEternity()
+                        :
+                        beliefStrengthInInterval(start, end))
+                    :
+                    questionStrength(start, end);
 
 
         return (template == null || !template.hasAny(Temporal) || template.equals(template.concept())) ? /* <- means it will match anything */
             strength
             :
-            complexTaskStrength(strength, template);
+            intermpolateStrength(strength, template);
     }
 
     public Answer term(@Nullable Term template) {
@@ -197,38 +186,8 @@ public final class Answer implements Timed, Predicate<Task> {
         return this;
     }
 
-//    /** TODO FloatRank not FloatFunction */
-//    public static FloatFunction<TaskRegion> mergeability(Task x) {
-//        LongPredicate xStamp = Stamp.toContainment(x);
-//
-//        long xStart = x.start(), xEnd = x.end();
-//
-//        FloatFunction<TaskRegion> f = (TaskRegion t) -> {
-//
-//            if (t==x || (!Param.ALLOW_REVISION_OVERLAP_IF_DISJOINT_TIME /* TODO: && !disjointTime(x,y) */
-//                    && Stamp.overlapsAny(xStamp, ((Task) t).stamp())))
-//                return Float.NaN;
-//
-//            return
-//                1f/(1 + (Math.abs(t.start() - xStart) + Math.abs(t.end() - xEnd))/2f);
-//        };
-//
-//        Term xt = x.term();
-//        if (xt.hasAny(Op.Temporal)) {
-//
-//            return (t) -> {
-//                float v1 = f.floatValueOf(t);
-//                if (v1 != v1) return Float.NaN;
-//
-//                Term tt = ((Task) t).term();
-//                return v1 / (1f + Intermpolate.dtDiff(xt, tt));
-//            };
-//        } else {
-//            return f;
-//        }
-//    }
 
-    private static FloatRank<Task> complexTaskStrength(FloatRank<Task> strength, Term template) {
+    private static FloatRank<Task> intermpolateStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {
 
             Term xt = x.term();
@@ -259,9 +218,7 @@ public final class Answer implements Timed, Predicate<Task> {
         };
     }
 
-    public static FloatRank<Task> beliefStrength(long start, long end) {
-        return start == ETERNAL ? eternalTaskStrength() : temporalTaskStrength(start, end);
-    }
+
 
     public static FloatRank<Task> questionStrength(long start, long end) {
 
@@ -283,20 +240,13 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * TODO use FloatRank min
      */
-    public static FloatRank<Task> eternalTaskStrength() {
-        //return (x, min) -> (x.isEternal() ? x.evi() : x.eviEternalized() * x.range())
-        //* x.originality()
+    public static FloatRank<Task> beliefStrengthInEternity() {
         return (x, min) -> (float) x.evi();
     }
 
 
     /** HACK needs double precision */
-    public static FloatRank<Task> temporalTaskStrength(long start, long end) {
-//        float dur = 1f + (end - start)/2f;
-//        return (x, min) -> (float) TruthIntegration.evi(x, start, end, dur)
-//                //* x.originality()
-//                ;
-
+    public static FloatRank<Task> beliefStrengthInInterval(long start, long end) {
         return (x,min) -> (float) TruthIntegration.eviFast(x, start, end);
     }
 

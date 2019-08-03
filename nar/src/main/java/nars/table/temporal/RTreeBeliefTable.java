@@ -123,13 +123,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         return !findEvictable(tree, tree.root(), weakest, weakestLeaf)
                 ||
-               mergeOrDelete(tree, weakest, weakestLeaf, remember);
+               mergeOrDelete(tree, weakest, weakestLeaf, remember, tableDur);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
-										 Top<Task> theWeakest,
-										 Top<RLeaf<TaskRegion>> mergeableLeaf,
-                                         Remember r) {
+                                         Top<Task> theWeakest,
+                                         Top<RLeaf<TaskRegion>> mergeableLeaf,
+                                         Remember r, long tableDur) {
 
         Task weakest = theWeakest.get();
         TruthProjection merging = null;
@@ -138,7 +138,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (!mergeableLeaf.isEmpty()) {
             Pair<Task, TruthProjection> AB = mergeLeaf(mergeableLeaf, r);
             if (AB != null) {
-                if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), r))
+                if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), tableDur, r))
                     merged = null;
             }
         }
@@ -156,10 +156,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
     }
 
-    private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
+    private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, long tableDur, Remember r) {
         long now = r.nar.time();
-        double weakEvictionValue = -eviFast(weakest, now);
-        double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
+        long a = now - tableDur/2, b = now + tableDur / 2;
+        double weakEvictionValue = -eviFast(weakest, a, b);
+        double mergeValue = eviFast(merged, a, b) - merging.sumOfDouble((Task t) -> eviFast(t, a, b));
 
         return mergeValue > weakEvictionValue;
     }
@@ -198,8 +199,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     @Override
     public final void match(Answer a) {
-        if (!isEmpty())
-            HyperIterator.iterate(this, a.temporalDistanceFn(), a);
+        if (!isEmpty()) {
+
+            long s = a.time.start, e = a.time.end;
+            double dur = tableDur((s+e)/2);
+            FloatFunction<TaskRegion> rank = a.beliefStrength(s, e, dur);
+
+            HyperIterator.iterate(this, rank, a);
+        }
     }
 
     @Override
@@ -312,12 +319,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     @Override
     public long tableDur(long now) {
         TaskRegion root = bounds();
-        if (root == null)
-            return 1;
-        else {
-            //return 1 + (root == null ? 0 : root.range() / NAL.TEMPORAL_BELIEF_TABLE_DUR_DIVISOR);
-            return 1 + Math.round(Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_DIVISOR);
-        }
+        return (root == null) ? 1 :
+            1 + Math.round(Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_SCALE);
     }
 
     @Override
@@ -413,13 +416,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Override
         public float floatValueOf(Task t) {
-
-            return (float)
-                -((t.evi() * t.range()/dur)
-                        /
-                 ((1 + t.minTimeTo(now)/dur)))
-                ;
+            return -Answer.beliefStrength(t, now, dur);
         }
+
     }
 
 

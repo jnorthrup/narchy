@@ -990,6 +990,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return truth(when, when, dur);
     }
 
+    @Override
+    default double eviMean() {
+        return evi();
+    }
+
     default String proof() {
         StringBuilder sb = new StringBuilder(1024);
         return proof(sb).toString().trim();

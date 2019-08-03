@@ -166,7 +166,7 @@ public class TruthWave {
 
         float[] data = this.truth;
         int j = 0;
-        Answer a = Answer.relevance(true, answerDetail, start, end, term, null, nar)
+        Answer a = Answer.taskStrength(true, answerDetail, start, end, term, null, nar)
                 .dur(dur);
         int tries = Math.round(answerDetail * NAL.ANSWER_TRYING);
 

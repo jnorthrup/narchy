@@ -362,7 +362,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
             if (answer == null) {
                 this.answer = Answer
-                        .relevance(true, answerDetail, start, end, null, null, nar);
+                        .taskStrength(true, answerDetail, start, end, null, null, nar);
             }
 
             this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));

@@ -14,7 +14,6 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.util.Answer;
 import nars.task.util.TaskRegion;
-import nars.task.util.TimeRange;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
@@ -274,10 +273,11 @@ class RTreeBeliefTableTest {
     static List<TaskRegion> seek(RTreeBeliefTable table, long s, long e) {
         int c = table.capacity();
         List<TaskRegion> seq = new FasterList(c);
+        double dur = table.tableDur((s+e)/2);
         table.read(t -> {
             HyperIterator<TaskRegion> h = new HyperIterator(t.model,
                     new TaskRegion[Math.min(c, 32)],
-                    Answer.temporalDistanceFn(new TimeRange(s, e)));
+                    Answer.beliefStrength(s, e, dur));
             while (h.hasNext()) {
                 seq.add(h.next());
             }

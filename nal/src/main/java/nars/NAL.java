@@ -179,7 +179,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final int HOWS_CAPACITY = 128;
 
     /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength */
-    public static final double TEMPORAL_BELIEF_TABLE_DUR_DIVISOR =
+    public static final double TEMPORAL_BELIEF_TABLE_DUR_SCALE =
             2;
 
     /**

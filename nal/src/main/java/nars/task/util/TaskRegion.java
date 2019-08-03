@@ -10,6 +10,8 @@ import nars.truth.Truth;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
+import static nars.truth.func.TruthFunctions.c2wSafe;
+
 /**
  * 3d cuboid region:
  * time            start..end              64-bit signed long
@@ -240,6 +242,10 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
     default int confMaxI() {
         return i(false, true);
+    }
+
+	default double eviMean() {
+        return c2wSafe((double)confMean());
     }
 
 }
