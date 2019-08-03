@@ -17,12 +17,12 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 public class NAL3DecomposeBeliefTest extends NAL3Test {
 
 
-    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, add special test case */})
+    @ValueSource(floats = { 0.7f, 0.8f, 0.9f })
     @ParameterizedTest
     void compound_decomposition_two_premises_Negative_DiffIntensional(float freq) {
-        String known = "<robin --> swimmer>";
-        String composed = "<robin --> (mammal - swimmer)>";
-        String unknown = "<robin --> mammal>";
+        String known = "(robin --> swimmer)";
+        String composed = "--(robin --> (mammal && swimmer))";
+        String unknown = "(robin --> mammal)";
 
         TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
 
@@ -33,20 +33,14 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
         test.mustNotOutput(cycles, "((mammal-swimmer)-->mammal)", BELIEF, 0, 1, 0, 1, ETERNAL);
     }
 
-    @ValueSource(floats = {0, 0.25f, 0.5f, 0.75f, 0.9f /* TODO 1f should produce no output, add special test case */})
+    @ValueSource(floats = { 0.7f, 0.8f, 0.9f /* TODO 1f should produce no output, add special test case */})
     @ParameterizedTest
     void compound_decomposition_two_premises_Negative_DiffExtensional(float freq) {
-        String known = "<b-->x>";
-        String composed = "<(a ~ b) --> x>";
-        String unknown = "<a --> x>";
+        String known = "(b-->x)";
+        String composed = "--((a && b) --> x)";
+        String unknown = "(a --> x)";
 
-        TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
-
-//        test.mustNotOutput(cycles, "<--a --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
-//        test.mustNotOutput(cycles, "<--b --> x>", BELIEF, 0, 1, 0, 1, ETERNAL);
-
-        //test neqRCom
-        //test.mustNotOutput(cycles, "(b --> (a-b))", BELIEF, 0, 1, 0, 1, ETERNAL);
+        testDecomposeNegDiff(freq, known, composed, unknown);
     }
 
     private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {

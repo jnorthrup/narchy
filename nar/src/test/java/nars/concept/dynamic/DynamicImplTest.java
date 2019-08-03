@@ -86,7 +86,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
             assertEq("(x ==>+2 y)", t.term());
             Truth tt = t.truth();
             assertEquals(1, tt.freq(), 0.01f);
-            assertEquals(25, tt.conf(), 0.10f);
+            assertEquals(0.25, tt.conf(), 0.10f);
         }
         assertEquals("(x ==>+2 y). 0 %1.0;.45%", n.belief($$("(x==>y)"), 0, 0).toStringWithoutBudget());
         assertEquals("(x ==>+1 y). 0 %1.0;.34%", n.belief($$("(x ==>+1 y)"), 0, 0).toStringWithoutBudget());
