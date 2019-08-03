@@ -199,10 +199,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     public void link(Game g) {
-        float pri = (float)(surprise()) * this.pri.pri();
-        //System.out.println(tl + " <- " + surprise);
+        float basePri = this.pri.pri();
+        double sur = surprise();
+        float pri = (float) sur * basePri;
 
-        //System.out.println(this + " " + surprise);
         if (pri > Float.MIN_NORMAL) {
             @NotNull AbstractTaskLink tl = newLink();
             tl.priMerge(BELIEF, pri, NAL.tasklinkMerge);

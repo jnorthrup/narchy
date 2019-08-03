@@ -76,18 +76,17 @@ abstract public class WhenTimeIs extends ScheduledTask {
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
     public static <T extends Timed> When<T> now(T t, float dur, int dither) {
-        long s, e;
-        long now = t.time();
-        if (dur > 0.5f) {
-            s = (long) Math.floor(now - dur / 2);
-            e = (long) Math.ceil(now + dur / 2);
-        } else {
-            s = e = now;
-        }
-        return now(t, dur, s, e, dither);
+        return now(t, dur, t.time(), dur/2, dur/2, dither);
     }
 
-    private static <T extends Timed> When<T> now(T t, float dur, long s, long e, int dither) {
+    /** dur doesnt necesarily need to have any relation to timeBefore, timeAfter */
+    public static <T extends Timed> When<T> now(T t, float dur, long now, float before, float after, int dither) {
+        return now(t, dur,
+            (long) Math.floor(now - before),
+            (long) Math.ceil(now + after), dither);
+    }
+
+    public static <T extends Timed> When<T> now(T t, float dur, long s, long e, int dither) {
         if (dither > 1) {
             s = Tense.dither(s, dither, -1);
             e = Tense.dither(e, dither, +1);

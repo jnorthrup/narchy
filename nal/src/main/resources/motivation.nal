@@ -47,7 +47,7 @@
 
 
     //sequence possibility quest
-    C, X, task("@"), eventOfPN(C,X) |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
+    C, X, task("@"), eventOfPN(C,X), hasBelief() |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
 
 
 
@@ -76,12 +76,12 @@
 
 
     //anti-conjunction containing anti-goal
-    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:Task)
-    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:Task)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C), hasBelief()  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:Task)
+    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C), hasBelief()  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:Task)
 //        G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
 //        G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
-    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:Task)
-    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Punctuation:Ask, Time:Task)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C), hasBelief()  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:Task)
+    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C), hasBelief()  |- (--G && --conjBefore(C,G)),   (Punctuation:Ask, Time:Task)
     //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
     //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
 

@@ -624,7 +624,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return x.sub(0).unify(y.sub(0), u);
             default:
                 if ((/* flat: */ x instanceof IntrinSubterms && y instanceof IntrinSubterms) ||
-                    u.random.nextFloat() < NAL.SUBTERM_UNIFY_RANDOM_PROBABILITY)
+                    u.random.nextFloat() < NAL.SUBTERM_UNIFY_ORDER_RANDOM_PROBABILITY)
                     return unifyRandom(x, y, n, u);
                 if (n == 2)
                     return unifyLinear2_complexityHeuristic(x, y, u);

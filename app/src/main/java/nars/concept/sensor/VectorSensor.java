@@ -67,7 +67,12 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
                 }
 
                 super.update(graph);
-                priComponent = branch.priFraction(size) * pri();
+                priComponent = super.pri();
+            }
+
+            @Override
+            public float pri() {
+                return super.pri() * size;
             }
 
             @Override
@@ -75,7 +80,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
                 return priComponent;
             }
         };
-        pri.output(PriNode.Branch.One_div_sqrtN);
+        pri.output(PriNode.Branch.One_Div_N);
 
         this.in = n.newChannel(id != null ? id : this);
         this.cause = new short[] { in.id };
@@ -86,6 +91,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
      */
     abstract public int size();// {return Iterables.size(this);}
 
+    /** surPRIse */
     public double surprise() {
         double s = 0;
         for (Signal c : this)

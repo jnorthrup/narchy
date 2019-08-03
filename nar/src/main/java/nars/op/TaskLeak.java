@@ -15,12 +15,12 @@ import nars.Op;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.concept.Concept;
 import nars.control.How;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -199,20 +199,14 @@ public abstract class TaskLeak extends How {
 
         private Predicate<Term> termFilter;
         private Predicate<Task> taskFilter;
-        private Random rng;
 
         private byte[] puncs;
-        int nextPunc = 0;
-        private NAR nar;
-        When when;
 
         @Override
         public @Nullable Off starting(TaskLeak t, NAR n) {
             this.termFilter = t::filter;
             this.taskFilter = t::filter;
-            this.rng = n.random();
             this.puncs = t.puncs;
-            this.nar = n;
             if (puncs == null || puncs.length == 0)
                 puncs = new byte[] { BELIEF, QUESTION, GOAL, QUEST };
             return null;
@@ -221,20 +215,20 @@ public abstract class TaskLeak extends How {
         @Override
         public void next(Consumer<Task> each, BooleanSupplier kontinue, What w) {
 
-            when = focus(w.dur());
+            When<NAR> when = focus(w);
 
-            StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+            Random rng = w.random();
 
-            w.sampleUnique(rng, (Predicate<? super TaskLink>)(c)->{
+            //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+            StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
 
-                Term xt = c.from();
-                if (termFilter.test(xt)) { //TODO check for impl filters which assume the target is from a Task, ex: dt!=XTERNAL but would be perfectly normal for a concept's target
-                    Concept cc = nar.conceptualizeDynamic(xt);
-                    if (cc!=null) {
-                        Task x = sample(cc);
-                        if (x != null && filter.addIfMissing(x))
-                            each.accept(x);
-                    }
+            w.sampleUnique(rng, (Predicate<? super TaskLink>)(link)->{
+
+                Term linkTerm = link.from();
+                if (filter.addIfMissing(linkTerm) && termFilter.test(link.from())) {
+                    Task x = sample(link, linkTerm, when);
+                    if (x != null)
+                        each.accept(x);
                 }
 
                 return kontinue.getAsBoolean();
@@ -242,27 +236,21 @@ public abstract class TaskLeak extends How {
         }
 
         /** TODO abstract */
-        protected When focus(float dur) {
-            long now = nar.time();
-            return new When(Math.round(now - dur/2), Math.round(now + dur/2), dur, nar);
+        protected When<NAR> focus(What w) {
+            return WhenTimeIs.now(w);
         }
 
-        /** TODO use TaskLink as the Task resolver not this custom impl */
-        @Deprecated @Nullable private Task sample(Concept c) {
-            Term ct = c.term();
-            boolean hasTemporal = ct.hasAny(Op.Temporal);
+        @Nullable private Task sample(TaskLink link, Term linkTerm, When<NAR> when) {
 
-            byte[] p = this.puncs;
-            for (int i = 0; i < p.length; i++) {
-                Task x = c.table(p[nextPunc]).match(when, null, (Task t) ->{
-                    Term tt = t.term();
-                    if (hasTemporal && !ct.equals(tt) && !termFilter.test(tt)) //test again for temporal containing target as this was not done when testing concept
-                        return false;
+            Predicate<Task> filter = linkTerm.hasAny(Op.Temporal) ? ((Predicate<Task>) t -> {
+                //tests again for temporal containing target as this was not done when testing concept
+                Term tt = t.term();
+                return linkTerm.equals(tt) || termFilter.test(tt);
+            }).and(taskFilter) : taskFilter;
 
-                    return taskFilter.test(t);
-                }, false);
-
-                if (x!=null)
+            for (byte b : this.puncs) {
+                Task x = link.get(b, when, filter);
+                if (x != null)
                     return x;
             }
             return null;

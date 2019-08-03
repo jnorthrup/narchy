@@ -211,8 +211,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * */
     public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
 
-    /** probability of unifying subterms randomly (not using deterministic complexity heuristic ordering) */
-    public static final float SUBTERM_UNIFY_RANDOM_PROBABILITY = 0.05f;
+    /** probability of unifying subterms randomly (not using any heuristics as usual) */
+    public static final float SUBTERM_UNIFY_ORDER_RANDOM_PROBABILITY = 0.05f;
 
     /** seems safe and will reduce equivalent permutations cluttering tasklink bags */
     public static final boolean TASKLINK_NORMALIZE_IMAGES = true;
@@ -585,7 +585,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
 
         /** if true, uses dur=0 for matching/answering which, as a result, restricts includable evidence in the truth projection */
-        public static final boolean ANSWER_HONEST_DUR = false;
+        public static final boolean ANSWER_HONEST_DUR = true;
     }
 
 

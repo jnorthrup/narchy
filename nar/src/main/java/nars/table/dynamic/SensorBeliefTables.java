@@ -249,6 +249,7 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
 
+    /** surPRIse */
     public float surprise() {
         Task n = current;
         return (n!=null) ? n.priElseZero() : 0;

@@ -41,7 +41,6 @@ public class PriNode extends PLink<Term> {
     }
 
     @Deprecated /* move to subclass */ protected final float priFraction() {
-        float i;
         int n = fanOut;
         return branch.priFraction(n); //TODO cache
 //        if (n <= 1)
