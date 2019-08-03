@@ -41,10 +41,16 @@
 
 
 //ABDUCTION ---------------------------
-    (S --> M), (S --> P), neqRCom(M,P)      |- (P --> M), (Belief:Abduction, Time:Compose)
-      //(A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Goal:DesireWeak, Time:Task)
+    (P --> M), (S --> M), neqRCom(M,P)      |- (S --> P), (Belief:Abduction, Time:Compose)
+    (M --> P), (M --> S), neqRCom(M,P)      |- (P --> S), (Belief:Abduction, Time:Compose)
 
-        (S --> M), (S --> P), neqRCom(M,P), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
+        (P --> M), (S --> M), neqRCom(B,C)      |- (S --> P), (Goal:DesireWeak, Time:Task)
+        (M --> P), (M --> S), neqRCom(B,C)      |- (P --> S), (Goal:DesireWeak, Time:Task)
+
+       (S --> P), (P --> M), neqRCom(S,P), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (S --> M), neqRCom(S,P), hasBelief()  |- (P --> M), (Punctuation:AskAsk, Time:Task)
+       (P --> S), (M --> P), neqRCom(S,P), hasBelief()  |- (M --> S), (Punctuation:AskAsk, Time:Task)
+        (P --> S), (M --> S), neqRCom(S,P), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
 //        (S --> M), (S --> P), task("!"), neqRCom(M,P)   |- (S --> P), (Punctuation:Quest, Time:Task)
 
