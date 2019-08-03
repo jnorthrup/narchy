@@ -1,26 +1,27 @@
-//// inheritance from similarty
-    //(S <-> P), P         |- (S --> P), (Belief:Identity)
-    //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
+
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 ////If P and S are a special case of M, then they might be similar (weak),
 ////also if P and S are a general case of M
 
       (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
+        (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
       (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
-      (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |-   (S <-> P), (Belief:Intersection, Time:Compose)
-      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
+        (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
 
+      (P <-> M), (S <-> M), --isVar(M), neqRCom(S,P) |-   (S <-> P), (Belief:Intersection, Time:Compose)
+        (P <-> M), (S <-> M), --isVar(M), neqRCom(S,P) |-   (S <-> P), (Goal:Desire, Time:Task)
+
+      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
+        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
+        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 
       (S <-> P),    P                                |-   (S --> P), (Goal:StructuralReduction, Time:Task)
 
-      (M <-> P), (S <-> M), --isVar(M), neqRCom(S,P) |-   (S <-> P), (Goal:Desire, Time:Task)
-      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
-      (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
-      (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
-
-      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
       (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
+
+      (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
+      (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
 
 
 //   see:
@@ -36,8 +37,10 @@
 
 
  Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeak, Time:TaskEvent)
+
  Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y), hasBelief()   |- substitute(Z, X, polarizeBelief(Y), novel), (Punctuation:AskAll, Time:Task)
- //Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:Task)
+   Z, (X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Time:Task)
+
     //   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
     //   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)
           //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
@@ -111,3 +114,6 @@
          //       (X --> A),  (--(Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:DesireN, Goal:DesireN)
           //  (A --> X),        ((A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:Desire, Goal:Desire)
           //      (A --> X),  (--(A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:DesireN, Goal:DesireN)
+//// inheritance from similarty
+    //(S <-> P), P         |- (S --> P), (Belief:Identity)
+    //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)

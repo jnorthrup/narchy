@@ -1,12 +1,5 @@
-//The rules of NAL, can be interpreted by considering the intiution behind the following two relations:
-// Statement:                 (A --> B):               A can stand for B
-// Statement about Statement: (A --> B) ==> (X --> Y): If A is true, so is/will be B
-// --> is a relation in meaning of terms, while ==> is a relation of truth between statements.
-
-
-
-//// inheritance-based syllogism ////////////////////////////////////////////////////////////////////////////////////
-// If A is a special case of B, and B is a special case of C, so is A a special case of C (strong), the other variations are hypotheses (weak)
+// inheritance-based syllogism
+//
 //       (A --> B) ------- (B --> C)
 //            \               /
 //             \             /
@@ -14,69 +7,40 @@
 //               \         /
 //                (A --> C)
 
-    (A --> B), (B --> C), neqRCom(A,C)     |-   (A --> C), (Belief:Deduction, Time:Compose)
-        (A --> B), (B --> C), neqRCom(A,C)     |-     (A --> C), (Goal:Desire, Time:Task)
-        //(A --> B), (B --> C), neqRCom(A,C)     |-    (A --> C), (Goal:DeductionPP, Time:Task)
-        //(A --> B), (B --> C), neqRCom(A,C)     |-  --(A --> C), (Goal:DeductionNP, Time:Task)
+//DEDUCTION ---------------------------
+
+    (A --> B), (B --> C), neqRCom(A,C)      |- (A --> C), (Belief:Deduction, Time:Compose)
+        (A --> B), (B --> C), neqRCom(A,C)  |- (A --> C), (Goal:Desire, Time:Task)
+
+        (A --> B), (B --> C), neqRCom(A,C)  |- (C --> A), (Punctuation:AskAsk, Time:Task)
 
         (A --> B), (B --> C), task("!"), neqRCom(A,C)   |- (B --> C), (Punctuation:Quest, Time:Task)
-//        (A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (A --> C), (Punctuation:Quest)
 
-        (A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (A --> C), (Time:Task)
-        //(A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Compose)
 
+//ABDUCTION ---------------------------
     (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Belief:Abduction, Time:Compose)
     (A --> B), (A --> C), neqRCom(B,C)      |- (C --> B), (Goal:DesireWeak, Time:Task)
 
+        (A --> B), (A --> C), neqRCom(B,C)  |- (B --> C), (Punctuation:AskAsk, Time:Task)
 
         (A --> B), (A --> C), task("!"), neqRCom(B,C)   |- (A --> C), (Punctuation:Quest, Time:Task)
-          //(A --> B), (A --> C), task("!"), neqRCom(B,C)      |- (B --> C), (Punctuation:Quest)
 
-        (A --> B), (A --> C), task("?@"), neqRCom(B,C)  |- (C --> B), (Time:Task)
-            //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (C --> B), (Punctuation:Quest)
-            //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
-        //(A --> B), (A --> C), task("?"), neqRCom(B,C) |- (C <-> B), (Punctuation:Question)
-        //(A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C <-> B), (Punctuation:Question)
-                    //(A --> B), (A --> C), task("?"), belief(negative), neqRCom(B,C) |- (--C --> B), (Punctuation:Question)
-            //(A --> B), (A --> C), task("@"), neqRCom(B,C)  |- (B --> C), (Punctuation:Quest)
+
+//INDUCTION ---------------------------
 
     (A --> C), (B --> C), neqRCom(A,B)      |- (B --> A), (Belief:Induction, Time:Compose)
     (A --> C), (B --> C), neqRCom(B,C)      |- (B --> A), (Goal:DesireWeak, Time:Task)
 
+        (A --> C), (B --> C), neqRCom(A,B)  |- (A --> B), (Punctuation:AskAsk, Time:Task)
 
         (A --> C), (B --> C), task("!"), neqRCom(A,B)  |- (B --> C), (Punctuation:Quest, Time:Task)
-          //(A --> C), (B --> C), task("!"), neqRCom(A,B)      |- (C --> B), (Punctuation:Quest)
-
-        (A --> C), (B --> C), task("?@"), neqRCom(A,B)  |- (B --> A), (Time:Task)
-            //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (A --> B), (Punctuation:Quest)
-            //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
-        //(A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A --> --B), (Punctuation:Question)
-        //(A --> C), (B --> C), task("?"), neqRCom(A,B) |- (A <-> B), (Punctuation:Question)
-        //(A --> C), (B --> C), task("?"), belief(negative), neqRCom(A,B) |- (A <-> --B), (Punctuation:Question)
 
 
-            //(A --> C), (B --> C), task("@"), neqRCom(A,B)  |- (B --> A), (Punctuation:Quest)
+//EXEMPLIFICATION  ---------------------------
 
-    (A --> B), (B --> C), neqRCom(A,C)      |-   (C --> A), (Belief:Exemplification, Time:Compose)
-        (A --> B), (B --> C), neqRCom(A,C)      |-   (C --> A), (Goal:DesireWeak, Time:Task)
+    (A --> B), (B --> C), neqRCom(A,C)      |- (C --> A), (Belief:Exemplification, Time:Compose)
+        (A --> B), (B --> C), neqRCom(A,C)  |- (C --> A), (Goal:DesireWeak, Time:Task)
+
+        (A --> B), (B --> C), neqRCom(A,C)  |- (A --> C), (Punctuation:AskAsk, Time:Task)
 
         (A --> B), (B --> C), task("!"), neqRCom(A,C)   |- (B --> C), (Punctuation:Quest, Time:Task)
-        //(A --> B), (B --> C), task("!"), neqRCom(A,C)      |- (C --> A), (Punctuation:Quest)
-
-        (A --> B), (B --> C), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Task)
-        //(B --> A), (C --> B), task("?@"), neqRCom(A,C)  |- (C --> A), (Time:Compose)
-
-
-
-     //(B --> C), (A --> B), neqRCom(A,C)      |- (C --> A), (Belief:ExemplificationX, Goal:DesireWeak)
-
-        //(B --> C), (A --> B), task("?@"), neqRCom(A,C)  |- (C --> A)
-            //(A --> B), (B --> C), task("@"), neqRCom(A,C)  |- (C --> A), (Punctuation:Quest)
-
-
-//// similarity from inheritance ////////////////////////////////////////////////////////////////////////////////////
-//If S is a special case of P, and P is a special case of S, then S and P are similar
-
-
-
-
