@@ -43,9 +43,9 @@ public class TaskLinkTest {
         t.priMergeGetDelta(BELIEF, 0.9f, PriMerge.plus);
         t.priMergeGetDelta(GOAL, 0.9f, PriMerge.plus);
         assertEquals(0.5f, t.pri(), 0.1f);
-        assertEquals("$.45:0.9,0,0.9,0 x x", t.toString());
+        assertEquals("$.45:0.9,0,0.9,0 x", t.toString());
         t.priMult(0.9f);
-        assertEquals("$.40:0.81,0,0.81,0 x x", t.toString());
+        assertEquals("$.40:0.81,0,0.81,0 x", t.toString());
 
     }
 

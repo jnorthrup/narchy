@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 350;
+    public static final int cycles = 150;
 
     @BeforeEach
     void setTolerance() {
@@ -278,9 +278,6 @@ public class NAL8Test extends NALTest {
         ;
     }
 
-
-
-
     @Test
     void testConditionalGoalConjunctionDecomposePositivePostconditionGoal() {
 
@@ -378,7 +375,7 @@ public class NAL8Test extends NALTest {
     void testInhibition() {
 
 
-        test.termVolMax(4).confMin(0.75f)
+        test.termVolMax(4).confMin(0.4f)
                 .goal("reward")
                 .believe("(  good ==> reward)", 1, 0.9f)
                 .believe("(--bad  ==> reward)", 1, 0.9f)
@@ -465,15 +462,7 @@ public class NAL8Test extends NALTest {
                 .mustGoal(cycles, "G", 0.0f, 0.4f);
     }
 
-    @Test
-    void testGoalSimilaritySpreadingNegInside() {
-        test.nar.termVolMax.set(4);
 
-        test
-                .input("--R!")
-                .input("(G <-> --R).")
-                .mustGoal(cycles, "G", 1.0f, 0.81f);
-    }
 
 //    @Test
 //    void testGoalSimilaritySpreadingNegInsideNeg() {
