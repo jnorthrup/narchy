@@ -296,7 +296,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         }
 
         if (hist!=null)
-            hist.commit(mass());
+            hist.commit();
 
         return s;
     }

@@ -1,10 +1,8 @@
 package nars.time.event;
 
-import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
 import nars.attention.What;
-import nars.derive.model.Derivation;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.ScheduledTask;
@@ -76,23 +74,34 @@ abstract public class WhenTimeIs extends ScheduledTask {
         return new When(Tense.ETERNAL, Tense.ETERNAL, n.dur(), n);
     }
 
+    public static <T extends Timed> When<T> now(float dur, T t) {
+        return now (t, dur, 1);
+    }
+
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
-    public static <T extends Timed> When<T> now(float dur, T t) {
+    public static <T extends Timed> When<T> now(T t, float dur, int dither) {
         long now = t.time();
-        return new When<>(Math.round(now - dur / 2), Math.round(now + dur / 2), dur, t);
+        long s, e;
+        if (dur > 1.5f) {
+            s = Math.round(now - dur / 2);
+            e = Math.round(now + dur / 2);
+            if (dither > 1) {
+                s = Tense.dither(s, dither, -1);
+                e = Tense.dither(e, dither, +1);
+            }
+        } else {
+            s = e = now;
+        }
+        return new When<>(s, e, dur, t);
     }
-    private static <T extends Timed> When<T> now(FloatSupplier dur, T t) {
-        return now(dur.asFloat(), t);
-    }
+
     public static <T extends Timed> When<T> now(T t) {
         return now(t.dur(), t);
     }
-    public static When<NAR> now(Derivation d) {
-        return now(d::dur, d.nar());
-    }
+
     public static When<NAR> now(What w) {
-        return now(w::dur, w.nar);
+        return now(w.nar, w.dur(), w.nar.dtDither());
     }
 
     public static <T extends Timed> When<T> since(long when, T t) {

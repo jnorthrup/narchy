@@ -481,8 +481,9 @@ public class ConjClustering extends How {
 
             long range = Util.min(LongInterval::range, x) - 1;
             long tEnd = start + range;
+            long[] se = Tense.dither(new long[] { start, tEnd}, nar);
             NALTask y = new STMClusterTask(cp, t,
-                    Tense.dither(start, ditherDT), Tense.dither(tEnd, ditherDT),
+                    se[0], se[1],
                     Stamp.sample(NAL.STAMP_CAPACITY, stamp, nar.random()), puncOut, now);
 
             Task.fund(y, x, priCopyOrMove);

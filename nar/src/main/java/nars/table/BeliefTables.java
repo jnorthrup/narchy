@@ -40,15 +40,16 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     public void match(Answer a) {
         int size = this.size;
         if (size == 0) return;
-        if (size == 1) { items[0].match(a); return; }
+        else if (size == 1) { items[0].match(a); }
+        else {
+            //first come first serve
+            ANDshuffled(a.random(), t -> {
+                t.match(a);
+                return a.ttl > 0;
+            });
 
-        //first come first serve
-        ANDshuffled(a.random(), t->{
-            t.match(a);
-            return a.ttl > 0;
-        });
 
-        //fair round robin
+            //fair round robin
 //        int ttlStart = a.ttl; assert(ttlStart > 0);
 //        int ttlFair = Math.max(1,
 //            //ttlStart /size
@@ -62,6 +63,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 //            return true;
 //        });
 //        a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
+        }
     }
 
 

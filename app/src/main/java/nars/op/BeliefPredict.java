@@ -147,8 +147,9 @@ public class BeliefPredict extends NARPart {
         float evi = c2w(conf );
 
         //long eShared = nar.evidence()[0];
-        long start = Tense.dither(when , nar);
-        long end = Tense.dither(when+sampleDur, nar);
+        long[] se = Tense.dither(new long[] { when, when+sampleDur }, nar);
+//        long start = Tense.dither(when , nar);
+//        long end = Tense.dither(when+sampleDur, nar);
 
         for (int i = 0; i < predFreq.length; i++) {
 
@@ -163,7 +164,7 @@ public class BeliefPredict extends NARPart {
                 continue;
 
             //System.out.println("-> " + start + " " + end);
-            PredictionTask p = new PredictionTask(predicted[i].term(), t, start, end, nar.evidence());
+            PredictionTask p = new PredictionTask(predicted[i].term(), t, se[0], se[1], nar.evidence());
             p.pri(nar);
 
             predictions.add(p);

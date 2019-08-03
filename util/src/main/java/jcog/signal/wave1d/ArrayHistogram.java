@@ -66,7 +66,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         final float rangeDelta;
         private final float lo;
         final float[] buffer;
-//        float mass = 0;
+        float mass = 0;
 
         HistogramWriter(int bins, float lo, float hi) {
             this.buffer = new float[bins];
@@ -80,6 +80,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
 
         /** TODO refine this could be more accurate in how it distributes the fraction */
         public void add(int value, float weight, int superSampling) {
+            mass += weight;
             float dw = weight / superSampling;
             float width = 1f; // <= 1
             float v = value - width/2f;
@@ -91,7 +92,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         }
 
         public void add(float value, float weight) {
-//            mass += weight;
+            mass += weight;
 
             //TODO anti-alias by populating >1 bins with fractions of the weight
             int bin = Util.bin((value - lo) / rangeDelta, bins);
@@ -100,7 +101,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             //data.addAt(weight, bin); //TODO unbuffered mode
         }
 
-        public float commit(float mass) {
+        public float commit() {
             if (bins() != bins)
                 resize(bins);
             data.setAll(buffer);
@@ -132,7 +133,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             flat = true;
         } else {
             mass = mass();
-            flat = (mass <= ScalarValue.EPSILON * rangeDelta);
+            flat = (mass <= ScalarValue.EPSILON * (1+rangeDelta));
         }
 
         float u = rng.nextFloat();
@@ -146,7 +147,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         //boolean direction = rng.nextBoolean();
 
         int b;
-        float ii;
+
         float B = Float.MAX_VALUE;
         boolean direction;
 

@@ -1,5 +1,6 @@
 package nars.op.mental;
 
+import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatRange;
 import nars.*;
@@ -17,8 +18,8 @@ import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableTransform;
-import nars.time.Tense;
 import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -43,7 +44,9 @@ public class Inperience extends How {
     public static final Atomic believe = Atomic.the("believe");
     public static final Atomic want = Atomic.the("want");
     public static final Atomic wonder = Atomic.the("wonder");
-    public static final Atomic evaluate = Atomic.the("plan");
+
+    /** note: NARS calls this 'evaluate' */
+    public static final Atomic plan = Atomic.the("plan");
 
     private static final int VOL_SAFETY_MARGIN = 4;
 
@@ -57,25 +60,28 @@ public class Inperience extends How {
         n.start(this);
     }
 
-    public static Term reifyQuestion(Term x, byte punc, NAR nar) {
-        return $.funcImg(punc == QUESTION ? wonder : evaluate, nar.self(), describe(x));
+    public static Term reifyQuestion(Term x, byte punc, Term self) {
+        return $.funcImg(verb(punc), self, describe(x));
     }
 
-    static Term reifyBeliefOrGoal(Task t, NAR nar) {
-
-        Term self = nar.self();
+    static Term reifyBeliefOrGoal(Task t, Term self) {
 
         Term y = describe(t.term());
 
-        Atomic verb;
+        Atomic verb = verb(t.punc());
 
-        if (t.punc() == BELIEF) {
-            verb = believe;
-        } else {
-            verb = want;
-        }
         //return $.funcImg(verb, self, y.negIf(t.isNegative()));
         return $.func(verb, self, y.negIf(t.isNegative()));
+    }
+
+    private static Atomic verb(byte punc) {
+        switch (punc) {
+            case BELIEF: return believe;
+            case GOAL: return want;
+            case QUESTION: return wonder;
+            case QUEST: return plan;
+            default: throw new UnsupportedOperationException();
+        }
     }
 
     private static Term describe(Term x) {
@@ -92,23 +98,19 @@ public class Inperience extends How {
     @Override
     public void next(What w, BooleanSupplier kontinue) {
         NAR n = w.nar;
-        long now = w.time();
-        float dur = w.dur();
-        double window = 1.0;
-
-        int dither = n.dtDither();
-        long start = Tense.dither((long)Math.floor(now - window * dur/2), dither);
-        long end = Tense.dither((long)Math.ceil(now + window * dur/2), dither);
-        When when = new When(start, end, dur, nar);
 
         int volMax = n.termVolMax.intValue();
         int volMaxPre = volMax-VOL_SAFETY_MARGIN;
         float beliefConf = n.confDefault(BELIEF);
         Random rng = w.random();
 
+        Term self = n.self();
+
         //Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
         //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
         StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+
+        When when = WhenTimeIs.now(w);
 
         w.sampleUnique(rng, (TaskLink l) -> {
 
@@ -118,24 +120,15 @@ public class Inperience extends How {
                 Task t = l.get(when);
                 if (t != null) {
 
-                    Task u = null;
-                    if (t.isBeliefOrGoal()) {
-                        Term r = reifyBeliefOrGoal(t, n);
-
-                        if ((r = validReification(r, volMax)) != null) {
-                            u = new InperienceTask(r, $.t(1,
-                                beliefConf * (t.isNegative() ?
-                                    t.truth().expectationNeg() : t.truth().expectation())), t);
-                        }
+                    if (isRecursive(t, self)) {
+                        //avoid cyclic
+                        //TODO refine
+                        Util.nop();
                     } else {
-                        Term r = reifyQuestion(t.term(), t.punc(), n);
-                        if ((r = validReification(r, volMax)) != null)
-                            u = new InperienceTask(r, $.t(1, Math.max(NAL.truth.TRUTH_EPSILON, beliefConf * t.priElseZero())), t);
-                    }
 
-                    if (u != null) {
-                        Task.fund(u, t, priFactor.floatValue(), true);
-                        w.accept(u);
+                        Task u = reflect(volMax, beliefConf, self, t);
+                        if (u!=null)
+                            w.accept(u);
                     }
                 }
             }
@@ -143,6 +136,38 @@ public class Inperience extends How {
             return kontinue.getAsBoolean();
         });
 
+    }
+
+    @Nullable private Task reflect(int volMax, float beliefConf, Term self, Task t) {
+        Task u = null;
+        if (t.isBeliefOrGoal()) {
+            Term r = reifyBeliefOrGoal(t, self);
+            if ((r = validReification(r, volMax)) != null)
+                u = new InperienceTask(r, $.t(1,
+                    beliefConf * (t.isNegative() ?
+                        t.truth().expectationNeg() : t.truth().expectation())), t);
+
+        } else {
+            Term r = reifyQuestion(t.term(), t.punc(), self);
+            if ((r = validReification(r, volMax)) != null)
+                u = new InperienceTask(r, $.t(1, Math.max(NAL.truth.TRUTH_EPSILON, beliefConf * t.priElseZero())), t);
+        }
+
+        if (u != null) {
+            Task.fund(u, t, priFactor.floatValue(), true);
+        }
+        return u;
+    }
+
+    /** attempt to filter believe(believe(.... */
+    private boolean isRecursive(Task t, Term self) {
+        Term x = t.term();
+         if (x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
+             Term inperiencer = x.sub(0).sub(0);
+             if (inperiencer instanceof nars.term.Variable || inperiencer.equals(self))
+                 return true;
+         }
+         return false;
     }
 
     private boolean accept(int volMax, Task t) {

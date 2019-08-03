@@ -3,6 +3,7 @@ package nars.table.temporal;
 import jcog.Skill;
 import jcog.Util;
 import jcog.pri.Prioritized;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
@@ -41,8 +42,8 @@ public interface TemporalBeliefTable extends BeliefTable {
 
     static void budget(TruthProjection sources, Task xy) {
 
-        sources.removeNulls();
-        Task[] tr = sources.arrayCommit();
+        //sources.removeNulls();
+        Task[] tr = sources.arrayCommit(); assert(ArrayUtil.indexOfIdentity(tr, null)==-1);
 
         ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), tr));
 

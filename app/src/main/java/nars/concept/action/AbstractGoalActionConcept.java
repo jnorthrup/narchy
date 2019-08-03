@@ -298,9 +298,9 @@ public class AbstractGoalActionConcept extends GameAction {
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
                     long curiEnd = Math.round(curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
 
-                    int dither = n.dtDither();
-                    curiStart = Tense.dither(curiStart, dither);
-                    curiEnd = Tense.dither(curiEnd, dither);
+                    long[] se = Tense.dither(new long[] { curiStart, curiEnd }, n);
+                    curiStart = se[0];
+                    curiEnd = se[1];
 
                     g.what().accept(
                             curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
@@ -334,10 +334,10 @@ public class AbstractGoalActionConcept extends GameAction {
     @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
         long[] evi = n.evidence();
 
-        SignalTask curiosity = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
-        curiosity.priMax(attn.pri());
-        curiosity.cause(causeArray);
-        return curiosity;
+        SignalTask t = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
+        t.priMax(attn.pri());
+        t.cause(causeArray);
+        return t;
     }
 
     protected void feedback(@Nullable Truth f, short[] cause, Game g) {

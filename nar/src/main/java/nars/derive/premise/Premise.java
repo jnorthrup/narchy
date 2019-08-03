@@ -186,6 +186,14 @@ public class Premise /*implements Comparable<Premise>*/ {
 //        }
 
 
+    private Task task(BeliefTable bb, Term beliefTerm, long s, long e, @Nullable Predicate<Task> beliefFilter, Derivation d) {
+        float dur = NAL.premise.ANSWER_HONEST_DUR ? 0 : d.dur();
+
+        return bb.matching(s, e, beliefTerm, beliefFilter, dur, d.nar())
+            .task(true, false, false);
+    }
+
+
 
     private Task tryMatch(Term beliefTerm, BeliefTable bb, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
 
@@ -196,14 +204,9 @@ public class Premise /*implements Comparable<Premise>*/ {
 
         long[] focus = timeFocus(beliefTerm, d);
 
-        boolean topOrSample =
-                true;
-        //false;
 
-        return bb.matching(focus[0], focus[1], beliefTerm, beliefFilter, d.dur(), d.nar())
-                .task(topOrSample, false, false);
+        return task(bb, beliefTerm, focus[0], focus[1], beliefFilter, d);
     }
-
 
     @Nullable
     private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
@@ -211,17 +214,12 @@ public class Premise /*implements Comparable<Premise>*/ {
 //        long ts = task.start(), te;
 //        if (ts == ETERNAL) {
         long[] f = timeFocus(beliefTerm, d);
-        long ts = f[0];
-        long te = f[1];
+        long ts = f[0], te = f[1];
 //        assert (ts != ETERNAL);
 //        } else {
 //            te = task.end();
 //        }
-        Task a = answerTable.matching(ts, te, beliefTerm,
-                null, d.dur(), d.nar())
-                .task(true, false, false);
-
-
+        Task a = task(answerTable, beliefTerm,ts, te, null, d);
         if (a != null) {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
@@ -246,7 +244,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 
     private long[] timeFocus(Term beliefTerm, Derivation d) {
 
-        long[] l = d.deriver.timing.apply(d.what, task, beliefTerm);
+        long[] l = d.deriver.timing.premise(d.what, task, beliefTerm);
 
         if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
             Tense.dither(l, d.ditherDT);

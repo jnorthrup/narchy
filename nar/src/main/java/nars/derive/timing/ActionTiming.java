@@ -1,15 +1,15 @@
 package nars.derive.timing;
 
 
-import jcog.func.TriFunction;
 import jcog.math.FloatRange;
 import nars.Task;
 import nars.attention.What;
+import nars.derive.TimeFocus;
 import nars.term.Term;
 
 import java.util.Random;
 
-public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
+public class ActionTiming implements TimeFocus {
 
     //TODO parametr for shifting focus balance toward past, present or future
 
@@ -23,7 +23,7 @@ public class ActionTiming implements TriFunction<What, Task, Term, long[]> {
     }
 
     @Override
-    public long[] apply(What what, Task task, Term term) {
+    public long[] premise(What what, Task task, Term term) {
 
         int dur = Math.round(what.dur() * focusDurs.floatValue());
 

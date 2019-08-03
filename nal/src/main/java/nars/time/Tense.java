@@ -125,7 +125,6 @@ public enum Tense {
         return dither(t, n.dtDither());
     }
 
-
     /** modifies the input array, and returns it */
     public static long[] dither(long[] t, NAL n) {
         return dither(t, n.dtDither());
@@ -139,8 +138,8 @@ public enum Tense {
             return t;
         }
 
-        t[0] = dither(s, dt);
-        t[1] = dither(t[1], dt);
+        t[0] = dither(s, dt, -1);
+        t[1] = dither(t[1], dt, +1);
         return t;
     }
 

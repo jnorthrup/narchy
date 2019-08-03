@@ -7,6 +7,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.table.TaskTable;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.term.util.TermException;
@@ -407,7 +408,11 @@ public final class Answer implements Timed, Predicate<Task> {
         if (tt == null)
             return null;
 
-        return DynTaskify.merge(tp::arrayCommit, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
+        if (tp.active()==1) {
+            return SpecialTruthAndOccurrenceTask.the(tp.firstValid(), tt, tp.start, tp.end);
+        } else {
+            return DynTaskify.merge(tp::arrayCommit, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
+        }
     }
 
 
@@ -473,8 +478,9 @@ public final class Answer implements Timed, Predicate<Task> {
         if (dither && start!=ETERNAL) {
             int dtDither = nar.dtDither();
             if (dtDither > 1) {
-                start = Tense.dither(start, dtDither);
-                end = Tense.dither(end, dtDither);
+                long[] se = Tense.dither(new long[] { start, end }, dtDither);
+                start = se[0];
+                end = se[1];
             }
         }
         return time(TimeRangeFilter.the(start, end,

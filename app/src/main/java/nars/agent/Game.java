@@ -129,12 +129,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         PriNode pri = what.pri;
 
-        this.attnAction = nar.control.input((Term)$.inh(id,ACTION), PriNode.Merge.Plus,
+        this.attnAction = nar.control.input((Term)$.inh(id,ACTION), PriNode.Merge.And,
             pri, nar.goalPriDefault);
-        this.attnSensor = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.Plus,
+        this.attnSensor = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.And,
             pri, nar.beliefPriDefault);
-        this.attnReward = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.Plus,
-            pri, nar.beliefPriDefault, nar.goalPriDefault);
+        this.attnReward = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.And,
+            pri, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
         add(time.clock(this));
     }

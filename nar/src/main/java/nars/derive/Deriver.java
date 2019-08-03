@@ -1,10 +1,8 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.func.TriFunction;
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
@@ -49,7 +47,7 @@ abstract public class Deriver extends How {
      * input: premise Task, premise belief target
      * output: long[2] time interval
      **/
-    public TriFunction<What, Task, Term, long[]> timing;
+    public TimeFocus timing;
 
     protected Deriver(Set<PremiseRuleProto> rules, NAR nar) {
         this(PremiseRuleCompiler.the(rules), nar);
@@ -61,7 +59,7 @@ abstract public class Deriver extends How {
         this(rules, rules.nar);
     }
 
-    protected Deriver(PremiseRuleSet rules, TriFunction<What, Task, Term, long[]> timing, PremiseSource premises) {
+    protected Deriver(PremiseRuleSet rules, TimeFocus timing, PremiseSource premises) {
         this(PremiseRuleCompiler.the(rules), premises, timing, rules.nar);
     }
 
@@ -74,7 +72,7 @@ abstract public class Deriver extends How {
                 nar);
     }
 
-    protected Deriver(DeriverRules rules, PremiseSource premises, TriFunction<What, Task, Term, long[]> timing, NAR nar) {
+    protected Deriver(DeriverRules rules, PremiseSource premises, TimeFocus timing, NAR nar) {
         super();
         this.rules = rules;
         this.premises = premises;

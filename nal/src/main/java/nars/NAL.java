@@ -99,7 +99,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             //1f;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 4f;
+    public static final float ANSWER_TRYING = 3f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
@@ -151,7 +151,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
 
-    public static final boolean ANSWER_TASK_TIME_DITHERING= configIs("ANSWER_TASK_TIME_DITHERING");
+
 
     /**
      * should be enough to account for an expected evidence integration error rate
@@ -218,7 +218,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean TASKLINK_NORMALIZE_IMAGES = true;
 
 
-    protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
+    /** if false, the tasklink resolution mode is sample */
+    public static final boolean TASKLINK_ANSWER_BELIEF = false;
+    public static final boolean TASKLINK_ANSWER_GOAL = true;
+
+
+	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
 
 
     /** 1.0 = perfectly sorted each duration (commit); values closer to zero are less accurate but faster */
@@ -578,6 +583,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /** TODO use Gödel numbering not this HACK */
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
+
+        /** if true, uses dur=0 for matching/answering which, as a result, restricts includable evidence in the truth projection */
+        public static final boolean ANSWER_HONEST_DUR = false;
     }
 
 
