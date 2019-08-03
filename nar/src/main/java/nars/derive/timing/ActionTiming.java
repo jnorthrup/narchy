@@ -32,7 +32,7 @@ public class ActionTiming implements TimeFocus {
     public When<NAR> task(What what) {
         float dur = what.dur();
         NAR nar = what.nar;
-        return WhenTimeIs.now(nar, dur, nar.time(), dur*past, dur*future, nar.dtDither());
+        return WhenTimeIs.now(nar, 0, nar.time(), dur*past, dur*future, nar.dtDither());
     }
 
     @Override

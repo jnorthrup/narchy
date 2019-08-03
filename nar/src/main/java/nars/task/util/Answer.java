@@ -490,10 +490,10 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public Answer dur(float dur) {
-        if (this.dur != dur) {
+//        if (this.dur != dur) {
             this.dur = dur;
             //time(time.start, time.end); //update the time filter
-        }
+//        }
         return this;
     }
 

@@ -23,7 +23,7 @@ public interface TimeFocus {
 	 *  1 duration.
 	 * */
 	default When<NAR> task(What what) {
-		return WhenTimeIs.now(what);
+		return WhenTimeIs.now(what, 0);
 	}
 
 	/** premise match focus */
