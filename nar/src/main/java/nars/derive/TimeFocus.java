@@ -22,7 +22,7 @@ public interface TimeFocus {
 	 *  constructs a time interval surrounding the present moment, with a diameter of
 	 *  1 duration.
 	 * */
-	default When<NAR> derive(What what) {
+	default When<NAR> task(What what) {
 		return WhenTimeIs.now(what);
 	}
 

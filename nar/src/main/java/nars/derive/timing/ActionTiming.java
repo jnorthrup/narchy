@@ -2,10 +2,13 @@ package nars.derive.timing;
 
 
 import jcog.math.FloatRange;
+import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.derive.TimeFocus;
 import nars.term.Term;
+import nars.time.When;
+import nars.time.event.WhenTimeIs;
 
 import java.util.Random;
 
@@ -20,6 +23,11 @@ public class ActionTiming implements TimeFocus {
 
     public ActionTiming() {
 
+    }
+
+    @Override
+    public When<NAR> task(What what) {
+        return WhenTimeIs.now(what);
     }
 
     @Override

@@ -3,7 +3,6 @@ package nars.time.event;
 import nars.$;
 import nars.NAR;
 import nars.attention.What;
-import nars.task.util.Answer;
 import nars.term.Term;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
@@ -66,32 +65,32 @@ abstract public class WhenTimeIs extends ScheduledTask {
         this.whenOrAfter = whenOrAfter;
     }
 
-    public static When<NAR> range(long subStart, long subEnd, Answer a) {
-        return new When<>(subStart, subEnd, a.dur, a.nar);
-    }
-
-    public static When<NAR> eternal(Timed n) {
-        return new When(Tense.ETERNAL, Tense.ETERNAL, n.dur(), n);
+    public static <T extends Timed> When<T>  eternal(T n) {
+        return new When<>(Tense.ETERNAL, Tense.ETERNAL, n.dur(), n);
     }
 
     public static <T extends Timed> When<T> now(float dur, T t) {
-        return now (t, dur, 1);
+        return now(t, dur, 1);
     }
 
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
     public static <T extends Timed> When<T> now(T t, float dur, int dither) {
-        long now = t.time();
         long s, e;
-        if (dur > 1.5f) {
-            s = Math.round(now - dur / 2);
-            e = Math.round(now + dur / 2);
-            if (dither > 1) {
-                s = Tense.dither(s, dither, -1);
-                e = Tense.dither(e, dither, +1);
-            }
+        long now = t.time();
+        if (dur > 0.5f) {
+            s = (long) Math.floor(now - dur / 2);
+            e = (long) Math.ceil(now + dur / 2);
         } else {
             s = e = now;
+        }
+        return now(t, dur, s, e, dither);
+    }
+
+    private static <T extends Timed> When<T> now(T t, float dur, long s, long e, int dither) {
+        if (dither > 1) {
+            s = Tense.dither(s, dither, -1);
+            e = Tense.dither(e, dither, +1);
         }
         return new When<>(s, e, dur, t);
     }

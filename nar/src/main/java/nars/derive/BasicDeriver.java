@@ -30,7 +30,7 @@ public class BasicDeriver extends Deriver {
     @Override
     protected final void derive(Derivation d, BooleanSupplier kontinue) {
 
-        When<NAR> now = d.deriver.timing.derive(d.what);
+        When<NAR> now = d.deriver.timing.task(d.what);
 
         int matchTTL = matchTTL();
         int deriveTTL = d.nar().deriveBranchTTL.intValue();
