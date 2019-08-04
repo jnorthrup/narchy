@@ -17,10 +17,10 @@
       (M --> P), (S --> M), neqRCom(S,P)  |- (S --> P), (Goal:Desire, Time:Task)
       (P --> M), (M --> S), neqRCom(S,P)  |- (P --> S), (Goal:Desire, Time:Task)
 
-       (S --> P), (S --> M), neqRCom(P,M), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
-        (S --> P), (M --> P), neqRCom(S,M), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
-       (P --> S), (M --> S), neqRCom(P,M), hasBelief()  |- (P --> M), (Punctuation:AskAsk, Time:Task)
-        (P --> S), (P --> M), neqRCom(S,M), hasBelief()  |- (M --> S), (Punctuation:AskAsk, Time:Task)
+       (S --> P), (S --> M), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (M --> P), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
+       (P --> S), (M --> S), neqRCom(P,M)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
+        (P --> S), (P --> M), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
 
 //       (M --> P), (S --> M), task("!"), neqRCom(S,P)   |- (S --> M), (Punctuation:Quest, Time:Task)
 //       (P --> M), (M --> S), task("!"), neqRCom(S,P)   |- (M --> S), (Punctuation:Quest, Time:Task)
@@ -32,10 +32,10 @@
       (P --> M), (M --> S), neqRCom(S,P)  |- (S --> P), (Goal:DesireWeak, Time:Task)
       (M --> P), (S --> M), neqRCom(S,P)  |- (P --> S), (Goal:DesireWeak, Time:Task)
 
-       (S --> P), (P --> M), neqRCom(S,M), hasBelief()  |- (M --> S), (Punctuation:AskAsk, Time:Task)
-        (S --> P), (M --> S), neqRCom(P,M), hasBelief()  |- (P --> M), (Punctuation:AskAsk, Time:Task)
-       (P --> S), (M --> P), neqRCom(S,M), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
-        (P --> S), (S --> M), neqRCom(P,M), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
+       (S --> P), (P --> M), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (M --> S), neqRCom(P,M)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
+       (P --> S), (M --> P), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
+        (P --> S), (S --> M), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
 //        (S --> M), (M --> P), task("!"), neqRCom(S,P)   |- (M --> P), (Punctuation:Quest, Time:Task)
 
@@ -47,10 +47,10 @@
         (P --> M), (S --> M), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
         (M --> P), (M --> S), neqRCom(S,P)      |- (P --> S), (Goal:DesireWeak, Time:Task)
 
-       (S --> P), (P --> M), neqRCom(S,M), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
-        (S --> P), (S --> M), neqRCom(P,M), hasBelief()  |- (P --> M), (Punctuation:AskAsk, Time:Task)
-       (P --> S), (M --> P), neqRCom(S,M), hasBelief()  |- (M --> S), (Punctuation:AskAsk, Time:Task)
-        (P --> S), (M --> S), neqRCom(P,M), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
+       (S --> P), (P --> M), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (S --> M), neqRCom(P,M)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
+       (P --> S), (M --> P), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
+        (P --> S), (M --> S), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
 //        (S --> M), (S --> P), task("!"), neqRCom(M,P)   |- (S --> P), (Punctuation:Quest, Time:Task)
 
@@ -63,10 +63,10 @@
         (M --> P), (M --> S), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
         (P --> M), (S --> M), neqRCom(S,P)      |- (P --> S), (Goal:DesireWeak, Time:Task)
 
-       (S --> P), (M --> P), neqRCom(M,S), hasBelief()  |- (M --> S), (Punctuation:AskAsk, Time:Task)
-        (S --> P), (M --> S), neqRCom(M,P), hasBelief()  |- (M --> P), (Punctuation:AskAsk, Time:Task)
-       (P --> S), (P --> M), neqRCom(M,S), hasBelief()  |- (S --> M), (Punctuation:AskAsk, Time:Task)
-        (P --> S), (S --> M), neqRCom(M,P), hasBelief()  |- (P --> M), (Punctuation:AskAsk, Time:Task)
+       (S --> P), (M --> P), neqRCom(M,S)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (M --> S), neqRCom(M,P)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
+       (P --> S), (P --> M), neqRCom(M,S)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
+        (P --> S), (S --> M), neqRCom(M,P)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
 
 //        (S --> P), (M --> P), task("!"), neqRCom(S,M)  |- (M --> P), (Punctuation:Quest, Time:Task)
 

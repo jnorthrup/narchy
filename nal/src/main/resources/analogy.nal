@@ -9,13 +9,16 @@
 //        (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
 
       (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Time:Compose)
-        (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Goal:DesireWeak, Time:Task)
+        (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Goal:Desire, Time:Task)
 
       (M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Time:Compose)
+        (M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Goal:Desire, Time:Task)
        (M <-> P), (S --> M), neqRCom(S,P) |- (S --> P), (Belief:AnalogyX, Time:Compose)
+        (M <-> P), (S --> M), neqRCom(S,P) |- (S --> P), (Goal:Desire, Time:Task)
       (P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Belief:Analogy, Time:Compose)
-        (S <-> M), (P --> M), neqRCom(S,P) |- (P --> S), (Belief:AnalogyX, Time:Compose)
-
+        (P --> M), (S <-> M), neqRCom(S,P) |- (P --> S), (Goal:Desire, Time:Task)
+       (S <-> M), (P --> M), neqRCom(S,P) |- (P --> S), (Belief:AnalogyX, Time:Compose)
+         (S <-> M), (P --> M), neqRCom(S,P) |- (P --> S), (Goal:Desire, Time:Task)
 
 //      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)

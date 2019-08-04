@@ -89,52 +89,64 @@
     //nature of such a rule."
 
     //If after S M happens, and after M then P happens, so S then P happens
+
+//DEDUCTION ----
     (S ==> M),   (M ==> P)    |-     (S ==> P),   (Belief:DeductionPP, Time:Compose)
-      //(M ==> P), (S ==> M)      |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
+      (M ==> P), (S ==> M)      |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
+            (S ==> P), (M ==> P), task("?")   |- (S ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (S ==> M), task("?")   |- (M ==> P), (Punctuation:Question, Time:Task)
 
     (S ==> M),   (M ==> P)    |-   --(S ==> P), (Belief:DeductionPN, Time:Compose)
-      //(S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
+      (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
 
     (S ==> M), (--M ==> P)    |-     (S ==> P),   (Belief:DeductionNP, Time:Compose)
-      //(--M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
+      (--M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
+            (S ==> P), (--M ==> P), task("?") |- (S ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (S ==> M), task("?")   |- (--M ==> P), (Punctuation:Question, Time:Task)
 
     (S ==> M), (--M ==> P)    |-   --(S ==> P), (Belief:DeductionNN, Time:Compose)
-      //(--M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
+      (--M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
 
+//EXEMPLIFICATION
+    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
+      (P ==> M), (  M ==> S)     |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
+            (S ==> P), (M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (P ==> M), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
 
-        //(S ==> M), (M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-            //(S ==> X), (Y ==> P), eqPN(X,Y), task("?") |- (S ==> P), (Punctuation:Question)
-            (S ==> M), (M ==> P), task("?") |- (S ==> P), (Punctuation:Question)
-            (M ==> P), (S ==> M), task("?") |- (S ==> P), (Punctuation:Question)
-            //(S ==> M), (M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
+    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
+      (P ==> M), (M ==> S)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
 
-            //(S ==> M), (--M ==> P), task("?") |- ((S ==> P) || (P ==> S)), (Punctuation:Question)
-                (S ==> M), (--M ==> P), task("?") |- (S ==> P), (Punctuation:Question, Time:Compose)
-                //(S ==> M), (--M ==> P), task("?") |- (P ==> S), (Punctuation:Question)
+    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
+      (P ==> M), (--M ==> S)     |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
+            (S ==> P), (--M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (P ==> M), task("?")   |- (--M ==> S), (Punctuation:Question, Time:Task)
 
+    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
+      (P ==> M), (--M ==> S)     |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
 
-
-    //TODO reversals for Abduction, Induction, Exemplification
+//INDUCTION/ABDUCTION
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction, Time:Compose)
         (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN, Time:Compose)
+            (S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Task)
+            (--S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
+            (--S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Task)
+
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction, Time:Compose)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN, Time:Compose)
 
-                (X ==> S), (Y ==> P), eqPN(X,Y), task("?") |- (polarizeRandom(S) ==> P), (Punctuation:Question, Time:Compose)
-
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB, Time:Compose)
+            (S ==> P), (P ==> M), task("?")   |- (S ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
+
     (S ==> M), (P ==> M) |- (P ==> S), (Belief:AbductionPB, Time:Compose)
+            (P ==> S), (P ==> M), task("?")   |- (S ==> M), (Punctuation:Question, Time:Task)
+            (P ==> S), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
 
 
-            (S ==> X), (P ==> X), task("?") |- (S ==> P), (Punctuation:Question)
+            
 
-    (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
-    (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
-    (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
-    (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
-
-            (X ==> S), (P ==> Y), task("?"), eqPN(X,Y) |- (polarizeRandom(S) ==> P), (Punctuation:Question, Time:Compose)
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
     //untested
