@@ -286,13 +286,23 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         qsort(items, from, to, x);
     }
 
-    public final X get(int i) {
-//        int s = size;
+    public final X getSafe(int i) {
+        X[] ii = this.items;
+        int s = Math.min(ii.length, size);
+        if (s == 0)
+            return null;
+        return ii[i];
+    }
+
+//    public final X get(Random rng) {
+//        X[] ii = this.items;
+//        int s = Math.min(ii.length, size);
 //        if (s == 0)
-//            throw new NoSuchElementException();
-//        if (i >= s)
-//            throw new ArrayIndexOutOfBoundsException();
-        //return items[i];
+//            return null;
+//        return ii[rng.nextInt(s)];
+//    }
+
+    public final X get(int i) {
         return items[i];//(X) ITEM.getOpaque(items, i);
     }
 

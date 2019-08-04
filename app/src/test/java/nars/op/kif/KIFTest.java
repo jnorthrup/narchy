@@ -283,7 +283,7 @@ class KIFTest {
 
         n.input("$1.0 possesses(I,#everything)!");
         n.input("$1.0 uses(#anything, I).");
-        n.input("$1.0 --Dead:{I}!");
+        n.input("$1.0 --({I}-->Dead)!");
         n.input("$1.0 Human:{I}.");
         n.input("$1.0 --needs(I, #all)!");
         n.input("$1.0 --lacks(I, #anything)!");

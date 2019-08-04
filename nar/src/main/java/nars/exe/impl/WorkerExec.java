@@ -6,10 +6,10 @@ import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
 import nars.control.How;
-import org.jctools.queues.MessagePassingQueue;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-    double granularity = 8;
+    double granularity = 16;
 
 
     /**
@@ -71,17 +71,17 @@ public class WorkerExec extends ThreadedExec {
     }
 
     //final Consumer execNow = this::executeNow;
-    final MessagePassingQueue.Consumer executeNow = WorkerExec.this::executeNow;
+//    final MessagePassingQueue.Consumer executeNow = WorkerExec.this::executeNow;
 
-    private final class WorkPlayLoop implements ThreadedExec.Worker {
+    private final class WorkPlayLoop implements ThreadedExec.Worker, BooleanSupplier /* kontinue */ {
 
 
         final Random rng;
 
         private final AtomicBoolean alive = new AtomicBoolean(true);
 
-//        private final FasterList schedule = new FasterList(inputQueueCapacityPerThread);
-//        final MessagePassingQueue.Consumer addToSchedule = schedule::addFast;
+        private long deadline = Long.MIN_VALUE;
+
 
         WorkPlayLoop() {
 
@@ -98,39 +98,33 @@ public class WorkerExec extends ThreadedExec {
                 play(threadWorkTimePerCycle);
                 sleep();
 
-            } while (alive.get());
+            } while (alive.getOpaque());
         }
         protected long work(float responsibility) {
 
-            int available;
-
-
-            if ((available = in.size()) <= 0)
-                return 0;
-
-
             long workStart = nanoTime();
-            do {
-                int batchSize = //Util.lerp(throttle,
-                    //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                    Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
 
-                //BUFFERED
-//                    schedule.ensureCapacity(batchSize);
-//                    int got = in.drain(addToSchedule, batchSize);
-//                    if (got > 0)
-//                        execute(schedule, 1, execNow);
-//                    else
-//                        break;
 
-                //UNBUFFERED
-                    Object next = in.relaxedPoll();
-                    if (next == null)
-                        break;
-                    executeNow(next);
-                    if (--batchSize <= 0) break;
+            int batchSize = -1;
+            Object next;
+            while ((next=in.relaxedPoll())!=null)  {
 
-            } while (!queueSafe((available=in.size())));
+                executeNow(next);
+
+                if (batchSize == -1) {
+                    //initialization once for subsequent attempts
+                    int available; //estimate
+                    if ((available = in.size()) <= 0)
+                        return 0;
+
+                    batchSize = //Util.lerp(throttle,
+                        //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+                        Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
+
+                } else if (--batchSize==0)
+                    break; //enough
+
+            } //while (!queueSafe((available=in.size())));
 
             long workEnd = nanoTime();
             return workEnd - workStart;
@@ -147,29 +141,31 @@ public class WorkerExec extends ThreadedExec {
             AntistaticBag<What> W = nar.what;
 
             long start = nanoTime();
-            long until = start + playTime, after = start /* assigned for safety */;
+            long until = start + playTime;
 
             //int hPerW = 1; //(int)Util.clamp(granularity/concurrency(), 1, H.size());
 
             int idle = 0;
-            do {
+            while (true) {
                 What w = W.sample(rng);
                 if (w != null && w.isOn()) {
                     How h = H.sample(rng);
                     if (h!=null && h.isOn()) {
-                        idle = 0;
-                        play(w, h);
-                        continue;
+                        if (play(w, h))
+                            idle = 0; //reset
                     }
                 }
 
+                if (nanoTime() > until)
+                    break;
+
                 Util.pauseSpin(idle++);
 
-            } while (until > nanoTime());
+            }
 
         }
 
-        private void play(What w, How h) {
+        private boolean play(What w, How h) {
             boolean singleton = h.singleton();
             if (!singleton || h.busy.compareAndSet(false, true)) {
 //                long before = nanoTime();
@@ -180,14 +176,25 @@ public class WorkerExec extends ThreadedExec {
 //                if (before + useNS > until)
 //                    return false;
 
+
+                deadline = nanoTime() + useNS;
                 try {
-                    h.runFor(w, useNS);
+                    h.next(w, this);
+                } catch (Throwable t) {
+                    logger.error("{} {} {}", w.term(), h.term(), t);
                 } finally {
                     if (singleton)
                         h.busy.set(false);
                 }
 
+                return true;
             }
+            return false;
+        }
+
+        /** whether to continue iterating in the how when it calls this back */
+        @Override public final boolean getAsBoolean() {
+            return nanoTime() < deadline;
         }
 
         void sleep() {

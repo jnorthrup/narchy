@@ -303,6 +303,16 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
 
+    /** immediate sample */
+    @Override public @Nullable Y sample(Random rng) {
+        Object[] ii = this.items();
+        int s = Math.min(ii.length, size());
+        if (s == 0)
+            return null;
+        int i = sampleNext(rng, s);
+        return (Y) ii[i];
+    }
+
     /**
      * chooses a starting index randomly then iterates descending the list
      * of items. if the sampling is not finished it restarts
@@ -312,7 +322,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public void sample(Random rng, Function<? super Y, SampleReaction> each) {
 
-        //while (true) {
         Object[] ii;
         int s;
         int i;

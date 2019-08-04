@@ -106,7 +106,7 @@ public class ExeCharts {
 
 
         Gridding g = grid(exeQueue, busy);
-        DurSurface d = DurSurface.get(g, n, new Consumer<NAR>() {
+        DurSurface d = DurSurface.get(g, n, new Consumer<>() {
 
             final Off c = n.onCycle((nn) -> {
                 busyBuffer.offer(nn.emotion.busyVol.asFloat());

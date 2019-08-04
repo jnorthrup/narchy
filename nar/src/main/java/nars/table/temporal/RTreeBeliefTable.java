@@ -30,6 +30,7 @@ import static nars.truth.proj.TruthIntegration.eviFast;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
+    private static final int MAX_TASKS_PER_LEAF = 4;
 
     static FloatFunction<RLeaf<TaskRegion>> WeakestTemporallyDense(long now) { return (n) -> {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
@@ -57,7 +58,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return (float)( Math.sqrt(n.size) * ( u  /* * (1 + ((double)timeDist)) */ ) / ( confFactor * range  )); //* (timeToNow/range)
         };
     }
-    private static final int MAX_TASKS_PER_LEAF = 3;
+
     /**
      * TODO tune
      */

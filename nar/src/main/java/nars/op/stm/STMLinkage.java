@@ -123,8 +123,8 @@ public class STMLinkage extends NARPart {
             }
 
             if (keep(y)) {
-                stm.relaxedPoll();
-                stm.relaxedOffer(pair(y, yc));
+                stm.poll();
+                stm.offer(pair(y, yc));
             }
         }
 

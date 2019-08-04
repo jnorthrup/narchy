@@ -170,7 +170,7 @@ public class PoleCart extends GameX {
          */
 
 
-        this.x = senseNumberBi($.p("x", id),() -> ((float) (pos - posMin)/(posMax-posMin)));
+        this.x = senseNumberBi($.p("x", id), () -> ((float) (pos - posMin)/(posMax-posMin)));
         this.xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
                 new FloatNormalized(() -> (float) posDot)
         );

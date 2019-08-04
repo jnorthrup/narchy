@@ -1810,9 +1810,10 @@ public enum Util {
      * adaptive spinlock behavior
      * see: https:
      * TODO tune
+     * TODO randomize?
      */
     public static void pauseSpin(int previousContiguousPauses) {
-        if (previousContiguousPauses < 2) {
+        if (previousContiguousPauses < 1) {
             return;
         } else if (previousContiguousPauses < 512) {
             onSpinWait();
@@ -1820,13 +1821,11 @@ public enum Util {
 
 
             if ((previousContiguousPauses & 31) == 0) {
-
-                //System.out.println("yield after: " + previousContiguousPauses);
                 Thread.yield();
-
             } else {
                 onSpinWait();
             }
+
         } else if (previousContiguousPauses < 2048) {
 
             if ((previousContiguousPauses & 7) == 0) {

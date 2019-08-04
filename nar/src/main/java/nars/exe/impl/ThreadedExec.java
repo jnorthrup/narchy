@@ -41,7 +41,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     @Override
     protected final void execute(/*@NotNull */Object x) {
-        if (!in.relaxedOffer(x)) {
+        if (!in.offer(x)) {
             executeBlocked(x);
         }
     }

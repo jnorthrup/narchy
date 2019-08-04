@@ -106,7 +106,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public Game(Term id, GameTime time, NAR nar) {
         this(time, id ,nar);
-        nar.start(this);
+        (this.nar=nar).start(this);
     }
 
 
