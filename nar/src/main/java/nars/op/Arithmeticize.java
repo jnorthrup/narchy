@@ -223,8 +223,8 @@ public class Arithmeticize {
             for (int aIth = bIth + 1; aIth < ii.length; aIth++) {
                 int a = ii[aIth];
 
-                //if (aIth == bIth) continue;
-                assert (b < a);
+
+                //assert (b < a);
 
                 if (a == -b) {
 
@@ -316,6 +316,8 @@ public class Arithmeticize {
                 if (anon != null)
                     s0 = anon.put(s0);
                 yy = yy.replace(s0, s1);
+                if (yy == Null)
+                    return Null; //HACK
             }
 
             if (baseTerm.equals(var))

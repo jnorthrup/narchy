@@ -10,10 +10,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.table.BeliefTable;
-import nars.task.DynamicTruthTask;
-import nars.task.NALTask;
-import nars.task.ProxyTask;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.Answer;
 import nars.task.util.TaskList;
 import nars.term.Compound;
@@ -21,10 +17,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Stamp;
-import nars.truth.Truth;
-import nars.util.Timed;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 
 import javax.annotation.Nullable;
 import java.util.Random;
@@ -33,7 +26,7 @@ import java.util.function.Predicate;
 import java.util.function.Supplier;
 
 import static nars.NAL.STAMP_CAPACITY;
-import static nars.Op.*;
+import static nars.Op.NEG;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 
@@ -78,24 +71,24 @@ public class DynTaskify extends TaskList {
     public  final NAR nar;
     public final Compound template;
 
-    /** whether the result is intended for internal or external usage; determines precision settings */
+    /** ditherTruth applied only to final result; not to projected subTasks */
     final boolean ditherTruth;
-    //, ditherTime;
+
+    final boolean ditherTime;
+
     final float dur;
     private MetalLongSet evi = null;
 
     final boolean beliefOrGoal;
     final Predicate<Task> filter;
-    public final MetalBitSet componentPolarity;
+    final MetalBitSet componentPolarity;
 
-    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime,int dur, NAR nar) {
-        this(model, beliefOrGoal, ditherTruth, ditherTime, null, dur, null, nar);
-    }
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, float dur, Predicate<Task> filter, NAR nar) {
         super(0);
         this.model = model;
         this.beliefOrGoal = beliefOrGoal;
+        this.ditherTime = ditherTime;
         this.ditherTruth = ditherTruth;
 
         this.template = template;
@@ -110,52 +103,6 @@ public class DynTaskify extends TaskList {
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
         this(model, beliefOrGoal, a.ditherTruth, true, (Compound)a.term(), a.dur, a.filter, a.nar);
-    }
-
-    @Nullable public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
-        boolean neg = content instanceof Neg;
-        if (neg)
-            content = content.unneg();
-
-        ObjectBooleanPair<Term> r = Task.tryTaskTerm(
-                content,
-                beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
-        if (r==null)
-            return null;
-
-        Truth yt = t.negIf(neg != r.getTwo());
-
-        Task[] tt = tasks.get();
-        if (tt.length == 1) {
-            Task only = tt[0];
-
-            //wrap the only task wtih Special proxy task
-            if (only.start() == start && only.end() == end && only.truth().equals(yt))
-                //direct
-                return only; //
-            else {
-                if (only instanceof SpecialTruthAndOccurrenceTask || !(only instanceof ProxyTask)) { //TODO other special proxy types
-                    return SpecialTruthAndOccurrenceTask.the(only, yt, start, end);
-                } //else: continue below
-            }
-
-        }
-
-
-        NALTask y = new DynamicTruthTask(
-            r.getOne(), beliefOrGoal,
-            yt,
-                w, start, end,
-                stamp.get());
-
-
-//        y.pri(
-//              tasks.reapply(TaskList::pri, NAL.DerivationPri)
-//                        // * dyn.originality() //HACK
-//        );
-        Task.fund(y, tt, true);
-
-        return y;
     }
 
     @Nullable

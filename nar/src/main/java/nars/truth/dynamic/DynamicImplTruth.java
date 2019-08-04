@@ -1,7 +1,6 @@
 package nars.truth.dynamic;
 
 import jcog.util.ObjectLongLongPredicate;
-import nars.NAL;
 import nars.Task;
 import nars.concept.TaskConcept;
 import nars.task.util.Answer;
@@ -47,12 +46,11 @@ class DynamicImplTruth extends AbstractDynamicTruth {
             //use a wrapper filter to try to provide a task matching the target polarity first.
             // if that returns nothing then redo without extra filter
 
-            assert(NAL.DYN_TASK_MATCH_MODE==1): "match mode (not sampled) highly recommended";
+            //assert(NAL.DYN_TASK_MATCH_MODE==1): "match mode (not sampled) highly recommended";
 
-            boolean subjPolarity = !(subTerm instanceof Neg);
-            Predicate<Task> specificFilter = Answer.filter(subjPolarity ? POSITIVE_FILTER : NEGATIVE_FILTER, filter);
-            Task specific =
-                    super.subTask(subConcept, subTerm, subStart, subEnd, specificFilter, d);
+            Predicate<Task> specificFilter = Answer.filter(
+                !(subTerm instanceof Neg) ? POSITIVE_FILTER : NEGATIVE_FILTER, filter);
+            Task specific = super.subTask(subConcept, subTerm, subStart, subEnd, specificFilter, d);
             if (specific!=null)
                 return specific;
         }

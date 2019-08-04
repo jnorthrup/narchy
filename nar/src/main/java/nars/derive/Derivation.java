@@ -211,17 +211,17 @@ public class Derivation extends PreDerivation {
                         transformDerived.derivationFunctors.apply(x)==null; //TODO better matcher
             }
 
-            @Override
-            protected final Term putCompound(Compound x) {
-                putOrGet = true;
-                return x.transform(this, directTermBuilder  /*termBuilder*/ , NAL.term.COMPOUND_VOLUME_MAX);
-            }
-
-            @Override
-            protected final Term getCompound(Compound x) {
-                putOrGet = false;
-                return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
-            }
+//            @Override
+//            protected final Term putCompound(Compound x) {
+//                putOrGet = true;
+//                return x.transform(this, directTermBuilder  /*termBuilder*/ , NAL.term.COMPOUND_VOLUME_MAX);
+//            }
+//
+//            @Override
+//            protected final Term getCompound(Compound x) {
+//                putOrGet = false;
+//                return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+//            }
 
         };
     }

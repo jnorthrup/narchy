@@ -49,7 +49,8 @@
     //sequence possibility quest
     C, X, task("@"), eventOfPN(C,X), hasBelief() |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
 
-
+    //rectify goal inversion
+    G, (G && --G), task("!"), hasBelief() |- (?X ==> (polarizeTask(G) && polarizeTask(G))) , (Punctuation:Question, Time:BeliefRelative)
 
 
     //avoidance TODO

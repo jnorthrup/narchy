@@ -744,17 +744,37 @@ public interface Compound extends Term, IPair, Subterms {
         int xdt = x.dt();
         if (newOp == null)
             ydt = xdt;
-        if (yy == xx && xOp == yOp && xdt == ydt)
-            return x; //no change
-
 
         if (yOp.commutative) {
-            if (yy.subs() == 1) {
+            int ys = yy.subs();
+            if (ys == 1) {
                 Term y0 = yy.sub(0);
                 if (!(y0 instanceof Ellipsislike) && y0.op()!=FRAG)
                     return y0;
             }
+            if (ydt!=XTERNAL && xdt==ydt && dtSpecial(ydt)) {
+                int xs = x.subs();
+                if (ys == xs){
+                    //pre-sort because it may be identical
+                    Subterms ySorted = yy.commuted();
+                    int yss = ySorted.subs();
+                    if (yss == xs) {
+
+                        if (xx.equalTermsIdentical(ySorted))
+                            return x;
+
+                    }
+                    yy = ySorted; //use the pre-sorted version since
+                    ys = yss;
+                }
+            }
         }
+
+        if (yy == xx && xOp == yOp && xdt == ydt)
+            return x; //no change
+
+
+
 
         if (yOp.temporal) {
 

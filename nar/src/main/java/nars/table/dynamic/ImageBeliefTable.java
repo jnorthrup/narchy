@@ -85,6 +85,14 @@ public class ImageBeliefTable extends DynamicTaskTable {
         return transformFromTemplate(t);
     }
 
+    @Override
+    public @Nullable Answer sampleSome(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+        Answer a = super.sampleSome(when, template, filter);
+        if (a!=null)
+            a.tasks.replace(this::transformFromTemplate);
+        return a;
+    }
+
     @Nullable private Task transformFromTemplate(Task t) {
         return t != null ? SpecialTermTask.the(t, transformTermFromTemplate(t), false) : null;
     }

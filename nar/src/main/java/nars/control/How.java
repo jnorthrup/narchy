@@ -209,6 +209,7 @@ abstract public class How extends PriNARPart implements Prioritizable {
         return _utilization;
     }
 
+
 //    /**
 //     * 0..+1
 //     */
@@ -238,6 +239,16 @@ abstract public class How extends PriNARPart implements Prioritizable {
         }
     }
 
+    @Deprecated public void runWhile(What w, long estTime, BooleanSupplier whil) {
+        long start = System.nanoTime();
+        try {
+            next(w, whil);
+        } catch (Throwable t) {
+            logger.error("{} {}", t, this.term());
+        }
+        long end = System.nanoTime();
+        use(estTime, end - start);
+    }
 
     public final void runFor(What w, long durationNS) {
         long start = System.nanoTime();

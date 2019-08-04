@@ -106,7 +106,6 @@ public final class TruthFunctions {
     public static Truth analogy(Truth a, float bf, double bc, float minConf) {
         float c = and(confCompose(a, bc), bf);
         return c >= minConf ? t(and(a.freq(), bf), c) : null;
-        //return c >= minConf ? t(a.freq(), c) : null;
     }
 
 

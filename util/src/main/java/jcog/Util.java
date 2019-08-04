@@ -2301,15 +2301,22 @@ public enum Util {
     }
 
 
-    public static float[] map(IntToFloatFunction build, @Nullable float[] reuse) {
-        return map(reuse.length, build, reuse);
+    public static float[] map(IntToFloatFunction build, @Nullable float[] target) {
+        return map(target.length, build, target);
     }
-
+    public static double[] map(IntToDoubleFunction build, @Nullable double[] target) {
+        return map(target.length, build, target);
+    }
     public static float[] map(int num, IntToFloatFunction build, @Nullable float[] reuse) {
         float[] f = (reuse != null && reuse.length == num) ? reuse : new float[num];
-        for (int i = 0; i < num; i++) {
+        for (int i = 0; i < num; i++)
             f[i] = build.valueOf(i);
-        }
+        return f;
+    }
+    public static double[] map(int num, IntToDoubleFunction build, @Nullable double[] reuse) {
+        double[] f = (reuse != null && reuse.length == num) ? reuse : new double[num];
+        for (int i = 0; i < num; i++)
+            f[i] = build.applyAsDouble(i);
         return f;
     }
 

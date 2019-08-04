@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-    double granularity = 16;
+    double granularity = 8;
 
 
     /**
@@ -107,7 +107,7 @@ public class WorkerExec extends ThreadedExec {
 
             int batchSize = -1;
             Object next;
-            while ((next=in.relaxedPoll())!=null)  {
+            while ((next=in.poll())!=null)  {
 
                 executeNow(next);
 
@@ -176,12 +176,9 @@ public class WorkerExec extends ThreadedExec {
 //                if (before + useNS > until)
 //                    return false;
 
-
                 deadline = nanoTime() + useNS;
                 try {
-                    h.next(w, this);
-                } catch (Throwable t) {
-                    logger.error("{} {} {}", w.term(), h.term(), t);
+                    h.runWhile(w, useNS,this);
                 } finally {
                     if (singleton)
                         h.busy.set(false);

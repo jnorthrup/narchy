@@ -81,7 +81,7 @@ public class LinearSplitLeaf<X> implements Split<X> {
         int r1Max = -1, r2Max = -1;
         double sepMax = Double.NEGATIVE_INFINITY;
         for (int d = 0; d < nD; d++) {
-            if (sepMax < separation[d]) {
+            if (separation[d] > sepMax) {
                 sepMax = separation[d];
                 r1Max = r[d][MAX][MIN];
                 r2Max = r[d][MIN][MAX];

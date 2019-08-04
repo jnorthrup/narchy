@@ -246,7 +246,7 @@ public class AbstractGoalActionConcept extends GameAction {
                 g.dur();
                 //g.durPhysical();
 
-        int limitBelief = Answer.BELIEF_MATCH_CAPACITY; //high sensitivity
+        int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY; //high sensitivity
         int limitGoal = limitBelief * 2;
 
         this.beliefTruth = truth(truth(true, limitBelief, now, gameDur, n));

@@ -111,17 +111,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     @Nullable public Subterms commit(Subterms src, Op superOp) {
         int ys = size();
 
-        //replace prefix nulls with the input's values
-        //any other modifications specific to the superOp type
 
-        Term[] ii = items;
-
-        for (int i = 0; i < ys; i++) {
-            if (ii[i] == null)
-                ii[i] = src.sub(i);
-            else
-                break; //finished at first non-null subterm
-        }
 
 //        if (volume() > NAL.term.COMPOUND_VOLUME_MAX) {
 //            throw new TermException("complexity overflow", this);
@@ -130,6 +120,17 @@ public class TermList extends FasterList<Term> implements Subterms {
         if (ys == 0)
             return Op.EmptySubterms;
         else {
+            //replace prefix nulls with the input's values
+            //any other modifications specific to the superOp type
+
+            Term[] ii = items;
+
+            for (int i = 0; i < ys; i++) {
+                if (ii[i] == null)
+                    ii[i] = src.sub(i);
+                else
+                    break; //finished at first non-null subterm
+            }
 //            //test for identical
 //            int s = this.size;
 //            if (s == src.subs()) {

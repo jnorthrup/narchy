@@ -13,6 +13,7 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
+import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
 
 import java.util.function.Predicate;
@@ -48,23 +49,24 @@ abstract public class AbstractDynamicTruth {
     public Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
         NAR nar = d.nar;
         float dur = d.dur;
-        Task bt;
+        Task x;
         switch (NAL.DYN_TASK_MATCH_MODE) {
             case 0:
                 //may be too aggressive in evidence collection, preventing other components from succeeding
-                bt = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
+                x = table.matchExact(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 1:
                 //may be too aggressive in evidence collection, preventing other components from succeeding
-                bt = table.match(subStart, subEnd, subTerm, filter, dur, nar);
+                x = table.match(subStart, subEnd, subTerm, filter, dur, nar);
                 break;
             case 2:
-                bt = table.sample(new When<>(subStart, subEnd, dur, nar), subTerm, filter);
+                x = table.sample(new When<>(subStart, subEnd, dur, nar), subTerm, filter);
                 break;
             default:
                 throw new UnsupportedOperationException();
         }
-        return bt;
+
+        return x;
     }
 
     public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> table(AbstractDynamicTruth... models) {
@@ -130,13 +132,6 @@ abstract public class AbstractDynamicTruth {
                 return null;
         }
 
-//        if (ditherTime) {
-//            if (s!= LongInterval.ETERNAL) {
-//                int dtDither = nar.dtDither();
-//                s = Tense.dither(s, dtDither, -1);
-//                e = Tense.dither(e, dtDither, +1);
-//            }
-//        }
-        return DynTaskify.merge(d::arrayCommit, y, t, d.stamp(d.nar.random()), d.beliefOrGoal, s, e, d.nar);
+        return TruthProjection.merge(d::arrayCommit, y, t, d.stamp(d.nar.random()), d.beliefOrGoal, s, e, d.nar);
     }
 }

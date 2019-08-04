@@ -443,10 +443,10 @@ abstract public class GameX extends Game {
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 
-        n.beliefPriDefault.amp(0.005f);
-        n.goalPriDefault.amp(0.005f);
-        n.questionPriDefault.amp(0.002f);
-        n.questPriDefault.amp(0.002f);
+        n.beliefPriDefault.amp(0.1f);
+        n.goalPriDefault.amp(0.2f);
+        n.questionPriDefault.amp(0.05f);
+        n.questPriDefault.amp(0.05f);
 
         n.beliefConfDefault.set(0.5f);
         n.goalConfDefault.set(0.5f);
@@ -454,8 +454,8 @@ abstract public class GameX extends Game {
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
 //
-        //n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.02f);
+        n.emotion.want(MetaGoal.Believe, 0.05f);
+        n.emotion.want(MetaGoal.Desire, 1f);
 //
 //        n.emotion.want(MetaGoal.Action, +1f);
 
@@ -515,7 +515,7 @@ abstract public class GameX extends Game {
         Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
         Deriver bd6 = new Deriver(Derivers.nal(n, 6, 8));
 
-        Deriver bd3_act = new Deriver(Derivers.nal(n, 3, 3));
+        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
         bd3_act.time(new ActionTiming());
 
         Deriver bd6_act = new Deriver(Derivers.nal(n, 6,8,"motivation.nal"));
@@ -545,8 +545,8 @@ abstract public class GameX extends Game {
 
         //tiered
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->t.isInput())
-                ,new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->!t.isInput())//t instanceof DerivedTask),
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 16, 512, t->true)
+                //,new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->!t.isInput())//t instanceof DerivedTask),
                 //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
                 //, new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)

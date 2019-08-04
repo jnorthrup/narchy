@@ -91,15 +91,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
-    public static final float ANSWER_DETAIL =
-            //0.25f;
-            0.333f;
-            //0.5f;
-            //0.75f;
-            //1f;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 16;
+    public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 4;
+    public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
+
+    /** if false, the tasklink resolution mode is sample */
+    public static final boolean TASKLINK_ANSWER_BELIEF = true;
+    public static final boolean TASKLINK_ANSWER_GOAL = true;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 3f;
+    public static final float ANSWER_TRYING = 2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
@@ -217,10 +218,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** seems safe and will reduce equivalent permutations cluttering tasklink bags */
     public static final boolean TASKLINK_NORMALIZE_IMAGES = true;
 
-
-    /** if false, the tasklink resolution mode is sample */
-    public static final boolean TASKLINK_ANSWER_BELIEF = false;
-    public static final boolean TASKLINK_ANSWER_GOAL = false;
 
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;
@@ -585,7 +582,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
 
         /** if true, uses dur=0 for matching/answering which, as a result, restricts includable evidence in the truth projection */
-        public static final boolean ANSWER_HONEST_DUR = true;
+        public static final boolean ANSWER_HONEST_DUR = false;
     }
 
 

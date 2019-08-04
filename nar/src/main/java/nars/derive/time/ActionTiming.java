@@ -16,17 +16,18 @@ public class ActionTiming implements TimeFocus {
 
     //TODO parametr for shifting focus balance toward past, present or future
 
-    public final FloatRange focusDurs = new FloatRange(2, 0, 32);
+    public final FloatRange focusDurs = new FloatRange(1, 0, 32);
 
-    public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
 
-    float past = 1;
-    float future = 2;
+
 
     public ActionTiming() {
 
     }
 
+    float past = 1;
+    float future = 2;
     @Override
     public When<NAR> task(What what) {
         float dur = what.dur() * horizonDurs.floatValue()/2;

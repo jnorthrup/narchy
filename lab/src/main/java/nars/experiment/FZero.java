@@ -133,9 +133,9 @@ public class FZero extends GameX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        //initPushButtonTank();
+        initPushButtonTank();
         //initLeftRightPushButtonMutex();
-        initTankContinuous();
+        //initTankContinuous();
 
         //initUnipolarLinear(2f);
 

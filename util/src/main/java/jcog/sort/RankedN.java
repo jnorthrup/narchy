@@ -1,6 +1,5 @@
 package jcog.sort;
 
-import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Arrays;
@@ -39,17 +38,6 @@ public class RankedN<X> extends TopN<X> {
         this(buffer);
         rank(ranking);
     }
-
-    private float rankCached(int index) {
-        return value[index];
-    }
-
-//    public static ThreadLocal<MetalPool<RankedTopN>> newRankedPool() {
-//        return MetalPool.threadLocal(() -> {
-//            int initialCapacity = 32;
-//            return new RankedTopN(new Object[initialCapacity]);
-//        });
-//    }
 
     @Override
     protected int addEnd(X x, float elementRank) {
@@ -100,11 +88,6 @@ public class RankedN<X> extends TopN<X> {
             return null;
     }
 
-    public X[] itemsArray() {
-        int s = size();
-        //return Util.map(i->i.x, arrayBuilder.apply(s), s, items);
-        return s > 0 ? Arrays.copyOf(items, s) : (X[]) ArrayUtil.EMPTY_OBJECT_ARRAY;
-    }
 
     @Override
     protected final void rejectExisting(X e) {

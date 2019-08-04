@@ -1,5 +1,6 @@
 package nars.table;
 
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
@@ -82,7 +83,7 @@ public interface TaskTable {
         assert(beliefOrQuestion);
 
         Answer a = Answer.taskStrength(beliefOrQuestion,
-                Answer.BELIEF_MATCH_CAPACITY, start, end, template, filter, nar)
+            NAL.ANSWER_BELIEF_MATCH_CAPACITY, start, end, template, filter, nar)
                 .dur(dur);
         match(a);
         return a;
@@ -93,8 +94,8 @@ public interface TaskTable {
                 .task(true, forceProject, ditherTruth) : null;
     }
 
-    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter, boolean ditherTruth) {
-        return match(w.start, w.end, false, template, filter, w.dur, w.x, ditherTruth); }
+    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter, float dur, boolean ditherTruth) {
+        return match(w.start, w.end, false, template, filter, dur, w.x, ditherTruth); }
 
     @Nullable default /* final */ Task match(long start, long end, Term template, float dur, NAR nar) {
         return match(start, end, template, null, dur, nar); }
@@ -106,20 +107,28 @@ public interface TaskTable {
         return match(start, end, true, template, filter, dur, n, false);
     }
 
-    @Nullable default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    @Nullable private Answer sampleAnswer(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
 
         if (isEmpty())
             return null;
 
         boolean isBeliefOrGoal = !(this instanceof QuestionTable);
 
-        Answer answer = Answer.taskStrength(isBeliefOrGoal,
-                isBeliefOrGoal ? Answer.BELIEF_SAMPLE_CAPACITY : Answer.QUESTION_SAMPLE_CAPACITY,
-                when.start, when.end, template, filter, when.x);
+        Answer a = Answer.taskStrength(isBeliefOrGoal,
+            isBeliefOrGoal ? NAL.ANSWER_BELIEF_SAMPLE_CAPACITY : NAL.ANSWER_QUESTION_SAMPLE_CAPACITY,
+            when.start, when.end, template, filter, when.x);
 
-        match(answer);
+        match(a);
+        return a.isEmpty() ? null : a;
+    }
 
-        return answer.tasks.isEmpty() ? null : answer.tasks.getRoulette(answer.random());
+    @Nullable default Answer sampleSome(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+        return sampleAnswer(when, template, filter);
+    }
+
+    @Nullable default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+        Answer a = sampleAnswer(when, template, filter);
+        return a==null ? null : a.sample();
     }
 
     /** clear and fully deallocate if possible */

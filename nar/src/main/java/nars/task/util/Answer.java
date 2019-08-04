@@ -6,13 +6,11 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.table.TaskTable;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Truth;
-import nars.truth.dynamic.DynTaskify;
 import nars.truth.proj.TruthIntegration;
 import nars.truth.proj.TruthProjection;
 import nars.util.Timed;
@@ -31,15 +29,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public final class Answer implements Timed, Predicate<Task> {
 
-    public final static int BELIEF_MATCH_CAPACITY =
-            (int)Math.ceil(NAL.STAMP_CAPACITY * NAL.ANSWER_DETAIL);
-            //Param.STAMP_CAPACITY - 1;
-            //Math.max(1, Param.STAMP_CAPACITY / 2);
-            //Math.max(1, 2 * (int) Math.ceil(Math.sqrt(NAL.STAMP_CAPACITY)));
-            //3;
 
-    public static final int BELIEF_SAMPLE_CAPACITY = BELIEF_MATCH_CAPACITY/2;
-    public static final int QUESTION_SAMPLE_CAPACITY = 1;
 
     public final NAR nar;
 
@@ -256,9 +246,8 @@ public final class Answer implements Timed, Predicate<Task> {
         return this;
     }
 
-    public Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
-        boolean ditherTime = ditherTruth;
-        return task(topOrSample, forceProject, ditherTruth, ditherTime);
+    public final Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
+        return task(topOrSample, forceProject, ditherTruth, ditherTruth);
     }
 
     /**
@@ -277,56 +266,55 @@ public final class Answer implements Timed, Predicate<Task> {
 
         ditherTruth(ditherTruth); //enable/disable truth dithering
 
-        Task root = tasks.first();
-
         long ss = time.start, ee = time.end;
 
-        Task t;
-        if (s == 1)
-            t = root;
-        else {
-            if (topOrSample) {
-                //compare alternate roots, as they might match better with tasks below
-                switch (root.punc()) {
-                    case BELIEF:
-                    case GOAL: {
-                        t = Truth.stronger(newTask(root.isBelief()), root, ss, ee);
-                        break;
-                    }
-
-                    case QUESTION:
-                    case QUEST:
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-            } else {
-                t = tasks.getRoulette(random());
-                assert (!forceProject);
-            }
-        }
+        Task root = tasks.first();
+        Task t = s == 1 ? root : merge(topOrSample, forceProject, root, ss, ee);
 
         double eviMin = eviMin();
         if (t.evi() < eviMin)
             return null;
 
-        if (forceProject && ss!=ETERNAL) { //dont bother sub-projecting eternal here.
-
+        if (forceProject && ss!=ETERNAL) //dont bother sub-projecting eternal here.
             t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
 
-        }
-
         return t;
-
     }
 
-    private Task newTask(boolean beliefOrGoal) {
+    private Task merge(boolean topOrSample, boolean forceProject, Task root, long ss, long ee) {
+        Task t;
+        if (topOrSample) {
+            //compare alternate roots, as they might match better with tasks below
+            switch (root.punc()) {
+                case BELIEF:
+                case GOAL: {
+                    t = Truth.stronger(newTask(root.isBelief(),forceProject), root, ss, ee);
+                    break;
+                }
+
+                case QUESTION:
+                case QUEST:
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        } else {
+            t = tasks.getRoulette(random());
+            assert (!forceProject);
+        }
+        return t;
+    }
+
+    private Task newTask(boolean beliefOrGoal, boolean forceProject) {
+        if (!forceProject && tasks.size() == 1) {
+            return tasks.get(0);
+        }
+
         TruthProjection tp = truthProjection();
-        return tp!=null ? newTask(tp, beliefOrGoal) : null;
+        return tp!=null ? tp.newTask(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar) : null;
     }
 
     private double eviMin() {
         return ditherTruth ? nar.confMin.evi() : NAL.truth.EVI_MIN;
-        //return nar.confMin.evi();
     }
 
     /**
@@ -349,20 +337,6 @@ public final class Answer implements Timed, Predicate<Task> {
         int n = tasks.size();
         return n == 0 ? null :
             nar.newProjection(time.start, time.end, dur).ditherDT(n).add(n, this.tasks.items);
-    }
-
-
-    @Nullable
-    private Task newTask(TruthProjection tp, boolean beliefOrGoal) {
-        @Nullable Truth tt = tp.truth(eviMin(), ditherTruth, true, nar);
-        if (tt == null)
-            return null;
-
-        if (tp.active()==1) {
-            return SpecialTruthAndOccurrenceTask.the(tp.firstValid(), tt, tp.start(), tp.end());
-        } else {
-            return DynTaskify.merge(tp::arrayCommit, tp.term, tt, tp.stamp(nar.random()), beliefOrGoal, tp.start(), tp.end(), nar);
-        }
     }
 
 
@@ -452,5 +426,9 @@ public final class Answer implements Timed, Predicate<Task> {
      */
     @Nullable public Term term() {
         return term;
+    }
+
+    @Nullable public Task sample() {
+        return tasks.isEmpty() ? null : tasks.getRoulette(random());
     }
 }

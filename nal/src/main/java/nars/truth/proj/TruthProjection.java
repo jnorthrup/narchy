@@ -10,26 +10,36 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.Task;
+import nars.task.DynamicTruthTask;
+import nars.task.NALTask;
+import nars.task.ProxyTask;
 import nars.task.Tasked;
+import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskList;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
 import nars.term.util.TermTransformException;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.util.Timed;
+import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.IntPredicate;
+import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
 import static jcog.Util.assertFinite;
 import static nars.NAL.STAMP_CAPACITY;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.Intermpolate.dtDiff;
 
@@ -65,6 +75,52 @@ abstract public class TruthProjection extends TaskList {
 		super(0);
 		time(start, end);
 		dur(dur);
+	}
+
+	@Nullable
+	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
+		boolean neg = content instanceof Neg;
+		if (neg)
+			content = content.unneg();
+
+		ObjectBooleanPair<Term> r = Task.tryTaskTerm(
+				content,
+				beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
+		if (r==null)
+			return null;
+
+		Truth yt = t.negIf(neg != r.getTwo());
+
+		Task[] tt = tasks.get();
+		if (tt.length == 1) {
+			Task only = tt[0];
+
+			//wrap the only task wtih Special proxy task
+			if (only.start() == start && only.end() == end && only.truth().equals(yt))
+				return only;
+			else {
+				if (only instanceof SpecialTruthAndOccurrenceTask || !(only instanceof ProxyTask)) { //TODO other special proxy types
+					return SpecialTruthAndOccurrenceTask.the(only, yt, start, end);
+				} //else: continue below
+			}
+
+		}
+
+
+		NALTask y = new DynamicTruthTask(
+			r.getOne(), beliefOrGoal,
+			yt,
+				w, start, end,
+				stamp.get());
+
+
+//        y.pri(
+//              tasks.reapply(TaskList::pri, NAL.DerivationPri)
+//                        // * dyn.originality() //HACK
+//        );
+		Task.fund(y, tt, true);
+
+		return y;
 	}
 
 	public TruthProjection dur(float dur) {
@@ -666,6 +722,21 @@ abstract public class TruthProjection extends TaskList {
 		return (active() == size());
 	}
 
+	@Nullable
+	public Task newTask(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
+		@Nullable Truth tt = truth(eviMin, ditherTruth, true, n);
+		if (tt == null)
+			return null;
+
+		if (active()==1) {
+			Task only = firstValid();
+			return !forceProject ?
+				only :
+				SpecialTruthAndOccurrenceTask.the(only, tt, start, end);
+		} else {
+			return merge(this::arrayCommit, term, tt, stamp(n.random()), beliefOrGoal, start, end, n);
+		}
+	}
 
 
 //    /**

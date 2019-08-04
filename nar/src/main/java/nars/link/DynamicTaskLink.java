@@ -20,12 +20,12 @@ public abstract class DynamicTaskLink extends AtomicTaskLink {
     }
 
     @Override
-    public @Nullable Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
-        Termed t = src(when);
+    public @Nullable Task get(byte punc, When<NAR> w, Predicate<Task> filter) {
+        Termed t = src(w);
         if (t!=null) {
-            TaskTable table = when.x.tableDynamic(t, BELIEF);
+            TaskTable table = w.x.tableDynamic(t, BELIEF);
             if (table != null) {
-                return table.sample(when, null, filter);
+                return table.sample(w, null, filter);
             }
         }
         return null;

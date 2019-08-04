@@ -113,6 +113,16 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return intifyShallow((s, x) -> s | x.structure(), 0);
     }
 
+    default boolean equalTermsIdentical(Subterms x) {
+        if (this == x) return true;
+        int n = subs();
+        if (x.subs()!=n) return false;
+        for (int i = 0; i < n; i++) {
+            if (sub(i)!=x.sub(i))
+                return false;
+        }
+        return true;
+    }
 
 
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,

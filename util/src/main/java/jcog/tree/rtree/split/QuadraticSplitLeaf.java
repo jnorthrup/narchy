@@ -20,6 +20,7 @@ package jcog.tree.rtree.split;
  * #L%
  */
 
+import jcog.Util;
 import jcog.tree.rtree.*;
 
 import java.util.function.Function;
@@ -31,30 +32,34 @@ import java.util.function.Function;
  */
 public class QuadraticSplitLeaf<X> implements Split<X> {
 
-    @Override
-    public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {
+    /**  find the two bounds that are most wasteful */
+    @Override public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {
 
-        double minCost = Double.MIN_VALUE;
+        double maxWaste = Double.NEGATIVE_INFINITY;
         short size = leaf.size;
-        int r1Max = 0, r2Max = size - 1;
+        int r1 = -1, r2 = -1;
         X[] data = leaf.data;
-        for (int i = 0; i < size; i++) {
+        double[] COST = Util.map(i -> m.bounds(data[i]).cost(), new double[size]); //cache
+        for (int i = 0; i < size-1; i++) {
             HyperRegion ii = m.bounds(data[i]);
-            double iic = ii.cost();
+            double iic = COST[i];
             Function<HyperRegion, HyperRegion> iiMbr = ii.mbrBuilder();
             for (int j = i + 1; j < size; j++) {
                 HyperRegion jj = m.bounds(data[j]);
-                final double cost = iiMbr.apply(jj).cost() - (iic + jj.cost());
-                if (cost > minCost) {
-                    r1Max = i;
-                    r2Max = j;
-                    minCost = cost;
+                HyperRegion ij = iiMbr.apply(jj);
+                double jjc = COST[j];
+                double ijc = (ij==ii ? iic : (ij ==jj ? jjc : ij.cost())); //assert(ijc >= iic && ijc >= iic);
+                final double waste = (ijc - iic) + (ijc - jjc);
+                if (waste > maxWaste) {
+                    r1 = i;
+                    r2 = j;
+                    maxWaste = waste;
                 }
             }
         }
 
 
-        return newBranch(x, leaf, m, size, r1Max, r2Max, data);
+        return newBranch(x, leaf, m, size, r1, r2, data);
     }
 
 

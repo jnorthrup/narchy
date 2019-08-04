@@ -61,9 +61,6 @@
 
 
 
-    //this is basically a duplicate of the generalized analogy; see analogy.nal
-    //(M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Goal:Weak)
-            //TODO write test case for this
 
 
 

@@ -30,16 +30,15 @@ import org.eclipse.collections.impl.factory.Maps;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
-import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
+import static nars.time.Tense.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -739,7 +738,7 @@ public enum Op {
     }
     public final Term statement(TermBuilder b, Op op, int dt, Term[] u) {
         if (u.length != 2)
-            throw new TermException(op + " requires 2 arguments, but got: " + Arrays.toString(u), op, dt, u);
+            return (op == INH || op == SIM || (op == IMPL && dtSpecial(dt)) ? True : Null); /* HACK */ //throw new TermException(op + " requires 2 arguments, but got: " + Arrays.toString(u), op, dt, u);
 
         return b.statement(op, dt, u[0], u[1]);
     }

@@ -87,7 +87,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return get(punc(when.x.random()), when, filter);
     }
 
-    @Nullable default Task get(byte punc, When<NAR> when, Predicate<Task> filter) {
+    @Nullable default Task get(byte punc, When<NAR> w, Predicate<Task> filter) {
         if (punc == 0)
             return null; //flat-lined tasklink
 
@@ -97,7 +97,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
                 //n.concept(t);
                 //n.conceptualizeDynamic(x);
                 //beliefOrGoal ? n.conceptualizeDynamic(x) : n.beliefDynamic(x);
-                when.x.tableDynamic(x, punc);
+                w.x.tableDynamic(x, punc);
 
         if (table == null || table.isEmpty()) {
             return null;
@@ -108,9 +108,9 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
             Task y;
             if ((punc==BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc==GOAL && NAL.TASKLINK_ANSWER_GOAL))
-                y = table.match(when, null, filter, false);
+                y = table.match(w, null, filter, NAL.premise.ANSWER_HONEST_DUR ? 0 : w.dur, false);
             else
-                y = table.sample(when, null, filter);
+                y = table.sample(w, null, filter);
 
             if (y == null) {
                 if (!beliefOrGoal) {

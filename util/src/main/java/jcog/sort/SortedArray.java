@@ -10,6 +10,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 import java.util.stream.Stream;
@@ -783,6 +784,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return ArrayIterator.iterateNonNullN(items, size);
     }
 
+
     public void reprioritize(X existing, int posBefore, float delta, float priAfter, FloatFunction<X> cmp) {
 
         //only reindex if exceeds threshold to previous or next item
@@ -813,5 +815,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         int inserted = add(existing, -priAfter, cmp);
         assert (inserted != -1);
 
+    }
+    public void replace(Function<X,X> each) {
+        X[] items = this.items;
+        for (int i = 0; i < size; i++) {
+            items[i] = each.apply(items[i]);
+        }
     }
 }

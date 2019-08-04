@@ -51,7 +51,7 @@ public interface BeliefTable extends TaskTable {
         return truth(start, end, template, filter, n.dur(), n);
     }
     default Truth truth(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR n) {
-        return truth(start, end, template, filter, Answer.BELIEF_MATCH_CAPACITY, dur, n);
+        return truth(start, end, template, filter, NAL.ANSWER_BELIEF_MATCH_CAPACITY, dur, n);
     }
 
     /** precision = max # of tasks to include in the sample */

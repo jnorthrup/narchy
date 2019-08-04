@@ -30,11 +30,12 @@ import jcog.tree.rtree.util.Stats;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Comparator;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static java.lang.System.arraycopy;
 
 /**
  * RTree node that contains leaf nodes
@@ -169,19 +170,23 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             HyperRegion before = dbf.bounds();
             RNode nextBest = dbf.add(x);
             if (nextBest == null) {
-                if (!before.equals(dbf.bounds()))
+                if (!before.equals(dbf.bounds())) {
                     updateBounds();
+                }
                 return null; /*merged*/
             }
 
             //inline
+
+            RNode bl;
             if (size < l && nextBest.size() == 2 && !nextBest.isLeaf()) {
                 RNode[] bc = ((RBranch<X>) nextBest).data;
-                data[bestLeaf] = bc[0];
+                bl = bc[0];
                 data[size++] = bc[1];
             } else {
-                data[bestLeaf] = nextBest;
+                bl = nextBest;
             }
+            data[bestLeaf] = bl;
 
             updateBounds();
 
@@ -220,8 +225,11 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
                     if (nAfter == null) {
                         //TODO the case where pen-ultimate item is removed then it's a 1-cell copy from last to last-1
-                        if (i < --size)
-                            Arrays.sort(data, NullCompactingComparator);
+                        if (i < --size) {
+                            arraycopy(data, i+1, data, i, size-i);
+                            data[size] = null;
+                            //Arrays.sort(data, NullCompactingComparator);
+                        }
                     }
 
 //                    //EXPERIMENTAL
@@ -544,20 +552,20 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     }
 
 
-    private static final Comparator NullCompactingComparator = (o1, o2) -> {
-        if (o1 == o2) {
-            return 0;
-        }
-        if (o1 == null) {
-            return 1;
-        }
-        if (o2 == null) {
-            return -1;
-        }
-        return Integer.compare(
-                System.identityHashCode(o1),
-                System.identityHashCode(o2)
-        );
-    };
+//    private static final Comparator NullCompactingComparator = (o1, o2) -> {
+//        if (o1 == o2) {
+//            return 0;
+//        }
+//        if (o1 == null) {
+//            return 1;
+//        }
+//        if (o2 == null) {
+//            return -1;
+//        }
+//        return Integer.compare(
+//                System.identityHashCode(o1),
+//                System.identityHashCode(o2)
+//        );
+//    };
 
 }

@@ -1,12 +1,10 @@
 package nars.term.util.transform;
 
 import jcog.data.list.FasterList;
-import nars.$;
 import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
 import org.jetbrains.annotations.Nullable;
 
@@ -21,9 +19,9 @@ abstract public class MapSubst implements Subst {
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
         Term y = m.get(x);
-        if (y!=null) {
+        if (y!=null)
             return y;
-        } else if (x instanceof Atomic)
+        else if (x instanceof Atomic)
             return x; //no subterms that could be changed
 
 
@@ -41,22 +39,32 @@ abstract public class MapSubst implements Subst {
             }
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
-                Map.Entry<? extends Term, Term> e1 = ii.next(), e2 = ii.next();
-                if(e1 == null || e2 == null)
+                Map.Entry<? extends Term, Term> A = ii.next(), B = ii.next();
+                if(A == null || B == null)
                     throw new NullPointerException();
-                Term a = e1.getKey(), b = e2.getKey();
+                Term a = A.getKey(), b = B.getKey();
+
+
+                Term aa = A.getValue();
+                Term bb = B.getValue();
+
+
+//                //HACK detect cyclic interlock
+//                if (aa.equals(b) && bb.equals(a)) {
+//                    //TODO should this be attempted but in 2 steps?
+//                    return x.replace(aa,);
+//                }
+
 
                 if (x.impossibleSubTerm(a)) {
                     return x.impossibleSubTerm(b) ?
                             x
                             :
-                            x.transform(replace(b, e2.getValue()));
-                } else {
-                    if (x.impossibleSubTerm(b))
-                        return x.transform(replace(a, e1.getValue()));
-                    else
-                        return x.transform(new MapSubst2(e1.getKey(), e1.getValue(), e2.getKey(), e2.getValue()));
-                }
+                            x.transform(replace(b, bb));
+                } if (x.impossibleSubTerm(b))
+                    return x.transform(replace(a, aa));
+                else
+                    return x.transform(new MapSubst2(A.getKey(), aa, B.getKey(), bb));
             }
             default: {
                 List<Term> valid = null;
@@ -107,8 +115,9 @@ abstract public class MapSubst implements Subst {
             this.ay = ay;
             this.bx = bx;
             this.by = by;
-            if ((ay.equals(bx)) || (by.equals(ax)))
-                throw new TermException( MapSubst2.class.getSimpleName() + " interlock", $.p(ax, ay, bx, by));
+//            if ((ay.equals(bx)) || (by.equals(ax))) {
+//                throw new TermException(MapSubst2.class.getSimpleName() + " interlock", $.p(ax, ay, bx, by));
+//            }
         }
 
         /**
