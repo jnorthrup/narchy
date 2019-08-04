@@ -31,11 +31,11 @@ public class Truthify extends AbstractPred<Derivation> {
      * 0 double premise
      * -1 disabled
      */
-    transient final byte beliefMode, goalMode, questionMode;
-    boolean beliefOverlap, goalOverlap;
+    final byte beliefMode, goalMode, questionMode;
+    final private boolean beliefOverlap, goalOverlap;
 
-    private final TruthFunction goal;
-    public final BeliefProjection beliefProjection;
+    final TruthFunction goal;
+    final BeliefProjection beliefProjection;
 
     /**
      * punctuation transfer function
@@ -74,10 +74,14 @@ public class Truthify extends AbstractPred<Derivation> {
     }
 
     private static final Atomic TRUTH = Atomic.the("truth");
+    private static final Atomic QUESTION_SINGLE = Atomic.the("?");
+    private static final Atomic QUESTION_DOUBLE = Atomic.the("??");
 
     public static Truthify the(PuncMap punc, TruthFunction beliefTruthOp, TruthFunction goalTruthOp, boolean questionSingle, Occurrify.OccurrenceSolver time) {
 
-        FasterList<Term> args = new FasterList(4);
+        boolean outQQ = !questionSingle && (punc.outAny(QUESTION) || punc.outAny(QUEST));
+
+        FasterList<Term> args = new FasterList<>(outQQ ? 5 : 4);
 
         args.add(punc);
 
@@ -87,10 +91,12 @@ public class Truthify extends AbstractPred<Derivation> {
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
         args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
 
-        args.add(Atomic.the(time.name()));
+        if (outQQ)
+            args.add(QUESTION_DOUBLE);
 
-        return new Truthify(
-                $.func(TRUTH, args.toArrayRecycled(Term[]::new)),
+        args.add(time.term);
+
+        return new Truthify( $.func(TRUTH, args.toArrayRecycled(Term[]::new)),
                 punc,
                 beliefTruthOp, goalTruthOp,
                 questionSingle,

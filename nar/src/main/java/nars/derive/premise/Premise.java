@@ -10,6 +10,7 @@ import nars.*;
 import nars.derive.Derivation;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.term.util.TermException;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
 
@@ -142,8 +143,10 @@ public class Premise /*implements Comparable<Premise>*/ {
         }
 
         Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm;//.unneg();
-        if (nextBeliefTerm.volume() > d.termVolMax)
-            return null; //WTF
+        if (NAL.DEBUG) {
+            if (nextBeliefTerm.volume() > d.termVolMax)
+                throw new TermException("excessive volume", nextBeliefTerm); //return null; //WTF
+        }
 
         if (!d.budget(task, belief))
             return null;

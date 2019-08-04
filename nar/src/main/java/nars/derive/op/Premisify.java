@@ -12,7 +12,7 @@ import nars.term.control.AbstractPred;
 abstract public class Premisify extends AbstractPred<Derivation> {
 
 
-    private final Term taskPat, beliefPat;
+    public final Term taskPat, beliefPat;
     final boolean fwd;
 
     private static final Atomic FWD = Atomic.the("fwd");
@@ -29,6 +29,13 @@ abstract public class Premisify extends AbstractPred<Derivation> {
 
 
     protected final boolean unify(Derivation d, boolean dir, boolean finish) {
+
+        if (finish) {
+            UnifyMatchFork mf = d.termifier;
+            d.forEachMatch = mf;
+            mf.reset(taskify);
+        }
+
         return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
     }
 

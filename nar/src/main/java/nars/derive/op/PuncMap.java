@@ -60,4 +60,9 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
         }
         return y;
     }
+
+    /** any output punctuation match */
+    public final boolean outAny(byte p) {
+        return belief==p || goal==p || question==p || quest==p;
+    }
 }

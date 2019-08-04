@@ -623,7 +623,7 @@ public class Occurrify extends TimeGraph {
 
         ;
 
-        private final Term term;
+        final Term term;
 
         OccurrenceSolver() {
             this.term = Atomic.the(name());

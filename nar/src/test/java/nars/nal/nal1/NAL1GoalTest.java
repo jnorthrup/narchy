@@ -18,7 +18,7 @@ public class NAL1GoalTest extends NALTest {
     }
 
     @Test
-    void questFromExtensionalSiblingGoal() {
+    void questFromInhSiblingGoal_ext() {
         test
                 .input("(a-->c)!")
                 .input("(b-->c).")

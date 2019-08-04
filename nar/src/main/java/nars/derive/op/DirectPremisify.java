@@ -15,23 +15,30 @@ import nars.term.Term;
  * */
 public class DirectPremisify extends Premisify {
 
+    private final boolean patternsEqual;
+
     public DirectPremisify(Term t, Term b, boolean fwd, Taskify taskify) {
         super(t, b, fwd, taskify);
+        this.patternsEqual = taskPat.equals(beliefPat);
     }
 
     @Override
     public boolean test(Derivation d) {
 
-        if (unify(d, fwd, false)) {
+        if (patternsEqual && d.taskTerm.equals(d.beliefTerm)) {
 
-            UnifyMatchFork mf = d.termifier;
-            d.forEachMatch = mf;
+            unify(d, fwd, true);
 
-            mf.reset(taskify);
+        } else {
 
-            boolean unified = unify(d, !fwd, true);
+            if (unify(d, fwd, false)) {
 
+                boolean unified = unify(d, !fwd, true);
+
+            }
         }
         return true;
     }
+
+
 }

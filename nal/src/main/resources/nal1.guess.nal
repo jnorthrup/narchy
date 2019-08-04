@@ -1,5 +1,8 @@
-//    (X --> Y), X, --is(X,"?") |- (?1 --> Y),   (Punctuation:Ask)
-//    (Y --> X), X, --is(X,"?") |- (Y --> ?1),   (Punctuation:Ask)
+//Backwards Inference
+    (X-->A), (Y-->A), neq(X,Y), is(X,"?") |- (Y --> ?Z), (Punctuation:AskAsk, Time:Task)
+     (X-->A), (Y-->A), neq(X,Y), is(X,"?") |- (?Z --> Y), (Punctuation:AskAsk, Time:Task)
+    (A-->X), (A-->Y), neq(X,Y), is(X,"?") |- (?Z --> Y), (Punctuation:AskAsk, Time:Task)
+     (A-->X), (A-->Y), neq(X,Y), is(X,"?") |- (Y --> ?Z), (Punctuation:AskAsk, Time:Task)
 
 
 //Similarity to Inheritance

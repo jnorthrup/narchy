@@ -8,7 +8,7 @@ import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
 
-    protected int cycles = 50;
+    protected int cycles = 150;
 
     @Override
     protected NAR nar() {
@@ -58,19 +58,24 @@ public class NAL1Test extends NALTest {
     @Test
     void abduction() {
         test
-                .believe("<sport --> competition>", 1f, 0.9f)
-                .believe("<chess --> competition>", 0.90f, 0.9f)
-                .mustBelieve(cycles, "(sport --> chess)", 0.9f, 0.45f)
-                .mustBelieve(cycles, "(chess --> sport)", 1f, 0.42f)
+            .termVolMax(3)
+                .believe("(sport --> competition)", 1f, 0.9f)
+              //.en("sport is a type of competition.");
+                .believe("(chess --> competition)", 0.90f, 0.9f)
+              //.en("chess is a type of competition.");
+                .mustBelieve(cycles, "(chess --> sport)", 0.9f, 0.45f)
+              //.en("I guess chess is a type of sport");
+                .mustBelieve(cycles, "(sport --> chess)", 1f, 0.42f)
+            /*  .en("I guess sport is a type of chess.")
+	            .en("sport is possibly a type of chess.")
+	            .es("es posible que sport es un tipo de chess.");*/
         ;
     }
 
 
     @Test
     void exemplification() {
-
         test
-
                 .believe("<robin --> bird>")
                 .believe("<bird --> animal>")
                 .mustOutput(cycles, "<animal --> robin>. %1.00;0.4475%");
@@ -84,7 +89,7 @@ public class NAL1Test extends NALTest {
                 .believe("<bird --> swimmer>", 1.0f, 0.8f)
                 .ask("<?1 --> swimmer>")
                 .mustOutput(cycles, "<?1 --> bird>?")
-                //.mustOutput(cycles, "<bird --> ?1>?")
+                .mustOutput(cycles, "<bird --> ?1>?")
         ;
     }
 
