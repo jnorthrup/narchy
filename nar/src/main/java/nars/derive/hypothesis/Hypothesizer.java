@@ -3,6 +3,7 @@ package nars.derive.hypothesis;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
@@ -16,13 +17,14 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atom;
 import nars.time.When;
+import nars.unify.UnifyAny;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static nars.Op.ATOM;
+import static nars.Op.*;
 
 /** generator of hypotheses */
 public interface Hypothesizer {
@@ -134,9 +136,9 @@ public interface Hypothesizer {
 	}
 
 	/** caches results of an exhaustive search (ex: of all or some concepts in memory) and supplies tangents using this */
-	class IndexExhaustive extends TangentSnapshotter {
+	abstract class AbstractIndexSnapshotter extends TangentSnapshotter {
 
-		static final String id = IndexExhaustive.class.getSimpleName();
+		static final String id = AbstractIndexSnapshotter.class.getSimpleName();
 
 		public int ttl(Derivation d) {
 			return -1; //permanent
@@ -150,9 +152,7 @@ public interface Hypothesizer {
 				List<Term> tangent = Snapshot.get(target, d.nar, id, d.time(), ttl(d), (Concept targetConcept, List<Term> t) -> {
                     FasterList<Term> l = d.nar.concepts().filter(c -> {
                         Term ct = c.term();
-                        return ct instanceof Compound &&
-                            !ct.equals(target) &&
-                            ((Compound) ct).unifiesRecursively(target, z -> z.hasAny(ATOM));
+                        return !ct.equals(target) && test(ct, target);
                     }).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
                     if (l.isEmpty())
                         return List.of();
@@ -169,12 +169,46 @@ public interface Hypothesizer {
 			return null;
 		}
 
+		abstract public boolean test(Term concept, Term target);
+
 		@Override
 		protected @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
 			Term t = tangentRandom(target, d);
 			return t != null ? t : super.forward(target, link, task, d);
 		}
 
+	}
+
+	class ExhaustiveIndexSnapshotter extends AbstractIndexSnapshotter {
+		@Override
+		public boolean test(Term t, Term target) {
+			return t instanceof Compound &&
+				((Compound) t).unifiesRecursively(target, z -> z.hasAny(ATOM));
+		}
+	}
+	class FirstOrderIndexSnapshotter extends AbstractIndexSnapshotter {
+		@Override
+		public boolean test(Term concept, Term target) {
+			if (concept instanceof Compound) {
+				Op op = concept.op();
+				if (op == target.op()) {
+					if (new UnifyAny().unifies(concept, target))
+						return true;
+				} /*else if (op ==CONJ) {
+
+
+					//..
+				} else if (op == IMPL) {
+					//..
+				} else*/ {
+					//try subterms
+					UnifyAny u = new UnifyAny();
+					return concept.subterms().OR(z -> u.unifies(z.unneg(), target));
+				}
+
+			}
+			return false;
+		}
 	}
 
 }

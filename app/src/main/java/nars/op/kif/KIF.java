@@ -34,6 +34,7 @@ import org.eclipse.collections.api.block.function.Function;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +58,7 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
  * https:
  * https:
  **/
-public class KIF {
+public class KIF implements Iterable<Task> {
 
     private static final Logger logger = LoggerFactory.getLogger(KIF.class);
     private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
@@ -664,6 +665,10 @@ public class KIF {
             ignore.printStackTrace();
         }
         return null;
+    }
+    @Override
+    public Iterator<Task> iterator() {
+        return tasks().iterator();
     }
 
 

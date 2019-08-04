@@ -31,11 +31,6 @@ class KIFTest {
     public void test1() throws IOException, Narsese.NarseseException {
 
 
-        KIF k = KIF.file("/home/me/sumo/FinancialOntology.kif");
-//                //"/home/me/sumo/Merge.kif";
-//                //"/home/me/sumo/tinySUMO.kif";
-//                //"/home/me/sumo/ComputerInput.kif";
-////                "/home/me/sumo/Economy.kif",
 
         //String O = "/home/me/d/sumo_merge.nal";
 //        k.tasks.forEach(bb -> System.out.println(bb));
@@ -44,7 +39,10 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
 
-        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new Hypothesizer.IndexExhaustive()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
+            //new Hypothesizer.ExhaustiveIndexSnapshotter()
+            new Hypothesizer.FirstOrderIndexSnapshotter()
+        ); // ~= PROLOG
 
         n.termVolMax.set(32);
         n.beliefPriDefault.amp(0.01f);
@@ -56,8 +54,13 @@ class KIFTest {
         w.links.decay.set(0.05f);
         w.links.links.capacity(1024);
 
+        //                //"/home/me/sumo/Merge.kif";
+//                //"/home/me/sumo/tinySUMO.kif";
+//                //"/home/me/sumo/ComputerInput.kif";
+////                "/home/me/sumo/Economy.kif",
+        n.input(KIF.file("/home/me/sumo/FinancialOntology.kif"));
+        n.input(KIF.file("/home/me/sumo/Economy.kif"));
 
-        n.input(k.tasks());
         n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
         //n.input("$1.0 classIntersection(?1,?2)?");
@@ -94,7 +97,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 6,8));
 
-        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new Hypothesizer.IndexExhaustive()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new Hypothesizer.FirstOrderIndexSnapshotter()); // ~= PROLOG
 
         KIF k = new KIF(t);
         n.input(k.tasks());
@@ -127,7 +130,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 5,8));
 
-        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new Hypothesizer.IndexExhaustive()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new Hypothesizer.FirstOrderIndexSnapshotter()); // ~= PROLOG
         n.log();
 
         KIF k = new KIF(t);

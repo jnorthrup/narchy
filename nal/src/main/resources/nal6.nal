@@ -145,7 +145,7 @@
             (P ==> S), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
 
 
-            
+
 
 
     //the comparison rules here emulates what Comparison did in generating <=> which are modeled here as a pair of opposing ==>
