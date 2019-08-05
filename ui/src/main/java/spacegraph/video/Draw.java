@@ -134,15 +134,16 @@ public enum Draw {
     public static void draw(GL2 gl, CollisionShape shape) {
 
 
-        if (shape.getShapeType() == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
+        BroadphaseNativeType shapeType = shape.getShapeType();
+        if (shapeType == BroadphaseNativeType.COMPOUND_SHAPE_PROXYTYPE) {
             CompoundShape compoundShape = (CompoundShape) shape;
-            Transform childTrans = new Transform();
-            for (int i = compoundShape.getNumChildShapes() - 1; i >= 0; i--) {
-                stack.transforms.get(
-                        compoundShape.getChildTransform(i, childTrans)
-                );
-                CollisionShape colShape = compoundShape.getChildShape(i);
+            //Transform childTrans = new Transform();
+            for (int i = compoundShape.size() - 1; i >= 0; i--) {
+//                stack.transforms.get(
+//                    compoundShape.getChildTransform(i)
+//                );
 
+                CollisionShape colShape = compoundShape.getChildShape(i);
 
                 push(gl);
                 stack.pushCommonMath();
@@ -152,7 +153,7 @@ public enum Draw {
             }
         } else {
             boolean useWireframeFallback = true;
-            switch (shape.getShapeType()) {
+            switch (shapeType) {
                 case BOX_SHAPE_PROXYTYPE:
                     SimpleBoxShape boxShape = (SimpleBoxShape) shape;
                     v3 a = boxShape.implicitShapeDimensions;
@@ -1103,6 +1104,7 @@ public enum Draw {
 
 
         gl.glStencilMask(0x00);
+
 
 
         gl.glStencilFunc(includeOrExclude ? GL_NOTEQUAL : GL_EQUAL, 0, 0xFF);

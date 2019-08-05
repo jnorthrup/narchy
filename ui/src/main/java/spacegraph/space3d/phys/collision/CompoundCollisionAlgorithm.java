@@ -56,7 +56,7 @@ public class CompoundCollisionAlgorithm extends CollisionAlgorithm {
 		assert (colObj.shape().isCompound());
 
 		CompoundShape compoundShape = (CompoundShape) colObj.shape();
-		int numChildren = compoundShape.getNumChildShapes();
+		int numChildren = compoundShape.size();
 		int i;
 
 		

@@ -35,18 +35,18 @@ import java.util.stream.Stream;
 abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     private static final int HISTOGRAM_SUPERSAMPLING = 3;
-    private static final int HISTOGRAM_RESOLUTION_FACTOR = 4;
+    private static final int HISTOGRAM_RESOLUTION_FACTOR = 5;
     /**
      * override and return 0 to effectively disable histogram sampling (for efficiency if sampling isnt needed)
      */
     protected int histogramBins(int s) {
         //TODO refine
-        int thresh = 3;
+        int thresh = 4;
         if (s <= thresh)
             return s;
         else {
             //return (int) (thresh + Math.sqrt((s - thresh)));
-            return (int)(thresh + Math.log(1 + s - thresh) * HISTOGRAM_RESOLUTION_FACTOR);
+            return (int)(thresh - 1 + Math.log(1 + s - thresh) * HISTOGRAM_RESOLUTION_FACTOR);
         }
     }
 

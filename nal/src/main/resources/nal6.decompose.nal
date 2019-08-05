@@ -62,8 +62,11 @@ C, X, --isVar(X), eventOfPN(C,X)                     |-   conjWithoutPN(C,X), (B
 
     //sub-sequence following belief or goal
     //(&/,B,A_1..n), B, task("!") |- (&/,A_1..n), (Truth:Deduction, Desire:Strong, SequenceIntervals:FromPremises)
-    C, X, --isVar(X), is(C,"&&")        |-  polarizeTask(conjAfter(C, polarizeBelief(X))),  (Belief:DeductionDepolarized, Time:BeliefEvent)
-    C, X, --isVar(X), is(C,"&&")        |-  polarizeTask(conjAfter(C, polarizeBelief(X))),  (  Goal:DeductionDepolarized, Time:TaskEvent)
+    C, X, --isVar(X), is(C,"&&")                |-  polarizeTask(conjAfter(C,   X)),  (Belief:DeductionDP, Time:BeliefEvent)
+      C, X, --isVar(X), is(C,"&&")                |-  polarizeTask(conjAfter(C,   X)),  (Goal:DeductionDP, Time:BeliefEvent)
+    C, X, --isVar(X), is(C,"&&"), has(C,"--")   |-  polarizeTask(conjAfter(C, --X)),  (Belief:DeductionDN, Time:BeliefEvent)
+      C, X, --isVar(X), is(C,"&&"), has(C,"--")   |-  polarizeTask(conjAfter(C, --X)),  (Goal:DeductionDN, Time:BeliefEvent)
+      //C, X, --isVar(X), is(C,"&&")        |-  polarizeTask(conjAfter(C, polarizeBelief(X))),  (  Goal:DivideDepolarized, Time:TaskEvent)
 
 //    C, X, --isVar(X)                    |-     conjAfter(C,   X),     (Belief:DeductionPP, Time:BeliefEvent)
 //      C, X, --isVar(X)                  |-     conjAfter(C,   X),       (Goal:DeductionPP, Time:TaskEvent)
@@ -75,12 +78,13 @@ C, X, --isVar(X), eventOfPN(C,X)                     |-   conjWithoutPN(C,X), (B
 //    D, X, --isVar(X), has(D,"--")       |-   --conjAfter(D, --X),     (Belief:DeductionNN, Time:BeliefEvent)
 //      D, X, --isVar(X), has(D,"--")     |-   --conjAfter(D, --X),       (Goal:DeductionNN, Time:TaskEvent)
 
-    //desire for sub-sequence leading to goal
-    G, C, is(C,"&&")                    |-  polarizeBelief(conjBefore(C, polarizeTask(G))),  (Goal:DeductionDepolarized, Time:TaskEvent)
-//    G, C                    |-    conjBefore(C,   G),  (Goal:DeductionPP, Time:TaskEvent)
-//    G, C, has(C,"--")       |-    conjBefore(C, --G),  (Goal:DeductionNP, Time:TaskEvent)
-//        G, D, has(D,"--")   |-  --conjBefore(D, --G),  (Goal:DeductionNN, Time:TaskEvent)
-//        G, D                |-  --conjBefore(D,   G),  (Goal:DeductionPN, Time:TaskEvent)
+    //sub-sequence leading to goal
+    //X, C, is(C,"&&")                    |-  polarizeBelief(conjBefore(C, polarizeTask(X))),  (Belief:DeductionDepolarized, Goal:DeductionDepolarized, Time:TaskEvent)
+    X, C, is(C,"&&")                    |-  polarizeBelief(conjBefore(C,   X)),  (Belief:DeductionPD, Goal:DeductionPD, Time:TaskEvent)
+    X, C, is(C,"&&"),has(C,"--")        |-  polarizeBelief(conjBefore(C, --X)),  (Belief:DeductionND, Goal:DeductionND, Time:TaskEvent)
+      //X, C, is(C,"&&")                    |-  conjBefore(C,   X),  (Belief:DividePPX, Time:TaskEvent)
+      //X, C, is(C,"&&"), has(C,"--")       |-  conjBefore(C, --X),  (Belief:DivideNPX, Time:TaskEvent) //<- PNX ?
+
 
 //// propositional decomposition ////////////////////////////////////////////////////////////////////////////////////
 //If S is the case, and (&&,S,A..+) is not the case, it can't be that (&&,A..+) is the case

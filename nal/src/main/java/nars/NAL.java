@@ -100,7 +100,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean TASKLINK_ANSWER_GOAL = true;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 1f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**

@@ -1,8 +1,6 @@
 package spacegraph.space2d.widget;
 
 import spacegraph.SpaceGraph;
-import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.widget.SurfacedCuboid;
@@ -19,20 +17,21 @@ class View3Din2DTest {
 //        }
 
 
-		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f, new Splitting(
+		SpaceGraph.window(//new Splitting(new PushButton("y"), 0.9f, new Splitting(
 			new View3Din2D(s),
-			0.1f, new PushButton("x")).resizeable()).resizeable(), 1280, 1024);
+			//0.1f, new PushButton("x")).resizeable()).resizeable(),
+			1280, 1024);
 
 //		s.zFar = 100;
 		s.add(new SurfacedCuboid("x",
-			//grid(WidgetTest.widgetDemo()),
+			//WidgetTest.widgetDemo(),
 			//new PushButton("x").clicked(()->System.out.println("x")),
 			//new XYSlider(),
 			new Sketch2DBitmap(128, 128),
 			//new BitmapLabel("y"),
 			//new MetaFrame(new Sketch2DBitmap(32,32)),
 			4, 4)
-			//.rotate(0, 0, 1, 0.5f, 1f)
+			.rotate(0, 1, 0, 0.5f, 1f)
 			.move(0, 0, -4)
 		);
 //		s.add(new SurfacedCuboid("y",

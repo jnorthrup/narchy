@@ -104,7 +104,7 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public void forEach(Consumer<Surface> o) {
         for (int i = 0; i < length; i++) {
-            S ii = children.get(i);
+            S ii = children.getOpaque(i);
             if (ii !=null)
                 o.accept(ii);
         }

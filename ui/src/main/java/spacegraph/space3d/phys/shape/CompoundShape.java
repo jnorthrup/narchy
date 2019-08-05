@@ -31,8 +31,6 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.util.OArrayList;
 import spacegraph.util.math.Matrix3f;
 
-import java.util.Collection;
-
 
 
 /**
@@ -105,7 +103,7 @@ public class CompoundShape extends CollisionShape {
 		recalculateLocalAabb();
 	}
 	
-	public int getNumChildShapes() {
+	public int size() {
 		return children.size();
 	}
 
@@ -114,16 +112,19 @@ public class CompoundShape extends CollisionShape {
 		return children.get(index).childShape;
 	}
 
+	public Transform getChildTransform(int index) {
+		return children.get(index).transform;
+	}
 	public Transform getChildTransform(int index, Transform out) {
 		
-		Transform t = children.get(index).transform;
+		Transform t = getChildTransform(index);
 		out.set(t);
 		return out;
 	}
 
-	public Collection<CompoundShapeChild> getChildList() {
-		return children;
-	}
+//	public Collection<CompoundShapeChild> getChildList() {
+//		return children;
+//	}
 
 	/**
 	 * getAabb's default implementation is brute force, expected derived classes to implement a fast dedicated version.

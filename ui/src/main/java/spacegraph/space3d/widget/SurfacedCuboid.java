@@ -142,7 +142,7 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 //        return null;
 //    }
 
-
+    float pixelScale = 512;
     @Override
     public final void renderRelative(GL2 gl, Collidable body, float dtS) {
         super.renderRelative(gl, body, dtS);
@@ -155,8 +155,7 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
             gl.glDepthMask(false);
 
-            float pixelScale = 1;
-            rendering.start(gl, pixelScale,pixelScale, dtS , 1);
+            rendering.start(gl, pixelScale,pixelScale, dtS , 10);
             front.renderIfVisible(rendering);
 
             gl.glDepthMask(true);

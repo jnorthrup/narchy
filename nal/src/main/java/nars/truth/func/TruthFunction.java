@@ -56,72 +56,36 @@ public interface TruthFunction {
 
     }
 
-    /** ____N , although more accurately it would be called: 'NP' */
-    final class NegatedTaskTruth extends ProxyTruthFunction {
 
-        NegatedTaskTruth(TruthFunction o) {
+    /** polarity specified for each component:
+     *      -1 = negated, 0 = depolarized, +1 = positive
+     * */
+    final class RepolarizedTruth extends ProxyTruthFunction {
+
+        final int task, belief;
+        private final String suffix;
+
+        RepolarizedTruth(TruthFunction o, int taskPolarity, int beliefPolarty, String suffix) {
             super(o);
-        }
-
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
-            return o.apply(task.neg(), belief, minConf, n);
-        }
-
-        @Override public final String toString() {
-            return o.toString() + 'N';
-        }
-    }
-
-    final class NegatedBeliefTruth extends ProxyTruthFunction {
-
-        NegatedBeliefTruth(TruthFunction o) {
-            super(o);
-        }
-
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
-            return o.apply(task, belief.neg(), minConf, n);
-        }
-
-        @Override public final String toString() {
-            return o + "PN";
-        }
-
-    }
-    final class NegatedTaskBeliefTruth extends ProxyTruthFunction {
-
-        NegatedTaskBeliefTruth(TruthFunction o) {
-            super(o);
-        }
-
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
-            return o.apply(task.neg(), belief.neg(), minConf, n);
-        }
-
-        @Override public final String toString() {
-            return o + "NN";
-        }
-
-    }
-
-    /** for when a conclusion's subterms have already been negated accordingly, so that conclusion confidence is positive and maximum
-            
-            
-            
-            
-            
-     */
-    final class DepolarizedTruth extends ProxyTruthFunction {
-
-        DepolarizedTruth(TruthFunction o) {
-            super(o);
+            this.task = taskPolarity; this.belief = beliefPolarty;
+            this.suffix = suffix;
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, float minConf, NAL n) {
-            return o.apply(unnegIfNotNull(T), unnegIfNotNull(B), minConf, n);
+            return o.apply(repolarize(T, task), repolarize(B, belief), minConf, n);
+        }
+
+        @Nullable private Truth repolarize(Truth t, int polarity) {
+            if (t == null || polarity==1)
+                return t;
+            else if (polarity==-1 || (polarity==0 && t.isNegative()))
+                return t.neg();
+            else
+                return t;
         }
 
         @Override public final String toString() {
-            return o + "Depolarized";
+            return o + suffix;
         }
     }
 
@@ -129,40 +93,9 @@ public interface TruthFunction {
     @Nullable static Truth unnegIfNotNull(@Nullable Truth x) {
         return x != null ? x.pos() : null;
     }
-//    final class DepolarizedTaskTruth extends ProxyTruthOperator {
-//
-//        public DepolarizedTaskTruth(TruthOperator o) {
-//            super(o);
-//        }
-//
-//        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, NAR m, float minConf) {
-//            if ((B == null) || (T == null)) return null;
-//            else {
-//                return o.apply(T.negIf(T.isNegative()), B, m, minConf);
-//            }
-//        }
-//
-//        @Override public final String toString() {
-//            return o + "DepolarizedTask";
-//        }
-//    }
 
-    /** negates both task and belief frequency */
-    final class NegatedTruths extends ProxyTruthFunction {
 
-        NegatedTruths(TruthFunction o) {
-            super(o);
-        }
 
-        @Override @Nullable public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
-            return task == null ? null : o.apply(task.neg(), belief!=null ? belief.neg() : null, minConf, n);
-        }
-
-        @Override public final String toString() {
-            return o + "NN";
-        }
-
-    }
 
     @Nullable
     static Truth identity(@Nullable Truth t, float minConf) {

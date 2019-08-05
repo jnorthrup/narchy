@@ -307,7 +307,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                     CompoundShape compoundShape = (CompoundShape) collisionShape;
                     int i = 0;
                     Transform childTrans = new Transform();
-                    for (i = 0; i < compoundShape.getNumChildShapes(); i++) {
+                    for (i = 0; i < compoundShape.size(); i++) {
                         compoundShape.getChildTransform(i, childTrans);
                         CollisionShape childCollisionShape = compoundShape.getChildShape(i);
                         Transform childWorldTrans = new Transform(colObjWorldTransform);
@@ -457,7 +457,7 @@ public abstract class Collisions<X> extends BulletGlobals {
                 
                 if (collisionShape.isCompound()) {
                     CompoundShape compoundShape = (CompoundShape) collisionShape;
-                    for (int i = 0; i < compoundShape.getNumChildShapes(); i++) {
+                    for (int i = 0; i < compoundShape.size(); i++) {
                         Transform childTrans = compoundShape.getChildTransform(i, new Transform());
                         CollisionShape childCollisionShape = compoundShape.getChildShape(i);
                         Transform childWorldTrans = new Transform();

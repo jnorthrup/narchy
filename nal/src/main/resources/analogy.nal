@@ -19,6 +19,10 @@
          (S <-> M), (P --> M), neqRCom(S,P) |- (P --> S), (Goal:Desire, Time:Task)
 
       (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
+            //ReduceConjunction ~= Undesire ~= Divide
+        (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Punctuation:AskAsk, Time:Task)
+        (S --> P), (S <-> S), --isVar(S), --isVar(P)   |-   (P --> P), (Punctuation:AskAsk, Time:Task)
+
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 

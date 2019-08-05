@@ -57,6 +57,9 @@ public class Premise /*implements Comparable<Premise>*/ {
 //        this.hash = premiseHash(task, beliefTerm);
     }
 
+    public void apply(Derivation d) {
+        d.reset(this.task, null, beliefTerm);
+    }
 
 //    /**
 //     * specially constructed hash that is useful for sorting premises by:
@@ -92,7 +95,10 @@ public class Premise /*implements Comparable<Premise>*/ {
      *
      * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
      */
-    @Nullable public MatchedPremise match(Derivation d, int matchTTL) {
+    @Nullable public Premise match(Derivation d, int matchTTL) {
+
+        if (!beliefTerm.op().taskable || /*beliefTerm.isNormalized() && */beliefTerm.hasAny(VAR_QUERY))
+            return this; //structural
 
         boolean beliefConceptUnifiesTaskConcept = false;
 
@@ -151,14 +157,14 @@ public class Premise /*implements Comparable<Premise>*/ {
             return null;
 
 //        System.out.println(task + "\t" + belief + "\t" + nextBeliefTerm);
-        return new MatchedPremise(task, belief, nextBeliefTerm);
+        return belief!=null ? new MatchedPremise(task, belief, nextBeliefTerm) : this;
 
     }
 
 
     private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
-        if (beliefTerm.op().taskable && beliefTerm.isNormalized() && !beliefTerm.hasAny(VAR_QUERY)) {
+
 
             NAR n = d.nar();
 
@@ -179,8 +185,6 @@ public class Premise /*implements Comparable<Premise>*/ {
             return beliefTable != null && !beliefTable.isEmpty() ?
                     tryMatch(beliefTerm, beliefTable, beliefConceptUnifiesTaskConcept, d) : null;
 
-        } else
-            return null;
     }
 
 //        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
@@ -349,7 +353,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 
         int ttlUsed;
 
-        @Nullable MatchedPremise m = match(d, matchTTL);
+        Premise m = match(d, matchTTL);
         if (m!=null) {
 
             m.apply(d);

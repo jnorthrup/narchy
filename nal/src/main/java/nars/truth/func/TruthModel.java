@@ -16,7 +16,10 @@ import org.jetbrains.annotations.Nullable;
  *    N           - shorthand for NP when belief truth is irrelevant or assumed true
  *    PN          - negate belief truth
  *    NN          - negate task and belief truth
- *    Depolarized - automatically un-negates any negative truth inputs (freq < 0.5)
+ *    Depolarized - automatically un-negates any negative truth inputs (freq < 0.5) (deprecated)
+ *    DD		  - depolarize task & belief
+ *    DP,DN	      - depolarize task
+ *    PD,ND		  - depolarize belief
  *
  *    X           - task and belief arguments swapped.  this is applied to the above and will always appear as the final suffix modifier
  */
@@ -49,16 +52,24 @@ public class TruthModel {
 		_add(t); //default, no modifiers
 		_add(t, "PP"); //PP
 
-		TruthFunction.NegatedTaskTruth negatedTask = new TruthFunction.NegatedTaskTruth(t);
-		_add(negatedTask);  //N
-		_add(negatedTask, "P"); //NP
+		_add(new TruthFunction.RepolarizedTruth(t, -1, +1, "N"));
+		_add(new TruthFunction.RepolarizedTruth(t, -1, +1, "NP"));
 
 		if (!t.single()) {
-			_add(new TruthFunction.NegatedBeliefTruth(t)); //PN
-			_add(new TruthFunction.NegatedTaskBeliefTruth(t)); //NN
+
+			_add(new TruthFunction.RepolarizedTruth(t, +1, -1, "PN"));
+			_add(new TruthFunction.RepolarizedTruth(t, -1, -1, "NN"));
+
+			_add(new TruthFunction.RepolarizedTruth(t, +1, 0, "PD"));
+			_add(new TruthFunction.RepolarizedTruth(t, -1, 0, "ND"));
+			_add(new TruthFunction.RepolarizedTruth(t, 0, +1, "DP"));
+			_add(new TruthFunction.RepolarizedTruth(t, 0, -1, "DN"));
 		}
 
-		_add(new TruthFunction.DepolarizedTruth(t));
+		_add(new TruthFunction.RepolarizedTruth(t, 0, 0, "DD"));
+		_add(new TruthFunction.RepolarizedTruth(t, 0, 0, "Depolarized")); //deprecated
+
+
 	}
 
 	protected void _add(TruthFunction t) {
