@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
  *    N           - shorthand for NP when belief truth is irrelevant or assumed true
  *    PN          - negate belief truth
  *    NN          - negate task and belief truth
- *    Depolarized - automatically un-negates any negative truth inputs (freq < 0.5) (deprecated)
  *    DD		  - depolarize task & belief
  *    DP,DN	      - depolarize task
  *    PD,ND		  - depolarize belief
@@ -55,6 +54,8 @@ public class TruthModel {
 		_add(new TruthFunction.RepolarizedTruth(t, -1, +1, "N"));
 		_add(new TruthFunction.RepolarizedTruth(t, -1, +1, "NP"));
 
+		_add(new TruthFunction.RepolarizedTruth(t, 0, 0, "DD"));
+
 		if (!t.single()) {
 
 			_add(new TruthFunction.RepolarizedTruth(t, +1, -1, "PN"));
@@ -65,11 +66,6 @@ public class TruthModel {
 			_add(new TruthFunction.RepolarizedTruth(t, 0, +1, "DP"));
 			_add(new TruthFunction.RepolarizedTruth(t, 0, -1, "DN"));
 		}
-
-		_add(new TruthFunction.RepolarizedTruth(t, 0, 0, "DD"));
-		_add(new TruthFunction.RepolarizedTruth(t, 0, 0, "Depolarized")); //deprecated
-
-
 	}
 
 	protected void _add(TruthFunction t) {

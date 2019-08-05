@@ -183,7 +183,7 @@
 
 
     //TODO DynamicImplTruth
-    (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
+    (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
     // (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDepolarized, Time:Compose)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDepolarized, Time:Compose)
 
@@ -279,7 +279,7 @@
 //
 
     //general implication induction
-    (A ==> B), X, --eqPN(A,X), --is(X,"==>")  |- polarizeTask(((A && polarizeBelief(X)) ==> B)), (Belief:InductionDepolarized)
+    (A ==> B), X, --eqPN(A,X), --is(X,"==>")  |- polarizeTask(((A && polarizeBelief(X)) ==> B)), (Belief:InductionDD)
 
 
 

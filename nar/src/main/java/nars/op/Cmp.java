@@ -53,9 +53,7 @@ public class Cmp extends SimpleBinaryFunctor {
                 }
             } else
                 return Null; //conflict with the correct value
-        }
-
-        if (!(xy instanceof Variable)) {
+        } else {
             if (!(xy instanceof Int))
                 return Null;
             if (!x.hasVars() && !y.hasVars()) {
@@ -77,8 +75,6 @@ public class Cmp extends SimpleBinaryFunctor {
             }
         }
 
-
-
         return super.apply3(e, x, y, xy);
     }
 
@@ -86,11 +82,10 @@ public class Cmp extends SimpleBinaryFunctor {
     protected Term compute(Evaluation e, Term x, Term y) {
         if (x.equals(y))
             return Int.the(0);
-        if (!x.hasVars() && !y.hasVars()) {
+        if (!x.hasVars() && !y.hasVars())
             return Int.the(x.compareTo(y));
-        } else {
+        else
             return null;
-        }
     }
 
 }

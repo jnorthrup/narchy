@@ -6,8 +6,8 @@
 //##################################
 
 //belief form:
-B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDepolarized, Time:BeliefRelative)
-B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belief:InductionDepolarized, Time:BeliefRelative)
+B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
+B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belief:InductionDD, Time:BeliefRelative)
 
 //question form:
 //B, A, task("."), --is(A,"==>"), hasBelief() |-          polarizeTask((polarizeBelief(A) ==> B)), (Punctuation:Question, Time:BeliefRelative)
@@ -20,8 +20,8 @@ B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belie
 //##################################
 
 //belief form:
-B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDepolarized, Time:TaskRelative)
-B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belief:AbductionDepolarized, Time:TaskRelative)
+B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDD, Time:TaskRelative)
+B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belief:AbductionDD, Time:TaskRelative)
 
 //question form:
 //B, A, task("."), --is(B,"==>"), hasBelief() |-          polarizeBelief((polarizeTask(B) ==> A)), (Punctuation:Question, Time:TaskRelative)
@@ -34,8 +34,8 @@ B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belie
 
 //##################################
 //belief form:
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDepolarized, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDepolarized, Time:Sequence)
+B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)
+B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
 
 B, A, --is(A,"==>"), --is(B,"==>"), hasBelief()  |-          (polarizeRandom(B) && polarizeBelief(A)), (Punctuation:AskAsk, Time:Task)
 B, A, --is(A,"==>"), --is(B,"==>"), hasBelief()  |- varIntro((polarizeRandom(B) && polarizeBelief(A))), (Punctuation:AskAsk, Time:Task)

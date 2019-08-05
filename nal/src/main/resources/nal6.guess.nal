@@ -10,7 +10,7 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithout(
 
 
 
-((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDepolarized, Time:TaskEvent)
+((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDD, Time:TaskEvent)
 
     //Conditional Abduction via Multi-conditional Syllogism
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:Task)

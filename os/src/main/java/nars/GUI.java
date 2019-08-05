@@ -59,7 +59,7 @@ public class GUI {
                         "$1.0 possesses(I,#everything)!"
                     );
                     n.input(
-                        "$1.0 possesses(I,(#x <-> UnitedStatesDollar))!"
+                        "$1.0 (possesses(I,#x) && (#x <-> UnitedStatesDollar))!"
                     );
                 } catch (Throwable e) {
                     e.printStackTrace();

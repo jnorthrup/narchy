@@ -1,7 +1,7 @@
 //Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
 
 //impl/sim
-  (X ==> Z), (Y ==> Z), neq(X,Y) |- (polarizeTask((X==>Z)) <-> polarizeBelief((Y==>Z))), (Belief:ComparisonSymmetricDepolarized, Time:Compose)
+  (X ==> Z), (Y ==> Z), neq(X,Y) |- (polarizeTask((X==>Z)) <-> polarizeBelief((Y==>Z))), (Belief:ComparisonSymmetricDD, Time:Compose)
   //(Z ==> X), (Z ==> Y), neq(X,Y) |- (polarizeTask((Z==>X)) <-> polarizeBelief((Z==>Y))), (Belief:ComparisonSymmetricDepolarized, Time:Compose)
 
 //  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
