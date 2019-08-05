@@ -3,10 +3,8 @@
 ////If P and S are a special case of M, then they might be similar (weak),
 ////also if P and S are a general case of M
 
-//      (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
-//      (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
-//        (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
-//        (P --> S), (S --> P), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
+      (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
+        (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
 
       (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Time:Compose)
         (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Goal:Desire, Time:Task)
@@ -20,7 +18,7 @@
        (S <-> M), (P --> M), neqRCom(S,P) |- (P --> S), (Belief:AnalogyX, Time:Compose)
          (S <-> M), (P --> M), neqRCom(S,P) |- (P --> S), (Goal:Desire, Time:Task)
 
-//      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
+      (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 

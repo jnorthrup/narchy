@@ -6,10 +6,11 @@ import jcog.math.FloatSupplier;
 import jcog.signal.Tensor;
 import jcog.signal.tensor.ScalarTensor;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 
 import java.util.List;
 import java.util.function.IntConsumer;
+
+import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /** TODO test */
 public class AgentBuilder {
@@ -18,8 +19,11 @@ public class AgentBuilder {
     final FloatSupplier reward;
 //    float durations = 1f;
 
+    /** allow history individually for each input using Rolling tensor */
+    @Deprecated int history = 4;
+
     /** whether to add an extra NOP action */
-    private final static boolean NOP_ACTION = true;
+    boolean NOP_ACTION = false;
 
     public AgentBuilder(FloatSupplier reward) {
         this.reward = reward;
@@ -28,7 +32,7 @@ public class AgentBuilder {
     /** builds the constructed agent */
     public Agenterator get(IntIntToObjectFunction<Agent> controller) {
 
-        return new Agenterator(controller, this.sensors, reward, actions, NOP_ACTION, act, 6);
+        return new Agenterator(controller, this.sensors, reward, actions, NOP_ACTION, act, history);
     }
 
     final IntConsumer act = (rawAction) -> {
@@ -38,9 +42,8 @@ public class AgentBuilder {
             int bb = aa.getOne();
             if (rawAction >= bb) {
                 rawAction -= bb;
-            } else {
+            } else if (rawAction >= 0) {
                 aa.getTwo().accept(rawAction);
-                return;
             }
         }
     };
@@ -60,10 +63,23 @@ public class AgentBuilder {
         return this;
     }
 
-    public AgentBuilder out(int decisions, IntConsumer decision) {
-        actions.add(PrimitiveTuples.pair(decisions, decision));
+    public AgentBuilder out(Runnable decision) {
+        actions.add(pair(1, (x) -> decision.run()));
         return this;
     }
 
+    public AgentBuilder out(int decisions, IntConsumer decision) {
+        actions.add(pair(decisions, decision));
+        return this;
+    }
 
+    @Override
+    public String toString() {
+        return "AgentBuilder{" +
+            "sensors=" + sensors +
+            ", actions=" + actions +
+            ", reward=" + reward +
+            ", act=" + act +
+            '}';
+    }
 }

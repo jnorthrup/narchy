@@ -175,11 +175,22 @@ public class NAL1Test extends NALTest {
     }
 
     @Test
+    void similarityBelief() {
+        test
+            .input("(a-->c).")
+            .input("(c-->a).")
+            .mustBelieve(cycles, "(a<->c)", 1f, 0.81f)
+        ;
+    }
+
+    @Test
     void inheritanceToSimilarity() {
 
-        test.believe("<swan --> bird>");
-        test.believe("<bird --> swan>", 0.1f, 0.9f);
-        test.mustBelieve(cycles, "<bird <-> swan>", 0.1f, 0.81f);
+
+        test
+            .believe("<swan --> bird>")
+            .believe("<bird --> swan>", 0.1f, 0.9f)
+            .mustBelieve(cycles, "<bird <-> swan>", 0.1f, 0.81f);
 
     }
 
@@ -197,14 +208,7 @@ public class NAL1Test extends NALTest {
     }
 
 
-    @Test
-    void similarityBelief() {
-        test
-                .input("(a-->c).")
-                .input("(c-->a).")
-                .mustBelieve(cycles, "(a<->c)", 1f, 0.81f)
-        ;
-    }
+
     @Test
     void similarityToInheritance4() {
 

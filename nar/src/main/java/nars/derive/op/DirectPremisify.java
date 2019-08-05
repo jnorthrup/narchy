@@ -25,18 +25,13 @@ public class DirectPremisify extends Premisify {
     @Override
     public boolean test(Derivation d) {
 
-        if (patternsEqual && d.taskTerm.equals(d.beliefTerm)) {
+        boolean single = patternsEqual && d.taskTerm.equals(d.beliefTerm);
 
-            unify(d, fwd, true);
-
-        } else {
-
-            if (unify(d, fwd, false)) {
-
-                boolean unified = unify(d, !fwd, true);
-
-            }
+        boolean unified = unify(d, fwd, single);
+        if (unified && !single) {
+            unify(d, !fwd, true);
         }
+
         return true;
     }
 

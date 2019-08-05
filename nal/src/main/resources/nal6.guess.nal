@@ -20,26 +20,21 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,c
 
 
 
-//Question Induction
-
-  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:TaskEvent)
-  X, C, eventOfPN(C,X), task("?@") |- (polarizeRandom(conjWithoutPN(C,X))==>X), (Punctuation:Question, Time:TaskEvent)
-    //TODO unified conj question
 
   B, (C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
     B, (--C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
   B, (X ==> C), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
 
     B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
-      B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
+      B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&"), has(A,"--") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
     B, (A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
-      B, (A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
+      B, (A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&"), has(A,"--") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
            B, (--A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
-              B, (--A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
+              B, (--A ==> X), --isVar(X), --is(B,"==>"), is(A,"&&"), has(A,"--") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
 
-  (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
-    (--C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
-  (X ==> C), B, neq(B,C), task("."), --isVar(B) |- unisubst((X ==> C),C,B,novel), (Punctuation:Question, Time:Task)
+//  (C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
+//    (--C ==> X), B, neq(B,C), task("."), --isVar(B) |- unisubst((--C ==> X),C,B,novel), (Punctuation:Question, Time:Task)
+//  (X ==> C), B, neq(B,C), task("."), --isVar(B) |- unisubst((X ==> C),C,B,novel), (Punctuation:Question, Time:Task)
 
 
 

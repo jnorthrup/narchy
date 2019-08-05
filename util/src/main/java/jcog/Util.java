@@ -2885,4 +2885,7 @@ public enum Util {
         Thread.onSpinWait();
     }
 
+    public static float sqrtBipolar(float d) {
+        return Math.signum(d) * Util.sqrt(Math.abs(d));
+    }
 }

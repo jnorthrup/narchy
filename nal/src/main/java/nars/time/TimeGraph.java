@@ -1196,7 +1196,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		assert (dt != XTERNAL);
 		Op xo = x.op();
 
-		if (xo == IMPL || dt == DTERNAL || dt == 0) {
+		if (xo == IMPL) { // || dt == DTERNAL || dt == 0) {
 			return x.dt(dt);
 		} else if (xo == CONJ) {
 

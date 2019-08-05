@@ -6,7 +6,10 @@ import jcog.data.list.FasterList;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
+import jcog.learn.AgentBuilder;
+import jcog.learn.Agenterator;
 import jcog.learn.ql.HaiQae;
+import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
@@ -16,6 +19,7 @@ import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
 import nars.attention.TaskLinkWhat;
+import nars.attention.What;
 import nars.concept.sensor.VectorSensor;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
@@ -53,14 +57,18 @@ import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static jcog.Texts.n4;
+import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
+import static toxi.math.MathUtils.abs;
 
 /**
  * Extensions to NAgent interface:
@@ -283,7 +291,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 1024,
-                                new PriBuffer.BagTaskBuffer(1024, 0.5f /* valve */))
+                                new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */))
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -495,11 +503,16 @@ abstract public class GameX extends Game {
 //        };
 
 
+
         addGovernor(n);
         Loop.of(()->{
             n.control.printPerf(System.out);
             System.out.println();
         }).setFPS(0.25f);
+
+        n.runLater(()-> {
+            addFuelInjection(n);
+        });
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 //                "motivation.nal"
@@ -604,6 +617,74 @@ abstract public class GameX extends Game {
 
     }
 
+    private static void addFuelInjection(NAR n) {
+        n.parts(What.class).forEach(w -> {
+            if (w.in instanceof PriBuffer.BagTaskBuffer)  {
+                PriBuffer.BagTaskBuffer b = (PriBuffer.BagTaskBuffer) w.in;
+
+
+
+                float ideal = 0.5f;
+
+                //TODO use AgentBuilder
+                float inc = 0.1f;
+
+                AgentBuilder ab = new AgentBuilder(() -> {
+                    float load = b.load();
+                    float error = load - ideal; //in -1..+1
+                    return (1 - Util.sqrt(Math.abs(error))*4);
+                })
+                    .in(b.valve)
+                    .in(b::load)
+                    .in(()->Math.max(0,b.load() - ideal))
+                    .in(()->Math.max(0,ideal - b.load()))
+                    .out(5, (o) -> {
+                        float rate = 0.005f;
+
+                        float d = b.load() - ideal;
+                        float delta = Util.sqrtBipolar(d);
+                        float change = 0;
+                        switch (o) {
+                            case 0:
+                                change = -rate*1f * delta; //away
+                                break;
+                            case 1:
+                                change = 0;
+                                break;
+                            case 2:
+                                change = +rate*1f * delta; //closer
+                                break;
+                            case 3:
+                                change = +rate*2f * delta; //closer
+                                break;
+                            case 4:
+                                change = +rate*4f * delta; //closer
+                                break;
+                        }
+                        b.valve.add(change);
+                    })
+//                    .out(8, (v) -> b.valve.set( lerp(0.9f, b.valve.get(), v/7f)) )
+                ;
+
+                System.out.println(ab);
+                Agenterator a = ab.get((i,o)->
+                        new DQN3(i,o));
+
+                ((DQN3)a.agent).gamma = 0.75f;
+
+//                float[] in = new float[2];
+//                final float[] valve = {0.5f};
+////                FloatAveragedWindow loadSmoothed = new FloatAveragedWindow(8, 0.1f, 0);
+                n.onDur(()->{
+                    float reward = a.asFloat();
+//                    System.out.println(reward);
+                }).durs(2);
+
+            }
+        });
+
+    }
+
     /**
      * governor
      * TODO extract to class
@@ -628,7 +709,7 @@ abstract public class GameX extends Game {
                         float r = w.valueRaw();
                         float v;
                         if (r == r)
-                            f[i] = v = Util.lerp(momentum, r, f[i]);
+                            f[i] = v = lerp(momentum, r, f[i]);
                         else
                             v = f[i];
 
@@ -667,7 +748,7 @@ abstract public class GameX extends Game {
 
                     float vSmooth = g.valueOf(v);
                     float ee = explorationRate;
-                    float vE = Util.lerp(vSmooth, ee/2, 1-ee/2);
+                    float vE = lerp(vSmooth, ee/2, 1-ee/2);
                     h.pri(vE);
                 });
 //                nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));

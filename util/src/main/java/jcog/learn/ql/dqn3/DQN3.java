@@ -18,7 +18,7 @@ public class DQN3 extends Agent {
 
 
 
-    private final double gamma;
+    public double gamma;
     private final float experienceAddProb;
     private final int experienceSize;
     private final int experienceLearnedPerIteration;
@@ -32,7 +32,7 @@ public class DQN3 extends Agent {
     public final Mat B2;
     private final FasterList<Experience> experience;
     private int experienceIndex;
-    private int t;
+
     private double lastReward;
     private Mat lastState;
     public Mat currentState;
@@ -52,14 +52,14 @@ public class DQN3 extends Agent {
     public DQN3(final int inputs, final int numActions, final Map<Option, Double> config) {
         super(inputs, numActions);
 
-        this.gamma = config.getOrDefault(Option.GAMMA, 0.75);
+        this.gamma = config.getOrDefault(Option.GAMMA, 0.9);
         this.alpha = config.getOrDefault(Option.ALPHA, 0.01);
 
         this.numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double)inputs*numActions /* estimate */));
 
         this.experienceAddProb = 1f/(int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
-        this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 1024.0));
-        this.experienceLearnedPerIteration = (int) Math.round(config.getOrDefault(Option.LEARNING_STEPS_PER_ITERATION, 10.0));
+        this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 64.0 /* 1024 */));
+        this.experienceLearnedPerIteration = (int) Math.round(config.getOrDefault(Option.LEARNING_STEPS_PER_ITERATION, 4.0));
         this.tdErrorClamp = config.getOrDefault(Option.TD_ERROR_CLAMP, 1.0);
 
         float rngRange =
@@ -75,7 +75,7 @@ public class DQN3 extends Agent {
         this.experience = new FasterList(experienceSize);
         this.experienceIndex = 0;
 
-        this.t = 0;
+
 
         this.lastReward = Double.NaN;
         this.lastState = null;
