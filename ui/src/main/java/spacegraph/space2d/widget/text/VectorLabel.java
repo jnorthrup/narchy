@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.text;
 
-import com.jogamp.opengl.GL2;
 import spacegraph.space2d.ReSurface;
 
 /**
@@ -55,12 +54,8 @@ public class VectorLabel extends AbstractLabel {
     
     @Override
     protected void renderContent(ReSurface r) {
-        r.on(this::paintLabel);
+        renderer.accept(this, r.gl);
         super.renderContent(r);
-    }
-
-    protected void paintLabel(GL2 gl, ReSurface r) {
-        renderer.accept(this, gl);
     }
 
     @Override

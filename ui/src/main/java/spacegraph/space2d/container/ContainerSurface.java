@@ -23,7 +23,7 @@ abstract public class ContainerSurface extends Surface {
     final static MetalAtomicIntegerFieldUpdater<ContainerSurface> MUSTLAYOUT =
             new MetalAtomicIntegerFieldUpdater<>(ContainerSurface.class, "mustLayout");
 
-    private final int mustLayout = 0;
+    private volatile int mustLayout = 0;
 
     @Override
     public final boolean start(Surfacelike parent) {
@@ -32,13 +32,6 @@ abstract public class ContainerSurface extends Surface {
             return true;
         }
         return false;
-    }
-
-    public final void layout() {
-
-
-        MUSTLAYOUT.set(this, 1);
-        //MUSTLAYOUT.lazySet(this, 1);
     }
 
 
@@ -94,14 +87,12 @@ abstract public class ContainerSurface extends Surface {
             doLayout(r.dtS());
         }
 
-        renderContainer(r);
+        //TODO if transparent ("non-opaque" in Swing terminology) this doesnt need rendered
+        paintIt(r.gl, r);
 
         renderContent(r);
     }
 
-    @Deprecated private void renderContainer(ReSurface r) {
-        r.on(this::paintIt); //TODO if transparent ("non-opaque" in Swing terminology) this doesnt need rendered
-    }
 
     @Deprecated protected void renderContent(ReSurface r) {
         //TODO forEachWith
@@ -148,6 +139,7 @@ abstract public class ContainerSurface extends Surface {
         forEach(Surface::stop);
     }
 
+    /** TODO forEachWith */
     abstract public void forEach(Consumer<Surface> o);
 
     public void forEachRecursively(Consumer<Surface> o) {
@@ -165,6 +157,7 @@ abstract public class ContainerSurface extends Surface {
 
     public abstract boolean whileEach(Predicate<Surface> o);
 
+    /** TODO make whileNullReverse(Function<Surface,Surface> o) */
     public abstract boolean whileEachReverse(Predicate<Surface> o);
 
     /** default implementation */
@@ -180,16 +173,14 @@ abstract public class ContainerSurface extends Surface {
         return (X) found[0];
     }
 
-    public boolean layoutPending() {
-        return this.mustLayout>0;
+    public final void layout() {
+        //MUSTLAYOUT.set(this, 1);
+        MUSTLAYOUT.lazySet(this, 1);
     }
 
+    public final boolean layoutPending() {
+        return MUSTLAYOUT.getOpaque(this)>0;
+    }
 
-//    public final void forEachReverse(Consumer<Surface> each) {
-//        whileEachReverse((s) -> {
-//            each.accept(s);
-//            return true;
-//        });
-//    }
 
 }

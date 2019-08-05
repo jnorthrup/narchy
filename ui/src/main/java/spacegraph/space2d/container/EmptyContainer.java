@@ -1,6 +1,7 @@
 package spacegraph.space2d.container;
 
 import spacegraph.input.finger.Finger;
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 
 import java.util.function.Consumer;
@@ -26,6 +27,11 @@ abstract public class EmptyContainer extends ContainerSurface {
     @Override
     public Surface finger(Finger finger) {
         return null;
+    }
+
+    @Override
+    protected void renderContent(ReSurface r) {
+
     }
 
     @Override

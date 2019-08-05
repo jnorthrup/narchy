@@ -81,7 +81,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     public static RectFloat mid(RectFloat source, RectFloat target, float relScale) {
         float cx = (source.cx() + target.cx()) / 2;
         float cy = (source.cy() + target.cy()) / 2;
-        float wh = relScale * Math.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
+        float wh = relScale * Util.max((source.w + target.w) / 2f, (source.h + target.h) / 2);
         return target.orThisIfEqual(source.orThisIfEqual(RectFloat.XYWH(cx, cy, wh, wh)));
     }
 
@@ -130,11 +130,11 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 //            return this;
 
         final float ax = this.x, bx = b.x,
-                minX = Math.min(ax, bx),
-                maxX = Math.max(ax + w, bx + b.w);
+                minX = Util.min(ax, bx),
+                maxX = Util.max(ax + w, bx + b.w);
         final float ay = this.y, by = b.y,
-                minY = Math.min(ay, by),
-                maxY = Math.max(ay + h, by + b.h);
+                minY = Util.min(ay, by),
+                maxY = Util.max(ay + h, by + b.h);
 
         return orThisIfEqual(XYXY(minX, minY, maxX, maxY));
     }
@@ -198,11 +198,11 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         return (x <= rx) && (x + w >= rx + rw) && (y <= ry) && (y + h >= (ry + rh));
     }
     public final boolean intersects(float rx, float ry, float rw, float rh) {
-        return (Math.max(rx, x) <= Math.min(rx+rw, x+w)) && (Math.max(ry, y) <= Math.min(ry+rh, y+h));
+        return (Util.max(rx, x) <= Util.min(rx+rw, x+w)) && (Util.max(ry, y) <= Util.min(ry+rh, y+h));
     }
     public final boolean intersectsX1Y1X2Y2(float x1, float y1, float x2, float y2) {
         //Longerval.intersects() = return max(x1, x2) <= min(y1, y2);
-        return (Math.max(x1, x) <= Math.min(x2, x+w)) && (Math.max(y1, y) <= Math.min(y2, y+h));
+        return (Util.max(x1, x) <= Util.min(x2, x+w)) && (Util.max(y1, y) <= Util.min(y2, y+h));
     }
 
     @Override
@@ -257,7 +257,7 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     /** max dimensional extent */
     public final float mag() {
-        return Math.max(w, h);
+        return Util.max(w, h);
     }
 
     public final boolean contains(v2 v) {

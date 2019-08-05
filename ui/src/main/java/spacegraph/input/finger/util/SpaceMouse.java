@@ -11,6 +11,8 @@ import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
 
+import static java.lang.Math.tan;
+
 /**
  * 3D camera control
  */
@@ -21,6 +23,8 @@ public abstract class SpaceMouse extends MouseAdapter {
     public v3 hitPoint;
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
     public Body3D pickedBody;
+
+    public final v3 target = new v3(), origin = new v3();
 
     protected SpaceMouse(SpaceDisplayGraph3D g) {
         this.space = g;
@@ -71,7 +75,7 @@ public abstract class SpaceMouse extends MouseAdapter {
         vertical.cross(hor, rayForward);
         vertical.normalize();
 
-        float tanfov = (float) Math.tan(0.5f * fov);
+        float tanfov = (float) tan(0.5f * fov);
 
 
         float aspect = hh / ww;
@@ -135,27 +139,28 @@ public abstract class SpaceMouse extends MouseAdapter {
         right.normalize();
 
 
-//        double nearScale = tan((space.fov * Math.PI / 180) / 2) * space.zNear;
-//        double vLength = nearScale;
-//        double hLength = nearScale * (space.right - space.left)/(space.top - space.bottom);
+        double nearScale = tan((space.fov * Math.PI / 180) ) * space.zNear;
+        double vLength = nearScale;
+        double hLength = nearScale * (space.right - space.left)/(space.top - space.bottom);
 
 
-        v3 origin = space.camPos.clone();
-        v3 target = new v3();
-        target.add(in);
-        target.addScaled(right, x*(space.right-space.left)/2);
-        target.addScaled(up, y*(space.top-space.bottom)/2);
-        target.scale(space.zFar);
+        origin.zero();
+        origin.addScaled(in, space.zNear);
+        origin.addScaled(right,
+            x*(space.right-space.left)
+            //(float) (x * hLength)
+        );
+        origin.addScaled(up,
+            y*(space.top-space.bottom)
+            //(float) (y * vLength)
+        );
+
+        target.set(origin);
+        target.scale(space.zFar / space.zNear);
+
+        origin.add(space.camPos);
         target.add(origin);
 
-//        //v3 target = origin + in*space.zNear + right*x*hLength + up*y*vLength
-//        v3 target = new v3();
-//        target.addScaled(in, space.zNear);
-//        target.addScaled(right, (float) (x*hLength));
-//        target.addScaled(up, (float) (y*vLength));
-//        target.normalize();
-//        target.scale(space.zFar/space.zNear);
-//        target.add(origin);
 
         //System.out.println(origin + " " + target);
 

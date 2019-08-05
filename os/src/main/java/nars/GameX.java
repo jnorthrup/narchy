@@ -642,7 +642,7 @@ abstract public class GameX extends Game {
                         float rate = 0.005f;
 
                         float d = b.load() - ideal;
-                        float delta = Util.sqrtBipolar(d);
+                        float delta = d;
                         float change = 0;
                         switch (o) {
                             case 0:

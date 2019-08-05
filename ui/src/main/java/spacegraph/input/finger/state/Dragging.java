@@ -14,7 +14,7 @@ abstract public class Dragging extends Fingering {
     }
 
     @Override
-    public boolean start(Finger f) {
+    public final boolean start(Finger f) {
         if (pressedNow(f) && starting(f)) {
             if (drag(f)) {
                 active = true;

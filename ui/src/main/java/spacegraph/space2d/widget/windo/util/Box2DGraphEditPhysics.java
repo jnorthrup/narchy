@@ -980,7 +980,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
             Dynamics2D w = physics;
 
             if (drawJoints) {
-                w.joints(j -> drawJoint(j, gl, reSurface.frameUnixTime));
+                w.joints(j -> drawJoint(j, gl, reSurface.frameNS));
             }
 
             if (drawBodies) {

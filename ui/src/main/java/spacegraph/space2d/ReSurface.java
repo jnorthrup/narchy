@@ -2,6 +2,7 @@ package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
 import jcog.Paper;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.v2;
@@ -31,9 +32,9 @@ public class ReSurface extends SurfaceCamera {
 
 
     public long frameNS;
-    @Deprecated public long frameUnixTime;
 
-    private transient GL2 gl;
+
+    public transient GL2 gl;
 
 
     @Deprecated public final void on(Consumer<GL2> renderable) {
@@ -48,17 +49,20 @@ public class ReSurface extends SurfaceCamera {
 
     /** ortho restart */
     public ReSurface start(GL2 gl, float pw, float ph, float dtS, float fps) {
-        this.frameDT = dtS;
-        this.frameNS = System.nanoTime();
-        this.frameUnixTime = System.currentTimeMillis();
-        //this.frameDTms = Math.max(1, Math.round(1000 * frameDT));
-        this.frameDTideal = (float) (1.0/Math.max(1.0E-9,fps));
-        this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
+        assert(pw >= 1 && ph >= 1);
 
+        this.frameDTideal = (float) (1.0/ Util.max(1.0E-9,fps));
         this.gl = gl;
         this.pw = pw;
         this.ph = ph;
+
+        this.frameDT = dtS;
+        //this.frameDTms = Util.max(1, Math.round(1000 * frameDT));
+        this.load.next( Util.max(0, dtS - frameDTideal) / frameDTideal );
+
         set(pw/2, ph/2, 1, 1);
+
+        this.frameNS = System.nanoTime();
 
         return this;
     }
@@ -77,8 +81,9 @@ public class ReSurface extends SurfaceCamera {
         this.x2 = cx + sxw;
         this.y1 = cy - syh;
         this.y2 = cy + syh;
-        w = x2-x1;
-        h = y2-y1;
+        this.w = x2-x1;
+        this.h = y2-y1;
+
         return this;
     }
 
@@ -107,14 +112,14 @@ public class ReSurface extends SurfaceCamera {
         //return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
 
 //        System.out.println(scaleX + " " + w + " " + pw);
-        float p = (bounds.w / this.w) * pw * scaleX;
+        float p = (bounds.w / w) * pw * scaleX;
         if (p < minPixelsToBeVisible)
             return 0;
-        float q = (bounds.h / this.h) * ph * scaleY;
+        float q = (bounds.h / h) * ph * scaleY;
         if (q < minPixelsToBeVisible)
             return 0;
 
-        return Math.min(p, q);
+        return Util.min(p, q);
     }
 
 

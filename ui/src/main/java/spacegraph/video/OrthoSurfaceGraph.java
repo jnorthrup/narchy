@@ -24,8 +24,6 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.util.animate.Animated;
 
-import java.util.function.BiConsumer;
-
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 
 public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
@@ -72,15 +70,8 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     public final Stacking layers = new Stacking() {
 
-        private transient int _w, _h;
+//        private transient int _w, _h;
 
-        private final BiConsumer<GL2, ReSurface> reset = (g, rr) -> {
-            rr.pw = _w;
-            rr.ph = _h;
-            rr.x1 = rr.y1 = 0;
-            rr.x2 = w();
-            rr.y2 = h();
-        };
 
         @Override
         public Surface finger(Finger finger) {
@@ -95,11 +86,13 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         }
 
         @Override
-        protected void renderContent(ReSurface r) {
-            _w = video.getWidth();
-            _h = video.getHeight();
-            r.on(reset);
-            super.renderContent(r);
+        protected void renderContent(ReSurface rr) {
+            rr.pw = video.getWidth();
+            rr.ph = video.getHeight();
+            rr.x1 = rr.y1 = 0;
+            rr.x2 = w();
+            rr.y2 = h();
+            super.renderContent(rr);
         }
     };
 

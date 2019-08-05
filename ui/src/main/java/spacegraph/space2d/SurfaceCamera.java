@@ -12,8 +12,8 @@ public class SurfaceCamera {
      */
     public float pw;
     public float ph;
-    transient float w;
-    transient float h;
+    public transient float w;
+    public transient float h;
 
     public SurfaceCamera clone() {
         SurfaceCamera s = new SurfaceCamera();

@@ -1,7 +1,6 @@
 package spacegraph.space2d.widget.slider;
 
 import com.jogamp.opengl.GL2;
-import jcog.exe.Exe;
 import jcog.math.FloatRange;
 import jcog.math.v2;
 import jcog.pri.ScalarValue;
@@ -104,19 +103,17 @@ public class XYSlider extends PaintSurface  {
 
         @Override
         protected boolean drag(Finger f) {
-            setPoint(f);
+            touch(f);
             return true;
         }
     };
 
-    private void setPoint(Finger f) {
+    private void touch(Finger f) {
         v2 hitPoint = f.posRelative(XYSlider.this);
 
         pressing = true;
-        float px = hitPoint.x, py = hitPoint.y;
-        if (Float.isFinite(px) && Float.isFinite(py) && knob.setIfChanged(unitize(px), unitize(py), Spatialization.EPSILONf))
+        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), Spatialization.EPSILONf))
             updated();
-
     }
 
     @Override
@@ -131,7 +128,9 @@ public class XYSlider extends PaintSurface  {
     private void updated() {
         FloatFloatProcedure c = change;
         if (c != null) {
-            Exe.invokeLater(() -> c.value(knob.x, knob.y));
+            //Exe.invokeLater(() ->
+                c.value(knob.x, knob.y);
+            //);
         }
     }
 

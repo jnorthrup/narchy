@@ -758,9 +758,7 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
 
 
     public float distanceSq(v2 v) {
-        if (v == this) return 0;
-        float d = Util.sqr(x - v.x) + Util.sqr(y - v.y);
-        return d;
+        return v == this ? 0 : Util.sqr(x - v.x) + Util.sqr(y - v.y);
     }
 
     public final void setZero() {

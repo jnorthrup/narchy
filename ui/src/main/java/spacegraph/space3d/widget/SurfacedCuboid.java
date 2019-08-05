@@ -26,6 +26,8 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
     public volatile Surface front;
     private static final float zOffset = 0.1f;
 
+    float pixelScale = 512f;
+
 //    @Nullable
 //    private Finger finger;
 //    private v3 mousePick;
@@ -45,6 +47,7 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
 
         scale(w, h, d);
+        front.resize(w, h);
 
 
         front(front);
@@ -61,7 +64,6 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
                     prevFront.stop();
                 this.front = front;
                 if (front != null) {
-                    front.resize(1, 1);
                     front.start(this);
                 }
             }
@@ -83,66 +85,7 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
         return true;
     }
 
-//    @Override
-//    public Surface onTouch(Finger finger, Collidable body, ClosestRay r, short[] buttons, SpaceDisplayGraph3D space) {
-//
-//        if (body != null) {
-//
-//
-////            Object d = body.data();
-////            if (d instanceof SimpleSpatial) {
-////
-////
-////            }
-//
-//            Surface s0 = super.onTouch(finger, body, r, buttons, space);
-//            if (s0 != null)
-//                return s0;
-//        }
-//
-//
-//        if (front != null) {
-//            Transform it = Transform.t(transform).invert();
-//            v3 localPoint = it.transform(v(r.hitPointWorld));
-//
-//            if (body != null && body.shape() instanceof SimpleBoxShape) {
-//                SimpleBoxShape shape = (SimpleBoxShape) body.shape();
-//                float frontZ = shape.z() / 2;
-//                float zTolerance = frontZ / 4f;
-//
-//                if (Util.equals(localPoint.z, frontZ, zTolerance)) {
-//
-//                    this.mousePick = r.hitPointWorld;
-//
-//                    this.finger = finger;
-//
-//                    //TODO
-//                    //front.posOrtho.set()
-//                    //finger.posOrtho.set(
-//                      //      localPoint.x / shape.x() + 0.5f, localPoint.y / shape.y() + 0.5f
-//                    //);
-//
-//                    ((NewtMouseFinger)this.finger).finger((f)->front); //TODO check
-//
-//                    finger.updateButtons(buttons);
-//
-//                    return finger.touching();
-//
-//                }
-//            } else {
-//
-//                if (this.finger != null) {
-//                    this.finger.off(front);
-//                    this.finger = null;
-//                }
-//            }
-//        }
-//
-//
-//        return null;
-//    }
 
-    float pixelScale = 512;
     @Override
     public final void renderRelative(GL2 gl, Collidable body, float dtS) {
         super.renderRelative(gl, body, dtS);
@@ -155,7 +98,9 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
             gl.glDepthMask(false);
 
-            rendering.start(gl, pixelScale,pixelScale, dtS , 10);
+            rendering.start(gl, pixelScale, pixelScale, dtS , 10);
+            rendering.w = front.w();
+            rendering.h = front.h();
             front.renderIfVisible(rendering);
 
             gl.glDepthMask(true);

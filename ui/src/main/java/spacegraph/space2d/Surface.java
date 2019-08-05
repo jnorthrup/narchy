@@ -244,6 +244,8 @@ abstract public class Surface implements Surfacelike {
     public final void renderIfVisible(ReSurface r) {
         if (this.showing = visible(r))
             render(r);
+//        else
+//            System.out.println("invisible: " + r + " " + visible(r));
     }
 
     /** actual render implementation */

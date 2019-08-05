@@ -6,10 +6,12 @@ import jcog.Util;
 import jcog.math.v2;
 import jcog.math.v3;
 import spacegraph.input.finger.Finger;
-import spacegraph.input.finger.util.SpaceMouse;
+import spacegraph.input.finger.state.Dragging;
+import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
+import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.collision.ClosestRay;
@@ -28,16 +30,30 @@ public class View3Din2D extends PaintSurface {
 
 	private final SpaceDisplayGraph3D space;
 
-	final SpaceMouse mouse;
+	final FingerAdapter mouse;
+	private final SimpleSpatial debugFwd, debugPick1, debugPick2;
 	private float px1 = 0, py1 = 0, px2 = 1, py2 = 1;
 
 	public View3Din2D(SpaceDisplayGraph3D space) {
 		this.space = space;
 		this.mouse = new FingerAdapter(space);
+
+
+		space.add(debugFwd = new SimpleSpatial().scale(0.01f,0.01f,0.01f).color(1,1,1,0.25f));
+		space.add(debugPick1 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(0,1,0,0.25f));
+		space.add(debugPick2 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(1,0,0,0.25f));
+	}
+
+	private void updateDebug() {
+		debugFwd.move(space.camPos.clone().addScaled(space.camFwd, 2));
+
 	}
 
 	@Override
 	protected void paint(GL2 gl, ReSurface r) {
+
+		updateDebug();
+
 		gl.glPushMatrix();
 
 		px1 = ((x() - r.x1) * r.scaleX);
@@ -69,50 +85,92 @@ public class View3Din2D extends PaintSurface {
 
 
 	@Override
-	public Surface finger(Finger finger) {
-		//v2 p = finger.posRelative(RectFloat.XYXY(px1, py1, px2, py2));
-        v2 p = finger.posRelative(bounds);
+	public Surface finger(Finger f) {
+
+		float wheel = f.rotationY(true);
+		if (wheel!=0) {
+			space.camPos.addScaled(space.camFwd, wheel);
+		}
+
+		if (!drag.active()) {
+			//v2 p = finger.posRelative(RectFloat.XYXY(px1, py1, px2, py2));
+			v2 p = f.posRelative(bounds);
 
 //		float pw = px2 - px1;
 //		float ph = py2 - py1;
-		ClosestRay c = mouse.pickRay((p.x-0.5f)*2, (p.y-0.5f)*2);
-		if (c.hasHit()) {
-			Body3D co = mouse.pickedBody;
-			//Collidable co = c.collidable;
-			if (co != null) {
-				Object s = co.data();
-				if (s instanceof SurfacedCuboid) {
-					SurfacedCuboid ss = (SurfacedCuboid) s;
-					SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
-					float zFront = sss.z() / 2;
-					v3 local =
-						co.transform.untransform(mouse.hitPoint.clone());
+			ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
+			{
+				debugPick1.move(mouse.origin);
+				float len = (float) Math.random() *  0.003f;
+				debugPick2.move(
+					Util.lerp(len, mouse.origin.x, mouse.target.x),
+					Util.lerp(len, mouse.origin.y, mouse.target.y),
+					Util.lerp(len, mouse.origin.z, mouse.target.z)
+				);
+			}
+
+			if (c.hasHit()) {
+				Body3D co = mouse.pickedBody;
+				//Collidable co = c.collidable;
+				if (co != null) {
+					Object s = co.data();
+					if (s instanceof SurfacedCuboid) {
+						SurfacedCuboid ss = (SurfacedCuboid) s;
+						SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
+						float zFront = sss.z() / 2;
+						v3 local =
+							co.transform.untransform(mouse.hitPoint.clone());
 
 
-					float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
-					//local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1 &&
+						float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
+						//local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1 &&
 
-                    if (Util.equals(local.z, zFront, radiusTolerance)) {
-						//System.out.println(local.x + " "  + local.y);
-                        Surface front = ss.front;
-                        if (front != null) {
-                            float localX = (local.x+0.5f), localY = (local.y+0.5f);
-							//float localX = local.x+sss.x(), localY = local.y+sss.y();
-                            //System.out.println(n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
-                            return finger.push((px, py, target) -> {
-                                target.set(localX, localY); //assumes virtual pixelResolution=1
-                            }, front::finger);
-                        }
-                    } else {
+						if (Util.equals(local.z, zFront, radiusTolerance)) {
+							//System.out.println(local.x + " "  + local.y);
+							Surface front = ss.front;
+							if (front != null) {
+								float localX = (local.x + 0.5f), localY = (local.y + 0.5f);
+								//float localX = local.x+sss.x(), localY = local.y+sss.y();
+								//System.out.println(n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
+								return f.push((px, py, target) -> {
+									target.set(localX, localY); //assumes virtual pixelResolution=1
+								}, front::finger);
+							}
+						} else {
 //						System.out.println(p + " -> " + c.hitPointWorld + "\t=> " + local);
+						}
 					}
 				}
 			}
 		}
+
+		if (f.test(drag))
+			return this;
+
 		return null;
 	}
 
-	private class FingerAdapter extends SpaceMouse {
+	final Dragging drag = new Dragging( 2) {
+
+		private v2 start;
+
+		float speed = 0.02f;
+
+		@Override
+		protected boolean starting(Finger f) {
+			start = f.posPixel.clone();
+			return true;
+		}
+
+		@Override
+		protected boolean drag(Finger f) {
+			v2 delta = f.posPixel.subClone(start).scaled(speed);
+			mouse.drag(delta.x, -delta.y);
+			return true;
+		}
+	};
+
+	private class FingerAdapter extends FPSLook {
 		public FingerAdapter(SpaceDisplayGraph3D space) {
 			super(space);
 		}

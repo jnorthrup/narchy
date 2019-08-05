@@ -41,28 +41,31 @@ public class FPSLook extends SpaceMouse {
             int x = e.getX();
             int y = e.getY();
 
-            int dx = x - prevX;
-            int dy = y - prevY;
+            float dx = x - prevX;
+            float dy = y - prevY;
 
-            float angleSpeed = 0.001f;
-            h += -dx * angleSpeed;
-            v += -dy * angleSpeed;
-
-            v3 direction = v(
-                    (float) (cos(this.v) * sin(h)),
-                    sin(this.v),
-                    (float) (cos(this.v) * cos(h))
-            );
-
-            
-
-            space.camFwd.set(direction);
+            drag(dx, dy);
 
             prevX = x;
             prevY = y;
 
             
         }
+    }
+
+    public void drag(float dx, float dy) {
+        float angleSpeed = 0.001f;
+        h += -dx * angleSpeed;
+        v += -dy * angleSpeed;
+
+        v3 direction = v(
+                (float) (cos(this.v) * sin(h)),
+                sin(this.v),
+                (float) (cos(this.v) * cos(h))
+        );
+
+
+        space.camFwd.set(direction);
     }
 
 }

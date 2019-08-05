@@ -778,10 +778,10 @@ public enum Util {
     public static boolean equals(float a, float b, float epsilon) {
         if (a == b)
             return true;
-        if (Float.isFinite(a) && Float.isFinite(b))
+        //if (Float.isFinite(a) && Float.isFinite(b))
             return Math.abs(a - b) < epsilon;
-        else
-            return (a != a) && (b != b); //both NaN
+//        else
+//            return (a != a) && (b != b); //both NaN
     }
 
     public static boolean equals(double a, double b) {
@@ -794,10 +794,10 @@ public enum Util {
     public static boolean equals(double a, double b, double epsilon) {
         if (a == b)
             return true;
-        if (Double.isFinite(a) && Double.isFinite(b))
+//        if (Double.isFinite(a) && Double.isFinite(b))
             return Math.abs(a - b) < epsilon;
-        else
-            return (a != a) && (b != b); //both NaN
+//        else
+//            return (a != a) && (b != b); //both NaN
     }
 
 
@@ -1484,6 +1484,16 @@ public enum Util {
         }
         return y;
     }
+
+    /** should be slightly faster than Math.max() since it assumes the values are finite */
+    public static float max(float x, float y) {
+        return x >= y ? x : y;
+    }
+    /** should be slightly faster than Math.max() since it assumes the values are finite */
+    public static float min(float x, float y) {
+        return x <= y ? x : y;
+    }
+
     public static float max(float... x) {
         float y = Float.NEGATIVE_INFINITY;
         for (float f : x) {
