@@ -1,5 +1,6 @@
 package nars.op.kif;
 
+import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.graph.AdjGraph;
@@ -21,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.List;
 
 import static nars.$.$$;
 
@@ -28,7 +30,7 @@ import static nars.$.$$;
 class KIFTest {
 
     @Test
-    public void test1() throws IOException, Narsese.NarseseException {
+    public void test1() throws Narsese.NarseseException {
 
 
 
@@ -51,15 +53,26 @@ class KIFTest {
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
         TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectPriBuffer<>()));
-        w.links.decay.set(0.05f);
         w.links.links.capacity(1024);
 
         //                //"/home/me/sumo/Merge.kif";
 //                //"/home/me/sumo/tinySUMO.kif";
 //                //"/home/me/sumo/ComputerInput.kif";
 ////                "/home/me/sumo/Economy.kif",
-        n.input(KIF.file("/home/me/sumo/FinancialOntology.kif"));
-        n.input(KIF.file("/home/me/sumo/Economy.kif"));
+        List.of("FinancialOntology", "Economy", "Merge").parallelStream()
+            .map(x -> "/home/me/sumo/" + x + ".kif")
+            .map(x -> {
+                try {
+                    return KIF.file(x);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    return (Iterable)List.of();
+                }
+            }
+        ).forEach(n::input);
+
+        System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
+
 
         n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
@@ -67,9 +80,13 @@ class KIFTest {
         //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-        n.input("$1.0 possesses(I,#everything)!");
-        n.input("$1.0 benefits(#all, I)!");
-        n.run(1000);
+//        n.input("$1.0 possesses(I,#everything)!");
+//        n.input("$1.0 benefits(#all, I)!");
+//        n.input("$1.0 uses(#anything, I).");
+        n.input("$1.0 occupiesPosition(I,#position,#org)!"); //http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?flang=SUO-KIF&lang=EnglishLanguage&kb=SUMO&term=occupiesPosition
+//        n.input("$1.0 --({I}-->Dead)!");
+        n.input("$1.0 Human:{I}.");
+        n.run(10000);
         w.links.links.print();
 
 //        n.concepts().forEach(c -> System.out.println(c));

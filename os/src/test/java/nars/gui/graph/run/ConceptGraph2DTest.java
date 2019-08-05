@@ -25,8 +25,8 @@ class ConceptGraph2DTest {
             n.termVolMax.set(14);
 
             Surface g = BagregateConceptGraph2D.get(n);
-            OrthoSurfaceGraph wg = window(g, 1200, 800);
 
+            OrthoSurfaceGraph wg = window(g, 1200, 800);
             wg.dev();
 
 

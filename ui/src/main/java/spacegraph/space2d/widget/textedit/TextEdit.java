@@ -2,7 +2,6 @@ package spacegraph.space2d.widget.textedit;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
-import jcog.TODO;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
 import jcog.math.v2;
@@ -19,6 +18,7 @@ import java.util.function.Consumer;
 public class TextEdit extends ScrollXY<TextEditModel>  {
 
     public final Topic<TextEdit> onChange = new ListTopic<>();
+    private final MyTextEditView model;
 
 
     public TextEdit(int cols) {
@@ -39,14 +39,13 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         super();
 
         MyTextEditView model;
-        set(model = new MyTextEditView());
+        set(this.model = model = new MyTextEditView());
         model.actions = TextEditActions.DEFAULT_ACTIONS;
         model.keys = TextEditActions.DEFAULT_KEYS;
 
 
         v2 initialSize = new v2(1, 1);
-        viewMin(new v2(1,1));
-//        viewMax(initialSize);
+        viewMinMax(new v2(1,1), initialSize);
         view(initialSize);
 
 
@@ -136,9 +135,10 @@ public class TextEdit extends ScrollXY<TextEditModel>  {
         onChange.on(e);
         return this;
     }
-    public TextEdit onKey(Consumer<KeyEvent> e) {
-        throw new TODO();
-        //return this;
+
+    public TextEdit onKeyPress(Consumer<KeyEvent> e) {
+        model.keyPress.on(e);
+        return this;
     }
 
     private abstract static class AppendableUnitContainer<S extends Surface> extends UnitContainer<S> implements Appendable {

@@ -1088,7 +1088,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final Stream<Concept> concepts() {
-        return memory.stream()/*.filter(Concept.class::isInstance)*/.map(Concept.class::cast);
+        return memory.stream();
     }
 
     /**

@@ -283,4 +283,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         this.nar = n; //HACK
         schedule(x -> x.accept(n));
     }
+
+    public void throttle(float t) {
+        nar.loop.throttle.set(t);
+    }
 }

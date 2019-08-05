@@ -33,7 +33,7 @@ public class ConceptGraph2D extends Graph2D<Term> {
     Iterable<Term> source;
 
 //    public class Controls {
-        public final AtomicBoolean update = new AtomicBoolean(true);
+    public final AtomicBoolean update = new AtomicBoolean(true);
 //    }
 
 //    public final Controls controls = new Controls();
@@ -190,6 +190,9 @@ public class ConceptGraph2D extends Graph2D<Term> {
 
         final Iterable<TaskLink> links;
 
+        /** non-volatile cached is this helpful? */
+        transient private boolean _belief, _goal, _question, _quest;
+
 
         private TasklinkVis(Iterable<TaskLink> links) {
             this.links = links;
@@ -198,15 +201,15 @@ public class ConceptGraph2D extends Graph2D<Term> {
         @Override
         public void nodes(CellMap<Term, NodeVis<Term>> cells, GraphEditing<Term> edit) {
 
-            boolean belief = this.belief.getOpaque();
-            boolean goal = this.goal.getOpaque();
-            boolean question = this.question.getOpaque();
-            boolean quest = this.quest.getOpaque();
-            if (!belief && !goal && !question && !quest)
+            _belief = this.belief.getOpaque();
+            _goal = this.goal.getOpaque();
+            _question = this.question.getOpaque();
+            _quest = this.quest.getOpaque();
+            if (!_belief && !_goal && !_question && !_quest)
                 return;
 
 
-            links.forEach(l -> add(edit, belief, goal, question, quest, l));
+            links.forEach(l -> add(edit, l));
 
 
         }
@@ -216,21 +219,24 @@ public class ConceptGraph2D extends Graph2D<Term> {
             //N/A
         }
 
-        public void add(GraphEditing<Term> graph, boolean belief, boolean goal, boolean question, boolean quest, TaskLink l) {
+        public void add(GraphEditing<Term> graph, TaskLink l) {
+
+            Term targetTerm = l.to();//.concept();
+            if (targetTerm instanceof nars.term.Variable)
+                return; //ignore variables
 
             float[] pp = new float[4];
-            pp[0] = belief ? l.priPunc(BELIEF) : 0;
-            pp[1] = goal ? l.priPunc(GOAL) : 0;
-            pp[2] = question ? l.priPunc(QUESTION) : 0;
-            pp[3] = quest ? l.priPunc(QUEST) : 0;
+            pp[0] = _belief ? l.priPunc(BELIEF) : 0;
+            pp[1] = _goal ? l.priPunc(GOAL) : 0;
+            pp[2] = _question ? l.priPunc(QUESTION) : 0;
+            pp[3] = _quest ? l.priPunc(QUEST) : 0;
             float pSum = (pp[0] + pp[1] + pp[2] + pp[3]);
             if (pSum < ScalarValue.EPSILON)
                 return;
 
 
-            Term targetTerm = l.to();//.concept();
-
-            EdgeVis<Term> e = graph.edge(l.from().concept(), targetTerm);
+            Term from = l.from().concept();
+            EdgeVis<Term> e = graph.edge(from, targetTerm);
             if (e != null) {
                 int r, g, b;
                 /*
@@ -345,13 +351,17 @@ public class ConceptGraph2D extends Graph2D<Term> {
             Term t = node.id;
             if (t.op().statement) {
                 Term subj = t.sub(0);
-                Term pred = t.sub(1);
-                @Nullable EdgeVis<Term> e = graph.edge(subj, pred);
-                if (e != null) {
-                    float p = 0.5f;
-                    e.weightLerp(p, WEIGHT_UPDATE_RATE)
-                            .colorLerp(Float.NaN, Float.NaN, (0.9f * p) + 0.1f, COLOR_UPDATE_RATE)
-                    ;
+                if (!(subj instanceof nars.term.Variable)) {
+                    Term pred = t.sub(1);
+                    if (!(pred instanceof nars.term.Variable)) {
+                        @Nullable EdgeVis<Term> e = graph.edge(subj, pred);
+                        if (e != null) {
+                            float p = 0.5f;
+                            e.weightLerp(p, WEIGHT_UPDATE_RATE)
+                                .colorLerp(Float.NaN, Float.NaN, (0.9f * p) + 0.1f, COLOR_UPDATE_RATE)
+                            ;
+                        }
+                    }
                 }
 
 //                }

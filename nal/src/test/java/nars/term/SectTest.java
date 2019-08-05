@@ -63,6 +63,14 @@ public class SectTest {
         assertEquals(t, t);
     }
 
+    @Disabled @Test void testFactorCommonSect() {
+        assertEq("(a-->c)", "((a&b)-->(b&c))");
+        assertEq("(a-->c)", "((a|b)-->(b|c))");
+        //??
+        //assertEq("(a-->c)", "((a|b)-->(b&c))");
+        //assertEq("(a-->c)", "((a&b)-->(b|c))");
+    }
+
     @Test void testTooComplexSectDiff() {
 //        assertEq("", "(a --> --(x-y))");
 

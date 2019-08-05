@@ -431,25 +431,30 @@ public enum Conj {
 
     @Deprecated
     public static Term diffAll(Term include, Term exclude) {
-        return diffAll(include, exclude, Op.terms);
+        return diffAll(include, exclude, false, Op.terms);
+    }
+    public static Term diffAllPN(Term include, Term exclude) {
+        return diffAll(include, exclude, true, Op.terms);
     }
 
-    public static Term diffAll(Term include, Term exclude, TermBuilder B) {
+    public static Term diffAll(Term include, Term exclude, boolean pn, TermBuilder B) {
 
-        if (include.equals(exclude))
-            return True;
+        if (!pn) {
+            if (include.equals(exclude)) return True;
+        } else {
+            if (include.equalsPosOrNeg(exclude)) return True;
+        }
 
         Subterms incSubs = include.subterms();
         if (!Term.commonStructure(incSubs, exclude))
             return include;
 
-        boolean iSeq = isSeq(include);
-        boolean eSeq = isSeq(exclude);
+        boolean iSeq = isSeq(include), eSeq = isSeq(exclude);
         if (eSeq && iSeq) {
 
             ConjList cc = ConjList.events(include);
             ConjList xx = ConjList.events(exclude);
-            int[] found = cc.contains(xx, Term::equals);
+            int[] found = cc.contains(xx, pn ? Term::equalsPosOrNeg : Term::equals);
             if (found.length > 0) {
                 for (int f : found)
                     cc.removeAllAt(f, xx);
@@ -462,10 +467,18 @@ public enum Conj {
 
             ConjList ii = ConjList.events(include);
             boolean[] removedSomething = new boolean[]{false};
-            exclude.eventsAND((when, what) -> {
-                removedSomething[0] |= ii.removeAll(what);
-                return true;
-            }, ETERNAL, true, false /*exclude.dt() == XTERNAL*/);
+            exclude.eventsAND(
+                !pn ?
+                    (when, what) -> {
+                        removedSomething[0] |= ii.removeAll(what);
+                        return true;
+                    }
+                    :
+                    (when, what) -> {
+                        removedSomething[0] |= ii.removeIf(what::equalsPosOrNeg);
+                        return true;
+                    }
+            , ETERNAL, true, false /*exclude.dt() == XTERNAL*/);
 
 //            //remove components from disjunctions (TODO optional)
 //            ii.replaceAll(t -> {
@@ -504,9 +517,15 @@ public enum Conj {
             if (exclude.op() == CONJ && exclude.dt() != XTERNAL) {
                 assert (exclude.dt() == DTERNAL);
                 Subterms excludeSubs = exclude.subterms();
-                p = t -> !excludeSubs.contains(t);
+                p = pn ?
+                    t -> !excludeSubs.containsPosOrNeg(t)
+                    :
+                    t -> !excludeSubs.contains(t);
             } else {
-                p = t -> !t.equals(exclude);
+                p = pn ?
+                    t -> !t.equalsPosOrNeg(exclude)
+                    :
+                    t -> !t.equals(exclude);
             }
             y = incSubs.indicesOfBits(p);
             if (y.cardinality() == incSubs.subs())

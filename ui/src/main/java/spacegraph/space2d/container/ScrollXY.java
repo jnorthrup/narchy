@@ -109,7 +109,12 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         layoutModel(); //TODO update if changed
         return this;
     }
-
+    public ScrollXY<S> viewMinMax(v2 min, v2 max) {
+        this.viewMin = min;
+        this.viewMax = max;
+        layoutModel(); //TODO update if changed
+        return this;
+    }
     public ScrollXY<S> view(v2 view) {
         return view(view.x, view.y);
     }
@@ -184,7 +189,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     /**
      * enables or disables certain scrollbar-related features per axis
      */
-    private ScrollXY<S> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
+    public ScrollXY<S> setScrollBar(boolean xOrY, boolean scrollVisible, boolean scaleVisible) {
         if (xOrY) {
             scrollX.visible(scrollVisible);
             borderSize(S, scrollVisible ? defaultScrollEdge : 0);
@@ -221,12 +226,12 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         float x1, x2;
         x1 = x;
         x2 = x+w;
-        setScrollBar(true, (!autoHideScroll || w > viewMax.x), true);
+        setScrollBar(true, (!autoHideScroll || w < viewMax.x), true);
 
         float y1, y2;
         y1 = y;
         y2 = y1 + h;
-        setScrollBar(false, (!autoHideScroll || h > viewMax.y), true);
+        setScrollBar(false, (!autoHideScroll || h < viewMax.y), true);
 
 //        viewMax(new v2(x2-x1, y2-y1)); //HACK
 

@@ -57,6 +57,8 @@ public class TextEditView implements BufferListener {
 
     private void updateCursor(CursorPosition c) {
         LineView lv = lines.get(c.getRow());
+        if (lv == null)
+            return; //HACK
 
         int lineChars = lv.length();
 

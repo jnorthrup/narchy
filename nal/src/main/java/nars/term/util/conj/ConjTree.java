@@ -107,18 +107,16 @@ public class ConjTree implements ConjBuilder {
         }
 
         return !(!neg.isEmpty() || (conj.hasAny(NEG) && !pos.isEmpty())) ||
-                conj.eventsAND((when, what) -> {
-                            if (what instanceof Neg) return pos.isEmpty() || !pos.contains(what.unneg());
-                            else return neg.isEmpty() || !neg.contains(what);
-                        },
-                        0, true, true);
+                conj.eventsAND((when, what) ->
+                    what instanceof Neg ? !pos.contains(what.unneg()) : !neg.contains(what),
+            0, true, true);
     }
 
     private boolean addParallelN(Term n) {
         assert (n instanceof Neg);
         Term nu = n.unneg();
 
-        if (!neg.isEmpty() && neg.contains(nu))
+        if (neg.contains(nu))
             return true;
 
         if (!pos.isEmpty()) {
@@ -325,7 +323,7 @@ public class ConjTree implements ConjBuilder {
                             } else if (z == False || z == Null)
                                 return z;
                             else {
-                                if (add == null) add = new FasterList(1);
+                                if (add == null) add = new FasterList<>(1);
                                 add.add(z);
                             }
 
@@ -347,21 +345,16 @@ public class ConjTree implements ConjBuilder {
         if (t==Null) {
             x = terminal = Null;
         } else if (t == False) {
-            if (x == null)
+            if (x != Null)
                 x = terminal = False;
         } else
             throw new WTF();
-
         return x;
     }
 
     @Override
     public boolean addEvent(long at, Term x) {
-        if (terminal != null)
-            return false;
-
-        if (at == ETERNAL) return addParallel(x);
-        else return addAt(at, x);
+        return terminal == null && (at == ETERNAL ? addParallel(x) : addAt(at, x));
     }
 
 
@@ -372,7 +365,7 @@ public class ConjTree implements ConjBuilder {
     private boolean addAt(long at, Term x) {
         if (!(x instanceof Neg)) {
 
-            if (!neg.isEmpty() && neg.contains(x)) {
+            if (neg.contains(x)) {
                 terminate(False); //contradicted
                 return false;
             }
@@ -388,7 +381,7 @@ public class ConjTree implements ConjBuilder {
             Term _xu = x.unneg();
             Term xu = _xu;
 //
-            if (!pos.isEmpty() && pos.contains(xu)) {
+            if (pos.contains(xu)) {
                 terminate(False); //contradict
                 return false;
             }
@@ -431,10 +424,8 @@ public class ConjTree implements ConjBuilder {
     }
 
     private boolean result(boolean result) {
-        if (!result) {
+        if (!result)
             terminate(False);
-        }
-        
         return result;
     }
 

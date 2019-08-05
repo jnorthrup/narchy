@@ -8,7 +8,6 @@ import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
 import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
-import nars.video.NARVideo;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
 
 import static nars.Op.BELIEF;
@@ -19,7 +18,7 @@ public class NARchy extends NARS {
 
 
     public static NAR core() {
-        return core(1);
+        return core(Runtime.getRuntime().availableProcessors());
     }
 
     public static NAR core(int threads) {
@@ -27,7 +26,7 @@ public class NARchy extends NARS {
 
         NAR nar = new DefaultNAR(0, true)
 
-                .index(new CaffeineMemory(32*1024))
+                .index(CaffeineMemory.soft())
                 //.index(new HijackConceptIndex(32*1024, 4))
 
                 .exe(new WorkerExec(threads))
@@ -40,15 +39,12 @@ public class NARchy extends NARS {
         nar.dtDither.set(20);
 
         nar.beliefPriDefault.amp(0.5f);
-        nar.goalPriDefault.amp(0.75f);
-        nar.questionPriDefault.amp(0.35f);
-        nar.questPriDefault.amp(0.35f);
+        nar.goalPriDefault.amp(0.5f);
+        nar.questionPriDefault.amp(0.5f);
+        nar.questPriDefault.amp(0.5f);
 
         nar.start(new ConjClustering(nar, BELIEF,
-                16, 64, Task::isInput
-        ));
-        nar.start(new ConjClustering(nar, BELIEF,
-                16, 64, t -> !t.isInput()
+                16, 256, t->true
         ));
 
         new Deriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
@@ -61,14 +57,11 @@ public class NARchy extends NARS {
     public static NAR ui() {
         /** TODO differentiate this from UI, for use in embeddeds/servers without GUI */
         NAR nar = core();
+        nar.exe.throttle(0.1f);
         
         nar.runLater(()->{
 
             //User u = User.the();
-
-
-
-
 
             NARHear.readURL(nar);
 
@@ -78,7 +71,7 @@ public class NARchy extends NARS {
                 
             }
 
-            new NARVideo(nar);
+//            new NARVideo(nar);
 //            new NARAudio(nar, new AudioSource().start(),  10f);
 
 

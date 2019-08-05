@@ -4,6 +4,7 @@ import java.lang.reflect.*;
 import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.function.Function;
 
 /** from: https:
 
@@ -274,8 +275,7 @@ public class Reflect {
             Field field = field0(name);
             return on(field.getType(),
                     object instanceof Class ? field /* the field itself */ : field.get(object));
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             throw new ReflectException(e);
         }
     }
@@ -326,6 +326,8 @@ public class Reflect {
 
         Class<?> t = type();
 
+        Function<String, Reflect> fieldResolver = this::field;
+
         do {
             for (Field field : t.getDeclaredFields()) {
                 int mods = field.getModifiers();
@@ -334,10 +336,7 @@ public class Reflect {
                     if (!nonPublic && !Modifier.isPublic(mods))
                         continue;
 
-                    String name = field.getName();
-
-                    if (!result.containsKey(name))
-                        result.put(name, field(name));
+                    result.computeIfAbsent(field.getName(), fieldResolver);
                 }
             }
 
@@ -405,15 +404,11 @@ public class Reflect {
     public Reflect call(String name, Object... args) throws ReflectException {
         Class<?>[] types = types(args);
 
-        
-        
         try {
             Method method = exactMethod(name, types);
             return on(method, object, args);
         }
 
-        
-        
         catch (NoSuchMethodException e) {
             try {
                 Method method = similarMethod(name, types);

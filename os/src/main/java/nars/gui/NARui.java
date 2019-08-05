@@ -14,7 +14,6 @@ import jcog.learn.ql.HaiQae;
 import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.Quantiler;
 import jcog.pri.VLink;
-import jcog.thing.Part;
 import jcog.thing.Thing;
 import nars.AttentionUI;
 import nars.NAR;
@@ -46,7 +45,6 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.Stacking;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
@@ -107,18 +105,8 @@ public class NARui {
     }
 
     public static Surface beliefCharts(NAR nar, Iterable<? extends Termed> ii) {
-        return new Gridding(Lists.newArrayList(Iterables.transform(ii, i -> {
-            return beliefChart(i, nar);
-        })));
+        return new Gridding(Lists.newArrayList(Iterables.transform(ii, i -> beliefChart(i, nar))));
     }
-
-    /**
-     * ordering: first is underneath, last is above
-     */
-    public static Stacking stack(Surface... s) {
-        return new Stacking(s);
-    }
-
 
     public static Surface top(NAR n) {
         return new Bordering(
@@ -135,7 +123,7 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> parts(Thing p) {
         HashMap<String,Supplier<Surface>> m = new HashMap<>();
         p.partStream().forEach(s -> {
-            m.put( ((Part)s).toString(), ()-> new ObjectSurface(s));
+            m.put( s.toString(), ()-> new ObjectSurface(s));
         });
         return m;
     }
@@ -494,7 +482,7 @@ public class NARui {
 
     public static TextEdit newNarseseInput(NAR n, Consumer<Task> onTask, Consumer<Exception> onException) {
         TextEdit input = new TextEdit(16, 1);
-        input.onKey((k) -> {
+        input.onKeyPress((k) -> {
             if (k.getKeyCode() == VK_ENTER) {
                 String s = input.text();
                 input.text("");
@@ -615,7 +603,7 @@ public class NARui {
 
         Map<String,Supplier<Surface>> attentions = new HashMap();
         n.what.forEach((v)->{
-           attentions.put(v.id.toString(), ()->attentionUI((What)v));
+           attentions.put(v.id.toString(), ()->attentionUI(v));
         });
         TabMenu atMenu = new TabMenu(attentions);
         return new Splitting(new TabMenu(global), 0.25f, atMenu).horizontal(true).resizeable();

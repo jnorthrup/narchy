@@ -31,23 +31,21 @@ public class Buffer {
         synchronized (this) {
 
             int l = lines.size();
-            if (l != 1 || lines.get(0).length() != 0) {
-                if (l > 0) {
-                    lines.forEach(observer::removeLine);
-                    lines.clear();
-                }
-
-                BufferLine bl = new BufferLine();
-                lines.add(bl);
-                observer.addLine(bl);
-
-                currentCursor.setCol(0);
-                currentCursor.setRow(0);
-                mark.setCol(0);
-                mark.setRow(0);
-
-                update();
+            if (l > 0) {
+                lines.forEach(observer::removeLine);
+                lines.clear();
             }
+
+            BufferLine bl = new BufferLine();
+            lines.add(bl);
+            observer.addLine(bl);
+
+            currentCursor.setCol(0);
+            currentCursor.setRow(0);
+            mark.setCol(0);
+            mark.setRow(0);
+
+            update();
         }
     }
 

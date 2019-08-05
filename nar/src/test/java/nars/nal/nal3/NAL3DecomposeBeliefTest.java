@@ -279,8 +279,8 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .goal("x:a")
                 .goal("x:b")
                 .quest("x:a")
-                .mustQuest(cycles, "x:(a&b)")
-                .mustGoal(cycles, "x:(a&b)", 1f, 0.81f)
+                .mustQuest(cycles, "x:(a|b)")
+                .mustGoal(cycles, "x:(a|b)", 1f, 0.81f)
         ;
     }
     @Test void testDecomposeWTF() {

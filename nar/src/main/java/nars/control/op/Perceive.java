@@ -261,7 +261,7 @@ public enum Perceive {
 
             if (y != Bool.Null && !y.equals(tt)) {
                 if (result(y)) {
-                    if (result.size() >= NAL.TASK_EVAL_FORK_LIMIT)
+                    if (result.size() >= NAL.TASK_EVAL_FORK_SUCCESS_LIMIT)
                         return false; //done, enough forks
                 }
             }

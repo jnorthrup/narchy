@@ -84,8 +84,8 @@ class ConjDiffTest {
         Term xy = $$("((x &&+4120 y) &&+1232 --y)");
 
         String both = "[(x &&+5352 (--,y)), (x &&+4120 y)]";
-        assertConjDiffPN(xy, y, both); //2 compound results
-        assertConjDiffPN(xy, y.neg(), both); //2 compound results
+        assertConjDiffPN(xy, y, "[x]"); //2 compound results
+        assertConjDiffPN(xy, y.neg(), "[x]"); //2 compound results
         assertConjDiffPN(xy, x, "[(y &&+1232 (--,y))]"); //1 compound result
     }
 
@@ -157,7 +157,7 @@ class ConjDiffTest {
 
         Set<Term> results = new TreeSet();
         for (int i = 0; i < 16; i++)
-            results.add(Conj.diffAll(xy, r));
+            results.add(Conj.diffAllPN(xy, r));
         assertEquals(s, results.toString());
     }
 

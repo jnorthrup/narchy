@@ -103,7 +103,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     public final @Nullable Y get(int index) {
-        return table.items.get(index);
+        return table.items.getSafe(index);
     }
 
     @Override
@@ -687,7 +687,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         if (capacity == 0)
             return null;
 
-        float xp = x.priElseZero();
+        float xp = x.pri();
         if (xp != xp)
             return null; //already deleted
 
@@ -697,7 +697,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         Map<X, Y> map = table.map;
 //        if (map instanceof ConcurrentMap) {
-//            //check map first, and elide acquiring a lock if merge can be performed
+//            //check map first, and elide acquiring a lock if merge can be performed and doesnt affect priority
 //        } else {
         //l = lock.readLock();
 //        }

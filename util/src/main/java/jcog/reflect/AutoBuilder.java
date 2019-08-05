@@ -38,7 +38,6 @@ public class AutoBuilder<X, Y> {
 
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
 
-
     public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building, Map<Class, BiFunction<? super X, Object, Y>> onClass) {
         this.building = building;
         this.maxDepth = maxDepth;
@@ -134,9 +133,7 @@ public class AutoBuilder<X, Y> {
 
     private <C> void collectFields(C c, X x, Y parentRepr, Collection<Pair<X, Iterable<Y>>> target, int depth) {
 
-        Class cc = x.getClass();
-        Reflect.on(cc).fields(true, false, false).forEach((s, ff) -> {
-
+        Reflect.on(x.getClass()).fields(true, false, false).forEach((s, ff) -> {
 
             try {
                 Field f = ff.get();

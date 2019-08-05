@@ -28,7 +28,7 @@ public class BagregateConceptGraph2D extends ConceptGraph2D {
     }
 
     public static Surface get(TaskLinks links, NAR n) {
-        Bagregate<Term> b = new Bagregate<Term>(() -> links.terms().iterator(), 256);
+        Bagregate<Term> b = new Bagregate<>(() -> links.terms().iterator(), 512);
 
         return DurSurface.get(
                 new nars.gui.graph.run.BagregateConceptGraph2D(b, links, n).widget(),

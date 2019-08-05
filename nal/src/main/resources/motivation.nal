@@ -12,10 +12,10 @@
 //    G, G, task("!") |-           (?1 && polarizeRandom(G)), (Punctuation:Question, Time:Task)
 
     //hypothesize goal cause (bridge from Goal to Belief)
-    G, G, task("!") |- (#X ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
+    //G, G, task("!") |- (#X ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
 
     //hypothesize goal consequence (bridge from Goal to Belief)
-    G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+    //G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
 
 //    //hypothesize goal co-occurrence (bridge from Goal to Belief)
 //    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)

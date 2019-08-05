@@ -100,6 +100,10 @@ public class TestNAR {
         //TODO etc
     }
 
+    public void run() {
+        run(-1);
+    }
+
     public void run(long finalCycle) {
         //NDC.push(this.toString());
 //        try {
@@ -641,7 +645,7 @@ public class TestNAR {
 
     public void test(/* for use with JUnit */) {
         nar.synch();
-        run(0);
+        run();
     }
 
     public TestNAR termVolMax(int i) {

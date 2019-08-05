@@ -52,7 +52,7 @@ public class AttentionUI {
                 .build(x->{
                     x.set(LabeledPane.the(x.id.toString(), new ObjectSurface<>(x.id, 2)));
                 })
-                .render((Graph2D.Graph2DRenderer<PriNode>) (node, graph) -> {
+                .render((node, graph) -> {
                     n.control.graph.node(node.id).nodes(false,true).forEach(c -> {
                         EdgeVis<PriNode> e = graph.edge(node, c.id());
                         if (e!=null) {

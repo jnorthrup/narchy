@@ -10,7 +10,7 @@ abstract public class EditablePort<X> extends TypedPort<X> {
         super(type);
         process(initialValue);
 
-        edit = new TextEdit(8, 1);
+        edit = new TextEdit(32, 1);
         //TODO txt = new TextEdit(8, 1);
         edit.onChange.on(z -> out(parse(z.text())));
         set(edit);

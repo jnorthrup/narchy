@@ -12,6 +12,7 @@ import spacegraph.space2d.container.unit.Clipped;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
+import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
@@ -45,7 +46,7 @@ class ScrollXYTest {
             ScrollXY<DynGrid<String>> grid = new ScrollXY<>(new DynGrid<>(model,
                     (x, y, s) -> {
                         if (Math.random() < 0.5f) {
-                            Surface p = new PushButton(s) {
+                            Surface p = new PushButton(new VectorLabel(s)) {
                                 @Override
                                 protected void paintWidget(RectFloat bounds, GL2 gl) {
                                     Draw.colorHash(gl, x ^ y, 0.2f, 0.3f, 0.85f);
@@ -59,7 +60,7 @@ class ScrollXYTest {
                     })).scroll(0,0,8,4);
 
 
-//            grid.setScrollBar(true, true, false);
+            grid.setScrollBar(true, true, false);
 //            grid.setScrollBar(false, false, true);
 
             SpaceGraph.window(grid, 1024, 800);
@@ -85,7 +86,11 @@ class ScrollXYTest {
                             Map.of("wtf", "ok", "sdfj", "xcv", "sdf", "fdfs")
                         ),
                         (x, y, n)->
-                            x == 0 ? new VectorLabel(n.toString()) : new CheckBox(n.toString())))
+                            x == 0 ?
+                                new BitmapLabel(n.toString())
+                                //new VectorLabel(n.toString())
+                                //new CheckBox(n.toString())
+                                : new CheckBox(n.toString())))
                 , 800, 800);
         }
 

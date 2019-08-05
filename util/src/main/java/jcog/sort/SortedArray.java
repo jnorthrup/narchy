@@ -290,9 +290,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public final X getSafe(int i) {
         X[] ii = this.items;
         int s = Math.min(ii.length, size);
-        if (s == 0)
-            return null;
-        return ii[i];
+        return s == 0 || i >= s ? null : ii[i];
     }
 
 //    public final X get(Random rng) {

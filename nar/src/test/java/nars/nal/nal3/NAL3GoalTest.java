@@ -5,6 +5,8 @@ import nars.nal.nal8.DecomposeTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.GOAL;
+import static nars.Op.QUEST;
 import static nars.nal.nal3.NAL3Test.cycles;
 
 class NAL3GoalTest {
@@ -81,8 +83,7 @@ class NAL3GoalTest {
                 .input(goalTask)
                 .input(beliefTask)
                 .mustGoal(cycles, YY, f, c)
-                .run(0);
-
+                .run();
     }
 
 //    @Test void testGoalDiffRaw1() {
@@ -145,7 +146,7 @@ class NAL3GoalTest {
                 .input("(Z-->(X&&Y))!")
 //                .input("(X --> Z).")
                 .mustGoal(DecomposeTest.cycles, "(Z-->Y)", 1, 0.81f) //via structural decomposition of intersection, at least
-                .run(0);
+                .run();
 
     }
     @Test
@@ -156,10 +157,26 @@ class NAL3GoalTest {
                 .input("((X|Y) --> Z)!")
 //                .input("(X --> Z).")
                 .mustGoal(DecomposeTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of union, at least
-                .run(0);
+                .run();
 
     }
 
+    @Test
+    void dontFormUselessIntersection() {
+
+        new TestNAR(NARS.tmp(3)).termVolMax(8)
+            .input("(x-->a)!")
+            .input("(y-->a)!")
+            .mustGoal(cycles, "((x || y)-->a)", 1f, 0.81f)
+            .mustNotOutput(cycles, "(x-->a)", GOAL, 0, 0.5f, 0, 1) //inverted
+            .mustNotOutput(cycles, "(y-->a)", GOAL, 0, 0.5f, 0, 1) //inverted
+            .mustNotOutput(cycles, "(((--,x)&&y)-->a)", QUEST)
+            .mustNotOutput(cycles, "(((--,y)&&x)-->a)", QUEST)
+            .mustNotOutput(cycles, "((--x && y)-->a)", GOAL)
+            .mustNotOutput(cycles, "((x && --y)-->a)", GOAL)
+            .run();
+
+    }
 //    @Test
 //    void intersectionGoalDecomposition3() {
 //        new TestNAR(NARS.tmp(3))

@@ -119,13 +119,7 @@ public class Builtin {
             new AbstractInlineFunctor2("conjWithoutPN") {
                 @Override
                 protected Term apply(Term conj, Term event) {
-                    Term x = Conj.diffAll(conj, event);
-                    if (!(x instanceof Bool)) {
-                        if (event instanceof Neg || x.hasAny(NEG))
-                            x = Conj.diffAll(x, event.neg());
-                    }
-
-                    //Term x = Conj.removeEvent(Conj.removeEvent(conj, event), event.neg());
+                    Term x = Conj.diffAllPN(conj, event);
                     return conj.equals(x) ? Null : x;
                 }
             },

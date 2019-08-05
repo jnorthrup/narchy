@@ -52,7 +52,7 @@ public class VectorLabel extends AbstractLabel {
 
         textY = 0.5f - textScaleY / 2f;
     }
-
+    
     @Override
     protected void renderContent(ReSurface r) {
         r.on(this::paintLabel);
@@ -71,7 +71,8 @@ public class VectorLabel extends AbstractLabel {
 
         textThickness = Math.min(3, 0.5f + (p / 70f));
 
-        return super.preRender(r);
+        //return super.preRender(r);
+        return true;
     }
 
 

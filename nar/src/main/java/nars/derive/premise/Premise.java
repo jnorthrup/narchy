@@ -4,7 +4,6 @@
  */
 package nars.derive.premise;
 
-import jcog.WTF;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.Derivation;
@@ -227,18 +226,25 @@ public class Premise /*implements Comparable<Premise>*/ {
             //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
             a = task.onAnswered(a);
-
             if (a == null)
                 return null; //interrupted by question
 
-            boolean answerGoalOrBelief = a.isGoal();
 
-            if (!(answerGoalOrBelief || a.isBelief())) throw new WTF();
+//            if (a instanceof DynamicTruthTask && a.creation() >= timeBefore and a.creation() < d.time() && a.why().length==0) {
+//                //HACK
+//                ((NALTask)a).cause(task.why());
+//            }
 
-            if (answerGoalOrBelief) {
-                d.what.accept(a); //goal
-            } else {
-                d.what.emit(a); //belief
+
+            if (a.conf() > d.confMin) {
+                boolean answerGoalOrBelief = a.isGoal();
+                assert (answerGoalOrBelief || a.isBelief());
+
+                if (answerGoalOrBelief) {
+                    d.what.accept(a); //goal
+                } else {
+                    //d.what.emit(a); //belief
+                }
             }
         }
 

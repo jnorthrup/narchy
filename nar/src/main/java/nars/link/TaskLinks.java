@@ -67,6 +67,11 @@ public class TaskLinks implements Sampler<TaskLink> {
     };
 
 
+    public TaskLinks(int linksCapacity) {
+        this();
+        links.capacity(linksCapacity);
+    }
+
     public TaskLinks(/*TODO bag as parameter */) {
         int c = linksMax.intValue();
 

@@ -9,7 +9,7 @@ import java.util.function.Consumer;
  */
 public class Versioning<X> {
 
-    protected final Versioned[] items;
+    protected final Versioned<X>[] items;
     protected int size = 0;
 
     public int ttl;
@@ -50,7 +50,7 @@ public class Versioning<X> {
         if (s <= 0)
             return;
 
-        final Versioned[] i = this.items;
+        final Versioned<X>[] i = this.items;
 
         while (s>0) {
             each.accept(i[--s]);
@@ -62,29 +62,26 @@ public class Versioning<X> {
      * reverts/undo to previous state
      * returns whether any revert was actually applied
      */
-    public final boolean revert(int when) {
+    public final void revert(int when) {
 
-        final int sizePrev;
-        if ((sizePrev = size) <= when)
-            return false;
+        final int sizeBefore = size;
+        if (sizeBefore <= when)
+            return;
 
-        int sizeNext = sizePrev;
+        int sizeAfter = sizeBefore;
         final Versioned[] i = this.items;
 
-        while (sizeNext>when) {
+        do {
 
-            i[--sizeNext].pop();
+            i[--sizeAfter].pop();
 
-//            Versioned ii;
-//            if ((ii = i[--sizeNext])==null)
-//                throw new WTF();
-//            ii.pop();
+        } while (sizeAfter > when);
 
-        }
-        Arrays.fill(i, when, sizePrev, null);
-        this.size = sizeNext;
+        this.size = sizeAfter;
 
-        return true;
+        Arrays.fill(i, when, sizeBefore, null);
+
+
     }
 
 

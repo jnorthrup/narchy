@@ -2,6 +2,8 @@ package spacegraph.space2d.widget.textedit;
 
 import com.jogamp.newt.event.KeyEvent;
 import com.jogamp.opengl.GL2;
+import jcog.event.ListTopic;
+import jcog.event.Topic;
 import jcog.math.v2;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.container.ScrollXY;
@@ -13,6 +15,7 @@ import spacegraph.video.Draw;
 
 public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY.ScrolledXY {
 
+    public final Topic<KeyEvent> keyPress = new ListTopic<>();
 
     /** current buffer */
     protected Buffer buffer;
@@ -51,7 +54,12 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
     @Override
     public final boolean key(KeyEvent e, boolean pressedOrReleased) {
         //TODO anything from super.key(..) ?
-        return keys.key(e, pressedOrReleased, this);
+        boolean b = keys.key(e, pressedOrReleased, this);
+        if (b) {
+            if (pressedOrReleased)
+                keyPress.emit(e); //release
+        }
+        return b;
     }
 
 
@@ -60,10 +68,9 @@ public class TextEditModel extends Widget /* TODO Surface */ implements ScrollXY
 
         //calculate min,max scales, with appropriate aspect ratio restrictions
 
-        s.viewMin(new v2(1, 1));
         int w = Math.max(1, Math.min(buffer.width(), 80));
         int h = Math.max(1, Math.min(buffer.height(), 20));
-        s.viewMax(new v2(w, h));
+        s.viewMinMax(new v2(1, 1), new v2(w, h));
 
         s.scroll(0, 0, w, h);
     }

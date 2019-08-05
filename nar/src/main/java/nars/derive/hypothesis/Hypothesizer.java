@@ -24,7 +24,8 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-import static nars.Op.*;
+import static nars.Op.ATOM;
+import static nars.Op.CONJ;
 
 /** generator of hypotheses */
 public interface Hypothesizer {
@@ -191,21 +192,43 @@ public interface Hypothesizer {
 		public boolean test(Term concept, Term target) {
 			if (concept instanceof Compound) {
 				Op op = concept.op();
-				if (op == target.op()) {
-					if (new UnifyAny().unifies(concept, target))
-						return true;
-				} /*else if (op ==CONJ) {
 
+				UnifyAny u = new UnifyAny();
 
-					//..
-				} else if (op == IMPL) {
-					//..
-				} else*/ {
-					//try subterms
-					UnifyAny u = new UnifyAny();
-					return concept.subterms().OR(z -> u.unifies(z.unneg(), target));
+				Op targetOp = target.op();
+				if (op == targetOp && u.unifies(concept, target))
+					return true;
+
+				Predicate<Term> subunification = x -> {
+						Term xx = x.unneg();
+						return xx.op()==targetOp && u.unifies(xx, target);
+					};
+
+				if (subUnifies(subunification, concept))
+					return true;
+
+				if (op.statement) {
+					for (int i = 0; i < 2; i++) {
+						Term ss = concept.sub(0).unneg();
+						if (ss.op() == CONJ) {
+							if (subUnifies(subunification, ss))
+								return true;
+						}
+					}
 				}
 
+			}
+			return false;
+		}
+
+		protected boolean subUnifies(Predicate<Term> u, Term concept) {
+
+			if (concept.op() == CONJ) {
+				if (concept.eventsOR((when,what)-> u.test(what), 0, true, true))
+					return true;
+			} else {
+				if (concept.subterms().OR(u))
+					return true;
 			}
 			return false;
 		}

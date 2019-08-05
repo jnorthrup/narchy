@@ -81,12 +81,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * TODO needs tested whether recursive Unification inherits TTL
      */
-    public static final int TASK_EVALUATION_TTL = 16;
-    public static final int TASK_EVAL_FORK_LIMIT = 8;
+    public static final int TASK_EVALUATION_TTL = 8;
+    public static final int TASK_EVAL_FORK_SUCCESS_LIMIT = 4;
 
     //    /** can produce varieties of terms with dt below the dithered threshold time */
 //    public static final boolean ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS= !configIs("DISABLE_ALLOW_UNDITHERED_DT_IF_DITHERED_FAILS");
-    public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = NAL.TASK_EVAL_FORK_LIMIT * 2;
+    public static final int TASK_EVAL_FORK_ATTEMPT_LIMIT = NAL.TASK_EVAL_FORK_SUCCESS_LIMIT * 2;
 
 
     /** determines answer capacity in proportion to STAMP_CAPACITY.
@@ -173,15 +173,19 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean FORK_JOIN_EXEC_ASYNC_MODE= configIs("FORK_JOIN_EXEC_ASYNC_MODE");
 
     /**
-     * might help with overall throughput by reducing lock and synchronization contention by grouping sequences of tasks by the destination concept
+     * presorting input batches might help with overall throughput by reducing lock and synchronization contention by grouping sequences of tasks by the destination concept
+     * but it doesnt maintain the priority ordering
+     * (experimental)
      */
-    public static final boolean PRE_SORT_TASK_INPUT_BATCH = configIs("PRE_SORT_TASK_INPUT_BATCH");
+    public static final boolean PRE_SORT_TASK_INPUT_BATCH = false;
+
     public static final int WHATS_CAPACITY = 128;
     public static final int HOWS_CAPACITY = 128;
 
-    /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength */
-    public static final double TEMPORAL_BELIEF_TABLE_DUR_SCALE =
-            2;
+    /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength
+     *  this determines the importance of time vs. evidence in determining task strength across time
+     *  */
+    public static final double TEMPORAL_BELIEF_TABLE_DUR_SCALE = 1;
 
     /**
      * enables higher-order (recursive) implication statements

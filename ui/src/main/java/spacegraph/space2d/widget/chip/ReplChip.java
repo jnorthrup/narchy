@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget.chip;
 
+import com.jogamp.newt.event.KeyEvent;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.port.TextPort;
 
@@ -9,7 +10,7 @@ public class ReplChip extends Gridding {
 
     private final ReplModel model;
     private final TextPort in;
-    private final TextPort out;
+//    private final TextPort out;
 
     @FunctionalInterface
     public interface ReplModel {
@@ -19,38 +20,42 @@ public class ReplChip extends Gridding {
     public ReplChip(ReplModel m) {
         this.model = m;
         set(
-                in = new TextPort(), //TODO a Port
-                out = new TextPort() //TODO a Port
+                in = new TextPort() //TODO a Port
+//                out = new TextPort() //TODO a Port
         );
 
-        out.edit.view(40, 8);
+//        out.edit.view(40, 8);
 
         //in.on(z -> {
            //TODO
         //});
 
-//        in.edit.onKey(x -> {
-//            if (x.getKeyType() == KeyType.Enter && (!enterOrControlEnter() || x.isCtrlDown())) {
-//                String cmd = in.edit.text();
-//
-//                if (clearOnEnter())
-//                    in.edit.text("");
-//
-//                model.input(cmd, (e) -> {
+        in.edit.onKeyPress(x -> {
+
+            //System.out.println(x.getKeyCode() + "\t" + x.getKeyChar() + "\t" + x.getKeySymbol());
+
+            if (x.getKeyCode() == KeyEvent.VK_ENTER && (!enterOrControlEnter() || x.isControlDown())) {
+                String cmd = in.edit.text();
+
+                if (clearOnEnter())
+                    in.edit.text("");
+
+                model.input(cmd, (e) -> {
+                    System.err.println(e); //HACK
 //                    if (appendOrReplace()) {
-//                        out.edit.append(e);
-//                        out.out(out.edit.text());
+////                        out.edit.text(e); //append?
+////                        out.out(out.edit.text());
 //                    } else {
-//                        out.edit.text(e);
+////                        out.edit.text(e);
 //                    }
-//                });
-//            }
-//        });
+                });
+            }
+        });
     }
 
-    public boolean appendOrReplace() { //append mode will require a clear button
-        return false;
-    }
+//    public boolean appendOrReplace() { //append mode will require a clear button
+//        return false;
+//    }
 
     protected boolean clearOnEnter() {
         return true;
