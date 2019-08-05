@@ -55,7 +55,9 @@ public class Cmp extends SimpleBinaryFunctor {
                 return Null; //conflict with the correct value
         }
 
-        if (!xy.hasVars()) {
+        if (!(xy instanceof Variable)) {
+            if (!(xy instanceof Int))
+                return Null;
             if (!x.hasVars() && !y.hasVars()) {
                 //check for truth, and canonical ordering
                 int c = x.compareTo(y);

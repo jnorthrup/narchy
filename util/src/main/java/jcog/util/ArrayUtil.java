@@ -1135,9 +1135,9 @@ public enum ArrayUtil {
      * @throws IllegalArgumentException if either array is {@code null}
      */
     public static boolean isSameType(final Object array1, final Object array2) {
-        if (array1 == null || array2 == null) {
-            throw new IllegalArgumentException("The Array must not be null");
-        }
+//        if (array1 == null || array2 == null) {
+//            throw new IllegalArgumentException("The Array must not be null");
+//        }
         return array1.getClass().getName().equals(array2.getClass().getName());
     }
 
@@ -1150,11 +1150,9 @@ public enum ArrayUtil {
      *
      * @param array the array to reverse, may be {@code null}
      */
-    public static void reverse(final Object[] array) {
-        if (array == null) {
-            return;
-        }
+    public static <X> X[] reverse(final X[] array) {
         reverse(array, 0, array.length);
+        return array;
     }
 
     /**
@@ -1165,9 +1163,6 @@ public enum ArrayUtil {
      * @param array the array to reverse, may be {@code null}
      */
     public static void reverse(final long[] array) {
-        if (array == null) {
-            return;
-        }
         reverse(array, 0, array.length);
     }
 

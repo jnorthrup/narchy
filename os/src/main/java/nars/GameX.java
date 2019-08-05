@@ -39,7 +39,11 @@ import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.task.DerivedTask;
 import nars.task.util.PriBuffer;
+import nars.task.util.signal.SignalTask;
 import nars.term.Term;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
@@ -446,13 +450,13 @@ abstract public class GameX extends Game {
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 
-        n.beliefPriDefault.amp(0.1f);
-        n.goalPriDefault.amp(0.1f);
-        n.questionPriDefault.amp(0.05f);
-        n.questPriDefault.amp(0.05f);
+        n.beliefPriDefault.amp(0.05f);
+        n.goalPriDefault.amp(0.05f);
+        n.questionPriDefault.amp(0.025f);
+        n.questPriDefault.amp(0.025f);
 
-        n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.5f);
+        n.goalConfDefault.set(0.5f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
@@ -507,6 +511,7 @@ abstract public class GameX extends Game {
 
         n.runLater(()-> {
             addFuelInjection(n);
+            addClock(n);
         });
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
@@ -612,6 +617,29 @@ abstract public class GameX extends Game {
 
     }
 
+    static final Atom FRAME = Atomic.atom("frame");
+
+    private static void addClock(NAR n) {
+        n.parts(Game.class).forEach(g -> {
+            g.onFrame(()->{
+                long now = n.time();
+                int X = g.frame();
+                int radix = 16;
+                Term x =
+                    //Int.the(X);
+                    //$.pRadix(X, 8, Integer.MAX_VALUE);
+                    $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
+
+                Term f = $.funcImg(FRAME, g.id, x);
+                Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                    now, now, Math.round(now + g.durPhysical()),
+                    new long[]{n.time.nextStamp()});
+                t.pri(n.priDefault(BELIEF)*g.what().pri());
+                //System.out.println(t);
+                g.what().accept(t);
+            });
+        });
+    }
     private static void addFuelInjection(NAR n) {
         n.parts(What.class).forEach(w -> {
             if (w.in instanceof PriBuffer.BagTaskBuffer)  {

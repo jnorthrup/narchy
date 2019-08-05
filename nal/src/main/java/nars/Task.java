@@ -1049,6 +1049,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return priSet(defaultPrioritizer.priDefault(punc()));
     }
 
+
     /**
      * computes the average frequency during the given interval
      */

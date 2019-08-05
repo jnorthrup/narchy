@@ -104,8 +104,11 @@ public enum $ { ;
         return Util.map(Atomic::the, new Term[id.length], id);
     }
 
-    public static Atom the(char c) {
-        return (Atom) Atomic.the(String.valueOf(c));
+    public static Atomic the(char c) {
+        if (Character.isDigit(c))
+            return Int.the(Character.digit(c, 10));
+
+        return Atomic.the(String.valueOf(c));
     }
 
     /**
@@ -573,25 +576,34 @@ public enum $ { ;
     }
 
 
+    public static int[] radix(int x, int radix, int maxValue) {
+        assert(x >= 0);
+        x = x % radix; //auto-wraparound
+
+        int decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
+        int[] y = new int[decimals];
+        int X = -x;
+        int yi = 0;
+        do {
+            y[yi++] = -(X % radix);
+            X /= radix;
+        } while(X <= -1);
+        return y;
+    }
+
     /**
      * most significant digit first, least last. padded with zeros
+     *
      */
     public static Term[] radixArray(int x, int radix, int maxX) {
-        String xs = Integer.toString(x, radix);
-        String xx = Integer.toString(maxX, radix);
-        Term[] tt = new Term[xx.length()];
-        int ttl = tt.length;
-        int xsl = xs.length();
-        int p = ttl - xsl;
-        int j = 0;
-        for (int i = 0; i < ttl; i++) {
-            Term n;
-            if (p-- > 0) {
-                n = $.the(0);
-            } else {
-                n = $.the(xs.charAt(j++) - '0');
-            }
-            tt[i] = n;
+
+        int[] xx = radix(x, radix, maxX);
+
+        Term[] tt = new Term[xx.length];
+        for (int i = 0; i < xx.length; i++) {
+            tt[i] =
+                //$.the(BinTxt.symbols[xx[i]]);
+                Int.the(xx[i]);
         }
         return tt;
     }
@@ -604,17 +616,16 @@ public enum $ { ;
         int n = innerStart ? 0 : j - 1;
         Term inner = t[n];
         Term nextInner = inner.op() != PROD ? $.p(inner) : inner;
-        while (j-- > 0) {
+        while (--j > 0) {
             n += innerStart ? +1 : -1;
             Term next = t[n];
 
-            if (innerStart) {
-                nextInner = next.op() != PROD ?
-                        $.p(nextInner, next) : $.p(ArrayUtil.add(next.subterms().arrayShared(), nextInner));
-            } else {
-                nextInner = next.op() != PROD ?
-                        $.p(next, nextInner) : $.p(ArrayUtil.add(next.subterms().arrayShared(), nextInner));
-            }
+
+            Term[] nextArray = ArrayUtil.add(next.subterms().arrayShared(), nextInner);
+
+            nextInner = next.op() != PROD ?
+                    (innerStart ? $.p(nextInner, next) : $.p(next, nextInner)) : $.p(nextArray);
+
         }
         return nextInner;
     }

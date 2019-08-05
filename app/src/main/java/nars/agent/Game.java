@@ -38,6 +38,7 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 import static nars.$.$$;
@@ -435,7 +436,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             public void next(Game a, int iteration, long prev, long now) {
                 a.sense();
                 a.act();
-                a.frame();
+                a.nextFrame();
             }
 
         },
@@ -457,7 +458,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
                     case 1:
                         //ACT
                         a.act();
-                        a.frame();
+                        a.nextFrame();
                         break;
                 }
             }
@@ -559,9 +560,18 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 //        }));
 //    }
 
-    private void frame() {
+    final AtomicInteger frame = new AtomicInteger();
+
+    private void nextFrame() {
         eventFrame.emit(nar);
+        frame.incrementAndGet();
     }
+
+    public final int frame() {
+        return frame.getOpaque();
+    }
+
+
 
 
 //    public float dexterity() {
