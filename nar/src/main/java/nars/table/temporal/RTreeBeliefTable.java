@@ -6,7 +6,7 @@ import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
-import jcog.tree.rtree.split.QuadraticSplitLeaf;
+import jcog.tree.rtree.split.QuadraticSplit;
 import nars.NAL;
 import nars.Task;
 import nars.control.op.Remember;
@@ -62,7 +62,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     /**
      * TODO tune
      */
-    private static final Split SPLIT = new QuadraticSplitLeaf();
+    private static final Split SPLIT =
+        new QuadraticSplit();
+        //new AxialSplit();
+
     protected int capacity;
 
     public RTreeBeliefTable() {

@@ -72,8 +72,8 @@ C, X, --isVar(X), eventOfPN(C,X)                     |-   conjWithoutPN(C,X), (B
       C, X, --isVar(X), has(C,"--")   |-  polarizeTask(conjAfter(C, --X)),  (Goal:DeductionDN, Time:BeliefEvent)
 
     //sub-sequence leading to goal
-    X, C                     |-  polarizeBelief(conjBefore(C,   X)),  (Belief:DeductionPD, Goal:DeductionPD, Time:TaskEvent)
-      X, C, has(C,"--")        |-  polarizeBelief(conjBefore(C, --X)),  (Belief:DeductionND, Goal:DeductionND, Time:TaskEvent)
+    X, C                     |-  conjBefore(C,   X),  (Belief:DeductionPP, Goal:DeductionPP, Time:TaskEvent)
+      X, C, has(C,"--")        |-  conjBefore(C, --X),  (Belief:DeductionNP, Goal:DeductionNP, Time:TaskEvent)
       //X, C, is(C,"&&")                    |-  conjBefore(C,   X),  (Belief:DividePPX, Time:TaskEvent)
         //X, C, is(C,"&&"), has(C,"--")       |-  conjBefore(C, --X),  (Belief:DivideNPX, Time:TaskEvent) //<- PNX ?
 

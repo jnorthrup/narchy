@@ -31,12 +31,12 @@ public class MiniPID {
     private double setpoint = 0;
     private double setpointRange = 0;
 
-    private double lastActual = Double.NaN;
+    private double actual = Double.NaN;
 
     private boolean reversed = false;
 
     private double outRampRate = 0;
-    private double outPrev = 0;
+    private double out = 0;
 
     private double outMomentum = 0;
 
@@ -65,6 +65,15 @@ public class MiniPID {
      * @param i Integral gain.  Becomes large if setpoint cannot reach target quickly.
      * @param d Derivative gain. Responds quickly to large changes in error. Small values prevents P and I terms from causing overshoot.
      * @param f Feed-forward gain. Open loop "best guess" for the output should be. Only useful if setpoint represents a rate.
+     *
+     *
+
+    https://www.crossco.com/blog/basics-tuning-pid-loops
+    Start with a low proportional and no integral or derivative.
+    Double the proportional until it begins to oscillate, then halve it.
+    Implement a small integral.
+    Double the integral until it starts oscillating, then halve it.
+
      */
     public MiniPID(double p, double i, double d, double f) {
         p(p);
@@ -267,10 +276,20 @@ public class MiniPID {
      * @return calculated output value for driving the system
      */
     public double out(double actual, double setpoint) {
-
         setpoint(this.setpoint = setpoint);
-
         return out(actual);
+    }
+
+    @Override
+    public String toString() {
+        return "MiniPID{" +
+            "P=" + P +
+            ", I=" + I +
+            ", D=" + D +
+            ", setpoint=" + setpoint +
+            ", actual=" + actual +
+            ", out=" + out +
+            '}';
     }
 
     /**
@@ -282,7 +301,7 @@ public class MiniPID {
      * @return calculated output value for driving the system
      */
     public double out() {
-        return out(lastActual, setpoint);
+        return out(actual, setpoint);
     }
 
     /**
@@ -316,15 +335,15 @@ public class MiniPID {
         Poutput = p() * error;
 
 
-        boolean initialIter = (lastActual!=lastActual);
+        boolean initialIter = (this.actual != this.actual);
         if (initialIter) {
-            lastActual = actual;
-            outPrev = Poutput + Foutput;
+            this.actual = actual;
+            out = Poutput + Foutput;
         }
 
 
-        Doutput = -d() * (actual - lastActual);
-        lastActual = actual;
+        Doutput = -d() * (actual - this.actual);
+        this.actual = actual;
 
 
         Ioutput = i() * errSum;
@@ -340,7 +359,7 @@ public class MiniPID {
             errSum = error;
 
 
-        } else if (outRampRate != 0 && !isInclusive(output, outPrev - outRampRate, outPrev + outRampRate)) {
+        } else if (outRampRate != 0 && !isInclusive(output, out - outRampRate, out + outRampRate)) {
             errSum = error;
         } else if (maxIOutput != 0) {
             double min = -errMax;
@@ -353,17 +372,17 @@ public class MiniPID {
 
 
         if (outRampRate != 0) {
-            output = Util.clamp(output, outPrev - outRampRate, outPrev + outRampRate);
+            output = Util.clamp(output, out - outRampRate, out + outRampRate);
         }
         if (!Util.equals(outMin, outMax)) {
             output = Util.clamp(output, outMin, outMax);
         }
         if (outMomentum != 0) {
-            output = outPrev * outMomentum + output * (1 - outMomentum);
+            output = out * outMomentum + output * (1 - outMomentum);
         }
 
 
-        return (outPrev = output);
+        return (out = output);
     }
 
     /**
@@ -374,7 +393,7 @@ public class MiniPID {
      * external forces.
      */
     public void reset() {
-        lastActual = Double.NaN;
+        actual = Double.NaN;
         errSum = 0;
     }
 

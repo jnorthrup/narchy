@@ -30,7 +30,7 @@ import java.util.function.Function;
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public class QuadraticSplitLeaf<X> implements Split<X> {
+public class QuadraticSplit<X> implements Split<X> {
 
     /**  find the two bounds that are most wasteful */
     @Override public RNode<X> split(X x, RLeaf<X> leaf, Spatialization<X> m) {

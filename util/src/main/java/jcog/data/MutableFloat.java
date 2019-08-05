@@ -199,7 +199,9 @@ public class MutableFloat extends NumberX implements FloatSupplier {
     public void add(float operand) {
         set(value + operand);
     }
-
+    public final void add(double operand) {
+        add((float)operand);
+    }
     /**
      * Adds a value to the value of this instance.
      *

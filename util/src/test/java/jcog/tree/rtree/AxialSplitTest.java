@@ -23,6 +23,8 @@ package jcog.tree.rtree;
 import jcog.tree.rtree.rect.RectDouble;
 import jcog.tree.rtree.util.Stats;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Random;
 
@@ -32,9 +34,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 /**
  * Created by jcovert on 6/12/15.
  */
-class LinearSplitLeafTest {
+class AxialSplitTest {
 
-    private static final Spatialization.DefaultSplits TYPE = Spatialization.DefaultSplits.LINEAR;
+    private static final Spatialization.DefaultSplits TYPE = Spatialization.DefaultSplits.AXIAL;
 
     /**
      * Adds enough entries to force a single split and confirms that
@@ -56,11 +58,13 @@ class LinearSplitLeafTest {
         rTree.add(new RectDouble(8, 8, 9, 9));
 
         Stats stats = rTree.stats();
+
         assertTrue(stats.getMaxDepth() == 1, "Unexpected max depth after basic split");
         assertTrue(stats.getBranchCount() == 1, "Unexpected number of branches after basic split");
         assertTrue(stats.getLeafCount() == 2, "Unexpected number of leaves after basic split");
         assertTrue(stats.getEntriesPerLeaf() == 4.5, "Unexpected number of entries per leaf after basic split");
     }
+
 
     @Test
     void splitCorrectnessTest() {
@@ -76,24 +80,28 @@ class LinearSplitLeafTest {
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
         int childCount = 0;
-        for (RNode c : children) {
+        for(RNode c : children) {
             if (c != null) {
                 childCount++;
             }
         }
-        assertEquals(2, childCount, "Expected different number of children after split");
+        assertEquals( 2, childCount, "Expected different number of children after split");
 
-        RNode<RectDouble> child1 = children[0];
-        RectDouble child1Mbr = (RectDouble) child1.bounds();
-        RectDouble expectedChild1Mbr = new RectDouble(0, 0, 4, 4);
-        assertEquals( 4, child1.size(), "Child 1 size incorrect after split");
-        assertEquals(expectedChild1Mbr, child1Mbr, "Child 1 mbr incorrect after split");
+        {
+            RNode<RectDouble> child1 = children[0];
+            RectDouble child1Mbr = (RectDouble) child1.bounds();
+            RectDouble expectedChild1Mbr = new RectDouble(0, 0, 3, 4);
+            assertEquals(2, child1.size(), "Child 1 size incorrect after split");
+            assertEquals(expectedChild1Mbr, child1Mbr, "Child 1 mbr incorrect after split");
+        }
 
-        RNode<RectDouble> child2 = children[1];
-        RectDouble child2Mbr = (RectDouble) child2.bounds();
-        RectDouble expectedChild2Mbr = new RectDouble(4, 0, 5, 1);
-        assertEquals(1, child2.size(), "Child 2 size incorrect after split");
-        assertEquals(expectedChild2Mbr, child2Mbr, "Child 2 mbr incorrect after split");
+        {
+            RNode<RectDouble> child2 = children[1];
+            RectDouble child2Mbr = (RectDouble) child2.bounds();
+            RectDouble expectedChild2Mbr = new RectDouble(1, 0, 5, 4);
+            assertEquals(3, child2.size(), "Child 2 size incorrect after split");
+            assertEquals(expectedChild2Mbr, child2Mbr, "Child 2 mbr incorrect after split");
+        }
     }
 
     /**
@@ -114,7 +122,7 @@ class LinearSplitLeafTest {
         rTree.add(new RectDouble(0, 0, 5, 5));
         rTree.add(new RectDouble(0, 0, 6, 6));
         rTree.add(new RectDouble(0, 0, 7, 7));
-        rTree.add(new RectDouble(0, 0, 7, 7.1));
+        rTree.add(new RectDouble(0, 0, 7.1, 7));
 
         rTree.add(new RectDouble(0, 0, 8, 8));
         rTree.add(new RectDouble(0, 0, 9, 9));
@@ -129,18 +137,38 @@ class LinearSplitLeafTest {
         final int expectedEntryCount = 17;
 
         final Stats stats = rTree.stats();
-        assertEquals(expectedEntryCount, stats.size(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
+        assertEquals( expectedEntryCount, stats.size(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
+    /**
+     * Adds many random entries and confirm that no entries
+     * are lost during insert/split.
+     */
+    @ParameterizedTest
+    @ValueSource(ints = {2,3,4,5,8})
+    void randomEntryTest(int maxLeaf) {
+
+        final int entryCount = 10000;
+        final RectDouble[] rects = RTree2DTest.generateRandomRects(entryCount);
+
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(maxLeaf, TYPE);
+        for (int i = 0; i < rects.length; i++)
+            rTree.add(rects[i]);
+
+        final Stats stats = rTree.stats();
+        assertTrue(Math.abs(entryCount - stats.size()) == 0,
+                "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size() /* in case of duplicates */);
+        stats.print(System.out);
+    }
 
     /**
-     * This test previously caused a StackOverflowException.
-     * It has since been fixed, but keeping the test to ensure
-     * it doesn't happen again.
+     * This test previously caused a StackOverflowException on LINEAR leaf.
+     * It has since been fixed, but keeping the test here to ensure this leaf type
+     * never falls victim to the same issue.
      */
     @Test
     void causeLinearSplitOverflow() {
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
+        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(TYPE);
         final Random rand = new Random(13);
         for (int i = 0; i < 500; i++) {
             final int x1 = rand.nextInt(10);
@@ -154,22 +182,5 @@ class LinearSplitLeafTest {
         stats.print(System.out);
     }
 
-
-    @Test
-    void causeLinearSplitNiceDist() {
-
-        final RTree<RectDouble> rTree = RTree2DTest.createRect2DTree(8, TYPE);
-        final Random rand = new Random(13);
-        for (int i = 0; i < 500; i++) {
-            final int x1 = rand.nextInt(250);
-            final int y1 = rand.nextInt(250);
-            final int x2 = x1 + rand.nextInt(10);
-            final int y2 = y1 + rand.nextInt(10);
-
-            rTree.add(new RectDouble(x1, y1, x2, y2));
-        }
-        final Stats stats = rTree.stats();
-        stats.print(System.out);
-    }
 
 }

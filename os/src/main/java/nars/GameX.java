@@ -6,10 +6,8 @@ import jcog.data.list.FasterList;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
-import jcog.learn.AgentBuilder;
-import jcog.learn.Agenterator;
+import jcog.learn.pid.MiniPID;
 import jcog.learn.ql.HaiQae;
-import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
@@ -57,18 +55,15 @@ import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static jcog.Texts.n4;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
-import static toxi.math.MathUtils.abs;
 
 /**
  * Extensions to NAgent interface:
@@ -626,60 +621,66 @@ abstract public class GameX extends Game {
 
                 float ideal = 0.5f;
 
-                //TODO use AgentBuilder
-                float inc = 0.1f;
+//                //TODO use AgentBuilder
+//                float inc = 0.1f;
+//
+//                AgentBuilder ab = new AgentBuilder(() -> {
+//                    float load = b.load();
+//                    float error = load - ideal; //in -1..+1
+//                    return (1 - Util.sqrt(Math.abs(error))*4);
+//                })
+//                    .in(b.valve)
+//                    .in(b::load)
+//                    .in(()->Math.max(0,b.load() - ideal))
+//                    .in(()->Math.max(0,ideal - b.load()))
+//                    .out(5, (o) -> {
+//                        float rate = 0.005f;
+//
+//                        float d = b.load() - ideal;
+//                        float delta = d;
+//                        float change = 0;
+//                        switch (o) {
+//                            case 0:
+//                                change = -rate*1f * delta; //away
+//                                break;
+//                            case 1:
+//                                change = 0;
+//                                break;
+//                            case 2:
+//                                change = +rate*1f * delta; //closer
+//                                break;
+//                            case 3:
+//                                change = +rate*2f * delta; //closer
+//                                break;
+//                            case 4:
+//                                change = +rate*4f * delta; //closer
+//                                break;
+//                        }
+//                        b.valve.add(change);
+//                    })
+////                    .out(8, (v) -> b.valve.set( lerp(0.9f, b.valve.get(), v/7f)) )
+//                ;
+//
+//                System.out.println(ab);
+//                Agenterator a = ab.get((i,o)->
+//                        new DQN3(i,o));
+//
+//                ((DQN3)a.agent).gamma = 0.75f;
 
-                AgentBuilder ab = new AgentBuilder(() -> {
-                    float load = b.load();
-                    float error = load - ideal; //in -1..+1
-                    return (1 - Util.sqrt(Math.abs(error))*4);
-                })
-                    .in(b.valve)
-                    .in(b::load)
-                    .in(()->Math.max(0,b.load() - ideal))
-                    .in(()->Math.max(0,ideal - b.load()))
-                    .out(5, (o) -> {
-                        float rate = 0.005f;
+//                n.onDur(()->{
+////                    float reward = a.asFloat();
+////                    System.out.println(reward);
 
-                        float d = b.load() - ideal;
-                        float delta = d;
-                        float change = 0;
-                        switch (o) {
-                            case 0:
-                                change = -rate*1f * delta; //away
-                                break;
-                            case 1:
-                                change = 0;
-                                break;
-                            case 2:
-                                change = +rate*1f * delta; //closer
-                                break;
-                            case 3:
-                                change = +rate*2f * delta; //closer
-                                break;
-                            case 4:
-                                change = +rate*4f * delta; //closer
-                                break;
-                        }
-                        b.valve.add(change);
-                    })
-//                    .out(8, (v) -> b.valve.set( lerp(0.9f, b.valve.get(), v/7f)) )
-                ;
+//                n.onDur(()->{
+//                    b.valve.add(0.005f * (b.load() - ideal)); //simple proportional control
+//                });
 
-                System.out.println(ab);
-                Agenterator a = ab.get((i,o)->
-                        new DQN3(i,o));
-
-                ((DQN3)a.agent).gamma = 0.75f;
-
-//                float[] in = new float[2];
-//                final float[] valve = {0.5f};
-////                FloatAveragedWindow loadSmoothed = new FloatAveragedWindow(8, 0.1f, 0);
+                MiniPID pid = new MiniPID(0.007f, 0.005, 0.0025, 0);
+                pid.outLimit(0, 1);
+                pid.setOutMomentum(0.1);
                 n.onDur(()->{
-                    float reward = a.asFloat();
-//                    System.out.println(reward);
-                }).durs(2);
-
+                    b.valve.set(pid.out(ideal-b.load(), 0));
+                });
             }
         });
 

@@ -1,8 +1,8 @@
 package jcog.tree.rtree;
 
-import jcog.tree.rtree.split.AxialSplitLeaf;
-import jcog.tree.rtree.split.LinearSplitLeaf;
-import jcog.tree.rtree.split.QuadraticSplitLeaf;
+import jcog.tree.rtree.split.AxialSplit;
+import jcog.tree.rtree.split.LinearSplit;
+import jcog.tree.rtree.split.QuadraticSplit;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
@@ -109,19 +109,19 @@ public class Spatialization<X> {
         AXIAL {
             @Override
             public <T> Split<T> get() {
-                return new AxialSplitLeaf<>();
+                return new AxialSplit<>();
             }
         },
         LINEAR {
             @Override
             public <T> Split<T> get() {
-                return new LinearSplitLeaf<>();
+                return new LinearSplit<>();
             }
         },
         QUADRATIC {
             @Override
             public <T> Split<T> get() {
-                return new QuadraticSplitLeaf<>();
+                return new QuadraticSplit<>();
             }
         };
 

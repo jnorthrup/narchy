@@ -8,7 +8,7 @@ import jcog.memoize.Memoize;
 import jcog.tree.rtree.RTree;
 import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
-import jcog.tree.rtree.split.LinearSplitLeaf;
+import jcog.tree.rtree.split.LinearSplit;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,7 +31,7 @@ public class IRL {
     public final RTree<OsmElement> index =
             new RTree<>(new Spatialization<>((OsmElement e) -> e,
                     //new AxialSplitLeaf<>(),
-                    new LinearSplitLeaf<>(),
+                    new LinearSplit<>(),
                     //new QuadraticSplitLeaf(),
                     4));
 

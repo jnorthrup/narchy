@@ -146,7 +146,7 @@ public final class Answer implements Timed, Predicate<Task> {
                 filter, capacity, nar)
                 .time(start, end)
                 .term(template)
-                .clear((int) Math.ceil(NAL.ANSWER_TRYING * capacity));
+                .clear((int) Math.ceil((beliefOrQuestion ? NAL.ANSWER_TRYING : 1) * capacity));
     }
 
 

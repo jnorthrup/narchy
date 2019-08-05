@@ -100,7 +100,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean TASKLINK_ANSWER_GOAL = true;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 1f;
+    public static final float ANSWER_TRYING = 2f;
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
     /**
@@ -781,8 +781,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
         public static boolean ETERNALIZE_BELIEF_PROJECTION = true;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = false;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = true;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = true;
 
 
     }

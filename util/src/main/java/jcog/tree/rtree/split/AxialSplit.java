@@ -33,12 +33,12 @@ import java.util.Arrays;
  * <p>
  * Created by jcairns on 5/5/15.
  */
-public class AxialSplitLeaf<X> implements Split<X> {
+public class AxialSplit<X> implements Split<X> {
 
     /** default stateless instance which can be re-used */
-    public static final Split<?> the = new AxialSplitLeaf<>();
+    public static final Split<?> the = new AxialSplit<>();
 
-    public AxialSplitLeaf() { }
+    public AxialSplit() { }
 
     @Override
     public RBranch<X> split(X x, RLeaf<X> leaf, Spatialization<X> model) {
