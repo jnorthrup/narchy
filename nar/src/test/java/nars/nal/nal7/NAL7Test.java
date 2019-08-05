@@ -25,7 +25,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 public class NAL7Test extends NALTest {
 
     public static final float CONF_TOLERANCE_FOR_PROJECTIONS = 2f; //200%
-    private final static int cycles = 250;
+    private final static int cycles = 350;
 
     @Override
     protected NAR nar() {
@@ -119,8 +119,8 @@ public class NAL7Test extends NALTest {
             $.50 (a &&+5 b). 1⋈6 %1.0;.90% {1: 1}
          */
         test
-                .inputAt(1, "(a &&+5 b). :|:")
-                .inputAt(6, "(b &&+5 #1). :|:")
+                .inputAt(1, "(a &&+5 b). |")
+                .inputAt(6, "(b &&+5 #1). |")
                 //.mustBelieve(cycles, "(a &&+10 #1)", 1.00f, 0.73f, 1)
                 .mustBelieve(cycles, "a", 1.00f, 0.81f, 1)
                 .mustBelieve(cycles, "b", 1.00f, 0.81f, 6)

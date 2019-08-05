@@ -513,7 +513,7 @@ public class Occurrify extends TimeGraph {
                 return rangeCombine(d, OccMerge.Task);
             }
         },
-        /** task modulates the truth but the occurrence time to be solved should center around the belief */
+        /** task modulates the truth but the occurrence time to be solved should depend on the belief */
         BeliefEvent() {
 
             @Override

@@ -57,7 +57,7 @@ public class NAL4MultistepTest extends NALTest {
         test.believe("blue:sky", 1.0f, 0.9f)
                 .believe("likes:sky", 1.0f, 0.9f)
                 .ask("likes:blue")
-                .mustBelieve(100, "likes:blue", 1.0f, 0.4f /* 0.45? */);
+                .mustBelieve(400, "likes:blue", 1.0f, 0.4f /* 0.45? */);
 
     }
 

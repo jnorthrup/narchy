@@ -253,7 +253,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
         @Test
         void disjunction_impl_decompose_two_premises_neg() {
             TestNAR tester = test;
-            tester.termVolMax(13);
+            tester.termVolMax(13).confMin(0.8f);
             tester.believe("(((robin --> [flying]) || (robin --> swimmer)) ==> --x)");
             tester.believe("((robin --> swimmer) ==> --x)", 0.0f, 0.9f);
             tester.mustBelieve(cycles, "((robin --> [flying]) ==> --x)", 1.00f, 0.81f);
