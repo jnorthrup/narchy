@@ -305,16 +305,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 //                );
     }
 
-    /**
-     * when merging dt's, ratio of the maximum difference in dt allowed
-     * ratio of the dt difference compared to the smaller dt of the two being merged
-     *
-     */
-    public final FloatRange intermpolationRangeLimit = new FloatRange(
-            //0.5f
-            //0.618f
-            2f
-            , 0, 2f);
+//    /**
+//     * when merging dt's, ratio of the maximum difference in dt allowed
+//     * ratio of the dt difference compared to the smaller dt of the two being merged
+//     *
+//     */
+//    public final FloatRange intermpolationRangeLimit = new FloatRange(
+//            //0.5f
+//            //0.618f
+//            2f
+//            , 0, 2f);
 
     /** max tolerance time (in durations) for unification of temporal terms */
     public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );

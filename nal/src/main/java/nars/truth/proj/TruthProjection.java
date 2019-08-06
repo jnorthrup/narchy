@@ -203,7 +203,9 @@ abstract public class TruthProjection extends TaskList {
 			} else if (shrink && activePostCull != activePreCull) {
 
 				refocus(shrink);
-				e = filter(minResults, shrink, needStamp);
+
+				if (needStamp)
+					e = stampRemain(activePostCull);
 			}
 		}
 

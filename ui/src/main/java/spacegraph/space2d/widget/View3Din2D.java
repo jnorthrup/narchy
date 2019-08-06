@@ -11,7 +11,6 @@ import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space3d.SimpleSpatial;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.collision.ClosestRay;
@@ -31,7 +30,7 @@ public class View3Din2D extends PaintSurface {
 	private final SpaceDisplayGraph3D space;
 
 	final FingerAdapter mouse;
-	private final SimpleSpatial debugFwd, debugPick1, debugPick2;
+//	private final SimpleSpatial debugFwd, debugPick1, debugPick2;
 	private float px1 = 0, py1 = 0, px2 = 1, py2 = 1;
 
 	public View3Din2D(SpaceDisplayGraph3D space) {
@@ -39,13 +38,13 @@ public class View3Din2D extends PaintSurface {
 		this.mouse = new FingerAdapter(space);
 
 
-		space.add(debugFwd = new SimpleSpatial().scale(0.01f,0.01f,0.01f).color(1,1,1,0.25f));
-		space.add(debugPick1 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(0,1,0,0.25f));
-		space.add(debugPick2 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(1,0,0,0.25f));
+//		space.add(debugFwd = new SimpleSpatial().scale(0.01f,0.01f,0.01f).color(1,1,1,0.25f));
+//		space.add(debugPick1 = new SimpleSpatial().scale(0.05f,0.05f,0.05f).color(0,1,0,0.25f));
+//		space.add(debugPick2 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(1,0,0,0.25f));
 	}
 
 	private void updateDebug() {
-		debugFwd.move(space.camPos.clone().addScaled(space.camFwd, 2));
+//		debugFwd.move(space.camPos.clone().addScaled(space.camFwd, 2));
 
 	}
 
@@ -60,7 +59,7 @@ public class View3Din2D extends PaintSurface {
 		py1 = ((y() - r.y1) * r.scaleY);
 		px2 = ((x() - r.x1 + w()) * r.scaleX);
 		py2 = ((y() - r.y1 + h()) * r.scaleY);
-		gl.glViewport(Math.round(px1), Math.round(py1), Math.round(px2 - px1), Math.round(py2 - py1));
+		gl.glViewport(0,0, Math.round(px2 - px1), Math.round(py2 - py1));
 
 //		space.zFar = 100;
 		render(gl, r);
@@ -99,41 +98,49 @@ public class View3Din2D extends PaintSurface {
 //		float pw = px2 - px1;
 //		float ph = py2 - py1;
 			ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
-			{
-				debugPick1.move(mouse.origin);
-				float len = (float) Math.random() *  0.003f;
-				debugPick2.move(
-					Util.lerp(len, mouse.origin.x, mouse.target.x),
-					Util.lerp(len, mouse.origin.y, mouse.target.y),
-					Util.lerp(len, mouse.origin.z, mouse.target.z)
-				);
-			}
+
 
 			if (c.hasHit()) {
 				Body3D co = mouse.pickedBody;
+
+
 				//Collidable co = c.collidable;
 				if (co != null) {
 					Object s = co.data();
 					if (s instanceof SurfacedCuboid) {
 						SurfacedCuboid ss = (SurfacedCuboid) s;
-						SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
-						float zFront = sss.z() / 2;
 						v3 local =
-							co.transform.untransform(mouse.hitPoint.clone());
+							ss.transform.untransform(mouse.hitPoint.clone());
+							//co.transform.untransform(mouse.hitPoint.clone());
+							//co.transform.untransform(c.hitPointWorld.clone());
 
+//						if (ss!=debugPick1 && ss!=debugPick2) {
+//							debugPick1.move(mouse.origin);
+////				float len = (float) Math.random() *  0.003f;
+//							debugPick2.move(
+////					Util.lerp(len, space.camPos.x, mouse.target.x),
+////					Util.lerp(len, space.camPos.y, mouse.target.y),
+////					Util.lerp(len, space.camPos.z, mouse.target.z)
+//								//c.hitPointWorld
+//								mouse.hitPoint
+//							);
+//						}
 
 						float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
 						//local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1 &&
 
+						SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
+						float zFront = sss.z() / 2;
 						if (Util.equals(local.z, zFront, radiusTolerance)) {
-							//System.out.println(local.x + " "  + local.y);
+							System.out.println(local.x + " "  + local.y);
 							Surface front = ss.front;
 							if (front != null) {
-								float localX = (local.x + 0.5f), localY = (local.y + 0.5f);
+								//float localX = ((local.x+0.5f)*front.w())/(2*sss.x()), localY = ((local.y+0.5f)*front.h())/(2*sss.y());
+								float localX = local.x, localY = local.y;
 								//float localX = local.x+sss.x(), localY = local.y+sss.y();
-								//System.out.println(n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
+								//System.out.println(front + " " + n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
 								return f.push((px, py, target) -> {
-									target.set(localX, localY); //assumes virtual pixelResolution=1
+									target.set(localX, localY);
 								}, front::finger);
 							}
 						} else {

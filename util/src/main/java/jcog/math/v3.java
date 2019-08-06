@@ -244,7 +244,10 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
         }
         return norm;
     }
-
+    public final v3 normalized() {
+        normalize();
+        return this;
+    }
     public final v3 normalized(float scale) {
         normalize();
         scaled(scale);

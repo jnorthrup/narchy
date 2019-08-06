@@ -30,12 +30,12 @@ public class Tetris extends GameX {
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
+    private final boolean opjects = true;
+    private final boolean canFall = false;
+
 
     private final Bitmap2D grid;
 
-    private final boolean opjects = false;
-
-    private final boolean canFall = false;
 
     public final FloatRange timePerFall = new FloatRange(1f, 1f, 8f);
     public final AtomicBoolean easy;

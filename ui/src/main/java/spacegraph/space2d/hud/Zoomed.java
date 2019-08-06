@@ -15,7 +15,7 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.util.SurfaceTransform;
-import spacegraph.util.animate.AnimVector3f;
+import spacegraph.util.animate.v3Anim;
 import spacegraph.util.animate.Animated;
 import spacegraph.video.JoglDisplay;
 
@@ -337,7 +337,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         return new Finger.TouchOverlay(finger, cam);
     }
 
-    public class Camera extends AnimVector3f implements SurfaceTransform {
+    public class Camera extends v3Anim implements SurfaceTransform {
 
         private static final float CHANGE_EPSILON = 0.001f;
         /**

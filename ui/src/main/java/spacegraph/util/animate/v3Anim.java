@@ -6,7 +6,7 @@ import jcog.data.atomic.AtomicFloat;
 import jcog.math.v3;
 
 /** TODO: implements Animator<v3> following RectAnimator */
-public class AnimVector3f extends v3 implements Animated {
+public class v3Anim extends v3 implements Animated {
 
     protected final v3 target = new v3();
     public final NumberX speed;
@@ -15,14 +15,14 @@ public class AnimVector3f extends v3 implements Animated {
     enum InterpolationCurve {
         Exponential {
             @Override
-            public void interp(float dt, AnimVector3f v) {
+            public void interp(float dt, v3Anim v) {
                 float d = Math.max(0, v.speed.floatValue() * dt);
                 v.moveDirect(d, 0.75f);
             }
         },
         Linear {
             @Override
-            public void interp(float dt, AnimVector3f v) {
+            public void interp(float dt, v3Anim v) {
 
                 /** constants speed: delta to move, in length */
                 float d = Math.max(0, v.speed.floatValue() * dt);
@@ -32,7 +32,7 @@ public class AnimVector3f extends v3 implements Animated {
         },
         LERP {
             @Override
-            public void interp(float dt, AnimVector3f v) {
+            public void interp(float dt, v3Anim v) {
                 float rate = 10f * dt;
                 v3 w = v.target;
                 if (rate >= 1) {
@@ -50,7 +50,7 @@ public class AnimVector3f extends v3 implements Animated {
             }
         };
 
-        protected abstract void interp(float dt, AnimVector3f v);
+        protected abstract void interp(float dt, v3Anim v);
     }
 
     /** d is the maximum distance to move the current state to the target, linearly */
@@ -93,11 +93,11 @@ public class AnimVector3f extends v3 implements Animated {
 
     private final InterpolationCurve curve = InterpolationCurve.LERP;
 
-    public AnimVector3f(float speed) {
+    public v3Anim(float speed) {
         this(0, 0, 0, speed);
     }
 
-    public AnimVector3f(float x, float y, float z, float speed) {
+    public v3Anim(float x, float y, float z, float speed) {
         super(x, y, z);
         target.set(this);
         this.speed = new AtomicFloat(speed);

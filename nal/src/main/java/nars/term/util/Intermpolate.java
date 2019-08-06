@@ -40,10 +40,10 @@ public enum Intermpolate {;
 
         boolean subsEqual = aa.equals(bb);
 
-        if (ao == CONJ && !subsEqual) {
+        if (ao == CONJ && !subsEqual)
             //return new Conjterpolate(a, b, aProp, nar).term(); //root only: conj sequence merge
-            return Null;
-        }
+            return Null; //TODO
+
 
         if (aa.subs() != bb.subs())
             return Null;
@@ -112,7 +112,7 @@ public enum Intermpolate {;
 
         if (adt == bdt) {
             dt = adt;
-        } else if (adt == XTERNAL || bdt == XTERNAL) {
+        } else if (adt == XTERNAL || bdt == XTERNAL)
 
             dt = adt == XTERNAL ? bdt : adt; //the other one
             //dt = choose(adt, bdt, aProp);
@@ -123,9 +123,9 @@ public enum Intermpolate {;
 //            //dt = adt == DTERNAL ? bdt : adt;
 //            //dt = choose(adt, bdt, aProp, nar.random());
 //
-        } else {
+        else
             dt = merge(adt, bdt, aProp, nar);
-        }
+
 
 
         return Tense.dither(dt, nar);
@@ -137,17 +137,17 @@ public enum Intermpolate {;
     static int merge(int adt, int bdt, float aProp, NAL nar) {
 
 
-        int range = Math.max(Math.abs(adt), Math.abs(bdt));
+//        int range = Math.max(Math.abs(adt), Math.abs(bdt));
         int ab = Util.lerpInt(aProp, bdt, adt);
-        int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
-        float ratio = ((float) delta) / range;
-        if (ratio < nar.intermpolationRangeLimit.floatValue()) {
+//        int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
+//        float ratio = ((float) delta) / range;
+//        if (ratio < nar.intermpolationRangeLimit.floatValue()) {
             return ab;
-        } else {
-            //invalid
-            return XTERNAL;
-            //discard temporal information//return DTERNAL;
-        }
+//        } else {
+//            //invalid
+//            return XTERNAL;
+//            //discard temporal information//return DTERNAL;
+//        }
     }
 
     public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAL nar) {

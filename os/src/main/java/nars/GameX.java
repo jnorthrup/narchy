@@ -510,7 +510,7 @@ abstract public class GameX extends Game {
         }).setFPS(0.25f);
 
         n.runLater(()-> {
-            addFuelInjection(n);
+            //addFuelInjection(n);
             addClock(n);
         });
 

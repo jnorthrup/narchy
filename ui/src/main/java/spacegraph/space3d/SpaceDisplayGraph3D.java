@@ -180,7 +180,8 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     public void renderVolume(float dtS, GL2 gl, float aspect) {
 
-        perspective(gl, aspect);
+        updateCamera(gl);
+        //perspective(gl, aspect);
 
 
 

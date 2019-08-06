@@ -66,7 +66,7 @@ public class RevisionTest {
     }
 
     protected static Set<Term> permuteIntermpolations(Compound a, Compound b) {
-
+        assertEquals(a.op(),a.op());
         {
             float ab = Intermpolate.dtDiff(a, b);
             assertTrue(Float.isFinite(ab));
@@ -83,11 +83,13 @@ public class RevisionTest {
 
         int n = 10 * (a.volume() + b.volume());
         for (int i = 0; i < n; i++) {
-            Term ab = Intermpolate.intermpolate(a, b, s.random().nextFloat(), s);
+            float r = s.random().nextFloat();
+            Term ab = Intermpolate.intermpolate(a, b, r, s);
+            assertEquals(a.op(),ab.op(), ()->a + " + " + b + " @ " + r);
             ss.add(ab);
         }
 
-        System.out.println(ss);
+        //System.out.println(ss);
 
         return ss;
     }
