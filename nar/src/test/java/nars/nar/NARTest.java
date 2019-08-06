@@ -76,9 +76,6 @@ class NARTest {
         n.onCycle(nn -> cycCount.incrementAndGet());
         n.trace(sw);
 
-        ;
-
-
         assertTrue(sw.toString().length() > 16);
         assertEquals(frames, cycCount.get());
 

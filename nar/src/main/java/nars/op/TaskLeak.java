@@ -109,11 +109,11 @@ public abstract class TaskLeak extends How {
     protected void starting(NAR nar) {
         super.starting(nar);
 
-        whenDeleted(nar.eventClear.on(this::clear));
+        on(nar.eventClear.on(this::clear));
 
         Off off = source.start(this, nar);
         if (off!=null)
-            whenDeleted(off);
+            on(off);
     }
 
     @Override

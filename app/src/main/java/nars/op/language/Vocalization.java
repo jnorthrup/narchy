@@ -41,7 +41,7 @@ public class Vocalization extends NARPart {
 
     @Override
     protected void starting(NAR nar) {
-        whenDeleted(
+        on(
                 nar.onDur(() -> {
                     energy = Math.min(1f, energy + 1f / (this.durationsPerWord));
                     if (energy >= 1f) {

@@ -60,7 +60,7 @@ abstract public class DurLoop extends NARPart {
      */
     public static FloatRange cache(FloatSupplier o, float min, float max, DurLoop parent, @Deprecated NAR nar) {
         Pair<FloatRange, Off> p = cache(o, min, max, 1, nar);
-        parent.whenDeleted(p.getTwo());
+        parent.on(p.getTwo());
         return p.getOne();
     }
 

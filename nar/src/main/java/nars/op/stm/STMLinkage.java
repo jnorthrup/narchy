@@ -33,13 +33,12 @@ public class STMLinkage extends NARPart {
     private final MpmcAtomicArrayQueue<Pair<Task, Concept>> stm;
     private final int capacity;
 
-    @Deprecated
     public STMLinkage(NAR nar, int capacity) {
         this(capacity);
         nar.start(this);
     }
 
-    public STMLinkage(int capacity) {
+    private STMLinkage(int capacity) {
         super();
 
         this.capacity = capacity;
@@ -53,7 +52,7 @@ public class STMLinkage extends NARPart {
 
     @Override
     protected void starting(NAR nar) {
-        whenDeleted(
+        on(
             nar.onTask(this::accept, BELIEF, GOAL),
             nar.eventClear.on(stm::clear)
         );
@@ -65,8 +64,7 @@ public class STMLinkage extends NARPart {
         if (ac == bc || bc == null)
             return;
 
-        Task bt = b.getOne();
-        link(ac, bt, factor, nar);
+        link(ac, b.getOne(), factor, nar);
         link(bc, at, factor, nar);
     }
 
@@ -83,12 +81,9 @@ public class STMLinkage extends NARPart {
         return x.isInput();
     }
 
-
     public final void accept(Task y) {
 
-
         if (filter(y)) {
-
 
             @Nullable Concept yc;
             yc = nar.concept(y);
@@ -106,8 +101,6 @@ public class STMLinkage extends NARPart {
 //                }
 //
 //            }
-
-
             float factor = this.strength.floatValue();
 
             if (capacity == 1) {

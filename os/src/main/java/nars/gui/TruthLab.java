@@ -224,7 +224,8 @@ public class TruthLab extends Gridding {
                 1200, 900);
 
 
-        n.log()
+        n.log();
+        n
                 .inputAt(10, "(x).   :|: %1.0;0.9%")
                 .inputAt(20, "(y).   :|: %1.0;0.9%")
                 .inputAt(30, "--(x). :|: %1.0;0.9%")

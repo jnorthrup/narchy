@@ -2,6 +2,7 @@ package nars.attention;
 
 import jcog.Paper;
 import jcog.event.ByteTopic;
+import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.pri.bag.Sampler;
 import jcog.util.ConsumerX;
@@ -22,6 +23,7 @@ import nars.util.Timed;
 
 import java.io.Externalizable;
 import java.util.Random;
+import java.util.function.Consumer;
 import java.util.stream.Stream;
 
 /**
@@ -197,4 +199,8 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
     public abstract void link(TaskLink t);
 
     public abstract TaskLink link(Task t);
+
+    public final Off onTask(Consumer<Task> listener, byte... punctuations) {
+        return eventTask.on(listener, punctuations);
+    }
 }

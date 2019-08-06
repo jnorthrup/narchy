@@ -1127,8 +1127,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        return eventTask.onWeak(listener, punctuations);
 //    }
 
-    public final Off onTask(Consumer<Task> listener, byte... punctuations) {
-        return eventTask().on(listener, punctuations);
+    @Deprecated public final Off onTask(Consumer<Task> listener, byte... punctuations) {
+        return what().onTask(listener, punctuations);
     }
 
     public NAR trace() {

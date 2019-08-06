@@ -3,6 +3,7 @@ package nars.op.stm;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
+import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
@@ -14,6 +15,7 @@ import nars.Task;
 import nars.attention.What;
 import nars.bag.BagClustering;
 import nars.control.How;
+import nars.control.PartBag;
 import nars.control.channel.CauseChannel;
 import nars.task.NALTask;
 import nars.task.TemporalTask;
@@ -34,13 +36,14 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.confCompose;
 
-public class ConjClustering extends How {
+public class ConjClustering extends How implements Consumer<Task> {
 
     public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
@@ -147,22 +150,7 @@ public class ConjClustering extends How {
 
         super.starting(nar);
 
-
-        whenDeleted(nar.onTask(t -> {
-            if (
-                   !t.isEternal()
-                && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
-                && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
-                && t.volume() <= inputTermVolMax
-                && filter.test(t)) {
-
-                    data.put(t, pri(t));
-
-            }
-        }, puncIn));
-
         _update(nar.time());
-
     }
 
 
@@ -178,24 +166,35 @@ public class ConjClustering extends How {
     }
 
 
-    @Override
-    public /*synchronized*/ void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
+    //final WeakIdentityMap<What,What> whats = WeakIdentityMap.newConcurrentHashMap();
+    final PartBag<What> whats = new PartBag<>(16) {
+        //TODO store off() somewhere so it can be called when an entry is evicted. maybe use MetaMap for What like Concept
 
+        @Override public void onAdd(What w) {
+            super.onAdd(w);
+            synchronized (this) {
+                Off off = w.onTask(ConjClustering.this, puncIn);
+            }
+        }
+    };
 
+    @Override public /*synchronized*/ void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
+        //attempt register
+        whats.putAsync(w);
 
         if (busy.compareAndSet(false, true)) {
             float dur = w.dur();
             try {
-                long now1 = nar.time();
-                long lastNow = this.now;
-                if (lastNow < now1) {
-                    _update(now1);
+                long now = nar.time();
+                long before = this.now;
+                if (before < now) {
+                    _update(now);
                 }
 
-                if (now1 - lastLearn >= minDurationsPerLearning*dur) {
+                if (now - lastLearn >= minDurationsPerLearning*dur) {
                     data.learn(forgetRate(), learningIterations);
-                    lastLearn = now1;
+                    lastLearn = now;
                 }
             } finally {
                 busy.set(false);
@@ -280,7 +279,20 @@ public class ConjClustering extends How {
         return in.value();
     }
 
-    public static class STMClusterTask extends TemporalTask implements UnevaluatedTask {
+    @Override public void accept(Task t) {
+        if (
+            !t.isEternal()
+            && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
+            && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
+            && t.volume() <= inputTermVolMax
+            && filter.test(t)) {
+
+            data.put(t, pri(t));
+
+        }
+    }
+
+    public static final class STMClusterTask extends TemporalTask implements UnevaluatedTask {
 
         STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
             super(cp.getOne(), punc, t!=null ? t.negIf(cp.getTwo()) : null, now, start, end, evidence);

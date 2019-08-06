@@ -25,12 +25,10 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
     protected final RunThese whenDeleted = new RunThese();
 
     //    /** register a future deactivation 'off' of an instance which has been switched 'on'. */
-    @Deprecated
-    protected final void whenDeleted(Off... x) {
+    protected final void on(Off... x) {
         for (Off xx : x)
             whenDeleted.add(xx);
     }
-
 
     protected final void startLocal(T t) {
         this.local.forEachWith((c, T) -> c.startIn(T, this), t);

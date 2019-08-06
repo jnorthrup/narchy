@@ -94,7 +94,7 @@ public class BeliefPredict extends NARPart {
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
-        whenDeleted(nar.onDur(this::predict));
+        on(nar.onDur(this::predict));
     }
 
     protected synchronized void predict() {
