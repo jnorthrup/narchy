@@ -50,7 +50,7 @@ import static nars.time.Tense.TIMELESS;
     "Action_axiom",
     "Norm_(artificial_intelligence)"
 })
-abstract public class How extends PriNARPart implements Prioritizable {
+abstract public class How extends PriNARPart {
 
     public static final Logger logger = Log.logger(How.class);
 
@@ -186,17 +186,6 @@ abstract public class How extends PriNARPart implements Prioritizable {
         usedTotal.addAndGet(l);
         return l;
     }
-
-    @Override public final float pri() {
-        return pri.pri();
-    }
-
-    public final float pri(float p) {
-        //pri.pri(p); return p;
-        pri.amp(p); return p;
-    }
-
-
 
     @Deprecated
     public WhenInternal event() {

@@ -9,7 +9,6 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.control.MetaGoal;
-import nars.task.Tasked;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -28,7 +27,7 @@ import static java.lang.Float.NaN;
  * on memory (beliefs, and other measurable quantities/qualities).
  * use these to form adaptive runtime hypervisors ensuring optimal and correct operation
  */
-abstract public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Tasked> {
+abstract public class TaskCondition implements NARCondition, Predicate<Task>, Consumer<Task> {
 
 
     /**
@@ -90,8 +89,8 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
     }
 
     @Override
-    public final void accept(Tasked tasked) {
-        test(tasked.task());
+    public final void accept(Task tasked) {
+        test(tasked);
     }
 
     @Override

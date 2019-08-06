@@ -21,7 +21,7 @@ class WhenInternalTest {
         List<? extends WhenInternal> aList = n.when().collect(toList());
         assertEquals(new HashSet(aList).size(), aList.size(), ()->"duplicate events found");
 
-        Map<Term, List<WhenInternal>> a = n.atMap();
+        Map<Term, List<WhenInternal>> a = n.whens();
 
         assertTrue(a.size() > 1);
 

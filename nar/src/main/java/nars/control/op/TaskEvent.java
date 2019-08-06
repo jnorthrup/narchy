@@ -1,6 +1,5 @@
 package nars.control.op;
 
-import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.task.AbstractTask;
@@ -16,12 +15,12 @@ public final class TaskEvent extends AbstractTask {
 
     @Override
     public Task next(Object n) {
-        emit(task, ((What)n).nar);
+        emit(task, ((What)n));
         return null;
     }
 
-    public static void emit(Task task, NAR n) {
-        n.eventTask.emit(task, task.punc());
+    public static void emit(Task task, What w) {
+        w.eventTask.emit(task, task.punc());
     }
 
 }

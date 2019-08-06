@@ -1,11 +1,12 @@
 package nars.attention;
 
 import jcog.Paper;
+import jcog.event.ByteTopic;
 import jcog.math.FloatRange;
-import jcog.pri.Prioritizable;
 import jcog.pri.bag.Sampler;
 import jcog.util.ConsumerX;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.PriNARPart;
@@ -63,11 +64,13 @@ import java.util.stream.Stream;
  *  be conceptualized and self-executed.
   */
 @Paper
-abstract public class What extends PriNARPart implements Prioritizable, Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
+abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
 
     /** input bag */
     public final PriBuffer<Task> in;
+
+    public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
 
     private final DurLoop.DurNARConsumer loop;
 
@@ -135,16 +138,7 @@ abstract public class What extends PriNARPart implements Prioritizable, Sampler<
         //return 1;
     }
 
-    @Override
-    public float pri() {
-        return pri.asFloat();
-    }
 
-    @Override
-    public float pri(float p) {
-        pri.amp(p);
-        return pri.amp.floatValue();
-    }
 
     /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
      *  triggered input buffers */
@@ -172,7 +166,7 @@ abstract public class What extends PriNARPart implements Prioritizable, Sampler<
     public abstract Stream<Concept> concepts();
 
     public void emit(Task t) {
-        TaskEvent.emit(t, nar);
+        TaskEvent.emit(t, this);
     }
 
 

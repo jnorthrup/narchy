@@ -67,7 +67,8 @@ class NARTest {
                 .input("<a --> b>.", "<b --> c>.")
                 .stopIf(() -> false);
         m.onCycle(nn -> cycCount.incrementAndGet());
-        m.trace(sw).run(frames);
+        m.trace(sw);
+        m.run(frames);
 
         NAR n = NARS.tmp()
                 .input("<a --> b>.", "<b --> c>.")

@@ -63,7 +63,7 @@ public class TestNAR {
     private final int temporalTolerance = 0;
     public float freqTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private float confTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
-    private final ByteTopic<Tasked>[] taskEvents;
+    private final ByteTopic<Task> taskEvent;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
 
@@ -73,10 +73,7 @@ public class TestNAR {
     public TestNAR(NAR nar) {
         this.nar = nar;
 
-        this.taskEvents = new ByteTopic[]{
-                nar.eventTask,
-        };
-
+        this.taskEvent = nar.eventTask();
     }
 
     public TestNAR confTolerance(float t) {
@@ -323,7 +320,7 @@ public class TestNAR {
 
 
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongPredicate occ) {
-        return mustEmit(taskEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s, e)-> occ.test(s) && occ.test(e));
+        return mustEmit(taskEvent, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s, e)-> occ.test(s) && occ.test(e));
     }
 
 
@@ -335,20 +332,20 @@ public class TestNAR {
         return mustOutput(cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, (s,e)->start==s && end==e);
     }
     public TestNAR mustOutput(long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) {
-        return mustEmit(taskEvents, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time);
+        return mustEmit(taskEvent, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time);
     }
 
 
     public TestNAR mustOutput(long cyclesAhead, String task) {
         try {
-            return mustEmit(taskEvents, cyclesAhead, task);
+            return mustEmit(taskEvent, cyclesAhead, task);
         } catch (Narsese.NarseseException e) {
             throw new RuntimeException(e);
         }
     }
 
 
-    private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) {
+    private TestNAR mustEmit(ByteTopic<Task> c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time) {
         try {
             return mustEmit(c, cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, true);
         } catch (Narsese.NarseseException e) {
@@ -357,13 +354,13 @@ public class TestNAR {
     }
 
 
-    private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
+    private TestNAR mustEmit(ByteTopic<Task> c, long cyclesAhead, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean must) throws Narsese.NarseseException {
         long now = time();
         cyclesAhead = Math.round(cyclesAhead * NAL.test.TIME_MULTIPLIER);
         return mustEmit(c, now, now + cyclesAhead, sentenceTerm, punc, freqMin, freqMax, confMin, confMax, time, must);
     }
 
-    private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean mustOrMustNot) throws Narsese.NarseseException {
+    private TestNAR mustEmit(ByteTopic<Task> c, long cycleStart, long cycleEnd, String sentenceTerm, byte punc, float freqMin, float freqMax, float confMin, float confMax, LongLongPredicate time, boolean mustOrMustNot) throws Narsese.NarseseException {
 
 
         if (freqMin == -1)
@@ -407,12 +404,12 @@ public class TestNAR {
     }
 
     public TestNAR must(byte punc, boolean mustOrMustNot, TaskCondition tc) {
-        return must(taskEvents, punc, mustOrMustNot, tc);
+        return must(taskEvent, punc, mustOrMustNot, tc);
     }
 
-    public TestNAR must(ByteTopic<Tasked>[] c, byte punc, boolean mustOrMustNot, TaskCondition tc) {
-        for (ByteTopic<Tasked> cc: c)
-            cc.on(tc, punc);
+    public TestNAR must(ByteTopic<Task> c, byte punc, boolean mustOrMustNot, TaskCondition tc) {
+
+        c.on(tc, punc);
 
         if (reportStats)
             ((TaskCondition.DefaultTaskCondition)tc).similars(maxSimilars);
@@ -434,7 +431,7 @@ public class TestNAR {
     }
 
 
-    private TestNAR mustEmit(ByteTopic<Tasked>[] c, long cyclesAhead, String task) throws Narsese.NarseseException {
+    private TestNAR mustEmit(ByteTopic<Task> c, long cyclesAhead, String task) throws Narsese.NarseseException {
         Task t = Narsese.task(task, nar);
 
 
@@ -512,7 +509,7 @@ public class TestNAR {
             throw new UnsupportedOperationException();
 
         try {
-            return mustEmit(taskEvents,
+            return mustEmit(taskEvent,
                     cyclesAhead,
                     term, punc,
                     freqMin, freqMax, confMin, confMax,

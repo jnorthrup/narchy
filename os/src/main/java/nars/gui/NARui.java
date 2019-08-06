@@ -132,7 +132,7 @@ public class NARui {
         Map<String, Supplier<Surface>> m = Map.of(
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
                 "nar", () -> new ObjectSurface<>(n, 1),
-                "on", () -> new ObjectSurface(n.atMap().entrySet(), 2),
+                "on", () -> new ObjectSurface(n.whens().entrySet(), 2),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),

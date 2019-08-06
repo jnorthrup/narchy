@@ -1,15 +1,12 @@
 package nars;
 
 
-import com.google.common.base.Joiner;
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
 import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.byt.DynBytes;
-import jcog.data.list.FasterList;
 import jcog.event.ByteTopic;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -26,10 +23,7 @@ import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
-import nars.control.Control;
-import nars.control.How;
-import nars.control.NARPart;
-import nars.control.Why;
+import nars.control.*;
 import nars.control.channel.CauseChannel;
 import nars.eval.Evaluation;
 import nars.eval.Evaluator;
@@ -43,7 +37,6 @@ import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.TaskTable;
 import nars.task.NALTask;
-import nars.task.proxy.SpecialOccurrenceTask;
 import nars.task.util.TaskException;
 import nars.term.*;
 import nars.term.atom.Atom;
@@ -72,7 +65,6 @@ import org.slf4j.Logger;
 
 import java.io.*;
 import java.net.URL;
-import java.util.Set;
 import java.util.*;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -102,37 +94,21 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     static final String VERSION = "NARchy v?.?";
     static final Logger logger = Log.logger(NAR.class);
-    private static final Set<String> loggedEvents = java.util.Set.of("eventTask");
+
     public final Exec exe;
     public final NARLoop loop;
     public final Memory memory;
-    @Deprecated
-    public final MemoryExternal memoryExternal = new MemoryExternal(this);
+    @Deprecated public final MemoryExternal memoryExternal = new MemoryExternal(this);
     public final ConceptBuilder conceptBuilder;
     public final Emotion emotion;
-    public final Function<Term, What> whatBuilder;
+    private final Function<Term, What> whatBuilder;
 
-    public final AntistaticBag<What> what = new AntistaticBag<>(NAL.WHATS_CAPACITY) {
-        @Override
-        public Term key(What w) {
-            return w.id;
-        }
-
-    };
-    public final AntistaticBag<How> how = new AntistaticBag<>(NAL.HOWS_CAPACITY) {
-        @Override
-        public Term key(How h) {
-            return h.id;
-        }
-    };
-
+    public final AntistaticBag<What> what = new PartBag<>(NAL.WHATS_CAPACITY);
+    public final AntistaticBag<How> how = new PartBag<>(NAL.HOWS_CAPACITY);
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
-    public final ByteTopic<Task> eventTask = new ByteTopic(Op.Punctuation);
     public final Control control;
-
-
 
     /**
      * id of this NAR's self; ie. its name
@@ -140,7 +116,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     final Term self;
 
     final InheritableThreadLocal<What> active = new InheritableThreadLocal<>();
-    //private final AtomicBoolean synching = new AtomicBoolean(false);
 
     /**
      * @param memory
@@ -153,27 +128,20 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe, time, rng);
 
-        eventOnOff.on(this::indexPartChange);
-
-
-
-
         this.memory = memory;
         this.exe = exe;
-
         this.control = new Control(this);
-
         this.whatBuilder = whatBuilder;
-        self = NAL.randomSelf();
-
-
+        this.self = NAL.randomSelf();
         this.conceptBuilder = conceptBuilder;
+
+        eventOnOff.on(this::indexPartChange);
+
         memory.start(this);
 
         onCycle(this.emotion = new Emotion(this));
 
         Builtin.init(this);
-
 
         this.loop = NARLoop.the(this);
         start(exe);
@@ -399,15 +367,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * <p>
      * this does not indicate the NAR has stopped or reset itself.
      */
-    @Deprecated
-    public void clear() {
-//        synchronized (exe) {
-
-            logger.info("clear");
-            eventClear.emit(this);
-
-//        }
-
+    @Deprecated public void clear() {
+        logger.info("clear");
+        eventClear.emit(this);
     }
 
     /**
@@ -435,8 +397,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * gets a concept if it exists, or returns null if it does not
      */
-    @Nullable
-    public final Concept conceptualize(String conceptTerm) throws NarseseException {
+    @Nullable public final Concept conceptualize(String conceptTerm) throws NarseseException {
         return conceptualize($(conceptTerm));
     }
 
@@ -444,7 +405,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * ask question
      */
     public Task question(String termString) throws NarseseException {
-
         return question($(termString));
     }
 
@@ -654,7 +614,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * logs tasks and other budgeted items with a summary exceeding a threshold
      */
-    public NAR logPriMin(Appendable out, float priThresh) {
+    public Off logPriMin(Appendable out, float priThresh) {
         return log(out, v -> {
             Prioritized b = null;
             if (v instanceof Prioritized) {
@@ -664,7 +624,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                     b = (Prioritized) ((Pair) v).getOne();
                 }
             }
-            return b != null && b.priElseZero() > priThresh;
+            return b != null && b.priElseZero() >= priThresh;
         });
     }
 
@@ -869,58 +829,66 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         loop.run();
     }
 
-    public NAR trace(Appendable out, Predicate<String> includeKey) {
+    public Off trace(Appendable out, Predicate<String> includeKey) {
         return trace(out, includeKey, null);
     }
 
-    public NAR trace(Appendable out, Predicate<String> includeKey, @Nullable Predicate includeValue) {
-
-
-        String[] previous = {null};
-
-        eventTask.on((v) -> {
-
-            if (includeValue != null && !includeValue.test(v))
-                return;
-
-            try {
-                outputEvent(out, previous[0], "task", v);
-            } catch (IOException e) {
-                logger.error("outputEvent: {}", e.toString());
-            }
-            previous[0] = "task";
-        });
-        Topic.all(this, (k, v) -> {
-
-            if (includeValue != null && !includeValue.test(v))
-                return;
-
-            try {
-                outputEvent(out, previous[0], k, v);
-
-            } catch (IOException e) {
-                logger.error("outputEvent: {}", e.toString());
-            }
-            previous[0] = k;
-        }, includeKey);
-
-        return this;
+    /** the current context's eventTask */
+    public final ByteTopic<Task> eventTask() {
+        return what().eventTask;
     }
 
-    public NAR trace(Appendable out) {
+    public Off trace(Appendable out, Predicate<String> includeKey, @Nullable Predicate includeValue) {
+
+        return eventTask().on(new Consumer<Task>() {
+
+            String previous = null;
+
+            @Override
+            public void accept(Task v) {
+
+                if (includeValue != null && !includeValue.test(v))
+                    return;
+
+                try {
+                    outputEvent(out, previous, "task", v);
+                } catch (IOException e) {
+                    logger.error("outputEvent: {}", e.toString());
+                }
+                previous = "task";
+            }
+            {
+                Topic.all(this, (k, v) -> {
+
+                    if (includeValue != null && !includeValue.test(v))
+                        return;
+
+                    try {
+                        outputEvent(out, previous, k, v);
+
+                    } catch (IOException e) {
+                        logger.error("outputEvent: {}", e.toString());
+                    }
+                    previous = k;
+                }, includeKey);
+            }
+        });
+    }
+
+    public Off trace(Appendable out) {
         return trace(out, k -> true);
     }
 
-    public NAR log() {
+    public Off log() {
         return log(System.out);
     }
 
-    public NAR log(Appendable out) {
+    public Off log(Appendable out) {
         return log(out, null);
     }
 
-    public NAR log(Appendable out, Predicate includeValue) {
-        return trace(out, NAR.loggedEvents::contains, includeValue);
+    public Off log(Appendable out, Predicate includeValue) {
+        return trace(out, (x)->true, includeValue);
     }
 
     /**
@@ -1152,7 +1120,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final Off onTask(Consumer<Task> listener) {
-        return eventTask.on(listener);
+        return eventTask().on(listener);
     }
 //TODO
 //    public final Off onTaskWeak(Consumer<Task> listener, byte... punctuations) {
@@ -1160,7 +1128,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //    }
 
     public final Off onTask(Consumer<Task> listener, byte... punctuations) {
-        return eventTask.on(listener, punctuations);
+        return eventTask().on(listener, punctuations);
     }
 
     public NAR trace() {
@@ -1465,19 +1433,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * invokes any pending tasks without advancing the clock
      */
     public final NAR synch() {
-        //if (synching.compareAndSet(false, true)) {
-        synchronized (exe) {
-//                try {
-            exe.synch();
-//                } finally {
-//                    synching.set(false);
-//                }
-        }
-        //}
+        exe.synch();
         return this;
     }
-
-
 
     public final Task answerBelief(Term x, long when) {
         return answerBelief(x, when, when);
@@ -1503,13 +1461,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return new Facts(this, expMin, beliefsOrGoals);
     }
 
-//    public final Task is(Term content, long start, long end) {
-//        return answer(content, BELIEF, start, end);
-//    }
-
-//    public final Task wants(Term content, long start, long end) {
-//        return answer(content, GOAL, start, end);
-//    }
 
     /**
      * stream of all (explicitly and inferrable) internal events
@@ -1530,7 +1481,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * map of internal events organized by category
      */
-    public final Map<Term, List<WhenInternal>> atMap() {
+    public final Map<Term, List<WhenInternal>> whens() {
         return when().collect(Collectors.groupingBy(WhenInternal::category));
     }
 
@@ -1538,8 +1489,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * stream of all registered services
      */
     public final <X> Stream<X> parts(Class<? extends X> nAgentClass) {
-        return this.partStream().filter(x -> nAgentClass.isAssignableFrom(x.getClass()))
-                .map(x -> (X) x);
+        return this.partStream().filter(x -> nAgentClass.isAssignableFrom(x.getClass())).map(x -> (X) x);
     }
 
 

@@ -218,7 +218,7 @@ public class TaskTest {
         d.input("<a --> b>.", "<b --> c>.");
 
         long[] ev = {1, 2};
-        d.eventTask.on(t -> {
+        d.eventTask().on(t -> {
 
             if (t instanceof DerivedTask && ((DerivedTask)t).parentBelief()!=null && !t.isCyclic())
                 assertArrayEquals(ev, t.stamp(), "all double-premise derived terms have this evidence: "

@@ -118,7 +118,6 @@ public class TaskSummarizer extends NARPart implements Consumer<Task> {
     protected void starting(NAR nar) {
         summary.set(new TaskSummary());
         super.starting(nar);
-        whenDeleted(nar.eventTask.on(this));
     }
 
     @Override

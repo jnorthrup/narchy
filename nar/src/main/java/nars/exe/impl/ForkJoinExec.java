@@ -64,7 +64,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
 
     @Override
-    public void synch() {
+    public synchronized void synch() {
         logger.info("synch");
 
         int iter = 0;

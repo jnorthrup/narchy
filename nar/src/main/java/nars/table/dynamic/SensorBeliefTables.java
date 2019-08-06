@@ -220,7 +220,7 @@ public class SensorBeliefTables extends BeliefTables {
                 ww.links.link(tl);
             }
 
-            TaskEvent.emit(next, w.nar);
+            TaskEvent.emit(next, w);
         }
 
     }

@@ -111,7 +111,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         this.what = nar.what(); //TODO be parameter
 
 
-        /*@Deprecated*/ n.eventTask.on(this);
+//        /*@Deprecated*/ n.eventTask.on(this);
     }
 
     @Override
