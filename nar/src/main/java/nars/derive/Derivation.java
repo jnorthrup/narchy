@@ -92,10 +92,8 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term apply1(Term arg) {
             Truth t = Derivation.this.taskTruth;
-//            return arg.negIf(t!=null ? t.isNegative() : random.nextBoolean());
-            if (t == null)
-                throw new NullPointerException();
-            return arg.negIf(t.isNegative());
+            return arg.negIf(t!=null ? t.isNegative() : random.nextBoolean());
+            //return arg.negIf(t.isNegative());
         }
     };
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
@@ -103,8 +101,6 @@ public class Derivation extends PreDerivation {
         protected Term apply1(Term arg) {
             Truth b = Derivation.this.beliefTruth_at_Belief;
             return arg.negIf(b!=null ? b.isNegative() : random.nextBoolean());
-//            if (b == null)
-//                throw new NullPointerException();
 //            return arg.negIf(b.isNegative());
         }
     };

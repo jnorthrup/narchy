@@ -78,7 +78,7 @@ public class AttentionUI {
                     }
                 });
         return DurSurface.get(aaa.widget(), n, () -> {
-            aaa.set(Iterables.transform(n.control.graph.nodes(), Node::id));
+            aaa.set(n.control.graph.nodeIDs());
         } ).live();
     }
 

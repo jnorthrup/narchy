@@ -133,9 +133,10 @@ public class FZero extends GameX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        initPushButtonTank();
+        //initPushButtonTank();
         //initLeftRightPushButtonMutex();
-        //initTankContinuous();
+        addTankContinuous();
+        addBrake();
 
         //initUnipolarLinear(2f);
 
@@ -347,12 +348,23 @@ public class FZero extends GameX {
 
     }
 
+    private void addBrake() {
+        actionUnipolar($.inh(id, "slow"), (x) -> {
+            if (x >= 0.5f) {
+                fz.vehicleMetrics[0][6] *= (1 - ((x - 0.5f) * 2));
+                return x;
+            } else {
+                return 0; //no brake
+            }
+        });
+    }
+
     /** TODO correct ackerman/tank drive vehicle dynamics */
-    private void initTankContinuous() {
+    private void addTankContinuous() {
 
         float res = 0.04f;
         float powerScale = 0.2f;
-        float rotSpeed = 0.85f;
+        float rotSpeed = 1.5f;
         final float[] left = new float[1];
         final float[] right = new float[1];
         float fwdSpeed = 75;
@@ -366,6 +378,7 @@ public class FZero extends GameX {
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
+            if (x <= 0.5f) return 0;
             return x;
         });
 
@@ -375,6 +388,7 @@ public class FZero extends GameX {
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
+            if (x <= 0.5f) return 0;
             return x;
         });
 

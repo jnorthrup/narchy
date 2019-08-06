@@ -178,28 +178,11 @@ public class ConjClustering extends How implements Consumer<Task> {
         }
     };
 
-    @Override public /*synchronized*/ void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
+    @Override public void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
 
-        //attempt register
-        whats.putAsync(w);
+        whats.putAsync(w); //register
 
-        if (busy.compareAndSet(false, true)) {
-            float dur = w.dur();
-            try {
-                long now = nar.time();
-                long before = this.now;
-                if (before < now) {
-                    _update(now);
-                }
-
-                if (now - lastLearn >= minDurationsPerLearning*dur) {
-                    data.learn(forgetRate(), learningIterations);
-                    lastLearn = now;
-                }
-            } finally {
-                busy.set(false);
-            }
-        }
+        tryLearn();
 
         CentroidConjoiner conjoiner = this.conjoiners.get();
 
@@ -232,24 +215,46 @@ public class ConjClustering extends How implements Consumer<Task> {
 
         } while (!centroids.isEmpty() && kontinue.getAsBoolean());
 
-
         //in.acceptAll(conjoiner.out, w);
-
     }
 
+    public void tryLearn() {
+        if (busy.compareAndSet(false, true)) {
+            try {
+                learn();
+            } finally {
+                busy.set(false);
+            }
+        }
+    }
+
+    /** called from one thread at a time */
+    public void learn() {
+        long now = nar.time();
+        long before = this.now;
+
+        if (now - lastLearn >= minDurationsPerLearning* nar.dur()) {
+            if (before < now)
+                _update(now);
+
+            data.learn(forgetRate(), learningIterations);
+            lastLearn = now;
+        }
+    }
+
+    /** experimental */
     static final Comparator<Task> centroidContentsSort = Comparators
             .byFloatFunction(Task::priElseZero)
             .thenComparingInt(Task::volume)
             .reversed();
             //.thenComparingFloat(Task::originality);
 
-        @Override
+    @Override
     public boolean singleton() {
-        //TODO make NeuralGasNet synchronization free then this will be good to set false
-        //return true;
         return false;
     }
 
+    /** should be safe to be called from multiple threads */
     private void _update(long now) {
         //parameters must be set even if data is empty due to continued use in the filter
         //but at most once per cycle or duration
@@ -266,30 +271,26 @@ public class ConjClustering extends How implements Consumer<Task> {
         this.inputTermVolMax = Math.max(1, volMax - 2);
     }
 
-    protected float forgetRate() {
+    protected final float forgetRate() {
         return forgetRate.asFloat();
-        //return 1f;
-        //return 0.9f;
-        //return 0.75f;
-        //return 0.5f;
     }
 
     @Override
-    public float value() {
+    public final float value() {
         return in.value();
     }
 
-    @Override public void accept(Task t) {
-        if (
-            !t.isEternal()
-            && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
-            && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
-            && t.volume() <= inputTermVolMax
-            && filter.test(t)) {
-
+    @Override public final void accept(Task t) {
+        if (filter(t))
             data.put(t, pri(t));
+    }
 
-        }
+    public boolean filter(Task t) {
+        return !t.isEternal()
+            && !t.hasVars() //<-- TODO requires multi-normalization (shifting offsets)
+            && t.volume() <= inputTermVolMax
+            && (stampLenMax == Integer.MAX_VALUE || (t.stamp().length <= stampLenMax))
+            && filter.test(t);
     }
 
     public static final class STMClusterTask extends TemporalTask implements UnevaluatedTask {

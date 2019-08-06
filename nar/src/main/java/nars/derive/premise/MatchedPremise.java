@@ -15,7 +15,11 @@ public class MatchedPremise extends Premise {
 
     @Override public void apply(Derivation d) {
         d.reset(this.task, belief, beliefTerm);
+
+        if (!belief.equals(task))
+            emit(belief, d);
     }
+
 
     @Override
     public String toString() {

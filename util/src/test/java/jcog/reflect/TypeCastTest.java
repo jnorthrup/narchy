@@ -23,7 +23,6 @@
  */
 package jcog.reflect;
 
-import jcog.data.graph.Node;
 import jcog.data.graph.path.Path;
 import org.junit.jupiter.api.Test;
 
@@ -145,8 +144,8 @@ public class TypeCastTest {
         }
         
         int co = 0;
-        for( Node<Class,Function> c : tcast.nodes() ){
-            if( c.id().equals(clsFrom) )
+        for( Class c : tcast.nodeIDs() ) {
+            if( c.equals(clsFrom) )
                 co++;
         }
         

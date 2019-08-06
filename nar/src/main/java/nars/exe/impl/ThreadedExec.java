@@ -16,7 +16,7 @@ import java.util.function.Supplier;
  */
 abstract public class ThreadedExec extends MultiExec {
 
-    static final int inputQueueCapacityPerThread = 256;
+    static final int inputQueueCapacityPerThread = 512;
 
     protected final MpmcAtomicArrayQueue in;
 
@@ -41,14 +41,24 @@ abstract public class ThreadedExec extends MultiExec {
 
     @Override
     protected final void execute(/*@NotNull */Object x) {
-        if (!in.offer(x)) {
-            executeBlocked(x);
-        }
+        if (!in.offer(x))
+            executeJammed(x);
     }
 
-    private void executeBlocked(Object x) {
-        logger.warn("{} exe queue blocked on: {}", this, x);
-        executeNow(x);
+    private void executeJammed(Object x) {
+
+        //experimental: help drain queue
+        Object helping = in.poll();
+        if (helping!=null) {
+            logger.error("{} queue jam help={}", this, helping);
+            executeNow(helping);
+        }
+
+        if (!in.offer(x)) { //try again
+            logger.error("{} queue blocked offer={}", this, x);
+            //TODO print queue contents, but only from one thread and not more than every N seconds
+            executeNow(x); //else: execute (may deadlock)
+        }
     }
 
     @Override

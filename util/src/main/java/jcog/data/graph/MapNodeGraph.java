@@ -174,6 +174,10 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
         return nodes.values();
     }
 
+    public Iterable<N> nodeIDs() {
+        return Iterables.transform(nodes(), Node::id);
+    }
+
     @Override int nodeCount() {
         return nodes.size();
     }

@@ -32,34 +32,33 @@ import static nars.time.Tense.ETERNAL;
 public class Premise /*implements Comparable<Premise>*/ {
 
 //    public static final Premise[] EmptyArray = new Premise[0];
-    /**
-     * variable types unifiable in premise formation
-     */
-    public final static int var =
-            Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-            //VAR_QUERY.bit
-            //Op.Variable //all
-            ;
-    public final Task task;
-    public final Term beliefTerm;
+	/**
+	 * variable types unifiable in premise formation
+	 */
+	public final static int var =
+		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+		//VAR_QUERY.bit
+		//Op.Variable //all
+		;
+	public final Task task;
+	public final Term beliefTerm;
 //    public final long hash;
 
 
-    public Premise(Task task, Term beliefTerm) {
-        super();
+	public Premise(Task task, Term beliefTerm) {
+		super();
 
 
+		this.task = task;
 
-        this.task = task;
-
-        this.beliefTerm = beliefTerm;
+		this.beliefTerm = beliefTerm;
 
 //        this.hash = premiseHash(task, beliefTerm);
-    }
+	}
 
-    public void apply(Derivation d) {
-        d.reset(this.task, null, beliefTerm);
-    }
+	public void apply(Derivation d) {
+		d.reset(this.task, null, beliefTerm);
+	}
 
 //    /**
 //     * specially constructed hash that is useful for sorting premises by:
@@ -78,47 +77,48 @@ public class Premise /*implements Comparable<Premise>*/ {
 //                ((beliefTerm.hashCode() & 0b00000000000011111111111111111111));
 //    }
 
-    /**
-     * resolve the most relevant belief of a given target/concept
-     * <p>
-     * patham9 project-eternalize
-     * patham9 depending on 4 cases
-     * patham9 https:
-     * sseehh__ ok ill add that in a bit
-     * patham9 you need  project-eternalize-to
-     * sseehh__ btw i disabled immediate eternalization entirely
-     * patham9 so https:
-     * patham9 especially try to understand the "temporal temporal" case
-     * patham9 its using the result of higher confidence
-     * <p>
-     * returns ttl used, -1 if failed before starting
-     *
-     * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
-     */
-    @Nullable public Premise match(Derivation d, int matchTTL) {
+	/**
+	 * resolve the most relevant belief of a given target/concept
+	 * <p>
+	 * patham9 project-eternalize
+	 * patham9 depending on 4 cases
+	 * patham9 https:
+	 * sseehh__ ok ill add that in a bit
+	 * patham9 you need  project-eternalize-to
+	 * sseehh__ btw i disabled immediate eternalization entirely
+	 * patham9 so https:
+	 * patham9 especially try to understand the "temporal temporal" case
+	 * patham9 its using the result of higher confidence
+	 * <p>
+	 * returns ttl used, -1 if failed before starting
+	 *
+	 * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
+	 */
+	@Nullable
+	public Premise match(Derivation d, int matchTTL) {
 
-        if (!beliefTerm.op().taskable || /*beliefTerm.isNormalized() && */beliefTerm.hasAny(VAR_QUERY))
-            return this; //structural
+		if (!beliefTerm.op().taskable || /*beliefTerm.isNormalized() && */beliefTerm.hasAny(VAR_QUERY))
+			return this; //structural
 
-        boolean beliefConceptUnifiesTaskConcept = false;
+		boolean beliefConceptUnifiesTaskConcept = false;
 
-        Term beliefTerm = this.beliefTerm;
-        Term taskTerm = task.term();
-        if (taskTerm.equals(beliefTerm)) {
-            beliefConceptUnifiesTaskConcept = true;
-        } else if (taskTerm.op() == beliefTerm.op()) {
+		Term beliefTerm = this.beliefTerm;
+		Term taskTerm = task.term();
+		if (taskTerm.equals(beliefTerm)) {
+			beliefConceptUnifiesTaskConcept = true;
+		} else if (taskTerm.op() == beliefTerm.op()) {
 
-            if (taskTerm.equalsRoot(beliefTerm)) {
-                //difference involving XTERNAL etc
-                beliefConceptUnifiesTaskConcept = true;
-                if (beliefTerm.hasXternal() && !taskTerm.hasXternal())
-                    beliefTerm = taskTerm;
+			if (taskTerm.equalsRoot(beliefTerm)) {
+				//difference involving XTERNAL etc
+				beliefConceptUnifiesTaskConcept = true;
+				if (beliefTerm.hasXternal() && !taskTerm.hasXternal())
+					beliefTerm = taskTerm;
 
-            } else if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
+			} else if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
-                Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
+				Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
 
-                if (unifiedBeliefTerm != null) {
+				if (unifiedBeliefTerm != null) {
 
 //                    unifiedBeliefTerm = //d.random.nextBoolean() ?
 ////                            unifiedBeliefTerm
@@ -126,144 +126,125 @@ public class Premise /*implements Comparable<Premise>*/ {
 //                            unifiedBeliefTerm.normalize();
 
 //                    beliefTerm = unifiedBeliefTerm.normalize();
-                    beliefTerm = unifiedBeliefTerm;
+					beliefTerm = unifiedBeliefTerm;
 
-                    beliefConceptUnifiesTaskConcept = true;
-                } else {
-                    beliefConceptUnifiesTaskConcept = false;
-                }
+					beliefConceptUnifiesTaskConcept = true;
+				} else {
+					beliefConceptUnifiesTaskConcept = false;
+				}
 
-            }
+			}
 
-        }
+		}
 
 
-        Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);
+		Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);
 
-        if (task != belief && task.stamp().length == 0) {
-            //only allow unstamped tasks to apply with stamped beliefs.
-            //otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
-            if (belief == null || belief.stamp().length == 0)
-                return null;
-        }
+		if (task != belief && task.stamp().length == 0) {
+			//only allow unstamped tasks to apply with stamped beliefs.
+			//otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
+			if (belief == null || belief.stamp().length == 0)
+				return null;
+		}
 
-        Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm;//.unneg();
-        if (NAL.DEBUG) {
-            if (nextBeliefTerm.volume() > d.termVolMax)
-                throw new TermException("excessive volume", nextBeliefTerm); //return null; //WTF
-        }
+		Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm;//.unneg();
+		if (NAL.DEBUG) {
+			if (nextBeliefTerm.volume() > d.termVolMax)
+				throw new TermException("excessive volume", nextBeliefTerm); //return null; //WTF
+		}
 
-        if (!d.budget(task, belief))
-            return null;
+		if (!d.budget(task, belief))
+			return null;
 
 //        System.out.println(task + "\t" + belief + "\t" + nextBeliefTerm);
-        return belief!=null ? new MatchedPremise(task, belief, nextBeliefTerm) : this;
+		return belief != null ? new MatchedPremise(task, belief, nextBeliefTerm) : this;
 
-    }
-
-
-    private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
+	}
 
 
+	private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
-            NAR n = d.nar();
+		NAR n = d.nar();
 
-            final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
+		final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
 
-            boolean quest = task.isQuest();
+		boolean quest = task.isQuest();
 
-            if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
+		if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
 
-                BeliefTable answerTable = quest ? n.tableDynamic(beliefTerm, false) : beliefTable;
-                if (answerTable != null && !answerTable.isEmpty()) {
-                    Task a = tryAnswer(beliefTerm, answerTable, d);
-                    if (!quest)
-                        return a; //premise belief
-                }
-            }
+			BeliefTable answerTable = quest ? n.tableDynamic(beliefTerm, false) : beliefTable;
+			if (answerTable != null && !answerTable.isEmpty()) {
+				Task a = tryAnswer(beliefTerm, answerTable, d);
+				if (!quest)
+					return a; //premise belief
+			}
+		}
 
-            return beliefTable != null && !beliefTable.isEmpty() ?
-                    tryMatch(beliefTerm, beliefTable, beliefConceptUnifiesTaskConcept, d) : null;
+		return beliefTable != null && !beliefTable.isEmpty() ?
+			tryMatch(beliefTerm, beliefTable, beliefConceptUnifiesTaskConcept, d) : null;
 
-    }
+	}
 
 //        if (unifiedBelief && belief != null && Param.LINK_VARIABLE_UNIFIED_PREMISE) {
 //            linkVariable(unifiedBelief, d.nar, beliefConcept);
 //        }
 
 
-    private Task task(BeliefTable bb, Term beliefTerm, long s, long e, @Nullable Predicate<Task> beliefFilter, Derivation d) {
-        float dur = NAL.premise.ANSWER_HONEST_DUR ? 0 : d.dur();
+	private Task task(BeliefTable bb, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
+		float dur = NAL.premise.ANSWER_HONEST_DUR ? 0 : d.dur();
 
-        return bb.matching(s, e, beliefTerm, beliefFilter, dur, d.nar())
-            .task(true, false, false);
-    }
-
-
-
-    private Task tryMatch(Term beliefTerm, BeliefTable bb, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
-
-        Predicate<Task> beliefFilter =
-                beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
-                        t -> !t.equals(task) :
-                        null;
-
-        long[] focus = timeFocus(beliefTerm, d);
+		return bb.matching(when[0], when[1], beliefTerm, beliefFilter, dur, d.nar())
+			.task(true, false, false);
+	}
 
 
-        return task(bb, beliefTerm, focus[0], focus[1], beliefFilter, d);
-    }
+	private Task tryMatch(Term beliefTerm, BeliefTable bb, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
 
-    @Nullable
-    private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
+		Predicate<Task> beliefFilter =
+			beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
+				t -> !t.equals(task) :
+				null;
+		
+        return task(bb, beliefTerm, timeFocus(beliefTerm, d), beliefFilter, d);
+	}
 
-//        long ts = task.start(), te;
-//        if (ts == ETERNAL) {
-        long[] f = timeFocus(beliefTerm, d);
-        long ts = f[0], te = f[1];
-//        assert (ts != ETERNAL);
-//        } else {
-//            te = task.end();
-//        }
-        Task a = task(answerTable, beliefTerm,ts, te, null, d);
-        if (a != null) {
-            //assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+	@Nullable
+	private Task tryAnswer(Term beliefTerm, BeliefTable answerTable, Derivation d) {
 
-            a = task.onAnswered(a);
-            if (a == null)
-                return null; //interrupted by question
+        Task a = task(answerTable, beliefTerm, timeFocus(beliefTerm, d), null, d);
+		if (a != null) {
+			//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
+			a = task.onAnswered(a);
+			if (a!=null && a.isGoal())
+                emit(a, d); //since it won't be the beliefTask, do *something* with it
+		}
 
+		return a;
+	}
 
-//            if (a instanceof DynamicTruthTask && a.creation() >= timeBefore and a.creation() < d.time() && a.why().length==0) {
+    protected void emit(Task x, Derivation d) {
+        //            if (a instanceof DynamicTruthTask && a.creation() >= timeBefore and a.creation() < d.time() && a.why().length==0) {
 //                //HACK
 //                ((NALTask)a).cause(task.why());
 //            }
 
-
-            if (a.conf() > d.confMin) {
-                boolean answerGoalOrBelief = a.isGoal();
-                assert (answerGoalOrBelief || a.isBelief());
-
-                if (answerGoalOrBelief) {
-                    d.what.accept(a); //goal
-                } else {
-                    //d.what.emit(a); //belief
-                }
-            }
+        if (x.conf() > d.confMin) {
+            if (x.isGoal())
+                d.what.accept(x);
+            else
+                d.what.emit(x);
         }
-
-        return null;
     }
 
-    private long[] timeFocus(Term beliefTerm, Derivation d) {
+	private long[] timeFocus(Term beliefTerm, Derivation d) {
 
-        long[] l = d.deriver.timing.premise(d.what, task, beliefTerm);
+		long[] l = d.deriver.timing.premise(d.what, task, beliefTerm);
 
-        if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
-            Tense.dither(l, d.ditherDT);
+		if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
+			Tense.dither(l, d.ditherDT);
 
-        return l;
-    }
+		return l;
+	}
 
 //    private void linkVariable(boolean unifiedBelief, NAR n, Concept beliefConcept) {
 //        if (unifiedBelief) {
@@ -303,23 +284,23 @@ public class Premise /*implements Comparable<Premise>*/ {
 //    }
 
 
-    @Override
-    public boolean equals(Object obj) {
-        return this == obj || (
-                //hashCode() == obj.hashCode() &&
-                ((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm.equals(beliefTerm));
-    }
+	@Override
+	public boolean equals(Object obj) {
+		return this == obj || (
+			//hashCode() == obj.hashCode() &&
+			((Premise) obj).task.equals(task) && ((Premise) obj).beliefTerm.equals(beliefTerm));
+	}
 
-    @Override
-    public final int hashCode() {
-        //return (int) (hash >> 10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */;
-        throw new UnsupportedOperationException();
-    }
+	@Override
+	public final int hashCode() {
+		//return (int) (hash >> 10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */;
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public String toString() {
-        return "Premise(" + task + " * " + beliefTerm + ')';
-    }
+	@Override
+	public String toString() {
+		return "Premise(" + task + " * " + beliefTerm + ')';
+	}
 
 
 //    @Override
@@ -346,29 +327,29 @@ public class Premise /*implements Comparable<Premise>*/ {
 ////        return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
 //    }
 
-    public void derive(Derivation d, int matchTTL, int deriveTTL) {
-        FastCounter result;
+	public void derive(Derivation d, int matchTTL, int deriveTTL) {
+		FastCounter result;
 
-        Emotion e = d.nar.emotion;
+		Emotion e = d.nar.emotion;
 
-        int ttlUsed;
+		int ttlUsed;
 
-        Premise m = match(d, matchTTL);
-        if (m!=null) {
+		Premise m = match(d, matchTTL);
+		if (m != null) {
 
-            m.apply(d);
+			m.apply(d);
 
-            result = d.run(deriveTTL) ? e.premiseFire : e.premiseUnderivable;
+			result = d.run(deriveTTL) ? e.premiseFire : e.premiseUnderivable;
 
-            ttlUsed = Math.max(0, deriveTTL - d.ttl);
+			ttlUsed = Math.max(0, deriveTTL - d.ttl);
 
-        } else {
-            result = e.premiseUnbudgetable;
-            ttlUsed = 0;
-        }
+		} else {
+			result = e.premiseUnbudgetable;
+			ttlUsed = 0;
+		}
 
-        e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-        result.increment();
+		e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
+		result.increment();
 
-    }
+	}
 }

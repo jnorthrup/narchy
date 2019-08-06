@@ -6,12 +6,12 @@ import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
+import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.Agent;
 import jcog.learn.AgentBuilder;
 import jcog.learn.Agenterator;
 import jcog.math.FloatSupplier;
-import jcog.pri.PriMap;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -56,22 +56,12 @@ import java.util.Arrays;
      *
      */
     public final FasterList<Why> why = new FasterList<>(0, new Why[512]);
-//    {
-//        @Override
-//        protected Why[] newArray(int newCapacity) {
-//
-//            if (newCapacity >= Short.MAX_VALUE)
-//                throw new TODO("all possible 16-bit cause ID's consumed");
-//
-//            return new Why[newCapacity];
-//        }
-//    };
 
 
     /** hierarchical priority distribution DAG (TODO ensure acyclic) */
     public final MapNodeGraph<PriNode,Object> graph = new MapNodeGraph<>(
-            PriMap.newMap(false)
-            //new ConcurrentFastIteratingHashMap<>(new Node[0])
+            new ConcurrentFastIteratingHashMap<>(new Node[0])
+            //PriMap.newMap(false)
     );
     private final PriNode root = PriNode.constant("root", 1);
     private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
