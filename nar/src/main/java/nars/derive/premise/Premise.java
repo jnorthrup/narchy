@@ -204,7 +204,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 			beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
 				t -> !t.equals(task) :
 				null;
-		
+
         return task(bb, beliefTerm, timeFocus(beliefTerm, d), beliefFilter, d);
 	}
 
