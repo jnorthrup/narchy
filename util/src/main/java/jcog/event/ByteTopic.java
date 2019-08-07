@@ -18,14 +18,14 @@ public class ByteTopic<X> {
     }*/
 
     /** last channel is reserved for general catch 'all' sent once in all cases */
-    final static byte ANY = Byte.MAX_VALUE-1;
+    private final static byte ANY = Byte.MAX_VALUE-1;
 
-    final boolean allowDynamic = false;
+    private final boolean allowDynamic = false;
 
-    final Topic<X>[] chan = new Topic[Byte.MAX_VALUE /* signed max */];
+    private final Topic<X>[] chan = new Topic[Byte.MAX_VALUE /* signed max */];
 
     /** TODO write atomic variant of LongMetalBitset */
-    final MetalBitSet active = MetalBitSet.bits(chan.length);
+    private final MetalBitSet active = MetalBitSet.bits(chan.length);
 
     public ByteTopic(byte... preDefined) {
         validate(false, preDefined);
@@ -73,6 +73,11 @@ public class ByteTopic<X> {
     private Off _on(Consumer<X> each, byte c, boolean strong) {
         active.set(c, true);
         return chan[c].on(each, strong);
+    }
+
+    public final void emit(X x, byte chan) {
+        _emit(x, chan);
+        _emit(x, ANY);
     }
 
     public final void emit(X x, byte... chans) {

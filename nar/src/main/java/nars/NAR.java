@@ -103,8 +103,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final Emotion emotion;
     private final Function<Term, What> whatBuilder;
 
-    public final AntistaticBag<What> what = new PartBag<>(NAL.WHATS_CAPACITY);
-    public final AntistaticBag<How> how = new PartBag<>(NAL.HOWS_CAPACITY);
+    public final PartBag<What> what = new PartBag<>(NAL.WHATS_CAPACITY);
+    public final PartBag<How> how = new PartBag<>(NAL.HOWS_CAPACITY);
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
@@ -191,23 +191,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
         Part<NAR> p = change.getOne();
-        if (p instanceof How) {
-            How h = (How) p;
+        if (p instanceof What || p instanceof How) {
+            PartBag b = (p instanceof What) ? what : how;
             if (change.getTwo()) {
-                how.put(h);
-            } else {
-                boolean removed = how.remove(h.id) != null;
-                assert (removed);
-            }
-        }
-        if (p instanceof What) {
-            What w = (What) p;
-            if (change.getTwo()) {
-                What inserted = what.put(w);
+                b.putAsync(p);
                 //TODO handle rejection, eviction etc
             } else {
-                @Nullable What removed = what.remove(w.id);
-                assert (removed == p);
+                boolean removed = b.remove(((PriNARPart) p).id) != null;
+                assert (removed);
             }
         }
     }
@@ -558,13 +549,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return input(pri, term, punc, occurrenceTime, occurrenceTime, freq, conf);
     }
 
-    public Task input(float pri, Term term, byte punc, long start, long end, float freq, float conf) throws TaskException {
+    public Task input(float pri, Term term, byte punc, long start, long end, float freq, double conf) throws TaskException {
 
-        PreciseTruth tr = Truth.theDithered(freq, c2w(conf), this);
-        Task z = Task.tryTask(term, punc, tr, (c, truth) -> {
-            Task y = NALTask.the(c, punc, truth, time(), start, end, evidence());
-            return y;
-        }, false);
+        Task z = Task.tryTask(term, punc,
+            Truth.theDithered(freq, c2w(conf), this),
+            (c, truth) ->
+                NALTask.the(c, punc, truth, time(), start, end, evidence())
+            , false);
+
 
         z.pri(pri);
         input(z);

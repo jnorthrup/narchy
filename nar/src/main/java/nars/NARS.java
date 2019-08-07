@@ -144,8 +144,8 @@ public class NARS {
 
                 n.termVolMax.set(22);
 
-                ((TaskLinkWhat) n.what()).links.linksMax.set(32);
-                ((TaskLinkWhat) n.what()).links.decay.set(0.1f);
+                ((TaskLinkWhat) n.what()).links.linksMax.set(64);
+                ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
 
 
                 float p = 0.5f;
@@ -194,7 +194,7 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume,
-                1, 512,
+                1, 256,
                 8, 128,
                 16, 32,
                 32, 8

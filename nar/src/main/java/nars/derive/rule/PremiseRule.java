@@ -370,15 +370,12 @@ public class PremiseRule extends ProxyTerm {
 
                 //case "eventsOfNeg":
 
-//                case "eventCommon":
-//
-//
-//                    neq(XX, YY);
-//                    is(X, CONJ);
-//                    is(Y, CONJ);
-//                    constraints.add(new CommonSubEventConstraint(XX, YY));
-//
-//                    break;
+                case "eventCommon":
+                    is(X, CONJ);
+                    is(Y, CONJ);
+                    constraints.add(new CommonSubEventConstraint(XX, YY));
+
+                    break;
 
 
                 case "subsMin":

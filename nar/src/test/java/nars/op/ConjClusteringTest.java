@@ -21,6 +21,7 @@ class ConjClusteringTest {
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, 4, ccap, Task::isInput);
         n.start(c);
+        n.run(1); //HACK
 
 
         for (int i = 0; i < ccap; i++)
@@ -40,10 +41,12 @@ class ConjClusteringTest {
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, 4, ccap, Task::isInput);
         n.start(c);
+        n.run(1); //HACK
 
         for (int i = 0; i < ccap; i++)
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(2);
+
         BeliefTable b = n.concept($.$("(&&,(--,x0),(--,x1),(--,x2),(--,x3))")).beliefs();
         assertEquals(1, b.taskCount());
 

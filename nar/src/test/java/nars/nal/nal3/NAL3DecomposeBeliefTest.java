@@ -130,15 +130,23 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
     @Test
     void testSubjPred_Self_Factor_arity2() {
         test
+
             .believe("((&&,a,b)-->(&&,a,c))", 1f, 0.9f)
             .mustBelieve(cycles, "(b-->c)", 1f, 0.81f)
+            .mustNotOutput(cycles, "((a&&b)-->(a&&c))", QUESTION) //we already know this why ask it
 //            .mustQuestion(cycles, "((a&&b)-->(&&,a,c,?1))") //nal3.guess
 //            .mustQuestion(cycles, "((&&,a,b,?1)-->(a&&c))")
-            .mustNotOutput(cycles, "((a&&b)-->(a&&c))", QUESTION) //we already know this why ask it
             .mustNotOutput(cycles, "((a &&+- b)-->(&&,a,c,?1))", QUESTION) //+- not helpful
             .mustNotOutput(cycles, "((&&,a,b,?1)-->(a &&+- c))", QUESTION)
 
         ;
+    }
+    @Test
+    void testSubjPred_Self_Factor_arity3() {
+        test
+            .believe("((&&,x,b,y)-->(&&,x,c,y))", 1f, 0.9f)
+            .mustBelieve(cycles, "(b-->c)", 1f, 0.81f)
+            ;
     }
 
     @Test
@@ -148,6 +156,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .believe("(x-->(&&,a,b))", 0.9f, 0.9f)
                 .mustBelieve(cycles, "(x-->c)", 0.81f, 0.66f);
     }
+
     @Test
     void testArity1_Decomposition_Intersect_3_2_neg() {
         test

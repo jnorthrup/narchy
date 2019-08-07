@@ -42,7 +42,9 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class FZero extends GameX {
 
-    public static final double DRAG = 0.98;
+    static final double restitution = 0.01;
+    static final double DRAG = 0.98;
+
     private final FZeroGame fz;
     private float progress;
     public Bitmap2DSensor c;
@@ -701,7 +703,7 @@ public class FZero extends GameX {
 
             imageGraphics = image.getGraphics();
             largeFont = getFont().deriveFont(100f);
-
+            font = getFont().deriveFont(32f);
 
         }
 
@@ -710,6 +712,8 @@ public class FZero extends GameX {
                     | (D(angle + 2 * Math.PI / 3, light, dark) << 8)
                     | (D(angle - 2 * Math.PI / 3, light, dark));
         }
+
+        Font font = null;
 
         public void update() {
 
@@ -737,7 +741,7 @@ public class FZero extends GameX {
                     }
                     power = FULL_POWER;
                     playerAngle = hitWallCount = 0;
-                    imageGraphics.setFont(getFont().deriveFont(32f));
+                    imageGraphics.setFont(font);
                     onPowerBar = false;
                 }
             } else if (vehicleMetrics[0][1] < 81984 && power > 0) {
@@ -855,7 +859,6 @@ public class FZero extends GameX {
                                         vehicleMetrics[j][8] = vehicleMetrics[j][3]
                                                 = vehicleMetrics[0][8] - normalZ * ratio;
 
-                                        double restitution = 0.5;
                                         vehicleMetrics[i][2] = -vehicleMetrics[j][2] * restitution;
                                         vehicleMetrics[i][3] = -vehicleMetrics[j][3] * restitution;
                                         if (i == 0) {
@@ -875,8 +878,7 @@ public class FZero extends GameX {
                         int vehicleZ = ((int) vehicleMetrics[j][1]) >> 5;
                         for (int z = -2; z <= 2; z++) {
                             for (int x = -2; x <= 2; x++) {
-                                if (Math.abs(raceTrack
-                                        [0x1FF & (z + vehicleZ)][0x1FF & (x + vehicleX)]) == 1) {
+                                if (Math.abs(raceTrack[0x1FF & (z + vehicleZ)][0x1FF & (x + vehicleX)]) == 1) {
                                     double normalX = vehicleMetrics[j][0]
                                             - (((x + vehicleX) << 5) + 16);
                                     double normalZ = vehicleMetrics[j][1]
@@ -891,7 +893,7 @@ public class FZero extends GameX {
                                                     = vehicleMetrics[0][7] - normalX * ratio;
                                             vehicleMetrics[j][8] = vehicleMetrics[j][3]
                                                     = vehicleMetrics[0][8] - normalZ * ratio;
-                                            vehicleMetrics[j][6] /= 2;
+                                            vehicleMetrics[j][6] *= restitution;
                                             if (j == 0) {
                                                 hitWallCount = 5;
                                             }

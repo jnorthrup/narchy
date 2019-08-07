@@ -113,7 +113,7 @@ public class Remember extends AbstractTask {
 
         NAR n = w.nar;
 
-        boolean the = (input == this.input);
+//        boolean the = (input == this.input);
 
         if (!store)
             link(input, w);

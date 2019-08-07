@@ -329,6 +329,10 @@ public final class TruthFunctions {
     }
 
     public static float c2w(float c) {
+        return (float)c2w((double)c);
+    }
+
+    public static double c2w(double c) {
         if (c < NAL.truth.TRUTH_EPSILON)
             throw new Truth.TruthException("confidence underflow", c);
 
@@ -337,7 +341,7 @@ public final class TruthFunctions {
             //c = Param.TRUTH_CONF_MAX;
         }
 
-        if (!Float.isFinite(c))
+        if (!Double.isFinite(c))
             throw new Truth.TruthException("non-finite confidence", c);
 
         return c2wSafe(c);
