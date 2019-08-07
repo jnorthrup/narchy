@@ -17,14 +17,14 @@ class SequenceTest {
     public static final Term X = $$("x");
     public static final Term Y = $$("y");
 
-    @Test void testIntervalOp() {
+    @Test void IntervalOp() {
         assertFalse(Op.INTERVAL.taskable);
         assertFalse(Op.INTERVAL.conceptualizable);
         assertFalse(Op.INTERVAL.eventable);
         assertTrue(Op.INTERVAL.atomic);
     }
 
-    @Test void test1() {
+    @Test void one() {
         ConjList l = new ConjList();
         l.add(1L, $$("x"));
         l.add(2L, $$("y"));
@@ -58,7 +58,7 @@ class SequenceTest {
         assertEquals("(&/,x,+1,(y&&z),+2,x)", s.toString());
 
     }
-    @Test void testTransform() {
+    @Test void Transform() {
         ConjList l = new ConjList();
         l.add(1L, X);
         l.add(2L, Y);

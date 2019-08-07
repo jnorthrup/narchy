@@ -26,7 +26,7 @@ public class SectTest {
         TermTest.assertEquivalentTerm("(|,a,b,c)", "(|,(b|a),c)");
     }
 
-    @Test void testSectDiffEquivAndReductions() {
+    @Test void SectDiffEquivAndReductions() {
         TermTest.assertEquivalentTerm("(&,b,--a)", "(b - a)");
         TermTest.assertEquivalentTerm("(|,b,--a)", "(b ~ a)");
 
@@ -58,12 +58,12 @@ public class SectTest {
 //    }
 
 
-    @Test void testSectDiff() {
+    @Test void SectDiff() {
         Term t = CONJ.the((Term)$$("(--,(?2~(|,(--,(?2~?1)),?2,?3)))"), $$("?2"), $$("?3"));
         assertEquals(t, t);
     }
 
-    @Disabled @Test void testFactorCommonSect() {
+    @Disabled @Test void factorCommonSect() {
         assertEq("(a-->c)", "((a&b)-->(b&c))");
         assertEq("(a-->c)", "((a|b)-->(b|c))");
         //??
@@ -71,7 +71,7 @@ public class SectTest {
         //assertEq("(a-->c)", "((a&b)-->(b|c))");
     }
 
-    @Test void testTooComplexSectDiff() {
+    @Test void TooComplexSectDiff() {
 //        assertEq("", "(a --> --(x-y))");
 
         /*
@@ -91,7 +91,7 @@ public class SectTest {
     }
 
     @Disabled
-    @Test void testInvalidTemporal1() {
+    @Test void InvalidTemporal1() {
         String a = "(x &&+1 y)";
         String b = "(x &&+2 y)";
         String c = "z";
@@ -122,7 +122,7 @@ public class SectTest {
 //        assertEq(Null, "((a==>+1 b)~(a ==>+2 b))");
 //        //TermTest.assertEq("((--,(c ==>+2 d))&(a ==>+1 b))", "((X &&+837 Y)~(--,(Y &&+1424 X)))");
 //    }
-//    @Test void testValidTemporal1() {
+//    @Test void ValidTemporal1() {
 //        assertEq("((x &&+1 y)|(x &&+2 z))", "((x &&+1 y)|(x &&+2 z))");
 //    }
 }

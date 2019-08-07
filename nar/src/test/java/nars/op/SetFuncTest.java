@@ -73,7 +73,7 @@ class SetFuncTest {
     }
 
 
-    @Test void testMember1_true() {
+    @Test void Member1_true() {
         assertEquals(
                 Set.of($$("member(a,{a,b})")),
                 Evaluation.eval($$("member(a,{a,b})"), n));
@@ -82,14 +82,14 @@ class SetFuncTest {
                 Evaluation.eval($$("member(a,(a,b))"), n));
 
     }
-    @Test void testMember1_false() {
+    @Test void Member1_false() {
         assertEquals(
                 Set.of($$("--member(c,{a,b})")),
                 Evaluation.eval($$("member(c,{a,b})"), true, true, n));
 
     }
 
-    @Test void testMember1_generator() {
+    @Test void Member1_generator() {
         assertEquals(
                 Set.of($$("member(a,{a,b})"),$$("member(b,{a,b})")),
                 Evaluation.eval($$("member(#x,{a,b})"), n));
@@ -99,7 +99,7 @@ class SetFuncTest {
                 Evaluation.eval($$("(member(#x,{a,b}) && (#x))"), n));
 
     }
-    @Test void testMultiTermute1() {
+    @Test void MultiTermute1() {
         nars.term.Term s = $.$$("(((--,(tetris-->((--,#2)&&left))) &&+4710 (member(#1,{right,#2})&&(tetris-->#1))) &&+4000 member(#1,{2,3}))");
         assertEquals(
                 Set.of(
@@ -110,7 +110,7 @@ class SetFuncTest {
     }
 
 
-    @Test void testMember_Combine_Rule() {
+    @Test void Member_Combine_Rule() {
         NAR n = NARS.shell();
         new Deriver(Derivers.files(n, "nal2.member.nal"));
         TestNAR t = new TestNAR(n);
@@ -120,7 +120,7 @@ class SetFuncTest {
         t.mustBelieve(cycles, "(member(#1,{a,b,c,d}) && (x(#1), y(#1)))", 1, 0.81f);
         t.run(cycles);
     }
-    @Test void testMember_Diff_Rule() {
+    @Test void Member_Diff_Rule() {
         NAR n = NARS.shell();
         new Deriver(Derivers.files(n, "nal2.member.nal"));
         TestNAR t = new TestNAR(n);
@@ -131,7 +131,7 @@ class SetFuncTest {
         t.run(cycles);
     }
 
-    @Test void testTermutesShuffled() {
+    @Test void TermutesShuffled() {
 
         nars.term.Term s = $.$$("(member(#1,{a,b,c})&&(x-->#1)))");
 

@@ -28,12 +28,12 @@ public class UnifyTest {
 
     private static final int INITIAL_TTL = 512;
 
-    @Test void testResolvePosNeg() {
+    @Test void ResolvePosNeg() {
         Unify u = new UnifyAny(new XoRoShiRo128PlusRandom(1));
         Term y = u.resolveTermRecurse($$("--x"));
         assertEq("(--,x)", y);
     }
-    @Test void testPossiblyUnifiable() {
+    @Test void PossiblyUnifiable() {
         Term x = $$("x"), y = $$("y"), z = $$("z");
 
         assertTrue( Subterms.possiblyUnifiable(SETe.the(x.neg(), $.varDep(1)), SETe.the(x.neg(), z), Op.Variable) );
@@ -75,7 +75,7 @@ public class UnifyTest {
         }
     }
 
-    @Test void testEllipsisContainingTermNotEqual() {
+    @Test void EllipsisContainingTermNotEqual() {
         assertNotEquals( $$("{a, %X}"), $$("{a, %X..+}"));
     }
 
@@ -820,14 +820,14 @@ public class UnifyTest {
                 true);
     }
 
-    @Test void testConjInConjConstantFail() {
+    @Test void ConjInConjConstantFail() {
         test(Op.VAR_PATTERN,
                 "((_1&|_2) &&+5 ((--,_1)&|(--,_2)))",
                 "(_1 &&+5 ((--,_1)&|_2))",
                 false);
     }
 //    @Disabled
-//    @Test void testConjInConjConstantFail2() {
+//    @Test void ConjInConjConstantFail2() {
 //        for (int a : new int[] { 5 }) {
 //            for (int b : new int[]{1, 5}) {
 //                Term x = $$("((_1 &&+5 ((--,_1)&&_2)) &&+5 (((--,_2)&&_3) &&+" + a + " (--,_3)))");
@@ -961,41 +961,41 @@ public class UnifyTest {
         return f;
     }
 
-    @Test void testVariableOrdering() {
+    @Test void VariableOrdering() {
         UnifyAny u = new UnifyAny();
         Term a = $$("#1"), b = $$("(--,%1)");
         assertTrue( u.unify(a, b) );
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
-    @Test void testVariableOrderingReverseA() {
+    @Test void VariableOrderingReverseA() {
         UnifyAny u = new UnifyAny();
         Term a = $$("(--,#1)"), b = $$("%1");
         assertTrue( u.unify(a, b) );
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
 
-    @Test void testVariableOrderingReverseB() {
+    @Test void VariableOrderingReverseB() {
         UnifyAny u = new UnifyAny();
         Term a = $$("#1"), b = $$("(--,%1)");
         assertTrue( u.unify(b, a) );
         assertEquals("{%1=(--,#1)}", u.xy.toString()); //WRONG: "{#1=(--,%1)}",
     }
 
-    @Test void testXternalConjUnifyWTF() {
+    @Test void XternalConjUnifyWTF() {
         UnifyAny u = new UnifyAny();
         Term
             a = $$("(hasGUEState($1,GUE_MaximizedState) &&+- hasGUEState($1,GUE_UncoveredState))"),
             b = $$("(agent($1,#2) &&+- ({#2}-->ComputerUser))");
         assertFalse( u.unifies(a, b) );
     }
-    @Test void testXternalConjUnifyWTF2() {
+    @Test void XternalConjUnifyWTF2() {
         UnifyAny u = new UnifyAny();
         Term
                 a = $$("(x-->y)"),
                 b = $$("((x-->y) &&+- (x -->y))");
         assertFalse( u.unifies(a, b) );
     }
-    @Test void testXternalConjUnifyWTF3() {
+    @Test void XternalConjUnifyWTF3() {
         UnifyAny u = new UnifyAny();
         Term
                 a = $$("(x-->y)"),

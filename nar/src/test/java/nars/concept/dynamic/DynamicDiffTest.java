@@ -34,7 +34,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
 //
 //    }
 
-    @Test void testDiffUnion() throws Narsese.NarseseException {
+    @Test void DiffUnion() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);
@@ -51,7 +51,7 @@ class DynamicDiffTest extends AbstractDynamicTaskTest {
                 "%.56;.25%", n.beliefTruth(xMinY, n.time()).toString()
         );
     }
-    @Test void testDiffIntersection() throws Narsese.NarseseException {
+    @Test void DiffIntersection() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe("c:x", 0.75f, 0.50f);
         n.believe("c:y", 0.25f, 0.50f);

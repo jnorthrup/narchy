@@ -990,16 +990,16 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test void testConjQuestion() {
+    @Test void ConjQuestion() {
         test.termVolMax(4).input("(  x && y).").input("x?").mustQuestion(10, "(  x && y)");
     }
-    @Test void testConjQuestion_neg() {
+    @Test void ConjQuestion_neg() {
         test.termVolMax(4).input("(--x && y).").input("x?").mustQuestion(10, "(--x && y)");
     }
-    @Test void testConjQuest() {
+    @Test void ConjQuest() {
         test.termVolMax(4).input("(  x && y).").input("x@").mustQuest(10, "(  x && y)");
     }
-    @Test void testConjQuest_neg() {
+    @Test void ConjQuest_neg() {
         test.termVolMax(4).input("(--x && y).").input("x@").mustQuest(10, "(--x && y)");
     }
 
@@ -1131,7 +1131,7 @@ public class NAL5Test extends NALTest {
         ;
     }
 
-    @Test void testEquivEmulationNegatingBoth() {
+    @Test void EquivEmulationNegatingBoth() {
         test.termVolMax(5)
             .believe("(x==>y)")
             .believe("(y==>x)")

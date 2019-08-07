@@ -44,7 +44,7 @@ class TemporalTermTest {
     }
 
 
-    @Test void testInvalidInh() {
+    @Test void InvalidInh() {
         assertEq("(x-->(x))", "(x-->(x))"); //valid
         assertEq("x(x)", "((x)-->x)"); //valid
         assertEq("(x-->(x,x))", "(x-->(x,x))"); //valid
@@ -55,7 +55,7 @@ class TemporalTermTest {
         assertInvalidTerms("(x<->(x<->y))");
     }
 
-    @Test void testInvalidInh_NegConjComponent() {
+    @Test void InvalidInh_NegConjComponent() {
         assertInvalidTerms("((x-->r)-->((--,r)&&c))");
     }
 
@@ -252,7 +252,7 @@ class TemporalTermTest {
 
     }
 
-    @Test void testInvalidIntEventTerms() {
+    @Test void InvalidIntEventTerms() {
 
         assertEq(Null, "(/ && x)");
 //        assertEq(Null, "(1 && x)");
@@ -290,7 +290,7 @@ class TemporalTermTest {
         assertTrue(Task.validTaskTerm(ss));
     }
 
-    @Test void testImplTransformMaintainsTiming() {
+    @Test void ImplTransformMaintainsTiming() {
         assertEq(
                 "((_2-->_1) ==>+3 (_1-->_3))",
                 $$("(($1-->_1) ==>-1 ((_2-->$1) &&+4 (_1-->_3)))").replace($.varIndep(1), $$("_2"))
@@ -300,7 +300,7 @@ class TemporalTermTest {
                 $$("(((_1-->_3) &&+4 (_2-->$1)) ==>-1 ($1-->_1))").replace($.varIndep(1), $$("_2"))
         );
     }
-    @Test void testConjTransformMaintainsTiming() {
+    @Test void ConjTransformMaintainsTiming() {
         assertEq(
                 "((x-->a) &&+3 (z-->a))",
                 $$("((x-->a) &&+1 ((y-->b) &&+2 (z -->a)))").replace($$("b"), $$("y"))

@@ -208,15 +208,15 @@ class BooleanTest {
     }
 
 
-    @Disabled @Test void testSATRandomBeliefEternal() {
+    @Disabled @Test void SATRandomBeliefEternal() {
         testSATRandom(true, false);
     }
-    @Disabled @Test void testSATRandomBeliefTemporal() {
+    @Disabled @Test void SATRandomBeliefTemporal() {
         testSATRandom(true, true);
     }
 
-    @Disabled @Test void testSATRandomGoalEternal() { testSATRandom(false, false);    }
-    @Disabled @Test void testSATRandomGoalTemporal() { testSATRandom(false, true);    }
+    @Disabled @Test void SATRandomGoalEternal() { testSATRandom(false, false);    }
+    @Disabled @Test void SATRandomGoalTemporal() { testSATRandom(false, true);    }
 
     static void testSATRandom(boolean beliefOrGoal, boolean temporalOrEternal) {
 

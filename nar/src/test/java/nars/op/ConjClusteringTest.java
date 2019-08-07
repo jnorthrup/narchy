@@ -58,7 +58,7 @@ class ConjClusteringTest {
         //assertTrue(p < n.priDefault(BELIEF)); //pri less than its components
     }
 
-    @Test void testDimensionalDistance1() {
+    @Test void DimensionalDistance1() {
         NAR n = NARS.shell();
         n.time.dur(4);
 

@@ -328,7 +328,7 @@ class TimeGraphTest {
 
     }
 
-    @Test void testNoBrainerNegation_impl() {
+    @Test void NoBrainerNegation_impl() {
 
         TimeGraph C = newTimeGraph(1);
         C.know($$("x"), 1);
@@ -336,7 +336,7 @@ class TimeGraphTest {
 
         assertSolved("(--x ==>+- y)", C, "((--,x) ==>+1 y)");
     }
-    @Test void testNoBrainerNegation_conj() {
+    @Test void NoBrainerNegation_conj() {
 
         TimeGraph C = newTimeGraph(1);
         C.know($$("x"), 1);
@@ -504,7 +504,7 @@ class TimeGraphTest {
         assertSolved("(y &&+- z)", C, "(y&&z)@1");
     }
 
-    @Test void testTemporalInRelation1() {
+    @Test void TemporalInRelation1() {
         TimeGraph C = newTimeGraph(1);
 
         C.know($$("a"), 1); //C.autoNeg.add($$("a"));
@@ -517,7 +517,7 @@ class TimeGraphTest {
         assertSolved("(x, (a ==>+- b))", C, "(x,(a ==>+1 b))");
     }
 
-    @Test void testTemporalInRelation2() {
+    @Test void TemporalInRelation2() {
         TimeGraph C = newTimeGraph(1);
         C.know($$("(a &&+1 b)")/*, ETERNAL*/);
 
@@ -525,7 +525,7 @@ class TimeGraphTest {
         assertSolved("(x, (a ==>+- b))", C, "(x,(a ==>+1 b))");
     }
 
-    @Test void testTemporalInRelation2_neg() {
+    @Test void TemporalInRelation2_neg() {
         TimeGraph C = newTimeGraph(1);
         C.know($$("(a &&+1 b)")/*, ETERNAL*/);
 

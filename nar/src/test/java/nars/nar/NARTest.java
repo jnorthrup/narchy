@@ -231,7 +231,7 @@ class NARTest {
                 0, 0, 0.9f, 0.9f);
     }
 
-    @Test void testImageConceptualize() throws Narsese.NarseseException {
+    @Test void ImageConceptualize() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         TermTest.assertEq("(x,z(y))", n.conceptualize("(x, (y --> (z,/)))").term());
 

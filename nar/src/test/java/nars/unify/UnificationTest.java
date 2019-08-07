@@ -19,13 +19,13 @@ class UnificationTest {
         assertSubst("[(a&&x)]", u, "(x && #1)");
     }
 
-    @Test void testPermute2() {
+    @Test void Permute2() {
         Unification u = new UnifyAny().unification($$("(%1<->%2)"),$$("(a<->b)"), 4);
         assertSubst("[(a,b), (b,a)]", u,
                 "(%1,%2)");
     }
 
-    @Test void testPermute6() {
+    @Test void Permute6() {
         Unification u = new UnifyAny().unification($$("{%1,%2,%3}"),$$("{x,y,z}"), 8);
         assertSubst("[(x,y,z), (x,z,y), (y,x,z), (y,z,x), (z,x,y), (z,y,x)]", u,
                 "(%1,%2,%3)");

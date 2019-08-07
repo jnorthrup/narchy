@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DynamicImplTest extends AbstractDynamicTaskTest {
 
-    @Test void testTables() {
+    @Test void Tables() {
         assertDynamicTable("(x==>y)");
         assertDynamicTable("(y==>x)");
         assertDynamicTable("(--y==>x)");
@@ -92,7 +92,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         assertEquals("(x ==>+1 y). 0 %1.0;.34%", n.belief($$("(x ==>+1 y)"), 0, 0).toStringWithoutBudget());
     }
 
-    @Test void testWeakPolarity() throws Narsese.NarseseException {
+    @Test void WeakPolarity() throws Narsese.NarseseException {
         n.input("x. %0.2%");
         n.input("y.");
         {

@@ -59,17 +59,17 @@ class TermLinkTest {
                 "[open(John,portal(a(d),b,c)), #1]"
         );
     }
-    @Test void testImplConjTemplates2() {
+    @Test void ImplConjTemplates2() {
         testTemplates("(( a($1,#2) &&+- b(#2)) ==>+- c($1))",
                 "TODO"
         );
     }
-    @Test void testImplConjTemplates2a() {
+    @Test void ImplConjTemplates2a() {
         testTemplates("(( a(z,#1) &&+- b(#1)) ==>+- c(z))",
                 "TODO"
         );
     }
-    @Test void testImplProd() {
+    @Test void ImplProd() {
         testTemplates("((a,b) ==> c)",
                 "[(a,b), c]"
         );

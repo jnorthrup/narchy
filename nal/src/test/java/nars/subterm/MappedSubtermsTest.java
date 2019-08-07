@@ -17,7 +17,7 @@ public class MappedSubtermsTest {
     static final Term y = $$("y");
     static final Term z = $$("z");
 
-    @Test void test2ary() {
+    @Test void TwoAry() {
         assertEq($$("x"), $$("(y --> (z,/))"));
     }
     @Test
@@ -54,7 +54,7 @@ public class MappedSubtermsTest {
         return b;
     }
 
-    @Test void testRepeatedSubterms() {
+    @Test void RepeatedSubterms() {
         {
             Term s = $$("(abc,abc,abc,abc)");
             assertEquals(RemappedSubterms.RepeatedSubterms.class, s.subterms().getClass());
@@ -75,7 +75,7 @@ public class MappedSubtermsTest {
             assertEquals("(#a,#a,#a)", s.toString());
         }
     }
-    @Test void testBiSubtermWeird() {
+    @Test void BiSubtermWeird() {
         Term allegedTarget = $$$("( &&+- ,(--,##2#4),_1,##2#4,$1)");
         Subterms base = new BiSubterm(allegedTarget, $$$("$1"));
         assertEquals("(( &&+- ,(--,##2#4),_1,$1,##2#4),$1)", base.toString());

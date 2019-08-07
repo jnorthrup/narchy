@@ -79,7 +79,7 @@ class ConjDiffTest {
                 $$("(y && (b &&+5 c))"), 5, $$("(x && (a &&+5 b))"), 0).term());
     }
 
-    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq() {
+    @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Seq() {
         Term x = $$("x"), y = $$("y");
         Term xy = $$("((x &&+4120 y) &&+1232 --y)");
 
@@ -91,16 +91,16 @@ class ConjDiffTest {
 
     private final Term xy = $$("((x &&+4120 (y&&z)) &&+1232 --y)");
 
-    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm() {
+    @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm() {
         assertConjDiffPN(xy, $$("(y&&z)"), "[(x &&+5352 (--,y))]");
         //assertConjDiffPN(xy, $$("(y&&z)").neg(), "[(x &&+5352 (--,y))]");
     }
 
-    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm_unify() {
+    @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Seq_with_inner_Comm_unify() {
         assertConjDiffPN(xy, $$("(z &&+1232 --y)"), "[(x &&+4120 y)]");
     }
 
-    @Test void testConjWithoutPN_EliminateOnlyOneAtAtime_Comm2() {
+    @Test void ConjWithoutPN_EliminateOnlyOneAtAtime_Comm2() {
         Term x = $$("x"), y = $$("y");
         Term xy = $$("(x && y)");
         assertConjDiffPN(xy, y, "[x]");

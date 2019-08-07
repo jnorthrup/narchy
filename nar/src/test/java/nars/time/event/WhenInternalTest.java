@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class WhenInternalTest {
 
-    @Test void test1() {
+    @Test void one() {
         NAR n = NARS.tmp();
 
         List<? extends WhenInternal> aList = n.when().collect(toList());

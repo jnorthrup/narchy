@@ -20,7 +20,7 @@ class TaskRegionTest {
     static final Term x = Atomic.atom("x");
     private static final NAL n = new DummyNAL();
 
-    @Test void testTasksRegionContainsTask() {
+    @Test void TasksRegionContainsTask() {
         //@1..9[0.6..1;0.9..0.9%]
         //$.50 x. 1 %.60;.90%
 

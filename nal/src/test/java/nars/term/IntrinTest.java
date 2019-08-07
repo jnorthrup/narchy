@@ -111,10 +111,10 @@ public class IntrinTest {
 
     }
 
-    @Test void testNormalizedVariables() {
+    @Test void NormalizedVariables() {
         assertAnon("(_1-->#1)", "(abc-->#1)");
     }
-    @Test void testIntegers() {
+    @Test void Integers() {
         assertEquals((Intrin.INT_POSs<<8) | 0, Intrin.id(Int.the(0)));
         assertEquals((Intrin.INT_POSs<<8) | 1, Intrin.id(Int.the(1)));
         assertEquals((Intrin.INT_POSs<<8) | 254, Intrin.id(Int.the(254)));
@@ -137,7 +137,7 @@ public class IntrinTest {
         assertTrue( $$("(1,-2,3)").subterms() instanceof IntrinSubterms );
         assertTrue( $$("((--,1),-2,3)").subterms() instanceof IntrinSubterms );
     }
-    @Test void testChars() {
+    @Test void Chars() {
         assertEquals((Intrin.CHARs << 8) | 'a', Intrin.id(Atomic.the('a')));
         assertEquals((Intrin.CHARs << 8) | 'A', Intrin.id(Atomic.the('A')));
         assertEquals((Intrin.CHARs << 8) | 'z', Intrin.id(Atomic.the('z')));
@@ -152,7 +152,7 @@ public class IntrinTest {
 
         assertTrue($$("(--,a)") instanceof Neg.NegIntrin);
     }
-    @Test void testChars_Subterms() {
+    @Test void Chars_Subterms() {
         assertTrue(
             $.p(Op.puncAtom(BELIEF), Op.puncAtom(GOAL), Op.puncAtom(QUESTION), Op.puncAtom(QUEST)).subterms()
             instanceof IntrinSubterms
@@ -361,7 +361,7 @@ public class IntrinTest {
 
     }
 
-    @Test void testShiftWithIndexGap() {
+    @Test void ShiftWithIndexGap() {
         //in ths example,
         // because there is no #1 variable,
         // the shift must replace x's #2 with #3 (not #2) which would collapse against itself
@@ -371,7 +371,7 @@ public class IntrinTest {
         assertEquals("(_2(_1) ==>+1 ((--,_3(#3))&&_3(#4)))", y.toString());
     }
 
-    @Test void testConjSeq() {
+    @Test void ConjSeq() {
         //0:((--,(tetris-->rotate))&&#_f),690:((--,(tetris-->right))&&(--,(tetris-->rotate))),800:(tetris-->left),3520:left(#1,#2)
         String t = "((((--,x)&&#_f) &&+690 ((--,x)&&(--,y))) &&+800 (z &&+3520 w))";
         Term T = $$(t);

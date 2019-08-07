@@ -42,7 +42,7 @@ class ArithmeticTest {
         assertEval(Int.the(1), "add(2,-1)");
     }
 
-    @Test void testAdd_1_const_1_var() {
+    @Test void Add_1_const_1_var() {
         assertEval($.varDep(1), "add(#1,0)");
     }
 
@@ -226,14 +226,14 @@ class ArithmeticTest {
         TermTest.assertEq("cmp(x(#1),x(#1),0)", n.eval($$("cmp(x(#a),x(#a),#c)"))); //variable, but equality known
     }
 
-    @Test void testNonConjArithmeticize() {
+    @Test void NonConjArithmeticize() {
         assertArithmetic("x(1,1)", null); //nothing to do
         assertArithmetic("x(1,2)", "[(cmp(#1,#2,-1)&&x(#1,#2)), (x(#1,add(#1,1))&&equal(#1,1))]");
         //assertArithmetic("((1 && --2)-->x)", "[(((#1~add(#1,1))-->x)&&equal(#1,1)), (((#2~#1)-->x)&&cmp(#2,#1,-1))]");
         //assertArithmetic("(((1,1)~(2,3))-->x)", "4 of them");
     }
 
-    @Test void testXOR() {
+    @Test void XOR() {
         assertEval($$("xor(true,false)"), "xor(true,false)");
         assertEval($$("xor(#1,true)"), "xor(#x,true)");
         assertEval($$("(--,xor(true,true))"), "xor(true,true)");

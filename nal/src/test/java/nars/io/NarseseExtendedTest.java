@@ -33,7 +33,7 @@ class NarseseExtendedTest extends NarseseTest {
         assertNotNull($.$(s));
     }
 
-    @Test void testBoolean() {
+    @Test void Boolean() {
         assertSame(Bool.True, $$("true"));
         assertSame(Bool.False, $$("false"));
         assertSame(Bool.Null, $$("null"));

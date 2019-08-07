@@ -205,7 +205,7 @@ class TermIOTest {
         assertEqualSerialize($.p( Anom.the(1), $.varDep(2) ));
     }
 
-    @Test void testDepVarCombinations() throws IOException {
+    @Test void DepVarCombinations() throws IOException {
         Term a = $$("(#1 &&+32 (#1 &&+24 #1))");
         Term b = $$("#1");
         Term c = $$("(--,#1)");

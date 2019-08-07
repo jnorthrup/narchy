@@ -22,7 +22,7 @@ public class IntermpolationTest {
         return Intermpolate.dtDiff($$(x), $$(y));
     }
 
-    @Test void testDTSimilarity() {
+    @Test void DTSimilarity() {
         for (String o : new String[] { "==>", "&&"}) {
             Term a = $$("(x " + o + "+0 y)");
             Term b = $$("(x " + o + "+1 y)");
@@ -60,7 +60,7 @@ public class IntermpolationTest {
         assertTrue(a52 > a54);
     }
 
-    @Test void testSimilarConj() {
+    @Test void SimilarConj() {
         assertTrue(Float.isFinite(dtDiff("(&&,a,b,c)","((b&|c)&&a)")));
     }
 

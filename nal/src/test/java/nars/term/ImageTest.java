@@ -23,13 +23,13 @@ import static org.junit.jupiter.api.Assertions.*;
 /** the NAL "Image" operator, not bitmaps or photos */
 class ImageTest {
 
-    @Test void testPreNormalize() {
+    @Test void PreNormalize() {
         Term t = $$("(acid --> (reaction,/,base))");
         assertEquals(CachedCompound.SimpleCachedCompound.class, t.getClass());
         t.isNormalized();
     }
 
-    @Test void testCompoundSubtermsNormalized() {
+    @Test void CompoundSubtermsNormalized() {
         assertEq("(x,reaction(acid,base))", "(x,(acid --> (reaction,/,base)))");
         assertEq("(x,reaction(#1,#2))", "(x,(#1 --> (reaction,/,#2)))");
         assertEq("(reaction(#1,#2)&&x)", "(x && (#1 --> (reaction,/,#2)))");
@@ -125,10 +125,10 @@ class ImageTest {
         assertEquals(x, imageNormalize(y));
     }
 
-    @Test void testOneArgFunctionAsImage() {
+    @Test void OneArgFunctionAsImage() {
         assertEquals("(y-->(x,/))", $.funcImg($.the("x"), $.the("y")).toString());
     }
-    @Test void testConceptualizationNormalizesImages() throws Narsese.NarseseException {
+    @Test void ConceptualizationNormalizesImages() throws Narsese.NarseseException {
         //"$.04 ((|,(--,(cart,"+")),(--,(cart,"-")),(--,angX))-->(believe,"-ß2~czîÊeå",/))! 406461⋈406503 %.06;.04%"
 
         Term t = Narsese.term("(x, (y --> (z,/)))",false);
@@ -139,7 +139,7 @@ class ImageTest {
         assertFalse(t.isNormalized());
 
     }
-    @Test void testRecursiveUnwrapping() {
+    @Test void RecursiveUnwrapping() {
         //assertEquals(
         //"reaction(acid,base)",
         Term a1 = $$("(((chemical,reaction),base)-->acid)");
@@ -166,20 +166,20 @@ class ImageTest {
 
     }
 
-    @Test void testNonRepeatableImage() {
+    @Test void NonRepeatableImage() {
         assertEquals(Null, Image.imageExt($$("a(b,/,c)"), $$("c")));
     }
-    @Test void testRepeatableImageInSubterm() {
+    @Test void RepeatableImageInSubterm() {
         assertEq("(b-->(a,/,(/,c)))", Image.imageExt($$("a(b,(/,c))"), $$("b")));
         assertEq("((/,c)-->(a,b,/))", Image.imageExt($$("a(b,(/,c))"), $$("(/,c)")));
     }
 
     @Disabled
-    @Test void testOppositeImageOK() {
+    @Test void OppositeImageOK() {
         assertEq("(c-->(a,b,\\,/))", Image.imageExt($$("a(b,\\,c)"), $$("c")));
     }
 
-    @Test void testNormalizeVsImageNormalize() {
+    @Test void NormalizeVsImageNormalize() {
         Term x = $$("(acid-->(reaction,/))");
         assertTrue(x.isNormalized());
         assertEquals(
@@ -189,7 +189,7 @@ class ImageTest {
         assertNotEquals(x.normalize(), imageNormalize(x));
     }
 
-    @Test void testNormalizeVsImageNormalize2() throws Narsese.NarseseException {
+    @Test void NormalizeVsImageNormalize2() throws Narsese.NarseseException {
         Term x = Narsese.term("((--,(4-->(ang,fz,/))) ==>-7600 ((race-->fz),((8,5)-->(cam,fz))))", false);
         assertFalse(x.isNormalized());
 
@@ -203,10 +203,10 @@ class ImageTest {
         assertEquals($$(y), xx);
     }
 
-    @Test void testConjNegatedNormalizeWTF() {
+    @Test void ConjNegatedNormalizeWTF() {
         assertEq("((--,(delta-->vel)) &&+280 (--,vel(fz,y)))", "((--,(delta-->vel)) &&+280 (--,(y-->(vel,fz,/))))");
     }
-    @Test void testConjNegatedNormalizeWTF2() {
+    @Test void ConjNegatedNormalizeWTF2() {
         assertEq("(((--,v(fz,x)) &&+2 (--,v(fz,y))) &&+1 z)",
                 "(((--,(x-->(v,fz,/))) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
 
@@ -217,11 +217,11 @@ class ImageTest {
                 "(((&&,(--,(x-->(v,fz,/))),(--,(y-->(v,fz,/))),w) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
     }
 
-    @Test void testImageProductNormalized() throws Narsese.NarseseException {
+    @Test void ImageProductNormalized() throws Narsese.NarseseException {
         Term x = Narsese.term("(y,\\,x)", false);
         assertTrue(x.isNormalized());
     }
-    @Test void testImageRecursionFilter() {
+    @Test void ImageRecursionFilter() {
         if (NAL.term.INH_IMAGE_RECURSION)
             return;
 

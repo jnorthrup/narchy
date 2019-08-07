@@ -167,7 +167,7 @@ class DeriverTest {
         tests.forEach(TestNAR::test);
     }
 
-    @Deprecated @Test void testTemporal() {
+    @Deprecated @Test void Temporal() {
         assertFalse(Occurrify.temporal($$("(x==>y)")));
         assertTrue(Occurrify.temporal($$("(x ==>+1 y)")));
     }

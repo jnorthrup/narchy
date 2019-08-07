@@ -46,7 +46,7 @@
           <!--<systemPropertyVariables>
             <gzoltar-agent.destfile>${project.build.directory}/gzoltar.ser</gzoltar-agent.destfile>
           </systemPropertyVariables> -->
-<!--          <skipTests>true</skipTests>-->
+-          <skipTests>true</skipTests>
           <argLine>--illegal-access=permit</argLine>
           <forkCount>1C</forkCount>
          <!-- <properties>
@@ -106,7 +106,7 @@
               <goal>shade</goal>
             </goals>
             <configuration>
-              <minimizeJar>true</minimizeJar>
+              <!-- <minimizeJar>true</minimizeJar> -->
               <filters>
                 <filter>
                   <artifact>*:*</artifact>
@@ -118,12 +118,12 @@
                   </excludes>
                 </filter>
               </filters>
-              <transformers>
+              <!--<transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
                   <mainClass>com.stackoverflow.nullpointer.expression.SwitchExpressions</mainClass>
                 </transformer>
-              </transformers>
+              </transformers>-->
             </configuration>
           </execution>
         </executions>
@@ -132,8 +132,8 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
         <configuration>
-          <release>14</release>
-          <target>14</target>
+          <release>12</release>
+          <target>12</target>
           <useIncrementalCompilation>true</useIncrementalCompilation>
         </configuration>
       </plugin>

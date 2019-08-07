@@ -30,7 +30,7 @@ public class TruthTest2 {
 		assertEquals(0.95f, c.conf(), 0.01f);
 	}
 
-	@Test void testDitheringSanity() {
+	@Test void DitheringSanity() {
 		NAR n = NARS.shell();
 		n.confResolution.set(0.1f);
 		int steps = 99;

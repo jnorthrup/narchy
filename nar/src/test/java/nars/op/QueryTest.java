@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class QueryTest {
 
-    @Test void testFactPos() throws Narsese.NarseseException {
+    @Test void FactPos() throws Narsese.NarseseException {
         final NAR n = NARS.shell();
         n.believe("f(x)");
 
@@ -22,7 +22,7 @@ public class QueryTest {
         assertEquals("[f(x)]", e.toString());
     }
 
-    @Test void testFactsPos() throws Narsese.NarseseException {
+    @Test void FactsPos() throws Narsese.NarseseException {
         final NAR n = NARS.shell();
         n.believe("f(x)");
         n.believe("f(y)");
@@ -31,7 +31,7 @@ public class QueryTest {
         assertEquals(Set.of($$("f(x)"), $$("f(y)")), e);
     }
 
-    @Test void testFactNeg() throws Narsese.NarseseException {
+    @Test void FactNeg() throws Narsese.NarseseException {
         final NAR n = NARS.shell();
         n.believe("--f(x)");
 
@@ -39,7 +39,7 @@ public class QueryTest {
         assertEquals("[(--,f(x))]", e.toString());
     }
 
-    @Test void testFactImpliedByFact() throws Narsese.NarseseException {
+    @Test void FactImpliedByFact() throws Narsese.NarseseException {
         final NAR n = NARS.shell();
         n.believe("(f(x) ==> g(x))");
         n.believe("f(x)");
@@ -48,7 +48,7 @@ public class QueryTest {
         assertEquals("[f(x)]", e.toString());
     }
 
-    @Test void testFactImpliedByConj() throws Narsese.NarseseException {
+    @Test void FactImpliedByConj() throws Narsese.NarseseException {
         final NAR n = NARS.shell();
         n.believe("((f(#1) && f(#2)) ==> g(#1,#2))");
         n.believe("f(x)");

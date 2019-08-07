@@ -103,7 +103,7 @@ public class SubtermsTest {
 
     }
 
-    @Test void testBiSubtermsContainsNeg() {
+    @Test void BiSubtermsContainsNeg() {
         assertTrue( $$("(--x &&+1 x)").containsNeg($$("x")) );
         assertTrue( $$("(--x &&+1 x)").containsNeg($$("--x")) );
         assertTrue( $$("(--x &&+1 x)").contains($$("x")) );

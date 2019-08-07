@@ -58,7 +58,7 @@ class DynamicImageTest extends AbstractDynamicTaskTest {
         );
     }
 
-    @Test void testInternalImageTaskTermRepresentation() {
+    @Test void InternalImageTaskTermRepresentation() {
         NAR n = NARS.tmp(4);
         Term it = $$("(x --> (y,/))");
         n.believe(it);

@@ -238,7 +238,7 @@ public class NAL8SequenceTest extends NALTest {
 
 
     @Disabled
-    @Test void test1() throws Narsese.NarseseException {
+    @Test void one() throws Narsese.NarseseException {
 
         String sequence = "(((f(a) &&+2 f(b)) &&+2 f(c)) &&+2 done)";
         String goal = "done";

@@ -47,7 +47,7 @@ class NARPartTest {
         //assertEquals(before, after);
     }
 
-    @Test void testComponent() {
+    @Test void Component() {
         NAR n = NARS.shell();
         n.start(new NARPart(){
             {

@@ -87,7 +87,7 @@ class CommonVariableTest {
         );
     }
 
-    @Test void testUnifyCommonVar_DepIndep() {
+    @Test void UnifyCommonVar_DepIndep() {
         String vx = "$", vy = "#";
         Set<String> uu = new TreeSet();
         for (int i = 0; i < 16; i++) {

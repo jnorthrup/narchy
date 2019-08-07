@@ -171,7 +171,7 @@ class TruthTest {
 //    }
 
 
-//    @Test void testPostFn() {
+//    @Test void PostFn() {
 //        /* bad
 //        $ .02 (right-->trackXY)! 3492⋈3500 %.28;.09% {3492: 1;36;3 A;3 K;3N;3O}
 //            $.17 (trackXY-->happy)! %1.0;.90% {0: 1}
@@ -192,7 +192,7 @@ class TruthTest {
 //    }
 
     /** a sanity test, but an algebraic proof would suffice instead */
-    @Test void testAssociativityOfOrFunction() {
+    @Test void AssociativityOfOrFunction() {
         Random rng = new XoRoShiRo128PlusRandom(1);
         for (int i = 0; i < 100; i++) {
             float a = rng.nextFloat(), b = rng.nextFloat(), c = rng.nextFloat();

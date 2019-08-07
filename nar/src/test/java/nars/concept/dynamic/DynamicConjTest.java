@@ -463,7 +463,7 @@ class DynamicConjTest {
         return components(ConjIntersection, xyz, s, e);
     }
 
-    @Test void testCoNegatedXternal() throws Narsese.NarseseException {
+    @Test void CoNegatedXternal() throws Narsese.NarseseException {
         NAR n = NARS.shell();
         n.believe($("x"), 0, 0);
         n.believe($("--x"), 2,2);

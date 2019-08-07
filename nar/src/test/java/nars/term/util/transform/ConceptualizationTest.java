@@ -110,7 +110,7 @@ class ConceptualizationTest {
 
     }
 
-    @Test void testConceptualizeSequence() {
+    @Test void ConceptualizeSequence() {
         assertEq("((2,(g,y)) &&+- (2,(g,y)))",
                 $$("((2,(g,y)) &&+260 (2,(g,y)))").root());
 
@@ -123,7 +123,7 @@ class ConceptualizationTest {
         assertEq("((--,(2,(g,y))) &&+- (--,(2,(g,y))))",
                 $$("(((--,(2,(g,y))) &&+260 (--,(2,(g,y)))) &&+710 (--,(2,(g,y))))").root());
     }
-    @Test void testConceptualizeNAL3() {
+    @Test void ConceptualizeNAL3() {
         //direct inh subterm
         assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").root());
         assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").concept());
@@ -144,7 +144,7 @@ class ConceptualizationTest {
         assertEq("((a&&b)<->(c&&d))", $$("((c&&d)<->(a&&b))").root());
     }
 
-    @Test void testConceptualize_Not_NAL3() {
+    @Test void Conceptualize_Not_NAL3() {
 
         //indirect inh subterm (thru product)
         assertEq("x((a &&+- b))", $$("x((a&&b))").root());

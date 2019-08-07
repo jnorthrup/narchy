@@ -208,7 +208,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 //            assertDecomposeSubjConjAandB(0f, 0f, 0f, 0.81f);
 //        }
 
-        //    @Test void testDecomposeSubjConjNegWeakNeg() {
+        //    @Test void DecomposeSubjConjNegWeakNeg() {
 //        test.logDebug();
 //        assertDecomposeSubjConjAandB(0.1f, 0.75f, 0.63f, 0.3f);
 //    }

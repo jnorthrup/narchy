@@ -132,7 +132,7 @@ class PremiseRuleTest {
         assertNotNull(d);
     }
 
-    @Test void testMissingPatternVar() {
+    @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
                 ()->new PremiseRule("X,Y |- (X,Z), (Belief:Analogy)"));
     }
@@ -147,7 +147,7 @@ class PremiseRuleTest {
     }
 
 
-    @Test void testNoXternalInSect() throws Narsese.NarseseException {
+    @Test void NoXternalInSect() throws Narsese.NarseseException {
         assertConcPattern("(X,Y), Z |- (Z-->(X&&Y)), (Belief:Intersection)", "(%3-->(%1&&%2))");
         assertConcPattern("(X,Y), Z |- (Z-->(X||Y)), (Belief:Intersection)", "(--,(%3-->((--,%1)&&(--,%2))))");
 

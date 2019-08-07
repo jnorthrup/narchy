@@ -1014,14 +1014,14 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-//    @Test void testImplIntersectionPos() {
+//    @Test void ImplIntersectionPos() {
 //        test
 //                .believe("(A ==> M)", 0.6f, 0.9f)
 //                .believe("(B ==> M)", 0.7f, 0.9f)
 //                .mustBelieve(cycles, "((A && B) ==> M)", .54f, 0.81f) //some freq and conf, dunno
 //        ;
 //    }
-//    @Test void testImplIntersectionPosNeg() {
+//    @Test void ImplIntersectionPosNeg() {
 //        test
 //                .believe("(A ==> M)", 0.25f, 0.9f)
 //                .believe("(B ==> M)", 0.75f, 0.9f)
@@ -1029,21 +1029,21 @@ public class NAL6Test extends NALTest {
 //        ;
 //        test.run(10);
 //    }
-//    @Test void testImplIntersectionNeg() {
+//    @Test void ImplIntersectionNeg() {
 //        test
 //                .believe("(A ==> M)", 0.4f, 0.9f)
 //                .believe("(B ==> M)", 0.3f, 0.9f)
 //                .mustBelieve(cycles, "((A && B) ==> M)", .46f, 0.81f) //some freq and conf, dunno
 //        ;
 //    }
-//    @Test void testImplUnionPos() {
+//    @Test void ImplUnionPos() {
 //        test
 //                .believe("(A ==> M)", 0.6f, 0.9f)
 //                .believe("(B ==> M)", 0.7f, 0.9f)
 //                .mustBelieve(cycles, "((A || B) ==> M)", .76f, 0.81f)
 //        ;
 //    }
-//    @Test void testImplUnionNeg() {
+//    @Test void ImplUnionNeg() {
 //        test
 //                .believe("(A ==> M)", 0.2f, 0.9f)
 //                .believe("(B ==> M)", 0.1f, 0.9f)
@@ -1087,7 +1087,7 @@ public class NAL6Test extends NALTest {
                 .mustBelieve(cycles, "(--(x && y) && a)", 1f, 0.81f)
         ;
     }
-//    @Test void testMutexConjImplBeliefInduction() {
+//    @Test void MutexConjImplBeliefInduction() {
 //        test.nar.termVolumeMax.setAt(12);
 //        test
 //                .believe("((x && --y) ==> z)")
@@ -1221,7 +1221,7 @@ public class NAL6Test extends NALTest {
     }
 
     /** fair "variable" var-shifting */
-    @Test void testVarShifts_Belief() {
+    @Test void VarShifts_Belief() {
         test
             .termVolMax(9)
             .believe("((a)-->#1)")
@@ -1236,7 +1236,7 @@ public class NAL6Test extends NALTest {
     }
 
     /** fair "variable" var-shifting */
-    @Test void testVarShifts_Question() {
+    @Test void VarShifts_Question() {
         test
             .termVolMax(9)
             .confMin(0.9f)
@@ -1248,7 +1248,7 @@ public class NAL6Test extends NALTest {
             .mustQuestion(cycles, "(x(#1) && y(a))")
         ;
     }
-    @Test void testConjBelief_2DepVars_Decompose() {
+    @Test void ConjBelief_2DepVars_Decompose() {
         test
             .believe("(x(#1) && y(#2))")
             .mustBelieve(cycles, "x(#1)", 1f, 0.81f)
@@ -1256,7 +1256,7 @@ public class NAL6Test extends NALTest {
         ;
     }
 
-    @Test void testConjQuestion_2DepVars_Decompose() {
+    @Test void ConjQuestion_2DepVars_Decompose() {
         test
             .ask("(x(#1) && y(#2))")
             .mustQuestion(cycles, "x(#1)")
@@ -1281,7 +1281,7 @@ public class NAL6Test extends NALTest {
 //        ;
 //    }
 
-//    @Test void testMutexSwapPos() {
+//    @Test void MutexSwapPos() {
 //        test.nar.termVolumeMax.setAt(14);
 //        test
 //                .believe("--(x && y)")
@@ -1291,7 +1291,7 @@ public class NAL6Test extends NALTest {
 //        ;
 //    }
 //
-//    @Test void testMutexSwapNeg() {
+//    @Test void MutexSwapNeg() {
 //        test
 //                .believe("--(x && y)")
 //                .believe("its(--x,a)")

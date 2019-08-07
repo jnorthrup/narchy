@@ -154,19 +154,19 @@ public class VariableTest {
 
     }
 
-    @Test void testVariableTransform1() {
+    @Test void VariableTransform1() {
         Term y = $$("(_3(#1,_1) &&+1 _2(#1,$2))").transform(VariableTransform.indepToQueryVar);
         assertEq("(_3(#1,_1) &&+1 _2(#1,?$2))", y);
         assertEq("(_3(#1,_1) &&+1 _2(#1,?2))", y.normalize());
     }
 
-    @Test void testNormalizationComplex() {
+    @Test void NormalizationComplex() {
         assertEq("(#1,$2)", $$("(#1,$1)").normalize());
         assertEq("(#1,?2)", $$("(#1,?1)").normalize());
         assertEq("(#1,($2==>($2)))", $$("(#1,($1==>($1)))").normalize());
         assertEq("(($1==>($1)),#2)", $$("(($1==>($1)),#1)").normalize());
     }
-    @Test void testNormalizationComplex2() {
+    @Test void NormalizationComplex2() {
         Term x = $$$("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#1}-->Investment))");
         assertFalse(x.isNormalized());
         assertEq("((($1-->Investor)==>(possesses($1,#2)&&({#2}-->Investment))) ==>+- ({#3}-->Investment))", x.normalize());

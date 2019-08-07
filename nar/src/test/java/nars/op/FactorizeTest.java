@@ -51,7 +51,7 @@ public class FactorizeTest {
         );
     }
 
-    @Test void test3() {
+    @Test void three() {
         String s = "(&|,(--,isRow(tetris,(15,true),true)),isRow(tetris,(15,false),true),(--,nextColliding(tetris,true)),nextInBounds(tetris,true))";
         Term t = $$(s);
         assertEquals(

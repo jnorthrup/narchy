@@ -78,7 +78,7 @@ class TermBufferTest {
         assertLazyTransforms("((_1) ==>+- (_1))");
     }
 
-    @Test void testTransform2() {
+    @Test void Transform2() {
         String x = "((_1) ==>+- _1)";
         assertEquals("(((x,y)) ==>+- (x,y))",
                 $$(x).transform(atomToCompoundTransform).toString());
@@ -93,10 +93,10 @@ class TermBufferTest {
                         .term().toString());
     }
 
-    @Test void testEmptyProd() {
+    @Test void EmptyProd() {
         assertLazyTransforms("x(intValue,(),3)");
     }
-    @Test void testAtomFunc() {
+    @Test void AtomFunc() {
         assertLazyTransforms("x(a)");
     }
 

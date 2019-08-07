@@ -226,7 +226,7 @@ class NarseseBaseTest extends NarseseTest {
         assertEquals(Op.INH, c.sub(0).op()); 
     }
 
-//    @Test void testInifix3() throws Narsese.NarseseException {
+//    @Test void Inifix3() throws Narsese.NarseseException {
 //        assertEquals("((a-b)|(--,x))", term("((a-b)|(--,x))").toString());
 //        assertEquals("((_2-_1)|(--,_3))", term("((_2-_1)|(--,_3))").toString());
 //    }
@@ -574,7 +574,7 @@ class NarseseBaseTest extends NarseseTest {
     }
 
 
-    @Test void testEllipsisMatch_Fragment() {
+    @Test void EllipsisMatch_Fragment() {
         assertEq("`a,b,c`", Fragment.fragment($$("a"), $$("b"), $$("c")));
         assertEq("`a,b,c`", "`a,b,c`");
         assertEquals(FRAG, $$("`a,b,c`").op());

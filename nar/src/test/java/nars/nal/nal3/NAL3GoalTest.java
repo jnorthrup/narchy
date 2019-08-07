@@ -86,14 +86,14 @@ class NAL3GoalTest {
                 .run();
     }
 
-//    @Test void testGoalDiffRaw1() {
+//    @Test void GoalDiffRaw1() {
 //        new TestNAR(NARS.tmp(3))
 //                .input("X!")
 //                .input("(X ~ Y).")
 //                .mustGoal(GoalDecompositionTest.cycles, "Y", 0, 0.81f)
 //                .run(16);
 //    }
-//    @Test void testGoalDiffRaw2() {
+//    @Test void GoalDiffRaw2() {
 //        new TestNAR(NARS.tmp(3))
 //                .input("X!")
 //                .input("--(X ~ Y).")
@@ -106,7 +106,7 @@ class NAL3GoalTest {
 //                .run(16);
 //    }
 //
-//    @Test void testGoalDiffRaw3() {
+//    @Test void GoalDiffRaw3() {
 //
 //        //belief version
 //        new TestNAR(NARS.tmp(3))
@@ -128,7 +128,7 @@ class NAL3GoalTest {
 //                .run(16);
 //    }
 //
-//    @Test void testGoalDiffRaw4() {
+//    @Test void GoalDiffRaw4() {
 //        new TestNAR(NARS.tmp(3))
 //                .input("--Y!")
 //                .input("(X ~ Y).")

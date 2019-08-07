@@ -11,6 +11,7 @@ import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -124,6 +125,20 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .believe("(a-->(b&&c))", 0f, 0.9f)
                 .believe("(a-->b)")
                 .mustBelieve(cycles, "(a-->c)", 0f, 0.81f);
+    }
+
+    @Test
+    void testSubjPred_Self_Factor_arity2() {
+        test
+            .believe("((&&,a,b)-->(&&,a,c))", 1f, 0.9f)
+            .mustBelieve(cycles, "(b-->c)", 1f, 0.81f)
+//            .mustQuestion(cycles, "((a&&b)-->(&&,a,c,?1))") //nal3.guess
+//            .mustQuestion(cycles, "((&&,a,b,?1)-->(a&&c))")
+            .mustNotOutput(cycles, "((a&&b)-->(a&&c))", QUESTION) //we already know this why ask it
+            .mustNotOutput(cycles, "((a &&+- b)-->(&&,a,c,?1))", QUESTION) //+- not helpful
+            .mustNotOutput(cycles, "((&&,a,b,?1)-->(a &&+- c))", QUESTION)
+
+        ;
     }
 
     @Test
@@ -283,7 +298,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .mustGoal(cycles, "x:(a|b)", 1f, 0.81f)
         ;
     }
-    @Test void testDecomposeWTF() {
+    @Test void DecomposeWTF() {
     /* wrong:
     $.05 (0-->x). 1 %1.0;.54% {419: 1;2;3©} (S --> M), X, is(S,"|"), subOf(S,X)   |-         (X --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
         $.09 (((2-1)|(--,0))-->x). 1 %1.0;.60% {127: 1;2;3} (P --> M), (S --> M), notSetsOrDifferentSets(S,P), neq(S,P) |- ((polarizeTask(P) | polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized)

@@ -77,7 +77,7 @@ public class TaskTest {
 
     }
 
-    @Test void testInvalidIndepOnlyTask() {
+    @Test void InvalidIndepOnlyTask() {
         assertFalse(Task.validTaskTerm($$("((--,$1) ==>-2 $1)")));
         assertFalse(Task.validTaskTerm($$("($1 ==>-2 $1)")));
         assertFalse(Task.validTaskTerm($$("(#1 ==>-2 #1)")));
@@ -255,12 +255,12 @@ public class TaskTest {
     }
 
 
-    @Test void testValidIndepTaskConcept() {
+    @Test void ValidIndepTaskConcept() {
         NAR tt = NARS.shell();
         Concept c = tt.conceptualize($$("(((sx,$1)&|good) ==>+2331 ((sx,$1)&&good))"));
         assertTrue(c instanceof TaskConcept);
     }
-//    @Test void testDiffQueryVarNormalization() throws Narsese.NarseseException {
+//    @Test void DiffQueryVarNormalization() throws Narsese.NarseseException {
 //        NAR tt = NARS.shell();
 //        Term x = assertEq("(?2~?1)", "(?x~?y)");
 //        assertEq("(?1~y)", "(?x~y)");

@@ -933,7 +933,7 @@ public class NAL8Test extends NALTest {
                 .mustNotOutput(cycles, "(b &&+2 c)", GOAL, 0f, 0.5f, 0f, 1f, x -> true);
     }
 
-    //    @Test void testGoalBeliefDecomposeTimeRangingRepeat() {
+    //    @Test void GoalBeliefDecomposeTimeRangingRepeat() {
 //        /*
 //        $.03 vel(fz,move)! 1536601075540⋈1536601112860 %.57;.03% {1536601090589: } ((%1,%2,eventOf(%2,%1)),(conjDropIfLatest(%2,%1),((Desire-->Goal))))
 //            //belief timing ignored
@@ -1174,14 +1174,14 @@ public class NAL8Test extends NALTest {
         ;
     }
 
-    @Test void testUnifyGoalSeqConclusionPos() {
+    @Test void UnifyGoalSeqConclusionPos() {
         test
             .termVolMax(10)
                 .believe("(f(#x) &&+1 g(#x))")
                 .goal("g(x)")
                 .mustGoal(cycles, "f(x)", 1f, 0.81f);
     }
-    @Test void testUnifyGoalSeqConclusionNeg() {
+    @Test void UnifyGoalSeqConclusionNeg() {
         test
             .termVolMax(10)
                 .believe("(f(#x) &&+1 --g(#x))")

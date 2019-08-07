@@ -42,10 +42,10 @@
           <artifactId>guava</artifactId>
           <groupId>*</groupId>
         </exclusion>
-        <exclusion>
-          <artifactId>javassist</artifactId>
-          <groupId>*</groupId>
-        </exclusion>
+<!--        <exclusion>-->
+<!--          <artifactId>javassist</artifactId>-->
+<!--          <groupId>*</groupId>-->
+<!--        </exclusion>-->
       </exclusions>
     </dependency>
     <dependency>

@@ -54,7 +54,7 @@ class STRIPSTest {
 //        (not (on ?ob ?underob)) (not (clear ?ob)) (not (arm-empty)))))
 
     }
-    @Test void testPDDL1() {
+    @Test void PDDL1() {
 
     }
     @Test

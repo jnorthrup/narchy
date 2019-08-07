@@ -16,7 +16,7 @@ class WhatTest {
      *      sharing concepts (and their contained beliefs),
      *      and also sharing cpu time (in some proportion).
      */
-    @Test void testCompartmentalization1() {
+    @Test void Compartmentalization1() {
         NAR n = NARS.tmp();
 
     }

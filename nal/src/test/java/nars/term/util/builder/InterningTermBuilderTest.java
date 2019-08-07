@@ -44,7 +44,7 @@ class InterningTermBuilderTest {
 
     }
 
-    @Test void testMappedNegBiSubterms() {
+    @Test void MappedNegBiSubterms() {
 
         InterningTermBuilder t = new InterningTermBuilder();
         assertTrue(InterningTermBuilder.sortCanonically);
@@ -69,7 +69,7 @@ class InterningTermBuilderTest {
 //        }
 //    }
 
-    @Test void testKeyConstructionEquivalence() {
+    @Test void KeyConstructionEquivalence() {
         byte[] a = new Intermed.InternedCompoundByComponentsArray(CONJ, 1, this.a.neg(), this.b).key.arrayCopy();
 		RecycledDynBytes.get().clear();
         byte[] b = new Intermed.InternedCompoundTransform(new LightDTCompound( new LightCompound(CONJ, this.a.neg(), this.b), 1)).key.arrayCopy();

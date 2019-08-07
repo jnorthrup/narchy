@@ -2,6 +2,9 @@
 (M --> I), X, eventOfPN(I,X)  |-   polarizeTask((M --> conjWithoutPN(I,X))), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
 (I --> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) --> M)), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
 
+//Self Factor
+((&&,X,A..+) --> (&&,Y,A..+)), ((&&,X,A..+) --> (&&,Y,A..+))  |-  polarizeTask((X --> Y)), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
+
 //NAL3 single premise question/quest decompose
 ( M --> I), X, eventOfPN(I,X) |- (M --> conjWithoutPN(I,X)), (Punctuation:AskAsk)
 ( I --> M), X, eventOfPN(I,X) |- (conjWithoutPN(I,X) --> M), (Punctuation:AskAsk)

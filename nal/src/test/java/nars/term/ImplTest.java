@@ -67,7 +67,7 @@ class ImplTest {
     }
 
     /** the + and - versions have distinct meanings that must be maintained */
-    @Test void testTemporalRepeatDoesNotNormalization() {
+    @Test void TemporalRepeatDoesNotNormalization() {
       assertEq("(x ==>-2 x)", "(x ==>-2 x)");
       assertEq("(x ==>+2 x)", "(x ==>+2 x)");
     }
@@ -296,7 +296,7 @@ class ImplTest {
 
 
     /** test repeat that may appear in a Mapped subterms */
-    @Test void testValidRepeatImplWithIndep() {
+    @Test void ValidRepeatImplWithIndep() {
         {
             String x = "(($1 &&+5 b) ==>+1 ($1 &&+5 b))";
             assertEquals(x, $$(x).toString());

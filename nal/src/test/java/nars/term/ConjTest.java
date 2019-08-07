@@ -124,11 +124,11 @@ class ConjTest {
                 "((((--,(a &&+43 b))||c) &&+110 d)&& --c))");
     }
 
-    @Test void testContradictionWTF() {
+    @Test void ContradictionWTF() {
         assertEq(False, $$("((x(g,1) &&+49 (--,((g,(g,-1))-->((x,/,-1),x))))&&(--,x(g,1)))"));
     }
 
-    @Test void testDisjCancellation() {
+    @Test void DisjCancellation() {
         assertEq("b", "((b||c)&&(b||(--,c)))");
     }
 
@@ -277,7 +277,7 @@ class ConjTest {
     }
 
 
-//    @Test void testConjEternalConj2() {
+//    @Test void ConjEternalConj2() {
 //        Term a = $$("(--,((--,((--,y)&|x))&&x))"); //<-- should not be constructed
 //        Term b = $$("(x &&+5480 (--,(z &&+5230 (--,x))))");
 //        Term ab = CONJ.the(a, b);
@@ -286,7 +286,7 @@ class ConjTest {
 
 
     //TODO
-//    @Test void testSubTimes() {
+//    @Test void SubTimes() {
 //        $$("(((--,_1) &&+22 _2) &&+2 (--,_2))").subTimes()
 //    }
 
@@ -907,7 +907,7 @@ class ConjTest {
         }
     }
 
-    @Test void testParallelValid3() {
+    @Test void ParallelValid3() {
         /*  (a or not(z)) and not(a and x) and not(a and y)
         *   DNF | (a ∧ ¬x ∧ ¬y) ∨ (¬a ∧ ¬z)
             CNF | (¬a ∨ ¬x) ∧ (¬a ∨ ¬y) ∧ (a ∨ ¬z)
@@ -996,7 +996,7 @@ class ConjTest {
         assertEq("((--,(y&&z))&&x)", "(x &| --(y && z))");
     }
 
-    @Test void testConjImageIndepVar() {
+    @Test void ConjImageIndepVar() {
         String r = "(($1-->(REPRESENT,/,$3))&&($2-->(REPRESENT,/,$4)))";
         assertEq(r, $$$(r));
         String s = "((($1-->(REPRESENT,/,$3))&&($2-->(REPRESENT,/,$4)))==>REPRESENT({$1,$2},{$3,$4}))";
