@@ -5,7 +5,6 @@ import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space3d.SpaceDisplayGraph3D;
 import spacegraph.space3d.widget.SurfacedCuboid;
-import spacegraph.test.Graph2DTest;
 import spacegraph.test.WidgetTest;
 
 class View3Din2DTest {
@@ -25,7 +24,18 @@ class View3Din2DTest {
 			//0.1f, new PushButton("x")).resizeable()).resizeable(),
 			1280, 1024);
 
-//		s.zFar = 100;
+
+		s.add(new SurfacedCuboid("x",
+			new MetaFrame(new Sketch2DBitmap(512,512)), 1, 1)
+			//new PushButton("x").clicked(()->System.out.println("x")),
+			//new XYSlider(),
+			//new Sketch2DBitmap(128, 128),
+			//new BitmapLabel("y"),
+			//new MetaFrame(new Sketch2DBitmap(32,32)),
+			.rotate(0, 1, 0, 0.2f, 1f)
+			.rotate(0, 0, 1, 0.2f, 1f)
+			.move(0, 0, 0)
+		);
 		s.add(new SurfacedCuboid("x",
 			WidgetTest.widgetDemo(),
 			//new PushButton("x").clicked(()->System.out.println("x")),
@@ -38,16 +48,30 @@ class View3Din2DTest {
 			.rotate(0, 0, 1, 0.2f, 1f)
 			.move(-1, 0, -4)
 		);
+		s.add(new SurfacedCuboid("ya",
+			new MetaFrame(new Sketch2DBitmap(512,512)), 1, 1)
+			.scale(1, 1, 1)
+			.rotate(1, 0, 0, -0.1f, 0.0001f)
+			.rotate(0, 0, 1, -0.1f, 1f)
+			.move(-1, 1, 0)
+		);
+		s.add(new SurfacedCuboid("za",
+			//Graph2DTest.newSimpleGraph(), 1, 1)
+			new MetaFrame(new Sketch2DBitmap(512,512)), 1, 1)
+			.rotate(1, 0, 0, 0.2f, 0.0001f)
+			.rotate(0, 0, 1, -0.1f, 1f)
+			.move(-1, -1, 0)
+		);
 		s.add(new SurfacedCuboid("y",
 			new MetaFrame(new Sketch2DBitmap(512,512)), 1, 1)
-			.scale(2, 1, 1)
+			.scale(1, 1, 1)
 			.rotate(1, 0, 0, -0.1f, 0.0001f)
 			.rotate(0, 0, 1, -0.1f, 1f)
 			.move(1, 1, 0)
 		);
 		s.add(new SurfacedCuboid("z",
-			Graph2DTest.newSimpleGraph(),
-			1, 1)
+			//Graph2DTest.newSimpleGraph(), 1, 1)
+			new MetaFrame(new Sketch2DBitmap(512,512)), 1, 1)
 			.rotate(1, 0, 0, 0.2f, 0.0001f)
 			.rotate(0, 0, 1, -0.1f, 1f)
 			.move(1, -1, 0)

@@ -28,10 +28,6 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
     float pixelScale = 512f;
 
-//    @Nullable
-//    private Finger finger;
-//    private v3 mousePick;
-
 
     SurfacedCuboid(X x, float w, float h) {
         this(x, null, w, h);

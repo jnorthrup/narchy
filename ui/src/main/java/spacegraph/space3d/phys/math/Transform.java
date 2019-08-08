@@ -123,8 +123,8 @@ public final class Transform extends v3 {
 	}
 
 	public v3 untransform(v3 v) {
-		basis.untransform(v);
 		v.sub(this);
+		basis.untransform(v);
 		return v;
 	}
 

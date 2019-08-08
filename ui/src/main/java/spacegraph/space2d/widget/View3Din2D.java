@@ -132,11 +132,11 @@ public class View3Din2D extends PaintSurface {
 						SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
 						float zFront = sss.z() / 2;
 						if (Util.equals(local.z, zFront, radiusTolerance)) {
-							System.out.println(local.x + " "  + local.y);
+							//System.out.println(local.x + " "  + local.y);
 							Surface front = ss.front;
 							if (front != null) {
 								//float localX = ((local.x+0.5f)*front.w())/(2*sss.x()), localY = ((local.y+0.5f)*front.h())/(2*sss.y());
-								float localX = local.x, localY = local.y;
+								float localX = local.x+0.5f, localY = local.y+0.5f;
 								//float localX = local.x+sss.x(), localY = local.y+sss.y();
 								//System.out.println(front + " " + n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
 								return f.push((px, py, target) -> {

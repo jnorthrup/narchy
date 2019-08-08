@@ -295,7 +295,7 @@ public class Derivation extends PreDerivation {
                                 //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
 
                     Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
-                    if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() > eviMin) {
+                    if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() >= eviMin) {
                         if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
 
 
