@@ -1,12 +1,12 @@
 package nars.link;
 
+import jcog.Util;
 import jcog.decide.Roulette;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.atom.Interval;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.compound.Sequence;
 import nars.term.util.conj.Conj;
@@ -101,12 +101,12 @@ public abstract class DynamicTermLinker implements TermLinker {
             return s.sub(Roulette.selectRoulette(n, i -> s.subFloat(i, this::subValue) , rng));
         }
 
-        private float _subValue(Term sub) {
-            if (sub instanceof Img || sub instanceof Interval /* HACK */)
-                return 0;
-            else
-                return subValue(sub);
-        }
+//        private float _subValue(Term sub) {
+//            if (sub instanceof Img || sub instanceof Interval /* HACK */)
+//                return 0;
+//            else
+//                return subValue(sub);
+//        }
 
         protected float subValue(Term sub) {
             if (sub instanceof Atomic)
@@ -116,12 +116,12 @@ public abstract class DynamicTermLinker implements TermLinker {
                     //sub.unneg().volume();
                     sub.unneg().complexity();
             return
-                    1f/v; //inverse
-                    //1f / Util.sqrt(v); //inverse sqrt
+                    1f / Util.sqrt(v); //inverse sqrt
+                    //1f/v; //inverse
+                    //1f/(v*v); //inverse_sq
                     //Util.sqrt(v);
                     //v;
                     //Util.sqr((float)v);
-                    //1f/(v*v); //inverse_sq
         }
     };
 }

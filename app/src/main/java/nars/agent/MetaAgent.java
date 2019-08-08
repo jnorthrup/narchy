@@ -190,8 +190,8 @@ abstract public class MetaAgent extends Game {
             //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 
-            actionCtlPriNodeRecursive(g.attnSensor, g.nar.control.graph);
-            actionCtlPriNode(g.attnAction); //non-recursive for now
+            actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
+            actionCtlPriNode(g.actionPri); //non-recursive for now
 
 
             actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);

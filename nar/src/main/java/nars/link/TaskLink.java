@@ -12,6 +12,7 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.table.TaskTable;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -87,11 +88,17 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return get(punc(when.x.random()), when, filter);
     }
 
-    @Nullable default Task get(byte punc, When<NAR> w, Predicate<Task> filter) {
-        if (punc == 0)
-            return null; //flat-lined tasklink
+    /** by default, the src term of the link is the materialized from() reference.  however Dynamic TaskLink can override this behavior */
+    default Termed src(When<NAR> when) {
+        return from();
+    }
 
-        Term x = from();
+    @Nullable default Task get(byte punc, When<NAR> w, Predicate<Task> filter) {
+
+        Termed x = src(w);
+
+        if (punc == 0)
+            punc = randomPunc(x.term(), w.x.random()); //flat-lined tasklink
 
         TaskTable table =
                 //n.concept(t);
@@ -117,7 +124,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
                     //form question?
                     float qpri = NAL.TASKLINK_GENERATED_QUESTION_PRI_RATE;
                     if (qpri > Float.MIN_NORMAL) {
-                        Task.validTaskTerm(x, punc, true);
+                        Task.validTaskTerm(x.term(), punc, true);
                     }
                 }
 
@@ -180,6 +187,24 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
 //        }
         //return null;
+    }
+
+    /** TODO refine
+     *  TODO query var -> only questions/quests
+     */
+    static byte randomPunc(Term term, Random rng) {
+        if (!term.op().goalable) {
+            return rng.nextBoolean() ? BELIEF : QUESTION;
+        } else {
+            switch (rng.nextInt(4)) {
+                case 0: return BELIEF;
+                case 1: return QUESTION;
+                case 2: return GOAL;
+                case 3: return QUEST;
+                default:
+                    throw new UnsupportedOperationException();
+            }
+        }
     }
 
     void delete(byte punc);

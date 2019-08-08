@@ -4,6 +4,7 @@
  */
 package nars.derive.premise;
 
+import jcog.Util;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.Derivation;
@@ -47,10 +48,7 @@ public class Premise /*implements Comparable<Premise>*/ {
 
 	public Premise(Task task, Term beliefTerm) {
 		super();
-
-
 		this.task = task;
-
 		this.beliefTerm = beliefTerm;
 
 //        this.hash = premiseHash(task, beliefTerm);

@@ -1,19 +1,30 @@
+//curiosity
+//X, X, task(".") |- X, (Goal:StructuralReduction, Time:Task)
+X, Y, hasBelief(), task("@") |- (polarizeRandom(X) && polarizeBelief(Y)), (Punctuation:Goal, Goal:BeliefStructuralReduction, Time:Task)
 
-//goal induction
-//  experimental
-G, B, task("!")  |- (polarizeTask(G) && polarizeBelief(B)), (Goal:IntersectionDD, Punctuation:Goal, Time:Sequence)
-G, B, task("@")  |- (polarizeBelief(B) ==> G), (Punctuation:Question)
-    //,--eventOfNeg(S,G) //<- TODO verify this will work if S isnt even a conj
 
-//nal3 goal induction
-  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
-  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
-    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
-    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
+//conjunction goal induction
+//G, X, task("!"), hasBelief() |- (polarizeTask(G) && polarizeBelief(X)), (Goal:DeductionWeakDD, Time:TaskEvent)
 
-//general implication induction
-    (C ==> Z), X |- ((C && X) ==> Z), (Belief:InductionPP)
-    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
+G, B, task("!")  |- (polarizeTask(G) && polarizeBelief(B)), (Punctuation:Goal, Goal:Intersection, Time:Sequence)
+G, B, task("!")  |- (polarizeTask(G) && polarizeRandom(B)), (Punctuation:Goal, Goal:StructuralReduction, Time:Task)
 
+//G, C, eventOf(C,G), --eventOfNeg(C,G), task("!") |- C, (Goal:Deduction, Time:TaskEvent)
+//G, C, eventOfNeg(C,G), --eventOf(C,G), task("!") |- C, (Goal:DeductionN, Time:TaskEvent)
+
+//goal -> impl question  induction
+//G, B, task("@")  |- (polarizeBelief(B) ==> G), (Punctuation:Question)
+
+
+////nal3 goal induction
+//  (X --> Z), ((&,X,A..+) --> Z) |- ((&,X,A..+) --> Z), (Goal:DesireWeak)
+//  (X --> Z), ((|,X,A..+) --> Z) |- ((|,X,A..+) --> Z), (Goal:Desire)
+//    (Z --> X), (Z --> (&,X,A..+)) |- (Z --> (&,X,A..+)), (Goal:Desire)
+//    (Z --> X), (Z --> (|,X,A..+)) |- (Z --> (|,X,A..+)), (Goal:DesireWeak)
+//
+////general implication/conj induction
+//    (C ==> Z), X |- ((C && X) ==> Z), (Belief:InductionPP)
+//    (C ==> Z), X |- ((C && --X) ==> Z), (Belief:InductionPN)
+//
 //X, (Y==>X), task("!") |- (Y &&   X), (Goal:Intersection)
 //X, (Y==>X), task("!") |- (Y && --X), (Goal:IntersectionNN)

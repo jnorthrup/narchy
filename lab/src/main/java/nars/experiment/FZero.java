@@ -366,7 +366,7 @@ public class FZero extends GameX {
 
         float res = 0.04f;
         float powerScale = 0.2f;
-        float rotSpeed = 1.5f;
+        float rotSpeed = 1.0f;
         final float[] left = new float[1];
         final float[] right = new float[1];
         float fwdSpeed = 75;

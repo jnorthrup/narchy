@@ -299,9 +299,10 @@ public class Derivation extends PreDerivation {
                         if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
 
 
-                            if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME)
+                            if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME) {
                                 nextBeliefStart = nextBeliefEnd = ETERNAL;
-                            else
+                                //nextBeliefStart = taskStart; nextBeliefEnd = taskEnd;
+                            } else
                                 nextBeliefEnd = nextBelief.end();
 
                             nextBelief = SpecialTruthAndOccurrenceTask.the(nextBelief,

@@ -1,9 +1,9 @@
 package nars.concept.action.curiosity;
 
 import jcog.Util;
-import nars.$;
 import nars.agent.Game;
 import nars.concept.action.AbstractGoalActionConcept;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -46,6 +46,6 @@ final class RandomPhasorCuriosity extends CuriosityMode {
 
         RandomPhasor pCuri = phasor.computeIfAbsent(action, (a) -> new RandomPhasor(g.time(), g.random()));
 
-        return $.t(pCuri.update(g.time(), g.dur(), g.random()), curiosity.conf.floatValue());
+        return PreciseTruth.byEvi(pCuri.update(g.time(), g.dur(), g.random()), curiosity.evi.floatValue());
     }
 }

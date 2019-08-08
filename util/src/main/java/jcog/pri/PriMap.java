@@ -93,13 +93,11 @@ public class PriMap<Y> {
         return items.isEmpty(); /* && termlink.isEmpty();*/
     }
 
-    public final Y put(Y x, float pri, PriMerge merge, @Nullable FloatConsumer pressurizable) {
+    public final Y put(Y x, PriMerge merge, @Nullable FloatConsumer pressurizable) {
 //        return putRaw(x, pri, merge, null);
 //    }
 //
 //    private Y putRaw(Y x, float pri, PriMerge merge, @Nullable OverflowDistributor<Y> overflow) {
-        if (pri != pri)
-            return null;
 
         Prioritizable y;
 
@@ -113,7 +111,7 @@ public class PriMap<Y> {
         }
 
         if (y != x) {
-            float delta = merge(y, x, pri, merge);
+            float delta = merge(y, x, ((Prioritizable)x).pri(), merge);
             if (pressurizable!=null && Math.abs(delta) > Float.MIN_NORMAL)
                 pressurizable.accept(delta);
 
@@ -179,9 +177,6 @@ public class PriMap<Y> {
 
 
 
-    public final <Z extends Prioritizable> void put(Z x, PriMerge merge) {
-        put((Y)x, x.pri(), merge, null);
-    }
 
     public void clear() {
         items.values().removeIf(i -> {

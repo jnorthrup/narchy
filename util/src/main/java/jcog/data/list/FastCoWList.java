@@ -12,6 +12,7 @@ import java.lang.reflect.Array;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Collectors;
@@ -438,4 +439,11 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             return true;
         });
     }
+
+	@Nullable public X get(Random random) {
+        X[] c = array();
+        if (c.length == 0)
+            return null;
+        return c[random.nextInt(c.length)];
+	}
 }

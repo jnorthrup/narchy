@@ -92,9 +92,6 @@
     //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
     //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
 
-    //conjunction goal induction
-//    G, C, eventOf(C,G), --eventOfNeg(C,G), task("!") |- C, (Goal:DeductionWeak, Time:TaskEvent)
-//    G, C, eventOfNeg(C,G), --eventOf(C,G), task("!") |- C, (Goal:DeductionWeakN, Time:TaskEvent)
 
 //    //anti-specific deduction: "conjunction contraposition"
 //    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)

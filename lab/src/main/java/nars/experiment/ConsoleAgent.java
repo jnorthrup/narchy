@@ -188,7 +188,7 @@ public class ConsoleAgent extends GameX {
 
             PriNode charAttn = new PriNode(id);
 
-            nar.control.input(charAttn, attnSensor);
+            nar.control.input(charAttn, sensorPri);
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {

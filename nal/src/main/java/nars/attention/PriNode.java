@@ -22,6 +22,9 @@ public class PriNode extends PLink<Term> {
 
     private int fanOut;
 
+    protected Merge input = Merge.Plus;
+    protected Branch branch = Branch.Equal;
+
     public PriNode(Object id) {
         super($.identity(id), 0);
     }
@@ -109,9 +112,6 @@ public class PriNode extends PLink<Term> {
 
         abstract public double merge(Iterable<? extends Node<PriNode, Object>> in);
     }
-
-    protected Merge input = Merge.Plus;
-    protected Branch branch = Branch.Equal;
 
     /** how the incoming priority is combined from sources */
     public PriNode input(Merge m) {

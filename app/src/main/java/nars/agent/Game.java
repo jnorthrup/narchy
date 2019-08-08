@@ -78,7 +78,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
-    public final PriNode attnReward, attnAction, attnSensor;
+    public final PriNode rewardPri, actionPri, sensorPri;
 
 
     /** the context representing the experience of the game */
@@ -129,12 +129,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         PriNode pri = what.pri;
 
-        this.attnAction = nar.control.input((Term)$.inh(id,ACTION), PriNode.Merge.And,
+        this.actionPri = nar.control.input((Term)$.inh(id,ACTION), PriNode.Merge.And,
             pri, nar.goalPriDefault);
-        this.attnSensor = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.And,
+        this.sensorPri = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.And,
             pri, nar.beliefPriDefault);
-        this.attnReward = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.And,
-            pri, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
+        this.rewardPri = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.And,
+            pri); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
         add(time.clock(this));
     }
@@ -205,7 +205,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         actions.add(c);
 
         nar().add(c);
-        addAttention(attnAction, c);
+        addAttention(actionPri, c);
         return c;
     }
 
@@ -218,7 +218,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         //TODO check for existing
         sensors.add(s);
-        addAttention(attnSensor, s);
+        addAttention(sensorPri, s);
         return s;
     }
 
@@ -292,7 +292,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     @Override
     public boolean delete() {
         if (super.delete()) {
-            nar.control.removeAll(attnAction, attnSensor, attnReward);
+            nar.control.removeAll(actionPri, sensorPri, rewardPri);
             return true;
         }
         return false;
@@ -378,7 +378,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
-        addAttention(attnReward, r);
+        addAttention(rewardPri, r);
         return r;
     }
 

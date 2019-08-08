@@ -119,7 +119,7 @@ public class NARio extends GameX {
 
         PriNode tileAttnGroup = new PriNode(tileSensors);
 
-        nar.control.input(tileAttnGroup, attnSensor);
+        nar.control.input(tileAttnGroup, sensorPri);
 
         for (SelectorSensor s : tileSensors)
             nar.control.input((PriNode) s.pri, tileAttnGroup);

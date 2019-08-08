@@ -42,35 +42,14 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-//    /*@AllowOverlap*/ Pre() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-//            return TruthFunctions2.pre(T, B, false, minConf);
-//        }
-//    },
-//
-//    @AllowOverlap PreRecursive() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-//            return Pre.apply(T, B, minConf, n);
-//        }
-//    },
-//
-//    /*@AllowOverlap*/ PreWeak() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-//            return TruthFunctions2.pre(T, B, true, minConf);
-//        }
-//    },
-
-    /*@AllowOverlap*/ Post() {
+    @AllowOverlap Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);
         }
     },
 
-    PostWeak() {
+    @AllowOverlap PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, false, minConf);
@@ -81,20 +60,20 @@ public enum NALTruth implements TruthFunction {
     /**
      * similar to structural deduction but keeps the same input frequency, only reducing confidence
      */
-    @SinglePremise StructuralReduction() {
+    @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
-    @SinglePremise StructuralDeduction() {
+    @AllowOverlap @SinglePremise StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             return T != null ? Deduction.apply(T, $.t(1f, confDefault(n)), minConf, n) : null;
         }
     },
-    @SinglePremise StructuralDeductionWeak() {
+    @AllowOverlap @SinglePremise StructuralDeductionWeak() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(n)), minConf, n), minConf) : null;

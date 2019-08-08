@@ -2,17 +2,14 @@ package nars.agent;
 
 import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.data.graph.MapNodeGraph;
 import nars.$;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.attention.AttnBranch;
 import nars.attention.PriNode;
 import nars.concept.Concept;
 import nars.concept.sensor.GameLoop;
 import nars.control.channel.CauseChannel;
-import nars.op.mental.Inperience;
 import nars.table.eternal.EternalDefaultTable;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -23,8 +20,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.List;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -42,14 +37,12 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     final PriNode attn;
 
-    public Reward(Term id, Game g) {
-    //TODO
-    //public Reward(NAgent a, FloatSupplier r, float confFactor) {
+    protected Reward(Term id, Game g) {
         this.game = g;
 
         this.attn = new PriNode(id);
 
-        g.nar.control.input(attn, g.attnReward);
+        g.nar.control.input(attn, g.rewardPri);
 
         in = g.nar.newChannel(id);
 
@@ -69,9 +62,9 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
      * */
     abstract public float happiness(float dur);
 
-    protected final float rewardFreq(boolean beliefOrGoal) {
-        return rewardFreq(beliefOrGoal, game.dur());
-    }
+//    protected final float rewardFreq(boolean beliefOrGoal) {
+//        return rewardFreq(beliefOrGoal, game.dur());
+//    }
 
     /** scalar value representing the reward state (0..1.0) */
     protected abstract float rewardFreq(boolean beliefOrGoal, float dur);
@@ -99,50 +92,98 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         Term goal = g.term();
         @Nullable Truth truth = $.t(goal.op()==NEG ? 1-freq : freq, conf);
 
-        Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
+        //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 
         long[] stamp = NAL.REWARD_GOAL_UNSTAMPED ? Stamp.UNSTAMPED : nar().evidence();
-        Task[] t = new Task[] { NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp) };
-
+        Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
+//        eteTable.insert(t); //insert directly
+        //game.what().accept(t);
+
+//        Term lt = $.inh(t.term(), "curiosity");
+
+        game.onFrame(()->{
+            float pri =
+                attn.pri();
+                //1;
+            t.pri(pri);
+            game.what().accept(t);
+
+
+//            DynamicTaskLink l = new DynamicTaskLink(lt) {
+//
+//                Termed randomSensor(Random rng) {
+//                    return game.sensors.get(rng).get(rng);
+//                }
+//
+//                Termed randomAction(Random rng) {
+//                    return game.actions.get(rng).get(rng);
+//                }
+//
+//                @Override
+//                public Termed src(When<NAR> when) {
+//                    return t.term();
+//                    //Random rng = when.x.random();
+////                    return CONJ.the(t.term(), randomSensor(rng).term().negIf(rng.nextBoolean()));
+//                    //return CONJ.the(t.term(), randomSensor(rng).term().negIf(rng.nextBoolean()));
+//                    //return CONJ.the(randomAction(rng).term().negIf(rng.nextBoolean()), randomSensor(rng).term().negIf(rng.nextBoolean()));
+//                }
+//
+//                @Override
+//                public Term target(Task task, Derivation d) {
+//                    Random rng = d.random;
+////                    return CONJ.the(
+////                        randomAction(rng).term().negIf(rng.nextBoolean()),
+////                        randomSensor(rng).term().negIf(rng.nextBoolean()));
+//
+//                    return rng.nextBoolean() ? randomAction(rng).term() : randomSensor(rng).term();
+////                    return game.sensors.get(rng).get(rng).term();
+//                }
+//            };
+//            //l.pri(pri);
+//            l.priSet(GOAL,pri/2);
+//            l.priSet(QUEST,pri/2);
+//            game.what().link(l);
+        });
+
+
 //        int redundancy = eteTable.capacity();
 //        Task[] t = new Task[redundancy];
 //
 //        for (int i = 0; i < redundancy; i++) {
 //            long[] stamp = nar().evidence();
 //            t[i] = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp); //TODO unevaluated?
-//            eteTable.insert(t[i]); //insert directly, avoid revision
+//            eteTable.insert(t); //insert directly, avoid revision
 //        }
 
 
-        PriNode a = new GoalReinforcement(at, t);
-
-        nar().control.input(a, attn);
-    }
-
-    private final class GoalReinforcement extends AttnBranch {
-        private final Task[] t;
-        private final long start;
-
-        public GoalReinforcement(Term at, Task... t) {
-            super(at, List.of(t));
-            this.t = t;
-            start = nar().time();
-        }
-
-        @Override
-        public void update(MapNodeGraph<PriNode,Object> g) {
-            super.update(g);
-
-            float p = pri();
-            for (Task tt : t) {
-                tt.pri(p);
-                tt.setCreation(start); //refresh start time
-            }
-
-            in.acceptAll(t, game.what());
-        }
+//        PriNode a = new GoalReinforcement(at, t);
 
     }
+
+//    private final class GoalReinforcement extends AttnBranch {
+//        private final Task[] t;
+//        private final long start;
+//
+//        public GoalReinforcement(Term at, Task... t) {
+//            super(at, List.of(t));
+//            this.t = t;
+//            start = nar().time();
+//        }
+//
+//        @Override
+//        public void update(MapNodeGraph<PriNode,Object> g) {
+//            super.update(g);
+//
+//            float p = pri();
+//            for (Task tt : t) {
+//                tt.pri(p);
+//                tt.setCreation(start); //refresh start time
+//            }
+//
+//            in.acceptAll(t, game.what());
+//        }
+//
+//    }
 }

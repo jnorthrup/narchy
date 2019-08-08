@@ -17,6 +17,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
+import static nars.truth.func.TruthFunctions.c2wSafe;
+
 /** a curiosity configuration which can be shared by multiple AbstractGoalActionConcept's */
 @Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
 public class Curiosity {
@@ -24,7 +26,7 @@ public class Curiosity {
     public final AtomicBoolean enable = new AtomicBoolean(true);
 
     /** advised default or maximum confidence setting of generated goal */
-    public final FloatRange conf = new FloatRange(0, NAL.truth.TRUTH_EPSILON, NAL.truth.CONF_MAX);
+    public final FloatRange evi = new FloatRange(0, 0, (float) NAL.truth.EVI_MAX);
 
     public final FasterList<CuriosityMode> curiosity = new FasterList<>(8); //new FastCoWList(8, CuriosityMode[]::new);
 
@@ -87,8 +89,7 @@ public class Curiosity {
 
 
         float curiConf =
-                nar.confMin.floatValue();
-                //Math.max(nar.confMin.floatValue() * factor, nar.confResolution.floatValue());
+                Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue());
                 //nar.confMin.floatValue() * 2;
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);
@@ -100,7 +101,7 @@ public class Curiosity {
                 //w2c(c2w(nar.confDefault(GOAL))/2);
                 //nar.confDefault(GOAL);
 
-        conf.set(Math.min(curiConf, NAL.truth.CONF_MAX));
+        evi.set(c2wSafe(curiConf, NAL.truth.CONF_MAX));
 
         int cc = curiosity.size();
 

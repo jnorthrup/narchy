@@ -461,7 +461,7 @@ abstract public class GameX extends Game {
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
 //
         n.emotion.want(MetaGoal.Believe, 0.05f);
-        n.emotion.want(MetaGoal.Desire, 1f);
+        n.emotion.want(MetaGoal.Desire, 0.1f);
 //
 //        n.emotion.want(MetaGoal.Action, +1f);
 
@@ -525,7 +525,7 @@ abstract public class GameX extends Game {
 
         Deriver bd1 = new Deriver(Derivers.nal(n, 1, 1));
         Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
-        Deriver bd6 = new Deriver(Derivers.nal(n, 6, 8));
+        Deriver bd6 = new Deriver(Derivers.nal(n, 6, 8,"motivation.nal"));
 
         Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
         bd3_act.time(new ActionTiming());
@@ -627,7 +627,8 @@ abstract public class GameX extends Game {
                 Term x =
                     //Int.the(X);
                     //$.pRadix(X, 8, Integer.MAX_VALUE);
-                    $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
+                    $.p( $.radixArray(X, radix, Integer.MAX_VALUE));
+                    //$.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
                 Term f = $.funcImg(FRAME, g.id, x);
                 Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),

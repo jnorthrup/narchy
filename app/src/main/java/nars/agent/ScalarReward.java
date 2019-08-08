@@ -33,8 +33,7 @@ abstract public class ScalarReward extends Reward {
     @Override
     public final void update(Game a) {
         this.reward = reward(a);
-        if (concept instanceof Signal) //??
-            ((Signal)concept).update(a);
+        concept.update(a);
     }
 
     protected abstract float reward(Game a);
@@ -64,10 +63,6 @@ abstract public class ScalarReward extends Reward {
     }
 
     abstract protected Signal newConcept();
-//    {
-//        return nar().conceptBuilder.construct(id.unneg());
-//    }
-
 
     @Override
     public final Iterator<Concept> iterator() {

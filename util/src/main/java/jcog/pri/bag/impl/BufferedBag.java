@@ -3,7 +3,6 @@ package jcog.pri.bag.impl;
 import jcog.data.NumberX;
 import jcog.pri.PriMap;
 import jcog.pri.Prioritizable;
-import jcog.pri.Prioritized;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.util.ProxyBag;
 import jcog.pri.op.PriMerge;
@@ -81,8 +80,6 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 
 	@Override
 	public final Y put(Y x) {
-		float pri = ((Prioritized) x).pri();
-
 //        boolean tryBypass = true;
 //        if (tryBypass) {
 //            Y y = bag.get(x);
@@ -94,7 +91,7 @@ abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBa
 //            }
 //        }
 
-		return (Y) pre.put((B) x, pri,
+		return (Y) pre.put((B) x,
 			merge(),
 			this::pressurize
 		);

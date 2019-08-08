@@ -226,29 +226,17 @@ public class Remember extends AbstractTask {
     public void merge(Task prev) {
 
         Task next = this.input;
-
-        boolean identity = prev == next;
-
         if (next!=null) {
 
-//            @Nullable Task r = rememberMerged(prev, next);
-//            if (r != null) {
-            if (rememberFilter(prev, next, this.nar)) {
+            boolean identity = prev == next;
+
+            if (filter(prev, next, this.nar))
                 remember(prev); //if novel: relink, re-emit (but using existing or identical task)
-            }
 
             if (!identity) {
-
-                //assert (!input.isDeleted()); //dont delete just yet
-
-                //TODO decide how much to re-activate
-                //TODO consider forgetting rate
-
                 Task.merge(prev, next);
-            }
-
-            if (!identity)
                 forget(next, true);
+            }
         }
 
         done = true;
@@ -258,12 +246,12 @@ public class Remember extends AbstractTask {
      * heuristic for determining repeat suppression
      *
      */
-    private static boolean rememberFilter(Task prev, Task next, NAR n) {
+    private static boolean filter(Task prev, Task next, NAR n) {
 
         boolean priChange = false;
         if (next!=prev) {
-            float np = next.priElseNeg1();
-            float pp = prev.priElseNeg1();
+            float np = next.priElseZero();
+            float pp = prev.priElseZero();
             float dPriPct = (np - pp) / Math.max(ScalarValue.EPSILON, Math.max(np, pp));
 
             //priority change significant enough
@@ -276,14 +264,16 @@ public class Remember extends AbstractTask {
         long prevCreation = prev.creation();
         long nextCreation = prev != next ? next.creation() : n.time();
 
-        boolean novel = false;
-        if (!priChange) { //dont compare time if pri already detected changed
+        boolean novel;
+        if (priChange) { //dont compare time if pri already detected changed
+            novel = true;
+        } else {
             long dCycles = Math.max(0, nextCreation - prevCreation);
             float dDithers = dCycles == 0 ? 0 : (dCycles / ((float) n.dtDither()));
             novel = dDithers > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS;
         }
 
-        if (priChange || novel) {
+        if (novel) {
             prev.setCreation(nextCreation); //renew creation
             return true;
         }

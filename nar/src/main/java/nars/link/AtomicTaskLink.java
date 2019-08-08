@@ -57,6 +57,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
 
+
     @Override
     @Deprecated public AtomicTaskLink clone(float priNormalize) {
         AtomicTaskLink l = new AtomicTaskLink(src, tgt, hash);
@@ -104,7 +105,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
         super(source, target, hash);
     }
 
-    private AtomicTaskLink(Term source, Term target) {
+    protected AtomicTaskLink(Term source, Term target) {
         super(source, target);
     }
 

@@ -224,8 +224,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return concepts.iterator();
     }
 
-
-    Signal randomPixel(Random rng) {
+    @Override
+    public Signal get(Random rng) {
         return concepts.get(rng);
     }
 
@@ -236,7 +236,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
 
         @Override public Termed src(When<NAR> when) {
-            return randomPixel(when.x.random());
+            return Bitmap2DSensor.this.get(when.x.random());
         }
 
 
@@ -287,18 +287,14 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
         @Override
-        protected Termed src(When<NAR> when) {
+        public Termed src(When<NAR> when) {
             return superPixel(when.x.random());
         }
 
-//        @Override
-//        public @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
-//            return superPixel(d.random);
-//        }
 
         @Override
         public Term target(Task task, Derivation d) {
-            return randomPixel(d.random).term();
+            return Bitmap2DSensor.this.get(d.random).term();
             //return superPixel(d.random);
             //return task.term();
         }
