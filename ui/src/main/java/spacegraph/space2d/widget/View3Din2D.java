@@ -5,7 +5,9 @@ import com.jogamp.opengl.fixedfunc.GLMatrixFunc;
 import jcog.Util;
 import jcog.math.v2;
 import jcog.math.v3;
+import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
+import spacegraph.input.finger.impl.MouseFinger;
 import spacegraph.input.finger.state.Dragging;
 import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space2d.ReSurface;
@@ -18,7 +20,6 @@ import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.widget.SurfacedCuboid;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
-import static spacegraph.input.finger.Fingering.Idle;
 
 /**
  * embedded 3d viewport for use on a 2d surface
@@ -44,26 +45,22 @@ public class View3Din2D extends PaintSurface {
 //		space.add(debugPick2 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(1,0,0,0.25f));
 	}
 
-	private void updateDebug() {
-//		debugFwd.move(space.camPos.clone().addScaled(space.camFwd, 2));
-
-	}
 
 	@Override
 	protected void paint(GL2 gl, ReSurface r) {
 
-		updateDebug();
+
 
 		gl.glPushMatrix();
+
 
 		px1 = ((x() - r.x1) * r.scaleX);
 		py1 = ((y() - r.y1) * r.scaleY);
 		px2 = ((x() - r.x1 + w()) * r.scaleX);
 		py2 = ((y() - r.y1 + h()) * r.scaleY);
-		gl.glViewport(0,0, Math.round(px2 - px1), Math.round(py2 - py1));
+		gl.glViewport(Math.round(bounds.x),Math.round(bounds.y), Math.round(px2 - px1), Math.round(py2 - py1));
 
-//		space.zFar = 100;
-		render(gl, r);
+		space.renderVolumeEmbedded(r.dtS(), gl, bounds);
 
 		//restore ortho state
 		gl.glMatrixMode(GL_PROJECTION);
@@ -76,56 +73,29 @@ public class View3Din2D extends PaintSurface {
 		gl.glPopMatrix();
 	}
 
-	protected void render(GL2 gl, ReSurface r) {
-//        space.camPos((float)(Math.random()*0.5f), (float)(Math.random()*0.5f), 5);
-//        space.camFwd((float)(Math.random()-0.5f)*2, (float)(Math.random()-0.5f)*2, -1);
-
-		space.renderVolumeEmbedded(r.dtS(), gl, bounds);
-	}
-
 
 	@Override
-	public Surface finger(Finger f) {
+	public Surface finger(Finger fingerFrom2D) {
 
-		float wheel = f.rotationY(true);
+		float wheel = fingerFrom2D.rotationY(true);
 		if (wheel!=0) {
 			space.camPos.addScaled(space.camFwd, wheel);
 		}
 
-		if (!drag.active()) {
-			//v2 p = finger.posRelative(RectFloat.XYXY(px1, py1, px2, py2));
-			v2 p = f.posRelative(bounds);
+		if (!fpsDrag.active()) {
 
-//		float pw = px2 - px1;
-//		float ph = py2 - py1;
+			v2 p = fingerFrom2D.posRelative(this);
+
 			ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
 
 
 			if (c.hasHit()) {
 				Body3D co = mouse.pickedBody;
-
-
-				//Collidable co = c.collidable;
 				if (co != null) {
 					Object s = co.data();
 					if (s instanceof SurfacedCuboid) {
 						SurfacedCuboid ss = (SurfacedCuboid) s;
-						v3 local =
-							ss.transform.untransform(mouse.hitPoint.clone());
-							//co.transform.untransform(mouse.hitPoint.clone());
-							//co.transform.untransform(c.hitPointWorld.clone());
-
-//						if (ss!=debugPick1 && ss!=debugPick2) {
-//							debugPick1.move(mouse.origin);
-////				float len = (float) Math.random() *  0.003f;
-//							debugPick2.move(
-////					Util.lerp(len, space.camPos.x, mouse.target.x),
-////					Util.lerp(len, space.camPos.y, mouse.target.y),
-////					Util.lerp(len, space.camPos.z, mouse.target.z)
-//								//c.hitPointWorld
-//								mouse.hitPoint
-//							);
-//						}
+						v3 local = ss.transform.untransform(mouse.hitPoint.clone());
 
 						float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
 						if (local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1) {
@@ -140,11 +110,17 @@ public class View3Din2D extends PaintSurface {
 									float localX = (local.x / sss.x()) + 0.5f, localY = (local.y / sss.y()) + 0.5f;
 									//float localX = local.x+sss.x(), localY = local.y+sss.y();
 									//System.out.println(front + " " + n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
-									Surface fingering = f.push(new v2(localX, localY), front::finger);
+
+									fingerTo2D.posPixel.set(localX, localY);
+									fingerTo2D.posGlobal.set(localX, localY);
+									fingerTo2D.copyButtons(fingerFrom2D);
+									//Surface fingering = fingerTo2D.push(new v2(localX, localY), front::finger);
+									Surface fingering = fingerTo2D.finger(front::finger);//front.finger(fingerTo2D);
+									//fingerTo2D.exit();
 									if (fingering!=null) {
 										//absorb and shadow internal node
-										f.fingering.set(Idle);//HACK
-										//f.test(Idle);//clear fingering
+//										fingerTo2D.fingering.set(Idle);//HACK
+//										//f.test(Idle);//clear fingering
 										return this;
 									}
 								}
@@ -155,13 +131,25 @@ public class View3Din2D extends PaintSurface {
 			}
 		}
 
-		if (f.test(drag))
+		if (fingerFrom2D.test(fpsDrag))
 			return this;
 
 		return null;
 	}
 
-	final Dragging drag = new Dragging( 2) {
+	final MouseFinger fingerTo2D = new MouseFinger(5) {
+		@Override
+		protected void start(SpaceGraph x) {
+			enter();
+		}
+
+		@Override
+		protected void stop(SpaceGraph x) {
+
+		}
+	};
+
+	final Dragging fpsDrag = new Dragging( 2) {
 
 		private v2 start;
 

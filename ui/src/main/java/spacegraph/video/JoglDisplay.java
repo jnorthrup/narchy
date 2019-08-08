@@ -126,14 +126,16 @@ abstract public class JoglDisplay extends SpaceGraph {
     }
 
 
+//    public void updateCamera(GL2 gl) {
+//        int glutScreenWidth = video.getWidth(), glutScreenHeight = video.getHeight();
+//
+//        updateCamera(gl, ((float) glutScreenWidth)/glutScreenHeight);
+//    }
 
-    public void updateCamera(GL2 gl) {
+    public void updateCamera(GL2 gl, float aspect) {
         gl.glMatrixMode(GL_PROJECTION);
         gl.glLoadIdentity();
 
-        int glutScreenWidth = video.getWidth(), glutScreenHeight = video.getHeight();
-
-        float aspect = ((float) glutScreenWidth)/glutScreenHeight;
 
 
         top = zNear * Math.tan(fov * Math.PI / 360.0);

@@ -40,7 +40,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     public final v2 posPixel = new v2();
     public final v2 posScreen = new v2();
     public final v2[] posPixelPress;
-    protected final v2 posGlobal = new v2();
+    public final v2 posGlobal = new v2();
 
     public final AtomicMetalBitSet prevButtonDown = new AtomicMetalBitSet();
     /**
@@ -61,7 +61,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     protected final AtomicBoolean focused = new AtomicBoolean(false);
     final FasterList<SurfaceTransform> transforms = new FasterList();
 
-    private final int buttons;
+    public final int buttons;
 
     /**
      * drag threshold (in screen pixels)
@@ -134,7 +134,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     /**
      * commit all buttons
      */
-    protected void commitButtons() {
+    public void commitButtons() {
         prevButtonDown.copyFrom(buttonDown);
     }
 
@@ -163,18 +163,30 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
                 boolean pressed = (b > 0);
 
                 if (!pressed) b = (short) -b;
-                b--;
 
-                buttonDown.set(b, pressed);
-
-                if (pressed && !wasPressed(b)) {
-                    posPixelPress[b].set(posPixel);
-                }
+                updateButton(b-1, pressed);
             }
         }
 
 //        System.out.println(buttonSummary());
     }
+
+    public void copyButtons(Finger toCopy) {
+        for (int i = 0; i < buttons; i++) {
+            updateButton(i, toCopy.buttonDown.get(i));
+        }
+    }
+
+    protected void updateButton(int button, boolean pressed) {
+        buttonDown.set(button, pressed);
+
+        if (pressed && !wasPressed(button)) {
+            posPixelPress[button].set(posPixel);
+        }
+    }
+
+
+
 
     /**
      * call once per frame

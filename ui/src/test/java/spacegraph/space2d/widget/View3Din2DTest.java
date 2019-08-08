@@ -21,11 +21,13 @@ class View3Din2DTest {
 //            }
 //        }
 
-
-		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f, new Splitting(
-			new View3Din2D(s),
-			0.1f, new PushButton("x")).resizeable()).resizeable(),
+		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f,
+			new View3Din2D(s)).resizeable(),
 			1280, 1024);
+//		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f, new Splitting(
+//			new View3Din2D(s),
+//			0.1f, new PushButton("x")).resizeable()).resizeable(),
+//			1280, 1024);
 
 
 		s.add(new SurfacedCuboid("x",

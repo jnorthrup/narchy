@@ -20,7 +20,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
 
 
     public NewtMouseFinger(JoglDisplay s, Function<Finger,Surface> root) {
-        super(MAX_BUTTONS, root);
+        super(MAX_BUTTONS);
         this.space = s;
 
         JoglWindow win = s.video;
@@ -29,7 +29,7 @@ public class NewtMouseFinger extends MouseFinger implements MouseListener, Windo
         if (win.window.hasFocus())
             focused.set(true);
 
-        win.onUpdate(this::update);
+        win.onUpdate(()-> finger(root));
     }
 
 
