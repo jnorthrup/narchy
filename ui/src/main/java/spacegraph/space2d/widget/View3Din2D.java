@@ -18,6 +18,7 @@ import spacegraph.space3d.phys.shape.SimpleBoxShape;
 import spacegraph.space3d.widget.SurfacedCuboid;
 
 import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
+import static spacegraph.input.finger.Fingering.Idle;
 
 /**
  * embedded 3d viewport for use on a 2d surface
@@ -127,24 +128,27 @@ public class View3Din2D extends PaintSurface {
 //						}
 
 						float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
-						//local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1 &&
+						if (local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1) {
 
-						SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
-						float zFront = sss.z() / 2;
-						if (Util.equals(local.z, zFront, radiusTolerance)) {
-							//System.out.println(local.x + " "  + local.y);
-							Surface front = ss.front;
-							if (front != null) {
-								//float localX = ((local.x+0.5f)*front.w())/(2*sss.x()), localY = ((local.y+0.5f)*front.h())/(2*sss.y());
-								float localX = local.x+0.5f, localY = local.y+0.5f;
-								//float localX = local.x+sss.x(), localY = local.y+sss.y();
-								//System.out.println(front + " " + n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
-								return f.push((px, py, target) -> {
-									target.set(localX, localY);
-								}, front::finger);
+							SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
+							float zFront = sss.z() / 2;
+							if (Util.equals(local.z, zFront, radiusTolerance)) {
+								//System.out.println(local.x + " "  + local.y);
+								Surface front = ss.front;
+								if (front != null) {
+									//float localX = ((local.x+0.5f)*front.w())/(2*sss.x()), localY = ((local.y+0.5f)*front.h())/(2*sss.y());
+									float localX = (local.x / sss.x()) + 0.5f, localY = (local.y / sss.y()) + 0.5f;
+									//float localX = local.x+sss.x(), localY = local.y+sss.y();
+									//System.out.println(front + " " + n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
+									Surface fingering = f.push(new v2(localX, localY), front::finger);
+									if (fingering!=null) {
+										//absorb and shadow internal node
+										f.fingering.set(Idle);//HACK
+										//f.test(Idle);//clear fingering
+										return this;
+									}
+								}
 							}
-						} else {
-//						System.out.println(p + " -> " + c.hitPointWorld + "\t=> " + local);
 						}
 					}
 				}

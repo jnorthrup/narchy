@@ -3,7 +3,6 @@ package spacegraph.space2d.widget.slider;
 import com.jogamp.opengl.GL2;
 import jcog.math.FloatRange;
 import jcog.math.v2;
-import jcog.pri.ScalarValue;
 import jcog.tree.rtree.Spatialization;
 import org.eclipse.collections.api.block.procedure.primitive.FloatFloatProcedure;
 import spacegraph.input.finger.Finger;
@@ -111,17 +110,14 @@ public class XYSlider extends PaintSurface  {
     private void touch(Finger f) {
         v2 hitPoint = f.posRelative(XYSlider.this);
 
-        pressing = true;
-        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), Spatialization.EPSILONf))
-            updated();
+        pressing = true; set(hitPoint.x, hitPoint.y);
+//        if (knob.setIfChanged(unitize(hitPoint.x), unitize(hitPoint.y), Spatialization.EPSILONf))
+//            updated();
     }
 
     @Override
     public Surface finger(Finger f) {
-        if (f.test(drag)) {
-            return this;
-        }
-        return null;
+        return f.test(drag) ? this : null;
     }
 
 
@@ -166,7 +162,7 @@ public class XYSlider extends PaintSurface  {
     }
 
     public XYSlider set(float x, float y) {
-        if (knob.setIfChanged(x, y, ScalarValue.EPSILON))
+        if (knob.setIfChanged(unitize(x), unitize(y), Spatialization.EPSILONf))
             updated();
         return this;
     }

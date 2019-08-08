@@ -54,7 +54,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     /**
      * a exclusive locking/latching state which may be requested by a surface
      */
-    protected final AtomicReference<Fingering> fingering = new AtomicReference<>(Idle);
+    public final AtomicReference<Fingering> fingering = new AtomicReference<>(Idle);
     /**
      * ex: true when finger enters the window, false when it leaves
      */
@@ -355,6 +355,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     }
 
 
+
     public final <S extends Surface> S push(SurfaceTransform t, Function<Finger, S> fingering) {
         v2 p = posGlobal.clone();
         transforms.add(t);
@@ -365,6 +366,13 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
             posGlobal.set(p);
             transforms.removeLast();
         }
+    }
+    public final <S extends Surface> S push(v2 g, Function<Finger, S> fingering) {
+        v2 p = posGlobal.clone();
+        posGlobal.set(g);
+        S result = fingering.apply(this);
+        posGlobal.set(p);
+        return result;
     }
 
     public Surface cursorSurface() {
