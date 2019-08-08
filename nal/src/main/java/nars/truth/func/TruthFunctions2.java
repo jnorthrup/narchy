@@ -120,8 +120,8 @@ public enum TruthFunctions2 {
 //        }
 //    }
 
-    @Nullable
-    public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
+    /** TODO rename 'Conduction' ?  */
+    @Nullable public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
 
         float cc = confCompose(belief, goal);
         if (cc >= minConf) {
@@ -222,14 +222,14 @@ public enum TruthFunctions2 {
     }
 
 
-    /**
-     * output polarity matches Y's polarity. X determines pre and post negations
-     */
-    public static Truth decomposeDiff(Truth X, Truth Y, float minConf) {
-        boolean yPos = Y.isPositive();
-        Truth t = TruthFunctions.deduction(X.negIf(!yPos), Y.negIf(!yPos), true, minConf);
-        return t != null ? t.negIf(X.isPositive()) : null;
-    }
+//    /**
+//     * output polarity matches Y's polarity. X determines pre and post negations
+//     */
+//    public static Truth decomposeDiff(Truth X, Truth Y, float minConf) {
+//        boolean yPos = Y.isPositive();
+//        Truth t = TruthFunctions.deduction(X.negIf(!yPos), Y.negIf(!yPos), true, minConf);
+//        return t != null ? t.negIf(X.isPositive()) : null;
+//    }
 
     /**
      *   X, (  X ==> Y) |- Y

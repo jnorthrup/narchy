@@ -4,7 +4,6 @@ import jcog.Log;
 import jcog.Skill;
 import jcog.Texts;
 import jcog.math.FloatAveragedWindow;
-import jcog.pri.Prioritizable;
 import nars.NAR;
 import nars.attention.What;
 import nars.term.Term;

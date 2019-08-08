@@ -3,7 +3,6 @@ package nars.test;
 import jcog.data.list.FasterList;
 import jcog.event.ByteTopic;
 import nars.*;
-import nars.task.Tasked;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.test.condition.LambdaTaskCondition;

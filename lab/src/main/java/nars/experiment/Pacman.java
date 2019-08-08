@@ -10,7 +10,6 @@ import nars.agent.GameTime;
 import nars.experiment.pacman.PacmanGame;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.SwingBitmap2D;
-import spacegraph.space2d.container.grid.Gridding;
 
 
 public class Pacman extends GameX {

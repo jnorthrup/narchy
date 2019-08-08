@@ -11,7 +11,6 @@ import nars.$;
 import nars.NAR;
 import nars.Narsese;
 import nars.Op;
-import nars.attention.PriNode;
 import nars.concept.action.BiPolarAction;
 import nars.concept.sensor.*;
 import nars.term.Term;

@@ -9,10 +9,6 @@
      B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DesireReversePP, Goal:DesireReverseWeakPP, Time:TaskEvent)
        B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DesireReverseNP, Goal:DesireReverseWeakNP, Time:TaskEvent)
 
-     //if novel, allow recursive
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$",novel), (Belief:DesireReverseRecursivePP, Goal:DesireReverseWeakPP, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$",novel), (Belief:DesireReverseRecursiveNP, Goal:DesireReverseWeakNP, Time:TaskEvent)
-
        //questions
           B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)

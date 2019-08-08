@@ -1,8 +1,6 @@
 package nars;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
-import jcog.data.graph.Node;
 import jcog.event.Off;
 import nars.attention.PriNode;
 import nars.attention.What;

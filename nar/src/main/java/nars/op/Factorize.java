@@ -8,6 +8,7 @@ import nars.NAR;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
+import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.cache.Intermed;

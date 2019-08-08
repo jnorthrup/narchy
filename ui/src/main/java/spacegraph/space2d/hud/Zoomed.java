@@ -15,8 +15,8 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.util.SurfaceTransform;
-import spacegraph.util.animate.v3Anim;
 import spacegraph.util.animate.Animated;
+import spacegraph.util.animate.v3Anim;
 import spacegraph.video.JoglDisplay;
 
 import java.util.ArrayDeque;

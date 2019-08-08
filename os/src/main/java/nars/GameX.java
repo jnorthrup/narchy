@@ -43,7 +43,6 @@ import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Int;
 import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;

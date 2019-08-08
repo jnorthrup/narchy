@@ -1,5 +1,6 @@
 package nars.truth.func;
 
+import jcog.Skill;
 import jcog.util.Reflect;
 import nars.$;
 import nars.NAL;
@@ -20,32 +21,18 @@ import static nars.truth.func.TruthFunctions2.weak;
  */
 public enum NALTruth implements TruthFunction {
 
-    Deduction() {
+	@AllowOverlap Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.deduction(T, B, true, minConf);
         }
     },
-
-    @AllowOverlap DeductionRecursive() {
-        @Override
-        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
-            return TruthFunctions.deduction(T, B, true, minConf);
-        }
-    },
-
-    @AllowOverlap DeductionWeakRecursive() {
-        @Override
-        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
-            return TruthFunctions.deduction(T, B, false, minConf);
-        }
-    },
-    DeductionWeak() {
-        @Override
-        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
-            return TruthFunctions.deduction(T, B, false, minConf);
-        }
-    },
+	@AllowOverlap DeductionWeak() {
+		@Override
+		public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+			return TruthFunctions.deduction(T, B, false, minConf);
+		}
+	},
 
 
     Induction() {
@@ -76,7 +63,7 @@ public enum NALTruth implements TruthFunction {
 //        }
 //    },
 
-    /*@AllowOverlap*/ Post/*Recursive*/() {
+    /*@AllowOverlap*/ Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);
@@ -98,7 +85,6 @@ public enum NALTruth implements TruthFunction {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
-//            c = weak(c);
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
@@ -167,7 +153,7 @@ public enum NALTruth implements TruthFunction {
     },
 
 
-    Abduction() {
+	@Skill("Sherlock_Holmes#Holmesian_deduction") Abduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return Induction.apply(B, T, minConf, n);
@@ -410,7 +396,6 @@ public enum NALTruth implements TruthFunction {
     StructuralAbduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-
             return Abduction.apply($.t(1f, confDefault(n)), T, minConf, n);
         }
     },
@@ -418,13 +403,11 @@ public enum NALTruth implements TruthFunction {
     BeliefStructuralAbduction() {
         @Override
         public Truth apply(@Nullable final Truth T, final Truth B, float minConf, NAL n) {
-
             return Abduction.apply($.t(1f, confDefault(n)), B, minConf, n);
         }
     },
 
-    //@AllowOverlap
-    Desire() {
+    @AllowOverlap Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(T, B, minConf, false,true);
@@ -432,19 +415,19 @@ public enum NALTruth implements TruthFunction {
             //return TruthFunctions2.desireSemiBipolar(T, B, minConf, true);
         }
     },
-    DesireReverse() {
+	@AllowOverlap DesireReverse() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(B, T, minConf, false,true);
         }
     },
-    @AllowOverlap DesireReverseRecursive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.desire(B, T, minConf, false,true);
-        }
-    },
-    DesireReverseWeak() {
+//    @AllowOverlap DesireReverseRecursive() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.desire(B, T, minConf, false,true);
+//        }
+//    },
+    @AllowOverlap DesireReverseWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(B, T, minConf, false,false);
