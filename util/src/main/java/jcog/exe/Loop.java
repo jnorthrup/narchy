@@ -15,12 +15,10 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     private static final Logger logger = Log.logger(Loop.class);
 
-
-
     /**
      * busy lock
      */
-    protected final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean busy = new AtomicBoolean(false);
 
 
     public static Loop of(Runnable iteration) {
@@ -78,7 +76,7 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     @Override
     protected final boolean isReady() {
-        return !busy.getOpaque();
+        return !busy.getAcquire();
     }
 
     public final Loop setFPS(float fps) {
@@ -87,7 +85,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public final void ready() {
-        busy.set(false);
+        busy.setRelease(false);
     }
 
 
@@ -120,7 +118,7 @@ abstract public class Loop extends FixedRateTimedFuture {
         return false;
     }
 
-    public void _start(int nextPeriodMS) {
+    private void _start(int nextPeriodMS) {
         logger.debug("start {} {} fps", this, n2(1000f/nextPeriodMS));
 
         synchronized (periodMS) {
@@ -130,13 +128,12 @@ abstract public class Loop extends FixedRateTimedFuture {
         Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
     }
 
-    public void _stop() {
+    private void _stop() {
         logger.debug("stop {}", this);
 
         cancel(false);
 
         synchronized (periodMS) {
-
             stopping();
         }
     }
@@ -163,7 +160,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     protected void thrown(Throwable e) {
         //stop();
         logger.error("{} {}", this, e);
-        e.printStackTrace(); //TEMPORARY
+//        e.printStackTrace(); //TEMPORARY
         //throw new RuntimeException(e);
     }
 

@@ -454,8 +454,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.amp(0.025f);
         n.questPriDefault.amp(0.025f);
 
-        n.beliefConfDefault.set(0.5f);
-        n.goalConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.9f);
+        n.goalConfDefault.set(0.9f);
 
         n.emotion.want(MetaGoal.Futile, -0.001f);
         n.emotion.want(MetaGoal.Perceive, -0.0001f);
@@ -627,8 +627,8 @@ abstract public class GameX extends Game {
                 Term x =
                     //Int.the(X);
                     //$.pRadix(X, 8, Integer.MAX_VALUE);
-                    $.p( $.radixArray(X, radix, Integer.MAX_VALUE));
-                    //$.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
+                    //$.p( $.radixArray(X, radix, Integer.MAX_VALUE));
+                    $.pRecurse(false, $.radixArray(X, radix, Integer.MAX_VALUE));
 
                 Term f = $.funcImg(FRAME, g.id, x);
                 Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),

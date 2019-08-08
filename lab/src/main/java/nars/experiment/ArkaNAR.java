@@ -43,7 +43,7 @@ public class ArkaNAR extends GameX {
     static boolean cam = true;
     static float fps = 25f;
 
-    public final FloatRange ballSpeed = new FloatRange(2.75f, 0.04f, 6f);
+    public final FloatRange ballSpeed = new FloatRange(2.25f, 0.04f, 6f);
 
 
     //final int visW = 48, visH = 32;

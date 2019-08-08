@@ -9,7 +9,7 @@ abstract public class InstrumentedLoop extends Loop {
 
 
 
-    protected final int windowLength = 8;
+    protected final int windowLength = 4;
 
     /**
      * in seconds
@@ -43,7 +43,7 @@ abstract public class InstrumentedLoop extends Loop {
         this.cycleTime.next((float) cycleTimeS);
 
         long dutyTimeNS = afterIteration - beforeIteration;
-        double dutyTimeS = (dutyTimeNS) / 1.0E9;
+        double dutyTimeS = dutyTimeNS / 1.0E9;
         this.dutyTime.next((float) dutyTimeS);
     }
 

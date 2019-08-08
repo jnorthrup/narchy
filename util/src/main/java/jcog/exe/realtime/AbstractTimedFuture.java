@@ -9,6 +9,7 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
     protected AbstractTimedFuture() {
 
     }
+
     AbstractTimedFuture(int rounds) {
         this();
         this.rounds = rounds;
@@ -16,10 +17,7 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public Status state() {
-        if (rounds--<=0)
-            return Status.READY;
-        else
-            return Status.PENDING;
+        return rounds-- <= 0 ? Status.READY : Status.PENDING;
     }
 
 
@@ -29,7 +27,6 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     @Override
     public long getDelay(TimeUnit unit) {
-        
         throw new UnsupportedOperationException();
     }
 

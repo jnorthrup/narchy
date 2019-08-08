@@ -2,7 +2,7 @@ package jcog.exe.realtime;
 
 public class FixedRateTimedFuture extends AbstractTimedRunnable {
 
-    int offset;
+    private int offset;
     /**
      * adjustable while running
      */
@@ -12,9 +12,9 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         super();
     }
 
-    public FixedRateTimedFuture(int rounds,
-                                Runnable callable,
-                                long recurringTimeout, long resolution, int wheels) {
+    FixedRateTimedFuture(int rounds,
+                         Runnable callable,
+                         long recurringTimeout, long resolution, int wheels) {
         super(rounds, callable);
         init(recurringTimeout, resolution, wheels);
     }

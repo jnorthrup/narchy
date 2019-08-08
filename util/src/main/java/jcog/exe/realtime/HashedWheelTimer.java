@@ -520,8 +520,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         public final boolean schedule(TimedFuture r, int c, HashedWheelTimer timer) {
             int offset = r.offset(resolution);
-            if (offset <= 0)
-                System.out.println(r);
+//            if (offset <= 0)
+//                System.out.println(r);
             if (offset > -1 || r.isPeriodic()) {
                 if (!reschedule(idx(c + offset), r))
                     return false;
@@ -588,9 +588,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         @Override
         public V get() {
             Object r = this.result;
-            if (r == this)
-                return null;
-            return (V) r;
+            return r == this ? null : (V) r;
         }
 
         @Override

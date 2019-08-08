@@ -458,32 +458,26 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                     return true;
 
                 GLAutoDrawable d = drawables.get(0);
-                if (d != null) {
+                if (d == null)
+                    return true;
 
+                updateWindow(w);
 
-                    updateWindow(w);
+                dtS = (float) renderer.loop.cycleTimeS;
 
-                    dtS = (float) renderer.loop.cycleTimeS;
+                onUpdate.emit(JoglWindow.this);
 
-                    onUpdate.emit(JoglWindow.this);
-
-                    try {
+                try {
 //                        d.flushGLRunnables();
-                        d.display();
-                    } catch (GLException e) {
-                        Throwable c = e.getCause();
-                        if(c!=null)
-                            c.printStackTrace();
-                        else
-                            e.printStackTrace();
-
-                        stop();
-                        return false;
-                    }
-
+                    d.display();
+                    return true;
+                } catch (GLException e) {
+                    Throwable c = e.getCause();
+                    ((c!=null) ? c : e).printStackTrace();
+                    stop();
+                    return false;
                 }
 
-                return true;
             }
         }
     }

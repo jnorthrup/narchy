@@ -14,7 +14,6 @@ import nars.concept.action.GameAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.DigitizedScalar;
-import nars.gui.sensor.VectorSensorView;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -156,20 +155,19 @@ public class FZero extends GameX {
 //                400, 400);
 
 
-        float r = 0.1f;
-//        senseNumberBi($.funcImg("vel", $$("x")), compose(() -> (float) fz.vehicleMetrics[0][7],
-//                new FloatAveragedWindow(8,0.5f, false))).resolution(r);
-//        senseNumberBi($.funcImg("vel", $$("y")), compose(() -> (float) fz.vehicleMetrics[0][8],
-//                new FloatAveragedWindow(8, 0.5f, false))).resolution(r);
+        float r = 0.02f;
+        senseNumberBi($.funcImg("vel", $$("x")), () -> (float) fz.vehicleMetrics[0][7]).resolution(r);
+        senseNumberBi($.funcImg("vel", $$("y")), () -> (float) fz.vehicleMetrics[0][8]).resolution(r);
 
         senseNumberDifferenceBi($.p(id,$.the("d"), $.the("vel")), () -> (float) fz.vehicleMetrics[0][6]).resolution(r);
+        senseNumberDifferenceBi($.p(id,$.the("d"), $.the("ang")), () -> (float) fz.playerAngle).resolution(r);
 
 
         int angles = 8;
         DigitizedScalar ang = senseAngle(()->(float)fz.playerAngle, angles, Atomic.the("ang"),
                 a->$.inh(id, $.p($.the("ang"), $.the(a))));
         ang.resolution(r);
-        window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
+//        window(new VectorSensorView(ang,1, angles, this).withControls(), 400, 400);
 
 //        nar.goal($.sim($.func("ang", id, $.varDep(1)),$.func("ang", id, $.varDep(2)).neg()), Tense.ETERNAL);
 //        nar.onTask(t -> {
@@ -237,7 +235,7 @@ public class FZero extends GameX {
         }));
         race.resolution().set(0.1f);
 
-        FloatAveragedWindow f = new FloatAveragedWindow(64, 0.5f, 0).mode(FloatAveragedWindow.Mode.Mean);
+        FloatAveragedWindow f = new FloatAveragedWindow(64, 0.25f, 0).mode(FloatAveragedWindow.Mode.Mean);
         Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> {
             return f.valueOf(Util.clamp(progress * 0.5f, -1, +1));
         }));

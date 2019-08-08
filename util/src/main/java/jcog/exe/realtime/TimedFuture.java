@@ -24,10 +24,12 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
     @Override
     default int compareTo(Delayed o) {
         TimedFuture other = (TimedFuture) o;
+        if (other == this) return 0;
+
         long r1 = rounds();
         long r2 = other.rounds();
         if (r1 == r2) {
-            return other == this ? 0 : -1;
+            return Integer.compare(System.identityHashCode(this), System.identityHashCode(other));
         } else {
             return Long.compare(r1, r2);
         }
