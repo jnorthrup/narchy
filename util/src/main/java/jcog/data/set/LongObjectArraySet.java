@@ -18,8 +18,6 @@ import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static jcog.math.LongInterval.TIMELESS;
-
 
 /**
  * a set of (long,object) pairs as 2 array lists
@@ -42,52 +40,104 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         super(initialCapacity);
         when = ArrayUtil.EMPTY_LONG_ARRAY;
     }
-
+    public void swap(int a, int b) {
+        if (a != b) {
+            ArrayUtil.swapObj(items, a, b);
+            ArrayUtil.swapLong(when, a, b);
+        }
+    }
 
     @Override
     public LongObjectArraySet<X> sortThis() {
+
         int size = this.size;
-        if (size <= 1)
-            return this;
-
-        long[] when = this.when;
-        X[] ii = this.items;
-
-        int left = 0, right = size - 1;
-        for (int i = left, j = i; i < right; j = ++i) {
-
-            X xi = ii[i + 1];
-            long li = when[i + 1];
-
-            while (li < when[j]) {
-                ii[j+1] = ii[j];
-                when[j + 1] = when[j];
-                if (j-- == left)
-                    break;
-            }
-
-            ii[j+1] = xi;
-            when[j + 1] = li;
-        }
-
-        if (get(0) instanceof Comparable) {
-            //sort the items within each timeslot
-            int a = 0;
-            long x = when[0];
-            for (int i = 1; i <= size; i++) {
-                long y = i<size ? when[i] : TIMELESS;
-                if (y != x) {
-                    if (i - a > 1)
-                        Arrays.sort(ii, a, i);
-
-                    x = y;
-                    a = i;
-                }
-            }
-        }
-
-
+        if (size > 1)
+            ArrayUtil.quickSort(0, size, this::whenFirstCompare, this::swap);
         return this;
+//
+//        long[] when = this.when;
+//        X[] ii = this.items;
+//
+//        int left = 0, right = size - 1;
+//        for (int i = left, j = i; i < right; j = ++i) {
+//
+//            X xi = ii[i + 1];
+//            long li = when[i + 1];
+//
+//            while (li < when[j]) {
+//                ii[j+1] = ii[j];
+//                when[j + 1] = when[j];
+//                if (j-- == left)
+//                    break;
+//            }
+//
+//            ii[j+1] = xi;
+//            when[j + 1] = li;
+//        }
+//
+//        if (get(0) instanceof Comparable) {
+//            //sort the items within each timeslot
+//            int a = 0;
+//            long x = when[0];
+//            for (int i = 1; i <= size; i++) {
+//                long y = i<size ? when[i] : TIMELESS;
+//                if (y != x) {
+//                    if (i - a > 1)
+//                        Arrays.sort(ii, a, i);
+//
+//                    x = y;
+//                    a = i;
+//                }
+//            }
+//        }
+    }
+
+    public LongObjectArraySet<X> sortThisByValue() {
+        int size = this.size;
+        if (size > 1)
+            ArrayUtil.quickSort(0, size, this::valueFirstCompare, this::swap);
+        return this;
+
+//        long[] when = this.when;
+//        X[] ii = this.items;
+//
+//        int left = 0, right = size - 1;
+//        for (int i = left, j = i; i < right; j = ++i) {
+//
+//            X xi = ii[i + 1];
+//            long li = when[i + 1];
+//
+//            while (valueFirstCompare(i+1, j)<0) {
+//                ii[j + 1] = ii[j];
+//                when[j + 1] = when[j];
+//                if (j-- == left)
+//                    break;
+//            }
+//
+//            ii[j + 1] = xi;
+//            when[j + 1] = li;
+//        }
+//        return this;
+    }
+
+    private int whenFirstCompare(int ia, int ib) {
+        if (ia == ib) return 0;
+        X a = items[ia], b = items[ib];
+        int ab = Long.compare(when[ia], when[ib]);
+        if (ab == 0)
+            return ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
+        else
+            return ab;
+    }
+
+    private int valueFirstCompare(int ia, int ib) {
+        if (ia == ib) return 0;
+        X a = items[ia], b = items[ib];
+        int ab = ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
+        if (ab == 0)
+            return Long.compare(when[ia], when[ib]);
+        else
+            return ab;
     }
 
     @Override
@@ -122,6 +172,8 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         }
         return -1;
     }
+
+    public String toItemString() { return super.toString(); }
 
     @Override
     public String toString() {

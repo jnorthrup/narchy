@@ -136,12 +136,12 @@ public enum ArrayUtil {
     public static final URL[] EMPTY_URL_ARRAY = new URL[0];
     public static final LongObjectPair[] EMPTY_LONGOBJECT_PAIR_ARRAY = new LongObjectPair[0];
 
-    private static final int SMALL = 7;
+    private static final int SMALL = 3;
     private static final int MEDIUM = 40;
     /**
      * The number of distinct byte values.
      */
-    private static final int NUM_BYTE_VALUES = 1 << 8;
+//    private static final int NUM_BYTE_VALUES = 1 << 8;
     private static final byte[] BYTE_ZERO = new byte[] { 0 };
     private static final byte[] BYTE_ONE = new byte[] { 1 };
     private static final byte[] BYTE_TWO = new byte[] { 2 };
@@ -7532,169 +7532,27 @@ public enum ArrayUtil {
             swapByte(array, i - 1, random.nextInt(i));
     }
 
-    public static void sort(int[] a, int left, int right, IntToShortFunction v) {
-        for (int i = left, j = i; i < right; j = ++i) {
-            int ai = a[i + 1];
-            while (v.valueOf(ai) > v.valueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-    }
-
-    /**
-     * sorts descending
-     */
-    public static void sort(byte[] a, ByteToFloatFunction v) {
-        sort(a, 0, a.length - 1, v);
-    }
-
     /**
      * sorts descending
      */
     public static void sort(int[] a, IntToFloatFunction v) {
-        sort(a, 0, a.length - 1, v);
+        sort(a, 0, a.length, v);
     }
 
-    /**
-     * sorts descending
-     */
-    public static void sort(int[] a, int left, int right /* inclusive */, IntToFloatFunction v) {
 
-
-        for (int i = left, j = i; i < right; j = ++i) {
-            int ai = a[i + 1];
-            float vai = v.valueOf(ai);
-            while (vai > v.valueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-
+    public static void sort(int[] x, int left, int right /* inclusive */, IntToFloatFunction v) {
+        quickSort(left, right, (a,b)->a==b ? 0 : Float.compare(v.valueOf(a), v.valueOf(b)), (a,b)->swapInt(x, a, b));
     }
 
-    public static <X> void sort(X[] a, int left, int right /* inclusive */, IntToDoubleFunction v) {
-
-        for (int i = left, j = i; i < right; j = ++i) {
-            X ai = a[i + 1];
-            double vai = v.valueOf(i+1);
-            while (vai > v.valueOf(j)) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-
-    }
-
-    public static void sort(byte[] a, int left, int right /* inclusive */, ByteToByteFunction v) {
-
-
-        for (int i = left, j = i; i < right; j = ++i) {
-            byte ai = a[i + 1];
-            byte vai = v.valueOf(ai);
-            while (vai > v.valueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-
-    }
-
-    /**
-     * sorts descending
-     */
-    public static <X> void sort(X[] a, DoubleFunction<X> v) {
-        sort(a, 0, a.length - 1, v);
-    }
-
-    public static <X> void sort(X[] a, FloatFunction<X> v) {
-        sort(a, 0, a.length - 1, v);
+    public static <X> void sort(X[] x, int left, int right /* inclusive */, IntToDoubleFunction v) {
+        quickSort(left, right, (a,b)->a==b ? 0 : Double.compare(v.valueOf(a), v.valueOf(b)), (a,b)->swapObj(x, a, b));
     }
 
     /**
      * sorts descending, left and right BOTH inclusive
      */
-    public static <X> void sort(X[] a, int left, int right /* inclusive */, DoubleFunction<X> v) {
-        for (int i = left, j = i; i < right; j = ++i) {
-            final X ai = a[i + 1];
-            double aid = v.doubleValueOf(ai);
-            while (aid > v.doubleValueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-    }
-
-    /**
-     * sorts descending, left and right BOTH inclusive
-     */
-    public static <X> void sort(X[] a, int left, int right /* inclusive */, FloatFunction<X> v) {
-        for (int i = left, j = i; i < right; j = ++i) {
-            final X ai = a[i + 1];
-            float aid = v.floatValueOf(ai);
-            while (aid > v.floatValueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-    }
-
-    /**
-     * sorts descending
-     */
-    public static void sort(long[] a, LongToLongFunction v) {
-        sort(a, 0, a.length - 1, v);
-    }
-
-    /**
-     * sorts descending
-     */
-    public static void sort(long[] a, int left, int right /* inclusive */, LongToLongFunction v) {
-        for (int i = left, j = i; i < right; j = ++i) {
-            long ai = a[i + 1];
-            long vai = v.valueOf(ai);
-            while (vai > v.valueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left)
-                    break;
-            }
-            a[j + 1] = ai;
-        }
-    }
-
-    /**
-     * modified from jdk9 source:
-     * Sorts the specified range of the array.
-     *
-     * @param a     the array to be sorted
-     * @param left  the index of the first element, inclusive, to be sorted
-     * @param right the index of the last element, inclusive, to be sorted
-     */
-    public static void sort(byte[] a, int left, int right, ByteToFloatFunction v) {
-        for (int i = left, j = i; i < right; j = ++i) {
-            byte ai = a[i + 1];
-            float vai = v.valueOf(ai);
-            while (vai > v.valueOf(a[j])) {
-                a[j + 1] = a[j];
-                if (j-- == left) {
-                    break;
-                }
-            }
-            a[j + 1] = ai;
-        }
-
+    public static <X> void sort(X[] x, int left, int right /* inclusive */, FloatFunction<X> v) {
+        quickSort(left, right, (a,b)->a==b ? 0 : Float.compare(v.floatValueOf(x[a]), v.floatValueOf(x[b])), (a,b)->swapObj(x, a, b));
     }
 
     /**

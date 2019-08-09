@@ -228,7 +228,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static boolean validTaskTerm(@Nullable Term t, byte punc, boolean safe) {
 
         if (t == null)
-            return fail(t, "null content", false /* FORCE */);
+            return fail(null, "null content", false /* FORCE */);
 
         if (t instanceof Bool || t instanceof Variable)
             return fail(t, "bool or variable", safe);

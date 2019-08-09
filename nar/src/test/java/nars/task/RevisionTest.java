@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 
 import java.util.*;
 
+import static nars.$.$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2w;
@@ -39,11 +40,11 @@ public class RevisionTest {
     private final NAR n = NARS.shell();
 
     private static TaskBuilder t(float freq, float conf, long occ) throws Narsese.NarseseException {
-        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, occ, occ);
+        return new TaskBuilder($("a:b"), BELIEF, $.t(freq, conf)).time(0, occ, occ);
     }
 
     static TaskBuilder t(float freq, float conf, long start, long end) throws Narsese.NarseseException {
-        return new TaskBuilder("a:b", BELIEF, $.t(freq, conf)).time(0, start, end);
+        return new TaskBuilder($("a:b"), BELIEF, $.t(freq, conf)).time(0, start, end);
     }
 
     static NAR newNAR(int fixedNumBeliefs) {
@@ -59,39 +60,6 @@ public class RevisionTest {
 
         return new NARS()/*.concepts(new DefaultConceptBuilder(cb))*/.get();
 
-    }
-
-    protected static void permuteChoose(Compound a, Compound b, String expected) {
-        assertEquals(expected, permuteIntermpolations(a, b).toString());
-    }
-
-    protected static Set<Term> permuteIntermpolations(Compound a, Compound b) {
-        assertEquals(a.op(),a.op());
-        {
-            float ab = Intermpolate.dtDiff(a, b);
-            assertTrue(Float.isFinite(ab), ()->"dtDiff(" +a + ","+ b + ")=" + ab);
-            assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
-        }
-
-        NAR s = NARS.shell();
-
-        Term concept = a.concept();
-        assertEquals(concept, b.concept(), "concepts differ: " + a + ' ' + b);
-
-
-        Set<Term> ss = new TreeSet();
-
-        int n = 10 * (a.volume() + b.volume());
-        for (int i = 0; i < n; i++) {
-            float r = s.random().nextFloat();
-            Term ab = Intermpolate.intermpolate(a, b, r, s);
-            assertEquals(a.op(),ab.op(), ()->a + " + " + b + " @ " + r);
-            ss.add(ab);
-        }
-
-        //System.out.println(ss);
-
-        return ss;
     }
 
     private static void p(Task aa) {

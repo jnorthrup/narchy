@@ -195,10 +195,10 @@ public class BagTest {
         if (bag.size() < 3)
             return; //histogram tests wont apply
 
-        int bins = Math.min(8, Math.max(3, cap/2));
+        int bins = Math.max(bag.size(), Math.min(8, Math.max(3, cap/2)));
         Tensor f1 = samplingPriDist(bag, batches, batchSize, bins);
 
-        String h = "cap=" + cap + " total=" + (batches * batchSize);
+//        String h = "cap=" + cap + " total=" + (batches * batchSize);
 //        System.out.println(h + ":\n\t" + f1.tsv2());
 //        System.out.println();
 
@@ -219,6 +219,7 @@ public class BagTest {
                 float diff = ff[j] - ff[i];
                 boolean unordered = diff > orderThresh;
                 if (unordered) {
+                    bag.print();
                     fail("sampling distribution not ordered. contents=" + bag);
                 }
             }

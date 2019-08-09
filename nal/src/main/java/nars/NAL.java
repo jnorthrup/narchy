@@ -96,7 +96,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 3f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = true;

@@ -112,7 +112,7 @@ public class Statement {
                     boolean predXternal = predicate.dt() == XTERNAL;
                     boolean xternal = dt == XTERNAL;
                     boolean bothXternal = xternal && predXternal;
-                    if ((!xternal && !predXternal) || bothXternal || (predXternal && !xternal)) {
+                    if (!xternal && !predXternal || bothXternal || predXternal) {
 
                         //not when only inner xternal, since that transformation destroys temporal information
 

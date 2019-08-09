@@ -85,7 +85,7 @@ public class TruthIntegration {
 			//question starts before task and ends during task
 			return e.integrateN(qs, Math.max(qs, ts-1), ts, qe);
 		} else {
-			assert(qs <= ts && qe >= te);
+//			assert(qs <= ts && qe >= te);
 
 			//question surrounds task
 			return e.integrateN(

@@ -8,7 +8,10 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.util.conj.ConjList;
 import nars.time.Tense;
+
+import java.util.Arrays;
 
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
@@ -39,9 +42,9 @@ public enum Intermpolate {;
 
         boolean subsEqual = aa.equals(bb);
 
-        if (ao == CONJ && !subsEqual)
-            //return new Conjterpolate(a, b, aProp, nar).term(); //root only: conj sequence merge
-            return Null; //TODO
+        if (ao == CONJ && !subsEqual) {
+            return intermpolateSeq(a, b, aProp, nar);
+        }
 
 
         if (aa.subs() != bb.subs())
@@ -59,10 +62,7 @@ public enum Intermpolate {;
             boolean change = false;
             for (int i = 0; i < len; i++) {
                 Term ai = aa.sub(i), bi = bb.sub(i);
-                if (ai.equals(bi)) {
-
-                } else {
-
+                if (!ai.equals(bi)) {
                     if (!(ai instanceof Compound) || !(bi instanceof Compound))
                         return Null;
 
@@ -79,6 +79,47 @@ public enum Intermpolate {;
 
             return !change ? a : ao.the(dt, ab);
         }
+    }
+
+    private static float dtDiffSeq(Compound a, Compound b, int depth) {
+        int v = a.volume();
+        if (v !=b.volume())
+            return Float.POSITIVE_INFINITY; //is there a solution here?
+
+        return (1 + dtDiff(a.eventRange(), b.eventRange()) ) * Math.max(a.subs(), b.subs()); //HACK estimate
+    }
+
+    private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {
+        if (aProp < 0.5f-Float.MIN_NORMAL)
+            return intermpolateSeq(b, a, 1-aProp, nar);
+
+        if (a.volume()!=b.volume())
+            return Null; //is there a solution here?
+
+        ConjList ae = ConjList.events(a);
+        ConjList be = ConjList.events(b);
+
+        //canonical order
+        ae.sortThisByValue();
+        be.sortThisByValue();
+        int s = ae.size();
+        if (!Arrays.equals(ae.array(), 0, s, be.array(), 0, s))
+            return Null; //wtf?
+
+        boolean changed = false;
+        for (int i = 0; i < s; i++) {
+            long ai = ae.when[i], bi = be.when[i];
+            long abi = Util.lerp(aProp, ai, bi);
+            if (abi!=ai) {
+                changed = true;
+                ae.when[i] = abi;
+            }
+        }
+        if (!changed)
+            return a;
+
+//        ae.sortThis();
+        return ae.term();
     }
 
 //    /**
@@ -104,36 +145,25 @@ public enum Intermpolate {;
         return chooseDT(a.dt(), b.dt(), aProp, nar);
     }
 
-    public static int chooseDT(int adt, int bdt, float aProp, NAL nar) {
-        int dt;
+    static int chooseDT(int adt, int bdt, float aProp, NAL nar) {
 
         if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
 
-        if (adt == bdt) {
+        int dt;
+        if (adt == bdt)
             dt = adt;
-        } else if (adt == XTERNAL || bdt == XTERNAL)
-
+        else if (adt == XTERNAL || bdt == XTERNAL)
             dt = adt == XTERNAL ? bdt : adt; //the other one
-            //dt = choose(adt, bdt, aProp);
-
-//        } else if (adt == DTERNAL || bdt == DTERNAL) {
-//
-//            dt = 0;
-//            //dt = adt == DTERNAL ? bdt : adt;
-//            //dt = choose(adt, bdt, aProp, nar.random());
-//
         else
-            dt = merge(adt, bdt, aProp, nar);
+            dt = merge(adt, bdt, aProp);
 
-
-
-        return Tense.dither(dt, nar);
+        return dt!=0 ? Tense.dither(dt, nar) : 0;
     }
 
     /**
      * merge delta
      */
-    static int merge(int adt, int bdt, float aProp, NAL nar) {
+    static int merge(int adt, int bdt, float aProp) {
 
 
 //        int range = Math.max(Math.abs(adt), Math.abs(bdt));
@@ -182,9 +212,21 @@ public enum Intermpolate {;
         if (!a.equalsRoot(b))
             return Float.POSITIVE_INFINITY;
 
-        float dSubterms = dtDiff(a.subterms(), b.subterms(), depth);
-        if (!Float.isFinite(dSubterms))
-            return Float.POSITIVE_INFINITY;
+
+        Subterms as = a.subterms();
+        Subterms bs = b.subterms();
+        float dSubterms;
+        if (as.equals(bs)) {
+            dSubterms = 0;
+        } else {
+            if (a.op()==CONJ) {
+                return dtDiffSeq((Compound)a, (Compound)b, depth);
+            } else {
+                dSubterms = dtDiff(as, bs, depth);
+                if (!Float.isFinite(dSubterms))
+                    return Float.POSITIVE_INFINITY;
+            }
+        }
 
         float dDT = dtDiff(a.dt(), b.dt());
 
@@ -212,22 +254,6 @@ public enum Intermpolate {;
     }
 
     private static float dtDiff(Subterms aa, Subterms bb, int depth) {
-        if (aa.equals(bb))
-            return 0;
-
-//            Op ao = a.op();
-//            if (ao == CONJ) {
-//                if (a.dt() == XTERNAL || b.dt() == XTERNAL)
-//                    return 0;
-//                if (aa.hasAny(CONJ) || bb.hasAny(CONJ)) { // sub-conj of any type, include &| which is not a sequence:
-//                    //if ((Conj.isSeq(a) || Conj.isSeq(b))) {
-//                    //estimate difference
-//                    int ar = a.eventRange(), br = b.eventRange();
-//                    int av = a.volume(), bv = b.volume();
-//                    return (1 + (av + bv) / 2f) * (1 + Math.abs(av - bv)) * (1 + Math.abs(ar - br)); //heuristic
-//
-//                }
-//            }
 
         int len = aa.subs();
         if (len != bb.subs())

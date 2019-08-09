@@ -68,15 +68,18 @@ public class AxialSplit<X> implements Split<X> {
         X[] obj = Arrays.copyOf(ld, size); //? X[] obj = (X[]) Array.newInstance(leaf.data.getClass(), size);
         obj[size-1] = x;
 
-        double[] strength = new double[size];
-        for (int i = 0; i < size; i++) {
-            X li = i < size-1 ? ld[i] : x;
-            double c = model.bounds(li).center(splitDimension); //TODO secondary sort by range
-            strength[i] = -c;
-        }
+//        double[] strength = new double[size];
+//        for (int i = 0; i < size; i++) {
+//            X li = i < size-1 ? ld[i] : x;
+//            double c = model.bounds(li).center(splitDimension); //TODO secondary sort by range
+//            strength[i] = -c;
+//        }
 
-        if (size > 1)
-            ArrayUtil.sort(obj, 0, size-1, (IntToDoubleFunction) i->strength[i]);
+        if (size > 1) {
+            ArrayUtil.sort(obj, 0, size, (IntToDoubleFunction) i ->
+                model.bounds(obj[i]).center(splitDimension)
+            );
+        }
 
         //TODO if size is odd, maybe l1Node should have the 1 extra element rather than l2Node as this will:
         final RLeaf<X> l1Node = model.transfer(obj, 0, size/2);

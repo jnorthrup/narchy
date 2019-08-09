@@ -23,9 +23,7 @@ import nars.video.AutoclassifiedBitmap;
 
 import javax.swing.*;
 import java.util.List;
-import java.util.stream.Stream;
 
-import static java.util.stream.Collectors.toList;
 import static nars.$.$$;
 import static nars.agent.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
@@ -153,16 +151,16 @@ public class NARio extends GameX {
         });
 
 
-        //initButton();
-        initBipolar();
+        initButton();
+        //initBipolar();
 
 
-        DigitizedScalar vx = senseNumberDifferenceBi($.p("v", "x"), 8, () -> theMario != null ? theMario.x : 0)
+        DigitizedScalar vx = senseNumberDifferenceBi($.p(id, $.p("v", "x")), 8, () -> theMario != null ? theMario.x : 0)
                 .resolution(0.25f);
-        DigitizedScalar vy = senseNumberDifferenceBi($.p("v", "y"), 8, () -> theMario != null ? theMario.y : 0)
+        DigitizedScalar vy = senseNumberDifferenceBi($.p(id, $.p("v", "y")), 8, () -> theMario != null ? theMario.y : 0)
                 .resolution(0.25f);
 
-        window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);
+//        window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);
 
 
         Reward right = reward("right", () -> {

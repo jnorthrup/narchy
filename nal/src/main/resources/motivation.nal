@@ -7,12 +7,8 @@
     //how goal
     G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
 
-    //result of goal
-    G, G, task("!") |-          (G ==> ?1), (Punctuation:Question, Time:Task)
-
-
-    //result of non-goal
-    G, G, task("!") |-        (--G ==> ?1), (Punctuation:Question, Time:Task)
+    //result of goal/non-goal
+    G, G, task("!") |-         (polarizeRandom(G) ==> ?1), (Punctuation:Question, Time:Task)
 
 //    //is what with goal/non-goal
 //    G, G, task("!") |-           (?1 && polarizeRandom(G)), (Punctuation:Question, Time:Task)

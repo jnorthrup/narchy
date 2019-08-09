@@ -144,6 +144,17 @@ class ConceptualizationTest {
         assertEq("((a&&b)<->(c&&d))", $$("((c&&d)<->(a&&b))").root());
     }
 
+
+    @Test void nonTemporalConjInInhSimSubtermsOnly() {
+
+        assertEq("(a-->(x &&+- y))", $$("(a-->(x && y))").concept());
+        assertEq("((x &&+- y)-->a)", $$("((x && y)-->a)").concept());
+        assertEq("((x &&+- y)<->a)", $$("((x && y)<->a)").concept());
+        assertEq("(a-->( &&+- ,x,y,z))", $$("(a-->(&&,x,y,z))").concept());
+
+        assertEq("(a-->((--,x) &&+- (--,y)))", $$("(a-->(x || y))").concept());
+    }
+
     @Test void Conceptualize_Not_NAL3_seq() {
         assertEq("(x-->(a &&+- a))", $$("(x-->(a &&+1 a))").root());
     }

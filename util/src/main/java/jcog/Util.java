@@ -2409,8 +2409,7 @@ public enum Util {
             return l;
         for (int i = 0; i < al; i++) {
             int d = a[i] - b[i];
-            if (d != 0)
-                return d;
+            if (d != 0) return d;
         }
         return 0;
     }

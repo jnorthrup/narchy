@@ -7,8 +7,6 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.Comparator;
 import java.util.TreeSet;
@@ -33,15 +31,7 @@ class TemporalTermTest {
         assertEquals(-1, $$("(x ==>-1 y)").compareTo($$("(x ==>+1 y)")));
     }
 
-    @ParameterizedTest
-    @ValueSource(strings={"&&","||"})
-    void nonTemporalConjInInhSimSubtermsOnly(String o) {
-        assertEq("(a-->(x" + o + "y))", $$("(a-->(x " + o + " y))").concept());
-        assertEq("((x" + o + "y)-->a)", $$("((x " + o + " y)-->a)").concept());
-        assertEq("((x" + o + "y)<->a)", $$("((x " + o + " y)<->a)").concept());
 
-        assertEq("(a-->(" + o + ",x,y,z))", $$("(a-->(" + o + ",x,y,z))").concept());
-    }
 
 
     @Test void InvalidInh() {

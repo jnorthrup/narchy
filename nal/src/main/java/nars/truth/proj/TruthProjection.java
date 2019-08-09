@@ -205,7 +205,7 @@ abstract public class TruthProjection extends TaskList {
 				clearFast(); return null; //HACK this test shouldnt be necessary
 			}
 
-			if (shrink && activePostCull != activeBeforeIntermpolate) {
+			if (activePostCull != activeBeforeIntermpolate) {
 
 				refocus(shrink);
 
@@ -224,11 +224,11 @@ abstract public class TruthProjection extends TaskList {
 	public int active() {
 		if (size == 0)
 			return 0;
-		double[] a = evi;
-		if (a == null)
-			throw new NullPointerException("evi cache is uncalculated");
+		double[] evi = this.evi;
+//		if (evi == null)
+//			throw new NullPointerException("evi cache is uncalculated");
 		int y = 0;
-		for (double aa : a) {
+		for (double aa : evi) {
 			if (valid(aa))
 				y++;
 		}
@@ -236,7 +236,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	public int update() {
-		int s = size();
+		int s = size;
 		if (s <= 0)
 			return 0;
 
@@ -247,20 +247,15 @@ abstract public class TruthProjection extends TaskList {
 			if (update(i))
 				count++;
 		}
+
 		if (count == 0) {
-			Arrays.fill(evi, 0);
+//			Arrays.fill(evi, 0);
 			return 0;
+		} else {
+			if (count > 1)
+				ArrayUtil.quickSort(0, s, this::eviComparator, this::eviSwapper); //descending
+			return count;
 		}
-		if (count > 1) {
-			//descending
-			ArrayUtil.quickSort(0, s, (a, b) ->
-					Double.compare(evi[b], evi[a])
-				, (a, b) -> {
-					ArrayUtil.swapObj(items, a, b);
-					ArrayUtil.swapDouble(evi, a, b);
-				});
-		}
-		return count;
 	}
 
 	/** removes weakest tasks having overlapping evidence with stronger ones */
@@ -486,6 +481,15 @@ abstract public class TruthProjection extends TaskList {
 	private TruthProjection add(Tasked tt) {
 		add(tt.task());
 		return this;
+	}
+
+	private int eviComparator(int a, int b) {
+		return Double.compare(evi[b], evi[a]);
+	}
+
+	private void eviSwapper(int a, int b) {
+		ArrayUtil.swapObj(items, a, b);
+		ArrayUtil.swapDouble(evi, a, b);
 	}
 
 

@@ -6,7 +6,6 @@ import jcog.data.set.MetalLongSet;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
-import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
@@ -193,7 +192,7 @@ public class ConjClustering extends How implements Consumer<Task> {
             int tts = tt.size();
             if (tts > 1) {
                 if (tts > 2) {
-                    ArrayUtil.sort(tt.array(), 0, tts - 1, Prioritized::priElseZero);
+                    ArrayUtil.sort(tt.array(), 0, tts, Task::priComparable);
                     //tt.sortThis(centroidContentsSort); //java.lang.IllegalArgumentException: Comparison method violates its general contract!
                 }
 
