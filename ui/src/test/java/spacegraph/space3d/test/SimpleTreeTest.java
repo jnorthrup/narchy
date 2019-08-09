@@ -15,8 +15,8 @@ public class SimpleTreeTest {
     private static Iterable<File> fileTreeChildren(File dir) {
         if (dir.isDirectory()) {
             return List.of(dir.listFiles());
-        }
-        return List.of();
+        } else
+            return List.of();
     }
 
     public static void main(String[] args)  {

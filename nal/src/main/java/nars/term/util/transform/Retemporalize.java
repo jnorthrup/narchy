@@ -14,6 +14,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
 
     public static final Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);
 ////    Retemporalize retemporalizeAllToZero = new RetemporalizeAll(0);
+    public static final Retemporalize retemporalizeAllToDTERNAL = new RetemporalizeAll(DTERNAL);
     public static final Retemporalize retemporalizeXTERNALToDTERNAL = new RetemporalizeFromTo(XTERNAL, DTERNAL);
     public static final Retemporalize retemporalizeXTERNALToZero = new RetemporalizeFromTo(XTERNAL, 0);
 

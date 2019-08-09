@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 
 import static nars.$.$$;
+import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.*;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -23,6 +24,9 @@ public class IntermpolationTest {
     }
 
     @Test void DTSimilarity() {
+        assertTrue(Intermpolate.dtDiff(0,1) == Intermpolate.dtDiff(0,-1));
+        assertTrue(Intermpolate.dtDiff(0,1) == Intermpolate.dtDiff(0,2));
+
         for (String o : new String[] { "==>", "&&"}) {
             Term a = $$("(x " + o + "+0 y)");
             Term b = $$("(x " + o + "+1 y)");
@@ -47,10 +51,10 @@ public class IntermpolationTest {
     @Test
     void testDTDiffVariety() {
         assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==>+- y)"), 0.01f);
-        assertEquals(0f, dtDiff("(x ==>+5 y)", "(x ==> y)"), 0.01f);
-        assertEquals(0.4f, dtDiff("(x ==>+5 y)", "(x ==>+3 y)"), 0.01f);
-        assertEquals(0.8f, dtDiff("(x ==>+5 y)", "(x ==>+1 y)"), 0.01f);
-        assertEquals(1f, dtDiff("(x ==>+5 y)", "(x =|> y)"), 0.01f);
+        assertEquals(0.5f, dtDiff("(x ==>+5 y)", "(x ==> y)"), 0.01f);
+        assertEquals(1f, dtDiff("(x ==>+5 y)", "(x ==>-5 y)"), 0.01f);
+        assertEquals(0.2f, dtDiff("(x ==>+5 y)", "(x ==>+3 y)"), 0.01f);
+        assertEquals(0.4f, dtDiff("(x ==>+5 y)", "(x ==>+1 y)"), 0.01f);
     }
 
     @Test
@@ -282,8 +286,11 @@ public class IntermpolationTest {
 
     @Test
     void testIntermpolationInner() throws Narsese.NarseseException {
-        RevisionTest.permuteChoose($.$("(x --> (a &&+1 b))"), $.$("(x --> (a &| b))"),
-                "[(x-->(a&&b)), (x-->(a &&+1 b))]");
+        Compound a = nars.$.$("(x --> (a &&+1 b))");
+        Term aRoot = a.root();
+        assertEq("(x-->(a&&b))", aRoot);
+        Compound b = nars.$.$("(x --> (a && b))");
+        RevisionTest.permuteChoose(a, b, "[(x-->(a&&b)), (x-->(a &&+1 b))]");
     }
 
     @Test

@@ -1,7 +1,6 @@
 package nars.term.util;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Op;
@@ -165,92 +164,86 @@ public enum Intermpolate {;
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
-        if (a instanceof Compound && b instanceof Compound)
-            return dtDiff(a, b, 0);
-        else
-            return a.equals(b) ? 0 : Float.POSITIVE_INFINITY;
+        return dtDiff(a, b, 0);
     }
 
     private static float dtDiff(Term a, Term b, int depth) {
         if (a.equals(b))
             return 0f;
+
         if (a instanceof Neg && b instanceof Neg) {
             a = a.unneg();
             b = b.unneg();
         }
 
-
-        if (!(a instanceof Compound) && !(b instanceof Compound) || !a.equalsRoot(b))
+        if (!(a instanceof Compound) && !(b instanceof Compound))
             return Float.POSITIVE_INFINITY;
 
-//        Op ao = a.op(), bo = b.op();
-//        if (ao != bo)
-//            return Float.POSITIVE_INFINITY;
+        if (!a.equalsRoot(b))
+            return Float.POSITIVE_INFINITY;
 
-        Subterms aa = a.subterms(), bb = b.subterms();
-//        if (!aa.equalsRoot(bb))
-//            return Float.POSITIVE_INFINITY;
-//        if ((((aa.structure() != bb.structure() || (a.volume() != b.volume())) && !(aa.hasAny(CONJ) || bb.hasAny(CONJ))))) {
-//            return Float.POSITIVE_INFINITY;
-//        }
+        float dSubterms = dtDiff(a.subterms(), b.subterms(), depth);
+        if (!Float.isFinite(dSubterms))
+            return Float.POSITIVE_INFINITY;
 
-
-        float dSubterms = 0;
-        if (!aa.equals(bb)) {
-            Op ao = a.op();
-            if (ao == CONJ) {
-                if (a.dt() == XTERNAL || b.dt() == XTERNAL)
-                    return 0;
-                if (aa.hasAny(CONJ) || bb.hasAny(CONJ)) { // sub-conj of any type, include &| which is not a sequence:
-                    //if ((Conj.isSeq(a) || Conj.isSeq(b))) {
-                    //estimate difference
-                    int ar = a.eventRange(), br = b.eventRange();
-                    int av = a.volume(), bv = b.volume();
-                    return (1 + (av + bv) / 2f) * (1 + Math.abs(av - bv)) * (1 + Math.abs(ar - br)); //heuristic
-
-                }
-            }
-
-            int len = aa.subs();
-            if (len != bb.subs())
-                return Float.POSITIVE_INFINITY;
-
-            for (int i = 0; i < len; i++) {
-                float di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
-                if (!Float.isFinite(di)) {
-                    return Float.POSITIVE_INFINITY;
-                }
-                dSubterms += di;
-            }
-
-            dSubterms /= len;
-        }
-
-
-        float dDT;
-        int adt = a.dt(), bdt = b.dt();
-
-        if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
-
-        if (adt != bdt) {
-            if (adt == XTERNAL || bdt == XTERNAL) {
-                //dDT = 0.25f; //undercut the DTERNAL case
-                dDT = ScalarValue.EPSILONcoarse;
-            } else {
-
-
-                float range = 1 + Math.abs(adt) + Math.abs(bdt);
-                if (range <= 0)
-                    throw new WTF();
-                dDT = Math.abs(adt - bdt) / (range);
-            }
-
-        } else {
-            dDT = 0;
-        }
-
+        float dDT = dtDiff(a.dt(), b.dt());
 
         return dDT + dSubterms;
     }
+
+    public static float dtDiff(int adt, int bdt) {
+        if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
+
+        if (adt == bdt)
+            return 0;
+
+        if (adt == XTERNAL || bdt == XTERNAL) {
+            //dDT = 0.25f; //undercut the DTERNAL case
+            return ScalarValue.EPSILONcoarse;
+        } else {
+            float range = Math.abs(adt) + Math.abs(bdt);
+//            return Math.abs(adt - bdt) / (range);
+//            float mean = (adt+bdt)/2f;
+            //float range = Math.max(Math.abs(adt), Math.abs(bdt));
+//            float range = Math.min(Math.abs(adt), Math.abs(bdt));
+            //return Math.max( Math.abs(adt - mean), Math.abs(bdt - mean)) / (range);
+            return Math.abs(adt - bdt) / (range);
+        }
+    }
+
+    private static float dtDiff(Subterms aa, Subterms bb, int depth) {
+        if (aa.equals(bb))
+            return 0;
+
+//            Op ao = a.op();
+//            if (ao == CONJ) {
+//                if (a.dt() == XTERNAL || b.dt() == XTERNAL)
+//                    return 0;
+//                if (aa.hasAny(CONJ) || bb.hasAny(CONJ)) { // sub-conj of any type, include &| which is not a sequence:
+//                    //if ((Conj.isSeq(a) || Conj.isSeq(b))) {
+//                    //estimate difference
+//                    int ar = a.eventRange(), br = b.eventRange();
+//                    int av = a.volume(), bv = b.volume();
+//                    return (1 + (av + bv) / 2f) * (1 + Math.abs(av - bv)) * (1 + Math.abs(ar - br)); //heuristic
+//
+//                }
+//            }
+
+        int len = aa.subs();
+        if (len != bb.subs())
+            return Float.POSITIVE_INFINITY;
+
+        float dSubterms = 0;
+        for (int i = 0; i < len; i++) {
+            float di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
+            if (!Float.isFinite(di)) {
+                return Float.POSITIVE_INFINITY;
+            }
+            dSubterms += di;
+        }
+
+        return dSubterms / len;
+    }
+
 
 }

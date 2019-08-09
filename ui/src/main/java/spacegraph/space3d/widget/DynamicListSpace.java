@@ -84,8 +84,8 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
         SpaceDisplayGraph3D<X> s = new SpaceDisplayGraph3D<>(ss);
 
         EdgeDirected3D fd = new EdgeDirected3D();
+        fd.condense.set(fd.condense.get() * 1);
         s.dyn.addBroadConstraint(fd);
-        fd.condense.set(fd.condense.get() * 8);
 
 
         s.camPos(0, 0, 90);

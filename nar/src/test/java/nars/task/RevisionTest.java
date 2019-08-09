@@ -69,7 +69,7 @@ public class RevisionTest {
         assertEquals(a.op(),a.op());
         {
             float ab = Intermpolate.dtDiff(a, b);
-            assertTrue(Float.isFinite(ab));
+            assertTrue(Float.isFinite(ab), ()->"dtDiff(" +a + ","+ b + ")=" + ab);
             assertEquals(ab, Intermpolate.dtDiff(b, a), ScalarValue.EPSILON); //commutative
         }
 

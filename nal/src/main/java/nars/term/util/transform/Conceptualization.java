@@ -48,7 +48,7 @@ public class Conceptualization {
                 //collapse any embedded CONJ which will inevitably have dt=XTERNAL
                 UnifiedSet<Term> t = new UnifiedSet(yy.subs());
                 for (Term yyy : yy) {
-                    if (yyy.op() == CONJ) {
+                    if (yyy instanceof Compound && yyy.op() == CONJ) {
                         yyy.eventsAND((when, what)->{
                             t.add(what);
                             return true;
@@ -122,29 +122,28 @@ public class Conceptualization {
         @Override
         public final Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
-
             if ((xo == INH || xo == SIM) && ((x.subterms().structureSurface()&CONJ.bit)!=0)) {
-                //HACK
-                return Retemporalize.retemporalizeXTERNALToDTERNAL.applyPosCompound(x);
+
+                //return Retemporalize.retemporalizeXTERNALToDTERNAL.applyPosCompound(x);
+                return Retemporalize.retemporalizeAllToXTERNAL.applyPosCompound(x);
             }
 
-            int dt = xo.temporal ? XTERNAL : DTERNAL;
 
             if (x.op() == CONJ) {
-                Term c = transformConj(x);
-                //if (c!=null)
-                    //return c;
-                if (c!=null) {
-                    if (c instanceof Compound && c.subterms().hasAny(Op.Temporal))
-                        x = (Compound) c;
-                    else
-                        return c;
+                Term y = transformConj(x);
+
+
+                if (y!=null) {
+                    if (!(y instanceof Compound) || !y.subterms().hasAny(Op.Temporal)) {
+                        return y;
+                    } else if (x!=y) {
+                        x = (Compound) y;
+                        xo = x.op();
+                    }
                 }
             }
 
-            Term y = x.transform(this, xo, dt);
-            return y;
-
+            return x.transform(this, xo, xo.temporal ? XTERNAL : DTERNAL);
         }
 
         @Override

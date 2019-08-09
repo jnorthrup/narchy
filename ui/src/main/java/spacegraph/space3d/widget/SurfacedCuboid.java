@@ -26,6 +26,8 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
     public volatile Surface front;
     private static final float zOffset = 0.1f;
 
+    private final ReSurface rendering = new ReSurface();
+
     float pixelScale = 512f;
 
 
@@ -41,13 +43,12 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
     private SurfacedCuboid(X x, Surface front, float w, float h, float d) {
         super(x);
 
-
         scale(w, h, d);
-        front.resize(w, h);
 
-
-        front(front);
-
+        if (front!=null) {
+            front.resize(w, h);
+            front(front);
+        }
     }
 
     /** set the "front"-facing surface */
@@ -92,6 +93,8 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
             gl.glTranslatef(-0.5f, -0.5f, 0.5f + (shape instanceof SphereShape ? 5 : 0) + zOffset);
 
+            //gl.glScalef(1f/pixelScale, 1f/pixelScale, 1f/pixelScale);
+
             gl.glDepthMask(false);
 
             rendering.start(gl, pixelScale, pixelScale, dtS , 10);
@@ -104,25 +107,6 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
         }
     }
 
-    private final ReSurface rendering = new ReSurface();
-
-//    @Override
-//    public void renderAbsolute(GL2 gl, int dtMS) {
-//        super.renderAbsolute(gl, dtMS);
-//
-//
-//        if (mousePick != null) {
-//            gl.glPushMatrix();
-//            gl.glTranslatef(mousePick.x, mousePick.y, mousePick.z);
-//            gl.glScalef(0.25f, 0.25f, 0.25f);
-//            gl.glColor4f(1f, 1f, 1f, 0.5f);
-//            gl.glRotated(Math.random() * 360.0, Math.random() - 0.5f, Math.random() - 0.5f, Math.random() - 0.5f);
-//
-//            Draw.rect(-0.5f, -0.5f, 1, 1, gl);
-//
-//            gl.glPopMatrix();
-//        }
-//    }
 
     @Override
     public Off onUpdate(Consumer<JoglWindow> c) {
