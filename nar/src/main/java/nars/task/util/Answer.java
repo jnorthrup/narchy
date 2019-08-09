@@ -8,7 +8,6 @@ import nars.Task;
 import nars.table.TaskTable;
 import nars.term.Term;
 import nars.term.util.Intermpolate;
-import nars.term.util.TermException;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
@@ -123,10 +122,10 @@ public final class Answer implements Timed, Predicate<Task> {
         return (float)(evidence(t, dur) / (1 + distance(t, qStart, qEnd, dur)));
     }
 
-    /** temporal distance to point magnitude */
-    private static double distance(TaskRegion t, long now, double dur) {
-        return t.minTimeTo(now)/dur;
-    }
+//    /** temporal distance to point magnitude */
+//    private static double distance(TaskRegion t, long now, double dur) {
+//        return t.minTimeTo(now)/dur;
+//    }
     /** temporal distance to range magnitude */
     private static double distance(TaskRegion t, long qStart, long qEnd, double dur) {
         return t.minTimeTo(qStart, qEnd)/dur;
@@ -179,32 +178,32 @@ public final class Answer implements Timed, Predicate<Task> {
 
     private static FloatRank<Task> intermpolateStrength(FloatRank<Task> strength, Term template) {
         return (x, min) -> {
+            float str = strength.rank(x, min);
+            if (str < min)
+                return Float.NaN; //already below thresh
 
             Term xt = x.term();
             float dtDiff = Intermpolate.dtDiff(template, xt);
             if (!Float.isFinite(dtDiff)) {
-                /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
-                   TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
-                 */
-
-                if (template.op() == CONJ && template.containsRecursively(xt)) {
-                    //HACK a dynamic conjunction to revision collapse
-                    dtDiff = template.volume();
-                } else {
-                    if (NAL.DEBUG)
-                        throw new TermException("mismatch for Answer template: " + template, x);
-                    else {
+//                /* probably safe to ignore caused by a Dynamic task result that doesnt quite match what is being sought
+//                   TODO record a misfire event. this will measure how much dynamic task generation is reducing efficiency
+//                 */
+//
+//                if (template.op() == CONJ && template.containsRecursively(xt)) {
+//                    //HACK a dynamic conjunction to revision collapse
+//                    dtDiff = template.volume();
+//                } else {
+//                    if (NAL.DEBUG)
+//                        throw new TermException("mismatch for Answer template: " + template, x);
+//                    else {
                         return Float.NaN;
-                    }
-                }
+//                    }
+//                }
 
             }
 
             float d = 1 / (1 + dtDiff);
-            if (d < min)
-                return Float.NaN;
-
-            return strength.rank(x, min) * d;
+            return d < min ? Float.NaN : str * d;
         };
     }
 

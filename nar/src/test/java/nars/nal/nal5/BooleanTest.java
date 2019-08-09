@@ -73,7 +73,7 @@ class BooleanTest {
         d.believe(CONJ.the(I, J));
 
 
-        d.run(256);
+        d.run(512);
 
         //System.out.println(i + " " + j + ' ');
         for (int k = 0, outcomesLength = outcomes.length; k < outcomesLength; k++) {

@@ -5,6 +5,8 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Objects;
+
 /**
  * accepts replacement truth and occurrence time for a proxied task
  */
@@ -13,19 +15,18 @@ public class SpecialTruthAndOccurrenceTask extends SpecialOccurrenceTask {
     public static Task the(Task t, Truth tr, long start, long end) {
         if (equivalent(t, tr, start, end))
             return t; //unchanged
-        else {
-            if (t instanceof SpecialTruthAndOccurrenceTask) {
-                t = ((SpecialTruthAndOccurrenceTask) t).task; //unwrap
-                if (equivalent(t, tr, start, end))
-                    return t; //check again
-            }
 
-            return new SpecialTruthAndOccurrenceTask(t, tr, start, end);
+        if (t instanceof SpecialTruthAndOccurrenceTask) {
+            t = ((SpecialTruthAndOccurrenceTask) t).task; //unwrap
+            if (equivalent(t, tr, start, end))
+                return t; //check again
         }
+
+        return new SpecialTruthAndOccurrenceTask(t, tr, start, end);
     }
 
-    public static boolean equivalent(Task t, Truth tr, long start, long end) {
-        return t.start()==start && t.end() == end && t.truth().equals(tr);
+    public static boolean equivalent(Task t, @Nullable Truth tr, long start, long end) {
+        return t.start()==start && t.end() == end && Objects.equals(t.truth(), tr);
     }
 
     private final boolean negatedContentTerm;

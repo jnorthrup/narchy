@@ -41,7 +41,6 @@ public class LinearTruthProjection extends TruthProjection {
             if (e != e)
                 continue;
 
-            e *= eviFactor;
             eSum += e;
 
             //float w = e;

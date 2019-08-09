@@ -6,7 +6,6 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.util.TermTransformException;
 import nars.term.util.transform.Retemporalize;
 
 import static nars.Op.QUEST;
@@ -41,8 +40,8 @@ public final class Termify extends ProxyTerm {
 
         this.patternEternal = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(pattern);
 
-        if (!(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root())))
-            throw new TermTransformException(pattern, patternEternal, "pattern eternalization mismatch");
+//        if (!(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root())))
+//            throw new TermTransformException(pattern, patternEternal, "pattern eternalization mismatch");
 
         this.time = time;
     }

@@ -144,6 +144,10 @@ class ConceptualizationTest {
         assertEq("((a&&b)<->(c&&d))", $$("((c&&d)<->(a&&b))").root());
     }
 
+    @Test void Conceptualize_Not_NAL3_seq() {
+        assertEq("(x-->(a &&+- a))", $$("(x-->(a &&+1 a))").root());
+    }
+
     @Test void Conceptualize_Not_NAL3() {
 
         //indirect inh subterm (thru product)

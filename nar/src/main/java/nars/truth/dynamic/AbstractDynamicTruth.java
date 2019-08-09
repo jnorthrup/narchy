@@ -96,6 +96,7 @@ abstract public class AbstractDynamicTruth {
 
 
         boolean absolute = (this!=Impl && this != ConjIntersection) || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
+        NAR nar = d.nar;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Task x = d.get(i);
             long xStart = x.start();
@@ -108,7 +109,7 @@ abstract public class AbstractDynamicTruth {
                             false,
                             1, //no need to dither truth or time here.  maybe in the final calculation though.
                             d.dur,
-                            d.nar);
+                        nar);
                     if (tt == null)
                         return null;
                     d.setFast(i, tt);
@@ -121,17 +122,13 @@ abstract public class AbstractDynamicTruth {
         if (t == null)
             return null;
 
-        /** interpret the presence of truth dithering as an indication this is producng something for 'external' usage,
-         *  and in which case, also dither time
-         */
-
         if (d.ditherTruth) {
             //dither and limit truth
-            t = t.dither(d.nar);
+            t = t.dither(nar);
             if (t == null)
                 return null;
         }
 
-        return TruthProjection.merge(d::arrayCommit, y, t, d.stamp(d.nar.random()), d.beliefOrGoal, s, e, d.nar);
+        return TruthProjection.merge(d::arrayCommit, y, t, d.stamp(nar.random()), d.beliefOrGoal, s, e, nar);
     }
 }

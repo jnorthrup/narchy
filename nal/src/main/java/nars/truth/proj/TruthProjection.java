@@ -4,8 +4,8 @@ import jcog.Paper;
 import jcog.Skill;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
-import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
@@ -27,16 +27,19 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.PeekableIntIterator;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Map;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
-import static jcog.Util.assertFinite;
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -60,7 +63,7 @@ abstract public class TruthProjection extends TaskList {
 	 * intermpolated (and evidence reduction applied as necessary)
 	 */
 	public Term term = null;
-	float eviFactor = 1;
+
 
 	/** used in final calculation of to start/end time intervals */
 	int ditherDT = 1;
@@ -185,22 +188,24 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	@Nullable
-	private MetalLongSet commitN(boolean shrink, int minResults, boolean needStamp, NAL n) {
-		MetalLongSet e = filter(minResults, shrink, needStamp);
+	private MetalLongSet commitN(boolean shrink, int minComponents, boolean needStamp, NAL n) {
+		MetalLongSet e = filter(minComponents, shrink, needStamp);
 		if (needStamp && e == null)
 			return null; //remain < minResults
 
-		int activePreCull = active();
+		int activeBeforeIntermpolate = active();
+		if (activeBeforeIntermpolate > 1) {
 
-		float eviFactor = intermpolateAndCull(n); assertFinite(eviFactor);
-		if (eviFactor < ScalarValue.EPSILONcoarse) {
-			e = null;
-		} else {
-			this.eviFactor = eviFactor;
+			if (!intermpolate(n, minComponents)) {
+				clearFast(); return null;
+			}
+
 			int activePostCull = active();
-			if (activePostCull < minResults) {
-				e = null;
-			} else if (shrink && activePostCull != activePreCull) {
+			if (activePostCull < minComponents) {
+				clearFast(); return null; //HACK this test shouldnt be necessary
+			}
+
+			if (shrink && activePostCull != activeBeforeIntermpolate) {
 
 				refocus(shrink);
 
@@ -208,6 +213,9 @@ abstract public class TruthProjection extends TaskList {
 					e = stampRemain(activePostCull);
 			}
 		}
+
+		if (term == null)
+			term = items[0].term();
 
 		return needStamp ? e : null;
 	}
@@ -462,10 +470,10 @@ abstract public class TruthProjection extends TaskList {
 		return this;
 	}
 
-	private TruthProjection add(Iterable<? extends Tasked> tasks) {
-		tasks.forEach(this::add);
-		return this;
-	}
+//	private TruthProjection add(Iterable<? extends Tasked> tasks) {
+//		tasks.forEach(this::add);
+//		return this;
+//	}
 
 	private void addFast(Tasked t) { addFast(t.task()); }
 
@@ -481,7 +489,124 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 
-	private float intermpolateAndCull(NAL nar) {
+	private static final class IEntry {
+		double eviSum = 0;
+		final RoaringBitmap id = new RoaringBitmap();
+		final Term root;
+
+		IEntry(Term r) {
+			this.root = r;
+		}
+
+		public void add(int index, double evi) {
+			eviSum += evi;
+			id.add(index);
+		}
+	}
+
+	private boolean intermpolate(NAL nar, int minComponents) {
+		int n = size(); //assumes nulls removed
+		Map<Term,IEntry> roots = null;
+		Task[] items = this.items;
+		Term root0 = items[0].term().root();
+		for (int i = 1; i < n; i++) {
+			Term iRoot = items[i].term().root();
+			if (roots==null) {
+				if (!root0.equals(iRoot)) {
+					roots = new UnifiedMap<>(n - i + 1);
+					IEntry ie = new IEntry(root0);
+					roots.put(root0, ie);
+					for (int j = 0; j < i; j++)
+						ie.add(j, evi[j]); //add existing evidence until the first that change (i)
+				}
+			}
+			if (roots!=null) {
+				roots.computeIfAbsent(iRoot, IEntry::new).add(i, evi[i]);
+			}
+		}
+		if (roots == null)
+			return true; //no intermpolation necessary
+
+		if (minComponents > 1) {
+			//eliminate roots for which less than minComponents are present
+			roots.values().removeIf(ii -> {
+				if (ii.id.getCardinality() < minComponents) {
+					intermpolateRemove(ii);
+					return true;
+				}
+				return false;
+			});
+		}
+
+		int es = roots.size(); if (es < minComponents) { clearFast(); return false; }
+
+
+		FasterList<Map.Entry<Term, IEntry>> e = new FasterList<>(roots.entrySet());
+		e.sortThisByDouble(x -> -x.getValue().eviSum);
+//		IEntry best = e.get(0).getValue();
+		for (int i = 1; i < es; i++) {
+			intermpolateRemove(e.get(i).getValue());
+		}
+
+		removeNulls();
+
+		Compound a = (Compound) items[0].term();
+
+		n = size();
+		if (n > 1) {
+			//Term bestRoot = best.root;
+			double ea = evi[0];
+			int remain = n;
+			for (int B = 1; B < n; B++) {
+				Compound b = (Compound) items[B].term();
+				if (!a.equals(b)) {
+					double eb = evi[B];
+					double eab = ea + eb;
+					Term ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
+					if (ab == Null) {
+						remove(B); //unexpected error
+						if (--remain < minComponents) {
+							clearFast();
+							return false;
+						}
+					} else {
+						//TODO apply dtDiff error in proportion to the 2+n components
+						double diffA = dtDiff(ab, a);
+						double diffB = dtDiff(ab, b);
+						if (diffA > 0) {
+							double discA = 1/((1+diffA * (ea/eab)) * B); //estimate: shared between all
+							for (int x = 0; x < B; x++)
+								evi[x] *= discA;
+						}
+						if (diffB > 0) {
+							double discB = 1/(1+diffB * (eb/eab));
+							evi[B] *= discB;
+						}
+
+						a = (Compound) ab;
+						ea += eb;
+					}
+				}
+			}
+
+			if (remain!=n) removeNulls();
+		}
+		this.term = a;
+
+		return true;
+	}
+
+	private void intermpolateRemove(IEntry ii) {
+		PeekableIntIterator ic = ii.id.getIntIterator();
+		while (ic.hasNext())
+			remove(ic.next());
+	}
+
+	/** if necessary, intermpolate a result term and reduce evidence by the dtDiff to each.
+	 * if intermpolation is impossible for any result, nullify that result.
+	 * return false if the projection becomes invalid
+	 */
+	private boolean intermpolate0(NAL nar, int minComponents) {
 
 		int thisSize;
 		main:
@@ -492,7 +617,7 @@ abstract public class TruthProjection extends TaskList {
 			this.term = first;
 			if (thisSize == 1 || !first.hasAny(Op.Temporal)) {
 				//assumes that all the terms are from the same concept.  so if the first target has no temporal components the rest should not either.
-				return 1;
+				return true;
 			}
 
 
@@ -512,7 +637,7 @@ abstract public class TruthProjection extends TaskList {
 						if (!matchesFirst.get(i))
 							remove(i);
 				}
-				return 1f;
+				return true;
 			} else {
 
 
@@ -555,7 +680,7 @@ abstract public class TruthProjection extends TaskList {
 
 								//return 1 - dtDiff * 0.5f; //half discounted
 								//return 1 - dtDiff;
-								return 1; //no discount for difference
+								return true; //no discount for difference
 							}
 
 
@@ -569,7 +694,7 @@ abstract public class TruthProjection extends TaskList {
 					continue main;
 				} else {
 					size = 1;
-					return 1;
+					return true;
 				}
 
 //            //last option: remove all except the first
@@ -581,13 +706,14 @@ abstract public class TruthProjection extends TaskList {
 
 			}
 		}
-		return 1; //?
+		return true; //?
 	}
 
 	@Override
 	public Task remove(int index) {
 		items[index] = null;
-		evi[index] = 0;
+		if (evi!=null)
+			evi[index] = 0;
 		return null; //HACK
 	}
 
@@ -652,12 +778,10 @@ abstract public class TruthProjection extends TaskList {
 					changed = time(u0, u1);
 				} else {
 					if (shrink) {
-						if (start < u0 && u0 < this.end) {
-							changed = time(u0, end);
-						}
-						if (this.end > u1 && u1 > start) {
-							changed = time(start, u1);
-						}
+						boolean ae = (u0 < this.end && u0 >= this.start);
+						boolean as = (u1 > this.start && u1 <= this.end);
+						if (as || ae)
+							changed = time(as ? u0 : start, ae ? u1 : end);
 					}
 				}
 			} else {
@@ -740,48 +864,5 @@ abstract public class TruthProjection extends TaskList {
 		}
 	}
 
-
-//    /**
-//     * TODO extend TaskList as TruthTaskList storing evi,freq pairs of floats in a compact float[]
-//     */
-//    @Deprecated
-//    public static class TaskComponent implements Tasked {
-//        public final Task task;
-//
-//        /**
-//         * NaN if not yet computed
-//         */
-//        double evi = Double.NaN;
-//
-//        TaskComponent(Task task) {
-//            this.task = task;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return task + "=" + evi;
-//        }
-//
-//        public boolean valid() {
-//            return evi == evi;
-//        }
-//
-//        @Override
-//        public @Nullable Task task() {
-//            return task;
-//        }
-//
-////        void invalidate() {
-////            evi = Double.NaN;
-////        }
-//
-//
-//        public final long[] stamp() {
-//            assert(valid());
-////            if (!valid())
-////                throw new WTF();
-//            return task.stamp();
-//        }
-//    }
 
 }

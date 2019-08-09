@@ -122,10 +122,20 @@ public class Conceptualization {
         @Override
         public final Term transformTemporal(Compound x, int dtNext) {
             Op xo = x.op();
-            if ((xo == INH || xo == SIM) && ((x.subterms().structureSurface()&CONJ.bit)!=0)) {
-
-                //return Retemporalize.retemporalizeXTERNALToDTERNAL.applyPosCompound(x);
-                return Retemporalize.retemporalizeAllToXTERNAL.applyPosCompound(x);
+            if (xo == INH || xo == SIM) {
+                if ((
+                    (x.sub(0).op() == CONJ && x.sub(0).dt() != DTERNAL) //seqlike
+                        ||
+                    (x.sub(1).op() == CONJ && x.sub(1).dt() != DTERNAL) //seqlike
+                )
+                ) {//((x.subterms().structureSurface()&CONJ.bit)!=0))
+                    //HACK
+                    //Term y = Retemporalize.retemporalizeAllToDTERNAL.applyPosCompound(x);
+                    //return y == Null ? Retemporalize.retemporalizeAllToXTERNAL.applyPosCompound(x) : y;
+                    return Retemporalize.retemporalizeAllToXTERNAL.applyPosCompound(x);
+                } else {
+                    return x;
+                }
             }
 
 

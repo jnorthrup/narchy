@@ -159,7 +159,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * should be enough to account for an expected evidence integration error rate
      */
     public static final float PROJECTION_EVIDENCE_INFLATION_PCT_TOLERANCE = 10000; //0.1f;
-    public static final boolean PROJECTION_EVIDENCE_INFLATION_DETECT = false;
+//    public static final boolean PROJECTION_EVIDENCE_INFLATION_DETECT = false;
 
     public static final int DYN_TASK_MATCH_MODE =
             2;
