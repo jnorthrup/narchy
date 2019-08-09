@@ -119,16 +119,28 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public static float beliefStrength(TaskRegion t, long qStart, long qEnd, double dur) {
-        return (float)(evidence(t, dur) / (1 + distance(t, qStart, qEnd, dur)));
+        return (float)(evidence(t, dur) / (1 + distanceMin(t, qStart, qEnd, dur)));
     }
 
-//    /** temporal distance to point magnitude */
-//    private static double distance(TaskRegion t, long now, double dur) {
-//        return t.minTimeTo(now)/dur;
-//    }
+    public static FloatFunction<TaskRegion> regionNearness(long qStart, long qEnd, double dur) {
+        return qStart == qEnd ?
+            (x -> -(float) distacnceMin(x, qStart, dur)) :
+            (x -> -(float) distanceMin(x, qStart, qEnd, dur));
+    }
+
+    /** temporal distance to point magnitude */
+    private static double distacnceMid(TaskRegion t, long now, double dur) {
+        return t.meanTimeTo(now)/dur;
+    }
+    private static double distacnceMin(TaskRegion t, long now, double dur) {
+        return t.minTimeTo(now)/dur;
+    }
     /** temporal distance to range magnitude */
-    private static double distance(TaskRegion t, long qStart, long qEnd, double dur) {
+    private static double distanceMin(TaskRegion t, long qStart, long qEnd, double dur) {
         return t.minTimeTo(qStart, qEnd)/dur;
+    }
+    private static double distanceMid(TaskRegion t, long qStart, long qEnd, double dur) {
+        return t.meanTimeTo(qStart, qEnd)/dur;
     }
 
     /** evidence magnitude */

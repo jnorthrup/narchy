@@ -1,6 +1,6 @@
 //Set Definition Unwrap
-    ({S} <-> {P}), {S} |- (S <-> P), (Belief:Identity, Goal:Identity)
-    ([S] <-> [P]), [S] |- (S <-> P), (Belief:Identity, Goal:Identity)
+    ({S} <-> {P}), ({S} <-> {P}) |- (S <-> P), (Belief:Identity, Goal:Identity)
+    ([S] <-> [P]), ({S} <-> {P}) |- (S <-> P), (Belief:Identity, Goal:Identity)
 
 //Nothing is more specific than a instance, so its similar
     ({P} <-> S),  S  |- (S --> {P}), (Belief:Identity, Goal:Identity)
@@ -9,8 +9,8 @@
     ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity, Goal:Identity)
 
 //single element set unwrap
-    ({E} --> X),  {E}  |- (E --> X), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (X --> [I]),  [I]  |- (X --> I), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
+    (X --> [I]),  [I]  |- polarizeTask((X --> I)), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
 
 //Set Composition
 
@@ -39,8 +39,8 @@
 
 //Set Decomposition
 
-    (C --> X), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- (C --> withoutPN(X,Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-    (X --> C), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- (withoutPN(X,Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+    (C --> X), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((C --> withoutPN(X,Y))), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
+    (X --> C), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((withoutPN(X,Y) --> C)), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
 
 //Set-in-Conjunction Decomposition
     //TODO

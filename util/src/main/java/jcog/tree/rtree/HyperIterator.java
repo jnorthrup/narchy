@@ -31,7 +31,7 @@ public class HyperIterator<X>  {
     private final RankedN plan;
     private final Consumer planAdd;
 
-    public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<X> rank, Predicate whle) {
+    public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<X> rank, int bufferCap, Predicate whle) {
 
         //tree.readOptimistic(
         tree.read(
@@ -44,7 +44,9 @@ public class HyperIterator<X>  {
                     t.forEach(whle::test);
                     break;
                 default: {
-                    int cursorCapacity = s; //TODO determine if this can safely be smaller like log(s)/branching or something
+                    int cursorCapacity =
+                        //s; //TODO determine if this can safely be smaller like log(s)/branching or something
+                        bufferCap;
 
                     HyperIterator<X> h = new HyperIterator<>(tree.model(), new Object[cursorCapacity], rank);
                     h.start(t.root());

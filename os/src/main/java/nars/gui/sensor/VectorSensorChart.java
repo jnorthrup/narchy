@@ -42,7 +42,7 @@ import static java.lang.Math.sqrt;
  * displays a CameraSensor pixel data as perceived through its concepts (belief/goal state)
  * monochrome
  */
-public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
+public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixView.ViewFunction2D {
 
     private static final int AFFECT_CONCEPT_BUTTON = 0;
     private static final int OPEN_CONCEPT_BUTTON = 2;
@@ -77,7 +77,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         float[] value;
         public final FloatRange opacity = new FloatRange(0.75f, 0, 1);
 
-        public final void doUpdate(VectorSensorView v) {
+        public final void doUpdate(VectorSensorChart v) {
             if (value == null)
                 value = new float[v.w * v.h];
             update(v);
@@ -85,9 +85,9 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
         abstract public void blend(float v, float opacity, float[] rgbTarget);
 
-        abstract public void update(VectorSensorView v);
+        abstract public void update(VectorSensorChart v);
 
-        protected void update(VectorSensorView v, IntIntToFloatFunction f) {
+        protected void update(VectorSensorChart v, IntIntToFloatFunction f) {
             int w = v.w;
             int h = v.h;
             for (int y = 0; y < h; y++) {
@@ -112,7 +112,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
 
         @Override
         public void blend(float v, float opacity, float[] rgb) {
-            VectorSensorView.blend(v * opacity, color, rgb);
+            VectorSensorChart.blend(v * opacity, color, rgb);
         }
 
     }
@@ -133,31 +133,31 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     transient private int answerDetail;
     transient private int answerTries;
 
-    public VectorSensorView(Bitmap2DSensor sensor, Game a) {
+    public VectorSensorChart(Bitmap2DSensor sensor, Game a) {
         this(sensor, a.what());
     }
 
-    public VectorSensorView(VectorSensor v, NAR n) {
+    public VectorSensorChart(VectorSensor v, NAR n) {
         this(v, n::dur, n);
     }
 
-    public VectorSensorView(VectorSensor v, int w, int h, NAR n) {
+    public VectorSensorChart(VectorSensor v, int w, int h, NAR n) {
         this(v, w, h, n::dur, n);
     }
 
-    public VectorSensorView(VectorSensor v, Game g) {
+    public VectorSensorChart(VectorSensor v, Game g) {
         this(v, g::dur, g.nar());
     }
-    public VectorSensorView(VectorSensor v, int w, int h, Game g) {
+    public VectorSensorChart(VectorSensor v, int w, int h, Game g) {
         this(v, w, h, g::dur, g.nar());
     }
 
 
-    public VectorSensorView(VectorSensor v, FloatSupplier baseDur, NAR n) {
+    public VectorSensorChart(VectorSensor v, FloatSupplier baseDur, NAR n) {
         this(v, (int)Math.ceil(idealStride(v)), (int)Math.ceil(v.size()/idealStride(v)), baseDur, n);
     }
 
-    public VectorSensorView(VectorSensor v, int w, int h, FloatSupplier baseDur, NAR n) {
+    public VectorSensorChart(VectorSensor v, int w, int h, FloatSupplier baseDur, NAR n) {
         super(w, h);
         this.baseDur = baseDur;
         this.sensor = v;
@@ -185,7 +185,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             }
 
             @Override
-            public void update(VectorSensorView v) {
+            public void update(VectorSensorChart v) {
                 update(v, new XYConcept() {
                     @Override protected float floatValue(int x, int y, TaskConcept c) {
                         Truth b = answer.clear(answerTries).match(c.beliefs()).truth();
@@ -221,7 +221,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             }
 
             @Override
-            public void update(VectorSensorView v) {
+            public void update(VectorSensorChart v) {
                 update(v, new XYConcept() {
                     @Override
                     protected float floatValue(int x, int y, TaskConcept c) {
@@ -249,7 +249,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         });
 
     }
-    public VectorSensorView(VectorSensor sensor, Signal[][] matrix, int width, int height, FloatSupplier baseDur, NAR n) {
+    public VectorSensorChart(VectorSensor sensor, Signal[][] matrix, int width, int height, FloatSupplier baseDur, NAR n) {
         super(width, height);
         this.baseDur = baseDur;
         this.sensor = sensor;
@@ -262,11 +262,11 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
         return (float) Math.ceil(sqrt(v.size()));
     }
 
-    public VectorSensorView(Bitmap2DSensor sensor, What w) {
+    public VectorSensorChart(Bitmap2DSensor sensor, What w) {
         this(sensor, w::dur, w.nar);
     }
 
-    public VectorSensorView(Bitmap2DSensor sensor, FloatSupplier baseDur, NAR n) {
+    public VectorSensorChart(Bitmap2DSensor sensor, FloatSupplier baseDur, NAR n) {
         this(sensor, sensor.concepts.matrix, sensor.width, sensor.height, baseDur, n);
     }
 
@@ -455,7 +455,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
     /** TODO use DurSurface */
     public static class CameraSensorViewControls extends Gridding {
 
-        private final VectorSensorView view;
+        private final VectorSensorChart view;
         private DurLoop on;
 
         /** the procedure to run in the next duration. limits activity to one
@@ -482,7 +482,7 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             }
         }
 
-        public CameraSensorViewControls(VectorSensorView view) {
+        public CameraSensorViewControls(VectorSensorChart view) {
             super();
 
             this.view = view;
@@ -511,12 +511,12 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
             );
         }
 
-        CheckBox goalCheckBox(VectorSensorView view, String s, /* TODO */ float value) {
+        CheckBox goalCheckBox(VectorSensorChart view, String s, /* TODO */ float value) {
             return goalCheckBox(view, s, value, value);
         }
 
         /** from,to allows specifying a transition, ex: (--x &&+1 x) or (x &&+1 --x) if they differe */
-        CheckBox goalCheckBox(VectorSensorView view, String s, /* TODO */ float fromValue, float toValue) {
+        CheckBox goalCheckBox(VectorSensorChart view, String s, /* TODO */ float fromValue, float toValue) {
             return new CheckBox(s, () -> {
                 view.onConceptTouch((c) -> {
                     next.set(() -> view.nar.want(c.term(), Tense.Present, toValue));
@@ -539,9 +539,11 @@ public class VectorSensorView extends BitmapMatrixView implements BitmapMatrixVi
                     float b = floatValue(x, y, c);
                     if (b == b)
                         return b;
+                    else
+                        return noise();
                 }
             }
-            return noise();
+            return 0.5f; //noise();
         }
 
     }

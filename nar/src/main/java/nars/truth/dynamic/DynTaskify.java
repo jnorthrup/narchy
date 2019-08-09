@@ -3,7 +3,6 @@ package nars.truth.dynamic;
 import jcog.Paper;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -20,12 +19,9 @@ import nars.truth.Stamp;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
 import javax.annotation.Nullable;
-import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 
-import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.NEG;
 import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
 import static nars.truth.dynamic.DynamicStatementTruth.Impl;
@@ -77,7 +73,6 @@ public class DynTaskify extends TaskList {
     final boolean ditherTime;
 
     final float dur;
-    private MetalLongSet evi = null;
 
     final boolean beliefOrGoal;
     final Predicate<Task> filter;
@@ -197,7 +192,7 @@ public class DynTaskify extends TaskList {
                 if (i == 0)
                     ensureCapacityForAdditional(cn);
 
-                setTask(j, tt); //HACK necessary for stamp detection
+                setTask(j, tt);
             }
         } else {
             ensureCapacityForAdditional(1);
@@ -237,16 +232,8 @@ public class DynTaskify extends TaskList {
     }
 
     private void setTask(int i, Task x) {
-
         setFast(i, x);
         ++this.size;
-
-        long[] xs = x.stamp();
-
-        if (evi==null)
-            evi =new MetalLongSet((components.size()-1) * STAMP_CAPACITY + xs.length );
-
-        evi.addAll(xs);
     }
 
     private boolean noOverlap(Task t) {
@@ -295,25 +282,6 @@ public class DynTaskify extends TaskList {
 //    }
 
 
-
-    @Override public Supplier<long[]> stamp(Random rng) {
-        if (evi == null) {
-            return super.stamp(rng);
-        } else {
-            return ()->Stamp.sample(STAMP_CAPACITY, this.evi, rng);
-        }
-    }
-
-
-
-    @Override
-    public boolean clearIfChanged() {
-        if (super.clearIfChanged()) {
-            evi = null;
-            return true;
-        }
-        return false;
-    }
 
     /** earliest start time, excluding ETERNALs.  returns ETERNAL if all ETERNAL */
     public long earliestStart() {

@@ -15,7 +15,7 @@ import nars.concept.Concept;
 import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
 import nars.concept.sensor.VectorSensor;
-import nars.gui.sensor.VectorSensorView;
+import nars.gui.sensor.VectorSensorChart;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -88,7 +88,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
                 new BitmapMatrixView(pixRecon),
 
-                new VectorSensorView(this, game).withControls()) {
+                new VectorSensorChart(this, game).withControls()) {
             {
                 game.onFrame(() -> forEach(x -> {
                     if (x instanceof BitmapMatrixView)

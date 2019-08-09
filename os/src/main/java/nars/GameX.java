@@ -27,7 +27,7 @@ import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorView;
+import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
@@ -137,9 +137,9 @@ abstract public class GameX extends Game {
             n.parts(VectorSensor.class).map((VectorSensor v) -> {
                 if (v instanceof Bitmap2DSensor) {
                     int w = ((Bitmap2DSensor) v).width, h = ((Bitmap2DSensor) v).height;
-                    return new AspectAlign(new VectorSensorView(v, w, h, n).withControls(), ((float)h)/w );
+                    return new AspectAlign(new VectorSensorChart(v, w, h, n).withControls(), ((float)h)/w );
                 } else {
-                    return SupplierPort.button(v.toString(), () -> new VectorSensorView(v, n).withControls());
+                    return SupplierPort.button(v.toString(), () -> new VectorSensorChart(v, n).withControls());
                 }
             }).forEach(l::add);
 

@@ -617,7 +617,9 @@ public class NARui {
                 "Input", () -> taskBufferView(w.in, n),
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),
-                "Concepts", ()->BagregateConceptGraph2D.get(attn, n)
+                "ConceptGraph", ()->BagregateConceptGraph2D.get(attn, n),
+                "TaskList", ()->new TaskListView(w, 32),
+                "ConceptList", ()->new ConceptListView(w, 32)
         )));
         m.south(new ObjectSurface(attn));
         m.west(new Gridding(

@@ -7,7 +7,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.agent.Game;
 import nars.concept.sensor.FreqVectorSensor;
-import nars.gui.sensor.VectorSensorView;
+import nars.gui.sensor.VectorSensorChart;
 import nars.term.Term;
 import spacegraph.SpaceGraph;
 import spacegraph.audio.AudioSource;
@@ -46,7 +46,7 @@ public class NARAudio extends WaveIn {
         WaveBitmap hearView = new WaveBitmap(hearBuf, 300, 64);
         h.onFrame(hearView::update);
 
-        SpaceGraph.window(grid(new VectorSensorView(hear, nar).withControls(),
+        SpaceGraph.window(grid(new VectorSensorChart(hear, nar).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 

@@ -1945,13 +1945,19 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 				Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangent =
 					this.tangent ? tangent(n, nid) : empty;
 
-				//TODO only tangentNeg if existing and tangent produced no results
-				Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg = empty;
-				if (this.tangentNeg) {
-					tangentNeg = tangent(n, nid.neg());
-				}
 
-				return Iterables.concat(existing, tangent, tangentNeg);
+				//TODO only tangentNeg if existing and tangent produced no results
+				Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg =
+					this.tangentNeg ? tangent(n, nid.neg()) : empty;
+
+				if (tangent == empty && tangentNeg == empty)
+					return existing;
+				else if (tangent == empty)
+					return Iterables.concat(existing, tangentNeg);
+				else if (tangentNeg == empty)
+					return Iterables.concat(existing, tangent);
+				else
+					return Iterables.concat(existing, tangent, tangentNeg);
 			}
 		}
 

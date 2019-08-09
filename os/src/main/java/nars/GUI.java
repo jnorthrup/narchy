@@ -1,6 +1,7 @@
 package nars;
 
 import nars.attention.TaskLinkWhat;
+import nars.gui.ConceptListView;
 import nars.gui.NARui;
 import nars.gui.TaskListView;
 import nars.gui.graph.run.BagregateConceptGraph2D;
@@ -36,7 +37,8 @@ public class GUI {
         demo(n);
 
         window(BagregateConceptGraph2D.get(n), 1200, 800);
-        window(new TaskListView(n,32), 1200, 800);
+        window(new TaskListView(n.what(), 32), 1200, 800);
+        window(new ConceptListView(n.what(), 32), 1200, 800);
 
         window(new ReplChip((cmd, receive) -> {
             try {

@@ -8,6 +8,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
+import jcog.decide.Roulette;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
@@ -19,6 +20,7 @@ import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.predicate.primitive.IntObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.ObjectIntPredicate;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectIntProcedure;
@@ -122,6 +124,24 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 return false;
         }
         return true;
+    }
+
+    @Nullable default Term subRoulette(FloatFunction<Term> subValue, Random rng) {
+        int s = subs();
+        switch (s) {
+            case 0: return null;
+            case 1 : return sub(0);
+            default: return sub(Roulette.selectRoulette(s, i -> subFloat(i, subValue) , rng));
+        }
+    }
+
+    @Nullable default Term sub(Random rng) {
+        int s = subs();
+        switch (s) {
+            case 0: return null;
+            case 1 : return sub(0);
+            default: return sub(rng.nextInt(s));
+        }
     }
 
 

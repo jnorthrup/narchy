@@ -11,7 +11,7 @@ import nars.agent.Reward;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.gui.BeliefTableChart;
-import nars.gui.sensor.VectorSensorView;
+import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.Termed;
@@ -138,7 +138,7 @@ public class Recog2D extends GameX {
 //                ),
 
 
-                new AspectAlign(new VectorSensorView(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
+                new AspectAlign(new VectorSensorChart(sp, this), AspectAlign.Align.Center, sp.width, sp.height),
 
                 new Gridding(beliefTableCharts(nar, List.of(tv.concepts), 16)),
 

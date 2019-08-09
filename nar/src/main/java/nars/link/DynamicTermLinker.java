@@ -1,7 +1,6 @@
 package nars.link;
 
 import jcog.Util;
-import jcog.decide.Roulette;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
@@ -34,7 +33,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         else if (n == 1)
             u = tt.sub(0);
         else
-            u = choose(tt, n, t, rng);
+            u = choose(tt, t, rng);
 
         if (u instanceof Img)
             return t; //HACK
@@ -49,7 +48,7 @@ public abstract class DynamicTermLinker implements TermLinker {
     abstract protected int depth(Compound root, Random rng);
 
     /** simple subterm choice abstraction TODO a good interface providing additional context */
-    abstract protected Term choose(Subterms tt, int n, Term parent, Random rng);
+    abstract protected Term choose(Subterms tt, Term parent, Random rng);
 
 
 
@@ -59,8 +58,8 @@ public abstract class DynamicTermLinker implements TermLinker {
             return rng.nextFloat() < 0.5f ? 1 : 2;
         }
 
-        @Override protected Term choose(Subterms tt, int n, Term parent, Random rng) {
-            return tt.sub(rng.nextInt(n));
+        @Override protected Term choose(Subterms s, Term parent, Random rng) {
+            return s.sub(rng);
         }
     };
 
@@ -91,14 +90,13 @@ public abstract class DynamicTermLinker implements TermLinker {
         }
 
         @Override
-        protected Term choose(Subterms _s, int n, Term parent, Random rng) {
+        protected Term choose(Subterms s, Term parent, Random rng) {
             if (parent instanceof Sequence) {
 
-            } else if (parent.op()==CONJ && _s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
-                _s = ConjList.events(parent).asSubterms(false);
+            } else if (parent.op()==CONJ && s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
+                s = ConjList.events(parent).asSubterms(false);
             }
-            Subterms s = _s;
-            return s.sub(Roulette.selectRoulette(n, i -> s.subFloat(i, this::subValue) , rng));
+            return s.subRoulette(this::subValue, rng);
         }
 
 //        private float _subValue(Term sub) {

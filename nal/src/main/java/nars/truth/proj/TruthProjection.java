@@ -20,6 +20,7 @@ import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.Intermpolate;
 import nars.term.util.TermTransformException;
 import nars.time.Tense;
@@ -567,7 +568,7 @@ abstract public class TruthProjection extends TaskList {
 					double eb = evi[B];
 					double eab = ea + eb;
 					Term ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
-					if (ab == Null) {
+					if (ab instanceof Bool) {
 						remove(B); //unexpected error
 						if (--remain < minComponents) {
 							clearFast();

@@ -25,7 +25,7 @@ public class ByteTopic<X> {
     private final Topic<X>[] chan = new Topic[Byte.MAX_VALUE /* signed max */];
 
     /** TODO write atomic variant of LongMetalBitset */
-    private final MetalBitSet active = MetalBitSet.bits(chan.length);
+    private final MetalBitSet active = MetalBitSet.bits(255);//new AtomicMetalBitSet();
 
     public ByteTopic(byte... preDefined) {
         validate(false, preDefined);
@@ -102,6 +102,7 @@ public class ByteTopic<X> {
         }
     }
 
+
     private final class ByteSubTopic<X> extends ListTopic<X> {
         private final byte c;
 
@@ -111,18 +112,19 @@ public class ByteTopic<X> {
 
         @Override
         public void start(Consumer<X> o) {
-            synchronized (ByteTopic.this.active) { //HACK TODO use atomic
+            synchronized (this) {
                 active.set(c, true);
+                super.start(o);
             }
-            super.start(o);
         }
 
         @Override
         public void stop(Consumer<X> o) {
-            synchronized (ByteTopic.this.active) { //HACK TODO use atomic
-                active.set(c, false);
+            synchronized (this) {
+                super.stop(o);
+                if (isEmpty())
+                    active.set(c, false);
             }
-            super.stop(o);
         }
     }
 }

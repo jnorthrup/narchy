@@ -16,7 +16,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorView;
+import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinkage;
@@ -343,7 +343,7 @@ public class TrackXY_NAR extends GameX {
 //            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
             if (a.cam != null) {
-                g.add(Splitting.column(new VectorSensorView(a.cam, a) {
+                g.add(Splitting.column(new VectorSensorChart(a.cam, a) {
                     @Override
                     protected void paint(GL2 gl, ReSurface reSurface) {
                         super.paint(gl, reSurface);

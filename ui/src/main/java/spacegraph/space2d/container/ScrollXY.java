@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.function.Function;
 
 import static jcog.Util.lerp;
+import static jcog.Util.maybeEqual;
 import static spacegraph.space2d.widget.slider.SliderModel.KnobHoriz;
 import static spacegraph.space2d.widget.slider.SliderModel.KnobVert;
 
@@ -120,15 +121,15 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
     public ScrollXY<S> view(float w, float h) {
-        RectFloat view1 = RectFloat.WH(w, h);
+        RectFloat nextView = RectFloat.WH(w, h);
         if (this.view == null) {
-            this.view = view1; //initial
+            this.view = nextView; //initial
             layoutModel();
         } else {
 
-            //break suspected deadlock
-//            Exe.invoke(() -> {
-                this.view = view1;
+
+//            Exe.invoke(() -> { //break suspected deadlock ?
+                this.view = Util.maybeEqual(this.view, nextView);
                 layoutModel();
 //            });
         }
@@ -147,10 +148,10 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
             float vw = Util.clamp(view.w, viewMin.x, viewMax.x);
             float vh = Util.clamp(view.h, viewMin.y, viewMax.y);
             scale.set(Util.normalize(view.w, viewMin.x, viewMax.x),Util.normalize(view.h, viewMin.y, viewMax.y));
-            this.view = RectFloat.X0Y0WH(
+            this.view = maybeEqual(this.view, RectFloat.X0Y0WH(
                     Util.clamp(view.x, 0, viewMax.x),
                     Util.clamp(view.y, 0, viewMax.y),
-                    vw, vh);
+                    vw, vh));
         }
 
 

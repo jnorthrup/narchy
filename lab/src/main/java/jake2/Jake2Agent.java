@@ -19,7 +19,7 @@ import nars.GameX;
 import nars.NAR;
 import nars.Narsese;
 import nars.concept.sensor.FreqVectorSensor;
-import nars.gui.sensor.VectorSensorView;
+import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
@@ -175,7 +175,7 @@ public class Jake2Agent extends GameX implements Runnable {
         addSensor(hear);
         WaveBitmap hearView = new WaveBitmap(hear.buf, 300, 64);
         onFrame(hearView::update);
-        SpaceGraph.window(grid(new VectorSensorView(hear, this).withControls(),
+        SpaceGraph.window(grid(new VectorSensorChart(hear, this).withControls(),
                 //spectrogram(hear.buf, 0.1f,512, 16),
                 new ObjectSurface(hear), hearView), 400, 400);
 

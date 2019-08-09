@@ -34,7 +34,7 @@ public enum Derivers { ;
                 case 2:
                     f.add(file("nal2.nal"));
                     f.add(file("nal2.guess.nal"));
-                    f.add(file("nal2.member.nal"));
+                    //f.add(file("nal2.member.nal"));
                     break;
 
                 case 3:
