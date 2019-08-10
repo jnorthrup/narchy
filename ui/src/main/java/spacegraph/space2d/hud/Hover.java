@@ -54,9 +54,9 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
 
             Surface t = this.target;
             if (t != null) {
-                if (tgtBoundsPx != null) {
+                if (tgtBoundsPx != null)
                     updatePos(t);
-                } else
+                else
                     t.hide();
             }
 

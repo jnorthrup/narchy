@@ -13,7 +13,7 @@ import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.PaintSurface;
-import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.collision.ClosestRay;
 import spacegraph.space3d.phys.shape.SimpleBoxShape;
@@ -24,40 +24,42 @@ import static com.jogamp.opengl.fixedfunc.GLMatrixFunc.GL_PROJECTION;
 /**
  * embedded 3d viewport for use on a 2d surface
  */
-public class View3Din2D extends PaintSurface {
+public class VolumeSurface extends PaintSurface {
 
+	private final SpaceGraph3D space;
 
-
-
-	private final SpaceDisplayGraph3D space;
-
-	final FingerAdapter mouse;
-//	private final SimpleSpatial debugFwd, debugPick1, debugPick2;
+	final FPSLook mouse;
 	private float px1 = 0, py1 = 0, px2 = 1, py2 = 1;
 
-	public View3Din2D(SpaceDisplayGraph3D space) {
+	final FingerAdapter fingerTo2D = new FingerAdapter();
+
+	public VolumeSurface(SpaceGraph3D space) {
 		this.space = space;
-		this.mouse = new FingerAdapter(space);
-
-
-//		space.add(debugFwd = new SimpleSpatial().scale(0.01f,0.01f,0.01f).color(1,1,1,0.25f));
-//		space.add(debugPick1 = new SimpleSpatial().scale(0.05f,0.05f,0.05f).color(0,1,0,0.25f));
-//		space.add(debugPick2 = new SimpleSpatial().scale(0.1f,0.1f,0.1f).color(1,0,0,0.25f));
+		this.mouse = new FPSLook(space);
 	}
 
+	@Override
+	protected void starting() {
+		fingerTo2D.enter();
+	}
+
+	@Override
+	protected void stopping() {
+		fingerTo2D.exit();
+	}
 
 	@Override
 	protected void paint(GL2 gl, ReSurface r) {
 
-
-
 		gl.glPushMatrix();
 
 
-		px1 = ((x() - r.x1) * r.scaleX);
-		py1 = ((y() - r.y1) * r.scaleY);
-		px2 = ((x() - r.x1 + w()) * r.scaleX);
-		py2 = ((y() - r.y1 + h()) * r.scaleY);
+		float left = left();
+		float bottom = bottom();
+		px1 = ((left - r.x1) * r.scaleX);
+		py1 = ((bottom - r.y1) * r.scaleY);
+		px2 = ((left - r.x1 + w()) * r.scaleX);
+		py2 = ((bottom - r.y1 + h()) * r.scaleY);
 		gl.glViewport(Math.round(bounds.x),Math.round(bounds.y), Math.round(px2 - px1), Math.round(py2 - py1));
 
 		space.renderVolumeEmbedded(r.dtS(), gl, bounds);
@@ -88,7 +90,6 @@ public class View3Din2D extends PaintSurface {
 
 			ClosestRay c = mouse.pickRay((p.x - 0.5f) * 2, (p.y - 0.5f) * 2);
 
-
 			if (c.hasHit()) {
 				Body3D co = mouse.pickedBody;
 				if (co != null) {
@@ -97,19 +98,16 @@ public class View3Din2D extends PaintSurface {
 						SurfacedCuboid ss = (SurfacedCuboid) s;
 						v3 local = ss.transform.untransform(mouse.hitPoint.clone());
 
-						float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
 						if (local.x >= -1 && local.x <= +1 && local.y >= -1 && local.y <= +1) {
 
 							SimpleBoxShape sss = (SimpleBoxShape) (ss.shape);
 							float zFront = sss.z() / 2;
+							float radiusTolerance = 0.25f * co.shape().getBoundingRadius();
 							if (Util.equals(local.z, zFront, radiusTolerance)) {
 								//System.out.println(local.x + " "  + local.y);
 								Surface front = ss.front;
 								if (front != null) {
-									//float localX = ((local.x+0.5f)*front.w())/(2*sss.x()), localY = ((local.y+0.5f)*front.h())/(2*sss.y());
 									float localX = (local.x / sss.x()) + 0.5f, localY = (local.y / sss.y()) + 0.5f;
-									//float localX = local.x+sss.x(), localY = local.y+sss.y();
-									//System.out.println(front + " " + n4(localX) + "," + n4(localY)); // local + " -> " + + "\t" + p + " " + c.hitPointWorld);
 
 									fingerTo2D.posPixel.set(localX, localY);
 									fingerTo2D.posGlobal.set(localX, localY);
@@ -119,8 +117,6 @@ public class View3Din2D extends PaintSurface {
 									//fingerTo2D.exit();
 									if (fingering!=null) {
 										//absorb and shadow internal node
-//										fingerTo2D.fingering.set(Idle);//HACK
-//										//f.test(Idle);//clear fingering
 										return this;
 									}
 								}
@@ -137,19 +133,8 @@ public class View3Din2D extends PaintSurface {
 		return null;
 	}
 
-	final MouseFinger fingerTo2D = new MouseFinger(5) {
-		@Override
-		protected void start(SpaceGraph x) {
-			enter();
-		}
 
-		@Override
-		protected void stop(SpaceGraph x) {
-
-		}
-	};
-
-	final Dragging fpsDrag = new Dragging( 2) {
+	private final Dragging fpsDrag = new Dragging( 2) {
 
 		private v2 start;
 
@@ -169,10 +154,18 @@ public class View3Din2D extends PaintSurface {
 		}
 	};
 
-	private class FingerAdapter extends FPSLook {
-		public FingerAdapter(SpaceDisplayGraph3D space) {
-			super(space);
+	private static class FingerAdapter extends MouseFinger {
+
+		public FingerAdapter() {
+			super(5);
+		}
+
+		@Override
+		protected void start(SpaceGraph x) {
+		}
+
+		@Override
+		protected void stop(SpaceGraph x) {
 		}
 	}
-
 }

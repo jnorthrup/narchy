@@ -5,7 +5,7 @@ import com.jogamp.newt.event.KeyListener;
 import com.jogamp.newt.event.MouseEvent;
 import jcog.math.v3;
 import spacegraph.input.finger.Finger;
-import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
@@ -34,7 +34,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
 
     private final Finger finger;
 
-    public OrbSpaceMouse(SpaceDisplayGraph3D g, Finger finger) {
+    public OrbSpaceMouse(SpaceGraph3D g, Finger finger) {
 
         super(g);
 

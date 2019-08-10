@@ -22,7 +22,7 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.phys.shape.SphereShape;
 import spacegraph.space3d.widget.DynamicListSpace;
 import spacegraph.space3d.widget.SpaceWidget;
@@ -86,7 +86,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     final AtomicBoolean updated = new AtomicBoolean(false);
 
     @Override
-    public void start(SpaceDisplayGraph3D<Concept> space) {
+    public void start(SpaceGraph3D<Concept> space) {
         synchronized (this) {
             super.start(space);
             init();

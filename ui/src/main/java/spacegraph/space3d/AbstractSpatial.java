@@ -31,18 +31,12 @@ public abstract class AbstractSpatial<X> extends Spatial<X> {
 
     @Override
     public void renderRelative(GL2 gl, Collidable body, float dtS) {
-
         colorshape(gl);
         Draw.draw(gl, body.shape());
     }
 
-
-
-
-
     void colorshape(GL2 gl) {
         gl.glColor4f(0.5f, 0.5f, 0.5f, 0.5f);
     }
-
 
 }

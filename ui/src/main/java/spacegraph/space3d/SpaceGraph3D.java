@@ -56,7 +56,7 @@ import static com.jogamp.opengl.GL2.*;
 /**
  * @author jezek2
  */
-public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>> {
+public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>> {
 
     private final boolean simulating = true;
 
@@ -73,11 +73,11 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 
     private final FasterList<AbstractSpace<X>> inputs = new FasterList<>(1);
 
-    public SpaceDisplayGraph3D<X> camPos(float x, float y, float z) {
+    public SpaceGraph3D<X> camPos(float x, float y, float z) {
         camPos.set(x, y, z);
         return this;
     }
-    public SpaceDisplayGraph3D<X> camFwd(float x, float y, float z) {
+    public SpaceGraph3D<X> camFwd(float x, float y, float z) {
         camFwd.set(x, y, z);
         return this;
     }
@@ -89,7 +89,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 //        inputs.clear();
 //    }
 
-    public SpaceDisplayGraph3D() {
+    public SpaceGraph3D() {
         super();
 
 
@@ -107,14 +107,14 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
 //        });
     }
 
-    public SpaceDisplayGraph3D(AbstractSpace<X>... cc) {
+    public SpaceGraph3D(AbstractSpace<X>... cc) {
         this();
 
         for (AbstractSpace c : cc)
             add(c);
     }
 
-    public SpaceDisplayGraph3D(Spatial<X>... cc) {
+    public SpaceGraph3D(Spatial<X>... cc) {
         this();
 
         add(cc);
@@ -277,7 +277,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
         return l;
     }
 
-    public SpaceDisplayGraph3D<X> add(AbstractSpace<X> c) {
+    public SpaceGraph3D<X> add(AbstractSpace<X> c) {
         if (inputs.add(c))
             c.start(this);
         return this;
@@ -306,7 +306,7 @@ public class SpaceDisplayGraph3D<X> extends JoglDisplay implements Iterable<Spat
     }
 
     @Deprecated
-    public SpaceDisplayGraph3D<X> with(BroadConstraint b) {
+    public SpaceGraph3D<X> with(BroadConstraint b) {
         dyn.addBroadConstraint(b);
         return this;
     }

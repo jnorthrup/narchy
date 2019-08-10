@@ -4,7 +4,7 @@ import com.jogamp.newt.event.MouseAdapter;
 import jcog.TODO;
 import jcog.math.v3;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.space3d.phys.Body3D;
 import spacegraph.space3d.phys.Collidable;
@@ -16,7 +16,7 @@ import spacegraph.space3d.phys.collision.narrow.VoronoiSimplexSolver;
  */
 public abstract class SpaceMouse extends MouseAdapter {
 
-    final SpaceDisplayGraph3D space;
+    final SpaceGraph3D space;
     protected final ClosestRay rayCallback = new ClosestRay(((short) (1 << 7)));
     public v3 hitPoint;
     private final VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
@@ -24,7 +24,7 @@ public abstract class SpaceMouse extends MouseAdapter {
 
     public final v3 target = new v3(), origin = new v3();
 
-    protected SpaceMouse(SpaceDisplayGraph3D g) {
+    protected SpaceMouse(SpaceGraph3D g) {
         this.space = g;
     }
 

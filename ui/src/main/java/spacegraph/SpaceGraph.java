@@ -5,7 +5,7 @@ import jcog.thing.Thing;
 import jdk.jshell.tool.JavaShellToolBuilder;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.widget.meta.ObjectSurface;
-import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.Spatial;
 import spacegraph.video.JoglDisplay;
 import spacegraph.video.OrthoSurfaceGraph;
@@ -43,7 +43,7 @@ $ jshell --startup startups/custom-startup
             s.video.show(w, h);
             return s;
         } else if (o instanceof Spatial) {
-            SpaceDisplayGraph3D win = new SpaceDisplayGraph3D(((Spatial) o));
+            SpaceGraph3D win = new SpaceGraph3D(((Spatial) o));
             win.video.show(w, h);
             return win;
         } else if (o instanceof Surface) {

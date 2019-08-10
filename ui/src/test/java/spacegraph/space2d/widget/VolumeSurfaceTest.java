@@ -6,13 +6,13 @@ import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.MetaFrame;
 import spacegraph.space2d.widget.sketch.Sketch2DBitmap;
 import spacegraph.space2d.widget.slider.XYSlider;
-import spacegraph.space3d.SpaceDisplayGraph3D;
+import spacegraph.space3d.SpaceGraph3D;
 import spacegraph.space3d.widget.SurfacedCuboid;
 import spacegraph.test.WidgetTest;
 
-class View3Din2DTest {
+class VolumeSurfaceTest {
 	public static void main(String[] args) {
-		SpaceDisplayGraph3D s = new SpaceDisplayGraph3D().camPos(0, 0, 5);
+		SpaceGraph3D s = new SpaceGraph3D().camPos(0, 0, 5);
 //        for (int x = -10; x < 10; x++) {
 //            for (int y = -10; y < 10; y++) {
 //                s.add(
@@ -22,7 +22,7 @@ class View3Din2DTest {
 //        }
 
 		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f,
-			new View3Din2D(s)).resizeable(),
+			new VolumeSurface(s)).resizeable(),
 			1280, 1024);
 //		SpaceGraph.window(new Splitting(new PushButton("y"), 0.9f, new Splitting(
 //			new View3Din2D(s),

@@ -225,7 +225,7 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         @Override
         public boolean update(Finger f) {
             float s = model.hoverTimeS;
-            float f1 = 0.1f + (s < 4 ? (float) Math.exp(s) : 1) * 0.2f;
+//            float f1 = 0.1f + (s < 4 ? (float) Math.exp(s) : 1) * 0.2f;
             //hoverLabel.alpha(Util.clamp(f1, 0.1f, 0.5f));
             return super.update(f);
         }
@@ -237,7 +237,10 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
         @Override
         public RectFloat pos() {
             //RectFloat ss = f.globalToPixel(s.bounds);
-            float scale = Math.max(f.boundsScreen.w, f.boundsScreen.h);
+            RectFloat bs = f.boundsScreen;
+            if (bs == null)
+                return null;
+            float scale = Math.max(bs.w, bs.h);
             double pulse = Math.cos(hoverTimeS * 6f) * 0.05f;
             float ss = (float) (
                     pulse +

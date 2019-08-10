@@ -33,6 +33,10 @@ public abstract class Spatial<X> implements Active {
      */
     @Deprecated public short order;
 
+    protected Spatial() {
+        this(null);
+    }
+
     Spatial(X k) {
         this.id = k != null ? k : (X) this;
         this.hash = k != null ? k.hashCode() : super.hashCode();
@@ -82,7 +86,7 @@ public abstract class Spatial<X> implements Active {
     /**
      * returns true if the event has been absorbed, false if it should continue propagating
      */
-    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceDisplayGraph3D space) {
+    public Surface onTouch(Finger finger, Collidable body, ClosestRay hitPoint, short[] buttons, SpaceGraph3D space) {
         return null;
     }
 
