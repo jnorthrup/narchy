@@ -8,6 +8,7 @@ import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
 import nars.derive.hypothesis.Hypothesizer;
+import nars.derive.hypothesis.TangentIndexer;
 import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRuleCompiler;
@@ -87,7 +88,7 @@ public class Deriver extends How {
     }
 
     @Deprecated public Deriver(DeriverRules rules, NAR nar) {
-        this(rules, new Hypothesizer.TangentSnapshotter(),
+        this(rules, new TangentIndexer(),
                 //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();

@@ -1,6 +1,5 @@
 package nars.table.dynamic;
 
-import jcog.Util;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -56,8 +55,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
             if (c == null)
                 return;
             c.table(normalized.punc()).remember(r);
-        } else
-            Util.nop();
+        }
 
         if (r.remembered!=null && r.remembered.contains(normalized)) {
 //        if (!r.store || r.remembered!=null) {

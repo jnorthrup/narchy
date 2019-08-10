@@ -372,7 +372,7 @@ public class FZero extends GameX {
         final Atom TANK = Atomic.atom("tank");
 
 
-        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK, NAct.NEG)), (x) -> {
+        GoalActionConcept l = actionUnipolar($.inh($.p(id,TANK), NAct.NEG), (x) -> {
             if (x!=x || x <= 0.5f) x = 0.5f;
             float power = (x - 0.5f) * powerScale;
             left[0] = power;
@@ -382,7 +382,7 @@ public class FZero extends GameX {
             return x;
         });
 
-        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK, NAct.POS)), (x) -> {
+        GoalActionConcept r = actionUnipolar($.inh($.p(id,TANK), NAct.POS), (x) -> {
             if (x!=x || x <= 0.5f) x = 0.5f;
             float power = (x - 0.5f) * powerScale;
             right[0] = power;

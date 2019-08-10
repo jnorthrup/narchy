@@ -9,7 +9,7 @@ import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.hypothesis.Hypothesizer;
+import nars.derive.hypothesis.FirstOrderIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.util.PriBuffer;
@@ -43,7 +43,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
             //new Hypothesizer.ExhaustiveIndexSnapshotter()
-            new Hypothesizer.FirstOrderIndexSnapshotter()
+            new FirstOrderIndexer()
         ); // ~= PROLOG
 
         n.termVolMax.set(32);
@@ -114,7 +114,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 6,8));
 
-        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new Hypothesizer.FirstOrderIndexSnapshotter()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
 
         KIF k = new KIF(t);
         n.input(k.tasks());
@@ -147,7 +147,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 5,8));
 
-        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new Hypothesizer.FirstOrderIndexSnapshotter()); // ~= PROLOG
+        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
         n.log();
 
         KIF k = new KIF(t);

@@ -57,7 +57,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public void forEach(Consumer<? super Task> x) {
-        lock.readOptimistic(()->super.forEach(x));
+        lock.read(()->super.forEach(x));
     }
 
 
@@ -90,7 +90,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     public void match(Answer a) {
         //long r = lock.readLock();
         //try {
-        lock.readOptimistic(()->whileEach(a));
+        lock.read(()->whileEach(a));
 //        } finally {
 //            lock.unlockRead(r);
 //        }
@@ -181,7 +181,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
     @Nullable
 	public Task insert(Task incoming) {
 
-
         Task displaced = null;
 
         if (size == capacity()) {
@@ -205,7 +204,6 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         assert (r != -1);
 
         return displaced;
-
     }
 
     public final Truth truth() {
@@ -427,9 +425,8 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (displaced == x) {
             r.forget(x);
         } else {
-            if (displaced != null) {
+            if (displaced != null)
                 r.forget(displaced);
-            }
 
             r.remember(x);
         }

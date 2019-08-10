@@ -248,9 +248,6 @@ public class Taskify extends ProxyTerm {
                 NAL.DEBUG ?
                         new DebugDerivedTask(x, punc, tru, S, E, d) :
                         new DerivedTask(x, punc, tru, d.time(), S, E, d.evidence());
-        //};
-        //);
-
 
         float priority = d.what.derivePri.pri(t, d);
         if (priority != priority) {

@@ -1,6 +1,5 @@
 package nars.op.mental;
 
-import jcog.Util;
 import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatRange;
 import nars.*;
@@ -41,6 +40,7 @@ import static nars.Op.*;
  */
 public class Inperience extends How {
 
+
     public static final Atomic believe = Atomic.the("believe");
     public static final Atomic want = Atomic.the("want");
     public static final Atomic wonder = Atomic.the("wonder");
@@ -49,6 +49,7 @@ public class Inperience extends How {
     public static final Atomic plan = Atomic.the("plan");
 
     private static final int VOL_SAFETY_MARGIN = 4;
+    static final boolean PROPAGATE_ETERNAL = false;
 
     public final FloatRange priFactor = new FloatRange(0.1f, 0, 2f);
 
@@ -123,10 +124,10 @@ public class Inperience extends How {
                     if (isRecursive(t, self)) {
                         //avoid cyclic
                         //TODO refine
-                        Util.nop();
+                        //Util.nop();
                     } else {
 
-                        Task u = reflect(volMax, beliefConf, self, t);
+                        Task u = reflect(volMax, beliefConf, self, t, when);
                         if (u!=null)
                             w.accept(u);
                     }
@@ -138,19 +139,26 @@ public class Inperience extends How {
 
     }
 
-    @Nullable private Task reflect(int volMax, float beliefConf, Term self, Task t) {
+    @Nullable private Task reflect(int volMax, float beliefConf, Term self, Task t, When when) {
+        long s, e;
+        if (PROPAGATE_ETERNAL || !t.isEternal()) {
+            s = t.start(); e = t.end();
+        } else {
+            s = when.start(); e = when.end();
+        }
+
         Task u = null;
         if (t.isBeliefOrGoal()) {
             Term r = reifyBeliefOrGoal(t, self);
             if ((r = validReification(r, volMax)) != null)
                 u = new InperienceTask(r, $.t(1,
                     beliefConf * (t.isNegative() ?
-                        t.truth().expectationNeg() : t.truth().expectation())), t);
+                        t.truth().expectationNeg() : t.truth().expectation())), t, s, e);
 
         } else {
             Term r = reifyQuestion(t.term(), t.punc(), self);
             if ((r = validReification(r, volMax)) != null)
-                u = new InperienceTask(r, $.t(1, Math.max(NAL.truth.TRUTH_EPSILON, beliefConf * t.priElseZero())), t);
+                u = new InperienceTask(r, $.t(1, Math.max(NAL.truth.TRUTH_EPSILON, beliefConf * t.priElseZero())), t, s, e);
         }
 
         if (u != null) {
@@ -199,8 +207,9 @@ public class Inperience extends How {
     }
 
     private static final class InperienceTask extends SignalTask {
-        InperienceTask(Term r, Truth tr, Task t) {
-            super(r, Op.BELIEF, tr, t);
+
+        InperienceTask(Term r, Truth tr, Task t, long s, long e) {
+            super(r, Op.BELIEF, tr, t, s, e);
         }
 
         @Override

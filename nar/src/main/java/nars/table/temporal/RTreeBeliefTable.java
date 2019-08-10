@@ -209,11 +209,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long s = a.time.start, e = a.time.end;
         double dur = tableDur((s+e)/2);
 
-        FloatFunction<TaskRegion> rank =
-            //a.beliefStrength(s, e, dur);
-            Answer.regionNearness(s, e, dur);
-
-        HyperIterator.iterate(this, rank, a.tasks.capacity(), a);
+        HyperIterator.iterate(this, Answer.regionNearness(s, e, dur), a.tasks.capacity(), a);
     }
 
     @Override
@@ -360,8 +356,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
-    public void whileEach(long minT, long maxT, Predicate<? super Task> each) {
-        intersectsWhile(new TimeRange(minT, maxT), TaskRegion.asTask(each));
+    public void whileEach(long s, long e, Predicate<? super Task> each) {
+        intersectsWhile(new TimeRange(s, e), TaskRegion.asTask(each));
     }
 
     @Override

@@ -1,7 +1,6 @@
 package nars.sensor;
 
 import com.google.common.collect.Iterables;
-import jcog.Util;
 import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
@@ -25,13 +24,14 @@ import nars.term.atom.Int;
 import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Random;
 
+import static java.lang.Math.max;
+import static jcog.Util.clamp;
 import static nars.Op.BELIEF;
 import static nars.Op.CONJ;
 
@@ -86,11 +86,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         n.start(this);
     }
 
-    @NotNull
-    public AbstractTaskLink newLink() {
-        return this.width > 2 && this.height > 2 ?
-                new ConjunctionSuperPixelTaskLink(2, 2) :
-                new PixelSelectorTaskLink();
+    protected AbstractTaskLink newLink() {
+        return
+                new ConjunctionSuperPixelTaskLink();
+                //new PixelSelectorTaskLink();
     }
 
     public Bitmap2DSensor<P> mode(FloatFloatToObjectFunction<Truth> mode) {
@@ -151,7 +150,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
     private static Term[] zipCoords(Term[] x, Term[] y) {
-        int m = Math.max(x.length, y.length);
+        int m = max(x.length, y.length);
         Term[] r = new Term[m];
         int sx = m - x.length;
         int sy = m - y.length;
@@ -203,13 +202,12 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         double sur = surprise();
         float pri = (float) sur * basePri;
 
-        if (pri > Float.MIN_NORMAL) {
-            @NotNull AbstractTaskLink tl = newLink();
-            tl.priMerge(BELIEF, pri, NAL.tasklinkMerge);
+        AbstractTaskLink tl = newLink();
+        tl.priMerge(BELIEF, pri, NAL.tasklinkMerge);
 //            tl.priMax(QUEST, surprise);
 //            tl.priMax(GOAL, surprise*(1/4f));
-            g.what().link(tl);
-        }
+        g.what().link(tl);
+
     }
 
     public final TaskConcept get(int x, int y) {
@@ -248,11 +246,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
             //random adjacent cell
             Bitmap2DConcepts.PixelSignal ps = (Bitmap2DConcepts.PixelSignal) d.nar.concept(task.term());
             if (ps!=null) {
-                int xx = Util.clamp(ps.x + d.random.nextInt(3) - 1, 0, width-1),
-                        yy = Util.clamp(ps.y + d.random.nextInt(3) - 1, 0, height-1);
+                int xx = clamp(ps.x + d.random.nextInt(3) - 1, 0, width-1),
+                        yy = clamp(ps.y + d.random.nextInt(3) - 1, 0, height-1);
                 return concepts.get(xx, yy).term();
-            }
-            else
+            } else
                 return null;
 //
 //        Term[] nn;
@@ -279,11 +276,10 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
     private class ConjunctionSuperPixelTaskLink extends DynamicTaskLink {
 
-        private final int batchX, batchY;
+        final static int MAX_WIDTH = 2, MAX_HEIGHT = 2;
 
-        ConjunctionSuperPixelTaskLink(int batchX, int batchY) {
+        ConjunctionSuperPixelTaskLink() {
             super(term());
-            this.batchX = batchX; this.batchY = batchY;
         }
 
         @Override
@@ -300,9 +296,11 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
         @Nullable
-        private Term superPixel(Random random) {
-            int px = random.nextInt(concepts.width - batchX);
-            int py = random.nextInt(concepts.height - batchY);
+        private Term superPixel(Random rng) {
+            int batchX = max(rng.nextInt(Math.min(width, MAX_WIDTH)),1),
+                batchY = max(rng.nextInt(Math.min(height, MAX_HEIGHT)), 1);
+            int px = rng.nextInt(concepts.width - batchX);
+            int py = rng.nextInt(concepts.height - batchY);
             TermList subterms = new TermList(batchX * batchY);
             for (int i = px; i < px+batchX; i++) {
                 for (int j = py; j < py+batchY; j++) {
@@ -316,9 +314,5 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         }
 
     }
-   /*private long nextStamp() {
-        return stamp;
-    }*/
-
 
 }

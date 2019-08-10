@@ -15,7 +15,11 @@ public class SignalTask extends TemporalTask implements UnevaluatedTask  {
                 stamp /* TODO use an implementation which doenst need an array for this */);
     }
 
+    public SignalTask(Term r, byte belief, Truth tr, Task copyFrom, long s, long e) {
+        this(r, belief, tr, copyFrom.creation(), s, e, copyFrom.stamp());
+    }
+
     public SignalTask(Term r, byte belief, Truth tr, Task copyFrom) {
-        this(r, belief, tr, copyFrom.creation(), copyFrom.start(), copyFrom.end(), copyFrom.stamp());
+        this(r, belief, tr, copyFrom,  copyFrom.start(), copyFrom.end());
     }
 }

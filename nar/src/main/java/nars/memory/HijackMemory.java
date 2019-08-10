@@ -154,8 +154,9 @@ public class HijackMemory extends Memory {
         if (existing==null || (existing.get()!=value && !(existing.get() instanceof PermanentConcept))) {
 //            remove(key);
             PLink<Concept> inserted = table.put(new PLinkHashCached<>(value, initialTask));
-            if (inserted == null && (inserted!=value && /* other */ value instanceof PermanentConcept)) {
-                throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + inserted + ' ' + value);
+            /* other */
+            if (inserted == null && (value instanceof PermanentConcept)) {
+                throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + null + ' ' + value);
             }
         }
     }

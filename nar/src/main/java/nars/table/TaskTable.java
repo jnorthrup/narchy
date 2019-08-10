@@ -80,7 +80,7 @@ public interface TaskTable {
 
     default Answer matching(long start, long end, @Nullable Term template, Predicate<Task> filter, float dur, NAR nar) {
         boolean beliefOrQuestion = !(this instanceof QuestionTable);
-        assert(beliefOrQuestion);
+//        assert(beliefOrQuestion);
 
         Answer a = Answer.taskStrength(beliefOrQuestion,
             NAL.ANSWER_BELIEF_MATCH_CAPACITY, start, end, template, filter, nar)

@@ -1021,10 +1021,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return this;
     }
 
-    @Override
-    default float expectation() {
-        return Truthed.super.expectation();
-    }
 
     default float expectation(long when, int dur) {
         return expectation(when, when, dur);
