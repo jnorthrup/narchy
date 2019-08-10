@@ -7,7 +7,7 @@
 
 //belief form:
 B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
-B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belief:InductionDD, Time:BeliefRelative)
+B, A, --is(A,"==>") |- polarizeTask(varIntro((polarizeBelief(A) ==> B))), (Belief:InductionDD, Time:BeliefRelative)
 
 //question form:
 //B, A, task("."), --is(A,"==>"), hasBelief() |-          polarizeTask((polarizeBelief(A) ==> B)), (Punctuation:Question, Time:BeliefRelative)
@@ -21,7 +21,7 @@ B, A, --is(A,"==>") |- varIntro(polarizeTask((polarizeBelief(A) ==> B))), (Belie
 
 //belief form:
 B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDD, Time:TaskRelative)
-B, A, --is(B,"==>") |- varIntro(polarizeBelief((polarizeTask(B) ==> A))), (Belief:AbductionDD, Time:TaskRelative)
+B, A, --is(B,"==>") |- polarizeBelief(varIntro((polarizeTask(B) ==> A))), (Belief:AbductionDD, Time:TaskRelative)
 
 //question form:
 //B, A, task("."), --is(B,"==>"), hasBelief() |-          polarizeBelief((polarizeTask(B) ==> A)), (Punctuation:Question, Time:TaskRelative)
@@ -39,16 +39,20 @@ B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBeli
 B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
   B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) || polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
 
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeRandom(B) && polarizeBelief(A)), (Punctuation:AskAsk, Time:Task)
-  B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeRandom(B) || polarizeBelief(A)), (Punctuation:AskAsk, Time:Task)
-B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeRandom(B) && polarizeBelief(A))), (Punctuation:AskAsk, Time:Task)
-  B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeRandom(B) || polarizeBelief(A))), (Punctuation:AskAsk, Time:Task)
+B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeRandom(B) && polarizeBelief(A)), (Punctuation:AskAsk, Time:TaskEvent)
+  B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeRandom(B) || polarizeBelief(A)), (Punctuation:AskAsk, Time:TaskEvent)
+B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeRandom(B) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+  B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeRandom(B) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
 
 //implication question absorber
-(X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) && polarizeBelief(A))), (Punctuation:AskAsk, Time:Task)
-(X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:Task)
-(X==>Y), A, --is(A,"==>")  |-  ((X && polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:Task)
-(X==>Y), A, --is(A,"==>")  |-  ((X || polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:Task)
+(X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+  A, (X==>Y), --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+(X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+  A, (X==>Y), --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+(X==>Y), A, --is(A,"==>")  |-  ((X && polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
+  A, (X==>Y), --is(A,"==>")  |-  ((X && polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
+(X==>Y), A, --is(A,"==>")  |-  ((X || polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
+  A, (X==>Y), --is(A,"==>")  |-  ((X || polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
 
 //question + quest form:
     //B, A, --is(A,"==>"), --is(B,"==>"), task("."), hasBelief()  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:Question, Time:Sequence)
