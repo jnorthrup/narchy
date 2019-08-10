@@ -449,7 +449,7 @@ public class NARio extends GameX {
 
     int lastCoins;
 
-    public final FloatRange MoveRight = new FloatRange(0.75f, 0f, 1f);
+//    public final FloatRange MoveRight = new FloatRange(0.75f, 0f, 1f);
     public final FloatRange EarnCoin = new FloatRange(0.95f, 0f, 1f);
 
     float lastX;

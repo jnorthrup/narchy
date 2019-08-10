@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.pri.ScalarValue;
 import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
@@ -59,13 +58,10 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
 
     @Override
-    @Deprecated public AtomicTaskLink clone(float priNormalize) {
+    public AtomicTaskLink clone() {
         AtomicTaskLink l = new AtomicTaskLink(src, tgt, hash);
         ((AtomicFixedPoint4x16bitVector)l.punc).data(((AtomicFixedPoint4x16bitVector)this.punc).data());
         l.invalidate();
-        float p = l.priElseZero();
-        if (p - priNormalize > ScalarValue.EPSILON)
-            l.priMult(priNormalize /p); //normalize
         return l;
     }
 

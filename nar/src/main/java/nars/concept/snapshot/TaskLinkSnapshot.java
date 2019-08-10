@@ -4,6 +4,7 @@ import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
+import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -42,7 +43,7 @@ public final class TaskLinkSnapshot {
 		for (TaskLink t : items) {
 			Term y = t.other(x, reverse);
 			if (y != null)
-				links.put(t.clone(1));
+				links.put(((AtomicTaskLink)t).clone());
 		}
 	}
 

@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
@@ -63,9 +63,17 @@ public class SectTest {
         assertEquals(t, t);
     }
 
-    @Disabled @Test void factorCommonSect() {
+    @Test void factorCommonSectConj() {
         assertEq("(a-->c)", "((a&b)-->(b&c))");
+        assertEq(True, "(b-->(b&c))");
+        assertEq(False, "(b-->(--b&c))");
+        assertEq(True, "((a&b)-->a)");
+    }
+    @Test void factorCommonSectDisj() {
         assertEq("(a-->c)", "((a|b)-->(b|c))");
+    }
+    @Test void factorCommonSectMix() {
+        //TODO
         //??
         //assertEq("(a-->c)", "((a|b)-->(b&c))");
         //assertEq("(a-->c)", "((a&b)-->(b|c))");

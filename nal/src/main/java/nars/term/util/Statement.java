@@ -1,7 +1,9 @@
 package nars.term.util;
 
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
@@ -12,6 +14,8 @@ import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.time.Tense;
+
+import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.*;
@@ -106,7 +110,7 @@ public class Statement {
 //                    else if (predicate == False)
 //                        return subject.neg();
 //                    else
-                        return Null;
+                    return Null;
 
                 case IMPL: {
                     boolean predXternal = predicate.dt() == XTERNAL;
@@ -145,7 +149,25 @@ public class Statement {
 
             if (!predicate.op().eventable)
                 return Null;
+        }
 
+        if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
+            if (op == INH /*|| op == SIM*/) {
+                boolean sn = subject instanceof Neg;// && !subject.unneg().op().isAny(mobiusExcept);
+                boolean pn = predicate instanceof Neg;// && !predicate.unneg().op().isAny(mobiusExcept);
+
+                if (sn) {
+                    negate = !negate;
+                    subject = subject.unneg();
+                }
+                if (pn) {
+                    negate = !negate;
+                    predicate = predicate.unneg();
+                }
+            }
+        }
+
+        {
 
             //TODO simple case when no CONJ or IMPL are present
 
@@ -167,54 +189,90 @@ public class Statement {
                     //do not reduce
                 } else {
 
-                    int subjRange = subject.eventRange();
-                    long po = subjRange + dt; //predicate occurrence
+                    if (op == IMPL) {
+                        int subjRange = subject.eventRange();
+                        long po = subjRange + dt; //predicate occurrence
 
-                    //subtract any common subject components from predicate
-                    ConjList newPredConj = ConjList.events(predicate, po);
-                    int removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
-                    Term newPred;
-                    switch (removed) {
-                        case -1: return False.negIf(negate);
-                        case +1: newPred = newPredConj.term(B); break;
-                        default: newPred = null; break;
-                    }
+                        //subtract any common subject components from predicate
+                        ConjList newPredConj = ConjList.events(predicate, po);
+                        int removed = newPredConj.removeAll(subject.unneg(), 0, !(subject instanceof Neg));
+                        Term newPred;
+                        switch (removed) {
+                            case -1:
+                                return False.negIf(negate);
+                            case +1:
+                                newPred = newPredConj.term(B);
+                                break;
+                            default:
+                                newPred = null;
+                                break;
+                        }
 
-                    if (newPred!=null && !predicate.equals(newPred)) {
+                        if (newPred != null && !predicate.equals(newPred)) {
 
-                        if (newPred instanceof Bool)
-                            return newPred.negIf(negate); //collapse
+                            if (newPred instanceof Bool)
+                                return newPred.negIf(negate); //collapse
 
 
-                        long shift = newPredConj.shift();
-                        if (shift == ETERNAL) {
-                            //??
-                            dt = 0;
-                        } else {
+                            long shift = newPredConj.shift();
+                            if (shift == ETERNAL) {
+                                //??
+                                dt = 0;
+                            } else {
 //
 
-                            dt = Tense.occToDT(shift - subjRange);
+                                dt = Tense.occToDT(shift - subjRange);
 
-                            if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
-                                //HACK return to dternal
-                                if (newPred instanceof Compound)
-                                    newPred = ((Compound) newPred).dt(DTERNAL, B);
+                                if (newPred.dt() == 0 && predicate.dt() == DTERNAL && predicate.subterms().equals(newPred.subterms())) {
+                                    //HACK return to dternal
+                                    if (newPred instanceof Compound)
+                                        newPred = ((Compound) newPred).dt(DTERNAL, B);
 
+                                }
+                            }
+
+                            if (newPred instanceof Neg) { //attempt to exit infinite loop of negations
+                                newPred = newPred.unneg();
+                                negate = !negate;
+                            }
+
+                            if (!newPred.equals(predicate)) { //HACK check again
+                                return statement(B, IMPL, dt, subject, newPred, depth - 1).negIf(negate); //recurse
+                            }
+
+                        }
+                    } else {
+                        if (subject.dt()==DTERNAL && predicate.dt() == DTERNAL) { //TODO test earlier
+                            //INH,SIM
+                            //TODO swap order for optimal comparison
+                            boolean sc = subject.op() == CONJ;
+                            boolean pc = predicate.op() == CONJ;
+                            if (sc && pc) {
+                                Subterms ssub = subject.subterms();
+                                Subterms psub = predicate.subterms();
+                                Term[] common = ssub.subsIncluding(psub::contains);
+                                if (common != null) {
+                                    int cn = common.length;
+                                    if (cn == ssub.subs() || cn == psub.subs())
+                                        return True; //contained entirely by the other
+                                    Predicate<Term> notCommon = z -> ArrayUtil.indexOf(common, z) == -1;
+                                    subject = CONJ.the(ssub.subsIncluding(notCommon));
+                                    predicate = CONJ.the(psub.subsIncluding(notCommon));
+                                    return statement(B, op, dt, subject, predicate, depth-1);
+                                }
+                            } else if (sc) {
+                                Subterms ssub = subject.subterms();
+                                if (ssub.contains(predicate)) return True;
+                                if (ssub.containsNeg(predicate)) return False;
+                            } else if (pc) {
+                                Subterms psub = predicate.subterms();
+                                if (psub.contains(subject)) return True;
+                                if (psub.containsNeg(subject)) return False;
                             }
                         }
-
-                        if (newPred instanceof Neg) { //attempt to exit infinite loop of negations
-                            newPred = newPred.unneg();
-                            negate = !negate;
-                        }
-
-                        if (!newPred.equals(predicate)) { //HACK check again
-                            return statement(B, IMPL, dt, subject, newPred, depth-1).negIf(negate); //recurse
-                        }
-
                     }
-
                 }
+
             }
 
         }
@@ -242,21 +300,6 @@ public class Statement {
 //            }
 //            }
 
-        if (NAL.term.INH_CLOSED_BOOLEAN_DUALITY_MOBIUS_PARADIGM) {
-            if (op == INH /*|| op == SIM*/) {
-                boolean sn = subject instanceof Neg;// && !subject.unneg().op().isAny(mobiusExcept);
-                boolean pn = predicate instanceof Neg;// && !predicate.unneg().op().isAny(mobiusExcept);
-
-                if (sn) {
-                    negate = !negate;
-                    subject = subject.unneg();
-                }
-                if (pn) {
-                    negate = !negate;
-                    predicate = predicate.unneg();
-                }
-            }
-        }
 
         if ((op != IMPL)
                 //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
