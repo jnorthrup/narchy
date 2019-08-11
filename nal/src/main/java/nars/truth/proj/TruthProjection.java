@@ -83,6 +83,12 @@ abstract public class TruthProjection extends TaskList {
 		dur(dur);
 	}
 
+	public TruthProjection init(Task[] t, int numTasks) {
+		this.items = t;
+		this.size = numTasks;
+		return this;
+	}
+
 	@Nullable
 	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
 		boolean neg = content instanceof Neg;
@@ -258,7 +264,7 @@ abstract public class TruthProjection extends TaskList {
 			return 0;
 		} else {
 			if (count > 1)
-				ArrayUtil.quickSort(0, s, this::eviComparator, this::eviSwapper); //descending
+				ArrayUtil.quickSort(0, s, this::eviComparator, this::swap); //descending
 			return count;
 		}
 	}
@@ -266,7 +272,6 @@ abstract public class TruthProjection extends TaskList {
 	/** removes weakest tasks having overlapping evidence with stronger ones */
 	@Nullable private MetalLongSet filter(int minComponents, boolean shrink, boolean needStamp) {
 
-		MetalBitSet.IntBitSet conflict = new MetalBitSet.IntBitSet(); //max 32
 
 		int activeBefore = active();
 		if (activeBefore < minComponents) {
@@ -281,6 +286,7 @@ abstract public class TruthProjection extends TaskList {
 			Task[] items = this.items;
 
 			int ss = size;
+			MetalBitSet.IntBitSet conflict = new MetalBitSet.IntBitSet(); //max 32
 			for (int i = 0; i < ss-1; i++) { //descending
 
 				double ie = evi[i];
@@ -521,9 +527,11 @@ abstract public class TruthProjection extends TaskList {
 		return Double.compare(evi[b], evi[a]);
 	}
 
-	private void eviSwapper(int a, int b) {
-		ArrayUtil.swapObj(items, a, b);
-		ArrayUtil.swapDouble(evi, a, b);
+	@Override public void swap(int a, int b) {
+		if (a!=b) {
+			ArrayUtil.swapObj(items, a, b);
+			ArrayUtil.swapDouble(evi, a, b);
+		}
 	}
 
 

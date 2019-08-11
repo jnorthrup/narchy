@@ -325,14 +325,14 @@ public final class Answer implements Timed, Predicate<Task> {
 
     @Nullable
     public final TruthProjection truthProjection(boolean forceProject) {
-        int n = tasks.size();
-        if (n == 0) return null;
+        int numTasks = tasks.size();
+        if (numTasks == 0) return null;
 
         long s, e;
         if (forceProject) {
             s = start; e = end;
         } else { s = e = ETERNAL; /* auto */ }
-        return nar.newProjection(s, e, dur).ditherDT(n).add(n, this.tasks.items);
+        return nar.newProjection(s, e, dur).init(this.tasks.items, numTasks);
     }
 
 

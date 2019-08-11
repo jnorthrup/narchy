@@ -950,10 +950,7 @@ public class FasterList<X> extends FastList<X> {
 
     public void swap(int a, int b) {
         if (a != b) {
-            X x = get(a);
-            X y = get(b);
-            set(a, y);
-            set(b, x);
+            ArrayUtil.swapObj(items, a, b);
         }
     }
 

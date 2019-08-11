@@ -85,21 +85,22 @@ class AxialSplitTest {
                 childCount++;
             }
         }
+        assertEquals(2, root.size);
         assertEquals( 2, childCount, "Expected different number of children after split");
 
         {
             RNode<RectDouble> child1 = children[0];
             RectDouble child1Mbr = (RectDouble) child1.bounds();
             RectDouble expectedChild1Mbr = new RectDouble(0, 0, 3, 4);
-            assertEquals(2, child1.size(), "Child 1 size incorrect after split");
+            assertEquals(3, child1.size(), "Child 1 size incorrect after split");
             assertEquals(expectedChild1Mbr, child1Mbr, "Child 1 mbr incorrect after split");
         }
 
         {
             RNode<RectDouble> child2 = children[1];
             RectDouble child2Mbr = (RectDouble) child2.bounds();
-            RectDouble expectedChild2Mbr = new RectDouble(1, 0, 5, 4);
-            assertEquals(3, child2.size(), "Child 2 size incorrect after split");
+            RectDouble expectedChild2Mbr = new RectDouble(2 /*1*/, 0, 5, 4);
+            assertEquals(2, child2.size(), "Child 2 size incorrect after split");
             assertEquals(expectedChild2Mbr, child2Mbr, "Child 2 mbr incorrect after split");
         }
     }

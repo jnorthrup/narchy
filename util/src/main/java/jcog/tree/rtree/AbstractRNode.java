@@ -48,7 +48,7 @@ abstract public class AbstractRNode<V,D> implements RNode<V> {
     }
 
     public final void drainLayer(Consumer each) {
-        int s = size();
+        int s = size;
         for (int i = 0; i < s; i++) {
             Object x = data[i];
 

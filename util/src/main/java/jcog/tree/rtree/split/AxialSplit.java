@@ -81,9 +81,10 @@ public class AxialSplit<X> implements Split<X> {
             );
         }
 
+        int splitN = size/2 + (((size & 1)!=0) ? 1 : 0);
         //TODO if size is odd, maybe l1Node should have the 1 extra element rather than l2Node as this will:
-        final RLeaf<X> l1Node = model.transfer(obj, 0, size/2);
-        final RLeaf<X> l2Node = model.transfer(obj, size / 2, size);
+        final RLeaf<X> l1Node = model.transfer(obj, 0, splitN);
+        final RLeaf<X> l2Node = model.transfer(obj, splitN, size);
 
         //assert (l1Node.size()+l2Node.size() == size);
 

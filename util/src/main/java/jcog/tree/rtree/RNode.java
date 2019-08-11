@@ -75,7 +75,6 @@ public interface RNode<X> extends Nodelike<X> {
      *                  if parent is null, indicates it is in the 'merge attempt' stage
      *                  if parent is non-null, in the 'insertion attempt' stage
      * @param i
-     * @return null if Leaf merged it with existing item
      */
     RNode<X> add(/*@NotNull */  /*@NotNull */RInsertion<X> i);
 

@@ -21,7 +21,7 @@ class ImplicationTest {
 
     private static final Term x = $.the("x"), y = $.the("y");
     private static final boolean[] B = new boolean[]{true, false};
-    private static final int CYCLES = 50;
+    private static final int CYCLES = 150;
     private static final int TERM_VOL_MAX = 5;
 
     private static void assertContains(String oo, String c) {

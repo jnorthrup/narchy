@@ -71,6 +71,11 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     }
 
     @Override
+    public final Stream<RNode<X>> streamNodesRecursively() {
+        return Stream.of(this);
+    }
+
+    @Override
     public Iterator<X> iterateValues() {
         return iterateLocal();
     }
@@ -101,6 +106,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     public RNode<X> add(/*@NotNull*/RInsertion<X> x) {
         int s = size;
         if (s > 0 && x.maybeContainedBy(bounds)) {
+            X[] data = this.data;
             for (int i = 0; i < s; i++) {
                 X y = data[i];
                 if (y == x.x) {
@@ -207,7 +213,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
         final int size = this.size;
-        if (size > 1 && !bounds().contains(xBounds))
+        if (size > 1 && !bounds.contains(xBounds))
             return this; //not found
 
         X[] data = this.data;

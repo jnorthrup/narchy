@@ -2,7 +2,6 @@ package nars.table.temporal;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
-import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
@@ -30,7 +29,7 @@ import static nars.truth.proj.TruthIntegration.eviFast;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
 
     static FloatFunction<RLeaf<TaskRegion>> WeakestTemporallyDense(long now) { return (n) -> {
         long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
@@ -77,7 +76,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<TaskRegion> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
         if (next instanceof RLeaf) {
 
             RLeaf l = (RLeaf) next;
@@ -121,28 +120,31 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long now = remember.nar.time();
         long tableDur = tableDur(now);
 
-		Top<Task> weakest = new Top<>(new FurthestWeakest(now, tableDur));
+        Top<TaskRegion> weakest = new Top<>(new FurthestWeakest(now, tableDur));
 
-		Top<RLeaf<TaskRegion>> weakestLeaf = new Top<>(WeakestTemporallyDense(now));
+		Top<RLeaf<TaskRegion>> weakestLeaf = new Top<>(
+		    //WeakestTemporallyDense(now)
+            l -> -(float) ((1+l.bounds.range(0)) * (l.bounds.coord(2,true))) //weakest
+        );
 
         return !findEvictable(tree, tree.root(), weakest, weakestLeaf)
                 ||
-               mergeOrDelete(tree, weakest, weakestLeaf, remember, tableDur);
+               mergeOrDelete(tree, weakest, weakestLeaf, remember);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
-                                         Top<Task> theWeakest,
+                                         Top<TaskRegion> theWeakest,
                                          Top<RLeaf<TaskRegion>> mergeableLeaf,
-                                         Remember r, long tableDur) {
+                                         Remember r) {
 
-        Task weakest = theWeakest.get();
+        Task weakest = (Task) theWeakest.get();
         TruthProjection merging = null;
         Task merged = null;
 
         if (!mergeableLeaf.isEmpty()) {
             Pair<Task, TruthProjection> AB = mergeLeaf(mergeableLeaf, r);
             if (AB != null) {
-                if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), tableDur, r))
+                if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), r))
                     merged = null;
             }
         }
@@ -160,11 +162,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
     }
 
-    private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, long tableDur, Remember r) {
+    private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
         long now = r.nar.time();
-        long a = now - tableDur/2, b = now + tableDur / 2;
-        double weakEvictionValue = -eviFast(weakest, a, b);
-        double mergeValue = eviFast(merged, a, b) - merging.sumOfDouble((Task t) -> eviFast(t, a, b));
+        double weakEvictionValue = -eviFast(weakest, now);
+        double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
 
         return mergeValue > weakEvictionValue;
     }
@@ -207,7 +208,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return;
 
         long s = a.start, e = a.end;
-        double dur = tableDur((s+e)/2);
+//        double dur = tableDur(s==ETERNAL ?
+//            a.time() :
+//            (s+e)/2);
+        double dur = a.dur;
 
         HyperIterator.iterate(this, Answer.regionNearness(s, e, dur), a.tasks.capacity(), a);
     }
@@ -250,13 +254,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         /** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
          *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */
-        TaskInsertion insertion = writeWith(r, (treeRW, R) -> {
-            TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
-            if (ii.added()) {
-                ensureCapacity(treeRW, R);
-            }
-            return ii;
-        });
+        TaskInsertion insertion = writeWith(r, this::insert);
 
         Task mergeReplaced = (Task) insertion.mergeReplaced;
         if (mergeReplaced != null && mergeReplaced != input) {
@@ -270,6 +268,20 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             onReject(input);
             r.forget(input);
         }
+
+//        //TEMPORARY for debug
+//        ListMultimap<String, Task> xx = MultimapBuilder.hashKeys().arrayListValues().build();
+//        taskStream().forEach(x -> xx.put(x.toString(), x));
+//        for (String s : xx.keys()) {
+//            List<Task> ll = xx.get(s);
+//            if (ll.size() > 1) {
+//                Set<LongArraySet> stamps = new HashSet();
+//                for (Task lll : ll)
+//                    stamps.add(new LongArraySet(lll.stamp()));
+//                if (stamps.size() < ll.size())
+//                    Util.nop();
+//            }
+//        }
 
 
     }
@@ -337,7 +349,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (s == 0) {
             return Task.EmptyArray;
         } else {
-            FasterList<Task> l = new FasterList(s);
+            FasterList<Task> l = new FasterList<>(s+1);
             forEachTask(l::add);
             return l.toArrayRecycled(Task[]::new);
         }
@@ -406,8 +418,16 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         return (TaskRegion) root().bounds();
     }
 
+    private TaskInsertion insert(Space<TaskRegion> treeRW, Remember R) {
+        TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
+        if (ii.added()) {
+            ensureCapacity(treeRW, R);
+        }
+        return ii;
+    }
 
-    static final class FurthestWeakest implements FloatFunction<Task> {
+
+    static final class FurthestWeakest implements FloatFunction<TaskRegion> {
 
         public final long now;
 		public final double dur;
@@ -418,10 +438,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public float floatValueOf(Task t) {
+        public float floatValueOf(TaskRegion t) {
             return -Answer.beliefStrength(t, now, dur);
         }
-
     }
 
 
@@ -469,31 +488,23 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                         } else if (Longerval.contains(is, ie, es, ee)) {
                             return in;
                         } else {
-                            if (LongInterval.intersects(is, ie, es, ee)) {
-                                long[] u = Longerval.unionArray(is, ie, es, ee);
-                                return Task.clone(ex, ex.term(), t, ex.punc(), u[0], u[1]);
-                            }
+                            //assert(mergeCanStretch());
+//                            if (LongInterval.intersects(is, ie, es, ee)) {
+//                                long[] u = Longerval.unionArray(is, ie, es, ee);
+//                                return Task.clone(ex, ex.term(), t, ex.punc(), u[0], u[1]);
+//                            }
                         }
                     }
                 }
 
-                //does this produce inconsistent results because conf bounds change?
-
-//                        if (Util.equals(et.freq(), it.freq(), Param.truth.TRUTH_EPSILON)) {
-//                            float ete = et.conf(), ite = it.conf();
-//                            if (ete >= ite && ee.containsRaw((LongInterval)ii)) {
-//                                m = ee;
-//                            } else if (ite >= ete && ii.containsRaw((LongInterval)ee)) {
-//                                m = ii;
-//                            }
-//                        }
 
             }
             return null;
         }
 
         public boolean mergeCanStretch() {
-            return true;
+            return false;
+            //return true;
         }
 
 

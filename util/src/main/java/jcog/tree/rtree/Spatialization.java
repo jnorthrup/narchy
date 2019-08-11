@@ -18,6 +18,8 @@ public class Spatialization<X> {
 
     private final Split<X> split;
     private final Function<X, HyperRegion> bounds;
+
+    /** leaf/branch capacity */
     public final short max;       
 
 
@@ -108,20 +110,20 @@ public class Spatialization<X> {
     @Deprecated public enum DefaultSplits {
         AXIAL {
             @Override
-            public <T> Split<T> get() {
-                return new AxialSplit<>();
+            public Split get() {
+                return AxialSplit.the;
             }
         },
         LINEAR {
             @Override
-            public <T> Split<T> get() {
-                return new LinearSplit<>();
+            public Split get() {
+                return LinearSplit.the;
             }
         },
         QUADRATIC {
             @Override
             public <T> Split<T> get() {
-                return new QuadraticSplit<>();
+                return new QuadraticSplit<>(); //TODO .the
             }
         };
 

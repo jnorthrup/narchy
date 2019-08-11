@@ -182,7 +182,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength
      *  this determines the importance of time vs. evidence in determining task strength across time
      *  */
-    public static final double TEMPORAL_BELIEF_TABLE_DUR_SCALE = 1;
+    public static final double TEMPORAL_BELIEF_TABLE_DUR_SCALE = 0.5;
 
     /**
      * enables higher-order (recursive) implication statements

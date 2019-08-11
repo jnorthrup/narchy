@@ -162,7 +162,28 @@ public enum ArrayUtil {
     private static final byte[] BYTE_NEGONE_NEGONE = new byte[] { -1, -1 };
     private static final byte[] BYTE_NEGONE_NEGTWO = new byte[] { -1, -2 };
 
-    /**
+
+    public static void sortNullsToEnd(Object[] x) {
+        Arrays.sort(x, NullCompactingComparator);
+    }
+
+	public static final Comparator NullCompactingComparator = (o1, o2) -> {
+		if (o1 == o2) {
+			return 0;
+		}
+		if (o1 == null) {
+			return 1;
+		}
+		if (o2 == null) {
+			return -1;
+		}
+		return Integer.compare(
+				System.identityHashCode(o1),
+				System.identityHashCode(o2)
+		);
+	};
+
+	/**
      * <p>Shallow clones an array returning a typecast result and handling
      * {@code null}.
      *

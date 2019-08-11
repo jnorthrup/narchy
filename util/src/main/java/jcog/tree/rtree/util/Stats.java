@@ -139,4 +139,8 @@ public class Stats {
                 ", leavesAtDepth=" + Arrays.toString(leavesAtDepth) +
                 '}';
     }
+
+    public final void print() {
+        print(System.out);
+    }
 }

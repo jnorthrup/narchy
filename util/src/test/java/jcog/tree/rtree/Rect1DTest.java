@@ -34,8 +34,7 @@ class Rect1DTest {
         final int entryCount = 20;
 
         
-            RTree<Double> t = new RTree<>((x) -> new RectDouble1D.DefaultRect1D(x, x), 3,
-                    new LinearSplit<>());
+            RTree<Double> t = new RTree<>(x -> new RectDouble1D.DefaultRect1D(x, x), 3, new LinearSplit<>());
             for (int i = 0; i < entryCount; i++) {
                 t.add((double)(i*i));
             }

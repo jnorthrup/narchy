@@ -262,9 +262,16 @@ public class RTree<X> implements Space<X> {
     }
 
     @Override
-    public HyperRegion bounds(X x) {
+    public final HyperRegion bounds(X x) {
         return model.bounds(x);
     }
 
+
+    public final Stream<RNode<X>> streamNodes() {
+        return root().streamNodes();
+    }
+    public final Stream<RNode<X>> streamNodesRecursively() {
+        return root().streamNodesRecursively();
+    }
 
 }

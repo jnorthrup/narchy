@@ -24,9 +24,10 @@ package jcog.tree.rtree;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
 import jcog.Util;
-import jcog.WTF;
+import jcog.data.list.FasterList;
 import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
+import jcog.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -197,142 +198,153 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Override
     public RNode<X> remove(final X x, HyperRegion xBounds, Spatialization<X> model, int[] removed) {
 
-        if (size > 1 && !bounds().contains(xBounds))
+        int nsize = this.size;
+        if (nsize > 1 && !bounds.contains(xBounds))
             return this; //not here
 
-        int nsize = this.size;
+        RNode<X>[] data = this.data;
         for (int i = 0; i < nsize; i++) {
             RNode<X> nBefore = data[i];
 
-            int rBefore = removed[0];
+//            int rBefore = removed[0];
 
             @Nullable RNode<X> nAfter = nBefore.remove(x, xBounds, model, removed);
 
-            if (removed[0] == rBefore) {
-                //assert (nAfter == nBefore);
-            } else {
+//            int rAfter = removed[0];
+//            if (nAfter!=null && nAfter.size()==0)
+//                throw new WTF();
 
-                if (size == 1) {
-                    bounds = null;
-                    data[i] = null;
-                    size = 0;
-                    return nAfter; //reduce to one
-                }
+            if (nAfter!=nBefore) {
+                data[i] = nAfter;
 
-                {
-
-                    data[i] = nAfter;
-
-                    if (nAfter == null) {
-                        //TODO the case where pen-ultimate item is removed then it's a 1-cell copy from last to last-1
-                        if (i < --size) {
-                            arraycopy(data, i+1, data, i, size-i);
-                            data[size] = null;
-                            //Arrays.sort(data, NullCompactingComparator);
-                        }
+                if (nAfter == null) {
+                    --size;
+                    if (size == 0) {
+                        //emptied
+                        return null;
+                    } else if (size == 1) {
+                        //return the only remaining item
+                        RNode<X> only = firstNonNull();
+                        size = 0;
+                        return only;
                     }
 
-//                    //EXPERIMENTAL
-//                    if (model.mergeCanStretch() &&
-//                            size > 1
-//                            && Util.and(l ->l instanceof RLeaf ,0, size, data))
-//                        return reinsert(model, removed);
-                }
-
-                switch (size) {
-                    case 0:
-                        bounds = null;
-                        return null; //gone
-                    case 1:
-                        bounds = null;
-                        return data[0]; //reduce to only leaf
-                    default: {
-                        //TODO possibly rebalance
-
-//                                if (Util.and((Node z) -> z instanceof Leaf, data)) {
-//                                    int values = Util.sum((ToIntFunction<Node>) Node::size, data);
-//                                    if (values <= model.max) {
-//                                        Leaf<X> compacted = model.newLeaf();
-//                                        int p = 0;
-//                                        for (int k = 0, dataLength = size(); k < dataLength; k++) {
-//                                            Node<X> z = data[k];
-//                                            X[] data1 = ((Leaf<X>) z).data;
-//                                            for (int j = 0, data1Length = z.size(); j < data1Length; j++) {
-//                                                X zz = data1[j];
-//                                                compacted.data[p++] = zz;
-//                                                compacted.grow(model.bounds(zz));
-//                                            }
-//                                        }
-//                                        compacted.size = (short) p;
-//                                        return compacted;
-//                                    }
-//                                }
-
-
-                        updateBounds();
-                        return this;
-//                            }
-
+                    //sort nulls to end
+                    if (i < size) {
+                        arraycopy(data, i+1, data, i, size-i);
+                        data[size] = null;
                     }
-
                 }
 
+                if (nAfter instanceof RLeaf) {
+                    RNode<X> next = consolidate(model, removed);
+                    if (next != null)
+                        return next;
+                }
+
+                updateBounds();
+                return this;
             }
         }
 
         return this;
     }
 
-    private RNode<X> reinsert(Spatialization<X> model, int[] removed) {
-//        RNode<X>[] d = data.clone();
-//        Arrays.fill(data, null);
-//        size = 0;
-        RNode<X> t = null;
+    private RNode<X> firstNonNull() {
+        for (RNode d : data) {
+            if (d!=null)
+                return d;
+        }
+        throw new UnsupportedOperationException();
+    }
 
-        Iterator<X> v = iterateValues();
-        while (v.hasNext()) {
-            X x = v.next();
-            /*parent.  ? */
+    /** consolidate under-capacity leafs by reinserting
+     * @return*/
+    private RNode<X> consolidate(Spatialization<X> model, int[] removed) {
+        int childItems = 0, leafs = 0;
+        for (RNode<X> x : data) {
+            if (x == null) break;
+            if (!(x instanceof RLeaf)) continue;
+            short ls = ((RLeaf<X>) x).size;
+            childItems += ls;
+            leafs++;
+        }
+        if (childItems <=1 || leafs <= 1 || (childItems > (leafs - 1) * model.max)) {
+            return null;
+        }
 
-            if (t == null) {
-                t = model.newLeaf();
-                ((RLeaf)t).data[0] = x;  //HACK
-                ((RLeaf)t).size = 1; //HACK
-                ((RLeaf)t).bounds = model.bounds(x);
-            } else {
-                RInsertion reinsertion = new RInsertion(x, true, model);
-                RNode u = t.add(reinsertion);
-                boolean merged = reinsertion.merged();
-                if (merged)
-                    removed[0]++;
-                else {
-
-                    if (!((reinsertion.added() && u != null) ))
-                        throw new WTF("unable to add");
-
-                    if (!reinsertion.added()/* && !reinsertion.merged*/) {
-//                            if (Sets.newHashSet((Iterator<X>) t.iterateValues()).contains(x)) { //HACK
-//                                //throw new WTF("added() value is incorrect because ");
-//                            } else {
-////                            //TEMPORARY for DEBUG
-////                            RInsertion reinsertion2 = new RInsertion(x, true, model);
-////                            /*parent.  ? */
-////                            RNode u2 = t.add(reinsertion);
-                        //     throw new WTF("unable to add");
-//                            }
-                    }
-//                        assert (reinsertion.added());
-                    t = u;
-                }
-
-            }
-
-
+        FasterList<X> xx = new FasterList<>(childItems);
+        for (int i = 0, dataLength = data.length; i < dataLength; i++) {
+            RNode<X> x = data[i];
+            if (x == null) break;
+            if (!(x instanceof RLeaf)) continue;
+            x.forEach(xx::addWithoutResize);
+            data[i] = null;
+            size--;
+        }
+        RNode<X> target;
+        if (size == 0) {
+            bounds = null;
+            target = model.newLeaf();
+        } else if (size == 1) {
+            target = firstNonNull();
+            size = 0;
+        } else {
+            ArrayUtil.sortNullsToEnd(data);
+            updateBounds();
+            target = this;
         }
 
 
-        //return ArrayUtil.equalsIdentity(data, t.data) ? this : t;
-        return t;
+        for (X xxx : xx) {
+            target = reinsert(xxx, target, model, removed);
+        }
+        return target;
+
+    }
+
+//    private RNode<X> reinsert(Spatialization<X> model, int[] removed) {
+////        RNode<X>[] d = data.clone();
+////        Arrays.fill(data, null);
+////        size = 0;
+//        RNode<X> t = null;
+//
+//        Iterator<X> v = iterateValues();
+//        while (v.hasNext()) {
+//            X x = v.next();
+//            /*parent.  ? */
+//
+//            if (t == null) {
+//                t = model.newLeaf();
+//                ((RLeaf)t).data[0] = x;  //HACK
+//                ((RLeaf)t).size = 1; //HACK
+//                ((RLeaf)t).bounds = model.bounds(x);
+//            } else {
+//                t = reinsert(x, t, model, removed);
+//            }
+//
+//
+//        }
+//
+//
+//        //return ArrayUtil.equalsIdentity(data, t.data) ? this : t;
+//        return t;
+//    }
+
+    private static <X> RNode<X> reinsert(X x, RNode<X> target, Spatialization<X> model, int[] removed) {
+        RInsertion<X> reinsertion = new RInsertion<>(x, true, model);
+        RNode<X> u = target.add(reinsertion);
+        boolean merged = reinsertion.merged();
+        if (merged)
+            removed[0]++;
+        else {
+            assert(reinsertion.added());
+        }
+//            if (!((reinsertion.added() && u != null) ))
+//                throw new WTF("unable to add");
+        if (u!=null) //HACK
+            target = u;
+        return target;
     }
 
     private void updateBounds() {
@@ -551,21 +563,5 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         return "Branch" + '{' + bounds + 'x' + size + ":\n\t" + Joiner.on("\n\t").skipNulls().join(data) + "\n}";
     }
 
-
-//    private static final Comparator NullCompactingComparator = (o1, o2) -> {
-//        if (o1 == o2) {
-//            return 0;
-//        }
-//        if (o1 == null) {
-//            return 1;
-//        }
-//        if (o2 == null) {
-//            return -1;
-//        }
-//        return Integer.compare(
-//                System.identityHashCode(o1),
-//                System.identityHashCode(o2)
-//        );
-//    };
 
 }

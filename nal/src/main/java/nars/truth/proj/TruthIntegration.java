@@ -66,6 +66,10 @@ public class TruthIntegration {
 			tEvi * Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd));
 	}
 
+	public static double eviFast(Task t, long now) {
+		return t.evi() * t.range() / (1 + t.maxTimeTo(now));
+	}
+
 	private static double eviIntegrate(double evi, float dur, long qs, long qe, long ts, long te) {
 
 		EvidenceEvaluator e = EvidenceEvaluator.of(ts, te, evi, dur);
