@@ -180,7 +180,7 @@ public enum Tense {
 
         for (Iterator<? extends TaskRegion> it = t; it.hasNext(); ) {
             TaskRegion x = it.next();
-            if (x == null) continue;
+            //if (x == null) continue;
             long xs = x.start();
             if (xs != ETERNAL) {
                 start = Math.min(xs, start);

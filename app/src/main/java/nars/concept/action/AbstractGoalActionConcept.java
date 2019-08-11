@@ -19,6 +19,7 @@ import nars.task.util.series.RingBufferTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.time.Tense;
+import nars.time.When;
 import nars.truth.Truth;
 import nars.truth.proj.TruthProjection;
 import org.jetbrains.annotations.Nullable;
@@ -131,24 +132,21 @@ public class AbstractGoalActionConcept extends GameAction {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, long now, float dur, NAR n) {
+    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<NAR> g) {
         BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
 
-
-        float sensitivityRange = 1;
-
-        //long s = Math.round(now - dur/2 * sensitivityRange), e = Math.round(now + dur/2 * sensitivityRange);
-        long s = Math.round(now - dur * sensitivityRange), e = now;
 
         if (!tables.isEmpty()) {
 //            int dither = n.dtDither.intValue();
 
             int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
+            float dur = g.dur;
+            long s = g.start, e = g.end;
             Answer a = Answer.taskStrength(true, limit, s, e, term,
                     //withoutCuriosity
                     null
-                    , n).dur(dur);
+                    , g.x).dur(dur);
 //            for (int iter = 0; iter < 1; iter++) {
 //
 //
@@ -201,7 +199,7 @@ public class AbstractGoalActionConcept extends GameAction {
 //                }
 
 
-                TruthProjection p = a.truthProjection();
+                TruthProjection p = a.truthProjection(true);
                 return p;
 //
 //                if (atl!=null) {
@@ -235,22 +233,15 @@ public class AbstractGoalActionConcept extends GameAction {
 
     @Override
     public void update( Game g) {
-        long now = g.now;
-
-        updateCuriosity(g.curiosity);
-
-        NAR n = g.nar();
-        float gameDur =
-                //0;
-                g.dur();
-                //g.durPhysical();
 
         int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY; //high sensitivity
         int limitGoal = limitBelief * 2;
 
-        this.beliefTruth = truth(truth(true, limitBelief, now, gameDur, n));
+        this.beliefTruth = truth(truth(true, limitBelief, g.when));
 
-        this.actionTruth = actionTruth(limitGoal, now, gameDur, g);
+        updateCuriosity(g.curiosity);
+
+        this.actionTruth = actionTruth(limitGoal, g);
 
     }
 
@@ -258,12 +249,12 @@ public class AbstractGoalActionConcept extends GameAction {
         return t!=null ? t.truth(NAL.truth.EVI_MIN, false, false, null) : null;
     }
 
-    private Truth actionTruth(int limit, long now, float gameDur, Game g) {
+    private Truth actionTruth(int limit, Game g) {
 
 
         NAR n = g.nar;
-        Truth actionTruth;
-        TruthProjection gt = truth(false, limit, now, gameDur, n);
+
+        TruthProjection gt = truth(false, limit, g.when);
 
         Truth nextActionDex = truth(gt);
         actionDex = nextActionDex;
@@ -271,12 +262,12 @@ public class AbstractGoalActionConcept extends GameAction {
         if (nextActionDex != null)
             lastNonNullActionDex = actionDex;
 
-
-        long s = Math.round(now - gameDur), e = now;
-
         Truth actionCuri = curiosity.curiosity(this);
 
-        Curiosity.CuriosityInjection curiosityInject = null;
+        long s = g.when.start, e = g.when.end;
+        float dur = g.when.dur;
+
+        Curiosity.CuriosityInjection curiosityInject;
         if (actionCuri != null) {
             curiosityInject = Curiosity.CuriosityInjection.Override;
 
@@ -295,7 +286,7 @@ public class AbstractGoalActionConcept extends GameAction {
                 if (curiosity.goal.getOpaque()) {
                     long lastCuriosity = curiosityTable.end();
                     long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-                    long curiEnd = Math.round(curiStart + gameDur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
+                    long curiEnd = Math.round(curiStart + dur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
 
                     long[] se = Tense.dither(new long[] { curiStart, curiEnd }, n);
                     curiStart = se[0];
@@ -314,7 +305,7 @@ public class AbstractGoalActionConcept extends GameAction {
             //use existing curiosity
             Answer a = Answer.
 				taskStrength(true, 2, s, e, term, null, n)
-                    .dur(gameDur)
+                    .dur(dur)
                     .match(curiosityTable);
             actionCuri = a.truth();
         }
@@ -343,7 +334,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
         f = g.dither(f, this);
 
-        ((SensorBeliefTables) beliefs()).input(f, g.now, attn::pri, cause, g.durPhysical(), g.what(), true);
+        ((SensorBeliefTables) beliefs()).input(f, attn::pri, cause, g.what(), g.when,true);
     }
 
 

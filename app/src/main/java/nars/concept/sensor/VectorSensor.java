@@ -116,7 +116,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
         for (Signal s : this) {
             s.resolution().set(res);
             //if (quality >= 1 || rng.nextFloat() < quality )
-                s.update(truther, aPri, cause, g);
+            s.update(truther, aPri, cause, g);
         }
     }
 

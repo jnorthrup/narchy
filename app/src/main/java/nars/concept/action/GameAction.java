@@ -23,13 +23,6 @@ public abstract class GameAction extends TaskConcept implements GameLoop, Perman
     public final AttnBranch attn;
     private final FloatRange res;
 
-    protected GameAction(Term term, NAR n) {
-        this(term,
-                new SensorBeliefTables(term, true),
-                new RTreeBeliefTable(),
-                n);
-    }
-
     protected GameAction(Term term, BeliefTable beliefs, BeliefTable goals, NAR n) {
         super(term, beliefs, goals, n.conceptBuilder);
 

@@ -2114,6 +2114,7 @@ public enum Util {
                 return true;
         return false;
     }
+
     public static <X> boolean and(X[] xx, Predicate<X> p) {
         return and(p, 0, xx.length, xx);
     }

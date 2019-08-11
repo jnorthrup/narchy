@@ -52,9 +52,8 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
     @Override
     public void update(Game g) {
-        long prev = g.prev, now = g.now;
 
-        int d = decide(prev, now);
+        int d = decide(g.when.start, g.when.end);
 
         if (d!=-1 && action.test(d))
             value.set((d +0.5f)/exp.length);

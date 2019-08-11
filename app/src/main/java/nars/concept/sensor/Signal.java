@@ -89,14 +89,11 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
         float nextValue = (currentValue = nextValue());
 
-        Truth nextTruth = nextValue == nextValue ? truther.value(prevValue, nextValue) : null;
-
         ((SensorBeliefTables) beliefs()).input(
-                g.dither(nextTruth, this),
-                g.now,
+                nextValue == nextValue ?
+                    g.dither(truther.value(prevValue, nextValue), this) : null,
                 pri, cause,
-                g.durPhysical(),
-                g.what(), autoTaskLink());
+                g.what(), g.when, autoTaskLink());
     }
 
     abstract public float nextValue();
@@ -108,8 +105,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
     @Override
     public void update(Game g) {
-        NAR nar = g.nar();
-        update((tp, tn) -> $.t(Util.unitize(tn), nar.confDefault(BELIEF)), this::pri, cause(), g);
+        update((tp, tn) -> $.t(Util.unitize(tn), g.nar().confDefault(BELIEF)), this::pri, cause(), g);
     }
 
     abstract public short[] cause();

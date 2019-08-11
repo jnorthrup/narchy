@@ -443,7 +443,7 @@ class DynamicConjTest {
         for (String s : new String[] { "(x &&+1 x)", "(x &&+- x)"}){
             Term xyz = $(s);
             Task t = n.answerBelief(xyz, 0, 2);
-            assertNotNull(t);
+            assertNotNull(t, ()->s + " -> null");
             assertEq("x", t.term());
             assertEquals(0.75f, t.freq(), 0.05f);
             assertEquals(0.94f, t.conf(), 0.1f);

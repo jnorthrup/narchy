@@ -26,8 +26,6 @@ public class When<X> extends TimeRange {
         super(start, end);
         assert(dur>=0);
 
-
-
         this.dur = dur;
         this.x = x;
     }

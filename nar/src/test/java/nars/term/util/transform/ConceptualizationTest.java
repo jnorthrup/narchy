@@ -125,23 +125,23 @@ class ConceptualizationTest {
     }
     @Test void ConceptualizeNAL3() {
         //direct inh subterm
-        assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").root());
-        assertEq("(x-->(a&&b))", $$("(x-->(a&&b))").concept());
+        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").root());
+        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").concept());
 
         assertEq(//TODO "(x-->(a||b))",
-                "(--,(x-->((--,a)&&(--,b))))",
+                "(--,(x-->((--,a) &&+- (--,b))))",
                 $$("(x-->(a||b))").root());
         assertEq(//TODO "(x-->(a||b))",
-                "(x-->((--,a)&&(--,b)))",
+                "(x-->((--,a) &&+- (--,b)))",
                 $$("(x-->(a||b))").concept());
 
 
-        assertEq("(x-->(&&,a,b,c))", $$("(x-->(&&,a,b,c))").root());
+        assertEq("(x-->( &&+- ,a,b,c))", $$("(x-->(&&,a,b,c))").root());
 
         //direct sim subterm
-        assertEq("((a&&b)<->x)", $$("(x<->(a&&b))").root());
-        assertEq("((a&&b)<->x)", $$("(x<->(a&&b))").concept());
-        assertEq("((a&&b)<->(c&&d))", $$("((c&&d)<->(a&&b))").root());
+        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").root());
+        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").concept());
+        assertEq("((a &&+- b)<->(c &&+- d))", $$("((c&&d)<->(a&&b))").root());
     }
 
 

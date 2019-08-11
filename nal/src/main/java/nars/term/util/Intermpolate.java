@@ -219,7 +219,8 @@ public enum Intermpolate {;
         if (as.equals(bs)) {
             dSubterms = 0;
         } else {
-            if (a.op()==CONJ) {
+            Op aop = a.op();
+            if (aop ==CONJ) {
                 return dtDiffSeq((Compound)a, (Compound)b, depth);
             } else {
                 dSubterms = dtDiff(as, bs, depth);

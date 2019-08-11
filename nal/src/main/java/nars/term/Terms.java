@@ -18,13 +18,11 @@ import nars.unify.constraint.NotEqualConstraint;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Random;
-import java.util.SortedSet;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -506,11 +504,11 @@ public enum Terms {
 		if (!Term.commonStructure(x.structure() & ~(Op.CONJ.bit), y.structure() & ~(Op.CONJ.bit)))
 			return false;
 
-//		if (yc && y.op() == CONJ) {
-//			return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
-//		} else if (xc && x.op() == CONJ) {
-//			return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
-//		} else
+		if (yc && y.op() == CONJ) {
+			return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
+		} else if (xc && x.op() == CONJ) {
+			return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
+		} else
 		    {
 
                 int av = x.volume(), bv = y.volume();
@@ -544,33 +542,37 @@ public enum Terms {
 		if (a instanceof Term && a.equals(b))
 			return (Term) a;
 
-		if (Term.commonStructure(a, b)) {
-
-			TreeSet<Term> ab = a.collect(b.subs() > 3 ? (b.toSet()::contains) : b::contains, new TreeSet());
-			int ssi = ab == null ? 0 : ab.size();
-			switch (ssi) {
-				case 0:
-					return Null;
-				case 1:
-					return ab.first();
-				default:
-					return o.the(ab);
-			}
-
-		} else
+		if (!Term.commonStructure(a, b))
 			return Null;
+
+
+		TreeSet<Term> ab = a.collect(b.subs() > 3 ? b.toSet()::contains : b::contains, new TreeSet());
+		int ssi = ab == null ? 0 : ab.size();
+		switch (ssi) {
+			case 0:
+				return Null;
+			case 1:
+				return ab.first();
+			default:
+				return o.the(ab);
+		}
+
+
 	}
 
 	public static Term union(/*@NotNull*/ Op o, Subterms a, Subterms b) {
+		if (a == b)
+			return a instanceof Term && ((Term)a).op()==o ? (Term)a : o.the(a);
+
 		boolean bothTerms = a instanceof Term && b instanceof Term;
 		if (bothTerms && a.equals(b))
 			return (Term) a;
 
-		TreeSet<Term> t = new TreeSet<>();
+		int as = a.subs(), bs = b.subs();
+		Set<Term> t = new UnifiedSet<>(as+bs);
 		a.addAllTo(t);
 		b.addAllTo(t);
 		if (bothTerms) {
-			int as = a.subs(), bs = b.subs();
 			int maxSize = Math.max(as, bs);
 			if (t.size() == maxSize) {
 				return (Term) (as > bs ? a : b);

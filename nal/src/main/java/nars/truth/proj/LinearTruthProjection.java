@@ -38,10 +38,9 @@ public class LinearTruthProjection extends TruthProjection {
 
 
             double e = evi[i];
-            if (e != e)
+            if (e != e || e <= Double.MIN_NORMAL)
                 continue;
 
-            eSum += e;
 
             //float w = e;
             //e * Math.abs(f-0.5f)*2f; /* polarity weighting */
@@ -50,8 +49,9 @@ public class LinearTruthProjection extends TruthProjection {
             //wSum += w;
 
             Task x = items[i];
-            if (x == null)
-                continue;
+//            if (x == null)
+//                continue;
+            eSum += e;
             double f = x.freq(start, end);
             wFreqSum += e * f;
 //            if (f >= 0.5f) wFreqPos += w * (1-f)*2; else wFreqNeg += w * (0.5 - f)*2;

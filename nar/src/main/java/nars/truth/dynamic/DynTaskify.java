@@ -137,18 +137,16 @@ public class DynTaskify extends TaskList {
                 if (s == LongInterval.ETERNAL) {
                     e = LongInterval.ETERNAL;
                 } else {
-                    long range = (minValue(t -> t.isEternal() ? 0 : t.range()-1));
+                    long range = minValue(t -> t.isEternal() ? 0 : t.range()-1);
                     e = s + range;
                 }
 
             } else {
 
                 long[] u = Tense.union(0, this);
-//                if (u == null)
-//                    return null;
-
                 s = u[0];
                 e = u[1];
+//                s = e = ETERNAL;
 
             }
 

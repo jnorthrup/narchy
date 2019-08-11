@@ -34,6 +34,7 @@ import java.io.IOException;
 
 import static jcog.WTF.WTF;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 import static nars.truth.func.TruthFunctions.*;
 
 
@@ -191,7 +192,7 @@ public interface Truth extends Truthed {
                 }
                 return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b) ? a : b;
             } else {
-                if (s == ETERNAL)
+                if (s == TIMELESS || s == ETERNAL)
                     return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
                 else
                     return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b, s, e, 0) ? a : b;

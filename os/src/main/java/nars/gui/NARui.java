@@ -666,17 +666,6 @@ public class NARui {
                 float b = (x.priPunc(QUESTION) + x.priPunc(QUEST)) / 2;
                 return Draw.rgbInt(r, g, b);
 
-//                    float h;
-//                    switch (x.puncMax()) {
-//                        case BELIEF: h = 0; break;
-//                        case QUESTION: h = 0.25f; break;
-//                        case GOAL: h = 0.5f; break;
-//                        case QUEST: h = 0.75f; break;
-//                        default:
-//                            return Draw.rgbInt(0.5f, 0.5f, 0.5f);
-//                    }
-//
-//                    return Draw.colorHSB(h, 0.75f, 0.25f + 0.75f * x.priElseZero());
 
             };
 

@@ -15,7 +15,6 @@ import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
-import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.action.GameAction;
 import nars.concept.sensor.GameLoop;
@@ -24,6 +23,7 @@ import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.time.Tense;
+import nars.time.When;
 import nars.truth.Truth;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -111,9 +111,9 @@ public class RLBooster  {
         this.history = history > 1 ? new TensorRing(inD, history) : new ArrayTensor(inD);
         this.agent = agent.apply(inD * history, outD);
 
-        actionFeedback(g.time()); //init
+        actionFeedback(g.when); //init
 
-        g.onFrame(()->accept(g.what()));
+        g.onFrame(()->accept(g));
     }
 
     public int actions() {
@@ -183,7 +183,7 @@ public class RLBooster  {
 
     final FloatNormalizer HAPPINESS = new FloatNormalizer();
 
-    public void accept(What w) {
+    public void accept(Game g) {
         NAR nar = env.nar();
 
         double reward = ((HAPPINESS.valueOf(env.happiness() ) - 0.5f) * 2);
@@ -195,18 +195,12 @@ public class RLBooster  {
 //        long end = env.now(); //+ dur/2;
 //        //HACK
 //        int dur = nar.dur();
-        long now = env.now;
-
-        int dtDither = nar.dtDither();
-        long start = Tense.dither(now, dtDither, -1);
-        long end = Tense.dither(Math.round(now + env.durPhysical()), dtDither, +1);
-
-        if (end < start)
-            return;
 //        long start = now - dur/2;
 //        long end = now + dur/2;
 
 
+        long start = g.when.start;
+        long end = g.when.end;
         float[] ii = input(start, end);
         _in = ii;
         if (history instanceof TensorRing) {
@@ -215,7 +209,7 @@ public class RLBooster  {
             ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
         }
 
-        int a = agent.act(actionFeedback(now), (float) reward, Util.toFloat(history.doubleArray()));
+        int a = agent.act(actionFeedback(g.when), (float) reward, Util.toFloat(history.doubleArray()));
         int buttons = (actionDiscretization-1)*actions.length;
         if (a >= buttons) {
             //nothing action, or otherwise beyond range of action buttons
@@ -252,18 +246,18 @@ public class RLBooster  {
             if (freq==freq) {
                 Truth t = $.t(freq, conf);
                 Task tt =
-                    new SignalTask(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
+                    new SignalTask(actions[o].term(), GOAL, t, start, start, end, new long[]{nar.time.nextStamp()});
                 //NALTask.the(actions[o].term(), GOAL, t, now, start, end, new long[]{nar.time.nextStamp()});
                 tt.pri(nar.priDefault(GOAL));
                 e.add(tt);
             }
         }
 
-        in.acceptAll(e, w);
+        in.acceptAll(e, g.what());
     }
 
-    public float[] actionFeedback(long now) {
-        return actionFeedback = feedback(env.prev, now, actionFeedback);
+    public float[] actionFeedback(When when) {
+        return actionFeedback = feedback(when.start, when.end, actionFeedback);
     }
 
 

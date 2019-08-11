@@ -15,7 +15,7 @@ public class ActionTiming implements TimeFocus {
 
     public final FloatRange focusDurs = new FloatRange(1, 0, 32);
 
-    public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
 
 
 

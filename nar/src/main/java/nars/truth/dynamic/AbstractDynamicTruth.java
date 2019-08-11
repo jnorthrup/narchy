@@ -42,8 +42,9 @@ abstract public class AbstractDynamicTruth {
 
     /** default subconcept Task resolver */
     public Task subTask(TaskConcept subConcept, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
-        BeliefTable table = (BeliefTable) subConcept.table(d.beliefOrGoal ? BELIEF : GOAL);
-        return subTask(table, subTerm, subStart, subEnd, filter, d);
+        return subTask(
+            (BeliefTable) subConcept.table(d.beliefOrGoal ? BELIEF : GOAL),
+            subTerm, subStart, subEnd, filter, d);
     }
 
     public Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
@@ -70,7 +71,7 @@ abstract public class AbstractDynamicTruth {
     }
 
     public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> table(AbstractDynamicTruth... models) {
-        return (Term t, boolean beliefOrGoal) ->
+        return (t, beliefOrGoal) ->
                 Util.map(m -> new DynamicTruthTable(t, m, beliefOrGoal), new BeliefTable[models.length], models);
     }
 

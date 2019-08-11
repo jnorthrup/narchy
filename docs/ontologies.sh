@@ -7,10 +7,8 @@ wget "http://schema.org/version/latest/all-layers.nq" -O nquad
 
 echo 'Downloading NASA Sweet...'
 rm -Rf sweet
-wget https://sweet.jpl.nasa.gov/sites/default/files/2.3.zip
-unzip 2.3.zip
-rm 2.3.zip
-mv 2.3 sweet
+#wget https://sweet.jpl.nasa.gov/sites/default/files/2.3.zip
+git clone --depth 1 https://github.com/ESIPFed/sweet
 cd sweet
 for f in *.owl; do
 rapper $f -o nquads > $f.nquad

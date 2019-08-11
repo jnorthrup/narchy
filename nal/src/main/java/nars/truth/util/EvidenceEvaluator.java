@@ -30,8 +30,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
          */
         public final double evi;
 
-        public TemporalPointEvidenceEvaluator(long s, double evi) {
-
+        TemporalPointEvidenceEvaluator(long s, double evi) {
             this.s = s;
             this.evi = evi;
         }

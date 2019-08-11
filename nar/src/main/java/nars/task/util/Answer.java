@@ -21,6 +21,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -277,28 +278,40 @@ public final class Answer implements Timed, Predicate<Task> {
 
         ditherTruth(ditherTruth); //enable/disable truth dithering
 
-        long ss = time.start, ee = time.end;
+
 
         Task root = tasks.first();
-        Task t = s == 1 ? root : merge(topOrSample, forceProject, root, ss, ee);
+        Task t = s == 1 ? root : merge(topOrSample, forceProject, root);
 
         double eviMin = eviMin();
         if (t.evi() < eviMin)
             return null;
 
-        if (forceProject && ss!=ETERNAL) //dont bother sub-projecting eternal here.
-            t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
+        //dont bother sub-projecting eternal here.
+        if (forceProject) {
+            long ss = time.start;
+            if (ss != ETERNAL) {
+                long ee = time.end;
+                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
+            }
+        }
 
         return t;
     }
 
-    private Task merge(boolean topOrSample, boolean forceProject, Task root, long ss, long ee) {
+    private Task merge(boolean topOrSample, boolean forceProject, Task root) {
         Task t;
         if (topOrSample) {
             //compare alternate roots, as they might match better with tasks below
             switch (root.punc()) {
                 case BELIEF:
                 case GOAL: {
+                    long ss, ee;
+                    if (forceProject) {
+                        ss = time.start; ee = time.end;
+                    } else {
+                        ss = ee = TIMELESS; /*auto*/
+                    }
                     t = Truth.stronger(newTask(root.isBelief(),forceProject), root, ss, ee);
                     break;
                 }
@@ -320,7 +333,7 @@ public final class Answer implements Timed, Predicate<Task> {
             return tasks.get(0);
         }
 
-        TruthProjection tp = truthProjection();
+        TruthProjection tp = truthProjection(forceProject);
         return tp!=null ? tp.newTask(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar) : null;
     }
 
@@ -333,7 +346,7 @@ public final class Answer implements Timed, Predicate<Task> {
      */
     @Nullable
     public Truth truth() {
-        TruthProjection tp = truthProjection();
+        TruthProjection tp = truthProjection(true);
         if (tp != null) {
             assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
@@ -344,10 +357,15 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     @Nullable
-    public final TruthProjection truthProjection() {
+    public final TruthProjection truthProjection(boolean forceProject) {
         int n = tasks.size();
-        return n == 0 ? null :
-            nar.newProjection(time.start, time.end, dur).ditherDT(n).add(n, this.tasks.items);
+        if (n == 0) return null;
+
+        long s, e;
+        if (forceProject) {
+            s = time.start; e = time.end;
+        } else { s = e = ETERNAL; /* auto */ }
+        return nar.newProjection(s, e, dur).ditherDT(n).add(n, this.tasks.items);
     }
 
 

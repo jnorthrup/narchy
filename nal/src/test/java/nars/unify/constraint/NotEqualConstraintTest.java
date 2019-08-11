@@ -18,6 +18,8 @@ class NotEqualConstraintTest {
         assertEqRCom("(left&&rotate)", "((--,left)&&(--,rotate))");
         assertEqRCom("(--left&&rotate)", "((--,left)&&(--,rotate))");
         assertEqRCom("(--left && --rotate)", "((--,left)&&(--,rotate))");
+        assertEqRCom("x", "(x&&y)");
+        assertEqRCom("--x", "(--x&&y)");
     }
 
     static void assertEqRCom(String a, String b) {

@@ -766,6 +766,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             //result = new EvidenceEvaluator.EternalEvidenceEvaluator(ee);
             return ee;
         else {
+            assert(when!=ETERNAL);
             return EvidenceEvaluator.of(s, end(), ee, dur, when);
         }
     }

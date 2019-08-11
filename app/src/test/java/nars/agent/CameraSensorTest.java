@@ -116,9 +116,7 @@ public class CameraSensorTest {
         public MyGame(NAR n) {
             super("tmp", n);
         }
-        public void prev(long l) {
-            prev = l;
-        }
+
         public void now(long l) {
             now = l;
         }

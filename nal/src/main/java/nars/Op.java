@@ -281,8 +281,8 @@ public enum Op {
      */
     public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
     public static final Predicate<Term> statementLoopyContainer = x -> !x.op().isAny(
-        //Op.PROD.bit
-        Op.PROD.bit | Op.CONJ.bit
+        Op.PROD.bit
+        //Op.PROD.bit | Op.CONJ.bit
         //Op.PROD.bit | Op.INH.bit | Op.SIM.bit | Op.IMPL.bit
 
     );

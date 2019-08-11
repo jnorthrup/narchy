@@ -14,6 +14,7 @@ import jcog.math.FloatSupplier;
 import jcog.thing.Part;
 import jcog.util.ArrayUtil;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
@@ -29,6 +30,8 @@ import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
+import nars.time.When;
 import nars.truth.Truth;
 import nars.util.Timed;
 import org.jetbrains.annotations.Nullable;
@@ -86,10 +89,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final Term id;
 
-    public volatile long prev = ETERNAL;
-    public volatile long now = ETERNAL;
-    public volatile long next = ETERNAL;
 
+    public volatile long now = ETERNAL;
+
+
+    public When<NAR> when = null;
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -134,7 +138,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         this.sensorPri = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.And,
             pri, nar.beliefPriDefault);
         this.rewardPri = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.And,
-            pri); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
+            pri, nar.goalPriDefault
+            ); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
         add(time.clock(this));
     }
@@ -484,24 +489,18 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             }
             if (now <= prev)
                 return; //too early
-
-
-            long idealPrev = time.prev(now);
-            if (now <= idealPrev)
-                return; //too early
-
-//            prev = Math.max(prev, idealPrev); //assume up to one frame behind
-
-            long next =
-                    //(Math.max(now, frameTrigger.next(now)), d);
-                    Math.max(now, time.next(now));
-
-            //assert (prev < now && now < next);
-            this.prev = prev;
             this.now = now;
-            this.next = next;
+
+            time.next(now);
 
 //            System.out.println(this + " "  + state().toString() + " " + (now - prev));
+
+            float dur = durPhysical();
+            long lastEnd = when!=null ? when.end : Math.round(now-dur/2);
+            int dither = nar.dtDither();
+            long nextStart = Math.max(lastEnd+1, Tense.dither((long)Math.floor(now - dur/2), dither, -1));
+            long nextEnd = Math.max(nextStart+1, Tense.dither(Math.round(Math.ceil(now + dur/2)), dither, +1));
+            this.when = new When<>(nextStart, nextEnd, dur, nar);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 
@@ -533,6 +532,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private transient float _freqRes = Float.NaN, _confRes = Float.NaN;
 
     protected void sense() {
+
         _freqRes = nar.freqResolution.floatValue();
         _confRes = nar.confResolution.floatValue();
 

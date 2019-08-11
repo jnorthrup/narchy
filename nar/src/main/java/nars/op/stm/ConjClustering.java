@@ -229,12 +229,10 @@ public class ConjClustering extends How implements Consumer<Task> {
 
     /** called from one thread at a time */
     public void learn() {
-        long now = nar.time();
-        long before = this.now;
+        now = nar.time();
 
         if (now - lastLearn >= minDurationsPerLearning* nar.dur()) {
-            if (before < now)
-                _update(now);
+            _update(now);
 
             data.learn(forgetRate(), learningIterations);
             lastLearn = now;

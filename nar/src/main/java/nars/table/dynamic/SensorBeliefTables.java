@@ -19,6 +19,7 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.term.Term;
 import nars.time.Tense;
+import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -85,39 +86,27 @@ public class SensorBeliefTables extends BeliefTables {
         if (seriesEnd == Tense.TIMELESS)
             seriesEnd = seriesStart;
 
-        int cleanMargin = cleanMarginCycles(r.nar);
+        int cleanMargin = 0; //cleanMarginCycles(r.nar);
         long ss = seriesStart + cleanMargin;
 
         long ee = seriesEnd - cleanMargin;
         return ss < ee && series.absorbNonSignal(r.input, ss, ee);
     }
 
-    public SeriesTask update(Truth value, long now, short[] cause, float dur, What w) {
-        NAR n = w.nar;
+    @Deprecated static protected int cleanMarginCycles(float dur) {
+        return Math.round(NAL.signal.CLEAN_MARGIN_DURS * dur);
+    }
 
-        SeriesTask x =
-            add(value,
-                    now,
-                series.term, series.punc(),
-                dur,
-                n);
+    public void input(Truth value, FloatSupplier pri, short[] cause, What what, When<NAR> when, @Deprecated boolean link) {
+        NAR n = what.nar;
 
-        if (x!=null) {
-            series.clean(this, cleanMarginCycles(n), n);
+        SeriesTask x = add(value, when);
+
+        if (x !=null) {
+            series.clean(this, cleanMarginCycles(when.dur), n);
             x.cause(cause);
+            remember(x, what, pri, link, when.dur);
         }
-        return x;
-    }
-
-    protected int cleanMarginCycles(NAR n) {
-        return Math.round(NAL.signal.CLEAN_MARGIN_DURS * n.dur());
-    }
-
-    public void input(Truth value, long now, FloatSupplier pri, short[] cause, float dur, What w, @Deprecated boolean link) {
-        SeriesTask x = update(value, now, cause, dur, w);
-
-        if(x!=null)
-            remember(x, w, pri, link, dur);
 
         this.current = x;
     }
@@ -126,25 +115,26 @@ public class SensorBeliefTables extends BeliefTables {
 
     /** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
      *             the interface itself (ex: clock rate) */
-    private SeriesTask add(@Nullable Truth next, long now, Term term, byte punc, float dur, NAL nar) {
+    private SeriesTask add(@Nullable Truth next, When<NAR> when) {
 
+        long nextStart = when.start;
+        long nextEnd = when.end;
 
         AbstractTaskSeries<SeriesTask> series = this.series.series;
 
         SeriesTask nextT = null, last = series.last();
         long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
-        long nextStart = Math.max(lastEnd+1, Math.round(now - dur/2));
-        long nextEnd = Math.max(now, nextStart); //Math.max(nextStart+1, Math.round( now + dur/2));
         if (last != null) {
             long lastStart = last.start();
-            if (lastEnd > now)
-                return null; //too soon, does this happen?
+//            if (lastEnd > now)
+//                return null; //too soon, does this happen?
 
-            long gapCycles = (now - lastEnd);
+            long gapCycles = (nextStart - lastEnd);
+            float dur = when.dur;
             if (gapCycles <= series.latchDurs() * dur) {
 
                 if (next!=null) {
-                    long stretchCycles = (now - lastStart);
+                    long stretchCycles = (nextStart - lastStart);
                     boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
                     if (stretchable) {
                         if (last.truth().equals(next)) {
@@ -179,7 +169,9 @@ public class SensorBeliefTables extends BeliefTables {
 
         if (next != null) {
 //                System.out.println("new " + now + " .. " + nextEnd + " (" + (nextEnd - now) + " cycles)");
-            this.series.add(nextT = newTask(term, punc, nextStart, nextEnd, next, nar));
+
+            this.series.add(nextT =
+                newTask(this.series.term, this.series.punc(), nextStart, nextEnd, next, when.x));
         }
 
         return nextT;

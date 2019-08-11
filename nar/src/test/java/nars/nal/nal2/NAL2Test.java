@@ -15,7 +15,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL2Test extends NALTest {
 
-    private static final int cycles = 500;
+    private static final int cycles = 200;
 
 
     @Override
@@ -92,8 +92,9 @@ public class NAL2Test extends NALTest {
     void setDefinition4() {
 
         TestNAR tester = test;
+
         tester.termVolMax(5);
-        tester.nar.confMin.set(0.9);
+        tester.confMin(0.8f);
         tester.believe("<[bright] <-> [smart]>");
         tester.mustBelieve(cycles, "<bright <-> smart>", 1.0f, 0.9f);
         tester.mustBelieve(cycles, "<[bright] --> [smart]>", 1.0f, 0.9f);
