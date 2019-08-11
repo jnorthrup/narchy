@@ -78,14 +78,14 @@ public class EternalDefaultTable extends DynamicTaskTable {
     @Override
     public void match(Answer a) {
         boolean weak = (strong==this.weak);
-        boolean ae = a.time.start == ETERNAL;
+        boolean ae = a.start == ETERNAL;
         if (ae) {
 //            if (!applyEternal)
 //                return;
         } else {
             long now = a.nar.time();
             float dur = a.dur;
-            if (a.time.end >= now-dur/2 ) {
+            if (a.end >= now-dur/2.0 ) {
                 weak = true;
 
             }
@@ -95,7 +95,7 @@ public class EternalDefaultTable extends DynamicTaskTable {
 
         if (!weak) {
             for (Task x : a.tasks)
-                if (x instanceof SeriesBeliefTable.SeriesTask && a.time.intersects /*contains*/((LongInterval) x)) {
+                if (x instanceof SeriesBeliefTable.SeriesTask && x.intersects(a.start, a.end)) {
                     weak = true;
                     break;
                 }

@@ -206,7 +206,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (isEmpty())
             return;
 
-        long s = a.time.start, e = a.time.end;
+        long s = a.start, e = a.end;
         double dur = tableDur((s+e)/2);
 
         HyperIterator.iterate(this, Answer.regionNearness(s, e, dur), a.tasks.capacity(), a);

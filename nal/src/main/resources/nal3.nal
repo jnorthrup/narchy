@@ -5,11 +5,10 @@
 //  corresponds to extensional union, and extensional intersection corresponds
 //  to intensional union.
 
-(M --> P), (M --> S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),  polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
-(M --> P), (M --> S), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),  polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
-(P --> M), (S --> M), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),  polarizeBelief(S)) --> M), (Punctuation:AskAll, Time:Compose)
-(P --> M), (S --> M), neqRCom(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),  polarizeBelief(S)) --> M), (Punctuation:AskAll, Time:Compose)
-        //neqRoot
+(M --> P), (M --> S), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,  S)), (Punctuation:AskAll, Time:Compose)
+(M --> P), (M --> S), notSetsOrDifferentSets(S,P) |- (M --> unionSect(P,  S)), (Punctuation:AskAll, Time:Compose)
+(P --> M), (S --> M), notSetsOrDifferentSets(S,P) |- (interSect(P,  S) --> M), (Punctuation:AskAll, Time:Compose)
+(P --> M), (S --> M), notSetsOrDifferentSets(S,P) |- (unionSect(P,  S) --> M), (Punctuation:AskAll, Time:Compose)
 
 
     //(P --> M), (S --> M), --isVar(M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:IntersectionDepolarized, Time:Compose)

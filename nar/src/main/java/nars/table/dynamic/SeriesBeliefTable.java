@@ -44,28 +44,28 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     @Override
     public final void match(Answer a) {
-        long s = a.time.start, e;
+        long s = a.start, e;
 
-        float dur = a.dur;
-        if (a.time.start == ETERNAL) {
+        double dur = a.dur;
+        if (s == ETERNAL) {
             //choose now as the default focus time
             long now = a.nar.time();
-            s = Math.round(now - dur/2);
-            e = Math.round(now + dur/2);
+            s = Math.round(Math.floor(now - dur/2));
+            e = Math.round(Math.ceil(now + dur/2));
         } else {
-            e = a.time.end;
+            e = a.end;
         }
 
         int aTTL = a.ttl; //save
-        {
-            //use at most a specific fraction of the TTL
-            int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1f, dur) * (e - s))));
-            a.ttl = seriesTTL;
-            series.whileEach(s, e, false, a);
-            int ttlUsed = seriesTTL - a.ttl;
-            aTTL -= ttlUsed;
-        }
-        a.ttl = aTTL; //restore
+
+        //use at most a specific fraction of the TTL
+        int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
+            NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * (e - s))));
+        a.ttl = seriesTTL;
+        series.whileEach(s, e, false, a);
+        int ttlUsed = seriesTTL - a.ttl;
+
+        a.ttl = aTTL - ttlUsed; //restore
     }
 
 

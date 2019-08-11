@@ -91,12 +91,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 12;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 8;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 1.5f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = true;
@@ -219,6 +219,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** seems safe and will reduce equivalent permutations cluttering tasklink bags */
     public static final boolean TASKLINK_NORMALIZE_IMAGES = true;
 
+    /** relative time when the desire is actually read (ex: half duration ago), in order to determine feedback in the present frame  */
+    public static final float ACTION_DESIRE_SHIFT_DUR =
+        0.5f;
+        //1f;
 
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;

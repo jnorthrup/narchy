@@ -251,23 +251,28 @@ public class Statement {
                                 Subterms ssub = subject.subterms();
                                 Subterms psub = predicate.subterms();
                                 Term[] common = ssub.subsIncluding(psub::contains);
-                                if (common != null) {
+                                if (common != null && common.length > 0) {
                                     int cn = common.length;
-                                    if (cn == ssub.subs() || cn == psub.subs())
-                                        return True; //contained entirely by the other
-                                    Predicate<Term> notCommon = z -> ArrayUtil.indexOf(common, z) == -1;
+                                    if (cn == ssub.subs() || cn == psub.subs()) {
+                                        //contained entirely by the other
+                                        //True; //TODO negate
+                                        return Null;
+                                    }
+                                    Predicate<Term> notCommon = common.length > 1 ? z -> ArrayUtil.indexOf(common, z) == -1 : z -> !common[0].equals(z);
                                     subject = CONJ.the(ssub.subsIncluding(notCommon));
                                     predicate = CONJ.the(psub.subsIncluding(notCommon));
                                     return statement(B, op, dt, subject, predicate, depth-1);
                                 }
                             } else if (sc) {
                                 Subterms ssub = subject.subterms();
-                                if (ssub.contains(predicate)) return True;
-                                if (ssub.containsNeg(predicate)) return False;
+//                                if (ssub.contains(predicate)) return True; //TODO negate
+//                                if (ssub.containsNeg(predicate)) return False; //TODO negate
+                                if (ssub.containsPosOrNeg(predicate)) return Null;
                             } else if (pc) {
                                 Subterms psub = predicate.subterms();
-                                if (psub.contains(subject)) return True;
-                                if (psub.containsNeg(subject)) return False;
+                                //if (psub.contains(subject)) return True; //TODO negate
+                                //if (psub.containsNeg(subject)) return False; //TODO negate
+                                if (psub.containsPosOrNeg(subject)) return Null;
                             }
                         }
                     }

@@ -29,14 +29,14 @@ import static nars.time.Tense.TIMELESS;
  */
 public final class Answer implements Timed, Predicate<Task> {
 
-
-
     public final NAR nar;
 
     @Nullable private Term term = null;
 
     public final RankedN<Task> tasks;
-    public TimeRangeFilter time;
+
+    public long start = ETERNAL, end = ETERNAL;
+
     public final Predicate<Task> filter;
 
     public boolean ditherTruth = false;
@@ -63,8 +63,7 @@ public final class Answer implements Timed, Predicate<Task> {
      */
     private Answer(FloatRank<Task> rank, @Nullable Predicate<Task> filter, int capacity, NAR nar) {
         this.nar = nar;
-        this.tasks = //TopN.pooled(topTasks, capacity, this.rank = rank.filter(filter));
-                new RankedN<>(new Task[capacity], rank.filter(filter));
+        this.tasks = new RankedN<>(new Task[capacity], rank.filter(filter));
         this.filter = filter;
     }
 
@@ -76,38 +75,6 @@ public final class Answer implements Timed, Predicate<Task> {
         if (b == null) return a;
         return x -> a.test(x) && b.test(x);
     }
-
-//    public static FloatFunction<Task> taskStrengthWithFutureBoost(long now, long futureThresh, float presentAndFutureBoost, int dur) {
-//        float pastDiscount = 1f - (presentAndFutureBoost - 1f);
-//        return (Task x) -> {
-//            float evi =
-//                    //x.evi(now, dur, min);
-//                    x.evi(); //avg
-//
-//            //long e = x.end();
-//            //long range = (e - x.start());
-//            //float adjRange = (1 + range) / (1f + max(0, (x.maxTimeTo(now) - range / 2f))); //proportional to max time distance. so it can't constantly grow and maintain same strength
-//            return (e < futureThresh ? pastDiscount : 1f) *
-//                    //evi * range;
-//                    //evi;
-//                    //x.evi(now, dur) * (1 + (e-s)/2f)/*x.range()*/;
-//                    //evi * x.originality();
-//                    //evi * x.originality() * range;
-//                    evi
-//                    * adjRange
-//                    //* (1f/(1+x.term().volume())) //TODO only if table for temporable concept
-//                    //* x.originality()
-//                    ;
-//        };
-//
-//        //(TruthIntegration.eviAvg(x, 0))/ (1 + x.maxTimeTo(now)/((float)dur));
-//        ///w2cSafe(TruthIntegration.evi(x));
-//        //w2cSafe(TruthIntegration.evi(x)) / (1 + x.midTimeTo(now)/((float)dur));
-//        //w2cSafe(x.evi(now, dur));
-//        //(x.evi(now, dur)) * x.range();
-//        //w2cSafe(x.evi(now, dur)) * (float)Math.log(x.range());
-////        };
-//    }
 
 
     /** for use only in temporal belief tables; eternal tasks not supported since i dont know how to directly compare them with temporals for the purposes of this interface */
@@ -289,9 +256,9 @@ public final class Answer implements Timed, Predicate<Task> {
 
         //dont bother sub-projecting eternal here.
         if (forceProject) {
-            long ss = time.start;
+            long ss = start;
             if (ss != ETERNAL) {
-                long ee = time.end;
+                long ee = end;
                 t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
             }
         }
@@ -308,7 +275,7 @@ public final class Answer implements Timed, Predicate<Task> {
                 case GOAL: {
                     long ss, ee;
                     if (forceProject) {
-                        ss = time.start; ee = time.end;
+                        ss = start; ee = end;
                     } else {
                         ss = ee = TIMELESS; /*auto*/
                     }
@@ -363,7 +330,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
         long s, e;
         if (forceProject) {
-            s = time.start; e = time.end;
+            s = start; e = end;
         } else { s = e = ETERNAL; /* auto */ }
         return nar.newProjection(s, e, dur).ditherDT(n).add(n, this.tasks.items);
     }
@@ -373,13 +340,6 @@ public final class Answer implements Timed, Predicate<Task> {
         t.match(this);
         return this;
     }
-
-
-    public Answer time(TimeRangeFilter time) {
-        this.time = time;
-        return this;
-    }
-
 
     public final boolean isEmpty() {
         return tasks.isEmpty();
@@ -395,18 +355,14 @@ public final class Answer implements Timed, Predicate<Task> {
      * a false return value should signal a stop to any iteration supplying results
      */
     public final boolean test(Task t) {
-        assert (t != null);
-        if (time.accept(t)) {
-            int remain = --ttl;
-            if (remain >= 0) {
-                if (filter == null || filter.test(t)) {
-                    tasks.add(t);
-                }
+        //assert (t != null);
+        int remain = --ttl;
+        if (remain >= 0) {
+            if (filter == null || filter.test(t)) {
+                tasks.add(t);
             }
-            return remain > 0;
-        } else {
-            return true;
         }
+        return remain > 0;
     }
 
     @Override
@@ -436,10 +392,9 @@ public final class Answer implements Timed, Predicate<Task> {
                 end = se[1];
             }
         }
-        return time(TimeRangeFilter.the(start, end,
-                TimeRangeFilter.Mode.Near
-                //start!=ETERNAL && dur == 0 ? TimeRangeFilter.Mode.Intersects : TimeRangeFilter.Mode.Near
-        ));
+        this.start = start;
+        this.end = end;
+        return this;
     }
 
     public Answer dur(float dur) {

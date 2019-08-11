@@ -21,13 +21,13 @@ import static nars.truth.func.TruthFunctions2.weak;
  */
 public enum NALTruth implements TruthFunction {
 
-	@AllowOverlap Deduction() {
+	Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.deduction(T, B, true, minConf);
         }
     },
-	@AllowOverlap DeductionWeak() {
+	DeductionWeak() {
 		@Override
 		public Truth apply(Truth T, Truth B, float minConf, NAL n) {
 			return TruthFunctions.deduction(T, B, false, minConf);
@@ -42,14 +42,14 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    @AllowOverlap Post() {
+    Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);
         }
     },
 
-    @AllowOverlap PostWeak() {
+    PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, false, minConf);
@@ -386,7 +386,7 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    @AllowOverlap Desire() {
+    Desire() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(T, B, minConf, false,true);
@@ -406,7 +406,8 @@ public enum NALTruth implements TruthFunction {
 //            return TruthFunctions2.desire(B, T, minConf, false,true);
 //        }
 //    },
-    @AllowOverlap DesireReverseWeak() {
+    /** TODO use correct 'Desire__X' func */
+    @Deprecated DesireReverseWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.desire(B, T, minConf, false,false);
@@ -430,13 +431,13 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    /** bipolar form of desire - belief truth can invert goal truth */
-    Need() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.desire(T, B, minConf, true,true);
-        }
-    },
+//    /** bipolar form of desire - belief truth can invert goal truth */
+//    Need() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.desire(T, B, minConf, true,true);
+//        }
+//    },
 
 
 //    @SinglePremise @AllowOverlap Curiosity() {

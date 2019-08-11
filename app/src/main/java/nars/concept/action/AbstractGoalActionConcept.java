@@ -132,102 +132,26 @@ public class AbstractGoalActionConcept extends GameAction {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<NAR> g) {
-        BeliefTable tables = (beliefsOrGoals ? beliefs() : goals());
+    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<NAR> g, int shift) {
+        BeliefTable t = (beliefsOrGoals ? beliefs() : goals());
 
+        if (t.isEmpty())
+            return null;
 
-        if (!tables.isEmpty()) {
-//            int dither = n.dtDither.intValue();
+        int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
-            int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
+        float dur = g.dur;
+        long s = g.start+shift, e = g.end+shift;
+        Answer a = Answer.taskStrength(true, limit, s, e, term,
+                withoutCuriosity
+                //null
+                , g.x).dur(dur);
 
-            float dur = g.dur;
-            long s = g.start, e = g.end;
-            Answer a = Answer.taskStrength(true, limit, s, e, term,
-                    //withoutCuriosity
-                    null
-                    , g.x).dur(dur);
-//            for (int iter = 0; iter < 1; iter++) {
-//
-//
-//                switch (iter) {
-//                    case 0:
-//                        //duration-precision window
-//                        s = now - gameDur / 2;
-//                        e = now + gameDur / 2;
-//                        //s = now - Math.max(narDur, agentDur);
-//                        //e = now;
-//                        //e = now;
-//                        break;
-//                    case 1:
-//                    default:
+        a.clear(tries).time(s, e);
 
-                        //s = now - Math.max(narDur, agentDur)*2;
-                        //e = now;
-                        //e = now;
-//                        break;
-////                    default:
-////                        //frame-precision window
-////                        int frameDur = Tense.occToDT(now - prev);
-////                        int dn = 3;
-////                        //s = (long) (now - Math.max(narDur*dn/2f, frameDur/2));
-////                        //e = (long) (now + Math.max(narDur*dn/2f, frameDur/2));
-////                        s = now - Math.max(narDur * dn, frameDur);
-////                        e = now; //now + Math.max(dur * 2, 0);
-////                        break;
-//
-//                }
+        t.match(a);
 
-//                //shift forward to include some immediate future desire as part of present moment desire
-//                int shift =
-//                        0;
-//                        //dither/2;
-//                        //Math.max(dither/2, narDur/2);
-//
-//                s += shift;
-//                e += shift;
-
-                a.clear(tries).time(s, e);
-
-                a.ttl = tries;
-                tables.match(a);
-//                for (BeliefTable table : (BeliefTables)tables) {
-//                    if (table!=curiosityTable) {
-//                        a.ttl = tries;
-//                        a.match(table);
-//                    }
-//                }
-
-
-                TruthProjection p = a.truthProjection(true);
-                return p;
-//
-//                if (atl!=null) {
-//
-//                    TruthProjection p =
-//                            new LinearTruthProjection(a.time.start, a.time.end, dur);
-//                            //new FocusingLinearTruthProjection(a.time.start, a.time.end, dur);
-//                    p.addAll(atl);
-//
-//                    //Truth next = nextP.truth(NAL.truth.EVI_MIN, false, true, n);
-//                    //if (next!=null) {
-//                    return p;
-//                    //}
-//                }
-                //TODO my truthpolation .stamp()'s and .cause()'s for clues
-
-//                if ((next = Truth.stronger(a.truth(), next))!=next) {
-//                    ss = s;
-//                    ee = e;
-//                }
-
-                //HACK
-//                if (next!=null)
-//                    break; //early finish on first non-null
-            }
-//        }
-
-        return null;
+        return a.truthProjection(true);
     }
 
 
@@ -237,11 +161,14 @@ public class AbstractGoalActionConcept extends GameAction {
         int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY; //high sensitivity
         int limitGoal = limitBelief * 2;
 
-        this.beliefTruth = truth(truth(true, limitBelief, g.when));
+
+        int perceptShift = Math.round((int)(g.when.end - g.when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+
+        this.beliefTruth = truth(truth(true, limitBelief, g.when, perceptShift));
 
         updateCuriosity(g.curiosity);
 
-        this.actionTruth = actionTruth(limitGoal, g);
+        this.actionTruth = actionTruth(limitGoal, g, perceptShift);
 
     }
 
@@ -249,12 +176,9 @@ public class AbstractGoalActionConcept extends GameAction {
         return t!=null ? t.truth(NAL.truth.EVI_MIN, false, false, null) : null;
     }
 
-    private Truth actionTruth(int limit, Game g) {
+    private Truth actionTruth(int limit, Game g, int shift) {
 
-
-        NAR n = g.nar;
-
-        TruthProjection gt = truth(false, limit, g.when);
+        TruthProjection gt = truth(false, limit, g.when, shift);
 
         Truth nextActionDex = truth(gt);
         actionDex = nextActionDex;
@@ -266,6 +190,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
         long s = g.when.start, e = g.when.end;
         float dur = g.when.dur;
+        NAR n = g.nar;
 
         Curiosity.CuriosityInjection curiosityInject;
         if (actionCuri != null) {

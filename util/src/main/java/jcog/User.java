@@ -34,6 +34,7 @@ import static java.lang.Double.POSITIVE_INFINITY;
 
 /**
  * general user-scope global utilities and facilities
+ * see https://github.com/eclipse/rdf4j-storage/blob/master/lucene/src/main/java/org/eclipse/rdf4j/sail/lucene/LuceneIndex.java
  */
 public class User {
 
