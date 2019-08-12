@@ -23,7 +23,6 @@ package jcog.tree.rtree;
 import jcog.Util;
 import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -115,8 +114,10 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
                 }
 
                 X xy = x.merge(y);
-                if (xy != null)
-                    return merged(xy, x, y, i);
+                if (xy != null) {
+                    merged(xy, x, y, i);
+                    return null;
+                }
 
             }
         }
@@ -125,10 +126,10 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     }
 
-    @Nullable
-    private RNode<X> merged(X merged, RInsertion<X> x, X existing, int i) {
+
+    private void merged(X merged, RInsertion<X> x, X existing, int i) {
         if (merged == existing)
-            return null;
+            return;
 
         data[i] = merged;
 
@@ -142,7 +143,6 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
                 x.stretched = true;
             }
         }
-        return null;
     }
 
     RNode<X> insert(RInsertion<X> r) {

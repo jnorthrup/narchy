@@ -67,7 +67,7 @@ public class Spatialization<X> {
      *  default implementation: test for equality and re-use existing item
      * */
     @Nullable
-    public X merge(X existing, X incoming) {
+    public X merge(X existing, X incoming, RInsertion<X> i) {
         return existing.equals(incoming) ? existing : null;
     }
 
@@ -94,9 +94,10 @@ public class Spatialization<X> {
         return false;
     }
 
-    public RInsertion<X> insertion(X t) {
-        return new RInsertion<>(t, true, this);
+    public RInsertion<X> insertion(X t, boolean addOrMerge) {
+        return new RInsertion<>(t, addOrMerge, this);
     }
+
 
 
 //    public HyperRegion mbr(Node<X>[] data) {

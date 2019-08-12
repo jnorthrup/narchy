@@ -226,7 +226,7 @@ public class Remember extends AbstractTask {
     public void merge(Task prev) {
 
         Task next = this.input;
-        if (next!=null) {
+        if (next!=null && prev.equals(next)) {
 
             boolean identity = prev == next;
 

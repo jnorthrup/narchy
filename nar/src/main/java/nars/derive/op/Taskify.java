@@ -144,6 +144,19 @@ public class Taskify extends ProxyTerm {
                 (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
                 (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
             throw new RuntimeException("invalid occurrence result: " + Arrays.toString(occ));
+
+
+//        long tRange = d._task.isEternal() ? Long.MAX_VALUE : d._task.range();
+//        long maxRange;
+//        if (d._belief!=null && !d.concSingle) {
+////            long bRange = d._belief.isEternal() ? Long.MAX_VALUE : d._belief.range();
+//            maxRange = !d._belief.isEternal() ? d.taskBelief_TimeIntersection[1] - d.taskBelief_TimeIntersection[0] : tRange;
+//        } else
+//            maxRange = tRange;
+//        long oRange = occ[0] == ETERNAL ? Long.MAX_VALUE : occ[1] - occ[0];
+//        if (oRange < maxRange - (d.ditherDT)) {
+//            throw new RuntimeException("occurrence range diminished from max=" + tRange + ": " + Arrays.toString(occ) + "=" + oRange);
+//        }
     }
 
 

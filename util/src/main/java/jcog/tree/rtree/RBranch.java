@@ -110,26 +110,22 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Override
     public RNode<X> add(RInsertion<X> x) {
 
-        final RNode<X>[] data = this.data;
 
         boolean addOrMerge = x.isAddOrMerge(); //save now
 
         //1. test containment
         x.setAdd(false);
         if (x.maybeContainedBy(bounds)) {
+            final RNode<X>[] data = this.data;
 
             int s = this.size;
             boolean merged = false;
             for (int i = 0; i < s; i++) {
                 RNode<X> ci = data[i];
-
                 RNode<X> di = ci.add(x);
-
-                if (di == null) {
-                    merged = true;
-                    break;
-                } else if (ci!=di) {
-                    data[i] = di;
+                if (ci!=di) {
+                    if (di!=null)
+                        data[i] = di;
                     merged = true;
                     break;
                 }
@@ -332,7 +328,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 //    }
 
     private static <X> RNode<X> reinsert(X x, RNode<X> target, Spatialization<X> model, int[] removed) {
-        RInsertion<X> reinsertion = new RInsertion<>(x, true, model);
+        RInsertion<X> reinsertion = model.insertion(x, true);
         RNode<X> u = target.add(reinsertion);
         boolean merged = reinsertion.merged();
         if (merged)

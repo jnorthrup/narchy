@@ -44,9 +44,6 @@ public class RInsertion<X> {
         this.added = false;
     }
 
-    public RInsertion(X x, Spatialization<X> model) {
-        this(x, true, model);
-    }
 
     public boolean isAddOrMerge() {
         return addOrMerge;
@@ -64,10 +61,6 @@ public class RInsertion<X> {
         added = true;
     }
 
-    public void setMerged() {
-        merged = true;
-    }
-
     //TODO setMerged() { ...
 
     public void setAdd(boolean addOrMerge) {
@@ -75,15 +68,15 @@ public class RInsertion<X> {
     }
 
     @Nullable
-    public X merge(X y) {
-        X z = model.merge(y, x);
+    public final X merge(X y) {
+        X z = model.merge(y, x, this);
         if (z!=null)
-            setMerged();
+            merged = true;
         return z;
     }
 
     public void mergeIdentity() {
-        setMerged();
+        merged = true;
     }
 
     final boolean maybeContainedBy(HyperRegion c) {

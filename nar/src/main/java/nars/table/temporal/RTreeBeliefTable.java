@@ -2,6 +2,7 @@ package nars.table.temporal;
 
 import jcog.WTF;
 import jcog.data.list.FasterList;
+import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
@@ -118,13 +119,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     private boolean compress(Space<TaskRegion> tree, Remember remember) {
 
         long now = remember.nar.time();
-        long tableDur = tableDur(now);
+        //long tableDur = tableDur(now);
 
-        Top<TaskRegion> weakest = new Top<>(new FurthestWeakest(now, tableDur));
+        Top<TaskRegion> weakest = new Top<>(new FurthestWeakest(now, 1));
 
 		Top<RLeaf<TaskRegion>> weakestLeaf = new Top<>(
 		    //WeakestTemporallyDense(now)
-            l -> -(float) ((1+l.bounds.range(0)) * (l.bounds.coord(2,true))) //weakest
+            l -> l.size / ((float) ((1+l.bounds.range(0)) * (l.bounds.coord(2,true)))) //weakest
         );
 
         return !findEvictable(tree, tree.root(), weakest, weakestLeaf)
@@ -260,8 +261,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         if (mergeReplaced != null && mergeReplaced != input) {
             r.merge(mergeReplaced);
             onReject(input);
-        }
-        if (!input.isDeleted()) {
+        } else if (!input.isDeleted()) {
             onRemember(input);
             r.remember(input);
         } else {
@@ -455,12 +455,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public RInsertion<TaskRegion> insertion(TaskRegion t) {
-            return new TaskInsertion(t);
+        public TaskInsertion insertion(TaskRegion t, boolean addOrMerge) {
+            return new TaskInsertion(t, addOrMerge);
         }
 
+
         @Override
-        public final TaskRegion bounds(TaskRegion taskRegion) {
+        public TaskRegion bounds(TaskRegion taskRegion) {
             return taskRegion;
         }
 
@@ -471,28 +472,27 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Nullable
         @Override
-        public TaskRegion merge(TaskRegion existing, TaskRegion incoming) {
+        public TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
 
             if (existing.equals(incoming))
                 return existing;
 
             Task ex = (Task) existing, in = (Task) incoming;
-            Truth t = ex.truth();
-            if (t.equals(in.truth())) {
-                if (Arrays.equals(ex.stamp(), in.stamp())) {
+            if (Arrays.equals(ex.stamp(), in.stamp())) {
+                Truth t = ex.truth();
+                if (t.equals(in.truth())) {
                     if (ex.term().equals(in.term())) {
                         long is = in.start(), ie = in.end();
                         long es = ex.start(), ee = ex.end();
                         if (Longerval.contains(es, ee, is, ie)) {
-                            return ex;
+                            return merge(ex, i);
                         } else if (Longerval.contains(is, ie, es, ee)) {
-                            return in;
+                            return merge(in, i);
                         } else {
-                            //assert(mergeCanStretch());
-//                            if (LongInterval.intersects(is, ie, es, ee)) {
-//                                long[] u = Longerval.unionArray(is, ie, es, ee);
-//                                return Task.clone(ex, ex.term(), t, ex.punc(), u[0], u[1]);
-//                            }
+                            if (LongInterval.intersects(is, ie, es, ee)) {
+                                //temporal union
+                                return merge(Task.clone(ex, ex.term(), t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
+                            }
                         }
                     }
                 }
@@ -502,9 +502,13 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return null;
         }
 
+        private TaskRegion merge(Task m, RInsertion<TaskRegion> i) {
+            ((TaskInsertion)i).mergeReplaced = m;
+            return m;
+        }
+
         public boolean mergeCanStretch() {
-            return false;
-            //return true;
+            return true;
         }
 
 
@@ -514,8 +518,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Nullable TaskRegion mergeReplaced = null;
 
-        public TaskInsertion(TaskRegion t) {
-            super(t, RTreeBeliefModel.the);
+        public TaskInsertion(TaskRegion t, boolean addOrMerge) {
+            super(t, addOrMerge, RTreeBeliefModel.the);
         }
 
         @Override
@@ -523,15 +527,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             mergeReplaced = x;
         }
 
-        @Nullable
-        @Override
-        public TaskRegion merge(TaskRegion y) {
-            TaskRegion m = super.merge(y);
-            if (m != null)
-                mergeReplaced = m;
 
-            return m;
-        }
     }
 
 //    /** TODO */

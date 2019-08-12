@@ -48,7 +48,6 @@ public interface LongInterval {
     //		return internew Longerval(x1, x2).intersection(y1, y2);
 //	}
     static Longerval union(long x1, long x2, long y1, long y2) {
-        assert (x1 != TIMELESS && x1 != ETERNAL && y1 != TIMELESS && y1 != ETERNAL);
         return new Longerval(x1, x2).union(y1, y2);
     }
 

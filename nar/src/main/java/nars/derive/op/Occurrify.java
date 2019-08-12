@@ -103,15 +103,15 @@ public class Occurrify extends TimeGraph {
 
 
     private static long[] rangeCombine(Derivation d, OccMerge mode) {
-        long beliefStart = d.beliefStart;
-        if (d.concSingle || (d._belief == null || d.beliefStart == ETERNAL))
+
+        if (d.concSingle || d.beliefStart == ETERNAL)
             return new long[] { d.taskStart, d.taskEnd };
         else if (d.taskStart == ETERNAL) {
-            assert(d.beliefStart!=TIMELESS);
+//            assert(d.beliefStart!=TIMELESS);
             return new long[]{d.beliefStart, d.beliefEnd};
         } else {
             long taskStart = d.taskStart;
-
+            long beliefStart = d.beliefStart;
 
             long start;
             switch (mode) {

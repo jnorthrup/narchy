@@ -27,7 +27,7 @@ class JUnitNARTest {
         List<Method> nal1TestMethods = TestNARSuite.tests(NAL1Test.class).collect(toList());
         assertTrue(nal1TestMethods.size() > 5);
         assertTrue(nal1TestMethods.toString().contains("deduction"));
-        assertTrue(nal1TestMethods.toString().contains("induction"));
+//        assertTrue(nal1TestMethods.toString().contains("induction"));
 //        System.out.println( nal1TestMethods.toString() );
 
         NALTest n = NALTest.test(tt, nal1TestMethods.get(0));

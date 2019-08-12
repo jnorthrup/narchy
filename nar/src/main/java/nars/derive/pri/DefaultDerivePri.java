@@ -20,7 +20,7 @@ public class DefaultDerivePri implements DerivePri {
     /**
      * master derivation gain factor
      */
-    public final FloatRange gain = new FloatRange(1f, 0f, 2f);
+    public final FloatRange gain = new FloatRange(0.9f, 0f, 2f);
 
     public final FloatRange questionGain = new FloatRange(0.5f, 0f, 2f);
 
@@ -37,7 +37,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
 
-    public final FloatRange simplicityExponent = new FloatRange(1f, 0f, 4f);
+    public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */
