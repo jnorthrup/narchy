@@ -578,7 +578,7 @@ public enum $ { ;
 
     public static int[] radix(int x, int radix, int maxValue) {
         assert(x >= 0);
-        x = x % radix; //auto-wraparound
+        x = x % maxValue; //auto-wraparound
 
         int decimals = (int) Math.ceil(Math.log(maxValue)/Math.log(radix));
         int[] y = new int[decimals];

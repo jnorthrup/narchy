@@ -7,8 +7,6 @@ import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.concept.sensor.GameLoop;
 import nars.table.BeliefTable;
-import nars.table.dynamic.SensorBeliefTables;
-import nars.table.temporal.RTreeBeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.Truth;

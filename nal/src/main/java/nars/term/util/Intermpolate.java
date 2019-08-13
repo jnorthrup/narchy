@@ -77,7 +77,7 @@ public enum Intermpolate {;
                 ab[i] = ai;
             }
 
-            return !change ? a : ao.the(dt, ab);
+            return !change ? a : Util.maybeEqual(ao.the(dt, ab), a, b);
         }
     }
 
@@ -98,28 +98,34 @@ public enum Intermpolate {;
 
         ConjList ae = ConjList.events(a);
         ConjList be = ConjList.events(b);
+        int s = ae.size();
+        if (be.size()!=s)
+            return Null; //?
 
         //canonical order
         ae.sortThisByValue();
         be.sortThisByValue();
-        int s = ae.size();
+
         if (!Arrays.equals(ae.array(), 0, s, be.array(), 0, s))
             return Null; //wtf?
 
+        int dtDither = nar.dtDither();
         boolean changed = false;
+        long[] aw = ae.when;
+        long[] bw = be.when;
         for (int i = 0; i < s; i++) {
-            long ai = ae.when[i], bi = be.when[i];
-            long abi = Util.lerp(aProp, ai, bi);
+            long ai = aw[i], bi = bw[i];
+            long abi = ai!=bi ? Tense.dither(Util.lerpLong(aProp, ai, bi), dtDither) : ai;
             if (abi!=ai) {
                 changed = true;
-                ae.when[i] = abi;
+                aw[i] = abi;
             }
         }
         if (!changed)
             return a;
 
 //        ae.sortThis();
-        return ae.term();
+        return Util.maybeEqual(ae.term(), a, b);
     }
 
 //    /**

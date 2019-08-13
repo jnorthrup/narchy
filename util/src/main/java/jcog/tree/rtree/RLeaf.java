@@ -106,24 +106,30 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         int s = size;
         if (s > 0 && x.maybeContainedBy(bounds)) {
             X[] data = this.data;
+
+            //test for identity/equality
+            X xx = x.x;
             for (int i = 0; i < s; i++) {
                 X y = data[i];
-                if (y == x.x) {
-                    x.mergeIdentity();
+                if (xx.equals(y)) {
+                    x.mergeEqual(y);
                     return null; //identical instance found
                 }
+            }
 
-                X xy = x.merge(y);
-                if (xy != null) {
-                    merged(xy, x, y, i);
-                    return null;
+            if (x.model.canMerge()) {
+                for (int i = 0; i < s; i++) {
+                    X y = data[i];
+                    X xy = x.merge(y);
+                    if (xy != null) {
+                        merged(xy, x, y, i);
+                        return null;
+                    }
                 }
-
             }
         }
 
         return x.isAddOrMerge() ? insert(x) : this;
-
     }
 
 

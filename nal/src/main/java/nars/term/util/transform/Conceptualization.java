@@ -8,7 +8,7 @@ import nars.term.atom.Interval;
 import nars.term.compound.Sequence;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 

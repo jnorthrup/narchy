@@ -1,6 +1,5 @@
 package nars.table.eternal;
 
-import jcog.math.LongInterval;
 import nars.$;
 import nars.NAR;
 import nars.Task;

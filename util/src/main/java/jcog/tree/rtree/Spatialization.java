@@ -62,13 +62,15 @@ public class Spatialization<X> {
         return EPSILON;
     }
 
-    /** if a merge is possible, either a or b or a new task will be returned.  null otherwise
+    /**
+     * equality will have been tested first.
+     * if a merge is possible, either a or b or a new task will be returned.  null otherwise
      *  existing and incoming will not be the same instance.
      *  default implementation: test for equality and re-use existing item
      * */
     @Nullable
     public X merge(X existing, X incoming, RInsertion<X> i) {
-        return existing.equals(incoming) ? existing : null;
+        return null;
     }
 
     /** one-way merge for containment test.
@@ -90,7 +92,12 @@ public class Spatialization<X> {
         return bounds;
     }
 
-    public boolean mergeCanStretch() {
+    /** whether merge is possible */
+    public boolean canMerge() {
+        return false;
+    }
+
+    public boolean canMergeStretch() {
         return false;
     }
 

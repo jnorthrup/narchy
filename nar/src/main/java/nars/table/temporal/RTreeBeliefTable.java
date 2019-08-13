@@ -258,9 +258,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         TaskInsertion insertion = writeWith(r, this::insert);
 
         Task mergeReplaced = (Task) insertion.mergeReplaced;
-        if (mergeReplaced != null && mergeReplaced != input) {
+        if (mergeReplaced != null) {
+            if (mergeReplaced != input)
+                onReject(input);
             r.merge(mergeReplaced);
-            onReject(input);
         } else if (!input.isDeleted()) {
             onRemember(input);
             r.remember(input);
@@ -474,9 +475,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         @Override
         public TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
 
-            if (existing.equals(incoming))
-                return existing;
-
             Task ex = (Task) existing, in = (Task) incoming;
             if (Arrays.equals(ex.stamp(), in.stamp())) {
                 Truth t = ex.truth();
@@ -507,7 +505,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return m;
         }
 
-        public boolean mergeCanStretch() {
+        @Override
+        public boolean canMerge() {
+            return true;
+        }
+
+        public boolean canMergeStretch() {
             return true;
         }
 
@@ -523,8 +526,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public void mergeIdentity() {
-            mergeReplaced = x;
+        public void mergeEqual(TaskRegion y) {
+            mergeReplaced = y;
         }
 
 

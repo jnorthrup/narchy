@@ -1,7 +1,6 @@
 package nars.task;
 
 import com.google.common.collect.Lists;
-import jcog.pri.ScalarValue;
 import nars.*;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;

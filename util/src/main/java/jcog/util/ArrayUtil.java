@@ -21,7 +21,9 @@ import com.google.common.collect.ForwardingListIterator;
 import jcog.data.array.IntComparator;
 import jcog.data.bit.MetalBitSet;
 import jcog.random.Rand;
-import org.eclipse.collections.api.block.function.primitive.*;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToDoubleFunction;
+import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 

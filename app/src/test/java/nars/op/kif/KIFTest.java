@@ -52,7 +52,7 @@ class KIFTest {
 
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
-        TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectPriBuffer<>()));
+        TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));
         w.links.links.capacity(1024);
 
         //                //"/home/me/sumo/Merge.kif";

@@ -606,11 +606,13 @@ public enum Util {
         return min + (max - min) * unitize(x);
     }
 
-    public static long lerp(float x, long min, long max) {
+    public static long lerpLong(float x, long min, long max) {
+        if (min == max) return min;
         return Math.round(min + (max - min) * unitize((double) x));
     }
 
     public static int lerpInt(float x, int min, int max) {
+        if (min == max) return min;
         return Math.round(min + (max - min) * unitize(x));
     }
 
@@ -2889,6 +2891,11 @@ public enum Util {
 
     public static <X,Y extends X,Z extends X> X maybeEqual(Y current, Z next) {
         return Objects.equals(current, next) ? current : next;
+    }
+    public static <X> X maybeEqual(X x, X a, X b) {
+        if (Objects.equals(x, a)) return a;
+        if (Objects.equals(x, b)) return b;
+        return x;
     }
 
     public static void nop() {

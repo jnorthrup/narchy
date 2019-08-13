@@ -54,7 +54,7 @@ public class GUI {
 
                 try {
                     TaskLinkWhat w = n.fork(new TaskLinkWhat($$("demo"), new TaskLinks(1024),
-                        new PriBuffer.DirectPriBuffer<>()));
+                        new PriBuffer.DirectTaskBuffer<>()));
 
                     n.input(KIF.file("/home/me/sumo/FinancialOntology.kif"));
                     n.input(

@@ -76,7 +76,7 @@ public class SignalView extends Gridding {
                 }
 
                 private long t(float f) {
-                    return Util.lerp(sample(f), start, end);
+                    return Util.lerpLong(sample(f), start, end);
                 }
 
                 @Override

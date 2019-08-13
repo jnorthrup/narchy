@@ -151,6 +151,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     @Nullable
     private RNode<X> insert(RInsertion<X> x) {
 
+        RNode<X>[] data = this.data;
         int l = data.length;
         if (size < l) {
 

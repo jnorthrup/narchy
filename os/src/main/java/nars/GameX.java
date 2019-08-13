@@ -289,7 +289,9 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                                 1024,
-                                new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */))
+                                //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
+                                new PriBuffer.DirectTaskBuffer()
+                        )
                 )
 //                .attention(() -> new ActiveConcepts(1024))
                 .exe(
@@ -508,10 +510,10 @@ abstract public class GameX extends Game {
             System.out.println();
         }).setFPS(0.25f);
 
-        n.runLater(()-> {
-            //addFuelInjection(n);
-            addClock(n);
-        });
+//        n.runLater(()-> {
+//            //addFuelInjection(n);
+//            addClock(n);
+//        });
 
 //        BatchDeriver bd = new BatchDeriver(Derivers.nal(n, 1, 8,
 //                "motivation.nal"

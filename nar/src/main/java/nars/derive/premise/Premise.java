@@ -4,7 +4,6 @@
  */
 package nars.derive.premise;
 
-import jcog.Util;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.Derivation;

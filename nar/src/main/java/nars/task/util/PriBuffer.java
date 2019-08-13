@@ -75,11 +75,11 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
     /**
      * pass-thru, no buffering
      */
-    public static class DirectPriBuffer<T extends Prioritizable> extends PriBuffer<T> {
+    public static class DirectTaskBuffer<T extends Prioritizable> extends PriBuffer<T> {
 
         private Consumer<T> each = null;
 
-        public DirectPriBuffer() {
+        public DirectTaskBuffer() {
         }
 
 

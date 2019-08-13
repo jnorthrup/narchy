@@ -75,12 +75,12 @@ public class RInsertion<X> {
         return z;
     }
 
-    public void mergeIdentity() {
+    public void mergeEqual(X x) {
         merged = true;
     }
 
     final boolean maybeContainedBy(HyperRegion c) {
-        return model.mergeCanStretch() ? c.intersects(bounds) : c.contains(bounds);
+        return model.canMergeStretch() ? c.intersects(bounds) : c.contains(bounds);
     }
 
 
