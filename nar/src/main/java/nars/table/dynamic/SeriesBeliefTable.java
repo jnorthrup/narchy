@@ -50,8 +50,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         if (s == ETERNAL) {
             //choose now as the default focus time
             long now = a.nar.time();
-            s = Math.round(Math.floor(now - dur/2));
-            e = Math.round(Math.ceil(now + dur/2));
+            s = (long)Math.floor(now - dur/2);
+            e = (long)Math.ceil(now + dur/2);
         } else {
             e = a.end;
         }

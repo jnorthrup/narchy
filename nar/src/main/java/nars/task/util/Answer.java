@@ -92,8 +92,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public static FloatFunction<TaskRegion> regionNearness(long qStart, long qEnd, double dur) {
         return qStart == qEnd ?
-            (x -> -(float) distacnceMin(x, qStart, dur)) :
-            (x -> -(float) distanceMin(x, qStart, qEnd, dur));
+            (x -> (float) (1.0/(1+distacnceMin(x, qStart, dur)))) :
+            (x -> (float) (1.0/(1+distanceMin(x, qStart, qEnd, dur)))) ;
     }
 
     /** temporal distance to point magnitude */

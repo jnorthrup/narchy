@@ -39,14 +39,14 @@ class KIFTest {
 
         NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
 
-        new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
+        new Deriver(Derivers.nal(n, 1,8, "motivation.nal"), new FirstOrderIndexer());
 
-        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
-            //new Hypothesizer.ExhaustiveIndexSnapshotter()
-            new FirstOrderIndexer()
-        ); // ~= PROLOG
+//        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
+//            //new Hypothesizer.ExhaustiveIndexSnapshotter()
+//            new FirstOrderIndexer()
+//        ); // ~= PROLOG
 
-        n.termVolMax.set(32);
+        n.termVolMax.set(64);
         n.beliefPriDefault.amp(0.01f);
 
 
@@ -59,7 +59,9 @@ class KIFTest {
 //                //"/home/me/sumo/tinySUMO.kif";
 //                //"/home/me/sumo/ComputerInput.kif";
 ////                "/home/me/sumo/Economy.kif",
-        List.of("FinancialOntology", "Economy", "Merge").parallelStream()
+        List.of("FinancialOntology", "Economy"
+            //, "Merge"
+        ).parallelStream()
             .map(x -> "/home/me/sumo/" + x + ".kif")
             .map(x -> {
                 try {
@@ -80,10 +82,10 @@ class KIFTest {
         //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-//        n.input("$1.0 possesses(I,#everything)!");
+        n.input("$1.0 possesses(I,#everything)!");
 //        n.input("$1.0 benefits(#all, I)!");
-//        n.input("$1.0 uses(#anything, I).");
-        n.input("$1.0 occupiesPosition(I,#position,#org)!"); //http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?flang=SUO-KIF&lang=EnglishLanguage&kb=SUMO&term=occupiesPosition
+        n.input("$1.0 uses(#anything, I).");
+        n.input("$1.0 occupiesPosition(I,#position,#org)."); //http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?flang=SUO-KIF&lang=EnglishLanguage&kb=SUMO&term=occupiesPosition
 //        n.input("$1.0 --({I}-->Dead)!");
         n.input("$1.0 Human:{I}.");
         n.run(10000);

@@ -440,7 +440,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Override
         public float floatValueOf(TaskRegion t) {
-            return -Answer.beliefStrength(t, now, dur);
+            return 1/(1+Answer.beliefStrength(t, now, dur));
         }
     }
 

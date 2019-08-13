@@ -72,7 +72,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     private static long occAuto(Term conj, long occOffset) {
-        return occOffset == TIMELESS ? (Conj.isSeq(conj) ? 0 : ETERNAL) : occOffset;
+        return occOffset == TIMELESS ? 0 : occOffset;
     }
 
     private long _startIfSorted() {

@@ -405,6 +405,14 @@ class ConjTest {
         assertEq("rotate", y);
     }
 
+    @Test void testParallelEvents() {
+        ConjList e = ConjList.events(
+            $$("(&&,(checkScore(tetris) &&+40 (--,isRow(tetris,(#1,TRUE)))),isRow(tetris,(#2,(--,TRUE))),cmp(#1,#2,-1))")
+        );
+        for (long w : e.when) {
+            assertTrue(w >=0 && w <= 40);
+        }
+    }
     @Test
     void testContainsEventSimple() {
         assertFalse(Conj.eventOf($$("x"), $$("x")));
