@@ -8,6 +8,8 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithout(
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
         //Goal: ?
 
+//Conjunction containing both pos/neg X drill-down question
+C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:AskAll)
 
 
 ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDD, Time:TaskEvent)
@@ -23,9 +25,13 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithout(
 
 
 
-  B, (C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
-    B, (--C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
-  B, (X ==> C), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:Task)
+
+  B, (C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
+     (C ==> X), B, --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
+    B, (--C ==> X), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
+       (--C ==> X), B, --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
+  B, (X ==> C), --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
+    (X ==> C), B, --isVar(X) |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
 
     B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
       B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&"), has(A,"--") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)
