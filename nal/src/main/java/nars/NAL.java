@@ -99,8 +99,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float ANSWER_TRYING = 1.5f;
 
     /** if false, the tasklink resolution mode is sample */
-    public static final boolean TASKLINK_ANSWER_BELIEF = true;
-    public static final boolean TASKLINK_ANSWER_GOAL = true;
+    public static final boolean TASKLINK_ANSWER_BELIEF = false;
+    public static final boolean TASKLINK_ANSWER_GOAL = false;
 
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
@@ -587,7 +587,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean PREMISE_KEY_DITHER= configIs("PREMISE_KEY_DITHER");
 
         /** if true, uses dur=0 for matching/answering which, as a result, restricts includable evidence in the truth projection */
-        public static final boolean ANSWER_HONEST_DUR = false;
+        public static final boolean ANSWER_HONEST_DUR = true;
     }
 
 

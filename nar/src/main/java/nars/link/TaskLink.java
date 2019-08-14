@@ -115,7 +115,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
             Task y;
             if ((punc==BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc==GOAL && NAL.TASKLINK_ANSWER_GOAL))
-                y = table.match(w, null, filter, NAL.premise.ANSWER_HONEST_DUR ? 0 : w.dur, false);
+                y = table.match(w, null, filter, w.dur, false);
             else
                 y = table.sample(w, null, filter);
 

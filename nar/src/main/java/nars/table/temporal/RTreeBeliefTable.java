@@ -32,32 +32,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     private static final int MAX_TASKS_PER_LEAF = 3;
 
-    static FloatFunction<RLeaf<TaskRegion>> WeakestTemporallyDense(long now) { return (n) -> {
-        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
-        long u = 0;
-//        long minRange = Long.MAX_VALUE, maxRange = Long.MIN_VALUE;
-//        int stampMin = Integer.MAX_VALUE, stampMax = Integer.MIN_VALUE;
-        for (TaskRegion t : n.data) {
-            if (t == null) break;
-            long ts = t.start();
-            long te = t.end();
-            s = Math.min(s, ts);
-            e = Math.max(e, te);
-            long r = 1 + (te - ts);
-            u += r;
-//            int stampLen = ((Task)t).stamp().length;
-//            stampMin = Math.min(stampLen, stampMin);
-//            stampMax = Math.max(stampLen, stampMax);
-        }
-//        int stampDelta = stampMax - stampMin;
-        //double rangeDeltaMax = ...
-        //double df = (n.bounds.range(1)) /* freq */;
-        double confFactor = (1+n.bounds.center(2));
-        long range = (1+(e-s));
-//        long timeDist = ((TaskRegion)n.bounds).maxTimeTo(now);
-        return (float)( Math.sqrt(n.size) * ( u  /* * (1 + ((double)timeDist)) */ ) / ( confFactor * range  )); //* (timeToNow/range)
-        };
-    }
 
     /**
      * TODO tune
@@ -123,14 +97,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         Top<TaskRegion> weakest = new Top<>(new FurthestWeakest(now, 1));
 
-		Top<RLeaf<TaskRegion>> weakestLeaf = new Top<>(
+		Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<>(
 		    //WeakestTemporallyDense(now)
-            l -> l.size / ((float) ((1+l.bounds.range(0)) * (l.bounds.coord(2,true)))) //weakest
+            l -> l.size / ((float) ((l.bounds.range(0)) * (l.bounds.coord(2,true)))) //weakest
         );
 
-        return !findEvictable(tree, tree.root(), weakest, weakestLeaf)
+        return !findEvictable(tree, tree.root(), weakest, mergeableLeaf)
                 ||
-               mergeOrDelete(tree, weakest, weakestLeaf, remember);
+               mergeOrDelete(tree, weakest, mergeableLeaf, remember);
     }
 
     private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
@@ -900,6 +874,32 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        }
 //    }
 
+//    static FloatFunction<RLeaf<TaskRegion>> WeakestTemporallyDense(long now) { return (n) -> {
+//        long s = Long.MAX_VALUE, e = Long.MIN_VALUE;
+//        long u = 0;
+////        long minRange = Long.MAX_VALUE, maxRange = Long.MIN_VALUE;
+////        int stampMin = Integer.MAX_VALUE, stampMax = Integer.MIN_VALUE;
+//        for (TaskRegion t : n.data) {
+//            if (t == null) break;
+//            long ts = t.start();
+//            long te = t.end();
+//            s = Math.min(s, ts);
+//            e = Math.max(e, te);
+//            long r = 1 + (te - ts);
+//            u += r;
+////            int stampLen = ((Task)t).stamp().length;
+////            stampMin = Math.min(stampLen, stampMin);
+////            stampMax = Math.max(stampLen, stampMax);
+//        }
+////        int stampDelta = stampMax - stampMin;
+//        //double rangeDeltaMax = ...
+//        //double df = (n.bounds.range(1)) /* freq */;
+//        double confFactor = (1+n.bounds.center(2));
+//        long range = (1+(e-s));
+////        long timeDist = ((TaskRegion)n.bounds).maxTimeTo(now);
+//        return (float)( Math.sqrt(n.size) * ( u  /* * (1 + ((double)timeDist)) */ ) / ( confFactor * range  )); //* (timeToNow/range)
+//    };
+//    }
 
 
 

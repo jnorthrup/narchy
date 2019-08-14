@@ -92,28 +92,28 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public static FloatFunction<TaskRegion> regionNearness(long qStart, long qEnd, double dur) {
         return qStart == qEnd ?
-            (x -> (float) (1.0/(1+distacnceMin(x, qStart, dur)))) :
+            (x -> (float) (1.0/(1+distanceMin(x, qStart, dur)))) :
             (x -> (float) (1.0/(1+distanceMin(x, qStart, qEnd, dur)))) ;
     }
 
     /** temporal distance to point magnitude */
     private static double distacnceMid(TaskRegion t, long now, double dur) {
-        return t.meanTimeTo(now)/dur;
+        return t.meanTimeTo(now)/(1+dur);
     }
-    private static double distacnceMin(TaskRegion t, long now, double dur) {
-        return t.minTimeTo(now)/dur;
+    private static double distanceMin(TaskRegion t, long now, double dur) {
+        return t.minTimeTo(now)/(1+dur);
     }
     /** temporal distance to range magnitude */
     private static double distanceMin(TaskRegion t, long qStart, long qEnd, double dur) {
-        return t.minTimeTo(qStart, qEnd)/dur;
+        return t.minTimeTo(qStart, qEnd)/(1+dur);
     }
     private static double distanceMid(TaskRegion t, long qStart, long qEnd, double dur) {
-        return t.meanTimeTo(qStart, qEnd)/dur;
+        return t.meanTimeTo(qStart, qEnd)/(1+dur);
     }
 
     /** evidence magnitude */
     private static double evidence(TaskRegion t, double dur) {
-        return (t.eviMean() * t.range()/dur);
+        return (t.eviMean() * t.range()/(1+dur));
     }
 
     /**

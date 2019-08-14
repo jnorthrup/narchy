@@ -1,5 +1,6 @@
 package nars.derive.util;
 
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -23,7 +24,7 @@ public interface TimeFocus {
 	 *  1 duration.
 	 * */
 	default When<NAR> task(What what) {
-		return WhenTimeIs.now(what, 0);
+		return WhenTimeIs.now(what, NAL.premise.ANSWER_HONEST_DUR ? 0 : what.dur());
 	}
 
 	/** premise match focus */

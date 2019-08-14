@@ -73,10 +73,7 @@ public class HyperIterator<X>  {
                             model.bounds(r)
                         );
 
-            if (y == null)
-                return Float.NaN; //HACK
-            else
-                return rank.floatValueOf(y);
+            return y == null ? Float.NaN : rank.floatValueOf(y); //HACK
         });
         this.planAdd = plan::add;
     }
