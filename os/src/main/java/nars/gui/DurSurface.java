@@ -7,6 +7,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.unit.UnitContainer;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 /**
@@ -22,6 +23,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     DurLoop dur;
     final long minUpdateTimeNS;
     private boolean autolayout;
+    volatile long nextUpdate = System.nanoTime();
 
     @Deprecated protected DurSurface(S x, NAR nar) {
         this(x, nar, minUpdateTimeSeconds);
@@ -30,6 +32,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         super(x);
         this.nar = nar;
         this.minUpdateTimeNS = Math.round(minUpdateTimeS*1.0e9);
+        nextUpdate = System.nanoTime();
     }
 
     @Override
@@ -64,20 +67,27 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         return get(x, n, x::updateIfShowing);
     }
 
-    long lastUpdate = System.nanoTime();
+
+    final AtomicBoolean busy = new AtomicBoolean();
 
     @Override
     protected void renderContent(ReSurface r) {
         long now = System.nanoTime();
-        if (lastUpdate < now - minUpdateTimeNS) {
-            lastUpdate = now; //TODO throttle duration to match expected update speed if significantly different
+        if (nextUpdate >= now) {
 
-            S x = the();
+//            S x = the();
 //            if (x instanceof ContainerSurface && (((ContainerSurface) x).layoutPending())) {
 //                invalidate();
 //            }
 
-            update();
+            if (busy.compareAndSet(false,true)) {
+                try {
+                    update();
+                } finally {
+                    nextUpdate = System.nanoTime() + minUpdateTimeNS; //TODO throttle duration to match expected update speed if significantly different
+                    busy.lazySet(false);
+                }
+            }
         }
 
         super.renderContent(r);

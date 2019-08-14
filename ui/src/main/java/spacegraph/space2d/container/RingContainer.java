@@ -91,7 +91,7 @@ public abstract class RingContainer<X extends Surface> extends EmptyContainer {
         int t = T.intValue();
         int y = this.y.intValue();
         for (int i = 0, xesLength = xes.length; i < xesLength; i++) {
-            X x = xes[(i + y)% t];
+            X x = xes[(i + y) % t];
             if (x != null)
                 each.accept(x, RectFloat.XYXY(c[j++], c[j++], c[j++], c[j++]));
             else

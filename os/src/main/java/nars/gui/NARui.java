@@ -650,13 +650,15 @@ public class NARui {
 
             @Override
             public void run() {
-                active.forEach(snapshot::add);
+                snapshot.clearFast();
+                int c = active.capacity();
+                snapshot.ensureCapacity(c);
+                active.forEach(snapshot::addFast);
                 s.next(color);
-                snapshot.clear();
             }
 
             final IntToIntFunction color = _x -> {
-                TaskLink x = snapshot.getSafe(_x);
+                TaskLink x = snapshot.get(_x);
                 if (x == null)
                     return 0;
 

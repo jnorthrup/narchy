@@ -290,10 +290,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         @Override
         public Term target(Task task, Derivation d) {
-            return Bitmap2DSensor.this.get(d.random).term();
-            //return superPixel(d.random);
-            //return task.term();
+            return null;
         }
+
 
         @Nullable
         private Term superPixel(Random rng) {

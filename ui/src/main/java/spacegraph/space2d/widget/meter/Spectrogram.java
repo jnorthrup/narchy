@@ -82,7 +82,6 @@ public class Spectrogram extends RingContainer<BitmapMatrixView> implements Bitm
                     z.tex.commit(gl);
                     z.show();
                 }
-                z.pos(b);
                 z.tex.paint(gl, b);
             });
 

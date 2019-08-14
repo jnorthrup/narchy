@@ -45,21 +45,24 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 	protected Premise fireTaskTermLink(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
 		Term target = tasklink.target(task, d);
+		if (target==null)
+			target = task.term();
+		else {
 
-		if (target.op().conceptualizable) {
-			Term reverse = reverse(target, tasklink, task, links, d);
-			if (reverse != null)
-				target = reverse;
-		}
-
-
-		Term forward = forward(target, tasklink, task, d);
-		if (forward != null)
-			links.grow(tasklink, task, forward);
+			if (target.op().conceptualizable) {
+				Term reverse = reverse(target, tasklink, task, links, d);
+				if (reverse != null)
+					target = reverse;
+			}
 
 
-		//normalize the image if premise doesnt involve Image-specific derivation
-		//TODO check for non-ImageTask images
+			Term forward = forward(target, tasklink, task, d);
+			if (forward != null)
+				links.grow(tasklink, task, forward);
+
+
+			//normalize the image if premise doesnt involve Image-specific derivation
+			//TODO check for non-ImageTask images
 //					if (task instanceof ImageTask &&
 //							((beliefTerm instanceof Compound && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit))
 //									||
@@ -77,6 +80,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 //					}
 //					if (!task.term().equals(target))
 //						target = Image.imageNormalize(target);
+		}
 
 		return new Premise(task, target);
 	}
