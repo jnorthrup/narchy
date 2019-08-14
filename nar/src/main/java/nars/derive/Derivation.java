@@ -357,7 +357,7 @@ public class Derivation extends PreDerivation {
         Truth t = !NAL.derive.BELIEF_PROJECTION_CLASSIC ?
             nextBelief.truth(taskStart, taskEnd, dur()) //integration-calculated
             :
-            nextBelief.truth(time(), _task) //classic opennars projection
+            nextBelief.truth(time(), _task.start()) //classic opennars projection
         ;
         return t!=null && t.evi() >= eviMin ? t : null;
     }

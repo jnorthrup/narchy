@@ -72,8 +72,6 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
 
     @Override
     protected void renderContent(ReSurface r) {
-        long now = System.nanoTime();
-        if (nextUpdate >= now) {
 
 //            S x = the();
 //            if (x instanceof ContainerSurface && (((ContainerSurface) x).layoutPending())) {
@@ -81,14 +79,17 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
 //            }
 
             if (busy.compareAndSet(false,true)) {
+                long start = System.nanoTime();
                 try {
-                    update();
+                    if (nextUpdate >= start) {
+                        update();
+                        nextUpdate = start + minUpdateTimeNS; //TODO throttle duration to match expected update speed if significantly different
+                    }
                 } finally {
-                    nextUpdate = System.nanoTime() + minUpdateTimeNS; //TODO throttle duration to match expected update speed if significantly different
                     busy.lazySet(false);
                 }
             }
-        }
+
 
         super.renderContent(r);
     }

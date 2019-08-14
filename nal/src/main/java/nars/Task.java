@@ -933,25 +933,26 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      *  based on OpenNARS projection formula:
      *   return 1.0f - abs(sourceTime - targetTime) / (abs(sourceTime - currentTime) + abs(targetTime - currentTime) );
      * */
-    @Nullable default Truth truth(long now, LongInterval tgt) {
+    @Nullable default Truth truth(long now, long tgt) {
 
-        Task src = this;
+        long src = start();
 
-        Truth truth = src.truth();
-        if (isEternal() || tgt.start()==ETERNAL)
+        Truth truth = truth();
+        if (src == ETERNAL || src==tgt)
             return truth;
+        if (tgt == ETERNAL)
+            return null; //eternalize?
 
-        double range = (src.meanTimeTo(now) + tgt.meanTimeTo(now));
+        long sep = Math.abs(src-tgt);
+        double range = (Math.abs(src-now) + Math.abs(tgt - now));
+        if (sep >= range)
+            return null;
         if (range < 0.5f)
             return truth;
 
-        long sep = src.meanTimeTo(tgt);
         double factor = 1.0 - sep / range;
         double e = factor * truth.evi();
-        if (e < NAL.truth.EVI_MIN)
-            return null;
-        else
-            return PreciseTruth.byEvi(truth.freq(), e);
+        return e < NAL.truth.EVI_MIN ? null : PreciseTruth.byEvi(truth.freq(), e);
     }
 
     @Nullable
