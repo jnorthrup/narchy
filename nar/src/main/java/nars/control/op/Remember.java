@@ -92,48 +92,29 @@ public class Remember extends AbstractTask {
         this.input = input;
     }
 
-
     @Override
     public String toString() {
         return Remember.class.getSimpleName() + '(' + input + ')';
     }
 
-
     @Override
     public Task next(Object w) {
-        commit(input, store, (What)w);
+
+        if (store) {
+           TaskConcept cc = (TaskConcept) ((What)w).nar.conceptualize(input);
+           if (cc==null)
+               return null;
+
+           cc.remember(this);
+       } else {
+           done = true;
+        }
+
+        if (done && !this.input.isDeleted()) {
+            link(this.input, (What)w);
+        }
+
         return null;
-    }
-
-    /** TODO check that image dont double link/activate for their product terms */
-    private void commit(Task input, boolean store, What w) {
-
-
-//        boolean the = (input == this.input);
-
-        if (!store) {
-            done = true;
-         } else {
-            TaskConcept cc = (TaskConcept) w.nar.conceptualize(input);
-            cc.remember(this);
-        }
-
-        if (done && !input.isDeleted()) {
-            link(input, w);
-        }
-
-
-//            if (remembered != null && !remembered.isEmpty()) {
-//                remembered.forEachWith((Task r, What ww) -> {
-//                    if (r.equals(this.input)) //HACK
-//                        link(r, ww); //root
-//                    else
-//                        commit(r, false, ww); //sub
-//                }, w);
-//                remembered = null;
-//            }
-//        }
-
     }
 
 
@@ -164,7 +145,6 @@ public class Remember extends AbstractTask {
         if (link)
             w.link(t);
 
-
         if (notify)
             w.emit(t); //notify regardless of whether it was conceptualized, linked, etc..
 
@@ -173,35 +153,12 @@ public class Remember extends AbstractTask {
 
 
     public void forget(Task x) {
-
-//        if (remembered != null && remembered.removeInstance(x)) {
-//            //throw new TODO();
-//            //TODO filter next tasks with any involving that task
-//        }
-
         x.delete();
-
-//        if (input == x) {
-//            input = null;
-//            done = true;
-//        }
     }
 
     public void remember(Task x) {
-//        if (x == input)
         input = x;
         done = true;
-
-//        if (this.remembered == null) {
-//            remembered = new FasterList<>(2);
-//            remembered.addFast(x);
-//        } else {
-//            if (x != null) {
-//                if (!this.remembered.containsInstance(x)) {
-//                    this.remembered.add(x);
-//                }
-//            }
-//        }
     }
 
 
@@ -211,9 +168,8 @@ public class Remember extends AbstractTask {
     public void merge(Task prev) {
 
         Task next = this.input;
-        if (next!=null && prev.equals(next)) {
-
-            boolean identity = prev == next;
+        boolean identity = prev == next;
+        if (identity || prev.equals(next)) {
 
             if (filter(prev, next, this.nar))
                 remember(prev); //if novel: relink, re-emit (but using existing or identical task)
@@ -267,11 +223,6 @@ public class Remember extends AbstractTask {
     }
 
 
-    public final boolean active() {
-        //return input == null || (remembered != null && remembered.containsInstance(input));
-        return !done;
-    }
-
     public boolean tryRemember(BeliefTable t) {
 //        BeliefTable[] z = this.items;
 //        if (z == null) return; //?wtf
@@ -280,7 +231,8 @@ public class Remember extends AbstractTask {
 //            BeliefTable t = z[i];
 //            if (t!=null) {
         t.remember(this);
-        return !active();
+        //return input == null || (remembered != null && remembered.containsInstance(input));
+        return done;
 //            }
 //        }
     }
