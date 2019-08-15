@@ -88,7 +88,7 @@ public class ConjTree implements ConjBuilder {
             }
         }
 
-        assert (p.op() != NEG);
+        //assert (p.op() != NEG);
         pos.add(p);
         return true;
     }
@@ -139,7 +139,7 @@ public class ConjTree implements ConjBuilder {
             terminate(nu);
             return false; /*conflict */
         } else {
-            assert (nu.op() != NEG);
+            //assert (nu.op() != NEG);
             neg.add(nu);
             return true;
         }
@@ -173,7 +173,7 @@ public class ConjTree implements ConjBuilder {
      * @return
      */
     private Term reduceNegNeg(Term nx) {
-        assert (nx.op() != NEG);
+        //assert (nx.op() != NEG);
 
 
         boolean xConj = nx.op() == CONJ;
@@ -183,7 +183,7 @@ public class ConjTree implements ConjBuilder {
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
             final Term ny = nyi.next();
             boolean yConj = ny.op() == CONJ;
-            int nys = ny.structure();
+            //int nys = ny.structure();
             //disj
             //                //Robbins Algebra / Huntington Reduction
             //                if (xConj && (nx.hasAny(NEG) || ny.hasAny(NEG)) && Term.commonStructure(nx.subterms().structure(), ny.subterms().structure())) {
@@ -273,7 +273,7 @@ public class ConjTree implements ConjBuilder {
 
     private Term reducePN(Term x, Collection<Term> y, boolean nP_or_pN) {
 
-        assert (x.op() != NEG);
+        //assert (x.op() != NEG);
 
         if (y.contains(x))
             return False; //contradiction

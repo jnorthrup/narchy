@@ -371,12 +371,7 @@ public class HttpConnection {
         this.state = newState;
 
         if (newState == STATE.DONE_READING) {
-            if (this.clientHttpMinor > 0) {
-                this.keepAlive = "keep-alive".equals(request.get("connection"));
-
-            } else {
-                this.keepAlive = false;
-            }
+            this.keepAlive = this.clientHttpMinor > 0 && "keep-alive".equals(request.get("connection").toLowerCase());
         }
 
         stateChangeListener.connectionStateChange(this, oldState, newState);

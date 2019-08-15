@@ -24,9 +24,9 @@ public abstract class WebServer implements HttpModel {
             case "/teavm/classes.js":
                 h.respond(new File("/tmp/tea/classes.js")); //TODO managed temporary directory
                 break;
-            case "/websocket.js":
-                h.respond(spacegraph.web.util.WebSocket.websocket_js);
-                break;
+//            case "/websocket.js":
+//                h.respond(spacegraph.web.util.WebSocket.websocket_js);
+//                break;
             case "/msgpack.js":
                 h.respond(MsgPack.msgpack_js);
                 break;
@@ -36,12 +36,13 @@ public abstract class WebServer implements HttpModel {
                                 "  <head>\n" +
                                 "    <title></title>\n" +
                                 "    <meta http-equiv=\"Content-Type\" content=\"text/html;charset=utf-8\">\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
+//                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"websocket.js\"></script>\n" +
                                 "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"msgpack.js\"></script>\n" +
-                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
+//                                "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/runtime.js\"></script>\n" +
                                 "    <script type=\"text/javascript\" charset=\"utf-8\" src=\"teavm/classes.js\"></script>\n" +
                                 "  </head>\n" +
-                                "  <body onload=\"main()\">\n" +
+                                "  <body>\n" +
+                                //"  <body onload=\"main()\">\n" +
                                 "  </body>\n" +
                                 "</html>");
                 break;

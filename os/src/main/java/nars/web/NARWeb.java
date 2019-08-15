@@ -1,9 +1,6 @@
 package nars.web;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.node.ArrayNode;
 import jcog.Texts;
-import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.Off;
 import jcog.event.RunThese;
@@ -32,7 +29,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
-import static nars.web.TaskJsonCodec.Native.taskify;
 import static spacegraph.web.util.ClientBuilder.rebuild;
 
 abstract public class NARWeb extends WebServer {
@@ -300,20 +296,25 @@ abstract public class NARWeb extends WebServer {
 //                String s = buf.toString();
 //                w.send(s);
 
-                ArrayNode a = Util.cborMapper.createArrayNode();
 
                 out.clear(t -> {
-                    taskify(t, a.addArray());
+                    w.send(t.toString());
                 });
 
-                if (a.size() > 0) {
-                    try {
-                        w.send(Util.cborMapper.writeValueAsBytes(a));
-                    } catch (JsonProcessingException e) {
-                        //logger.error("")
-                        e.printStackTrace();
-                    }
-                }
+//                ArrayNode a = Util.cborMapper.createArrayNode();
+//
+//                out.clear(t -> {
+//                    taskify(t, a.addArray());
+//                });
+//
+//                if (a.size() > 0) {
+//                    try {
+//                        w.send(Util.cborMapper.writeValueAsBytes(a));
+//                    } catch (JsonProcessingException e) {
+//                        //logger.error("")
+//                        e.printStackTrace();
+//                    }
+//                }
 
             } else {
                 //closed, dont un-busy

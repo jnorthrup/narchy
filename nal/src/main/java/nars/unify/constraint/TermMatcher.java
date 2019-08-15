@@ -258,7 +258,7 @@ abstract public class TermMatcher {
         @Override
         public boolean test(Term term) {
             return term instanceof Compound &&
-                    term.op().id == is &&
+                    term.opID() == is &&
                     term.volume() >= volMin &&
                     (structSubs==0 || Op.hasAll(term.subStructure(), structSubs));
         }

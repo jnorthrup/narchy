@@ -8,6 +8,8 @@ import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -70,6 +72,11 @@ abstract public class AND<X> extends AbstractPred<X> {
             assert(!(a instanceof AND) && !(b instanceof AND));
             this.a = a; this.b = b;
         }
+
+//        @Override
+//        public MethodHandle compile() {
+//            return MethodHandles.guardWithTest(a.compile(), b.compile(), MethodHandles.zero(boolean.class)).bindTo(this);
+//        }
 
         @Override
         public final boolean test(X x) {

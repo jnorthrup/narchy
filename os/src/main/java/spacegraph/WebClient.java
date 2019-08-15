@@ -9,7 +9,7 @@ import org.teavm.jso.webgl.WebGLBuffer;
 import org.teavm.jso.webgl.WebGLProgram;
 import org.teavm.jso.webgl.WebGLRenderingContext;
 import org.teavm.jso.webgl.WebGLShader;
-import spacegraph.web.util.WebSocket;
+import org.teavm.jso.websocket.WebSocket;
 
 import static org.teavm.jso.browser.Window.alert;
 
@@ -22,22 +22,22 @@ public class WebClient {
     private final WebGLRenderingContext gl;
     private final HTMLCanvasElement canvas;
 
-    protected WebClient() {
+    public WebClient() {
 
         doc = HTMLDocument.current();
         body = doc.getBody();
 
-        socket = WebSocket.connect("/");
+        socket = WebSocket.create("ws://localhost:60606");
 
 
-        socket.setOnData((msg) -> {
-//                MsgPack.decodeArray(msg, (x) -> {
-//                    JSObject klass = JS.get(x,0);
-        });
-
-        socket.setOnOpen(() -> {
-            //socket.send("..");
-        });
+//        socket.onMessage((msg) -> {
+////                MsgPack.decodeArray(msg, (x) -> {
+////                    JSObject klass = JS.get(x,0);
+//        });
+//
+//        socket.onOpen((e) -> {
+//            //socket.send("..");
+//        });
 
         canvas = (HTMLCanvasElement) doc.createElement("canvas")
                 .withAttr("id", "c")

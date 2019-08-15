@@ -40,6 +40,36 @@ public class FORK<X> extends AbstractPred<X> {
         return true;
     }
 
+//    @Override
+//    public MethodHandle compile() {
+//        //https://stackoverflow.com/questions/52962364/how-to-chain-methodhandle-invocations
+//        MethodHandle loop = MethodHandles.countedLoop(
+//            constant(int.class, branch.length),
+//            null,
+//            MethodHandles.arrayElementGetter(PREDICATE[].class).bindTo(branch).asType(MethodType.methodType(Void.class)));
+//        return MethodHandles.filterReturnValue(loop.bindTo(this), constant(boolean.class, true));
+//
+//
+//
+////        MethodHandle mh = null;
+////        for (int i = 1; i < branch.length; i++) {
+////            if (mh == null)
+////                mh = MethodHandles.foldArguments(branch[i-1].compile(), branch[i].compile());
+////            else
+////                mh = MethodHandles.foldArguments(mh, branch[i].compile());
+////        }
+////        return mh;
+////        MethodHandle[] mh = new MethodHandle[branch.length+1];
+////        int i = 0;
+////        for (PREDICATE p : branch) {
+////            MethodHandle pp = p.compile();
+////            //MethodType rt = pp.type().changeReturnType(void.class);
+////            mh[i++] = pp.asType(MethodType.methodType(void.class, pp.type().parameterType(0)));
+////        }
+////        mh[i] = constant(boolean.class, false);
+////        return MethodHandles.loop(mh);
+//    }
+
     @Override
     public PREDICATE<X> transform(Function<PREDICATE<X>, PREDICATE<X>> f) {
         throw new TODO();

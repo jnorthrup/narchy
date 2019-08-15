@@ -415,7 +415,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 return t;
             }
         }
-        if ((!(y instanceof Bool)) && (y.op() == t.op()))
+        if ((!(y instanceof Bool)) && (y.opID() == t.opID()))
             return y;
         //else: ? why might this happen
 

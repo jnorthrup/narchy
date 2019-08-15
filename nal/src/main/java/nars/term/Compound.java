@@ -106,7 +106,7 @@ public interface Compound extends Term, IPair, Subterms {
      */
     static int hash(Compound c) {
         return hash(
-                c.op().id,
+                c.opID(),
                 c.hashCodeSubterms()
         );
     }

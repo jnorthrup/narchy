@@ -20,7 +20,7 @@ public class DefaultDerivePri implements DerivePri {
     /**
      * master derivation gain factor
      */
-    public final FloatRange gain = new FloatRange(0.9f, 0f, 2f);
+    public final FloatRange gain = new FloatRange(1f, 0f, 2f);
 
     public final FloatRange questionGain = new FloatRange(0.5f, 0f, 2f);
 

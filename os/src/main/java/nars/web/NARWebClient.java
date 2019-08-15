@@ -1,13 +1,10 @@
 package nars.web;
 
-import org.teavm.jso.JSObject;
-import org.teavm.jso.core.JSString;
 import org.teavm.jso.dom.events.KeyboardEvent;
 import org.teavm.jso.dom.html.HTMLElement;
 import org.teavm.jso.dom.html.HTMLInputElement;
+import org.teavm.runtime.Console;
 import spacegraph.WebClient;
-import spacegraph.web.util.JS;
-import spacegraph.web.util.MsgPack;
 
 import java.util.ArrayDeque;
 
@@ -21,7 +18,7 @@ public class NARWebClient extends WebClient {
     final static int bufferCapacity = 32;
     private final ArrayDeque<HTMLElement> buffer = new ArrayDeque<>(bufferCapacity);
 
-    NARWebClient() {
+    public NARWebClient() {
 
         super();
 
@@ -39,32 +36,33 @@ public class NARWebClient extends WebClient {
         });
         body.appendChild(input);
 
-        socket.setOnData((msg) -> {
-            MsgPack.decodeArray(msg, (x) -> {
-                JSObject klass = JS.get(x,0);
-                String k = ((JSString) klass).stringValue();
-                switch (k) {
-                    case ".":
-                    case "!":
-                    case "?":
-                    case "@":
-                        push(new TaskJson(
-                                JS.getString(x, 2),
-                                //new DiscreteTruth(1f, 0.5f),
-                                JS.getString(x, 3),
-                                k.charAt(0),
-                                0, 0,
-                                ((float)(JS.getInt(x, 1)))/Short.MAX_VALUE));
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-
-                //push(x);
-            });
+        socket.onMessage((msg) -> {
+            Console.printString(msg.getDataAsString());
+//            MsgPack.decodeArray(msg, (x) -> {
+//                JSObject klass = JS.get(x,0);
+//                String k = ((JSString) klass).stringValue();
+//                switch (k) {
+//                    case ".":
+//                    case "!":
+//                    case "?":
+//                    case "@":
+//                        push(new TaskJson(
+//                                JS.getString(x, 2),
+//                                //new DiscreteTruth(1f, 0.5f),
+//                                JS.getString(x, 3),
+//                                k.charAt(0),
+//                                0, 0,
+//                                ((float)(JS.getInt(x, 1)))/Short.MAX_VALUE));
+//                        break;
+//                    default:
+//                        throw new UnsupportedOperationException();
+//                }
+//
+//                //push(x);
+//            });
         });
 
-        socket.setOnOpen(() -> {
+        socket.onOpen((e) -> {
             socket.send("(x-->y).");
             socket.send("(x-->a).");
         });

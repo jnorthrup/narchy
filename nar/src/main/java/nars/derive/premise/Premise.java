@@ -93,17 +93,17 @@ public class Premise /*implements Comparable<Premise>*/ {
 	 */
 	@Nullable
 	public Premise match(Derivation d, int matchTTL) {
+		Term beliefTerm = this.beliefTerm;
 
 		if (!beliefTerm.op().taskable || /*beliefTerm.isNormalized() && */beliefTerm.hasAny(VAR_QUERY))
 			return this; //structural
 
 		boolean beliefConceptUnifiesTaskConcept = false;
 
-		Term beliefTerm = this.beliefTerm;
 		Term taskTerm = task.term();
 		if (taskTerm.equals(beliefTerm)) {
 			beliefConceptUnifiesTaskConcept = true;
-		} else if (taskTerm.op() == beliefTerm.op()) {
+		} else if (taskTerm.opID() == beliefTerm.opID()) {
 
 			if (taskTerm.equalsRoot(beliefTerm)) {
 				//difference involving XTERNAL etc

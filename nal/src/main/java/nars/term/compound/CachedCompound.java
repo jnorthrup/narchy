@@ -229,13 +229,14 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         return hasVarIndep() ? subterms().varIndep() : 0;
     }
 
-    @Override
-    public int opBit() {
-        return 1<<op;
-    }
 
     @Override
     public final Op op() {
         return Op.the(op);
+    }
+
+    @Override
+    public final int opID() {
+        return op;
     }
 }

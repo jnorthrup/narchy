@@ -38,9 +38,8 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
         return cstruct;
     }
 
-    @Override
-    public final int opBit() {
-        return 1<<op;
+    public final int opID() {
+        return op;
     }
 
     @Override

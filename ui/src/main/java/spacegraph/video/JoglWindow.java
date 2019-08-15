@@ -80,7 +80,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     private static GLCapabilitiesImmutable config() {
 
 
-        GLCapabilities config = new GLCapabilities(
+        GLCapabilities c = new GLCapabilities(
 
 
                 //GLProfile.getGL2GL3()
@@ -93,10 +93,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         );
 
 
-        config.setStencilBits(1);
+        c.setStencilBits(1);
+        c.setSampleBuffers(true);
+        c.setNumSamples(2);
 
-
-        return config;
+        return c;
     }
 
     private void updateWindow(GLWindow w) {

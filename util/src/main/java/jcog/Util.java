@@ -106,7 +106,6 @@ public enum Util {
                     .enable(MapperFeature.AUTO_DETECT_IS_GETTERS)
                     .disable(SerializationFeature.FAIL_ON_EMPTY_BEANS);
     public final static ObjectMapper cborMapper =
-
             new ObjectMapper(new CBORFactory())
                     .enable(JsonParser.Feature.ALLOW_UNQUOTED_FIELD_NAMES);
 

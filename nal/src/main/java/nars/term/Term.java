@@ -141,6 +141,15 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     Op op();
 
+    default int opBit() {
+        return 1<<opID();
+    }
+
+    default int opID() {
+        return op().id;
+    }
+
+
     @Override
     boolean equals(Object o);
 
@@ -377,9 +386,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return (opBit() & bitsetOfOperators) != 0;
     }
 
-    default int opBit() {
-        return op().bit;
-    }
 
     void appendTo(Appendable w) throws IOException;
 
@@ -515,7 +521,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             return vc;
 
         Op op = this.op();
-        int oc = Integer.compare(op.id, t.op().id);
+        int oc = Integer.compare(op.id, t.opID());
         if (oc != 0)
             return oc;
 

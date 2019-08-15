@@ -157,7 +157,7 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     /** includes but doesnt equal */
     public boolean includes(Term v) {
-        return v instanceof Variable && v.op()==op() && !this.equals(v) && _includes(v);
+        return v instanceof Variable && v.opID()==opID() && !this.equals(v) && _includes(v);
     }
 
     private boolean _includes(Term v) {

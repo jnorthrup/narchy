@@ -24,8 +24,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
     /** suspect */
     Comparator<PREDICATE> sortByCostIncreasing = (a, b) -> {
         if (a.equals(b)) return 0;
-        float ac = a.cost();
-        float bc = b.cost();
+        float ac = a.cost(), bc = b.cost();
         if (ac > bc) return +1;
         else if (ac < bc) return -1;
         else return a.compareTo(b);
@@ -62,6 +61,15 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
     }
 
 
+//    default MethodHandle compile() {
+//        try {
+//            return MethodHandles.lookup().findVirtual(getClass(), "test",
+//                MethodType.methodType(boolean.class, MethodType.genericMethodType(1))
+//            ).bindTo(this);
+//        } catch (NoSuchMethodException | IllegalAccessException e) {
+//            throw new RuntimeException(e);
+//        }
+//    }
 
     @Nullable
     static <X> PREDICATE<X> compileAnd(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {

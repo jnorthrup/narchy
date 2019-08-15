@@ -35,7 +35,7 @@ import java.nio.channels.ServerSocketChannel;
  */
 public class HttpServer extends Loop implements WebSocketSelector.UpgradeWebSocketHandler, HttpModel {
 
-    static final int LINEBUFFER_SIZE = 512; 
+    static final int LINEBUFFER_SIZE = 2048;
     private static final int RCVBUFFER_SIZE = 16384;
     static final int BUFFER_SIZE = RCVBUFFER_SIZE + LINEBUFFER_SIZE;
 

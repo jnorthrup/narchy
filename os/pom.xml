@@ -11,6 +11,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
+    <repositories>
+        <repository>
+            <id>teavm-dev</id>
+            <url>https://dl.bintray.com/konsoletyper/teavm</url>
+        </repository>
+    </repositories>
 
     <groupId>narchy</groupId>
     <artifactId>os</artifactId>

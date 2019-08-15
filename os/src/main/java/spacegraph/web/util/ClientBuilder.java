@@ -39,18 +39,20 @@ public class ClientBuilder {
 
             TeaVMTool tea = new TeaVMTool();
 
+
+//            tea.setSourceFilesCopied(true);
             tea.setMainClass(entryClass.getName());
             tea.setCacheDirectory(new File("/tmp/teacache"));
-            tea.setIncremental(true);
-            tea.setTargetType(TeaVMTargetType.WEBASSEMBLY);
 
+//            tea.setIncremental(true);
+            //tea.setTargetType(TeaVMTargetType.WEBASSEMBLY);
+            tea.setTargetType(TeaVMTargetType.JAVASCRIPT);
 
-            //tea.setDebugInformationGenerated(true);
+            tea.setDebugInformationGenerated(true);
 
             tea.setTargetDirectory(new File("/tmp/tea"));
             tea.setLog(LOG);
 
-            //tea.setTargetType(TeaVMTargetType.JAVASCRIPT);
             tea.setMinifying(false);
 
 

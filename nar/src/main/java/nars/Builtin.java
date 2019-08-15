@@ -8,10 +8,8 @@ import nars.op.data.flat;
 import nars.op.data.reflect;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Terms;
 import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
@@ -133,7 +131,7 @@ public class Builtin {
                     return Null;
 
                 int n;
-                if (from.op() == to.op() && (n = from.subs()) == to.subs()) {
+                if (from.opID() == to.opID() && (n = from.subs()) == to.subs()) {
 
                     Map<Term, Term> m = null;
                     for (int i = 0; i < n; i++) {
@@ -482,7 +480,7 @@ public class Builtin {
                if (event instanceof nars.term.Variable)
                    return Null; //impossible
                //choose a likely unifiable candiate sub-event.  do not choose an equal match
-               if (conj.op()==NEG)
+               if (conj instanceof Neg)
                    conj = conj.unneg();
 
                boolean requireVars = !event.hasVars();

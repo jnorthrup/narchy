@@ -179,6 +179,7 @@ public class Derivation extends PreDerivation {
      */
     private transient float priSingle, priDouble;
     private Term _taskTerm;
+//    private MethodHandle deriverMH;
 
     {
         premiseUnify.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
@@ -492,6 +493,8 @@ public class Derivation extends PreDerivation {
 
         this.deriver = d;
         this.what = w;
+        //this.deriverMH = deriver.rules.what.compile();
+
 
         what.derivePri.premise(this);
 
@@ -683,7 +686,14 @@ public class Derivation extends PreDerivation {
     @Override
     public ShortBuffer preDerive() {
         canCollector.clear();
+
         deriver.rules.what.test(this);
+//        try {
+//            deriverMH.invoke(this);
+//        } catch (Throwable throwable) {
+//            throwable.printStackTrace();
+//        }
+
         return canCollector;
     }
 
