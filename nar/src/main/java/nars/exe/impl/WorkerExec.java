@@ -170,7 +170,7 @@ public class WorkerExec extends ThreadedExec {
             if (!singleton || h.busy.compareAndSet(false, true)) {
 //                long before = nanoTime();
 
-                float util = h.utilization();
+                float util = h._utilization;
                 if (!Float.isFinite(util)) util = 1;
                 long useNS = Math.round(subCycleMaxNS / ((double)Util.clamp(util, 1f, maxOverUtilization)));
 //                if (before + useNS > until)

@@ -1,16 +1,13 @@
 package nars.control.op;
 
-import jcog.WTF;
-import jcog.data.list.FasterList;
-import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
-import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
+import nars.table.BeliefTable;
 import nars.task.AbstractTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -30,14 +27,14 @@ public class Remember extends AbstractTask {
     /**
      * root input
      */
-    @Deprecated public Task input;
+    public Task input;
 
-    public FasterList<Task> remembered = null;
+//    public FasterList<Task> remembered = null;
 
     public boolean store;
     public boolean link;
     public boolean notify;
-    public boolean done = false;
+    private boolean done = false;
 
     public final NAR nar;
 
@@ -45,7 +42,7 @@ public class Remember extends AbstractTask {
         return the(x, true, true, true, n);
     }
 
-    public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
+    private static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
 
         Term xTerm = x.term();
 //        assert (!x.isCommand());
@@ -87,7 +84,7 @@ public class Remember extends AbstractTask {
         return new Remember(x, store, link, emit, n);
     }
 
-    public Remember(Task input, boolean store, boolean link, boolean notify, NAR n) {
+    private Remember(Task input, boolean store, boolean link, boolean notify, NAR n) {
         this.store = store;
         this.link = link;
         this.notify = notify;
@@ -111,24 +108,31 @@ public class Remember extends AbstractTask {
     /** TODO check that image dont double link/activate for their product terms */
     private void commit(Task input, boolean store, What w) {
 
-        NAR n = w.nar;
 
 //        boolean the = (input == this.input);
 
-        if (!store)
-            link(input, w);
-        else {
-            Concept cc = n.conceptualize(input);
-            if (!(cc instanceof TaskConcept)) {
-//                //may be an atomic functor term, not sure
-//                if (NAL.DEBUG)
-                    throw new WTF();
-//                return;
-            }
-
-
-            insert((TaskConcept) cc, w);
+        if (!store) {
+            done = true;
+         } else {
+            TaskConcept cc = (TaskConcept) w.nar.conceptualize(input);
+            cc.remember(this);
         }
+
+        if (done && !input.isDeleted()) {
+            link(input, w);
+        }
+
+
+//            if (remembered != null && !remembered.isEmpty()) {
+//                remembered.forEachWith((Task r, What ww) -> {
+//                    if (r.equals(this.input)) //HACK
+//                        link(r, ww); //root
+//                    else
+//                        commit(r, false, ww); //sub
+//                }, w);
+//                remembered = null;
+//            }
+//        }
 
     }
 
@@ -167,56 +171,37 @@ public class Remember extends AbstractTask {
     }
 
 
-    /**
-     * attempt to insert into the concept's belief table
-     */
-    private void insert(TaskConcept c, What w) {
 
+    public void forget(Task x) {
 
-        c.add(this);
+//        if (remembered != null && remembered.removeInstance(x)) {
+//            //throw new TODO();
+//            //TODO filter next tasks with any involving that task
+//        }
 
-        if (remembered != null && !remembered.isEmpty()) {
-            remembered.forEachWith((Task r, What ww) -> {
-                if (r.equals(this.input)) //HACK
-                    link(r, ww); //root
-                else
-                    commit(r, false, ww); //sub
-            }, w);
-            remembered = null;
-        }
-    }
+        x.delete();
 
-
-    public final void forget(Task x) {
-        forget(x, true);
-    }
-
-    public void forget(Task x, boolean delete) {
-
-        if (remembered != null && remembered.removeInstance(x)) {
-            //throw new TODO();
-            //TODO filter next tasks with any involving that task
-        }
-
-        if (delete)
-            x.delete();
-
-        if (input == x) {
-            input = null;
-            done = true;
-        }
+//        if (input == x) {
+//            input = null;
+//            done = true;
+//        }
     }
 
     public void remember(Task x) {
-        if (x == input)
-            done = true;
+//        if (x == input)
+        input = x;
+        done = true;
 
-        if (this.remembered == null) {
-            remembered = new FasterList<>(2);
-            remembered.addFast(x);
-        } else {
-            add(x, this.remembered);
-        }
+//        if (this.remembered == null) {
+//            remembered = new FasterList<>(2);
+//            remembered.addFast(x);
+//        } else {
+//            if (x != null) {
+//                if (!this.remembered.containsInstance(x)) {
+//                    this.remembered.add(x);
+//                }
+//            }
+//        }
     }
 
 
@@ -235,7 +220,7 @@ public class Remember extends AbstractTask {
 
             if (!identity) {
                 Task.merge(prev, next);
-                forget(next, true);
+                forget(next);
             }
         }
 
@@ -282,22 +267,21 @@ public class Remember extends AbstractTask {
     }
 
 
-    private static boolean add(Prioritizable x, FasterList f) {
-        if (x != null) {
-            if (!f.containsInstance(x)) {
-                f.add(x);
-                return true;
-            } else {
-                return false;
-            }
-        }
-        return false;
-    }
-
-
     public final boolean active() {
         //return input == null || (remembered != null && remembered.containsInstance(input));
         return !done;
     }
 
+    public boolean tryRemember(BeliefTable t) {
+//        BeliefTable[] z = this.items;
+//        if (z == null) return; //?wtf
+//        int thisSize = Math.min(size, z.length);
+//        for (int i = 0; i < thisSize; i++) {
+//            BeliefTable t = z[i];
+//            if (t!=null) {
+        t.remember(this);
+        return !active();
+//            }
+//        }
+    }
 }

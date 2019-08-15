@@ -13,7 +13,6 @@ import org.slf4j.Logger;
 import java.io.PrintStream;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.atomic.LongAdder;
 import java.util.function.BooleanSupplier;
 
 import static nars.time.Tense.TIMELESS;
@@ -61,12 +60,12 @@ abstract public class How extends PriNARPart {
      */
     public final AtomicBoolean busy;
 
-    FloatAveragedWindow utilization = new FloatAveragedWindow(8, 0.5f).clear(1);
+    public FloatAveragedWindow utilization = new FloatAveragedWindow(8, 0.5f).clear(1);
 //    final AtomicHistogram utilizationPct = new AtomicHistogram(1, 100000, 3);
     /** cached factor */
-    transient float _utilization = 1;
+    public transient float _utilization = 1;
 
-    public final LongAdder useActual = new LongAdder();
+    public final AtomicLong useActual = new AtomicLong();
     public final AtomicLong usedTotal = new AtomicLong(0);
 
     /**
@@ -159,7 +158,7 @@ abstract public class How extends PriNARPart {
 
 
     private void use(long expected, long actual) {
-        useActual.add(actual);
+        useActual.addAndGet(actual);
         double utilization = ((double)actual)/expected;
         //long utilPct = Math.round(utilization * 100);
         //if (utilPct > 100000)
@@ -181,7 +180,7 @@ abstract public class How extends PriNARPart {
     }
 
     public long used() {
-        long l = useActual.sumThenReset();
+        long l = useActual.getAndSet(0);
         usedTotal.addAndGet(l);
         return l;
     }
@@ -192,10 +191,6 @@ abstract public class How extends PriNARPart {
     }
 
     private final WhenInternal myCause = new AtCause(id);
-
-    public float utilization() {
-        return _utilization;
-    }
 
 
 //    /**

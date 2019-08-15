@@ -42,7 +42,6 @@ public enum Perceive {
         NAR n = w.nar;
         n.emotion.perceivedTaskStart.increment();
 
-
         byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
@@ -61,23 +60,22 @@ public enum Perceive {
                 perceived = executionPerceived;
         }
 
-        if (!Evaluation.evalable(x.term()))
-            return perceived;
+        if (Evaluation.evalable(x.term())) {
+            FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
+            if (rt != null) {
+                rt.removeInstance(x); //something was eval, remove the input HACK
+                //rt.remove(x);
 
-        FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
-        if (rt != null) {
-            rt.removeInstance(x); //something was eval, remove the input HACK
-            //rt.remove(x);
+                if (!rt.isEmpty()) {
+                    //move and share input priority fairly:
+                    float xp = x.priGetAndSet(0) / rt.size();
+                    for (Task y : rt)
+                        y.pri(xp);
 
-            if (!rt.isEmpty()) {
-                //move and share input priority fairly:
-                float xp = x.priGetAndSet(0) / rt.size();
-                for (Task y : rt)
-                    y.pri(xp);
+                    //rt.add(perceived); //echo
 
-                //rt.add(perceived); //echo
-
-                return task(rt, false);
+                    return task(rt, false);
+                }
             }
         }
 

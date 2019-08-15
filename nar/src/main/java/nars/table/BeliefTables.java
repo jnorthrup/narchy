@@ -138,17 +138,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** stops after the first table accepts it */
     @Override public void remember(Remember r) {
-        BeliefTable[] z = this.items;
-        if (z == null) return; //?wtf
-        int thisSize = Math.min(size, z.length);
-        for (int i = 0; i < thisSize; i++) {
-            BeliefTable t = z[i];
-            if (t!=null) {
-                t.remember(r);
-                if (!r.active())
-                    return;
-            }
-        }
+        anySatisfy(r::tryRemember);
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
 //            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&

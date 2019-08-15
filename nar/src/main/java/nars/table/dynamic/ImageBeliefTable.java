@@ -57,8 +57,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
             c.table(normalized.punc()).remember(r);
         }
 
-        if (r.remembered!=null && r.remembered.contains(normalized)) {
-//        if (!r.store || r.remembered!=null) {
+        if (normalized.equals(r.input)) {
             r.store = false;
             r.link = r.notify = true;
             r.remember(imaged);
