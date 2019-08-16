@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.pri.ScalarValue;
 import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
@@ -12,6 +13,8 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.term.util.TermException;
+
+import static nars.Task.i;
 
 
 public class AtomicTaskLink extends AbstractTaskLink {
@@ -84,9 +87,18 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
     @Override
-    public void priSet(TaskLink t, float factor) {
-        for (byte i = 0; i < 4; i++)
-            punc.setAt(i, t.priIndex(i) * factor);
+    public float transfer(TaskLink t, float factor, float sustain, byte punc) {
+//        float free = 0;
+        byte i = i(punc);
+        //for (byte i = 0; i < 4; i++) {
+            float xfer = (1-sustain) * this.punc.merge(i, factor * t.priIndex(i), plus, PriReturn.Delta);
+            if (xfer > ScalarValue.EPSILON) {
+                ((AtomicTaskLink)t).merge(i, -xfer, plus, PriReturn.Void);
+            }
+        //}
+        ((AtomicTaskLink)t).invalidate();
+        invalidate();
+        return xfer;
     }
 
     @Override
@@ -124,6 +136,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
         for (byte i = 0; i < 4; i++) {
             taken += punc.merge(i, pct, mult, PriReturn.Delta);
         }
+        invalidate();
         return -taken;
     }
 

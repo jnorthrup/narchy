@@ -2,10 +2,12 @@ package nars.truth.proj;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
+import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
@@ -338,30 +340,33 @@ abstract public class TruthProjection extends TaskList {
 			}
 		}
 
-//		//post-filter cull weak tasks that excessively dilute the effective average evidence
 		int activeAfter = active();
-//		if (shrink && activeAfter > minComponents && start!=ETERNAL) {
-//			if (activeAfter != activeBefore) {
-//				refocus(shrink);
-//			}
-//			activeBefore = activeAfter;
-//
-//			for (int i = minComponents; i < activeBefore; i++) {
-//				Task ti = items[i];
-//				if (ti.isEternal()) continue;
-//				double thresh = 0.5 * eviSum() * 1.0/activeBefore;
-//				if (evi[i] < thresh) {
-//					LongInterval lti = (LongInterval) ti;
-//					if (!Util.or(k->k!=null && k.contains(lti), 0, i-1, items)) { //if no stronger task contains the interval, then it must be expanding the total focus
-//						remove(i);
-//						activeAfter--;
-//					}
-//				}
-//			}
-//		}
-//
 		if (activeAfter != activeBefore)
 			refocus(shrink);
+
+		//post-filter cull weak tasks that excessively dilute the effective average evidence
+		if (shrink && activeAfter > minComponents && start!=ETERNAL) {
+			activeBefore = activeAfter;
+
+			double eSum = eviSum(null);
+			double eFactor = 0.5;
+			double thresh = eFactor * eSum * 1.0/(activeBefore-minComponents + 1);
+			for (int i = minComponents; i < activeBefore; i++) {
+				if (evi[i] < thresh) {
+					Task ti = items[i];
+					if (ti.isEternal()) continue;
+					if (!Util.or(k->k!=null && k.contains((LongInterval) ti), 0, i, items)) { //if no stronger task contains the interval, then it must be expanding the total focus
+						remove(i);
+						activeAfter--;
+					}
+				}
+			}
+			if (activeAfter != activeBefore) {
+				refocus(shrink);
+			}
+		}
+
+
 
 		return (!needStamp || remain <= 0) ? null : stampRemain(remain);
 	}
@@ -441,18 +446,18 @@ abstract public class TruthProjection extends TaskList {
 //    }
 
 
-//	private double eviSum(@Nullable IntPredicate each) {
-//		double e = 0;
-//		int n = size();
-//		for (int i = 0; i < n; i++) {
-//			if (each == null || each.test(i)) {
-//				double ce = evi[i];
-//				if (valid(ce))
-//					e += ce;
-//			}
-//		}
-//		return e;
-//	}
+	private double eviSum(@Nullable IntPredicate each) {
+		double e = 0;
+		int n = size();
+		for (int i = 0; i < n; i++) {
+			if (each == null || each.test(i)) {
+				double ce = evi[i];
+				if (valid(ce))
+					e += ce;
+			}
+		}
+		return e;
+	}
 
 	private MetalLongSet commit1(boolean provideStamp) {
 		Task only = firstValid();
@@ -837,16 +842,13 @@ abstract public class TruthProjection extends TaskList {
 					changed = time(u0, u1);
 				} else {
 					if (shrink) {
-						long ss = (u0 > this.start && u0 <= this.end) ? u0 : start;
-						long ee = (u1 < this.end && u1 >= ss) ? u1 : end;
-						//long ss = u0, ee = u1;
+						long ss = (u0 > start && u0 <= end) ? u0 : start;
+						long ee = (u1 < end && u1 >= ss) ? u1 : end;
 						changed = time(ss, ee);
 					}
 				}
 			} else {
-				if (start != ETERNAL) {
-					changed = time(ETERNAL, ETERNAL);
-				}
+				changed = (start != ETERNAL) && time(ETERNAL, ETERNAL);
 			}
 
 		}

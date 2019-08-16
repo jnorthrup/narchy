@@ -143,57 +143,29 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-    public void grow(TaskLink parent, Term from, Term to) {
-        //                //TODO abstact activation parameter object
-//                float subRate =
-//                        1f;
-//                //1f/(t.volume());
-//                //(float) (1f/(Math.sqrt(s.volume())));
-//
-//
-//                float inflation = 1; //TODO test inflation<1
-//                float want = p * subRate / 2;
-//                float p =
-//                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
-
-//        float p =
-//                link.priPunc(punc);
-        float pFwd = amp.floatValue();
-
-        //CHAIN pattern
-        link(from, to, parent, pFwd); //forward (hop)
-
-        float toUnsustain = pFwd * (1 - this.sustain.floatValue());
-        if (toUnsustain > ScalarValue.EPSILON) {
-            float unsustained = parent.take(toUnsustain);
-            links.bag.depressurize(unsustained);
+    public float grow(TaskLink parent, Term from, Term to, byte punc) {
+        float take = amp.floatValue();
+        if (take > ScalarValue.EPSILON) {
+            return transfer(from, to, parent, take, sustain.floatValue(), punc);
         }
-
-
-        //link(s, t, punc, ); //redundant
-        //link(t, s, punc, pp); //reverse echo
-
-//                if (self)
-//                    t = u;
-
-//                } else {
-//////                int n = 1;
-//////                float pp = p * conductance / n;
-//////
-//////                link(t, s, punc, pp); //reverse echo
-////
-//                }
-//            }
+        return 0;
     }
 
 
     private void link(Term s, Term u, byte punc, float p) {
         link(AtomicTaskLink.link(s, u).priSet(punc, p));
     }
-    private void link(Term s, Term u, TaskLink parent, float p) {
-        AtomicTaskLink l = AtomicTaskLink.link(s, u);
-        l.priSet(parent, p);
+
+    /** returns the total priority released
+     *  sustain=1: copy
+     *  sustain=0: move
+     *
+     * @return*/
+    private float transfer(Term s, Term u, TaskLink parent, float fraction, float sustain, byte punc) {
+        TaskLink l = AtomicTaskLink.link(s, u);
+        float freed = l.transfer(parent, fraction, sustain, punc);
         link(l);
+        return freed;
     }
 
     public final TaskLink link(TaskLink x) {

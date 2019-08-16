@@ -52,20 +52,20 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 			Term reverse = reverse(target, tasklink, task, links, d);
 			if (reverse != null)
 				target = reverse;
+		}
 
-			{
-				Term src = task.term();
-				Term forward = forward(src, tasklink, task, d);
-				if (forward != null) {
-					if (!forward.op().eventable && !src.containsRecursively(forward)) {
-						//throw new WTF();
-					} else {
-						links.grow(tasklink, src, forward);
-					}
+		{
+			Term src = task.term();
+			Term forward = forward(src, tasklink, task, d);
+			if (forward != null) {
+				if (!forward.op().eventable && !src.containsRecursively(forward)) {
+					//throw new WTF();
+				} else {
+					float freed = links.grow(tasklink, src, forward, task.punc());
+					links.links.depressurize(freed);
 				}
 			}
 		}
-
 		return new Premise(task, target);
 	}
 

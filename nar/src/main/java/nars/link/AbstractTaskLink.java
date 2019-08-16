@@ -14,7 +14,6 @@ import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
 import static jcog.signal.tensor.AtomicFixedPoint4x16bitVector.SHORT_TO_FLOAT_SCALE;
 import static nars.Task.i;
-import static nars.Task.p;
 
 public abstract class AbstractTaskLink implements TaskLink {
 
@@ -26,6 +25,9 @@ public abstract class AbstractTaskLink implements TaskLink {
     public final Term src;
     public final Term tgt;
     public final int hash;
+
+    static final FloatFloatToFloatFunction plus = PriMerge.plus::mergeUnitize;
+    static final FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
 
     /**
      * cached; NaN means invalidated
@@ -149,12 +151,6 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override abstract public String toString();
 
-
-    public void priSet(TaskLink t, float factor) {
-        for (byte i = 0; i < 4; i++)
-            priSet(p(i), t.priIndex(i) * factor);
-    }
-
     public final AbstractTaskLink priSet(byte punc, float puncPri) {
         if (puncPri==puncPri)
             priMerge(punc, puncPri, PriMerge.replace);
@@ -189,7 +185,7 @@ public abstract class AbstractTaskLink implements TaskLink {
         throw new TODO();
     }
 
-    private void mergeComponent(byte punc, float pri, PriMerge merge) {
+    protected void mergeComponent(byte punc, float pri, PriMerge merge) {
         mergeComponent(punc, pri, merge, PriReturn.Void);
     }
 
@@ -223,7 +219,7 @@ public abstract class AbstractTaskLink implements TaskLink {
         throw new TODO();
     }
 
-    static final FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
+
 
     @Override
     public float priMult(float X) {
