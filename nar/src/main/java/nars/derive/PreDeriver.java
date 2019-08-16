@@ -22,7 +22,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
         final ByteHijackMemoize<PremiseKey, short[]> whats;
 
-        CentralMemoizer() {
+        public CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_what",
                     Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
                     bd -> ((PreDerivation) bd.x).preDerive().toArray(true));

@@ -297,7 +297,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
 
     public final Subterms asSubterms(boolean commute) {
-        DisposableTermList terms = new DisposableTermList(this.items);
+        DisposableTermList terms = new DisposableTermList(size, this.items);
         if (commute)
             terms.sortAndDedup();
         return terms;

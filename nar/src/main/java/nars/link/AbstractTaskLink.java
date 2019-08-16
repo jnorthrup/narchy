@@ -14,6 +14,7 @@ import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
 import static jcog.signal.tensor.AtomicFixedPoint4x16bitVector.SHORT_TO_FLOAT_SCALE;
 import static nars.Task.i;
+import static nars.Task.p;
 
 public abstract class AbstractTaskLink implements TaskLink {
 
@@ -93,10 +94,10 @@ public abstract class AbstractTaskLink implements TaskLink {
         this.pri = Float.NaN;
     }
 
+
     @Override
     public float take(byte punc, float howMuch) {
         return Math.max(ScalarValue.EPSILON,
-                //-priMergeGetDelta(punc, howMuch, PriMerge.minus)
                 -priMergeGetDelta(punc, -howMuch, PriMerge.plus)
         );
     }
@@ -148,6 +149,11 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override abstract public String toString();
 
+
+    public void priSet(TaskLink t, float factor) {
+        for (byte i = 0; i < 4; i++)
+            priSet(p(i), t.priIndex(i) * factor);
+    }
 
     public final AbstractTaskLink priSet(byte punc, float puncPri) {
         if (puncPri==puncPri)

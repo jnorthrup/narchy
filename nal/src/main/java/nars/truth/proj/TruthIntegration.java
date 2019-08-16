@@ -10,9 +10,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class TruthIntegration {
 
-	public static double eviAvg(Task t, float dur) {
-		return eviAvg(t, t.start(), t.end(), dur);
-	}
+
 
 	public static double eviAvg(Task t, long start, long end, float dur) {
 		long range = start == ETERNAL ? 1 : 1 + (end - start);

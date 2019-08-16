@@ -33,8 +33,8 @@ abstract public class AbstractTaskSeries<T extends Task> implements TaskSeries<T
         int toRemove = (size()+1) - cap;
         while (toRemove-- > 0) {
             T x = pop();
-            if (x!=null)
-                x.delete();
+//            if (x!=null)
+//                x.delete();
         }
     }
 

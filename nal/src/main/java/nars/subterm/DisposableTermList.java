@@ -13,6 +13,10 @@ public class DisposableTermList extends TermList {
         super(t);
     }
 
+    public DisposableTermList(int startingSize, Term[] t) {
+        super(startingSize, t);
+    }
+
     public DisposableTermList(int initialCap, int startingSize) {
         super(initialCap);
         this.size = startingSize;

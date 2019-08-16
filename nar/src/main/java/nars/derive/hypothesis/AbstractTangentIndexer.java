@@ -16,7 +16,9 @@ import java.util.stream.Collectors;
 
 import static nars.Op.ATOM;
 
-/** caches results of an exhaustive search (ex: of all or some concepts in memory) and supplies tangents using this */
+/**
+ * caches results of an exhaustive search (ex: of all or some concepts in memory) and supplies tangents using this
+ */
 public abstract class AbstractTangentIndexer extends TangentIndexer {
 
 	static final String id = AbstractTangentIndexer.class.getSimpleName();
@@ -31,19 +33,19 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 		if (target instanceof Compound && target.hasAny(ATOM)) {
 
 			List<Term> tangent = Snapshot.get(target, d.nar, id, d.time(), ttl(d), (Concept targetConcept, List<Term> t) -> {
-FasterList<Term> l = d.nar.concepts().filter(c -> {
-Term ct = c.term();
-return !ct.equals(target) && test(ct, target);
-}).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
-if (l.isEmpty())
-return List.of();
-else {
-l.trimToSize();
-return l;
-}
-});
+				FasterList<Term> l = d.nar.concepts().filter(c -> {
+					Term ct = c.term();
+					return !ct.equals(target) && test(ct, target);
+				}).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
+				if (l.isEmpty())
+					return List.of();
+				else {
+					l.trimToSize();
+					return l;
+				}
+			});
 
-			if (tangent!=null && !tangent.isEmpty())
+			if (tangent != null && !tangent.isEmpty())
 				return tangent.get(d.random.nextInt(tangent.size())); //System.out.println(target + "\t" + tangent);
 
 		}

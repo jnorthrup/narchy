@@ -2887,6 +2887,16 @@ public enum Util {
 
         return strong ? lock.writeLock() : lock.tryWriteLock();
     }
+    public static long writeToRead(long l, StampedLock lock) {
+        if (l != 0) {
+            long ll = lock.tryConvertToReadLock(l);
+            if (ll != 0) return ll;
+
+            lock.unlockWrite(l);
+        }
+
+        return lock.readLock();
+    }
 
     public static <X,Y extends X,Z extends X> X maybeEqual(Y current, Z next) {
         return Objects.equals(current, next) ? current : next;

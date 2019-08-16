@@ -92,8 +92,8 @@ public enum PremiseRuleCompiler {
                 rootBranches,
 //                mustAtomizableStructure,
 
-                PreDeriver.DIRECT_DERIVATION_RUNNER
-                //new PreDeriver.CentralMemoizer()
+                //PreDeriver.DIRECT_DERIVATION_RUNNER
+                new PreDeriver.CentralMemoizer()
                 //DeriverPlanner.ConceptMetaMemoizer
         );
 //        print(rr, System.out, 2);

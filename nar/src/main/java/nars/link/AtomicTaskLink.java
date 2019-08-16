@@ -19,6 +19,9 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     public static AtomicTaskLink link(Term source, Term target) {
 
+//        if ((target instanceof Variable || target instanceof Int) && !source.containsRecursively(target))
+//            throw new WTF();
+
         if (NAL.TASKLINK_NORMALIZE_IMAGES) {
             source = Image.imageNormalize(source);
             if (target instanceof Compound)
@@ -81,6 +84,12 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
     @Override
+    public void priSet(TaskLink t, float factor) {
+        for (byte i = 0; i < 4; i++)
+            punc.setAt(i, t.priIndex(i) * factor);
+    }
+
+    @Override
     protected void fill(float pri) {
         punc.fill(pri);
         invalidate();
@@ -109,6 +118,14 @@ public class AtomicTaskLink extends AbstractTaskLink {
         super(self, self);
     }
 
+    @Override
+    public float take(float pct) {
+        float taken = 0;
+        for (byte i = 0; i < 4; i++) {
+            taken += punc.merge(i, pct, mult, PriReturn.Delta);
+        }
+        return -taken;
+    }
 
     private final WritableTensor punc =
             new AtomicFixedPoint4x16bitVector();

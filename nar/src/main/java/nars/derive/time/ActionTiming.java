@@ -6,18 +6,19 @@ import nars.Task;
 import nars.attention.What;
 import nars.derive.util.TimeFocus;
 import nars.term.Term;
+import nars.time.Tense;
 
 import java.util.Random;
 
+import static java.lang.Math.round;
+
 public class ActionTiming implements TimeFocus {
 
-    //TODO parametr for shifting focus balance toward past, present or future
-
+    /** TODO mutable histogram model for temporal focus duration  */
     public final FloatRange focusDurs = new FloatRange(1, 0, 32);
 
+    /** TODO mutable histogram model for temporal focus position  */
     public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
-
-
 
     public ActionTiming() {
 
@@ -35,32 +36,17 @@ public class ActionTiming implements TimeFocus {
     @Override
     public long[] premise(What what, Task task, Term term) {
 
-        int dur = Math.round(what.dur() * focusDurs.floatValue());
+        float dur = what.dur() * focusDurs.floatValue();
 
         long now = what.time();
         Random rng = what.random();
-        long start, end;
-//        long taskStart = task.start();
-//        if (taskStart <= now - dur) {
 
-            //gaussian
-            long then = Math.round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
+        //gaussian
+        long then = round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
+        //uniform
+        //long then = Math.round(now + (-.5f + rng.nextFloat()) * 2 * horizonDurs.floatValue() * dur); //uniform
 
-            //uniform
-            //long then = Math.round(now + (-.5f + rng.nextFloat()) * 2 * horizonDurs.floatValue() * dur); //uniform
-
-
-
-            start = (then - dur / 2);
-            //start = Tense.dither(start, nar);
-            end = (then + dur / 2);
-            //end = Tense.dither(end, nar);
-
-
-//        } else {
-//            //non-eternal present or future
-//            start = taskStart; end = task.end();
-//        }
-        return new long[]{start, end};
+        long[] se = new long[] { round(then - dur / 2), round(then + dur / 2)};
+        return Tense.dither(se, what.nar);
     }
 }

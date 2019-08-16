@@ -48,7 +48,7 @@ public class NAL1Test extends NALTest {
         String belief = "<bird --> swimmer>";
 
         test
-                .mustBelieve(4, belief, 0.87f, 0.91f)
+                .mustBelieve(cycles, belief, 0.87f, 0.91f)
                 .believe(belief)
                 .believe(belief, 0.10f, 0.60f)
         ;

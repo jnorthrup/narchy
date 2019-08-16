@@ -73,7 +73,8 @@ public class FasterList<X> extends FastList<X> {
      * uses array directly
      */
     public FasterList(int size, X[] x) {
-        super(size, x);
+        this.items = x;
+        this.size = size;
         if (size > x.length)
             ensureCapacity(size);
     }

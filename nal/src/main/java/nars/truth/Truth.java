@@ -184,29 +184,22 @@ public interface Truth extends Truthed {
             boolean ae = a.isEternal(), be = b.isEternal();
             if (ae && be) {
                 return a.evi() >= b.evi() ? a : b;
-            } else if ((ae || be) && s != ETERNAL) {
+            } else if (ae || be) {
                 if (be) {
                     @Nullable Task x = a;
                     a = b;
                     b = x; //swap so that 'b' is temporal
                 }
                 return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b) ? a : b;
+            } else if (s == TIMELESS || s == ETERNAL) {
+                //auto range
+                return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
             } else {
-                if (s == TIMELESS || s == ETERNAL)
-                    return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
-                else
-                    return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b, s, e, 0) ? a : b;
+                return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b, s, e, 0) ? a : b;
             }
         }
     }
 
-//    static <T extends Truthed> T weaker(@Nullable T a, @Nullable T b) {
-//        if (b == null)
-//            return b;
-//        if (a == null)
-//            return a;
-//        return a.evi() <= b.evi() ? a : b;
-//    }
 
     static float freq(float f, float epsilon) {
         if (!Float.isFinite(f))

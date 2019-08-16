@@ -256,6 +256,7 @@ public interface TermIO {
 
     /**
      * destructive
+     * TODO test
      */
     class DeferredTemporalTermIO extends DefaultTermIO {
         @Nullable IntArrayList dts = null;

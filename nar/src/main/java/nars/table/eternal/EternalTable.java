@@ -404,10 +404,24 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             if (tryPut(revised, r)) {
                 if (tryPut(input, r)) {
                     //inserted both
+                } else {
+                    //inserted only the revision
                 }
-                //inserted only the revision
+            } else {
+                //could not insertion revision
             }
-            //could not insertion revision
+        }
+
+        lock = Util.writeToRead(lock, this.lock);
+
+        if (revised!=null) {
+            if (!revised.isDeleted())
+                r.remember(revised);
+            else
+                r.forget(input);
+        } else {
+            if (!input.isDeleted())
+                r.remember(input);
         }
 
         return lock;
@@ -424,14 +438,13 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
         if (displaced == x) {
             r.forget(x);
+            return false;
         } else {
             if (displaced != null)
                 r.forget(displaced);
 
-            r.remember(x);
+            return true;
         }
-
-        return true;
     }
 
 

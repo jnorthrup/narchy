@@ -63,6 +63,10 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //            b.putAsync(x);
 //        }
 //    }
+    /** by default, the src term of the link is the materialized from() reference.  however Dynamic TaskLink can override this behavior */
+    default Termed src(When<NAR> when) {
+        return from();
+    }
 
     /**
      * sample punctuation by relative priority
@@ -88,10 +92,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return get(punc(when.x.random()), when, filter);
     }
 
-    /** by default, the src term of the link is the materialized from() reference.  however Dynamic TaskLink can override this behavior */
-    default Termed src(When<NAR> when) {
-        return from();
-    }
 
     @Nullable default Task get(byte punc, When<NAR> w, Predicate<Task> filter) {
 
@@ -113,6 +113,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
             boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
 
+            //TODO abstract TaskLinkResolver strategy
             Task y;
             if ((punc==BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc==GOAL && NAL.TASKLINK_ANSWER_GOAL))
                 y = table.match(w, null, filter, w.dur, false);
@@ -219,6 +220,9 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
     float merge(TaskLink incoming, PriMerge merge, PriReturn returning);
 
     float take(byte punc, float howMuch);
+
+    /** multiplies all components by factor of pct, returns the sum delta released */
+    float take(float pct);
 
     default boolean isSelf() {
         return from().equals(to());

@@ -31,11 +31,11 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		}
 	}
 
-	protected boolean fireTask(Predicate<Premise> p, When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink tasklink) {
-		Task task = tasklink.get(when);
+	protected boolean fireTask(Predicate<Premise> p, When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink l) {
+		Task task = l.get(when);
 		if (task != null && !task.isDeleted()) {
 			for (int i = 0; i < termLinksPerTaskLink; i++) {
-				Premise premise = fireTaskTermLink(links, d, tasklink, task);
+				Premise premise = fireTaskTermLink(links, d, l, task);
 				if (!p.test(premise))
 					return false;
 			}
@@ -47,39 +47,23 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		Term target = tasklink.target(task, d);
 		if (target==null)
 			target = task.term();
-		else {
 
-			if (target.op().conceptualizable) {
-				Term reverse = reverse(target, tasklink, task, links, d);
-				if (reverse != null)
-					target = reverse;
+		if (target.op().conceptualizable) {
+			Term reverse = reverse(target, tasklink, task, links, d);
+			if (reverse != null)
+				target = reverse;
+
+			{
+				Term src = task.term();
+				Term forward = forward(src, tasklink, task, d);
+				if (forward != null) {
+					if (!forward.op().eventable && !src.containsRecursively(forward)) {
+						//throw new WTF();
+					} else {
+						links.grow(tasklink, src, forward);
+					}
+				}
 			}
-
-
-			Term forward = forward(target, tasklink, task, d);
-			if (forward != null)
-				links.grow(tasklink, task, forward);
-
-
-			//normalize the image if premise doesnt involve Image-specific derivation
-			//TODO check for non-ImageTask images
-//					if (task instanceof ImageTask &&
-//							((beliefTerm instanceof Compound && !beliefTerm.op().isAny(Op.INH.bit | Op.SIM.bit))
-//									||
-//									(beliefTerm instanceof Atomic && task.term().containsRecursively(beliefTerm))
-//							)
-//					) {
-//						task = ((ImageTask) task).task;
-//					}
-//					if (target instanceof Compound) {
-//						if (!task.term().op().isAny(Op.INH.bit | Op.SIM.bit)) {
-//							Term tn = Image.imageNormalize(target);
-//							if (tn != target)
-//								target = tn;
-//						}
-//					}
-//					if (!task.term().equals(target))
-//						target = Image.imageNormalize(target);
 		}
 
 		return new Premise(task, target);

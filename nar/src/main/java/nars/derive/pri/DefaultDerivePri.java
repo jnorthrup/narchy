@@ -37,7 +37,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
 
-    public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
+    public final FloatRange simplicityExponent = new FloatRange(1f, 0f, 4f);
 
 
     /** importance of frequency polarity in result (distance from freq=0.5) */

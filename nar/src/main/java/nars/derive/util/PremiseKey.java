@@ -18,7 +18,8 @@ public class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
     public PremiseKey(PreDerivation d, int ditherDT) {
         super(d);
 
-        /* TODO move dithering option to parameter */
+        //TODO if taskTerm or beliefTerm have #'s, apply full Anon intern that considers Int as Atom like before Int's had an Intern repr
+
         if (NAL.premise.PREMISE_KEY_DITHER && ditherDT > 1) {
             TermIO.DeferredTemporalTermIO io = new TermIO.DeferredTemporalTermIO();
             io.write(d.taskTerm, key);
@@ -35,7 +36,6 @@ public class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
                     |
             Task.i(d.taskPunc)
         );
-
 
         commit();
 

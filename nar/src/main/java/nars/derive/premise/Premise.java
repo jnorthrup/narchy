@@ -54,7 +54,11 @@ public class Premise /*implements Comparable<Premise>*/ {
 	}
 
 	public void apply(Derivation d) {
-		d.reset(this.task, null, beliefTerm);
+		d.reset(this.task, belief(), beliefTerm);
+	}
+
+	public Task belief() {
+		return null;
 	}
 
 //    /**
@@ -212,8 +216,8 @@ public class Premise /*implements Comparable<Premise>*/ {
 		if (a != null) {
 			//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 			a = task.onAnswered(a);
-			if (a!=null && a.isGoal())
-                emit(a, d); //since it won't be the beliefTask, do *something* with it
+			if (a!=null)
+                emit(a, d);
 		}
 
 		return a;

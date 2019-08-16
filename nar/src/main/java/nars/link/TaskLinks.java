@@ -143,7 +143,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-    public void grow(TaskLink link, Task task, Term forward) {
+    public void grow(TaskLink parent, Term from, Term to) {
         //                //TODO abstact activation parameter object
 //                float subRate =
 //                        1f;
@@ -155,22 +155,17 @@ public class TaskLinks implements Sampler<TaskLink> {
 //                float want = p * subRate / 2;
 //                float p =
 //                        inflation < 1 ? Util.lerp(inflation, link.take(punc, want*inflation), want) : want;
-        byte punc = task.punc();
 
-        float p =
-                link.priPunc(punc);
-        float pFwd = p * amp.floatValue();
-        Term from = link.from();
+//        float p =
+//                link.priPunc(punc);
+        float pFwd = amp.floatValue();
 
         //CHAIN pattern
-        link(from, forward, punc, pFwd); //forward (hop)
-        //link(u, s, punc, pAmp); //reverse (hop)
-        //link(t, u, punc, pAmp); //forward (adjacent)
-        //link(u, t, punc, pAmp); //reverse (adjacent)
+        link(from, to, parent, pFwd); //forward (hop)
 
         float toUnsustain = pFwd * (1 - this.sustain.floatValue());
-        if (toUnsustain> ScalarValue.EPSILON) {
-            float unsustained = link.take(punc, toUnsustain);
+        if (toUnsustain > ScalarValue.EPSILON) {
+            float unsustained = parent.take(toUnsustain);
             links.bag.depressurize(unsustained);
         }
 
@@ -194,6 +189,11 @@ public class TaskLinks implements Sampler<TaskLink> {
 
     private void link(Term s, Term u, byte punc, float p) {
         link(AtomicTaskLink.link(s, u).priSet(punc, p));
+    }
+    private void link(Term s, Term u, TaskLink parent, float p) {
+        AtomicTaskLink l = AtomicTaskLink.link(s, u);
+        l.priSet(parent, p);
+        link(l);
     }
 
     public final TaskLink link(TaskLink x) {
