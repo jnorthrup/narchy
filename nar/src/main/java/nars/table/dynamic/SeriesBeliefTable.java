@@ -158,6 +158,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             return x;
     }
 
+
     public final void add(T nextT) {
         series.compress();
 
@@ -190,6 +191,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
                 throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
             this.e = end;
         }
+
+
 
         @Override
         protected int hashCalculate(long start, long end, long[] stamp) {

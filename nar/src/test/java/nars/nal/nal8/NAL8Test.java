@@ -302,14 +302,22 @@ public class NAL8Test extends NALTest {
     }
 
     @Test
-    void testConditionalGoalConjunctionDecomposeNegativeGoal() {
+    void testConditionalGoalConjunctionDecomposePositiveGoalBefore() {
 
         test
-                .goal("x", Tense.Present, 0f, 0.9f)
-                .believe("(x &&+3 y)", Tense.Present, 1f, 0.9f)
-                .mustBelieve(cycles, "x", 1f, 0.81f, 0)
-                .mustBelieve(cycles, "y", 1f, 0.81f, 3)
+                .goal("x", Tense.Present, 1f, 0.9f)
+                .inputAt(2, "(x &&+3 y). |")
+                .mustGoal(cycles, "y", 1f, 0.45f /*0.81f*/, 3)
+        ;
+    }
 
+    @Test
+    void testConditionalGoalConjunctionDecomposePositiveGoalAfter() {
+
+        test
+            .goal("y", Tense.Present, 1f, 0.9f)
+            .inputAt(2, "(x &&+3 y). |")
+            .mustGoal(cycles, "x", 1f, 0.81f, -3)
         ;
     }
 

@@ -1,7 +1,6 @@
 package nars.exe;
 
 import jcog.Log;
-import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.util.ConsumerX;
 import nars.NAR;
@@ -12,6 +11,7 @@ import nars.control.op.Perceive;
 import nars.control.op.Remember;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.AbstractTask;
+import nars.task.NALTask;
 import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
 import org.jctools.queues.atomic.MpscAtomicArrayQueue;
@@ -49,41 +49,27 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
     }
 
     /** HACK this needs better */
-    public static void run(Task t0, What w) {
+    @Deprecated public static void run(Task _x, What w) {
 
-        Task x = t0;
 
-            while (x!=null && !(x instanceof AbstractTask)) {
-                Task y;
-                if (x instanceof UnevaluatedTask) {
-                    if (x instanceof SeriesBeliefTable.SeriesTask) {
-                        y = null; //already added directly by the table to itself
-                    } else {
-                        y = Remember.the(x, w.nar);
-                    }
+        Task x = _x;
+        while (x instanceof NALTask) {
+
+            //HACK
+            if (x instanceof UnevaluatedTask) {
+                if (x instanceof SeriesBeliefTable.SeriesTask) {
+                    return; //already added directly by the table to itself
                 } else {
-                    y = Perceive.perceive(x, w);
+                    x = Remember.the(x, w.nar);
                 }
-                if (y!=null && y.equals(x))
-                    throw new WTF(); //HACK
-                x = y;
+            } else {
+                x = Perceive.perceive(x, w);
             }
 
+        }
 
-                if (x instanceof AbstractTask.TasksArray) {
-                    //HACK
-                    for (Task tt : ((AbstractTask.TasksArray) x).tasks)
-                        /* assert(!tt.equals(t0)); cycle */ run(tt, w);
-                } else if (x!=null) {
-                    do {
-                        x = x.next(w);
-                    } while (x != null);
-                }
-            /* } else if (x != null) {
-                throw new WTF("unrecognized task type: " + x.getClass() + '\t' + x);
-            }*/
-
-
+        if (x instanceof AbstractTask)
+            Task.run(x, w);
     }
 
 
@@ -157,13 +143,12 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
      * immediately execute a Task
      */
     @Override
-    public final void accept(AbstractTask x) {
-        Task t = x;
-        try {
-            Task.run(t, nar);
-        } catch (Throwable e) {
-            logger.warn("{} {}", e, t);
-        }
+    @Deprecated public final void accept(AbstractTask t) {
+//        try {
+        Task.run(t, nar);
+//        } catch (Throwable e) {
+//            logger.warn("{} {}", e, t);
+//        }
     }
 
     /**

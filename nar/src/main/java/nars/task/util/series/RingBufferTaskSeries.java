@@ -63,7 +63,8 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 //                return; //?
 //        }
 
-        q.add(t);
+        //q.add(t);
+        q.offer(t);
     }
 
     @Nullable

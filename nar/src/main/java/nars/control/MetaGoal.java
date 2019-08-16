@@ -69,16 +69,18 @@ public enum MetaGoal {
      */
     public void learn(float strength, FasterList<Why> whies, short... cause) {
 
-        if (Math.abs(strength) < Float.MIN_NORMAL)
-            return;
-
         int n = cause.length;
         if (n == 0)
             return;
 
         float s =
-                strength / n;
-                //strength;
+            strength / n;
+        //strength;
+        if (Math.abs(s) < Float.MIN_NORMAL)
+            return;
+
+
+
 
         int ordinal = ordinal();
         Why[] cc = whies.array();

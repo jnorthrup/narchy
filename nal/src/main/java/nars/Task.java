@@ -291,9 +291,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     @Nullable
     static Task clone(Task x, Term newContent) {
-        if (x.term().equals(newContent))
-            return x;
-        return clone(x, newContent, x.truth(), x.punc());
+        return x.term().equals(newContent) ? x :
+            clone(x, newContent, x.truth(), x.punc());
     }
 
     @Nullable
@@ -596,7 +595,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * TODO rewrite as ForkJoin recursive task
      */
     @Deprecated
-    static <W> void run(Task t, W w) {
+    static void run(Task t, Object w) {
         Task x = t;
         do {
             x = x.next(w);

@@ -23,17 +23,17 @@ public abstract class Introduction extends TaskLeakTransform {
 
     /** returns the new, transformed target or null if the task should not be cloned */
     @Nullable
-    protected abstract Term newTerm(Task x);
+    protected abstract Term newTerm(Term x);
 
     @Override
     protected float leak(Task xx, What what) {
 
-        Term y = newTerm(xx);
+        Term x = xx.term();
+        Term y = newTerm(x);
 
-        if(y!=null && !(y instanceof Bool)) {
+        if(y!=null && !x.equals(y) && !(y instanceof Bool)) {
             Term yu = y.unneg();
             if (yu.volume() <= volMax && yu.op().conceptualizable) {
-                Term x = xx.term();
                 if (!yu.equals(x)) {
 
                     Task yy = Task.clone(xx, y, xx.truth(), xx.punc(),

@@ -491,16 +491,26 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private static class TaskInsertion extends RInsertion<TaskRegion> {
+    private static final class TaskInsertion extends RInsertion<TaskRegion> {
 
         @Nullable TaskRegion mergeReplaced = null;
 
-        public TaskInsertion(TaskRegion t, boolean addOrMerge) {
+        TaskInsertion(TaskRegion t, boolean addOrMerge) {
             super(t, addOrMerge, RTreeBeliefModel.the);
+        }
+
+        @Nullable
+        @Override
+        public TaskRegion merge(TaskRegion x) {
+            TaskRegion y = super.merge(x);
+            if (y!=null)
+                mergeReplaced = y;
+            return y;
         }
 
         @Override
         public void mergeEqual(TaskRegion y) {
+            super.mergeEqual(y);
             mergeReplaced = y;
         }
 

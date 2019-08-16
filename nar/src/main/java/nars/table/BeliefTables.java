@@ -138,7 +138,10 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** stops after the first table accepts it */
     @Override public void remember(Remember r) {
-        anySatisfy(r::tryRemember);
+        anySatisfy(t -> {
+            t.remember(r);
+            return r.done;
+        });
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
 //            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&

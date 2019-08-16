@@ -2,17 +2,17 @@ package nars.op;
 
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.compound.Sequence;
-import nars.time.Tense;
 import org.eclipse.collections.api.block.function.primitive.ObjectIntToObjectFunction;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
+import java.util.concurrent.ThreadLocalRandom;
+
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /** introduction applied to subevents and subconditions */
 public abstract class EventIntroduction extends Introduction {
@@ -32,8 +32,7 @@ public abstract class EventIntroduction extends Introduction {
     }
 
     @Override
-    protected final @Nullable Term newTerm(Task x) {
-        Term xx = x.term();
+    protected final @Nullable Term newTerm(Term xx) {
         Term y = applyAndNormalize(xx, volMax-2);
         return y != xx ? y : null;
     }
@@ -44,36 +43,37 @@ public abstract class EventIntroduction extends Introduction {
 
     private Term applyAndNormalize(Term x, int volMax) {
         Term y = apply(x, this::apply, volMax);
-        return y!=null && y != x && y.volume() <= volMax ? y.normalize() : x;
+        return y!=null && !x.equals(y) && y.volume() <= volMax ? y.normalize() : x;
     }
 
     abstract protected Term apply(Term x, int volMax);
 
+    /** dont separate in conj and impl components if variables because renormalization will cause them to become distinct HACK */
     public static Term apply(Term x, ObjectIntToObjectFunction<Term,Term> each, int volMax) {
         if (volMax <= 0 || x instanceof Sequence)
             return x; //HACK incompatible with sequences for now
 
         Op xo = x.op();
-        if (xo == NEG) {
-            Term xu = x.unneg();
-            Term y = each.valueOf(xu, volMax-1);
-            return y!=null && y != xu ? y.neg() : x;
-        } else if (xo == IMPL) {
-            return impl(x, volMax, x.sub(0), x.sub(1), each);
-        } else if (xo == CONJ) {
+        switch (xo) {
+            case NEG:
+                Term xu = x.unneg();
+                Term y = each.valueOf(xu, volMax - 1);
+                return y != null && y != xu ? y.neg() : x;
+//            case IMPL:
+//                return x.hasAny(Op.Variable) ? x :
+//                    impl(x, volMax, x.sub(0), x.sub(1), each);
+//            case CONJ:
+//
+//                if (x.dt() == XTERNAL || x.hasAny(Op.Variable))
+//                    return x; //unchanged
+//
+//                if (!Tense.dtSpecial(x.dt()))
+//                    return conjSeq(x, volMax, x.sub(0), x.sub(1), each);
+//                else
+//                    return each.valueOf(x, volMax - 1);
 
-            if (x.dt()==XTERNAL)
-                return x; //unchanged
-
-            if (!Tense.dtSpecial(x.dt())) {
-                return conjSeq(x, volMax, x.sub(0), x.sub(1), each);
-                //return x; //unchanged
-            }
-
-            return each.valueOf(x, volMax-1);
-
-        } else {
-            return x;
+            default:
+                return each.valueOf(x, volMax);
         }
     }
 
@@ -93,11 +93,22 @@ public abstract class EventIntroduction extends Introduction {
     public static Term impl(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectFunction<Term, Term> each) {
         int dt = x.dt();
         if (dt == DTERNAL) dt = 0; //HACK
-        Term subjFactored = apply(subj, each,volMax - pred.volume() - 1);
-        if (subjFactored == null) subjFactored = subj;
-        Term predFactored = apply(pred, each,volMax - subj.volume() - 1);
-        if (predFactored == null) predFactored = pred;
-        if ((subjFactored!=subj) || (predFactored!=pred))
+
+        boolean phase = ThreadLocalRandom.current().nextBoolean();
+        Term subjFactored = null, predFactored = null;
+        for (int i = 0; i < 2; i++) {
+            if ((i == 0 && phase) || (i==1 && !phase)) {
+                subjFactored = apply(subj, each, volMax - pred.volume() - 1);
+                if (subjFactored == null) subjFactored = subj;
+            }
+
+            if ((i == 1 && phase) || (i==0 && !phase)) {
+                predFactored = apply(pred, each, volMax - subj.volume() - 1);
+                if (predFactored == null) predFactored = pred;
+            }
+        }
+
+        if ((!subj.equals(subjFactored)) || (!pred.equals(predFactored)))
             return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), predFactored);
         else
             return x; //unchanged

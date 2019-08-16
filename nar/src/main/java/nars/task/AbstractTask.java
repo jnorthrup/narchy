@@ -6,6 +6,8 @@ import jcog.pri.Prioritizable;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Task;
+import nars.attention.What;
+import nars.exe.Exec;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.block.factory.Comparators;
@@ -230,8 +232,9 @@ public abstract class AbstractTask implements Task {
 
         @Override
         public Task next(Object n) {
+            What w = (What) n;
             for (Task t: tasks)
-                Task.run(t, n);
+                Exec.run(t, w);
             return null;
         }
 

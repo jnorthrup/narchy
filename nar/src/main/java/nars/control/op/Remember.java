@@ -7,7 +7,6 @@ import nars.Task;
 import nars.attention.What;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
-import nars.table.BeliefTable;
 import nars.task.AbstractTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -34,7 +33,7 @@ public class Remember extends AbstractTask {
     public boolean store;
     public boolean link;
     public boolean notify;
-    private boolean done = false;
+    public boolean done = false;
 
     public final NAR nar;
 
@@ -108,7 +107,7 @@ public class Remember extends AbstractTask {
            cc.remember(this);
        } else {
            done = true;
-        }
+       }
 
         if (done && !this.input.isDeleted()) {
             link(this.input, (What)w);
@@ -149,8 +148,6 @@ public class Remember extends AbstractTask {
             w.emit(t); //notify regardless of whether it was conceptualized, linked, etc..
 
     }
-
-
 
     public void forget(Task x) {
         x.delete();
@@ -223,17 +220,4 @@ public class Remember extends AbstractTask {
     }
 
 
-    public boolean tryRemember(BeliefTable t) {
-//        BeliefTable[] z = this.items;
-//        if (z == null) return; //?wtf
-//        int thisSize = Math.min(size, z.length);
-//        for (int i = 0; i < thisSize; i++) {
-//            BeliefTable t = z[i];
-//            if (t!=null) {
-        t.remember(this);
-        //return input == null || (remembered != null && remembered.containsInstance(input));
-        return done;
-//            }
-//        }
-    }
 }

@@ -1,6 +1,5 @@
 package nars.control.op;
 
-import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
@@ -124,22 +123,17 @@ public enum Perceive {
     @Nullable
     private static Task perceiveable(Task x, Term y, What w) {
 
-        Term it = x.term();
-        if (!it.equals(y)) {
-            byte punc = x.punc();
-            if (y.op() == BOOL) {
-                return perceiveBooleanAnswer(x, y, w, it, punc);
-            } else {
-                return rememberTransformed(x, y, punc);
-            }
-        } else {
+        if (x.term().equals(y))
             return null;
-        }
 
+        byte punc = x.punc();
+        return y instanceof Bool ?
+            perceiveBooleanAnswer(x, y, w, punc) :
+            rememberTransformed(x, y, punc);
     }
 
     @Nullable
-    private static Task perceiveBooleanAnswer(Task x, Term y, What w, Term it, byte punc) {
+    private static Task perceiveBooleanAnswer(Task x, Term y, What w, byte punc) {
         Task t;
         if (punc == QUESTION || punc == QUEST) {
             //conver to an answering belief/goal now that the absolute truth has been determined
@@ -156,7 +150,7 @@ public enum Perceive {
 //                        it = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(it);
 
             return Task.clone(x,
-                    it,
+                    x.term(),
                     $.t(y == True ? 1 : 0, w.nar.confDefault(answerPunc)),
                     answerPunc,
                     x.start(), x.end());
@@ -167,23 +161,14 @@ public enum Perceive {
         }
     }
 
-    private static Task rememberTransformed(Task input, Term y, byte punc) {
-        @Nullable ObjectBooleanPair<Term> yy = Task.tryTaskTerm(y, punc,
-                !input.isInput() // || !Param.DEBUG
-        );
+    @Nullable private static Task rememberTransformed(Task input, Term y, byte punc) {
+        @Nullable ObjectBooleanPair<Term> yy = Task.tryTaskTerm(y, punc, !input.isInput() );
         if (yy == null)
             return null;
 
-        Term yyz = yy.getOne();
-        @Nullable Task u;
-
-        u = Task.clone(input, yyz.negIf(yy.getTwo()));
-        if (u != null) {
-            return u; //recurse
-        } else {
-            throw new WTF();
-            //return false;
-        }
+        Task u = Task.clone(input, yy.getOne().negIf(yy.getTwo()));
+        assert(u!=null);
+        return u; //recurse
     }
 
     private static Task execOperator(Task t, NAR n, boolean cmd) {
@@ -232,12 +217,12 @@ public enum Perceive {
             evalTry((Compound) (t.term()), w.nar.evaluator.get(), false);
 
             if (result!=null) {
-                if (result.contains(True) && result.contains(False)) {
+                if (result.size()>=2 && result.contains(True) && result.contains(False)) {
                     //explicit contradiction
                     result = null;
                 } else {
 
-                    FasterList f = new FasterList(result);
+                    FasterList f = new FasterList<>(result);
                     result = f;
                     f.replaceAll(this::termToTask);
                     f.removeNulls();
@@ -249,7 +234,7 @@ public enum Perceive {
 
         }
 
-        @Nullable protected Task termToTask(Object yTerm) {
+        @Nullable Task termToTask(Object yTerm) {
             return Perceive.perceiveable(t, (Term)yTerm, what);
         }
 
