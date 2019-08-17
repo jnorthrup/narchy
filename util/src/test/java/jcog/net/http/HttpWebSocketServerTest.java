@@ -42,7 +42,7 @@ class HttpWebSocketServerTest {
         
 
         
-        WebSocketTest.Client c = new WebSocketTest.Client();
+        WebSocketTest.Client c = new WebSocketTest.Client(8080);
 
         c.connectBlocking();
 

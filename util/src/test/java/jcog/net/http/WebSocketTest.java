@@ -87,8 +87,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
     static class Client extends WebSocketClient {
 
 
-        public Client() throws URISyntaxException {
-            super( new URI( "ws://localhost:8080"), new Draft_6455() );
+        public Client(int port) throws URISyntaxException {
+            super( new URI( "ws://localhost:" + port ), new Draft_6455() );
 
         }
 
@@ -115,13 +115,14 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
     @Test
     void test1() throws IOException, URISyntaxException, InterruptedException {
-        Server s = new Server(8080);
+        int port = 8081;
+        Server s = new Server(port);
         s.start();
 
 
         Util.sleepMS(1000);
 
-        Client c = new Client();
+        Client c = new Client(port);
         c.connect();
 
         Util.sleepMS(100);

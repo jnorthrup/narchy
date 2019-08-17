@@ -1,3 +1,5 @@
+X, C, eventOfPN(C,X)  |-    C,  (Punctuation:AskAsk, Time:TaskEvent)
+
 
 //Anonymous Analogy (NAL5)
 //  originally this only unified depvar (dep var elimination)

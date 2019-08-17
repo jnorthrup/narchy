@@ -111,11 +111,11 @@ public abstract class DynamicTermLinker implements TermLinker {
                 return 1;
 
             int v =
-                    //sub.unneg().volume();
-                    sub.unneg().complexity();
+                    sub.unneg().volume();
+                    //sub.unneg().complexity();
             return
                     1f / Util.sqrt(v); //inverse sqrt
-                    //1f/v; //inverse
+                    //1f / v; //inverse
                     //1f/(v*v); //inverse_sq
                     //Util.sqrt(v);
                     //v;
