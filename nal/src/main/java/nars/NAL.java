@@ -91,16 +91,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 6;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 1.5f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = false;
-    public static final boolean TASKLINK_ANSWER_GOAL = true;
+    public static final boolean TASKLINK_ANSWER_GOAL = false;
 
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;
@@ -321,8 +321,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
-    public final IntRange premiseUnifyTTL = new IntRange(4 * derive.TTL_UNISUBST_MAX, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(8 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange premiseUnifyTTL = new IntRange(3 * derive.TTL_UNISUBST_MAX, 1, 32);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -345,15 +345,16 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * global truth confidence resolution by which reasoning is dithered
      */
-    public final FloatRange confResolution = new FloatRangeRounded(NAL.truth.TRUTH_EPSILON, NAL.truth.TRUTH_EPSILON, 0.5f, NAL.truth.TRUTH_EPSILON) {
-        @Override
-        public void set(float value) {
-            super.set(value);
+    public final FloatRange confResolution = new FloatRangeRounded(NAL.truth.TRUTH_EPSILON, NAL.truth.TRUTH_EPSILON, 0.5f, NAL.truth.TRUTH_EPSILON);
+//    {
+//        @Override
+//        public void set(float value) {
+//            super.set(value);
 //            value = this.get();
 //            if (NAL.this.confMin.floatValue() < value)
 //                NAL.this.confMin.set(value);
-        }
-    };
+//        }
+//    };
     /**
      * Default priority of input question
      */
@@ -739,22 +740,18 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         @Range(min = 0, max = 64)
         public static final int TTL_COST_MUTATE = 1;
         /**
-         * cost of a successful task derivation
+         * cost of a complete task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_SUCCESS = 5;
+        public static final int TTL_COST_DERIVE_TASK = 4;
         /**
          * estimate
          */
         @Deprecated
         public static final int TTL_MIN =
                 (2) +
-                        (NAL.derive.TTL_COST_BRANCH * 1) + NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS;
-        /**
-         * cost of a repeat (of another within the premise's batch) task derivation
-         */
-        @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK_REPEAT = 3;
+                    (NAL.derive.TTL_COST_BRANCH * 1) + NAL.derive.TTL_COST_DERIVE_TASK;
+
         /**
          * cost of a task derived, but too similar to one of its parents
          */

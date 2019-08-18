@@ -12,6 +12,7 @@ import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -27,13 +28,14 @@ public class Remember extends AbstractTask {
      * root input
      */
     public Task input;
+    @Nullable public Task result = null;
 
 //    public FasterList<Task> remembered = null;
 
     public boolean store;
     public boolean link;
     public boolean notify;
-    public boolean done = false;
+
 
     public final NAR nar;
 
@@ -106,16 +108,22 @@ public class Remember extends AbstractTask {
 
            cc.remember(this);
        } else {
-           done = true;
+           result = input;
        }
 
-        if (done && !this.input.isDeleted()) {
-            link(this.input, (What)w);
+        if (complete() && !this.result.isDeleted()) {
+            link(this.result, (What)w);
         }
+
+        if (result!=input)
+            input.delete();
 
         return null;
     }
 
+    public boolean complete() {
+        return result!=null;
+    }
 
     private void link(Task t, What w) {
 
@@ -141,8 +149,10 @@ public class Remember extends AbstractTask {
 //            }
         }
 
-        if (link)
-            w.link(t);
+        if (link) {
+            //emit the result, but using the input pri (which may be different on merge)
+            w.link(t, input.priElseZero());
+        }
 
         if (notify)
             w.emit(t); //notify regardless of whether it was conceptualized, linked, etc..
@@ -154,38 +164,40 @@ public class Remember extends AbstractTask {
     }
 
     public void remember(Task x) {
-        input = x;
-        done = true;
+        result = x;
     }
 
 
     /**
      * called by belief tables when the input task is matched by an existing equal (or identical) task
      */
-    public void merge(Task prev) {
+    public void merge(Task y) {
 
-        Task next = this.input;
-        boolean identity = prev == next;
-        if (identity || prev.equals(next)) {
+        boolean identity = y == input;
+        if (identity || y.equals(input)) {
 
-            if (filter(prev, next, this.nar))
-                remember(prev); //if novel: relink, re-emit (but using existing or identical task)
+            if (filter(y))
+                remember(y); //if novel: relink, re-emit (but using existing or identical task)
+            else {
+                link = false;
+                notify = false;
+            }
 
             if (!identity) {
-                Task.merge(prev, next);
-                forget(next);
+                Task.merge(y, input);
             }
         }
 
-        done = true;
+        result = y;
     }
 
     /**
      * heuristic for determining repeat suppression
      *
      */
-    private static boolean filter(Task prev, Task next, NAR n) {
+    private boolean filter(Task prev) {
 
+        Task next = input;
         boolean priChange = false;
         if (next!=prev) {
             float np = next.priElseZero();
@@ -199,6 +211,8 @@ public class Remember extends AbstractTask {
         }
 
 
+        NAR n = nar;
+
         long prevCreation = prev.creation();
         long nextCreation = prev != next ? next.creation() : n.time();
 
@@ -208,7 +222,7 @@ public class Remember extends AbstractTask {
         } else {
             long dCycles = Math.max(0, nextCreation - prevCreation);
             float dDithers = dCycles == 0 ? 0 : (dCycles / ((float) n.dtDither()));
-            novel = dDithers > NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS;
+            novel = dDithers >= NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS;
         }
 
         if (novel) {

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 200;
+    private final int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -991,16 +991,45 @@ public class NAL5Test extends NALTest {
     }
 
     @Test void ConjQuestion() {
-        test.termVolMax(3).input("(  x && y).").input("x?").mustQuestion(10, "(  x && y)");
+        test.termVolMax(3).input("(x && y).").input("x?")
+            //.mustQuestion(cycles, "(x && y)")
+            .mustQuestion(cycles, "y")
+        ;
     }
     @Test void ConjQuestion_neg() {
-        test.termVolMax(4).input("(--x && y).").input("x?").mustQuestion(10, "(--x && y)");
+        test.termVolMax(4).input("(--x && y).").input("x?")
+            //.mustQuestion(10, "(--x && y)")
+            .mustQuestion(cycles, "y")
+        ;
     }
+
     @Test void ConjQuest() {
-        test.termVolMax(4).input("(  x && y).").input("x@").mustQuest(60, "(  x && y)");
+        test.termVolMax(4).input("(  x && y).").input("x@")
+            //.mustQuest(60, "(  x && y)")
+            .mustQuest(cycles, "y")
+        ;
     }
     @Test void ConjQuest_neg() {
-        test.termVolMax(4).input("(--x && y).").input("x@").mustQuest(60, "(--x && y)");
+        test.termVolMax(4).input("(--x && y).").input("x@")
+            //.mustQuest(60, "(--x && y)")
+            .mustQuest(cycles, "y")
+        ;
+    }
+
+    @Test void ConjInImplSubj_Question() {
+        test.termVolMax(6).input("((x && y)==>a).").input("x?")
+            .mustQuestion(cycles, "(y ==>+- a)")
+        ;
+    }
+    @Test void ConjInImplPred_Question() {
+        test.termVolMax(6).input("(a ==> (x && y)).").input("x?")
+            .mustQuestion(cycles, "(a ==>+- y)")
+        ;
+    }
+    @Test void ConjInImplPred_Quest() {
+        test.termVolMax(6).input("(a ==> (x && y)).").input("x@")
+            .mustQuestion(cycles, "(a ==>+- y)")
+        ;
     }
 
     @Test

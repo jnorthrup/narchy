@@ -188,17 +188,19 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
 
     @Override
-    @Deprecated public final void accept(Task x) {
-        put(x);
+    public final void accept(Task x) {
+        in.put(x);
     }
 
-    @Deprecated public final Task put(Task x) {
-        return in.put(x);
-    }
 
     public abstract void link(TaskLink t);
 
-    public abstract TaskLink link(Task t);
+
+    public final TaskLink link(Task task) {
+        return link(task, task.pri());
+    }
+
+    public abstract TaskLink link(Task t, float pri);
 
     public final Off onTask(Consumer<Task> listener, byte... punctuations) {
         return eventTask.on(listener, punctuations);

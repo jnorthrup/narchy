@@ -43,7 +43,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
     /**
      * returns the input task, or the existing task if a pending duplicate was present
      */
-    public abstract T put(T x);
+    public abstract void put(T x);
 
     public abstract void commit(ConsumerX<T> target, NAR n);
 
@@ -84,9 +84,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
 
         @Override
-        public final T put(T x) {
+        public final void put(T x) {
             each.accept(x);
-            return x.isDeleted() ? null : x;
         }
 
         @Override
@@ -161,15 +160,13 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public final X put(X n) {
+        public final void put(X n) {
             X p = tasks.putIfAbsent(n, n);
             if (p != null) {
                 Task.merge(p, n);
                 hit.incrementAndGet();
-                return p;
             } else {
                 miss.incrementAndGet();
-                return n;
             }
         }
 
@@ -291,8 +288,8 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
         }
 
         @Override
-        public Task put(Task x) {
-            return tasks.put(x);
+        public void put(Task x) {
+            tasks.putAsync(x);
         }
 
         @Override

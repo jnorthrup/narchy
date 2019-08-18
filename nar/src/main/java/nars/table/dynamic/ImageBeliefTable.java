@@ -1,5 +1,6 @@
 package nars.table.dynamic;
 
+import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -39,27 +40,28 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Override
     public void remember(Remember r) {
 
+        assert(r.link && r.notify): "TODO save these to tmp var";
 
         Task imaged = r.input;
         Term normal = Image.imageNormalize(imaged.term());
 
-
-
-        Task normalized = SpecialTermTask.the(imaged, normal, true);
-
+        Task normalized = null;
 
         if (r.store) {
             r.link = r.notify = false; //proxy store
-            r.input = normalized;
             TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
             if (c == null)
                 return;
+            r.input = normalized = SpecialTermTask.the(imaged, normal, true);
             c.table(normalized.punc()).remember(r);
         }
 
-        if (normalized.equals(r.input)) {
+        if (r.result!=null && !r.result.isDeleted() && normalized.equals(r.result)) {
             r.store = false;
             r.link = r.notify = true;
+            if (normalized!=r.result) {
+                Task.merge(imaged, r.result, PriMerge.replace);
+            }
             r.remember(imaged);
         }
     }

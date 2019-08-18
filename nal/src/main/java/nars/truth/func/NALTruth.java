@@ -67,6 +67,13 @@ public enum NALTruth implements TruthFunction {
             return c >= minConf ? $.t(T.freq(), c) : null;
         }
     },
+    @AllowOverlap @SinglePremise StructuralReductionWeak() {
+        @Override
+        public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
+            float c = confCompose(T, NALTruth.confDefault(n));
+            return c >= minConf ? weak($.t(T.freq(), c),minConf) : null;
+        }
+    },
     @AllowOverlap @SinglePremise StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {

@@ -224,12 +224,13 @@ public class TrackXY_NAR extends GameX {
                 1, 8
                 //2, 8
                 //, "motivation.nal"
-        )) {
+        ));
+        //{
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
 //                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
 //                    }
-        };
+        //};
 //        d.timing = new ActionTiming();
 
 

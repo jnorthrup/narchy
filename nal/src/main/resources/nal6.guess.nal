@@ -1,4 +1,8 @@
-X, C, eventOfPN(C,X)  |-    C,  (Punctuation:AskAsk, Time:TaskEvent)
+//X, C, eventOfPN(C,X)  |-    C,  (Punctuation:AskAsk, Time:TaskEvent)
+X, C,       eventOfPN(C,X)                |-         conjWithoutPN(C, X),   (Punctuation:AskAsk, Time:TaskEvent)
+X, (A==>C), eventOfPN(C,X), task("?@")    |-    (A==>conjWithoutPN(C, X)),  (Punctuation:Question, Time:TaskEvent)
+X, (C==>A), eventOfPN(C,X), task("?@")    |-    (conjWithoutPN(C, X)==>A),  (Punctuation:Question, Time:TaskEvent)
+X, (--C==>A), eventOfPN(C,X), task("?@")  |-  (--conjWithoutPN(C, X)==>A),  (Punctuation:Question, Time:TaskEvent)
 
 
 //Anonymous Analogy (NAL5)

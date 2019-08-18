@@ -261,10 +261,11 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
     @Override
     public final void remember(Remember r) {
-        if (!r.input.isEternal())
+        Task input = r.input;
+        if (!input.isEternal())
             return;
 
-        Task input = r.input, existing = null;
+        Task existing = null;
 
         long l = lock.readLock();
         try {

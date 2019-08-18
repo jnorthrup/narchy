@@ -136,6 +136,9 @@ public enum TruthFunctions2 {
                 cc = Util.and(bF, cc); //in unipolar mode, attenuate confidence to zero as the low belief frequency pulls the output frequency to 0.5
             }
 
+            /* attenuate by polarity, helps to unglue sticky ambivalent states */
+            cc = Util.and(cc, goal.polarity());
+
             if (!strong)
                 cc = weak(cc);
 

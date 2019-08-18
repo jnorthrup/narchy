@@ -41,12 +41,12 @@
     //sub-sequence leading to goal
     X, C                     |-  conjBefore(C,   X),  (Belief:DeductionPP, Goal:DeductionPP, Time:TaskEvent)
     X, C, has(C,"--")        |-  conjBefore(C, --X),  (Belief:DeductionNP, Goal:DeductionNP, Time:TaskEvent)
-        X, C                 |-    conjAfter(C,   X),  (Belief:DeductionPP, Goal:DeductionWeakPP, Time:TaskEvent)
-        X, C, has(C,"--")    |-    conjAfter(C, --X),  (Belief:DeductionNP, Goal:DeductionWeakNP, Time:TaskEvent)
+        X, C                 |-    conjAfter(C,   X),  (Belief:DeductionPP, Time:TaskEvent)
+        X, C, has(C,"--")    |-    conjAfter(C, --X),  (Belief:DeductionNP, Time:TaskEvent)
     X, D                     |-  --conjBefore(D,   X),  (Belief:DeductionPN, Goal:DeductionPN, Time:TaskEvent)
     X, D, has(D,"--")        |-  --conjBefore(D, --X),  (Belief:DeductionNN, Goal:DeductionNN, Time:TaskEvent)
-      X, D                     |-  --conjAfter(D,   X),  (Belief:DeductionPN, Goal:DeductionWeakPN, Time:TaskEvent)
-      X, D, has(D,"--")        |-  --conjAfter(D, --X),  (Belief:DeductionNN, Goal:DeductionWeakNN, Time:TaskEvent)
+      X, D                     |-  --conjAfter(D,   X),  (Belief:DeductionPN, Time:TaskEvent)
+      X, D, has(D,"--")        |-  --conjAfter(D, --X),  (Belief:DeductionNN, Time:TaskEvent)
 
       //X, C, is(C,"&&")                    |-  conjBefore(C,   X),  (Belief:DividePPX, Time:TaskEvent)
         //X, C, is(C,"&&"), has(C,"--")       |-  conjBefore(C, --X),  (Belief:DivideNPX, Time:TaskEvent) //<- PNX ?

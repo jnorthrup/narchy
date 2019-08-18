@@ -277,21 +277,10 @@ public class Taskify extends ProxyTerm {
 
         t.pri(priority);
 
-        int cost;
-        Task u = d.add(t);
-        if (u == t) {
+        d.add(t);
 
-            nar.emotion.deriveTask.increment();
-            cost = NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS;
-
-        } else {
-
-            nar.emotion.deriveFailDerivationDuplicate.increment();
-            cost = NAL.derive.TTL_COST_DERIVE_TASK_REPEAT;
-
-        }
-
-        d.use(cost);
+        nar.emotion.deriveTask.increment();
+        d.use(NAL.derive.TTL_COST_DERIVE_TASK);
     }
 
     private boolean same(Derivation d, NAR nar) {

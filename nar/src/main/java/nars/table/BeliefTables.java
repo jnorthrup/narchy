@@ -140,7 +140,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     @Override public void remember(Remember r) {
         anySatisfy(t -> {
             t.remember(r);
-            return r.done;
+            return r.complete();
         });
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {

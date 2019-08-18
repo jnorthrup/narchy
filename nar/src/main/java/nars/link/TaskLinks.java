@@ -173,27 +173,9 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-    /**
-     * initial tasklink activation for an input task
-     *
-     * @return
-     */
-    public TaskLink link(Task task) {
-        TaskLink tl = link(task, task.pri());
 
-//        //pre-seed
-//        double ii = 1 + Math.sqrt(task.term().volume());
-//        for (int i = 0; i < ii; i++)
-//            grow(tl, task, ThreadLocalRandom.current() /* HACK */);
 
-//        if (tl == null && task.isInput()) {
-//            System.err.println("tasklinks rejected input task: " + task);
-//        }
-
-        return tl;
-    }
-
-    protected TaskLink link(Task task, float pri) {
+    public TaskLink link(Task task, float pri) {
         return link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri));
     }
 

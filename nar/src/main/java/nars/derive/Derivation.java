@@ -600,8 +600,8 @@ public class Derivation extends PreDerivation {
             return y;
     }
 
-    public final nars.Task add(Task t) {
-        return what.put(t);
+    public final void add(Task t) {
+        what.accept(t);
     }
 
     public boolean concTruthEviMul(float ratio, boolean eternalize) {

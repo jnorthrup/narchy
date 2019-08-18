@@ -45,8 +45,8 @@ public class ProxyWhat extends What {
     }
 
     @Override
-    public TaskLink link(Task t) {
-        return what.link(t);
+    public TaskLink link(Task t, float pri) {
+        return what.link(t, pri);
     }
 
     @Override

@@ -3,7 +3,6 @@ package nars.nal.nal1;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
-import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
@@ -110,20 +109,18 @@ public class NAL1Test extends NALTest {
     @Test
     void structureTransformation_InhQuestion_SimBelief() {
 
-        TestNAR tester = test;
-        tester.believe("<bright <-> smart>", 0.9f, 0.9f);
-        tester.ask("<bright --> smart>");
-        tester.mustBelieve(cycles, "<bright --> smart>", 0.9f, 0.81f);
+        test.believe("<bright <-> smart>", 0.9f, 0.9f);
+        test.ask("<bright --> smart>");
+        test.mustBelieve(cycles, "<bright --> smart>", 0.9f, 0.81f);
 
     }
 
     @Test
     void revisionSim() {
 
-        TestNAR tester = test;
-        tester.mustBelieve(cycles, "<robin <-> swan>", 0.87f, 0.91f);
-        tester.believe("<robin <-> swan>");
-        tester.believe("<robin <-> swan>", 0.1f, 0.6f);
+        test.mustBelieve(cycles, "<robin <-> swan>", 0.87f, 0.91f);
+        test.believe("<robin <-> swan>");
+        test.believe("<robin <-> swan>", 0.1f, 0.6f);
     }
 
     @Test
@@ -138,13 +135,19 @@ public class NAL1Test extends NALTest {
     @Test
     void comparison2() {
 
-        TestNAR tester = test;
-        tester.believe("<sport --> competition>");
-        tester.believe("<chess --> competition>", 0.9f, 0.9f);
-        tester.mustBelieve(cycles, "<chess <-> sport>", 0.9f, 0.45f);
+        test.believe("<sport --> competition>");
+        test.believe("<chess --> competition>", 0.9f, 0.9f);
+        test.mustBelieve(cycles, "<chess <-> sport>", 0.9f, 0.45f);
 
     }
 
+    @Test
+    void comparisonPosNeg() {
+        test
+            .believe("(swan --> swimmer)", 0.9f, 0.9f)
+            .believe("--(swan --> dinosaur)")
+            .mustBelieve(cycles, "<dinosaur <-> swimmer>", 0f, 0.42f);
+    }
 
     @Test
     void analogy() {
@@ -157,20 +160,29 @@ public class NAL1Test extends NALTest {
     @Test
     void analogy2() {
 
-        TestNAR tester = test;
-        tester.believe("<gull --> swimmer>");
-        tester.believe("<gull <-> swan>");
-        tester.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.45f);
+        test.believe("<gull --> swimmer>");
+        test.believe("<gull <-> swan>");
+        test.mustBelieve(cycles, "<swan --> swimmer>", 1.0f, 0.45f);
     }
-
+    @Test
+    void comparisonStructuralPos() {
+        test
+            .believe("((a-->b) <-> (a-->c))")
+            .mustBelieve(cycles, "(b<->c)", 1.0f, 0.45f);
+    }
+    @Test
+    void comparisonStructuralNeg() {
+        test
+            .believe("--((a-->b) <-> (a-->c))")
+            .mustBelieve(cycles, "(b<->c)", 0.0f, 0.45f);
+    }
 
     @Test
     void resemblance() {
 
-        TestNAR tester = test;
-        tester.believe("<robin <-> swan>");
-        tester.believe("<gull <-> swan>");
-        tester.mustBelieve(cycles, "<gull <-> robin>", 1.0f, 0.81f);
+        test.believe("<robin <-> swan>");
+        test.believe("<gull <-> swan>");
+        test.mustBelieve(cycles, "<gull <-> robin>", 1.0f, 0.81f);
 
     }
 
@@ -182,6 +194,7 @@ public class NAL1Test extends NALTest {
             .mustBelieve(cycles, "(a<->c)", 1f, 0.81f)
         ;
     }
+
 
     @Test
     void inheritanceToSimilarity() {
@@ -204,7 +217,7 @@ public class NAL1Test extends NALTest {
         test.termVolMax(3)
             .believe("<swan --> bird>")
             .believe("<bird <-> swan>", 0.1f, 0.9f)
-            .mustBelieve(cycles, "<bird --> swan>", 0.1f, 0.81f);
+            .mustBelieve(cycles, "<bird --> swan>", 0.1f, 0.65f /*0.81f*/);
     }
 
 
@@ -212,44 +225,40 @@ public class NAL1Test extends NALTest {
     @Test
     void similarityToInheritance4() {
 
-        TestNAR tester = test;
-        tester.termVolMax(3);
-        tester.confMin(0.7f);
-        tester.believe("<bird <-> swan>", 0.9f, 0.9f);
-        tester.ask("<swan --> bird>");
-        tester.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.81f);
+        test.termVolMax(3);
+        test.confMin(0.7f);
+        test.believe("<bird <-> swan>", 0.9f, 0.9f);
+        test.ask("<swan --> bird>");
+        test.mustBelieve(cycles, "<swan --> bird>", 0.9f, 0.81f);
 
     }
 
     @Test
     void variable_elimination_sim_subj() {
 
-        TestNAR tester = test;
-        tester.believe("(($x --> bird) <-> ($x --> swimmer))");
-        tester.believe("(swan --> bird)", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
-                0.45f);
+        test.believe("(($x --> bird) <-> ($x --> swimmer))");
+        test.believe("(swan --> bird)", 0.90f, 0.9f);
+        test.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
+                0.39f);
 
     }
     @Test
     void variable_elimination_analogy_substIfUnify() {
 
-        TestNAR tester = test;
-        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(bird --> swan)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
-                0.45f);
+        test.believe("((bird --> $x) <-> (swimmer --> $x))");
+        test.believe("(bird --> swan)", 0.80f, 0.9f);
+        test.mustBelieve(cycles, "(swimmer --> swan)", 0.80f,
+                0.49f);
 
     }
 
     @Test
     void variable_elimination_analogy_substIfUnifyOther() {
         //same as variable_elimination_analogy_substIfUnify but with sanity test for commutive equivalence
-        TestNAR tester = test;
-        tester.believe("((bird --> $x) <-> (swimmer --> $x))");
-        tester.believe("(swimmer --> swan)", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "(bird --> swan)", 0.80f,
-                0.45f);
+        test.believe("((bird --> $x) <-> (swimmer --> $x))");
+        test.believe("(swimmer --> swan)", 0.80f, 0.9f);
+        test.mustBelieve(cycles, "(bird --> swan)", 0.80f,
+                0.49f);
 
     }
 

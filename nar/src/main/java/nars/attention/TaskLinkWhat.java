@@ -58,9 +58,10 @@ public class TaskLinkWhat extends What {
         links.link(t);
     }
 
+
     @Override
-    public TaskLink link(Task t) {
-        return links.link(t);
+    public TaskLink link(Task t, float p) {
+        return links.link(t, p);
     }
 
     @Override

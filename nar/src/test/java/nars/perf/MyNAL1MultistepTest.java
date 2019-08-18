@@ -15,7 +15,7 @@ class MyNAL1MultistepTest implements FloatSupplier {
             NAL1MultistepTest n = new NAL1MultistepTest();
 
             System.out.println("TTL_MUTATE=" + NAL.derive.TTL_COST_MUTATE);
-            System.out.println("TTL_MUTATE=" + NAL.derive.TTL_COST_DERIVE_TASK_SUCCESS);
+            System.out.println("TTL_MUTATE=" + NAL.derive.TTL_COST_DERIVE_TASK);
 
             n.multistepSim4();
             n.end();

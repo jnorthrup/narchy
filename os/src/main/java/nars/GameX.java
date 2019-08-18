@@ -288,7 +288,8 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                1024,
+                                256    ,
+                                //1024,
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
                                 new PriBuffer.DirectTaskBuffer()
                         )
@@ -446,15 +447,15 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.termVolMax.set(32);
+        n.termVolMax.set(40);
 
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 
-        n.beliefPriDefault.amp(0.05f);
-        n.goalPriDefault.amp(0.05f);
-        n.questionPriDefault.amp(0.025f);
-        n.questPriDefault.amp(0.025f);
+        n.beliefPriDefault.amp(0.25f);
+        n.goalPriDefault.amp(0.25f);
+        n.questionPriDefault.amp(0.25f);
+        n.questPriDefault.amp(0.25f);
 
         n.beliefConfDefault.set(0.5f);
         n.goalConfDefault.set(0.5f);

@@ -122,8 +122,6 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         } else {
             if (y != null)
                 r.merge(y); //existing
-            else
-                r.forget(x);
         }
 
         commit(forget(r.nar.questionForgetRate.floatValue() /* estimate */));
