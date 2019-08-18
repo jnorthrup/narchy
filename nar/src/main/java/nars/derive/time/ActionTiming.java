@@ -6,7 +6,6 @@ import nars.Task;
 import nars.attention.What;
 import nars.derive.util.TimeFocus;
 import nars.term.Term;
-import nars.time.Tense;
 
 import java.util.Random;
 
@@ -18,7 +17,7 @@ public class ActionTiming implements TimeFocus {
     public final FloatRange focusDurs = new FloatRange(1, 0, 32);
 
     /** TODO mutable histogram model for temporal focus position  */
-    public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
 
     public ActionTiming() {
 
@@ -39,14 +38,16 @@ public class ActionTiming implements TimeFocus {
         float dur = what.dur() * focusDurs.floatValue();
 
         long now = what.time();
+        long tStart = task.start();
+
+        long target = Math.max(now, tStart);
         Random rng = what.random();
 
         //gaussian
-        long then = round(now + rng.nextGaussian() * horizonDurs.floatValue() * dur);
+        long then = round(target + rng.nextGaussian() * horizonDurs.floatValue() * dur);
         //uniform
         //long then = Math.round(now + (-.5f + rng.nextFloat()) * 2 * horizonDurs.floatValue() * dur); //uniform
 
-        long[] se = new long[] { round(then - dur / 2), round(then + dur / 2)};
-        return Tense.dither(se, what.nar);
+        return new long[] { round(then - dur / 2), round(then + dur / 2)};
     }
 }

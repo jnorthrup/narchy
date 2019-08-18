@@ -935,14 +935,14 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      *  based on OpenNARS projection formula:
      *   return 1.0f - abs(sourceTime - targetTime) / (abs(sourceTime - currentTime) + abs(targetTime - currentTime) );
      * */
-    @Nullable default Truth truth(long now, long tgt) {
+    @Nullable default Truth truthRelative(long now, long tgt) {
 
         long src = start();
 
         Truth truth = truth();
         if (src == ETERNAL || src==tgt)
             return truth;
-        if (tgt == ETERNAL)
+        if (tgt == ETERNAL || (now==src) || (now==tgt))
             return null; //eternalize?
 
         long sep = Math.abs(src-tgt);
