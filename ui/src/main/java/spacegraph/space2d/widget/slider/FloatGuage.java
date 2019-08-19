@@ -12,8 +12,8 @@ public class FloatGuage extends FloatSlider {
     }
 
     @Override
-    public boolean preRender(ReSurface r) {
-        if (super.preRender(r)) {
+    public boolean canRender(ReSurface r) {
+        if (super.canRender(r)) {
             set(value.asFloat());
             return true;
         }

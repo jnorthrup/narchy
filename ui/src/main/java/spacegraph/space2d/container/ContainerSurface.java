@@ -70,7 +70,7 @@ abstract public class ContainerSurface extends Surface {
 
     @Override
     protected final void render(ReSurface r) {
-        if (preRender(r)) {
+        if (canRender(r)) {
             render(r, MUSTLAYOUT.compareAndSet(this, 1, 0));
             show();
         } else {
@@ -93,6 +93,15 @@ abstract public class ContainerSurface extends Surface {
         renderContent(r);
     }
 
+    @Override
+    public final void showing(boolean s) {
+        boolean wasShown = this.showing;
+        if (wasShown!=s) {
+            showing = s;
+            if (!s)
+                forEach(c -> c.showing(false));
+        }
+    }
 
     @Deprecated protected void renderContent(ReSurface r) {
         //TODO forEachWith
@@ -100,7 +109,7 @@ abstract public class ContainerSurface extends Surface {
     }
 
     /** post-visibility render guard */
-    protected boolean preRender(ReSurface r) {
+    protected boolean canRender(ReSurface r) {
         return true;
     }
 

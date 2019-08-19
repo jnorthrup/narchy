@@ -150,8 +150,8 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     }
 
     @Override
-    protected boolean preRender(ReSurface r) {
-        if (super.preRender(r)) {
+    protected boolean canRender(ReSurface r) {
+        if (super.canRender(r)) {
             if (autolayout)
                 layout();
             return true;

@@ -342,9 +342,9 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
         }
 
         @Override
-        public boolean preRender(ReSurface r) {
+        public boolean canRender(ReSurface r) {
             on((a.getOpaque())); //load
-            return super.preRender(r);
+            return super.canRender(r);
         }
     }
 }

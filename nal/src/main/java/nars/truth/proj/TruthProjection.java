@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -36,6 +35,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
@@ -180,52 +180,48 @@ abstract public class TruthProjection extends TaskList {
 	 * removes the weakest components sharing overlapping evidence with stronger ones.
 	 * should be called after all entries are added
 	 *
-	 * @param needStamp whether a stamp result should be returned, or if this can be elided if not necessary
 	 */
-	@Nullable
-	public final MetalLongSet commit(boolean shrink, int minResults, boolean needStamp, NAL n) {
+	public final boolean commit(boolean shrink, int minResults, NAL n) {
 		int s = size();
-		if (s < minResults) return null;
+		if (s < minResults) return false;
 
 		int r = refocus(shrink);
-		if (r < minResults) return null;
+		if (r < minResults) return false;
 
-		return r == 1 ? commit1(needStamp) : commitN(shrink, minResults, needStamp, n);
+		return r == 1 ? commit1() : commitN(shrink, minResults, n);
 	}
 
-	@Nullable
-	private MetalLongSet commitN(boolean shrink, int minComponents, boolean needStamp, NAL n) {
-		MetalLongSet e = filter(minComponents, shrink, needStamp);
-		if (needStamp && e == null)
-			return null; //remain < minResults
+	private boolean commitN(boolean shrink, int minComponents, NAL n) {
+		if (!filter(minComponents, shrink, false)) {
+			clearFast();
+			return false;
+		}
 
 		int activeBeforeIntermpolate = active();
 		if (activeBeforeIntermpolate > 1) {
 
 			if (!intermpolate(n, minComponents)) {
 				clearFast();
-				return null;
+				return false;
 			}
 
 			int activePostCull = active();
 			if (activePostCull < minComponents) {
 				clearFast();
-				return null; //HACK this test shouldnt be necessary
+				return false; //HACK this test shouldnt be necessary
 			}
 
 			if (activePostCull != activeBeforeIntermpolate) {
 
 				refocus(shrink);
 
-				if (needStamp)
-					e = stampRemain(activePostCull);
 			}
 		}
 
 		if (term == null)
 			term = items[0].term();
 
-		return needStamp ? e : null;
+		return true;
 	}
 
 
@@ -271,14 +267,12 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * removes weakest tasks having overlapping evidence with stronger ones
 	 */
-	@Nullable
-	private MetalLongSet filter(int minComponents, boolean shrink, boolean needStamp) {
+	private boolean filter(int minComponents, boolean shrink, boolean needStamp) {
 
 
 		int activeBefore = active();
 		if (activeBefore < minComponents) {
-			clearFast();
-			return null; //HACK
+			return false;
 		}
 		int remain = activeBefore;
 
@@ -317,8 +311,7 @@ abstract public class TruthProjection extends TaskList {
 
 					//remove i
 					if (--remain < minComponents) {
-						clearFast();
-						return null; //fail
+						return false;
 					}
 
 					evi[i] = 0;
@@ -326,8 +319,7 @@ abstract public class TruthProjection extends TaskList {
 					//remove the conflicts
 					remain -= conflict.cardinality();
 					if (remain < minComponents) {
-						clearFast();
-						return null; //fail
+						return false; //fail
 					}
 
 					for (int k = ss - 1; k > i; k--) {
@@ -366,19 +358,47 @@ abstract public class TruthProjection extends TaskList {
 			}
 		}
 
-
-
-		return (!needStamp || remain <= 0) ? null : stampRemain(remain);
+		return remain > 0;
 	}
 
-	private MetalLongSet stampRemain(int remain) {
-		MetalLongSet e = new MetalLongSet(remain * STAMP_CAPACITY);
-		int ss = size;
-		for (int i = 0; i < ss; i++) {
-			if (valid(i))
-				e.addAll(stamp(i));
+	/** computes a stamp by sampling from components in proportion to their evidence contribution */
+	public long[] stampSample(int capacity, Random rng) {
+		removeNulls(); //HACK
+		int n = active();
+		if (n == 0)
+			throw new NullPointerException();
+
+		@Nullable long[] s0 = stamp(0);
+		if (n == 1) {
+			long[] s = s0;
+			assert(s.length <= capacity);
+			return s;
 		}
-		return e;
+
+		if (n == 2) {
+			return Stamp.zip(s0, stamp(1), (float) (evi[0] / (evi[0] + evi[1])), capacity);
+		}
+
+		int maxPossibleStampLen = 0;
+		for (int i = 0; i < n; i++)
+			maxPossibleStampLen += stamp(i).length;
+
+		if (maxPossibleStampLen <= capacity) {
+			//TODO use insertion sort into array
+			return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
+		} else {
+			//sample n-ary
+			// TODO weight contribution by evidence
+			return Stamp.sample(capacity, Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n), rng);
+		}
+
+		//		MetalLongSet e = new MetalLongSet(remain * STAMP_CAPACITY);
+//		int ss = size;
+//		for (int i = 0; i < ss; i++) {
+//			if (valid(i))
+//				e.addAll(stamp(i));
+//		}
+//		return e;
 	}
 
 	@Override
@@ -459,13 +479,13 @@ abstract public class TruthProjection extends TaskList {
 		return e;
 	}
 
-	private MetalLongSet commit1(boolean provideStamp) {
+	private boolean commit1() {
 		Task only = firstValid();
 		term = only.term();
-		return provideStamp ? Stamp.toMutableSet(only) : null;
+		return true;
 	}
 
-	public Task firstValid() {
+	private Task firstValid() {
 		int i = firstValidIndex();
 		return i != -1 ? get(i) : null;
 	}
@@ -921,7 +941,7 @@ abstract public class TruthProjection extends TaskList {
 				only :
 				SpecialTruthAndOccurrenceTask.the(only, tt, start, end);
 		} else {
-			return merge(this::arrayCommit, term, tt, stamp(n.random()), beliefOrGoal, start, end, n);
+			return merge(this::arrayCommit, term, tt, ()->stampSample(STAMP_CAPACITY, n.random()), beliefOrGoal, start, end, n);
 		}
 	}
 

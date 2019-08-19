@@ -59,7 +59,7 @@ public class VectorLabel extends AbstractLabel {
     }
 
     @Override
-    protected final boolean preRender(ReSurface r) {
+    protected final boolean canRender(ReSurface r) {
         float p = r.visP(bounds, 7);
         if (p < 7)
             return false;

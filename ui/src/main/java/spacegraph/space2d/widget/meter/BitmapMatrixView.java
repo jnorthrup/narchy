@@ -220,7 +220,7 @@ public class BitmapMatrixView extends TexSurface {
 
     private final AtomicBoolean busy = new AtomicBoolean();
 
-    public boolean update() {
+    protected final boolean update() {
 
         if (!busy.compareAndSet(false, true))
             return false;
@@ -243,7 +243,7 @@ public class BitmapMatrixView extends TexSurface {
 
     }
 
-    protected void renderView() {
+    private void renderView() {
         view.color(buf, pix);
     }
 

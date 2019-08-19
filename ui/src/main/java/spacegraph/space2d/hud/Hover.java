@@ -125,11 +125,11 @@ public class Hover<X extends Surface, Y extends Surface> extends Fingering {
         }
 
         @Override
-        protected boolean preRender(ReSurface r) {
+        protected boolean canRender(ReSurface r) {
             if (target==null) {
                 delete(); return false;
             }
-            return super.preRender(r);
+            return super.canRender(r);
         }
     }
 }

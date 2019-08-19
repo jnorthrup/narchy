@@ -35,8 +35,8 @@ public class Premise /*implements Comparable<Premise>*/ {
 	 * variable types unifiable in premise formation
 	 */
 	public final static int var =
-		//Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-		VAR_QUERY.bit
+		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+		//VAR_QUERY.bit
 		//Op.Variable //all
 		;
 	public final Task task;
@@ -328,10 +328,14 @@ public class Premise /*implements Comparable<Premise>*/ {
 ////        return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
 //    }
 
-	public void derive(Derivation d, int matchTTL, int deriveTTL) {
+	public void derive(Derivation d) {
 		FastCounter result;
 
-		Emotion e = d.nar.emotion;
+		NAR nar = d.nar;
+		Emotion e = nar.emotion;
+
+		int matchTTL = nar.premiseUnifyTTL.intValue();
+		int deriveTTL = nar.deriveBranchTTL.intValue();
 
 		int ttlUsed;
 

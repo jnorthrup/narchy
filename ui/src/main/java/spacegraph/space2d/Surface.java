@@ -44,7 +44,7 @@ abstract public class Surface implements Surfacelike {
     public volatile RectFloat bounds = RectFloat.Unit;
     public volatile Surfacelike parent;
     protected volatile boolean visible = true;
-    private volatile boolean showing = false;
+    protected volatile boolean showing = false;
 
 //    public volatile int zIndex;
 
@@ -242,8 +242,12 @@ abstract public class Surface implements Surfacelike {
      * prepares the rendering procedures in the rendering context
      */
     public final void renderIfVisible(ReSurface r) {
-        if (this.showing = visible(r))
+        boolean showing = visible(r);
+        showing(showing);
+        if (showing) {
             render(r);
+        }
+
 //        else
 //            System.out.println("invisible: " + r + " " + visible(r));
     }
@@ -370,5 +374,9 @@ abstract public class Surface implements Surfacelike {
 
     public final boolean resizeIfChanged(float w, float h) {
         return posChanged(bounds.size(w, h));
+    }
+
+    public void showing(boolean s) {
+        showing = s;
     }
 }

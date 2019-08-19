@@ -68,7 +68,7 @@ public class MetaFrame extends Bordering  {
     private SatelliteMetaFrame satellite = null;
 
     @Override
-    protected boolean preRender(ReSurface r) {
+    protected boolean canRender(ReSurface r) {
         if (expanded) {
             clipBounds = false;
 
@@ -92,7 +92,7 @@ public class MetaFrame extends Bordering  {
             return true;
         } else {
 //            clipBounds = true;
-            return super.preRender(r);
+            return super.canRender(r);
         }
     }
 

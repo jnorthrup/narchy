@@ -18,6 +18,7 @@ import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjec
 
 import java.util.function.Predicate;
 
+import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
@@ -130,6 +131,6 @@ abstract public class AbstractDynamicTruth {
                 return null;
         }
 
-        return TruthProjection.merge(d::arrayCommit, y, t, d.stamp(nar.random()), d.beliefOrGoal, s, e, nar);
+        return TruthProjection.merge(d::arrayCommit, y, t, d.stamp(STAMP_CAPACITY, nar.random()), d.beliefOrGoal, s, e, nar);
     }
 }

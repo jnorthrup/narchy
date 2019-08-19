@@ -1,5 +1,6 @@
 package nars.table.temporal;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
@@ -40,7 +41,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         new QuadraticSplit();
         //new AxialSplit();
 
-    protected int capacity;
+    private int capacity;
 
     public RTreeBeliefTable() {
         super(new RTree<>(RTreeBeliefModel.the));
@@ -90,7 +91,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private boolean compress(Space<TaskRegion> tree, Remember remember) {
+    private static boolean compress(Space<TaskRegion> tree, Remember remember) {
 
         long now = remember.nar.time();
         //long tableDur = tableDur(now);
@@ -99,7 +100,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<>(
 		    //WeakestTemporallyDense(now)
-            l -> l.size / ((float) ((l.bounds.range(0)) * (l.bounds.coord(2,true)))) //weakest
+            l -> (float)(l.size /  ((l.bounds.range(0)) * (l.bounds.coord(2,true)))) //weakest
         );
 
         return !findEvictable(tree, tree.root(), weakest, mergeableLeaf)
@@ -186,9 +187,12 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        double dur = tableDur(s==ETERNAL ?
 //            a.time() :
 //            (s+e)/2);
-        double dur = a.dur;
 
-        HyperIterator.iterate(this, Answer.regionNearness(s, e, dur), a.tasks.capacity(), a);
+
+        HyperIterator.iterate(
+            this,
+            new HyperIterator.HyperIteratorRanker<>(t-> t, Answer.regionNearness(s, e)),
+            a.tasks.capacity(), a);
     }
 
     @Override
@@ -365,6 +369,32 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     @Override
+    public void removeIf(Predicate<Task> remove, long s, long e) {
+        FasterList<Task> deleteAfter = new FasterList<>(0);
+
+        long l = readLock();
+        try {
+
+            tree.intersectsWhile(new TimeRange(s, e), (_t)->{
+                Task t = (Task) _t;
+                if (remove.test(t)) {
+                    deleteAfter.add(t); //buffer the deletions because it will interfere with the iteration
+                }
+                return true;
+            });
+            if (!deleteAfter.isEmpty()) {
+                l = Util.readToWrite(l, this);
+                deleteAfter.forEach(t -> {
+                    tree.remove(t);
+                    t.delete();
+                });
+            }
+        } finally {
+            unlock(l);
+        }
+    }
+
+    @Override
     public boolean removeTask(Task x, boolean delete) {
         assert (!x.isEternal());
 
@@ -404,8 +434,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     static final class FurthestWeakest implements FloatFunction<TaskRegion> {
 
-        public final long now;
-		public final double dur;
+        final long now;
+		final double dur;
 
         FurthestWeakest(long now, double dur) {
             this.now = now;
@@ -474,7 +504,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             return null;
         }
 
-        private TaskRegion merge(Task m, RInsertion<TaskRegion> i) {
+        private static TaskRegion merge(Task m, RInsertion<TaskRegion> i) {
             ((TaskInsertion)i).mergeReplaced = m;
             return m;
         }
@@ -501,17 +531,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
         @Nullable
         @Override
-        public TaskRegion merge(TaskRegion x) {
-            TaskRegion y = super.merge(x);
+        public TaskRegion merge(TaskRegion existing) {
+            TaskRegion y = super.merge(existing);
             if (y!=null)
                 mergeReplaced = y;
             return y;
         }
 
         @Override
-        public void mergeEqual(TaskRegion y) {
-            super.mergeEqual(y);
-            mergeReplaced = y;
+        public void mergeEqual(TaskRegion existing) {
+            super.mergeEqual(existing);
+            mergeReplaced = existing;
         }
 
 

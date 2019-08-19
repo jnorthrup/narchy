@@ -230,8 +230,8 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
 
     @Override
-    public boolean preRender(ReSurface r) {
-        if (super.preRender(r)) {
+    public boolean canRender(ReSurface r) {
+        if (super.canRender(r)) {
             FloatObjectProcedure<Port<X>> u = this.updater;
             if (u != null)
                 u.value(r.dtS(), this);

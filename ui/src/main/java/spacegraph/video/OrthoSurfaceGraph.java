@@ -96,7 +96,11 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
         }
     };
 
-
+    @Override
+    protected final void setVisible(boolean visible) {
+        if (!visible)
+            layers.showing(false);
+    }
 
     /**
      *

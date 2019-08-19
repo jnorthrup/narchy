@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.data.set.MetalLongSet;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -14,6 +13,7 @@ import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.NAL.STAMP_CAPACITY;
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -133,10 +133,8 @@ public enum Revision {;
 
         TruthProjection p = nal.newProjection(ETERNAL, ETERNAL, 0).ditherDT(nal).add(n, tasks);
 
-        MetalLongSet stamp = p.commit(true, minComponents, true, nal);
-        if (stamp == null)
+        if (!p.commit(true, minComponents, nal))
             return null;
-
 
         double eviMin =
                 NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
@@ -147,10 +145,9 @@ public enum Revision {;
 
         byte punc = p.punc();
         Task y = Task.tryTask(p.term, punc, truth, (c, tr) ->
-                new TemporalTask(c, punc,
-                        tr,
+                new TemporalTask(c, punc, tr,
                         nal.time(), p.start(), p.end(),
-                        Stamp.sample(NAL.STAMP_CAPACITY, stamp /* TODO account for relative evidence contributions */, nal.random())
+                        p.stampSample(STAMP_CAPACITY, nal.random())
                 )
         );
         return pair(y, p);

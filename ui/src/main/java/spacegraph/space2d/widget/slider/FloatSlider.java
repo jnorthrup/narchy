@@ -91,7 +91,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
     @Deprecated volatile float lastValue = Float.NaN;
 
     @Override
-    public boolean preRender(ReSurface r) {
+    public boolean canRender(ReSurface r) {
 
         slider.update();
 
@@ -102,7 +102,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
         }
 
 
-        return super.preRender(r);
+        return super.canRender(r);
     }
 
 

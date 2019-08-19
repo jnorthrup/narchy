@@ -194,8 +194,8 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     }
 
     @Override
-    protected boolean preRender(ReSurface r) {
-        if (super.preRender(r)) {
+    protected boolean canRender(ReSurface r) {
+        if (super.canRender(r)) {
             if (busy.compareAndSet(false, true)) {
                 try {
                     updater.update(this, r.dtS());

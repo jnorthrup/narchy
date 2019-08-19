@@ -121,7 +121,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
 
             @Override
-            public boolean preRender(ReSurface r) {
+            public boolean canRender(ReSurface r) {
                 float v = this.get();
                 float d = (v - 0.5f) * 2;
                 double delta = d * (end - start) * speed;
@@ -131,7 +131,7 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
                     set(Util.lerp(0.5f + sticking/2, v, 0.5f));
                 }
 
-                return super.preRender(r);
+                return super.canRender(r);
             }
 
             @Override
@@ -144,12 +144,12 @@ public class Timeline2D extends Stacking implements Finger.ScrollWheelConsumer {
 
         FloatSlider zoomSlider = new FloatSlider(0.5f, 0.48f, 0.52f) {
             @Override
-            public boolean preRender(ReSurface r) {
+            public boolean canRender(ReSurface r) {
                 float v = this.get();
                 timeScale((v + 0.5f));
                 set(Util.lerp(0.5f + sticking/2, v, 0.5f));
 
-                return super.preRender(r);
+                return super.canRender(r);
             }
 
             @Override

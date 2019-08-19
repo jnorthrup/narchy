@@ -244,13 +244,13 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
     /** newest element */
     public final X last() {
-        int i = size() - 1;
-        return i >= 0 ? peek(i) : null;
+        return last(0);
     }
 
     public final X last(int beforeEnd) {
-        int i = size() - 1 - beforeEnd;
-        return i >= 0 ? peek(i) : null;
+        int tail = tail(), head = head();
+        int i = size(tail, head) - beforeEnd - 1;
+        return i >= 0 ? peek(head,i) : null;
     }
 
     public int remove(final X[] x) {
@@ -427,7 +427,10 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
         // note these values can roll from positive to
         // negative, this is properly handled since
         // it is a difference
-        return Math.max((tail() - head()), 0);
+        return size(tail(), head());
+    }
+    private static int size(int tail, int head) {
+        return Math.max((tail - head), 0);
     }
 
 

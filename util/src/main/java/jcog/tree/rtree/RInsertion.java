@@ -68,14 +68,14 @@ public class RInsertion<X> {
     }
 
     @Nullable
-    public X merge(X y) {
-        X z = model.merge(y, x, this);
+    public X merge(X existing) {
+        X z = model.merge(existing, x, this);
         if (z!=null)
             merged = true;
         return z;
     }
 
-    public void mergeEqual(X x) {
+    public void mergeEqual(X existing) {
         merged = true;
     }
 

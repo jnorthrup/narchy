@@ -87,25 +87,25 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public static float beliefStrength(TaskRegion t, long qStart, long qEnd, double dur) {
-        return (float)(evidence(t, dur) / (1 + distanceMin(t, qStart, qEnd, dur)));
+        return (float)(evidence(t, dur) / (1 + distanceMin(t, qStart, qEnd)));
     }
 
-    public static FloatFunction<TaskRegion> regionNearness(long qStart, long qEnd, double dur) {
+    public static FloatFunction<TaskRegion> regionNearness(long qStart, long qEnd) {
         return qStart == qEnd ?
-            (x -> (float) -distanceMin(x, qStart, dur)) :
-            (x -> (float) -distanceMin(x, qStart, qEnd, dur)) ;
+            (x -> -distanceMin(x, qStart)) :
+            (x -> -((float) distanceMin(x, qStart, qEnd))) ;
     }
 
     /** temporal distance to point magnitude */
-    private static double distacnceMid(TaskRegion t, long now, double dur) {
+    private static double distanceMid(TaskRegion t, long now, double dur) {
         return t.meanTimeTo(now)/(1+dur);
     }
-    private static double distanceMin(TaskRegion t, long now, double dur) {
-        return t.minTimeTo(now)/(1+dur);
+    private static float distanceMin(TaskRegion t, long now) {
+        return t.minTimeTo(now);
     }
     /** temporal distance to range magnitude */
-    private static double distanceMin(TaskRegion t, long qStart, long qEnd, double dur) {
-        return t.minTimeTo(qStart, qEnd)/(1+dur);
+    private static double distanceMin(TaskRegion t, long qStart, long qEnd) {
+        return t.minTimeTo(qStart, qEnd);
     }
     private static double distanceMid(TaskRegion t, long qStart, long qEnd, double dur) {
         return t.meanTimeTo(qStart, qEnd)/(1+dur);

@@ -502,7 +502,7 @@ public class SignalViewTest {
                 );
                 //pp.tex.mipmap(true);
                 pp.cellTouch = false;
-                pp.update();
+                //pp.update();
                 //p.add(ff);
 
                 p = pp; //new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));

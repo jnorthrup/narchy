@@ -1,13 +1,13 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import jcog.data.list.FasterList;
+import jcog.WTF;
 import nars.NAL;
-import nars.NAR;
 import nars.Task;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
+import nars.table.temporal.TemporalBeliefTable;
 import nars.task.util.Answer;
 import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.signal.SignalTask;
@@ -17,11 +17,12 @@ import nars.truth.Truth;
 
 import java.util.List;
 import java.util.function.Consumer;
+import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.math.LongInterval.TIMELESS;
 import static nars.Op.CONJ;
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 
 /**
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
@@ -89,33 +90,23 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         series.forEach(action);
     }
 
-    void clean(List<BeliefTable> tables, int marginCycles, NAR n) {
+    /** TODO only remove tasks which are weaker than the sensor */
+    void clean(List<BeliefTable> tables, int marginCycles) {
         if (!NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
             return;
 
         long sStart = series.start(), sEnd;
         if (sStart != TIMELESS && (sEnd = series.end()) != TIMELESS) {
 
-            long finalEnd = sEnd - marginCycles;
-            long finalStart = sStart + marginCycles;
+            long finalEnd = sEnd - marginCycles, finalStart = sStart + marginCycles;
             if (finalStart < finalEnd) {
 
-                FasterList<Task> deleteAfter = new FasterList<Task>(0);
-                Consumer<Task> cleaner = (t) -> {
-                    if (absorbNonSignal(t, finalStart, finalEnd))
-                        deleteAfter.add(t);
-                };
+                Predicate<Task> cleaner = t -> absorbNonSignal(t, finalStart, finalEnd);
 
                 for (int i = 0, tablesSize = tables.size(); i < tablesSize; i++) {
                     TaskTable b = tables.get(i);
-                    if (!(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
-
-                        b.forEachTask(finalStart, finalEnd, cleaner);
-
-                        if (!deleteAfter.isEmpty()) {
-                            deleteAfter.forEachWith((t, B) -> B.removeTask(t, true), b);
-                            deleteAfter.clear();
-                        }
+                    if (b!=this && !(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
+                        ((TemporalBeliefTable)b).removeIf(cleaner, finalStart, finalEnd);
                     }
                 }
             }
@@ -126,8 +117,13 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     /**
      * used for if you can cache seriesStart,seriesEnd for a batch of calls
+     * TODO only remove tasks which are weaker than the sensor
      */
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
+
+        if (t.isGoal())
+            throw new WTF();
+        //assert(!t.isGoal());
 
         if (t.isDeleted())
             return true;

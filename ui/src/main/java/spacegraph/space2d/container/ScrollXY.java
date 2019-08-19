@@ -307,7 +307,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
         }
 
         @Override
-        public boolean preRender(ReSurface r) {
+        public boolean canRender(ReSurface r) {
 
             float k = knob.asFloat();
 
@@ -318,7 +318,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
             ((FloatSliderModel.Knob)slider.ui).knob = k;
 
-            return super.preRender(r);
+            return super.canRender(r);
         }
     }
 }

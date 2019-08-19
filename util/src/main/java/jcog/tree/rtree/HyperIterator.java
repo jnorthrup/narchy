@@ -1,9 +1,11 @@
 package jcog.tree.rtree;
 
+import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.function.Consumer;
+import java.util.function.Function;
 import java.util.function.Predicate;
 
 /**
@@ -31,7 +33,8 @@ public class HyperIterator<X>  {
     private final RankedN plan;
     private final Consumer planAdd;
 
-    public static <X> void iterate(ConcurrentRTree<X> tree, FloatFunction<X> rank, int bufferCap, Predicate whle) {
+
+    public static <X,R extends HyperRegion> void iterate(ConcurrentRTree<X> tree, HyperIteratorRanker<X,R> rank, int bufferCap, Predicate whle) {
 
         //tree.readOptimistic(
         tree.read(
@@ -48,7 +51,7 @@ public class HyperIterator<X>  {
                         //s; //TODO determine if this can safely be smaller like log(s)/branching or something
                         bufferCap;
 
-                    HyperIterator<X> h = new HyperIterator<>(tree.model(), new Object[cursorCapacity], rank);
+                    HyperIterator<X> h = new HyperIterator<>(new Object[cursorCapacity], rank);
                     h.start(t.root());
                     while (h.hasNext() && whle.test(h.next())) {
                     }
@@ -61,20 +64,12 @@ public class HyperIterator<X>  {
 
     }
 
-    public HyperIterator(Spatialization/*<X>*/ model, Object/*X*/[] x, FloatFunction/*<? super HyperRegion>*/ rank) {
-        this.plan = new RankedN(x, (FloatFunction) r -> {
-            HyperRegion y =
-                    r instanceof HyperRegion ?
-                        ((HyperRegion) r)
-                        :
-                        (r instanceof RNode ?
-                            ((RNode) r).bounds()
-                            :
-                            model.bounds(r)
-                        );
+    @Deprecated public HyperIterator(Spatialization/*<X>*/ model, Object/*X*/[] x, FloatRank/*<? super HyperRegion>*/ rank) {
+        this(x, new HyperIteratorRanker<>(model::bounds, rank));
+    }
 
-            return y == null ? Float.NaN : rank.floatValueOf(y); //HACK
-        });
+    public <H extends HyperRegion> HyperIterator(Object/*X*/[] buffer, HyperIteratorRanker<X,H> ranking) {
+        this.plan = new RankedN(buffer, ranking);
         this.planAdd = plan::add;
     }
 
@@ -109,6 +104,35 @@ public class HyperIterator<X>  {
 //        if (n == null)
 //            throw new NoSuchElementException();
         return n;
+    }
+
+    public static class HyperIteratorRanker<X,R extends HyperRegion> implements FloatRank {
+        private final Function<X, R> bounds;
+        private final FloatRank<R> rank;
+
+        public HyperIteratorRanker(Function<X, R> bounds, FloatFunction<R> rank) {
+            this(bounds, FloatRank.the(rank));
+        }
+
+        public HyperIteratorRanker(Function<X, R> bounds, FloatRank<R> rank) {
+            this.bounds = bounds;
+            this.rank = rank;
+        }
+
+        @Override
+        public float rank(Object r, float min) {
+            HyperRegion y =
+                r instanceof HyperRegion ?
+                    ((HyperRegion) r)
+                    :
+                    (r instanceof RNode ?
+                        ((RNode) r).bounds()
+                        :
+                        bounds.apply((X) r)
+                    );
+
+            return y == null ? Float.NaN : rank.rank((R)y, min);
+        }
     }
 
 //    public void setNodeFilter(NodeFilter<X> n) {

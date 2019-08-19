@@ -24,9 +24,7 @@ public class LinearTruthProjection extends TruthProjection {
     public final Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL n) {
 
         if (commitFirst) {
-            commit(tShrink, 1, false, n);
-
-            if (active()==0)
+            if (!commit(tShrink, 1, n))
                 return null;
         }
 

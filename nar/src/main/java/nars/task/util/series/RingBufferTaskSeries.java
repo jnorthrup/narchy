@@ -294,7 +294,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
     }
 
     @Override
-    public T last() {
+    public final T last() {
         return q.last();
     }
 

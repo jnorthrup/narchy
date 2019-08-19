@@ -98,12 +98,11 @@ public class SensorBeliefTables extends BeliefTables {
     }
 
     public void input(Truth value, FloatSupplier pri, short[] cause, What what, When<NAR> when, @Deprecated boolean link) {
-        NAR n = what.nar;
 
         SeriesTask x = add(value, when);
 
         if (x !=null) {
-            series.clean(this, cleanMarginCycles(when.dur), n);
+            series.clean(this, cleanMarginCycles(when.dur));
             x.cause(cause);
             remember(x, what, pri, link, when.dur);
         }
@@ -123,17 +122,15 @@ public class SensorBeliefTables extends BeliefTables {
         AbstractTaskSeries<SeriesTask> series = this.series.series;
 
         SeriesTask nextT = null, last = series.last();
-        long lastEnd = last!=null ? last.end() : Long.MIN_VALUE;
         if (last != null) {
-            long lastStart = last.start();
-//            if (lastEnd > now)
-//                return null; //too soon, does this happen?
+            long lastEnd = last.end();
 
             long gapCycles = (nextStart - lastEnd);
             float dur = when.dur;
             if (gapCycles <= series.latchDurs() * dur) {
 
                 if (next!=null) {
+                    long lastStart = last.start();
                     long stretchCycles = (nextStart - lastStart);
                     boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
                     if (stretchable) {

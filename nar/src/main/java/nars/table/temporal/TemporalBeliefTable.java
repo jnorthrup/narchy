@@ -2,6 +2,7 @@ package nars.table.temporal;
 
 import jcog.Skill;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -73,4 +74,15 @@ public interface TemporalBeliefTable extends BeliefTable {
     }
 
 
+	default void removeIf(Predicate<Task> remove, long finalStart, long finalEnd) {
+        FasterList<Task> deleteAfter = new FasterList<Task>(0);
+
+        forEachTask(finalStart, finalEnd, t->{
+            if (remove.test(t))
+                deleteAfter.add(t);
+        });
+
+        if (!deleteAfter.isEmpty())
+            deleteAfter.forEach((t) -> removeTask(t, true));
+    }
 }

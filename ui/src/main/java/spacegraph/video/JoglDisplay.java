@@ -54,6 +54,9 @@ abstract public class JoglDisplay extends SpaceGraph {
         video.onUpdate(camUp = new v3Anim(0, 1, 0, cameraRotateSpeed));
     }
 
+    protected void setVisible(boolean visible) {
+
+    }
 
     private void initDepth(GL2 gl) {
         gl.glEnable(GL_DEPTH_TEST);
@@ -255,6 +258,11 @@ abstract public class JoglDisplay extends SpaceGraph {
 
         MyJoglWindow() {
             super();
+        }
+
+        @Override
+        public void setVisible(boolean b) {
+            JoglDisplay.this.setVisible(b);
         }
 
         @Override

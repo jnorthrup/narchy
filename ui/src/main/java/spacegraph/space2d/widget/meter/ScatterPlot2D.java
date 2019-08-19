@@ -197,8 +197,8 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
     }
 
     @Override
-    protected boolean preRender(ReSurface r) {
-        if (super.preRender(r)) {
+    protected boolean canRender(ReSurface r) {
+        if (super.canRender(r)) {
             extent.animate(r.dtS());
             return true;
         }

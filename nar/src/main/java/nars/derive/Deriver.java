@@ -9,7 +9,6 @@ import nars.control.How;
 import nars.control.Why;
 import nars.derive.hypothesis.Hypothesizer;
 import nars.derive.hypothesis.TangentIndexer;
-import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRuleCompiler;
 import nars.derive.rule.PremiseRuleProto;
@@ -24,7 +23,6 @@ import nars.time.When;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 /**
@@ -118,21 +116,11 @@ public class Deriver extends How {
 
         When<NAR> now = d.deriver.timing.task(d.what);
 
-        int matchTTL = matchTTL();
-        int deriveTTL = d.nar().deriveBranchTTL.intValue();
         TaskLinks links = ((TaskLinkWhat) d.what).links;
-
-//        LongSupplier clock = d::time;
-
-        Predicate<Premise> eachPremise = p -> {
-            p.derive(d, matchTTL, deriveTTL);
-            return kontinue.getAsBoolean();
-        };
 
         do {
 
             hypothesize.premises(
-                eachPremise,
                 now, //maybe update if these are long cycles
                 links, d);
 

@@ -43,11 +43,11 @@ public class CheckBox extends ToggleButton {
 
 
     @Override
-    protected boolean preRender(ReSurface r) {
+    protected boolean canRender(ReSurface r) {
         if (on())
             pri(0.5f);
 
-        return super.preRender(r);
+        return super.canRender(r);
     }
 
     @Override

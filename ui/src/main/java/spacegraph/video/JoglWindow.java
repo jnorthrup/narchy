@@ -213,6 +213,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         long renderDtNS = nowNS - lastRenderNS;
         this.lastRenderNS = nowNS;
 
+
+
+
+
         /* ns -> ms */
         //render((int) Math.min(Integer.MAX_VALUE, Math.round(renderDtNS / 1_000_000.0)));
         render((float) (renderDtNS / 1.0E9));
@@ -252,11 +256,11 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
     }
 
     public void setVisible(boolean b) {
-        if (!b) {
-            setSize(0, 0);
-        } else {
-            setSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
-        }
+//        if (!b) {
+//            setSize(0, 0);
+//        } else {
+//            setSize(Math.max(1, getWidth()), Math.max(1, getHeight()));
+//        }
     }
 
 
@@ -452,15 +456,20 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 if (w == null)
                     return false;
 
-                if (!w.isVisible())
+                GLAutoDrawable d = drawables.get(0);
+                if (d == null)
+                    return true;
+
+                if (!w.isVisible()) {
+                    JoglWindow.this.setVisible(false);
                     return false;
+                } else {
+                    JoglWindow.this.setVisible(true);
+                }
 
                 if (drawables.isEmpty())
                     return true;
 
-                GLAutoDrawable d = drawables.get(0);
-                if (d == null)
-                    return true;
 
                 updateWindow(w);
 

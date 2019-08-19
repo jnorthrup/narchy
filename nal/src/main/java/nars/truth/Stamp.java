@@ -148,6 +148,9 @@ public interface Stamp {
         return new LongArrayList(a);
     }
 
+    static long[] zip(long[] a, long[] b, float aToB, int maxLen) {
+        return zip(a, b, aToB, maxLen, true);
+    }
 
     /***
      * zips two evidentialBase arrays into a new one
@@ -155,7 +158,7 @@ public interface Stamp {
      * the later-created task should be in 'b'
      */
     /*@NotNull*/
-    @Deprecated static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
+    static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
 
 //        if (a.length == 0 || a == Stamp.UNSTAMPED_OVERLAPPING) {
 //            if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING)
@@ -165,6 +168,9 @@ public interface Stamp {
 //        } else if (b.length == 0 || b == Stamp.UNSTAMPED_OVERLAPPING) {
 //            return a;
 //        }
+
+        if (Arrays.equals(a, b))
+            return a;
 
         int aLen = a.length, bLen = b.length;
 
@@ -497,7 +503,7 @@ public interface Stamp {
     /**
      * returns pair: (stamp, % overlapping)
      */
-    static ObjectFloatPair<long[]> zip(List<? extends Stamp> s, int maxLen) {
+    @Deprecated static ObjectFloatPair<long[]> zip(List<? extends Stamp> s, int maxLen) {
 
         int S = s.size();
         assert (S > 0);

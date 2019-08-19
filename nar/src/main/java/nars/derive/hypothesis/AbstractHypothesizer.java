@@ -11,8 +11,6 @@ import nars.term.atom.Atomic;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
-
 /**
  * unbuffered
  */
@@ -23,30 +21,27 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	public final IntRange termLinksPerTaskLink = new IntRange(1, 1, 8);
 
 	@Override
-	public void premises(Predicate<Premise> p, When<NAR> when, TaskLinks links, Derivation d) {
+	public void premises(When<NAR> when, TaskLinks links, Derivation d) {
 		int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
 
 		int nLinks = (int) Math.max(1, premisesPerIteration.floatValue() / termLinksPerTaskLink);
 		for (int i = 0; i < nLinks; i++) {
 			TaskLink tasklink = links.sample(d.random);
-			if (tasklink != null && !fireTask(p, when, links, d, termLinksPerTaskLink, tasklink))
-				return;
+			if (tasklink != null)
+				fireTask(when, links, d, termLinksPerTaskLink, tasklink);
 		}
 	}
 
-	protected boolean fireTask(Predicate<Premise> p, When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink l) {
+	protected void fireTask(When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink l) {
 		Task task = l.get(when);
 		if (task != null && !task.isDeleted()) {
 			for (int i = 0; i < termLinksPerTaskLink; i++) {
-				Premise premise = fireTaskTermLink(links, d, l, task);
-				if (!p.test(premise))
-					return false;
+				process(links, d, l, task).derive(d);
 			}
 		}
-		return true;
 	}
 
-	protected Premise fireTaskTermLink(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
+	protected Premise process(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
 		Term target = tasklink.target(task, d);
 		if (target == null)
 			target = task.term();

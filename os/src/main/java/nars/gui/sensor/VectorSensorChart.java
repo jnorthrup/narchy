@@ -1,6 +1,5 @@
 package nars.gui.sensor;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FastCoWList;
 import jcog.func.IntIntToFloatFunction;
@@ -18,7 +17,6 @@ import nars.concept.sensor.VectorSensor;
 import nars.gui.NARui;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.util.Answer;
-import nars.time.Tense;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import org.apache.commons.lang3.mutable.MutableBoolean;
@@ -33,7 +31,7 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
-import java.util.concurrent.atomic.AtomicReference;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static java.lang.Math.sqrt;
@@ -50,6 +48,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     private final VectorSensor sensor;
     private final NAR nar;
     private final FloatSupplier baseDur;
+    final FastCoWList<Layer> layers = new FastCoWList<>(Layer[]::new);
 
     private DurLoop on;
 
@@ -122,12 +121,14 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         rgb[2] += v * color[2];
     }
 
-    final FastCoWList<Layer> layers = new FastCoWList<Layer>(Layer[]::new);
+
 
     private TaskConcept touchConcept;
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
     transient public final TaskConcept[][] concept;
+
+    final AtomicBoolean ready = new AtomicBoolean(true);
 
     transient private Answer answer = null;
     transient private int answerDetail;
@@ -366,10 +367,13 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
             }
 
             this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));
+
+            for (Layer l : layers)
+                l.doUpdate(this);
+
+            update();
         }
 
-
-        updateIfShowing();
     }
 
 
@@ -379,12 +383,6 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         return noise.nextFloat();
     }
 
-    @Override
-    protected void renderView() {
-        for (Layer l : layers)
-            l.doUpdate(this);
-        super.renderView();
-    }
 
     @Override
     public int color(int x, int y) {
@@ -448,24 +446,23 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     }
 
     public Splitting withControls() {
-        return new Splitting(this, 0.1f, new Splitting(new ObjectSurface(layers), 0.5f, new CameraSensorViewControls(this)).resizeable()).resizeable();
+        return new Splitting(this, 0.1f, new Splitting(new ObjectSurface(layers), 0.5f, new CameraSensorViewControls()).resizeable()).resizeable();
     }
 
 
     /** TODO use DurSurface */
-    public static class CameraSensorViewControls extends Gridding {
+    class CameraSensorViewControls extends Gridding {
 
-        private final VectorSensorChart view;
         private DurLoop on;
 
-        /** the procedure to run in the next duration. limits activity to one
-         * of these per duration. */
-        private final AtomicReference<Runnable> next = new AtomicReference<>();
+//        /** the procedure to run in the next duration. limits activity to one
+//         * of these per duration. */
+//        private final AtomicReference<Runnable> next = new AtomicReference<>();
 
         @Override
         protected void starting() {
             super.starting();
-            on = view.nar.onDur(this::commit);
+//            on = view.nar.onDur(this::commit);
         }
 
         @Override
@@ -475,52 +472,50 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
             super.stopping();
         }
 
-        protected void commit() {
-            Runnable next = this.next.getAndSet(null);
-            if (next!=null) {
-                next.run();
-            }
-        }
+//        protected void commit() {
+//            Runnable next = this.next.getAndSet(null);
+//            if (next!=null) {
+//                next.run();
+//            }
+//        }
 
-        public CameraSensorViewControls(VectorSensorChart view) {
+        public CameraSensorViewControls() {
             super();
-
-            this.view = view;
 
             /** TODO use MutableEnum */
             set(new ButtonSet<>(ButtonSet.Mode.One,
                     new CheckBox("Pri+", ()->{
-                        view.onConceptTouch((c)->{
-                            next.set(()-> {
-                                        //view.nar.activate(c, 1f)
-                                        throw new TODO();
-                                    }
-                            );
-                        });
+//                        view.onConceptTouch((c)->{
+//                            next.set(()-> {
+//                                        //view.nar.activate(c, 1f)
+//                                        throw new TODO();
+//                                    }
+//                            );
+//                        });
                     }),
 
 
-                goalCheckBox(view, "Goal-", 0f),
-                goalCheckBox(view, "Goal-+", 0f, 1f),
-                goalCheckBox(view, "Goal~", 0.5f),
-                goalCheckBox(view, "Goal+-", 1f, 0f),
-                goalCheckBox(view, "Goal+", 1f)
+                goalCheckBox("Goal-", 0f),
+                goalCheckBox( "Goal-+", 0f, 1f),
+                goalCheckBox( "Goal~", 0.5f),
+                goalCheckBox( "Goal+-", 1f, 0f),
+                goalCheckBox( "Goal+", 1f)
             ), new ObjectSurface<>(view)
                     //TODO attn node plot: supply/demand
                     //new FloatSlider("Supply", view.sensor.attn.supply)
             );
         }
 
-        CheckBox goalCheckBox(VectorSensorChart view, String s, /* TODO */ float value) {
-            return goalCheckBox(view, s, value, value);
+        CheckBox goalCheckBox(String s, /* TODO */ float value) {
+            return goalCheckBox(s, value, value);
         }
 
         /** from,to allows specifying a transition, ex: (--x &&+1 x) or (x &&+1 --x) if they differe */
-        CheckBox goalCheckBox(VectorSensorChart view, String s, /* TODO */ float fromValue, float toValue) {
+        CheckBox goalCheckBox(String s, /* TODO */ float fromValue, float toValue) {
             return new CheckBox(s, () -> {
-                view.onConceptTouch((c) -> {
-                    next.set(() -> view.nar.want(c.term(), Tense.Present, toValue));
-                });
+//                view.onConceptTouch((c) -> {
+//                    next.set(() -> view.nar.want(c.term(), Tense.Present, toValue));
+//                });
             });
         }
 

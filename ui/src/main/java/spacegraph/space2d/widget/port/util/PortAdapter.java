@@ -55,14 +55,14 @@ public class PortAdapter<X,Y> extends Widget {
     }
 
     @Override
-    protected boolean preRender(ReSurface r) {
+    protected boolean canRender(ReSurface r) {
         if ((x!=null && !x.active()) || (y!=null && !y.active())) {
             //done
             parentOrSelf(Windo.class).delete();
             //remove();
             return false;
         }
-        return super.preRender(r);
+        return super.canRender(r);
     }
 
     protected final boolean out(Object o, boolean sender) {

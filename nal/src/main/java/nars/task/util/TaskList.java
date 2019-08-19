@@ -112,7 +112,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         return true;
     }
 
-    public Supplier<long[]> stamp(Random rng) {
+    public Supplier<long[]> stamp(int capacity, Random rng) {
         int ss = size();
         switch (ss) {
             case 1:
@@ -123,19 +123,18 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
 //                    if (a == null && b == null) throw new NullPointerException();
 //                    if (a == null) return b;
 //                    if (b == null) return a;
-                    return Stamp.sample(STAMP_CAPACITY, Stamp.toSet(a.length + b.length, a, b), rng);
+                    return Stamp.sample(capacity, Stamp.toSet(a.length + b.length, a, b), rng);
                 };
             default:
-                //TODO optimized 2-ary case?
 
                 return () -> {
                     @Nullable MetalLongSet stampSet = Stamp.toMutableSet(
-                        STAMP_CAPACITY,
+                        capacity,
                         this::stamp,
                         ss); //calculate stamp after filtering and after intermpolation filtering
                     //assert(!stampSet.isEmpty());
-                    if (stampSet.size() > STAMP_CAPACITY) {
-                        return Stamp.sample(STAMP_CAPACITY, stampSet, rng);
+                    if (stampSet.size() > capacity) {
+                        return Stamp.sample(capacity, stampSet, rng);
                     } else {
                         return stampSet.toSortedArray();
                     }
