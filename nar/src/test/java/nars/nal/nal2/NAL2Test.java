@@ -332,12 +332,20 @@ public class NAL2Test extends NALTest {
     @Test
     void set_operations5() {
 
-        TestNAR tester = test;
-        tester.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f);
-        tester.believe("<{Pluto,Saturn} --> planetX>", 0.1f, 0.9f);
-        tester.mustBelieve(cycles*2, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f);
-        tester.mustBelieve(cycles*2, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f);
+        test.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f);
+        test.believe("<{Pluto,Saturn} --> planetX>", 0.1f, 0.9f);
+        test.mustBelieve(cycles*2, "<{Mars,Pluto,Saturn,Venus} --> planetX>", 0.1f, 0.81f);
+        test.mustBelieve(cycles*2, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f);
     }
 
+//    @Test void testDepVarLift() { //single premise
+//        test.believe("(#1-->x)", 1.0f, 0.9f);
+//        test.mustBelieve(cycles, "({#1}-->x)", 1f, 0.81f);
+//    }
+//    @Test void testDepVarCollect() {
+//        test.believe("(#1-->x)", 1.0f, 0.9f);
+//        test.believe("(a-->x)", 1.0f, 0.9f);
+//        test.mustBelieve(cycles, "({#1,a}-->x)", 1f, 0.81f);
+//    }
 }
 

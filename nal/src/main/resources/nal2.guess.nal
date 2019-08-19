@@ -15,3 +15,9 @@
 //2-element set choice unwrap to disjunction (dichotomy)
 //    (X-->Y),  ({A,B}-->Y), task("?@")   |- ((A-->Y) || (B-->Y))
 //    (Y-->X),  (Y-->[A,B]), task("?@")   |- ((Y-->A) || (Y-->B))
+
+
+////induct lift depvar-containing INH to NAL2: an existential quantifier variable implies a collection of satisfiable answers
+//(Y --> X), (Y --> Z), is(X,"#")  |- (Y --> {X,Z}), (Belief:Intersection)
+//(X --> Y), (Z --> Y), is(X,"#")  |- ({X,Z} --> Y), (Belief:Union)
+

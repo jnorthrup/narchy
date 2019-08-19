@@ -15,7 +15,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.BELIEF;
 import static nars.Op.VAR_QUERY;
 import static nars.time.Tense.ETERNAL;
 
@@ -36,8 +35,8 @@ public class Premise /*implements Comparable<Premise>*/ {
 	 * variable types unifiable in premise formation
 	 */
 	public final static int var =
-		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-		//VAR_QUERY.bit
+		//Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+		VAR_QUERY.bit
 		//Op.Variable //all
 		;
 	public final Task task;
@@ -202,9 +201,10 @@ public class Premise /*implements Comparable<Premise>*/ {
 	private Task tryMatch(Term beliefTerm, BeliefTable bb, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
 
 		Predicate<Task> beliefFilter =
-			beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
-				t -> !t.equals(task) :
-				null;
+			null; //allow task=belief
+//			beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
+//				t -> !t.equals(task) :
+//				null;
 
         return task(bb, beliefTerm, timeFocus(beliefTerm, d), beliefFilter, d);
 	}
