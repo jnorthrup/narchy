@@ -144,6 +144,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
+    default Subterms remove(Term event) {
+        Term[] t = removing(event);
+        return t.length == subs() ? this : Op.terms.subterms(t);
+    }
+
+
 
     /** allows a Subterms implementation to accept the byte[] key that was used in constructing it,
      *  allowing it to cache it for fast serialization.  typically it will want to keep:
@@ -1251,7 +1257,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Util.hashCombine(this.hashCodeSubterms(), op);
     }
 
-    @Nullable
+
     default Term[] removing(Term x) {
         return removing(indicesOfBits(x::equals));
     }

@@ -1,7 +1,9 @@
 package nars.term.util.conj;
 
+import jcog.TODO;
 import jcog.data.bit.MetalBitSet;
 import nars.op.UniSubst;
+import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -28,35 +30,56 @@ public enum ConjMatch { ;
 
     /**
      * returns the prefix or suffix sequence of a specific matched subevent
+     * TODO configurable dtTolerance for matches
      */
-    public static Term beforeOrAfter(Term conj, Term x, boolean includeBefore, boolean includeMatched, boolean includeAfter,  UnifyTransform s, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
-        if (!(conj instanceof Compound) || conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(x))
+    public static Term beforeOrAfter(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter,  UnifyTransform s, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
+        if (!(conj instanceof Compound) || conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(event))
             return Null;
 
-        if (!x.op().eventable)
+        if (!event.op().eventable)
             return Null;
 
-        x = Image.imageNormalize(x);
+        event = Image.imageNormalize(event);
 
-        if (!Term.commonStructure( x.structure()&(~varBits), conj.subStructure()&(~varBits)))
+        if (!Term.commonStructure( event.structure()&(~varBits), conj.subStructure()&(~varBits)))
             return Null;
 
-        return beforeOrAfterSeq(conj, x, includeBefore, includeMatched, includeAfter, varBits, s, ttl);
+        return beforeOrAfterSeq(conj, event, includeBefore, includeMatched, includeAfter, varBits, s, ttl);
+
     }
 
     private static Term beforeOrAfterSeq(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter, int varBits, UnifyTransform s, int ttl) {
+
+        boolean eVar = event.hasAny(varBits);
+        boolean unify = eVar || conj.hasAny(varBits);
+
+        if (!unify && event.op()!=CONJ) {
+            if (!Conj.isSeq(conj)) {
+                if (!includeMatched) {
+                    //simple parallel remove match case
+                    Subterms cs = conj.subterms();
+                    Subterms csNext = cs.remove(event);
+                    if (cs != csNext)
+                        return CONJ.the(csNext);
+                    else
+                        return Null; //same
+                } else
+                    throw new TODO();
+            } else {
+                if (!conj.containsRecursively(event))
+                    return Null; //quick fail test for simple event case
+            }
+        }
+
 
         //sequence or commutive
 
         ConjList seq = ConjList.events(conj);
 
         int n = seq.size();
-        if (n <= 1)
-            return Null; //throw new WTF();  //assert (n > 1);
 
-        ConjList ee = ConjList.events(event);
-        boolean eVar = event.hasAny(varBits);
-        boolean unify = eVar || conj.hasAny(varBits);
+
+
         EventUnifier u = unify ? new EventUnifier(s) : null;
         MetalBitSet matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
         s.clear(varBits);
@@ -67,6 +90,7 @@ public enum ConjMatch { ;
         else
             forward = includeAfter;
 
+        ConjList ee = ConjList.events(event);
         int[] at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches);
         if (at.length == 0)
             return Null;
