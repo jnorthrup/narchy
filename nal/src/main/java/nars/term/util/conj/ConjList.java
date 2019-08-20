@@ -52,7 +52,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 //    }
 
     public static ConjList events(Term conj, long occOffset) {
-        occOffset = occAuto(conj, occOffset);
+        occOffset = occOffset == TIMELESS ? 0 : occOffset;
 
         ConjList l = new ConjList();
         conj.eventsAND(l::add, occOffset, true, false);
@@ -73,30 +73,31 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         return from;
     }
 
-    private static long occAuto(Term conj, long occOffset) {
-        return occOffset == TIMELESS ? 0 : occOffset;
-    }
-
-    private long _startIfSorted() {
+    /** assumes its sorted */
+    private long _start() {
         return when[0];
     }
-    private long _endIfSorted() {
-        return when[size()-1];
+    /** assumes its sorted */
+    private long _end() {
+        return when[size-1];
     }
 
     public boolean contains(ConjList other) {
-        return contains(other, Term::equals).length > 0;
+        return contains(other, Term::equals);
     }
 
-    public int[] contains(ConjList other, BiPredicate<Term,Term> equal) {
-        return contains(other, equal, Integer.MAX_VALUE, true, null);
+    public boolean contains(ConjList other, BiPredicate<Term,Term> equal) {
+        return contains(other, 1, equal).length > 0;
+    }
+    public int[] contains(ConjList other, int maxResults, BiPredicate<Term,Term> equal) {
+        return contains(other, equal, maxResults, true, null, 1);
     }
 
     /** assumes they are both sorted and/or expanded/condensed in the same way
      * warning: if not forward, both arrays will be reversed.  a restoration by re-reversing is not performed TODO
      *
      * */
-    public int[] contains(ConjList other, BiPredicate<Term,Term> equal, int maxLocations, boolean forward /* or reverse */, @Nullable MetalBitSet hit) {
+    public int[] contains(ConjList other, BiPredicate<Term,Term> equal, int maxLocations, boolean forward /* or reverse */, @Nullable MetalBitSet hit, int dtTolerance) {
         if (this == other) return new int[] { 0 };
 
         int s = size();
@@ -106,10 +107,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         other.sortThis();
         sortThis();
-        if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted())
+        if (other._start() < _start() || other._end() > _end())
             return EMPTY_INT_ARRAY;
-
-
 
         Term otherFirst = other.get(forward ? 0 : os-1);
         IntArrayList locations = null;
@@ -120,7 +119,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
             int from = forward ? j : (s - 1 - j);
             if (equal.test(otherFirst, get(from))) {
-                if (containsRemainder(other, from, forward, equal, hit)) {
+                if (containsRemainder(other, from, forward, equal, hit, dtTolerance)) {
                     if (locations == null)
                         locations = new IntArrayList(maxLocations!=Integer.MAX_VALUE ? maxLocations : 1);
                     locations.add(Tense.occToDT(when[from]));
@@ -135,7 +134,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         }
         return locations==null ? EMPTY_INT_ARRAY : locations.toArray();
     }
-    private boolean containsRemainder(ConjList other, int start, boolean forward, BiPredicate<Term, Term> equal, @Nullable MetalBitSet hit) {
+
+    private boolean containsRemainder(ConjList other, int start, boolean forward, BiPredicate<Term, Term> equal, @Nullable MetalBitSet hit, int dtTolerance) {
         if (hit!=null) hit.set(start);
 
         int os = other.size();
@@ -147,11 +147,14 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int oo = forward ? 0 : os - 1;
         long shift = when[start] - oWhens[oo];
         int next = start;
-        int end = forward ? size-1 : 0;
+        int s = this.size;
+        int end = forward ? s -1 : 0;
         for (int i = 1; i < os; i++) {
             oo += forward ? 1 : -1;
             next += forward ? 1 : -1;
-            next = indexOfIfSorted(oWhens[oo]+shift, oItems[oo], next, end, equal);
+            if (next < 0 || next >= s)
+                return false;
+            next = _indexOf(oWhens[oo]+shift, oItems[oo], next, end, equal, dtTolerance);
             if (next == -1)
                 return false;
             if (hit!=null)

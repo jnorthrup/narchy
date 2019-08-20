@@ -773,6 +773,10 @@ public enum Util {
         return equals(a, b, Float.MIN_NORMAL * 2);
     }
 
+    public static boolean equals(long a, long b, int tolerance) {
+        return Math.abs(a-b) < tolerance;
+    }
+
     /**
      * tests equivalence (according to epsilon precision)
      */

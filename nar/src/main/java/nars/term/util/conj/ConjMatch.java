@@ -59,10 +59,7 @@ public enum ConjMatch { ;
                     //simple parallel remove match case
                     Subterms cs = conj.subterms();
                     Subterms csNext = cs.remove(event);
-                    if (cs != csNext)
-                        return CONJ.the(csNext);
-                    else
-                        return Null; //same
+                    return cs != csNext ? CONJ.the(csNext) : Null;
                 } else
                     throw new TODO();
             } else {
@@ -71,39 +68,35 @@ public enum ConjMatch { ;
             }
         }
 
-
-        //sequence or commutive
-
+        //TODO only include events that actually can be returned
         ConjList seq = ConjList.events(conj);
 
         int n = seq.size();
 
-
-
         EventUnifier u = unify ? new EventUnifier(s) : null;
+
         MetalBitSet matches = includeMatched ? null : MetalBitSet.bits(n); //only necessary if they are to be removed
         s.clear(varBits);
 
-        boolean forward;
-        if (includeAfter == includeBefore)
-            forward = ThreadLocalRandom.current().nextBoolean();
-        else
-            forward = includeAfter;
+        boolean forward = (includeAfter != includeBefore) ? includeAfter : ThreadLocalRandom.current().nextBoolean();
 
         ConjList ee = ConjList.events(event);
-        int[] at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches);
+
+        int[] at = seq.contains(ee, unify ? u : Term::equals, 1, forward, matches, s.dtTolerance);
         if (at.length == 0)
             return Null;
 
-        long matchStart = seq.when(at[0]), matchEnd = (forward ? matchStart + event.eventRange() : matchStart - event.eventRange());
+        long matchStart = at[0], matchEnd = (forward ? matchStart + event.eventRange() : matchStart - event.eventRange());
+
         if (!includeMatched)
             seq.removeAll(matches);
-        if (!includeBefore) {
+
+        if (!includeBefore)
             seq.removeIf((w,x)-> w < matchEnd);
-        }
-        if (!includeAfter) {
+
+        if (!includeAfter)
             seq.removeIf((w,x)-> w > matchStart);
-        }
+
 
         Term ss = seq.term();
         if (u!=null && ss.hasAny(varBits)) {
@@ -113,7 +106,6 @@ public enum ConjMatch { ;
         }
 
         return ss;
-
     }
 
 //    private static boolean removeExtreme(Term event, ConjList x, long[] matchedTime, BiPredicate<Term, Term> eq, boolean beforeOrAfter) {

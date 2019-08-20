@@ -12,7 +12,7 @@ import java.net.URL;
 /** File and URL access interface (through VFS) */
 public class FileFunc {
 
-    static FILE get(String path) throws FileSystemException {
+    public static FILE get(String path) throws FileSystemException {
         return new FILE(fs.resolveFile(path));
     }
 

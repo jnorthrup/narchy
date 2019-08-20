@@ -454,7 +454,7 @@ public enum Conj {
 
             ConjList cc = ConjList.events(include);
             ConjList xx = ConjList.events(exclude);
-            int[] found = cc.contains(xx, pn ? Term::equalsPosOrNeg : Term::equals);
+            int[] found = cc.contains(xx, 1, pn ? Term::equalsPosOrNeg : Term::equals);
             if (found.length > 0) {
                 for (int f : found)
                     cc.removeAllAt(f, xx);

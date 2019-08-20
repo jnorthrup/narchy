@@ -3,6 +3,7 @@ package jcog.data.set;
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterables;
 import jcog.TODO;
+import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
@@ -160,14 +161,15 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         }
         return false;
     }
-    protected int indexOfIfSorted(long w, X what, int startIndex, int finalIndexExc, BiPredicate<X,X> equal) {
+
+    /** assumes its been sorted */
+    protected int _indexOf(long w, X what, int startIndex, int finalIndexExc, BiPredicate<X,X> equal, int dtTolerance) {
         long[] longs = this.when;
         X[] ii = this.items;
         boolean forward = finalIndexExc >= startIndex;
-        int delta = forward ? 1 : -1;
-        for (int i = startIndex; ; i+=delta) {
+        for (int i = startIndex; ; i+= forward ? 1 : -1) {
             long ll = longs[i];
-            if (ll == w && equal.test(ii[i],what))
+            if (Util.equals(ll, w, dtTolerance) && equal.test(ii[i],what))
                 return i;
             if (i == finalIndexExc || (forward && (ll > w)) || (!forward && ll < w))
                 break; //past the target

@@ -1284,7 +1284,7 @@ class ConjTest {
         Term a = $$("((x &&+1 y) &&+1 z)");
         Term b = $$("(x &&+2 z)");
         assertTrue(ConjList.events(a).contains(ConjList.events(b)));
-        assertArrayEquals(new int[] { 0 } , ConjList.events(a).contains(ConjList.events(b), Term::equals));
+        assertArrayEquals(new int[] { 0 } , ConjList.events(a).contains(ConjList.events(b), 2, Term::equals));
         assertEq("y", Conj.diffAll(a, b));
 
     }
