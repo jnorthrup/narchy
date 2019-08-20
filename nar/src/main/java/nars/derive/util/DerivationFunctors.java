@@ -70,12 +70,12 @@ public enum DerivationFunctors {
 
                 new AbstractInlineFunctor2(ConjMatch.BEFORE) {
                     @Override protected Term apply(Term conj, Term event) {
-                        return ConjMatch.beforeOrAfter(conj, event, true, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
+                        return ConjMatch.beforeOrAfter(conj, event, true, false, false, d.uniSubstFunctor.u, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                     }
                 },
                 new AbstractInlineFunctor2(ConjMatch.AFTER) {
                     @Override protected Term apply(Term conj, Term event) {
-                        return ConjMatch.beforeOrAfter(conj, event, false, d, NAL.derive.TTL_CONJ_BEFORE_AFTER);
+                        return ConjMatch.beforeOrAfter(conj, event, false, false, true, d.uniSubstFunctor.u, NAL.derive.TTL_CONJ_BEFORE_AFTER);
                     }
                 },
 

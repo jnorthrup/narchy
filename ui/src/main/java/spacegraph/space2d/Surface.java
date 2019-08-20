@@ -270,7 +270,7 @@ abstract public class Surface implements Surfacelike {
 
     public final Surface hide() {
         visible = false;
-        showing = false;
+        showing(false);
         return this;
     }
 

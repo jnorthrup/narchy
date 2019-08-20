@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.Util;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
@@ -114,8 +113,8 @@ public abstract class DynamicTermLinker implements TermLinker {
                     sub.unneg().volume();
                     //sub.unneg().complexity();
             return
-                    1f / Util.sqrt(v); //inverse sqrt
-                    //1f / v; //inverse
+                    //1f / Util.sqrt(v); //inverse sqrt
+                    1f / v; //inverse
                     //1f/(v*v); //inverse_sq
                     //Util.sqrt(v);
                     //v;

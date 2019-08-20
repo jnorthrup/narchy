@@ -278,7 +278,7 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unify(Term y, Unify u) {
         return (this == y)
                 ||
-                (y instanceof Compound && (equals(y) || (op() == y.op() && unifySubterms(y, u))))
+                (y instanceof Compound && (equals(y) || (opID() == y.opID() && unifySubterms(y, u))))
                 ||
                 (y instanceof Variable && y.unify(this, u));
     }

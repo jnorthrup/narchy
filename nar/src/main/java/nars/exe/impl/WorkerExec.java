@@ -17,202 +17,208 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-    double granularity = 8;
+	double granularity = 32;
 
 
-    /**
-     * process sub-timeslice divisor
-     * TODO auto-calculate
-     */
-    private long subCycleMaxNS;
+	/**
+	 * process sub-timeslice divisor
+	 * TODO auto-calculate
+	 */
+	private long subCycleNS;
 
-    /**
-     * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
-     */
-    float workResponsibility =
-            //1f;
-            //1.5f;
-            //1.618f;
-            2f;
-
-
-    public WorkerExec(int threads) {
-        super(threads);
-    }
-
-    public WorkerExec(int threads, boolean affinity) {
-        super(threads, affinity);
+	/**
+	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
+	 */
+	float workResponsibility =
+		//1f;
+		//1.5f;
+		//1.618f;
+		2f;
 
 
-        Exe.setExecutor(this);
-    }
+	public WorkerExec(int threads) {
+		super(threads);
+	}
 
-    @Override
-    protected void update() {
-        nar.how.commit(null);
-        nar.what.commit(null);
+	public WorkerExec(int threads, boolean affinity) {
+		super(threads, affinity);
 
-        super.update();
 
-        subCycleMaxNS = Math.round(((((double)threadWorkTimePerCycle * concurrency())) / granularity));
+		Exe.setExecutor(this);
+	}
 
-    }
+	@Override
+	protected void update() {
+		nar.how.commit(null);
+		nar.what.commit(null);
 
-    @Override
-    protected Supplier<Worker> loop() {
-        return WorkPlayLoop::new;
-    }
+		super.update();
 
-    @Override
-    public synchronized void synch() {
-        if (this.exe.running() == 0) {
-            in.drain(this::executeNow); //initialize
-        }
-    }
+		subCycleNS = Math.round((threadWorkTimePerCycle / granularity));
+	}
 
-    //final Consumer execNow = this::executeNow;
+	@Override
+	protected Supplier<Worker> loop() {
+		return WorkPlayLoop::new;
+	}
+
+	@Override
+	public synchronized void synch() {
+		if (this.exe.running() == 0) {
+			in.drain(this::executeNow); //initialize
+		}
+	}
+
+	//final Consumer execNow = this::executeNow;
 //    final MessagePassingQueue.Consumer executeNow = WorkerExec.this::executeNow;
 
-    private final class WorkPlayLoop implements ThreadedExec.Worker, BooleanSupplier /* kontinue */ {
+	private final class WorkPlayLoop implements ThreadedExec.Worker, BooleanSupplier /* kontinue */ {
 
 
-        final Random rng;
+		final Random rng;
 
-        private final AtomicBoolean alive = new AtomicBoolean(true);
+		private final AtomicBoolean alive = new AtomicBoolean(true);
 
-        private long deadline = Long.MIN_VALUE;
-
-
-        WorkPlayLoop() {
-
-            rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
-        }
-
-        @Override
-        public void run() {
-
-            do {
-
-                work(workResponsibility);
-
-                play(threadWorkTimePerCycle);
-                sleep();
-
-            } while (alive.getOpaque());
-        }
-        protected long work(float responsibility) {
-
-            long workStart = nanoTime();
+		private long deadline = Long.MIN_VALUE;
 
 
-            int batchSize = -1;
-            Object next;
-            while ((next=in.poll())!=null)  {
+		WorkPlayLoop() {
 
-                executeNow(next);
+			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
+		}
 
-                if (batchSize == -1) {
-                    //initialization once for subsequent attempts
-                    int available; //estimate
-                    if ((available = in.size()) <= 0)
-                        return 0;
+		@Override
+		public void run() {
 
-                    batchSize = //Util.lerp(throttle,
-                        //available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-                        Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
+			do {
 
-                } else if (--batchSize==0)
-                    break; //enough
 
-            } //while (!queueSafe((available=in.size())));
+				long worked = work(workResponsibility);
 
-            long workEnd = nanoTime();
-            return workEnd - workStart;
+				long cycleTimeRemain = cycleIdealNS - worked;
+				if (cycleTimeRemain > 0)
+					play(cycleTimeRemain);
 
-        }
+				sleep();
 
-        static final float maxOverUtilization = 2;
+			} while (alive.getOpaque());
+		}
 
-        private void play(long playTime) {
-            if (subCycleMaxNS <= 0)
-                return;
+		protected long work(float responsibility) {
 
-            AntistaticBag<How> H = nar.how;
-            AntistaticBag<What> W = nar.what;
+			long workStart = nanoTime();
 
-            long start = nanoTime();
-            long until = start + playTime;
 
-            //int hPerW = 1; //(int)Util.clamp(granularity/concurrency(), 1, H.size());
+			int batchSize = -1;
+			Object next;
+			while ((next = in.poll()) != null) {
 
-            int idle = 0;
-            while (true) {
-                What w = W.sample(rng);
-                if (w != null && w.isOn()) {
-                    How h = H.sample(rng);
-                    if (h!=null && h.isOn()) {
-                        if (play(w, h))
-                            idle = 0; //reset
-                    }
-                }
+				executeNow(next);
 
-                if (nanoTime() > until)
-                    break;
+				if (batchSize == -1) {
+					//initialization once for subsequent attempts
+					int available; //estimate
+					if ((available = in.size()) <= 0)
+						return 0;
 
-                Util.pauseSpin(idle++);
+					batchSize = //Util.lerp(throttle,
+						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+						Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
 
-            }
+				} else if (--batchSize == 0)
+					break; //enough
 
-        }
+			} //while (!queueSafe((available=in.size())));
 
-        private boolean play(What w, How h) {
-            boolean singleton = h.singleton();
-            if (!singleton || h.busy.compareAndSet(false, true)) {
-//                long before = nanoTime();
+			long workEnd = nanoTime();
+			return workEnd - workStart;
 
-                float util = h._utilization;
-                if (!Float.isFinite(util)) util = 1;
-                long useNS = Math.round(subCycleMaxNS / ((double)Util.clamp(util, 1f, maxOverUtilization)));
-//                if (before + useNS > until)
-//                    return false;
+		}
 
-                deadline = nanoTime() + useNS;
-                try {
-                    h.runWhile(w, useNS,this);
-                } finally {
-                    if (singleton)
-                        h.busy.set(false);
-                }
+		static final double maxOverUtilization = 1.5;
 
-                return true;
-            }
-            return false;
-        }
+		private void play(long playTime) {
+			if (subCycleNS <= 0)
+				return;
 
-        /** whether to continue iterating in the how when it calls this back */
-        @Override public final boolean getAsBoolean() {
-            return nanoTime() < deadline;
-        }
+			AntistaticBag<How> H = nar.how;
+			AntistaticBag<What> W = nar.what;
 
-        void sleep() {
-            long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float) concurrency()) / exe.maxThreads));
-            if (i > 0) {
-                Util.sleepNS(NapTimeNS);
-                //Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
-            }
-        }
+			long start = nanoTime(), until = start + playTime;
 
-        @Override
-        public void close() {
-            if (alive.compareAndSet(true, false)) {
+			int idle = 0;
+			while (true) {
+				How h = H.sample(rng);
+				if (h != null && h.isOn()) {
+					What w = W.sample(rng);
+					if (w != null && w.isOn()) {
+						if (play(w, h, until))
+							idle = 0; //reset
+					}
+				}
+
+				if (nanoTime() > until)
+					break;
+
+				if (idle > 0)
+					Util.pauseSpin(idle++);
+
+			}
+
+		}
+
+		private boolean play(What w, How h, long until) {
+			boolean singleton = h.singleton();
+			if (!(!singleton || h.busy.compareAndSet(false, true)))
+				return false;
+
+			float util = h._utilization;
+			if (!Float.isFinite(util)) util = 1;
+
+			long useNS = (util <= 1) ?
+				Math.round(subCycleNS * (util + 1f) / 2) //less than subcycle but optimistically, more time than it might expect
+				:
+				Math.round(subCycleNS * (1 - (Util.min(util, maxOverUtilization) - 1))); //penalize up to a certain amount for previous over-utilization
+
+			deadline = Math.min(until, nanoTime() + useNS);
+			//try {
+			h.runWhile(w, useNS, this);
+			//} finally {
+			if (singleton)
+				h.busy.set(false);
+			//}
+
+			return true;
+
+		}
+
+		/**
+		 * whether to continue iterating in the how when it calls this back
+		 */
+		@Override
+		public final boolean getAsBoolean() {
+			return nanoTime() < deadline;
+		}
+
+		void sleep() {
+			long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float) concurrency()) / exe.maxThreads));
+			if (i > 0) {
+				Util.sleepNS(NapTimeNS);
+				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
+			}
+		}
+
+		@Override
+		public void close() {
+			if (alive.compareAndSet(true, false)) {
 //                //execute remaining tasks in callee's thread
 //                schedule.removeIf(x -> {
 //                    if (x != null)
 //                        executeNow(x);
 //                    return true;
 //                });
-            }
-        }
-    }
+			}
+		}
+	}
 
 }

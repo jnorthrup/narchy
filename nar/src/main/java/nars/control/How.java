@@ -222,12 +222,12 @@ abstract public class How extends PriNARPart {
         }
     }
 
-    @Deprecated public void runWhile(What w, long estTime, BooleanSupplier whil) {
+    @Deprecated public final void runWhile(What w, long estTime, BooleanSupplier whil) {
         long start = System.nanoTime();
         try {
             next(w, whil);
         } catch (Throwable t) {
-            logger.error("{} {}", t, this.term());
+            logger.error("{} {}", t, this);
         }
         long end = System.nanoTime();
         use(estTime, end - start);

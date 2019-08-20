@@ -61,4 +61,8 @@ public class SubUnify extends Unify {
         return true;
     }
 
+    public void clear(int varBits) {
+        clear();
+        this.varBits = varBits;
+    }
 }

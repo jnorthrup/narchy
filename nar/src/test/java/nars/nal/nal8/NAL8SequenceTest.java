@@ -1,11 +1,14 @@
 package nars.nal.nal8;
 
 import jcog.data.list.FasterList;
+import jcog.random.XoRoShiRo128PlusRandom;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.unify.UnifyTransform;
 import nars.term.Term;
+import nars.term.util.conj.ConjMatch;
 import nars.test.NALTest;
 import nars.time.Tense;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +21,7 @@ import java.util.List;
 
 import static nars.$.$$;
 import static nars.Op.GOAL;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
@@ -107,6 +111,16 @@ public class NAL8SequenceTest extends NALTest {
         ;
     }
 
+    @Disabled @Test //TODO
+    void testXternal() {
+
+        test
+            .input( "f.")
+            .input( "(a &&+- (b &&+1 (c&&f))).")
+            .mustBelieve(cycles, "(a &&+- (b &&+1 c))", 1, 0.81f) //81% for one step
+        ;
+    }
+
     @Test
     void testNegMidSequenceOutcome() {
         
@@ -130,6 +144,7 @@ public class NAL8SequenceTest extends NALTest {
     void testUnifyConclusionSequenceOutcome() {
         
         test
+            .logDebug()
                 .input( "e(x)!")
                 .input( "(a(#1) &&+1 (b &&+1 (c &&+1 (d &&+1 e(#1))))).")
                 .mustGoal(cycles, "(a(x) &&+1 (b &&+1 (c &&+1 d)))", 1, 0.81f) //81% for one step
@@ -189,11 +204,28 @@ public class NAL8SequenceTest extends NALTest {
 
     @Test
     void testGoalDeduction_MidSequenceDTernalComponentWithUnification2() {
-        test.termVolMax(30);
+        {
+
+            Term seq = $$("( ( ( (d(x,#1) &&+1 e(#1)) &&+1 (b(#1)&&c))  &&+1 c(#1)) &&+1 f)");
+            Term cmd = $$("(b(x) &&+1 c(x))");
+            Term result = $$("f");
+            assertEquals(result, ConjMatch.beforeOrAfter(seq, cmd, false, false, true,
+                    new UnifyTransform(new XoRoShiRo128PlusRandom(1)),
+                    10));
+        }
+
+        Term seq = $$("((d(x,#1) &&+1 e(#1)) &&+1 ((b(#1)&&c) &&+1 c(#1)))");
+        Term cmd = $$("(b(x) &&+1 c(x))");
+        Term result = $$("((d(x,x) &&+1 e(x)) &&+1 c)");
+        assertEquals(result, ConjMatch.beforeOrAfter(seq, cmd, true, false, false,
+                new UnifyTransform(new XoRoShiRo128PlusRandom(1)),
+                10));
+
+        test.termVolMax(24);
         test
-                .input( "(a &&+1 ((b(#1)&&c) &&+1 ((&&,c(#1),d(x,#1)) &&+1 e(#1))))!")
-                .input( "(b(x) &&+1 c(x)).")
-                .mustGoal(cycles, "(d(x,x) &&+1 e(x))", 1, 0.81f) //81% for one step
+                .believe( seq.toString() )
+                .goal( cmd.toString() )
+                .mustGoal(cycles, result.toString(), 1, 0.81f) //81% for one step
         //.mustGoal(cycles, "(&&,a,b,d(x,x))", 1, 0.81f) //81% for one step
         ;
     }

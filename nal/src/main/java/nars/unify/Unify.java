@@ -11,9 +11,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import nars.unify.unification.DeterministicUnification;
@@ -109,13 +107,9 @@ public abstract class Unify extends Versioning<Term> {
         super(stackMax);
 
         this.random = random;
-        setVarBits(varBits);
+        this.varBits = varBits;
 
         this.xy = new ConstrainedVersionMap( termMap);
-    }
-
-    protected void setVarBits(int varBits) {
-        this.varBits = varBits;
     }
 
     /**
@@ -145,7 +139,7 @@ public abstract class Unify extends Versioning<Term> {
 
 
     public static Function<Term, Term> transform(Function<Variable,Term> resolve) {
-        return new UnifyTransform.LambdaUnifyTransform(resolve);
+        return new AbstractUnifyTransform.LambdaUnifyTransform(resolve);
     }
 
     /**
@@ -650,34 +644,7 @@ public abstract class Unify extends Versioning<Term> {
         }
     }
 
-    public abstract static class UnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {
-
-        abstract protected Term resolveVar(Variable v);
-
-        @Override
-        public Term applyAtomic(Atomic x) {
-            if (x instanceof Variable) {
-                Term y = resolveVar((Variable) x);
-//                if (y != null)
-                    return y;
-            }
-            return x;
-        }
-
-        public static class LambdaUnifyTransform extends UnifyTransform {
-            private final Function<Variable, Term> resolve;
-
-            public LambdaUnifyTransform(Function<Variable, Term> resolve) {
-                this.resolve = resolve;
-            }
-
-            @Override protected Term resolveVar(Variable v) {
-                return resolve.apply(v);
-            }
-        }
-    }
-
-    protected class MyUnifyTransform extends UnifyTransform {
+    protected class MyUnifyTransform extends AbstractUnifyTransform {
         @Override protected Term resolveVar(Variable v) {
             return Unify.this.resolveVar(v);
         }

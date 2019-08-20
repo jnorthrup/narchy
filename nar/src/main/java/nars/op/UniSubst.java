@@ -14,8 +14,8 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
-import nars.unify.SubUnify;
-import org.jetbrains.annotations.Nullable;
+import nars.unify.Unify;
+import nars.unify.UnifyTransform;
 
 import static nars.Op.VAR_DEP;
 import static nars.Op.VAR_INDEP;
@@ -80,14 +80,14 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
     public final static Term DEP_VAR = $.quote("#");
     public static final Atom unisubst = (Atom) Atomic.the("unisubst");
 
-    public final MySubUnify u; //TODO find what state is being held that contaminated repeated use of this
+    public final MyUnifyTransform u; //TODO find what state is being held that contaminated repeated use of this
 
     private final Derivation parent;
 
     public UniSubst(Derivation parent) {
         super(unisubst);
         this.parent = parent;
-        u = new MySubUnify();
+        u = new MyUnifyTransform();
     }
 
     @Override
@@ -126,8 +126,6 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 
         if (x.equals(y))
             return strict ? Null : c;
-
-        Term output;
 
         boolean hasVar = x.hasAny(var) || y.hasAny(var);
         //boolean hasXternal = x.hasXternal() || y.hasXternal();
@@ -174,78 +172,33 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
 //        return false;
 //    }
 
-    public final class MySubUnify extends SubUnify {
-
-        private boolean strict;
-
-        MySubUnify() {
-            super(null, Op.Variable);
-        }
-
-        public MySubUnify reset(int varBits, boolean strict) {
-            this.random = parent.random;
-            this.strict = strict;
-            setVarBits(varBits);
-            this.result = this.transformed = null;
-            clear();
-            return this;
+    public final class MyUnifyTransform extends UnifyTransform {
+        public MyUnifyTransform() {
+            super(null);
         }
 
         @Override
+        public Unify clear() {
+            random = parent.random;
+            return super.clear();
+        }
+
+
+        @Override
         protected boolean accept(Term result) {
-
-            if (!strict || !result.equals(transformed)) {
-                    //&& !result.normalize().equals(transformed.normalize()))) { //dont actually normalize it ; could destroy common variables since they arent Anon and in the derivation's Anon map
-
-                this.xy.forEach(parent.retransform::put);
-
-                //this.xy.forEach(parent.xy::force);
-
-                //this.xy.forEach(parent.xy::setAt);
-
-//                int i = 0;
-//                for (Map.Entry<Variable, Term> e : this.xy.entrySet()) {
-//
-//                    //mode 1: force
-////                    parent.xy.force(e.getKey(), e.getValue());
-//
-//                    //mode 2: attempt
-//                    parent.xy.setAt(e.getKey(), e.getValue());
-//
-//                    //mode 3: careful
-////                    if (!parent.xy.setAt(e.getKey(), e.getValue())) {
-////                        //undo any assignments up to i
-////                        //TODO
-////                        //for (int k = 0; k < i; k++) {
-////                        //}
-////                        return false;
-////                    }
-//                    i++;
-//                }
-
+            if (super.accept(result)) {
+                commitSubst();
                 return true;
             }
             return false;
         }
 
-        @Nullable
-        Term unifySubst(Term x, Term y, @Nullable Term transformed) {
-            this.transformed = transformed;
-            this.result = null;
-
-            unify(x, y);
-
-            return result;
+        /** commit substitutions to the premise */
+        public void commitSubst() {
+            this.xy.forEach(parent.retransform::put);
         }
 
-        @Nullable
-        public Term unifySubst(Term x, Term y, Term transformed, int var, boolean strict) {
-            reset(var, strict);
-            return unifySubst(x, y, transformed);
-        }
     }
-
-
 
 
 }

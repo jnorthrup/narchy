@@ -1,4 +1,4 @@
-package nars.op;
+package jcog.io;
 
 import jcog.WTF;
 import org.apache.commons.vfs2.*;

@@ -163,11 +163,13 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     protected int indexOfIfSorted(long w, X what, int startIndex, int finalIndexExc, BiPredicate<X,X> equal) {
         long[] longs = this.when;
         X[] ii = this.items;
-        for (int i = startIndex; i < finalIndexExc; i++) {
+        boolean forward = finalIndexExc >= startIndex;
+        int delta = forward ? 1 : -1;
+        for (int i = startIndex; ; i+=delta) {
             long ll = longs[i];
             if (ll == w && equal.test(ii[i],what))
                 return i;
-            if (ll > w)
+            if (i == finalIndexExc || (forward && (ll > w)) || (!forward && ll < w))
                 break; //past the target
         }
         return -1;
@@ -329,7 +331,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         return removeAll(MetalBitSet.bits(s).set(indices), s);
     }
 
-    private final boolean removeAll(MetalBitSet m, int s) {
+    private boolean removeAll(MetalBitSet m, int s) {
         int toRemove = Math.min(m.cardinality(),s);
         if (toRemove == 0)
             return false;
@@ -401,6 +403,10 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     public final long when(int i) {
         return when[i];
+    }
+
+    public final void removeAll(MetalBitSet b) {
+        removeAll(b, size());
     }
 
     static final class InternalLongIterator implements MutableLongIterator {

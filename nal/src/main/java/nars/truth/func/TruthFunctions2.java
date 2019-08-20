@@ -137,7 +137,10 @@ public enum TruthFunctions2 {
             }
 
             /* attenuate by polarity, helps to unglue sticky ambivalent states */
-            cc = Util.and(cc, goal.polarity());
+            cc = Util.and(cc,
+                goal.polarity()
+                //(float) Math.sqrt(goal.polarity())
+            );
 
             if (!strong)
                 cc = weak(cc);

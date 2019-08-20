@@ -1,5 +1,6 @@
 package nars.op;
 
+import jcog.io.FileFunc;
 import jcog.pri.PLink;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;

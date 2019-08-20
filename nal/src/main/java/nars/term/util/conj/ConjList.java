@@ -1,6 +1,7 @@
 package nars.term.util.conj;
 
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.set.LongObjectArraySet;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
@@ -13,6 +14,7 @@ import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.primitive.LongHashSet;
+import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -86,8 +88,15 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         return contains(other, Term::equals).length > 0;
     }
 
-    /** assumes they are both sorted and/or expanded/condensed in the same way */
     public int[] contains(ConjList other, BiPredicate<Term,Term> equal) {
+        return contains(other, equal, Integer.MAX_VALUE, true, null);
+    }
+
+    /** assumes they are both sorted and/or expanded/condensed in the same way
+     * warning: if not forward, both arrays will be reversed.  a restoration by re-reversing is not performed TODO
+     *
+     * */
+    public int[] contains(ConjList other, BiPredicate<Term,Term> equal, int maxLocations, boolean forward /* or reverse */, @Nullable MetalBitSet hit) {
         if (this == other) return new int[] { 0 };
 
         int s = size();
@@ -100,28 +109,53 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (other._startIfSorted() < _startIfSorted() || other._endIfSorted() > _endIfSorted())
             return EMPTY_INT_ARRAY;
 
-        Term otherFirst = other.get(0);
+
+
+        Term otherFirst = other.get(forward ? 0 : os-1);
         IntArrayList locations = null;
         long[] when = this.when;
-        for (int i = 0; i <= s - os; i++) {
-            if (equal.test(otherFirst, get(i))) {
-                if (containsRemainder(other, i, s, equal)) {
+
+        int testSpan = s - os;
+        for (int j = 0; j <= testSpan; j++) {
+
+            int from = forward ? j : (s - 1 - j);
+            if (equal.test(otherFirst, get(from))) {
+                if (containsRemainder(other, from, forward, equal, hit)) {
                     if (locations == null)
-                        locations = new IntArrayList(1);
-                    locations.add(Tense.occToDT(when[i]));
+                        locations = new IntArrayList(maxLocations!=Integer.MAX_VALUE ? maxLocations : 1);
+                    locations.add(Tense.occToDT(when[from]));
+                    if (locations.size() >= maxLocations)
+                        break;
                 }
             }
+
+            if (equal instanceof EventUnifier)
+                ((EventUnifier)equal).clear();
+            if (hit!=null) hit.clear();
         }
         return locations==null ? EMPTY_INT_ARRAY : locations.toArray();
     }
-    private boolean containsRemainder(ConjList other, int start, int end, BiPredicate<Term,Term> equal) {
+    private boolean containsRemainder(ConjList other, int start, boolean forward, BiPredicate<Term, Term> equal, @Nullable MetalBitSet hit) {
+        if (hit!=null) hit.set(start);
+
         int os = other.size();
-        long shift = when[start];
+        if (os == 1)
+            return true; //already matched the first term
+
+        long[] oWhens = other.when;
+        Term[] oItems = other.items;
+        int oo = forward ? 0 : os - 1;
+        long shift = when[start] - oWhens[oo];
         int next = start;
+        int end = forward ? size-1 : 0;
         for (int i = 1; i < os; i++) {
-            next = indexOfIfSorted(other.when[i]+shift, other.get(i), next+1, end, equal);
+            oo += forward ? 1 : -1;
+            next += forward ? 1 : -1;
+            next = indexOfIfSorted(oWhens[oo]+shift, oItems[oo], next, end, equal);
             if (next == -1)
                 return false;
+            if (hit!=null)
+                hit.set(next);
         }
         return true;
     }

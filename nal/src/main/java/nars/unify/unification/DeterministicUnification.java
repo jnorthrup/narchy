@@ -3,6 +3,7 @@ package nars.unify.unification;
 import nars.term.Term;
 import nars.unify.Unification;
 import nars.unify.Unify;
+import nars.unify.AbstractUnifyTransform;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
@@ -40,8 +41,8 @@ abstract public class DeterministicUnification implements Unification {
         return x.transform(transform());
     }
 
-    protected Unify.UnifyTransform.LambdaUnifyTransform transform() {
-        return new Unify.UnifyTransform.LambdaUnifyTransform(this::xy);
+    protected AbstractUnifyTransform.LambdaUnifyTransform transform() {
+        return new AbstractUnifyTransform.LambdaUnifyTransform(this::xy);
     }
 
     @Nullable

@@ -132,8 +132,9 @@ public interface Stamp {
             MetalLongSet AB = new MetalLongSet(abLength);
             do {
                 LongArrayList x = (A!=B && rng.nextFloat() <= aToB) ? A : B;
-                AB.add(x.removeLong(x.size()-1));
-                if (x.isEmpty()) {
+                int xs = x.size();
+                AB.add(x.removeLong(--xs));
+                if (xs == 0) {
                     if (x == A && x == B)
                         break; //both empty
                     else if (x == A) A = B;
