@@ -4,6 +4,8 @@ import jcog.Skill;
 import nars.truth.func.TruthFunctions;
 import org.jetbrains.annotations.Nullable;
 
+import static nars.truth.func.TruthFunctions.w2cSafe;
+
 /** indicates an implementation has, or is associated with a specific TruthValue */
 public interface Truthed  {
 
@@ -13,8 +15,7 @@ public interface Truthed  {
 
     /** a dual (reversible) asymptotic normalization of evi(), see: HORIZON */
     default float conf() {
-        //return w2cSafe(evi());
-        return truth().conf();
+        return (float)w2cSafe(evi());
     }
 
     /** weight of evidence ( confidence converted to weight, 'c2w()' ) */

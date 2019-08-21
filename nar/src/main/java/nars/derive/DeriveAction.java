@@ -35,11 +35,7 @@ public class DeriveAction  /*implements ThrottledAction<Derivation>*/ {
      */
     public final float pri(Derivation d) {
 
-        byte punc = truth.preFilter(d);
-        if (punc == 0)
-            return 0f; //disabled or not applicable to the premise
-
-        float puncFactor = d.preAmp(punc);
+        float puncFactor = d.preAmp(d.punc);
         if (puncFactor <= ScalarValue.EPSILON)
             return 0f; //entirely disabled by deriver
 

@@ -89,27 +89,18 @@
 //    (  --C ==> M), (S ==> M), eventOfNeg(C,S)          |-   (  --conjWithout(C, --S) ==> M), (Belief:DeductionPP, Time:Compose)
 //       ( --C ==> M), (S ==> M), eventOfNeg(C,S)        |- --(  --conjWithout(C, --S) ==> M), (Belief:DeductionNP, Time:Compose)
 
-//conj pred
-
-//   //(M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |-   (M ==> conjWithout(C,   S)), (Belief:DeductionPP, Time:Compose)
-//   (M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |- --(M ==> conjWithout(C, --S)), (Belief:DeductionPP, Time:Compose)
-//   //(M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |-   (M ==> conjWithout(C, --S)), (Belief:DeductionPN, Time:Compose)
-//   (M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |- --(M ==> conjWithout(C,   S)), (Belief:DeductionPN, Time:Compose)
-//       //(M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |- --(M ==> conjWithout(C,   S)), (Belief:DeductionNP, Time:Compose)
-//       (M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |-   (M ==> conjWithout(C, --S)), (Belief:DeductionNP, Time:Compose)
-//       //(M ==> C), (M ==> S), eventOfNeg(C,S), --isVar(M)   |- --(M ==> conjWithout(C, --S)), (Belief:DeductionNN, Time:Compose)
-//       (M ==> C), (M ==> S), eventOf(C,S), --isVar(M)      |-   (M ==> conjWithout(C,   S)), (Belief:DeductionNN, Time:Compose)
+//impl/conj pred
 
 
-   (M ==> C), (M ==> S), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DeductionPP, Time:Compose)
-     (M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithout(C,   S)), (Belief:DeductionPP, Time:Compose)
-   (M ==> C), (M ==> S), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DeductionPN, Time:Compose)
-     (M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithout(C, --S)), (Belief:DeductionNP, Time:Compose)
+   (M ==> C), (M ==> S), eventOf(C,S)                 |-   (M ==> conjWithoutUnify(C,   S)), (Belief:DeductionPP, Time:Compose)
+     (M ==> S), (M ==> C), eventOf(C,S)                 |-   (M ==> conjWithoutUnify(C,   S)), (Belief:DeductionPP, Time:Compose)
+   (M ==> C), (M ==> S), eventOfNeg(C,S)              |-   (M ==> conjWithoutUnify(C, --S)), (Belief:DeductionPN, Time:Compose)
+     (M ==> S), (M ==> C), eventOfNeg(C,S)              |-   (M ==> conjWithoutUnify(C, --S)), (Belief:DeductionNP, Time:Compose)
 
-   (M ==> D), (M ==> S), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DeductionNP, Time:Compose)
-    (M ==> S), (M ==> D), eventOfNeg(D,S)               |- --(M ==> conjWithout(D, --S)), (Belief:DeductionNN, Time:Compose)
-   (M ==> D), (M ==> S), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DeductionNN, Time:Compose)
-    (M ==> S), (M ==> D), eventOf(D,S)                  |- --(M ==> conjWithout(D,   S)), (Belief:DeductionPN, Time:Compose)
+   (M ==> D), (M ==> S), eventOfNeg(D,S)               |- --(M ==> conjWithoutUnify(D, --S)), (Belief:DeductionNP, Time:Compose)
+    (M ==> S), (M ==> D), eventOfNeg(D,S)               |- --(M ==> conjWithoutUnify(D, --S)), (Belief:DeductionNN, Time:Compose)
+   (M ==> D), (M ==> S), eventOf(D,S)                  |- --(M ==> conjWithoutUnify(D,   S)), (Belief:DeductionNN, Time:Compose)
+    (M ==> S), (M ==> D), eventOf(D,S)                  |- --(M ==> conjWithoutUnify(D,   S)), (Belief:DeductionPN, Time:Compose)
 
 
 

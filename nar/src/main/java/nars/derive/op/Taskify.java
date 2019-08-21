@@ -77,7 +77,7 @@ public class Taskify extends ProxyTerm {
             if (!VarIndep.validIndep(y, true)) {
                 //convert orphaned indep vars to query/dep variables
                 Term z = y.transform(
-                        (d.concPunc == QUESTION || d.concPunc == QUEST) ?
+                        (d.punc == QUESTION || d.punc == QUEST) ?
                                 VariableTransform.indepToQueryVar
                                 :
                                 VariableTransform.indepToDepVar
@@ -85,7 +85,7 @@ public class Taskify extends ProxyTerm {
                 y = z;
             }
 
-            if (!d.concSingle)
+            if (!d.single)
                 y = Image.imageNormalize(y);
         }
         return y;
@@ -111,15 +111,15 @@ public class Taskify extends ProxyTerm {
 
         Term y = timing.getOne();
 
-        if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.concPunc == BELIEF || d.concPunc == GOAL)) {
-            if (DerivationFailure.failure(y, d.concPunc)) {
+        if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.punc == BELIEF || d.punc == GOAL)) {
+            if (DerivationFailure.failure(y, d.punc)) {
 
                 //as a last resort, try forming a question from the remains
-                byte qPunc = d.concPunc == BELIEF ? QUESTION : QUEST;
-                d.concPunc = qPunc;
+                byte qPunc = d.punc == BELIEF ? QUESTION : QUEST;
+                d.punc = qPunc;
                 if (DerivationFailure.failure(y, d) == Success) {
-                    d.concPunc = qPunc;
-                    d.concTruth = null;
+                    d.punc = qPunc;
+                    d.truth.clear(); //may be unnecessary
                 } else {
                     d.nar.emotion.deriveFailTemporal.increment();
                     return; //fail
@@ -165,7 +165,7 @@ public class Taskify extends ProxyTerm {
      */
     protected void taskify(Term x0, long start, long end, Derivation d) {
 
-        final byte punc = d.concPunc;
+        final byte punc = d.punc;
         if (punc == 0)
             throw new RuntimeException("no punctuation assigned");
 
@@ -211,7 +211,7 @@ public class Taskify extends ProxyTerm {
         if (punc == BELIEF || punc == GOAL) {
 
             //dither truth
-            tru = d.concTruth.dither(d.eviMin, neg, nar);
+            tru = Truth.dither(d.truth, d.eviMin, neg, nar);
             if (tru == null) {
                 nar.emotion.deriveFailTaskifyTruthUnderflow.increment();
                 spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
@@ -272,7 +272,7 @@ public class Taskify extends ProxyTerm {
         //these must be applied before possible merge on input to derivedTask bag
         t.cause(ArrayUtil.add(d.parentCause(), channel.id));
 
-        if (d.concSingle) //|| (NAL.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
+        if (d.single) //|| (NAL.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);
 
         t.pri(priority);

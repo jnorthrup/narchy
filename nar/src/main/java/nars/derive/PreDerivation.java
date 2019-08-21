@@ -63,6 +63,7 @@ public abstract class PreDerivation extends Unify {
 
         DeriveAction[] branch = d.deriver.rules.branch;
         int valid = 0, lastValid = -1;
+        PostDerivable[] post = this.post;
         for (int i = 0; i < can.length; i++) {
             if ((post[i].priSet(branch[can[i]], d)) > Float.MIN_NORMAL) {
                 lastValid = i;
@@ -104,8 +105,7 @@ public abstract class PreDerivation extends Unify {
     private static final Comparator<? super PostDerivable> sortByPri = (a, b)->{
         if (a==b) return 0;
         int i = Float.compare(a.pri, b.pri);
-        if (i != 0) return -i;
-        else return Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+        return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
     };
 
 }

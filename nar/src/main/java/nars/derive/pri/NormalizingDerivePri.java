@@ -1,13 +1,11 @@
 package nars.derive.pri;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.truth.Truth;
 
 /** wraps another DeriverBudgeting implementation and ensures that
  * the sum of the priorities of all a premise's derivation
@@ -58,7 +56,7 @@ public class NormalizingDerivePri implements DerivePri {
     }
 
     @Override
-    public float prePri(float priBase, Truth concTruth) {
-        throw new TODO();
+    public float prePri(Derivation d) {
+        return 1;
     }
 }

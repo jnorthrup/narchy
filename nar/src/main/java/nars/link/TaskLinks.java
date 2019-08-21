@@ -38,12 +38,16 @@ public class TaskLinks implements Sampler<TaskLink> {
      * 1.0 = balanced with incoming pressure
      *  >1 = active forget
      */
-    public final FloatRange decay = new FloatRange(1f, 0, 2);
+    public final FloatRange decay = new FloatRange(1f, 0, 8);
+
+
+    /** pre-amplifier */
+    public final FloatRange preAmp = new FloatRange(0.5f, 0, 2f /* 2f */);
 
     /**
-     * (post-)Amp: tasklink propagation rate
+     * (post-)Amp: tasklink conductance, propagation rate
      */
-    public final FloatRange amp = new FloatRange(0.5f, 0, 2f /* 2f */);
+    public final FloatRange grow = new FloatRange(0.5f, 0, 2f /* 2f */);
 
     /**
      * tasklink retention rate:
@@ -144,7 +148,7 @@ public class TaskLinks implements Sampler<TaskLink> {
 
 
     public float grow(TaskLink parent, Term from, Term to, byte punc) {
-        float take = amp.floatValue();
+        float take = grow.floatValue();
         if (take > ScalarValue.EPSILON) {
             return transfer(from, to, parent, take, sustain.floatValue(), punc);
         }
@@ -152,9 +156,6 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-    private void link(Term s, Term u, byte punc, float p) {
-        link(AtomicTaskLink.link(s, u).priSet(punc, p));
-    }
 
     /** returns the total priority released
      *  sustain=1: copy
@@ -172,11 +173,8 @@ public class TaskLinks implements Sampler<TaskLink> {
         return links.put(x);
     }
 
-
-
-
     public TaskLink link(Task task, float pri) {
-        return link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri));
+        return link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri * preAmp.floatValue()));
     }
 
     public Stream<Term> terms() {

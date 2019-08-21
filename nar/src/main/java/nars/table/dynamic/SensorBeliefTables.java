@@ -9,8 +9,6 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.op.Remember;
 import nars.control.op.TaskEvent;
-import nars.link.AbstractTaskLink;
-import nars.link.AtomicTaskLink;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
@@ -24,7 +22,6 @@ import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
-import static nars.Op.BELIEF;
 
 /**
  * special belief tables implementation
@@ -201,12 +198,13 @@ public class SensorBeliefTables extends BeliefTables {
 
             if (link) {
                 TaskLinkWhat ww = (TaskLinkWhat) w;
-                AbstractTaskLink tl = AtomicTaskLink.link(next.term());
-                tl.priSet(BELIEF, nextPri);
-//        tl.priSet(BELIEF, surprise*2f/3f);
-////        tl.priSet(GOAL, surprise/3);
-//        tl.priSet(QUEST, surprise*1f/3f);
-                ww.links.link(tl);
+                ww.link(next);
+//                AbstractTaskLink tl = AtomicTaskLink.link(next.term());
+//                tl.priSet(BELIEF, nextPri);
+////        tl.priSet(BELIEF, surprise*2f/3f);
+//////        tl.priSet(GOAL, surprise/3);
+////        tl.priSet(QUEST, surprise*1f/3f);
+//                ww.links.link(tl);
             }
 
             TaskEvent.emit(next, w);

@@ -5,7 +5,6 @@ import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.truth.Truth;
 
 public class DirectDerivePri implements DerivePri {
 
@@ -17,7 +16,7 @@ public class DirectDerivePri implements DerivePri {
     }
 
     @Override
-    public float prePri(float priBase, Truth concTruth) {
+    public float prePri(Derivation d) {
         throw new TODO();
     }
 

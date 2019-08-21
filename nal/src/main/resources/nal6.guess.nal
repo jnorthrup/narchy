@@ -8,8 +8,8 @@ X, (--C==>A), eventOfPN(C,X), task("?@")  |-  (--conjWithoutPN(C, X)==>A),  (Pun
 //Anonymous Analogy (NAL5)
 //  originally this only unified depvar (dep var elimination)
 //  TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithout(C,chooseUnifiableSubEvent(C,Y)), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithout(C,chooseUnifiableSubEvent(C,--Y)), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,Y)), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,--Y)), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
         //Goal: ?

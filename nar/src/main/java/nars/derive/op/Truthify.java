@@ -111,9 +111,9 @@ public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
-        d.concTruth = null;
-        d.concSingle = false;
-        d.concPunc = 0;
+        d.truth.clear(); //<- may not be necessary
+        d.single = false;
+        d.punc = 0;
         d.truthFunction = null;
 
         boolean single;
@@ -158,11 +158,9 @@ public class Truthify extends AbstractPred<Derivation> {
                 throw new InvalidPunctuationException(punc);
         }
 
-        d.concTruth = t;
-        d.concPunc = punc;
-        d.concSingle = single;
-
-
+        d.truth.set(t);
+        d.punc = punc;
+        d.single = single;
 
         return true;
     }

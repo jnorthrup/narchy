@@ -1,6 +1,5 @@
 package nars.derive.op;
 
-import jcog.WTF;
 import jcog.data.set.ArrayHashSet;
 import jcog.decide.Roulette;
 import jcog.math.LongInterval;
@@ -104,7 +103,7 @@ public class Occurrify extends TimeGraph {
 
     private static long[] rangeCombine(Derivation d, OccMerge mode) {
 
-        if (d.concSingle || d.beliefStart == ETERNAL)
+        if (d.single || d.beliefStart == ETERNAL)
             return new long[] { d.taskStart, d.taskEnd };
         else if (d.taskStart == ETERNAL) {
 //            assert(d.beliefStart!=TIMELESS);
@@ -141,13 +140,11 @@ public class Occurrify extends TimeGraph {
                 }
                 case UnionDilute: {
                     long[] u = LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
-                    if (d.concTruth == null)
-                        throw new WTF(); //HACK
-                    if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+                    if (d.isBeliefOrGoal()) {
                         long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
                         long uRange = u[1] - u[0];
                         double pct = (1 + iRange) / (1.0 + uRange);
-                        if (!d.concTruthEviMul((float) pct, false))
+                        if (!d.doubt((float) pct, false))
                             return null;
                     }
                     return u;
@@ -234,10 +231,10 @@ public class Occurrify extends TimeGraph {
         long taskStart = taskOccurr ? d.taskStart : TIMELESS,
                 taskEnd = taskOccurr ? d.taskEnd : TIMELESS,
                 beliefStart =
-                        beliefOccurr && (!d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST)) ? d.beliefStart : TIMELESS,
+                        beliefOccurr && (!d.single || (d.punc ==QUESTION || d.punc ==QUEST)) ? d.beliefStart : TIMELESS,
                         //d.beliefStart,
                 beliefEnd =
-                        beliefOccurr && (!d.concSingle || (d.concPunc==QUESTION || d.concPunc==QUEST)) ? d.beliefEnd : TIMELESS;
+                        beliefOccurr && (!d.single || (d.punc ==QUESTION || d.punc ==QUEST)) ? d.beliefEnd : TIMELESS;
                         //d.beliefEnd;
 
         this.decomposeEvents = decomposeEvents;
@@ -367,7 +364,7 @@ public class Occurrify extends TimeGraph {
      * eternal check: conditions under which an eternal result might be valid
      */
     boolean validEternal() {
-        return d.taskStart == ETERNAL && (d.concSingle || d.beliefStart == ETERNAL);
+        return d.taskStart == ETERNAL && (d.single || d.beliefStart == ETERNAL);
     }
 
     public enum OccurrenceSolver {
@@ -390,10 +387,10 @@ public class Occurrify extends TimeGraph {
                     long[] o = new long[]{d.taskStart, r + d.taskEnd};
 
 
-                    if (r > 0 && d.concTruth != null) {
+                    if (r > 0 && d.isBeliefOrGoal()) {
                         //HACK decrease evidence by proportion of time expanded
                         float ratio = (float) (((double) (1 + d.taskEnd - d.taskStart)) / (1 + o[1] - o[0]));
-                        if (!d.concTruthEviMul(ratio, false))
+                        if (!d.doubt(ratio, false))
                             return null;
                     }
 
@@ -672,7 +669,7 @@ public class Occurrify extends TimeGraph {
             if (nonTemporal(x) && nonTemporal(d.taskTerm) && nonTemporal(d.beliefTerm))
                 return pair(x, occurrence(d));
 
-            if (!taskOccurr && beliefOccurr && (d.concSingle || d._belief == null || d.beliefStart == ETERNAL || d.beliefStart == TIMELESS))
+            if (!taskOccurr && beliefOccurr && (d.single || d._belief == null || d.beliefStart == ETERNAL || d.beliefStart == TIMELESS))
                 taskOccurr = true; //allow task occurrence
             if (!beliefOccurr && taskOccurr && (d.taskStart == ETERNAL) && (d.beliefStart != ETERNAL && d.beliefStart != TIMELESS))
                 beliefOccurr = true; //allow belief occurrence

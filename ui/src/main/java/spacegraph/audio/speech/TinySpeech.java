@@ -21,6 +21,10 @@ import java.util.Random;
  * <p>
  * JavaScript port: losso/code red (Alexander Grupe)
  * http://heckmeck.de/demoscene/tiny-speech-synth-js/
+ *
+ * see:
+ *  https://github.com/formant/audio-formant
+ *  https://github.com/chdh/klatt-syn
  */
 public class TinySpeech {
 
@@ -156,18 +160,21 @@ public class TinySpeech {
             float xx = 0, xxx = 0;
             final float q =
                 Math.max(0, 1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY)); //adjust 10 to tune resonance
+                //(float) (1 / (pw[formant] * tan(2 * PI * 0.5)));
 
             int pos = bufPos;
             float xp = 0;
 
             for (int s = 0; s < sl; s++) {
                 float x;
+
                 if (!osc) {
-                    x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
                     xp = 0;
+                    x = resonator(f0, s);
                 } else {
-                    x = rng.nextFloat() - 0.5f;
+                    x = noise();
                 }
+
                 // Apply formant filter
                 x = (float) ((x + (2f * Math.cos(PI_2 * freq) * xx * q)) - (xxx * q * q));
                 xxx = xx;
@@ -198,6 +205,18 @@ public class TinySpeech {
 
         bufPos += Math.round( (1-overlap)*sl + (p.plosive ? (sl & 0xfffffe) : 0));
         return bufPos;
+    }
+
+    private float resonator(float f0, int s) {
+        float x;
+        x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
+        return x;
+    }
+
+    private float noise() {
+        float x;
+        x = 2 * (rng.nextFloat() - 0.5f);
+        return x;
     }
 
     private SamplePlayer saySample(String text) {

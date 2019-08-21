@@ -259,7 +259,6 @@ public interface Truth extends Truthed {
     }
 
     @Override float freq();
-    @Override float conf();
 
     /** provides high-precision confidence value, if implemented */
     default double confDouble() {
@@ -336,8 +335,8 @@ public interface Truth extends Truthed {
             return PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
     }
 
-    @Nullable default Truth dither(double eviMin, boolean negate, NAL nar) {
-        double e = evi();
+    public static Truth dither(Truth in, double eviMin, boolean negate, NAL nar) {
+        double e = in.evi();
         if (e < eviMin)
             return null;
 
@@ -345,14 +344,14 @@ public interface Truth extends Truthed {
         float confRes = nar.confResolution.floatValue();
 
         if (!negate && freqRes < NAL.truth.TRUTH_EPSILON && confRes < NAL.truth.TRUTH_EPSILON)
-            return this;
+            return in;
 
-        float fBefore = freq();
+        float fBefore = in.freq();
         float fAfter = freq(negate ? 1-fBefore : fBefore, freqRes);
-        double cBefore = Math.max(conf(), w2cSafeDouble(e));
+        double cBefore = w2cSafeDouble(e);
         double cAfter = conf(cBefore, confRes);
-        if (Util.equals(fBefore,fAfter, NAL.truth.TRUTH_EPSILON) && Util.equals(cBefore,cAfter, NAL.truth.TRUTH_EPSILON))
-            return this;
+        if ((!(in instanceof MutableTruth)) && (Util.equals(fBefore,fAfter, NAL.truth.TRUTH_EPSILON) && Util.equals(cBefore,cAfter, NAL.truth.EVI_MIN)))
+            return in;
         else
             return PreciseTruth.byConfEvi(fAfter, cAfter, e /* extra precision */);
     }

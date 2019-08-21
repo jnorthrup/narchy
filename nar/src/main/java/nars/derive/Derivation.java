@@ -32,7 +32,7 @@ import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
-import nars.truth.PreciseTruth;
+import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunction;
@@ -153,21 +153,27 @@ public class Derivation extends PreDerivation {
     public transient boolean temporal;
     public transient int ditherDT;
     public Deriver deriver;
+
     /**
      * precise time that the task and belief truth are sampled
      */
     public transient long taskStart, taskEnd, beliefStart, beliefEnd; //TODO taskEnd, beliefEnd
     public transient boolean overlapDouble, overlapSingle;
 
-    @Deprecated public transient boolean concSingle;
-    @Deprecated public transient Truth concTruth;
-    @Deprecated public transient byte concPunc;
+    @Deprecated public transient boolean single;
+    @Deprecated public final MutableTruth truth = new MutableTruth();
+    @Deprecated public transient byte punc;
     @Deprecated public transient TruthFunction truthFunction;
 
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;
     private transient short[] parentCause;
-    private transient long[] evidenceDouble, evidenceSingle;
+
+    /** evi avg */
+    public double eviDouble;
+    public double eviSingle;
+
+    private transient long[] stampDouble, stampSingle;
     private transient int taskUniqueAnonTermCount;
 
     /**
@@ -455,8 +461,10 @@ public class Derivation extends PreDerivation {
         this.overlapSingle = _task.isCyclic();
 
 
+        this.eviSingle = _task.isBeliefOrGoal() ? _task.evi() : 0;
         if (_belief != null) {
             this.overlapDouble = Stamp.overlap(this._task, _belief);
+            this.eviDouble = this.eviSingle + _belief.evi();
         } else {
             this.overlapDouble = false; //N/A
         }
@@ -465,7 +473,7 @@ public class Derivation extends PreDerivation {
 
     public void ready(int ttl) {
 
-        this.evidenceDouble = evidenceSingle = null;
+        this.stampDouble = stampSingle = null;
 
         setTTL(ttl);
     }
@@ -514,15 +522,15 @@ public class Derivation extends PreDerivation {
 
     @Nullable
     private long[] evidenceSingle() {
-        if (evidenceSingle == null) {
-            evidenceSingle = _task.stamp();
+        if (stampSingle == null) {
+            stampSingle = _task.stamp();
         }
-        return evidenceSingle;
+        return stampSingle;
     }
 
     @Nullable
     private long[] evidenceDouble() {
-        if (evidenceDouble == null) {
+        if (stampDouble == null) {
             double te, be, tb;
             if (taskPunc == BELIEF || taskPunc == GOAL) {
 
@@ -537,11 +545,11 @@ public class Derivation extends PreDerivation {
                 tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
             }
             long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, random);
-            if (evidenceDouble == null || !Arrays.equals(e, evidenceDouble))
-                this.evidenceDouble = e;
+            if (stampDouble == null || !Arrays.equals(e, stampDouble))
+                this.stampDouble = e;
             return e;
         } else {
-            return evidenceDouble;
+            return stampDouble;
         }
     }
 
@@ -559,7 +567,7 @@ public class Derivation extends PreDerivation {
         _task = _belief = null;
         taskPunc = 0;
         parentCause = null;
-        concTruth = null;
+        truth.clear();
         taskTerm = beliefTerm = null;
         taskTruth = beliefTruth_at_Task = beliefTruth_at_Belief = null;
 
@@ -604,21 +612,25 @@ public class Derivation extends PreDerivation {
         what.accept(t);
     }
 
-    public boolean concTruthEviMul(float ratio, boolean eternalize) {
+    public boolean doubt(float ratio, boolean eternalize) {
 //        if (concTruth == null)
 //            return true; //not belief/goal
 
         if (Util.equals(ratio, 1f))
             return true; //no change
 
-        double e = ratio * concTruth.evi();
+        double e = ratio * truth.evi();
         if (eternalize)
-            e = Math.max(concTruth.eviEternalized(), e);
+            e = Math.max(truth.eviEternalized(), e);
         return concTruthEvi(e);
     }
 
     private boolean concTruthEvi(double e) {
-        return e >= eviMin && (this.concTruth = PreciseTruth.byEvi(concTruth.freq(), e)) != null;
+        if (e >= eviMin) {
+            this.truth.evi(e);
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -629,7 +641,7 @@ public class Derivation extends PreDerivation {
     }
 
     public final float parentPri() {
-        return (concSingle ? priSingle : priDouble);
+        return (single ? priSingle : priDouble);
     }
 
 //    public float parentEvi() {
@@ -664,7 +676,7 @@ public class Derivation extends PreDerivation {
     }
 
     public long[] evidence() {
-        return concSingle ? evidenceSingle() : evidenceDouble();
+        return single ? evidenceSingle() : evidenceDouble();
     }
 
     public short[] parentCause() {
@@ -695,6 +707,15 @@ public class Derivation extends PreDerivation {
 //        }
 
         return canCollector;
+    }
+
+    public final double evi() {
+        return single ? eviSingle : eviDouble;
+    }
+
+    public final boolean isBeliefOrGoal() {
+        byte p = this.punc;
+        return p == BELIEF || p == GOAL;
     }
 
     abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {

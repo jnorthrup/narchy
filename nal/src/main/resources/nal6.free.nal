@@ -6,6 +6,7 @@ C, X, --isVar(X), eventOfPN(C,X), conjParallel(C)    |-   conjWithoutPN(C,X), (B
 
 //C, X, conjParallel(C), --isVar(X), eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 
+  C, X, --isVar(X), hasBelief()                  |- conjWithoutUnify(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
   C, X, --isVar(X), hasBelief()                  |- conjBefore(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
   C, X, --isVar(X), hasBelief(), conjSequence(C) |- conjAfter(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 

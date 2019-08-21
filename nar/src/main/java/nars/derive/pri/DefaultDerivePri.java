@@ -3,13 +3,10 @@ package nars.derive.pri;
 import jcog.Util;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
-import nars.NAL;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.truth.Truth;
-import nars.truth.proj.TruthIntegration;
-
-import static nars.time.Tense.ETERNAL;
+import nars.truth.func.TruthFunctions;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -52,11 +49,13 @@ public class DefaultDerivePri implements DerivePri {
 
         float factor;
         if (t.isBeliefOrGoal()) {
-            factor = factorCmpl * factorEviAbsolute(t, d) * factorPolarity(t.freq()); //<-- absolute is much better
+            factor = factorCmpl * factorPolarity(t.freq()); //<-- absolute is much better
             //factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
         } else {
             factor = questionGain.floatValue() * factorCmpl * factorCmpl;
         }
+
+        factor *= factorEviAbsolute(t,d);
 
         float y = this.gain.floatValue() * postAmp(t, d.parentPri(), factor);
         return Util.clamp(y, ScalarValue.EPSILON, 1);
@@ -87,7 +86,7 @@ public class DefaultDerivePri implements DerivePri {
     float factorComplexityRelative(Task t, Derivation d, float simplicityExponent) {
 
         float pCompl =
-                d.concSingle ?
+                d.single ?
                     d.taskTerm.volume()
                     :
                     ((float) (d.taskTerm.volume() + d.beliefTerm.volume())) / 2; //average
@@ -115,48 +114,26 @@ public class DefaultDerivePri implements DerivePri {
     }
 
     float factorEviAbsolute(Task t, Derivation d) {
-        float f;
+        //eternal=1 dur
+        long taskRange = d._task.rangeIfNotEternalElse(1);
+        long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(1));
+        double taskBeliefRange = Math.min(taskRange, beliefRange);
+
+        double rangeRatio = t.rangeIfNotEternalElse(1) / taskBeliefRange;
+
+        double y;
         if (t.isBeliefOrGoal())
-            f = t.conf();
+            y = t.truth().confDouble() * rangeRatio; //conf integrated
         else
-            f = 1;
-        return Util.lerp(eviImportance.floatValue(), 1f, f);
+            y = rangeRatio * rangeRatio;
+        return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
     }
 
-    float factorEviRelative(Task t, Derivation d) {
 
-        double eParentTask, eParentBelief, eDerived;
-        if (t.isEternal()) {
-            eDerived = t.evi();
-            assert(d.taskStart==ETERNAL);
-            eParentTask = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
+    float factorMaintainAverageEvidence(Task t, Derivation d) {
 
-            if (!d.concSingle)
-                eParentBelief = d._belief.evi();
-            else
-                eParentBelief = 0;
-
-        } else {
-
-            eDerived = TruthIntegration.evi(t);
-
-            long ts = t.start(), te = t.end();
-            eParentTask = d._task.isBeliefOrGoal() ?
-                    (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, 0) : TruthIntegration.evi(d._task))
-                        : 0;
-
-            if (!d.concSingle)
-                eParentBelief =
-                    d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief);
-            else
-                eParentBelief = 0;
-
-        }
-
-        double eParent =
-                Math.max(eParentTask, eParentBelief);
-                //Util.mean(eParentTask, eParentBelief);
-                //eParentTask + eParentBelief;
+        double eParent = d.evi();
+        double eDerived = t.evi();
         if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return 1;
@@ -173,14 +150,56 @@ public class DefaultDerivePri implements DerivePri {
     }
 
 
-    @Override public float prePri(float priBase, Truth concTruth) {
-        float boost = concTruth!=null ?
-            (/*(concSingle ? 1 : 2) * */ concTruth.conf())
-            :
-            NAL.truth.TRUTH_EPSILON; /* biased against questions */
+    @Override public float prePri(Derivation d) {
 
-        //return priBase + boost;
-        //return Math.max(ScalarValue.EPSILON, p * boost);
-        return Util.or(priBase, boost);
+        if (d.isBeliefOrGoal()) {
+            //belief or goal conf boost
+            //TODO include time range as factor since it's average evi
+            double te = d.truth.evi(), de = d.evi();
+            double maintained =
+                    //te / (te + de) //as weight
+                    TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de)) //as conf
+            ;
+
+            return (float) (1 + Math.min(1, maintained));
+        } else {
+            //question
+            return 1;
+        }
     }
 }
+/*
+//        double eParentTask, eParentBelief, eDerived;
+//        if (t.isEternal()) {
+//            eDerived = t.evi();
+//            assert(d.taskStart==ETERNAL);
+//            eParentTask = d._task.isBeliefOrGoal() ? d._task.evi() : 0;
+//
+//            if (!d.concSingle)
+//                eParentBelief = d._belief.evi();
+//            else
+//                eParentBelief = 0;
+//
+//        } else {
+//
+//            eDerived = TruthIntegration.evi(t);
+//
+//            long ts = t.start(), te = t.end();
+//            eParentTask = d._task.isBeliefOrGoal() ?
+//                    (d._task.isEternal() ? TruthIntegration.evi(d._task, ts, te, 0) : TruthIntegration.evi(d._task))
+//                        : 0;
+//
+//            if (!d.concSingle)
+//                eParentBelief =
+//                    d._belief.isEternal() ? TruthIntegration.evi(d._belief, ts, te, 0) : TruthIntegration.evi(d._belief);
+//            else
+//                eParentBelief = 0;
+//
+//        }
+//
+//        double eParent =
+//                Math.max(eParentTask, eParentBelief);
+//                //Util.mean(eParentTask, eParentBelief);
+//                //eParentTask + eParentBelief;
+
+ */

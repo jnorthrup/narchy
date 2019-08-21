@@ -1,48 +1,53 @@
 package nars.derive;
 
-import nars.truth.Truth;
+import nars.truth.MutableTruth;
 import nars.truth.func.TruthFunction;
 
 public class PostDerivable {
 
     public final PreDerivation d;
+    public final MutableTruth truth = new MutableTruth();
 
     public float pri;
-    public byte concPunc;
-    public Truth concTruth;
-    public TruthFunction truthFunction;
-    public boolean concSingle;
+    private byte punc;
+
+    private TruthFunction truthFunction;
+    private boolean single;
     private DeriveAction action;
 
-    public PostDerivable(PreDerivation d) {
+    PostDerivable(PreDerivation d) {
         this.d = d;
     }
 
     /** returns <= 0 for impossible */
     private float pri(DeriveAction a, Derivation d) {
 
+        byte punc = a.truth.preFilter(d);
+        if (punc == 0)
+            return 0f; //disabled or not applicable to the premise
+
         float p = a.pri(d);
-        if (p <= Float.MIN_NORMAL || !a.truth.test(d))
+        if (p <= Float.MIN_NORMAL)
             return 0;
 
-        return d.what.derivePri.prePri(
-            p,
-            d.concTruth /* important: not this.concTruth which has not been set yet */
-        );
+        if (!a.truth.test(d))
+            return 0;
+
+        return p * d.what.derivePri.prePri(d);
     }
 
     public float priSet(DeriveAction a, Derivation d) {
         float p = pri(a, d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;
-            this.concTruth = d.concTruth;
-            this.concPunc = d.concPunc;
-            this.concSingle = d.concSingle;
+            this.truth.set( d.truth );
+            this.punc = d.punc;
+            this.single = d.single;
             this.truthFunction = d.truthFunction;
             return this.pri = p;
         } else {
-            this.pri = 0;
             this.action = null;
+            this.pri = 0;
             return 0;
             //shouldnt be necessary to keep setting:
 //            this.concTruth = null;
@@ -53,9 +58,9 @@ public class PostDerivable {
     }
 
     @Deprecated public boolean apply(Derivation d) {
-        d.concTruth = concTruth;
-        d.concPunc = concPunc;
-        d.concSingle = concSingle;
+        d.truth.set(truth);
+        d.punc = punc;
+        d.single = single;
         d.truthFunction = truthFunction;
         return true;
     }

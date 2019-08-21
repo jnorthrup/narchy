@@ -178,24 +178,24 @@ public class MutableRoulette {
     }
 
     private int nextN() {
-        float distance = EPSILON + rng.nextFloat() * weightSum;
+        float distance = rng.nextFloat() * weightSum;
 
         float[] w = this.w;
         int i = this.i;
-//            int idle = 0;
         float wi;
         int count = w.length;
 
+        int idle = count+1; //to count eextra step
         do {
             wi = w[i = Util.next(i, direction, count)];
             distance -= wi;
-//                    if (idle++ == count + 1)
-//                        return -1; //emergency bailout: WTF
+            if (--idle < 0)
+                return -1; //emergency bailout
         } while (distance > 0);
 
 
         float nextWeight = weightUpdate.valueOf(wi);
-        if (nextWeight < EPSILON) {
+        if (!validWeight(nextWeight)) {
             w[i] = 0;
             weightSum -= wi;
             remaining--;
@@ -213,18 +213,22 @@ public class MutableRoulette {
         for (int x = 0; x < count; x++) {
             float wx = w[x];
             if (wx >= EPSILON) {
-                float wy = weightUpdate.valueOf(wx);
-                if (wy < EPSILON) {
+                float nextWeight = weightUpdate.valueOf(wx);
+                if (!validWeight(nextWeight)) {
                     w[x] = 0;
                     remaining = 0;
                 } else {
-                    w[x] = wy;
+                    w[x] = nextWeight;
                 }
                 return x;
             }
         }
 
         throw new RuntimeException();
+    }
+
+    private boolean validWeight(float nextWeight) {
+        return nextWeight==nextWeight /*!NaN*/ && nextWeight >= EPSILON;
     }
 
     /** weight sum */

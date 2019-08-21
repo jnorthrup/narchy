@@ -9,7 +9,6 @@ import nars.derive.Derivation;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.term.Term;
-import nars.term.atom.Atom;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
@@ -23,8 +22,8 @@ public class TangentIndexer extends AbstractHypothesizer {
 	int ATOM_TANGENT_REFRESH_DURS = 1;
 
 	protected boolean cache(Term target) {
-		return target instanceof Atom;
-		//return target.volume() <= 3;
+		//return target instanceof Atom;
+		return target.volume() <= 3;
 	}
 
 	@Override

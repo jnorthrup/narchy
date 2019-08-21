@@ -54,7 +54,7 @@ public class WorkerExec extends ThreadedExec {
 
 		super.update();
 
-		subCycleNS = Math.round(((double)(threadWorkTimePerCycle * concurrency()) / granularity));
+		subCycleNS = Math.round(((double)(threadWorkTimePerCycle * concurrency())) / granularity);
 	}
 
 	@Override
