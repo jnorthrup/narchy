@@ -2,14 +2,16 @@ package spacegraph.audio.speech;
 
 import jcog.Util;
 import jcog.random.XoRoShiRo128PlusRandom;
+import org.eclipse.collections.api.map.primitive.ImmutableByteObjectMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 import spacegraph.audio.Audio;
 import spacegraph.audio.sample.SamplePlayer;
 import spacegraph.audio.sample.SoundSample;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Java port of tss.js -- Tiny Speech Synthesizer in JavaScript
@@ -23,24 +25,45 @@ import java.util.Map;
 public class TinySpeech {
 
     public static final int SAMPLE_FREQUENCY = 44100;
-    final static float PI = (float) Math.PI;
-    final static float PI_2 = 2 * (float) Math.PI;
+    private final static float PI = (float) Math.PI;
+    private final static float PI_2 = 2 * (float) Math.PI;
+    private final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    // Auxiliary functions
-    static float CutLevel(float x, float lvl) {
-        if (x > lvl)
-            return lvl;
-        if (x < -lvl)
-            return -lvl;
-        return x;
+    private float amp = 0.0005f;
+    float f0 = 120;
+    float period = 1.2f;
+
+    private static float sawtooth(float x) {
+        return 0.5f - (x - (int)(x / PI_2) * PI_2) / PI_2;
     }
 
-    static float Sawtooth(float x) {
-        return (float) (0.5 - (x - Math.floor(x / PI_2) * PI_2) / PI_2);
+    static class Phoneme {
+
+        final float amp;
+        final float len;
+        final int[] f;
+        final int[] w;
+        final boolean osc;
+        final boolean plosive;
+
+        Phoneme(Map x) {
+            this.amp = (int) x.get("amp");
+            this.len = (int) x.get("len");
+            this.osc = ((int) x.get("osc")) == 1;
+            this.plosive = ((int) x.get("plosive")) == 1;
+
+            this.f = new int[3]; this.w = new int[3];
+            List<Integer> F = (List<Integer>) x.get("f");
+            List<Integer> G = (List<Integer>) x.get("w");
+            for (int i  = 0; i < 3; i++) {
+                f[i] = F.get(i); w[i] = G.get(i);
+            }
+        }
     }
 
     /** HACK */
-    @Deprecated static final Map g_phonemes;
+    @Deprecated static final Map g_phonemes_json;
+    @Deprecated static final ImmutableByteObjectMap<Phoneme> g_phonemes;
 
     static {
         Map g;
@@ -76,94 +99,117 @@ public class TinySpeech {
         } catch (IOException e) {
             g = null;
         }
-        g_phonemes = g;
-    }
-    public static void say(String text) {
-        Audio.the().play( saySample(text, 80, 1f  ) );
+        g_phonemes_json = g;
+
+        ByteObjectHashMap gg = new ByteObjectHashMap(g_phonemes_json.size());
+        g_phonemes_json.forEach((c, p)-> gg.put((byte) ((String)c).charAt(0), new Phoneme((Map)p)));
+        g_phonemes = gg.toImmutable();
     }
 
-    public static float[] _say(String text) {
-        return _say(text, 80, 1f);
+
+//    public float[] _say(String text) {
+//        throw new TODO();
+//        //return _say(text, 80, 1f);
+//    }
+
+    private SoundSample _say(String text) {
+        float[] buf = new float[10 * SAMPLE_FREQUENCY];
+        int bufPos = 0;
+        return say(text, amp, f0, period, buf, bufPos);
     }
 
     // Synthesizes speech and adds it to specified buffer
-    public static float[] _say(String text, float f0, float speed) {
+    private SoundSample say(String text, float amp, float f0, float speed, float[] buf, int bufPos) {
 
-        XoRoShiRo128PlusRandom rng = new XoRoShiRo128PlusRandom(1);
-        float[] buf = new float[10 * SAMPLE_FREQUENCY];
-        int bufPos = 0;
 
-        // Debug
-//        int minBuf = 0, maxBuf = 0;
-        // Loop through all phonemes
         int tlen = text.length();
-        for (int textPos = 0; textPos < tlen; textPos++) {
-            char l = text.charAt(textPos);
-            // Find phoneme description
-            Map p = (Map) g_phonemes.get(String.valueOf(l));
-            if (p==null) {
-                if (l == ' ' || l == '\n') {
-                    int skip = (int) Math.floor(SAMPLE_FREQUENCY * 0.2 * speed);
-                    bufPos += skip;
-                }
+        for (int textPos = 0; textPos < tlen; textPos++)
+            bufPos = say(text.charAt(textPos), f0, speed, buf, bufPos);
+
+//        for (int i = 0; i < bufPos; i++)
+//            buf[i] /= Short.MAX_VALUE;
+
+        return new SoundSample(buf, 0, bufPos, SAMPLE_FREQUENCY);
+    }
+
+    private int say(char c, float f0, float speed, float[] buf, int bufPos) {
+        if (c == ' ' || c == '\n') {
+            bufPos += (int)(SAMPLE_FREQUENCY * 0.2f * speed); //skip
+        }
+
+        Phoneme p = g_phonemes.get((byte) c);
+        if (p==null)
+            return bufPos;
+
+        float v = p.amp;
+        int sl = Math.round(speed * p.len * SAMPLE_FREQUENCY / 15);
+        int[] pf = p.f;
+        int[] pw = p.w;
+        boolean osc = p.osc;
+        for (int formant = 0; formant < 3; formant++) {
+            float ff = pf[formant];
+            if (ff == 0)
                 continue;
-            }
-            int v = (int)p.get("amp");
-            // Generate sound
-            int sl = Math.round((int)p.get("len") * (SAMPLE_FREQUENCY / 15f) * speed);
-            List<Integer> pf = (List) p.get("f");
-            List<Integer> pw = (List) p.get("w");
-            boolean osc = p.get("osc").equals(1);
-            for (int formant = 0; formant < 3; formant++) {
-                float ff = pf.get(formant);
-                if (ff == 0)
-                    continue;
 
-                float freq = ff * (50f / SAMPLE_FREQUENCY);
+            float freq = ff * 50f / SAMPLE_FREQUENCY;
 
-                float buf1Res = 0, buf2Res = 0;
-                float q = 1.0f - pw.get(formant) * (PI * 10 / SAMPLE_FREQUENCY);
-                float xp = 0;
-                int thisBufPos = bufPos;
+            float xx = 0, xxx = 0;
+            final float q =
+                Math.max(0, 1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY)); //adjust 10 to tune resonance
 
-                for (int s = 0; s < sl; s++) {
-                    float x = rng.nextFloat() - 0.5f;
-                    if (!osc) {
-                        x = Sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
-                        xp = 0;
-                    }
-                    // Apply formant filter
-                    x = (float) (x + 2f * Math.cos(PI_2 * freq) * buf1Res * q - buf2Res * q * q);
-                    buf2Res = buf1Res;
-                    buf1Res = x;
-                    x = 0.75f * xp + x * v;
-                    xp = x;
-                    // Anticlick function
-                    x *= CutLevel((float) (Math.sin((PI * s) / sl) * 5), 1)*10f;
-                    buf[thisBufPos++] = buf[thisBufPos]/2+x;
-//                    buf[thisBufPos++] = buf[thisBufPos]/2+x;
-                    //buf.addAt(z);
+            int pos = bufPos;
+            float xp = 0;
 
-//                    if (buf[thisBufPos - 1] < minBuf) minBuf = buf[thisBufPos - 1];
-//                    if (buf[thisBufPos - 1] > maxBuf) maxBuf = buf[thisBufPos - 1];
+            for (int s = 0; s < sl; s++) {
+                float x;
+                if (!osc) {
+                    x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
+                    xp = 0;
+                } else {
+                    x = rng.nextFloat() - 0.5f;
                 }
+                // Apply formant filter
+                x = (float) ((x + (2f * Math.cos(PI_2 * freq) * xx * q)) - (xxx * q * q));
+                xxx = xx;
+                xx = x;
+                x = x * v + xp;
+                xp = x;
+
+                // Anticlick filter ?? low pass
+                x *= Util.clamp((float)Math.sin((PI * s) / sl), -1, 1);
+
+
+
+                x *= amp;
+
+                // Mix
+                //buf[pos] = buf[pos]/2 + x;
+                buf[pos] += x;
+
+                pos++;
             }
-            // Overlap neighbour phonemes
-            bufPos += Math.round( ((3*sl/4)) + ((((int)p.get("plosive"))==1) ? (sl & 0xfffffe) : 0));
         }
+        // silence until next phoneme
+        float overlap =
+            //0.5f;
+            //0.25f;
+            0.1f;
+            //0;
 
-
-        float[] aa = Arrays.copyOf(buf, bufPos);
-        for (int i = 0; i < aa.length; i++) {
-            aa[i] /= Short.MAX_VALUE;
-        }
-
-        return aa;
+        bufPos += Math.round( (1-overlap)*sl + (p.plosive ? (sl & 0xfffffe) : 0));
+        return bufPos;
     }
 
-    public static SamplePlayer saySample(String text, float f0, float speed) {
-        return new SamplePlayer(new SoundSample(_say(text, f0, speed), SAMPLE_FREQUENCY));
+    private SamplePlayer saySample(String text) {
+        return new SamplePlayer(_say(text));
     }
 
+    public void say(String text) {
+        Audio.the().play( saySample(text  ) );
+    }
 
+    public static void main(String[] args) throws IOException {
+        Audio.the().play(new TinySpeech().saySample("hello hello hello this is a spEIE ch test"));
+        System.in.read();
+    }
 }

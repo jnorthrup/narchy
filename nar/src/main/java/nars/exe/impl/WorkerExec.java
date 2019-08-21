@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-	double granularity = 8;
+	double granularity = 4;
 
 
 	/**
@@ -54,7 +54,7 @@ public class WorkerExec extends ThreadedExec {
 
 		super.update();
 
-		subCycleNS = Math.round((threadWorkTimePerCycle / granularity));
+		subCycleNS = Math.round(((double)(threadWorkTimePerCycle * concurrency()) / granularity));
 	}
 
 	@Override

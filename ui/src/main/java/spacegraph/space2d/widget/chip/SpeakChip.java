@@ -19,7 +19,7 @@ public class SpeakChip extends Bordering {
         TinySpeech {
             @Override
             protected void accept(String s) {
-                spacegraph.audio.speech.TinySpeech.say(s);
+                new spacegraph.audio.speech.TinySpeech().say(s);
             }
         },
         System_TTS {

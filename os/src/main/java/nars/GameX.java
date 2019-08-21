@@ -722,9 +722,9 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 4;
-        float momentum = 0.25f;
-        float explorationRate = 0.1f;
+        int gHist = 3;
+        float momentum = 0.85f;
+        float explorationRate = 0.05f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
