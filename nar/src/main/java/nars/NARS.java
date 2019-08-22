@@ -151,8 +151,8 @@ public class NARS {
                 float p = 0.5f;
                 n.beliefPriDefault.amp(p);
                 n.goalPriDefault.amp(p);
-                n.questionPriDefault.amp(p/2);
-                n.questPriDefault.amp(p/2);
+                n.questionPriDefault.amp(p/4);
+                n.questPriDefault.amp(p/4);
 
 //                n.emotion.want(Perceive, -0.1f);
 

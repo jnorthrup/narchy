@@ -1,9 +1,9 @@
 package nars.unify.unification;
 
 import nars.term.Term;
+import nars.unify.AbstractUnifyTransform;
 import nars.unify.Unification;
 import nars.unify.Unify;
-import nars.unify.AbstractUnifyTransform;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.List;

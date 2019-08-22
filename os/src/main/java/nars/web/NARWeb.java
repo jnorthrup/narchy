@@ -20,7 +20,6 @@ import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.WebServer;
-import spacegraph.web.util.ClientBuilder;
 
 import java.io.IOException;
 import java.net.URI;
@@ -29,7 +28,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
-import static spacegraph.web.util.ClientBuilder.rebuild;
 
 abstract public class NARWeb extends WebServer {
 
@@ -108,7 +106,7 @@ abstract public class NARWeb extends WebServer {
 
         public static void main(String[] args) throws IOException {
 
-            ClientBuilder.rebuildAsync(NARWebClient.class, false);
+//            ClientBuilder.rebuildAsync(NARWebClient.class, false);
 
             int port;
             if (args.length > 0) {
@@ -325,11 +323,5 @@ abstract public class NARWeb extends WebServer {
 
     }
 
-    public static class WebClientJSBuilder {
 
-        public static void main(String[] args) {
-            rebuild(NARWebClient.class, false);
-        }
-
-    }
 }

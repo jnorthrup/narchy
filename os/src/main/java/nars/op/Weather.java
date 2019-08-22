@@ -11,17 +11,19 @@ import nars.control.NARPart;
 import nars.task.NALTask;
 import nars.time.clock.RealTime;
 import org.apache.commons.io.IOUtils;
-import org.joda.time.LocalDate;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 
 import java.io.IOException;
 import java.net.URL;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.List;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+
+//import org.joda.time.LocalDate;
+//import org.joda.time.format.DateTimeFormat;
+//import org.joda.time.format.DateTimeFormatter;
 
 /**
  * weather and meteorlogical model
@@ -82,9 +84,9 @@ public class Weather extends NARPart {
 
                 w = w.get("results");
 
-                sunrise = DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("sunrise").asText()).toDateTime().withDate(LocalDate.now()).toDate();
-                sunset = DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("sunset").asText()).toDateTime().withDate(LocalDate.now()).toDate();
-                noon = DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("solar_noon").asText()).toDateTime().withDate(LocalDate.now()).toDate();
+                sunrise = null; //TODO DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("sunrise").asText()).toDateTime().withDate(LocalDate.now()).toDate();
+                sunset = null; //TODO DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("sunset").asText()).toDateTime().withDate(LocalDate.now()).toDate();
+                noon = null; //TODO DateTimeFormat.forPattern("hh:mm:ss a").withZoneUTC().parseDateTime(w.get("solar_noon").asText()).toDateTime().withDate(LocalDate.now()).toDate();
 
 
                 long HALF_HOUR_ms = 3600/2 * 1000;
@@ -128,12 +130,12 @@ public class Weather extends NARPart {
                 JsonNode times = w.get("time").get("startValidTime");
                 JsonNode temperatures = w.get("data").get("temperature");
                 int n = times.size();
-                DateTimeFormatter df = DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
+                DateTimeFormatter df = null; //TODO DateTimeFormat.forPattern("yyyy-MM-dd'T'HH:mm:ssZ");
                 //2018-11-05T18:00:00-05:00
 
                 //12 hour intervals
                 for (int i = 0; i < n; i++) {
-                    Date ww = df.parseDateTime(times.get(i).asText()).toDate();
+                    Date ww = null; //TODO df.parseDateTime(times.get(i).asText()).toDate();
                     int tempFahrenheit = Integer.valueOf(temperatures.get(i).asText()); //a string really??
 
                     forecastTemperature(ww, 3600*1000*6, tempFahrenheit);

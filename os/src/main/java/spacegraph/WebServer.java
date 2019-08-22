@@ -4,7 +4,6 @@ import jcog.event.RunThese;
 import jcog.net.http.HttpConnection;
 import jcog.net.http.HttpModel;
 import org.java_websocket.WebSocket;
-import spacegraph.web.util.MsgPack;
 
 import java.io.File;
 import java.net.URI;
@@ -27,9 +26,9 @@ public abstract class WebServer implements HttpModel {
 //            case "/websocket.js":
 //                h.respond(spacegraph.web.util.WebSocket.websocket_js);
 //                break;
-            case "/msgpack.js":
-                h.respond(MsgPack.msgpack_js);
-                break;
+//            case "/msgpack.js":
+//                h.respond(MsgPack.msgpack_js);
+//                break;
             default:
                 h.respond(
                         "<html>\n" +

@@ -5,7 +5,10 @@
 package nars.derive.premise;
 
 import jcog.signal.meter.FastCounter;
-import nars.*;
+import nars.Emotion;
+import nars.NAL;
+import nars.NAR;
+import nars.Task;
 import nars.derive.Derivation;
 import nars.table.BeliefTable;
 import nars.term.Term;

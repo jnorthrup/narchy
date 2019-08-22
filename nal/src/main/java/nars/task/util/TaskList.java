@@ -17,8 +17,6 @@ import java.util.Collection;
 import java.util.Random;
 import java.util.function.Supplier;
 
-import static nars.NAL.STAMP_CAPACITY;
-
 /**
  * A List of Task's which can be used for various purposes, including dynamic truth and evidence calculations (as utility methods)
  */

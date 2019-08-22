@@ -11,12 +11,12 @@
         <relativePath>../pom.xml</relativePath>
     </parent>
 
-    <repositories>
-        <repository>
-            <id>teavm-dev</id>
-            <url>https://dl.bintray.com/konsoletyper/teavm</url>
-        </repository>
-    </repositories>
+<!--    <repositories>-->
+<!--        <repository>-->
+<!--            <id>teavm-dev</id>-->
+<!--            <url>https://dl.bintray.com/konsoletyper/teavm</url>-->
+<!--        </repository>-->
+<!--    </repositories>-->
 
     <groupId>narchy</groupId>
     <artifactId>os</artifactId>
@@ -47,41 +47,41 @@
             <scope>compile</scope>
         </dependency>
 
-        <dependency>
-            <groupId>org.teavm</groupId>
-            <artifactId>teavm-tooling</artifactId>
-            <version>LATEST</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.teavm</groupId>
-            <artifactId>teavm-jso</artifactId>
-            <version>LATEST</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <dependency>
-            <groupId>org.teavm</groupId>
-            <artifactId>teavm-classlib</artifactId>
-            <version>LATEST</version>
-            <scope>compile</scope>
-            <exclusions>
-                <exclusion>
-                    <artifactId>*</artifactId>
-                    <groupId>org.ow2.asm</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.teavm</groupId>-->
+<!--            <artifactId>teavm-tooling</artifactId>-->
+<!--            <version>LATEST</version>-->
+<!--            <scope>compile</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                    <groupId>org.ow2.asm</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.teavm</groupId>-->
+<!--            <artifactId>teavm-jso</artifactId>-->
+<!--            <version>LATEST</version>-->
+<!--            <scope>compile</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                    <groupId>org.ow2.asm</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.teavm</groupId>-->
+<!--            <artifactId>teavm-classlib</artifactId>-->
+<!--            <version>LATEST</version>-->
+<!--            <scope>compile</scope>-->
+<!--            <exclusions>-->
+<!--                <exclusion>-->
+<!--                    <artifactId>*</artifactId>-->
+<!--                    <groupId>org.ow2.asm</groupId>-->
+<!--                </exclusion>-->
+<!--            </exclusions>-->
+<!--        </dependency>-->
     </dependencies>
 </project>

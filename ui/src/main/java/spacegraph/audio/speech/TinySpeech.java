@@ -33,7 +33,7 @@ public class TinySpeech {
     private final static float PI_2 = 2 * (float) Math.PI;
     private final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    private float amp = 0.0005f;
+    private float amp = 0.01f;
     float f0 = 120;
     float period = 1.2f;
 
@@ -58,9 +58,9 @@ public class TinySpeech {
 
             this.f = new int[3]; this.w = new int[3];
             List<Integer> F = (List<Integer>) x.get("f");
-            List<Integer> G = (List<Integer>) x.get("w");
+            List<Integer> W = (List<Integer>) x.get("w");
             for (int i  = 0; i < 3; i++) {
-                f[i] = F.get(i); w[i] = G.get(i);
+                f[i] = F.get(i); w[i] = W.get(i);
             }
         }
     }
@@ -128,7 +128,7 @@ public class TinySpeech {
 
         int tlen = text.length();
         for (int textPos = 0; textPos < tlen; textPos++)
-            bufPos = say(text.charAt(textPos), f0, speed, buf, bufPos);
+            bufPos = say(text.charAt(textPos), f0, speed, buf, bufPos, amp);
 
 //        for (int i = 0; i < bufPos; i++)
 //            buf[i] /= Short.MAX_VALUE;
@@ -136,7 +136,8 @@ public class TinySpeech {
         return new SoundSample(buf, 0, bufPos, SAMPLE_FREQUENCY);
     }
 
-    private int say(char c, float f0, float speed, float[] buf, int bufPos) {
+    private int say(char c, float f0, float speed, float[] buf, int bufPos, float amp) {
+
         if (c == ' ' || c == '\n') {
             bufPos += (int)(SAMPLE_FREQUENCY * 0.2f * speed); //skip
         }
@@ -145,7 +146,7 @@ public class TinySpeech {
         if (p==null)
             return bufPos;
 
-        float v = p.amp;
+        float v = p.amp * amp;
         int sl = Math.round(speed * p.len * SAMPLE_FREQUENCY / 15);
         int[] pf = p.f;
         int[] pw = p.w;
@@ -159,7 +160,7 @@ public class TinySpeech {
 
             float xx = 0, xxx = 0;
             final float q =
-                Math.max(0, 1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY)); //adjust 10 to tune resonance
+                1.0f - pw[formant] * (PI * 10/ SAMPLE_FREQUENCY); //adjust 10 to tune resonance
                 //(float) (1 / (pw[formant] * tan(2 * PI * 0.5)));
 
             int pos = bufPos;
@@ -176,14 +177,16 @@ public class TinySpeech {
                 }
 
                 // Apply formant filter
-                x = (float) ((x + (2f * Math.cos(PI_2 * freq) * xx * q)) - (xxx * q * q));
+                x = (float) ((x + (2 * Math.cos(PI_2 * freq) * xx * q)) - (xxx * q * q));
                 xxx = xx;
                 xx = x;
                 x = x * v + xp;
                 xp = x;
 
-                // Anticlick filter ?? low pass
-                x *= Util.clamp((float)Math.sin((PI * s) / sl), -1, 1);
+                // envelope
+                double e = Math.sin((PI * s) / sl); //sine  /-\
+
+                x *= e;
 
 
 
@@ -196,11 +199,11 @@ public class TinySpeech {
                 pos++;
             }
         }
-        // silence until next phoneme
+
         float overlap =
             //0.5f;
-            //0.25f;
-            0.1f;
+            0.25f;
+            //0.1f;
             //0;
 
         bufPos += Math.round( (1-overlap)*sl + (p.plosive ? (sl & 0xfffffe) : 0));
@@ -215,7 +218,7 @@ public class TinySpeech {
 
     private float noise() {
         float x;
-        x = 2 * (rng.nextFloat() - 0.5f);
+        x = (rng.nextFloat() - 0.5f);
         return x;
     }
 

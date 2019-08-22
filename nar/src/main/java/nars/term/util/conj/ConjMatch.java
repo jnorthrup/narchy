@@ -20,7 +20,8 @@ import static nars.time.Tense.XTERNAL;
 public enum ConjMatch { ;
 
 
-    static final int varBits =
+    /** TODO as argument */
+    @Deprecated static final int varBits =
         VAR_DEP.bit | VAR_INDEP.bit | VAR_QUERY.bit;
         //VAR_DEP.bit | VAR_INDEP.bit;
         //VAR_INDEP.bit | VAR_QUERY.bit;
@@ -36,6 +37,7 @@ public enum ConjMatch { ;
      * TODO configurable dtTolerance for matches
      */
     public static Term beforeOrAfter(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter,  UnifyTransform s, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
+        int varBits = ConjMatch.varBits;
         if (!(conj instanceof Compound) || conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(event))
             return Null;
 
