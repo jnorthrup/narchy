@@ -1,10 +1,14 @@
 package nars.web;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.node.ArrayNode;
 import jcog.Texts;
+import jcog.Util;
 import jcog.data.map.CustomConcurrentHashMap;
 import jcog.event.Off;
 import jcog.event.RunThese;
 import jcog.exe.Exe;
+import jcog.net.http.EvalSocket;
 import jcog.net.http.HttpServer;
 import jcog.net.http.WebSocketConnection;
 import jcog.pri.bag.impl.PriArrayBag;
@@ -19,19 +23,24 @@ import org.java_websocket.WebSocket;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.WebServer;
 
 import java.io.IOException;
 import java.net.URI;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
 
 import static jcog.data.map.CustomConcurrentHashMap.*;
+import static nars.web.TaskJsonCodec.Native.taskify;
 
-abstract public class NARWeb extends WebServer {
+abstract public class NARWeb extends EvalSocket<NAR> {
 
     static final int DEFAULT_PORT = 60606;
+
+    public NARWeb(Supplier target) {
+        super(target);
+    }
 
 
     @Override
@@ -59,20 +68,20 @@ abstract public class NARWeb extends WebServer {
     protected abstract NAR nar(WebSocketConnection conn, String url);
 
 
-    @Override
-    public void wssMessage(WebSocket ws, String message) {
-        try {
-            NAR n = ((NARWeb.NARConnection) ws.getAttachment()).nar;
-            n.input(message);
-//            System.out.println(n.loop + " " + n.loop.isRunning());
-//            System.out.println(Iterables.toString(n.attn.active));
-//            System.out.println(Iterators.toString(n.services().iterator()));
-//            System.out.println(n.exe);
-
-        } catch (Narsese.NarseseException e) {
-            ws.send(e.toString()); //e.printStackTrace();
-        }
-    }
+//    @Override
+//    public void wssMessage(WebSocket ws, String message) {
+//        try {
+//            NAR n = ((NARWeb.NARConnection) ws.getAttachment()).nar;
+//            n.input(message);
+////            System.out.println(n.loop + " " + n.loop.isRunning());
+////            System.out.println(Iterables.toString(n.attn.active));
+////            System.out.println(Iterators.toString(n.services().iterator()));
+////            System.out.println(n.exe);
+//
+//        } catch (Narsese.NarseseException e) {
+//            ws.send(e.toString()); //e.printStackTrace();
+//        }
+//    }
 
     static class NARConnection extends RunThese {
         public final NAR nar;
@@ -101,6 +110,7 @@ abstract public class NARWeb extends WebServer {
         private final NAR nar;
 
         public Single(NAR nar) {
+            super(()->nar);
             this.nar = nar;
         }
 
@@ -117,10 +127,10 @@ abstract public class NARWeb extends WebServer {
 
             NAR nar;
             jcog.net.http.HttpServer h = new HttpServer(port, new NARWeb.Single(nar = NARchy.core(1)));
-            h.setFPS(10f);
+            h.setFPS(5f);
 
             nar.startFPS(5f);
-            nar.loop.throttle.set(0.1f);
+            nar.loop.throttle.set(0.05f);
         }
 
         @Override
@@ -141,6 +151,7 @@ abstract public class NARWeb extends WebServer {
         private final Memory sharedIndex;
 
         public Multi() {
+            super(null/*TODO*/);
             this.nar = NARchy.core();
             //this.nar.loop.setFPS(10);
             this.sharedIndex = new ProxyMemory(nar.memory);
@@ -294,12 +305,17 @@ abstract public class NARWeb extends WebServer {
 //                String s = buf.toString();
 //                w.send(s);
 
-
+                ArrayNode a = Util.cborMapper.createArrayNode();
                 out.clear(t -> {
-                    w.send(t.toString());
+                    taskify(t, a.addArray());
                 });
+                try {
+                    w.send(Util.jsonMapper.writeValueAsString(a));
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
 
-//                ArrayNode a = Util.cborMapper.createArrayNode();
+
 //
 //                out.clear(t -> {
 //                    taskify(t, a.addArray());

@@ -54,12 +54,7 @@
       <version>2.0.9</version>
       <scope>compile</scope>
     </dependency>
-    <dependency>
-      <groupId>org.codehaus.janino</groupId>
-      <artifactId>janino</artifactId>
-      <version>3.1.0</version>
-      <scope>compile</scope>
-    </dependency>
+
     <dependency>
       <groupId>org.boofcv</groupId>
       <artifactId>boofcv-swing</artifactId>
