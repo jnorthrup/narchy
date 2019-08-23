@@ -167,12 +167,12 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
         int tasks = threads * granularity;
 
 
-        double playTimeNS = updater.durCycles() * idealCycleNS * efficiency * nar.loop.throttle.floatValue();
+        double playTimeNS = idealCycleNS * efficiency * nar.loop.throttle.floatValue();
         double nsPerPri = priTotal > Double.MIN_VALUE ? playTimeNS / priTotal : 0;
         double priPerTask = priTotal / tasks;
 
         int ll = play.size();
-        FasterList<PlayBatch> next = new FasterList(tasks);
+        FasterList<PlayBatch> next = new FasterList<>(tasks);
         double priCurrentThread;
         for (int i = 0; i < ll; ) {
             int j = i;

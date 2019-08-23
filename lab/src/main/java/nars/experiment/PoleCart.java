@@ -36,6 +36,7 @@ import static spacegraph.SpaceGraph.window;
  */
 public class PoleCart extends GameX {
 
+    boolean speedControl = true;
 
     private final DigitizedScalar xVel;
     private final DigitizedScalar x;
@@ -43,6 +44,7 @@ public class PoleCart extends GameX {
 
 
     static final float fps = 25;
+    private float speed = 1;
 
     public static void main(String[] arg) {
         //polecart(-1);
@@ -192,6 +194,11 @@ public class PoleCart extends GameX {
         //initBipolar();
         initUnipolar();
 
+        if (speedControl) {
+            actionUnipolar($.inh(id, "S"), (s)->{
+               speed = Util.sqr(s*2);
+            });
+        }
 
 
 
@@ -341,7 +348,7 @@ public class PoleCart extends GameX {
     }
 
     float power(float a) {
-        return a;
+        return a * speed;
         //return Util.sqrt(a);
     }
 

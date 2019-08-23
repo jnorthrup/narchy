@@ -35,14 +35,11 @@ public class Gradius extends GameX {
     int lastScore;
 
     public static void main(String[] args) {
-
         GameX.runRT(Gradius::new, 40f);
-
     }
 
     public Gradius(NAR nar) {
         super("g", fps(25), nar);
-
 
         //TODO coordinate with fps
         g.updateMS =
@@ -53,7 +50,6 @@ public class Gradius extends GameX {
                 //10; //100fps
                 //5; //200fps
         //10;
-
 
         int dx = 2, dy = 2;
         int px = 24, py = 24;

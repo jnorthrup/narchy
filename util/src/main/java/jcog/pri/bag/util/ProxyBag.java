@@ -98,6 +98,11 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
     }
 
     @Override
+    public @Nullable Y sample(Random rng) {
+        return bag.sample(rng);
+    }
+
+    @Override
     public final void sample(Random rng, Function<? super Y, SampleReaction> each) {
         bag.sample(rng, each);
     }

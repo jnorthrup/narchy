@@ -176,11 +176,12 @@ public final class Answer implements Timed, Predicate<Task> {
 //                    if (NAL.DEBUG)
 //                        throw new TermException("mismatch for Answer template: " + template, x);
 //                    else {
-                        return Float.NaN;
-//                    }
+                       return Float.NaN;
+                    }
 //                }
 
-            }
+//            }
+            //dtDiff = dtDiff > 0 ? (float) Math.log(1+dtDiff) : 0; //HACK
 
             float d = 1 / (1 + dtDiff);
             return d < min ? Float.NaN : str * d;

@@ -108,15 +108,19 @@ public class Deriver extends How {
     }
 
 
+
     @Override
     public final void next(What w, final BooleanSupplier kontinue) {
 
+        TaskLinks links = ((TaskLinkWhat) w).links;
+        if (links.isEmpty())
+            return;
 
         Derivation d = Derivation.derivation.get().next(this, w);
 
-        When<NAR> now = d.deriver.timing.task(d.what);
+        When<NAR> now = d.deriver.timing.task(w);
 
-        TaskLinks links = ((TaskLinkWhat) d.what).links;
+
 
         do {
 

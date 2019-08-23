@@ -86,7 +86,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
     static class NARConnection extends RunThese {
         public final NAR nar;
 
-        public NARConnection(NAR n, Off... ons) {
+        NARConnection(NAR n, Off... ons) {
             this.nar = n;
             for (Off o : ons)
                 add(o);
@@ -118,16 +118,11 @@ abstract public class NARWeb extends EvalSocket<NAR> {
 
 //            ClientBuilder.rebuildAsync(NARWebClient.class, false);
 
-            int port;
-            if (args.length > 0) {
-                port = Texts.i(args[0]);
-            } else {
-                port = DEFAULT_PORT;
-            }
+            int port = args.length > 0 ? Texts.i(args[0]) : DEFAULT_PORT;
 
-            NAR nar;
-            jcog.net.http.HttpServer h = new HttpServer(port, new NARWeb.Single(nar = NARchy.core(1)));
-            h.setFPS(5f);
+            NAR nar = NARchy.core(1);
+            jcog.net.http.HttpServer h = new HttpServer(port, new NARWeb.Single(nar));
+            h.setFPS(10f);
 
             nar.startFPS(5f);
             nar.loop.throttle.set(0.05f);

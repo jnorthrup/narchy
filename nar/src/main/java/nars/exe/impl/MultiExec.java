@@ -4,14 +4,13 @@ import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.math.FloatAveragedWindow;
+import jcog.event.Off;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.exe.Exec;
 import nars.task.AbstractTask;
 import nars.time.clock.RealTime;
-import nars.time.part.DurLoop;
 
 import java.io.IOException;
 import java.util.function.Consumer;
@@ -36,20 +35,21 @@ abstract public class MultiExec extends Exec {
      * higher value demands faster response at (a likely) throughput cost
      */
     public final FloatRange alertness = new FloatRange(1f, 0, 1f);
-    protected final DurLoop.DurRunnable updater;
-    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(3, 0.5f);
+//    protected NARPart updater;
+//    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(3, 0.5f);
     //1.5;
     volatile long threadWorkTimePerCycle, threadIdleTimePerCycle;
     volatile long cycleIdealNS;
-    volatile long lastDur = System.nanoTime();
+    volatile long lastDur /* TODO lastNow */ = System.nanoTime();
+    private Off cycle;
 
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
 
-        updater = new DurLoop.DurRunnable(this::update);
-        updater.durs(UPDATE_DURS);
-        add(updater);
+        //updater = new DurLoop.DurRunnable(this::update);
+        //updater.durs(UPDATE_DURS);
+//        add(updater);
     }
 
     static boolean execute(FasterList b, int concurrency, Consumer each) {
@@ -84,6 +84,15 @@ abstract public class MultiExec extends Exec {
             throw new UnsupportedOperationException("non-realtime clock not supported");
 
         super.starting(n);
+
+        cycle = n.onCycle(this::update);
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
+        cycle.close(); cycle = null;
+
+        super.stopping(nar);
     }
 
     @Deprecated
@@ -135,24 +144,27 @@ abstract public class MultiExec extends Exec {
 
             //TODO better idle calculation in each thread / worker
             long workTargetNS = (long) (Util.lerp(throttle, 0, cycleIdealNS));
-            long cycleActualNS = (long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (durDeltaNS / 1.0E6)/(UPDATE_DURS * nar.dur())));
-            long lagMeanNS = cycleActualNS - cycleIdealNS;
+            //float durCycles = nar.dur();
+            //long cycleActualNS = Math.round(((double)durDeltaNS)/(UPDATE_DURS * durCycles)); //(long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (durDeltaNS / 1.0E6)/(UPDATE_DURS * nar.dur())));
+            long lagMeanNS = durDeltaNS - cycleIdealNS; //cycleActualNS - Math.round(UPDATE_DURS * cycleIdealNS);
+
 
             long threadWorkTimePerCycle = workTargetNS;
             long threadIdleTimePerCycle = Math.max(0, cycleIdealNS - workTargetNS);
 
-            long lagNS = Math.round(lagMeanNS * lagAdjustmentFactor);
-            if (lagNS > 0) {
+            if (lagMeanNS > 0) {
+                long lagNS = Math.round(lagMeanNS * lagAdjustmentFactor);
                 if (threadIdleTimePerCycle >= lagNS) {
                     //use some idle time to compensate for lag overtime
-                    threadIdleTimePerCycle -= lagNS;
-                } else {
-                    long idleConsumed = threadIdleTimePerCycle;
-                    //need all idle time
-                    threadIdleTimePerCycle = 0;
-                    //decrease work time for remainder
-                    threadWorkTimePerCycle = Math.max(0, threadWorkTimePerCycle - (lagNS - idleConsumed));
+                    threadIdleTimePerCycle = Math.max(0,threadIdleTimePerCycle - lagNS);
                 }
+//                else {
+//                    long idleConsumed = threadIdleTimePerCycle;
+//                    //need all idle time
+//                    threadIdleTimePerCycle = 0;
+//                    //decrease work time for remainder
+//                    threadWorkTimePerCycle = Math.max(0, threadWorkTimePerCycle - (lagNS - idleConsumed));
+//                }
             }
 
 
@@ -161,6 +173,12 @@ abstract public class MultiExec extends Exec {
 
             this.threadWorkTimePerCycle = threadWorkTimePerCycle;
             this.threadIdleTimePerCycle = threadIdleTimePerCycle;
+
+//            System.out.println(
+//                Texts.timeStr(threadWorkTimePerCycle) + " work, " +
+//                Texts.timeStr(threadIdleTimePerCycle) + " idle, " +
+//                Texts.timeStr(lagMeanNS) + " lag"
+//                );
         }
 
     }

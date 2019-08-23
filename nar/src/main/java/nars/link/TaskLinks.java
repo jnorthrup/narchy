@@ -136,13 +136,19 @@ public class TaskLinks implements Sampler<TaskLink> {
         links.commit(f /*g*/);
     }
 
+    @Nullable
     @Override
-    public void sample(Random rng, Function<? super TaskLink, Sampler.SampleReaction> each) {
+    public final TaskLink sample(Random rng) {
+        return links.sample(rng);
+    }
+
+    @Override
+    public final void sample(Random rng, Function<? super TaskLink, Sampler.SampleReaction> each) {
         links.sample(rng, each);
     }
 
     @Override
-    public void sampleUnique(Random rng, Predicate<? super TaskLink> predicate) {
+    public final void sampleUnique(Random rng, Predicate<? super TaskLink> predicate) {
         links.sampleUnique(rng, predicate);
     }
 
@@ -204,6 +210,7 @@ public class TaskLinks implements Sampler<TaskLink> {
         return links.iterator();
     }
 
-
-
+    public final boolean isEmpty() {
+        return links.isEmpty();
+    }
 }

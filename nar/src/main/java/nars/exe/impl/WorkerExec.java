@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-	double granularity = 4;
+	double granularity = 2;
 
 
 	/**
@@ -201,7 +201,7 @@ public class WorkerExec extends ThreadedExec {
 		}
 
 		void sleep() {
-			long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((float) concurrency()) / exe.maxThreads));
+			long i = Math.round(WorkerExec.this.threadIdleTimePerCycle * (((double) concurrency()) / exe.maxThreads));
 			if (i > 0) {
 				Util.sleepNS(NapTimeNS);
 				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());

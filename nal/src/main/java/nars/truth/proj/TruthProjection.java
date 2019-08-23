@@ -652,8 +652,9 @@ abstract public class TruthProjection extends TaskList {
 						}
 					} else {
 						//TODO apply dtDiff error in proportion to the 2+n components
-						double diffA = dtDiff(ab, a);
-						double diffB = dtDiff(ab, b);
+						float dur = Math.max(1, this.dur);
+						double diffA = dtDiff(ab, a)/dur;
+						double diffB = dtDiff(ab, b)/dur;
 						if (diffA > 0) {
 							double discA = 1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
 							for (int x = 0; x < B; x++)
