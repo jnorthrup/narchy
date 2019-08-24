@@ -10,7 +10,6 @@ import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
 import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 
-import javax.script.ScriptException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
 import java.util.Collections;
@@ -185,8 +184,8 @@ public class EvalSocket<X> implements HttpModel {
                     if (x == null || socket.isClosed())
                         return;
 
-                    if (x instanceof ScriptException)
-                        x = ((Throwable) x).getMessage();
+//                    if (x instanceof ScriptException)
+//                        x = ((Throwable) x).getMessage();
 
                     if (x instanceof String)
                         socket.send((String) x);

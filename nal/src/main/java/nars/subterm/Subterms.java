@@ -1253,7 +1253,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return hashWith(op.id);
     }
 
-    default int hashWith(byte op) {
+    default int hashWith(/*byte*/int op) {
         return Util.hashCombine(this.hashCodeSubterms(), op);
     }
 

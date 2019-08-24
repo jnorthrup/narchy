@@ -218,19 +218,19 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
         boolean negate = _x instanceof Neg;
         Term xi;
-        Op xo;
+        int xo;
         if (negate) {
             xi = _x.unneg();
             if (xi instanceof Atomic)
                 return _x;
 
-            xo = xi.op();
+            xo = xi.opID();
         } else {
-            xo = (xi = _x).op();
+            xo = (xi = _x).opID();
         }
 
         if (internable(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
-            Term yi = terms[xo.id].apply(new Intermed.InternedCompoundByComponentsSubs(xi));
+            Term yi = terms[xo].apply(new Intermed.InternedCompoundByComponentsSubs(xi));
             if(negate) {
                 if (yi == xi)
                     return _x; //use original
@@ -252,7 +252,11 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Op op) {
-        return termsInterned.get(op.id);
+        return internable(op.id);
+    }
+
+    private boolean internable(int opID) {
+        return termsInterned.get(opID);
     }
 
     private boolean internable(Subterms subterms) {

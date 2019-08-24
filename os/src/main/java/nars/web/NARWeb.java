@@ -51,6 +51,13 @@ abstract public class NARWeb extends EvalSocket<NAR> {
             //logger.info("..
             //System.out.println("NAR " + System.identityHashCode(n) + " for " + url);
 
+//            try {
+//                n.input("x. |");
+//                n.input("y. |");
+//                n.input("z. |");
+//            } catch (Narsese.NarseseException e) {
+//                e.printStackTrace();
+//            }
             conn.setAttachment(
                     new NARConnection(n,
                             n.onTask(new WebSocketLogger(conn, n))
@@ -121,11 +128,13 @@ abstract public class NARWeb extends EvalSocket<NAR> {
             int port = args.length > 0 ? Texts.i(args[0]) : DEFAULT_PORT;
 
             NAR nar = NARchy.core(1);
+            //nar.log();
+
             jcog.net.http.HttpServer h = new HttpServer(port, new NARWeb.Single(nar));
             h.setFPS(10f);
 
-            nar.startFPS(5f);
-            nar.loop.throttle.set(0.05f);
+            nar.startFPS(1f);
+            nar.loop.throttle.set(0.01f);
         }
 
         @Override
@@ -267,7 +276,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
     static class WebSocketLogger implements Consumer<Task> {
 
         volatile WebSocket w;
-        final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 64);
+        final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 4);
         final AtomicBoolean busy = new AtomicBoolean();
         public WebSocketLogger(WebSocket ws, NAR n) {
             this.w = ws;

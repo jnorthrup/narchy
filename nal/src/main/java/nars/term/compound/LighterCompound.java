@@ -59,7 +59,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
 
     @Override
     public final int hashCode() {
-        return hashWith(op());
+        return hashWith(opID());
     }
 
 

@@ -107,9 +107,9 @@ public class Atom extends AbstractAtomic implements The {
         return true;
     }
 
-    public static int hashCode(int id, Op o) {
-        return (id + o.id) * 31;
-    }
+//    public static int hashCode(int id, Op o) {
+//        return (id + o.id) * 31;
+//    }
 
     @Override
     public final Op op() {

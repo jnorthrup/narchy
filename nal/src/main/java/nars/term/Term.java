@@ -107,22 +107,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     }
 
     /**
-     * opX function
-     */
-    static int opX(Op o, short subOp) {
-        return (o.id << 16) | (subOp);
-    }
-
-    /**
-     * for convenience, delegates to the byte function
-     */
-    @Deprecated
-    static int opX(Op o, int subOp) {
-        assert (subOp < Short.MAX_VALUE - 1);
-        return opX(o, (short) subOp);
-    }
-
-    /**
      * true if there is at least some type of structure in common
      */
     static boolean commonStructure(Termlike x, Termlike y) {
