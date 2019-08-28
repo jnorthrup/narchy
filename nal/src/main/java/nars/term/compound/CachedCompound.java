@@ -30,22 +30,18 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
     public static Compound newCompound(Op op, int dt, Subterms subterms) {
 
-        Compound c;
         if (!op.temporal && !subterms.hasAny(Op.Temporal)) {
             //assert (dt == DTERNAL);
-            if (subterms.isNormalized())
-                c = new SimpleCachedCompound(op, subterms);
-            else
-                c = new UnnormalizedCachedCompound(op, subterms);
+            return subterms.isNormalized() ?
+                new SimpleCachedCompound(op, subterms) :
+                new UnnormalizedCachedCompound(op, subterms);
         } else {
 //            if (subterms.sub(subterms.subs() - 1) instanceof Interval) {
 //                c = new Sequence(subterms);
 //            } else {
-                c = new TemporalCachedCompound(op, dt, subterms);
+            return new TemporalCachedCompound(op, dt, subterms);
 //            }
         }
-
-        return c;
     }
 
     /** non-temporal but unnormalized */

@@ -144,7 +144,6 @@ public class NAL8SequenceTest extends NALTest {
     void testUnifyConclusionSequenceOutcome() {
         
         test
-            .logDebug()
                 .input( "e(x)!")
                 .input( "(a(#1) &&+1 (b &&+1 (c &&+1 (d &&+1 e(#1))))).")
                 .mustGoal(cycles, "(a(x) &&+1 (b &&+1 (c &&+1 d)))", 1, 0.81f) //81% for one step
