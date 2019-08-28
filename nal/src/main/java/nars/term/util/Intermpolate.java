@@ -82,13 +82,13 @@ public enum Intermpolate {;
     }
 
     private static float dtDiffSeq(Compound a, Compound b, int depth) {
-        int v = a.volume();
-        if (v !=b.volume()) {
+//        int v = a.volume();
+//        if (v !=b.volume()) {
             //return Float.POSITIVE_INFINITY; //is there a solution here?
-            return (1+a.eventRange()) * (1+b.eventRange()); //HACK finite, but nonsensical
-        }
+            return (1+Math.abs(a.eventRange()-b.eventRange())) * (1 + Math.abs(a.volume()-b.volume())) ; //HACK finite, but nonsensical
+//        }
 
-        return (1 + dtDiff(a.eventRange(), b.eventRange()) ) * Math.max(a.subs(), b.subs()); //HACK estimate
+        //return (1 + dtDiff(a.eventRange(), b.eventRange()) ) * Math.max(a.subs(), b.subs()); //HACK estimate
     }
 
     private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {

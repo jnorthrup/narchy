@@ -144,9 +144,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    default Subterms remove(Term event) {
+    @Nullable default Subterms remove(Term event) {
         Term[] t = removing(event);
-        return t.length == subs() ? this : Op.terms.subterms(t);
+        if (t == null)
+            return null;
+        else
+            return t.length == subs() ? this : Op.terms.subterms(t);
     }
 
 
@@ -1009,11 +1012,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] removing(MetalBitSet toRemove) {
         return subsIncExc(toRemove, false);
     }
-    default Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
+    @Nullable default Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
 
         int c = s.cardinality();
 
-        if (c == 0) return includeOrExclude ? Op.EmptyTermArray : arrayShared();
+        if (c == 0) {
+//            if (!includeOrExclude)
+//                throw new UnsupportedOperationException("should not reach here");
+            return includeOrExclude ? Op.EmptyTermArray : arrayShared();
+        }
 
         int size = subs();
         assert(c <= size): "bitset has extra bits setAt beyond the range of subterms";
@@ -1258,8 +1265,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    default Term[] removing(Term x) {
-        return removing(indicesOfBits(x::equals));
+    @Nullable default Term[] removing(Term x) {
+        MetalBitSet toRemove = indicesOfBits(x::equals);
+        return toRemove.cardinality() == 0 ? null : removing(toRemove);
     }
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {

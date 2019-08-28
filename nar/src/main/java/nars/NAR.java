@@ -96,7 +96,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final Exec exe;
     public final NARLoop loop;
     public final Memory memory;
-    @Deprecated public final MemoryExternal memoryExternal = new MemoryExternal(this);
+//    @Deprecated public final MemoryExternal memoryExternal = new MemoryExternal(this);
     public final ConceptBuilder conceptBuilder;
     public final Emotion emotion;
     private final Function<Term, What> whatBuilder;
@@ -115,14 +115,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     final InheritableThreadLocal<What> active = new InheritableThreadLocal<>();
 
-    /**
-     * @param memory
-     * @param exe
-     * @param attn           core attention.  others may be added/removed dynamically as parts
-     * @param time
-     * @param rng
-     * @param conceptBuilder
-     */
+
     public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
         super(exe, time, rng);
 

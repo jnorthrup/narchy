@@ -63,18 +63,18 @@ public class KIF implements Iterable<Task> {
     private static final Term SYMMETRIC_RELATION = $$("SymmetricRelation");
     private static final Term ASYMMETRIC_RELATION = $$("AsymmetricRelation");
 
-    public static MemoryExternal.BytesToTasks load = new MemoryExternal.BytesToTasks("kif") {
-
-        @Override
-        public Stream<Task> apply(InputStream i) {
-            try {
-                return new KIF(i).tasks();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return null;
-        }
-    };
+//    public static MemoryExternal.BytesToTasks load = new MemoryExternal.BytesToTasks("kif") {
+//
+//        @Override
+//        public Stream<Task> apply(InputStream i) {
+//            try {
+//                return new KIF(i).tasks();
+//            } catch (Exception e) {
+//                e.printStackTrace();
+//            }
+//            return null;
+//        }
+//    };
 
 
 	public Stream<Task> tasks() {

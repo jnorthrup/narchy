@@ -65,9 +65,11 @@ public class SectTest {
 
     @Test void factorCommonSectConj() {
         assertEq("(a-->c)", "((a&b)-->(b&c))");
-        assertEq(True, "(b-->(b&c))");
-        assertEq(False, "(b-->(--b&c))");
-        assertEq(True, "((a&b)-->a)");
+    }
+    @Test void recursiveSect() {
+        assertEq(Null /*True*/, "(b-->(b&c))");
+        assertEq(Null /*False*/, "(b-->(--b&c))");
+        assertEq(Null /*True*/, "((a&b)-->a)");
     }
     @Test void factorCommonSectDisj() {
         assertEq("(a-->c)", "((a|b)-->(b|c))");

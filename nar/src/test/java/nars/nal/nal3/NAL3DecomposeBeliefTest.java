@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 public class NAL3DecomposeBeliefTest extends NAL3Test {
 
+    static final int cycles = 1350;
 
     @ValueSource(floats = { 0.7f, 0.8f, 0.9f })
     @ParameterizedTest
@@ -209,6 +210,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 
         test
                 .termVolMax(6)
+                .confMin(0.8f)
                 .believe("--(x-->(RealNumber&&ComplexNumber))")
                 .believe("(x-->RealNumber)")
 //                .mustBelieve(cycles, "(x-->ComplexNumber)", 0f, 0.45f) //single decomposition
@@ -232,6 +234,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 
 
         test
+            .termVolMax(6)
                 .believe("--(x-->ComplexNumber)")
                 .believe("(x-->RealNumber)")
                 .mustBelieve(cycles, "(x-->(RealNumber-ComplexNumber))", 1f, 0.81f);

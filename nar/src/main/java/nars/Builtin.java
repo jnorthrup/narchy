@@ -1,8 +1,6 @@
 package nars;
 
 import jcog.Texts;
-import jcog.User;
-import nars.io.IO;
 import nars.op.*;
 import nars.op.data.flat;
 import nars.op.data.reflect;
@@ -27,10 +25,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeSet;
@@ -602,50 +596,50 @@ public class Builtin {
 //            }
 //        });
 
-        initMemoryOps(nar);
+//        initMemoryOps(nar);
     }
 
-    private static void initMemoryOps(NAR nar) {
-        nar.addOp1("load", (id, nn) -> {
-            Runnable r = nn.memoryExternal.copy(id, nn.self());
-            if (r != null)
-                nn.runLater(r);
-        });
-
-//        /** eternal tasks only */
-//        nar.onOp1("remember", (id, nn) -> {
-//            nn.runLater(() -> {
-//                save(nn, id, Task::isEternal);
-//                nn.logger.info("remembered {}", id);
-//            });
+//    private static void initMemoryOps(NAR nar) {
+//        nar.addOp1("load", (id, nn) -> {
+//            Runnable r = nn.memoryExternal.copy(id, nn.self());
+//            if (r != null)
+//                nn.runLater(r);
 //        });
 //
-//        /** all tasks */
-//        nar.onOp1("save", (id, nn) -> {
-//            nn.runLater(() -> {
-//                save(nn, id, (t) -> true);
-//                nn.logger.info("saved {}", id);
-//            });
-//        });
-
-        nar.addOp2("memory2txtfile", (id, filePath, nn) -> nn.runLater(() -> {
-            try {
-                PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
-                User.the().get(id.toString(), (byte[] x) -> {
-                    try {
-                        IO.readTasks(x, (Task t) -> p.println(t.toString(true)));
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                });
-                p.close();
-
-                //nn.log("saved {} to {}", id, filePath);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-        }));
-    }
+////        /** eternal tasks only */
+////        nar.onOp1("remember", (id, nn) -> {
+////            nn.runLater(() -> {
+////                save(nn, id, Task::isEternal);
+////                nn.logger.info("remembered {}", id);
+////            });
+////        });
+////
+////        /** all tasks */
+////        nar.onOp1("save", (id, nn) -> {
+////            nn.runLater(() -> {
+////                save(nn, id, (t) -> true);
+////                nn.logger.info("saved {}", id);
+////            });
+////        });
+//
+//        nar.addOp2("memory2txtfile", (id, filePath, nn) -> nn.runLater(() -> {
+//            try {
+//                PrintStream p = new PrintStream(new FileOutputStream($.unquote(filePath)));
+//                User.the().get(id.toString(), (byte[] x) -> {
+//                    try {
+//                        IO.readTasks(x, (Task t) -> p.println(t.toString(true)));
+//                    } catch (IOException e) {
+//                        e.printStackTrace();
+//                    }
+//                });
+//                p.close();
+//
+//                //nn.log("saved {} to {}", id, filePath);
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//            }
+//        }));
+//    }
 
 
 //

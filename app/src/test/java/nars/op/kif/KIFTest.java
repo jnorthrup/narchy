@@ -1,11 +1,10 @@
 package nars.op.kif;
 
 import com.google.common.base.Joiner;
-import jcog.Texts;
 import jcog.Util;
-import jcog.data.graph.AdjGraph;
-import jcog.data.graph.GraphMeter;
-import nars.*;
+import nars.NAR;
+import nars.NARS;
+import nars.Narsese;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -13,15 +12,11 @@ import nars.derive.hypothesis.FirstOrderIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.util.PriBuffer;
-import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 import java.util.List;
 
 import static nars.$.$$;
@@ -170,114 +165,114 @@ class KIFTest {
         );
     }
 
-    @Test
-    public void testSUMOViaMemory() {
-        String sumo =
-                "Transportation";
-        //"People";
-        //"Merge";
-        //"Law";
-        String inURL = "file:///home/me/sumo/" + sumo + ".kif";
-
-        NAR n = NARS.shell();
-        n.memoryExternal.on(KIF.load);
-
-
-        Term I = $$(inURL);
-        Term O =
-                //n.self();
-                //Atomic.the("stdout");
-                Atomic.the("file:///tmp/x.nalz");
-
-        Runnable r = n.memoryExternal.copy(I, O);
-        r.run();
-
-
-    }
-
-    @Test
-    public void testSUMOViaMemory2() {
-        String sumo =
-                "Merge";
-        //"People";
-        //"Merge";
-        //"Law";
-        String inURL = "file:///home/me/sumo/" + sumo + ".kif";
-
-        NAR n = NARS.
-                tmp();
-
-
-        n.memoryExternal.on(KIF.load);
-
-
-        Term I = $.quote(inURL);
-        Term O =
-                //Atomic.the("stdout");
-                //Atomic.the("file:///tmp/x.nal");
-                n.self();
-
-        n.log();
-
-        Runnable r = n.memoryExternal.copy(I, O);
-        r.run();
-
-
-        n.run(10000);
-
-        AdjGraph<Term, Task> structure = new AdjGraph<>(true);
-        n.tasks().forEach(t -> {
-            switch (t.op()) {
-                case INH: {
-                    int s = structure.addNode(t.sub(0));
-                    int p = structure.addNode(t.sub(1));
-                    structure.edge(s, p, t);
-                    break;
-                }
-
-            }
-        });
-
-
-        structure.nodeSet().forEach((t) -> {
-            System.out.println(t + " " +
-                    GraphMeter.clustering((AdjGraph) structure, t)
-            );
-        });
-
-
-    }
-
-    @Test
-    public void testGenerate() {
-        String sumoDir = "file:///home/me/sumo/";
-
-        try {
-            Files.createDirectory(Paths.get("/tmp/sumo"));
-        } catch (IOException e) {
-            //e.printStackTrace();
-        }
-
-        NAR n = NARS.shell();
-
-        n.memoryExternal.on(KIF.load);
-
-
-        n.memoryExternal.contents(sumoDir).parallel().forEach(I -> {
-            String ii = Texts.unquote(I.toString());
-            if (!ii.endsWith(".kif"))
-                return;
-
-            if (ii.contains("WorldAirports")) //exclusions
-                return;
-
-            String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.')).toLowerCase();
-
-            n.memoryExternal.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nalz")).run();
-            n.memoryExternal.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nal")).run();
-        });
-
-    }
+//    @Test
+//    public void testSUMOViaMemory() {
+//        String sumo =
+//                "Transportation";
+//        //"People";
+//        //"Merge";
+//        //"Law";
+//        String inURL = "file:///home/me/sumo/" + sumo + ".kif";
+//
+//        NAR n = NARS.shell();
+//        n.memoryExternal.on(KIF.load);
+//
+//
+//        Term I = $$(inURL);
+//        Term O =
+//                //n.self();
+//                //Atomic.the("stdout");
+//                Atomic.the("file:///tmp/x.nalz");
+//
+//        Runnable r = n.memoryExternal.copy(I, O);
+//        r.run();
+//
+//
+//    }
+//
+//    @Test
+//    public void testSUMOViaMemory2() {
+//        String sumo =
+//                "Merge";
+//        //"People";
+//        //"Merge";
+//        //"Law";
+//        String inURL = "file:///home/me/sumo/" + sumo + ".kif";
+//
+//        NAR n = NARS.
+//                tmp();
+//
+//
+//        n.memoryExternal.on(KIF.load);
+//
+//
+//        Term I = $.quote(inURL);
+//        Term O =
+//                //Atomic.the("stdout");
+//                //Atomic.the("file:///tmp/x.nal");
+//                n.self();
+//
+//        n.log();
+//
+//        Runnable r = n.memoryExternal.copy(I, O);
+//        r.run();
+//
+//
+//        n.run(10000);
+//
+//        AdjGraph<Term, Task> structure = new AdjGraph<>(true);
+//        n.tasks().forEach(t -> {
+//            switch (t.op()) {
+//                case INH: {
+//                    int s = structure.addNode(t.sub(0));
+//                    int p = structure.addNode(t.sub(1));
+//                    structure.edge(s, p, t);
+//                    break;
+//                }
+//
+//            }
+//        });
+//
+//
+//        structure.nodeSet().forEach((t) -> {
+//            System.out.println(t + " " +
+//                    GraphMeter.clustering((AdjGraph) structure, t)
+//            );
+//        });
+//
+//
+//    }
+//
+//    @Test
+//    public void testGenerate() {
+//        String sumoDir = "file:///home/me/sumo/";
+//
+//        try {
+//            Files.createDirectory(Paths.get("/tmp/sumo"));
+//        } catch (IOException e) {
+//            //e.printStackTrace();
+//        }
+//
+//        NAR n = NARS.shell();
+//
+//        n.memoryExternal.on(KIF.load);
+//
+//
+//        n.memoryExternal.contents(sumoDir).parallel().forEach(I -> {
+//            String ii = Texts.unquote(I.toString());
+//            if (!ii.endsWith(".kif"))
+//                return;
+//
+//            if (ii.contains("WorldAirports")) //exclusions
+//                return;
+//
+//            String name = ii.substring(ii.lastIndexOf('/') + 1, ii.lastIndexOf('.')).toLowerCase();
+//
+//            n.memoryExternal.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nalz")).run();
+//            n.memoryExternal.copy(I, Atomic.the("file:///tmp/sumo/" + name + ".nal")).run();
+//        });
+//
+//    }
 
     @Test
     public void testLoad() throws Narsese.NarseseException {

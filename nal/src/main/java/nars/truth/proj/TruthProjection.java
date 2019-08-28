@@ -2,11 +2,9 @@ package nars.truth.proj;
 
 import jcog.Paper;
 import jcog.Skill;
-import jcog.Util;
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
-import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
@@ -337,26 +335,27 @@ abstract public class TruthProjection extends TaskList {
 			refocus(shrink);
 
 		//post-filter cull weak tasks that excessively dilute the effective average evidence
-		if (shrink && activeAfter > minComponents && start!=ETERNAL) {
-			activeBefore = activeAfter;
-
-			double eSum = eviSum(null);
-			double eFactor = 0.5;
-			double thresh = eFactor * eSum * 1.0/(activeBefore-minComponents + 1);
-			for (int i = minComponents; i < activeBefore; i++) {
-				if (evi[i] < thresh) {
-					Task ti = items[i];
-					if (ti.isEternal()) continue;
-					if (!Util.or(k->k!=null && k.contains((LongInterval) ti), 0, i, items)) { //if no stronger task contains the interval, then it must be expanding the total focus
-						remove(i);
-						activeAfter--;
-					}
-				}
-			}
-			if (activeAfter != activeBefore) {
-				refocus(shrink);
-			}
-		}
+		//TODO calculate exact threshold necessary to not dilute further
+//		if (shrink && activeAfter > minComponents && start!=ETERNAL) {
+//			activeBefore = activeAfter;
+//
+//			double eSum = eviSum(null);
+//			double eFactor = 0.5;
+//			double thresh = eFactor * eSum * 1.0/(activeBefore-minComponents + 1);
+//			for (int i = minComponents; i < activeBefore; i++) {
+//				if (evi[i] < thresh) {
+//					Task ti = items[i];
+//					if (ti.isEternal()) continue;
+//					if (!Util.or(k->k!=null && k.contains((LongInterval) ti), 0, i, items)) { //if no stronger task contains the interval, then it must be expanding the total focus
+//						remove(i);
+//						activeAfter--;
+//					}
+//				}
+//			}
+//			if (activeAfter != activeBefore) {
+//				refocus(shrink);
+//			}
+//		}
 
 		return remain > 0;
 	}

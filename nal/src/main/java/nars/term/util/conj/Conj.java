@@ -528,7 +528,10 @@ public enum Conj {
                     t -> !t.equals(exclude);
             }
             y = incSubs.indicesOfBits(p);
-            if (y.cardinality() == incSubs.subs())
+            int yCardinality = y.cardinality();
+            if (yCardinality == 0)
+                return True; //all removed
+            else if (yCardinality == incSubs.subs())
                 return include; //unchanged
             else
                 return CONJ.the(include.dt(), incSubs.subsIncExc(y, true));

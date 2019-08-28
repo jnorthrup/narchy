@@ -8,6 +8,7 @@ import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ObjectInput;
 import java.io.ObjectOutput;
@@ -82,6 +83,12 @@ public class TaskLinkWhat extends What {
     @Override
     public final void sample(Random rng, Function<? super TaskLink, SampleReaction> each) {
         links.sample(rng, each);
+    }
+
+    @Nullable
+    @Override
+    public TaskLink sample(Random rng) {
+        return links.sample(rng);
     }
 
     @Override
