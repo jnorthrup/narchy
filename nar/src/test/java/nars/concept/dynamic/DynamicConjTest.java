@@ -413,7 +413,7 @@ class DynamicConjTest {
         }
         {
             //Term xyz = $("((x&&y) &&+2 z))");
-            Term xyz = $("(&&,x,y,z)");
+            Term xyz = $("(&&+- ,x,y,z)");
             Task t = n.answerBelief(xyz, 0);
             assertNotNull(t);
             assertEquals(1f, t.freq(), 0.05f);
@@ -423,7 +423,7 @@ class DynamicConjTest {
         }
         {
             //Term xyz = $("((x&&y) &&+2 z))");
-            Term xyz = $("(&&,x,--y,z)");
+            Term xyz = $("(&&+- ,x,--y,z)");
             Task t = n.answerBelief(xyz, 0);
             assertNotNull(t);
             assertEquals(0f, t.freq(), 0.05f);

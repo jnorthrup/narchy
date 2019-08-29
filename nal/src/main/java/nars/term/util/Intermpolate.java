@@ -84,11 +84,33 @@ public enum Intermpolate {;
     private static float dtDiffSeq(Compound a, Compound b, int depth) {
 //        int v = a.volume();
 //        if (v !=b.volume()) {
-            //return Float.POSITIVE_INFINITY; //is there a solution here?
-            return (1+Math.abs(a.eventRange()-b.eventRange())) * (1 + Math.abs(a.volume()-b.volume())) ; //HACK finite, but nonsensical
+//            return Float.POSITIVE_INFINITY; //is there a solution here?
+//            //return (1+Math.abs(a.eventRange()-b.eventRange())) * (1 + Math.abs(a.volume()-b.volume())) ; //HACK finite, but nonsensical
 //        }
 
         //return (1 + dtDiff(a.eventRange(), b.eventRange()) ) * Math.max(a.subs(), b.subs()); //HACK estimate
+
+        //exhaustive test:
+        ConjList aa = ConjList.events(a);
+        ConjList bb = ConjList.events(b);
+        int n = aa.size();
+        if (n !=bb.size())
+            return Float.POSITIVE_INFINITY;
+
+        long aar = aa.eventRange(), bbr = bb.eventRange(); //save these before changing sort
+
+        aa.sortThisByValue(); bb.sortThisByValue();
+
+        if (!Arrays.equals(aa.array(), 0, n, bb.array(), 0, n))
+            return Float.POSITIVE_INFINITY;
+
+        //same events, sum timing differences
+        long dtErr = 0;
+        long[] aaw = aa.when, bbw = bb.when;
+        for (int i = 0; i < n; i++)
+            dtErr += Math.abs(aaw[i] - bbw[i]);
+
+        return dtDiff(dtErr, Math.min(aar, bbr));
     }
 
     private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {
@@ -242,7 +264,7 @@ public enum Intermpolate {;
         return dDT + dSubterms;
     }
 
-    public static float dtDiff(int adt, int bdt) {
+    public static float dtDiff(long adt, long bdt) {
         if (adt == DTERNAL) adt = 0; if (bdt == DTERNAL) bdt = 0; //HACK
 
         if (adt == bdt)
@@ -252,7 +274,7 @@ public enum Intermpolate {;
             //dDT = 0.25f; //undercut the DTERNAL case
             return ScalarValue.EPSILONcoarse;
         } else {
-            float range = Math.abs(adt) + Math.abs(bdt);
+            float range = Math.max(1, Math.abs(adt) + Math.abs(bdt));
 //            return Math.abs(adt - bdt) / (range);
 //            float mean = (adt+bdt)/2f;
             //float range = Math.max(Math.abs(adt), Math.abs(bdt));
@@ -277,7 +299,7 @@ public enum Intermpolate {;
             dSubterms += di;
         }
 
-        return dSubterms / len;
+        return dSubterms;
     }
 
 

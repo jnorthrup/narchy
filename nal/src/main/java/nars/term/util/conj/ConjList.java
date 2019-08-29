@@ -589,4 +589,11 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         }
         return removed;
     }
+
+    public long eventRange() {
+        int n = size();
+        if (n <= 1)
+            return 0;
+        return when[n-1] - when[0];
+    }
 }

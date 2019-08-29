@@ -1,6 +1,7 @@
 package nars.truth.proj;
 
 
+import nars.NAL;
 import nars.Task;
 import nars.truth.util.EvidenceEvaluator;
 
@@ -65,8 +66,9 @@ public class TruthIntegration {
 	}
 
 	public static double eviFast(Task t, long now) {
-		return t.range() * t.evi() / (1 + t.minTimeTo(now));
 		//return t.range() * t.evi() / (1 + t.meanTimeTo(now));
+		return NAL.evi(t.range() * t.evi(), t.meanTimeTo(now), 1.0f);
+		//return t.range() * t.evi() / (1 + t.minTimeTo(now));
 		//return t.range() * t.evi() / (1 + t.maxTimeTo(now));
 		//return Math.sqrt(t.range()) * t.evi() / (1 + t.maxTimeTo(now));
 	}
