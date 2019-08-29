@@ -65,7 +65,10 @@ public class TruthIntegration {
 	}
 
 	public static double eviFast(Task t, long now) {
-		return t.evi() * t.range() / (1 + t.maxTimeTo(now));
+		return t.range() * t.evi() / (1 + t.minTimeTo(now));
+		//return t.range() * t.evi() / (1 + t.meanTimeTo(now));
+		//return t.range() * t.evi() / (1 + t.maxTimeTo(now));
+		//return Math.sqrt(t.range()) * t.evi() / (1 + t.maxTimeTo(now));
 	}
 
 	private static double eviIntegrate(double evi, float dur, long qs, long qe, long ts, long te) {
