@@ -41,6 +41,9 @@
     //bifurcate plan
     G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (polarizeRandom(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
+    //bifurcate conj
+    (X && Y), (X && Y) |- ((X && ?1) && --(Y && ?2)), (Punctuation:Ask)
+
     //implication look-ahead
     (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
 
