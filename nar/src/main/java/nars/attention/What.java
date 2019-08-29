@@ -18,7 +18,7 @@ import nars.exe.Exec;
 import nars.link.TaskLink;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.part.DurLoop;
+import nars.time.part.DurNARConsumer;
 import nars.util.Timed;
 
 import java.io.Externalizable;
@@ -74,7 +74,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
 
-    private final DurLoop.DurNARConsumer loop;
+    private final DurNARConsumer loop;
 
 
     /**
@@ -108,7 +108,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         super(id);
         this.in = in;
 
-        loop = new DurLoop.DurNARConsumer(!in.async(out) ? this::perceiveCommit : this::commit);
+        loop = new DurNARConsumer(!in.async(out) ? this::perceiveCommit : this::commit);
         add(loop);
     }
 

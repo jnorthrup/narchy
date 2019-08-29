@@ -14,7 +14,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
 
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 
 /**
  * a part that executes a given procedure once every N durations (approximate)
@@ -135,24 +134,6 @@ abstract public class DurLoop extends NARPart {
         protected void run(NAR n, long dt) {
             r.run();
         }
-
-    }
-
-    public static final class DurNARConsumer extends DurLoop {
-
-        final Consumer<NAR> r;
-
-        public DurNARConsumer(Consumer<NAR> r) {
-            super($.identity(r));
-            this.r = r;
-        }
-
-        @Override
-        protected void run(NAR n, long dt) {
-            r.accept(n);
-        }
-
-
 
     }
 

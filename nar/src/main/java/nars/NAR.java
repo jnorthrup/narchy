@@ -48,6 +48,7 @@ import nars.time.event.WhenCycle;
 import nars.time.event.WhenInternal;
 import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
+import nars.time.part.DurNARConsumer;
 import nars.truth.Truth;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -1100,7 +1101,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
 
     public final DurLoop onDur(Consumer<NAR> on) {
-        DurLoop.DurNARConsumer r = new DurLoop.DurNARConsumer(on);
+        DurNARConsumer r = new DurNARConsumer(on);
         start(r);
         return r;
     }
