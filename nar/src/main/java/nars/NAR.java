@@ -113,7 +113,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     final Term self;
 
-    final InheritableThreadLocal<What> active = new InheritableThreadLocal<>();
+    public final What main;
 
 
     public NAR(Memory memory, Exec exe, Function<Term, What> whatBuilder, Time time, Supplier<Random> rng, ConceptBuilder conceptBuilder) {
@@ -128,7 +128,10 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         eventOnOff.on(this::indexPartChange);
 
+
         memory.start(this);
+
+        fork(main = whatBuilder.apply(self));
 
         onCycle(this.emotion = new Emotion(this));
 
@@ -613,12 +616,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     @Override
     public final void input(Task t) {
-        what().accept(t);
+        main.accept(t);
     }
 
     @Override
     public final void input(Task... t) {
-        what().acceptAll(t);
+        main.acceptAll(t);
     }
 
     @Override
@@ -818,7 +821,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     /** the current context's eventTask */
     public final ByteTopic<Task> eventTask() {
-        return what().eventTask;
+        return main.eventTask;
     }
 
     public Off trace(Appendable out, Predicate<String> includeKey, @Nullable Predicate includeValue) {
@@ -1111,7 +1114,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //    }
 
     @Deprecated public final Off onTask(Consumer<Task> listener, byte... punctuations) {
-        return what().onTask(listener, punctuations);
+        return main.onTask(listener, punctuations);
     }
 
     public NAR trace() {
@@ -1124,12 +1127,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     @Deprecated
     public void input(Iterable<? extends Task> tasks) {
-        what().acceptAll(tasks);
+        main.acceptAll(tasks);
     }
 
     @Deprecated
     public final void input(Stream<? extends Task> tasks) {
-        what().acceptAll(tasks);
+        main.acceptAll(tasks);
     }
 
     @Override
@@ -1476,10 +1479,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
 
+    public final What fork(Term id) {
+        return fork(id, true);
+    }
+
     /**
      * TODO persistent cache
      */
-    public What the(Term id, boolean createAndStartIfMissing) {
+    public What fork(Term id, boolean createAndStartIfMissing) {
         What w;
         synchronized (what) {
             w = what.get(id);
@@ -1487,35 +1494,33 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                 return w;
 
             w = what.put(this.whatBuilder.apply(id));
-            w.nar = this; //HACK
+            w.nar = this;
         }
         start(w);
         return w;
     }
 
-    public NAR the(What w) {
-        synchronized (what) {
-            What existing = what.put(w);
-            if (existing!=null)
-                throw new RuntimeException(/*TODO*/);
+//    public NAR the(What w) {
+//        synchronized (what) {
+//            What existing = what.put(w);
+//            if (existing!=null)
+//                throw new RuntimeException(/*TODO*/);
+//
+//            w.nar = this; //HACK
+//        }
+//        start(w);
+//        return this;
+//    }
 
-            w.nar = this; //HACK
-        }
-        start(w);
-        return this;
-    }
 
-
-    /**
-     * thread-local attention
-     */
     public final What what() {
-        What w = active.get();
-        if (w == null) {
-            Term id = $.identity(Thread.currentThread());
-            fork(w = the(id, true));
-        }
-        return w;
+        return main;
+//        What w = active.get();
+//        if (w == null) {
+//            Term id = $.identity(Thread.currentThread());
+//            fork(w = the(id, true));
+//        }
+//        return w;
     }
 
     public final <W extends What> W fork(W next) {
@@ -1528,28 +1533,28 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * by returning NaN
      */
     public final What fork(What next, @Nullable FloatFunction<What> reprioritizeCurrent) {
-        What prev = active.get();
-        if (next == prev)
-            return next;
+//        What prev = active.get();
+//        if (next == prev)
+//            return next;
         //float delta = 0;
-        if (reprioritizeCurrent != null && prev != null) {
-            float prevPriNext = reprioritizeCurrent.floatValueOf(prev);
-            if (prevPriNext != prevPriNext) {
-                //NaN to discard
-                what.remove(prev.id);
-            } else {
-                prev.pri(prevPriNext);
-            }
-        }
+//        if (reprioritizeCurrent != null && prev != null) {
+//            float prevPriNext = reprioritizeCurrent.floatValueOf(prev);
+//            if (prevPriNext != prevPriNext) {
+//                //NaN to discard
+//                what.remove(prev.id);
+//            } else {
+//                prev.pri(prevPriNext);
+//            }
+//        }
 
         if (logger.isDebugEnabled())
-            logger.debug("fork {} {} <- {}" /* (+{})"*/, Thread.currentThread(), next, prev/*, delta*/);
+            logger.debug("fork {} {}" /* (+{})"*/, Thread.currentThread(), next);
 
         What removed = what.put(next, null);
         if (removed!=null)
             stop(removed);
         start(next);
-        active.set(next);
+//        active.set(next);
         return next;
     }
 

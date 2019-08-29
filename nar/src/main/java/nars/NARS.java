@@ -144,8 +144,9 @@ public class NARS {
 
                 n.termVolMax.set(22);
 
-                ((TaskLinkWhat) n.what()).links.linksMax.set(64);
-                ((TaskLinkWhat) n.what()).links.decay.set(0.01f);
+                TaskLinkWhat main = (TaskLinkWhat) n.what();
+                main.links.linksMax.set(64);
+                main.links.decay.set(0.01f);
 
 
                 float p = 0.5f;

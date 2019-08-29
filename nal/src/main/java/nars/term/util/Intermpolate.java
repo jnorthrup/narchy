@@ -130,6 +130,7 @@ public enum Intermpolate {;
         ae.sortThisByValue();
         be.sortThisByValue();
 
+        //TODO could be conjunction in believe() etc which differs
         if (!Arrays.equals(ae.array(), 0, s, be.array(), 0, s))
             return Null; //wtf?
 

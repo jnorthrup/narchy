@@ -213,11 +213,14 @@ public class Opjects extends DefaultTermizer {
         return Modifier.isPublic(mm);
     }
 
-    public Opjects(NAR n) {
-        in = (nar = n).newChannel(this);
-        this.what = n.what();
-        update(n);
-        this.on = n.onDur(this::update);
+    @Deprecated public Opjects(NAR n) {
+        this(n.main);
+    }
+    public Opjects(What w) {
+        this.what = w;
+        in = (nar = w.nar).newChannel(this);
+        update(w.nar);
+        this.on = w.nar.onDur(this::update);
     }
 
     /**

@@ -125,7 +125,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         this.id = id;
 
-        this.what = nar.the(id, true);
+        this.what = nar.fork(id, true);
 
         this.time = time;
 

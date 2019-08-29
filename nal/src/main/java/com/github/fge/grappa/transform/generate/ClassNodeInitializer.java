@@ -177,9 +177,8 @@ public final class ClassNodeInitializer
 
         String methodKey = name + desc;
         StringBuilder nameBuilder = new StringBuilder(name);
-        while (true) {
+        while (ruleMethods.containsKey(methodKey)) {
 
-            if (!ruleMethods.containsKey(methodKey)) break;
             nameBuilder.insert(0, '$');
             methodKey = nameBuilder + desc;
         }

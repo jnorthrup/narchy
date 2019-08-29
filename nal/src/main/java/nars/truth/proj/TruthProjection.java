@@ -524,7 +524,7 @@ abstract public class TruthProjection extends TaskList {
 		return add(tasks.length, tasks);
 	}
 
-	public final <T extends Tasked> TruthProjection add(int firstN, T... tasks) {
+	public final <T extends Tasked> TruthProjection add(int firstN, T[] tasks) {
 		ensureCapacity(firstN);
 		for (int i = 0; i < firstN; i++)
 			addFast(tasks[i]);
@@ -637,7 +637,7 @@ abstract public class TruthProjection extends TaskList {
 			//Term bestRoot = best.root;
 			double ea = evi[0];
 			int remain = n;
-			for (int B = 1; B < n; B++) {
+			for (int B = 1; B < n; ) {
 				Compound b = (Compound) items[B].term();
 				if (!a.equals(b)) {
 					double eb = evi[B];
@@ -666,6 +666,7 @@ abstract public class TruthProjection extends TaskList {
 
 						a = (Compound) ab;
 						ea += eb;
+						B++;
 					}
 				}
 			}

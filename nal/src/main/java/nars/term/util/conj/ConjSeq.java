@@ -2,6 +2,7 @@ package nars.term.util.conj;
 
 import jcog.WTF;
 import jcog.data.bit.MetalBitSet;
+import nars.Op;
 import nars.Task;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -37,14 +38,13 @@ public enum ConjSeq { ;
         list.shift(0);
 
 
-        TreeSet<Term> ordered = new TreeSet();
-        ordered.addAll(list);
+        TreeSet<Term> ordered = new TreeSet(list);
 
         ByteAnonMap m = new ByteAnonMap(n);
         for (Term x : ordered)
             m.intern(x);
 
-        Term[] oa = ordered.toArray(new Term[ordered.size()]);
+        Term[] oa = ordered.toArray(Op.EmptyTermArray);
 
         byte[] subterm = new byte[n];
         int[] value = new int[n];

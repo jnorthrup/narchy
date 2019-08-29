@@ -169,7 +169,7 @@ public class Tetris extends GameX {
 
     private TetrisState actionsReflect() {
 
-        Opjects oo = new Opjects(nar);
+        Opjects oo = new Opjects(nar.fork((Term)$.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
 //        oo.pri.setAt(ScalarValue.EPSILON);
 

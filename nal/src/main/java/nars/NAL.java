@@ -620,7 +620,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * maximum span of a Task, in cycles.
          * beyond a certain length, evidence integration precision suffers accuracy diminishes and may become infinite
          */
-        public static long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
+        public static final long TASK_RANGE_LIMIT = (1L << 61) /* estimate */;
 
 
     }
@@ -677,7 +677,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /** prevent variable introduction from erasing negative compounds,
          *  though content within negatives can be var introduced as normal. */
-        public static boolean VAR_INTRODUCTION_NEG_FILTER = true;
+        public static final boolean VAR_INTRODUCTION_NEG_FILTER = true;
     }
 
     public enum test {
@@ -778,9 +778,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         //public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
-        public static boolean ETERNALIZE_BELIEF_PROJECTION = true;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = true;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = true;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION = false;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = false;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = false;
 
 
     }

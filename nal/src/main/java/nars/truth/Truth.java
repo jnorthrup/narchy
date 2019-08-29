@@ -335,7 +335,7 @@ public interface Truth extends Truthed {
             return PreciseTruth.byConfEvi(ff, cc, evi() /* include extra precision */);
     }
 
-    public static Truth dither(Truth in, double eviMin, boolean negate, NAL nar) {
+    static Truth dither(Truth in, double eviMin, boolean negate, NAL nar) {
         double e = in.evi();
         if (e < eviMin)
             return null;

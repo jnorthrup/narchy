@@ -37,8 +37,8 @@ public class GUI {
         demo(n);
 
         window(BagregateConceptGraph2D.get(n), 1200, 800);
-        window(new TaskListView(n.what(), 32), 1200, 800);
-        window(new ConceptListView(n.what(), 32), 1200, 800);
+        //window(new TaskListView(n.what(), 32), 1200, 800);
+        //window(new ConceptListView(n.what(), 32), 1200, 800);
 
         window(new ReplChip((cmd, receive) -> {
             try {
