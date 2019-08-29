@@ -637,14 +637,14 @@ abstract public class TruthProjection extends TaskList {
 			//Term bestRoot = best.root;
 			double ea = evi[0];
 			int remain = n;
-			for (int B = 1; B < n; ) {
+			for (int B = 1; B < n; B++) {
 				Compound b = (Compound) items[B].term();
 				if (!a.equals(b)) {
 					double eb = evi[B];
 					double eab = ea + eb;
 					Term ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
 					if (ab instanceof Bool) {
-						remove(B); //unexpected error
+						nullify(B); //unexpected error
 						if (--remain < minComponents) {
 							clearFast();
 							return false;
@@ -666,7 +666,6 @@ abstract public class TruthProjection extends TaskList {
 
 						a = (Compound) ab;
 						ea += eb;
-						B++;
 					}
 				}
 			}
@@ -681,7 +680,7 @@ abstract public class TruthProjection extends TaskList {
 	private void intermpolateRemove(IEntry ii) {
 		PeekableIntIterator ic = ii.id.getIntIterator();
 		while (ic.hasNext())
-			remove(ic.next());
+			nullify(ic.next());
 	}
 
 //	/**
@@ -792,16 +791,21 @@ abstract public class TruthProjection extends TaskList {
 //		return true; //?
 //	}
 
-	@Override
-	public Task remove(int index) {
+//	@Override
+//	public Task remove(int index) {
+//		throw new UnsupportedOperationException("use nullify");
+//		//nullify(index);
+//		//return null;
+//	}
+
+	public final void nullify(int index) {
 		items[index] = null;
 		if (evi != null)
 			evi[index] = 0;
-		return null; //HACK
 	}
 
-	public byte punc() {
-		if (isEmpty()) throw new RuntimeException();
+	public final byte punc() {
+		//if (isEmpty()) throw new RuntimeException();
 		return get(0).punc();
 	}
 
