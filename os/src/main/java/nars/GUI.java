@@ -1,9 +1,7 @@
 package nars;
 
 import nars.attention.TaskLinkWhat;
-import nars.gui.ConceptListView;
 import nars.gui.NARui;
-import nars.gui.TaskListView;
 import nars.gui.graph.run.BagregateConceptGraph2D;
 import nars.link.TaskLinks;
 import nars.op.kif.KIF;

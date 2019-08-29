@@ -440,6 +440,9 @@ abstract public class GameX extends Game {
 
 
     public static void config(NAR n) {
+        n.main.pri.amp(0);  //HACK
+        n.what.remove(n.main.id); //HACK
+
         n.dtDither.set(
                 //1
                 10
