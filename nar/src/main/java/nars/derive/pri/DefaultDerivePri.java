@@ -19,7 +19,7 @@ public class DefaultDerivePri implements DerivePri {
      */
     public final FloatRange gain = new FloatRange(1f, 0f, 2f);
 
-    public final FloatRange questionGain = new FloatRange(1f, 0f, 2f);
+    public final FloatRange questionGain = new FloatRange(0.5f, 0f, 2f);
 
 
     /**
@@ -52,7 +52,7 @@ public class DefaultDerivePri implements DerivePri {
             factor = factorCmpl * factorPolarity(t.freq()); //<-- absolute is much better
             //factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
         } else {
-            factor = questionGain.floatValue() * factorCmpl * factorCmpl;
+            factor = questionGain.floatValue() * factorCmpl;
         }
 
         factor *= factorEviAbsolute(t,d);

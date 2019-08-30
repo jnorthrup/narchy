@@ -235,15 +235,12 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_elimination_conj() {
-        test.nar.termVolMax.set(7);
-
-        TestNAR tester = test;
-
-        tester.believe("((#x --> bird) && (#x --> swimmer))");
-        tester.believe("(swan --> bird)", 0.90f, 0.9f);
-        tester.mustBelieve(cycles, "(swan --> swimmer)", 0.90f,
-
-                0.43f);
+        test
+            .termVolMax(7)
+            .confMin(0.4f)
+            .believe("((#x --> bird) && (#x --> swimmer))")
+            .believe("(swan --> bird)", 0.90f, 0.9f)
+            .mustBelieve(cycles, "(swan --> swimmer)", 0.90f, 0.43f);
     }
 
 

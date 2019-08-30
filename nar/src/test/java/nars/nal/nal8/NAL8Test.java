@@ -438,12 +438,11 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testInhibitionReverse() {
-        test.nar.termVolMax.set(5);
+        test.nar.termVolMax.set(3);
 
         test
                 .goal("reward")
                 .believe("(reward ==> good)", 1, 0.9f)
-
                 .mustGoal(cycles, "good", 1.0f, 0.45f)
                 .mustNotOutput(cycles, "good", GOAL, 0.0f, 0.5f, 0.0f, 1f, ETERNAL);
 
@@ -452,7 +451,7 @@ public class NAL8Test extends NALTest {
 
     @Test
     void testGoalSimilaritySpreading() {
-        test.nar.termVolMax.set(5);
+        test.nar.termVolMax.set(3);
 
         test
                 .input("R!")
@@ -463,7 +462,7 @@ public class NAL8Test extends NALTest {
     @Disabled
     @Test
     void testGoalSimilaritySpreadingNeg() {
-        test.nar.termVolMax.set(5);
+        test.nar.termVolMax.set(3);
         test
                 .input("R!")
                 .input("--(G <-> R).")
@@ -551,7 +550,7 @@ public class NAL8Test extends NALTest {
 
         test
                 .input("a!")
-                .input("(a &| b).")
+                .input("(a && b).")
                 .mustGoal(cycles, "b", 1f, 0.81f);
     }
 
@@ -575,24 +574,21 @@ public class NAL8Test extends NALTest {
     }
 
 
-    @ParameterizedTest
-    @ValueSource(strings = {"&|", "&&"})
-    void testGoalImplComponentEternal(String conj) {
+    @Test void testGoalImplComponentEternal() {
         test.termVolMax(6)
             .confMin(0.7f)
             .input("happy!")
-            .input("(in ==> (happy " + conj + " --out)).")
+            .input("(in ==> (happy && --out)).")
             .mustBelieve(cycles, "(in ==> happy)", 1f, 0.81f)
             .mustGoal(cycles, "in", 1f, 0.73f);
     }
 
-    @ParameterizedTest
-    @ValueSource(strings = {"&&", "&|"})
-    void testGoalImplComponentEternalSubjNeg(String conj) {
+    @Test
+    void testGoalImplComponentEternalSubjNeg() {
         test.termVolMax(6)
             .confMin(0.4f)
             .input("happy!")
-            .input("(--in ==> (happy " + conj + " --out)).")
+            .input("(--in ==> (happy && --out)).")
             .mustGoal(cycles, "in", 0f, 0.42f);
     }
 

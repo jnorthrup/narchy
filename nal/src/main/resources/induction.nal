@@ -39,10 +39,11 @@ B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBeli
 B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
 //  B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) || polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
 
-B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |-          (B && A), (Punctuation:AskAsk, Time:TaskEvent)
-  B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |-          (B || A), (Punctuation:AskAsk, Time:TaskEvent)
-B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |- varIntro((B && A)), (Punctuation:AskAsk, Time:TaskEvent)
-  B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |- varIntro((B || A)), (Punctuation:AskAsk, Time:TaskEvent)
+//B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |-          (B && A), (Punctuation:AskAsk, Time:TaskEvent)
+//  B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |-          (B || A), (Punctuation:AskAsk, Time:TaskEvent)
+//B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |- varIntro((B && A)), (Punctuation:AskAsk, Time:TaskEvent)
+//  B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A)  |- varIntro((B || A)), (Punctuation:AskAsk, Time:TaskEvent)
+
 //B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:AskAsk, Time:TaskEvent)
 //  B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) || polarizeBelief(A)), (Punctuation:AskAsk, Time:TaskEvent)
 //B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
