@@ -1,17 +1,16 @@
 package nars.term;
 
 import jcog.bloom.StableBloomFilter;
-import jcog.bloom.hash.BytesHasher;
 import jcog.data.bit.MetalBitSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.Task;
-import nars.io.IO;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.task.util.TaskHasher;
 import nars.term.atom.Atom;
 import nars.term.compound.PatternCompound;
+import nars.term.util.TermHasher;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.constraint.NotEqualConstraint;
@@ -347,11 +346,10 @@ public enum Terms {
 	public static StableBloomFilter<Term> newTermBloomFilter(Random rng, int cells) {
 		return new StableBloomFilter<>(
 			cells, 2, 1f / cells, rng,
-			new BytesHasher<>(IO::termToBytes));
+			new TermHasher());
 	}
 
 	public static StableBloomFilter<Task> newTaskBloomFilter(Random rng, int cells) {
-
 		return new StableBloomFilter<>(
 			cells, 2, 1f / cells, rng,
 			new TaskHasher());

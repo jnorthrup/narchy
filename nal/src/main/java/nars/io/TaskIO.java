@@ -1,5 +1,6 @@
 package nars.io;
 
+import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.Task;
 import nars.task.CommandTask;
@@ -67,4 +68,35 @@ public class TaskIO {
         return readTask(IO.input(b));
     }
 
+	/**
+	 * with Term first
+	 */
+	static void write(Task t, ByteArrayDataOutput out, boolean budget, boolean creation)  {
+
+
+		byte p = t.punc();
+		out.writeByte(p);
+
+
+		TermIO.the.write(t.term(), out);
+
+
+		if (p != COMMAND) {
+			if (hasTruth(p))
+				Truth.write(t.truth(), out);
+
+			//TODO use delta zig zag encoding (with creation time too)
+			out.writeLong(t.start());
+			out.writeLong(t.end());
+
+			IO.writeEvidence(out, t.stamp());
+
+			if (budget)
+				IO.writeBudget(out, t);
+
+			if (creation)
+				out.writeLong(t.creation());
+		}
+
+	}
 }

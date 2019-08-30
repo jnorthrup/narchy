@@ -76,7 +76,9 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = false;
+    static final boolean initMeta = true;
+    static final boolean initMetaRL = false;
+    static final boolean metaAllowPause = false;
 
     /**
      * determines memory strength
@@ -179,15 +181,17 @@ abstract public class GameX extends Game {
             Exe.invokeLater(() -> {
 
                 float _fps = 24;
-                MetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps).addRLBoost();
+                MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps);
+                if (initMetaRL)
+                    self.addRLBoost();
                 self.pri(0.3f);
 
-
-                n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
-                    float fps = 12;
-                    boolean allowPause = false;
-                    MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, allowPause);
-                    gm.pri(0.1f);
+                Exe.invokeLater(() -> {
+                    n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
+                        float fps = _fps;
+                        MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, metaAllowPause);
+                        gm.pri(0.1f);
+                    });
                 });
             });
         }

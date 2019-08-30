@@ -38,16 +38,16 @@ public class TaskLinks implements Sampler<TaskLink> {
      * 1.0 = balanced with incoming pressure
      *  >1 = active forget
      */
-    public final FloatRange decay = new FloatRange(1f, 0, 8);
+    public final FloatRange decay = new FloatRange(1f, 0, 2);
 
 
     /** pre-amplifier */
-    public final FloatRange preAmp = new FloatRange(0.5f, 0, 2f /* 2f */);
+    public final FloatRange preAmp = new FloatRange(1f, 0, 2f /* 2f */);
 
     /**
      * (post-)Amp: tasklink conductance, propagation rate
      */
-    public final FloatRange grow = new FloatRange(0.5f, 0, 2f /* 2f */);
+    public final FloatRange grow = new FloatRange(0.5f, 0, 1f /* 2f */);
 
     /**
      * tasklink retention rate:

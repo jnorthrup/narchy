@@ -8,6 +8,7 @@ import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAL;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
@@ -44,9 +45,37 @@ public abstract class AbstractTaskLink implements TaskLink {
     protected AbstractTaskLink(Term source, Term target) {
         this(source, target,
             //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
-            source==target ? source.hashCode() : Util.hashCombine(source, target)
+            hash(source, target)
         );
     }
+
+    private static int hash(Term source, Term target) {
+        int s = source.hashCodeShort();
+        int t = source!=target ? target.hashCodeShort() : s;
+        int hash = (t << 16) | s;
+//        if (t!=(hash >>> 16))
+//            throw new WTF();
+//        if (s!=(hash & 0xffff))
+//            throw new WTF();
+        return hash;
+    }
+
+    @Override
+    public @Nullable final Term other(Term x, int xHashShort, boolean reverse) {
+        //return x.equals(reverse ? to() : from()) ? (reverse ? from() : to()) : null;
+        boolean hashMatch = xHashShort == (reverse ? toHash() : fromHash());
+//        if ((other(x,reverse) !=null ) != hashMatch)
+//            throw new WTF();
+        return hashMatch ? other(x, reverse) : null;
+    }
+
+    public final int toHash() {
+        return (hash >>> 16);
+    }
+    public final int fromHash() {
+        return (hash & 0xffff);
+    }
+
 
     @Override
     public final TaskLink id() {

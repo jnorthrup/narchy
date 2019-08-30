@@ -160,12 +160,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     Term transform(TermTransform t);
     Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
 
+	default int hashCodeShort() {
+	    int h = hashCode();
+	    return ((h & 0xffff) ^ (h >>> 16));
+    }
 
-
-
-
-
-    enum TermWalk {
+	enum TermWalk {
         Left, //prev subterm
         Right, //next subterm
         Down, //descend, recurse, or equivalent to Right if atomic

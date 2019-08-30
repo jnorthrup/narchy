@@ -14,7 +14,6 @@ import nars.task.ProxyTask;
 import nars.task.Tasked;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskList;
-import nars.task.util.TaskRegion;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
@@ -25,6 +24,7 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
+import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
@@ -36,7 +36,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
-import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
 import static nars.NAL.STAMP_CAPACITY;
@@ -378,17 +377,28 @@ abstract public class TruthProjection extends TaskList {
 			return Stamp.zip(s0, stamp(1), (float) (evi[0] / (evi[0] + evi[1])), capacity);
 		}
 
-		int maxPossibleStampLen = 0;
+		int lenSum = 0;
 		for (int i = 0; i < n; i++)
-			maxPossibleStampLen += stamp(i).length;
+			lenSum += stamp(i).length;
 
-		if (maxPossibleStampLen <= capacity) {
+		if (lenSum <= capacity) {
+			//return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
+
+
 			//TODO use insertion sort into array
-			return Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n).toSortedArray();
+			LongArrayList l = new LongArrayList(lenSum);
+			for (int i = 0; i < n; i++) {
+				for (long s : stamp(i)) {
+					if (!l.contains(s))
+						l.add(s);
+				}
+			}
+			return l.toSortedArray();
+
 		} else {
 			//sample n-ary
 			// TODO weight contribution by evidence
-			return Stamp.sample(capacity, Stamp.toMutableSet(maxPossibleStampLen, this::stamp, n), rng);
+			return Stamp.sample(capacity, Stamp.toMutableSet(lenSum, this::stamp, n), rng);
 		}
 
 		//		MetalLongSet e = new MetalLongSet(remain * STAMP_CAPACITY);
@@ -845,15 +855,32 @@ abstract public class TruthProjection extends TaskList {
 
 		boolean changed = false;
 		if (shrink || start == ETERNAL) {
-			final long u0, u1;
+			long u0, u1;
 
 			if (s > 1) {
-				long[] union = Tense.union(IntStream.range(0, s)
-					.filter(evi != null ? this::valid : this::nonNull)
-					.mapToObj(x -> (TaskRegion) items[x]).iterator());
+				//Tense.union equivalent
+//				long[] union = Tense.union(IntStream.range(0, s)
+//					.filter(evi != null ? this::valid : this::nonNull)
+//					.mapToObj(x -> (TaskRegion) items[x]).iterator());
+//				u0 = union[0];
+//				u1 = union[1];
 
-				u0 = union[0];
-				u1 = union[1];
+				Task[] items = this.items;
+				boolean hasEvi = evi!=null;
+				u0 = Long.MAX_VALUE; u1 = Long.MIN_VALUE;
+				for (int i = 0; i < s; i++) {
+					if (hasEvi ? valid(i) : nonNull(i)) {
+						Task t = items[i];
+						long ts = t.start();
+						if (ts != ETERNAL) {
+							u0 = Math.min(u0, ts);
+							u1 = Math.max(u1, t.end());
+						}
+					}
+				}
+				if (u0 == Long.MAX_VALUE) {
+					u0 = u1 = ETERNAL; //all eternal
+				}
 			} else {
 				Task only = evi != null ? firstValid() : items[firstValidOrNonNullIndex(0)];
 				u0 = only.start();

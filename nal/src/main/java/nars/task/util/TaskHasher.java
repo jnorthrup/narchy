@@ -13,7 +13,7 @@ public class TaskHasher extends DynBytesHasher<Task> {
 
 	@Override
 	protected void write(Task t, DynBytes d) {
-		IO.taskToBytes(t, d);
+		IO.bytes(t, false, false, d);
 	}
 
 }

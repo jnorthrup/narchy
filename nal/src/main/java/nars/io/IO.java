@@ -11,7 +11,6 @@ import nars.Task;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.atom.Atomic;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
@@ -19,8 +18,6 @@ import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.function.Consumer;
-
-import static nars.Op.COMMAND;
 
 /**
  * Created by me on 5/29/16.
@@ -77,42 +74,11 @@ public class IO {
     }
 
 
-    /**
-     * with Term first
-     */
-    private static void bytes(ByteArrayDataOutput out, Task t)  {
-
-
-        byte p = t.punc();
-        out.writeByte(p);
-
-
-        TermIO.the.write(t.term(), out);
-
-
-        if (p != COMMAND) {
-            if (TaskIO.hasTruth(p))
-                Truth.write(t.truth(), out);
-
-            //TODO use delta zig zag encoding (with creation time too)
-            out.writeLong(t.start());
-            out.writeLong(t.end());
-
-            writeEvidence(out, t.stamp());
-
-            writeBudget(out, t);
-
-            out.writeLong(t.creation());
-        }
-
-    }
-
-
     private static void writePriority(ByteArrayDataOutput out, Prioritized t)  {
         out.writeFloat(t.priElseZero());
     }
 
-    private static void writeBudget(ByteArrayDataOutput out, Prioritized t)  {
+    static void writeBudget(ByteArrayDataOutput out, Prioritized t)  {
         writePriority(out, t);
     }
 
@@ -163,19 +129,21 @@ public class IO {
         return b;
     }
 
-    public @Nullable
-    static byte[] taskToBytes(Task x, DynBytes dos) {
-        return bytes(x, dos).arrayCopy();
+    public @Nullable static byte[] taskToBytes(Task x, DynBytes dos) {
+        TaskIO.write(x, dos,false, false);
+        return dos.arrayCopy();
     }
 
-    public static DynBytes bytes(Task x, DynBytes dos) {
-
+    public static DynBytes bytes(Task x, boolean budget, boolean creation, DynBytes dos) {
         dos.clear();
-        IO.bytes(dos, x);
-
+        TaskIO.write(x, dos, budget, creation);
         return dos;
     }
-
+    public static DynBytes bytes(Term x, DynBytes dos) {
+        dos.clear();
+        TermIO.the.write(x, dos);
+        return dos;
+    }
     /**
      * WARNING
      */

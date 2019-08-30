@@ -43,7 +43,7 @@ public class ArkaNAR extends GameX {
     static boolean cam = true;
     static float fps = 25f;
 
-    public final FloatRange ballSpeed = new FloatRange(2.25f, 0.04f, 6f);
+    public final FloatRange ballSpeed = new FloatRange(1.25f, 0.04f, 6f);
 
 
     //final int visW = 48, visH = 32;
@@ -172,16 +172,20 @@ public class ArkaNAR extends GameX {
                     new SwingBitmap2D(noid)
                     , visW, visH
             )/*.blur()*/);
-            //cc.resolution(0.05f);
+            cc.resolution(0.2f);
         }
 
 
         if (numeric) {
+            float numRes = 0.2f;
             AbstractSensor px = senseNumberBi($.inh($.the("px"), term), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            px.resolution(numRes);
             AbstractSensor dx = senseNumberBi($.inh($.the("dx"), term), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
-            senseNumberBi($.inh($.p("b", "x"), term), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
-            senseNumberBi($.inh($.p("b", "y"), term), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
-
+            dx.resolution(numRes);
+            AbstractSensor cx = senseNumberBi($.inh($.p("b", "x"), term), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            cx.resolution(numRes);
+            AbstractSensor cy = senseNumberBi($.inh($.p("b", "y"), term), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            cy.resolution(numRes);
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
 
         }
