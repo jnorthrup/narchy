@@ -181,7 +181,7 @@
     //TODO DynamicImplTruth
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
-       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
+       //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
 
 //     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
 //       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)

@@ -36,7 +36,7 @@
     //G, B, task("!"), hasBelief() |-        ((polarizeRandom(G) && B) ==> ?1), (Punctuation:Question)
 
     //should what with goal/non-goal
-    //G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (&&,polarizeTask(G),polarizeBelief(B)), (Punctuation:Quest, Time:Task)
+    //G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (polarizeTask(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //bifurcate plan
     G, B, task("@"), neq(G,B), --is(B,"?"), hasBelief()   |-  (polarizeRandom(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
