@@ -31,6 +31,9 @@
           //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
+       //second layer
+       B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,polarizeBelief(X),A..+),C,  polarizeTask(B),novel), (Belief:DeductionDD)
+
 
 //            //--is(A,"#"),
 //       B, (  (&&,  C,A..+) ==> X)       |-   unisubst((&&,X,A..+),C,B), (Belief:Abduction)

@@ -1,6 +1,6 @@
 package nars.op;
 
-import nars.$;
+import nars.Op;
 import nars.The;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
@@ -26,55 +26,51 @@ public final class Member extends Functor implements The, InlineFunctor<Evaluati
 
     @Override
     public Term apply(Evaluation evaluation, Subterms terms) {
-        if (terms.subs()!=2) return null;
+        if (terms.subs()!=2)
+            return null;
 
-        Term x = terms.sub(0);
-        Term y = terms.sub(1);
-        if (x.equals(y))
+        Term x = terms.sub(0), y = terms.sub(1);
+        if (x.equals(y) || (y instanceof Compound && y.op()==SETe && y.contains(x)))
             return True;
 
         boolean xVar = x instanceof Variable;
-        boolean yVar = y instanceof Variable;
-        if (xVar && yVar)
-            return null; //can no be determined
 
-        Subterms yy;
-        Term rewrite = null;
-        if (y instanceof Compound) {
-            yy = y.subterms();
-            if (yy.contains(x)) {
-                if (evaluation!=null)
-                    return True; //an instance being generated
-                else {
-                    Term[] zz = yy.removing(x);
-                    if (zz.length == 0)
-                        return True;
-                    Term zzz = SETe.the(zz);
-                    rewrite = $.func(member, x, zzz);
-                    yy = zzz.subterms();
-                    y = zzz;
-                }
-            }
-        } else {
-            yy = null;
-        }
+//        Subterms yy;
+//        Term rewrite = null;
+//        if (y instanceof Compound) {
+//            yy = y.subterms();
+//            if (yy.contains(x)) {
+//                if (evaluation!=null)
+//                    return True; //an instance being generated
+//                else {
+//                    Term[] zz = yy.removing(x);
+//                    if (zz.length == 0)
+//                        return True;
+//                    Term zzz = SETe.the(zz);
+//                    rewrite = $.func(member, x, zzz);
+//                    yy = zzz.subterms();
+//                    y = zzz;
+//                }
+//            }
+//        } else {
+//            yy = null;
+//        }
 
 
         if (xVar) {
             if (evaluation!=null) {
-                if (y instanceof Compound)
-                    evaluation.canBe(x, yy);
+                if (y instanceof Compound && y.op()==SETe)
+                    evaluation.canBe(x, /*Iterable*/y.subterms());
                 else {
                     if (!evaluation.is(x, y))
                         return Null;
                 }
             }
-            return rewrite;
+            return null;
         }
 
-        if (yVar) {
-            return rewrite; //can no be determined
-        }
+        if (y.hasAny(Op.Variable) || x.hasAny(Op.Variable))
+            return null; //can not be determined for sure
 
         return False;
     }

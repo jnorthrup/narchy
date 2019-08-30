@@ -108,7 +108,7 @@ public class Arithmeticize {
         @Override
         protected Term apply(Term x, int volMax) {
             Random random = nar.random();
-            return Arithmeticize.apply(x, null, volMax, random.nextFloat() < preEvalRate, random);
+            return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / x.volume()), random);
         }
     }
 

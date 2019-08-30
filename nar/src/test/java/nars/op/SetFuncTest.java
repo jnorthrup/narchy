@@ -4,12 +4,8 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.derive.Deriver;
-import nars.derive.Derivers;
 import nars.eval.Evaluation;
-import nars.term.Compound;
 import nars.term.Term;
-import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
 import java.util.HashSet;
@@ -72,64 +68,6 @@ class SetFuncTest {
                     $$("(&&,add(1,#x,#a),sort((#a,2),quote,(2,3)))"), n));
     }
 
-
-    @Test void Member1_true() {
-        assertEquals(
-                Set.of($$("member(a,{a,b})")),
-                Evaluation.eval($$("member(a,{a,b})"), n));
-        assertEquals(
-                Set.of($$("member(a,(a,b))")),
-                Evaluation.eval($$("member(a,(a,b))"), n));
-
-    }
-    @Test void Member1_false() {
-        assertEquals(
-                Set.of($$("--member(c,{a,b})")),
-                Evaluation.eval($$("member(c,{a,b})"), true, true, n));
-
-    }
-
-    @Test void Member1_generator() {
-        assertEquals(
-                Set.of($$("member(a,{a,b})"),$$("member(b,{a,b})")),
-                Evaluation.eval($$("member(#x,{a,b})"), n));
-
-        assertEquals(
-                Set.of($$("(a)"),$$("(b)")),
-                Evaluation.eval($$("(member(#x,{a,b}) && (#x))"), n));
-
-    }
-    @Test void MultiTermute1() {
-        nars.term.Term s = $.$$("(((--,(tetris-->((--,#2)&&left))) &&+4710 (member(#1,{right,#2})&&(tetris-->#1))) &&+4000 member(#1,{2,3}))");
-        assertEquals(
-                Set.of(
-                        $$("((--,(tetris-->((--,2)&&left))) &&+4710 (tetris-->2))"),
-                        $$("((--,(tetris-->((--,3)&&left))) &&+4710 (tetris-->3))")
-                ),
-                Evaluation.eval((Compound)s, n));
-    }
-
-
-    @Test void Member_Combine_Rule() {
-        NAR n = NARS.shell();
-        new Deriver(Derivers.files(n, "nal2.member.nal"));
-        TestNAR t = new TestNAR(n);
-        t.believe("(member(#1,{a,b}) && (x(#1), y(#1)))");
-        t.believe("(member(#1,{c,d}) && (x(#1), y(#1)))");
-        int cycles = 500;
-        t.mustBelieve(cycles, "(member(#1,{a,b,c,d}) && (x(#1), y(#1)))", 1, 0.81f);
-        t.run(cycles);
-    }
-    @Test void Member_Diff_Rule() {
-        NAR n = NARS.shell();
-        new Deriver(Derivers.files(n, "nal2.member.nal"));
-        TestNAR t = new TestNAR(n);
-        t.believe("  (member(#1,{a,b,c}) && (x(#1), y(#1)))");
-        t.believe("--(member(#1,{b,d  }) && (x(#1), y(#1)))");
-        int cycles = 500;
-        t.mustBelieve(cycles, "(member(#1,{a,c}) && (x(#1), y(#1)))", 1, 0.81f);
-        t.run(cycles);
-    }
 
     @Test void TermutesShuffled() {
 

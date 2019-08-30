@@ -76,7 +76,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = true;
+    static final boolean initMeta = false;
     static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 

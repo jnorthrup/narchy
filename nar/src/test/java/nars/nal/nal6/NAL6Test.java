@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 800;
+    private static final int cycles = 400;
 
     @BeforeEach
     void setup() {
@@ -558,20 +558,19 @@ public class NAL6Test extends NALTest {
 
     @Test
     void second_level_variable_unification() {
-        TestNAR tester = test;
-        ////there is a lock which is opened by all keys
-        tester.believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f);
-        tester.believe("({key1} --> key)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f);
+        /* there is a lock which is opened by all keys */
+        test
+            .believe("(((#1 --> lock) && ($2 --> key)) ==> open($2, #1))", 1.00f, 0.90f)
+            .believe("({key1} --> key)", 1.00f, 0.90f)
+            .mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f);
     }
 
     @Test
     void second_level_variable_unification_neg() {
-        TestNAR tester = test;
-        ////there is a lock which is opened by all non-keys
-        tester.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))");
-        tester.believe("--({nonKey1} --> key)");
-        tester.mustBelieve(cycles, "((#1 --> lock) && open({nonKey1}, #1))", 1.00f, 0.81f);
+        /* there is a lock which is opened by all non-keys */
+        test.believe("(((#1 --> lock) && --($2 --> key)) ==> open($2, #1))")
+            .believe("--({nonKey1} --> key)")
+            .mustBelieve(cycles, "((#1 --> lock) && open({nonKey1}, #1))", 1.00f, 0.81f);
     }
 
 
@@ -579,10 +578,9 @@ public class NAL6Test extends NALTest {
     void second_level_variable_unification2() {
         test.nar.termVolMax.set(15);
 
-        TestNAR tester = test;
-        tester.believe("<($1 --> lock) ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
-        tester.believe("({key1} --> key)", 1.00f, 0.90f);
-        tester.mustBelieve(cycles, "<($1 --> lock) ==> open({key1},$1)>", 1.00f,
+        test.believe("<($1 --> lock) ==> (&&,<#2 --> key>,open(#2,$1))>", 1.00f, 0.90f);
+        test.believe("({key1} --> key)", 1.00f, 0.90f);
+        test.mustBelieve(cycles, "<($1 --> lock) ==> open({key1},$1)>", 1.00f,
                 //0.81f
                 0.4f
         );
@@ -594,22 +592,19 @@ public class NAL6Test extends NALTest {
     @Test
     void testSimpleIndepUnification() {
 
-        TestNAR t = test;
-        t.input("(y:$x ==> z:$x).");
-        t.input("y:x.");
-        t.mustBelieve(cycles, "z:x", 1.0f, 0.81f);
+        test.input("(y:$x ==> z:$x).");
+        test.input("y:x.");
+        test.mustBelieve(cycles, "z:x", 1.0f, 0.81f);
     }
 
 
     @Test
     void second_variable_introduction_induction() {
 
-        TestNAR tester = test;
-        test.nar.termVolMax.set(17);
-
-        tester.believe("(open($1,lock1) ==> key:$1)");
-        tester.believe("open(lock,lock1)");
-        tester.mustBelieve(cycles,
+        test.termVolMax(17);
+        test.believe("(open($1,lock1) ==> key:$1)");
+        test.believe("open(lock,lock1)");
+        test.mustBelieve(cycles,
                 "((open(lock,#1) && open($2,#1)) ==> key:$2)",
                 1.00f, 0.45f /*0.81f*/);
 

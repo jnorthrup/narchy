@@ -51,13 +51,13 @@ B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBeli
 
 //implication question absorber
 (X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
-  A, (X==>Y), --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
-(X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
-  A, (X==>Y), --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+  //A, (X==>Y), --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) && polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+//(X==>Y), A, --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
+  //A, (X==>Y), --is(A,"==>")  |-  (X ==> (polarizeRandom(Y) || polarizeBelief(A))), (Punctuation:AskAsk, Time:TaskEvent)
 (X==>Y), A, --is(A,"==>")  |-  ((X && polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
-  A, (X==>Y), --is(A,"==>")  |-  ((X && polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
+  //A, (X==>Y), --is(A,"==>")  |-  ((X && polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
 (X==>Y), A, --is(A,"==>")  |-  ((X || polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
-  A, (X==>Y), --is(A,"==>")  |-  ((X || polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
+  //A, (X==>Y), --is(A,"==>")  |-  ((X || polarizeBelief(A)) ==> Y),   (Punctuation:AskAsk, Time:TaskEvent)
 
 //question + quest form:
     //B, A, --is(A,"==>"), --is(B,"==>"), task("."), hasBelief()  |-          (polarizeTask(B) && polarizeBelief(A)), (Punctuation:Question, Time:Sequence)

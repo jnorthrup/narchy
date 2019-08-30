@@ -200,7 +200,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
     }
 
     public void canBe(Term x, Iterable<Term> y) {
-        canBe(()-> new ChoiceIterator(x, y));
+        canBe(new ChoiceIterable(x, y));
     }
 
 
@@ -267,14 +267,32 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
     }
 
+    private static final class ChoiceIterable implements Iterable<Predicate<Termerator>> {
+        final Iterable<Term> y;
+        private final Term x;
+
+        ChoiceIterable(Term x, Iterable<Term> y) {
+            this.x = x;
+            this.y = y;
+        }
+
+        @Override
+        public Iterator<Predicate<Termerator>> iterator() {
+            return new ChoiceIterator(x, y);
+        }
+    }
+
     private static final class ChoiceIterator implements Iterator<Predicate<Termerator>> {
 
         final Iterator<Term> y;
         private final Term x;
 
         ChoiceIterator(Term x, Iterable<Term> y) {
+            this(x, y.iterator());
+        }
+        ChoiceIterator(Term x, Iterator<Term> y) {
             this.x = x;
-            this.y = y.iterator();
+            this.y = y;
         }
 
         @Override

@@ -21,6 +21,7 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
+import static nars.Op.CONJ;
 import static nars.term.atom.Bool.*;
 
 /**
@@ -60,7 +61,7 @@ public class Evaluation extends Termerator {
 		this.each = each;
 	}
 
-	@Deprecated
+
 	private boolean termute(Evaluator e, Term y) {
 
 		int before = v.size();
@@ -83,28 +84,27 @@ public class Evaluation extends Termerator {
 			tt[i] = shuffle(tt[i]);
 		ArrayUtil.shuffle(tt, random());
 
-		CartesianIterator<Predicate<Termerator>> ci = new CartesianIterator(Predicate[]::new, tt);
+		CartesianIterator<Predicate<Termerator>> ci = new CartesianIterator<>(Predicate[]::new, tt);
 
 		termutes.clear();
 
-		nextProduct:
+		Set<Term> tried = null;
 		while (ci.hasNext()) {
-
-			v.revert(start);
-
-			Predicate/*<VersionMap<Term,Term>>*/[] c = ci.next();
-
-			for (Predicate<Termerator> cc : c) {
-//                if (cc == null)
-//                    break; //null target list
-				if (!cc.test(this))
-					continue nextProduct;
+			boolean appliedAll = true;
+			for (Predicate<Termerator> cc : ci.next()) {
+				if (!cc.test(this)) {
+					appliedAll = false;
+					break;
+				}
 			}
 
-			//all components applied successfully
+			if (appliedAll) {
+				if (tried == null) tried = new UnifiedSet<>(0);
+				if (!recurse(e, y, tried))
+					return false;
+			}
 
-			if (!recurse(e, y))
-				return false;
+			v.revert(start);
 
 		}
 		return true;
@@ -113,9 +113,12 @@ public class Evaluation extends Termerator {
 
 	private boolean termute1(Evaluator e, Term y, int start) {
 		Iterable<Predicate<Termerator>> t = shuffle(termutes.remove(0));
+		Set<Term> tried = null;
 		for (Predicate<Termerator> tt : t) {
 			if (tt.test(this)) {
-				if (!recurse(e, y))
+				if (tried == null) tried = new UnifiedSet<>(0);
+
+				if (!recurse(e, y, tried))
 					return false;
 			}
 			v.revert(start);
@@ -127,9 +130,9 @@ public class Evaluation extends Termerator {
 		return ShuffledPermutations.shuffle(t, random());
 	}
 
-	private boolean recurse(Evaluator e, Term y) {
+	private boolean recurse(Evaluator e, Term y, Set<Term> tried) {
 		Term z = y.replace(subs);
-		return y.equals(z) || eval(e, z);  //CUT
+		return y.equals(z) || !tried.add(z) || eval(e, z);  //CUT
 	}
 
 
@@ -189,17 +192,21 @@ public class Evaluation extends Termerator {
                     boolean newSubsts = now() != vStart;
 
                     if (b instanceof Bool && !newSubsts) {
-                        if (b == True) {
-                            //continue
+						if (b == Null) {
+							y = Null;
+							break main;
+						} else if (b == True && y.op()!=CONJ) {
+//							if (x.equals(y)) {
+//								y = True;
+//								break main;
+//							}
                             y = x.equals(y) ? True : a;
                             break main;
-                        } else if (b == False) {
+                        } else if (b == False && y.op()==CONJ) {
                             y = x.equals(y) ? False : a.neg();
                             break main;
-                        } else {
-                            y = Null;
-                            break main;
                         }
+
                     }
 
                     Term y0 = y;
@@ -243,7 +250,7 @@ public class Evaluation extends Termerator {
 			return each.test(bool(x, (Bool) y)); //Terminal Result
 
 		//if termutators, collect all results. otherwise 'cur' is the only result to return
-		else if (termutators() > 0)
+		if (termutators() > 0)
 			return termute(e, y);
 		else
 			return each.test(y); //Transformed Result (possibly same)
@@ -306,7 +313,7 @@ public class Evaluation extends Termerator {
 	 */
 	public static Set<Term> eval(Term x, boolean includeTrues, boolean includeFalses, Function<Atom, Functor> resolver) {
 
-		UnifiedSet ee = new UnifiedSet(0, 0.5f);
+		UnifiedSet<Term> ee = new UnifiedSet<>(0);
 
 		Evaluation.eval(x, includeTrues, includeFalses, resolver, t -> {
 			if (t != Null)
