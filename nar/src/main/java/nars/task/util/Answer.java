@@ -260,7 +260,7 @@ public final class Answer implements Timed, Predicate<Task> {
             long ss = start;
             if (ss != ETERNAL) {
                 long ee = end;
-                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
+                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, nar);
             }
         }
 
@@ -333,7 +333,7 @@ public final class Answer implements Timed, Predicate<Task> {
         if (forceProject) {
             s = start; e = end;
         } else { s = e = ETERNAL; /* auto */ }
-        return nar.newProjection(s, e, dur).init(this.tasks.items, numTasks);
+        return nar.newProjection(s, e).init(this.tasks.items, numTasks);
     }
 
 

@@ -109,7 +109,7 @@ class RuleInductionTest {
 
     private static float observe(NAR n, Term x, long now) {
         Task nb = n.belief(x, now);
-        Truth xTruth = nb != null ? nb.truth(now, n.dur()) : null;
+        Truth xTruth = nb != null ? nb.truth(now, now, n.dur()) : null;
 
         System.out.println(x + "\t" + xTruth);
         n.conceptualize(x).beliefs().print();

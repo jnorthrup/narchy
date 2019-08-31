@@ -110,8 +110,7 @@ abstract public class AbstractDynamicTruth {
                             NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
                             false,
                             1, //no need to dither truth or time here.  maybe in the final calculation though.
-                            d.dur,
-                        nar);
+						nar);
                     if (tt == null)
                         return null;
                     d.setFast(i, tt);

@@ -42,7 +42,7 @@ class TruthProjectionTest {
     public void testEvidenceIntegration_ConservedSingleTask_Full_Duration() {
         int W = 10;
         for (int i = W-1; i >=1; i--)  {
-            LinearTruthProjection t = new LinearTruthProjection(0, W, 1);
+            LinearTruthProjection t = new LinearTruthProjection(0, W);
             NALTask T = t(1f, 0.5f, 0, i);
             t.add(T);
             Truth tt = t.truth();
@@ -56,14 +56,23 @@ class TruthProjectionTest {
     }
     @Test
     public void testEvidenceIntegration_ConservedSingleTask_Half_Duration() {
-        LinearTruthProjection t = new LinearTruthProjection(0, 10, 1);
-        {
-            float conf = 0.5f;
-            t.add(t(1f, conf, 0, 10));
-            @Nullable Truth tt = t.truth();
-            assertEquals(1f, tt.freq());
-            assertEquals(conf, tt.conf());
+        float conf = 0.5f;
+        NALTask t = t(1f, conf, 0, 10);
+
+        //monotonically decrease evidence further away from task, regardless of observation time
+        for (long now : new long[] { -10, -5, 0, 5, 10, 15}) {
+            assertTrue(t.eviRelative(1, now) == t.eviRelative(9, now));
+            assertTrue(t.eviRelative(-1, now) > t.eviRelative(-2, now));
+            assertTrue(t.eviRelative(10, now) > t.eviRelative(11, now));
+            assertTrue(t.eviRelative(11, now) > t.eviRelative(12, now));
         }
+
+
+        LinearTruthProjection p = new LinearTruthProjection(0, 10);
+        p.add(t);
+        @Nullable Truth tt = p.truth();
+        assertEquals(1f, tt.freq());
+        assertEquals(conf, tt.conf());
     }
 
 

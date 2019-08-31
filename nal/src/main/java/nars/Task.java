@@ -1,6 +1,5 @@
 package nars;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritizable;
@@ -10,9 +9,7 @@ import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
 import nars.control.CauseMerge;
 import nars.task.DerivedTask;
-import nars.task.EternalTask;
 import nars.task.NALTask;
-import nars.task.UnevaluatedTask;
 import nars.task.proxy.SpecialNegatedTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -40,7 +37,6 @@ import java.util.Comparator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
-import static java.lang.Math.abs;
 import static java.lang.Math.min;
 import static nars.Op.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -372,24 +368,16 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     @Nullable
     static ObjectBooleanPair<Term> tryTaskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
 
-        boolean negated;
-        if (t instanceof Neg) {
+        boolean negated = (t instanceof Neg);
+        if (negated)
             t = t.unneg();
-            negated = true;
-        } else {
-            negated = false;
-        }
 
         t = t.normalize();
 
         if (t instanceof Compound && NAL.TASK_COMPOUND_POST_NORMALIZE)
             t = Task.postNormalize(t);
 
-        if (Task.validTaskTerm(t/*.the()*/, punc, safe)) {
-
-            return pair(t, negated);
-        } else
-            return null;
+        return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
     }
 
     static Term postNormalize(Term t) {
@@ -431,7 +419,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * start!=ETERNAL
      */
     @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, NAL n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, NAL n) {
 
         if (dtDither > 1) {
             start = Tense.dither(start, dtDither, -1);
@@ -444,13 +432,16 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         Truth tt;
         if (t.isBeliefOrGoal()) {
-            tt = t.truth(start, end, dur); //0 dur
-            if (tt == null || tt.evi() < eviMin)
-                return null;
+
+            tt = t.truthRelative((start+end)/2, n.time(), eviMin);
+            if (tt == null) return null;
+
+            //tt = t.truth(start, end, dur); //0 dur
+            //if (tt == null || tt.evi() < eviMin) return null;
 
             if (ditherTruth) {
                 Truth ttd = tt.dither(n);
-                if (ttd == null || ttd.evi() < eviMin)
+                if (ttd == null || (ttd != tt && ttd.evi() < eviMin))
                     return null;
                 tt = ttd;
             }
@@ -480,46 +471,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             return ((SpecialNegatedTask) t).task;
         else
             return new SpecialNegatedTask(t);
-    }
-
-    /**
-     * leave n null to avoid dithering
-     */
-    static Task eternalized(Task x, float confFactor, double eviMin, @Nullable NAL n) {
-        boolean isEternal = x.isEternal();
-        boolean hasTruth = x.isBeliefOrGoal();
-        if (isEternal) {
-            if (confFactor != 1)
-                throw new TODO();
-            if (hasTruth) {
-                if (x.evi() < eviMin)
-                    return null;
-            }
-            return x;
-        }
-
-        Truth tt;
-
-        if (hasTruth) {
-            tt = x.truth().eternalized(confFactor, eviMin, n);
-            if (tt == null)
-                return null;
-        } else {
-            tt = null;
-        }
-
-        byte punc = x.punc();
-
-        Task y = Task.clone(x, x.term(),
-                tt,
-                punc,
-                /* TODO current time, from NAR */
-                (c, t) ->
-                        new EternalizedTask(c, punc, t, x)
-        );
-        if (y != null && x.isCyclic())
-            y.setCyclic(true); //inherit cyclic
-        return y;
     }
 
     //    @Deprecated
@@ -944,29 +895,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     /** subjective truth projection, relative to a specific 'now' observed time point */
     default double eviRelative(long tgt, long now) {
-
-        Truth truth = truth();
-        double evi = truth.evi();
-
-        long start = start();
-        if (start == ETERNAL || start==tgt)
-            return evi;
-        long end = end();
-        if ((tgt > start && tgt <= end))
-            return evi; //within the task's range
-
-        long sep = min(abs(start-tgt), abs(end-tgt)); //minTimeTo
-        long range = Math.max(abs(start-now),abs(end-now)) + abs(tgt - now);
-        //double e = (evi / (evi + ((double)sep) / range ));
-        double e = evi * (1 / (1 + ((double)sep) / range ));
-        //double factor = 1.0 - sep / range; //classic
-        //double factor = 1.0 / (1 + sep / range ); //experimental
-        //factor = NAL.evi(1, sep, range ); //experimental
-        return e;
+        return NAL.eviRelative(start(), end(), this.evi(), tgt, now);
     }
 
     @Nullable
-    default Truth truth(long targetStart, long targetEnd, float dur) {
+    @Deprecated default Truth truth(long targetStart, long targetEnd, float dur) {
 
         if (isEternal())
             return truth();
@@ -981,12 +914,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                         e);
 
         }
-    }
-
-
-    @Nullable
-    default Truth truth(long when, float dur) {
-        return truth(when, when, dur);
     }
 
     @Override
@@ -1020,15 +947,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
 
-    default float expectation(long when, int dur) {
-        return expectation(when, when, dur);
-    }
-
-    default float expectation(long start, long end, int dur) {
-        Truth t = truth(start, end, dur);
-        return t == null ? Float.NaN : t.expectation();
-    }
-
     byte punc();
 
     /**
@@ -1055,11 +973,5 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return beliefOrGoal ? isBelief() : isGoal();
     }
 
-    final class EternalizedTask extends EternalTask implements UnevaluatedTask {
-
-        EternalizedTask(Term c, byte punc, Truth t, Task x) {
-            super(c, punc, t, x.creation(), x.stamp());
-        }
-    }
 
 }

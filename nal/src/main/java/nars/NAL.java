@@ -26,7 +26,10 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import static fucknutreport.config.NodeConfig.configIs;
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
 import static nars.Op.*;
+import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
@@ -234,7 +237,27 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float TaskEvalPriDecomposeRate = 0.5f;
 
-	//0.25f;
+    /** subjective evidence projection */
+    public static double eviRelative(long start, long end, double evi, long tgt, long now) {
+
+//        long start = start();
+        if (start == ETERNAL || start==tgt)
+            return evi;
+//        long end = end();
+        if ((tgt > start && tgt <= end))
+            return evi; //within the task's range
+
+        long sep = min(abs(start-tgt), abs(end-tgt)); //minTimeTo
+        long range = Math.max(abs(start-now),abs(end-now)) + abs(tgt - now);
+        //double e = (evi / (evi + ((double)sep) / range ));
+        double e = evi * (1 / (1 + ((double)sep) / range ));
+        //double factor = 1.0 - sep / range; //classic
+        //double factor = 1.0 / (1 + sep / range ); //experimental
+        //factor = NAL.evi(1, sep, range ); //experimental
+        return e;
+    }
+
+    //0.25f;
 
 
     /**
@@ -488,8 +511,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     }
 
-    public final TruthProjection newProjection(final long start, final long end, final float dur) {
-        return new LinearTruthProjection(start, end, dur);
+    public final TruthProjection newProjection(final long start, final long end) {
+        return new LinearTruthProjection(start, end);
     }
 
     /**

@@ -15,8 +15,8 @@ import org.jetbrains.annotations.Nullable;
  */
 public class LinearTruthProjection extends TruthProjection {
 
-    public LinearTruthProjection(long start, long end, float dur) {
-        super(start, end, dur);
+    public LinearTruthProjection(long start, long end) {
+        super(start, end);
     }
 
     @Override

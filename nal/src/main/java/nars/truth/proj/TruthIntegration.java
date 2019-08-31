@@ -12,17 +12,13 @@ public class TruthIntegration {
 
 
 
-	public static double eviAvg(Task t, long start, long end, float dur) {
+	@Deprecated public static double eviAvg(Task t, long start, long end, float dur) {
 		long range = start == ETERNAL ? 1 : 1 + (end - start);
-		return evi(t, start, end, dur) / range;
+		return eviAbsolute(t, start, end, dur) / range;
 	}
 
 	public static double evi(Task t) {
-		return evi(t, 0);
-	}
-
-	private static double evi(Task t, float dur) {
-		return evi(t, t.start(), t.end(), dur);
+		return eviAbsolute(t, t.start(), t.end(), 0);
 	}
 
 
@@ -31,7 +27,7 @@ public class TruthIntegration {
 	 * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
 	 * if qStart==qEnd then it is a point sample
 	 */
-	public static double evi(Task t, long qStart, long qEnd, float dur) {
+	public static double eviAbsolute(Task t, long qStart, long qEnd, float dur) {
 
 		assert (qStart != ETERNAL && qStart <= qEnd);
 
@@ -46,11 +42,27 @@ public class TruthIntegration {
 				long range = (qEnd - qStart + 1);
 				return evi * range;
 			} else {
-				return eviIntegrate(evi, dur, qStart, qEnd, tStart, t.end()); //temporal task
+				long tEnd = t.end();
+				return eviIntegrate(qStart, qEnd, tStart, tEnd, EvidenceEvaluator.of(tStart, tEnd, evi, dur));
 			}
 		}
 	}
 
+	public static double evi(Task t, long qStart, long qEnd, long now) {
+
+		assert (qStart != ETERNAL && qStart <= qEnd);
+
+		if (qStart == qEnd) {
+			return t.eviRelative(qStart, now); //point
+		} else {
+			double evi = t.evi();
+			long tStart = t.start();
+			//temporal task
+			return tStart == ETERNAL ?
+				evi * (qEnd - qStart + 1) :
+				eviIntegrate(evi, now, qStart, qEnd, tStart, t.end());
+		}
+	}
 	/**
 	 * allows ranking task by projected evidence strength to a target query region, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation
 	 */
@@ -75,33 +87,34 @@ public class TruthIntegration {
 		//return Math.sqrt(t.range()) * t.evi() / (1 + t.maxTimeTo(now));
 	}
 
-	private static double eviIntegrate(double evi, float dur, long qs, long qe, long ts, long te) {
+	private static double eviIntegrate(double evi, long now, long qs, long qe, long ts, long te) {
+		return eviIntegrate(qs, qe, ts, te, EvidenceEvaluator.of(ts, te, evi, now));
+	}
 
-		EvidenceEvaluator e = EvidenceEvaluator.of(ts, te, evi, dur);
-
- 		if (max(qs, ts) > min(qe, te)) {
-			//DISJOINT - entirely before, or after //!LongInterval.intersectsRaw(ts, te, qs, qe)) {
-			return e.integrate2(qs, qe);
-		} else if (ts <= qs && te >= qe) {
-			//task equals or contains question
-			return e.integrate2(qs, qe);
-		} else if (qs >= ts && qe > te) {
-			//question starts during and ends after task
-			//return e.integrateN(qs, te, Math.min(te + 1, qe), (te + qe) / 2, qe);
-			//return e.integrateN(qs, te, (te + qe) / 2, qe);
-			return e.integrateN(qs, te, Math.min(te+1, qe), qe);
-		} else if (qs < ts && qe <= te) {
-			//question starts before task and ends during task
-			return e.integrateN(qs, Math.max(qs, ts-1), ts, qe);
-		} else {
+	private static double eviIntegrate(long qs, long qe, long ts, long te, EvidenceEvaluator e) {
+		if (max(qs, ts) > min(qe, te)) {
+		   //DISJOINT - entirely before, or after //!LongInterval.intersectsRaw(ts, te, qs, qe)) {
+		   return e.integrate2(qs, qe);
+	   } else if (ts <= qs && te >= qe) {
+		   //task equals or contains question
+		   return e.integrate2(qs, qe);
+	   } else if (qs >= ts && qe > te) {
+		   //question starts during and ends after task
+		   //return e.integrateN(qs, te, Math.min(te + 1, qe), (te + qe) / 2, qe);
+		   //return e.integrateN(qs, te, (te + qe) / 2, qe);
+		   return e.integrateN(qs, te, Math.min(te+1, qe), qe);
+	   } else if (qs < ts && qe <= te) {
+		   //question starts before task and ends during task
+		   return e.integrateN(qs, Math.max(qs, ts-1), ts, qe);
+	   } else {
 //			assert(qs <= ts && qe >= te);
 
-			//question surrounds task
-			return e.integrateN(
-				qs, Math.max(qs, ts - 1),
-				ts, te,
-				Math.min(te + 1, qe), qe);
-		}
+		   //question surrounds task
+		   return e.integrateN(
+			   qs, Math.max(qs, ts - 1),
+			   ts, te,
+			   Math.min(te + 1, qe), qe);
+	   }
 	}
 
 //    private static float eviInteg(Task t, int dur, long... when) {

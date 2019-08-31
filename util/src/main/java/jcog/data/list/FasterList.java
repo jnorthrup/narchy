@@ -26,7 +26,7 @@ import java.util.function.*;
  */
 public class FasterList<X> extends FastList<X> {
 
-    private static final int INITIAL_SIZE_IF_GROWING_FROM_EMPTY = 8;
+    private static final int INITIAL_SIZE_IF_GROWING_FROM_EMPTY = 4;
 
     public FasterList() {
         super();

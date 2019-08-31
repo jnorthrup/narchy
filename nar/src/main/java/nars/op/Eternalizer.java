@@ -1,7 +1,9 @@
 package nars.op;
 
+import jcog.TODO;
 import jcog.math.FloatRange;
 import jcog.sort.FloatRank;
+import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -9,15 +11,19 @@ import nars.attention.What;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.table.BeliefTable;
+import nars.task.EternalTask;
+import nars.task.UnevaluatedTask;
 import nars.term.Term;
 import nars.time.When;
+import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
-public class Eternalizer extends LinkProcessor<Task> {
+@Deprecated public class Eternalizer extends LinkProcessor<Task> {
 
     private static final int cap = 16; //TODO IntRange
     public final FloatRange confFactor = new FloatRange(1f, 0, 1);
@@ -28,6 +34,52 @@ public class Eternalizer extends LinkProcessor<Task> {
     public Eternalizer(NAR nar) {
         super();
         in = nar.newChannel(this);
+    }
+
+    /**
+     * leave n null to avoid dithering
+     */
+    static Task eternalized(Task x, float confFactor, double eviMin, @Nullable NAL n) {
+        boolean isEternal = x.isEternal();
+        boolean hasTruth = x.isBeliefOrGoal();
+        if (isEternal) {
+            if (confFactor != 1)
+                throw new TODO();
+            if (hasTruth) {
+                if (x.evi() < eviMin)
+                    return null;
+            }
+            return x;
+        }
+
+        Truth tt;
+
+        if (hasTruth) {
+            tt = x.truth().eternalized(confFactor, eviMin, n);
+            if (tt == null)
+                return null;
+        } else {
+            tt = null;
+        }
+
+        byte punc = x.punc();
+
+        Task y = Task.clone(x, x.term(),
+                tt,
+                punc,
+                /* TODO current time, from NAR */
+                (c, t) ->
+                        new EternalizedTask(c, punc, t, x)
+        );
+        if (y != null && x.isCyclic())
+            y.setCyclic(true); //inherit cyclic
+        return y;
+    }
+    static final class EternalizedTask extends EternalTask implements UnevaluatedTask {
+
+        EternalizedTask(Term c, byte punc, Truth t, Task x) {
+            super(c, punc, t, x.creation(), x.stamp());
+        }
     }
 
 
@@ -97,7 +149,7 @@ public class Eternalizer extends LinkProcessor<Task> {
     protected void run(Task t, What w) {
         //best.forEach(t->{
 //            try {
-        Task u = Task.eternalized(t, confFactor.floatValue(), nar.confMin.floatValue(), nar);
+        Task u = eternalized(t, confFactor.floatValue(), nar.confMin.floatValue(), nar);
         if (u != null) {
             u.priMult(priFactor.floatValue());
             //System.out.println(u);
