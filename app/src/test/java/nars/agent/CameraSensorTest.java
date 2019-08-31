@@ -35,7 +35,9 @@ public class CameraSensorTest {
         final int[] causesDetected = {0};
         Term aPixel = $$("x(0,0)");
         short[] cause = new short[] { c.in.id };
-        n.onTask(t -> {
+
+        tmp = new MyGame(n);
+        tmp.what().onTask(t -> {
            if (t.term().equals(aPixel)) {
                if (t.why().length <= 1) //ignore revisions
                  assertArrayEquals(cause, t.why());
@@ -84,8 +86,7 @@ public class CameraSensorTest {
     MyGame tmp;
 
     void next(NAR n, AbstractSensor c) {
-        if (tmp==null)
-             tmp = new MyGame(n);
+
 
         //tmp.prev(n.time() - 2);
         tmp.now(n.time() - 1 );

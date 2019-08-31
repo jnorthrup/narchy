@@ -290,26 +290,37 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         @Override
         public Term target(Task task, Derivation d) {
-            return null;
+            if (task.op()==CONJ)
+                return null; //structural ex: decompose
+            else
+                return superPixel(d.random); //single pixel, so choose a target for comparison
         }
 
 
         @Nullable
         private Term superPixel(Random rng) {
-            int batchX = max(rng.nextInt(Math.min(width, MAX_WIDTH)),1),
-                batchY = max(rng.nextInt(Math.min(height, MAX_HEIGHT)), 1);
-            int px = rng.nextInt(concepts.width - batchX);
-            int py = rng.nextInt(concepts.height - batchY);
-            TermList subterms = new TermList(batchX * batchY);
+            int batchX = max(rng.nextInt(Math.min(width, MAX_WIDTH)+1),1),
+                batchY = max(rng.nextInt(Math.min(height, MAX_HEIGHT)+1), 1);
+            int px = rng.nextInt(concepts.width - batchX+1);
+            int py = rng.nextInt(concepts.height - batchY+1);
+            TermList subterms = (batchX*batchY > 1) ? new TermList(batchX * batchY) : null;
             for (int i = px; i < px+batchX; i++) {
                 for (int j = py; j < py+batchY; j++) {
                     Signal ij = concepts.get(i, j);
+                    Term ijt = ij.term();
+                    if (subterms==null)
+                        return ijt; //only one pixel, unnegated
                     Task current = ((SensorBeliefTables) (ij.beliefs())).current();
-                    if (current!=null)
-                        subterms.add(ij.term().negIf(current.isNegative()));
+                    if (current!=null) {
+                        subterms.add(ijt.negIf(current.isNegative()));
+                    }
                 }
             }
-            return subterms.isEmpty() ? null : CONJ.the(0, (Subterms) subterms);
+            switch (subterms.size()) {
+                case 0: return null;
+                case 1: return subterms.get(0);
+                default: return CONJ.the(0, (Subterms) subterms);
+            }
         }
 
     }
