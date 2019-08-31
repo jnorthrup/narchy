@@ -23,6 +23,7 @@ import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.IntProcedure;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.function.BooleanSupplier;
 import java.util.function.IntConsumer;
 import java.util.function.IntPredicate;
 
@@ -247,7 +248,12 @@ import static nars.Op.BELIEF;
             if (x) R.run();
         }, thresh);
     }
-
+    default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanSupplier L, BooleanSupplier R, FloatSupplier thresh) {
+        return actionPushButtonMutex(l, r,
+            x -> x && L.getAsBoolean(),
+            x -> x && R.getAsBoolean(),
+            thresh, q());
+    }
     /** normally, feedback indicating whether the action caused any effect is HELPFUL so this method is not going to be as good as the BooleanPredicate one */
     @Deprecated default GoalActionConcept[] actionPushButtonMutex(Term l, Term r, BooleanProcedure L, BooleanProcedure R) {
         return actionPushButtonMutex(l, r, L, R, midThresh());

@@ -1,12 +1,15 @@
 package nars.truth;
 
 import nars.$;
+import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.proj.LinearTruthProjection;
 import nars.truth.proj.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
+
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -15,7 +18,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class TruthProjectionTest {
 
-    int serial = 0;
+    static final AtomicInteger serial = new AtomicInteger();
     static final Term x = $$("x");
 
     @Test
@@ -64,8 +67,23 @@ class TruthProjectionTest {
     }
 
 
-    private NALTask t(float freq, float conf, long start, long end) {
-        long[] stamp = new long[] { serial++ };
+    static private NALTask t(float freq, float conf, long start, long end) {
+        long[] stamp = new long[] { serial.getAndIncrement() };
         return NALTask.the(x, BELIEF, $.t(freq, conf), (long) 0, start, end, stamp);
+    }
+
+    @Test void testSubjectiveProjection() {
+        float f = 1, c = 0.9f;
+        Task t = t(f, c, 0, 0);
+        assertEquals($.t(f,c), t.truthRelative(0, 0)); //all at same point
+        assertEquals($.t(f,c), t.truthRelative(0, 1)); //observation point changes but target point remains at the task
+
+//        assertEquals($.t(f,0.47f), t.truthRelative(1, 0)); //project to future, effectively eternalized
+//        assertEquals($.t(f,0.47f), t.truthRelative(10, 0)); //project to future, effectively eternalized
+//
+//        assertEquals($.t(f,0.49f), t.truthRelative(1, 2)); //project to future
+//        assertEquals($.t(f,0.50f), t.truthRelative(1, 4)); //project to future
+//        assertEquals($.t(f,0.49f), t.truthRelative(2, 4)); //project to future
+//        assertEquals($.t(f,0.47f), t.truthRelative(4, 4)); //project to future
     }
 }

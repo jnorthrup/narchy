@@ -7,11 +7,11 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.attention.PriNode;
-import nars.concept.sensor.ScalarSignal;
+import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.truth.PreciseTruth;
 import spacegraph.SpaceGraph;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.key.KeyPressed;
@@ -20,6 +20,8 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.console.VectorTextGrid;
 
 import java.util.Arrays;
+
+import static nars.Op.BELIEF;
 
 /**
  * executes a unix shell and perceives the output as a grid of symbols
@@ -52,7 +54,7 @@ public class ConsoleAgent extends GameX {
 
         this.WIDTH = w; this.HEIGHT = h;
         R = new TestConsole(
-                $.p(id,Atomic.the("should")),
+                $.inh(id,"should"),
                 WIDTH, HEIGHT, alphabet) {
 
             @Override
@@ -100,7 +102,7 @@ public class ConsoleAgent extends GameX {
 
 
         W = new TestConsole(
-                $.p(id,Atomic.the("is")),
+                $.inh(id, "is"),
                 R.W(), R.H(), alphabet) {
 
             final FloatRange moveThresh = new FloatRange(0.51f, 0, 1f);
@@ -109,11 +111,28 @@ public class ConsoleAgent extends GameX {
             {
 
                 Term id = ConsoleAgent.this.id;
-                actionPushButtonMutex($.inh(id,$.$$("left")), $.inh(id,$.$$("right")), ()->Left(), ()->Right(), moveThresh::floatValue);
-                actionPushButtonMutex($.inh(id,$.$$("up")), $.inh(id,$.$$("down")), ()->Up(), ()->Down(), moveThresh::floatValue);
+
+                GoalActionConcept[] lr = actionPushButtonMutex($.inh(id, "left"), $.inh(id, "right"), this::Left, this::Right, moveThresh::floatValue);
+                PreciseTruth OFF = $.t(0, nar.confDefault(BELIEF));
+                lr[0].goalDefault(OFF, nar);
+                lr[1].goalDefault(OFF, nar);
+
+                if (R.H() > 1) {
+                    GoalActionConcept[] ud = actionPushButtonMutex($.inh(id, "up"), $.inh(id, "down"), this::Up, this::Down, moveThresh::floatValue);
+                    ud[0].goalDefault(OFF, nar);
+                    ud[1].goalDefault(OFF, nar);
+                }
                 for (char c : alphabet) {
-                    actionPushButton($.inh(id, $.p(WRITE, $.the(c))),
-                            writeThresh::floatValue, () -> write(c));
+                    Term C = $.inh(id, $.quote(String.valueOf(c)));
+                    //actionPushButton(C, writeThresh::floatValue, () -> write(c));
+                    GoalActionConcept cc = actionUnipolar(C, (x) -> {
+                        if (x > writeThresh.floatValue()) {
+                            if (write(c))
+                                return 1;
+                        }
+                        return 0;
+                    });
+                    cc.goalDefault(OFF, nar);
                 }
             }
 
@@ -123,22 +142,13 @@ public class ConsoleAgent extends GameX {
 
             float s = similarity(R.chars, W.chars);
             return s;
-//            float d = s - prevSim;
-//            prevSim = s;
-//            if (d == 0)
-//                return s == 0 ? +1 : Float.NaN;
-//            if (d < 0)
-//                return -1;
-//            else
-//                return +1;
-            //return d==0 ? Float.NaN : Util.tanhFast(d);
         });
 
         noise = Loop.of(()->{
             R.c[0] = random().nextInt(R.cols);
             R.c[1] = random().nextInt(R.rows);
             R.write(alphabet[random().nextInt(alphabet.length)]);
-        }).setFPS(0.05f);
+        }).setFPS(0.5f);
 
     }
 
@@ -146,7 +156,7 @@ public class ConsoleAgent extends GameX {
 
 
         GameX.runRT((n) -> {
-            ConsoleAgent a = new ConsoleAgent(3, 3, n);
+            ConsoleAgent a = new ConsoleAgent(3, 1, n);
             SpaceGraph.window(new Gridding(a.R, a.W), 800, 400);
             return a;
         }, fps);
@@ -186,35 +196,35 @@ public class ConsoleAgent extends GameX {
             this.charMatrix = new Signal[w][h][alphabet.length];
 
 
-            PriNode charAttn = new PriNode(id);
-
-            nar.control.input(charAttn, sensorPri);
+//            PriNode charAttn = new PriNode(id);
+//            nar.control.input(charAttn, sensorPri);
 
             for (int x = 0; x < w; x++) {
                 for (int y = 0; y < h; y++) {
                     Term XY = $.p($.the(x), $.the(y));
-                    PriNode xy = new PriNode(XY);
-
-                    nar.control.input(xy, charAttn);
+                    //PriNode xy = new PriNode(XY);
+                    //nar.control.input(xy, charAttn);
 
                     for (int i = 0, alphabetLength = alphabet.length; i < alphabetLength; i++) {
                         char a = alphabet[i];
                         Term xya =
-                                $.inh(id, $.p($.the(a), XY));
+                                $.inh(id, $.p($.quote(String.valueOf(a)), XY));
                                 //$.funcImg((Atomic)id, $.the(a), XY);
                         int xx = x;
                         int yy = y;
 
                         //HACK
-                        nar.control.input(((ScalarSignal)(charMatrix[x][y][i] = sense(
-                            xya,
-                            () -> chars[xx][yy] == a))).pri, xy);
+                        Signal cm = charMatrix[x][y][i] = sense(xya, () -> chars[xx][yy] == a);
+                        //nar.control.input(((ScalarSignal)(cm).pri, xy);
 
                     }
                 }
             }
             c[0] = 0;
             c[1] = 0;
+//            what().onTask(t->{
+//                System.out.println(t);
+//            });
         }
 
         @Override
@@ -233,7 +243,7 @@ public class ConsoleAgent extends GameX {
         @Override
         protected boolean setBackgroundColor(GL2 gl, TextCharacter c, int col, int row) {
             //nar.beliefTruth(charMatrix[col][row][], nar.time());
-            float cc = 0.5f; //nar.concepts.pri(charMatrix[col][row].target, 0);
+            float cc = 0.25f; //nar.concepts.pri(charMatrix[col][row].target, 0);
             if (cc == cc) {
                 gl.glColor4f(cc, cc, cc, 0.95f);
                 return true;
@@ -241,36 +251,48 @@ public class ConsoleAgent extends GameX {
             return false;
         }
 
-        public void Left() {
+        public boolean Left() {
+            int before = c[0];
             c[0] = Math.max(0, c[0] - 1);
+            return c[0]!=before;
         }
 
-        public void Up() {
+        public boolean Up() {
+            int before = c[1];
             c[1] = Math.max(0, c[1] - 1);
+            return c[1]!=before;
         }
 
-        public void Down() {
+        public boolean Down() {
+            int before = c[1];
             c[1] = Math.min(rows() - 1, c[1] + 1);
+            return c[1]!=before;
+        }
+
+        public boolean Right() {
+            int before = c[0];
+            c[0] = Math.min(cols() - 1, c[0] + 1);
+            return c[0]!=before;
         }
 
         public int rows() {
             return chars[0].length;
         }
 
-        public void Right() {
-            c[0] = Math.min(cols() - 1, c[0] + 1);
-        }
 
         public int cols() {
             return chars.length;
         }
 
-        public void write(char value) {
+        public boolean write(char value) {
             int cx = this.c[0];
             int cy = this.c[1];
             char prev = chars[cx][cy];
-
-            chars[cx][cy] = value;
+            if (prev!=value) {
+                chars[cx][cy] = value;
+                return true;
+            }
+            return false;
         }
 
 //        protected void believe(char c, int x, int y) {

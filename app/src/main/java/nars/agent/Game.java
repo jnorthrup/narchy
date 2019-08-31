@@ -318,7 +318,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      */
     protected Term rewardTerm(String reward) {
         //return $.func($$(reward), id);
-        return $.inh(id, $$(reward));
+        return $.inh(id, reward);
     }
 
     public Reward rewardNormalized(String reward, float min, float max, FloatSupplier rewardFunc) {

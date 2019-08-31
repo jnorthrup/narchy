@@ -18,6 +18,7 @@ import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -272,26 +273,11 @@ public class Derivation extends PreDerivation {
             } else {
 
                 this.beliefTruth_at_Belief = nextBelief.truth();
-                if (beliefTruth_at_Belief == null)
-                    throw new NullPointerException("null belief truth");
 
                 boolean taskEternal = taskStart == ETERNAL;
-                if (taskEternal) {
-
-//                    if (!nextBelief.isEternal() && nextBelief.start() < time()) {
-//                        long now = time();
-//                        float d = dur();
-//                        long presentStart = Math.round(now - d / 2);
-//                        long presentEnd = Math.round(now + d / 2);
-//                        _task = new SpecialOccurrenceTask(_task, taskStart = presentStart, taskEnd = presentEnd);
-//                        this.beliefTruth_at_Task = beliefAtTask(nextBelief);
-//                    } else
-                        this.beliefTruth_at_Task = beliefTruth_at_Belief;
-
-
-                } else {
-                    this.beliefTruth_at_Task = beliefAtTask(nextBelief);
-                }
+                this.beliefTruth_at_Task = taskEternal ?
+                    beliefTruth_at_Belief :
+                    beliefAtTask(nextBelief);
 
                 if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) && (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || beliefTruth_at_Task==null)) {
 
@@ -364,7 +350,7 @@ public class Derivation extends PreDerivation {
         Truth t = !NAL.derive.BELIEF_PROJECTION_CLASSIC ?
             nextBelief.truth(taskStart, taskEnd, dur()) //integration-calculated
             :
-            nextBelief.truthRelative(time(), _task.start()) //classic opennars projection
+            nextBelief.truthRelative(taskStart, time()) //classic opennars projection
         ;
         return t!=null && t.evi() >= eviMin ? t : null;
     }
@@ -395,21 +381,15 @@ public class Derivation extends PreDerivation {
 
 
         if (!sameTask) {
-
-
-            this.taskPunc = nextTask.punc();
-            if ((taskPunc == BELIEF || taskPunc == GOAL)) {
-                this.taskTruth = nextTask.truth();
-
-                assert (taskTruth != null);
-            } else {
-                this.taskTruth = null;
-            }
-
+            byte p = nextTask.punc();
+            this.taskTruth = ((((this.taskPunc = p)) == BELIEF) || (p == GOAL)) ?
+                nextTask.truth() : null;
         }
 
-        this.taskStart = nextTask.start();
-        this.taskEnd = nextTask.end();
+        if (!sameTask || nextTask instanceof SeriesBeliefTable.SeriesTask) {
+            this.taskStart = nextTask.start();
+            this.taskEnd = nextTask.end();
+        }
 
         return nextTask;
     }

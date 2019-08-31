@@ -40,6 +40,8 @@ import java.util.Comparator;
 import java.util.function.BiFunction;
 import java.util.function.Function;
 
+import static java.lang.Math.abs;
+import static java.lang.Math.min;
 import static nars.Op.*;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
@@ -611,14 +613,14 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {
         int volSum = Util.sum(TermedDelegate::volume, x);
         double volFactor =
-                Math.min(1, ((double)volSum) / y.volume() );
+                min(1, ((double)volSum) / y.volume() );
 
         double confFactor;
         boolean xHasTruth = x[0].isBeliefOrGoal();
         if (y.isBeliefOrGoal() && xHasTruth) {
             double yConf = y.truth().confDouble();
             double xConfMax = Util.max(Task::conf, x);
-            confFactor = Math.min(1, (yConf / xConfMax));
+            confFactor = min(1, (yConf / xConfMax));
         } else {
             if (xHasTruth) {
                 //question formation
@@ -636,7 +638,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         else {
             long xRangeMax = Util.max((Task t) -> t.rangeIfNotEternalElse(1), x);
             long yRange = y.range();
-            rangeFactor = Math.min(1, ((double) yRange) / xRangeMax);
+            rangeFactor = min(1, ((double) yRange) / xRangeMax);
         }
 
         //int Xn = x.length;
@@ -930,31 +932,37 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return term().dt();
     }
 
+    @Nullable default Truth truthRelative(long tgt, long now) {
+        return truthRelative(tgt, now, NAL.truth.EVI_MIN);
+    }
 
-    /** relative to an observation time point
-     *  based on OpenNARS projection formula:
-     *   return 1.0f - abs(sourceTime - targetTime) / (abs(sourceTime - currentTime) + abs(targetTime - currentTime) );
-     * */
-    @Nullable default Truth truthRelative(long now, long tgt) {
+    /** subjective truth projection, relative to a specific 'now' observed time point */
+    @Nullable default Truth truthRelative(long tgt, long now, double eviMin) {
+        double e = eviRelative(tgt, now);
+        return e < eviMin ? null : PreciseTruth.byEvi(truth().freq(), e);
+    }
 
-        long src = start();
+    /** subjective truth projection, relative to a specific 'now' observed time point */
+    default double eviRelative(long tgt, long now) {
 
         Truth truth = truth();
-        if (src == ETERNAL || src==tgt)
-            return truth;
-        if (tgt == ETERNAL || (now==src) || (now==tgt))
-            return null; //eternalize?
+        double evi = truth.evi();
 
-        long sep = Math.abs(src-tgt);
-        double range = (Math.abs(src-now) + Math.abs(tgt - now));
-        if (sep >= range)
-            return null;
-        if (range < 0.5f)
-            return truth;
+        long start = start();
+        if (start == ETERNAL || start==tgt)
+            return evi;
+        long end = end();
+        if ((tgt > start && tgt <= end))
+            return evi; //within the task's range
 
-        double factor = 1.0 - sep / range;
-        double e = factor * truth.evi();
-        return e < NAL.truth.EVI_MIN ? null : PreciseTruth.byEvi(truth.freq(), e);
+        long sep = min(abs(start-tgt), abs(end-tgt)); //minTimeTo
+        long range = Math.max(abs(start-now),abs(end-now)) + abs(tgt - now);
+        //double e = (evi / (evi + ((double)sep) / range ));
+        double e = evi * (1 / (1 + ((double)sep) / range ));
+        //double factor = 1.0 - sep / range; //classic
+        //double factor = 1.0 / (1 + sep / range ); //experimental
+        //factor = NAL.evi(1, sep, range ); //experimental
+        return e;
     }
 
     @Nullable
@@ -966,29 +974,15 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
             double e = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
 
-            if (e < NAL.truth.EVI_MIN)
-                return null;
-            else
-                return PreciseTruth.byEvi(
+            return (e < NAL.truth.EVI_MIN) ?
+                null :
+                PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
                         e);
 
         }
     }
 
-//    @Nullable
-//    default List log(boolean createIfMissing) {
-//        return null;
-//    }
-
-//    @Nullable
-//    default Object lastLogged() {
-//        List log = log(false);
-//        if (log == null) return null;
-//        int s = log.size();
-//        if (s == 0) return null;
-//        else return log.get(s - 1);
-//    }
 
     @Nullable
     default Truth truth(long when, float dur) {

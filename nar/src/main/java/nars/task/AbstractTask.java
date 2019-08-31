@@ -25,8 +25,6 @@ import java.util.Collection;
  */
 public abstract class AbstractTask implements Task {
 
-    public static final Logger logger = Log.logger(AbstractTask.class);
-
     public static Task multiTask(@Nullable Collection<Task> next) {
         if (next == null) return null;
         switch (next.size()) {
@@ -39,14 +37,6 @@ public abstract class AbstractTask implements Task {
         }
     }
 
-
-//    public static void error(Prioritizable t, Prioritizable x, Throwable ee) {
-//        if (t == x)
-//            Task.logger.error("{} {}", x, ee);
-//        else
-//            Task.logger.error("{}->{} {}", t, x, ee);
-//    }
-
     public final byte punc() {
         return 0;
     }
@@ -54,21 +44,6 @@ public abstract class AbstractTask implements Task {
     @Override
     public final float pri() {
         return 1;
-    }
-
-//    @Override
-//    public String toString() {
-//        return getClass().toStri
-//    }
-
-    @Override
-    public final boolean delete() {
-        throw new UnsupportedOperationException();
-    }
-
-    @Override
-    public final boolean isDeleted() {
-        return false;
     }
 
     @Override
@@ -84,90 +59,10 @@ public abstract class AbstractTask implements Task {
     public abstract Task next(Object n);
 
 
-//    /**
-//     * wraps a Runnable
-//     */
-//    public static final class RunTask extends NativeTask {
-//
-//        public final Runnable run;
-//
-//        public RunTask(Runnable runnable) {
-//            run = runnable;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return run.toString();
-//        }
-//
-//        @Override
-//        public ITask next(NAR n) {
-//            run.run();
-//            return null;
-//        }
-//
-//    }
-
-
-    //    public static class NARTask extends AbstractTask {
-//
-//        final Consumer run;
-//
-//        public NARTask(Consumer<NAR> runnable) {
-//            run = runnable;
-//        }
-//
-//        @Override
-//        public String toString() {
-//            return run.toString();
-//        }
-//
-//        @Override
-//        public ITask next(NAR x) {
-//            run.accept(x);
-//            return null;
-//        }
-//
-//    }
-//    public final static class TasksCollection extends AbstractTask {
-//        private final Collection<ITask> tasks;
-//
-//        public TasksCollection(Collection<ITask> x) {
-//            this.tasks = x;
-//            if (x.size() > 3) {
-//                //sort by the task type
-//            }
-//        }
-//
-//        @Override
-//        public ITask next(NAR n) {
-//            //FasterList<ITask> next = null;
-//            for (ITask t: tasks) {
-//                t.run(n);
-////                ITask p = t.next(n);
-////                if (p!=null) {
-////                    if (next == null) next = new FasterList(1);
-////                    next.addAt(p);
-////                }
-//            }
-//            return null;
-//        }
-//
-//    }
 
     @Override
     public short[] why() {
         return ArrayUtil.EMPTY_SHORT_ARRAY;
-    }
-
-    @Override
-    public @Nullable Truth truth(long when, float dur) {
-        return null;
-    }
-
-    @Override
-    public @Nullable Truth truth(long targetStart, long targetEnd, float dur) {
-        return null;
     }
 
     @Override
