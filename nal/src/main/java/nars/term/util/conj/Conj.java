@@ -112,16 +112,22 @@ public enum Conj {
         if (!Op.hasAll(conj.subStructure(), x.structure() & ~(CONJ.bit)))
             return false;
 
-        boolean xSeq = Conj.isSeq(x);
-        boolean conjSeq = Conj.isSeq(conj);
-        if (!xSeq && !conjSeq && x.op() == CONJ && x.dt() == DTERNAL) {
-            for (Term xx : x.subterms()) //parallel
-                if (!__eventOf(conj, xx, when, Conj.isSeq(xx), false))
-                    return false;
-            return true;
-        } else {
-            return __eventOf(conj, x, when, xSeq, conjSeq);
+        boolean xConj = x.op() == CONJ;
+        boolean xSeq = xConj && Conj.isSeq(x), conjSeq = Conj.isSeq(conj);
+
+        if (!xSeq && !conjSeq && xConj) {
+            int xdt = x.dt();
+            if (xdt == DTERNAL || xdt == XTERNAL) {
+                //parallel
+                for (Term xx : x.subterms())
+                    if (!__eventOf(conj, xx, when, Conj.isSeq(xx), false))
+                        return false;
+                return true; //all x components present
+            }
         }
+
+        return __eventOf(conj, x, when, xSeq, conjSeq);
+
     }
 
     private static boolean __eventOf(Term conj, Term x, long when, boolean xSeq, boolean conjSeq) {
@@ -138,9 +144,9 @@ public enum Conj {
 
             return conj.eventsOR(
                     when == ETERNAL ?
-                            (w, cc) -> x.equals(cc) || (cc.op() == CONJ && _eventOf(cc, x, ETERNAL))
+                            (w, cc) -> x.equals(cc) || (cc.opID() == CONJ.id && _eventOf(cc, x, ETERNAL))
                             :
-                            (w, cc) -> w == when && (x.equals(cc) || (cc.op() == CONJ && _eventOf(cc, x, 0)))
+                            (w, cc) -> w == when && (x.equals(cc) || (cc.opID() == CONJ.id && _eventOf(cc, x, 0)))
                     //    !(w == when && x.equals(cc))
                     , when, true, conj.dt() == XTERNAL);
         }
@@ -1254,15 +1260,12 @@ public enum Conj {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (!(x instanceof Compound) || x.op() != CONJ || x instanceof Sequence)
+        if (!(x instanceof Compound) || x.opID() != CONJ.id || x instanceof Sequence)
             return false;
 
 
         int dt = x.dt();
-        if (dt == DTERNAL) {
-            return ConjSeq._isSeq(x);
-        } else
-            return !dtSpecial(dt);
+        return dt == DTERNAL ? ConjSeq._isSeq(x) : !dtSpecial(dt);
     }
 
     public static ConjBuilder diff(Term include, long includeAt, Term exclude, long excludeAt) {
@@ -1270,6 +1273,24 @@ public enum Conj {
         return ConjList.subtract(ConjList.events(include, includeAt), exclude, excludeAt);
 //        boolean eNeg = exclude.op() == NEG;
 //        return the(include, includeAt, eNeg ? exclude.unneg() : exclude, excludeAt, eNeg);
+    }
+
+    public static Term diffPar(Term conj, Term y) {
+        if (conj.dt()==XTERNAL) {
+            Term[] cc = conj.subterms().removing(y);
+            if (cc == null)
+                return conj;
+            else {
+                if (cc.length == 1) return cc[0];
+                else return CONJ.the(XTERNAL, cc);
+            }
+        } else {
+            ConjList c = ConjList.events(conj);
+            if(c.removeAll(y))
+                return c.term();
+            else
+                return conj;
+        }
     }
 
 //    @Override

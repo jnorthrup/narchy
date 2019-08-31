@@ -8,21 +8,17 @@ import nars.term.var.ellipsis.Ellipsis;
 
 public class PremiseRuleNormalization extends VariableNormalization {
 
-
-
     @Override
     protected Term applyPosCompound(Compound x) {
-        /** process completely to resolve built-in functors,
+        /** HACK process completely to resolve built-in functors,
          * to override VariableNormalization's override */
         return x.transform(this, x.op(), x.dt());
     }
 
-    /*@NotNull*/
     @Override
     protected Variable newVariable(/*@NotNull*/ Variable x) {
         if (x instanceof Ellipsis.EllipsisPrototype)
-            return Ellipsis.EllipsisPrototype.make((byte) count,
-                ((Ellipsis.EllipsisPrototype) x).minArity);
+            return Ellipsis.EllipsisPrototype.make((byte) count, ((Ellipsis.EllipsisPrototype) x).minArity);
         else if (x instanceof Ellipsis)
             return x;
         else

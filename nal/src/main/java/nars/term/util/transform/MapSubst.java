@@ -1,7 +1,6 @@
 package nars.term.util.transform;
 
 import jcog.data.list.FasterList;
-import nars.NAL;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -13,8 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 
-abstract public class MapSubst implements Subst {
-
+public enum MapSubst { ;
 
     public static Term replace(Term x, Map<? extends Term, Term> m) {
 
@@ -32,10 +30,7 @@ abstract public class MapSubst implements Subst {
             case 1: {
                 Map.Entry<? extends Term, Term> e = m.entrySet().iterator().next();
                 Term src = e.getKey(), target = e.getValue();
-                if (x.impossibleSubTerm(src))
-                    return x; //no change
-                else
-                    return x.transform(replace(src, target));
+                return x.replace(src, target);
             }
             case 2: {
                 Iterator<? extends Map.Entry<? extends Term, Term>> ii = m.entrySet().iterator();
@@ -57,12 +52,9 @@ abstract public class MapSubst implements Subst {
 
 
                 if (x.impossibleSubTerm(a)) {
-                    return x.impossibleSubTerm(b) ?
-                            x
-                            :
-                            x.transform(replace(b, bb));
+                    return x.replace(b, bb);
                 } if (x.impossibleSubTerm(b))
-                    return x.transform(replace(a, aa));
+                    return x.replace(a, aa);
                 else
                     return x.transform(new MapSubst2(A.getKey(), aa, B.getKey(), bb));
             }
@@ -87,7 +79,7 @@ abstract public class MapSubst implements Subst {
                 switch (validN) {
                     case 1: {
                         Term a = valid.get(0);
-                        return x.transform(replace(a, m.get(a)));
+                        return x.replace(a, m.get(a));
                     } case 2: {
                         Term a = valid.get(0), b = valid.get(1);
                         return x.transform(new MapSubst2(a, m.get(a), b, m.get(b), kStruct));
@@ -162,7 +154,7 @@ abstract public class MapSubst implements Subst {
 
     public static TermTransform replace(Term from, Term to) {
 
-        if (NAL.DEBUG && from.equals(to))
+        if (from.equals(to))
             throw new TermTransformException(from, to, "pointless substitution");
 
         return from instanceof Atomic ?
@@ -199,14 +191,12 @@ abstract public class MapSubst implements Subst {
         public @Nullable Term applyCompound(Compound c) {
             if (c.equals(from))
                 return to;
-            if (c.impossibleSubTerm(fromStructure, fromVolume))
-                return c;
-            return AbstractTermTransform.super.applyCompound(c);
+            return c.impossibleSubTerm(fromStructure, fromVolume) ? c : AbstractTermTransform.super.applyCompound(c);
         }
 
     }
 
-    final static class SubstAtomic extends AbstractTermTransform.NegObliviousTermTransform {
+    final static class SubstAtomic implements AbstractTermTransform  {
 
         private final Atomic from;
         private final Term to;
@@ -227,8 +217,8 @@ abstract public class MapSubst implements Subst {
         }
 
         @Override
-        protected @Nullable Term applyPosCompound(Compound x) {
-            return x.impossibleSubStructure(fromStructure) ? x : super.applyPosCompound(x);
+        public @Nullable Term applyCompound(Compound x) {
+            return x.impossibleSubStructure(fromStructure) ? x : AbstractTermTransform.super.applyCompound(x);
         }
 
     }

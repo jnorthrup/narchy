@@ -2,6 +2,8 @@ package nars.nal.nal3;
 
 import org.junit.jupiter.api.Test;
 
+import static nars.Op.BELIEF;
+
 public class NAL3ComposeTest extends NAL3Test {
     @Test
     void compound_composition_two_premises() {
@@ -61,5 +63,18 @@ public class NAL3ComposeTest extends NAL3Test {
                 .mustBelieve(cycles, "(((swan)&(swimmer)) --> bird)", 1f, 0.81f);
     }
 
+    @Test
+    void composeConjSimilarity_dont_introduce_xternal() {
+//        test.nar.onCycle(()->{
+//            ((TaskLinkWhat)test.nar.what()).links.links.print();
+//        });
+        test
+            .termVolMax(5)
+            .believe("(x --> a)")
+            .believe("(x --> b)")
+            .believe("(y <-> x)")
+            .mustBelieve(cycles, "(y <-> (a&&b))", 1f, 0.81f)
+            .mustNotOutput(cycles, "(y <-> (a &&+- b))", BELIEF);
+    }
 
 }

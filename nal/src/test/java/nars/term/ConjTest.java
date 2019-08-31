@@ -2287,6 +2287,35 @@ class ConjTest {
         assertUnifies("(x &&+1 (%y &&+1 z))", "(x &&+1 ((y,w) &&+1 z))", true);
     }
 
+    @Test void internalDisjCausingStackOverflow() {
+
+        {
+            assertEq("c", Conj.diffPar($$("((--,b) &&+- c)"), $$("--b")));
+            //assertEquals(2, ConjList.events($$("((--,b) &&+- c)")).size());
+
+            assertEq("((--,b)&&(--,c))", $$("( --(--b && c) && --b)"));
+            assertEq("((--,b)&&(--,c))", $$("( --(--b &&+- c) && --b)"));
+        }
+
+        {
+            assertEq("((--,b)&&c)", $$("( (--b && c) && --b)"));
+            assertEq("(((--,b)&&c) &&+- (--,b))", $$("( (--b &&+- c) && --b)"));
+        }
+
+        assertEq("(((--,b)&&(--,c)) &&+- ((--,b)&&d))", $$("(&&, (--(--b &&+- c) &&+- d), (--,b))"));
+    }
+    @Test void internalDisjCausingStackOverflow2() {
+        //[_4, ((_2 ||+- (--,_3)) &&+- _4), ((--,_2) &&+- _4), (--,_2), (--,_3)]
+        //[d, ((b ||+- (--,c)) &&+- d), ((--,b) &&+- d), (--,b), (--,c)]
+
+        assertEq("TODO", $$("(&&, (--(--b &&+- c) &&+- d), ((--,b) &&+- d), (--,b))"));
+
+        assertEq("TODO", $$("(&&, d, (--(--b &&+- c) &&+- d), ((--,b) &&+- d), (--,b))"));
+
+        assertEq("TODO", $$("(&&, d, (--(--b &&+- c) &&+- d), ((--,b) &&+- d), (--,b), (--,c))"));
+
+    }
+
     static void assertUnifies(String x, String y, boolean unifies) {
         Random rng = new XoRoShiRo128PlusRandom(1);
         assertEquals(unifies, $$(x).unify($$(y), new SubUnify(rng)));

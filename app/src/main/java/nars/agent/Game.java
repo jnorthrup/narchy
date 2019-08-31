@@ -494,10 +494,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 //            System.out.println(this + " "  + state().toString() + " " + (now - prev));
 
             float dur = durPhysical();
-            long lastEnd = when!=null ? when.end : Math.round(now-dur/2);
+            long lastEnd = when!=null ? when.end : Math.round(now-dur/2-1);
             int dither = nar.dtDither();
             long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - dur/2));
-            long nextEnd = Math.max(nextStart+1, Math.round(Math.ceil(now + dur/2)));
+            long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + dur/2 - 1)));
             this.when = new When<>(nextStart, nextEnd, dur, nar);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);

@@ -1271,22 +1271,19 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {
-        if (containsRecursively(from)) {
-            return transformSubs(MapSubst.replace(from, to), superOp);
-        } else {
-            return this;
-        }
+        return !impossibleSubTerm(from) ? transformSubs(MapSubst.replace(from, to), superOp) : this;
     }
 
     default Subterms transformSub(int which, Function<Term,Term> f) {
         Term x = sub(which);
         Term y = f.apply(x);
-        if (x!=y) {
-            Term[] yy = arrayClone();
-            yy[which] = y;
-            return Op.terms.subterms(yy);
-        } else
+        //if (x == y)
+        if (x.equals(y))
             return this;
+
+        Term[] yy = arrayClone();
+        yy[which] = y;
+        return Op.terms.subterms(yy);
     }
 
     /**

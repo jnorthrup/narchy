@@ -2145,7 +2145,6 @@ public enum Util {
     public static <X> boolean and(Predicate<X> p, X... xx) {
         return and(xx, p);
     }
-
     public static <X> boolean or(Predicate<X> p, X... xx) {
         for (X x : xx)
             if (p.test(x))

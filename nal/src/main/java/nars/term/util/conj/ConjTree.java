@@ -1,6 +1,7 @@
 package nars.term.util.conj;
 
 import jcog.TODO;
+import jcog.Util;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import nars.NAL;
@@ -23,6 +24,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
+import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -242,7 +244,19 @@ public class ConjTree implements ConjBuilder {
                 if (Conj.eventOf(nx, ny))
                     return ny; //reduce nx to ny, so that it can be added at the correct sequence position.  for parallel this isnt needed and could return True?
                 Term nyn = ny.neg();
-                if (Conj.eventOf(nx, nyn)) {
+
+                if (nx.dt()==XTERNAL) {
+                    //HACK because ConjList.events doesnt decompose XTERNAL
+                    Term nx2 = Conj.diffPar(nx, nyn);
+                    if (!nx.equals(nx2)) {
+                        nx = nx2;
+                        if (nx instanceof Bool)
+                            return nx;
+                        Term x = reinsertNN(nx, toAdd, 0);
+                        if (x != null)
+                            return x;
+                    }
+                } else if (Conj.eventOf(nx, nyn)) {
                     ConjList nxe = ConjList.events(nx);
                     nxe.removeAll(nyn);
                     nx = nxe.term();
@@ -250,17 +264,9 @@ public class ConjTree implements ConjBuilder {
                     if (nx instanceof Bool)
                         return nx;
                     long nxshift = nxe.shift();
-                    //add at shifted time
-                    if (nxshift == ETERNAL || nxshift == 0) {
-                        //continue, adding at present parallel time
-                    } else {
-                        if (!addEvent(nxshift, nx.neg()))
-                            return False;
-                        else {
-                            assert(toAdd == null): "TODO";
-                            return True;
-                        }
-                    }
+                    Term x = reinsertNN(nx, toAdd, nxshift);
+                    if (x != null)
+                        return x;
                 }
 
             }
@@ -269,6 +275,22 @@ public class ConjTree implements ConjBuilder {
         if (toAdd != null) if (!toAdd.allSatisfy(this::addParallelNeg))
             return False;
         return nx;
+    }
+
+    @Nullable
+    private Term reinsertNN(Term nx, FasterList<Term> toAdd, long nxshift) {
+        //add at shifted time
+        if (nxshift == ETERNAL || nxshift == 0) {
+            //continue, adding at present parallel time
+        } else {
+            if (!addEvent(nxshift, nx.neg()))
+                return False;
+            else {
+                assert(toAdd == null): "TODO";
+                return True;
+            }
+        }
+        return null;
     }
 
     private Term reducePN(Term x, Collection<Term> y, boolean nP_or_pN) {
@@ -546,7 +568,8 @@ public class ConjTree implements ConjBuilder {
                 return terminal;
 
             return s;
-        } else return termCom(B);
+        } else
+            return termCom(B);
 
     }
 
@@ -562,11 +585,7 @@ public class ConjTree implements ConjBuilder {
 
     private Term termCom(TermBuilder B) {
 
-
-        //        if (s == null || !Conj.isSeq(s)) {
-
         DisposableTermList PN = null;
-
 
         if (!pos.isEmpty()) {
             int pp = pos.size();
@@ -594,9 +613,6 @@ public class ConjTree implements ConjBuilder {
 
         Term[] q = PN.arrayKeep();
 
-
-
-        Term pn;
         switch (q.length) {
             case 0:
                 return True;
@@ -673,14 +689,11 @@ public class ConjTree implements ConjBuilder {
                 }
 
 
-//                if (!inSeq && Util.and(qq -> qq.op()!=CONJ || Conj.isSeq(qq) || qq.dt()==XTERNAL, q)) {
-//                    simple= true; //TODO refine
-//                } else {
-//                    //flatten
-//                    simple = false;
-//                }
+                if (!simple && Util.or((Predicate<Term>) qq -> qq.op()==CONJ && qq.dt()==XTERNAL, q)) {
+                    simple = true; //TODO refine
+                }
 
-                Term y = Null;
+                Term y;
                 if (simple) {
                     Arrays.sort(q);
                     y = B.newCompound(CONJ, DTERNAL, q);
@@ -695,8 +708,6 @@ public class ConjTree implements ConjBuilder {
                         } catch (TermTransformException tte) {
                             if (NAL.DEBUG)
                                 throw tte;
-                            //return Null;
-                            simple = false;
                         }
                     }
 
