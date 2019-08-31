@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.math.ShuffledPermutations;
 import jcog.util.ArrayUtil;
 import nars.NAR;
+import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -22,6 +23,7 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.term.atom.Bool.*;
 
 /**
@@ -195,14 +197,16 @@ public class Evaluation extends Termerator {
 						if (b == Null) {
 							y = Null;
 							break main;
-						} else if (b == True && y.op()!=CONJ) {
+						}
+						Op yOp = y.op();
+						if (b == True && yOp !=CONJ && yOp !=IMPL) {
 //							if (x.equals(y)) {
 //								y = True;
 //								break main;
 //							}
                             y = x.equals(y) ? True : a;
                             break main;
-                        } else if (b == False && y.op()==CONJ) {
+                        } else if (b == False && yOp ==CONJ) {
                             y = x.equals(y) ? False : a.neg();
                             break main;
                         }

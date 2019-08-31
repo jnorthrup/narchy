@@ -62,16 +62,21 @@ public enum Perceive {
         if (Evaluation.evalable(x.term())) {
             FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
             if (rt != null) {
-                rt.removeInstance(x); //something was eval, remove the input HACK
+                //rt.removeInstance(x); //something was eval, remove the input HACK
                 //rt.remove(x);
 
                 if (!rt.isEmpty()) {
                     //move and share input priority fairly:
-                    float xp = x.priGetAndSet(0) / rt.size();
+                    float xPri = x.pri();
+                    float xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
+                    x.pri(xPriAfter);
+                    float xp = (xPri - xPriAfter) / rt.size();
                     for (Task y : rt)
                         y.pri(xp);
 
-                    //rt.add(perceived); //echo
+                    //echo TODO obviousness filter
+                    //TODO cache the evaluation context in a proxy to the echo'd evaluable percept
+                    rt.add(perceived);
 
                     return task(rt, false);
                 }

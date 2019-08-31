@@ -114,7 +114,7 @@ public class MemberTest {
 
 		String belief = "(member(#x,{a,b}) " + op + " #x)";
 
-		//t.mustBelieve(cycles,belief,1f,0.9f); //the belief itself
+		t.mustBelieve(cycles, belief,1f,0.9f); //the belief itself
 		t.mustBelieve(cycles,"a",1f,0.9f);
 		t.mustBelieve(cycles,"b",1f,0.9f);
 

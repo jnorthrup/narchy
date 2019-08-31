@@ -12,7 +12,6 @@ import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termlike;
-import nars.term.Variable;
 import nars.term.util.TermException;
 import nars.term.util.transform.TermTransform;
 
@@ -116,35 +115,34 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public final boolean is(Term x, Term y) {
+        if (x == Null || y == Null) return false;
+
         if (x.equals(y))
             return true;
-
-        if (y == Null) return false;
-
-        boolean empty = v==null || v.size()==0;
-
-        if (!empty) {
-            Term z = y.replace(subs);  //transform the assignment result preventing loops etc
-            if (!z.equals(y))
-                return is(x, z); //recurse
-        }
 
         if (y.containsRecursively(x))
             return false; //loop
 
+        boolean empty = v==null || v.size()==0;
+
         if (!empty) {
-            if (y instanceof Variable) {
-                //check for a reverse assignment from an existing constant
-                Term y0 = subs.get(x);
-                if (y0 != null && !(y0 instanceof Variable))
-                    return is(y, y0);
+            Term xx = x.replace(subs);
+            Term yy = y.replace(subs);
+            if (!yy.equals(y) || !xx.equals(x))
+                return is(xx, yy); //recurse
+        }
+
+        if (!empty) {
+            //replace existing subs
+            if (!subs.replace((sx, sy)-> !x.equals(sx) ? sy.replace(x, y) : sy)) {
+                return false;
             }
         } else {
             ensureReady();
         }
 
         boolean set = subs.set(x, y);     assert(set);
-        return subs.replace((sx, sy)-> !x.equals(sx) ? sy.replace(x, y) : sy);
+        return true;
     }
 
     /**

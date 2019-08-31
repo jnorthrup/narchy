@@ -231,7 +231,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** 1.0 = perfectly sorted each duration (commit); values closer to zero are less accurate but faster */
     public static float tasklinkSortedness =
             1f;
-        //0.25f;
+
+    public static final float TaskEvalPriDecomposeRate = 0.5f;
+
+	//0.25f;
 
 
     /**
@@ -778,9 +781,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         //public static final float TERM_BUFFER_VOLMAX_SCRATCH_FACTOR = 8f;
 
-        public static boolean ETERNALIZE_BELIEF_PROJECTION = false;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = false;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = false;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION = true;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = true;
+        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = true;
 
 
     }

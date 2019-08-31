@@ -14,9 +14,9 @@ C, X, --isVar(X), eventOfPN(C,X), conjParallel(C)    |-   conjWithoutPN(C,X), (B
     //impl conj/disj pred belief and question free structural implication decomposition
     (A ==> C), X, eventOfPN(C,X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction, Time:Task)
 
-      //if these are used, they probably should be StructuralDeductionWeak:
-        //(A ==> D), X, eventOf(D,X), --isVar(X)                 |-   (A ==> --X), (Belief:StructuralDeductionN, Time:Task)
-        //(A ==> D), X, eventOfNeg(D,X), --isVar(X), has(D,"--") |-   (A ==>   X), (Belief:StructuralDeductionN, Time:Task)
+      //if these are used, they maybe should be StructuralDeductionWeak:
+        (A ==> D), X, eventOf(D,X), --isVar(X)                 |-   (A ==> --X), (Belief:StructuralDeductionN, Time:Task)
+        (A ==> D), X, eventOfNeg(D,X), --isVar(X), has(D,"--") |-   (A ==>   X), (Belief:StructuralDeductionN, Time:Task)
 
 
         //(A ==> C), X, eventOfPN(C,X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction)

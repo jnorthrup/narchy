@@ -130,7 +130,7 @@ public class IO {
     }
 
     public @Nullable static byte[] taskToBytes(Task x, DynBytes dos) {
-        TaskIO.write(x, dos,false, false);
+        TaskIO.write(x, dos,true, true);
         return dos.arrayCopy();
     }
 
