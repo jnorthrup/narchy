@@ -182,6 +182,8 @@ public class TestNAR {
 
             nar.emotion.print(System.out);
             nar.stats(System.out);
+            //nar.control.stats(System.out);
+
         }
 
         if (trace != null)

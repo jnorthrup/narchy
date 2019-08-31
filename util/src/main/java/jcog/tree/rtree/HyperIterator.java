@@ -49,10 +49,10 @@ public class HyperIterator<X>  {
                 default: {
                     int cursorCapacity =
                         //s; //TODO determine if this can safely be smaller like log(s)/branching or something
-                        bufferCap;
+                        Math.min(s, bufferCap);
 
                     HyperIterator<X> h = new HyperIterator<>(new Object[cursorCapacity], rank);
-                    h.start(t.root());
+                    h.plan.add(t.root());
                     while (h.hasNext() && whle.test(h.next())) {
                     }
 
@@ -69,12 +69,8 @@ public class HyperIterator<X>  {
     }
 
     public <H extends HyperRegion> HyperIterator(Object/*X*/[] buffer, HyperIteratorRanker<X,H> ranking) {
-        this.plan = new RankedN(buffer, ranking);
+        this.plan = new RankedN<>(buffer, ranking);
         this.planAdd = plan::add;
-    }
-
-    private void start(RNode<X> start) {
-        plan.add(start);
     }
 
 

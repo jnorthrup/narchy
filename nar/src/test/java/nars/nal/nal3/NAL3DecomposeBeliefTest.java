@@ -5,6 +5,7 @@ import nars.subterm.util.SubtermCondition;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.unify.constraint.SubOfConstraint;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
@@ -128,7 +129,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
                 .mustBelieve(cycles, "(a-->c)", 0f, 0.81f);
     }
 
-    @Test
+    @Disabled @Test
     void testSubjPred_Self_Factor_arity2() {
         test
 
@@ -142,7 +143,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 
         ;
     }
-    @Test
+    @Disabled @Test
     void testSubjPred_Self_Factor_arity3() {
         test
             .believe("((&&,x,b,y)-->(&&,x,c,y))", 1f, 0.9f)
@@ -277,7 +278,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 
     }
 
-    @Test
+    @Disabled @Test
     void testDifferenceQuestion() {
         test
                 .termVolMax(8)
@@ -287,7 +288,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
         ;
     }
 
-    @Test
+    @Disabled @Test
     void testDifferenceQuest() {
         test
 

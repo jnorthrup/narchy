@@ -1,8 +1,7 @@
 package nars.control;
 
 import jcog.Texts;
-
-import java.util.concurrent.atomic.DoubleAdder;
+import jcog.data.atomic.AtomicFloat;
 
 /** concurrent traffic accumulator;
  *  concurrent updates (ie. addAt) but expects a synchronous commit
@@ -10,7 +9,7 @@ import java.util.concurrent.atomic.DoubleAdder;
  *
  *  the AtomicFloat which this subclasses holds the accumulating value
  *  that safely supports multiple concurrent accumulators */
-public class Traffic extends DoubleAdder /*AtomicFloat*/ {
+public class Traffic extends /*DoubleAdder*/ AtomicFloat {
 
     /** value at last commit */
     public volatile float current;
@@ -24,7 +23,8 @@ public class Traffic extends DoubleAdder /*AtomicFloat*/ {
     /** partially atomic commit, faster than full atomic commit;
      * should be ok for single thread modes */
     public final void commit() {
-        float next = (float) sumThenReset();
+        //float next = (float) sumThenReset();
+        float next = getAndSet(0);
         this.current = next;
 
 //        DoubleAdder t = this.total;

@@ -8,6 +8,7 @@ import nars.Task;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
+import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -262,17 +263,20 @@ public enum MetaGoal {
 
             cc.forEach(c -> {
 
-//                int i = 0;
-//                for (Traffic t : c.credit) {
-//                    MetaGoal m = MetaGoal.values()[i];
-//                    double tt = t.total();
-//                    if (tt != 0) {
-//                        synchronized (this) {
-//                            addToValue(PrimitiveTuples.pair(c, (byte) i), tt);
-//                        }
-//                    }
-//                    i++;
-//                }
+                int i = 0;
+                MetaGoal[] values = MetaGoal.values();
+                for (Traffic t : c.credit) {
+
+                    MetaGoal m = values[i];
+                    double tt = //t.total();
+                        t.floatValue();
+                    if (tt != 0) {
+                        synchronized (this) {
+                            addToValue(PrimitiveTuples.pair(c, (byte) i), tt);
+                        }
+                    }
+                    i++;
+                }
 
             });
             return this;

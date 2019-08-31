@@ -13,14 +13,10 @@
           B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
           B, (--A ==> C), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
 
-    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |-   unisubst((X==>A),chooseUnifiableSubEvent(A,B),B,novel), (Belief:DesireReversePP, Time:TaskEvent)
-    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |-   unisubst((X==>A),chooseUnifiableSubEvent(A,--B),--B,novel), (Belief:DesireReverseNP, Time:TaskEvent)
-
-    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((A==>X),chooseUnifiableSubEvent(A,B),B,novel), (Belief:DesireReversePP, Time:TaskEvent)
-    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((A==>X),chooseUnifiableSubEvent(A,--B),--B,novel), (Belief:DesireReverseNP, Time:TaskEvent)
-
-        B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((--A==>X),chooseUnifiableSubEvent(A,B),B,novel), (Belief:DesireReversePP, Time:TaskEvent)
-        B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |- unisubst((--A==>X),chooseUnifiableSubEvent(A,--B),--B,novel), (Belief:DesireReverseNP, Time:TaskEvent)
+    //impl unify total transform (without decompose)
+    B, (X ==> A), --is(X,"#"), --is(B,"==>"), is(A,"&&") |-   polarizeBelief(unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel)), (Belief:DeductionDD, Time:TaskEvent)
+    B, (A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |-   polarizeBelief(unisubst((A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel)), (Belief:DeductionDD, Time:TaskEvent)
+      B, (--A ==> X), --is(X,"#"), --is(B,"==>"), is(A,"&&") |-   polarizeBelief(unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel)), (Belief:DeductionDD, Time:TaskEvent)
 
 
         //antigoal:
@@ -290,7 +286,9 @@
     (&&,--X,A..+), (&&,X,A..+)                 |- (&&,A..+), (Belief:Union, Time:Compose)
 
 // Mutex induction
-    (&&,X,--Y,A..*), (&&,Y,--X,A..*), neq(X,Y)                 |- (&&,--(X && Y),A..*), (Belief:IntersectionPB, Time:Compose)
+    (&&,X,--Y,A..*), (&&,Y,--X,A..*), neq(X,Y)           |- (&&,--(X && Y),A..*), (Belief:IntersectionPB, Time:Compose)
+//    (--(&&,X,A..+) ==> Z), C, eventOf(C,X), eventOf(C,Z) |- --(&&,A..+), (Belief:Abduction, Time:Compose)
+
 
 //    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
 //

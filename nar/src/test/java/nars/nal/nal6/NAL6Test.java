@@ -1045,6 +1045,26 @@ public class NAL6Test extends NALTest {
 
 
     @Test
+    void testMutexAbduction() {
+        test
+            .termVolMax(6)
+            .believe("(--(x && y) ==> z)")
+            .believe("(x && z)")
+            .mustBelieve(cycles, "y", 0f, 0.45f)
+            .mustNotOutput(cycles, "y", BELIEF, 0.1f, 1f, 0, 1)
+        ;
+    }
+    @Test
+    void testMutexAbductionNeg() {
+        test
+            .termVolMax(6)
+            .believe("(--(x && y) ==> --z)")
+            .believe("(x && --z)")
+            .mustBelieve(cycles, "y", 0f, 0.45f)
+            .mustNotOutput(cycles, "y", BELIEF, 0.1f, 1, 0, 1)
+        ;
+    }
+    @Test
     void testMutexBelief() {
         test
                 .confMin(0.7f)

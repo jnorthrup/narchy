@@ -88,6 +88,12 @@ import java.util.Arrays;
 
 
 
+    public MetaGoal.Report stats(PrintStream out) {
+        MetaGoal.Report r = new MetaGoal.Report();
+        r.add(why);
+        r.print(out);
+        return r;
+    }
 
 
     private void schedule() {

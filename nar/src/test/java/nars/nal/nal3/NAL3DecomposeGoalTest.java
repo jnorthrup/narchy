@@ -232,15 +232,6 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     }
 
 
-    @Test
-    void testMutexAbduction() {
-        test
-                .termVolMax(6)
-                .believe("(--(x && y) ==> z)")
-                .believe("(x && z)")
-                .mustBelieve(cycles, "y", 0f, 0.45f)
-        ;
-    }
 
     @Test
     void testMutexDiffGoal1Neg() {

@@ -86,7 +86,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
         return Math.round(floatValue());
     }
 
-    public void add(float x) {
+    public final void add(float x) {
         F.add(this, x);
     }
 

@@ -13,6 +13,7 @@ import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintStream;
 import java.util.*;
 import java.util.function.*;
 
@@ -1080,6 +1081,11 @@ public class FasterList<X> extends FastList<X> {
             }
         }
         return true;
+    }
+
+    public void stats(PrintStream out) {
+
+
     }
 
     /**

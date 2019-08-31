@@ -515,6 +515,7 @@ abstract public class GameX extends Game {
         addGovernor(n);
         Loop.of(()->{
             n.control.printPerf(System.out);
+            //n.control.stats(System.out);
             System.out.println();
         }).setFPS(0.25f);
 

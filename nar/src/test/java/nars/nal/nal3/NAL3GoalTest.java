@@ -164,16 +164,16 @@ class NAL3GoalTest {
     @Test
     void dontFormUselessIntersection() {
 
-        new TestNAR(NARS.tmp(3)).termVolMax(8)
+        new TestNAR(NARS.tmp(3)).termVolMax(10)
             .input("(x-->a)!")
             .input("(y-->a)!")
-            .mustGoal(cycles, "((x || y)-->a)", 1f, 0.81f)
-            .mustNotOutput(cycles, "(x-->a)", GOAL, 0, 0.5f, 0, 1) //inverted
-            .mustNotOutput(cycles, "(y-->a)", GOAL, 0, 0.5f, 0, 1) //inverted
-            .mustNotOutput(cycles, "(((--,x)&&y)-->a)", QUEST)
-            .mustNotOutput(cycles, "(((--,y)&&x)-->a)", QUEST)
-            .mustNotOutput(cycles, "((--x && y)-->a)", GOAL)
-            .mustNotOutput(cycles, "((x && --y)-->a)", GOAL)
+            //.mustGoal(cycles, "((x | y)-->a)", 1f, 0.81f)
+            .mustNotOutput(cycles, "(x-->a)", GOAL, 0, 0.5f, 0, 0.89f) //inverted
+            .mustNotOutput(cycles, "(y-->a)", GOAL, 0, 0.5f, 0, 0.89f) //inverted
+            .mustNotOutput(cycles, "(((--,x)&y)-->a)", QUEST)
+            .mustNotOutput(cycles, "(((--,y)&x)-->a)", QUEST)
+            .mustNotOutput(cycles, "((--x & y)-->a)", GOAL)
+            .mustNotOutput(cycles, "((x & --y)-->a)", GOAL)
             .run();
 
     }
