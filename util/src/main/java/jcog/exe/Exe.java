@@ -35,7 +35,7 @@ public enum Exe {;
 
 //            new MetalConcurrentQueueWheelModel(64, 32,
 //                    TimeUnit.MILLISECONDS.toNanos(1))
-            new QueueWheelModel(128,
+            new QueueWheelModel(64,
                     ()->
                         new MpscAtomicArrayQueue<>(32)
                         //new MpscArrayQueue<>(32)

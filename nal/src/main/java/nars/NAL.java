@@ -267,7 +267,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         ;
 
         public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= configIs("SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS");
-        public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 512;
+        public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 128;
         /**
          * maximum time (in durations) that a signal task can stretch the same value
          * until a new task (with new evidence) is created (seamlessly continuing it afterward)
@@ -280,8 +280,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * stretches perception across some amount of lag
          */
         public static final float SIGNAL_LATCH_LIMIT_DURS =
-                2f;
-                //1.5f;
+                //2f;
+                1.5f;
                 //1f;
 
         /**
@@ -293,7 +293,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final int SERIES_MATCH_MIN = 1;
 
-        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.1f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.5f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.75f;
         public static final float CLEAN_MARGIN_DURS =
             0;

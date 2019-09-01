@@ -1508,6 +1508,13 @@ public enum Util {
         return y;
     }
 
+    public static double min(double x, double y) {
+        return x <= y ? x : y;
+    }
+    public static double max(double x, double y) {
+        return x <= y ? y : x;
+    }
+
     public static double min(double... x) {
         double y = Double.POSITIVE_INFINITY;
         for (double f : x) {

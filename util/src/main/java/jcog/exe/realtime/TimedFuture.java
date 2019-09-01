@@ -9,7 +9,10 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
     int rounds();
 
 
-    Status state();
+    int CANCELLED = -1;
+    int PENDING = 0;
+    int READY = 1;
+    int state();
 
     /**
      * Get the offset of the Registration relative to the current cursor position
@@ -45,12 +48,5 @@ public interface TimedFuture<T> extends RunnableScheduledFuture<T>, Runnable {
         t.execute(this);
     }
 
-
-    enum Status {
-        CANCELLED,
-        PENDING,
-        READY
-        
-    }
 
 }

@@ -108,33 +108,38 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         model.restart(this);
 
-        int c, empties;
+
 
         long deadline = System.nanoTime();
 
+        final int w = wheels;
+//        IntUnaryOperator updater = (cc) -> (cc + 1) % w;
+
+        int empties;
+
         do {
 
+            int c = cursor();
             empties = 0;
 
-            while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
+            //while ((c = cursor.getAndAccumulate(wheels, (cc, w) -> (cc + 1) % w)) >= 0) {
+            while ((cursor.compareAndSet(c, c = (c + 1) % w))) {
 
-                if (model.run(c, this) == 0) {
+                if (model.run(c, this) != 0) {
+                    empties = 0;
+                } else {
                     if (empties++ >= wheels * SLEEP_EPOCHS)
                         break;
-
-                } else
-                    empties = 0;
-
+                }
 
                 //await();
                 deadline = await(deadline);
             }
-        }
-        while (cursor() >= 0 && !model.isEmpty() && !cursor.compareAndSet(c, -1));
+        } while (cursor() >= 0 && !model.isEmpty()); // && !cursor.compareAndSet(c, -1));
 
         loop = null;
 
-        logger.info("{} {} {}", this, c == SHUTDOWN ? "off" : "sleep", System.currentTimeMillis());
+        logger.info("{} {} {}", this, cursor() == SHUTDOWN ? "off" : "sleep", System.currentTimeMillis());
 
 
     }
@@ -188,7 +193,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     }
 
     public final <D> TimedFuture<D> schedule(TimedFuture<D> r) {
-        if (r.state()==TimedFuture.Status.CANCELLED)
+        if (r.state()==TimedFuture.CANCELLED)
             throw new RuntimeException("scheduling an already cancelled task");
 
         boolean ok = model.accept(r, this);
@@ -225,7 +230,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         return cursor % wheels;
     }
 
-    public int cursor() {
+    public final int cursor() {
         return cursor.getOpaque();
     }
 

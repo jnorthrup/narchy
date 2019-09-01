@@ -34,7 +34,7 @@ import static jcog.Texts.n4;
 @Paper
 public enum MetaGoal {
 
-    Futile,
+    //Futile,
 
     //PerceiveCmplx,  //by complexity
 

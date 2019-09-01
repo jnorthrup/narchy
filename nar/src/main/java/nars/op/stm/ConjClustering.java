@@ -115,17 +115,15 @@ public class ConjClustering extends How implements Consumer<Task> {
             @Override
             public double distanceSq(double[] a, double[] b) {
 
-                double dPolarity = Math.abs(a[1] - b[1]);
-                double dConf = Math.abs(a[2] - b[2]);
-
-                double rangeMin = Math.min(a[3], b[3]);
-                double dRange = Math.abs(a[3] - b[3])/rangeMin;
-                double dMid = Math.abs(a[0] - b[0])/rangeMin;
-                return (1 + dMid)
+                return (1 + Math.abs(a[0] - b[0])) //dMid
                         *
-                       (1 + dRange)
+                       (1 + Math.abs(a[3] - b[3])/ Util.min(a[3], b[3])) //dRange
                         *
-                       (1 + (dConf + dPolarity))
+                       (1 + (
+                           Math.abs(a[2] - b[2]) //dConf
+                           +
+                           Math.abs(a[1] - b[1]) //dPolarity
+                       ))
                        ;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))

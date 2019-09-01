@@ -18,7 +18,6 @@ import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Compound;
 import nars.term.Functor;
@@ -386,27 +385,17 @@ public class Derivation extends PreDerivation {
                 nextTask.truth() : null;
         }
 
-        if (!sameTask || nextTask instanceof SeriesBeliefTable.SeriesTask) {
-            this.taskStart = nextTask.start();
-            this.taskEnd = nextTask.end();
-        }
-
+        this.taskStart = nextTask.start();
+        this.taskEnd = nextTask.end();
         return nextTask;
     }
 
-    private float pri(Task t) {
-        float p = t.priElseZero();
-        return
-                p;
-        //t.isEternal() ? p : Param.evi(p, t.minTimeTo(nar.time()), nar.dur());
-    }
-
     public boolean budget(Task task, Task belief) {
-        float taskPri = pri(task);
+        float taskPri = task.priElseZero();
         float priSingle = taskPri;
         float priDouble = belief == null ?
                 taskPri :
-                NAL.DerivationPri.apply(taskPri, pri(belief));
+                NAL.DerivationPri.apply(taskPri, belief.priElseZero());
 
 //        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble, priSingle) < nar.input.priMin() /* TODO cache */)
 //            return false;

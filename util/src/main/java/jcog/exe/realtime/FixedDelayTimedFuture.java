@@ -52,14 +52,14 @@ public class FixedDelayTimedFuture<T> extends AbstractTimedCallable<T> {
 
     @Deprecated private int roundsPeriod() {
         return (int) Math.min(Integer.MAX_VALUE-1,
-                Math.round((((double)periodNS)/(resolution* wheels)))
+                Math.round((((double)periodNS)/(resolution * wheels)))
         );
     }
 
     @Override
     public void run() {
         super.run();
-        if (status != Status.CANCELLED) {
+        if (status != CANCELLED) {
             reset();
             rescheduleCallback.accept(this);
         }

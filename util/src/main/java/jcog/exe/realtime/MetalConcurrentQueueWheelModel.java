@@ -5,6 +5,8 @@ import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.function.ToIntFunction;
 
+import static jcog.exe.realtime.TimedFuture.*;
+
 /** where each wheel is simply its own concurrent queue */
 public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel {
 

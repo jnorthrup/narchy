@@ -6,7 +6,6 @@ import nars.$;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.control.MetaGoal;
 import nars.derive.Derivation;
 import nars.derive.rule.PremiseRuleProto;
 import nars.derive.util.DerivationFailure;
@@ -56,7 +55,7 @@ public class Taskify extends ProxyTerm {
     boolean spam(Derivation d, int cost) {
         d.use(cost);
 
-        MetaGoal.Futile.learn(cost, d.nar.control.why, channel.id);
+        //MetaGoal.Futile.learn(cost, d.nar.control.why, channel.id);
 
         return true;
     }

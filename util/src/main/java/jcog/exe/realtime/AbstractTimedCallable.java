@@ -14,7 +14,7 @@ abstract public class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
 
     private final Callable<X> callable;
     private volatile Object result = this;
-    protected /*volatile*/ Status status = Status.PENDING;
+    protected /*volatile*/ int status = PENDING;
 
     protected AbstractTimedCallable(int rounds, Callable<X> callable) {
         super(rounds);
@@ -23,13 +23,13 @@ abstract public class AbstractTimedCallable<X> extends AbstractTimedFuture<X> {
 
     @Override
     public boolean isCancelled() {
-        return status == Status.CANCELLED;
+        return status == CANCELLED;
     }
 
 
     @Override
     public boolean cancel(boolean mayInterruptIfRunning /* ignored */) {
-        this.status = Status.CANCELLED;
+        this.status = CANCELLED;
         return true;
     }
 

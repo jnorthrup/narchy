@@ -6,7 +6,7 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
     int rounds;
 
-    protected AbstractTimedFuture() {
+    AbstractTimedFuture() {
 
     }
 
@@ -16,8 +16,8 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
     }
 
     @Override
-    public Status state() {
-        return rounds-- <= 0 ? Status.READY : Status.PENDING;
+    public int state() {
+        return rounds-- <= 0 ? READY : PENDING;
     }
 
 

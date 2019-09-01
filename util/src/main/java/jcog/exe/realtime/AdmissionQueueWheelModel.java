@@ -5,6 +5,8 @@ import jcog.data.list.MetalConcurrentQueue;
 import java.util.ArrayDeque;
 import java.util.Queue;
 
+import static jcog.exe.realtime.TimedFuture.*;
+
 /**
  * uses central concurrent admission queue which is drained each cycle.
  * the wheel queues are (hopefully fast) ArrayDeque's safely accessed from one thread only

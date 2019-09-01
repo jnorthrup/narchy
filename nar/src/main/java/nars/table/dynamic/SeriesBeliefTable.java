@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import jcog.WTF;
 import nars.NAL;
 import nars.Task;
 import nars.table.BeliefTable;
@@ -121,8 +120,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
      */
     boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
-        if (t.isGoal())
-            throw new WTF();
+//        if (t.isGoal())
+//            throw new WTF();
         //assert(!t.isGoal());
 
         if (t.isDeleted())
@@ -148,16 +147,12 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
      * adjust CONJ concepts for series task generation
      */
     protected static Term taskTerm(Term x) {
-        if (x.op() == CONJ)
-            return ((Compound)x).dt(0);
-        else
-            return x;
+        return x.opID() == CONJ.id ? ((Compound) x).dt(0) : x;
     }
 
 
     public final void add(T nextT) {
         series.compress();
-
         series.push(nextT);
     }
 

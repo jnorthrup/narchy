@@ -28,16 +28,14 @@ import static nars.time.Tense.ETERNAL;
  * note: Comparable as implemented here is not 100% consistent with Task.equals and Term.equals.  it is
  * sloppily consistent for its purpose in collating Premises in optimal sorts during hypothesizing
  */
-public class Premise /*implements Comparable<Premise>*/ {
-
-//    public static final Premise[] EmptyArray = new Premise[0];
+public class Premise  {
 	/**
 	 * variable types unifiable in premise formation
 	 */
 	public final static int var =
-		//VAR_QUERY.bit
+		VAR_QUERY.bit
 		//Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-		Op.Variable //all
+		//Op.Variable //all
 		;
 	public final Task task;
 	public final Term beliefTerm;

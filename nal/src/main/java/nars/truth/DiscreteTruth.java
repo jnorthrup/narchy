@@ -18,7 +18,7 @@ public class DiscreteTruth implements Truth {
     private static final DiscreteTruth[] shared = new DiscreteTruth[(int) Util.sqr(Math.ceil(1f/NAL.truth.TRUTH_EPSILON))];
 
     /** gets the shared instance */
-    public static final DiscreteTruth the(float f, float c) {
+    public static DiscreteTruth the(float f, float c) {
         int i = Truth.truthToInt(f, c);
         int index = i % shared.length;
         DiscreteTruth t = shared[index];

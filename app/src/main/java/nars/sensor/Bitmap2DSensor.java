@@ -203,7 +203,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         float pri = (float) sur * basePri;
 
         AbstractTaskLink tl = newLink();
-        tl.priMerge(BELIEF, pri, NAL.tasklinkMerge);
+        tl.priMerge(BELIEF, pri, NAL.tasklinkMerge); //TODO * preamp?
 //            tl.priMax(QUEST, surprise);
 //            tl.priMax(GOAL, surprise*(1/4f));
         g.what().link(tl);
