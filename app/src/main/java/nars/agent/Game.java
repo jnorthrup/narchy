@@ -42,6 +42,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static nars.$.$$;
+import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -96,6 +97,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
             Cycles.Interleaved;
+    public float confDefaultBelief;
 
 
     @Deprecated public Game(String id, NAR n) {
@@ -499,6 +501,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - dur/2));
             long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + dur/2 - 1)));
             this.when = new When<>(nextStart, nextEnd, dur, nar);
+
+            this.confDefaultBelief = nar().confDefault(BELIEF);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 

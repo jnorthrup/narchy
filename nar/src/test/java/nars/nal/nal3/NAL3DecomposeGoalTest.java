@@ -113,10 +113,9 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
 
     @Test
     void testPredUnionConditionalDecomposeGoalPosNeg() {
-        test
-                .input("(g-->(a||b))!")
-                .input("--(g-->a).")
-                .mustGoal(cycles, "(g-->b)", 1f, 0.81f);
+        test.input("(g-->(a|b))!")
+            .input("--(g-->a).")
+            .mustGoal(cycles, "(g-->b)", 1f, 0.81f);
     }
 
 

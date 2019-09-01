@@ -100,8 +100,4 @@ public final class PreciseTruth extends DiscreteTruth {
         return (float) TruthFunctions.expectation(freq(), confDouble());
     }
 
-    /** create a DiscreteTruth instance, shedding the freq,evi floats stored here */
-    public DiscreteTruth raw() {
-        return new DiscreteTruth(this);
-    }
 }

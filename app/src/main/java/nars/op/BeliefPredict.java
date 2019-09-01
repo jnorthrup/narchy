@@ -74,6 +74,7 @@ public class BeliefPredict extends NARPart {
     public BeliefPredict(Termed[] pastSampling, int history, int sampleDur, Termed[] presentSampling, Predictor m, What target) {
         super(target.nar);
 
+        NAR nar = target.nar;
         this.sampleDur = sampleDur;
         this.predicted = presentSampling;
 

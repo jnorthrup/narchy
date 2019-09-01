@@ -292,7 +292,7 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                                512    ,
+                                128    ,
                                 //1024,
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
                                 new PriBuffer.DirectTaskBuffer()

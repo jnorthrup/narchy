@@ -7,7 +7,6 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.agent.NAct;
 import nars.agent.Reward;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GameAction;
@@ -134,12 +133,19 @@ public class FZero extends GameX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        //initPushButtonTank();
-        //initLeftRightPushButtonMutex();
-        addTankContinuous();
+        initPushButtonTank();
+        //addTankContinuous();
         addBrake();
-
+        //initLeftRightPushButtonMutex();
         //initUnipolarLinear(2f);
+
+//        Term rr = $$("(fz-->race)");
+//        what().onTask(t -> {
+//            if (t.isGoal() && t.term().equals(rr) && t.isNegative()) {
+//                System.out.println(t.proof());
+//                System.out.println(MetaGoal.proof(t, nar));
+//            }
+//        });
 
 //        BiPolarAction A =
         //    initBipolarRotateRelative(true, 0.3f);
@@ -349,7 +355,8 @@ public class FZero extends GameX {
     }
 
     private void addBrake() {
-        actionUnipolar($.inh(id, "slow"), (x) -> {
+        PreciseTruth bias = $.t(0, 0.001f);
+        GoalActionConcept slow = actionUnipolar($.inh(id, "slow"), (x) -> {
             if (x >= 0.5f) {
                 fz.vehicleMetrics[0][6] *= (1 - ((x - 0.5f) * 2));
                 return x;
@@ -357,13 +364,14 @@ public class FZero extends GameX {
                 return 0; //no brake
             }
         });
+        slow.goalDefault(bias, nar);
     }
 
     /** TODO correct ackerman/tank drive vehicle dynamics */
     private void addTankContinuous() {
 
-        float res = 0.04f;
-        float powerScale = 0.2f;
+        float res = 0.02f;
+        float powerScale = 0.1f;
         float rotSpeed = 1.0f;
         final float[] left = new float[1];
         final float[] right = new float[1];
@@ -372,23 +380,23 @@ public class FZero extends GameX {
         final Atom TANK = Atomic.atom("tank");
 
 
-        GoalActionConcept l = actionUnipolar($.inh($.p(id,TANK), NAct.NEG), (x) -> {
-            if (x!=x || x <= 0.5f) x = 0.5f;
-            float power = (x - 0.5f) * powerScale;
+        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (x) -> {
+            if (x!=x) x = 0f;
+            float power = x * powerScale;
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
-            if (x <= 0.5f) return 0;
+            //if (x <= 0.5f) return 0;
             return x;
         });
 
-        GoalActionConcept r = actionUnipolar($.inh($.p(id,TANK), NAct.POS), (x) -> {
-            if (x!=x || x <= 0.5f) x = 0.5f;
-            float power = (x - 0.5f) * powerScale;
+        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK,POS)), (x) -> {
+            if (x!=x) x = 0f;
+            float power = x * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
-            if (x <= 0.5f) return 0;
+            //if (x <= 0.5f) return 0;
             return x;
         });
 

@@ -5,10 +5,7 @@
 package nars.derive.premise;
 
 import jcog.signal.meter.FastCounter;
-import nars.Emotion;
-import nars.NAL;
-import nars.NAR;
-import nars.Task;
+import nars.*;
 import nars.derive.Derivation;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -38,9 +35,9 @@ public class Premise /*implements Comparable<Premise>*/ {
 	 * variable types unifiable in premise formation
 	 */
 	public final static int var =
-		VAR_QUERY.bit
+		//VAR_QUERY.bit
 		//Op.VAR_QUERY.bit | Op.VAR_DEP.bit
-		//Op.Variable //all
+		Op.Variable //all
 		;
 	public final Task task;
 	public final Term beliefTerm;

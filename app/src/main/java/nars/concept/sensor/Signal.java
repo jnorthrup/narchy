@@ -1,6 +1,5 @@
 package nars.concept.sensor;
 
-import jcog.Util;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
@@ -11,14 +10,13 @@ import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.List;
 import java.util.function.Function;
-
-import static nars.Op.BELIEF;
 
 
 /**
@@ -83,7 +81,12 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
         return currentValue;
     }
 
-    public void update(FloatFloatToObjectFunction<Truth> truther, FloatSupplier pri, short[] cause, Game g) {
+    protected Truth truth(float prevValue, float nextValue, Game g) {
+        //return $.t(Util.unitize(nextValue), g.confDefaultBelief);
+        return DiscreteTruth.the(nextValue, g.confDefaultBelief);
+    }
+
+    public void update(FloatSupplier pri, short[] cause, Game g) {
 
         float prevValue = currentValue;
 
@@ -91,7 +94,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
         ((SensorBeliefTables) beliefs()).input(
                 nextValue == nextValue ?
-                    g.dither(truther.value(prevValue, nextValue), this) : null,
+                    g.dither(truth(prevValue, nextValue,g), this) : null,
                 pri, cause,
                 g.what(), g.when, autoTaskLink());
     }
@@ -105,7 +108,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
     @Override
     public void update(Game g) {
-        update((tp, tn) -> $.t(Util.unitize(tn), g.nar().confDefault(BELIEF)), this::pri, cause(), g);
+        update(this::pri, cause(), g);
     }
 
     abstract public short[] cause();

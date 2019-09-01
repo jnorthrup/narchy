@@ -5,6 +5,7 @@ import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.math.Longerval;
+import jcog.sort.FloatRank;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
 import jcog.tree.rtree.split.AxialSplit;
@@ -542,11 +543,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     }
 
-    private static final FloatFunction<RLeaf<TaskRegion>> MergeableLeaf = l -> {
+    private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = (l,min) -> {
 //                double conf = l.bounds.coord(2, true);
 //                return (float) ((1-conf) / l.bounds.range(0));
-        double conf = l.bounds.coord(2, true);
-        return -(float)(conf * l.bounds.range(0));
+        double conf = -l.bounds.coord(2, true);
+        return (float)(conf * l.bounds.range(0) / l.size);
     };
 
 

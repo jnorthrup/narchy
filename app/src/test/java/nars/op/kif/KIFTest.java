@@ -5,6 +5,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
@@ -54,19 +55,21 @@ class KIFTest {
 //                //"/home/me/sumo/tinySUMO.kif";
 //                //"/home/me/sumo/ComputerInput.kif";
 ////                "/home/me/sumo/Economy.kif",
-        List.of("FinancialOntology", "Economy"
-            //, "Merge"
+        List.of(//"FinancialOntology", "Economy",
+            "Merge"
         ).parallelStream()
             .map(x -> "/home/me/sumo/" + x + ".kif")
             .map(x -> {
                 try {
-                    return KIF.file(x);
+                    KIF k = KIF.file(x);
+                    k.tasks.forEach(System.out::println);
+                    return k;
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return (Iterable)List.of();
+                    return List.of();
                 }
             }
-        ).forEach(n::input);
+        ).forEach((Iterable ww) -> ww.forEach((x) -> w.accept((Task)x)));
 
         System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
 

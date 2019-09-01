@@ -11,7 +11,6 @@ import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -22,7 +21,6 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
-import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
@@ -31,6 +29,7 @@ import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
@@ -102,10 +101,7 @@ public class Impiler {
 
         @Override
         protected boolean filter(Term term) {
-            if (term.hasVars())
-                return false;
-
-            return true;
+            return !term.hasVars();
         }
 
         @Override
@@ -126,7 +122,7 @@ public class Impiler {
             if (m != null) {
                 //TODO handle negations correctly
                 List<Node> targets = List.of(m);
-                new ImpilerDeductionSearch(root, what,
+                new Impiler.ImpilerDeductionSearch(root, what,
                     task.isEternal() ? what.time() : task.start())
                         //.dfs(targets);
                         .bfs(targets);
@@ -162,219 +158,6 @@ public class Impiler {
             return in.value();
         }
 
-        private class ImpilerDeductionSearch extends Search<Term, Task> {
-
-            final static int recursionMin = 2;
-            final static int recursionMax = 3;
-            static final int volPadding = 2;
-            private static final int STAMP_LIMIT = Integer.MAX_VALUE;
-            final float confMin;
-            private final Term source;
-            private final What what;
-            private final long start;
-            MetalLongSet stamp = null;
-            ConjBuilder cc = null;
-
-            public ImpilerDeductionSearch(Term source, What what, final long when) {
-                this.source = source.unneg();
-                this.what = what;
-                confMin = nar.confMin.floatValue();
-                this.start = when;
-            }
-
-            /**
-             * out only
-             */
-            @Override
-            protected Iterable<FromTo<Node<Term, Task>, Task>> find(Node<Term, Task> n, List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
-
-                if (path.size() >= recursionMin && !deduce(path))
-                    return empty; //boundary
-
-                if (path.size() + 1 > recursionMax)
-                    return empty;
-
-                return ((ImplNode) n).edges(false, true);
-            }
-
-            @Override
-            protected boolean go(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path, Node<Term, Task> next) {
-                return true;
-            }
-
-            /**
-             * returns whether to continue further
-             */
-            protected boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
-
-                int n = path.size();
-
-                Task[] pathTasks = new Task[n];
-
-                final int stampLimit = STAMP_CAPACITY;
-                Term nextEvent = source;
-                int j = 0;
-                int volEstimate = 1 + n/2; //initial cost estimate
-                for (BooleanObjectPair<FromTo<Node<Term, Task>, Task>> pe : path) {
-                    Task e = pe.getTwo().id();
-                    Term ee = e.term();
-                    volEstimate += ee.volume();
-                    if (volEstimate > volMax - volPadding)
-                        return false; //path exceeds volume
-                    if (!ee.sub(0).unneg().equals(nextEvent))
-                        return false; //path is not continuous
-                    nextEvent = ee.sub(1);
-                    pathTasks[j++] = e;
-                }
-
-                if (stamp != null)
-                    stamp.clear();
-                Truth tAccum = null;
-
-
-
-                //final long now = nar.time();
-
-                long offset =
-                        //now
-                        start;
-
-                for (Task e : pathTasks) {
-                    Truth ttt = e.truth();
-
-                    Term ee = e.term();
-                    Truth tt = e.isEternal() ? ttt : project(ttt, e.start(), offset);
-                    if (tt == null)
-                        return false; //too weak
-
-                    offset += ee.sub(0).eventRange();
-                    int edt = ee.dt(); if (edt == DTERNAL) edt = 0;
-                    offset += edt;
-
-
-
-                    if (tAccum == null) {
-                        tAccum = tt;
-                    } else {
-                        tAccum = NALTruth.Deduction.apply(tAccum, tt, confMin, null);
-                        if (tAccum == null)
-                            return false;
-                    }
-                    long[] ss = e.stamp();
-                    if (stamp == null) {
-                        stamp = new MetalLongSet(path.size() * STAMP_CAPACITY);
-
-                        stamp.addAll(ss);
-                    } else {
-                        if (STAMP_LIMIT < Integer.MAX_VALUE && stamp.size() + ss.length > STAMP_LIMIT)
-                            return false; //stamp exceeds limit
-
-                        for (long es : ss) {
-                            if (!stamp.add(es))
-                                return false; //overlap TODO just cancel at this point
-                        }
-                    }
-                }
-
-                if (cc == null)
-                    cc = new ConjTree();
-                else
-                    cc.clear();
-
-
-                Term pred = Null;
-                int zDT = 0;
-                long range = Long.MAX_VALUE;
-                offset = 0;
-                for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
-                    Task e = pathTasks[i];
-
-                    Term ee = e.term();
-
-
-                    long es = e.start();
-                    if (es != ETERNAL)
-                        range = Math.min(range, e.end() - es);
-
-                    pred = ee.sub(1).negIf(e.isNegative());
-                    int dt = ee.dt(); if (dt == DTERNAL) dt = 0; //HACK
-                    if (dt == XTERNAL)
-                        throw new UnsupportedOperationException();
-
-
-//                        switch (dt) {
-//                            case DTERNAL: {
-//                                if (i == 0) {
-//                                    cc.add(ETERNAL, source);
-//                                } else {
-//                                    Term f = cc.term();
-//                                    if (f == False || f == Null)
-//                                        return false;
-//                                    cc.clear();
-//                                    cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
-//                                }
-//                                if (i != n - 1) {
-//                                    if (!cc.add(ETERNAL, Z))
-//                                        return false;
-//                                }
-//                                lastDT = 0;
-//                                break;
-//                            }
-//                            case XTERNAL:
-//                            default: {
-
-                    Term zubj = ee.sub(0);
-
-                    zDT = dt;
-                    if (i == 0) {
-                        cc.add(0, zubj);
-                    }
-                    offset += zubj.eventRange();
-                    offset += dt;
-                    if (i != n - 1) {
-                        if (!cc.add(offset, pred))
-                            return false;
-                    }
-
-
-//                                break;
-//                            }
-//                        }
-                }
-
-                Term ee = IMPL.the(cc.term(), zDT, pred);
-                if (ee.volume() > volMax)
-                    return false;
-
-                if (range == Long.MAX_VALUE)
-                    range = 0; //all eternal
-
-                long finalStart = start;
-                long finalEnd = start + range;
-                Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
-                        NALTask.the(ttt, BELIEF, tr, nar.time(), finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY, stamp, ThreadLocalRandom.current())));
-                if (z != null) {
-
-                    Task.fund(z, pathTasks, true);
-
-                    //System.out.println(z);
-                    in.accept(z, what);
-                }
-
-
-                return true; //continue
-            }
-
-
-        }
-
-        private Truth project(Truth t, long start, long offset) {
-            long delta = Math.abs(start - offset);
-            if (delta == 0)
-                return t;
-            else
-                return PreciseTruth.byEvi(t.freq(), NAL.evi(t.evi(), delta, dur));
-        }
     }
 
     /**
@@ -515,10 +298,221 @@ public class Impiler {
                 this.target = target;
             }
         }
-//
-//        private Iterable<FromTo<Node<Term, ImplEdge>, ImplEdge>> edges(ImplBag xx) {
-//            return Iterables.transform(xx, (ImplEdge x) -> Node.edge(this, x, this /* HACK */));
-//        }
+
+    }
+
+    public static class ImpilerDeductionSearch extends Search<Term, Task> {
+
+        final static int recursionMin = 2;
+        final static int recursionMax = 3;
+        static final int volPadding = 2;
+        private static final int STAMP_LIMIT = Integer.MAX_VALUE;
+        final float confMin;
+        private final Term source;
+        private final What what;
+        private final long start;
+        private final long now;
+        private final Consumer<Task> in;
+        private final int volMax;
+        MetalLongSet stamp = null;
+        ConjBuilder cc = null;
+
+        public ImpilerDeductionSearch(Term source, What what, final long when) {
+            this.source = source.unneg();
+            this.start = when;
+
+            this.what = what;
+            this.now = what.time();
+            this.in = what::accept;
+            this.volMax = what.nar.termVolMax.intValue();
+            this.confMin = what.nar.confMin.floatValue();
+        }
+
+        /**
+         * out only
+         */
+        @Override
+        protected Iterable<FromTo<Node<Term, Task>, Task>> find(Node<Term, Task> n, List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
+
+            if (path.size() >= recursionMin && !deduce(path))
+                return empty; //boundary
+
+            if (path.size() + 1 > recursionMax)
+                return empty;
+
+            return n.edges(false, true);
+        }
+
+        @Override
+        protected boolean go(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path, Node<Term, Task> next) {
+            return true;
+        }
+
+        /**
+         * returns whether to continue further
+         */
+        protected boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
+
+            int n = path.size();
+
+            Task[] pathTasks = new Task[n];
+
+            //final int stampLimit = STAMP_CAPACITY;
+            Term nextEvent = source;
+            int j = 0;
+            int volEstimate = 1 + n/2; //initial cost estimate
+            for (BooleanObjectPair<FromTo<Node<Term, Task>, Task>> pe : path) {
+                Task e = pe.getTwo().id();
+                Term ee = e.term();
+                volEstimate += ee.volume();
+                if (volEstimate > volMax - volPadding)
+                    return false; //path exceeds volume
+                if (!ee.sub(0).unneg().equals(nextEvent))
+                    return false; //path is not continuous
+                nextEvent = ee.sub(1);
+                pathTasks[j++] = e;
+            }
+
+            if (stamp != null)
+                stamp.clear();
+            Truth tAccum = null;
+
+
+
+            //final long now = nar.time();
+
+            long offset =
+                    //now
+                    start;
+
+            for (Task e : pathTasks) {
+                Truth ttt = e.truth();
+
+                Term ee = e.term();
+                Truth tt = e.isEternal() ? ttt : e.truthRelative(offset+e.start(), now);
+                if (tt == null)
+                    return false; //too weak
+
+                offset += ee.sub(0).eventRange();
+                int edt = ee.dt(); if (edt == DTERNAL) edt = 0;
+                offset += edt;
+
+
+
+                if (tAccum == null) {
+                    tAccum = tt;
+                } else {
+                    tAccum = NALTruth.Deduction.apply(tAccum, tt, confMin, null);
+                    if (tAccum == null)
+                        return false;
+                }
+                long[] ss = e.stamp();
+                if (stamp == null) {
+                    stamp = new MetalLongSet(path.size() * STAMP_CAPACITY);
+
+                    stamp.addAll(ss);
+                } else {
+                    if (STAMP_LIMIT < Integer.MAX_VALUE && stamp.size() + ss.length > STAMP_LIMIT)
+                        return false; //stamp exceeds limit
+
+                    for (long es : ss) {
+                        if (!stamp.add(es))
+                            return false; //overlap TODO just cancel at this point
+                    }
+                }
+            }
+
+            if (cc == null)
+                cc = new ConjTree();
+            else
+                cc.clear();
+
+
+            Term pred = Null;
+            int zDT = 0;
+            long range = Long.MAX_VALUE;
+            offset = 0;
+            for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
+                Task e = pathTasks[i];
+
+                Term ee = e.term();
+
+
+                long es = e.start();
+                if (es != ETERNAL)
+                    range = Math.min(range, e.end() - es);
+
+                pred = ee.sub(1).negIf(e.isNegative());
+                int dt = ee.dt(); if (dt == DTERNAL) dt = 0; //HACK
+                if (dt == XTERNAL)
+                    throw new UnsupportedOperationException();
+
+
+//                        switch (dt) {
+//                            case DTERNAL: {
+//                                if (i == 0) {
+//                                    cc.add(ETERNAL, source);
+//                                } else {
+//                                    Term f = cc.term();
+//                                    if (f == False || f == Null)
+//                                        return false;
+//                                    cc.clear();
+//                                    cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
+//                                }
+//                                if (i != n - 1) {
+//                                    if (!cc.add(ETERNAL, Z))
+//                                        return false;
+//                                }
+//                                lastDT = 0;
+//                                break;
+//                            }
+//                            case XTERNAL:
+//                            default: {
+
+                Term zubj = ee.sub(0);
+
+                zDT = dt;
+                if (i == 0) {
+                    cc.add(0, zubj);
+                }
+                offset += zubj.eventRange();
+                offset += dt;
+                if (i != n - 1) {
+                    if (!cc.add(offset, pred))
+                        return false;
+                }
+
+
+//                                break;
+//                            }
+//                        }
+            }
+
+            Term ee = IMPL.the(cc.term(), zDT, pred);
+            if (ee.volume() > volMax)
+                return false;
+
+            if (range == Long.MAX_VALUE)
+                range = 0; //all eternal
+
+            long finalStart = start;
+            long finalEnd = start + range;
+            Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
+                    NALTask.the(ttt, BELIEF, tr, now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY, stamp,
+                        ThreadLocalRandom.current())));
+            if (z != null) {
+
+                Task.fund(z, pathTasks, true);
+
+                //System.out.println(z);
+                in.accept(z);
+            }
+
+
+            return true; //continue
+        }
+
+
     }
 }
 //    static class ImplBag extends SortedArray<ImplEdge> {

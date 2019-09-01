@@ -102,21 +102,13 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     @Override
     public void update(Game g) {
 
-        float confDefault = nar.confDefault(BELIEF);
-        float min = nar.confMin.floatValue();
-        FloatFloatToObjectFunction<Truth> truther = (p, n) -> {
-            float c = confDefault;// * Math.abs(n - 0.5f) * 2f;
-            return c > min ? $.t(n, c) : null;
-        };
-
-
         FloatSupplier aPri = pri::priComponent;
         //float quality = Util.sqrt(attn.amp.floatValue());
         //Random rng = g.random();
         for (Signal s : this) {
             s.resolution().set(res);
             //if (quality >= 1 || rng.nextFloat() < quality )
-            s.update(truther, aPri, cause, g);
+            s.update(aPri, cause, g);
         }
     }
 

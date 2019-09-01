@@ -118,7 +118,7 @@ public class SensorBeliefTables extends BeliefTables {
 
         AbstractTaskSeries<SeriesTask> series = this.series.series;
 
-        SeriesTask nextT = null, last = series.last();
+        SeriesTask last = series.last();
         if (last != null) {
             long lastEnd = last.end();
 
@@ -161,21 +161,16 @@ public class SensorBeliefTables extends BeliefTables {
             }
         }
 
-        if (next != null) {
-//                System.out.println("new " + now + " .. " + nextEnd + " (" + (nextEnd - now) + " cycles)");
+        if (next == null)
+            return null;
 
-            this.series.add(nextT =
-                newTask(this.series.term, this.series.punc(), nextStart, nextEnd, next, when.x));
-        }
-
+        SeriesTask nextT = newTask(this.series.term, this.series.punc(), nextStart, nextEnd, next, when.x);
+        this.series.add(nextT);
         return nextT;
     }
 
     private SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {
-        long[] evi;
-            evi = nar.evidence(); //unique
-
-        return new SeriesTask(term, punc, truth, s, e, evi);
+        return new SeriesTask(term, punc, truth, s, e, nar.evidence());
     }
 
     static private void stretch(SeriesTask t, long e) {

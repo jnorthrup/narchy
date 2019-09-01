@@ -1,8 +1,10 @@
 package nars.experiment;
 
+import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
+import jcog.learn.LivePredictor;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
@@ -13,7 +15,9 @@ import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
+import nars.op.BeliefPredict;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Atomic;
 
 import javax.swing.*;
@@ -57,21 +61,21 @@ public class PoleCart extends GameX {
                                 instances > 1 ?
                                         $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
                                         $.the(PoleCart.class.getSimpleName()), n);
-//                        Iterable<? extends Termed> predicting = Iterables.concat(
-//                                p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
-//                        );
-//                        new BeliefPredict(
-//                                predicting,
-////                java.util.List.of(
-////                        x, xVel,
-////                        angVel, angX, angY),
-//                                8,
-//                                Math.round(4 * n.dur()),
-//                                3,
-//                                new LivePredictor.LSTMPredictor(0.1f, 1),
-//                                //new LivePredictor.MLPPredictor(0.01f),
-//                                p.what()
-//                        );
+                        Iterable<? extends Termed> predicting = Iterables.concat(
+                                p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
+                        );
+                        new BeliefPredict(
+                                predicting,
+//                java.util.List.of(
+//                        x, xVel,
+//                        angVel, angX, angY),
+                                8,
+                                Math.round(6 * n.dur()),
+                                3,
+                                new LivePredictor.LSTMPredictor(0.1f, 1),
+                                //new LivePredictor.MLPPredictor(0.01f),
+                                p.what()
+                        );
                         return p;
                     },
                     threadsEach, fps*2, 8);

@@ -1,5 +1,6 @@
 package nars.truth;
 
+import jcog.Util;
 import nars.NAL;
 
 import static nars.truth.func.TruthFunctions.c2wSafe;
@@ -14,8 +15,16 @@ public class DiscreteTruth implements Truth {
 
     private final int hash;
 
-    DiscreteTruth(Truth t) {
-        this(t.freq(), t.conf());
+    private static final DiscreteTruth[] shared = new DiscreteTruth[(int) Util.sqr(Math.ceil(1f/NAL.truth.TRUTH_EPSILON))];
+
+    /** gets the shared instance */
+    public static final DiscreteTruth the(float f, float c) {
+        int i = Truth.truthToInt(f, c);
+        int index = i % shared.length;
+        DiscreteTruth t = shared[index];
+        if (t == null || t.hash != i)
+            shared[index] = t = new DiscreteTruth(i);
+        return t;
     }
 
     public DiscreteTruth(float f, float c) {
@@ -25,9 +34,10 @@ public class DiscreteTruth implements Truth {
         this(Truth.truthToInt(f, c));
     }
 
-    public DiscreteTruth(float f, float c, float res) {
+    DiscreteTruth(float f, float c, float res) {
         this(f, c, res, res);
     }
+
     private DiscreteTruth(float f, float c, float freqRes, float confRes) {
         this(
             Truth.freq(f, freqRes),
