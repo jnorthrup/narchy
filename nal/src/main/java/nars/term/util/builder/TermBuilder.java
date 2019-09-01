@@ -109,7 +109,7 @@ public abstract class TermBuilder implements TermConstructor {
         return y;
     }
 
-    public final Term conj(Term... u) {
+    public final Term conj(Term[] u) {
         return conj(DTERNAL, u);
     }
 
@@ -117,7 +117,7 @@ public abstract class TermBuilder implements TermConstructor {
         return conj(false, dt, u);
     }
 
-    protected Term conj(boolean preSorted, int dt, Term... u) {
+    protected Term conj(boolean preSorted, int dt, Term[] u) {
 
         if (u.length>0 && u[u.length-1] instanceof Interval) {
             return new Sequence(subterms(u));

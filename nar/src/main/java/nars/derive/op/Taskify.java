@@ -66,9 +66,10 @@ public class Taskify extends ProxyTerm {
 
         if (y instanceof Compound) {
 
-            if (y.concept() == Null) {
+            Term yc = y.concept();
+            if (yc == Null) {
                 if (NAL.DEBUG)
-                    throw new TermTransformException(y, y.concept(), "unconceptualizable");
+                    throw new TermTransformException(y, yc, "unconceptualizable");
                 else
                     return Null;
             }

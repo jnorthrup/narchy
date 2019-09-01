@@ -685,12 +685,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 							if ((edt == 0 || (edt == DTERNAL && !Conj.isSeq(eventTerm)))) {
 
 								//commutive dternal: inherit event time simultaneously
-								eventSubs.forEach(
-									absolute ?
-										y -> know(y, eventStart, eventEnd)
-										:
-										y -> link(event, 0, know(y))
-								);
+								for (Term y : eventSubs) {
+									if (!y.op().eventable)
+										continue; //HACK
+									if (absolute)
+										know(y, eventStart, eventEnd);
+									else
+										link(event, 0, know(y));
+								}
 
 							} else {
 

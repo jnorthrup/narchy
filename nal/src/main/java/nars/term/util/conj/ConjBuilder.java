@@ -6,7 +6,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
-import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.iterator.LongIterator;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
@@ -14,7 +13,6 @@ import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.Null_Array;
 import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
 
@@ -60,8 +58,6 @@ public interface ConjBuilder {
                 return Bool.False_Array;
             if (t == Bool.True)
                 trues++;
-            else if (!t.op().eventable)
-                return Null_Array;
         }
         if (trues > 0) {
 
@@ -110,8 +106,8 @@ public interface ConjBuilder {
         if (x == True)
             return true; //ignore
 
-        if (!(x instanceof Bool) && !x.op().eventable)
-            throw new TermException("invalid Conj event", x);
+//        if (!(x instanceof Bool) && !x.op().eventable)
+//            throw new TermException("invalid Conj event", x);
 
         if (x instanceof Compound) {
 

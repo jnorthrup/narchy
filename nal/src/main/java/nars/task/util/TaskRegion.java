@@ -132,9 +132,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return 1 + (end() - start());
             case 1:
-                return (freqMaxI() - freqMinI());
+                return (freqMaxI() - freqMinI()) * NAL.truth.TRUTH_EPSILON;
             case 2:
-                return (confMaxI() - confMinI());
+                return (confMaxI() - confMinI()) * NAL.truth.TRUTH_EPSILON;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -197,21 +197,19 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     default double coord(int dimension, boolean maxOrMin) {
         switch (dimension) {
-            case 0: return !maxOrMin ? start() : end();
-            case 1: return !maxOrMin ? freqMinI() : freqMaxI();
-            case 2: return !maxOrMin ? confMinI() : confMaxI();
-            default:
-                return Double.NaN;
+            case 0: return maxOrMin ? end() : start();
+            case 1: return (maxOrMin ? freqMaxI() : freqMinI())*(NAL.truth.TRUTH_EPSILON);
+            case 2: return (maxOrMin ? confMaxI() : confMinI())*(NAL.truth.TRUTH_EPSILON);
+            default: return Double.NaN;
         }
     }
 
     default double center(int dimension) {
         switch (dimension) {
             case 0: return mid();
-            case 1: return (freqMinI() + freqMaxI())/2.0;
-            case 2: return (confMinI() + confMaxI())/2.0;
-            default:
-                return Double.NaN;
+            case 1: return (freqMinI() + freqMaxI())*(0.5 * NAL.truth.TRUTH_EPSILON);
+            case 2: return (confMinI() + confMaxI())*(0.5 * NAL.truth.TRUTH_EPSILON);
+            default: return Double.NaN;
         }
     }
 
@@ -228,8 +226,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     float confMax();
 
     default int i(boolean freqOrConf, boolean maxOrMin) {
-        float v = freqOrConf ? (maxOrMin ? freqMax() : freqMin()) : (maxOrMin ? confMax() : confMin());
-        return Truth.truthToInt(v);
+        return Truth.truthToInt(freqOrConf ?
+            (maxOrMin ? freqMax() : freqMin()) :
+            (maxOrMin ? confMax() : confMin()));
     }
 
     default int freqMinI() {

@@ -220,6 +220,11 @@ public class Factorize {
         }
 
         @Override
+        protected boolean filter(Term next) {
+            return next.op()!=IMPL; //HACK doesnt always work well when CONJ'd with
+        }
+
+        @Override
         protected Term apply(Term x, int volMax) {
 
             Term[] y = factorize.apply(x.subterms().commuted());
@@ -237,7 +242,7 @@ public class Factorize {
 //        if (xx.equalTerms(yy))
 //            return x; //unchanged
 
-            return CONJ.the(x.dt(), y);
+            return CONJ.the(y);
         }
 
     }

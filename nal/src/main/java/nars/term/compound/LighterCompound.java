@@ -37,7 +37,7 @@ public class LighterCompound extends TermList implements AbstractLightCompound {
         if (this == obj) return true;
         if (obj instanceof Compound) {
             Compound c = (Compound)obj;
-            if (c.op() == op() && c.dt()==dt()) {
+            if (c.opID() == opID() && c.dt()==dt()) {
                 int s = c.subs();
                 if (subs()==s) {
                     for (int i = 0; i < s; i++) {

@@ -217,7 +217,7 @@ public enum DynamicStatementTruth { ;
          */
         private static Term stmtDecomposeStructural(Op superOp, boolean subjOrPred, Term subterm, Term common) {
             boolean outerNegate;
-            if (outerNegate = (subterm.op() == NEG)) {
+            if (outerNegate = (subterm instanceof Neg)) {
                 subterm = subterm.unneg();
             }
 

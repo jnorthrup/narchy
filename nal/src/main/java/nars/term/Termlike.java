@@ -158,7 +158,8 @@ public interface Termlike {
      * counts subterms matching the supplied op
      */
     default int count(Op matchingOp) {
-        return count(x -> x.op() == matchingOp);
+        int matchingOpID = matchingOp.id;
+        return count(x -> x.opID() == matchingOpID);
     }
 
     /**
@@ -303,16 +304,7 @@ public interface Termlike {
      */
     default Term[] arrayClone() {
         int s = subs();
-        switch (s) {
-            case 0:
-                return Op.EmptyTermArray;
-            case 1:
-                return new Term[]{sub(0)};
-            case 2:
-                return new Term[]{sub(0), sub(1)};
-            default:
-                return arrayClone(new Term[s], 0, s);
-        }
+        return s == 0 ? Op.EmptyTermArray : arrayClone(new Term[s], 0, s);
     }
 
     default Term[] arrayClone(Term[] target) {
@@ -333,7 +325,7 @@ public interface Termlike {
      * return whether a subterm op at an index is an operator.
      */
     default boolean subIs(int i, Op o) {
-        return sub(i).op() == o;
+        return sub(i).opID() == o.id;
     }
 
     /**
@@ -342,7 +334,7 @@ public interface Termlike {
      */
     default boolean subIsOrOOB(int i, Op o) {
         Term x = sub(i, null);
-        return x != null && x.op() == o;
+        return x != null && x.opID() == o.id;
     }
 
 

@@ -6,6 +6,7 @@ import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.CONJ;
+import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactorizeTest {
@@ -13,11 +14,25 @@ public class FactorizeTest {
     public static final Factorize.FactorIntroduction f = new Factorize.FactorIntroduction(NARS.shell());
 
     @Test
-    void testDouble() {
+    void testConjPar2() {
         assertEquals(
                 $$("(f(#1) && member(#1,{a,b}))"),
                 f.applyAndNormalize($$("(f(a) && f(b))"))
         );
+    }
+    @Test
+    void testDisjPar2() {
+        assertEquals(
+            $$("--(--f(#1) && member(#1,{a,b}))"),
+            f.applyAndNormalize($$("(f(a) || f(b))"))
+        );
+    }
+
+    @Test
+    void testConjSeq2() {
+        String x = "(f(a) &&+3 f(b))";
+        //factoring NOT POSSIBLE
+        assertEq(x, f.applyAndNormalize($$(x)));
     }
 
     @Test

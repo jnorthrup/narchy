@@ -125,7 +125,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     Op op();
 
-    default int opBit() {
+    default /* final */ int opBit() {
         return 1<<opID();
     }
 

@@ -164,7 +164,7 @@ abstract public class TruthProjection extends TaskList {
 			//TODO subclass this or param for all these options
 			//return TruthIntegration.evi(task, start, end, now);
 			//return TruthIntegration.eviAbsolute(task, start, end, 0);
-			return TruthIntegration.eviAbsolute(task, start, end, 1 /* leak */ );
+			return TruthIntegration.eviAbsolute(task, start, end, 1 /* leak */);
 		}
 	}
 
@@ -172,7 +172,6 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * removes the weakest components sharing overlapping evidence with stronger ones.
 	 * should be called after all entries are added
-	 *
 	 */
 	public final boolean commit(boolean shrink, int minResults, NAL n) {
 		int s = size();
@@ -329,33 +328,61 @@ abstract public class TruthProjection extends TaskList {
 		if (activeAfter != activeBefore)
 			refocus(shrink);
 
-		//post-filter cull weak tasks that excessively dilute the effective average evidence
-		//TODO calculate exact threshold necessary to not dilute further
-//		if (shrink && activeAfter > minComponents && start!=ETERNAL) {
-//			activeBefore = activeAfter;
-//
-//			double eSum = eviSum(null);
-//			double eFactor = 0.5;
-//			double thresh = eFactor * eSum * 1.0/(activeBefore-minComponents + 1);
-//			for (int i = minComponents; i < activeBefore; i++) {
-//				if (evi[i] < thresh) {
-//					Task ti = items[i];
-//					if (ti.isEternal()) continue;
-//					if (!Util.or(k->k!=null && k.contains((LongInterval) ti), 0, i, items)) { //if no stronger task contains the interval, then it must be expanding the total focus
-//						remove(i);
-//						activeAfter--;
-//					}
-//				}
-//			}
-//			if (activeAfter != activeBefore) {
-//				refocus(shrink);
-//			}
-//		}
+		if (shrink && activeAfter > minComponents && start != ETERNAL) {
+			postFilter(minComponents);
+		}
 
 		return remain > 0;
 	}
+	private void postFilter(int minComponents) {
+		//post-filter cull weak tasks that excessively dilute the effective average evidence
+		//TODO calculate exact threshold necessary to not dilute further
+		int activeAfter = active();
+		Task[] items = this.items;
+		double[] evi = this.evi;
+		long us = Long.MAX_VALUE, ue = Long.MIN_VALUE;
+		double esum = 0;
+		boolean removedAny = false;
 
-	/** computes a stamp by sampling from components in proportion to their evidence contribution */
+		double densityLossThreshold = 0.5/activeAfter;
+		//TODO utilize frequency deviation to increase acceptable loss
+		long S = start, E = end;
+		for (int i = 0; i < activeAfter; i++) {
+			Task ii = items[i];
+			long ts = ii.start();
+			double ei = evi[i];
+			if (ts != ETERNAL) {
+				long te = ii.end();
+				ts = Math.max(S, ts);
+				te = Math.min(E, te);
+				long ns = Math.min(us, ts), ne = Math.max(ue, te);
+				if (i > minComponents && (ns < us || ne > ue)) {
+					//if it has stretched the time range,
+					//determine if any additional evidence dilution is justifiable.
+					//if not justifiable, remove it
+					double densityWithout = esum / (ue - us + 1);
+					double densityWith = (esum + ei) / (ne - ns + 1);
+					double densityDiff = (densityWithout - densityWith);
+					double densityLossFactor = (densityDiff)/(densityWithout);
+					if (densityLossFactor > densityLossThreshold) {
+						nullify(i);
+						removedAny = true;
+						continue;
+					} //else System.out.println("contrib");
+				}
+				us = ns;
+				ue = ne;
+			}
+			esum += ei;
+		}
+
+		if (removedAny)
+			refocus(true);
+	}
+
+	/**
+	 * computes a stamp by sampling from components in proportion to their evidence contribution
+	 */
 	public long[] stampSample(int capacity, Random rng) {
 		removeNulls(); //HACK
 		int n = active();
@@ -365,7 +392,7 @@ abstract public class TruthProjection extends TaskList {
 		@Nullable long[] s0 = stamp(0);
 		if (n == 1) {
 			long[] s = s0;
-			assert(s.length <= capacity);
+			assert (s.length <= capacity);
 			return s;
 		}
 
@@ -861,8 +888,9 @@ abstract public class TruthProjection extends TaskList {
 //				u1 = union[1];
 
 				Task[] items = this.items;
-				boolean hasEvi = evi!=null;
-				u0 = Long.MAX_VALUE; u1 = Long.MIN_VALUE;
+				boolean hasEvi = evi != null;
+				u0 = Long.MAX_VALUE;
+				u1 = Long.MIN_VALUE;
 				for (int i = 0; i < s; i++) {
 					if (hasEvi ? valid(i) : nonNull(i)) {
 						Task t = items[i];
@@ -968,7 +996,7 @@ abstract public class TruthProjection extends TaskList {
 				only :
 				SpecialTruthAndOccurrenceTask.the(only, tt, start, end);
 		} else {
-			return merge(this::arrayCommit, term, tt, ()->stampSample(STAMP_CAPACITY, n.random()), beliefOrGoal, start, end, n);
+			return merge(this::arrayCommit, term, tt, () -> stampSample(STAMP_CAPACITY, n.random()), beliefOrGoal, start, end, n);
 		}
 	}
 

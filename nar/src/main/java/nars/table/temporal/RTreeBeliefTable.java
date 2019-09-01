@@ -7,7 +7,7 @@ import jcog.math.LongInterval;
 import jcog.math.Longerval;
 import jcog.sort.Top;
 import jcog.tree.rtree.*;
-import jcog.tree.rtree.split.QuadraticSplit;
+import jcog.tree.rtree.split.AxialSplit;
 import nars.NAL;
 import nars.Task;
 import nars.control.op.Remember;
@@ -33,13 +33,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
     private static final int MAX_TASKS_PER_LEAF = 3;
 
-
-    /**
-     * TODO tune
-     */
-    private static final Split SPLIT =
-        new QuadraticSplit();
-        //new AxialSplit();
 
     private int capacity;
 
@@ -91,7 +84,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * returns true if at least one net task has been removed from the table.
      */
     /*@NotNull*/
-    private static boolean compress(Space<TaskRegion> tree, Remember remember) {
+    private static void compress(Space<TaskRegion> tree, Remember remember) {
 
         long now = remember.nar.time();
         //long tableDur = tableDur(now);
@@ -100,15 +93,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<>(
 		    //WeakestTemporallyDense(now)
-            l -> (float)(l.size /  ((l.bounds.range(0)) * (l.bounds.coord(2,true)))) //weakest
+            MergeableLeaf
         );
 
-        return !findEvictable(tree, tree.root(), weakest, mergeableLeaf)
-                ||
-               mergeOrDelete(tree, weakest, mergeableLeaf, remember);
+        if (findEvictable(tree, tree.root(), weakest, mergeableLeaf))
+            compress(tree, weakest, mergeableLeaf, remember);
+
     }
 
-    private static boolean mergeOrDelete(Space<TaskRegion> treeRW,
+    private static void compress(Space<TaskRegion> treeRW,
                                          Top<TaskRegion> theWeakest,
                                          Top<RLeaf<TaskRegion>> mergeableLeaf,
                                          Remember r) {
@@ -129,11 +122,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
             merge(merged, merging, r, treeRW);
         else
             evict(weakest, r, treeRW);
-
-        return true;
     }
 
-    private static Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
+    @Nullable private static Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
         RLeaf<TaskRegion> leaf = mergeableLeaf.get();
         return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
     }
@@ -283,8 +274,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
                 treeRW.clear();
                 return true;
             }
-            if (!compress(treeRW, r))
-                return false;
+
+            compress(treeRW, r);
 
             e++;
             assert (e < cap): this + " compressed " + e + " times (cap=" + cap + ")";
@@ -449,13 +440,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
 
+    private static final Split SPLIT =
+        //new QuadraticSplit();
+        new AxialSplit();
 
     private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
 
         static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
 
+
         private RTreeBeliefModel() {
-            super((t -> t), RTreeBeliefTable.SPLIT,
+            super((t -> t), SPLIT,
                     RTreeBeliefTable.MAX_TASKS_PER_LEAF);
         }
 
@@ -546,6 +541,14 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
     }
+
+    private static final FloatFunction<RLeaf<TaskRegion>> MergeableLeaf = l -> {
+//                double conf = l.bounds.coord(2, true);
+//                return (float) ((1-conf) / l.bounds.range(0));
+        double conf = l.bounds.coord(2, true);
+        return -(float)(conf * l.bounds.range(0));
+    };
+
 
 //    /** TODO */
 //    public static class EternalizingRTreeBeliefTable extends RTreeBeliefTable {

@@ -42,7 +42,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     public static final ToIntFunction<Term> depIndepFilter = t ->
         (t.op().var) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
     public static final ToIntFunction<Term> nonNegdepIndepFilter = t ->
-            t.op().isAny(Op.Variable|Op.NEG.bit) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
+            t.isAny(Op.Variable|Op.NEG.bit) ? 0 : (t.hasAny(Op.VAR_INDEP.bit) ? 0 : 1);
 
     /** if no variables are present in the target target, use the normalized variable which can help ensure avoidance of a need for full compound normalization */
     private static final Variable UnnormalizedVarIndep = $.varIndep("_v");

@@ -456,8 +456,8 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
                 if (w == null)
                     return false;
 
-//                if (drawables.isEmpty())
-//                    return true;
+                if (drawables.isEmpty())
+                    return true;
 
                 GLAutoDrawable d = drawables.get(0);
                 if (d == null)
