@@ -133,8 +133,8 @@ public class FZero extends GameX {
 //                NARui.beliefCharts(actions, nar)), 400, 400);
 
 
-        initPushButtonTank();
-        //addTankContinuous();
+        //initPushButtonTank();
+        addTankContinuous();
         addBrake();
         //initLeftRightPushButtonMutex();
         //initUnipolarLinear(2f);
@@ -343,11 +343,11 @@ public class FZero extends GameX {
 
     private void initPushButtonTank() {
 
-        actionPushButton($.inh($.the("left"), id), (b) -> {
+        actionPushButton($.inh(id, "left"), (b) -> {
             fz.left = b;
             fz.thrust = fz.left && fz.right;
         });
-        actionPushButton($.inh($.the("right"), id), (b) -> {
+        actionPushButton($.inh(id, "right"), (b) -> {
             fz.right = b;
             fz.thrust = fz.left && fz.right;
         });

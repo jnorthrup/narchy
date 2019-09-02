@@ -41,6 +41,10 @@ abstract public class Search<N, E> {
         this.log = log;
     }
 
+    public void clear() {
+        log.clear();
+    }
+
     public static <N, E> Node<N, E> pathStart(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, int n) {
         BooleanObjectPair<FromTo<Node<N, E>, E>> step = path.get(n);
         return step.getTwo().from(step.getOne());
@@ -105,18 +109,21 @@ abstract public class Search<N, E> {
         return e.other(at);
     }
 
-
     public boolean dfs(Iterable<?> startingNodes) {
         return dfs(startingNodes, null);
+    }
+
+    public boolean bfs(Object startingNode) {
+        return bfs(List.of(startingNode));
     }
 
     public boolean bfs(Iterable<?> startingNodes) {
         return bfs(startingNodes, new ArrayDeque<>(), null);
     }
 
-    public boolean dfs(Iterable<?> startingNodes, @Nullable NodeGraph g) {
+    public boolean dfs(Iterable<?> startingNodes, @Nullable NodeGraph<N,E> g) {
 
-        List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = new FasterList(8);
+        List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = new FasterList<>(4);
 
         for (Object n : startingNodes) {
             Node nn;
@@ -175,7 +182,7 @@ abstract public class Search<N, E> {
     public boolean bfs(Iterable<?> startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, NodeGraph g) {
 
         for (Object n : startingNodes) {
-            Node nn;
+            Node<N,E> nn;
             if (n instanceof Node)
                 nn = (Node) n;
             else {

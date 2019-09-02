@@ -1,9 +1,6 @@
 package nars.agent;
 
-import jcog.Log;
-import jcog.Paper;
-import jcog.Skill;
-import jcog.TODO;
+import jcog.*;
 import jcog.data.list.FastCoWList;
 import jcog.event.ListTopic;
 import jcog.event.Off;
@@ -41,7 +38,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
-import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
@@ -397,16 +393,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return time.dur();
     }
 
-    @Nullable
-    public Truth dither(@Nullable Truth f, GameLoop g) {
-        if (f!=null) {
-            f = f.dither(
-                    Math.max(_freqRes, g.resolution().asFloat()),
-                    _confRes
-            );
-        }
-        return f;
-
+    public final float ditherFreq(float f, float res) {
+        return Truth.freqSafe(f, Util.max(res, _freqRes));
+    }
+    public final float ditherConf(float c) {
+        return (float) Truth.confSafe(c, _confRes);
     }
 
     public void pri(float v) {

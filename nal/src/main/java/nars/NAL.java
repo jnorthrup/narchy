@@ -94,9 +94,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 3;
-    public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 2;
-    public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 1;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
+    public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
+    public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
     public static final float ANSWER_TRYING = 1.5f;
@@ -280,8 +280,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * stretches perception across some amount of lag
          */
         public static final float SIGNAL_LATCH_LIMIT_DURS =
-                //2f;
-                1.5f;
+                2f;
+                //1.5f;
                 //1f;
 
         /**
@@ -586,7 +586,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * TODO find way to make this work only when evidence ranges are the same otherwise a short range could boost a weaker large range unfairly
          * */
         public static final boolean AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth = false;
-    }
+
+		public static boolean postFilter = false;
+	}
 
     /**
      * how the subjective perception of objective truth changes through time

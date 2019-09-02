@@ -172,7 +172,7 @@
        //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB)
 
         (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAll, Time:Compose)
-          (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAll, Time:Compose)
+          //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAll, Time:Compose)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)
             //(P ==> M), (S ==> M), task("?")  |- (P && S), (Punctuation:Question)
 

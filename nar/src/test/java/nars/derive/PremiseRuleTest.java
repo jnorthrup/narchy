@@ -225,7 +225,8 @@ class PremiseRuleTest {
         ));
         d.printRecursive();
 //        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
-        assertTrue(d.what.toString().contains("PuncMap((0,0,\"?\",0))"));
+        String w = d.what.toString();
+        assertTrue(w.contains("PuncMap((0,0,\"?\",0))"));
     }
 
     @Test

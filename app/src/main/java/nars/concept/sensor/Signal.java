@@ -81,9 +81,14 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
         return currentValue;
     }
 
+    public static Truth truthDithered(float nextValue, float freqRes, Game g) {
+        return DiscreteTruth.the(
+            g.ditherFreq(nextValue, freqRes),
+            g.ditherConf(g.confDefaultBelief)
+        );
+    }
     protected Truth truth(float prevValue, float nextValue, Game g) {
-        //return $.t(Util.unitize(nextValue), g.confDefaultBelief);
-        return DiscreteTruth.the(nextValue, g.confDefaultBelief);
+        return Signal.truthDithered(nextValue, resolution().floatValue(), g);
     }
 
     public void update(FloatSupplier pri, short[] cause, Game g) {
@@ -94,7 +99,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
         ((SensorBeliefTables) beliefs()).input(
                 nextValue == nextValue ?
-                    g.dither(truth(prevValue, nextValue,g), this) : null,
+                    truth(prevValue, nextValue, g) : null,
                 pri, cause,
                 g.what(), g.when, autoTaskLink());
     }

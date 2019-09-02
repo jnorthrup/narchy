@@ -242,17 +242,17 @@ class TemporalTermTest {
 
     }
 
-    @Test void InvalidIntEventTerms() {
-
-        assertEq(Null, "(/ && x)");
-//        assertEq(Null, "(1 && x)");
-//        assertEq(Null, "(1 &&+1 x)");
-//        assertEq(Null, "(1 ==> x)");
-//        assertEq(Null, "(x ==> 1)");
-
-//        assertEq(Null, "(--,1)");
-//        assertEq(Null, "((--,1) && x)");
-    }
+//    @Test void InvalidIntEventTerms() {
+//
+//        assertEq(Null, "(/ && x)");
+////        assertEq(Null, "(1 && x)");
+////        assertEq(Null, "(1 &&+1 x)");
+////        assertEq(Null, "(1 ==> x)");
+////        assertEq(Null, "(x ==> 1)");
+//
+////        assertEq(Null, "(--,1)");
+////        assertEq(Null, "((--,1) && x)");
+//    }
 
 
     @Disabled

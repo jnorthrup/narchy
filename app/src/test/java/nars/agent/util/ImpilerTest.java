@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.Task;
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -34,10 +35,22 @@ class ImpilerTest {
 
 
         n.tasks().forEach(t -> Impiler.impile(t, n));
-        Impiler.graphGML(n.concepts()::iterator, System.out);
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction($$("a"), 0, n);
-        List<Task> t = d.get();
+
+        //Impiler.graphGML(n.concepts()::iterator, System.out);
+
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n);
+
+        deduce(d, $$("a"), true, 0);
+
+        deduce(d, $$("d"), false, 0);
+
+    }
+
+    private static List<Task> deduce(Impiler.ImpilerDeduction d, Term x, boolean forward, long at) {
+        System.out.println((forward ? "forward: " : "reverse: " ) + x);
+        List<Task> t = d.get(x, at, forward);
         t.forEach(System.out::println);
+        return t;
     }
 
     @Test

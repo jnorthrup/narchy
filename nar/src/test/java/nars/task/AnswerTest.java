@@ -18,13 +18,13 @@ class AnswerTest {
 
     @Test
     void testMatchPartialXternal() throws Narsese.NarseseException {
-        beliefQuery("((x &&+1 y) =|> z)",
-                new String[]{"((x &&+- y) =|> z)", "((x &&+- y) ==> z)", "((x &&+- y) ==>+- z)", "((x && y) =|> z)"});
+        beliefQuery("((x &&+1 y) ==> z)",
+                new String[]{"((x &&+- y) ==> z)", "((x &&+- y) ==> z)", "((x &&+- y) ==>+- z)", "((x && y) ==> z)"});
     }
     @Test
     void testMatchPartialXternalDifferentVolume() throws Narsese.NarseseException {
-        beliefQuery("((x &&+1 (x &&+1 y)) =|> z)",
-                new String[]{"((x &&+- y) =|> z)"});
+        beliefQuery("((x &&+1 (x &&+1 y)) ==> z)",
+                new String[]{"((x &&+- y) ==> z)"});
     }
 
     static void beliefQuery(String belief, String[] queries) throws Narsese.NarseseException {

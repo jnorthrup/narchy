@@ -9,11 +9,11 @@ import jcog.data.graph.NodeGraph;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
-import jcog.data.set.MetalLongSet;
 import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
+import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -23,6 +23,7 @@ import nars.op.TaskLeak;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
 import nars.truth.Stamp;
@@ -33,7 +34,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.List;
-import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BooleanSupplier;
 
 import static nars.NAL.STAMP_CAPACITY;
@@ -48,13 +48,14 @@ import static nars.time.Tense.*;
  * <p>
  * see: https://github.com/opennars/opennars-archived/blob/1.6.1_Plugins/nars_java/nars/plugin/app/plan
  * see: https://github.com/opennars/opennars-archived/blob/1.6.1_Plugins/nars_java/nars/plugin/app/plan/GraphExecutive.java
+ *
  */
 public class Impiler {
 
 	/**
 	 * concept metadata field key storing impiler node instances
 	 */
-	static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
+	private static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
 
 	public static void init(NAR n) {
 
@@ -70,7 +71,7 @@ public class Impiler {
 	}
 
 	@Nullable
-	static ImplNode node(Term x, boolean createIfMissing, NAR nar) {
+    private static ImplNode node(Term x, boolean createIfMissing, NAR nar) {
 		Concept xc = createIfMissing ? nar.conceptualize(x) : nar.concept(x);
 		if (xc != null)
 			return node(xc, createIfMissing);
@@ -79,7 +80,7 @@ public class Impiler {
 	}
 
 	@Nullable
-	static ImplNode node(Concept sc, boolean createIfMissing) {
+    private static ImplNode node(Concept sc, boolean createIfMissing) {
 		Term sct = sc.term();
 		return createIfMissing ? sc.meta(IMPILER_NODE, s -> new ImplNode(sct)) : sc.meta(IMPILER_NODE);
 	}
@@ -88,7 +89,7 @@ public class Impiler {
 		return next.op() == IMPL && !next.hasVars();
 	}
 
-	static public float implValue(Task t) {
+	private static float implValue(Task t) {
 		return t.priElseZero();
 		//return (float) t.evi();
 		//return (1f + (float) t.evi()) * (1 + t.priElseZero());
@@ -110,7 +111,7 @@ public class Impiler {
 	/**
 	 * creates graph snapshot
 	 */
-	public static AdjGraph<Term, Task> graph(Iterable<? extends Concept> concepts) {
+	private static AdjGraph<Term, Task> graph(Iterable<? extends Concept> concepts) {
 		AdjGraph<Term, Task> g = new AdjGraph<>(true);
 
 		concepts.forEach(c -> {
@@ -180,7 +181,7 @@ public class Impiler {
 		}
 	}
 
-	static void edge(Task t, Concept sc, Concept pc) {
+	private static void edge(Task t, Concept sc, Concept pc) {
 		node(sc, true).add(true, t, pc);
 		node(pc, true).add(false, t, sc);
 	}
@@ -190,11 +191,11 @@ public class Impiler {
 	 * searches forward, discovering shortcuts in the downstream impl graph
 	 * TODO configurable trigger, dont just extend TaskLeak
 	 */
-	public static class ImpilerDeducer extends TaskLeak {
+	static class ImpilerDeducer extends TaskLeak {
 
 		private final CauseChannel<Task> in;
 
-		public ImpilerDeducer(NAR n) {
+		ImpilerDeducer(NAR n) {
 			super(n);
 			in = n.newChannel(this);
 		}
@@ -211,19 +212,15 @@ public class Impiler {
 
 		@Override
 		protected float leak(Task next, What what) {
-			return deduce(next, what);
+			return deduce(next, what, true);
 		}
 
-		public float deduce(Task task, What what) {
-			Term root = task.term();
-			if (root.op() == IMPL)
-				root = root.sub(0); //subj
+		float deduce(Task task, What what, boolean forward) {
+			Term target = task.term();
 
-			ImpilerDeduction x = new ImpilerDeduction(root,
-				task.isEternal() ? what.time() : task.start(),
-				what.nar);
+			ImpilerDeduction x = new ImpilerDeduction(what.nar);
 
-            List<Task> result = x.get();
+            List<Task> result = x.get(target, task.isEternal() ? what.time() : task.start(), forward);
             if (!result.isEmpty()) {
                 what.acceptAll(result);
                 return 1;
@@ -282,11 +279,11 @@ public class Impiler {
 		final static int CAP = 8; //TODO parameterize
 		final Bag<Task, ImplPLink> tasks = new PriReferenceArrayBag<>(PriMerge.max, CAP);
 
-		public ImplNode(Term id) {
+		ImplNode(Term id) {
 			super(id);
 		}
 
-		public final void add(boolean direction, Task e, Concept target) {
+		final void add(boolean direction, Task e, Concept target) {
 			tasks.commit();
 			tasks.put(new ImplPLink(e, implValue(e), direction, target));
 		}
@@ -299,19 +296,19 @@ public class Impiler {
 
 		@Override
 		public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
-			assert (in || out);
+			assert (in ^ out);
 			return tasks.isEmpty() ? List.of() : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
 				boolean td = tLink.direction;
-				if ((in && out) || (td == out)) {
+				if ((out && td) || (in && !td)) {
 					Task tt = tLink.get();
 					//Term other = tt.term().sub(td ? 1 : 0);
 
-					if (tLink.target.isDeleted())
-						tLink.delete(); //targetconcept deleted
+//					if (tLink.target.isDeleted())
+//						tLink.delete(); //targetconcept deleted
 
 					Node otherNode = node(tLink.target, false);
 					if (otherNode != null) {
-						return td ? Node.edge(this, tt, otherNode) : Node.edge(otherNode, tt, this);
+						return out ? Node.edge(this, tt, otherNode) : Node.edge(otherNode, tt, this);
 					} else {
 						tLink.delete();
 					}
@@ -332,7 +329,7 @@ public class Impiler {
 			 */
 			private final Concept target;
 
-			public ImplPLink(Task task, float p, boolean direction, Concept target) {
+			ImplPLink(Task task, float p, boolean direction, Concept target) {
 				super(task, p);
 				this.direction = direction;
 				this.target = target;
@@ -348,13 +345,12 @@ public class Impiler {
 		static final int volPadding = 2;
 		private static final int STAMP_LIMIT = Integer.MAX_VALUE;
 		float confMin;
-		private final Term source;
-		private final long start;
+
+		private long start;
 		private long now;
-        private final List<ImplNode> targets;
         private final NAR nar;
 
-        boolean reverse = false, forward = true;
+        boolean forward;
 
         /**
 		 * collects results
@@ -364,54 +360,37 @@ public class Impiler {
 
 		private int volMax;
 
-		/**
-		 * TODO track stamp for each unique time point individually
-		 */
-		MetalLongSet stamp = null;
-
 		ConjBuilder cc = null;
+        private Term target;
 
-		public ImpilerDeduction(Term source, long when, NAR nar) {
-			this(source, when, null, nar);
-		}
-
-		public ImpilerDeduction(Term root, long when, @Nullable Iterable<? extends Term> additionalSeeds, NAR nar) {
+        public ImpilerDeduction( NAR nar) {
             this.nar = nar;
-		    this.source = root.unneg();
-            this.start = when;
-
-            ImplNode rootNode = node(source, true, nar);
-			if (rootNode != null) {
-				//TODO handle negations correctly
-				if (additionalSeeds != null) {
-					targets = new FasterList(1);
-					targets.add(rootNode);
-
-					for (Term a : additionalSeeds) {
-						@Nullable ImplNode an = node(a, true, nar);
-						if (an != null)
-							targets.add(an);
-					}
-				} else {
-					targets = List.of(rootNode);
-				}
-            } else
-			    targets = List.of();
 		}
 
 
 		/**
 		 * get the results
 		 */
-		public /* synchronized */ List<Task> get() {
-		    in = null; //reset in case invoked repeatedly
+		public /* synchronized */ List<Task> get(Term target, long when, boolean forward) {
 
-		    if (!targets.isEmpty()) {
+		    this.in = null; //reset for repeated invocation
+
+            if (target.op()==IMPL)
+                target = target.sub(forward ? 0 /* subj */ : 1 /* pred */);
+
+            this.target = target.unneg();
+            this.forward = forward;
+            this.start = when;
+
+            ImplNode rootNode = node(target, true, nar);
+            if (rootNode != null) {
                 this.volMax = nar.termVolMax.intValue();
                 this.confMin = nar.confMin.floatValue();
                 this.now = nar.time();
 
-                bfs(targets);
+                bfs(rootNode);
+                super.clear(); //clear search log
+
                 if (in!=null)
                     return in;
             }
@@ -428,10 +407,11 @@ public class Impiler {
 			if (path.size() >= recursionMin && !deduce(path))
 				return empty; //boundary
 
+            //path may have grown:
 			if (path.size() + 1 > recursionMax)
 				return empty;
 
-			return n.edges(reverse, forward);
+			return n.edges(!forward, forward);
 		}
 
 		@Override
@@ -442,40 +422,47 @@ public class Impiler {
 		/**
 		 * returns whether to continue further
 		 */
-		protected boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
+        boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
 
 			int n = path.size();
 
 			Task[] pathTasks = new Task[n];
 
 			//final int stampLimit = STAMP_CAPACITY;
-			Term nextEvent = source;
-			int j = 0;
+			Term nextEvent = target;
+
 			int volEstimate = 1 + n / 2; //initial cost estimate
-			for (BooleanObjectPair<FromTo<Node<Term, Task>, Task>> pe : path) {
+			for (int i = 0, pathSize = path.size(); i < pathSize; i++) {
+				BooleanObjectPair<FromTo<Node<Term, Task>, Task>> pe = path.get(i);
 				Task e = pe.getTwo().id();
 				Term ee = e.term();
 				volEstimate += ee.volume();
 				if (volEstimate > volMax - volPadding)
-					return false; //path exceeds volume
-				if (!ee.sub(0).unneg().equals(nextEvent))
+					return false; //estimated path volume exceeds limit
+
+				int ees = forward ? 0 : 1;
+				if (!ee.sub(ees).unneg().equals(nextEvent))
 					return false; //path is not continuous
-				nextEvent = ee.sub(1);
-				pathTasks[j++] = e;
+				nextEvent = ee.sub(1 - ees).unneg();
+				pathTasks[i] = e;
+
+
+				for (int k = 0; k < i; k++)
+					if (Stamp.overlap(e, pathTasks[k]))
+						return false;
+
 			}
 
-			if (stamp != null)
-				stamp.clear();
+
 			Truth tAccum = null;
-
-
-			//final long now = nar.time();
 
 			long offset =
 				//now
 				start;
 
-			for (Task e : pathTasks) {
+
+			for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
+				Task e = pathTasks[i];
 				Truth ttt = e.truth();
 
 				Term ee = e.term();
@@ -483,7 +470,8 @@ public class Impiler {
 				if (tt == null)
 					return false; //too weak
 
-				offset += ee.sub(0).eventRange();
+				int ees = forward ? 0 : 1;
+				offset += ee.sub(ees).eventRange();
 				int edt = ee.dt();
 				if (edt == DTERNAL) edt = 0;
 				offset += edt;
@@ -496,20 +484,8 @@ public class Impiler {
 					if (tAccum == null)
 						return false;
 				}
-				long[] ss = e.stamp();
-				if (stamp == null) {
-					stamp = new MetalLongSet(path.size() * STAMP_CAPACITY);
 
-					stamp.addAll(ss);
-				} else {
-					if (STAMP_LIMIT < Integer.MAX_VALUE && stamp.size() + ss.length > STAMP_LIMIT)
-						return false; //stamp exceeds limit
 
-					for (long es : ss) {
-						if (!stamp.add(es))
-							return false; //overlap TODO just cancel at this point
-					}
-				}
 			}
 
 			if (cc == null)
@@ -518,84 +494,65 @@ public class Impiler {
 				cc.clear();
 
 
-			Term pred = Null;
+			Term before = Null, next = Null;
 			int zDT = 0;
 			long range = Long.MAX_VALUE;
 			offset = 0;
 			for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
-				Task e = pathTasks[i];
+				Task e = pathTasks[forward ? i : (n-1-i)];
 
 				Term ee = e.term();
-
 
 				long es = e.start();
 				if (es != ETERNAL)
 					range = Math.min(range, e.end() - es);
 
-				pred = ee.sub(1).negIf(e.isNegative());
+                int ees = forward ? 0 : 1;
+
+				before = ee.sub(1-ees);
+				if (forward) before = before.negIf(e.isNegative());
+
 				int dt = ee.dt();
 				if (dt == DTERNAL) dt = 0; //HACK
-				if (dt == XTERNAL)
+				else if (dt == XTERNAL)
 					throw new UnsupportedOperationException();
 
-
-//                        switch (dt) {
-//                            case DTERNAL: {
-//                                if (i == 0) {
-//                                    cc.add(ETERNAL, source);
-//                                } else {
-//                                    Term f = cc.term();
-//                                    if (f == False || f == Null)
-//                                        return false;
-//                                    cc.clear();
-//                                    cc.add(ETERNAL, f); //add existing accumulated sequence DTERNALly
-//                                }
-//                                if (i != n - 1) {
-//                                    if (!cc.add(ETERNAL, Z))
-//                                        return false;
-//                                }
-//                                lastDT = 0;
-//                                break;
-//                            }
-//                            case XTERNAL:
-//                            default: {
-
-				Term zubj = ee.sub(0);
+				next = ee.sub(ees);
+				if (!forward) next = next.negIf(e.isNegative());
 
 				zDT = dt;
-				if (i == 0) {
-					cc.add(0, zubj);
-				}
-				offset += zubj.eventRange();
-				offset += dt;
+
+				if (i == 0)
+					cc.add(0, forward ? next : before);
+
+				offset += (forward ? next : before).eventRange() + dt;
+
 				if (i != n - 1) {
-					if (!cc.add(offset, pred))
+					if (!cc.add(offset, (forward ? before : next)))
 						return false;
 				}
 
-
-//                                break;
-//                            }
-//                        }
 			}
 
-			Term ee = IMPL.the(cc.term(), zDT, pred);
-			if (ee.volume() > volMax)
+			Term ee = forward ?
+				IMPL.the(cc.term(), zDT, before)
+				:
+				IMPL.the(cc.term(), zDT, next);
+			if (ee instanceof Bool || ee.volume() > volMax)
 				return false;
 
 			if (range == Long.MAX_VALUE)
 				range = 0; //all eternal
 
-			long finalStart = start;
-			long finalEnd = start + range;
+			long finalStart = start, finalEnd = start + range;
 			Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
-				NALTask.the(ttt, BELIEF, tr, now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY, stamp,
-					ThreadLocalRandom.current())));
+				NALTask.the(ttt, BELIEF, tr, now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
+					Stamp.toMutableSet(Math.round(n/2f * STAMP_CAPACITY), i->pathTasks[i].stamp(), n),
+					nar.random())));
 			if (z != null) {
 
 				Task.fund(z, pathTasks, true);
 
-				//System.out.println(z);
 				if (in == null) in = new FasterList<>(1);
 				in.add(z);
 			}

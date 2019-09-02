@@ -153,10 +153,6 @@ public class IntrinTest {
         assertTrue($$("(--,a)") instanceof Neg.NegIntrin);
     }
     @Test void Chars_Subterms() {
-        assertTrue(
-            $.p(Op.puncAtom(BELIEF), Op.puncAtom(GOAL), Op.puncAtom(QUESTION), Op.puncAtom(QUEST)).subterms()
-            instanceof IntrinSubterms
-        );
         assertTrue($$("(a,b,c)").subterms() instanceof IntrinSubterms);
         assertTrue($$("((--,a),b,c)").subterms() instanceof IntrinSubterms);
     }

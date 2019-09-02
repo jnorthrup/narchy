@@ -16,7 +16,6 @@ import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
-import nars.agent.util.Impiler;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.sensor.VectorSensor;
@@ -48,6 +47,7 @@ import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
+import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -68,6 +68,7 @@ import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
+import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -573,7 +574,7 @@ abstract public class GameX extends Game {
 
         //tiered
         List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 16, 512, t->true)
+                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 16, 256, t->true)
                 //,new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->!t.isInput())//t instanceof DerivedTask),
                 //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)

@@ -75,7 +75,6 @@ abstract public class TruthProjection extends TaskList {
 	TruthProjection(long start, long end) {
 		super(0);
 		time(start, end);
-
 	}
 
 	public TruthProjection init(Task[] t, int numTasks) {
@@ -177,41 +176,62 @@ abstract public class TruthProjection extends TaskList {
 		int s = size();
 		if (s < minResults) return false;
 
+		//quick short-circuiting 2-ary test for overlap
+		if (s == 2 && Stamp.overlap(items[0], items[1])) {
+			if (minResults > 1) {
+				return false;
+			} else {
+				nullify(1);
+				refocus(shrink);
+				return true;
+			}
+		}
+
 		int r = refocus(shrink);
 		if (r < minResults) return false;
 
-		return r == 1 ? commit1() : commitN(shrink, minResults, n);
+		return r == 1 ? commit1() : commitN(shrink, r, minResults, n);
 	}
 
-	private boolean commitN(boolean shrink, int minComponents, NAL n) {
-		if (!filter(minComponents, shrink, false)) {
-			clearFast();
-			return false;
-		}
+	private boolean commitN(boolean shrink, int activeBefore, int minComponents, NAL n) {
+		//note: this assumes the 2-ary test has already been applied
 
-		int activeBeforeIntermpolate = active();
-		if (activeBeforeIntermpolate > 1) {
-
-			if (!intermpolate(n, minComponents)) {
-				clearFast();
+			if (!filter(minComponents)) {
+				//clearFast();
 				return false;
 			}
 
-			int activePostCull = active();
-			if (activePostCull < minComponents) {
-				clearFast();
-				return false; //HACK this test shouldnt be necessary
+			if (active()!=activeBefore) {
+				activeBefore = refocus(shrink);
+				if (activeBefore==1)
+					return true; //reduced to one
 			}
 
-			if (activePostCull != activeBeforeIntermpolate) {
 
-				refocus(shrink);
+		int active;
+		if (shrink /* TODO && not all ETERNAL */ && NAL.truth.postFilter) {
+			if (postFilter(minComponents)) {
+				activeBefore = active = refocus(true);
+			} else
+				active = active();
+		} else
+			active = active();
 
+		if (active > 1) {
+
+			if (!intermpolate(n, minComponents)) {
+				//clearFast();
+				return false;
 			}
+
+			active = active();
 		}
 
 		if (term == null)
 			term = items[0].term();
+
+		if (active != activeBefore)
+			refocus(shrink);
 
 		return true;
 	}
@@ -224,16 +244,13 @@ abstract public class TruthProjection extends TaskList {
 		double[] evi = this.evi;
 		int y = 0;
 		for (int i = 0; i < s; i++) {
-			double aa = evi[i];
-			if (valid(aa)) {
-				//assert(items[i]!=null);
+			if (valid(evi[i]))
 				y++;
-			}
 		}
 		return y;
 	}
 
-	public int update() {
+	private int update() {
 		int s = size;
 		if (s <= 0)
 			return 0;
@@ -259,13 +276,13 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * removes weakest tasks having overlapping evidence with stronger ones
 	 */
-	private boolean filter(int minComponents, boolean shrink, boolean needStamp) {
+	public boolean filter(int minComponents) {
 
 
 		int activeBefore = active();
-		if (activeBefore < minComponents) {
+		if (activeBefore < minComponents)
 			return false;
-		}
+
 		int remain = activeBefore;
 
 		//int iterations = 0;
@@ -302,11 +319,10 @@ abstract public class TruthProjection extends TaskList {
 				if (eviConflict > ie) {
 
 					//remove i
-					if (--remain < minComponents) {
+					if (--remain < minComponents)
 						return false;
-					}
 
-					evi[i] = 0;
+					nullify(i);
 				} else {
 					//remove the conflicts
 					remain -= conflict.cardinality();
@@ -316,7 +332,7 @@ abstract public class TruthProjection extends TaskList {
 
 					for (int k = ss - 1; k > i; k--) {
 						if (conflict.getFast(k))
-							evi[k] = 0;
+							nullify(k);
 					}
 				}
 				//continue main;
@@ -324,23 +340,26 @@ abstract public class TruthProjection extends TaskList {
 			}
 		}
 
-		int activeAfter = active();
-		if (activeAfter != activeBefore)
-			refocus(shrink);
-
-		if (shrink && activeAfter > minComponents && start != ETERNAL) {
-			postFilter(minComponents);
-		}
 
 		return remain > 0;
 	}
-	private void postFilter(int minComponents) {
+
+	/** returns true if postfiltering removed something */
+	private boolean postFilter(int minComponents) {
 		//post-filter cull weak tasks that excessively dilute the effective average evidence
 		//TODO calculate exact threshold necessary to not dilute further
 		int activeAfter = active();
 		Task[] items = this.items;
 		double[] evi = this.evi;
-		long us = Long.MAX_VALUE, ue = Long.MIN_VALUE;
+
+		long us, ue;
+		if (start == ETERNAL) {
+			us = Long.MAX_VALUE; ue = Long.MIN_VALUE;
+		} else {
+			//expand from midpoint of current interval
+			us = (start + end) / 2; ue = us;
+		}
+
 		double esum = 0;
 		boolean removedAny = false;
 
@@ -353,9 +372,7 @@ abstract public class TruthProjection extends TaskList {
 			double ei = evi[i];
 			if (ts != ETERNAL) {
 				long te = ii.end();
-				ts = Math.max(S, ts);
-				te = Math.min(E, te);
-				long ns = Math.min(us, ts), ne = Math.max(ue, te);
+				long ns = Math.max(S,Math.min(us, ts)), ne = Math.min(E,Math.max(ue, te));
 				if (i > minComponents && (ns < us || ne > ue)) {
 					//if it has stretched the time range,
 					//determine if any additional evidence dilution is justifiable.
@@ -376,8 +393,7 @@ abstract public class TruthProjection extends TaskList {
 			esum += ei;
 		}
 
-		if (removedAny)
-			refocus(true);
+		return removedAny;
 	}
 
 	/**
@@ -431,6 +447,11 @@ abstract public class TruthProjection extends TaskList {
 //				e.addAll(stamp(i));
 //		}
 //		return e;
+	}
+
+	public void clear(long s, long e) {
+		clear();
+		start = s; end = e;
 	}
 
 	@Override
@@ -649,7 +670,7 @@ abstract public class TruthProjection extends TaskList {
 
 		int es = roots.size();
 		if (es < minComponents) {
-			clearFast();
+			//clearFast();
 			return false;
 		}
 
@@ -679,7 +700,7 @@ abstract public class TruthProjection extends TaskList {
 					if (ab instanceof Bool) {
 						nullify(B); //unexpected error
 						if (--remain < minComponents) {
-							clearFast();
+							//clearFast();
 							return false;
 						}
 					} else {
@@ -832,8 +853,9 @@ abstract public class TruthProjection extends TaskList {
 
 	public final void nullify(int index) {
 		items[index] = null;
-		if (evi != null)
-			evi[index] = 0;
+		@Nullable double[] e = this.evi;
+		if (e != null)
+			e[index] = 0;
 	}
 
 	public final byte punc() {

@@ -111,7 +111,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         return true;
     }
 
-    private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(Compound t) {
+    private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicImpl(final Compound t) {
 
         //TODO allow indep var if they are involved in (contained within) either but not both subj and pred
         if (t.hasAny(Op.VAR_INDEP.bit | Op.VAR_QUERY.bit))
@@ -119,10 +119,11 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         if (!t.hasAny(AtomicConstant))
             return null;
 
-        AbstractDynamicTruth c = null;
-        if (t.hasAny(Op.CONJ)) {
+        final Subterms tt = t.subterms();
 
-            Subterms tt = t.subterms();
+        AbstractDynamicTruth c = null;
+        if (tt.hasAny(Op.CONJ)) {
+
             Term su = tt.sub(0);
 //                if (su.hasAny(Op.VAR_INDEP))
 //                    return null;
@@ -160,16 +161,12 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             }
         }
 
+        AbstractDynamicTruth i = (!(tt.sub(0).unneg() instanceof nars.term.Variable || tt.sub(1) instanceof nars.term.Variable)) ?
+            DynamicStatementTruth.Impl //TODO this may be decomposable if the other term is && or ||
+            :
+            null;
 
-
-        AbstractDynamicTruth i = null;
-        if (!(t.sub(0).unneg() instanceof nars.term.Variable || t.sub(1) instanceof nars.term.Variable)) {
-            //TODO this may be decomposable if the other term is && or ||
-            i = DynamicStatementTruth.Impl;
-        }
-
-        if (i == null) return c == null ? null : table(c);
-        return c == null ? table(i) : table(i, c);
+        return i != null ? c != null ? table(i, c) : table(i) : c != null ? table(c) : null;
     }
 
     private static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicInh(Term i) {

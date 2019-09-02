@@ -43,18 +43,18 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         throw new UnsupportedOperationException();
     }
 
-    public boolean dfs(N startingNode, Search<N, E> tv) {
+    public boolean dfs(Object startingNode, Search<N, E> tv) {
         return dfs(List.of(startingNode), tv);
     }
 
-    public boolean bfs(N startingNode, Search<N, E> tv) {
+    public boolean bfs(Object startingNode, Search<N, E> tv) {
         return bfs(List.of(startingNode),tv);
     }
 
     /** iterate all nodes, in topologically sorted order */
     public void forEachBF(N root, Consumer<? super N> each) {
         each.accept(root);
-        bfs(List.of(root), new Search<>() {
+        bfs(root, new Search<>() {
             @Override
             protected boolean go(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next) {
                 each.accept(next.id());
@@ -63,7 +63,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         });
     }
 
-    private boolean dfs(Iterable<N> startingNodes, Search<N, E> search) {
+    private boolean dfs(Iterable<?> startingNodes, Search<N, E> search) {
         return search.dfs(startingNodes, this);
     }
 
@@ -77,7 +77,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
 
 
 
-    public boolean bfs(Iterable<N> roots, Search<N, E> search) {
+    public boolean bfs(Iterable<?> roots, Search<N, E> search) {
         int c = nodeCount();
         switch (c) {
             case 0:
@@ -85,13 +85,13 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
                 return true; //nothing
             case 2:
                 return dfs(roots, search); //optimization (no queue needed)
+            default:
+                return bfs(roots, new ArrayDeque<>(
+                    2 * (int)Math.ceil(Math.log(c)) /* estimate */), search);
         }
-
-        return bfs(roots, new ArrayDeque<>(
-                2 * (int)Math.ceil(Math.log(c)) /* estimate */), search);
     }
 
-    public boolean bfs(Iterable startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Search<N, E> search) {
+    public boolean bfs(Iterable<?> startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, Search<N, E> search) {
         return search.bfs(startingNodes, q, this);
     }
 

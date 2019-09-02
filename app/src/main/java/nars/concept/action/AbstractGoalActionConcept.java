@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.GOAL;
+import static nars.concept.sensor.Signal.truthDithered;
 import static nars.time.Tense.TIMELESS;
 import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
@@ -202,28 +203,22 @@ public class AbstractGoalActionConcept extends GameAction {
 //                actionCuri = $.t(actionCuri.freq(), confMin);
 //            }
 
-            Truth curiDithered = g.dither(actionCuri, this);
-            if (curiDithered != null) {
+            //pre-load curiosity for the future
+            if (curiosity.goal.getOpaque()) {
+                long lastCuriosity = curiosityTable.end();
+                long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
+                long curiEnd = Math.round(curiStart + dur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
 
-                actionCuri = curiDithered;
+                long[] se = Tense.dither(new long[] { curiStart, curiEnd }, n);
+                curiStart = se[0];
+                curiEnd = se[1];
 
-                //pre-load curiosity for the future
-                if (curiosity.goal.getOpaque()) {
-                    long lastCuriosity = curiosityTable.end();
-                    long curiStart = lastCuriosity != TIMELESS ? Math.max(s, lastCuriosity + 1) : s;
-                    long curiEnd = Math.round(curiStart + dur * NAL.CURIOSITY_TASK_RANGE_DURS); //(1 + (curiosity.Math.max(curiStart, e);
-
-                    long[] se = Tense.dither(new long[] { curiStart, curiEnd }, n);
-                    curiStart = se[0];
-                    curiEnd = se[1];
-
-                    g.what().accept(
-                            curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
-                    );
-                }
-
-
+                g.what().accept(
+                        curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
+                );
             }
+
+
         } else {
             curiosityInject = curiosity.injection.get();
 
@@ -257,7 +252,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
     protected void feedback(@Nullable Truth f, short[] cause, Game g) {
 
-        f = g.dither(f, this);
+        f = truthDithered(f.freq(), resolution().floatValue(), g);
 
         ((SensorBeliefTables) beliefs()).input(f, attn::pri, cause, g.what(), g.when,true);
     }

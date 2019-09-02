@@ -32,7 +32,7 @@ import static nars.truth.proj.TruthIntegration.eviFast;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final int MAX_TASKS_PER_LEAF = 4;
+    private static final int MAX_TASKS_PER_LEAF = 3;
 
 
     private int capacity;
@@ -544,10 +544,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = (l,min) -> {
-//                double conf = l.bounds.coord(2, true);
-//                return (float) ((1-conf) / l.bounds.range(0));
-        double conf = -l.bounds.coord(2, true);
-        return (float)(conf * l.bounds.range(0) / l.size);
+        //TODO use min parameter to early exit
+        HyperRegion bounds = l.bounds;
+        double conf = bounds.coord(2, true);
+        return -(float)(conf * bounds.range(0));
     };
 
 

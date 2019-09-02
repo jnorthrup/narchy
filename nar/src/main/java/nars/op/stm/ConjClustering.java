@@ -56,7 +56,7 @@ public class ConjClustering extends How implements Consumer<Task> {
 
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
-    int learningIterations = 2;
+    int learningIterations = 1;
     int minDurationsPerLearning = 1;
 
     private final Predicate<Task> filter;
@@ -104,12 +104,13 @@ public class ConjClustering extends How implements Consumer<Task> {
             @Override
             public void coord(Task t, double[] c) {
                 Truth tt = t.truth();
-                c[0] = t.mid();
+                long s = t.start(), e = t.end();
+                c[0] = (s+e)/2; //mid
 
                 c[1] = tt.polarity();
                 c[2] = tt.conf();
 
-                c[3] = t.range();
+                c[3] = (e-s); //range
             }
 
             @Override
@@ -117,13 +118,13 @@ public class ConjClustering extends How implements Consumer<Task> {
 
                 return (1 + Math.abs(a[0] - b[0])) //dMid
                         *
-                       (1 + Math.abs(a[3] - b[3])/ Util.min(a[3], b[3])) //dRange
+                       (1 + Math.abs(a[3] - b[3])/ (1+Util.max(a[3], b[3]))) //dRange
                         *
                        (1 + (
                            Math.abs(a[2] - b[2]) //dConf
                            +
                            Math.abs(a[1] - b[1]) //dPolarity
-                       ))
+                       )/2)
                        ;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
