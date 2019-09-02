@@ -35,7 +35,7 @@ class DynamicImplTruth extends AbstractDynamicTruth {
         assert(d.componentPolarity.get(1));
 
         Truth predTruth = d.get(1).truth();
-        return NALTruth.Abduction.apply(subjTruth, predTruth, 0, null);
+        return NALTruth.Abduction.apply(subjTruth, predTruth, Float.MIN_NORMAL, null);
     }
 
     @Override

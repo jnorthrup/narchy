@@ -27,7 +27,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.and;
 import static jcog.Util.or;
-import static nars.$.t;
+import static nars.$.tt;
 import static nars.NAL.HORIZON;
 import static nars.truth.func.TruthFunctions2.weak;
 
@@ -46,7 +46,7 @@ public final class TruthFunctions {
      */
     public static Truth conversion(Truth t, float minConf) {
         float c = (float) w2cSafe(t.freq() * t.confDouble());
-        return c >= minConf ? t(1, c) : null;
+        return c >= minConf ? tt(1, c) : null;
     }
 
     /* ----- Single argument functions, called in StructuralRules ----- */
@@ -60,7 +60,7 @@ public final class TruthFunctions {
 //     */
 //    public static Truth contraposition(Truth t, float minConf) {
 //        float c = w2cSafe((1 - t.freq()) * t.conf());
-//        return c >= minConf ? t(0, c) : null;
+//        return c >= minConf ? tt(0, c) : null;
 //    }
 
 
@@ -74,7 +74,7 @@ public final class TruthFunctions {
     @Nullable private static Truth deductionR(Truth a, double reliance, float minConf) {
         float f = a.freq();
         float c = and(f, confCompose(a, reliance));
-        return (c >= minConf) ? t(f, c) : null;
+        return (c >= minConf) ? tt(f, c) : null;
     }
 
 
@@ -94,7 +94,7 @@ public final class TruthFunctions {
         if (!strong)
             c = weak(c);
 
-        return (c < minConf) ? null : t(fxy, c);
+        return (c < minConf) ? null : tt(fxy, c);
     }
 
     /**
@@ -105,7 +105,7 @@ public final class TruthFunctions {
     @Nullable
     public static Truth analogy(Truth a, float bf, double bc, float minConf) {
         float c = and(confCompose(a, bc), bf);
-        return c >= minConf ? t(and(a.freq(), bf), c) : null;
+        return c >= minConf ? tt(and(a.freq(), bf), c) : null;
     }
 
 
@@ -121,7 +121,7 @@ public final class TruthFunctions {
         final float f1 = v1.freq();
         final float f2 = v2.freq();
         final float c = and(confCompose(v1, v2), or(f1, f2));
-        return c >= minConf ? t(and(f1, f2), c) : null;
+        return c >= minConf ? tt(and(f1, f2), c) : null;
     }
 
     /**
@@ -133,7 +133,7 @@ public final class TruthFunctions {
      */
     public static Truth induction(Truth a, Truth b, float minConf) {
         float c = w2cSafe(confCompose(a, b) * b.freq());
-        return c >= minConf ? $.t(a.freq(), c) : null;
+        return c >= minConf ? $.tt(a.freq(), c) : null;
     }
 
 
@@ -143,7 +143,7 @@ public final class TruthFunctions {
      */
     static Truth exemplification(Truth a, Truth b, float minConf) {
         float c = w2cSafe(a.freq() * b.freq() * confCompose(a, b));
-        return c >= minConf ? t(1, c) : null;
+        return c >= minConf ? tt(1, c) : null;
     }
 
 
@@ -164,7 +164,7 @@ public final class TruthFunctions {
             return null;
 
         final float f = (f0 < NAL.truth.TRUTH_EPSILON) ? 0 : (and(f1, f2) / f0);
-        return $.t(f,c);
+        return $.tt(f,(float)c);
     }
 
 //    /**
@@ -193,7 +193,7 @@ public final class TruthFunctions {
 //            return null;
 //
 //        //float f = (Util.equals(f0, 0, NAL.truth.TRUTH_EPSILON)) ? 0 : (and(f1, f2) / f0);
-//        return t(f0, c);
+//        return tt(f0, c);
 //    }
 
 
@@ -259,7 +259,7 @@ public final class TruthFunctions {
     @Nullable
     public static Truth intersection(Truth x, boolean negX, Truth y, boolean negY, float minConf) {
         float c = confCompose(x, y);
-        return (c < minConf) ? null : $.t(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
+        return (c < minConf) ? null : $.tt(and(negIf(x.freq(),negX), negIf(y.freq(),negY)), c);
     }
 
     private static float negIf(float f, boolean neg) {
@@ -312,7 +312,7 @@ public final class TruthFunctions {
 //                    //fxySqrt * cxy;
 //
 //            if (c >= minConf)
-//                return t(z ? fxy : 1 - fxy, c);
+//                return tt(z ? fxy : 1 - fxy, c);
 //
 //        }
 //        return null;
@@ -325,7 +325,7 @@ public final class TruthFunctions {
         final float f = and(f1, f2);
         final float c12 = confCompose(a, b);
         final float c = and(c12, f2) * (strong ? 1 : w2cSafe(1));
-        return c > minConf ? t(f, c) : null;
+        return c > minConf ? tt(f, c) : null;
     }
 
     public static float c2w(float c) {

@@ -9,7 +9,7 @@ import nars.derive.op.Occurrify.BeliefProjection;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
-import nars.truth.Truth;
+import nars.truth.MutableTruth;
 import nars.truth.func.TruthFunction;
 
 import java.util.function.Predicate;
@@ -117,29 +117,29 @@ public class Truthify extends AbstractPred<Derivation> {
         d.truthFunction = null;
 
         boolean single;
-        Truth t;
 
         byte punc = this.punc.get(d.taskPunc);
         switch (punc) {
             case BELIEF:
             case GOAL:
                 single = (punc == BELIEF ? beliefMode : goalMode) == 1;
-                Truth beliefTruth;
+                MutableTruth beliefTruth;
                 if (single) {
                     beliefTruth = null;
                 } else {
-                    if ((beliefTruth = beliefProjection.apply(d)) == null)
-                        return false;
+                    beliefTruth = beliefProjection.apply(d);
+                    if (!beliefTruth.set())
+                        return false; //double but beliefTruth not defined
                 }
 
                 TruthFunction f = punc == BELIEF ? belief : goal;
-                if ((t = f.apply(
-                        d.taskTruth,
-                        beliefTruth,
-                        d.confMin, d.nar
-                )) == null)
-                    return false;
 
+                MutableTruth taskTruth = d.taskTruth;
+                if (!taskTruth.set())
+                    taskTruth = null;
+
+                if (!d.truth.set(f.apply(taskTruth, beliefTruth, d.confMin, d.nar)).set())
+                    return false;
 
                 d.truthFunction = f;
 
@@ -148,7 +148,6 @@ public class Truthify extends AbstractPred<Derivation> {
             case QUEST:
             case QUESTION:
                 single = questionMode == 1;
-                t = null;
                 break;
 
             case 0:
@@ -158,7 +157,6 @@ public class Truthify extends AbstractPred<Derivation> {
                 throw new InvalidPunctuationException(punc);
         }
 
-        d.truth.set(t);
         d.punc = punc;
         d.single = single;
 

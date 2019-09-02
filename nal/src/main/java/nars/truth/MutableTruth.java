@@ -1,5 +1,7 @@
 package nars.truth;
 
+import org.jetbrains.annotations.Nullable;
+
 import static nars.truth.func.TruthFunctions.c2w;
 
 public class MutableTruth implements Truth {
@@ -11,18 +13,22 @@ public class MutableTruth implements Truth {
 
 	}
 
+	public MutableTruth(float f, float evi) {
+		freq = f; this.evi = evi;
+	}
+
 	public MutableTruth(Truth t) {
-		freq(t.freq());
-		evi(t.evi());
+		freq = t.freq();
+		evi = t.evi();
 	}
 
 	@Override
-	public float freq() {
+	public final float freq() {
 		return freq;
 	}
 
 	@Override
-	public double evi() {
+	public final double evi() {
 		return evi;
 	}
 
@@ -36,16 +42,29 @@ public class MutableTruth implements Truth {
 	}
 
 	public MutableTruth conf(float c) {
-		return evi(c2w(c));
+		evi = c2w(c);
+		return this;
 	}
 	public MutableTruth conf(double c) {
-		return evi(c2w(c));
+		evi = c2w(c);
+		return this;
 	}
 
 	/** modifies this instance */
 	public final MutableTruth negateThis() {
+//		float f = freq();
+//		if (f != f)
+//			throw new NullPointerException();
 		freq = 1.0f - freq;
 		return this;
+	}
+
+	@Override
+	public final MutableTruth neg() {
+		MutableTruth x = new MutableTruth();
+		x.freq = 1 - freq;
+		x.evi = evi;
+		return x;
 	}
 
 	public final MutableTruth negateThisIf(boolean ifTrue) {
@@ -61,18 +80,19 @@ public class MutableTruth implements Truth {
 
 	@Override
 	public final boolean equals(Object obj) {
-		return this == obj; //no other equality allowed
+		throw new UnsupportedOperationException();
+		//return this == obj; //no other equality allowed
 	}
 
-	public PreciseTruth clone() {
-		return PreciseTruth.byEvi(freq, evi);
+	@Nullable public PreciseTruth clone() {
+		return set() ? PreciseTruth.byEvi(freq, evi) : null;
 	}
 
-	public MutableTruth set(Truth x) {
+	public MutableTruth set(@Nullable Truth x) {
 		if (this!=x) {
-			if (x!=null) {
-				freq(x.freq());
-				evi(x.evi());
+			if (MutableTruth.isSet(x)) {
+				freq = x.freq();
+				evi = x.evi();
 			} else {
 				clear();
 			}
@@ -81,10 +101,22 @@ public class MutableTruth implements Truth {
 	}
 
 	/** sets to an invalid state */
-	public MutableTruth clear() {
+	public final MutableTruth clear() {
 		freq = Float.NaN;
-		evi = 0;
 		return this;
 	}
 
+	/** whether this instance's state is set to a specific value (true), or clear (false) */
+	public final boolean set() {
+		return freq==freq;
+	}
+
+	public static boolean isSet(@Nullable Truth x) {
+		return x!=null && (!(x instanceof MutableTruth) || ((MutableTruth)x).set() );
+	}
+
+	@Override
+	public String toString() {
+		return _toString();
+	}
 }

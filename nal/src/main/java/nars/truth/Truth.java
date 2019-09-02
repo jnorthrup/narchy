@@ -279,8 +279,6 @@ public interface Truth extends Truthed {
     }
 
     default String _toString() {
-
-
         return appendString(new StringBuilder(7)).toString();
     }
 

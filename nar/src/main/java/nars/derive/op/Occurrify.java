@@ -14,7 +14,7 @@ import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.time.Tense;
 import nars.time.TimeGraph;
-import nars.truth.Truth;
+import nars.truth.MutableTruth;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.api.tuple.Pair;
@@ -745,14 +745,14 @@ public class Occurrify extends TimeGraph {
     /**
      * TODO do derivation truth calculation in implemented method of this enum
      */
-    public enum BeliefProjection implements Function<Derivation, Truth> {
+    public enum BeliefProjection implements Function<Derivation, MutableTruth> {
 
         /**
          * belief truth evident at its own occurrence time
          */
         Belief {
             @Override
-            public Truth apply(Derivation d) {
+            public MutableTruth apply(Derivation d) {
                 return d.beliefTruth_at_Belief;
             }
         },
@@ -762,7 +762,7 @@ public class Occurrify extends TimeGraph {
          */
         Task {
             @Override
-            public Truth apply(Derivation d) {
+            public MutableTruth apply(Derivation d) {
                 return d.beliefTruth_at_Task;
             }
         },

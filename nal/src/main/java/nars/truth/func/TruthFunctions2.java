@@ -2,12 +2,11 @@ package nars.truth.func;
 
 import jcog.Skill;
 import jcog.Util;
-import nars.$;
 import nars.NAL;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.$.t;
+import static nars.$.tt;
 import static nars.truth.func.TruthFunctions.confCompose;
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
@@ -25,7 +24,7 @@ public enum TruthFunctions2 {
 //        float ac = a.conf(), bc = b.conf();
 //        float conf = Util.lerp(diff, w2cSafe(c2wSafe(ac) + c2wSafe(bc)), (ac * bc));
 //        float freq = ((a.freq() * ac) + (b.freq() * bc)) / (ac + bc);
-//        return conf >= confMin ? $.t(freq, conf) : null;
+//        return conf >= confMin ? $.tt(freq, conf) : null;
 //    }
 
 //    /**
@@ -40,7 +39,7 @@ public enum TruthFunctions2 {
 //        float conf = Util.lerp(extreme, (ac * bc), w2cSafe(c2wSafe(ac) + c2wSafe(bc)));
 //
 //        float freq = a.freq() * (1f - b.freq());
-//        return conf >= confMin ? $.t(freq, conf) : null;
+//        return conf >= confMin ? $.tt(freq, conf) : null;
 //    }
 
 //    public static Truth unionX(Truth a, Truth b, float confMin) {
@@ -91,7 +90,7 @@ public enum TruthFunctions2 {
 //     */
 //    public static Truth induction(Truth a, Truth b, float minConf) {
 //        float c = w2cSafe(a.conf() * b.freqTimesConf());
-//        return c >= minConf ? $.t(a.freq(), c) : null;
+//        return c >= minConf ? $.tt(a.freq(), c) : null;
 //    }
 
 //
@@ -113,7 +112,7 @@ public enum TruthFunctions2 {
 //
 //            float f = goal.freq();
 //
-//            return $.t(f, c);
+//            return $.tt(f, c);
 //
 //        } else {
 //            return null;
@@ -157,7 +156,7 @@ public enum TruthFunctions2 {
                             //Util.lerpSafe(bF, 0.5f, gF)
                         ;
 
-                return $.t(f, cc);
+                return tt(f, cc);
 
             }
 
@@ -183,7 +182,7 @@ public enum TruthFunctions2 {
         }
 
         float f = Util.lerp(bF, ((1-goal.freq()) + 0.5f)/2, goal.freq());
-        return $.t(f, cc);
+        return tt(f, cc);
     }
 
 
@@ -198,7 +197,7 @@ public enum TruthFunctions2 {
         float sim =
             (1f - Math.abs(t.freq() - b.freq())) * Math.max(t.polarity(), b.polarity());
         float cc = /*weak*/(c * sim);
-        return cc >= minConf ? $.t(sim, cc) : null;
+        return cc >= minConf ? tt(sim, cc) : null;
     }
 
     public static float weak(float c) {
@@ -211,7 +210,7 @@ public enum TruthFunctions2 {
         if (t == null)
             return null;
         float c = weak(t.conf());
-        return c >= minConf ? $.t(t.freq(), c) : null;
+        return c >= minConf ? tt(t.freq(), c) : null;
     }
 
     /**
@@ -224,7 +223,7 @@ public enum TruthFunctions2 {
         float f = t.freq();
         float fPolarization = t.polarity();
         float c = weak(fPolarization * t.conf());
-        return c >= minConf ? t((1 - f), c) : null;
+        return c >= minConf ? tt((1 - f), c) : null;
     }
 
 
@@ -251,7 +250,7 @@ public enum TruthFunctions2 {
         if (weak)
             cc = weak(cc);
         if (cc < minConf) return null;
-        return $.t(XimplY.freq(), cc);
+        return tt(XimplY.freq(), cc);
     }
 
     /**
@@ -293,17 +292,17 @@ public enum TruthFunctions2 {
         float f;
         //mode 1:
         {
-            /*
+
             c *= alignment; if (c < minConf)  return null;
             f = 1;
-            */
+
         }
         //mode 2:
         {
-            f = Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
+            //f = Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
         }
 
-        return $.t(f, c);
+        return tt(f, c);
     }
 
 //    @Nullable public static Truth intersectionSym(Truth t, Truth b, float minConf) {
@@ -317,7 +316,7 @@ public enum TruthFunctions2 {
 //        } else {
 //            f = intersectionSym(t.freq(), b.freq());
 //        }
-//        return $.t(f, c);
+//        return $.tt(f, c);
 //
 ////        if (T.isPositive() && B.isPositive()) {
 ////            return Intersection.apply(T, B, m, minConf);
@@ -340,7 +339,7 @@ public enum TruthFunctions2 {
 //        } else {
 //            f = unionSym(t.freq(), b.freq());
 //        }
-//        return $.t(f, c);
+//        return $.tt(f, c);
 //    }
 
     /**
@@ -408,7 +407,7 @@ public enum TruthFunctions2 {
             fy = 1;
         }
 
-        return t(fy, c);
+        return tt(fy, c);
     }
 
     /** variation of the original union truth function that
@@ -429,8 +428,7 @@ public enum TruthFunctions2 {
         float loss = Math.abs( (f - tf) - (f - bf) );
         float lossFraction = loss / f;
         c *= 1 - lossFraction;
-        if (c < minConf) return null;
-        else return t(f, c);
+        return c < minConf ? null : tt(f, c);
     }
 
 

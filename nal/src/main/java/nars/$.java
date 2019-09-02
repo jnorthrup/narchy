@@ -25,6 +25,7 @@ import nars.term.util.SetSectDiff;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
+import nars.truth.MutableTruth;
 import nars.truth.PreciseTruth;
 import org.apache.commons.math3.fraction.Fraction;
 import org.eclipse.collections.api.RichIterable;
@@ -46,6 +47,7 @@ import java.util.stream.Stream;
 import static java.lang.Character.isDigit;
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /***
  *     oooo       oo       .o.       ooooooooo.
@@ -425,6 +427,10 @@ public enum $ { ;
 
     public static Atomic the(int v) {
         return Int.the(v);
+    }
+
+    public static MutableTruth tt(float f, float c) {
+        return new MutableTruth(f, c2wSafe(c));
     }
 
     public static PreciseTruth t(float f, float c) {

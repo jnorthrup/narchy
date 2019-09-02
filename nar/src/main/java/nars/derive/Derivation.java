@@ -91,16 +91,16 @@ public class Derivation extends PreDerivation {
     public final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
-            Truth t = Derivation.this.taskTruth;
-            return arg.negIf(t!=null ? t.isNegative() : random.nextBoolean());
+            MutableTruth t = Derivation.this.taskTruth;
+            return arg.negIf(t.set() ? t.isNegative() : random.nextBoolean());
             //return arg.negIf(t.isNegative());
         }
     };
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            Truth b = Derivation.this.beliefTruth_at_Belief;
-            return arg.negIf(b!=null ? b.isNegative() : random.nextBoolean());
+            MutableTruth b = Derivation.this.beliefTruth_at_Belief;
+            return arg.negIf(b.set() ? b.isNegative() : random.nextBoolean());
 //            return arg.negIf(b.isNegative());
         }
     };
@@ -261,28 +261,28 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
-        beliefTruth_at_Task = beliefTruth_at_Belief = null;
+
+
 
         long nextBeliefEnd;
 
         if (nextBelief != null) {
             long nextBeliefStart = nextBelief.start();
+            beliefTruth_at_Belief.set/* = */( nextBelief.truth() );
             if (nextBeliefStart == ETERNAL) {
-                beliefTruth_at_Task = beliefTruth_at_Belief = nextBelief.truth();
+
+                beliefTruth_at_Task.set( beliefTruth_at_Belief ); /* = */
             } else {
 
-                this.beliefTruth_at_Belief = nextBelief.truth();
+                this.beliefTruth_at_Task.set(
+                    (taskStart == ETERNAL) ? beliefTruth_at_Belief : beliefAtTask(nextBelief)
+                );
 
-                boolean taskEternal = taskStart == ETERNAL;
-                this.beliefTruth_at_Task = taskEternal ?
-                    beliefTruth_at_Belief :
-                    beliefAtTask(nextBelief);
+                if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) &&
+                    (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || !beliefTruth_at_Task.set())) {
 
-                if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) && (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || beliefTruth_at_Task==null)) {
-
-                    double eScale =
-                            (taskTruth == null) ? 1 :
-                                1;
+                    double eScale = 1;
+                            //(!taskTruth.set()) ? 1 : 1;
                                 //taskTruth.conf();
                                 //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
 
@@ -298,7 +298,7 @@ public class Derivation extends PreDerivation {
                                 nextBeliefEnd = nextBelief.end();
 
                             nextBelief = SpecialTruthAndOccurrenceTask.the(nextBelief,
-                                this.beliefTruth_at_Task = beliefTruth_eternalized,
+                                this.beliefTruth_at_Task.set(beliefTruth_eternalized),
                                 nextBeliefStart, nextBeliefEnd
 							);
                         }
@@ -308,7 +308,7 @@ public class Derivation extends PreDerivation {
 
             }
 
-            if (beliefTruth_at_Task == null && beliefTruth_at_Belief == null)
+            if (!beliefTruth_at_Task.set() && !beliefTruth_at_Belief.set())
                 nextBelief = null;
 
         }
@@ -321,7 +321,8 @@ public class Derivation extends PreDerivation {
             _beliefTerm = nextBelief.term();
 
         } else {
-            this.beliefTruth_at_Belief = this.beliefTruth_at_Task = null;
+            this.beliefTruth_at_Belief.clear();
+            this.beliefTruth_at_Task.clear();
 
 //            this.taskStart = _task.start();
 //            this.taskEnd = _task.end(); //HACK reset task start in case it was changed
@@ -381,8 +382,10 @@ public class Derivation extends PreDerivation {
 
         if (!sameTask) {
             byte p = nextTask.punc();
-            this.taskTruth = ((((this.taskPunc = p)) == BELIEF) || (p == GOAL)) ?
-                nextTask.truth() : null;
+            this.taskTruth.set(
+                ((((this.taskPunc = p)) == BELIEF) || (p == GOAL)) ?
+                    nextTask.truth() : null
+            );
         }
 
         this.taskStart = nextTask.start();
@@ -536,9 +539,12 @@ public class Derivation extends PreDerivation {
         _task = _belief = null;
         taskPunc = 0;
         parentCause = null;
-        truth.clear();
         taskTerm = beliefTerm = null;
-        taskTruth = beliefTruth_at_Task = beliefTruth_at_Belief = null;
+
+        truth.clear();
+        taskTruth.clear();
+        beliefTruth_at_Task.clear();
+        beliefTruth_at_Belief.clear();
 
         ttl = 0;
         taskUniqueAnonTermCount = 0;

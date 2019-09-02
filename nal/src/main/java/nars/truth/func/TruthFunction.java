@@ -10,6 +10,7 @@ public interface TruthFunction {
     /**
      * @param minConf if confidence is less than minConf, it can return null without creating the Truth instance;
      *                if confidence is equal to or greater, then it is valid
+     *                very important for minConf >= Float.MIN_NORMAL and not zero.
      */
     @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n);
 
@@ -75,7 +76,7 @@ public interface TruthFunction {
             return o.apply(repolarize(T, task), repolarize(B, belief), minConf, n);
         }
 
-        @Nullable private Truth repolarize(Truth t, int polarity) {
+        @Nullable private Truth repolarize(@Nullable Truth t, int polarity) {
             if (t == null || polarity==1)
                 return t;
             else if (polarity==-1 || (polarity==0 && t.isNegative()))

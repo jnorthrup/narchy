@@ -5,7 +5,7 @@ import jcog.data.ShortBuffer;
 import jcog.decide.MutableRoulette;
 import nars.Op;
 import nars.term.Term;
-import nars.truth.Truth;
+import nars.truth.MutableTruth;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -22,8 +22,9 @@ public abstract class PreDerivation extends Unify {
     public Term beliefTerm;
     public byte taskPunc;
 
-    public Truth taskTruth;
-    public Truth beliefTruth_at_Belief, beliefTruth_at_Task;
+    public final MutableTruth taskTruth = new MutableTruth();
+    public final MutableTruth beliefTruth_at_Belief = new MutableTruth();
+    public final MutableTruth beliefTruth_at_Task = new MutableTruth();
 
     /**
      * choices mapping the available post targets
@@ -44,7 +45,7 @@ public abstract class PreDerivation extends Unify {
     }
 
     public boolean hasBeliefTruth() {
-        return beliefTruth_at_Belief !=null || beliefTruth_at_Task !=null;
+        return beliefTruth_at_Belief.set() || beliefTruth_at_Task.set();
     }
 
     public abstract ShortBuffer preDerive();

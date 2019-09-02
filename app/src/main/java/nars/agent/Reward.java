@@ -15,6 +15,7 @@ import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.util.TermedDelegate;
+import nars.truth.DiscreteTruth;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -73,7 +74,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     @Deprecated protected FloatFloatToObjectFunction<Truth> truther() {
         return (prev, next) -> (next == next) ?
-                $.t(Util.unitize(next), nar().confDefault(BELIEF)) : null;
+                DiscreteTruth.the(Util.unitize(next), nar().confDefault(BELIEF)) : null;
     }
 
 

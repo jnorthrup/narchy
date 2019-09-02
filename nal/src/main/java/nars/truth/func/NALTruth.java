@@ -64,33 +64,33 @@ public enum NALTruth implements TruthFunction {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
-            return c >= minConf ? $.t(T.freq(), c) : null;
+            return c >= minConf ? $.tt(T.freq(), c) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralReductionWeak() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
-            return c >= minConf ? weak($.t(T.freq(), c),minConf) : null;
+            return c >= minConf ? weak($.tt(T.freq(), c),minConf) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralDeduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
-            return T != null ? Deduction.apply(T, $.t(1f, confDefault(n)), minConf, n) : null;
+            return T != null ? Deduction.apply(T, $.tt(1f, confDefault(n)), minConf, n) : null;
         }
     },
     @AllowOverlap @SinglePremise StructuralDeductionWeak() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
-            return T != null ? weak(Deduction.apply(T, $.t(1f, confDefault(n)), minConf, n), minConf) : null;
+            return T != null ? weak(Deduction.apply(T, $.tt(1f, confDefault(n)), minConf, n), minConf) : null;
         }
     },
 
     BeliefStructuralIntersection() {
         @Override
         public Truth apply(final Truth Tignored, final Truth B, float minConf, NAL n) {
-            return Intersection.apply(B, $.t(1f, confDefault(n)), minConf, n);
+            return Intersection.apply(B, $.tt(1f, confDefault(n)), minConf, n);
         }
     },
 
@@ -99,13 +99,13 @@ public enum NALTruth implements TruthFunction {
 //    @SinglePremise @AllowOverlap
 //    StructuralStrong() {
 //        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return T != null ? NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf) : null;
+//            return T != null ? NALTruth.Analogy.apply(T, $.tt(1f, confDefault(m)), m, minConf) : null;
 //        }
 //    },
 //    @SinglePremise @AllowOverlap
 //    StructuralWeak() {
 //        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return T != null ? weak(NALTruth.Analogy.apply(T, $.t(1f, confDefault(m)), m, minConf)) : null;
+//            return T != null ? weak(NALTruth.Analogy.apply(T, $.tt(1f, confDefault(m)), m, minConf)) : null;
 //        }
 //    },
 
@@ -382,14 +382,14 @@ public enum NALTruth implements TruthFunction {
     StructuralAbduction() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return Abduction.apply($.t(1f, confDefault(n)), T, minConf, n);
+            return Abduction.apply($.tt(1f, confDefault(n)), T, minConf, n);
         }
     },
 
     BeliefStructuralAbduction() {
         @Override
         public Truth apply(@Nullable final Truth T, final Truth B, float minConf, NAL n) {
-            return Abduction.apply($.t(1f, confDefault(n)), B, minConf, n);
+            return Abduction.apply($.tt(1f, confDefault(n)), B, minConf, n);
         }
     },
 
@@ -450,7 +450,7 @@ public enum NALTruth implements TruthFunction {
 //    @SinglePremise @AllowOverlap Curiosity() {
 //        @Override
 //        public Truth apply(final Truth T, final Truth B, NAR m, float minConf) {
-//            return $.t(m.random().nextFloat(), m.confMin.floatValue()*2);
+//            return $.tt(m.random().nextFloat(), m.confMin.floatValue()*2);
 //        }
 //    },
 
