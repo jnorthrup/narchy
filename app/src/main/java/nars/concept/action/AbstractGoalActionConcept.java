@@ -159,17 +159,17 @@ public class AbstractGoalActionConcept extends GameAction {
     @Override
     public void update( Game g) {
 
-        int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY; //high sensitivity
-        int limitGoal = limitBelief * 2;
+        int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
+        int limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;
 
-
-        int perceptShift = Math.round((int)(g.when.end - g.when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+        int perceptShift = (int)((g.when.end - g.when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
         this.beliefTruth = truth(truth(true, limitBelief, g.when, perceptShift));
 
         updateCuriosity(g.curiosity);
 
         this.actionTruth = actionTruth(limitGoal, g, perceptShift);
+
 
     }
 

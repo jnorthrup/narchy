@@ -483,7 +483,8 @@ public class Derivation extends PreDerivation {
                 //w.dur(); //COARSE
         this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
                 //n.dtDither(); //FINE
-                Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
+                Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
+                //Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
         this.confMin = n.confMin.floatValue();

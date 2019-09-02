@@ -54,7 +54,7 @@ public class WorkerExec extends ThreadedExec {
 
 		super.update();
 
-		subCycleNS = Math.round(((double)(threadWorkTimePerCycle * concurrency())) / granularity);
+		subCycleNS = (long) (((double)(threadWorkTimePerCycle * concurrency())) / granularity);
 	}
 
 	@Override
@@ -175,10 +175,11 @@ public class WorkerExec extends ThreadedExec {
 			float util = h._utilization;
 			if (!Float.isFinite(util)) util = 1;
 
-			long useNS = (util <= 1) ?
-				Math.round(subCycleNS * (util + 1f) / 2) //less than subcycle but optimistically, more time than it might expect
-				:
-				Math.round(subCycleNS * (1 - (Util.min(util, maxOverUtilization) - 1))); //penalize up to a certain amount for previous over-utilization
+			long useNS =
+				(long)(subCycleNS * ((util <= 1) ?
+					((util + 1f) / 2) //less than subcycle but optimistically, more time than it might expect
+					:
+					((1 - (Util.min(util, maxOverUtilization) - 1))))); //penalize up to a certain amount for previous over-utilization
 
 			deadline = Math.min(until, nanoTime() + useNS);
 			//try {
@@ -201,7 +202,7 @@ public class WorkerExec extends ThreadedExec {
 		}
 
 		void sleep() {
-			long i = Math.round(WorkerExec.this.threadIdleTimePerCycle * (((double) concurrency()) / exe.maxThreads));
+			long i = (long)(WorkerExec.this.threadIdleTimePerCycle * (((double) concurrency()) / exe.maxThreads));
 			if (i > 0) {
 				Util.sleepNS(NapTimeNS);
 				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());

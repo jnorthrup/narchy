@@ -9,6 +9,8 @@ import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 
+import static jcog.Util.unitize;
+
 /* 1D and 2D grid tracking */
 public class TrackXY  {
 
@@ -22,14 +24,13 @@ public class TrackXY  {
     /** current coordinates: to be moved by the experiment */
     public volatile float cx, cy;
 
-    public final FloatRange controlSpeed = new FloatRange(0.15f, 0, 0.25f);
+    public final FloatRange controlSpeed = new FloatRange(0.01f, 0, 0.25f);
 
-    public final FloatRange targetSpeed = new FloatRange(0.1f, 0, 0.25f);
+    public final FloatRange targetSpeed = new FloatRange(0.01f, 0, 0.25f);
 
-    public final FloatRange visionContrast = new FloatRange(0.1f, 0, 1f);
+    public final FloatRange visionContrast = new FloatRange(1f, 0, 2f);
 
-    public final MutableEnum<TrackXYMode> mode =
-            new MutableEnum<TrackXYMode>(TrackXYMode.CircleTarget);
+    public final MutableEnum<TrackXYMode> mode = new MutableEnum<>(TrackXYMode.CircleTarget);
 
 
     public TrackXY(int W, int H) {
@@ -59,10 +60,10 @@ public class TrackXY  {
         grid.set((x, y) -> {
 
 
-            float distOther = (float) Math.sqrt(Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
-            return distOther > visionContrast.floatValue() ? 0 : 1;
+            float distOther = (float) (Util.sqr((tx - x)/((double)W)) + Util.sqr((ty - y)/((double)H)));
+            //return distOther > visionContrast.floatValue() ? 0 : 1;
             //float distSelf = (float) Math.sqrt(Util.sqr(sx - x) + Util.sqr(sy - y));
-            //return unitize(1 - Math.max(1f/(Math.max(W,H)),distOther) * 8 * visionContrast.floatValue());
+            return unitize(1 - distOther * Math.max(W,H) * visionContrast.floatValue());
 //                return Util.unitize(
 //                        Math.max(1 - distOther * visionContrast,
 //                                1 - distSelf * visionContrast

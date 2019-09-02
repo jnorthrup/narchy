@@ -1,9 +1,10 @@
-package nars.agent;
+package nars.agent.util;
 
 import jcog.learn.Agent;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
+import nars.agent.Game;
 import nars.concept.action.SwitchAction;
 import nars.concept.sensor.GameLoop;
 import nars.term.Term;

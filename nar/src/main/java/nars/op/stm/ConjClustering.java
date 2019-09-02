@@ -2,7 +2,6 @@ package nars.op.stm;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.data.set.MetalLongSet;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.LongInterval;
@@ -26,6 +25,7 @@ import nars.term.util.conj.ConjSeq;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
@@ -153,10 +153,10 @@ public class ConjClustering extends How implements Consumer<Task> {
 
 
     protected float pri(Task t) {
-        return    (t.pri())
-                * (t.conf())
-                * (0.5f + 0.5f * t.polarity())
-                * (0.5f + 0.5f * t.originality())
+        return    (1 + 0.5f * t.pri())
+                * (1 + 0.5f * t.conf())
+                * (1 + 0.5f * t.polarity())
+                * (1 + 0.5f * t.originality())
 
 //                 * (1/(1f+t.volume()))
                 //* TruthIntegration.evi(t);
@@ -304,9 +304,10 @@ public class ConjClustering extends How implements Consumer<Task> {
 
 //        private final Map<LongObjectPair<Term>, Task> vv = new UnifiedMap<>(16);
         final List<Task> trying = new FasterList();
+        final IntToObjectFunction<Task> tryer = trying::get;
         final FasterList<Task> tried = new FasterList();
 
-        final MetalLongSet stamp = new MetalLongSet(NAL.STAMP_CAPACITY * 8);
+
         public FasterList<TaskList> centroids = new FasterList();
 
         /** generated tasks */
@@ -333,7 +334,6 @@ public class ConjClustering extends How implements Consumer<Task> {
 
             tried.clear();
             trying.clear();
-            stamp.clear();
 
 //            System.out.println(items.size());
 
@@ -370,7 +370,6 @@ public class ConjClustering extends How implements Consumer<Task> {
                     start = Long.MAX_VALUE;
                     volEstimate = 1;
 
-                    stamp.clear();
                     trying.clear();
                 }
 
@@ -391,9 +390,8 @@ public class ConjClustering extends How implements Consumer<Task> {
                 int xtv = term.volume();
 
                 if (volEstimate + xtv <= volMax) {
-                    long[] tStamp = t.stamp();
 
-                    if (!Stamp.overlapsAny(stamp, tStamp)) {
+                    if (!Stamp.overlap(t, tryer, 0, trying.size())) {
 
                         long tStart = t.start();
                         //                        if (vv.isEmpty() || !vv.containsKey(pair(tStart, term.neg()))) {
@@ -402,8 +400,6 @@ public class ConjClustering extends How implements Consumer<Task> {
 
 
                         volEstimate += (xtv+1);
-
-                        stamp.addAll(tStamp);
 
                         if (start > tStart) start = tStart;
 
@@ -493,7 +489,9 @@ public class ConjClustering extends How implements Consumer<Task> {
             long[] se = Tense.dither(new long[] { start, tEnd}, nar);
             NALTask y = new STMClusterTask(cp, t,
                     se[0], se[1],
-                    Stamp.sample(NAL.STAMP_CAPACITY, stamp, nar.random()), puncOut, now);
+                    Stamp.sample(NAL.STAMP_CAPACITY,
+                        Stamp.toMutableSet(NAL.STAMP_CAPACITY,nnn->x[nnn].stamp(), x.length),
+                        nar.random()), puncOut, now);
 
             Task.fund(y, x, priCopyOrMove);
 

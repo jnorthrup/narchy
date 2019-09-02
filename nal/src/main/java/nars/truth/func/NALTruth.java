@@ -60,7 +60,7 @@ public enum NALTruth implements TruthFunction {
     /**
      * similar to structural deduction but keeps the same input frequency, only reducing confidence
      */
-    @SinglePremise StructuralReduction() {
+    @AllowOverlap @SinglePremise StructuralReduction() {
         @Override
         public Truth apply(final Truth T, final Truth Bignored, float minConf, NAL n) {
             float c = confCompose(T, NALTruth.confDefault(n));
@@ -486,7 +486,7 @@ public enum NALTruth implements TruthFunction {
 
 
     public final @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, NAL m) {
-        return apply(task, belief, NAL.truth.TRUTH_EPSILON, m);
+        return apply(task, belief, Float.MIN_NORMAL, m);
     }
 
     private static @Nullable Truth negIfNonNull(@Nullable Truth t) {

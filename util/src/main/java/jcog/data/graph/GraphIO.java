@@ -97,19 +97,21 @@ public enum GraphIO { ;
     /**
      * Saves the given graph to
      * the given stream in GML format.
+     * https://www.fim.uni-passau.de/fileadmin/files/lehrstuhl/brandenburg/projekte/gml/gml-technical-report.pdf
      */
     public static void writeGML(Graph g, PrintStream out) {
 
         out.println("graph [ directed " + (g.directed() ? "1" : "0"));
 
-        for (int i = 0; i < g.size(); ++i)
-            out.println("node [ id " + i + " ]");
+        int size = g.size();
+        for (int i = 0; i < size; ++i)
+            out.println("node [ id " + i + " label \"" + g.vertex(i) + "\" ]");
 
-        for (int i = 0; i < g.size(); ++i) {
+        for (int i = 0; i < size; ++i) {
             int ii = i;
             g.neighborsOut(i).forEach(o -> {
                 out.println(
-                        "edge [ source " + ii + " target " + o + " ]");
+                        "edge [ source " + ii + " target " + o + " ]"); //TODO edge label
             });
         }
 

@@ -19,7 +19,6 @@ import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
@@ -202,19 +201,19 @@ public class TrackXY_NAR extends GameX {
 
 //        n.attn.links.capacity(1024);
 
-        n.goalPriDefault.amp(0.1f);
-        n.beliefPriDefault.amp(0.1f);
-        n.questionPriDefault.amp(0.03f);
-        n.questPriDefault.amp(0.05f);
+//        n.goalPriDefault.amp(0.1f);
+//        n.beliefPriDefault.amp(0.1f);
+//        n.questionPriDefault.amp(0.03f);
+//        n.questPriDefault.amp(0.05f);
 
 
-        n.freqResolution.set(0.02f);
+        n.freqResolution.set(0.05f);
 //        n.confResolution.set(0.05f);
 
 
         //n.freqResolution.set(0.04f);
 
-        n.termVolMax.set(14);
+        n.termVolMax.set(30);
         //n.dtDither.set(Math.max(1, durMS));
 
 
@@ -237,12 +236,12 @@ public class TrackXY_NAR extends GameX {
 //        ((BatchDeriver) d).premisesPerIteration.set(derivationStrength);
 
 
-        new STMLinkage(n, 1) {
-//                @Override
-//                public boolean keep(Task newEvent) {
-//                    return newEvent.isGoal();
-//                }
-        };
+//        new STMLinkage(n, 1) {
+////                @Override
+////                public boolean keep(Task newEvent) {
+////                    return newEvent.isGoal();
+////                }
+//        };
 
 
         ConjClustering cjB = new ConjClustering(n, BELIEF,
@@ -257,11 +256,12 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-        final int W = 3, H = 1;
+        final int W = 4, H = 4;
+        //final int W = 3, H = 1;
         //final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
-        ((TaskLinkWhat)a.what()).links.linksMax.set(512);
+        ((TaskLinkWhat)a.what()).links.linksMax.set(64);
 
         Table t = DataTable.create(DoubleColumn.create("tx"),DoubleColumn.create("cx"));
         Runtime.getRuntime().addShutdownHook(new Thread(()->{

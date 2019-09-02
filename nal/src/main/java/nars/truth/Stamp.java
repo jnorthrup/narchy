@@ -33,6 +33,7 @@ import nars.NAL;
 import nars.Op;
 import nars.Task;
 import nars.truth.func.TruthFunctions;
+import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
 import org.eclipse.collections.api.list.primitive.MutableLongList;
 import org.eclipse.collections.api.set.primitive.LongSet;
 import org.eclipse.collections.api.tuple.primitive.ObjectFloatPair;
@@ -456,7 +457,13 @@ public interface Stamp {
         return false;
     }
 
-
+    static boolean overlap(Task a, IntToObjectFunction<Task> b, int from, int to) {
+        for (int i = from; i < to; i++) {
+            if (Stamp.overlap(a,b.apply(i)))
+                return true;
+        }
+        return false;
+    }
 
     static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
         for (long x : b)
@@ -470,8 +477,8 @@ public interface Stamp {
     }
 
     static boolean overlap(Task x, Task y) {
-        if (x == y) return true;
-        return (x.intersects((LongInterval)y) && overlapsAny(x.stamp(), y.stamp()));
+        return x == y ||
+            (x.intersects((LongInterval) y) && overlapsAny(x.stamp(), y.stamp()));
     }
 
     long creation();

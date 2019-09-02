@@ -11,22 +11,18 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.Task;
 import nars.agent.Reward;
-import nars.agent.util.Impiler;
-import nars.attention.TaskLinkWhat;
+import nars.impiler.Impiler;
 import nars.attention.What;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
+import nars.impiler.ImpilerDeduction;
 import nars.op.BeliefPredict;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
-import nars.time.When;
-import nars.time.event.WhenTimeIs;
-import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -35,8 +31,6 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.BELIEF;
-import static nars.Op.IMPL;
 import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
@@ -93,7 +87,7 @@ public class PoleCart extends GameX {
 
 						Impiler.impile(what);
 
-                        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n);
+                        ImpilerDeduction d = new ImpilerDeduction(n);
                         d.get(p.actions().get(n.random()).term(), n.time(), false).forEach(t -> {
                            System.out.println(t);
                            what.accept(t);
