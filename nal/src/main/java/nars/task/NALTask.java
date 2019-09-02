@@ -7,7 +7,6 @@ import nars.Task;
 import nars.control.CauseMerge;
 import nars.term.Term;
 import nars.time.When;
-import nars.truth.MutableTruth;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 

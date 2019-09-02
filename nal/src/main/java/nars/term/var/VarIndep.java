@@ -97,9 +97,7 @@ public final class VarIndep extends NormalizedVariable {
             if (!count.isEmpty())
                 count.clear();
 
-            for (int j = 0, varPathsSize = varPaths.size(); j < varPathsSize; j++) {
-                ByteList p = varPaths.get(j);
-
+            for (ByteList p : varPaths) {
                 if (rootIsStatement) {
                     byte branch = p.get(0);
                     if (Util.branchOr((byte) -1, count, branch) == 0b11)
@@ -108,7 +106,8 @@ public final class VarIndep extends NormalizedVariable {
 
                 int pSize = p.size();
 
-                nextStatement: for (byte k = 0; k < nStatements; k++) {
+                nextStatement:
+                for (byte k = 0; k < nStatements; k++) {
                     ByteList statement = statements.get(k);
                     int statementPathLength = statement.size();
                     if (statementPathLength > pSize)

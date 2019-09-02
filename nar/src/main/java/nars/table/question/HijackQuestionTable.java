@@ -9,12 +9,12 @@ import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
 public class HijackQuestionTable extends PriHijackBag<Task, Task> implements QuestionTable {
@@ -56,55 +56,55 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     }
 
 
-    /** finds nearly equivalent and temporally combineable task. if merged, this method will call put to insert it. */
-    private Task preMerge(Task _x) {
-        Task x = _x;
-        if (isEmpty() || x.isEternal())
-            return x;
+    /** finds nearly equivalent and temporally combineable task.
+     * returns null if insertion should proceed with the 'x' instance.
+     * if returns 'x' it means its already present
+     * if it returns another instance it is an equal but different
+     * */
+    @Nullable
+    private Task preMerge(Task x) {
+        if (isEmpty())
+            return null;
 
         long xs = TIMELESS, xe = TIMELESS;
         for (Task y : this) {
             if (x.equals(y))
                 return y; //found exact
 
-            long ys = y.start();
-            if (ys!=ETERNAL) {
-                if (Arrays.equals(x.stamp(), y.stamp())) {
-                    if (x.term().equals(y.term())) {
-                        long ye = y.end();
-                        if (xs == TIMELESS) {
-                            xs = x.start(); xe = x.end();
-                        }
 
-                        //if (LongInterval.intersectLength(xs, xe, ys, ye)>0) {
-                        if (LongInterval.intersectsSafe(xs, xe, ys, ye)) {
-                            Longerval u = LongInterval.union(xs, xe, ys, ye);
-                            if (u.start == ys && u.end == ye) {
-                                //x contained within y, so merge
-                                //TODO boost y priority if contributes to it, in proportion to range
-                                return y;
-                            } else if (u.start == xs && u.end == xe) {
-                                //y contained within x, so remove y
-                                //TODO boost x priority if contributes to it, in proportion to range
-                                remove(y); y.delete();
-                            } else {
-                                float newPri = (float)(((x.priElseZero() * ((double)(xe-xs))) + (y.priElseZero() * (ye-ys))) /  (u.end - u.start));
-                                Task x2 = Task.clone(x, x.term(), null, x.punc(), xs = u.start, xe = u.end);
-                                Task.merge(x2, new Task[] { x, y }, newPri);
-                                remove(y); y.delete();
-                                x = x2;
-                            }
-
-                        }
+            if (Arrays.equals(x.stamp(), y.stamp())) {
+                if (x.term().equals(y.term())) {
+                    long ye = y.end();
+                    if (xs == TIMELESS) {
+                        xs = x.start(); xe = x.end();
                     }
+                    long ys = y.start();
+                    //if (LongInterval.intersectLength(xs, xe, ys, ye)>0) {
+                    //if (LongInterval.intersectsSafe(xs, xe, ys, ye)) {
+                        Longerval u = LongInterval.union(xs, xe, ys, ye);
+                        if (u.start == ys && u.end == ye) {
+                            //x contained within y, so merge
+                            //TODO boost y priority if contributes to it, in proportion to range
+                            return y;
+                        } else if (u.start == xs && u.end == xe) {
+                            //y contained within x, so remove y.   expect x to get inserted next
+                            //TODO boost x priority if contributes to it, in proportion to range
+                            remove(y); y.delete();
+                            return null;
+                        } else {
+//                                float newPri = (float)(((x.priElseZero() * ((double)(xe-xs))) + (y.priElseZero() * (ye-ys))) /  (u.end - u.start));
+//                                Task x2 = Task.clone(x, x.term(), null, x.punc(), xs = u.start, xe = u.end);
+//                                Task.merge(x2, new Task[] { x, y }, newPri);
+//                                remove(y); y.delete();
+//                                x = x2;
+                        }
+
+                    //}
                 }
             }
         }
 
-        if (x!=_x)
-            return put(x);
-        else
-            return x;
+        return null;
     }
 
 
@@ -112,21 +112,13 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
     public void remember(Remember r) {
         Task x = r.input;
 
-        Task y;
-        y = preMerge(x);
-        if (y == x)
-            y = put(x);
-
-        if (y == x) {
+        Task y = preMerge(x);
+        if (y == null) {
+            x = put(x);
+            commit(forget(r.nar.questionForgetRate.floatValue() /* estimate */));
             r.remember(x);
-        } else {
-            if (y != null)
-                r.merge(y); //existing
-        }
-
-        commit(forget(r.nar.questionForgetRate.floatValue() /* estimate */));
-
-        //TODO track displaced questions
+        } else
+            r.merge(y);
     }
 
     @Override

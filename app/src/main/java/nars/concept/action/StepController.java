@@ -1,4 +1,4 @@
-package nars;
+package nars.concept.action;
 
 import org.eclipse.collections.api.block.procedure.primitive.FloatProcedure;
 import org.eclipse.collections.api.tuple.primitive.IntObjectPair;

@@ -78,7 +78,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 
-	private static final Event[] EMPTY_EVENT_ARRAY = new Event[0];
+	private static final Event[] EMPTY_EVENT_ARRAY = Event.EmptyArray;
 
 
 	private static final Iterable empty = List.of();
@@ -293,7 +293,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	 * creates an event for a hypothetical target which may not actually be an event;
 	 * but if it is there or becomes there, it will connect what it needs to
 	 */
-	protected Event shadow(Term v) {
+	protected static Event shadow(Term v) {
 		//return event(v, TIMELESS, false);
 		return new Relative(v);
 	}
@@ -448,7 +448,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		}
 	}
 
-	private TimeGraph.Event event(Term t, long start, long end) {
+	private static TimeGraph.Event event(Term t, long start, long end) {
 		return (end != start) ? new AbsoluteRange(t, start, end) : new Absolute(t, start);
 	}
 
@@ -1193,7 +1193,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	 * expects 'dt' to be the final value (already dithered)
 	 */
 	@Deprecated
-	private Term dt(Compound x, boolean dir, int dt) {
+	private static Term dt(Compound x, boolean dir, int dt) {
 
 		assert (dt != XTERNAL);
 		Op xo = x.op();
@@ -1375,7 +1375,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		return true;
 	}
 
-	private boolean tryRootMatch(Term x, Event z, boolean isRoot, Predicate<Event> each) {
+	private static boolean tryRootMatch(Term x, Event z, boolean isRoot, Predicate<Event> each) {
 		if (z instanceof Absolute) {
 			if (!each.test(!isRoot ?
 				z //solution as-is
@@ -1617,7 +1617,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		return true;
 	}
 
-	private boolean solveLastResort(Event x, Predicate<Event> each) {
+	private static boolean solveLastResort(Event x, Predicate<Event> each) {
 //        if (!(x instanceof Relative))
 //            throw new TODO("should this each.test(x)?");
 		return !(x instanceof Relative) || each.test(x);

@@ -1,4 +1,4 @@
-package nars.util;
+package nars.op;
 
 import jcog.Texts;
 import jcog.data.list.FasterList;

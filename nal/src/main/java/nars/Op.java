@@ -739,7 +739,7 @@ public enum Op {
             super("Invalid punctuation: " + c);
         }
     }
-    public final Term statement(TermBuilder b, Op op, int dt, Term[] u) {
+    public static Term statement(TermBuilder b, Op op, int dt, Term[] u) {
         if (u.length != 2)
             return (op == INH || op == SIM || (op == IMPL && dtSpecial(dt)) ? True : Null); /* HACK */ //throw new TermException(op + " requires 2 arguments, but got: " + Arrays.toString(u), op, dt, u);
 

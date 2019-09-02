@@ -24,6 +24,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Predicate;
 import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
@@ -191,24 +192,30 @@ public enum ConjPar {
             sp.sortThis(Comparator.comparingInt((ObjectIntPair<Term> i) -> -i.getTwo()).thenComparing(ObjectIntPair::getOne));
 
 
+        MutableSet<Term> components = null;
         for (ObjectIntPair<Term> j : sp) {
             int xxxn = xxx.size();
             if (xxxn < 2)
                 break; //done
+            if (components!=null)
+                components.clear();
             Term jj = j.getOne();
             int subjOrPred = !(jj instanceof Neg) ? 0 :1;
             jj = jj.unneg();
-            MutableSet<Term> components = new UnifiedSet(xxxn);
             for (Term xxxi : xxx) {
                 Subterms xxi = xxxi.unneg().subterms();
                 if (xxi.sub(subjOrPred).equals(jj)) {
                     Term c = xxxi;
-                    if (components.contains(c.neg()))
-                        return False; //contradiction detected
+                    if (components!=null) {
+                        if (components.contains(c.neg()))
+                            return False; //contradiction detected
+                    } else {
+                        components = new UnifiedSet();
+                    }
                     components.add(c);
                 }
             }
-            if (components.size() <= 1)
+            if (components==null || components.size() <= 1)
                 continue;
 
             components.forEach(xxx::removeInstance);
@@ -216,12 +223,9 @@ public enum ConjPar {
             components.forEach(z -> c2.add(z.unneg().sub(1 - subjOrPred).negIf(z instanceof Neg)));
 
 
-            Term cc;
-            if (subjOrPred==0) {
-                cc = INH.the(B, jj, CONJ.the(B, c2));
-            } else {
-                cc = INH.the(B, Op.DISJ(B, c2.toArray(Op.EmptyTermArray)), jj);
-            }
+            Term cc = subjOrPred == 0 ?
+                INH.the(B, jj, CONJ.the(B, c2)) :
+                INH.the(B, Op.DISJ(B, c2.toArray(Op.EmptyTermArray)), jj);
             if (cc == False || cc == Null)
                 return cc;
             if (cc!=True)
@@ -281,9 +285,13 @@ public enum ConjPar {
 
                     xx = xx.clone(); //dont modify input array
                     j = -1;
+
+                    Predicate<Term> commonDoesntContain = s -> !common.contains(s);
+
                     for (int k = 0; k < d; k++) {
                         j = cond.next(true, j + 1, n);
-                        Term[] xxj = xx[j].unneg().subterms().subsIncluding(s -> !common.contains(s));
+
+                        Term[] xxj = xx[j].unneg().subterms().subsIncluding(commonDoesntContain);
                         if (xxj.length == 0)
                             return null; //eliminated TODO detect sooner
                         xx[j] = (xxj.length == 1 ? xxj[0] :

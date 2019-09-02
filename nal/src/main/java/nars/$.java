@@ -382,7 +382,7 @@ public enum $ { ;
      * normalized variable
      */
     public static NormalizedVariable v(/**/ Op type, byte id) {
-        return (NormalizedVariable) NormalizedVariable.the(type, id);
+        return NormalizedVariable.the(type, id);
     }
 
     /**

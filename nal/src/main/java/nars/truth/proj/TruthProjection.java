@@ -551,7 +551,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	private int firstValidIndex(int after) {
-		return indexOf(after, (IntPredicate) (this::valid));
+		return indexOf(after, (IntPredicate) i -> valid(i));
 	}
 
 	private int firstValidOrNonNullIndex(int after) {
@@ -573,7 +573,7 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * test for whether an amount of evidence is valid
 	 */
-	public final boolean valid(double e) {
+	public static boolean valid(double e) {
 		return e > Double.MIN_NORMAL;
 	}
 

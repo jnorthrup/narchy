@@ -237,7 +237,7 @@ public enum Intermpolate {;
             b = b.unneg();
         }
 
-        if (!(a instanceof Compound) && !(b instanceof Compound))
+        if (!(a instanceof Compound) || !(b instanceof Compound))
             return Float.POSITIVE_INFINITY;
 
         if (!a.equalsRoot(b))

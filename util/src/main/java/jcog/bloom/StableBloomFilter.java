@@ -39,7 +39,7 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
     }
 
     /**
-     * if the element isnt contained, add it. return true if added, false if already present.
+     * if the element isnt contained, add it. return true if added, false if possibly present.
      */
     public boolean addIfMissing(E element) {
         return addIfMissing(element, 1);
@@ -61,7 +61,6 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
     @Override
     public void remove(E element) {
         int[] indices = hash(element);
-
         remove(indices);
     }
 
@@ -73,17 +72,17 @@ public class StableBloomFilter<E> extends MetalBloomFilter<E> implements Countin
 
 
     public void forget(float forgetFactor, Random rng) {
-        for (int i = 0; i < Math.ceil(forget*forgetFactor); i++) {
-            int index = rng.nextInt(numberOfCells);
-            decrement(index);
+        double nForget = Math.ceil(forget * forgetFactor);
+        for (int i = 0; i < nForget; i++) {
+            decrement(rng.nextInt(numberOfCells));
         }
     }
 
 
     private void decrement(int idx) {
-        if (cells[idx] > 0) {
-            cells[idx] -= 1;
-        }
+        byte[] c = this.cells;
+        if (c[idx] > 0)
+            c[idx] -= 1;
     }
 
 }

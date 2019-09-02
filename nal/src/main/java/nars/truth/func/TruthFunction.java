@@ -76,7 +76,7 @@ public interface TruthFunction {
             return o.apply(repolarize(T, task), repolarize(B, belief), minConf, n);
         }
 
-        @Nullable private Truth repolarize(@Nullable Truth t, int polarity) {
+        @Nullable private static Truth repolarize(@Nullable Truth t, int polarity) {
             if (t == null || polarity==1)
                 return t;
             else if (polarity==-1 || (polarity==0 && t.isNegative()))

@@ -419,7 +419,6 @@ public final class Narsese {
 //            return extract(start, end);
         }
 
-        @SuppressWarnings("AutoUnboxing")
         @Override
         public IndexRange getLineRange(final int lineNumber) {
             throw new UnsupportedOperationException();
