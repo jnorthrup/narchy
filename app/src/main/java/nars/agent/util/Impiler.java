@@ -15,6 +15,7 @@ import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Task;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
@@ -26,6 +27,8 @@ import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
+import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -130,6 +133,17 @@ public class Impiler {
 		});
 
 		return g;
+	}
+
+	public static void impile(What w) {
+		When<NAR> nxow = WhenTimeIs.now(w);
+		((TaskLinkWhat) w).links.links.forEach(tl -> {
+			if (tl.from().op()==IMPL) {
+				@Nullable Task tt = tl.get(BELIEF, nxow, null);
+				if (tt != null)
+					Impiler.impile(tt, w.nar);
+			}
+		});
 	}
 
 	/**

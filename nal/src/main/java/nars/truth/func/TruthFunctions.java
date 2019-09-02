@@ -428,6 +428,13 @@ public final class TruthFunctions {
     public static double eternalize(double evi) {
         return w2cSafeDouble(evi);
     }
+
+    public static Truth union(Truth t, Truth b, float minConf) {
+        @Nullable Truth z = TruthFunctions.intersection(t, true, b, true, minConf);
+        return z != null ? z.neg() : null;
+    }
+
+
 }
 
 

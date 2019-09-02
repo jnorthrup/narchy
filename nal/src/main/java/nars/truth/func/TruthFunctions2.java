@@ -290,10 +290,18 @@ public enum TruthFunctions2 {
         if(opposite)
             alignment = 1 - alignment;
 
-        c *= alignment; if (c < minConf)  return null;
-        float f =
-                //Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
-                1;
+        float f;
+        //mode 1:
+        {
+            /*
+            c *= alignment; if (c < minConf)  return null;
+            f = 1;
+            */
+        }
+        //mode 2:
+        {
+            f = Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
+        }
 
         return $.t(f, c);
     }
@@ -403,6 +411,27 @@ public enum TruthFunctions2 {
         return t(fy, c);
     }
 
+    /** variation of the original union truth function that
+     * decreases confidence in proportion to the information lost
+     * by one component's higher frequency masking the other
+     * component's lower frequency.  if the components
+     * have equal frequencies then no loss is involved.
+     */
+    public static Truth union(Truth t, Truth b, float minConf) {
+        float c = confCompose(t, b);
+        if (c < minConf) return null;
+
+        float tf = t.freq(), bf = b.freq();
+        float f = Util.or(tf, bf);
+        if (f < NAL.truth.TRUTH_EPSILON)
+            return null;
+
+        float loss = Math.abs( (f - tf) - (f - bf) );
+        float lossFraction = loss / f;
+        c *= 1 - lossFraction;
+        if (c < minConf) return null;
+        else return t(f, c);
+    }
 
 
 }

@@ -229,8 +229,8 @@ public enum NALTruth implements TruthFunction {
     Union() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            @Nullable Truth z = TruthFunctions.intersection(T, true, B, true, minConf);
-            return z != null ? z.neg() : null;
+            return TruthFunctions.union(T, B, minConf);
+            //return TruthFunctions2.union(T, B, minConf);
         }
     },
 

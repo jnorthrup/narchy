@@ -36,6 +36,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 import static nars.Op.BELIEF;
+import static nars.Op.IMPL;
 import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
@@ -89,12 +90,9 @@ public class PoleCart extends GameX {
 					);
 
                     Loop.of(() -> {
-						When<NAR> nxow = WhenTimeIs.now(what);
-						((TaskLinkWhat) what).links.links.forEach(tl -> {
-							@Nullable Task tt = tl.get(BELIEF, nxow, null);
-							if (tt!=null)
-								Impiler.impile(tt, n);
-						});
+
+						Impiler.impile(what);
+
                         Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n);
                         d.get(p.actions().get(n.random()).term(), n.time(), false).forEach(t -> {
                            System.out.println(t);

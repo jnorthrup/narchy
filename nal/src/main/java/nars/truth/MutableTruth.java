@@ -42,6 +42,18 @@ public class MutableTruth implements Truth {
 		return evi(c2w(c));
 	}
 
+	/** modifies this instance */
+	public final MutableTruth negateThis() {
+		freq = 1.0f - freq;
+		return this;
+	}
+
+	public final MutableTruth negateThisIf(boolean ifTrue) {
+		if (ifTrue)
+			negateThis();
+		return this;
+	}
+
 	@Override
 	public final int hashCode() {
 		throw new UnsupportedOperationException();
@@ -74,4 +86,5 @@ public class MutableTruth implements Truth {
 		evi = 0;
 		return this;
 	}
+
 }

@@ -1,6 +1,6 @@
 package nars.truth.dynamic;
 
-import nars.Task;
+import nars.truth.MutableTruth;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 
@@ -18,27 +18,27 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     protected abstract boolean negResult();
 
     private Truth apply(DynTaskify d, boolean negComponents, boolean negResult) {
-        Truth y = null;
+        MutableTruth y = null;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
-            Task li = d.get(i);
-            Truth x = li.truth();
-            if (x == null)
-                return null;
+            Truth x = d.truth(i);
+//            if (x == null)
+//                return null;
 
             if (negComponents ^ !d.componentPolarity.get(i))
                 x = x.neg();
 
             if (y == null) {
-                y = x;
+                y = new MutableTruth(x);
             } else {
-                y = NALTruth.Intersection.apply(y, x, null);
-                if (y == null)
+                Truth yy = NALTruth.Intersection.apply(y, x, null);
+                if (yy == null)
                     return null;
+                y.set(yy);
             }
         }
 
 
-        return y.negIf(negResult);
+        return y.negateThisIf(negResult);
     }
 
     @Override

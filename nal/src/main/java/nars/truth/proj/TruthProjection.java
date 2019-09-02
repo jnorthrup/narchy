@@ -20,6 +20,7 @@ import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.util.Intermpolate;
 import nars.time.Tense;
+import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -112,6 +113,8 @@ abstract public class TruthProjection extends TaskList {
 
 		}
 
+		if (yt instanceof MutableTruth)
+			yt = ((MutableTruth)yt).clone();
 
 		NALTask y = new DynamicTruthTask(
 			r.getOne(), beliefOrGoal,

@@ -6,6 +6,7 @@
      B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
 
+
      B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:DeductionWeakPP, Time:TaskEvent)
          B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")   |-   --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:DeductionWeakPN, Time:TaskEvent)
        B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:DeductionWeakNP, Time:TaskEvent)
@@ -111,10 +112,10 @@
             (S ==> P), (P ==> M), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
 
     (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
-      (P ==> M), (M ==> S)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
+      (P ==> M), (M ==> S)       |- (--S ==> P), (Belief:ExemplificationPN, Time:Compose)
 
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
-      (P ==> M), (--M ==> S)     |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
+      (P ==> M), (--M ==> S)     |- (  S ==> P), (Belief:ExemplificationNP, Time:Compose)
             (S ==> P), (--M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
             (S ==> P), (P ==> M), task("?")   |- (--M ==> S), (Punctuation:Question, Time:Task)
 
@@ -182,7 +183,7 @@
     //TODO DynamicImplTruth
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
-       //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
+       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
 
 //     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
 //       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
@@ -283,9 +284,11 @@
 
 
 
-//Union induction
-    (&&,X,A..+), (&&,--X,A..+)                 |- (&&,A..+), (Belief:Union, Time:Compose)
-    (&&,--X,A..+), (&&,X,A..+)                 |- (&&,A..+), (Belief:Union, Time:Compose)
+//Union reduction
+    (&&,X,A..+), (&&,--X,A..+)                 |-   (&&,A..+), (Belief:UnionPP, Time:Compose)
+      (&&,X,A..+), (&&,--X,A..+)               |- --(&&,A..+), (Belief:UnionNN, Time:Compose)
+    (&&,--X,A..+), (&&,X,A..+)                 |-   (&&,A..+), (Belief:UnionPP, Time:Compose)
+      (&&,--X,A..+), (&&,X,A..+)               |- --(&&,A..+), (Belief:UnionNN, Time:Compose)
 
 // Mutex induction
     (&&,X,--Y,A..*), (&&,Y,--X,A..*), neq(X,Y)           |- (&&,--(X && Y),A..*), (Belief:IntersectionPB, Time:Compose)

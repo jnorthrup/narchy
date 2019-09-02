@@ -3,7 +3,6 @@ package nars.truth.dynamic;
 import jcog.Util;
 import jcog.util.ObjectLongLongPredicate;
 import nars.Op;
-import nars.Task;
 import nars.subterm.Subterms;
 import nars.task.util.TaskRegion;
 import nars.term.Compound;
@@ -11,10 +10,11 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjTree;
+import nars.term.util.conj.ConjList;
 import nars.time.Tense;
 
-import static nars.Op.*;
+import static nars.Op.CONJ;
+import static nars.Op.IMPL;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
@@ -85,12 +85,12 @@ public enum DynamicStatementTruth { ;
 
                 //IMPL: compute innerDT for the conjunction
                 ConjBuilder c =
-                        new ConjTree();
+                        //new ConjTree();
+                        new ConjList();
 
                 Term constantCondition = null;
                 for (int i = 0, componentsSize = d.size(); i < componentsSize; i++) {
-                    Task x = d.get(i);
-                    Term xx = x.term();
+                    Term xx = d.term(i);
                     if (xx.op()==IMPL) {
 
 

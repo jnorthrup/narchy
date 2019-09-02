@@ -1,8 +1,8 @@
 //NAL3 single premise belief/goal decompose
 (M --> C), X, eventOfPN(C,X)    |-   (M --> conjWithoutPN(C,X)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-  (M --> D), X, eventOfPN(D,X)  |- --(M --> conjWithoutPN(D,X)), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+  (M --> D), X, eventOfPN(D,X)  |- --(M --> conjWithoutPN(D,X)), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 (C --> M), X, eventOfPN(C,X)    |-   (conjWithoutPN(C,X) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-  (D --> M), X, eventOfPN(D,X)  |- --(conjWithoutPN(D,X) --> M), (Belief:StructuralDeductionWeakN,Goal:StructuralDeductionWeakN)
+  (D --> M), X, eventOfPN(D,X)  |- --(conjWithoutPN(D,X) --> M), (Belief:StructuralDeductionN,Goal:StructuralDeductionN)
 
 //(M --> I), X, eventOfPN(I,X)  |-   polarizeTask((M --> conjWithoutPN(I,X))), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
 //(I --> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) --> M)), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)

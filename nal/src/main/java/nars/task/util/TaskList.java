@@ -9,7 +9,9 @@ import jcog.pri.Prioritized;
 import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
+import nars.term.Term;
 import nars.truth.Stamp;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -143,6 +145,14 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
     @Nullable public final long[] stamp(int component) {
         Task t = items[component];
         return t!=null ? t.stamp() : null;
+    }
+
+    public final Term term(int i) {
+        return items[i].term();
+    }
+
+    public Truth truth(int i) {
+        return items[i].truth();
     }
 
 
