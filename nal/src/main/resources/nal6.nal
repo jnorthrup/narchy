@@ -6,8 +6,10 @@
      B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
 
 
-     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DesireReversePP, Goal:DesireReverseWeakPP, Time:TaskEvent)
-       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DesireReverseNP, Goal:DesireReverseWeakNP, Time:TaskEvent)
+     B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:DeductionWeakPP, Time:TaskEvent)
+         B, (  X ==> C), --is(X,"--"), --is(C,"#"), --is(B,"==>")   |-   --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:DeductionWeakPN, Time:TaskEvent)
+       B, (--X ==> C), --is(C,"#"), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:DeductionWeakNP, Time:TaskEvent)
+           B, (--X ==> C), --is(C,"#"), --is(B,"==>")               |-   --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:DeductionWeakNN, Time:TaskEvent)
 
        //questions
           B, (A ==> C), task("?@"), --is(A,{"--","#"}), --is(C,"#"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)

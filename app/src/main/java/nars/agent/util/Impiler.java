@@ -13,7 +13,6 @@ import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
-import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -23,9 +22,11 @@ import nars.op.TaskLeak;
 import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
+import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
@@ -71,7 +72,7 @@ public class Impiler {
 	}
 
 	@Nullable
-    private static ImplNode node(Term x, boolean createIfMissing, NAR nar) {
+    private static ImplNode node(Termed x, boolean createIfMissing, NAR nar) {
 		Concept xc = createIfMissing ? nar.conceptualize(x) : nar.concept(x);
 		if (xc != null)
 			return node(xc, createIfMissing);
@@ -135,7 +136,7 @@ public class Impiler {
 	 * update task in the intra-concept graph
 	 */
 	public static boolean impile(Task i, NAR n) {
-		if (implFilter(i.term())) {
+		if (i.isBelief() && implFilter(i.term())) {
 			_impile(i, n);
 			return true;
 		}
@@ -371,10 +372,11 @@ public class Impiler {
 		/**
 		 * get the results
 		 */
-		public /* synchronized */ List<Task> get(Term target, long when, boolean forward) {
+		public /* synchronized */ List<Task> get(Termed _target, long when, boolean forward) {
 
 		    this.in = null; //reset for repeated invocation
 
+			Term target = _target.term();
             if (target.op()==IMPL)
                 target = target.sub(forward ? 0 /* subj */ : 1 /* pred */);
 
@@ -454,7 +456,7 @@ public class Impiler {
 			}
 
 
-			Truth tAccum = null;
+			MutableTruth tAccum = null;
 
 			long offset =
 				//now
@@ -462,7 +464,7 @@ public class Impiler {
 
 
 			for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
-				Task e = pathTasks[i];
+				Task e = pathTasks[forward ? i : (n-1-i)];
 				Truth ttt = e.truth();
 
 				Term ee = e.term();
@@ -470,19 +472,27 @@ public class Impiler {
 				if (tt == null)
 					return false; //too weak
 
-				int ees = forward ? 0 : 1;
-				offset += ee.sub(ees).eventRange();
 				int edt = ee.dt();
 				if (edt == DTERNAL) edt = 0;
-				offset += edt;
 
+				if (forward) {
+					offset += ee.sub(0).eventRange() + edt;
+				} else {
+					offset += -ee.sub(1).eventRange() - edt;
+				}
 
 				if (tAccum == null) {
-					tAccum = tt;
+					tAccum = new MutableTruth(tt);
 				} else {
-					tAccum = NALTruth.Deduction.apply(tAccum, tt, confMin, null);
-					if (tAccum == null)
+
+					Truth tNext =
+						(forward ? NALTruth.Deduction : NALTruth.PostWeak)
+							.apply(tAccum, tt, confMin, null);
+
+					if (tNext == null)
 						return false;
+
+					tAccum.set(tNext);
 				}
 
 
@@ -534,10 +544,13 @@ public class Impiler {
 
 			}
 
+			Term ccc = cc.term();
+			if (ccc == Null) return false;
+
 			Term ee = forward ?
-				IMPL.the(cc.term(), zDT, before)
+				IMPL.the(ccc, zDT, before)
 				:
-				IMPL.the(cc.term(), zDT, next);
+				IMPL.the(ccc, zDT, next);
 			if (ee instanceof Bool || ee.volume() > volMax)
 				return false;
 
@@ -546,7 +559,7 @@ public class Impiler {
 
 			long finalStart = start, finalEnd = start + range;
 			Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
-				NALTask.the(ttt, BELIEF, tr, now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
+				NALTask.the(ttt, BELIEF, tr.dither(nar), now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
 					Stamp.toMutableSet(Math.round(n/2f * STAMP_CAPACITY), i->pathTasks[i].stamp(), n),
 					nar.random())));
 			if (z != null) {

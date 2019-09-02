@@ -16,6 +16,7 @@ import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
+import nars.agent.util.Impiler;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.sensor.VectorSensor;
@@ -47,7 +48,6 @@ import nars.time.clock.RealTime;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
-import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.unit.AspectAlign;
@@ -68,7 +68,6 @@ import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
-import static spacegraph.space2d.container.grid.Gridding.grid;
 
 /**
  * Extensions to NAgent interface:
@@ -193,6 +192,8 @@ abstract public class GameX extends Game {
                         float fps = _fps;
                         MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, metaAllowPause);
                         gm.pri(0.1f);
+
+
                     });
                 });
             });
@@ -521,9 +522,6 @@ abstract public class GameX extends Game {
             System.out.println();
         }).setFPS(0.25f);
 
-        //Loop.of(()->{
-            //Impiler.init();
-        //}).setFPS(0.5f);
 
 //        n.runLater(()-> {
 //            //addFuelInjection(n);

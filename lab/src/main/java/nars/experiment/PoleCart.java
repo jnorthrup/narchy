@@ -4,13 +4,18 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
+import jcog.exe.Loop;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
+import nars.Task;
 import nars.agent.Reward;
+import nars.agent.util.Impiler;
+import nars.attention.TaskLinkWhat;
+import nars.attention.What;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
@@ -19,6 +24,9 @@ import nars.op.BeliefPredict;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
+import nars.time.When;
+import nars.time.event.WhenTimeIs;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -27,6 +35,7 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
+import static nars.Op.BELIEF;
 import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
@@ -40,49 +49,66 @@ import static spacegraph.SpaceGraph.window;
  */
 public class PoleCart extends GameX {
 
-    boolean speedControl = true;
+	boolean speedControl = true;
 
-    private final DigitizedScalar xVel;
-    private final DigitizedScalar x;
-    private final AtomicBoolean drawFinished = new AtomicBoolean(true);
+	private final DigitizedScalar xVel;
+	private final DigitizedScalar x;
+	private final AtomicBoolean drawFinished = new AtomicBoolean(true);
 
 
-    static final float fps = 25;
-    private float speed = 1;
+	static final float fps = 25;
+	private float speed = 1;
 
-    public static void main(String[] arg) {
-        //polecart(-1);
+	public static void main(String[] arg) {
+		//polecart(-1);
 
-        //int instances = 2; int threadsEach = 1;
-        int instances = 1; int threadsEach = 4;
-        for (int i = 0; i < instances; i++)
-            runRTNet((n)-> {
-                        PoleCart p = new PoleCart(
-                                instances > 1 ?
-                                        $.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
-                                        $.the(PoleCart.class.getSimpleName()), n);
-                        Iterable<? extends Termed> predicting = Iterables.concat(
-                                p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
-                        );
-                        new BeliefPredict(
-                                predicting,
+		//int instances = 2; int threadsEach = 1;
+		int instances = 1;
+		int threadsEach = 4;
+		for (int i = 0; i < instances; i++)
+			runRTNet((n) -> {
+					PoleCart p = new PoleCart(
+						instances > 1 ?
+							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
+							$.the(PoleCart.class.getSimpleName()), n);
+					Iterable<? extends Termed> predicting = Iterables.concat(
+						p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
+					);
+					What what = p.what();
+					new BeliefPredict(
+						predicting,
 //                java.util.List.of(
 //                        x, xVel,
 //                        angVel, angX, angY),
-                                8,
-                                Math.round(6 * n.dur()),
-                                3,
-                                new LivePredictor.LSTMPredictor(0.1f, 1),
-                                //new LivePredictor.MLPPredictor(0.01f),
-                                p.what()
-                        );
-                        return p;
-                    },
-                    threadsEach, fps*2, 8);
-    }
+						8,
+						Math.round(6 * n.dur()),
+						3,
+						new LivePredictor.LSTMPredictor(0.1f, 1),
+						//new LivePredictor.MLPPredictor(0.01f),
+						what
+					);
+
+                    Loop.of(() -> {
+						When<NAR> nxow = WhenTimeIs.now(what);
+						((TaskLinkWhat) what).links.links.forEach(tl -> {
+							@Nullable Task tt = tl.get(BELIEF, nxow, null);
+							if (tt!=null)
+								Impiler.impile(tt, n);
+						});
+                        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n);
+                        d.get(p.actions().get(n.random()).term(), n.time(), false).forEach(t -> {
+                           System.out.println(t);
+                           what.accept(t);
+                        });
+                    }).setFPS(0.5f);
+
+					return p;
+				},
+				threadsEach, fps * 2, 8);
 
 
 
+	}
 
 
 //    public static class RL {
@@ -105,223 +131,221 @@ public class PoleCart extends GameX {
 //        }
 //    }
 
-    private final JPanel panel;
+	private final JPanel panel;
 
 
-    Dimension offDimension;
-    Image offImage;
-    Graphics offGraphics;
+	Dimension offDimension;
+	Image offImage;
+	Graphics offGraphics;
 
 
-    double pos, posDot, angle, angleDot;
+	double pos, posDot, angle, angleDot;
 
-    final float posMin = -2f, posMax = +2f;
-    float velMax = 10;
-    boolean manualOverride;
-
-
-    static final double cartMass = 1.;
-    static final double poleMass = 0.1;
-    static final double poleLength = 1f;
-    static final double gravity = 9.8;
-    static final double forceMag =
-            10;
-            //100.;
-            //200;
-    public final FloatRange tau = new FloatRange(
-            //0.007f, 0.001f, 0.02f
-                    0.025f, 0.001f, 0.05f
-            );
-    //0.01;
-    //0.005;
-    //0.0025f;
-    static final double fricCart = 0.00005;
-    static final double fricPole =
-            0.01f;
-    static final double totalMass = cartMass + poleMass;
-    static final double halfPole = 0.5 * poleLength;
-    static final double poleMassLength = poleLength * poleMass;
-    static final double fourthirds = 4. / 3.;
+	final float posMin = -2f, posMax = +2f;
+	float velMax = 10;
+	boolean manualOverride;
 
 
-    DigitizedScalar angX;
-    DigitizedScalar angY;
-
-    DigitizedScalar angVel;
-
-
-    volatile double action, actionLeft, actionRight;
-
-    public PoleCart(Term id, NAR nar, float tau) {
-        this(id, nar);
-        this.tau.set(tau);
-    }
-
-    public PoleCart(Term id, NAR nar) {
-        super(id, fps(fps), nar);
-
-
-        pos = 0.;
-        posDot = 0.;
-        angle = 0.2;
-        angleDot = 0.;
-        action = 0;
-
-
-        /**
-         returnObs.doubleArray[0] = theState.getX();
-         returnObs.doubleArray[1] = theState.getXDot();
-         returnObs.doubleArray[2] = theState.getTheta();
-         returnObs.doubleArray[3] = theState.getThetaDot();
-         */
+	static final double cartMass = 1.;
+	static final double poleMass = 0.1;
+	static final double poleLength = 1f;
+	static final double gravity = 9.8;
+	static final double forceMag =
+		10;
+	//100.;
+	//200;
+	public final FloatRange tau = new FloatRange(
+		//0.007f, 0.001f, 0.02f
+		0.025f, 0.001f, 0.05f
+	);
+	//0.01;
+	//0.005;
+	//0.0025f;
+	static final double fricCart = 0.00005;
+	static final double fricPole =
+		0.01f;
+	static final double totalMass = cartMass + poleMass;
+	static final double halfPole = 0.5 * poleLength;
+	static final double poleMassLength = poleLength * poleMass;
+	static final double fourthirds = 4. / 3.;
 
 
-        this.x = senseNumberBi($.p("x", id), () -> ((float) (pos - posMin)/(posMax-posMin)));
-        this.xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
-                new FloatNormalized(() -> (float) posDot)
-        );
+	DigitizedScalar angX;
+	DigitizedScalar angY;
+
+	DigitizedScalar angVel;
+
+
+	volatile double action, actionLeft, actionRight;
+
+	public PoleCart(Term id, NAR nar, float tau) {
+		this(id, nar);
+		this.tau.set(tau);
+	}
+
+	public PoleCart(Term id, NAR nar) {
+		super(id, fps(fps), nar);
+
+
+		pos = 0.;
+		posDot = 0.;
+		angle = 0.2;
+		angleDot = 0.;
+		action = 0;
+
+
+		/**
+		 returnObs.doubleArray[0] = theState.getX();
+		 returnObs.doubleArray[1] = theState.getXDot();
+		 returnObs.doubleArray[2] = theState.getTheta();
+		 returnObs.doubleArray[3] = theState.getThetaDot();
+		 */
+
+
+		this.x = senseNumberBi($.p("x", id), () -> ((float) (pos - posMin) / (posMax - posMin)));
+		this.xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
+			new FloatNormalized(() -> (float) posDot)
+		);
 
 
 //        angX.resolution(0.02f);
 //        angY.resolution(0.02f);
-        this.angX = senseNumberBi($.p(id,$.the("ang"),$.the("x")),
-                () -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-        this.angY = senseNumberBi($.p(id,$.the("ang"),$.the("y")),
-                () -> (float) (0.5f + 0.5f * (Math.cos(angle))));
+		this.angX = senseNumberBi($.p(id, $.the("ang"), $.the("x")),
+			() -> (float) (0.5f + 0.5f * (Math.sin(angle))));
+		this.angY = senseNumberBi($.p(id, $.the("ang"), $.the("y")),
+			() -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
 
-        this.angVel = senseNumberBi($.p(id,$.the("d"), $.the("ang")),
-                new FloatNormalized(() -> (float) angleDot)
-        );
+		this.angVel = senseNumberBi($.p(id, $.the("d"), $.the("ang")),
+			new FloatNormalized(() -> (float) angleDot)
+		);
 
 
-        //initBipolar();
-        initUnipolar();
+		//initBipolar();
+		initUnipolar();
 
-        if (speedControl) {
-            actionUnipolar($.inh(id, "S"), (s)->{
-               speed = Util.sqr(s*2);
-            });
-        }
-
-
+		if (speedControl) {
+			actionUnipolar($.inh(id, "S"), (s) -> {
+				speed = Util.sqr(s * 2);
+			});
+		}
 
 
-        this.panel = new JPanel(new BorderLayout()) {
-            public final Stroke stroke = new BasicStroke(4);
+		this.panel = new JPanel(new BorderLayout()) {
+			public final Stroke stroke = new BasicStroke(4);
 
-            @Override
-            public void paint(Graphics g) {
-                update(g);
-            }
+			@Override
+			public void paint(Graphics g) {
+				update(g);
+			}
 
-            @Override
-            public void update(Graphics g) {
-                action = -actionLeft + actionRight;
-                Dimension d = panel.getSize();
-                Color cartColor = Color.ORANGE;
-                Color trackColor = Color.GRAY;
-
-
-                if ((offGraphics == null)
-                        || (d.width != offDimension.width)
-                        || (d.height != offDimension.height)) {
-                    offDimension = d;
-                    offImage = panel.createImage(d.width, d.height);
-                    offGraphics = offImage.getGraphics();
-                }
+			@Override
+			public void update(Graphics g) {
+				action = -actionLeft + actionRight;
+				Dimension d = panel.getSize();
+				Color cartColor = Color.ORANGE;
+				Color trackColor = Color.GRAY;
 
 
-                float clearRate = 0.5f;
-                offGraphics.setColor(new Color(0, 0, 0, clearRate));
-                offGraphics.fillRect(0, 0, d.width, d.height);
+				if ((offGraphics == null)
+					|| (d.width != offDimension.width)
+					|| (d.height != offDimension.height)) {
+					offDimension = d;
+					offImage = panel.createImage(d.width, d.height);
+					offGraphics = offImage.getGraphics();
+				}
 
 
-                double[] xs = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
-                double[] ys = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
-                int[] pixxs = new int[8];
-                int[] pixys = new int[8];
-                for (int i = 0; i < 8; i++) {
-                    pixxs[i] = pixX(d, xs[i]);
-                    pixys[i] = pixY(d, ys[i]);
-                }
-                offGraphics.setColor(trackColor);
-                offGraphics.fillPolygon(pixxs, pixys, 8);
+				float clearRate = 0.5f;
+				offGraphics.setColor(new Color(0, 0, 0, clearRate));
+				offGraphics.fillRect(0, 0, d.width, d.height);
+
+
+				double[] xs = {-2.5, 2.5, 2.5, 2.3, 2.3, -2.3, -2.3, -2.5};
+				double[] ys = {-0.4, -0.4, 0., 0., -0.2, -0.2, 0, 0};
+				int[] pixxs = new int[8];
+				int[] pixys = new int[8];
+				for (int i = 0; i < 8; i++) {
+					pixxs[i] = pixX(d, xs[i]);
+					pixys[i] = pixY(d, ys[i]);
+				}
+				offGraphics.setColor(trackColor);
+				offGraphics.fillPolygon(pixxs, pixys, 8);
 
 
 //                String msg = "Position = " + n2(pos) + " Angle = " + n2(angle) + " angleDot = " + n2(angleDot);
 //                offGraphics.drawString(msg, 20, d.height - 20);
 
 
-                offGraphics.setColor(cartColor);
-                offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
+				offGraphics.setColor(cartColor);
+				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
-                ((Graphics2D) offGraphics).setStroke(stroke);
-
-
-                offGraphics.drawLine(pixX(d, pos), pixY(d, 0),
-                        pixX(d, pos + Math.sin(angle) * poleLength),
-                        pixY(d, poleLength * Math.cos(angle)));
+				((Graphics2D) offGraphics).setStroke(stroke);
 
 
-                if (action != 0) {
-                    int signAction = (action > 0 ? 1 : (action < 0) ? -1 : 0);
-                    int tipx = pixX(d, pos + 0.2 *
-                            //signAction
-                            action
-                    );
-                    Color arrowColor = new Color(0.25f, 0.5f + Util.tanhFast(Math.abs((float)action))/2f, 0.25f);
-                    int tipy = pixY(d, -0.1);
-                    offGraphics.setColor(arrowColor);
-                    offGraphics.drawLine(pixX(d, pos), pixY(d, -0.1), tipx, tipy);
-                    offGraphics.drawLine(tipx, tipy, tipx - 4 * signAction, tipy + 4);
-                    offGraphics.drawLine(tipx, tipy, tipx - 4 * signAction, tipy - 4);
-                }
+				offGraphics.drawLine(pixX(d, pos), pixY(d, 0),
+					pixX(d, pos + Math.sin(angle) * poleLength),
+					pixY(d, poleLength * Math.cos(angle)));
 
 
-                g.drawImage(offImage, 0, 0, panel);
-
-                drawFinished.set(true);
-            }
-
-        };
-
-
-        JFrame f = new JFrame();
-        f.setContentPane(panel);
-        f.setSize(800, 300);
-        f.setVisible(true);
-
-        f.addKeyListener(new KeyAdapter() {
-
-            @Override
-            public void keyPressed(KeyEvent e) {
-                if (e.getKeyChar() == 'o') {
-                    manualOverride = !manualOverride;
-                    System.out.println("manualOverride=" + manualOverride);
-                }
-                if (e.getKeyCode() == KeyEvent.VK_LEFT) {
-                    actionLeft = +1;
-                    actionRight = 0;
-                } else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
-                    actionRight = +1;
-                    actionLeft = 0;
-                } else if (e.getKeyChar() == ' ') {
-                    actionLeft = actionRight = 0;
-
-                }
-            }
-        });
+				if (action != 0) {
+					int signAction = (action > 0 ? 1 : (action < 0) ? -1 : 0);
+					int tipx = pixX(d, pos + 0.2 *
+						//signAction
+						action
+					);
+					Color arrowColor = new Color(0.25f, 0.5f + Util.tanhFast(Math.abs((float) action)) / 2f, 0.25f);
+					int tipy = pixY(d, -0.1);
+					offGraphics.setColor(arrowColor);
+					offGraphics.drawLine(pixX(d, pos), pixY(d, -0.1), tipx, tipy);
+					offGraphics.drawLine(tipx, tipy, tipx - 4 * signAction, tipy + 4);
+					offGraphics.drawLine(tipx, tipy, tipx - 4 * signAction, tipy - 4);
+				}
 
 
-        Reward r = rewardNormalized("balanced", -1, +1, this::update);
+				g.drawImage(offImage, 0, 0, panel);
 
-        //new RewardBooster(r);
+				drawFinished.set(true);
+			}
+
+		};
+
+
+		JFrame f = new JFrame();
+		f.setContentPane(panel);
+		f.setSize(800, 300);
+		f.setVisible(true);
+
+		f.addKeyListener(new KeyAdapter() {
+
+			@Override
+			public void keyPressed(KeyEvent e) {
+				if (e.getKeyChar() == 'o') {
+					manualOverride = !manualOverride;
+					System.out.println("manualOverride=" + manualOverride);
+				}
+				if (e.getKeyCode() == KeyEvent.VK_LEFT) {
+					actionLeft = +1;
+					actionRight = 0;
+				} else if (e.getKeyCode() == KeyEvent.VK_RIGHT) {
+					actionRight = +1;
+					actionLeft = 0;
+				} else if (e.getKeyChar() == ' ') {
+					actionLeft = actionRight = 0;
+
+				}
+			}
+		});
+
+
+		Reward r = rewardNormalized("balanced", -1, +1, this::update);
+
+		//new RewardBooster(r);
 
 
 //        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
-        {
+		{
 //        RLBooster bb = new RLBooster(this, (i, o) ->
 //                //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
 //                new DQN3(i, o, Map.of(
@@ -330,131 +354,131 @@ public class PoleCart extends GameX {
 //                2, 3, false);
 //        bb.conf.set(0.01f);
 //        window(NARui.rlbooster(bb), 500, 500);
-        }
+		}
 
-        Exe.invokeLater(()->
-            window(NARui.beliefCharts(nar, this.sensors.stream()
-                    .flatMap(s-> Streams.stream(s.components()))
-                    .collect(toList())), 900, 900)
-        );
-    }
+		Exe.invokeLater(() ->
+			window(NARui.beliefCharts(nar, this.sensors.stream()
+				.flatMap(s -> Streams.stream(s.components()))
+				.collect(toList())), 900, 900)
+		);
+	}
 
-    public void initBipolar() {
-        final float SPEED = 1f;
-        BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
-            float a =
-                    x * SPEED;
-                    //(x * x * x) * SPEED;
-            this.actionLeft = a < 0 ? -a : 0;
-            this.actionRight = a > 0 ? a : 0;
-            return x;
-        });
-    }
+	public void initBipolar() {
+		final float SPEED = 1f;
+		BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
+			float a =
+				x * SPEED;
+			//(x * x * x) * SPEED;
+			this.actionLeft = a < 0 ? -a : 0;
+			this.actionRight = a > 0 ? a : 0;
+			return x;
+		});
+	}
 
-    float power(float a) {
-        return a * speed;
-        //return Util.sqrt(a);
-    }
+	float power(float a) {
+		return a * speed;
+		//return Util.sqrt(a);
+	}
 
-    public void initUnipolar() {
-        GoalActionConcept L = actionUnipolar(
-                //$.funcImg("mx", id, $.the(-1))
-                $.inh(id, "L"), (a) -> {
-                    if (!manualOverride) {
-                        actionLeft = power(a); //Util.clampBi((float) (action + a));
-                        //action = Util.clampBi((float) (action + a * a));
-                    }
-                });
-        GoalActionConcept R = actionUnipolar(
-            //$.funcImg("mx", id, $.the(+1))
-            $.inh(id,"R"), (a) -> {
-            if (!manualOverride) {
-                actionRight = power(a);//Util.clampBi((float) (action - a));
-                //action = Util.clampBi((float) (action - a * a));
-            }
-        });
+	public void initUnipolar() {
+		GoalActionConcept L = actionUnipolar(
+			//$.funcImg("mx", id, $.the(-1))
+			$.inh(id, "L"), (a) -> {
+				if (!manualOverride) {
+					actionLeft = power(a); //Util.clampBi((float) (action + a));
+					//action = Util.clampBi((float) (action + a * a));
+				}
+			});
+		GoalActionConcept R = actionUnipolar(
+			//$.funcImg("mx", id, $.the(+1))
+			$.inh(id, "R"), (a) -> {
+				if (!manualOverride) {
+					actionRight = power(a);//Util.clampBi((float) (action - a));
+					//action = Util.clampBi((float) (action - a * a));
+				}
+			});
 
-    }
-
-
-    protected float update() {
+	}
 
 
-        double force = forceMag * action;
-
-        double sinangle = Math.sin(angle);
-        double cosangle = Math.cos(angle);
-        double angleDotSq = angleDot * angleDot;
-        double common = (force + poleMassLength * angleDotSq * sinangle
-                - fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
-
-        double angleDDot = (gravity * sinangle - cosangle * common
-                - fricPole * angleDot / poleMassLength) /
-                (halfPole * (fourthirds - poleMass * cosangle * cosangle /
-                        totalMass));
-        double posDDot = common - poleMassLength * angleDDot * cosangle /
-                totalMass;
+	protected float update() {
 
 
-        float tau = this.tau.floatValue();
-        pos += posDot * tau;
+		double force = forceMag * action;
+
+		double sinangle = Math.sin(angle);
+		double cosangle = Math.cos(angle);
+		double angleDotSq = angleDot * angleDot;
+		double common = (force + poleMassLength * angleDotSq * sinangle
+			- fricCart * (posDot < 0 ? -1 : 0)) / totalMass;
+
+		double angleDDot = (gravity * sinangle - cosangle * common
+			- fricPole * angleDot / poleMassLength) /
+			(halfPole * (fourthirds - poleMass * cosangle * cosangle /
+				totalMass));
+		double posDDot = common - poleMassLength * angleDDot * cosangle /
+			totalMass;
 
 
-        if ((pos >= posMax) || (pos <= posMin)) {
-
-            pos = Util.clamp((float) pos, posMin, posMax);
-
-
-            posDot = -1f /* restitution */ * posDot;
+		float tau = this.tau.floatValue();
+		pos += posDot * tau;
 
 
-        }
+		if ((pos >= posMax) || (pos <= posMin)) {
 
-        posDot += posDDot * tau;
-        posDot = Math.min(+velMax, Math.max(-velMax, posDot));
-
-        angle += angleDot * tau;
-        angleDot += angleDDot * tau;
-
-        /**TODO
-         **/
+			pos = Util.clamp((float) pos, posMin, posMax);
 
 
-        if (drawFinished.compareAndSet(true, false))
-            SwingUtilities.invokeLater(panel::repaint);
+			posDot = -1f /* restitution */ * posDot;
 
 
-        float rewardLinear = (float) (Math.cos(angle));
-        return rewardLinear;
-        //return rewardLinear * rewardLinear * rewardLinear;
+		}
+
+		posDot += posDDot * tau;
+		posDot = Math.min(+velMax, Math.max(-velMax, posDot));
+
+		angle += angleDot * tau;
+		angleDot += angleDDot * tau;
+
+		/**TODO
+		 **/
 
 
-    }
+		if (drawFinished.compareAndSet(true, false))
+			SwingUtilities.invokeLater(panel::repaint);
 
 
-    int pixX(Dimension d, double v) {
-        return (int) Math.round((v + 2.5) / 5.0 * d.width);
-    }
+		float rewardLinear = (float) (Math.cos(angle));
+		return rewardLinear;
+		//return rewardLinear * rewardLinear * rewardLinear;
 
 
-    int pixDX(Dimension d, double v) {
-        return (int) Math.round(v / 5.0 * d.width);
-    }
+	}
 
-    int pixY(Dimension d, double v) {
-        return (int) Math.round(d.height - (v + 0.5f) / 2.0 * d.height);
-    }
 
-    public int pixDY(Dimension d, double v) {
-        return (int) Math.round(-v / 2.0 * d.height);
-    }
+	int pixX(Dimension d, double v) {
+		return (int) Math.round((v + 2.5) / 5.0 * d.width);
+	}
 
-    void resetPole() {
-        pos = 0.;
-        posDot = 0.;
-        angle = 0.;
-        angleDot = 0.;
-    }
+
+	int pixDX(Dimension d, double v) {
+		return (int) Math.round(v / 5.0 * d.width);
+	}
+
+	int pixY(Dimension d, double v) {
+		return (int) Math.round(d.height - (v + 0.5f) / 2.0 * d.height);
+	}
+
+	public int pixDY(Dimension d, double v) {
+		return (int) Math.round(-v / 2.0 * d.height);
+	}
+
+	void resetPole() {
+		pos = 0.;
+		posDot = 0.;
+		angle = 0.;
+		angleDot = 0.;
+	}
 
 
 }

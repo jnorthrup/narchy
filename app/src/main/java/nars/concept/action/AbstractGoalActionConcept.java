@@ -252,7 +252,8 @@ public class AbstractGoalActionConcept extends GameAction {
 
     protected void feedback(@Nullable Truth f, short[] cause, Game g) {
 
-        f = truthDithered(f.freq(), resolution().floatValue(), g);
+        if (f!=null)
+            f = truthDithered(f.freq(), resolution().floatValue(), g);
 
         ((SensorBeliefTables) beliefs()).input(f, attn::pri, cause, g.what(), g.when,true);
     }

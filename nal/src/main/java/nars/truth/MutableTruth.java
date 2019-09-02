@@ -7,6 +7,15 @@ public class MutableTruth implements Truth {
 	float freq = Float.NaN;
 	double evi;
 
+	public MutableTruth() {
+
+	}
+
+	public MutableTruth(Truth t) {
+		freq(t.freq());
+		evi(t.evi());
+	}
+
 	@Override
 	public float freq() {
 		return freq;

@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.List;
 
 import static nars.$.$$;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class ImpilerTest {
 
@@ -40,9 +41,9 @@ class ImpilerTest {
 
         Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n);
 
-        deduce(d, $$("a"), true, 0);
+        assertEquals(2, deduce(d, $$("a"), true, 0).size());
 
-        deduce(d, $$("d"), false, 0);
+		assertEquals(2, deduce(d, $$("d"), false, 0).size());
 
     }
 
