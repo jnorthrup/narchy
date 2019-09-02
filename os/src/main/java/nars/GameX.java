@@ -16,6 +16,7 @@ import jcog.util.ArrayUtil;
 import nars.agent.Game;
 import nars.agent.GameTime;
 import nars.agent.MetaAgent;
+import nars.agent.util.Impiler;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.sensor.VectorSensor;
@@ -293,8 +294,8 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w, 256,
                                 //1024,
-                                new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
-                                //new PriBuffer.DirectTaskBuffer()
+                                //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
+                                new PriBuffer.DirectTaskBuffer()
                         )
                 )
 //                .attention(() -> new ActiveConcepts(1024))
@@ -512,11 +513,16 @@ abstract public class GameX extends Game {
 
 
         addGovernor(n);
+
         Loop.of(()->{
             n.control.printPerf(System.out);
             //n.control.stats(System.out);
             System.out.println();
         }).setFPS(0.25f);
+
+        //Loop.of(()->{
+            //Impiler.init();
+        //}).setFPS(0.5f);
 
 //        n.runLater(()-> {
 //            //addFuelInjection(n);

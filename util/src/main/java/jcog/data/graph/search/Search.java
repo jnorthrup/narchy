@@ -62,8 +62,8 @@ abstract public class Search<N, E> {
     abstract protected boolean go(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next);
 
     private boolean bfsNode(Node<N, E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
-        if (start == null)
-            return true;  //??
+//        if (start == null)
+//            return true;  //??
 
         if (!log.visit(start))
             return true; //reached a root via a previous root
@@ -106,15 +106,15 @@ abstract public class Search<N, E> {
     }
 
 
-    public boolean dfs(Iterable<Node> startingNodes) {
+    public boolean dfs(Iterable<?> startingNodes) {
         return dfs(startingNodes, null);
     }
 
-    public boolean bfs(Iterable<Node> startingNodes) {
-        return bfs(startingNodes, new ArrayDeque(), null);
+    public boolean bfs(Iterable<?> startingNodes) {
+        return bfs(startingNodes, new ArrayDeque<>(), null);
     }
 
-    public boolean dfs(Iterable startingNodes, @Nullable NodeGraph g) {
+    public boolean dfs(Iterable<?> startingNodes, @Nullable NodeGraph g) {
 
         List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path = new FasterList(8);
 
@@ -172,7 +172,7 @@ abstract public class Search<N, E> {
     /**
      * q is recycleable between executions automatically. just provide a pre-allocated ArrayDeque or similar.
      */
-    public boolean bfs(Iterable startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, NodeGraph g) {
+    public boolean bfs(Iterable<?> startingNodes, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q, NodeGraph g) {
 
         for (Object n : startingNodes) {
             Node nn;

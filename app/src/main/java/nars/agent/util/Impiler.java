@@ -1,11 +1,14 @@
 package nars.agent.util;
 
 import com.google.common.collect.Iterables;
+import jcog.TODO;
 import jcog.data.graph.AdjGraph;
+import jcog.data.graph.GraphIO;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
+import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.pri.PLink;
 import jcog.pri.bag.Bag;
@@ -17,6 +20,7 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.op.TaskLeak;
+import nars.subterm.Subterms;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.term.util.conj.ConjBuilder;
@@ -25,11 +29,12 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintStream;
 import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
 import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
@@ -46,406 +51,492 @@ import static nars.time.Tense.*;
  */
 public class Impiler {
 
-    /**
-     * concept metadata field key storing impiler node instances
-     */
-    static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
+	/**
+	 * concept metadata field key storing impiler node instances
+	 */
+	static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
 
-    public static void init(NAR n) {
+	public static void init(NAR n) {
 
 //        Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction( n);
+		Impiler.ImpilerDeducer d = new Impiler.ImpilerDeducer(n);
 
-        ImplGrapher t = new ImplGrapher(n) {
-            @Override
-            public float value() {
-                return d.value();
-            }
-        };
+		ImplGrapher t = new ImplGrapher(n) {
+			@Override
+			public float value() {
+				return d.value();
+			}
+		};
+	}
+
+	@Nullable
+	static ImplNode node(Term x, boolean createIfMissing, NAR nar) {
+		Concept xc = createIfMissing ? nar.conceptualize(x) : nar.concept(x);
+		if (xc != null)
+			return node(xc, createIfMissing);
+		else
+			return null;
+	}
+
+	@Nullable
+	static ImplNode node(Concept sc, boolean createIfMissing) {
+		Term sct = sc.term();
+		return createIfMissing ? sc.meta(IMPILER_NODE, s -> new ImplNode(sct)) : sc.meta(IMPILER_NODE);
+	}
+
+	private static boolean implFilter(Term next) {
+		return next.op() == IMPL && !next.hasVars();
+	}
+
+	static public float implValue(Task t) {
+		return t.priElseZero();
+		//return (float) t.evi();
+		//return (1f + (float) t.evi()) * (1 + t.priElseZero());
+	}
+
+	public static void graphGML(Iterable<? extends Concept> concepts, PrintStream out) {
+        GraphIO.writeGML(graph(concepts), out);
     }
 
-    static ImplNode node(Concept sc, boolean createIfMissing) {
-        Term sct = sc.term();
-        return createIfMissing ? sc.meta(IMPILER_NODE, s -> new ImplNode(sct)) : sc.meta(IMPILER_NODE);
+
+    public static AdjGraph<Term, Task> graph(NAR nar) {
+	    return graph(()->nar.concepts().iterator());
     }
 
-    private static boolean implFilter(Term next) {
-        return next.op() == IMPL && !next.hasVars();
+    public static AdjGraph<Term, Task> graph(What w) {
+	    throw new TODO();
     }
 
-    static public float implValue(Task t) {
-        return t.priElseZero();
-        //return (float) t.evi();
-        //return (1f + (float) t.evi()) * (1 + t.priElseZero());
-    }
+	/**
+	 * creates graph snapshot
+	 */
+	public static AdjGraph<Term, Task> graph(Iterable<? extends Concept> concepts) {
+		AdjGraph<Term, Task> g = new AdjGraph<>(true);
 
-    /**
-     * searches forward, discovering shortcuts in the downstream impl graph
-     * TODO configurable trigger, dont just extend TaskLeak
-     */
-    public static class ImpilerDeduction extends TaskLeak {
+		concepts.forEach(c -> {
+			ImplNode m = c.meta(IMPILER_NODE);
+			if (m != null) {
+				g.addNode(c.term());
+				m.edges(false, true).forEach(e -> {
+                    Term s = e.from().id();
+                    Term t = e.to().id();
+                    g.addNode(s);
+                    g.addNode(t);
+                    g.setEdge(s, t, e.id()); //TODO check if multiedge
+				});
+			}
+		});
 
-        private transient float dur;
-        private final CauseChannel<Task> in;
+		return g;
+	}
 
-        public ImpilerDeduction( NAR n) {
-            super(n);
-            in = n.newChannel(this);
-        }
+	/**
+	 * update task in the intra-concept graph
+	 */
+	public static boolean impile(Task i, NAR n) {
+		if (implFilter(i.term())) {
+			_impile(i, n);
+			return true;
+		}
+		return false;
+	}
 
-        @Override
-        public void next(What w, BooleanSupplier kontinue) {
-            super.next(w, kontinue);
-            dur = w.dur();
-        }
-
-        @Override
-        protected boolean filter(Term term) {
-            return !term.hasVars();
-        }
-
-        @Override
-        protected float leak(Task next, What what) {
-            return deduce(next, what);
-        }
-
-        public float deduce(Task task, What what) {
-            Term root = task.term();
-            if (root.op() == IMPL)
-                root = root.sub(0); //subj
-
-            Concept c = nar.concept(root.unneg());
-            if (c == null)
-                return 0;
-
-            ImplNode m = node(c, false);
-            if (m != null) {
-                //TODO handle negations correctly
-                List<Node> targets = List.of(m);
-                new Impiler.ImpilerDeductionSearch(root, what,
-                    task.isEternal() ? what.time() : task.start())
-                        //.dfs(targets);
-                        .bfs(targets);
-                return 1;
-            }
+	private static void _impile(Task t, NAR nar) {
 
 
-            return 0;
-        }
+		//BeliefTable table = c.tableAnswering(beliefOrGoal ? BELIEF : GOAL);
+		//table.sample(ETERNAL, ETERNAL, null, nar);
+		//Task it = table.answer(whenStart, whenEnd, i, null, nar);
+		/*if (it != null) */
 
-        /**
-         * creates graph snapshot
-         */
-        public AdjGraph<Term, Task> graph() {
-            AdjGraph g = new AdjGraph(true);
+		Term i = t.term();
+		Subterms ii = i.subterms();
 
-            nar.concepts().forEach(c -> {
-                ImplNode m = c.meta(IMPILER_NODE);
-                if (m != null) {
-                    g.addNode(c.term());
-                    m.edges(false, true).forEach(e -> {
-                        g.setEdge(e.from().id(), e.to().id(), e); //TODO check if multiedge
-                    });
-                }
-            });
-
-            return g;
-        }
+		//TODO for now dont consider the implication/etc.. as its own event although NARS does
+		//  just represent it as transitions
+		//TODO dont track evidence
+		Term subj = ii.sub(0).concept(), pred = ii.sub(1).concept();
+		if (!subj.equals(pred)) {
 
 
-        @Override
-        public float value() {
-            return in.value();
-        }
-
-    }
-
-    /**
-     * builds the implication graph in concept metadata fields
-     * TODO configurable trigger, dont just extend TaskLeak
-     */
-    public static class ImplGrapher extends TaskLeak {
-
-
-//        final static long whenStart = ETERNAL, whenEnd = ETERNAL;
-
-        public ImplGrapher(NAR n) {
-            super( n, BELIEF);
-        }
-
-//        @Override
-//        protected boolean filter(Task next) {
-//            return next.punc() == BELIEF;
-//        }
-
-        @Override
-        protected boolean filter(Term term) {
-            return implFilter(term);
-        }
-
-        @Override
-        protected float leak(Task t, What what) {
-
-            Term i = t.term(); //from the task not the concept
-            //BeliefTable table = c.tableAnswering(beliefOrGoal ? BELIEF : GOAL);
-            //table.sample(ETERNAL, ETERNAL, null, nar);
-            //Task it = table.answer(whenStart, whenEnd, i, null, nar);
-            /*if (it != null) */
-
-            {
-                //TODO for now dont consider the implication/etc.. as its own event although NARS does
-                //  just represent it as transitions
-                //TODO dont track evidence
-                Term subj = i.sub(0).concept(), pred = i.sub(1).concept();
-                if (!subj.equals(pred)) {
-
-
-                    //split the evidence between the positive and negative paths
+			//split the evidence between the positive and negative paths
 //                    float f = it.freq();
 //                    float conf = it.conf();
 //                    //float e = it.evi();
 //                    float cp = (conf * f);
 //                    float cn = (conf * (1 - f));
 
-                    Concept sc =
-                            //nar.conceptualize(subj.unneg());
-                            nar.conceptualizeDynamic(subj.unneg());
-                    if (sc != null) {
-                        Concept pc =
-                                //nar.conceptualize(pred);
-                                nar.conceptualizeDynamic(pred/*.unneg()*/);
-                        if (pc != null) {
-                            edge(t, sc, pc);
-                        }
-                    }
-                }
+			Concept sc =
+				nar.conceptualize(subj.unneg());
+				//nar.conceptualizeDynamic(subj.unneg());
+			if (sc != null) {
+				Concept pc =
+					nar.conceptualize(pred);
+					//nar.conceptualizeDynamic(pred/*.unneg()*/);
+				if (pc != null) {
+					edge(t, sc, pc);
+				}
+			}
+		}
+	}
 
-            }
-
-            return 1;
-        }
-
-        protected void edge(Task t, Concept sc, Concept pc) {
-            node(sc, true).add(true, t, pc);
-            node(pc, true).add(false, t, sc);
-        }
+	static void edge(Task t, Concept sc, Concept pc) {
+		node(sc, true).add(true, t, pc);
+		node(pc, true).add(false, t, sc);
+	}
 
 
-        @Override
-        public float value() {
-            return 0;
-        }
-    }
+	/**
+	 * searches forward, discovering shortcuts in the downstream impl graph
+	 * TODO configurable trigger, dont just extend TaskLeak
+	 */
+	public static class ImpilerDeducer extends TaskLeak {
 
-    static class ImplNode extends NodeGraph.AbstractNode<Term, Task> {
+		private final CauseChannel<Task> in;
 
-        final static int CAP = 8; //TODO parameterize
-        final Bag<Task, ImplPLink> tasks = new PriReferenceArrayBag<>(PriMerge.max, CAP);
+		public ImpilerDeducer(NAR n) {
+			super(n);
+			in = n.newChannel(this);
+		}
 
-        public ImplNode(Term id) {
-            super(id);
-        }
+		@Override
+		public void next(What w, BooleanSupplier kontinue) {
+			super.next(w, kontinue);
+		}
 
-        public final void add(boolean direction, Task e, Concept target) {
-            tasks.commit();
-            tasks.put(new ImplPLink(e, implValue(e), direction, target));
-        }
+		@Override
+		protected boolean filter(Term term) {
+			return !term.hasVars();
+		}
+
+		@Override
+		protected float leak(Task next, What what) {
+			return deduce(next, what);
+		}
+
+		public float deduce(Task task, What what) {
+			Term root = task.term();
+			if (root.op() == IMPL)
+				root = root.sub(0); //subj
+
+			ImpilerDeduction x = new ImpilerDeduction(root,
+				task.isEternal() ? what.time() : task.start(),
+				what.nar);
+
+            List<Task> result = x.get();
+            if (!result.isEmpty()) {
+                what.acceptAll(result);
+                return 1;
+            } else
+                return 0;
 
 
-        @Override
-        public String toString() {
-            return id + ":" + tasks.toString();
-        }
+		}
 
-        @Override
-        public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
-            assert (in || out);
-            return tasks.isEmpty() ? List.of() : Iterables.filter(Iterables.transform(tasks, (t) -> {
-                boolean td = t.direction;
-                if ((in && out) || (td == out)) {
-                    Task tt = t.get();
-                    Term other = tt.term().sub(td ? 1 : 0);
 
-                    if (t.target.isDeleted())
-                        t.delete(); //targetconcept deleted
+		@Override
+		public float value() {
+			return in.value();
+		}
 
-                    Node otherNode = node(t.target, false);
-                    if (otherNode != null) {
-                        return td ? Node.edge(this, tt, otherNode) : Node.edge(otherNode, tt, this);
-                    } else {
-                        t.delete();
-                    }
-                }
-                return null;
-            }), x -> x != null);
-        }
+	}
 
-        private static final class ImplPLink extends PLink<Task> {
+	/**
+	 * builds the implication graph in concept metadata fields
+	 * TODO configurable trigger, dont just extend TaskLeak
+	 */
+	public static class ImplGrapher extends TaskLeak {
 
-            /**
-             * true = out, false = in
-             */
-            private final boolean direction;
 
-            /**
-             * TODO weakref?
-             */
-            private final Concept target;
+//        final static long whenStart = ETERNAL, whenEnd = ETERNAL;
 
-            public ImplPLink(Task task, float p, boolean direction, Concept target) {
-                super(task, p);
-                this.direction = direction;
-                this.target = target;
-            }
-        }
+		public ImplGrapher(NAR n) {
+			super(n, BELIEF);
+		}
 
-    }
+//        @Override
+//        protected boolean filter(Task next) {
+//            return next.punc() == BELIEF;
+//        }
 
-    public static class ImpilerDeductionSearch extends Search<Term, Task> {
+		@Override
+		protected boolean filter(Term term) {
+			return implFilter(term);
+		}
 
-        final static int recursionMin = 2;
-        final static int recursionMax = 3;
-        static final int volPadding = 2;
-        private static final int STAMP_LIMIT = Integer.MAX_VALUE;
-        final float confMin;
-        private final Term source;
-        private final What what;
-        private final long start;
-        private final long now;
-        private final Consumer<Task> in;
-        private final int volMax;
-        MetalLongSet stamp = null;
-        ConjBuilder cc = null;
+		@Override
+		protected float leak(Task t, What what) {
+			_impile(t, what.nar);
+			return 1;
+		}
 
-        public ImpilerDeductionSearch(Term source, What what, final long when) {
-            this.source = source.unneg();
+		@Override
+		@Deprecated
+		public float value() {
+			return 0;
+		}
+	}
+
+	static class ImplNode extends NodeGraph.AbstractNode<Term, Task> {
+
+		final static int CAP = 8; //TODO parameterize
+		final Bag<Task, ImplPLink> tasks = new PriReferenceArrayBag<>(PriMerge.max, CAP);
+
+		public ImplNode(Term id) {
+			super(id);
+		}
+
+		public final void add(boolean direction, Task e, Concept target) {
+			tasks.commit();
+			tasks.put(new ImplPLink(e, implValue(e), direction, target));
+		}
+
+
+		@Override
+		public String toString() {
+			return id + ":" + tasks.toString();
+		}
+
+		@Override
+		public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
+			assert (in || out);
+			return tasks.isEmpty() ? List.of() : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
+				boolean td = tLink.direction;
+				if ((in && out) || (td == out)) {
+					Task tt = tLink.get();
+					//Term other = tt.term().sub(td ? 1 : 0);
+
+					if (tLink.target.isDeleted())
+						tLink.delete(); //targetconcept deleted
+
+					Node otherNode = node(tLink.target, false);
+					if (otherNode != null) {
+						return td ? Node.edge(this, tt, otherNode) : Node.edge(otherNode, tt, this);
+					} else {
+						tLink.delete();
+					}
+				}
+				return null;
+			}), x -> x != null);
+		}
+
+		private static final class ImplPLink extends PLink<Task> {
+
+			/**
+			 * true = out, false = in
+			 */
+			private final boolean direction;
+
+			/**
+			 * TODO weakref?
+			 */
+			private final Concept target;
+
+			public ImplPLink(Task task, float p, boolean direction, Concept target) {
+				super(task, p);
+				this.direction = direction;
+				this.target = target;
+			}
+		}
+
+	}
+
+	public static class ImpilerDeduction extends Search<Term, Task> {
+
+		final static int recursionMin = 2;
+		final static int recursionMax = 3;
+		static final int volPadding = 2;
+		private static final int STAMP_LIMIT = Integer.MAX_VALUE;
+		float confMin;
+		private final Term source;
+		private final long start;
+		private long now;
+        private final List<ImplNode> targets;
+        private final NAR nar;
+
+        boolean reverse = false, forward = true;
+
+        /**
+		 * collects results
+		 */
+		@Nullable
+		private List<Task> in = null;
+
+		private int volMax;
+
+		/**
+		 * TODO track stamp for each unique time point individually
+		 */
+		MetalLongSet stamp = null;
+
+		ConjBuilder cc = null;
+
+		public ImpilerDeduction(Term source, long when, NAR nar) {
+			this(source, when, null, nar);
+		}
+
+		public ImpilerDeduction(Term root, long when, @Nullable Iterable<? extends Term> additionalSeeds, NAR nar) {
+            this.nar = nar;
+		    this.source = root.unneg();
             this.start = when;
 
-            this.what = what;
-            this.now = what.time();
-            this.in = what::accept;
-            this.volMax = what.nar.termVolMax.intValue();
-            this.confMin = what.nar.confMin.floatValue();
-        }
+            ImplNode rootNode = node(source, true, nar);
+			if (rootNode != null) {
+				//TODO handle negations correctly
+				if (additionalSeeds != null) {
+					targets = new FasterList(1);
+					targets.add(rootNode);
 
-        /**
-         * out only
-         */
-        @Override
-        protected Iterable<FromTo<Node<Term, Task>, Task>> find(Node<Term, Task> n, List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
+					for (Term a : additionalSeeds) {
+						@Nullable ImplNode an = node(a, true, nar);
+						if (an != null)
+							targets.add(an);
+					}
+				} else {
+					targets = List.of(rootNode);
+				}
+            } else
+			    targets = List.of();
+		}
 
-            if (path.size() >= recursionMin && !deduce(path))
-                return empty; //boundary
 
-            if (path.size() + 1 > recursionMax)
-                return empty;
+		/**
+		 * get the results
+		 */
+		public /* synchronized */ List<Task> get() {
+		    in = null; //reset in case invoked repeatedly
 
-            return n.edges(false, true);
-        }
+		    if (!targets.isEmpty()) {
+                this.volMax = nar.termVolMax.intValue();
+                this.confMin = nar.confMin.floatValue();
+                this.now = nar.time();
 
-        @Override
-        protected boolean go(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path, Node<Term, Task> next) {
-            return true;
-        }
-
-        /**
-         * returns whether to continue further
-         */
-        protected boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
-
-            int n = path.size();
-
-            Task[] pathTasks = new Task[n];
-
-            //final int stampLimit = STAMP_CAPACITY;
-            Term nextEvent = source;
-            int j = 0;
-            int volEstimate = 1 + n/2; //initial cost estimate
-            for (BooleanObjectPair<FromTo<Node<Term, Task>, Task>> pe : path) {
-                Task e = pe.getTwo().id();
-                Term ee = e.term();
-                volEstimate += ee.volume();
-                if (volEstimate > volMax - volPadding)
-                    return false; //path exceeds volume
-                if (!ee.sub(0).unneg().equals(nextEvent))
-                    return false; //path is not continuous
-                nextEvent = ee.sub(1);
-                pathTasks[j++] = e;
+                bfs(targets);
+                if (in!=null)
+                    return in;
             }
 
-            if (stamp != null)
-                stamp.clear();
-            Truth tAccum = null;
+		    return List.of();
+		}
+
+		/**
+		 * out only
+		 */
+		@Override
+		protected Iterable<FromTo<Node<Term, Task>, Task>> find(Node<Term, Task> n, List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
+
+			if (path.size() >= recursionMin && !deduce(path))
+				return empty; //boundary
+
+			if (path.size() + 1 > recursionMax)
+				return empty;
+
+			return n.edges(reverse, forward);
+		}
+
+		@Override
+		protected boolean go(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path, Node<Term, Task> next) {
+			return true;
+		}
+
+		/**
+		 * returns whether to continue further
+		 */
+		protected boolean deduce(List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
+
+			int n = path.size();
+
+			Task[] pathTasks = new Task[n];
+
+			//final int stampLimit = STAMP_CAPACITY;
+			Term nextEvent = source;
+			int j = 0;
+			int volEstimate = 1 + n / 2; //initial cost estimate
+			for (BooleanObjectPair<FromTo<Node<Term, Task>, Task>> pe : path) {
+				Task e = pe.getTwo().id();
+				Term ee = e.term();
+				volEstimate += ee.volume();
+				if (volEstimate > volMax - volPadding)
+					return false; //path exceeds volume
+				if (!ee.sub(0).unneg().equals(nextEvent))
+					return false; //path is not continuous
+				nextEvent = ee.sub(1);
+				pathTasks[j++] = e;
+			}
+
+			if (stamp != null)
+				stamp.clear();
+			Truth tAccum = null;
 
 
+			//final long now = nar.time();
 
-            //final long now = nar.time();
+			long offset =
+				//now
+				start;
 
-            long offset =
-                    //now
-                    start;
+			for (Task e : pathTasks) {
+				Truth ttt = e.truth();
 
-            for (Task e : pathTasks) {
-                Truth ttt = e.truth();
+				Term ee = e.term();
+				Truth tt = e.isEternal() ? ttt : e.truthRelative(offset + e.start(), now);
+				if (tt == null)
+					return false; //too weak
 
-                Term ee = e.term();
-                Truth tt = e.isEternal() ? ttt : e.truthRelative(offset+e.start(), now);
-                if (tt == null)
-                    return false; //too weak
-
-                offset += ee.sub(0).eventRange();
-                int edt = ee.dt(); if (edt == DTERNAL) edt = 0;
-                offset += edt;
-
-
-
-                if (tAccum == null) {
-                    tAccum = tt;
-                } else {
-                    tAccum = NALTruth.Deduction.apply(tAccum, tt, confMin, null);
-                    if (tAccum == null)
-                        return false;
-                }
-                long[] ss = e.stamp();
-                if (stamp == null) {
-                    stamp = new MetalLongSet(path.size() * STAMP_CAPACITY);
-
-                    stamp.addAll(ss);
-                } else {
-                    if (STAMP_LIMIT < Integer.MAX_VALUE && stamp.size() + ss.length > STAMP_LIMIT)
-                        return false; //stamp exceeds limit
-
-                    for (long es : ss) {
-                        if (!stamp.add(es))
-                            return false; //overlap TODO just cancel at this point
-                    }
-                }
-            }
-
-            if (cc == null)
-                cc = new ConjTree();
-            else
-                cc.clear();
+				offset += ee.sub(0).eventRange();
+				int edt = ee.dt();
+				if (edt == DTERNAL) edt = 0;
+				offset += edt;
 
 
-            Term pred = Null;
-            int zDT = 0;
-            long range = Long.MAX_VALUE;
-            offset = 0;
-            for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
-                Task e = pathTasks[i];
+				if (tAccum == null) {
+					tAccum = tt;
+				} else {
+					tAccum = NALTruth.Deduction.apply(tAccum, tt, confMin, null);
+					if (tAccum == null)
+						return false;
+				}
+				long[] ss = e.stamp();
+				if (stamp == null) {
+					stamp = new MetalLongSet(path.size() * STAMP_CAPACITY);
 
-                Term ee = e.term();
+					stamp.addAll(ss);
+				} else {
+					if (STAMP_LIMIT < Integer.MAX_VALUE && stamp.size() + ss.length > STAMP_LIMIT)
+						return false; //stamp exceeds limit
+
+					for (long es : ss) {
+						if (!stamp.add(es))
+							return false; //overlap TODO just cancel at this point
+					}
+				}
+			}
+
+			if (cc == null)
+				cc = new ConjTree();
+			else
+				cc.clear();
 
 
-                long es = e.start();
-                if (es != ETERNAL)
-                    range = Math.min(range, e.end() - es);
+			Term pred = Null;
+			int zDT = 0;
+			long range = Long.MAX_VALUE;
+			offset = 0;
+			for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
+				Task e = pathTasks[i];
 
-                pred = ee.sub(1).negIf(e.isNegative());
-                int dt = ee.dt(); if (dt == DTERNAL) dt = 0; //HACK
-                if (dt == XTERNAL)
-                    throw new UnsupportedOperationException();
+				Term ee = e.term();
+
+
+				long es = e.start();
+				if (es != ETERNAL)
+					range = Math.min(range, e.end() - es);
+
+				pred = ee.sub(1).negIf(e.isNegative());
+				int dt = ee.dt();
+				if (dt == DTERNAL) dt = 0; //HACK
+				if (dt == XTERNAL)
+					throw new UnsupportedOperationException();
 
 
 //                        switch (dt) {
@@ -469,51 +560,52 @@ public class Impiler {
 //                            case XTERNAL:
 //                            default: {
 
-                Term zubj = ee.sub(0);
+				Term zubj = ee.sub(0);
 
-                zDT = dt;
-                if (i == 0) {
-                    cc.add(0, zubj);
-                }
-                offset += zubj.eventRange();
-                offset += dt;
-                if (i != n - 1) {
-                    if (!cc.add(offset, pred))
-                        return false;
-                }
+				zDT = dt;
+				if (i == 0) {
+					cc.add(0, zubj);
+				}
+				offset += zubj.eventRange();
+				offset += dt;
+				if (i != n - 1) {
+					if (!cc.add(offset, pred))
+						return false;
+				}
 
 
 //                                break;
 //                            }
 //                        }
-            }
+			}
 
-            Term ee = IMPL.the(cc.term(), zDT, pred);
-            if (ee.volume() > volMax)
-                return false;
+			Term ee = IMPL.the(cc.term(), zDT, pred);
+			if (ee.volume() > volMax)
+				return false;
 
-            if (range == Long.MAX_VALUE)
-                range = 0; //all eternal
+			if (range == Long.MAX_VALUE)
+				range = 0; //all eternal
 
-            long finalStart = start;
-            long finalEnd = start + range;
-            Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
-                    NALTask.the(ttt, BELIEF, tr, now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY, stamp,
-                        ThreadLocalRandom.current())));
-            if (z != null) {
+			long finalStart = start;
+			long finalEnd = start + range;
+			Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
+				NALTask.the(ttt, BELIEF, tr, now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY, stamp,
+					ThreadLocalRandom.current())));
+			if (z != null) {
 
-                Task.fund(z, pathTasks, true);
+				Task.fund(z, pathTasks, true);
 
-                //System.out.println(z);
-                in.accept(z);
-            }
-
-
-            return true; //continue
-        }
+				//System.out.println(z);
+				if (in == null) in = new FasterList<>(1);
+				in.add(z);
+			}
 
 
-    }
+			return true; //continue
+		}
+
+
+	}
 }
 //    static class ImplBag extends SortedArray<ImplEdge> {
 //

@@ -1,32 +1,43 @@
 package nars.agent.util;
 
-import jcog.data.graph.GraphIO;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
+import nars.Task;
 import org.junit.jupiter.api.Test;
+
+import java.util.List;
+
+import static nars.$.$$;
 
 class ImpilerTest {
 
     @Test
     public void test1() throws Narsese.NarseseException {
-        NAR n = NARS.tmp();
+        NAR n = NARS.threadSafe();
         //n.log();
 
-        Impiler.init(n);
+        //Impiler.init(n);
 
         n.input("(a ==> b).");
         n.input("(--a ==> c). %0.9;0.5%");
         n.input("((c&&d) ==> e). %1.0;0.9%");
         n.input("a.");
 
-        n.run(10);
+        //n.run(10);
         n.input("(b ==> c). %0.9;0.5%");
         n.input("(c ==> d). %0.9;0.5%");
         n.input("(d ==> e). %0.9;0.5%");
         n.input("(e ==> f). %0.9;0.5%");
-        n.run(10);
+        //n.run(10);
 
+
+
+        n.tasks().forEach(t -> Impiler.impile(t, n));
+        Impiler.graphGML(n.concepts()::iterator, System.out);
+        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction($$("a"), 0, n);
+        List<Task> t = d.get();
+        t.forEach(System.out::println);
     }
 
     @Test
@@ -51,9 +62,9 @@ class ImpilerTest {
         };
 
 
-        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n) {
-
-        };
+//        Impiler.ImpilerDeduction d = new Impiler.ImpilerDeduction(n) {
+//
+//        };
 
 //        n.synch();
 
@@ -76,7 +87,8 @@ class ImpilerTest {
 
 //        assertTrue(4 <= edges[0]);
 
-        GraphIO.writeGML(d.graph(), System.out);
+
+        //d.graphGML(System.out)
 
     }
 

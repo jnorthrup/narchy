@@ -11,6 +11,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.Exec;
 import nars.exe.impl.UniExec;
+import nars.memory.CaffeineMemory;
 import nars.memory.Memory;
 import nars.memory.SimpleMemory;
 import nars.op.stm.STMLinkage;
@@ -125,10 +126,9 @@ public class NARS {
             assert(nalMin <= nalMax);
 
             if (threadSafe)
-                index =
-                        //() -> new CaffeineIndex(64 * 1024)
-                        () -> new SimpleMemory(16 * 1024, true)
-            ;
+                index = () -> new CaffeineMemory(64 * 1024);
+            else
+                index = () -> new SimpleMemory(16 * 1024, true);
 
 
             if (nalMax > 0)
