@@ -15,6 +15,7 @@ import java.util.function.Function;
 import java.util.function.IntFunction;
 import java.util.stream.Stream;
 
+import static jcog.Util.PHI_min_1f;
 import static jcog.Util.lerp;
 
 /** TODO parameterize DX/DY to choose between row, column, or grid of arbitrary aspect ratio
@@ -29,7 +30,7 @@ public class Gridding extends MutableListContainer {
     public static final float VERTICAL = Float.POSITIVE_INFINITY;
 
     /** https://en.wikipedia.org/wiki/Golden_ratio */
-    public static final float PHI = 0.618f;
+    public static final float PHI = PHI_min_1f;
 
     protected float margin = Widget.marginPctDefault;
 

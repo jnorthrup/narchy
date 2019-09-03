@@ -118,6 +118,9 @@ public class Occurrify extends TimeGraph {
                     start = Math.min(taskStart, beliefStart);
                     break;
                 case Task:
+//                    if ((d.punc == QUESTION || d.punc == QUEST) && (d.taskPunc == QUESTION || d.taskPunc == QUEST))
+//                        start = beliefStart; //follow the non-question part of a question progression
+//                    else
                     start = taskStart;
                     break;
                 case Belief:

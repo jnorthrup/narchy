@@ -17,6 +17,8 @@ import java.util.function.Consumer;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
+import static jcog.Util.PHI_min_1f;
+
 /**
  * concurrent radix tree index
  * TODO restore byte[] sequence writing that doesnt prepend atom length making leaves unfoldable by natural ordering
@@ -24,7 +26,7 @@ import java.util.stream.StreamSupport;
 public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 	private final float maxIterationRemovalPct = 0.05f;
-	private final float descentRate = 0.618f;
+	private final float descentRate = PHI_min_1f;
 	private final float overflowSafetyPct = 0.1f;
 
 

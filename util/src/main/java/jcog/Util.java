@@ -86,6 +86,11 @@ public enum Util {
     }
 
 
+    public static final double PHI = 1.6180339887498948482;
+    public static final float PHIf = (float)PHI;
+    public static final double PHI_min_1 = PHI - 1;
+    public static final float PHI_min_1f = (float)PHI_min_1;
+
     public static final int PRIME3 = 524287;
     public static final int PRIME2 = 92821;
     public static final int PRIME1 = 31;

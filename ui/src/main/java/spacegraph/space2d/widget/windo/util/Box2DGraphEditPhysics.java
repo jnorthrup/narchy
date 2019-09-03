@@ -519,7 +519,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         protected void updateGeometry() {
-            elementLength = (distance() / n) * 0.618f;
+            elementLength = (distance() / n) * Util.PHI_min_1f;
 
             float sourceRadius = sourceRadius(); //((Surface)sourceBody.data()).radius();
             float targetRadius = targetRadius();  //((Surface)targetBody.data()).radius();

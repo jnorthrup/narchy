@@ -1,5 +1,6 @@
 package spacegraph.test;
 
+import jcog.Util;
 import jcog.exe.Exe;
 import spacegraph.SpaceGraph;
 import spacegraph.space2d.Surface;
@@ -49,10 +50,10 @@ public class WidgetTest {
                                 grid(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("grid wide",
-                                new Gridding(0.618f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                new Gridding(Util.PHI_min_1f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("grid tall",
-                                new Gridding(1 / 0.618f, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
+                                new Gridding(Util.PHIf, iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
                         ),
                         LabeledPane.the("column",
                                 column(iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton(), iconButton())
@@ -112,9 +113,9 @@ public class WidgetTest {
         m.put("Sketch", () -> new MetaFrame(new Sketch2DBitmap(256, 256)));
         m.put("Speak", SpeakChip::new);
         m.put("Resplit", () -> new Splitting(
-                        new Splitting<>(iconButton(), 0.618f, true, iconButton()).resizeable(),
-                        0.618f,
-                        new Splitting<>(iconButton(), 0.618f, false, iconButton()).resizeable()
+                        new Splitting<>(iconButton(), Util.PHI_min_1f, true, iconButton()).resizeable(),
+                        Util.PHI_min_1f,
+                        new Splitting<>(iconButton(), Util.PHI_min_1f, false, iconButton()).resizeable()
                 ).resizeable()
         );
         m.put("Timeline", Timeline2DTest::timeline2dTest);

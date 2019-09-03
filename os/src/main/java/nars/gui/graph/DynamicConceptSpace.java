@@ -433,7 +433,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
                 float r = nodeScale;
                 cw.scale(r, r, 0.5f);
             } else {
-                float l = nodeScale * 1.618f;
+                float l = nodeScale * Util.PHIf;
                 float w = nodeScale;
                 float h = 1; 
                 cw.scale(l, w, h);

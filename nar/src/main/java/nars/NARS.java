@@ -145,15 +145,15 @@ public class NARS {
                 n.termVolMax.set(22);
 
                 TaskLinkWhat main = (TaskLinkWhat) n.what();
-                main.links.linksMax.set(64);
+                main.links.linksMax.set(32);
                 main.links.decay.set(0.01f);
 
 
-                float p = 0.5f;
+                float p = 0.25f;
                 n.beliefPriDefault.amp(p);
                 n.goalPriDefault.amp(p);
-                n.questionPriDefault.amp(p/2);
-                n.questPriDefault.amp(p/2);
+                n.questionPriDefault.amp(p);
+                n.questPriDefault.amp(p);
 
 //                n.emotion.want(Perceive, -0.1f);
 
