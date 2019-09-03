@@ -230,8 +230,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  determines when desire is answered to produce feedback in the present frame.
      *  represents a natural latency between decision and effect. */
     public static final float ACTION_DESIRE_SHIFT_DUR =
-        0;
-        //-0.5f;
+        //0;
+        -0.5f;
 
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;

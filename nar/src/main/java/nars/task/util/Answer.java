@@ -249,6 +249,9 @@ public final class Answer implements Timed, Predicate<Task> {
 
         assert(!forceProject || topOrSample);
         Task t = topOrSample ? mergeTop(forceProject) : mergeSample();
+        if (t == null) {
+            return null; //why?  intermpolate?
+        }
 
         double eviMin = eviMin();
         if (t.evi() < eviMin)

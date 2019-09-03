@@ -152,10 +152,10 @@ abstract public class TruthProjection extends TaskList {
 	@Nullable
 	public abstract Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL nar);
 
-	private void update(int from, int to) {
-		for (int i = from; i < to; i++)
-			update(i);
-	}
+//	private void update(int from, int to) {
+//		for (int i = from; i < to; i++)
+//			update(i);
+//	}
 
 	private boolean update(int i) {
 		Task t = items[i];
