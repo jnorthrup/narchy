@@ -15,6 +15,7 @@ import nars.time.When;
 import nars.truth.Truth;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
@@ -80,7 +81,7 @@ abstract public class AbstractDynamicTruth {
     /** estimates number of components, for allocation purposes */
     abstract public int componentsEstimate();
 
-    public Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
+    @Nullable public Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
         Term y = reconstruct(template, s, e, d);
         if (y==null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
             if (NAL.DEBUG) {

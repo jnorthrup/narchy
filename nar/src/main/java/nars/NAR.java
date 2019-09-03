@@ -58,6 +58,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
+import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -179,7 +180,37 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         out.append(v.toString()).append('\n');
     }
 
-    /**
+    public final void proofPrint(Task t) {
+        proof(t, System.out);
+    }
+
+	public void proof(Task t, Appendable out) {
+        try {
+            out.append(t.toString());
+            out.append('\n');
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+
+		short[] tc = t.why();
+		if (tc.length > 0) {
+			ShortHashSet seen = tc.length > 1 ? new ShortHashSet(tc.length) : null;
+			for (int i = tc.length - 1; i >= 0; i--) {
+				short s = tc[i];
+				if (seen == null || seen.add(s)) {
+					Why c = control.why.get(s);
+                    try {
+                        out.append(c.toString());
+                        out.append('\n');
+                    } catch (IOException e) {
+                        throw new RuntimeException(e);
+                    }
+				}
+			}
+		}
+	}
+
+	/**
      * updates indexes when a part is added or removed
      *
      * @param change a change event emitted by Parts

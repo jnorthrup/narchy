@@ -593,7 +593,7 @@ abstract public class GameX extends Game {
         if (NAL.DEBUG) {
             n.onTask((t) -> {
                 if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
-                    System.err.println(t + "\n" + MetaGoal.proof(t, n) + "\n");
+                    n.proofPrint(t);
                 }
             });
         }

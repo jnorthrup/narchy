@@ -433,11 +433,11 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         Truth tt;
         if (t.isBeliefOrGoal()) {
 
-            tt = t.truthRelative((start+end)/2, n.time(), eviMin);
-            if (tt == null) return null;
+            //tt = t.truthRelative((start+end)/2, n.time(), eviMin);
+            //if (tt == null) return null;
 
-            //tt = t.truth(start, end, dur); //0 dur
-            //if (tt == null || tt.evi() < eviMin) return null;
+            tt = t.truth(start, end, 0); //0 dur
+            if (tt == null || tt.evi() < eviMin) return null;
 
             if (ditherTruth) {
                 Truth ttd = tt.dither(n);

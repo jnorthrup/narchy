@@ -57,11 +57,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
 
             //HACK
             if (x instanceof UnevaluatedTask) {
-                if (x instanceof SeriesBeliefTable.SeriesTask) {
-                    return; //already added directly by the table to itself
-                } else {
-                    x = Remember.the(x, w.nar);
-                }
+                x = Remember.the(x, w.nar);
             } else {
                 x = Perceive.perceive(x, w);
             }

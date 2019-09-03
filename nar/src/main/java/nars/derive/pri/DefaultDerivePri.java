@@ -8,6 +8,8 @@ import nars.derive.Derivation;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunctions;
 
+import static jcog.math.LongInterval.TIMELESS;
+
 /**
  * TODO parameterize, modularize, refactor etc
  * TODO belief decomposition gets less priority than a question activated decomposition
@@ -115,11 +117,20 @@ public class DefaultDerivePri implements DerivePri {
 
     float factorEviAbsolute(Task t, Derivation d) {
         //eternal=1 dur
-        long taskRange = d._task.rangeIfNotEternalElse(1);
-        long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(1));
-        double taskBeliefRange = Math.min(taskRange, beliefRange);
+        long taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
+        long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
+        long taskBeliefRange;
+        if (taskRange == TIMELESS && beliefRange != TIMELESS) {
+            taskBeliefRange = beliefRange;
+        } else if (taskRange != TIMELESS && beliefRange == TIMELESS) {
+            taskBeliefRange = taskRange;
+        } else if (taskRange!=TIMELESS && beliefRange!=TIMELESS) {
+            taskBeliefRange = Math.min(taskRange, beliefRange);
+        } else {
+            taskBeliefRange = TIMELESS;
+        }
 
-        double rangeRatio = t.rangeIfNotEternalElse(1) / taskBeliefRange;
+        double rangeRatio = t.rangeIfNotEternalElse(taskBeliefRange) / ((double)taskBeliefRange);
 
         double y;
         if (t.isBeliefOrGoal())

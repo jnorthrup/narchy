@@ -58,12 +58,12 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-ext</artifactId>
-            <version>2.0.0-alpha0</version>
-            <scope>compile</scope>
-        </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.slf4j</groupId>-->
+<!--            <artifactId>slf4j-ext</artifactId>-->
+<!--            <version>2.0.0-alpha0</version>-->
+<!--            <scope>compile</scope>-->
+<!--        </dependency>-->
 
 
         <dependency>
@@ -118,7 +118,7 @@
         <dependency>
             <groupId>org.roaringbitmap</groupId>
             <artifactId>RoaringBitmap</artifactId>
-            <version>0.8.10</version>
+            <version>0.8.9</version>
             <scope>compile</scope>
             <exclusions>
                 <exclusion>
@@ -153,6 +153,10 @@
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter-engine</artifactId>
             <version>${junit-jupiter-params.version}</version>
+            <exclusions><exclusion>
+                <groupId>org.apiguardian</groupId>
+                <artifactId>apiguardian-api</artifactId>
+            </exclusion></exclusions>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -216,8 +220,12 @@
         <dependency>
             <groupId>tech.tablesaw</groupId>
             <artifactId>tablesaw-core</artifactId>
-            <version>0.34.2</version>
+            <version>0.35.0</version>
             <scope>compile</scope>
+            <exclusions><exclusion>
+                <groupId>io.github.classgraph</groupId>
+                <artifactId>classgraph</artifactId>
+            </exclusion></exclusions>
         </dependency>
         <!--        <dependency>-->
         <!--            <groupId>net.openhft</groupId>-->

@@ -14,7 +14,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.NAL.STAMP_CAPACITY;
-import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.TIMELESS;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
 /**
@@ -131,9 +131,9 @@ public enum Revision {;
     /** truth revision task merge strategy */
     @Nullable public static <T extends TaskRegion> Pair<Task, TruthProjection> _merge(T[] tasks, int n, int minComponents, boolean ditherTruth, NAL nal) {
 
-        TruthProjection p = nal.newProjection(ETERNAL, ETERNAL).ditherDT(nal).add(n, tasks);
+        TruthProjection p = nal.newProjection(TIMELESS, TIMELESS).ditherDT(nal).add(n, tasks);
 
-        if (!p.commit(true, minComponents, nal))
+        if (!p.minComponents(minComponents).commit(false, nal))
             return null;
 
         double eviMin =

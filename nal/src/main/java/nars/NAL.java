@@ -593,7 +593,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * */
         public static final boolean AGGLOMERATE_MAX_EVIDENCE_OF_EQUAL_PreciseTruth = false;
 
-		public static final boolean postFilter = false;
+        /** concentrate the temporal region to minimize evidence dilution that a naive temporal union might result in */
+		public static final boolean concentrate = true;
 	}
 
     /**

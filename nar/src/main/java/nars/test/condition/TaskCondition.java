@@ -8,7 +8,6 @@ import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.control.MetaGoal;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -186,8 +185,8 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
              }
         }
 
-        public void log(Task s, StringBuilder sb) {
-            sb.append(s.proof()).append('\n').append(MetaGoal.proof(s, nar)).append('\n');
+        public void log(Task t, StringBuilder sb) {
+            nar.proof(t, sb);
         }
 
         @Override

@@ -101,7 +101,7 @@ abstract public class ThreadedExec extends MultiExec {
             if (idealThreads > currentThreads) {
                 //spawn more
                 int demand = idealThreads - currentThreads;
-                logger.info("add {} worker threads (ideal: {} )", demand, idealThreads);
+                logger.info("start +{} worker threads (ideal: {} )", demand, idealThreads);
                 synchronized (exe) {
                     exe.execute(loop(), demand, false);
                 }

@@ -11,7 +11,6 @@ import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
 import nars.agent.GameTime;
 import nars.attention.TaskLinkWhat;
-import nars.control.MetaGoal;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
@@ -385,7 +384,7 @@ public class TrackXY_NAR extends GameX {
                             String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
                             System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
                             System.out.println(tt.proof());
-                            System.out.println(MetaGoal.proof(tt, n));
+                            //System.out.println(NAR.proof(tt, n));
                             System.out.println();
 
                         }

@@ -2,7 +2,6 @@ package nars.table.question;
 
 import jcog.data.NumberX;
 import jcog.math.LongInterval;
-import jcog.math.Longerval;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.Task;
@@ -74,30 +73,32 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
             if (Arrays.equals(x.stamp(), y.stamp())) {
                 if (x.term().equals(y.term())) {
-                    long ye = y.end();
+//                    long ye = y.end();
                     if (xs == TIMELESS) {
                         xs = x.start(); xe = x.end();
                     }
-                    long ys = y.start();
+                    //long ys = y.start();
                     //if (LongInterval.intersectLength(xs, xe, ys, ye)>0) {
                     //if (LongInterval.intersectsSafe(xs, xe, ys, ye)) {
-                        Longerval u = LongInterval.union(xs, xe, ys, ye);
-                        if (u.start == ys && u.end == ye) {
-                            //x contained within y, so merge
-                            //TODO boost y priority if contributes to it, in proportion to range
-                            return y;
-                        } else if (u.start == xs && u.end == xe) {
-                            //y contained within x, so remove y.   expect x to get inserted next
-                            //TODO boost x priority if contributes to it, in proportion to range
-                            remove(y); y.delete();
-                            return null;
-                        } else {
+                        //Longerval u = LongInterval.union(xs, xe, ys, ye);
+                    if (y.contains(xs, xe))  {
+                        //x contained within y, so merge
+                        //TODO boost y priority if contributes to it, in proportion to range
+                        return y;
+                    } else if (x.contains((LongInterval)y)) { //TODO y.containedBy(xs,xe)
+                        //y contained within x, so remove y.   expect x to get inserted next
+                        //TODO boost x priority if contributes to it, in proportion to range
+                        remove(y);
+                        y.delete();
+                        return null;
+                    }
+//                        } else {
 //                                float newPri = (float)(((x.priElseZero() * ((double)(xe-xs))) + (y.priElseZero() * (ye-ys))) /  (u.end - u.start));
 //                                Task x2 = Task.clone(x, x.term(), null, x.punc(), xs = u.start, xe = u.end);
 //                                Task.merge(x2, new Task[] { x, y }, newPri);
 //                                remove(y); y.delete();
 //                                x = x2;
-                        }
+//                        }
 
                     //}
                 }

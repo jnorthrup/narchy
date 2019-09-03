@@ -102,45 +102,29 @@ public class DynTaskify extends TaskList {
 
     @Nullable
     public Task eval(long start, long end) {
-        if (template == null)
-            throw new NullPointerException();
-        return model.evalComponents(template, start, end, this::evalComponent) ? taskify() : null;
+        return model.evalComponents(template, start, end, this::evalComponent) && components() ?
+            taskify() : null;
     }
 
-    @Nullable public Task taskify() {
-
-        if (!components())
-            return null;
+    @Nullable private Task taskify() {
 
         long s, e;
         long earliest;
         long latest = maxValue(Stamp::end);
         if (latest == LongInterval.ETERNAL) {
             //all are eternal
-            s = e = LongInterval.ETERNAL;
             earliest = LongInterval.ETERNAL;
+            s = e = LongInterval.ETERNAL;
         } else {
 
             earliest = earliestStart();
 
-
             if (model == ConjIntersection || model == Impl) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
-
-                //long ss = a.time.start, ee = a.time.end;
-                //long range = ee-ss;
-//                if (ss != LongInterval.ETERNAL && ss != XTERNAL) {
-//                    s = Util.clampSafe(s, ss, ee); //project sequence to when asked
-//                }
-
-                if (s == LongInterval.ETERNAL) {
-                    e = LongInterval.ETERNAL;
-                } else {
-                    long range = minValue(t -> t.isEternal() ? 0 : t.range()-1);
-                    e = s + range;
-                }
-
+                e = s == LongInterval.ETERNAL ?
+                    LongInterval.ETERNAL :
+                    s + minValue(t -> t.rangeIfNotEternalElse(1) - 1);
             } else {
 
                 long[] u = Tense.union(0, this);

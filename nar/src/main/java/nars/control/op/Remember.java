@@ -7,9 +7,9 @@ import nars.Task;
 import nars.attention.What;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.AbstractTask;
 import nars.task.util.TaskException;
-import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -39,19 +39,24 @@ public class Remember extends AbstractTask {
 
     public final NAR nar;
 
-    public static Remember the(Task x, NAR n) {
+    @Nullable public static Remember the(Task x, NAR n) {
         return the(x, true, true, true, n);
     }
 
-    private static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
+    @Nullable private static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
+        if (x instanceof SeriesBeliefTable.SeriesTask)
+            return null; //already will have been added directly by the table to itself
 
-        Term xTerm = x.term();
-//        assert (!x.isCommand());
-//        assert (xTerm.op().taskable);
+        verify(x, n);
 
-        boolean input = x.isInput();
-        if ((NAL.VOLMAX_RESTRICTS) && (input || !NAL.VOLMAX_RESTRICTS_INPUT)) {
-            int termVol = xTerm.volume();
+        return new Remember(x, store, link, emit, n);
+    }
+
+    /** misc verification tests which are usually disabled */
+    private static void verify(Task x, NAR n) {
+
+        if ((NAL.VOLMAX_RESTRICTS) && (x.isInput() || !NAL.VOLMAX_RESTRICTS_INPUT)) {
+            int termVol = x.term().volume();
             int maxVol = n.termVolMax.intValue();
             if (termVol > maxVol)
                 throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
@@ -76,13 +81,11 @@ public class Remember extends AbstractTask {
             int d = n.dtDither();
             if (d > 1) {
                 if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
-                    Tense.assertDithered(xTerm, d);
+                    Tense.assertDithered(x.term(), d);
                 if (NAL.test.DEBUG_ENSURE_DITHERED_OCCURRENCE)
                     Tense.assertDithered(x, d);
             }
         }
-
-        return new Remember(x, store, link, emit, n);
     }
 
     private Remember(Task input, boolean store, boolean link, boolean notify, NAR n) {

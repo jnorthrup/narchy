@@ -23,7 +23,6 @@ import nars.time.Tense;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.util.Timed;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -35,6 +34,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Map;
 import java.util.Random;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntPredicate;
 import java.util.function.Supplier;
 
@@ -66,26 +66,27 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * used in final calculation of to start/end time intervals
 	 */
-	int ditherDT = 1;
+	private int ditherDT = 1;
 
 	/**
 	 * active evidence cache
 	 */
 	@Nullable double[] evi = null;
+	private int minComponents = 1;
 
 	TruthProjection(long start, long end) {
 		super(0);
 		time(start, end);
 	}
 
-	public TruthProjection init(Task[] t, int numTasks) {
+	public TruthProjection with(Task[] t, int numTasks) {
 		this.items = t;
 		this.size = numTasks;
 		return this;
 	}
 
 	@Nullable
-	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, Timed w) {
+	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAL n) {
 		boolean neg = content instanceof Neg;
 		if (neg)
 			content = content.unneg();
@@ -119,7 +120,7 @@ abstract public class TruthProjection extends TaskList {
 		NALTask y = new DynamicTruthTask(
 			r.getOne(), beliefOrGoal,
 			yt,
-			w, start, end,
+			n, start, end,
 			stamp.get());
 
 
@@ -132,7 +133,7 @@ abstract public class TruthProjection extends TaskList {
 		return y;
 	}
 
-	public TruthProjection ditherDT(int ditherDT) {
+	private TruthProjection ditherDT(int ditherDT) {
 		this.ditherDT = ditherDT;
 		return this;
 	}
@@ -151,6 +152,11 @@ abstract public class TruthProjection extends TaskList {
 	@Nullable
 	public abstract Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL nar);
 
+	private void update(int from, int to) {
+		for (int i = from; i < to; i++)
+			update(i);
+	}
+
 	private boolean update(int i) {
 		Task t = items[i];
 		return valid(evi[i] = evi(t));
@@ -158,6 +164,7 @@ abstract public class TruthProjection extends TaskList {
 
 	private double evi(Task task) {
 		long start = this.start;
+		assert(start!=TIMELESS);
 		if (start == ETERNAL) {
 			if (!task.isEternal())
 				throw new WTF("eternal truthpolation requires eternal tasks");
@@ -175,13 +182,13 @@ abstract public class TruthProjection extends TaskList {
 	 * removes the weakest components sharing overlapping evidence with stronger ones.
 	 * should be called after all entries are added
 	 */
-	public final boolean commit(boolean shrink, int minResults, NAL n) {
+	public final boolean commit(boolean shrink, NAL n) {
 		int s = size();
-		if (s < minResults) return false;
+		if (s < minComponents) return false;
 
 		//quick short-circuiting 2-ary test for overlap
 		if (s == 2 && Stamp.overlap(items[0], items[1])) {
-			if (minResults > 1) {
+			if (minComponents > 1) {
 				return false;
 			} else {
 				nullify(1);
@@ -191,15 +198,15 @@ abstract public class TruthProjection extends TaskList {
 		}
 
 		int r = refocus(shrink);
-		if (r < minResults) return false;
+		if (r < minComponents) return false;
 
-		return r == 1 ? commit1() : commitN(shrink, r, minResults, n);
+		return r == 1 ? commit1() : commitN(shrink, r, n);
 	}
 
-	private boolean commitN(boolean shrink, int activeBefore, int minComponents, NAL n) {
+	private boolean commitN(boolean shrink, int activeBefore, NAL n) {
 		//note: this assumes the 2-ary test has already been applied
 
-			if (!filter(minComponents)) {
+			if (!filter()) {
 				//clearFast();
 				return false;
 			}
@@ -211,18 +218,11 @@ abstract public class TruthProjection extends TaskList {
 			}
 
 
-		int active;
-		if (shrink /* TODO && not all ETERNAL */ && NAL.truth.postFilter) {
-			if (postFilter(minComponents)) {
-				activeBefore = active = refocus(true);
-			} else
-				active = active();
-		} else
-			active = active();
+		int active = active();
 
 		if (active > 1) {
 
-			if (!intermpolate(n, minComponents)) {
+			if (!intermpolate(n)) {
 				//clearFast();
 				return false;
 			}
@@ -266,12 +266,37 @@ abstract public class TruthProjection extends TaskList {
 				count++;
 		}
 
+		if (count!=s)
+			removeNulls();
+
 		if (count == 0) {
 //			Arrays.fill(evi, 0);
 			return 0;
 		} else {
-			if (count > 1)
+			if (count > 1) {
 				ArrayUtil.quickSort(0, s, this::eviComparator, this::swap); //descending
+
+				//shuffle spans of equivalent items
+				double last = evi[0];
+				int contig = 0;
+				int i;
+				for (i = 1; i < s; i++) {
+					double ei = evi[i];
+					if (ei == last) {
+						contig++;
+					} else {
+						if (contig > 0) {
+							ArrayUtil.shuffle(i - contig, i, ThreadLocalRandom.current(), this::swap);
+						}
+						last = ei;
+						contig = 0;
+					}
+				}
+				if (contig > 0) {
+					i--;
+					ArrayUtil.shuffle(i - contig, i, ThreadLocalRandom.current(), this::swap);
+				}
+			}
 			return count;
 		}
 	}
@@ -279,7 +304,7 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * removes weakest tasks having overlapping evidence with stronger ones
 	 */
-	public boolean filter(int minComponents) {
+	public boolean filter() {
 
 
 		int activeBefore = active();
@@ -348,55 +373,72 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	/** returns true if postfiltering removed something */
-	private boolean postFilter(int minComponents) {
+	private void concentrate() {
 		//post-filter cull weak tasks that excessively dilute the effective average evidence
 		//TODO calculate exact threshold necessary to not dilute further
-		int activeAfter = active();
+//		int activeAfter = active();
 		Task[] items = this.items;
-		double[] evi = this.evi;
+//		double[] evi = this.evi;
 
 		long us, ue;
-		if (start == ETERNAL) {
-			us = Long.MAX_VALUE; ue = Long.MIN_VALUE;
-		} else {
+		assert(start!=ETERNAL && start!=TIMELESS);
+//		if (start == ETERNAL) {
+//			us = Long.MAX_VALUE; ue = Long.MIN_VALUE;
+//		} else {
 			//expand from midpoint of current interval
-			us = (start + end) / 2; ue = us;
-		}
+//			us = (start + end) / 2; ue = us;
+//		}
 
-		double esum = 0;
-		boolean removedAny = false;
+		//first non-eternal
+		int i = 0;
+		while (items[i].isEternal()) i++;
+		Task root = items[i];
+		us = root.start(); ue = root.end();
+		if (time(us, ue))
+			update();
 
-		double densityLossThreshold = 0.5/activeAfter;
-		//TODO utilize frequency deviation to increase acceptable loss
-		long S = start, E = end;
-		for (int i = 0; i < activeAfter; i++) {
-			Task ii = items[i];
-			long ts = ii.start();
-			double ei = evi[i];
-			if (ts != ETERNAL) {
-				long te = ii.end();
-				long ns = Math.max(S,Math.min(us, ts)), ne = Math.min(E,Math.max(ue, te));
-				if (i > minComponents && (ns < us || ne > ue)) {
-					//if it has stretched the time range,
-					//determine if any additional evidence dilution is justifiable.
-					//if not justifiable, remove it
-					double densityWithout = esum / (ue - us + 1);
-					double densityWith = (esum + ei) / (ne - ns + 1);
-					double densityDiff = (densityWithout - densityWith);
-					double densityLossFactor = (densityDiff)/(densityWithout);
-					if (densityLossFactor > densityLossThreshold) {
-						nullify(i);
-						removedAny = true;
-						continue;
-					} //else System.out.println("contrib");
-				}
-				us = ns;
-				ue = ne;
-			}
-			esum += ei;
-		}
-
-		return removedAny;
+//		double esum = evi[0];
+//
+//		boolean changed = time(us, ue);
+//
+//		double densityLossThreshold = 0.5/activeAfter;
+//		//TODO utilize frequency deviation to increase acceptable loss
+//		for (int i = 1; i < activeAfter; i++) {
+//			Task ii = items[i];
+//			long ts = ii.start();
+//			if (ts == ETERNAL)
+//				continue; //auto include eternal components
+//
+//			if (changed)
+//				update(i);
+//
+//			double ei = evi[i];
+//			long te = ii.end();
+//			long ns = Math.min(us, ts), ne = Math.max(ue, te);
+//			if (i > minComponents && (ns < us || ne > ue)) {
+//				//if it has stretched the time range,
+//				//determine if any additional evidence dilution is justifiable.
+//				//if justifiable, allow stretch
+//				double densityWithout = esum / (ue - us + 1);
+//				double densityWith = (esum + ei) / (ne - ns + 1);
+//				double densityDiff = (densityWithout - densityWith);
+//				double densityLossFactor = (densityDiff)/(densityWithout);
+//				if (densityLossFactor > densityLossThreshold) {
+//					//dont stretch
+//				} else {
+//					if (time(ns, ne)) {
+//						update(0, i+1);
+//						changed = true;
+//						//recalculate eSum
+//						esum = 0;
+//						for (int e = 0; e < i; e++)
+//							esum += evi[e];
+//						ei = evi[i];
+//					}
+//				}
+//			}
+//			esum += ei;
+//		}
 	}
 
 	/**
@@ -620,6 +662,11 @@ abstract public class TruthProjection extends TaskList {
 		}
 	}
 
+	public TruthProjection minComponents(int minComponents) {
+		this.minComponents = minComponents;
+		return this;
+	}
+
 
 	private static final class IEntry {
 		double eviSum = 0;
@@ -636,7 +683,7 @@ abstract public class TruthProjection extends TaskList {
 		}
 	}
 
-	private boolean intermpolate(NAL nar, int minComponents) {
+	private boolean intermpolate(NAL nar) {
 		int n = size(); //assumes nulls removed
 		Map<Term, IEntry> roots = null;
 		Task[] items = this.items;
@@ -854,7 +901,7 @@ abstract public class TruthProjection extends TaskList {
 //		//return null;
 //	}
 
-	public final void nullify(int index) {
+	private final void nullify(int index) {
 		items[index] = null;
 		@Nullable double[] e = this.evi;
 		if (e != null)
@@ -894,14 +941,14 @@ abstract public class TruthProjection extends TaskList {
 	 * @param all - true if applying to the entire set of tasks; false if applying only to those remaining active
 	 */
 	private int refocus(boolean shrink) {
-		removeNulls();
-
 		int s = size;
 		if (s == 0)
 			return 0;
 
+		removeNulls();
+
 		boolean changed = false;
-		if (shrink || start == ETERNAL) {
+		if (shrink || start == TIMELESS) {
 			long u0, u1;
 
 			if (s > 1) {
@@ -914,15 +961,13 @@ abstract public class TruthProjection extends TaskList {
 
 				Task[] items = this.items;
 				boolean hasEvi = evi != null;
-				u0 = Long.MAX_VALUE;
-				u1 = Long.MIN_VALUE;
+				u0 = Long.MAX_VALUE; u1 = Long.MIN_VALUE;
 				for (int i = 0; i < s; i++) {
 					if (hasEvi ? valid(i) : nonNull(i)) {
 						Task t = items[i];
 						long ts = t.start();
 						if (ts != ETERNAL) {
-							u0 = Math.min(u0, ts);
-							u1 = Math.max(u1, t.end());
+							u0 = Math.min(u0, ts); u1 = Math.max(u1, t.end());
 						}
 					}
 				}
@@ -937,7 +982,8 @@ abstract public class TruthProjection extends TaskList {
 
 
 			if (u0 != ETERNAL) {
-				if (start == ETERNAL) {
+				//temporal result
+				if (start == TIMELESS) {
 					//override eternal range with the entire calculated union
 					changed = time(u0, u1);
 				} else {
@@ -948,18 +994,25 @@ abstract public class TruthProjection extends TaskList {
 					}
 				}
 			} else {
-				changed = (start != ETERNAL) && time(ETERNAL, ETERNAL);
+				//eternal result
+				changed = time(ETERNAL, ETERNAL);
 			}
 
 		}
-		return changed || evi == null ? update() : s;
+
+		int active = changed || evi == null ? update() : s;
+
+		if (shrink && start!=ETERNAL &&  NAL.truth.concentrate) {
+			concentrate();
+		}
+		return active;
 	}
 
 	/**
 	 * returns true if the start, end times have changed
 	 */
 	public boolean time(long s, long e) {
-		if (s != ETERNAL) {
+		if (s != TIMELESS) {
 			int dith = this.ditherDT;
 			if (dith > 1) {
 				s = Tense.dither(s, dith, -1);

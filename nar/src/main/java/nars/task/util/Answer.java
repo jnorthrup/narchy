@@ -247,9 +247,8 @@ public final class Answer implements Timed, Predicate<Task> {
         ditherTruth(ditherTruth); //enable/disable truth dithering
 
 
-
-        Task root = tasks.first();
-        Task t = s == 1 ? root : merge(topOrSample, forceProject, root);
+        assert(!forceProject || topOrSample);
+        Task t = topOrSample ? mergeTop(forceProject) : mergeSample();
 
         double eviMin = eviMin();
         if (t.evi() < eviMin)
@@ -267,42 +266,44 @@ public final class Answer implements Timed, Predicate<Task> {
         return t;
     }
 
-    private Task merge(boolean topOrSample, boolean forceProject, Task root) {
+    private Task mergeTop(boolean forceProject) {
         Task t;
-        if (topOrSample) {
-            //compare alternate roots, as they might match better with tasks below
-            switch (root.punc()) {
-                case BELIEF:
-                case GOAL: {
-                    long ss, ee;
-                    if (forceProject) {
-                        ss = start; ee = end;
-                    } else {
-                        ss = ee = TIMELESS; /*auto*/
-                    }
-                    t = Truth.stronger(newTask(root.isBelief(),forceProject), root, ss, ee);
-                    break;
-                }
 
-                case QUESTION:
-                case QUEST:
-                default:
-                    throw new UnsupportedOperationException();
+        Task root = tasks.first();
+        int s = tasks.size();
+        if (s == 1 && (!forceProject || (root.start() == start && root.end() == end)))
+            return root;
+
+        //compare alternate roots, as they might match better with tasks below
+        switch (root.punc()) {
+            case BELIEF:
+            case GOAL: {
+//                long ss, ee;
+//                if (forceProject) {
+//                    ss = start;
+//                    ee = end;
+//                } else {
+//                    ss = ee = TIMELESS; /*auto*/
+//                }
+//                t = Truth.stronger(newTask(root.isBelief(), forceProject), root, ss, ee);
+                t = newTask(root.isBelief(), forceProject);
+                break;
             }
-        } else {
-            t = tasks.getRoulette(random());
-            assert (!forceProject);
+
+            case QUESTION:
+            case QUEST:
+            default:
+                throw new UnsupportedOperationException();
         }
         return t;
     }
 
-    private Task newTask(boolean beliefOrGoal, boolean forceProject) {
-        if (!forceProject && tasks.size() == 1) {
-            return tasks.get(0);
-        }
+    private Task mergeSample() {
+        return tasks.getRoulette(random());
+    }
 
-        TruthProjection tp = truthProjection(forceProject);
-        return tp!=null ? tp.newTask(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar) : null;
+    private Task newTask(boolean beliefOrGoal, boolean forceProject) {
+        return truthProjection(forceProject).newTask(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar);
     }
 
     private double eviMin() {
@@ -314,26 +315,25 @@ public final class Answer implements Timed, Predicate<Task> {
      */
     @Nullable
     public Truth truth() {
+        assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
+
         TruthProjection tp = truthProjection(true);
-        if (tp != null) {
-            assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
-            return tp.truth(NAL.truth.EVI_MIN, false, false, nar);
-        }
-
-        return null;
+        return tp!=null ? tp.truth(NAL.truth.EVI_MIN, false, false, nar) : null;
     }
 
-    @Nullable
-    public final TruthProjection truthProjection(boolean forceProject) {
+    @Nullable public final TruthProjection truthProjection(boolean forceProject) {
         int numTasks = tasks.size();
-        if (numTasks == 0) return null;
+        if (numTasks == 0)
+            return null;
 
         long s, e;
         if (forceProject) {
             s = start; e = end;
-        } else { s = e = ETERNAL; /* auto */ }
-        return nar.newProjection(s, e).init(this.tasks.items, numTasks);
+        } else {
+            s = e = TIMELESS; /* auto */
+        }
+        return nar.newProjection(s, e).with(this.tasks.items, numTasks);
     }
 
 

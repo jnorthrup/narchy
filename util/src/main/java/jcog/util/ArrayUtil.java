@@ -7160,6 +7160,16 @@ public enum ArrayUtil {
         for (int i = array.length; i > 1; i--)
             swapObj(array, i - 1, random.nextInt(i));
     }
+    /** from,to is an inclusive range which is non-standard wrt the other shuffle methods */
+    public static void shuffle(int from, int to, Random random, IntIntProcedure swapper) {
+        int range = 1+(to - from);
+        for (int i = to; i > from; i--) {
+            int a = i - 1;
+            int b = random.nextInt(range) + from;
+            if (a!=b)
+                swapper.value(a, b);
+        }
+    }
 
     public static void shuffle(Object[] array, Rand random) {
         for (int i = array.length; i > 1; i--)

@@ -584,8 +584,11 @@ public class Derivation extends PreDerivation {
             return y;
     }
 
-    public final void add(Task t) {
+    public final void derive(Task t) {
         what.accept(t);
+
+        nar.emotion.deriveTask.increment();
+        use(NAL.derive.TTL_COST_DERIVE_TASK);
     }
 
     public boolean doubt(float ratio, boolean eternalize) {

@@ -20,7 +20,7 @@ public interface QuestionTable extends TaskTable {
      * allows question to pass through it to the link activation phase, but
      * otherwise does not store it
      */
-    /*@NotNull*/ QuestionTable Empty = new QuestionTable() {
+    QuestionTable Empty = new QuestionTable() {
 
         @Override
         public Stream<? extends Task> taskStream() {
