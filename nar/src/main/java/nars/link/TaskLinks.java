@@ -56,7 +56,7 @@ public class TaskLinks implements Sampler<TaskLink> {
      * 0 = deducts all propagated priority from source tasklink (full resistance)
      * 1 = deducts no propagated priority (superconductive)
      **/
-    public final FloatRange sustain = new FloatRange(0f, 0, 1f);
+    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
     private final PriMerge merge = NAL.tasklinkMerge;
 
 

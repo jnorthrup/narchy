@@ -372,30 +372,51 @@ abstract public class TruthProjection extends TaskList {
 		return remain > 0;
 	}
 
-	/** returns true if postfiltering removed something */
+	/**
+	 * assumes that the current start,end interval is the temporal union of all tasks
+	 * returns true if postfiltering removed something */
 	private void concentrate() {
+		assert(start!=ETERNAL && start!=TIMELESS);
+
 		//post-filter cull weak tasks that excessively dilute the effective average evidence
 		//TODO calculate exact threshold necessary to not dilute further
-//		int activeAfter = active();
 		Task[] items = this.items;
-//		double[] evi = this.evi;
 
-		long us, ue;
-		assert(start!=ETERNAL && start!=TIMELESS);
-//		if (start == ETERNAL) {
-//			us = Long.MAX_VALUE; ue = Long.MIN_VALUE;
-//		} else {
-			//expand from midpoint of current interval
-//			us = (start + end) / 2; ue = us;
-//		}
+		long us = start, ue = end; //union
 
 		//first non-eternal
-		int i = 0;
-		while (items[i].isEternal()) i++;
-		Task root = items[i];
-		us = root.start(); ue = root.end();
-		if (time(us, ue))
-			update();
+		int rootIndex = 0;
+		while (items[rootIndex].isEternal()) rootIndex++;
+		Task root = items[rootIndex];
+		long rs = root.start(); long re = root.end();
+
+		if (rs!=us || re!=ue) {
+			//heuristic decision about how large to expand the range without diluting the evidence
+			//HACK this is a simple comparison of the first temporal component vs. the others and the difference in density that expanding to the union would cause
+			double eviRoot = evi[rootIndex];
+			double eviOther = 0;
+			double eviSum = 0;
+			int size = this.size;
+			double[] evi = this.evi;
+			for (int i = 0; i < size; i++) {
+				if (!items[i].isEternal())
+					eviSum += evi[i];
+			}
+//			eviOther = eviSum - evi[rootIndex];
+			double densityUnion = eviSum / (1 + ue - us);
+			double densityRoot = eviSum / (1 + re - rs);
+			float threshold = 0.5f;
+			if ((densityRoot - densityUnion) / densityRoot > threshold) {
+				//collapse to root
+				if (time(rs, re))
+					update();
+				else
+					assert(false); //shouldnt
+			} else {
+				//keep union
+				//Util.nop();
+			}
+		}
 
 //		double esum = evi[0];
 //
@@ -1002,9 +1023,9 @@ abstract public class TruthProjection extends TaskList {
 
 		int active = changed || evi == null ? update() : s;
 
-		if (shrink && start!=ETERNAL &&  NAL.truth.concentrate) {
+		if (shrink && active>1 && start!=ETERNAL &&  NAL.truth.concentrate)
 			concentrate();
-		}
+
 		return active;
 	}
 

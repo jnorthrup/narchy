@@ -222,10 +222,6 @@
             <artifactId>tablesaw-core</artifactId>
             <version>0.35.0</version>
             <scope>compile</scope>
-            <exclusions><exclusion>
-                <groupId>io.github.classgraph</groupId>
-                <artifactId>classgraph</artifactId>
-            </exclusion></exclusions>
         </dependency>
         <!--        <dependency>-->
         <!--            <groupId>net.openhft</groupId>-->
