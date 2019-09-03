@@ -50,7 +50,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 	private int volMax;
 
-	ConjBuilder cc = null;
+	final ConjBuilder cc = new ConjTree();
 	private Term target;
 
 	public ImpilerDeduction(NAR nar) {
@@ -148,20 +148,16 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		MutableTruth tAccum = null;
 
-		long offset =
-			//now
-			start;
+		long offset = start;
 
 
 		for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
 			Task e = pathTasks[i];
-			Truth ttt = e.truth();
-
-			Term ee = e.term();
-			Truth tt = e.isEternal() ? ttt : e.truthRelative(offset + e.start(), now);
-			if (tt == null)
+			Truth tCurr = e.truthRelative(offset + e.start(), now);
+			if (tCurr == null)
 				return false; //too weak
 
+			Term ee = e.term();
 			int edt = ee.dt();
 			if (edt == DTERNAL) edt = 0;
 
@@ -172,17 +168,19 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			}
 
 			if (tAccum == null) {
-				tAccum = new MutableTruth(tt);
+				tAccum = new MutableTruth(tCurr);
 			} else {
 
 				if (ee.sub(0) instanceof Neg) {
 					tAccum.negateThis(); //negate incoming truth to match the negated precondition
 				}
 
-				Truth tNext =
-					NALTruth.Deduction //(forward ? NALTruth.Deduction : NALTruth.PostWeak)
-						.apply(tAccum, tt, confMin, null);
+				if (i == n-1 && e.isNegative()) {
+					//negate so that the deduction belief truth is positive because the final implication predicate will be inverted
+					tCurr = tCurr.neg();
+				}
 
+				Truth tNext = NALTruth.Deduction.apply(tAccum, tCurr, confMin, null);
 				if (tNext == null)
 					return false;
 
@@ -192,11 +190,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		}
 
-		if (cc == null)
-			cc = new ConjTree();
-		else
-			cc.clear();
-
+		cc.clear();
 
 		Term before = Null, next = Null;
 		int zDT = 0;
@@ -241,18 +235,20 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		Term ccc = cc.term();
 		if (ccc == Null) return false;
 
-		Term ee = forward ?
+		Term implication = forward ?
 			IMPL.the(ccc, zDT, before)
 			:
 			IMPL.the(ccc, zDT, next);
-		if (ee instanceof Bool || ee.volume() > volMax)
+		if (implication instanceof Bool || implication.volume() > volMax)
 			return false;
+
+
 
 		if (range == Long.MAX_VALUE)
 			range = 0; //all eternal
 
 		long finalStart = start, finalEnd = start + range;
-		Task z = Task.tryTask(ee, BELIEF, tAccum, (ttt, tr) ->
+		Task z = Task.tryTask(implication, BELIEF, tAccum, (ttt, tr) ->
 			NALTask.the(ttt, BELIEF, tr.dither(nar), now, finalStart, finalEnd, Stamp.sample(STAMP_CAPACITY,
 				Stamp.toMutableSet(Math.round(n / 2f * STAMP_CAPACITY), i -> pathTasks[i].stamp(), n),
 				nar.random())));

@@ -889,8 +889,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     /** subjective truth projection, relative to a specific 'now' observed time point */
     @Nullable default Truth truthRelative(long tgt, long now, double eviMin) {
-        double e = eviRelative(tgt, now);
-        return e < eviMin ? null : PreciseTruth.byEvi(truth().freq(), e);
+        if (isEternal()) {
+            return truth(); //shortcut
+        } else {
+            double e = eviRelative(tgt, now);
+            return e < eviMin ? null : PreciseTruth.byEvi(truth().freq(), e);
+        }
     }
 
     /** subjective truth projection, relative to a specific 'now' observed time point */

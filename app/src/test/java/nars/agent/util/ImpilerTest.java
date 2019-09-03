@@ -64,8 +64,22 @@ class ImpilerTest {
     }
 
     @Test
-    public void testEternalOuterNegation() {
-        //TODO
+    public void testEternalOuterNegation_FwdStart() throws Narsese.NarseseException {
+        NAR n = NARS.threadSafe();
+        n.input("(--a ==> b).");
+        n.input("(b ==> c).");
+        Impiler.impile(n);
+        ImpilerDeduction d = new ImpilerDeduction(n);
+        assertEquals("[$.45 (((--,a)&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
+    }
+    @Test
+    public void testEternalOuterNegation_FwdEnd() throws Narsese.NarseseException {
+        NAR n = NARS.threadSafe();
+        n.input("(a ==> b).");
+        n.input("(b ==> --c).");
+        Impiler.impile(n);
+        ImpilerDeduction d = new ImpilerDeduction(n);
+        assertEquals("[$.45 ((a&&b)==>c). 0 %0.0;.81%]", deduce(d, $$("a"), true, 0).toString());
     }
 
     @Test
