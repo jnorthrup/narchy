@@ -317,12 +317,20 @@ public final class Answer implements Timed, Predicate<Task> {
      * clears the cache and tasks before returning
      */
     @Nullable
-    public Truth truth() {
+    public Truth truth(float perceptualDur) {
         assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
         TruthProjection tp = truthProjection(true);
 
-        return tp!=null ? tp.truth(NAL.truth.EVI_MIN, false, false, nar) : null;
+        if (tp != null) {
+            tp.dur(perceptualDur);
+            return tp.truth(NAL.truth.EVI_MIN, false, false, nar);
+        } else
+            return null;
+    }
+
+    @Nullable public final Truth truth() {
+        return truth(dur);
     }
 
     @Nullable public final TruthProjection truthProjection(boolean forceProject) {

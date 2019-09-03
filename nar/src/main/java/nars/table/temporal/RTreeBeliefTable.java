@@ -270,12 +270,19 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        boolean beliefOrGoal = r.input.isBelief();
         int e = 0, cap;
         while (treeRW.size() > (cap = capacity())) {
+
+
             if (cap == 0) {
                 //became deleted
                 treeRW.clear();
                 return true;
             }
 
+            if (e > 0) {
+                Util.nop();
+                if (e > 1)
+                    throw new WTF();
+            }
             compress(treeRW, r);
 
             e++;

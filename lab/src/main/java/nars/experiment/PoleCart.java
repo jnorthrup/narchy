@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
-import jcog.exe.Loop;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
@@ -12,13 +11,11 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
-import nars.impiler.Impiler;
 import nars.attention.What;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
-import nars.impiler.ImpilerDeduction;
 import nars.op.BeliefPredict;
 import nars.term.Term;
 import nars.term.Termed;
@@ -83,16 +80,16 @@ public class PoleCart extends GameX {
 						what
 					);
 
-                    Loop.of(() -> {
-
-						Impiler.impile(what);
-
-                        ImpilerDeduction d = new ImpilerDeduction(n);
-                        d.get(p.actions().get(n.random()).term(), n.time(), false).forEach(t -> {
-                           System.out.println(t);
-                           what.accept(t);
-                        });
-                    }).setFPS(0.5f);
+//                    Loop.of(() -> {
+//
+//						Impiler.impile(what);
+//
+//                        ImpilerDeduction d = new ImpilerDeduction(n);
+//                        d.get(p.actions().get(n.random()).term(), n.time(), false).forEach(t -> {
+//                           System.out.println(t);
+//                           what.accept(t);
+//                        });
+//                    }).setFPS(0.5f);
 
 					return p;
 				},

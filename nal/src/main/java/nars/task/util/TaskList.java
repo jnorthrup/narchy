@@ -155,6 +155,11 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         return items[i].truth();
     }
 
+    public long taskRange(int i) {
+        return items[i].range();
+    }
+
+
 
     //    protected float pri(long start, long end) {
 //

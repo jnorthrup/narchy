@@ -95,15 +95,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 3;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
-    public static final int ANSWER_ACTION_ANSWER_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY * 4;
+    public static final int ANSWER_ACTION_ANSWER_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY * 3;
 
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 1.5f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = false;

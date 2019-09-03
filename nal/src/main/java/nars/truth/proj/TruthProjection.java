@@ -1,8 +1,6 @@
 package nars.truth.proj;
 
-import jcog.Paper;
-import jcog.Skill;
-import jcog.WTF;
+import jcog.*;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
@@ -73,6 +71,7 @@ abstract public class TruthProjection extends TaskList {
 	 */
 	@Nullable double[] evi = null;
 	private int minComponents = 1;
+	private float dur = 0;
 
 	TruthProjection(long start, long end) {
 		super(0);
@@ -142,20 +141,15 @@ abstract public class TruthProjection extends TaskList {
 		return ditherDT(nal.dtDither());
 	}
 
-	public final Truth truth(double eviMin, boolean dither, boolean tShrink, NAL nar) {
-		return truth(eviMin, dither, tShrink, true, nar);
+	public final Truth truth(double eviMin, boolean dither, boolean tShrink, NAL n) {
+		return commit(tShrink, n) ? get(eviMin, dither, n) : null;
 	}
 
 	/**
 	 * computes the final truth value
-	 */
+	 * (commit(..) is not invoked here; if commit is necessary, use truth(..) method */
 	@Nullable
-	public abstract Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL nar);
-
-//	private void update(int from, int to) {
-//		for (int i = from; i < to; i++)
-//			update(i);
-//	}
+	public abstract Truth get(double eviMin, boolean dither, NAL nar);
 
 	private boolean update(int i) {
 		Task t = items[i];
@@ -173,7 +167,7 @@ abstract public class TruthProjection extends TaskList {
 			//TODO subclass this or param for all these options
 			//return TruthIntegration.evi(task, start, end, now);
 			//return TruthIntegration.eviAbsolute(task, start, end, 0);
-			return TruthIntegration.eviAbsolute(task, start, end, 1 /* leak */);
+			return TruthIntegration.eviAbsolute(task, start, end, dur /* leak */);
 		}
 	}
 
@@ -373,16 +367,20 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	/**
+	 * heuristic range contraction to avoid evidence dilution ie. preserve evidence density
+	 *
 	 * assumes that the current start,end interval is the temporal union of all tasks
-	 * returns true if postfiltering removed something */
+	 * returns true if postfiltering removed something
+	 * TODO refine
+	 * */
 	private void concentrate() {
 		assert(start!=ETERNAL && start!=TIMELESS);
 
-		//post-filter cull weak tasks that excessively dilute the effective average evidence
+
 		//TODO calculate exact threshold necessary to not dilute further
 		Task[] items = this.items;
 
-		long us = start, ue = end; //union
+		final long us = start, ue = end; //union
 
 		//first non-eternal
 		int rootIndex = 0;
@@ -391,21 +389,27 @@ abstract public class TruthProjection extends TaskList {
 		long rs = root.start(); long re = root.end();
 
 		if (rs!=us || re!=ue) {
-			//heuristic decision about how large to expand the range without diluting the evidence
-			//HACK this is a simple comparison of the first temporal component vs. the others and the difference in density that expanding to the union would cause
-			double eviRoot = evi[rootIndex];
-			double eviOther = 0;
-			double eviSum = 0;
-			int size = this.size;
 			double[] evi = this.evi;
+
+			double ud = ue - us;
+			double eviSum = 0, eviLoss = 0;
+			int size = this.size;
 			for (int i = 0; i < size; i++) {
-				if (!items[i].isEternal())
-					eviSum += evi[i];
+				if (!items[i].isEternal()) {
+					double ei = evi[i];
+					eviSum += ei;
+				 	if (i>rootIndex) {
+						//eviOther += ei;
+						eviLoss += ei * ((ud - taskRange(i)) / ud);
+					}
+				}
 			}
-//			eviOther = eviSum - evi[rootIndex];
-			double densityUnion = eviSum / (1 + ue - us);
-			double densityRoot = eviSum / (1 + re - rs);
-			float threshold = 0.5f;
+
+			double densityUnion = eviSum / (1 + ud);
+			long rd = re - rs;
+			double densityRoot = (eviSum  - eviLoss) / (1 + (double) rd);
+			//System.out.println(Texts.n4(densityRoot) +"/"+ Texts.n4(densityUnion) + " : " + this);
+			double threshold = 0.5f;
 			if ((densityRoot - densityUnion) / densityRoot > threshold) {
 				//collapse to root
 				if (time(rs, re))
@@ -414,7 +418,7 @@ abstract public class TruthProjection extends TaskList {
 					assert(false); //shouldnt
 			} else {
 				//keep union
-				//Util.nop();
+				Util.nop();
 			}
 		}
 
@@ -688,6 +692,11 @@ abstract public class TruthProjection extends TaskList {
 		return this;
 	}
 
+	/** task evidence leak dur */
+	public TruthProjection dur(float dur) {
+		this.dur = dur;
+		return this;
+	}
 
 	private static final class IEntry {
 		double eviSum = 0;
@@ -922,7 +931,7 @@ abstract public class TruthProjection extends TaskList {
 //		//return null;
 //	}
 
-	private final void nullify(int index) {
+	private void nullify(int index) {
 		items[index] = null;
 		@Nullable double[] e = this.evi;
 		if (e != null)
@@ -962,11 +971,12 @@ abstract public class TruthProjection extends TaskList {
 	 * @param all - true if applying to the entire set of tasks; false if applying only to those remaining active
 	 */
 	private int refocus(boolean shrink) {
+
+		removeNulls();
+
 		int s = size;
 		if (s == 0)
 			return 0;
-
-		removeNulls();
 
 		boolean changed = false;
 		if (shrink || start == TIMELESS) {
@@ -1023,7 +1033,7 @@ abstract public class TruthProjection extends TaskList {
 
 		int active = changed || evi == null ? update() : s;
 
-		if (shrink && active>1 && start!=ETERNAL &&  NAL.truth.concentrate)
+		if (shrink && active>minComponents && start!=ETERNAL &&  NAL.truth.concentrate)
 			concentrate();
 
 		return active;

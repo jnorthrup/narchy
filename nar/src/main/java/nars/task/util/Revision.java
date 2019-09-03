@@ -139,7 +139,7 @@ public enum Revision {;
         double eviMin =
                 NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
 
-        Truth truth = p.truth(eviMin, ditherTruth, true, false, nal);
+        Truth truth = p.get(eviMin, ditherTruth, nal);
         if (truth == null)
             return null;
 

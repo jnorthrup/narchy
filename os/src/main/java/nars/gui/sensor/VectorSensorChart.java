@@ -64,7 +64,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     public final FloatRange window = new FloatRange(1, 0, 4);
 
     /** truth duration */
-    public final FloatRange truthDur = new FloatRange(1, 0, 4);
+    public final FloatRange perceptDur = new FloatRange(1, 0, 4);
 
 
 //    public final AtomicBoolean beliefs = new AtomicBoolean(true);
@@ -187,13 +187,11 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
             @Override
             public void update(VectorSensorChart v) {
+
                 update(v, new XYConcept() {
                     @Override protected float floatValue(int x, int y, TaskConcept c) {
                         Truth b = answer.clear(answerTries).match(c.beliefs()).truth();
-                        if (b != null)
-                            return b.freq();
-
-                        return Float.NaN;
+                        return b != null ? b.freq() : Float.NaN;
                     }
                 });
                 //Util.normalize(value);
@@ -223,6 +221,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
             @Override
             public void update(VectorSensorChart v) {
+
                 update(v, new XYConcept() {
                     @Override
                     protected float floatValue(int x, int y, TaskConcept c) {
@@ -366,7 +365,9 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
                         .taskStrength(true, answerDetail, start, end, null, null, nar);
             }
 
-            this.answer.time(start, end).dur(Math.round(baseDur * truthDur.floatValue()));
+
+
+            this.answer.time(start, end).dur(Math.round(baseDur * perceptDur.floatValue()));
 
             for (Layer l : layers)
                 l.doUpdate(this);

@@ -173,7 +173,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
     }
 
-    private  @Nullable Truth truth(TruthProjection t) {
+    private  @Nullable Truth truth(@Nullable TruthProjection t) {
         return t!=null ? t.truth(NAL.truth.EVI_MIN, false, false, null) : null;
     }
 

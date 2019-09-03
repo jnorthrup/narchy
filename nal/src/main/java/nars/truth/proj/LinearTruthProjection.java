@@ -21,12 +21,8 @@ public class LinearTruthProjection extends TruthProjection {
 
     @Override
     @Nullable
-    public final Truth truth(double eviMin, boolean dither, boolean tShrink, boolean commitFirst, NAL n) {
+    public final Truth get(double eviMin, boolean dither, NAL n) {
 
-        if (commitFirst) {
-            if (!commit(tShrink, n))
-                return null;
-        }
 
 
         double wFreqSum = 0, /*wSum = 0,*/ eSum = 0;
