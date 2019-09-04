@@ -106,7 +106,7 @@ public class DynamicConjTruth {
 
             boolean result = aligned ?
                 reconstructSequence(sequenceStart, end, d, b) :
-                reconstructInterval(sequenceStart, end, d, b);
+                reconstructInterval(d, b);
 
             return result ? b.term() : null;
         }
@@ -234,7 +234,7 @@ public class DynamicConjTruth {
         }
         return true;
     }
-    static boolean reconstructInterval(long sequenceStart, long end, DynTaskify d, ConjBuilder b) {
+    static boolean reconstructInterval(DynTaskify d, ConjBuilder b) {
         @Nullable ConjBuilder bb = ConjSpans.add(d, true, b);
         return (bb != null);
     }

@@ -1094,7 +1094,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	@Nullable
-	public Task newTask(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
+	public Task task(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
 		@Nullable Truth tt = truth(eviMin, ditherTruth, !forceProject, n);
 		if (tt == null)
 			return null;

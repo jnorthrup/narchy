@@ -37,12 +37,10 @@ import static nars.Op.NEG;
 public class DynTaskify extends TaskList {
 
 
-
-
-    private static class Component implements Function<DynTaskify,Task> {
+    static class Component implements Function<DynTaskify,Task> {
         final Term term;
         final BeliefTable table;
-        final long start, end;
+        long start, end;
         final int termVolume;
 
         Component(Term term, BeliefTable _c, long start, long end) {
@@ -58,7 +56,7 @@ public class DynTaskify extends TaskList {
         }
     }
 
-    private FasterList<Component> components = null;
+    protected FasterList<Component> components = null;
 
     public final AbstractDynamicTruth model;
 

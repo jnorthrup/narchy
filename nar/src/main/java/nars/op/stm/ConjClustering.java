@@ -50,6 +50,9 @@ public class ConjClustering extends How implements Consumer<Task> {
     int learningIterations = 1;
     int minDurationsPerLearning = 1;
 
+    /** HACK */
+    @Deprecated private int volEstimateInflationFactor = 3;
+
     private final Predicate<Task> filter;
 
     private float confMin;
@@ -293,21 +296,15 @@ public class ConjClustering extends How implements Consumer<Task> {
 
     private final class CentroidConjoiner {
 
-
-//        private final Map<LongObjectPair<Term>, Task> vv = new UnifiedMap<>(16);
         final List<Task> trying = new FasterList();
         final IntToObjectFunction<Task> tryer = trying::get;
         final FasterList<Task> tried = new FasterList();
 
-
         public FasterList<TaskList> centroids = new FasterList();
 
-        /** generated tasks */
-        //final FasterList<Task> out = new FasterList();
         private transient int tasksGeneratedPerCentroidIterationMax;
 
-        /** HACK */
-        @Deprecated private int volEstimateInflationFactor = 3;
+
 
         private CentroidConjoiner() {
 

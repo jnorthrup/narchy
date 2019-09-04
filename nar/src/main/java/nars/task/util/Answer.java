@@ -248,7 +248,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
 
         assert(!forceProject || topOrSample);
-        Task t = topOrSample ? mergeTop(forceProject) : mergeSample();
+        Task t = topOrSample ? taskTop(forceProject) : taskSample();
         if (t == null) {
             return null; //why?  intermpolate?
         }
@@ -269,9 +269,7 @@ public final class Answer implements Timed, Predicate<Task> {
         return t;
     }
 
-    private Task mergeTop(boolean forceProject) {
-        Task t;
-
+    private Task taskTop(boolean forceProject) {
         Task root = tasks.first();
         int s = tasks.size();
         if (s == 1 && (!forceProject || (root.start() == start && root.end() == end)))
@@ -280,33 +278,22 @@ public final class Answer implements Timed, Predicate<Task> {
         //compare alternate roots, as they might match better with tasks below
         switch (root.punc()) {
             case BELIEF:
-            case GOAL: {
-//                long ss, ee;
-//                if (forceProject) {
-//                    ss = start;
-//                    ee = end;
-//                } else {
-//                    ss = ee = TIMELESS; /*auto*/
-//                }
-//                t = Truth.stronger(newTask(root.isBelief(), forceProject), root, ss, ee);
-                t = newTask(root.isBelief(), forceProject);
-                break;
-            }
+            case GOAL:
+                return task(root.isBelief(), forceProject);
 
             case QUESTION:
             case QUEST:
             default:
                 throw new UnsupportedOperationException();
         }
-        return t;
     }
 
-    private Task mergeSample() {
+    private Task taskSample() {
         return tasks.getRoulette(random());
     }
 
-    private Task newTask(boolean beliefOrGoal, boolean forceProject) {
-        return truthProjection(forceProject).newTask(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar);
+    private Task task(boolean beliefOrGoal, boolean forceProject) {
+        return truthProjection(forceProject).task(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar);
     }
 
     private double eviMin() {
