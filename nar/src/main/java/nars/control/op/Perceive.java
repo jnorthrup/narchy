@@ -9,6 +9,7 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.eval.Evaluation;
+import nars.task.UnevaluatedTask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -44,19 +45,22 @@ public enum Perceive {
         byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
+        Task xPerceived = !cmd ? Remember.the(x, n) : null;
+
+        if (x instanceof UnevaluatedTask)
+            return xPerceived;
+
         Task executionPerceived = cmd || punc == GOAL && !x.isEternal() ?
                 execOperator(x, n, cmd) : null;
 
-        Task xPerceived = (!cmd) ? Remember.the(x, n) : null;
-
         Task perceived;
-        if (executionPerceived == null) {
-            perceived = xPerceived;
-        } else {
+        if (executionPerceived != null) {
             if (xPerceived != null)
                 perceived = task(new FasterList<Task>(2).with(executionPerceived, xPerceived), false);
             else
                 perceived = executionPerceived;
+        } else {
+            perceived = xPerceived;
         }
 
         if (Evaluation.evalable(x.term())) {

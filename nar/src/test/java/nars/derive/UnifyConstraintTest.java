@@ -4,7 +4,7 @@ import nars.$;
 import nars.NARS;
 import nars.Narsese;
 import nars.test.TestNAR;
-import nars.unify.constraint.NotEqualConstraint;
+import nars.unify.constraint.RelationConstraint;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -19,7 +19,7 @@ class UnifyConstraintTest {
 
     @Test
     void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
-        NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf c = new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
+        RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf c = new RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
         assertFalse(
                 c.invalid($.$("X"), $.$("Y"), null)
         );

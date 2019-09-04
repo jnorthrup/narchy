@@ -1,6 +1,7 @@
 package nars.truth.dynamic;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.math.LongInterval;
 import jcog.util.ObjectLongLongPredicate;
 import nars.NAL;
@@ -23,8 +24,6 @@ import static nars.NAL.STAMP_CAPACITY;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
-import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 
 /**
  * Created by me on 12/4/16.
@@ -35,6 +34,10 @@ abstract public class AbstractDynamicTruth {
 
 
     public abstract boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each);
+
+    public boolean temporal() {
+        return false;
+    }
 
     /**
      * used to reconstruct a dynamic target from some or all components
@@ -98,7 +101,7 @@ abstract public class AbstractDynamicTruth {
         }
 
 
-        boolean absolute = (this!=Impl && this != ConjIntersection) || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
+        boolean absolute = !temporal() || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
         NAR nar = d.nar;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Task x = d.get(i);

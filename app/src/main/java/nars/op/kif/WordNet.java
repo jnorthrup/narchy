@@ -430,7 +430,7 @@ public class WordNet {
             avp.attribute = ptr;
             avp.value = targetPOS + targetSynset;
             ArrayList al = new ArrayList();
-            if (relations.keySet().contains(synset)) {
+            if (relations.containsKey(synset)) {
                 al = (ArrayList) relations.get(synset);
             } else {
                 relations.put(synset, al);
@@ -468,7 +468,7 @@ public class WordNet {
                         key = synset.substring(1) + '-' + word;
                     }
                     ArrayList frames = new ArrayList();
-                    if (!verbFrames.keySet().contains(key)) {
+                    if (!verbFrames.containsKey(key)) {
                         verbFrames.put(key, frames);
                     } else {
                         frames = (ArrayList) verbFrames.get(key);
@@ -1158,7 +1158,7 @@ public class WordNet {
                 String synset = (String) al.get(0); 
                 String SUMOterm = (String) al.get(1);
                 String bestTotal = (String) al.get(2);
-                int total = Integer.valueOf(bestTotal);
+                int total = Integer.parseInt(bestTotal);
                 if (total > bestScore) {
                     bestScore = total;
                     POS = i;
@@ -1332,7 +1332,7 @@ public class WordNet {
         try {
             if (initNeeded) {
                 if (WordNet.baseDir == null || WordNet.baseDir.isEmpty()) {
-                    WordNet.baseDir = KBmanager.getMgr().getPref("kbDir");
+                    WordNet.baseDir = KBmanager.manager.getPref("kbDir");
                 }
                 baseDirFile = new File(WordNet.baseDir);
                 wn = new WordNet();
@@ -1945,7 +1945,7 @@ public class WordNet {
             frames.addAll(res);
         }
         for (Object frame : frames) {
-            int value = Integer.valueOf((String) frame);
+            int value = Integer.parseInt((String) frame);
             if (arrayContains(intrans, value)) {
                 intransitive = "intransitive";
             } else if (arrayContains(ditrans, value)) {
@@ -2186,14 +2186,10 @@ public class WordNet {
      */
     public void writeProlog(KB kb) {
 
-        FileWriter fw = null;
-        PrintWriter pw = null;
         String dir = WordNet.baseDir;
         String fname = "WordNet.pl";
 
-        try {
-            fw = new FileWriter(dir + File.separator + fname);
-            pw = new PrintWriter(fw);
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
             writeNounsProlog(pw, kb);
             writeVerbsProlog(pw, kb);
             writeAdjectivesProlog(pw, kb);
@@ -2201,16 +2197,6 @@ public class WordNet {
         } catch (Exception e) {
             System.out.println("Error writing file " + dir + File.separator + fname + '\n' + e.getMessage());
             e.printStackTrace();
-        } finally {
-            try {
-                if (pw != null) {
-                    pw.close();
-                }
-                if (fw != null) {
-                    fw.close();
-                }
-            } catch (Exception ex) {
-            }
         }
     }
 
@@ -2302,14 +2288,10 @@ public class WordNet {
      */
     public void writeWordNetS() {
 
-        FileWriter fw = null;
-        PrintWriter pw = null;
         String dir = WordNet.baseDir;
         String fname = "Wn_s.pl";
 
-        try {
-            fw = new FileWriter(dir + File.separator + fname);
-            pw = new PrintWriter(fw);
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
             if (wordsToSenses.keySet().size() < 1) {
                 System.out.println("Error in WordNet.writeWordNetS(): No contents in sense index");
             }
@@ -2323,7 +2305,7 @@ public class WordNet {
                 }
                 while (it2.hasNext()) {
                     String senseKey = (String) it2.next();
-                    
+
                     String POS = senseKeyPOS(senseKey);
                     String senseNum = senseKeySenseNum(senseKey);
                     if (POS != null && POS.isEmpty() || senseNum != null && senseNum.isEmpty()) {
@@ -2339,16 +2321,6 @@ public class WordNet {
         } catch (Exception e) {
             System.out.println("Error writing file " + dir + File.separator + fname + '\n' + e.getMessage());
             e.printStackTrace();
-        } finally {
-            try {
-                if (pw != null) {
-                    pw.close();
-                }
-                if (fw != null) {
-                    fw.close();
-                }
-            } catch (Exception ex) {
-            }
         }
     }
 
@@ -2357,21 +2329,17 @@ public class WordNet {
      */
     public void writeWordNetHyp() {
 
-        FileWriter fw = null;
-        PrintWriter pw = null;
         String dir = WordNet.baseDir;
         String fname = "Wn_hyp.pl";
 
-        try {
-            fw = new FileWriter(dir + File.separator + fname);
-            pw = new PrintWriter(fw);
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
 
             if (relations.keySet().size() < 1) {
                 System.out.println("Error in WordNet.writeWordNetHyp(): No contents in relations");
             }
             for (Object o : relations.keySet()) {
                 String synset = (String) o;
-                
+
 
                 List rels = (ArrayList) relations.get(synset);
                 if (rels == null || rels.size() < 1) {
@@ -2390,16 +2358,6 @@ public class WordNet {
         } catch (Exception e) {
             System.out.println("Error writing file " + dir + File.separator + fname + '\n' + e.getMessage());
             e.printStackTrace();
-        } finally {
-            try {
-                if (pw != null) {
-                    pw.close();
-                }
-                if (fw != null) {
-                    fw.close();
-                }
-            } catch (Exception ex) {
-            }
         }
     }
 
@@ -2425,14 +2383,10 @@ public class WordNet {
      */
     public void writeWordNetG() {
 
-        FileWriter fw = null;
-        PrintWriter pw = null;
         String dir = WordNet.baseDir;
         String fname = "Wn_g.pl";
 
-        try {
-            fw = new FileWriter(dir + File.separator + fname);
-            pw = new PrintWriter(fw);
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
             Iterator it = nounDocumentationHash.keySet().iterator();
             while (it.hasNext()) {
                 String synset = (String) it.next();
@@ -2464,16 +2418,6 @@ public class WordNet {
         } catch (Exception e) {
             System.out.println("Error writing file " + dir + File.separator + fname + '\n' + e.getMessage());
             e.printStackTrace();
-        } finally {
-            try {
-                if (pw != null) {
-                    pw.close();
-                }
-                if (fw != null) {
-                    fw.close();
-                }
-            } catch (Exception ex) {
-            }
         }
     }
 

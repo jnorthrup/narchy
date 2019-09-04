@@ -116,9 +116,10 @@ public class ConjClustering extends How implements Consumer<Task> {
             @Override
             public double distanceSq(double[] a, double[] b) {
 
-                return (1 + Math.abs(a[0] - b[0])) //dMid
+                double range = 1 + Util.max(a[3], b[3]);
+                return (1 + Math.abs(a[0] - b[0])/range) //dMid  (div by range to normalize against scale)
                         *
-                       (1 + Math.abs(a[3] - b[3])/ (1+Util.max(a[3], b[3]))) //dRange
+                       (1 + Math.abs(a[3] - b[3])/ range) //dRange
                         *
                        (1 + (
                            Math.abs(a[2] - b[2]) //dConf

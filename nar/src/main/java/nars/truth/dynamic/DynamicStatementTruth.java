@@ -59,6 +59,11 @@ public enum DynamicStatementTruth { ;
         }
 
         @Override
+        public boolean temporal() {
+            return true;
+        }
+
+        @Override
         protected boolean truthNegComponents() {
             return false;
         }

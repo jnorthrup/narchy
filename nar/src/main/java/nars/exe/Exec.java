@@ -8,11 +8,9 @@ import nars.Task;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.op.Perceive;
-import nars.control.op.Remember;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.AbstractTask;
+import nars.task.CommandTask;
 import nars.task.NALTask;
-import nars.task.UnevaluatedTask;
 import nars.time.ScheduledTask;
 import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 import org.slf4j.Logger;
@@ -51,17 +49,9 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
     /** HACK this needs better */
     @Deprecated public static void run(Task _x, What w) {
 
-
         Task x = _x;
-        while (x instanceof NALTask) {
-
-            //HACK
-            if (x instanceof UnevaluatedTask) {
-                x = Remember.the(x, w.nar);
-            } else {
-                x = Perceive.perceive(x, w);
-            }
-
+        while (x instanceof NALTask || x instanceof CommandTask) {
+            x = Perceive.perceive(x, w);
         }
 
         if (x instanceof AbstractTask)

@@ -59,6 +59,12 @@ import static nars.op.rdfowl.NQuadsRDF.equi;
  * http:
  * https:
  * https:
+ * https://github.com/TeamSPoon/sigma_ace/blob/master/engine/sigma_functions.pl
+ *
+ * holdsDuring(ImmediateFutureFn(WhenFn($1)),$2) is
+ *          when($1, ?W) & immediateFuture(?W,?P) & holdsDurrent(?P, $2)
+ *
+ * https://en.wikipedia.org/wiki/Linear_temporal_logic#Equivalences
  **/
 public class KIF implements Iterable<Task> {
 
@@ -132,7 +138,7 @@ public class KIF implements Iterable<Task> {
     }
 
     private void process() {
-        KB kb = KBmanager.getMgr().addKB("preprocess");
+        KB kb = KBmanager.manager.addKB("preprocess");
 
         kif.formulaMap.values().forEach(xx -> {
 
@@ -250,9 +256,13 @@ public class KIF implements Iterable<Task> {
 
 
         int l = x.listLength();
-        if (l == -1)
-            return atomic(x.theFormula);
-        else if (l == 1) {
+        if (l == -1) {
+//            if (x.theFormula.contains("(")) {
+//                if (!x.listP())
+//                    return null;
+//            } else
+                return atomic(x.theFormula);
+        } else if (l == 1) {
             return $.p(formulaToTerm(x.getArgument(0), level+1));
         } else if (l == 0) {
             throw new WTF();
@@ -298,8 +308,8 @@ public class KIF implements Iterable<Task> {
                 break;
 
 
+
             case "exhaustiveAttribute": {
-                
                 y = INH.the(args.get(0), Op.SETi.the(args.subList(1, args.size())));
                 break;
             }
@@ -361,7 +371,9 @@ public class KIF implements Iterable<Task> {
                 break;
 
             case "equal":
-//                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
+            case "<=>":
+                //y = impl(args.get(0), args.get(1), false);
+                //                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
 //
 //                    //y = impl(args.get(0), args.get(1), false);
 //                    y = SIM.the(args.get(0), args.get(1));
@@ -397,10 +409,6 @@ public class KIF implements Iterable<Task> {
                 break;
             case "=>":
                 y = impl(args.get(0), args.get(1), true);
-                break;
-            case "<=>":
-                //y = impl(args.get(0), args.get(1), false);
-                y = Equal.the(args.get(0), args.get(1));
                 break;
 
 

@@ -8,13 +8,11 @@ import nars.task.util.Revision;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjBuilder;
-import nars.term.util.conj.ConjList;
-import nars.term.util.conj.ConjSeq;
+import nars.term.util.conj.*;
 import nars.time.Tense;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ThreadLocalRandom;
 
@@ -24,6 +22,11 @@ import static nars.time.Tense.*;
 public class DynamicConjTruth {
 
     public static final AbstractDynamicTruth ConjIntersection = new AbstractSectTruth() {
+
+        @Override
+        public boolean temporal() {
+            return true;
+        }
 
         @Override
         protected boolean truthNegComponents() {
@@ -37,7 +40,7 @@ public class DynamicConjTruth {
             has special support for collapsing the potential sequence to a revision if intersect,
             especially if the separation is less than NAR's dt dithering which will produce invalid dynamic result
          */
-        @Override public Task task(Compound template, long earliest, long sequenceStart, long e, DynTaskify d) {
+        @Override public Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
 
             //TODO generalize beyond n=2
             if (d.size() == 2 && d.get(0).term().equals(d.get(1).term())) {
@@ -58,13 +61,16 @@ public class DynamicConjTruth {
             }
 
 
-            return super.task(template, earliest, sequenceStart, e, d);
+            return super.task(template, earliest, s, e, d);
         }
 
         @Override
         public Term reconstruct(Compound superterm, long sequenceStart, long startEnd, DynTaskify d) {
 
-            int n = d.size();
+            ConjBuilder b =
+                //new ConjTree();
+                new ConjList();
+
 
             long end;
             if (sequenceStart==ETERNAL) {
@@ -78,27 +84,31 @@ public class DynamicConjTruth {
                 end = sequenceLatestStart + range; //the actual total end of the sequence
             }
 
-            ConjBuilder l =
-                    //new ConjTree();
-                    new ConjList();
 
-            for (int i = 0; i < n; i++) {
-                Task t = d.get(i);
-                long s = t.start();
-                long when;
-
-                if (s == ETERNAL || (sequenceStart!=ETERNAL && s<=sequenceStart && t.end()>=end))
-                    when = ETERNAL; //spans entire event
-                else
-                    when = s; //Tense.dither(s, dtDither);
-
-                Term x = t.term().negIf(!d.componentPolarity.get(i));
-
-                if (!l.add(when, x))
-                    return null;
+            //determine what method to use.  if all the non-eternal tasks have similar spans, then reconstructSequence otherwise reconstructInterval
+            boolean aligned = true;
+            {
+                long s = Long.MAX_VALUE, e = Long.MAX_VALUE;
+                int dither = d.nar.dtDither();
+                for (Task t : d) {
+                    long ts = t.start();
+                    if (ts == ETERNAL) continue;
+                    if (s == Long.MAX_VALUE) {
+                        s = ts; e = t.end();
+                    } else {
+                        if (Math.abs(s - ts) >= dither || Math.abs(e - t.end()) >= dither) {
+                            aligned = false;
+                            break;
+                        }
+                    }
+                }
             }
 
-            return l.term();
+            boolean result = aligned ?
+                reconstructSequence(sequenceStart, end, d, b) :
+                reconstructInterval(sequenceStart, end, d, b);
+
+            return result ? b.term() : null;
         }
 
         @Override
@@ -202,6 +212,33 @@ public class DynamicConjTruth {
 
 
     };
+
+    static boolean reconstructSequence(long sequenceStart, long end, DynTaskify d, ConjBuilder b) {
+        int n = d.size();
+
+
+        for (int i = 0; i < n; i++) {
+            Task t = d.get(i);
+            long s = t.start();
+            long when;
+
+            if (s == ETERNAL || (sequenceStart!=ETERNAL && s<=sequenceStart && t.end()>=end))
+                when = ETERNAL; //spans entire event
+            else
+                when = s; //Tense.dither(s, dtDither);
+
+            Term x = t.term().negIf(!d.componentPolarity.get(i));
+
+            if (!b.add(when, x))
+                return false;
+        }
+        return true;
+    }
+    static boolean reconstructInterval(long sequenceStart, long end, DynTaskify d, ConjBuilder b) {
+        @Nullable ConjBuilder bb = ConjSpans.add(d, true, b);
+        return (bb != null);
+    }
+
 }
 //                if (dternal || xternal || parallel) {
 //

@@ -290,10 +290,9 @@ public class StringUtil {
      * @return true if s == null or s is an empty String, else false.
      */
     public static boolean emptyString(Object s) {
-
         return ((s == null)
                 || ((s instanceof String)
-                && s.equals("")));
+                && ((String) s).isEmpty()));
     }
 
     /****************************************************************
@@ -313,7 +312,7 @@ public class StringUtil {
     public static String spacesToUnderlines(String input) {
 
         String[] s = input.split("\\s+");
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < s.length; i++) {
             sb.append(s[i]);
             if ((i+1) < s.length) {
@@ -327,11 +326,11 @@ public class StringUtil {
      */
     public static String camelCaseToUnderlines(String input) {
 
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         char lastChar = ' ';
         for (char c : input.toCharArray()) {
             if (Character.isUpperCase(c) && Character.isLowerCase(lastChar))
-                sb.append("_" + c);
+                sb.append("_").append(c);
             else
                 sb.append(c);
             lastChar = c;
@@ -531,7 +530,7 @@ public class StringUtil {
 
         if (al == null || al.size() < 1)
             return "";
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < al.size(); i++) {
             if (i != 0)
                 sb.append(' ');
@@ -802,7 +801,7 @@ public class StringUtil {
             System.out.println("Error in StringUtil.allCapsToSUMOID(): str is null");
             return "";
         }
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
         boolean under = false;
         for (int i = 0; i < str.length(); i++) {
             if (str.charAt(i) == '_')
@@ -1069,9 +1068,7 @@ public class StringUtil {
 
         String ans = "";
         try {
-            StringBuilder sb = new StringBuilder();
-            sb.append(String.valueOf(input).repeat(Math.max(0, n)));
-            ans = sb.toString();
+            ans = String.valueOf(input).repeat(Math.max(0, n));
         }
         catch (Exception ex) {
             ex.printStackTrace();
@@ -1447,7 +1444,7 @@ public class StringUtil {
 
         if (StringUtil.emptyString(input))
             return null;
-        StringBuffer result = new StringBuffer();
+        StringBuilder result = new StringBuilder();
         if (Character.isJavaIdentifierStart(input.charAt(0)))
             if (upcaseFirst)
                 result.append(Character.toUpperCase(input.charAt(0)));
@@ -1473,10 +1470,8 @@ public class StringUtil {
     /** *****************************************************************
      */
     public static String indent(int num, String indentChars) {
-        
-        StringBuffer sb = new StringBuffer();
-        sb.append(String.valueOf(indentChars).repeat(Math.max(0, num)));
-        return sb.toString();
+
+        return String.valueOf(indentChars).repeat(Math.max(0, num));
     }
     
 
@@ -1554,24 +1549,20 @@ public class StringUtil {
         StringBuilder contents = new StringBuilder();
 
         try {
-            
-            
-            BufferedReader input =  new BufferedReader(new FileReader(aFile));
-            try {
-                String line = null; 
-        /*
-        * readLine is a bit quirky :
-        * it returns the content of a line MINUS the newline.
-        * it returns null only for the END of the stream.
-        * it returns an empty String if two newlines appear in a row.
-        */
-                while (( line = input.readLine()) != null){
+
+
+            try (BufferedReader input = new BufferedReader(new FileReader(aFile))) {
+                String line = null;
+                /*
+                 * readLine is a bit quirky :
+                 * it returns the content of a line MINUS the newline.
+                 * it returns null only for the END of the stream.
+                 * it returns an empty String if two newlines appear in a row.
+                 */
+                while ((line = input.readLine()) != null) {
                     contents.append(line);
                     contents.append(System.getProperty("line.separator"));
                 }
-            }
-            finally {
-                input.close();
             }
         }
         catch (IOException ex){

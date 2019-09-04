@@ -4,7 +4,8 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
      B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
-       //B, (X ==> A), --is(X,"#"), --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostN, Time:TaskEvent)
+       //goal only:
+       B, (X ==> A), --is(X,"#"), --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
 
 
 

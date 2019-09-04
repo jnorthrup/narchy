@@ -33,8 +33,8 @@ public class Premise  {
 	 * variable types unifiable in premise formation
 	 */
 	public final static int var =
-		VAR_QUERY.bit
-		//Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+		//VAR_QUERY.bit
+		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
 		//Op.Variable //all
 		;
 	public final Task task;

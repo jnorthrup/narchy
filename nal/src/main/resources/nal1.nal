@@ -12,10 +12,10 @@
 //DEDUCTION ---------------------------
 
     (M --> P), (S --> M), neqRCom(S,P)    |- (S --> P), (Belief:Deduction, Time:Compose)
-    (P --> M), (M --> S), neqRCom(S,P)    |- (P --> S), (Belief:Deduction, Time:Compose)
+    (S --> M), (M --> P), neqRCom(S,P)    |- (S --> P), (Belief:Deduction, Time:Compose)
 
       (M --> P), (S --> M), neqRCom(S,P)  |- (S --> P), (Goal:Desire, Time:Task)
-      (P --> M), (M --> S), neqRCom(S,P)  |- (P --> S), (Goal:Desire, Time:Task)
+      (S --> M), (M --> P), neqRCom(S,P)  |- (S --> P), (Goal:Desire, Time:Task)
 
        (S --> P), (S --> M), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
         (S --> P), (M --> P), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)

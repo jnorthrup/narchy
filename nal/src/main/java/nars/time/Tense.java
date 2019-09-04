@@ -35,13 +35,16 @@ public enum Tense {
     /**
      * integer version of long ETERNAL
      */
-    public static final int DTERNAL = Integer.MIN_VALUE;
+    @Deprecated public static final int DTERNAL = Integer.MIN_VALUE;
 
-    /**
-     * a dt placeholder value for preventing premature flattening during derivation target construction
-     */
+    /** before or after-ternal */
     public static final int XTERNAL = Integer.MAX_VALUE;
 
+    /** before-ternal */
+    public static final int BTERNAL = Integer.MAX_VALUE - 1;
+
+    /** after-ternal */
+    public static final int ATERNAL = Integer.MAX_VALUE - 2;
 
     private final String symbol;
 

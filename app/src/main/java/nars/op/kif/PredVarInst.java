@@ -17,10 +17,10 @@ import java.util.*;
 public class PredVarInst {
     
     
-    private static final Map<String, Integer> predVarArity = new HashMap<String,Integer>();
+    private static final Map<String, Integer> predVarArity = new HashMap<>();
     
     
-    private static final HashMap<String,HashSet<String>> candidatePredicates = new HashMap<String,HashSet<String>>();
+    private static final HashMap<String,HashSet<String>> candidatePredicates = new HashMap<>();
 
     
     private static final List<String> logicalTerms=Arrays.asList("forall","exists","=>","and","or","<=>","not");
@@ -38,19 +38,17 @@ public class PredVarInst {
      */
     private static HashMap<String,HashSet<String>> addExplicitTypes(KB kb, Formula input, HashMap<String,HashSet<String>> types) {
         
-        HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
+        HashMap<String,HashSet<String>> result = new HashMap<>();
         FormulaPreprocessor fp = new FormulaPreprocessor();
     	HashMap<String,HashSet<String>> explicit = FormulaPreprocessor.findExplicitTypesInAntecedent(kb,input);
         if (explicit == null || explicit.keySet() == null || explicit.keySet().isEmpty())
             return types;
-        Iterator<String> it = explicit.keySet().iterator();
-        while (it.hasNext()) {
-            String var = it.next();
-            HashSet<String> hs = new HashSet<String>();
+        for (String var : explicit.keySet()) {
+            HashSet<String> hs = new HashSet<>();
             if (types.containsKey(var))
                 hs = types.get(var);
             hs.addAll(explicit.get(var));
-            result.put(var,hs);
+            result.put(var, hs);
         }
         return result;
     }
@@ -66,7 +64,7 @@ public class PredVarInst {
      */
     public static Set<Formula> instantiatePredVars(Formula input, KB kb) {
         
-        Set<Formula> result = new HashSet<Formula>();
+        Set<Formula> result = new HashSet<>();
         HashSet<String> predVars = gatherPredVars(kb,input);
         if (predVars == null )
             return null;
@@ -76,25 +74,17 @@ public class PredVarInst {
         HashMap<String,HashSet<String>> varTypes = findPredVarTypes(input,kb);
         
         varTypes = addExplicitTypes(kb,input,varTypes);
-        Iterator<String> it = varTypes.keySet().iterator();
-        while (it.hasNext()) {
-            String var = it.next();
-            Iterator<String> it2 = kb.kbCache.relations.iterator();
-            
-            while (it2.hasNext()) {
-                String rel = it2.next();
+        for (String var : varTypes.keySet()) {
+            for (String rel : kb.kbCache.relations) {
                 if (kb.kbCache.valences.get(rel).equals(predVarArity.get(var))) {
                     boolean ok = true;
-                    Iterator<String> it3 = varTypes.get(var).iterator();
-                    while (it3.hasNext()) {
-                        String varType = it3.next();
-                        
+                    for (String varType : varTypes.get(var)) {
                         if (!kb.isInstanceOf(rel, varType)) {
                             ok = false;
                             break;
                         }
                     }
-                    
+
                     if (ok == true) {
                         Formula f = input.deepCopy();
                         f = f.replaceVar(var, rel);
@@ -380,7 +370,7 @@ public class PredVarInst {
      */
     private static HashSet<String> gatherPredVarRecurse(KB kb, Formula f) {
         
-        HashSet<String> ans = new HashSet<String>();
+        HashSet<String> ans = new HashSet<>();
         
         if (f == null || f.empty() || Formula.atom(f.theFormula) || f.isVariable())
             return ans;
@@ -443,10 +433,8 @@ public class PredVarInst {
         HashSet<String> predVars = gatherPredVars(kb,f);
         FormulaPreprocessor fp = new FormulaPreprocessor();
         HashMap<String,HashSet<String>> typeMap = FormulaPreprocessor.computeVariableTypes(f, kb);
-        HashMap<String,HashSet<String>> result = new HashMap<String,HashSet<String>>();
-        Iterator<String> it = predVars.iterator();
-        while (it.hasNext()) {
-            String var = it.next();
+        HashMap<String,HashSet<String>> result = new HashMap<>();
+        for (String var : predVars) {
             if (typeMap.containsKey(var))
                 result.put(var, typeMap.get(var));
         }
@@ -459,7 +447,7 @@ public class PredVarInst {
     protected static HashSet<String> gatherPredVars(KB kb, Formula f) {
         
         HashSet<String> varlist = null;
-        HashMap<String,HashSet<String>> ans = new HashMap<String,HashSet<String>>();
+        HashMap<String,HashSet<String>> ans = new HashMap<>();
         if (!StringUtil.emptyString(f.theFormula)) {
             varlist = gatherPredVarRecurse(kb,f);
         }
@@ -721,9 +709,9 @@ public class PredVarInst {
      /** ***************************************************************
      */
     public static void arityTest() {
-        
-        KBmanager.getMgr().initializeOnce();
-        KB kb = KBmanager.getMgr().getKB(KBmanager.getMgr().getPref("sumokbname"));
+
+        KBmanager.manager.initializeOnce();
+        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
         System.out.println("INFO in PredVarInst.test(): completed loading KBs");
         String formStr = "(=> " +
         "(and " +
@@ -748,9 +736,9 @@ public class PredVarInst {
     /** ***************************************************************
      */
     public static void test() {
-        
-        KBmanager.getMgr().initializeOnce();
-        KB kb = KBmanager.getMgr().getKB(KBmanager.getMgr().getPref("sumokbname"));
+
+        KBmanager.manager.initializeOnce();
+        KB kb = KBmanager.manager.getKB(KBmanager.manager.getPref("sumokbname"));
         System.out.println("INFO in PredVarInst.test(): completed loading KBs");
         if (kb.kbCache.transInstOf("exhaustiveAttribute","VariableArityRelation")) {
             System.out.println("INFO in PredVarInst.test() variable arity: ");

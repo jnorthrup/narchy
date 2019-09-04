@@ -3,6 +3,7 @@ package nars.op.kif;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.BiPredicate;
 
 /**
@@ -15,8 +16,8 @@ public class FormulaUtil {
      */
     public static String toProlog(Formula f) {
 
-        StringBuffer sb = new StringBuffer();
-        sb.append(f.car() + '(');
+        StringBuilder sb = new StringBuilder();
+        sb.append(f.car()).append('(');
         for (int i = 1; i < f.argumentsToArrayList(0).size(); i ++) {
             if (i != 1)
                 sb.append(',');
@@ -38,7 +39,7 @@ public class FormulaUtil {
         for( int i = 0; i< size; i++) {
             array[i] = i;
         }
-        List<int[]> result = new LinkedList<int[]>();
+        List<int[]> result = new LinkedList<>();
         permutation(new int[0], array, result, validateFn);
         return result;
     }
@@ -55,7 +56,6 @@ public class FormulaUtil {
         int n = array.length;
         if (n == 0) {
             permutations.add(prefix);
-            return;
         }
         else {
             for (int i = 0; i < n; i++) {
@@ -106,8 +106,8 @@ public class FormulaUtil {
 
             FormulaMatchMemoMapKey that = (FormulaMatchMemoMapKey) o;
 
-            if (f1 != null ? !f1.equals(that.f1) : that.f1 != null) return false;
-            return f2 != null ? f2.equals(that.f2) : that.f2 == null;
+            if (!Objects.equals(f1, that.f1)) return false;
+            return Objects.equals(f2, that.f2);
         }
 
         /** ******************************************************************************************

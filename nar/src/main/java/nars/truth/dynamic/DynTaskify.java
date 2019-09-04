@@ -23,8 +23,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.NEG;
-import static nars.truth.dynamic.DynamicConjTruth.ConjIntersection;
-import static nars.truth.dynamic.DynamicStatementTruth.Impl;
 
 /**
  * Dynamic Taskify
@@ -119,7 +117,7 @@ public class DynTaskify extends TaskList {
 
             earliest = earliestStart();
 
-            if (model == ConjIntersection || model == Impl) {
+            if (model.temporal()) {
                 //calculate the minimum range (ie. intersection of the ranges)
                 s = earliest;
                 e = s == LongInterval.ETERNAL ?

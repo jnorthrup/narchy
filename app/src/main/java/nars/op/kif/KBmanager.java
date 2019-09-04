@@ -48,11 +48,11 @@ public class KBmanager implements Serializable {
     public static final int USE_TPTP         = 8;
 
 
-    private static KBmanager manager = new KBmanager();
-    protected static final String CONFIG_FILE = "config.xml";
+    public static final KBmanager manager = new KBmanager();
+    //protected static final String CONFIG_FILE = "config.xml";
 
     private final HashMap<String,String> preferences = new HashMap<String,String>();
-    public HashMap<String,KB> kbs = new HashMap<String,KB>();
+    public HashMap<String,KB> kbs = new HashMap<>();
     public static boolean initialized = false;
     public static boolean initializing = false;
     public static boolean debug = false;
@@ -303,7 +303,6 @@ public class KBmanager implements Serializable {
             System.out.println("Error in KBmanager.setDefaultAttributes(): " + Arrays.toString(ex.getStackTrace()));
             ex.printStackTrace();
         }
-        return;
     }
 
 
@@ -621,7 +620,6 @@ public class KBmanager implements Serializable {
         
         String base = System.getenv("SIGMA_HOME");
         initializeOnce(base + File.separator + "KBs");
-        return;
     }
 
     /** ***************************************************************
@@ -640,7 +638,7 @@ public class KBmanager implements Serializable {
             return;
         }
         initializing = true;
-        KBmanager.getMgr().setPref("kbDir",configFileDir);
+        manager.setPref("kbDir",configFileDir);
         if (debug) System.out.println("KBmanager.initializeOnce(): number of preferences: " +
                 preferences.keySet().size());
 
@@ -664,8 +662,8 @@ public class KBmanager implements Serializable {
                 System.out.println("Info in KBmanager.initializeOnce(): reading from sources");
                 if (debug) System.out.println("KBmanager.initializeOnce(): number of preferences: " +
                         preferences.keySet().size());
-                manager = this;
-                KBmanager.getMgr().setPref("kbDir",configFileDir); 
+                //manager = this;
+        manager.setPref("kbDir",configFileDir);
 
 
 
@@ -686,7 +684,6 @@ public class KBmanager implements Serializable {
         System.out.println("Info in KBmanager.initializeOnce(): initialized is " + initialized);
         if (debug) System.out.println("KBmanager.initializeOnce(): number of preferences: " +
                 preferences.keySet().size());
-        return;
     }
 
 
@@ -867,24 +864,12 @@ public class KBmanager implements Serializable {
     }
 
     /** ***************************************************************
-     * Get the one instance of KBmanager from its class variable.
-     */
-    public static KBmanager getMgr() {
-
-        
-        
-        return manager;
-    }
-
-    /** ***************************************************************
      * Get the Set of KB names in this manager.
      */
     public HashSet<String> getKBnames() {
 
-        HashSet<String> names = new HashSet<String>();
-        Iterator<String> it = kbs.keySet().iterator();
-        while (it.hasNext()) {
-            String kbName = it.next();
+        HashSet<String> names = new HashSet<>();
+        for (String kbName : kbs.keySet()) {
             KB kb = getKB(kbName);
             if (kb.isVisible())
                 names.add(kbName);
@@ -897,10 +882,8 @@ public class KBmanager implements Serializable {
      */
     public ArrayList<String> allAvailableLanguages() {
 
-        ArrayList<String> result = new ArrayList<String>();
-        Iterator<String> it = kbs.keySet().iterator();
-        while (it.hasNext()) {
-            String kbName = it.next();
+        ArrayList<String> result = new ArrayList<>();
+        for (String kbName : kbs.keySet()) {
             KB kb = getKB(kbName);
             result.addAll(kb.availableLanguages());
         }

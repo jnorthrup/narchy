@@ -13,17 +13,18 @@ public class FirstOrderIndexer extends AbstractTangentIndexer {
 	@Override
 	public boolean test(Term concept, Term target) {
 		if (concept instanceof Compound) {
-			Op op = concept.op();
+
 
 			UnifyAny u = new UnifyAny();
 
-			Op targetOp = target.op();
-			if (op == targetOp && u.unifies(concept, target))
+			Op op = target.op();
+			int targetOp = op.id;
+			if (concept.opID() == targetOp && u.unifies(concept, target))
 				return true;
 
 			Predicate<Term> subunification = x -> {
 					Term xx = x.unneg();
-					return xx.op()==targetOp && u.unifies(xx, target);
+					return xx.opID()==targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
 				};
 
 			if (subUnifies(subunification, concept))

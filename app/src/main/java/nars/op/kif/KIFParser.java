@@ -49,10 +49,10 @@ public class KIFParser {
     private int parseMode = NORMAL_PARSE_MODE;
 
     /** The set of all terms in the knowledge base. This is a set of Strings. */
-    public TreeSet<String> terms = new TreeSet<String>();
+    public TreeSet<String> terms = new TreeSet<>();
 
     /** A hashMap to store target frequencies for each target in knowledge base */
-    public Map<String, Integer> termFrequency = new HashMap<String, Integer>();
+    public Map<String, Integer> termFrequency = new HashMap<>();
 
     /**
      * A HashMap of ArrayLists of Formulas. Each String key points to a list of
@@ -61,7 +61,7 @@ public class KIFParser {
      *
      * @see #createKey(String, boolean, boolean, int, int) for key format.
      */
-    public HashMap<String, ArrayList<String>> formulas = new HashMap<String, ArrayList<String>>();
+    public HashMap<String, ArrayList<String>> formulas = new HashMap<>();
 
     /**
      * A HashMap of String keys representing the formula, and Formula values.
@@ -69,16 +69,16 @@ public class KIFParser {
      * Formula that is that string, along with information about at what line
      * number and in what file it appears.
      */
-    public HashMap<String, Formula> formulaMap = new HashMap<String, Formula>();
+    public HashMap<String, Formula> formulaMap = new HashMap<>();
 
     private final String filename = "";
 
     private int totalLinesForComments = 0;
 
     /** warnings generated during parsing */
-    public TreeSet<String> warningSet = new TreeSet<String>();
+    public TreeSet<String> warningSet = new TreeSet<>();
     /** errors generated during parsing */
-    public Set<String> errorSet = new TreeSet<String>();
+    public Set<String> errorSet = new TreeSet<>();
 
     /*****************************************************************
      * @return int Returns an integer value denoting the current parse mode.
@@ -187,7 +187,7 @@ public class KIFParser {
             int argumentNum = -1;
             boolean inAntecedent = false;
             boolean inConsequent = false;
-            HashSet<String> keySet = new HashSet<String>();
+            HashSet<String> keySet = new HashSet<>();
             
             boolean isEOL = false;
             do {
@@ -243,7 +243,7 @@ public class KIFParser {
                     if (parenLevel == 0) { 
                         String fstr = StringUtil.normalizeSpaceChars(expression.toString());
                         f.theFormula = fstr.intern();
-                        if (formulaMap.keySet().contains(f.theFormula)) {
+                        if (formulaMap.containsKey(f.theFormula)) {
                             String warning = ("Duplicate axiom at line " + f.startLine + " of " + f.sourceFile + ": "
                                     + expression);
                             warningSet.add(warning);
@@ -266,29 +266,24 @@ public class KIFParser {
                         keySet.add(f.theFormula); 
                         keySet.add(f.createID());
                         f.endLine = st.lineno() + totalLinesForComments;
-                        Iterator<String> it = keySet.iterator();
-                        while (it.hasNext()) { 
-                            String fkey = it.next();
+                        for (String fkey : keySet) {
                             if (formulas.containsKey(fkey)) {
-                                if (!formulaMap.keySet().contains(f.theFormula)) { 
+                                if (!formulaMap.containsKey(f.theFormula)) {
                                     ArrayList<String> list = formulas.get(fkey);
                                     if (StringUtil.emptyString(f.theFormula)) {
                                         System.out.println("Error in KIF.parse(): Storing empty formula from line: "
-                                                + f.startLine);
+                                            + f.startLine);
                                         errorSet.add(errStr);
-                                    }
-                                    else if (!list.contains(f.theFormula))
+                                    } else if (!list.contains(f.theFormula))
                                         list.add(f.theFormula);
                                 }
-                            }
-                            else {
-                                ArrayList<String> list = new ArrayList<String>();
+                            } else {
+                                ArrayList<String> list = new ArrayList<>();
                                 if (StringUtil.emptyString(f.theFormula)) {
                                     System.out.println(
-                                            "Error in KIF.parse(): Storing empty formula from line: " + f.startLine);
+                                        "Error in KIF.parse(): Storing empty formula from line: " + f.startLine);
                                     errorSet.add(errStr);
-                                }
-                                else if (!list.contains(f.theFormula))
+                                } else if (!list.contains(f.theFormula))
                                     list.add(f.theFormula);
                                 formulas.put(fkey, list);
                             }
@@ -442,8 +437,8 @@ public class KIFParser {
 
         int len = 0;
         char[] cArray = str.toCharArray();
-        for (int i = 0; i < cArray.length; i++) {
-            if (cArray[i] == c)
+        for (char value : cArray) {
+            if (value == c)
                 len++;
         }
         return len;
@@ -476,28 +471,11 @@ public class KIFParser {
      */
     public void writeFile(String fname) {
 
-        FileWriter fr = null;
-        PrintWriter pr = null;
-        try {
-            fr = new FileWriter(fname);
-            pr = new PrintWriter(fr);
-            Iterator<Formula> it = formulaMap.values().iterator();
-            while (it.hasNext())
-                pr.println(it.next().theFormula);
-        }
-        catch (Exception ex) {
+        try (FileWriter fr = new FileWriter(fname); PrintWriter pr = new PrintWriter(fr)) {
+            for (Formula formula : formulaMap.values()) pr.println(formula.theFormula);
+        } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();
-        }
-        finally {
-            try {
-                if (pr != null)
-                    pr.close();
-                if (fr != null)
-                    fr.close();
-            }
-            catch (Exception ex2) {
-            }
         }
     }
 

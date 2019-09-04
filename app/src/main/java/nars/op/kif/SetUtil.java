@@ -49,8 +49,7 @@ public class SetUtil {
         catch (Exception ex) {
             ex.printStackTrace();
         }
-        return;
-    }
+	}
 
     /** ***************************************************************
      * Returns true if obj is not a Collection (including if obj ==
@@ -132,8 +131,7 @@ public class SetUtil {
         catch (Exception ex) {
             ex.printStackTrace();
         }
-        return;
-    }
+	}
 
     /** **************************************************************
      * Filters the List of Strings seq, retaining only items that match
@@ -161,7 +159,6 @@ public class SetUtil {
         catch (Exception ex) {
             ex.printStackTrace();
         }
-        return;
-    }
+	}
 
 }  

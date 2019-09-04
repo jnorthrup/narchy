@@ -74,14 +74,14 @@ C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:As
       (&&,X,--Y,A..*), X, --isVar(X), --isVar(Y)   |- unisubst((&&,X,--Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 //implication comparison: common cause or common effect
-(X==>Z), (Y==>Z), neq(X,Y), hasBelief(), task(".") |- ((X && --Y) ==> Z), (Punctuation:Question, Time:Compose)
-(X==>Z), (Y==>Z), neq(X,Y), hasBelief(), task(".") |- ((--X && Y) ==> Z), (Punctuation:Question, Time:Compose)
-(Z==>X), (Z==>Y), neq(X,Y), hasBelief(), task(".") |- (Z ==> (X && --Y)), (Punctuation:Question, Time:Compose)
-(Z==>X), (Z==>Y), neq(X,Y), hasBelief(), task(".") |- (Z ==> (--X && Y)), (Punctuation:Question, Time:Compose)
+(X==>Z), (Y==>Z), neqPN(X,Y), hasBelief(), task(".") |- ((X && --Y) ==> Z), (Punctuation:Question, Time:Compose)
+(X==>Z), (Y==>Z), neqPN(X,Y), hasBelief(), task(".") |- ((--X && Y) ==> Z), (Punctuation:Question, Time:Compose)
+(Z==>X), (Z==>Y), neqPN(X,Y), hasBelief(), task(".") |- (Z ==> (X && --Y)), (Punctuation:Question, Time:Compose)
+(Z==>X), (Z==>Y), neqPN(X,Y), hasBelief(), task(".") |- (Z ==> (--X && Y)), (Punctuation:Question, Time:Compose)
 
 //conjunction comparison: common event
-(X && Z), (Y && Z), neq(X,Y), neq(X,Z), neq(Y,Z), hasBelief() |- (X && --Y), (Punctuation:Ask, Time:Compose)
-(X && Z), (Y && Z), neq(X,Y), neq(X,Z), neq(Y,Z), hasBelief() |- (Y && --X), (Punctuation:Ask, Time:Compose)
+(X && Z), (Y && Z), neqPN(X,Y), neq(X,Z), neq(Y,Z), hasBelief() |- (X && --Y), (Punctuation:Ask, Time:Compose)
+(X && Z), (Y && Z), neqPN(X,Y), neq(X,Z), neq(Y,Z), hasBelief() |- (Y && --X), (Punctuation:Ask, Time:Compose)
 
 //mutex induction from conjunction events
 //    (&&,X,--Y,A..*), X, task(".") |- (X ==> --Y), (Belief:StructuralDeduction)

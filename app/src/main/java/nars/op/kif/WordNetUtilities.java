@@ -477,11 +477,11 @@ public class WordNetUtilities {
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
-            KB kb = KBmanager.getMgr().getKB("SUMO");
-            fw = new FileWriter(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName + "-new.txt");
+			KB kb = KBmanager.manager.getKB("SUMO");
+			fw = new FileWriter(KBmanager.manager.getPref("kbDir") + File.separator + fileName + "-new.txt");
             pw = new PrintWriter(fw);
 
-            FileReader r = new FileReader(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName + ".txt");
+			FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName + ".txt");
             LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
@@ -612,11 +612,11 @@ public class WordNetUtilities {
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
-            KB kb = KBmanager.getMgr().getKB("SUMO");
-            fw = new FileWriter(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName + "-new.txt");
+			KB kb = KBmanager.manager.getKB("SUMO");
+			fw = new FileWriter(KBmanager.manager.getPref("kbDir") + File.separator + fileName + "-new.txt");
             pw = new PrintWriter(fw);
 
-            FileReader r = new FileReader(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName + ".txt");
+			FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName + ".txt");
             LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
@@ -697,11 +697,11 @@ public class WordNetUtilities {
         FileWriter fw = null;
         PrintWriter pw = null;
         try {
-            KB kb = KBmanager.getMgr().getKB("SUMO");
-            fw = new FileWriter(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName + "-new");
+			KB kb = KBmanager.manager.getKB("SUMO");
+			fw = new FileWriter(KBmanager.manager.getPref("kbDir") + File.separator + fileName + "-new");
             pw = new PrintWriter(fw);
 
-            FileReader r = new FileReader(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName);
+			FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName);
             LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {
@@ -766,7 +766,7 @@ public class WordNetUtilities {
     public void updateWNversionReading(String fileName, String pattern, String posNum) throws IOException {
 
         try {
-            FileReader r = new FileReader(KBmanager.getMgr().getPref("kbDir") + File.separator + fileName);
+			FileReader r = new FileReader(KBmanager.manager.getPref("kbDir") + File.separator + fileName);
             LineNumberReader lr = new LineNumberReader(r);
             String line;
             while ((line = lr.readLine()) != null) {

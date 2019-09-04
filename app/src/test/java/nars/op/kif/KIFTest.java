@@ -2,16 +2,14 @@ package nars.op.kif;
 
 import com.google.common.base.Joiner;
 import jcog.Util;
-import nars.NAR;
-import nars.NARS;
-import nars.Narsese;
-import nars.Task;
+import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.hypothesis.FirstOrderIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
+import nars.task.EternalTask;
 import nars.task.util.PriBuffer;
 import nars.term.util.TermTest;
 import org.junit.jupiter.api.Disabled;
@@ -21,6 +19,7 @@ import java.io.IOException;
 import java.util.List;
 
 import static nars.$.$$;
+import static nars.Op.*;
 
 @Disabled
 class KIFTest {
@@ -33,9 +32,11 @@ class KIFTest {
         //String O = "/home/me/d/sumo_merge.nal";
 //        k.tasks.forEach(bb -> System.out.println(bb));
 
-        NAR n = new NARS().index(new RadixTreeMemory(128*1024)).get();
+        NAR n = new NARS().index(new RadixTreeMemory(256*1024)).get();
 
-        new Deriver(Derivers.nal(n, 1,8, "motivation.nal"), new FirstOrderIndexer());
+        new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
+
+        new Deriver(Derivers.nal(n, 5,8), new FirstOrderIndexer());
 
 //        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
 //            //new Hypothesizer.ExhaustiveIndexSnapshotter()
@@ -49,14 +50,15 @@ class KIFTest {
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
         TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));
-        w.links.links.capacity(1024);
+        w.links.links.capacity(64);
+
 
         //                //"/home/me/sumo/Merge.kif";
 //                //"/home/me/sumo/tinySUMO.kif";
 //                //"/home/me/sumo/ComputerInput.kif";
 ////                "/home/me/sumo/Economy.kif",
         List.of(//"FinancialOntology", "Economy",
-            "Merge"
+            "Merge","Mid-level-ontology"
         ).parallelStream()
             .map(x -> "/home/me/sumo/" + x + ".kif")
             .map(x -> {
@@ -69,24 +71,34 @@ class KIFTest {
                     return List.of();
                 }
             }
-        ).forEach((Iterable ww) -> ww.forEach((x) -> w.accept((Task)x)));
+        ).forEach((Iterable ww) ->
+            ww.forEach((x) -> w.accept((Task)x)));
 
         System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
 
 
-        n.log();
+//        n.log();
         //n.input("$1.0 ({?ACT}-->JoystickMotion)?");
         //n.input("$1.0 classIntersection(?1,?2)?");
         //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-        n.input("$1.0 possesses(I,#everything)!");
+        w.onTask(t->System.out.println(t));
+        //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
+        w.accept(new EternalTask($$("patient(#p,#a)"), BELIEF, $.t(0, 0.9f), n).priSet(0.1f));
+        w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.1f));
+        w.accept(new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n).priSet(0.1f));
+        w.accept(new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.01f));
+        w.accept(new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.01f));
+        //w.accept(new EternalTask($$("(#x --> Death)"), GOAL, $.t(0, 0.9f), n).priSet(1));
+        //w.accept(new EternalTask($$("(?x ==> (?y --> Damaging))"), QUESTION, null, n).priSet(1));
+        //n.input("$1.0 possesses(I,#everything)!");
 //        n.input("$1.0 benefits(#all, I)!");
-        n.input("$1.0 uses(#anything, I).");
-        n.input("$1.0 occupiesPosition(I,#position,#org)."); //http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?flang=SUO-KIF&lang=EnglishLanguage&kb=SUMO&term=occupiesPosition
+//        n.input("$1.0 uses(#anything, I).");
+//        n.input("$1.0 occupiesPosition(I,#position,#org)."); //http://sigma.ontologyportal.org:8080/sigma/Browse.jsp?flang=SUO-KIF&lang=EnglishLanguage&kb=SUMO&term=occupiesPosition
 //        n.input("$1.0 --({I}-->Dead)!");
-        n.input("$1.0 Human:{I}.");
-        n.run(10000);
+//        n.input("$1.0 Human:{I}.");
+        n.run(30000);
         w.links.links.print();
 
 //        n.concepts().forEach(c -> System.out.println(c));

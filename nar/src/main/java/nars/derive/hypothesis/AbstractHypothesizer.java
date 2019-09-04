@@ -60,7 +60,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 					//throw new WTF();
 				} else {
 					float freed = links.grow(tasklink, src, forward, task.punc());
-					links.links.depressurize(freed);
+					//links.links.depressurize(freed);
 				}
 			}
 

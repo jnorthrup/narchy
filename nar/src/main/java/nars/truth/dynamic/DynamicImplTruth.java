@@ -9,6 +9,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
+import nars.truth.Truthed;
 import nars.truth.func.NALTruth;
 
 import java.util.function.Predicate;
@@ -19,9 +20,16 @@ import static nars.time.Tense.*;
 class DynamicImplTruth extends AbstractDynamicTruth {
 
     private static final Predicate<Task> POSITIVE_FILTER =
-            (t-> t.freq() >= 2/3f);
+            (Truthed::isPositive);
+            //(t-> t.freq() >= 2/3f);
     private static final Predicate<Task> NEGATIVE_FILTER =
-            (t-> t.freq() <= 1/3f);
+            (Truthed::isNegative);
+            //(t-> t.freq() <= 1/3f);
+
+    @Override
+    public boolean temporal() {
+        return true;
+    }
 
     /**
      *     B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDepolarized, Time:BeliefRelative)

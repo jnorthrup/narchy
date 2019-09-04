@@ -365,6 +365,10 @@ abstract public class MetalBitSet {
         }
     }
 
+    public static MetalBitSet full() {
+        return bits(32);
+    }
+
     public static MetalBitSet bits(int size) {
         if (size <= 32) {
             return new IntBitSet();

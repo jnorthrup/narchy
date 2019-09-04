@@ -545,7 +545,7 @@ public class TemporalConstraints<E> {
         final AllenNode<E> tgt;
         final short constraints;
 
-        public Constraint(AllenNode<E> src, AllenNode<E> tgt, short constraints) {
+        Constraint(AllenNode<E> src, AllenNode<E> tgt, short constraints) {
             this.src = src;
             this.tgt = tgt;
             this.constraints=constraints;
@@ -557,7 +557,7 @@ public class TemporalConstraints<E> {
      * @author Jörn Franke <jornfranke@gmail.com>
      *
      */
-    public static class AllenNode<E> {
+    static class AllenNode<E> {
 
         final E id;
 

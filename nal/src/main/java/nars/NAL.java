@@ -243,7 +243,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float TaskEvalPriDecomposeRate = 0.5f;
 
-    /** subjective evidence projection */
+
+	/** subjective evidence projection */
     public static double eviRelative(long start, long end, double evi, long tgt, long now) {
 
 //        long start = start();

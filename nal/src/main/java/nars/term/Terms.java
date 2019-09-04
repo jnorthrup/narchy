@@ -13,7 +13,7 @@ import nars.term.compound.PatternCompound;
 import nars.term.util.TermHasher;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsislike;
-import nars.unify.constraint.NotEqualConstraint;
+import nars.unify.constraint.RelationConstraint;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -481,8 +481,8 @@ public enum Terms {
 	private static boolean rCom(Term a, Term b, boolean recurse) {
 
 		return recurse ?
-			a.containsRecursively(b, NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
-			a.contains(NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
+			a.containsRecursively(b, RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
+			a.contains(RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
 
 	}
 

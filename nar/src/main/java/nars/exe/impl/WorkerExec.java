@@ -17,7 +17,7 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-	double granularity = 6;
+	double granularity = 3;
 
 
 	/**

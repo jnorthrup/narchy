@@ -189,12 +189,16 @@ public class PremiseRule extends ProxyTerm {
                         neq(XX, Y); //???
                     break;
 
+                case "neqPN":
+                    constraints.add(new RelationConstraint.NotEqualPosNegConstraint(XS, YS));
+                    break;
+
                 case "neqRoot":
                     neqRoot(XS, YS);
                     break;
 
                 case "subCountEqual":
-                    constraints.add(new NotEqualConstraint.SubCountEqual(XS, YS));
+                    constraints.add(new RelationConstraint.NotEqualConstraint.SubCountEqual(XS, YS));
                     break;
 
                 case "eqPN":
@@ -211,15 +215,15 @@ public class PremiseRule extends ProxyTerm {
 
                 case "neqRCom":
                     neqRoot(XS, YS);
-                    constraints.add(new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(XS, YS));
+                    constraints.add(new RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(XS, YS));
                     break;
 
                 case "setsIntersect":
-                    constraints.add(new NotEqualConstraint.SetsIntersect(XS, YS));
+                    constraints.add(new RelationConstraint.NotEqualConstraint.SetsIntersect(XS, YS));
                     break;
 
                 case "notSetsOrDifferentSets": {
-                    constraints.add(new NotEqualConstraint.NotSetsOrDifferentSets(XS, YS));
+                    constraints.add(new RelationConstraint.NotEqualConstraint.NotSetsOrDifferentSets(XS, YS));
                     break;
                 }
 
@@ -1223,14 +1227,14 @@ public class PremiseRule extends ProxyTerm {
         if (y instanceof Neg && y.unneg() instanceof Variable) {
             constraints.add(new EqualNegConstraint(x, (Variable) (y.unneg())).neg());
         } else if (y instanceof Variable) {
-            constraints.add(new NotEqualConstraint(x, (Variable) y));
+            constraints.add(new RelationConstraint.NotEqualConstraint(x, (Variable) y));
         } else {
             match(x, new TermMatcher.Equals(y), false);
         }
     }
 
     private void neqRoot(Variable x, Variable y) {
-        constraints.add(new NotEqualConstraint.NotEqualRootConstraint(x, y));
+        constraints.add(new RelationConstraint.NotEqualConstraint.NotEqualRootConstraint(x, y));
     }
 
     private void bigger(Variable x, Variable y) {
