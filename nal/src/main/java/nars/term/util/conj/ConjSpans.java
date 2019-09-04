@@ -32,9 +32,7 @@ public enum ConjSpans { ;
 					return null;
 			}
 			long e = t.end();
-			b.add(s, t.term());
-			if (e!=s)
-				b.add(e, t.term());
+			return b.add(s, t.term()) && ((e==s) || b.add(e, t.term())) ? b : null;
 		}
 
 
@@ -46,13 +44,17 @@ public enum ConjSpans { ;
 		for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
 			Task t = tt.get(i);
 			long s = t.start();
-			if (s == ETERNAL) continue; //ignore, already added
+			if (s == ETERNAL) {
+				if (!b.add(ETERNAL, t.term().negIf(autoNeg && t.isNegative())))
+					return null;
+			}
 			long e = t.end();
 			inter.getIfAbsentPut(s, MetalBitSet::full).set(i);
 			if (e!=s) {
 				inter.getIfAbsentPut(e, MetalBitSet::full).set(i);
 			}
 		}
+
 		MutableList<LongObjectPair<MetalBitSet>> w = inter.keyValuesView().toSortedList();
 		int wn = w.size();
 		//add intermediate overlapping events

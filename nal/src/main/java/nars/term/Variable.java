@@ -8,6 +8,7 @@ import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
+import nars.unify.UnifyFirst;
 
 import static nars.Op.FRAG;
 import static nars.Op.VAR_PATTERN;
@@ -19,7 +20,7 @@ import static nars.term.atom.Bool.Null;
  * <p>
  * implemented by both raw variable terms and variable concepts
  **/
-public interface Variable extends Atomic {
+public interface Variable extends Atomic, UnifyFirst {
 
     private static boolean neggable(Term t) {
         return !(t instanceof Ellipsislike) && (t.op() != FRAG);

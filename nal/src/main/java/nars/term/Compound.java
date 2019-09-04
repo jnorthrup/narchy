@@ -45,6 +45,7 @@ import nars.term.util.transform.TermTransform;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
 import nars.unify.UnifyAny;
+import nars.unify.UnifyFirst;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -278,9 +279,11 @@ public interface Compound extends Term, IPair, Subterms {
     default boolean unify(Term y, Unify u) {
         return (this == y)
                 ||
-                (y instanceof Compound && (equals(y) || (opID() == y.opID() && unifySubterms(y, u))))
+                (y instanceof UnifyFirst && y.unify(this, u))
                 ||
-                (y instanceof Variable && y.unify(this, u));
+                (y instanceof Compound && (equals(y) || (opID() == y.opID() && unifySubterms(y, u))))
+
+                ;
     }
 
 

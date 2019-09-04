@@ -7,11 +7,13 @@ import nars.term.util.transform.InlineFunctor;
 
 public abstract class AbstractInlineFunctor extends Functor implements InlineFunctor<Evaluation> {
 
-    AbstractInlineFunctor(Atom atom) {
+
+    protected AbstractInlineFunctor(Atom atom) {
         super(atom);
     }
 
-    AbstractInlineFunctor(String atom) {
+    protected AbstractInlineFunctor(String atom) {
         super(atom);
     }
+
 }

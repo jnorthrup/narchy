@@ -4,31 +4,23 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.math.FloatRange;
-import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
-import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.BagClustering;
 import nars.control.How;
 import nars.control.PartBag;
 import nars.control.channel.CauseChannel;
-import nars.task.NALTask;
-import nars.task.TemporalTask;
-import nars.task.UnevaluatedTask;
-import nars.task.util.TaskException;
 import nars.task.util.TaskList;
 import nars.term.Term;
-import nars.term.util.conj.ConjSeq;
-import nars.time.Tense;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.truth.dynamic.DynTaskify;
+import nars.truth.dynamic.DynamicConjTruth;
 import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.block.factory.Comparators;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Comparator;
 import java.util.List;
@@ -39,7 +31,6 @@ import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.truth.func.TruthFunctions.c2wSafe;
 import static nars.truth.func.TruthFunctions.confCompose;
 
 public class ConjClustering extends How implements Consumer<Task> {
@@ -65,7 +56,7 @@ public class ConjClustering extends How implements Consumer<Task> {
     private int volMax;
 
     private final boolean popConjoinedTasks = false;
-    static final boolean priCopyOrMove = true;
+
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private volatile long now;
@@ -290,13 +281,13 @@ public class ConjClustering extends How implements Consumer<Task> {
             && filter.test(t);
     }
 
-    public static final class STMClusterTask extends TemporalTask implements UnevaluatedTask {
-
-        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
-            super(cp.getOne(), punc, t!=null ? t.negIf(cp.getTwo()) : null, now, start, end, evidence);
-        }
-
-    }
+//    public static final class STMClusterTask extends TemporalTask implements UnevaluatedTask {
+//
+//        STMClusterTask(@Nullable ObjectBooleanPair<Term> cp, Truth t, long start, long end, long[] evidence, byte punc, long now) throws TaskException {
+//            super(cp.getOne(), punc, t!=null ? t.negIf(cp.getTwo()) : null, now, start, end, evidence);
+//        }
+//
+//    }
 
     private final ThreadLocal<CentroidConjoiner> conjoiners = ThreadLocal.withInitial(CentroidConjoiner::new);
 
@@ -314,6 +305,9 @@ public class ConjClustering extends How implements Consumer<Task> {
         /** generated tasks */
         //final FasterList<Task> out = new FasterList();
         private transient int tasksGeneratedPerCentroidIterationMax;
+
+        /** HACK */
+        @Deprecated private int volEstimateInflationFactor = 3;
 
         private CentroidConjoiner() {
 
@@ -333,6 +327,10 @@ public class ConjClustering extends How implements Consumer<Task> {
 
             boolean active = true, reset = true;
 
+            /** only an estimate to determine when threshold is being approached;
+             * the actual conf will be computed more exactly but it wont exceed this */
+            double conf = 1;
+
             tried.clear();
             trying.clear();
 
@@ -340,7 +338,6 @@ public class ConjClustering extends How implements Consumer<Task> {
 
             ListIterator<Task> i = ArrayUtil.cycle(in);
             int volEstimate = 1;
-            float freq = 1, conf = 1;
             long start = Long.MAX_VALUE;
             main: for (; i.hasNext(); ) {
 
@@ -367,7 +364,7 @@ public class ConjClustering extends How implements Consumer<Task> {
                     reset = false;
                     active = false;
 
-                    freq = conf = 1f;
+                    conf = 1f;
                     start = Long.MAX_VALUE;
                     volEstimate = 1;
 
@@ -400,7 +397,7 @@ public class ConjClustering extends How implements Consumer<Task> {
 //                            if (null == vv.putIfAbsent(pair(tStart, term), t)) {
 
 
-                        volEstimate += (xtv+1);
+                        volEstimate += ((xtv+1) * volEstimateInflationFactor);
 
                         if (start > tStart) start = tStart;
 
@@ -408,7 +405,6 @@ public class ConjClustering extends How implements Consumer<Task> {
                         conf = nextConf;
 
                         float tf = tx.freq();
-                        freq *= taskNeg ? (1f - tf) : tf;
 
                         trying.add(t);
                         i.remove();
@@ -421,7 +417,7 @@ public class ConjClustering extends How implements Consumer<Task> {
 
                                 active = true;
 
-                                Task y = conjoin(x, freq, conf, start);
+                                Task y = conjoin(x, start);
 
                                 if (y != null) {
 
@@ -459,46 +455,49 @@ public class ConjClustering extends How implements Consumer<Task> {
             return count;
         }
 
-        private Task conjoin(Task[] x, float freq, float conf, long start) {
+        private Task conjoin(Task[] x, long start) {
 
 
-            Truth t;
-            if (puncOut==BELIEF || puncOut == GOAL) {
-                double e = c2wSafe((double) conf);
-                if (e < NAL.truth.EVI_MIN)
-                    return null;
-
-                t = Truth.theDithered(freq, e, nar);
-                if (t == null)
-                    return null;
-            } else {
-                t = null;
-            }
-
-
-            int ditherDT = nar.dtDither.intValue();
-            Term cj = ConjSeq.sequence(x, ditherDT, Op.terms);
-            if (cj.op() != CONJ)
-                return null;
-
-            ObjectBooleanPair<Term> cp = Task.tryTaskTerm(cj, puncOut, true);
-            if (cp == null)
-                return null;
-
-            long range = Util.min(LongInterval::range, x) - 1;
-            long tEnd = start + range;
-            long[] se = Tense.dither(new long[] { start, tEnd}, nar);
-            NALTask y = new STMClusterTask(cp, t,
-                    se[0], se[1],
-                    Stamp.sample(NAL.STAMP_CAPACITY,
-                        Stamp.toMutableSet(NAL.STAMP_CAPACITY,nnn->x[nnn].stamp(), x.length),
-                        nar.random()), puncOut, now);
-
-            Task.fund(y, x, priCopyOrMove);
-
-            return y;
+//            Truth t;
+//            if (puncOut==BELIEF || puncOut == GOAL) {
+//                double e = c2wSafe((double) conf);
+//                if (e < NAL.truth.EVI_MIN)
+//                    return null;
+//
+//                t = Truth.theDithered(freq, e, nar);
+//                if (t == null)
+//                    return null;
+//            } else {
+//                t = null;
+//            }
+//
+//
+//            int ditherDT = nar.dtDither.intValue();
+//            Term cj = ConjSeq.sequence(x, ditherDT, Op.terms);
+//            if (cj.op() != CONJ)
+//                return null;
+//
+//            ObjectBooleanPair<Term> cp = Task.tryTaskTerm(cj, puncOut, true);
+//            if (cp == null)
+//                return null;
+//
+//            long range = Util.min(LongInterval::range, x) - 1;
+//            long tEnd = start + range;
+//            long[] se = Tense.dither(new long[] { start, tEnd}, nar);
+//            NALTask y = new STMClusterTask(cp, t,
+//                    se[0], se[1],
+//                    Stamp.sample(NAL.STAMP_CAPACITY,
+//                        Stamp.toMutableSet(NAL.STAMP_CAPACITY,nnn->x[nnn].stamp(), x.length),
+//                        nar.random()), puncOut, now);
 
 
+            DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
+                true, true, null, 0, null, nar
+            );
+
+            d.addAll(x);
+
+            return d.task();
         }
     }
 

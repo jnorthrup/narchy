@@ -13,6 +13,7 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
+import nars.unify.UnifyFirst;
 import nars.unify.mutate.Choose1;
 import nars.unify.mutate.Choose2;
 import nars.unify.mutate.Termutator;
@@ -59,7 +60,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
         throw new UnsupportedOperationException("normalize before patternify");
     }
 
-    public abstract static class PatternCompoundWithEllipsis extends PatternCompound {
+    public abstract static class PatternCompoundWithEllipsis extends PatternCompound implements UnifyFirst {
 
         final Ellipsis ellipsis;
 

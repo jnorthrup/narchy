@@ -101,10 +101,10 @@ public class DynTaskify extends TaskList {
     @Nullable
     public Task eval(long start, long end) {
         return model.evalComponents(template, start, end, this::evalComponent) && components() ?
-            taskify() : null;
+            task() : null;
     }
 
-    @Nullable private Task taskify() {
+    @Override @Nullable public Task task() {
 
         long s, e;
         long earliest;
