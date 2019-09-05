@@ -25,16 +25,12 @@ import jcog.Texts;
 import jcog.Util;
 import nars.NAL;
 import nars.Op;
-import nars.Task;
-import nars.truth.proj.TruthIntegration;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.DataInput;
 import java.io.IOException;
 
 import static jcog.WTF.WTF;
-import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 import static nars.truth.func.TruthFunctions.*;
 
 
@@ -174,31 +170,31 @@ public interface Truth extends Truthed {
             return a.evi() >= b.evi() ? a : b;
     }
 
-    /** TODO make int compare(a,b) */
-    @Nullable static Task stronger(@Nullable Task a, @Nullable Task b, long s, long e) {
-        if (a == null)
-            return b;
-        else if (b == null || a.equals(b))
-            return a;
-        else {
-            boolean ae = a.isEternal(), be = b.isEternal();
-            if (ae && be) {
-                return a.evi() >= b.evi() ? a : b;
-            } else if (ae || be) {
-                if (be) {
-                    @Nullable Task x = a;
-                    a = b;
-                    b = x; //swap so that 'b' is temporal
-                }
-                return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b) ? a : b;
-            } else if (s == TIMELESS || s == ETERNAL) {
-                //auto range
-                return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
-            } else {
-                return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b, s, e, 0) ? a : b;
-            }
-        }
-    }
+//    /** TODO make int compare(a,b) */
+//    @Nullable static Task stronger(@Nullable Task a, @Nullable Task b, long s, long e) {
+//        if (a == null)
+//            return b;
+//        else if (b == null || a.equals(b))
+//            return a;
+//        else {
+//            boolean ae = a.isEternal(), be = b.isEternal();
+//            if (ae && be) {
+//                return a.evi() >= b.evi() ? a : b;
+//            } else if (ae || be) {
+//                if (be) {
+//                    @Nullable Task x = a;
+//                    a = b;
+//                    b = x; //swap so that 'b' is temporal
+//                }
+//                return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b) ? a : b;
+//            } else if (s == TIMELESS || s == ETERNAL) {
+//                //auto range
+//                return TruthIntegration.evi(a) >= TruthIntegration.evi(b) ? a : b;
+//            } else {
+//                return TruthIntegration.evi(a, s, e, 0) >= TruthIntegration.evi(b, s, e, 0) ? a : b;
+//            }
+//        }
+//    }
 
 
     static float freq(float f, float epsilon) {

@@ -261,9 +261,6 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
-
-
-
         long nextBeliefEnd;
 
         if (nextBelief != null) {
@@ -347,11 +344,7 @@ public class Derivation extends PreDerivation {
 
     @Nullable
     private Truth beliefAtTask(Task nextBelief) {
-        Truth t = !NAL.derive.BELIEF_PROJECTION_CLASSIC ?
-            nextBelief.truth(taskStart, taskEnd, dur()) //integration-calculated
-            :
-            nextBelief.truthRelative(taskStart, time()) //classic opennars projection
-        ;
+        @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur()); //integration-calculated
         return t!=null && t.evi() >= eviMin ? t : null;
     }
 
@@ -435,7 +428,7 @@ public class Derivation extends PreDerivation {
 
         this.eviSingle = _task.isBeliefOrGoal() ? _task.evi() : 0;
         if (_belief != null) {
-            this.overlapDouble = Stamp.overlap(this._task, _belief);
+            this.overlapDouble = Stamp.overlapAny(this._task, _belief);
             this.eviDouble = this.eviSingle + _belief.evi();
         } else {
             this.overlapDouble = false; //N/A

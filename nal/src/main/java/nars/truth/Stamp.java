@@ -53,7 +53,7 @@ public interface Stamp {
 
     long[] UNSTAMPED = new long[0];
 
-    static long[] merge(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b, float aToB, Random rng) {
+    static long[] merge(long[] a, long[] b, float aToB, Random rng) {
         return merge(a, b, rng, aToB, NAL.STAMP_CAPACITY);
     }
 
@@ -304,7 +304,7 @@ public interface Stamp {
     void setCyclic(boolean b);
 
     /*@NotNull*/
-    default StringBuilder appendOccurrenceTime(/*@NotNull*/ StringBuilder sb) {
+    default StringBuilder appendOccurrenceTime(StringBuilder sb) {
         long oc = start();
 
         /*if (oc == Stamp.TIMELESS)
@@ -368,12 +368,12 @@ public interface Stamp {
     }
 
     /*@NotNull*/
-    static long[] toSetArray(/*@NotNull*/ long[] x) {
+    static long[] toSetArray(long[] x) {
         return toSetArray(x, x.length);
     }
 
     /*@NotNull*/
-    static long[] toSetArray(/*@NotNull*/ long[] x, final int outputLen) {
+    static long[] toSetArray(long[] x, final int outputLen) {
         int l = x.length;
 
 
@@ -382,7 +382,7 @@ public interface Stamp {
 
 
     /*@NotNull*/
-    static long[] _toSetArray(int outputLen, /*@NotNull*/ long[] sorted) {
+    static long[] _toSetArray(int outputLen, long[] sorted) {
 
 
         Arrays.sort(sorted);
@@ -424,7 +424,9 @@ public interface Stamp {
      * @param a evidence stamp in sorted order
      * @param b evidence stamp in sorted order
      */
-    static boolean overlapsAny(/*@NotNull*/ long[] a, /*@NotNull*/ long[] b) {
+    static boolean overlapsAny(long[] a, long[] b) {
+        if (a == b)
+            return true;
 
         int A = a.length;
         int B = b.length;
@@ -465,7 +467,7 @@ public interface Stamp {
         return false;
     }
 
-    static boolean overlapsAny(/*@NotNull*/ MetalLongSet aa,  /*@NotNull*/ long[] b) {
+    static boolean overlapsAny(MetalLongSet aa,  long[] b) {
         for (long x : b)
             if (aa.contains(x))
                 return true;
@@ -477,8 +479,11 @@ public interface Stamp {
     }
 
     static boolean overlap(Task x, Task y) {
-        return x == y ||
-            (x.intersects((LongInterval) y) && overlapsAny(x.stamp(), y.stamp()));
+        return x == y || (x.intersects((LongInterval) y) && overlapAny(x, y));
+    }
+
+    static boolean overlapAny(Stamp x, Stamp y) {
+        return overlapsAny(x.stamp(), y.stamp());
     }
 
     long creation();
@@ -668,7 +673,7 @@ public interface Stamp {
 
         return Util.unitize(((float) common) / denom);
     }
-    private static int overlapCount(/*@NotNull*/ LongSet aa,  /*@NotNull*/ long[] b) {
+    private static int overlapCount(LongSet aa,  long[] b) {
         int common = 0;
         for (long x : b)
             if (aa.contains(x))

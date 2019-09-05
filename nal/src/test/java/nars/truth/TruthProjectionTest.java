@@ -1,12 +1,10 @@
 package nars.truth;
 
 import nars.$;
-import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.proj.LinearTruthProjection;
 import nars.truth.proj.TruthIntegration;
-import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;
@@ -54,26 +52,33 @@ class TruthProjectionTest {
             assertEquals(T.conf(), tt.conf(), 0.01f);*/
         }
     }
-    @Test
-    public void testEvidenceIntegration_ConservedSingleTask_Half_Duration() {
-        float conf = 0.5f;
-        NALTask t = t(1f, conf, 0, 10);
-
-        //monotonically decrease evidence further away from task, regardless of observation time
-        for (long now : new long[] { -10, -5, 0, 5, 10, 15}) {
-            assertTrue(t.eviRelative(1, now) == t.eviRelative(9, now));
-            assertTrue(t.eviRelative(-1, now) > t.eviRelative(-2, now));
-            assertTrue(t.eviRelative(10, now) > t.eviRelative(11, now));
-            assertTrue(t.eviRelative(11, now) > t.eviRelative(12, now));
-        }
-
-
-        LinearTruthProjection p = new LinearTruthProjection(0, 10);
-        p.add(t);
-        @Nullable Truth tt = p.truth();
-        assertEquals(1f, tt.freq());
-        assertEquals(conf, tt.conf());
-    }
+//
+//    @Test
+//    public void testEvidenceIntegration_ConservedSingleTask_Half_Duration() {
+//        float conf = 0.5f;
+//        NALTask t = t(1f, conf, 0, 10);
+//
+//        //monotonically decrease evidence further away from task, regardless of observation time
+//        for (long now : new long[] { -10, -5, 0, 5, 10, 15}) {
+//            assertTrue(t.eviRelative(1, now) == t.eviRelative(9, now));
+//            assertTrue(t.eviRelative(-1, now) > t.eviRelative(-2, now));
+//            assertTrue(t.eviRelative(10, now) > t.eviRelative(11, now));
+//            assertTrue(t.eviRelative(11, now) > t.eviRelative(12, now));
+//        }
+//        //monotonically decrease evidence further away from task, regardless of tgt time
+//        for (long tgt : new long[] { -10, -5, 0, 5, 10, 15}) {
+//            double a = t.eviRelative(tgt, 0);
+//            double b = t.eviRelative(tgt, 20);
+//            assertTrue(a > b);
+//        }
+//
+//
+//        LinearTruthProjection p = new LinearTruthProjection(0, 10);
+//        p.add(t);
+//        @Nullable Truth tt = p.truth();
+//        assertEquals(1f, tt.freq());
+//        assertEquals(conf, tt.conf());
+//    }
 
 
     static private NALTask t(float freq, float conf, long start, long end) {
@@ -81,18 +86,4 @@ class TruthProjectionTest {
         return NALTask.the(x, BELIEF, $.t(freq, conf), (long) 0, start, end, stamp);
     }
 
-    @Test void testSubjectiveProjection() {
-        float f = 1, c = 0.9f;
-        Task t = t(f, c, 0, 0);
-        assertEquals($.t(f,c), t.truthRelative(0, 0)); //all at same point
-        assertEquals($.t(f,c), t.truthRelative(0, 1)); //observation point changes but target point remains at the task
-
-//        assertEquals($.t(f,0.47f), t.truthRelative(1, 0)); //project to future, effectively eternalized
-//        assertEquals($.t(f,0.47f), t.truthRelative(10, 0)); //project to future, effectively eternalized
-//
-//        assertEquals($.t(f,0.49f), t.truthRelative(1, 2)); //project to future
-//        assertEquals($.t(f,0.50f), t.truthRelative(1, 4)); //project to future
-//        assertEquals($.t(f,0.49f), t.truthRelative(2, 4)); //project to future
-//        assertEquals($.t(f,0.47f), t.truthRelative(4, 4)); //project to future
-    }
 }

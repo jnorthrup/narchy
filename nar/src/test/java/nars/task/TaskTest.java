@@ -9,10 +9,12 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
 
+import static jcog.Texts.n4;
 import static nars.$.*;
 import static nars.Op.BELIEF;
 import static nars.term.util.TermTest.assertEq;
@@ -100,74 +102,6 @@ public class TaskTest {
 
         assertEq("(($1,x)==>a($1))", Task.postNormalize($$("((--$1,x) ==> a(--$1))")));
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     @Test

@@ -26,10 +26,7 @@ import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
 import static fucknutreport.config.NodeConfig.configIs;
-import static java.lang.Math.abs;
-import static java.lang.Math.min;
 import static nars.Op.*;
-import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
@@ -244,29 +241,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float TaskEvalPriDecomposeRate = 0.5f;
 
 
-	/** subjective evidence projection */
-    public static double eviRelative(long start, long end, double evi, long tgt, long now) {
-
-//        long start = start();
-        if (start == ETERNAL || start==tgt)
-            return evi;
-//        long end = end();
-        if ((tgt > start && tgt <= end))
-            return evi; //within the task's range
-
-        long sep = min(abs(start-tgt), abs(end-tgt)); //minTimeTo
-        long range = Math.max(abs(start-now),abs(end-now)) + abs(tgt - now);
-        //double e = (evi / (evi + ((double)sep) / range ));
-        double e = evi * (1 / (1 + ((double)sep) / range ));
-        //double factor = 1.0 - sep / range; //classic
-        //double factor = 1.0 / (1 + sep / range ); //experimental
-        //factor = NAL.evi(1, sep, range ); //experimental
-        return e;
-    }
-
-    //0.25f;
-
-
     /**
      * SignalTask's
      */
@@ -467,8 +441,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         double e;
 
+
+
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
+        //double ee = TruthFunctions.eternalize(evi);
+        //e = ee + ((evi-ee) / (1.0 + Util.sqr(((double)dt) / dur)));
 
         //cubic decay:
         //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLTEvKDErZV4oLXgpKSIsImNvbG9yIjoiIzAwNzdGRiJ9LHsidHlwZSI6MCwiZXEiOiIxLygxK3gqeCkiLCJjb2xvciI6IiNENDFBMUEifSx7InR5cGUiOjAsImVxIjoiMS8oMSt4KngqeCkiLCJjb2xvciI6IiM4OUFEMDkifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTgiLCIwIiwiMSJdfV0-
@@ -495,7 +473,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //---------
 
         //eternal noise floor (post-filter)
-        //double ee = TruthFunctions.eternalize(evi);
         //e = ee + ((e - ee) / (1.0 + (((float)dt) / (falloffDurs * dur))));
 
         return e;
@@ -807,9 +784,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * in some cases, forming the question may be answered by a dynamic truth calculation later
          */
         public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
-
-        /** belief truth projection strategy: evi integration-based vs. self-scaling classic opennars projection */
-        public static final boolean BELIEF_PROJECTION_CLASSIC = true;
 
         public static boolean ETERNALIZE_BELIEF_PROJECTION = false;
         public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = true;

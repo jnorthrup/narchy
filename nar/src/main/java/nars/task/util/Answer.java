@@ -293,7 +293,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     private Task task(boolean beliefOrGoal, boolean forceProject) {
-        return truthProjection(forceProject).task(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar);
+        return truthProjection().task(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar);
     }
 
     private double eviMin() {
@@ -307,11 +307,11 @@ public final class Answer implements Timed, Predicate<Task> {
     public Truth truth(float perceptualDur) {
         assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
-        TruthProjection tp = truthProjection(true);
+        TruthProjection tp = truthProjection();
 
         if (tp != null) {
             tp.dur(perceptualDur);
-            return tp.truth(NAL.truth.EVI_MIN, false, false, nar);
+            return tp.truth(start, end, NAL.truth.EVI_MIN, false, false, nar);
         } else
             return null;
     }
@@ -320,18 +320,12 @@ public final class Answer implements Timed, Predicate<Task> {
         return truth(dur);
     }
 
-    @Nullable public final TruthProjection truthProjection(boolean forceProject) {
+    @Nullable public final TruthProjection truthProjection() {
         int numTasks = tasks.size();
         if (numTasks == 0)
             return null;
 
-        long s, e;
-        if (forceProject) {
-            s = start; e = end;
-        } else {
-            s = e = TIMELESS; /* auto */
-        }
-        return nar.newProjection(s, e).with(this.tasks.items, numTasks);
+        return nar.newProjection(TIMELESS, TIMELESS).with(this.tasks.items, numTasks);
     }
 
 

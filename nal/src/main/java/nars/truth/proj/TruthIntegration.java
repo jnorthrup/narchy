@@ -48,21 +48,21 @@ public class TruthIntegration {
 		}
 	}
 
-	public static double evi(Task t, long qStart, long qEnd, long now) {
-
-		assert (qStart != ETERNAL && qStart <= qEnd);
-
-		if (qStart == qEnd) {
-			return t.eviRelative(qStart, now); //point
-		} else {
-			double evi = t.evi();
-			long tStart = t.start();
-			//temporal task
-			return tStart == ETERNAL ?
-				evi * (qEnd - qStart + 1) :
-				eviIntegrate(evi, now, qStart, qEnd, tStart, t.end());
-		}
-	}
+//	public static double evi(Task t, long qStart, long qEnd, long now) {
+//
+//		assert (qStart != ETERNAL && qStart <= qEnd);
+//
+//		if (qStart == qEnd) {
+//			return t.eviRelative(qStart, now); //point
+//		} else {
+//			double evi = t.evi();
+//			long tStart = t.start();
+//			//temporal task
+//			return tStart == ETERNAL ?
+//				evi * (qEnd - qStart + 1) :
+//				eviIntegrate(evi, now, qStart, qEnd, tStart, t.end());
+//		}
+//	}
 	/**
 	 * allows ranking task by projected evidence strength to a target query region, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation
 	 */
@@ -86,9 +86,9 @@ public class TruthIntegration {
 		//return Math.sqrt(t.range()) * t.evi() / (1 + t.maxTimeTo(now));
 	}
 
-	private static double eviIntegrate(double evi, long now, long qs, long qe, long ts, long te) {
-		return eviIntegrate(qs, qe, ts, te, EvidenceEvaluator.of(ts, te, evi, now));
-	}
+//	private static double eviIntegrate(double evi, long now, long qs, long qe, long ts, long te) {
+//		return eviIntegrate(qs, qe, ts, te, EvidenceEvaluator.of(ts, te, evi, now));
+//	}
 
 	private static double eviIntegrate(long qs, long qe, long ts, long te, EvidenceEvaluator e) {
 		if (max(qs, ts) > min(qe, te)) {

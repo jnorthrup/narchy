@@ -141,8 +141,13 @@ abstract public class TruthProjection extends TaskList {
 		return ditherDT(nal.dtDither());
 	}
 
-	public final Truth truth(double eviMin, boolean dither, boolean tShrink, NAL n) {
-		return commit(tShrink, n) ? get(eviMin, dither, n) : null;
+	public final Truth truth(long s, long e, double eviMin, boolean dither, boolean tShrink, NAL n) {
+		if (commit(tShrink, n)) {
+			if (s!=TIMELESS)
+				time(s, e);
+			return get(eviMin, dither, n);
+		} else
+			return null;
 	}
 
 	/**
@@ -945,7 +950,7 @@ abstract public class TruthProjection extends TaskList {
 
 	@Nullable
 	public final Truth truth() {
-		return truth(NAL.truth.EVI_MIN, false, false, null);
+		return truth(start, end, NAL.truth.EVI_MIN, false, false, null);
 	}
 
 
@@ -1095,7 +1100,7 @@ abstract public class TruthProjection extends TaskList {
 
 	@Nullable
 	public Task task(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
-		@Nullable Truth tt = truth(eviMin, ditherTruth, !forceProject, n);
+		@Nullable Truth tt = truth(start, end, eviMin, ditherTruth, !forceProject, n);
 		if (tt == null)
 			return null;
 

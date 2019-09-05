@@ -152,7 +152,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
         t.match(a);
 
-        return a.truthProjection(true);
+        return a.truthProjection();
     }
 
 
@@ -164,7 +164,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
         int perceptShift = (int)((g.when.end - g.when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
-        this.beliefTruth = truth(truth(true, limitBelief, g.when, perceptShift));
+        this.beliefTruth = truth(truth(true, limitBelief, g.when, perceptShift), g.when, perceptShift);
 
         updateCuriosity(g.curiosity);
 
@@ -173,15 +173,16 @@ public class AbstractGoalActionConcept extends GameAction {
 
     }
 
-    private  @Nullable Truth truth(@Nullable TruthProjection t) {
-        return t!=null ? t.truth(NAL.truth.EVI_MIN, false, false, null) : null;
+    private  @Nullable Truth truth(@Nullable TruthProjection t, When<NAR> when, int shift) {
+        return t!=null ? t.truth(when.start + shift, when.end+ shift, NAL.truth.EVI_MIN,
+            false, false, null) : null;
     }
 
     private Truth actionTruth(int limit, Game g, int shift) {
 
         TruthProjection gt = truth(false, limit, g.when, shift);
 
-        Truth nextActionDex = truth(gt);
+        Truth nextActionDex = truth(gt, g.when, shift);
         actionDex = nextActionDex;
         actionCoh = nextActionDex != null ? gt.coherency() : 0;
         if (nextActionDex != null)

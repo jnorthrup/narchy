@@ -401,25 +401,7 @@ public enum NALTruth implements TruthFunction {
             //return TruthFunctions2.desireSemiBipolar(T, B, minConf, true);
         }
     },
-	@AllowOverlap DesireReverse() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.desire(B, T, minConf, false,true);
-        }
-    },
-//    @AllowOverlap DesireReverseRecursive() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-//            return TruthFunctions2.desire(B, T, minConf, false,true);
-//        }
-//    },
-    /** TODO use correct 'Desire__X' func */
-    @Deprecated DesireReverseWeak() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.desire(B, T, minConf, false,false);
-        }
-    },
+
 
     /** wrapper for Desire that inverts the belief truth according to the polarity of the task  truth */
     Undesire() {

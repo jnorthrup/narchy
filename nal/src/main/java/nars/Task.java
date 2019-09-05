@@ -413,13 +413,16 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         return t;
     }
-
+    @Nullable
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, NAL n) {
+        return project(t, start, end, eviMin, ditherTruth, dtDither, 0, n);
+    }
 
     /**
      * start!=ETERNAL
      */
     @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, NAL n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, NAL n) {
 
         if (dtDither > 1) {
             start = Tense.dither(start, dtDither, -1);
@@ -436,7 +439,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             //tt = t.truthRelative((start+end)/2, n.time(), eviMin);
             //if (tt == null) return null;
 
-            tt = t.truth(start, end, 0); //0 dur
+            tt = t.truth(start, end, dur); //0 dur
+
             if (tt == null || tt.evi() < eviMin) return null;
 
             if (ditherTruth) {
@@ -883,24 +887,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return term().dt();
     }
 
-    @Nullable default Truth truthRelative(long tgt, long now) {
-        return truthRelative(tgt, now, NAL.truth.EVI_MIN);
-    }
 
-    /** subjective truth projection, relative to a specific 'now' observed time point */
-    @Nullable default Truth truthRelative(long tgt, long now, double eviMin) {
-        if (isEternal()) {
-            return truth(); //shortcut
-        } else {
-            double e = eviRelative(tgt, now);
-            return e < eviMin ? null : PreciseTruth.byEvi(truth().freq(), e);
-        }
-    }
-
-    /** subjective truth projection, relative to a specific 'now' observed time point */
-    default double eviRelative(long tgt, long now) {
-        return NAL.eviRelative(start(), end(), this.evi(), tgt, now);
-    }
 
     @Nullable
     @Deprecated default Truth truth(long targetStart, long targetEnd, float dur) {
@@ -916,7 +903,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 PreciseTruth.byEvi(
                         freq() /* TODO interpolate frequency wave */,
                         e);
-
         }
     }
 
