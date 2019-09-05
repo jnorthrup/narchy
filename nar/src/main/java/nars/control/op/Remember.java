@@ -224,8 +224,8 @@ public class Remember extends AbstractTask {
             novel = true;
         } else {
             long dCycles = Math.max(0, nextCreation - prevCreation);
-            float dDithers = dCycles == 0 ? 0 : (dCycles / ((float) n.dtDither()));
-            novel = dDithers >= NAL.belief.REMEMBER_REPEAT_THRESH_DITHERS;
+            float dDurs = dCycles == 0 ? 0 : (dCycles / n.dur()); //maybe what.dur()
+            novel = dDurs >= NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
         }
 
         if (novel) {

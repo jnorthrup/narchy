@@ -225,7 +225,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
             //use existing curiosity
             Answer a = Answer.
-				taskStrength(true, 2, s, e, term, null, n)
+				taskStrength(true, 1, s, e, term, null, n)
                     .dur(dur)
                     .match(curiosityTable);
             actionCuri = a.truth();

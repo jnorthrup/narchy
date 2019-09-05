@@ -36,21 +36,22 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
 
-        new Deriver(Derivers.nal(n, 5,8), new FirstOrderIndexer());
+        new Deriver(Derivers.nal(n, 1,8), new FirstOrderIndexer());
 
 //        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
 //            //new Hypothesizer.ExhaustiveIndexSnapshotter()
 //            new FirstOrderIndexer()
 //        ); // ~= PROLOG
 
-        n.termVolMax.set(64);
+        n.termVolMax.set(96);
         n.beliefPriDefault.amp(0.01f);
+        n.time.dur(100);
 
 
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
         TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));
-        w.links.links.capacity(64);
+        w.links.links.capacity(256);
 
 
         //                //"/home/me/sumo/Merge.kif";
@@ -83,7 +84,7 @@ class KIFTest {
         //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-        w.onTask(t->System.out.println(t));
+        w.onTask(t->System.out.println(t.toString(true)));
         //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
         w.accept(new EternalTask($$("patient(#p,#a)"), BELIEF, $.t(0, 0.9f), n).priSet(0.1f));
         w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.1f));

@@ -625,7 +625,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * useful as a novelty threshold:
          * >=0, higher values decrease the rate at which repeated tasks can be reactivated
          */
-        public static int REMEMBER_REPEAT_THRESH_DITHERS = 1;
+        public static int REMEMBER_REPEAT_THRESH_DURS = 1;
 
 
 
