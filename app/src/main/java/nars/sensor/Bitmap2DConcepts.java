@@ -157,7 +157,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
         @Override
         protected boolean autoTaskLink() {
-            return false;
+            return true;
         }
 
         @Override

@@ -4,6 +4,7 @@
  */
 package nars.derive.premise;
 
+import jcog.Util;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.Derivation;
@@ -215,24 +216,26 @@ public class Premise  {
 			//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 			a = task.onAnswered(a);
 			if (a!=null)
-                emit(a, d);
+				answer(a, d);
 		}
 
 		return a;
 	}
 
-    protected void emit(Task x, Derivation d) {
-        //            if (a instanceof DynamicTruthTask && a.creation() >= timeBefore and a.creation() < d.time() && a.why().length==0) {
-//                //HACK
-//                ((NALTask)a).cause(task.why());
-//            }
-
-        if (x.conf() > d.confMin) {
-            if (x.isGoal())
-                d.what.accept(x);
-            else
-                d.what.emit(x);
-        }
+    private void answer(Task a, Derivation d) {
+//        if (x.conf() > d.confMin) {
+//            if (x.isGoal())
+//                d.what.accept(x);
+//            else
+		Task q = this.task;
+		float qPri = q.priElseZero();
+		float aPri = a.pri();
+		float pri =
+			//qPri * aPri;
+			Util.or(qPri, aPri);
+		d.what.link(a, pri);
+		d.what.emit(a);
+//        }
     }
 
 	private long[] timeFocus(Term beliefTerm, Derivation d) {

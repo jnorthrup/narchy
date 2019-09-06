@@ -9,6 +9,7 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.dynamic.DynamicTruthTable;
+import nars.task.DynamicTruthTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.time.When;
@@ -87,8 +88,7 @@ abstract public class AbstractDynamicTruth {
 	 */
 	abstract public int componentsEstimate();
 
-	@Nullable
-	public Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
+	public @Nullable Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
 		Term y = reconstruct(template, s, e, d);
 		if (y == null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
 			if (NAL.DEBUG) {

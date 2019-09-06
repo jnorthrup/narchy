@@ -43,7 +43,8 @@ public class Remember extends AbstractTask {
         return the(x, true, true, true, n);
     }
 
-    @Nullable private static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
+    @Nullable
+    public static Remember the(Task x, boolean store, boolean link, boolean emit, NAR n) {
         if (x instanceof SeriesBeliefTable.SeriesTask)
             return null; //already will have been added directly by the table to itself
 
@@ -105,12 +106,9 @@ public class Remember extends AbstractTask {
     public Task next(Object w) {
 
         if (store) {
-           TaskConcept cc = (TaskConcept) ((What)w).nar.conceptualize(input);
-           if (cc==null)
-               return null;
-
-           cc.remember(this);
-       } else {
+            if (!store(true))
+                return null;
+        } else {
            result = input;
        }
 
@@ -122,6 +120,16 @@ public class Remember extends AbstractTask {
             input.delete();
 
         return null;
+    }
+
+    public boolean store(boolean conceptualize) {
+        TaskConcept cc = (TaskConcept)nar.concept(input,conceptualize);
+        if (cc==null)
+            return false;
+        else {
+            cc.remember(this);
+            return true;
+        }
     }
 
     public boolean complete() {

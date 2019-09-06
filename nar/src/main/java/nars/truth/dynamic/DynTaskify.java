@@ -17,8 +17,8 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Stamp;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
+import org.jetbrains.annotations.Nullable;
 
-import javax.annotation.Nullable;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
@@ -66,12 +66,12 @@ public class DynTaskify extends TaskList {
     /** ditherTruth applied only to final result; not to projected subTasks */
     final boolean ditherTruth;
 
-    final boolean ditherTime;
+    private final boolean ditherTime;
 
     final float dur;
 
     final boolean beliefOrGoal;
-    final Predicate<Task> filter;
+    private final Predicate<Task> filter;
     final MetalBitSet componentPolarity;
 
 
@@ -109,8 +109,7 @@ public class DynTaskify extends TaskList {
         long latest = maxValue(Stamp::end);
         if (latest == LongInterval.ETERNAL) {
             //all are eternal
-            earliest = LongInterval.ETERNAL;
-            s = e = LongInterval.ETERNAL;
+            earliest = s = e = LongInterval.ETERNAL;
         } else {
 
             earliest = earliestStart();
@@ -210,8 +209,8 @@ public class DynTaskify extends TaskList {
     }
 
     private void setTask(int i, Task x) {
-        setFast(i, x);
-        ++this.size;
+        items[i] = x;
+        this.size++;
     }
 
     private boolean noOverlap(Task t) {

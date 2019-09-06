@@ -39,8 +39,9 @@ public class DynamicConjTruth {
         /**
             has special support for collapsing the potential sequence to a revision if intersect,
             especially if the separation is less than NAR's dt dithering which will produce invalid dynamic result
-         */
-        @Override public Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
+		 * @return
+		 */
+        @Override public @Nullable Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
 
             //TODO generalize beyond n=2
             if (d.size() == 2 && d.get(0).term().equals(d.get(1).term())) {

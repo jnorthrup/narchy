@@ -1,13 +1,14 @@
 package nars.truth.proj;
 
-import jcog.*;
+import jcog.Paper;
+import jcog.Skill;
+import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
 import nars.task.DynamicTruthTask;
-import nars.task.NALTask;
 import nars.task.ProxyTask;
 import nars.task.Tasked;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
@@ -117,7 +118,7 @@ abstract public class TruthProjection extends TaskList {
 		if (yt instanceof MutableTruth)
 			yt = ((MutableTruth)yt).clone();
 
-		NALTask y = new DynamicTruthTask(
+		DynamicTruthTask y = new DynamicTruthTask(
 			r.getOne(), beliefOrGoal,
 			yt,
 			n, start, end,

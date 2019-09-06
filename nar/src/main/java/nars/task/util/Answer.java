@@ -17,6 +17,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
+import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -31,7 +32,10 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public final NAR nar;
 
-    @Nullable private Term term = null;
+    /** whether to store any dynamically created tasks that match the query */
+    public boolean storeDynamic = true;
+
+	@Nullable private Term term = null;
 
     public final RankedN<Task> tasks;
 
@@ -348,14 +352,18 @@ public final class Answer implements Timed, Predicate<Task> {
      * a false return value should signal a stop to any iteration supplying results
      */
     public final boolean test(Task t) {
-        //assert (t != null);
         int remain = --ttl;
-        if (remain >= 0) {
-            if (filter == null || filter.test(t)) {
-                tasks.add(t);
-            }
-        }
+        if (remain >= 0 && (filter == null || filter.test(t)))
+            tasks.add(t);
+
         return remain > 0;
+    }
+
+    public final void test(Task t, BiFunction<Task,Answer,Task> ifSuccessfulInsert) {
+        int remain = --ttl;
+        if (remain >= 0 && (filter == null || filter.test(t))) {
+            tasks.add(ifSuccessfulInsert.apply(t,this));
+        }
     }
 
     @Override
