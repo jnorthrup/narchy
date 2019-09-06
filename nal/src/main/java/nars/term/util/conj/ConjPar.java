@@ -306,28 +306,5 @@ public enum ConjPar {
     }
 
 
-    public static Term theXternal(TermBuilder b, Term... u) {
-        int ul = u.length;
-        Term[] args;
-        switch (ul) {
-            case 0:
-                return True;
 
-            case 1:
-                return u[0];
-
-            default: {
-                Term[] uux = Terms.commute(u);
-                if (uux.length == 1) {
-                    args = new Term[]{uux[0], uux[0]}; //repeat
-                } else {
-                    args = uux;
-                }
-            }
-
-        }
-
-        return b.newCompound(CONJ, XTERNAL, args);
-
-    }
 }

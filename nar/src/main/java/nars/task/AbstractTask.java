@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.Log;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import jcog.util.ArrayUtil;
@@ -12,7 +11,6 @@ import nars.term.Term;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
-import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.Collection;

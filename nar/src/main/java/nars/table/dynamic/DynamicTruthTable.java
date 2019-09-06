@@ -30,7 +30,7 @@ public final class DynamicTruthTable extends DynamicTaskTable {
         if (y!=null) {
             if (a.test(y)) {
                 if (a.storeDynamic)
-                    a.test(y, this::storeDynamic);
+                    a.test(y, this::cacheDynamic);
                 else
                     a.test(y);
             }
@@ -39,10 +39,10 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
     /** insertion resolver
      *  if r.result!=y replace y in a with r.result to re-use cached Task */
-    private Task storeDynamic(Task y, Answer a) {
+    private Task cacheDynamic(Task y, Answer a) {
         float pBefore = y.pri(); //HACK
         Remember r = Remember.the(y, true, false, false, a.nar);
-        if (r.store(false)) {
+        if (r!=null && r.store(false)) {
             Task z = r.result;
             if (z != null && z != y)
                 return z;

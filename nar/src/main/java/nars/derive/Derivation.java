@@ -25,8 +25,6 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.buffer.DirectTermBuffer;
-import nars.term.buffer.TermBuffer;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
@@ -128,8 +126,8 @@ public class Derivation extends PreDerivation {
             return y;
         }
     };
-    private final TermBuffer termBuilder = new TermBuffer();
-    private final TermBuffer directTermBuilder = new DirectTermBuffer();
+//    private final TermBuffer termBuilder = new TermBuffer();
+//    private final TermBuffer directTermBuilder = new DirectTermBuffer();
 
 
     /**

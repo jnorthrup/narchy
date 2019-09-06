@@ -12,7 +12,6 @@ import jcog.util.Range;
 import nars.attention.PriNode;
 import nars.term.Term;
 import nars.term.atom.Atom;
-import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.transform.Conceptualization;
 import nars.term.util.transform.Retemporalize;
 import nars.time.Time;
@@ -92,7 +91,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 6;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 5;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
@@ -100,7 +99,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 4f;
+    public static final float ANSWER_TRYING = 3f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = false;
@@ -293,24 +292,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * it is enabled for unit tests automatically regardless of the value here.
      */
     public static boolean DEBUG;
-
-    static {
-        terms =
-                //HeapTermBuilder.the;
-
-                //new InterningTermBuilder();
-
-                new MemoizingTermBuilder();
-
-//                new VerifyingTermBuilder(
-//                    new MemoizingTermBuilder(),
-//                    new VerifyingTermBuilder(
-//                            new MemoizingTermBuilder() //new InterningTermBuilder()
-//                            ,
-//                            HeapTermBuilder.the
-//                    )
-//                );
-    }
 
 //    /**
 //     * when merging dt's, ratio of the maximum difference in dt allowed

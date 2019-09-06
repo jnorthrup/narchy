@@ -192,13 +192,13 @@ public class Factorize {
             if (!masked.contains(i)) {
                 t.add(x[i]);
             }
-        Term m = $.func(Member.member, f, $.sete(rr.getTwo().collect((ob)->{
+        Term s = $.sete(rr.getTwo().collect((ob) -> {
             Term y = ob.getOne();
-            if (y.op()==CONJ && y.dt()==DTERNAL)//flatten
-                return SETe.the(y.subterms());
-            else
-                return y;
-        })));
+            return y.op() == CONJ && y.dt() == DTERNAL ? SETe.the(y.subterms()) : y; //flatten
+        }));
+        if (s instanceof Bool)
+            return null;
+        Term m = $.func(Member.member, f, s);
         if (m == Null)
             return null;
 

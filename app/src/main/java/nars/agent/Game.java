@@ -29,7 +29,6 @@ import nars.term.atom.Atomic;
 import nars.time.When;
 import nars.truth.Truth;
 import nars.util.Timed;
-import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 
 import java.util.Random;

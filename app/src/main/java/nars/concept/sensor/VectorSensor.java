@@ -3,7 +3,6 @@ package nars.concept.sensor;
 import com.google.common.collect.Iterables;
 import jcog.data.graph.MapNodeGraph;
 import jcog.math.FloatSupplier;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.agent.Game;
@@ -14,10 +13,6 @@ import nars.control.channel.CauseChannel;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.truth.Truth;
-import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-
-import static nars.Op.BELIEF;
 
 /**
  * base class for a group of concepts representing a sensor 'vector'

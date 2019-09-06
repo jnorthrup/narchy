@@ -35,7 +35,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 10;
+    public static final int volMaxDefault = 8;
     private static final int ATOM_INTERNING_LENGTH_MAX = 10;
 
     /**
@@ -45,7 +45,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     private final static boolean cacheSubtermKeyBytes = false;
 
 
-    private static final boolean resolveNeg = false;
+
     //    private final static boolean internNegs = false;
     static final boolean deepDefault = true;
 
@@ -339,9 +339,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
         return super.newCompound1(o, resolve(x));
     }
 
-    @Override public Term neg(Term x) {
-        return resolveNeg ? super.neg(resolve(x)) : super.neg(x);
-    }
 
     @Override
     public Atomic atom(String id) {

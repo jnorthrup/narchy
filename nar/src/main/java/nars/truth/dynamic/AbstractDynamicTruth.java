@@ -9,7 +9,6 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.dynamic.DynamicTruthTable;
-import nars.task.DynamicTruthTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.time.When;

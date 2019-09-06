@@ -41,6 +41,7 @@ import static spacegraph.SpaceGraph.window;
  */
 public class PoleCart extends GameX {
 
+	static final boolean beliefPredict = false;
 	boolean speedControl = true;
 
 	private final DigitizedScalar xVel;
@@ -67,18 +68,21 @@ public class PoleCart extends GameX {
 						p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
 					);
 					What what = p.what();
-					new BeliefPredict(
-						predicting,
+
+					if (beliefPredict) {
+						new BeliefPredict(
+							predicting,
 //                java.util.List.of(
 //                        x, xVel,
 //                        angVel, angX, angY),
-						8,
-						Math.round(6 * n.dur()),
-						3,
-						new LivePredictor.LSTMPredictor(0.1f, 1),
-						//new LivePredictor.MLPPredictor(0.01f),
-						what
-					);
+							8,
+							Math.round(6 * n.dur()),
+							3,
+							new LivePredictor.LSTMPredictor(0.1f, 1),
+							//new LivePredictor.MLPPredictor(0.01f),
+							what
+						);
+					}
 
 //                    Loop.of(() -> {
 //

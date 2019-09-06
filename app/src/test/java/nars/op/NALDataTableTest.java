@@ -8,7 +8,6 @@ import jcog.table.DataTable;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.op.NALData;
 import nars.truth.Stamp;
 import org.junit.jupiter.api.Test;
 import tech.tablesaw.api.Row;

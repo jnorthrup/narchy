@@ -50,7 +50,7 @@ public abstract class TermBuilder implements TermConstructor {
         boolean hasEllipsis = false;
         for (Term x : t) {
             if (x == Bool.Null)
-                return Bool.Null;
+                return Bool.Null; //try to detect earlier
             if (x instanceof Ellipsislike)
                 hasEllipsis = true;
         }
@@ -58,10 +58,7 @@ public abstract class TermBuilder implements TermConstructor {
         assert (o.minSubs <= s || hasEllipsis) :
                 "subterm underflow: " + o + ' ' + Arrays.toString(t);
 
-        if (o == NEG) {
-            assert(t.length == 1);
-            return neg(t[0]);
-        } else if (s == 1 && o!= CONJ /* HACK */ ) {
+        if (s == 1 && o!= CONJ /* HACK */ ) {
             return newCompound1(o, t[0]);
         } else {
             return newCompoundN(o, dt, t, key);
@@ -74,7 +71,7 @@ public abstract class TermBuilder implements TermConstructor {
 
 
     protected Term newCompound1(Op o, Term x) {
-       return new CachedUnitCompound(o, x);
+        return o == NEG ? neg(x) : new CachedUnitCompound(o, x);
     }
 
     protected Subterms subterms(Op o, Term[] t, @Nullable DynBytes key) {
@@ -113,7 +110,7 @@ public abstract class TermBuilder implements TermConstructor {
         if (u.length>0 && u[u.length-1] instanceof Interval)
             return new Sequence(subterms(u));
 
-        if (!preSorted)
+        if (!preSorted || (dt == XTERNAL /* HACK */))
             u = ConjBuilder.preSort(dt, u);
 
         switch (u.length) {
@@ -131,7 +128,7 @@ public abstract class TermBuilder implements TermConstructor {
                 return ConjPar.the(this, dt,false, u);
 
             case XTERNAL:
-                return ConjPar.theXternal(this, u);
+                return newCompound(CONJ, XTERNAL, u);
 
             default: {
                 if (u.length != 2)
@@ -145,7 +142,7 @@ public abstract class TermBuilder implements TermConstructor {
     /** attaches two events together with dt separation */
     public Term conjAppend(Term a, int dt, Term b) {
         if (dt == XTERNAL)
-            return ConjPar.theXternal(Op.terms, a, b);
+            return conj(XTERNAL, a, b);
 
         int aRange = a.eventRange(), bRange = b.eventRange();
 
@@ -160,7 +157,7 @@ public abstract class TermBuilder implements TermConstructor {
     /** merges two events with a dt offset applied to 'b' relative to a */
     @Deprecated public Term conjMerge(Term a, int dt, Term b) {
         if (dt == XTERNAL)
-            return ConjPar.theXternal(Op.terms, a, b);
+            return conj(XTERNAL, a, b);
 
         int aRange = a.eventRange(), bRange = b.eventRange();
 

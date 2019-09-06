@@ -97,16 +97,12 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
     }
 
     final Term getAtomic(Atomic x) {
-        if (x instanceof Anom)
-            return map.interned(((Anom) x).id());
-        else
-            return x;
+        return x instanceof Anom ? map.interned(((Anom) x).id()) : x;
     }
 
     protected Term getCompound(Compound x) {
         putOrGet = false;
-        Term y0 = applyCompound(x);
-        return y0;
+        return applyCompound(x);
 
 //      Term y = transformCompoundLazily((Compound)x);
 ////      if (!y.equals(y0)) {

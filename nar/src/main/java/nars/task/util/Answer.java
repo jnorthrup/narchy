@@ -342,10 +342,6 @@ public final class Answer implements Timed, Predicate<Task> {
         return tasks.isEmpty();
     }
 
-    @Nullable
-    public Task any() {
-        return isEmpty() ? null : tasks.top();
-    }
 
     /**
      * consume a limited 'tries' iteration. also applies the filter.
@@ -361,9 +357,8 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public final void test(Task t, BiFunction<Task,Answer,Task> ifSuccessfulInsert) {
         int remain = --ttl;
-        if (remain >= 0 && (filter == null || filter.test(t))) {
+        if (remain >= 0 && (filter == null || filter.test(t)))
             tasks.add(ifSuccessfulInsert.apply(t,this));
-        }
     }
 
     @Override

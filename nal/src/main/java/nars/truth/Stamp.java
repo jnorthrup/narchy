@@ -53,6 +53,17 @@ public interface Stamp {
 
     long[] UNSTAMPED = new long[0];
 
+
+    /** GATHER only */
+    static boolean overlap(Task x, Task y) {
+        return x == y || (x.intersects((LongInterval) y) && overlapAny(x, y));
+    }
+
+    /** GATHER + SCATTER */
+    static boolean overlapAny(Stamp x, Stamp y) {
+        return overlapsAny(x.stamp(), y.stamp());
+    }
+
     static long[] merge(long[] a, long[] b, float aToB, Random rng) {
         return merge(a, b, rng, aToB, NAL.STAMP_CAPACITY);
     }
@@ -159,7 +170,6 @@ public interface Stamp {
      * assumes a and b are already sorted in increasing order
      * the later-created task should be in 'b'
      */
-    /*@NotNull*/
     static long[] zip(long[] a, long[] b, float aToB, int maxLen, boolean newToOld) {
 
 //        if (a.length == 0 || a == Stamp.UNSTAMPED_OVERLAPPING) {
@@ -478,13 +488,6 @@ public interface Stamp {
         return x!=null && overlap(x, y);
     }
 
-    static boolean overlap(Task x, Task y) {
-        return x == y || (x.intersects((LongInterval) y) && overlapAny(x, y));
-    }
-
-    static boolean overlapAny(Stamp x, Stamp y) {
-        return overlapsAny(x.stamp(), y.stamp());
-    }
 
     long creation();
 

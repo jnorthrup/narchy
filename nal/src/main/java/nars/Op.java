@@ -19,6 +19,7 @@ import nars.term.atom.Int;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
+import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.var.UnnormalizedVariable;
@@ -302,7 +303,9 @@ public enum Op {
     /**
      * re-initialized in NAL
      */
-    public static TermBuilder terms = HeapTermBuilder.the;
+    public static TermBuilder terms =
+        //HeapTermBuilder.the;
+        new MemoizingTermBuilder();
 
 
     static {
@@ -314,12 +317,10 @@ public enum Op {
         }
 
         final Map<String, Op> _stringToOperator = new HashMap<>(values().length * 2);
-
-
-        for (Op r : Op.values()) {
+        for (Op r : Op.values())
             _stringToOperator.put(r.toString(), r);
 
-        }
+
         stringToOperator = Maps.immutable.ofMap(_stringToOperator);
 
 

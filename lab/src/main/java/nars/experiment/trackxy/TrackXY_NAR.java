@@ -22,7 +22,6 @@ import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
-import org.eclipse.collections.impl.block.factory.Comparators;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.GraphEdit2D;
@@ -33,12 +32,11 @@ import tech.tablesaw.api.Table;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static java.util.stream.Collectors.toList;
 import static jcog.Texts.n2;
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 public class TrackXY_NAR extends GameX {
 

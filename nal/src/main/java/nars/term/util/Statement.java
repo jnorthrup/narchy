@@ -125,7 +125,7 @@ public class Statement {
                         Term newSubj;
                         int newDT;
                         if (bothXternal) {
-                            newSubj = CONJ.the(B, XTERNAL, subject, inner);
+                            newSubj = B.conj(XTERNAL, subject, inner);
                             newDT = XTERNAL;
                         } else {
                             newSubj = B.conjAppend(subject, dt, inner);
