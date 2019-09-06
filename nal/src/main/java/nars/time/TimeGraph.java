@@ -1195,49 +1195,43 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	@Deprecated
 	private static Term dt(Compound x, boolean dir, int dt) {
 
-		assert (dt != XTERNAL);
+		assert (dt != XTERNAL && dt!=DTERNAL);
 		Op xo = x.op();
 
 		if (xo == IMPL) { // || dt == DTERNAL || dt == 0) {
 			return x.dt(dt);
 		} else if (xo == CONJ) {
 
-
-//            if (dt == 0) {
-//                return x.dt(dt);
-//            } else {
-			{
-
-				Subterms xx = x.subterms();
-				Term xEarly, xLate;
-				if (x.dt() == XTERNAL) {
-
-					//use the provided 'path' and 'dir'ection, if non-null, to correctly order the sequence, which may be length>2 subterms
-					Term x0 = xx.sub(0);
-					Term x1 = xx.sub(1);
-
-					if (dir) {
-						xEarly = x0;
-						xLate = x1;
-					} else {
-						xEarly = x1;
-						xLate = x0;
-						dt = -dt;
-					}
+			Subterms xx = x.subterms();
+			Term xEarly, xLate;
+			if (x.dt() == XTERNAL) {
 
 
+				//use the provided 'path' and 'dir'ection, if non-null, to correctly order the sequence, which may be length>2 subterms
+				Term x0 = xx.sub(0);
+				Term x1 = xx.sub(1);
+
+				if (dir) {
+					xEarly = x0;
+					xLate = x1;
 				} else {
-
-					int early = Conj.conjEarlyLate(x, true);
-					if (early == 1)
-						dt = -dt;
-
-					xEarly = xx.sub(early);
-					xLate = xx.sub(1 - early);
+					xEarly = x1;
+					xLate = x0;
+					dt = -dt;
 				}
 
-				return terms.conjAppend(xEarly, dt, xLate);
+
+			} else {
+
+				int early = Conj.conjEarlyLate(x, true);
+				if (early == 1)
+					dt = -dt;
+
+				xEarly = xx.sub(early);
+				xLate = xx.sub(1 - early);
 			}
+
+			return terms.conjAppend(xEarly, dt, xLate);
 		}
 
 		throw new UnsupportedOperationException();

@@ -3,14 +3,14 @@
 //Set Questions
 
     //was: BeliefIdentity
-    ([A] <-> [B]), (A <-> B), task("?") |- polarizeBelief(([A] <-> [B])), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief)
-    ({A} <-> {B}), (A <-> B), task("?") |- polarizeBelief(({A} <-> {B})), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief)
+    ([A] <-> [B]), (A <-> B), task("?") |- polarizeBelief(([A] <-> [B])), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief, Time:Belief)
+    ({A} <-> {B}), (A <-> B), task("?") |- polarizeBelief(({A} <-> {B})), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief, Time:Belief)
 
-    ([A] --> [B]), (A <-> B), task("?") |- polarizeBelief(([A] --> [B])), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief)
-    ({A} --> {B}), (A <-> B), task("?") |- polarizeBelief(({A} --> {B})), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief)
+    ([A] --> [B]), (A <-> B), task("?") |- polarizeBelief(([A] --> [B])), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief, Time:Belief)
+    ({A} --> {B}), (A <-> B), task("?") |- polarizeBelief(({A} --> {B})), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief, Time:Belief)
 
-    ([A] --> [B]), (A --> B), task("?") |- polarizeBelief(([A] --> [B])), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief)
-    ({A} --> {B}), (A --> B), task("?") |- polarizeBelief(({A} --> {B})), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief)
+    ([A] --> [B]), (A --> B), task("?") |- polarizeBelief(([A] --> [B])), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief, Time:Belief)
+    ({A} --> {B}), (A --> B), task("?") |- polarizeBelief(({A} --> {B})), (Belief:BeliefStructuralDeductionDD, Punctuation:Belief, Time:Belief)
 
 //2-element set choice unwrap to disjunction (dichotomy)
 //    (X-->Y),  ({A,B}-->Y), task("?@")   |- ((A-->Y) || (B-->Y))

@@ -189,18 +189,18 @@ public class Taskify extends ProxyTerm {
 //        if (punc == GOAL && d.taskPunc == GOAL) {
 //            //check for contradictory goal derivation
 //            if (LongInterval.minTimeTo(d._task, start, end) < d.dur() + d.taskTerm.eventRange() + x.unneg().eventRange()) {
-//                Term posTaskGoal = d.taskTerm.negIf(d.taskTruth.isNegative());
+//                Term posTaskGoal = d._task.term().negIf(d.taskTruth.isNegative());
 //                Term antiTaskGoal = posTaskGoal.neg();
-//                Term cc = x.negIf(d.concTruth.isNegative());
+//                Term cc = x.negIf(d.truth.isNegative());
 //
 //                if (
 //                    cc.equals(antiTaskGoal)
-//                    //|| (cc.op() == CONJ && Conj.containsEvent(cc, antiTaskGoal))
-//                    //|| (posTaskGoal.op() == CONJ && Conj.containsEvent(posTaskGoal, cc.neg()))
+//                    || (Conj.eventOf(cc, antiTaskGoal))
 //                ) {
-//                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
-//                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
-//                    return;
+//                    System.err.println(d._task + " " + x);
+////                    nar.emotion.deriveFailTaskifyGoalContradiction.increment();
+////                    spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
+////                    return;
 //                }
 //            }
 //        }

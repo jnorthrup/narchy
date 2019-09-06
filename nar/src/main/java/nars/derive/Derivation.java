@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
-import jcog.math.Longerval;
 import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.NAR;
@@ -86,7 +85,7 @@ public class Derivation extends PreDerivation {
         }
     };
     public final Occurrify occ = new Occurrify(this);
-    public final long[] taskBelief_TimeIntersection = new long[2];
+//    public final long[] taskBelief_TimeIntersection = new long[2];
     public final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
@@ -357,19 +356,19 @@ public class Derivation extends PreDerivation {
     void preReady() {
 
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
-        if (eternalCompletely) {
-            this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = ETERNAL;
-        } else if ((_belief != null) && taskStart == ETERNAL) {
-            this.taskBelief_TimeIntersection[0] = beliefStart;
-            this.taskBelief_TimeIntersection[1] = beliefEnd;
-        } else if ((_belief == null) || beliefStart == ETERNAL) {
-            this.taskBelief_TimeIntersection[0] = taskStart;
-            this.taskBelief_TimeIntersection[1] = taskEnd;
-        } else /*if (_belief != null)*/ {
-            if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBelief_TimeIntersection)) {
-                this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = TIMELESS; //no intersection
-            }
-        }
+//        if (eternalCompletely) {
+//            this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = ETERNAL;
+//        } else if ((_belief != null) && taskStart == ETERNAL) {
+//            this.taskBelief_TimeIntersection[0] = beliefStart;
+//            this.taskBelief_TimeIntersection[1] = beliefEnd;
+//        } else if ((_belief == null) || beliefStart == ETERNAL) {
+//            this.taskBelief_TimeIntersection[0] = taskStart;
+//            this.taskBelief_TimeIntersection[1] = taskEnd;
+//        } else /*if (_belief != null)*/ {
+//            if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBelief_TimeIntersection)) {
+//                this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = TIMELESS; //no intersection
+//            }
+//        }
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
 
 
@@ -493,7 +492,7 @@ public class Derivation extends PreDerivation {
         ttl = 0;
         taskUniqueAnonTermCount = 0;
         temporal = false;
-        taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
+//        taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
         nar = null;
 
         //clear();
@@ -534,17 +533,8 @@ public class Derivation extends PreDerivation {
         use(NAL.derive.TTL_COST_DERIVE_TASK);
     }
 
-    public boolean doubt(float ratio, boolean eternalize) {
-//        if (concTruth == null)
-//            return true; //not belief/goal
-
-        if (Util.equals(ratio, 1f))
-            return true; //no change
-
-        double e = ratio * truth.evi();
-        if (eternalize)
-            e = Math.max(truth.eviEternalized(), e);
-        return concTruthEvi(e);
+    public boolean doubt(float ratio) {
+        return Util.equals(ratio, 1f) || concTruthEvi(ratio * truth.evi());
     }
 
     private boolean concTruthEvi(double e) {

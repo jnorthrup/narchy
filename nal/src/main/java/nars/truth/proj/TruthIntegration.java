@@ -97,7 +97,7 @@ public class TruthIntegration {
 
 	/** for ranking relative relevance of tasks with respect to a time point */
 	public static double eviFast(Task t, long now) {
-		return t.range() * t.evi() / (1 + 2 * Math.max(now - t.start(), now - t.end())); //penalize long tasks even if they surround now evenly
+		return t.range() * t.evi() / (1 + Math.max(now - t.start(), now - t.end())); //penalize long tasks even if they surround now evenly
 		///return t.range() * t.evi() / (1 + t.maxTimeTo(now));
 		//return NAL.evi(t.range() * t.evi(), t.meanTimeTo(now), 1.0f);
 		//return t.range() * t.evi() / (1 + t.meanTimeTo(now));

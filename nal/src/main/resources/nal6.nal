@@ -35,7 +35,7 @@
 
 
        //second layer
-       B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,polarizeBelief(X),A..+),C,  polarizeTask(B),novel), (Belief:DeductionDD)
+       B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,polarizeBelief(X),A..+),C,  polarizeTask(B),novel), (Belief:DeductionDD, Time:TaskEvent)
 
 
 //            //--is(A,"#"),
@@ -186,8 +186,8 @@
 
     //TODO DynamicImplTruth
 
-     (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Compose)
-       (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Compose)
+     (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
+       (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
        (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)

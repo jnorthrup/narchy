@@ -293,7 +293,7 @@ abstract public class GameX extends Game {
         return new NARS()
 
                 .what(
-                        (w) -> new TaskLinkWhat(w, 256,
+                        (w) -> new TaskLinkWhat(w, 512,
                                 //1024,
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
                                 new PriBuffer.DirectTaskBuffer()

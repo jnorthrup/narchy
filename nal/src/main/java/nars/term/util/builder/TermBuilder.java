@@ -37,9 +37,6 @@ import static nars.time.Tense.XTERNAL;
  */
 public abstract class TermBuilder implements TermConstructor {
 
-
-
-
     public final Term newCompound(Op o, int dt, Term... u) {
         return newCompound(o, dt, u, null);
     }
@@ -84,8 +81,6 @@ public abstract class TermBuilder implements TermConstructor {
         return subterms(o, t);
     }
 
-
-
     public static Compound newCompound(Op op, Subterms subterms) {
         return newCompound(op, DTERNAL, subterms);
     }
@@ -94,17 +89,13 @@ public abstract class TermBuilder implements TermConstructor {
         return CachedCompound.newCompound(op, dt, subterms);
     }
 
-
-
-
     public Term normalize(Compound x, byte varOffset) {
 
         CompoundNormalization c = new CompoundNormalization(x, varOffset);
         Term y = c.apply(x); //x.transform();
 
-        if (varOffset == 0 && y instanceof Compound) {
+        if (varOffset == 0 && y instanceof Compound)
             y.subterms().setNormalized();
-        }
 
         return y;
     }
@@ -119,9 +110,8 @@ public abstract class TermBuilder implements TermConstructor {
 
     protected Term conj(boolean preSorted, int dt, Term[] u) {
 
-        if (u.length>0 && u[u.length-1] instanceof Interval) {
+        if (u.length>0 && u[u.length-1] instanceof Interval)
             return new Sequence(subterms(u));
-        }
 
         if (!preSorted)
             u = ConjBuilder.preSort(dt, u);
@@ -132,14 +122,7 @@ public abstract class TermBuilder implements TermConstructor {
 
             case 1:
                 Term only = u[0];
-//                if (only instanceof EllipsisMatch)
-//                    return conj(dt, only.arrayShared());
-//                else
-                //special case
-                if (only instanceof Ellipsislike){
-                    return newCompound(CONJ, dt, only);
-                } else
-                    return only;
+                return only instanceof Ellipsislike ? newCompound(CONJ, dt, only) : only;
         }
 
         switch (dt) {
@@ -147,9 +130,8 @@ public abstract class TermBuilder implements TermConstructor {
             case 0:
                 return ConjPar.the(this, dt,false, u);
 
-            case XTERNAL: {
+            case XTERNAL:
                 return ConjPar.theXternal(this, u);
-            }
 
             default: {
                 if (u.length != 2)
@@ -162,19 +144,30 @@ public abstract class TermBuilder implements TermConstructor {
 
     /** attaches two events together with dt separation */
     public Term conjAppend(Term a, int dt, Term b) {
-        if ((dt == 0 && a.eventRange()==0 && b.eventRange()==0) || dt == XTERNAL)
-            return conj(dt, a, b);
+        if (dt == XTERNAL)
+            return ConjPar.theXternal(Op.terms, a, b);
 
-        return (dt >= 0) ?
-                ConjSeq.sequence(a, 0, b, +dt + a.eventRange(), this) :
-                ConjSeq.sequence(b, 0, a, -dt + b.eventRange(), this);
+        int aRange = a.eventRange(), bRange = b.eventRange();
+
+        if (dt == 0 && aRange == 0 && bRange == 0)
+            return conj(dt, a, b);
+        else
+            return (dt >= 0) ?
+                    ConjSeq.sequence(a, 0, b, +dt + aRange, this) :
+                    ConjSeq.sequence(b, 0, a, -dt + bRange, this);
     }
-    /** merges two events with a dt offset applied to 'b' relative to a */
-    public Term conjMerge(Term a, int dt, Term b) {
-        if ((dt == 0 && a.eventRange()==0 && b.eventRange()==0) || dt == XTERNAL)
-            return conj(dt, a, b);
 
-        return ConjSeq.sequence(a, 0, b, dt, this);
+    /** merges two events with a dt offset applied to 'b' relative to a */
+    @Deprecated public Term conjMerge(Term a, int dt, Term b) {
+        if (dt == XTERNAL)
+            return ConjPar.theXternal(Op.terms, a, b);
+
+        int aRange = a.eventRange(), bRange = b.eventRange();
+
+        if (dt == 0 && aRange == 0 && bRange == 0)
+            return conj(dt, a, b);
+        else
+            return ConjSeq.sequence(a, 0, b, dt, this);
     }
 
     public Term root(Compound x) {
@@ -186,7 +179,7 @@ public abstract class TermBuilder implements TermConstructor {
                 );
     }
 
-    public Term concept(Compound x) {
+    public static Term concept(Compound x) {
         Term term = x.unneg().root().normalize();
 
         if (term instanceof Neg || !x.op().conceptualizable)

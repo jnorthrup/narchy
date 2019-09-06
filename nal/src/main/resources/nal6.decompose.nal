@@ -7,8 +7,8 @@
 
 
     //question short-circuit answer
-    C, X, task("?"), eventOf(C,X)                 |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief, Time:TaskEvent)
-    C, X, task("?"), eventOfNeg(C,X), has(C,"--") |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief, Time:TaskEvent)
+    C, X, task("?"), eventOf(C,X)                 |- --C,  (Belief:BeliefStructuralDeductionPN, Punctuation:Belief, Time:BeliefEvent)
+    C, X, task("?"), eventOfNeg(C,X), has(C,"--") |-   C,  (Belief:BeliefStructuralDeductionPP, Punctuation:Belief, Time:BeliefEvent)
         //TODO other short-circuits, involving ==> etc
 
 

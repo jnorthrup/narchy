@@ -31,8 +31,8 @@
 //      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
 
-      (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
-      (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak)
+      (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
+      (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
 
 //Structural Analogy
       ((A-->B) <-> (A-->C)), ((A-->B) <-> (A-->C)), neqRCom(S,P) |- (B <-> C), (Belief:StructuralReductionWeak, Goal:StructuralReductionWeak)

@@ -306,7 +306,7 @@ public enum ConjPar {
     }
 
 
-    public static Term theXternal(TermBuilder b, Term[] u) {
+    public static Term theXternal(TermBuilder b, Term... u) {
         int ul = u.length;
         Term[] args;
         switch (ul) {

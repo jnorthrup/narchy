@@ -8,8 +8,8 @@ X, (--C==>A), eventOfPN(C,X), task("?@"), hasBelief()  |-  (--conjWithoutPN(C, X
 //Anonymous Analogy (NAL5)
 //  originally this only unified depvar (dep var elimination)
 //  TODO merge these ules into one, requires a variation on unisubst that can apply chooseUnifiableSubEvent in 2 ways
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,Y)), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
-C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,--Y)), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,Y)), (Belief:AnonymousAnalogyPP, Time:BeliefEvent)
+C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithoutUnify(C,chooseUnifiableSubEvent(C,--Y)), (Belief:AnonymousAnalogyPN, Time:BeliefEvent)
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y)               |- unisubst(C,chooseUnifiableSubEvent(C,Y),Y,"#",novel), (Belief:AnonymousAnalogyPP, Time:TaskEvent)
     //C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- unisubst(C,chooseUnifiableSubEvent(C,--Y),--Y,"#",novel), (Belief:AnonymousAnalogyPN, Time:TaskEvent)
         //Goal: ?
@@ -21,8 +21,8 @@ C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:As
 ((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDD, Time:TaskEvent)
 
     //Conditional Abduction via Multi-conditional Syllogism
-    (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:Task)
-    (C ==> X), (--E ==> Y), eventOfNeg(C,E) |-    conjWithout(C,--E), (Belief:AbductionPB, Time:Task)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:Compose)
+    (C ==> X), (--E ==> Y), eventOfNeg(C,E) |-    conjWithout(C,--E), (Belief:AbductionPB, Time:Compose)
       //(E ==> Y), (C ==> X), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPBX)
       //(--E ==> Y), (C ==> X), eventOfNeg(C,E)      |-    conjWithout(C,--E), (Belief:AbductionPBX)
 

@@ -1,5 +1,6 @@
 package nars.derive.op;
 
+import jcog.TODO;
 import jcog.data.set.ArrayHashSet;
 import jcog.decide.Roulette;
 import jcog.math.LongInterval;
@@ -103,64 +104,73 @@ public class Occurrify extends TimeGraph {
 
     private static long[] rangeCombine(Derivation d, OccMerge mode) {
 
+        final long taskEnd = d.taskEnd;
+        final long taskStart = d.taskStart;
+        final long beliefStart = d.beliefStart;
+
         if (d.single || d.beliefStart == ETERNAL)
-            return new long[] { d.taskStart, d.taskEnd };
-        else if (d.taskStart == ETERNAL) {
-//            assert(d.beliefStart!=TIMELESS);
-            return new long[]{d.beliefStart, d.beliefEnd};
-        } else {
-            long taskStart = d.taskStart;
-            long beliefStart = d.beliefStart;
+            return new long[] { d.taskStart, taskEnd};
+        else {
+            final long beliefEnd = d.beliefEnd;
+            if (d.taskStart == ETERNAL) {
+    //            assert(d.beliefStart!=TIMELESS);
+                return new long[]{d.beliefStart, beliefEnd};
+            } else {
 
-            long start;
-            switch (mode) {
-                case Earliest:
-                    start = Math.min(taskStart, beliefStart);
-                    break;
-                case Task:
-//                    if ((d.punc == QUESTION || d.punc == QUEST) && (d.taskPunc == QUESTION || d.taskPunc == QUEST))
-//                        start = beliefStart; //follow the non-question part of a question progression
-//                    else
-                    start = taskStart;
-                    break;
-                case Belief:
-                    start = beliefStart;
-                    break;
-                case Union:
-                    return LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
-                case Intersect: {
-                    long[] i = d.taskBelief_TimeIntersection;
-//                    if (i[0] == TIMELESS)
-//                        throw new WTF("intersection filter failure");
-
-//                    if (d.concPunc == BELIEF || d.concPunc == GOAL) {
-//                        long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
-//                        long uRange = i[1] - i[0];
-//                        double pct = (1 + iRange) / (1.0 + uRange);
+                long start;
+                switch (mode) {
+                    case Earliest:
+                        start = Math.min(taskStart, beliefStart);
+                        break;
+                    case Task:
+    //                    if ((d.punc == QUESTION || d.punc == QUEST) && (d.taskPunc == QUESTION || d.taskPunc == QUEST))
+    //                        start = beliefStart; //follow the non-question part of a question progression
+    //                    else
+                        start = taskStart;
+                        break;
+                    case Belief:
+                        start = beliefStart;
+                        break;
+                    case Union:
+                        return LongInterval.union(taskStart, taskEnd, beliefStart, beliefEnd).toArray();
+                    case Intersect:
+                        throw new TODO();
+//                        long[] i = d.taskBelief_TimeIntersection;
+//    //                    if (i[0] == TIMELESS)
+//    //                        throw new WTF("intersection filter failure");
 //
-//                    }
-                    return i;
-                }
-                case UnionDilute: {
-                    long[] u = LongInterval.union(taskStart, d.taskEnd, beliefStart, d.beliefEnd).toArray();
-                    if (d.isBeliefOrGoal()) {
-                        long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
-                        long uRange = u[1] - u[0];
-                        double pct = (1 + iRange) / (1.0 + uRange);
-                        if (!d.doubt((float) pct, false))
-                            return null;
-                    }
-                    return u;
-                }
-                default:
-                    throw new UnsupportedOperationException();
-            }
+//    //                    if (d.concPunc == BELIEF || d.concPunc == GOAL) {
+//    //                        long iRange = LongInterval.intersectLength(taskStart, d.taskEnd, beliefStart, d.beliefEnd);
+//    //                        long uRange = i[1] - i[0];
+//    //                        double pct = (1 + iRange) / (1.0 + uRange);
+//    //
+//    //                    }
+//                        return i;
 
-            //minimum range
-            return new long[]{
-                    start,
-                    start + Math.min(d.taskEnd - taskStart, d.beliefEnd - beliefStart)
-            };
+                    case UnionDilute: {
+                        long[] u = LongInterval.union(taskStart, taskEnd, beliefStart, beliefEnd).toArray();
+                        if (d.isBeliefOrGoal()) {
+                            long tRange = taskEnd - taskStart, bRange = beliefEnd - beliefStart;
+                            long uRange = u[1] - u[0];
+                            //long iRange = LongInterval.intersectLength(taskStart, taskEnd, beliefStart, beliefEnd);
+                            double pct = (1 + tRange + bRange) / (1.0 + uRange*2);
+                            assert(pct <= 1.0);
+
+                            if (!d.doubt((float) pct))
+                                return null;
+                        }
+                        return u;
+                    }
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+
+                //minimum range
+                return new long[]{
+                        start,
+                        start + Math.min(taskEnd - taskStart, beliefEnd - beliefStart)
+                };
+            }
         }
     }
 
@@ -372,38 +382,6 @@ public class Occurrify extends TimeGraph {
 
     public enum OccurrenceSolver {
 
-        /**
-         * TaskRange is a specialization of Task timing that applies a conj's range to the result, effectively a union across its dt span
-         */
-        TaskRange() {
-            @Override
-            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
-                return solveDT(d, x, true);
-            }
-
-            @Override
-            long[] occurrence(Derivation d) {
-                assert (d.taskTerm.op() == CONJ);
-
-                if (d.taskStart != ETERNAL) {
-                    int r = d.taskTerm.eventRange();
-                    long[] o = new long[]{d.taskStart, r + d.taskEnd};
-
-
-                    if (r > 0 && d.isBeliefOrGoal()) {
-                        //HACK decrease evidence by proportion of time expanded
-                        float ratio = (float) (((double) (1 + d.taskEnd - d.taskStart)) / (1 + o[1] - o[0]));
-                        if (!d.doubt(ratio, false))
-                            return null;
-                    }
-
-                    return o;
-                } else {
-                    return new long[]{ETERNAL, ETERNAL};
-                }
-            }
-
-        },
 
 
         Default() {
@@ -416,13 +394,19 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccMerge.Task);
             }
+
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
+            }
         },
 
         /** composition of non-events to a single outcome event.  a simplified version of Default */
         Compose() {
-            final BeliefProjection PROJ = BeliefProjection.Task;
 
             final OccMerge combine = NAL.OCCURRIFY_COMPOSE_UNION_DILUTE ? OccMerge.UnionDilute : OccMerge.Task;
+
+            final BeliefProjection PROJ = combine == OccMerge.Task ? BeliefProjection.Task : BeliefProjection.Belief;
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
@@ -436,10 +420,7 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d,
-                        combine
-
-                );
+                return rangeCombine(d, combine);
             }
 
 
@@ -512,6 +493,10 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccMerge.Task);
             }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
+            }
         },
         /** task modulates the truth but the occurrence time to be solved should depend on the belief */
         BeliefEvent() {
@@ -523,7 +508,11 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, OccMerge.Belief);
+                return rangeCombine(d, OccMerge.Task);
+            }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
             }
         },
 
@@ -618,7 +607,26 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, OccMerge.Task);
             }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
+            }
+        },
+        Belief() {
+            @Override
+            public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                return solveDT(d, x, true);
+            }
 
+            @Override
+            long[] occurrence(Derivation d) {
+                return rangeCombine(d, OccMerge.Belief);
+            }
+
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Belief;
+            }
         },
 
         ;
@@ -712,9 +720,7 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-        public BeliefProjection beliefProjection() {
-            return BeliefProjection.Task;
-        }
+        abstract public BeliefProjection beliefProjection();
     }
 
     /** semi-auto-unneg to help occurrify */
@@ -776,8 +782,8 @@ public class Occurrify extends TimeGraph {
 //        },
     }
 
-    private static final Predicate<Derivation> intersection = d ->
-        d.taskBelief_TimeIntersection[0] != TIMELESS;
+//    private static final Predicate<Derivation> intersection = d ->
+//        d.taskBelief_TimeIntersection[0] != TIMELESS;
 
     private static final Predicate<Derivation> differentTermsOrTimes = d ->
         !d.taskTerm.equals(d.beliefTerm) || Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT);

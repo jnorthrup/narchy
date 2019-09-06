@@ -3,10 +3,10 @@
 ////  If S can stand for P, P can to a certain low degree also represent the class S
 ////  If after S usually P happens, then it might be a good guess that usually before P happens, S happens.
 //
-    (  P ==> S), (  S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-     (P ==>   S),   (Belief:ConversionPP, Punctuation:Belief, Time:Task)
-    (--P ==> S), (  S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-   (--P ==>   S),   (Belief:ConversionPN, Punctuation:Belief, Time:Task)
-    (  P ==> S), (--S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-     (P ==> --S),   (Belief:ConversionPP, Punctuation:Belief, Time:Task)
-    (--P ==> S), (--S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-   (--P ==> --S),   (Belief:ConversionPN, Punctuation:Belief, Time:Task)
+    (  P ==> S), (  S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-     (P ==>   S),   (Belief:ConversionPP, Punctuation:Belief, Time:Compose)
+    (--P ==> S), (  S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-   (--P ==>   S),   (Belief:ConversionPN, Punctuation:Belief, Time:Compose)
+    (  P ==> S), (--S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-     (P ==> --S),   (Belief:ConversionPP, Punctuation:Belief, Time:Compose)
+    (--P ==> S), (--S ==> P), task("?"), --isVar(P), --isVar(S), hasBelief()   |-   (--P ==> --S),   (Belief:ConversionPN, Punctuation:Belief, Time:Compose)
 
 
 // Contraposition (structural)

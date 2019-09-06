@@ -86,14 +86,14 @@ public enum Conj {
      *                 TODO test for subsequences
      */
     public static boolean eventOf(Term container, Term _x, long when, int polarity) {
-        if (container.op() != CONJ)
+        if (container.opID() != CONJ.id)
             return false;
 
         Term x;
         if (polarity == 0)
             throw new TODO();
         else if (polarity == -1) {
-            if (!container.hasAny(Op.NEG))
+            if (!container.hasAny(Op.NEG.bit))
                 return false;
             x = _x.neg();
         } else

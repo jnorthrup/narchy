@@ -147,7 +147,7 @@ public class Premise  {
 		}
 
 		Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm;//.unneg();
-		if (NAL.DEBUG) {
+		if (NAL.test.DEBUG_EXTRA) {
 			if (nextBeliefTerm.volume() > d.termVolMax)
 				throw new TermException("excessive volume", nextBeliefTerm); //return null; //WTF
 		}

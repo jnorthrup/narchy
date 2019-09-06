@@ -100,7 +100,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 1.5f;
+    public static final float ANSWER_TRYING = 4f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = false;
@@ -215,7 +215,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  TODO DiluteUnion will require reprojection of the task and the belief to their temporal midpoint
      *  this requires changes to Derivation
      * */
-    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = false;
+    public static final boolean OCCURRIFY_COMPOSE_UNION_DILUTE = true;
 
     /** probability of unifying subterms randomly (not using any heuristics as usual) */
     public static final float SUBTERM_UNIFY_ORDER_RANDOM_PROBABILITY = 0.05f;
