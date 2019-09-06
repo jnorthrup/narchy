@@ -4,6 +4,8 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
      B, (X ==> A), --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
+       (X ==> A), B, --is(X,"#"), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeakX, Time:BeliefEvent)
+
        //goal only:
        //B, (X ==> A), --is(X,"#"), --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostWeakPN, Time:TaskEvent)
 
@@ -184,11 +186,11 @@
 
     //TODO DynamicImplTruth
 
-     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
-       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAll, Time:Compose)
+     (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Compose)
+       (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Compose)
 
-//     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
-//       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
+     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
+       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
 
 //        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)
 

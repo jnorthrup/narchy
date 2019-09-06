@@ -29,9 +29,7 @@ public class UnifyAny extends Unify {
     public boolean unifies(Term x, Term y) {
         clear();
         int matchesBefore = matches;
-        if (!unify(x, y))
-            return false;
-        return (matchesBefore < matches);
+        return unify(x, y) && matchesBefore < matches;
     }
 
 }

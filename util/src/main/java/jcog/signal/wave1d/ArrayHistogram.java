@@ -26,7 +26,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         range(0,1);
     }
 
-    public ArrayHistogram(float min, float max, int bins) {
+    public ArrayHistogram(float min, float max) {
         range(min, max);
     }
 

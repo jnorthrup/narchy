@@ -6,6 +6,7 @@ import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.hypothesis.ExhaustiveIndexer;
 import nars.derive.hypothesis.FirstOrderIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
@@ -19,7 +20,8 @@ import java.io.IOException;
 import java.util.List;
 
 import static nars.$.$$;
-import static nars.Op.*;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 @Disabled
 class KIFTest {
@@ -36,22 +38,26 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
 
-        new Deriver(Derivers.nal(n, 1,8), new FirstOrderIndexer());
+        new Deriver(Derivers.nal(n, 1,8),
+            //new FirstOrderIndexer()
+            new ExhaustiveIndexer()
+            );
+//        new Deriver(Derivers.nal(n, 1,8), new CommonAtomIndexer());
 
 //        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
 //            //new Hypothesizer.ExhaustiveIndexSnapshotter()
 //            new FirstOrderIndexer()
 //        ); // ~= PROLOG
 
-        n.termVolMax.set(96);
-        n.beliefPriDefault.amp(0.01f);
-        n.time.dur(100);
+        n.termVolMax.set(64);
+//        n.beliefPriDefault.amp(0.01f);
+        n.time.dur(1);
 
 
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
         TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));
-        w.links.links.capacity(256);
+        w.links.links.capacity(512);
 
 
         //                //"/home/me/sumo/Merge.kif";
@@ -65,7 +71,7 @@ class KIFTest {
             .map(x -> {
                 try {
                     KIF k = KIF.file(x);
-                    k.tasks.forEach(System.out::println);
+//                    k.tasks.forEach(System.out::println);
                     return k;
                 } catch (IOException e) {
                     e.printStackTrace();
@@ -86,11 +92,11 @@ class KIFTest {
         w.clear();
         w.onTask(t->System.out.println(t.toString(true)));
         //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
-        w.accept(new EternalTask($$("patient(#p,#a)"), BELIEF, $.t(0, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.01f));
-        w.accept(new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.01f));
+        w.accept(new EternalTask($$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.t(1, 0.9f), n).priSet(0.1f));
+        w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.5f));
+        w.accept(new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n).priSet(0.5f));
+        w.accept(new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.05f));
+        w.accept(new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.05f));
         //w.accept(new EternalTask($$("(#x --> Death)"), GOAL, $.t(0, 0.9f), n).priSet(1));
         //w.accept(new EternalTask($$("(?x ==> (?y --> Damaging))"), QUESTION, null, n).priSet(1));
         //n.input("$1.0 possesses(I,#everything)!");

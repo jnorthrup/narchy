@@ -212,23 +212,22 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //    /**
 //     * recursively
 //     */
-//    /*@NotNull*/
-//    static boolean hasCommonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
-//
-//        Subterms aa = a.subterms();
-//        Subterms bb = b.subterms();
-//
-//        int commonStructure = aa.structure() & bb.structure();
-//        if (excludeVariables)
-//            commonStructure = commonStructure & ~(Op.Variable);
-//
-//        if (commonStructure == 0)
-//            return false;
-//
-//        Set<Term> scratch = new UnifiedSet<>(4);
-//        aa.recurseSubtermsToSet(commonStructure, scratch, true);
-//        return bb.recurseSubtermsToSet(commonStructure, scratch, false);
-//    }
+    static boolean commonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
+
+        Subterms aa = a.subterms();
+        Subterms bb = b.subterms();
+
+        int commonStructure = aa.structure() & bb.structure();
+        if (excludeVariables)
+            commonStructure = commonStructure & ~(Op.Variable) & AtomicConstant;
+
+        if (commonStructure == 0)
+            return false;
+
+        Set<Term> scratch = new UnifiedSet<>(4);
+        aa.recurseSubtermsToSet(commonStructure, scratch, true);
+        return bb.recurseSubtermsToSet(commonStructure, scratch, false);
+    }
 
 //    /*@NotNull*/
 //    static boolean commonSubterms(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, boolean excludeVariables) {

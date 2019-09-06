@@ -55,7 +55,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private final MySortedListTable table;
 
 
-    private final ArrayHistogram hist = new ArrayHistogram(0, 1, 0);
+    private final ArrayHistogram hist = new ArrayHistogram();
 
 
     ArrayBag(PriMerge merge, Map<X, Y> map) {
