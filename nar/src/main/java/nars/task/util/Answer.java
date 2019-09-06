@@ -94,10 +94,11 @@ public final class Answer implements Timed, Predicate<Task> {
         return (float)(evidence(t, dur) / (1 + distanceMin(t, qStart, qEnd)));
     }
 
-    public static FloatFunction<TaskRegion> regionNearness(long qStart, long qEnd) {
+    /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
+    public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd, float confPerTime) {
         return qStart == qEnd ?
-            (x -> -distanceMin(x, qStart)) :
-            (x -> -((float) distanceMin(x, qStart, qEnd))) ;
+            ((x,min) -> -distanceMin(x, qStart) + x.confMax() * confPerTime) :
+            ((x,min) -> -((float) distanceMin(x, qStart, qEnd)) + x.confMax() * confPerTime) ;
     }
 
     /** temporal distance to point magnitude */

@@ -20,7 +20,7 @@ public class Atom extends AbstractAtomic implements The {
 //    }
 
     public Atom(String id) {
-        super(ATOM, id);
+        super((byte)0 /* = ATOM.id */, id);
     }
 
     static void validateAtomID(String id) {

@@ -4,6 +4,8 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Arrays;
 
+import static java.lang.Float.NEGATIVE_INFINITY;
+
 /** caches the rank inside a Ranked instance for fast entry comparison as each entry
  * TODO maybe make autocloseable to enforce .clear (aka .close()) for returning Ranked to pools
  * */
@@ -83,6 +85,7 @@ public class RankedN<X> extends TopN<X> {
                 System.arraycopy(value, index + 1, value, index, totalOffset);
             }
             list[SIZE.decrementAndGet(this)] = null;
+            min = NEGATIVE_INFINITY;
             return previous;
         } else
             return null;
@@ -106,7 +109,7 @@ public class RankedN<X> extends TopN<X> {
             super.clear();
             //Arrays.fill(ranked, Float.NEGATIVE_INFINITY);
         }
-        min = Float.NEGATIVE_INFINITY;
+        min = NEGATIVE_INFINITY;
     }
 
 

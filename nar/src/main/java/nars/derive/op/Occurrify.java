@@ -150,15 +150,15 @@ public class Occurrify extends TimeGraph {
                     case UnionDilute: {
                         long[] u = LongInterval.union(taskStart, taskEnd, beliefStart, beliefEnd).toArray();
                         if (d.isBeliefOrGoal()) {
-                            long tRange = taskEnd - taskStart, bRange = beliefEnd - beliefStart;
-                            long uRange = u[1] - u[0];
+                            long tRange = 1 + taskEnd - taskStart, bRange = 1 + beliefEnd - beliefStart;
+                            long uRange = 1 + u[1] - u[0];
                             //long iRange = LongInterval.intersectLength(taskStart, taskEnd, beliefStart, beliefEnd);
-                            double pct = (1 + tRange + bRange) / (1.0 + uRange*2);
+                            double pct = Math.max(tRange, bRange) / (uRange);
                             assert(pct <= 1.0);
 
                             if (!d.doubt((float) pct))
                                 return null;
-                        }
+                        } //TODO else: decrease priority?
                         return u;
                     }
                     default:

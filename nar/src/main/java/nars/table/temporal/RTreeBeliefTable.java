@@ -33,173 +33,191 @@ import static nars.truth.proj.TruthIntegration.eviFast;
 
 public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements TemporalBeliefTable {
 
-    private static final int MAX_TASKS_PER_LEAF = 3;
+	private static final int MAX_TASKS_PER_LEAF = 3;
 
 
-    private int capacity;
+	private int capacity;
 
-    public RTreeBeliefTable() {
-        super(new RTree<>(RTreeBeliefModel.the));
-    }
-
-
-    /**
-     * immediately returns false if space removed at least one as a result of the scan, ie. by removing
-     * an encountered deleted task.
-     */
-    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
-        if (next instanceof RLeaf) {
-
-            RLeaf l = (RLeaf) next;
-            Object[] data = l.data;
-            short s = l.size;
-            for (int i = 0; i < s; i++) {
-                Task x = (Task) data[i];
-                if (x.isDeleted()) {
-                    boolean removed = tree.remove(x);
-                    assert (removed);
-                    return false;
-                }
-
-                weakest.accept(x);
-            }
-
-            if (s >= 2)
-                mergeableLeaf.accept(l);
-
-        } else {
-            for (RNode bb : ((RBranch<TaskRegion>) next).data) {
-
-                if (bb == null) break; //null-terminated
-
-                if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
-                    return false;
-
-            }
-        }
-
-        return true;
-    }
+	public RTreeBeliefTable() {
+		super(new RTree<>(RTreeBeliefModel.the));
+	}
 
 
-    /**
-     * returns true if at least one net task has been removed from the table.
-     */
-    /*@NotNull*/
-    private static void compress(Space<TaskRegion> tree, Remember remember) {
+	/**
+	 * immediately returns false if space removed at least one as a result of the scan, ie. by removing
+	 * an encountered deleted task.
+	 */
+	private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
+		if (next instanceof RLeaf) {
 
-        long now = remember.nar.time();
-        //long tableDur = tableDur(now);
+			RLeaf l = (RLeaf) next;
+			Object[] data = l.data;
+			short s = l.size;
+			for (int i = 0; i < s; i++) {
+				Task x = (Task) data[i];
+				if (x.isDeleted()) {
+					boolean removed = tree.remove(x);
+					assert (removed);
+					return false;
+				}
 
-        Top<Task> weakest = new Top<>(new FurthestWeakest(now, 1));
+				weakest.accept(x);
+			}
+
+			if (s >= 2)
+				mergeableLeaf.accept(l);
+
+		} else {
+			for (RNode bb : ((RBranch<TaskRegion>) next).data) {
+
+				if (bb == null) break; //null-terminated
+
+				if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
+					return false;
+
+			}
+		}
+
+		return true;
+	}
+
+
+	/**
+	 * returns true if at least one net task has been removed from the table.
+	 */
+	/*@NotNull*/
+	private static void compress(Space<TaskRegion> tree, Remember remember) {
+
+		long now = remember.nar.time();
+		//long tableDur = tableDur(now);
+
+		Top<Task> weakest = new Top<>(new FurthestWeakest(now, 1));
 
 		Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<>(
-		    //WeakestTemporallyDense(now)
-            MergeableLeaf
-        );
+			//WeakestTemporallyDense(now)
+			MergeableLeaf
+		);
 
-        if (findEvictable(tree, tree.root(), weakest, mergeableLeaf))
-            compress(tree, weakest, mergeableLeaf, remember);
+		if (findEvictable(tree, tree.root(), weakest, mergeableLeaf))
+			compress(tree, weakest, mergeableLeaf, remember);
 
-    }
+	}
 
-    private static void compress(Space<TaskRegion> treeRW,
-                                         Top<Task> theWeakest,
-                                         Top<RLeaf<TaskRegion>> mergeableLeaf,
-                                         Remember r) {
+	private static void compress(Space<TaskRegion> treeRW,
+								 Top<Task> theWeakest,
+								 Top<RLeaf<TaskRegion>> mergeableLeaf,
+								 Remember r) {
 
-        Task weakest = theWeakest.get();
-        TruthProjection merging = null;
-        Task merged = null;
+		Task weakest = theWeakest.get();
+		TruthProjection merging = null;
+		Task merged = null;
 
-        if (!mergeableLeaf.isEmpty()) {
-            Pair<Task, TruthProjection> AB = mergeLeaf(mergeableLeaf, r);
-            if (AB != null) {
-                if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), r))
-                    merged = null;
-            }
-        }
+		if (!mergeableLeaf.isEmpty()) {
+			Pair<Task, TruthProjection> AB = mergeLeaf(mergeableLeaf, r);
+			if (AB != null) {
+				if (!mergeOrEvict(weakest, merged = Revision.afterMerge(AB), merging = AB.getTwo(), r))
+					merged = null;
+			}
+		}
 
-        if (merged!=null)
-            merge(merged, merging, r, treeRW);
-        else
-            evict(weakest, r, treeRW);
-    }
+		if (merged != null)
+			merge(merged, merging, r, treeRW);
+		else
+			evict(weakest, r, treeRW);
+	}
 
-    @Nullable private static Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
-        RLeaf<TaskRegion> leaf = mergeableLeaf.get();
-        return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
-    }
+	@Nullable
+	private static Pair<Task, TruthProjection> mergeLeaf(Top<RLeaf<TaskRegion>> mergeableLeaf, Remember r) {
+		RLeaf<TaskRegion> leaf = mergeableLeaf.get();
+		return Revision.merge(r.nar, false, 2, leaf.size, leaf.data);
+	}
 
-    private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
-        long now = r.nar.time();
-        double weakEvictionValue = -eviFast(weakest, now);
-        double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
+	private static boolean mergeOrEvict(Task weakest, Task merged, TruthProjection merging, Remember r) {
+		long now = r.nar.time();
+		double weakEvictionValue = -eviFast(weakest, now);
+		double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
 
-        return mergeValue > weakEvictionValue;
-    }
+		return mergeValue > weakEvictionValue;
+	}
 
-    private static void merge(Task merged, TruthProjection merging, Remember r, Space<TaskRegion> treeRW) {
-        for (int i = 0, ababSize = merging.size(); i < ababSize; i++) {
-            if (merging.valid(i)) {
-                Task rr = merging.get(i);
-                if (treeRW.remove(rr))
-                    r.forget(rr);
-            }
-        }
-        if (treeRW.add(merged)) {
-            r.remember(merged);
-        } //else: possibly already contained the merger?
-    }
+	private static void merge(Task merged, TruthProjection merging, Remember r, Space<TaskRegion> treeRW) {
+		for (int i = 0, ababSize = merging.size(); i < ababSize; i++) {
+			if (merging.valid(i)) {
+				Task rr = merging.get(i);
+				if (treeRW.remove(rr))
+					r.forget(rr);
+			}
+		}
+		if (treeRW.add(merged)) {
+			r.remember(merged);
+		} //else: possibly already contained the merger?
+	}
 
-    private static void evict(Task weakest, Remember r, Space<TaskRegion> treeRW) {
-        if (treeRW.remove(weakest)) {
-            r.forget(weakest);
-        } else {
-            //tree may have been cleared/deleted while compressing.  if this isnt the case then someting unexpected happened
-            if (!treeRW.isEmpty()) throw new WTF();
-        }
-    }
+	private static void evict(Task weakest, Remember r, Space<TaskRegion> treeRW) {
+		if (treeRW.remove(weakest)) {
+			r.forget(weakest);
+		} else {
+			//tree may have been cleared/deleted while compressing.  if this isnt the case then someting unexpected happened
+			if (!treeRW.isEmpty()) throw new WTF();
+		}
+	}
 
-    @Override
-    public final boolean isEmpty() {
-        return super.isEmpty();
-    }
+	@Override
+	public final boolean isEmpty() {
+		return super.isEmpty();
+	}
 
-    @Override
-    public final int taskCount() {
-        return size();
-    }
+	@Override
+	public final int taskCount() {
+		return size();
+	}
 
-    @Override
-    public final void match(Answer a) {
-        if (isEmpty())
-            return;
-
-        long s = a.start, e = a.end;
-//        double dur = tableDur(s==ETERNAL ?
-//            a.time() :
-//            (s+e)/2);
+	@Override
+	public final void match(Answer a) {
 
 
-        HyperIterator.iterate(
-            this,
-            new HyperIterator.HyperIteratorRanker<>(t-> t, Answer.regionNearness(s, e)),
-            a.tasks.capacity(), a);
-    }
+		//tree.readOptimistic(
+		read(
+			t -> {
+				int n = t.size();
+				switch (n) {
+					case 0:
+						return;
+					case 1:
+						t.forEach(((Predicate) a)::test);
+						break;
+					default: {
 
-    @Override
-    public void setTaskCapacity(int capacity) {
-        this.capacity = capacity;
-    }
+						long s = a.start, e = a.end;
+						float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) t.root().bounds()).confMax());
+						float confPerTime = (float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
 
-    @Override
-    public void remember(Remember r) {
+						HyperIterator.HyperIteratorRanker<?,TaskRegion> rank = new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e, confPerTime));
+						//
+						int cursorCapacity = Math.min(n, a.tasks.capacity() /* tries? */ );
 
-        if (capacity == 0 || r.input.isEternal())
-            return;
+						HyperIterator h = new HyperIterator(new Object[cursorCapacity], rank);
+						//h.dfs(t.root(), whle);
+						h.bfs(t.root(), a);
 
-        /** buffer removal handling until outside of the locked section */
+						break;
+					}
+				}
+			});
+	}
+
+	@Override
+	public void setTaskCapacity(int capacity) {
+		this.capacity = capacity;
+	}
+
+	@Override
+	public void remember(Remember r) {
+
+		if (capacity == 0 || r.input.isEternal())
+			return;
+
+		/** buffer removal handling until outside of the locked section */
 
 
 //        Task input;
@@ -222,24 +240,24 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //            input = r.input;
 //        }
 
-        Task input = r.input;
+		Task input = r.input;
 
-        /** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
-         *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */
-        TaskInsertion insertion = writeWith(r, this::insert);
+		/** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
+		 *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */
+		TaskInsertion insertion = writeWith(r, this::insert);
 
-        Task mergeReplaced = (Task) insertion.mergeReplaced;
-        if (mergeReplaced != null) {
-            if (mergeReplaced != input)
-                onReject(input);
-            r.merge(mergeReplaced);
-        } else if (!input.isDeleted()) {
-            onRemember(input);
-            r.remember(input);
-        } else {
-            onReject(input);
-            r.forget(input);
-        }
+		Task mergeReplaced = (Task) insertion.mergeReplaced;
+		if (mergeReplaced != null) {
+			if (mergeReplaced != input)
+				onReject(input);
+			r.merge(mergeReplaced);
+		} else if (!input.isDeleted()) {
+			onRemember(input);
+			r.remember(input);
+		} else {
+			onReject(input);
+			r.forget(input);
+		}
 
 //        //TEMPORARY for debug
 //        ListMultimap<String, Task> xx = MultimapBuilder.hashKeys().arrayListValues().build();
@@ -256,42 +274,42 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        }
 
 
-    }
+	}
 
-    protected void onReject(Task input) {
-        /* optional: implement in subclasses */
-    }
+	protected void onReject(Task input) {
+		/* optional: implement in subclasses */
+	}
 
-    protected void onRemember(Task input) {
-        /* optional: implement in subclasses */
+	protected void onRemember(Task input) {
+		/* optional: implement in subclasses */
 
-    }
+	}
 
-    private boolean ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
+	private boolean ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
 //        boolean beliefOrGoal = r.input.isBelief();
-        int e = 0, cap;
-        while (treeRW.size() > (cap = capacity())) {
+		int e = 0, cap;
+		while (treeRW.size() > (cap = capacity())) {
 
 
-            if (cap == 0) {
-                //became deleted
-                treeRW.clear();
-                return true;
-            }
+			if (cap == 0) {
+				//became deleted
+				treeRW.clear();
+				return true;
+			}
 
-            if (e > 0) {
-                Util.nop();
-                if (e > 1)
-                    throw new WTF();
-            }
-            compress(treeRW, r);
+			if (e > 0) {
+				Util.nop();
+				if (e > 1)
+					throw new WTF();
+			}
+			compress(treeRW, r);
 
-            e++;
-            assert (e < cap): this + " compressed " + e + " times (cap=" + cap + ")";
-        }
+			e++;
+			assert (e < cap) : this + " compressed " + e + " times (cap=" + cap + ")";
+		}
 
-        return true;
-    }
+		return true;
+	}
 
 //    /**
 //     * decides the value of keeping a task, used in compression decision
@@ -306,258 +324,258 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 ////        );
 //    }
 
-    /**
-     * this is the range as a radius surrounding present moment and optionally further subdivided
-     * to represent half inside the super-duration, half outside the super-duration
-     */
-    @Override
-    public long tableDur(long now) {
-        TaskRegion root = bounds();
-        return (root == null) ? 1 :
-            1 + Math.round(Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_SCALE);
-    }
+	/**
+	 * this is the range as a radius surrounding present moment and optionally further subdivided
+	 * to represent half inside the super-duration, half outside the super-duration
+	 */
+	@Override
+	public long tableDur(long now) {
+		TaskRegion root = bounds();
+		return (root == null) ? 1 :
+			1 + Math.round(Math.max(Math.abs(now - root.start()), Math.abs(now - root.end())) * NAL.TEMPORAL_BELIEF_TABLE_DUR_SCALE);
+	}
 
-    @Override
-    public Stream<? extends Task> taskStream() {
-        return stream().map(TaskRegion::_task);
-    }
+	@Override
+	public Stream<? extends Task> taskStream() {
+		return stream().map(TaskRegion::_task);
+	}
 
-    @Override
-    public Task[] taskArray() {
-        int s = size();
-        if (s == 0) {
-            return Task.EmptyArray;
-        } else {
-            FasterList<Task> l = new FasterList<>(s+1);
-            forEachTask(l::add);
-            return l.toArrayRecycled(Task[]::new);
-        }
-    }
+	@Override
+	public Task[] taskArray() {
+		int s = size();
+		if (s == 0) {
+			return Task.EmptyArray;
+		} else {
+			FasterList<Task> l = new FasterList<>(s + 1);
+			forEachTask(l::add);
+			return l.toArrayRecycled(Task[]::new);
+		}
+	}
 
-    @Override
-    public void clear() {
-        writeConditional(
-            ()->!toString().isEmpty(),
-            tree::clear);
-    }
+	@Override
+	public void clear() {
+		writeConditional(
+			() -> !toString().isEmpty(),
+			tree::clear);
+	}
 
-    @Override
-    public void whileEach(Predicate<? super Task> each) {
-        intersectsWhile(root().bounds(), TaskRegion.asTask(each));
-    }
+	@Override
+	public void whileEach(Predicate<? super Task> each) {
+		intersectsWhile(root().bounds(), TaskRegion.asTask(each));
+	}
 
-    @Override
-    public void whileEach(long s, long e, Predicate<? super Task> each) {
-        intersectsWhile(new TimeRange(s, e), TaskRegion.asTask(each));
-    }
+	@Override
+	public void whileEach(long s, long e, Predicate<? super Task> each) {
+		intersectsWhile(new TimeRange(s, e), TaskRegion.asTask(each));
+	}
 
-    @Override
-    public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
-            forEach(TaskRegion.asTask(x));
-        } else {
-            whileEach(minT, maxT, (t) -> {
-                x.accept(t);
-                return true;
-            });
-        }
-    }
+	@Override
+	public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
+		if (minT == Long.MIN_VALUE && maxT == Long.MAX_VALUE) {
+			forEach(TaskRegion.asTask(x));
+		} else {
+			whileEach(minT, maxT, (t) -> {
+				x.accept(t);
+				return true;
+			});
+		}
+	}
 
-    @Override
-    public void forEachTask(Consumer<? super Task> each) {
-        forEach(t -> each.accept((Task) t));
-    }
+	@Override
+	public void forEachTask(Consumer<? super Task> each) {
+		forEach(t -> each.accept((Task) t));
+	}
 
-    @Override
-    public void removeIf(Predicate<Task> remove, long s, long e) {
-        FasterList<Task> deleteAfter = new FasterList<>(0);
+	@Override
+	public void removeIf(Predicate<Task> remove, long s, long e) {
+		FasterList<Task> deleteAfter = new FasterList<>(0);
 
-        long l = readLock();
-        try {
+		long l = readLock();
+		try {
 
-            tree.intersectsWhile(new TimeRange(s, e), (_t)->{
-                Task t = (Task) _t;
-                if (remove.test(t)) {
-                    deleteAfter.add(t); //buffer the deletions because it will interfere with the iteration
-                }
-                return true;
-            });
-            if (!deleteAfter.isEmpty()) {
-                l = Util.readToWrite(l, this);
-                deleteAfter.forEach(t -> {
-                    tree.remove(t);
-                    t.delete();
-                });
-            }
-        } finally {
-            unlock(l);
-        }
-    }
+			tree.intersectsWhile(new TimeRange(s, e), (_t) -> {
+				Task t = (Task) _t;
+				if (remove.test(t)) {
+					deleteAfter.add(t); //buffer the deletions because it will interfere with the iteration
+				}
+				return true;
+			});
+			if (!deleteAfter.isEmpty()) {
+				l = Util.readToWrite(l, this);
+				deleteAfter.forEach(t -> {
+					tree.remove(t);
+					t.delete();
+				});
+			}
+		} finally {
+			unlock(l);
+		}
+	}
 
-    @Override
-    public boolean removeTask(Task x, boolean delete) {
-        assert (!x.isEternal());
+	@Override
+	public boolean removeTask(Task x, boolean delete) {
+		assert (!x.isEternal());
 
-        if (remove(x)) {
-            if (delete)
-                x.delete();
-            return true;
-        }
-        return false;
-    }
+		if (remove(x)) {
+			if (delete)
+				x.delete();
+			return true;
+		}
+		return false;
+	}
 
-    public void print(PrintStream out) {
-        forEachTask(t -> out.println(t.toString(true)));
-        stats().print(out);
-    }
+	public void print(PrintStream out) {
+		forEachTask(t -> out.println(t.toString(true)));
+		stats().print(out);
+	}
 
-    public int capacity() {
-        return capacity;
-    }
+	public int capacity() {
+		return capacity;
+	}
 
-    /**
-     * bounds of the entire table
-     */
-    @Nullable
-    public TaskRegion bounds() {
-        return (TaskRegion) root().bounds();
-    }
+	/**
+	 * bounds of the entire table
+	 */
+	@Nullable
+	public TaskRegion bounds() {
+		return (TaskRegion) root().bounds();
+	}
 
-    private TaskInsertion insert(Space<TaskRegion> treeRW, Remember R) {
-        TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
-        if (ii.added()) {
-            ensureCapacity(treeRW, R);
-        }
-        return ii;
-    }
+	private TaskInsertion insert(Space<TaskRegion> treeRW, Remember R) {
+		TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
+		if (ii.added()) {
+			ensureCapacity(treeRW, R);
+		}
+		return ii;
+	}
 
 
-    static final class FurthestWeakest implements FloatFunction<Task> {
+	static final class FurthestWeakest implements FloatFunction<Task> {
 
-        final long now;
+		final long now;
 		final double dur;
 
-        FurthestWeakest(long now, double dur) {
-            this.now = now;
-            this.dur = dur;
-        }
+		FurthestWeakest(long now, double dur) {
+			this.now = now;
+			this.dur = dur;
+		}
 
-        @Override
-        public float floatValueOf(Task t) {
-            //return -Answer.beliefStrength(t, now, dur);
-            return -(float)TruthIntegration.eviFast(t, now);
-        }
-    }
-
-
-    private static final Split SPLIT =
-        //new QuadraticSplit();
-        new AxialSplit();
-
-    private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
-
-        static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
+		@Override
+		public float floatValueOf(Task t) {
+			//return -Answer.beliefStrength(t, now, dur);
+			return -(float) TruthIntegration.eviFast(t, now);
+		}
+	}
 
 
-        private RTreeBeliefModel() {
-            super((t -> t), SPLIT,
-                    RTreeBeliefTable.MAX_TASKS_PER_LEAF);
-        }
+	private static final Split SPLIT =
+		//new QuadraticSplit();
+		new AxialSplit();
 
-        @Override
-        public TaskInsertion insertion(TaskRegion t, boolean addOrMerge) {
-            return new TaskInsertion(t, addOrMerge);
-        }
+	private static final class RTreeBeliefModel extends Spatialization<TaskRegion> {
+
+		static final Spatialization<TaskRegion> the = new RTreeBeliefModel();
 
 
-        @Override
-        public TaskRegion bounds(TaskRegion taskRegion) {
-            return taskRegion;
-        }
+		private RTreeBeliefModel() {
+			super((t -> t), SPLIT,
+				RTreeBeliefTable.MAX_TASKS_PER_LEAF);
+		}
 
-        @Override
-        public RLeaf<TaskRegion> newLeaf(int capacity) {
-            return new RLeaf<>(new TaskRegion[capacity]);
-        }
-
-        @Nullable
-        @Override
-        public TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
-
-            Task ex = (Task) existing, in = (Task) incoming;
-            if (Arrays.equals(ex.stamp(), in.stamp())) {
-                Truth t = ex.truth();
-                if (t.equals(in.truth())) {
-                    if (ex.term().equals(in.term())) {
-                        long is = in.start(), ie = in.end();
-                        long es = ex.start(), ee = ex.end();
-                        if (Longerval.contains(es, ee, is, ie)) {
-                            return merge(ex, i);
-                        } else if (Longerval.contains(is, ie, es, ee)) {
-                            return merge(in, i);
-                        } else {
-                            if (LongInterval.intersects(is, ie, es, ee)) {
-                                //temporal union
-                                return merge(Task.clone(ex, ex.term(), t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
-                            }
-                        }
-                    }
-                }
+		@Override
+		public TaskInsertion insertion(TaskRegion t, boolean addOrMerge) {
+			return new TaskInsertion(t, addOrMerge);
+		}
 
 
-            }
-            return null;
-        }
+		@Override
+		public TaskRegion bounds(TaskRegion taskRegion) {
+			return taskRegion;
+		}
 
-        private static TaskRegion merge(Task m, RInsertion<TaskRegion> i) {
-            ((TaskInsertion)i).mergeReplaced = m;
-            return m;
-        }
+		@Override
+		public RLeaf<TaskRegion> newLeaf(int capacity) {
+			return new RLeaf<>(new TaskRegion[capacity]);
+		}
 
-        @Override
-        public boolean canMerge() {
-            return true;
-        }
+		@Nullable
+		@Override
+		public TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
 
-        public boolean canMergeStretch() {
-            return true;
-        }
-
-
-    }
-
-    private static final class TaskInsertion extends RInsertion<TaskRegion> {
-
-        @Nullable TaskRegion mergeReplaced = null;
-
-        TaskInsertion(TaskRegion t, boolean addOrMerge) {
-            super(t, addOrMerge, RTreeBeliefModel.the);
-        }
-
-        @Nullable
-        @Override
-        public TaskRegion merge(TaskRegion existing) {
-            TaskRegion y = super.merge(existing);
-            if (y!=null)
-                mergeReplaced = y;
-            return y;
-        }
-
-        @Override
-        public void mergeEqual(TaskRegion existing) {
-            super.mergeEqual(existing);
-            mergeReplaced = existing;
-        }
+			Task ex = (Task) existing, in = (Task) incoming;
+			if (Arrays.equals(ex.stamp(), in.stamp())) {
+				Truth t = ex.truth();
+				if (t.equals(in.truth())) {
+					if (ex.term().equals(in.term())) {
+						long is = in.start(), ie = in.end();
+						long es = ex.start(), ee = ex.end();
+						if (Longerval.contains(es, ee, is, ie)) {
+							return merge(ex, i);
+						} else if (Longerval.contains(is, ie, es, ee)) {
+							return merge(in, i);
+						} else {
+							if (LongInterval.intersects(is, ie, es, ee)) {
+								//temporal union
+								return merge(Task.clone(ex, ex.term(), t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
+							}
+						}
+					}
+				}
 
 
-    }
+			}
+			return null;
+		}
 
-    private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = (l,min) -> {
-        //TODO use min parameter to early exit
-        HyperRegion bounds = l.bounds;
-        double conf = bounds.coord(2, true);
-        return -(float)(conf * bounds.range(0));
-    };
+		private static TaskRegion merge(Task m, RInsertion<TaskRegion> i) {
+			((TaskInsertion) i).mergeReplaced = m;
+			return m;
+		}
+
+		@Override
+		public boolean canMerge() {
+			return true;
+		}
+
+		public boolean canMergeStretch() {
+			return true;
+		}
+
+
+	}
+
+	private static final class TaskInsertion extends RInsertion<TaskRegion> {
+
+		@Nullable TaskRegion mergeReplaced = null;
+
+		TaskInsertion(TaskRegion t, boolean addOrMerge) {
+			super(t, addOrMerge, RTreeBeliefModel.the);
+		}
+
+		@Nullable
+		@Override
+		public TaskRegion merge(TaskRegion existing) {
+			TaskRegion y = super.merge(existing);
+			if (y != null)
+				mergeReplaced = y;
+			return y;
+		}
+
+		@Override
+		public void mergeEqual(TaskRegion existing) {
+			super.mergeEqual(existing);
+			mergeReplaced = existing;
+		}
+
+
+	}
+
+	private static final FloatRank<RLeaf<TaskRegion>> MergeableLeaf = (l, min) -> {
+		//TODO use min parameter to early exit
+		HyperRegion bounds = l.bounds;
+		double conf = bounds.coord(2, true);
+		return -(float) (conf * bounds.range(0));
+	};
 
 
 //    /** TODO */
@@ -814,9 +832,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 }
 
 
-
-
-    //    static final ToDoubleFunction<RLeaf<TaskRegion>> MostComponents = (n) -> {
+//    static final ToDoubleFunction<RLeaf<TaskRegion>> MostComponents = (n) -> {
 //        return n.size;
 //    };
 //    static final ToDoubleFunction<RLeaf<TaskRegion>> LeastOriginality = (n) -> {
@@ -898,7 +914,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        return 1.0 / (1 + t.confMean());
 //    };
 
-    //    static final ToDoubleFunction<? super Task> WeakestEviInteg = (t) -> {
+//    static final ToDoubleFunction<? super Task> WeakestEviInteg = (t) -> {
 //        double eviRange = t.evi() * t.range();
 //        //return 1.0 / (1+eviRange);
 //        return -eviRange;

@@ -149,12 +149,12 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         return x;
     }
 
+
     public List<X> drain(int count) {
         count = Math.min(count, size);
-        List<X> x = new FasterList(count);
-        for (int i = 0; i < count; i++) {
+        List<X> x = new FasterList<>(count);
+        for (int i = 0; i < count; i++)
             x.add(removeFirst());
-        }
         commit();
         return x;
     }

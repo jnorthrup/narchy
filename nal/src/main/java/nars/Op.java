@@ -417,7 +417,8 @@ public enum Op {
         this.id = (byte) (ordinal());
         this.str = string;
         this.ch = string.length() == 1 ? string.charAt(0) : 0;
-        this.strAtom = ch != '.' ? new Atom('"' + str + '"') : null /* dont compute for ATOM, infinite loops */;
+        this.strAtom = //ch != '.' ? new Atom('"' + str + '"') : null /* dont compute for ATOM, infinite loops */;
+            new Atom('"' + str + '"');
 
         this.commutative = commutative;
         this.minLevel = minLevel;

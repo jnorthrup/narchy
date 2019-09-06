@@ -40,8 +40,8 @@
 
 
 //ABDUCTION ---------------------------
-    (P --> M), (S --> M), neqRCom(S,P)      |- (S --> P), (Belief:Abduction, Time:Compose)
-    (M --> P), (M --> S), neqRCom(S,P)      |- (P --> S), (Belief:Abduction, Time:Compose)
+    (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")      |- (S --> P), (Belief:Abduction, Time:Compose)
+    (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".")      |- (P --> S), (Belief:Abduction, Time:Compose)
 
         //dangerously sticky:
         //(P --> M), (S --> M), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
@@ -58,8 +58,8 @@
 
 //INDUCTION ---------------------------
 
-    (M --> P), (M --> S), neqRCom(S,P)      |- (S --> P), (Belief:Induction, Time:Compose)
-    (P --> M), (S --> M), neqRCom(S,P)      |- (P --> S), (Belief:Induction, Time:Compose)
+    (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".")      |- (S --> P), (Belief:Induction, Time:Compose)
+    (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")      |- (P --> S), (Belief:Induction, Time:Compose)
 
         //dangerously sticky:
         //(M --> P), (M --> S), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)

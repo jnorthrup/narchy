@@ -509,13 +509,15 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     @Nullable
     public X removeFirst() {
-        if (size == 0)
-            return null;
-        return remove(0);
+        return size == 0 ? null : remove(0);
     }
 
     public X removeLast() {
-        return this.items[SIZE.decrementAndGet(this)];
+        int s = SIZE.decrementAndGet(this);
+        X[] items = this.items;
+        X x = items[s];
+        items[s] = null;
+        return x;
     }
 
 //    /**

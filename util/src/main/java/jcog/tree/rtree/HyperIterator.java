@@ -1,5 +1,6 @@
 package jcog.tree.rtree;
 
+import jcog.Util;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -34,34 +35,87 @@ public class HyperIterator<X>  {
     private final Consumer planAdd;
 
 
-    public static <X,R extends HyperRegion> void iterate(ConcurrentRTree<X> tree, HyperIteratorRanker<X,R> rank, int bufferCap, Predicate whle) {
 
-        //tree.readOptimistic(
-        tree.read(
-            t -> {
-            int s = t.size();
-            switch (s) {
-                case 0:
-                    return;
-                case 1:
-                    t.forEach(whle::test);
-                    break;
-                default: {
-                    int cursorCapacity =
-                        //s; //TODO determine if this can safely be smaller like log(s)/branching or something
-                        Math.min(s, bufferCap);
 
-                    HyperIterator<X> h = new HyperIterator<>(new Object[cursorCapacity], rank);
-                    h.plan.add(t.root());
-                    while (h.hasNext() && whle.test(h.next())) {
-                    }
+    public void dfs(RNode<X> root, Predicate whle) {
+        plan.add(root);
+        while (hasNext() && whle.test(next())) { }
+    }
 
-                    break;
+    /** gets a set of LeafNode's before round-robin visiting their contents as an iterator */
+    public void bfs(RNode<X> root, Predicate whle) {
+        if (root instanceof RLeaf) {
+            leaf((RLeaf) root, whle);
+        } else {
+
+            plan.add(root);
+            boolean findingLeaves;
+            restart: do {
+                findingLeaves = false;
+                Object[] items = plan.items;
+                for (int i = 0, itemsLength = plan.size(); i < itemsLength;) {
+                    Object x = items[i];
+                    if (x instanceof RBranch) {
+                        plan.remove(i);
+                        RBranch xb = (RBranch) x;
+                        Object[] data = xb.data;
+                        boolean added = false;
+                        for (int j = 0, dataLength = xb.size; j < dataLength; j++) {
+                            Object y = data[j];
+                            added |= plan.add(y);
+                            if (added && y instanceof RBranch)
+                                findingLeaves = true;
+                        }
+                        if (added)
+                            continue restart;
+                        else {
+                            itemsLength--;
+                        }
+                    } else
+                        i++;
                 }
+            //} while (findingLeaves);
+            } while (Util.or(plan.items, x -> x instanceof RBranch)); //HACK
+
+
+            int leaves = plan.size();
+            assert(leaves > 0);
+            if (leaves == 1)
+                leaf((RLeaf<X>) plan.first(), whle);
+            else {
+                //round-robin visit
+                int[] prog = new int[leaves];
+                int n = 0;
+                for (int i = 0; i < leaves; i++) {
+                    short is = ((RLeaf) plan.get(i)).size;
+                    prog[i] = is;
+                    n+= is;
+                }
+                int c = 0;
+                int k = 0;
+                Object[] pp = plan.items;
+                do {
+                    if (k == leaves) k = 0;
+                    int pk = prog[k];
+                    if (pk > 0) {
+                        if (!whle.test( ((RLeaf<X>) pp[k]).data[ --prog[k] ] )) {
+                            break;
+                        }
+                    }
+                    k++;
+                } while (c++ < n);
+
             }
-        });
+        }
+    }
 
-
+    private static <X> void leaf(RLeaf<X> rl, Predicate whle) {
+        short ls = rl.size;
+        X[] rld = rl.data;
+        for (int i = 0; i < ls; i++) {
+            if (!whle.test(rld[i]))
+                break;
+        }
     }
 
     @Deprecated public HyperIterator(Spatialization/*<X>*/ model, Object/*X*/[] x, FloatRank/*<? super HyperRegion>*/ rank) {
@@ -102,7 +156,7 @@ public class HyperIterator<X>  {
         return n;
     }
 
-    public static class HyperIteratorRanker<X,R extends HyperRegion> implements FloatRank {
+    public static final class HyperIteratorRanker<X,R extends HyperRegion> implements FloatRank<Object> {
         private final Function<X, R> bounds;
         private final FloatRank<R> rank;
 
@@ -130,10 +184,6 @@ public class HyperIterator<X>  {
             return y == null ? Float.NaN : rank.rank((R)y, min);
         }
     }
-
-//    public void setNodeFilter(NodeFilter<X> n) {
-//        this.nodeFilter = n;
-//    }
 
 
 //    public static final HyperIterator2 Empty = new HyperIterator2() {

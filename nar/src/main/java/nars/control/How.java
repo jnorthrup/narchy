@@ -228,6 +228,7 @@ abstract public class How extends PriNARPart {
             next(w, whil);
         } catch (Throwable t) {
             logger.error("{} {}", t, this);
+            t.printStackTrace();
         }
         long end = System.nanoTime();
         use(estTime, end - start);
