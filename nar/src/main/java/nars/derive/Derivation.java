@@ -18,7 +18,6 @@ import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
-import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -261,58 +260,17 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
-        long nextBeliefEnd;
-
-        if (nextBelief != null) {
-            long nextBeliefStart = nextBelief.start();
-            beliefTruth_at_Belief.set/* = */( nextBelief.truth() );
-            if (nextBeliefStart == ETERNAL) {
-
-                beliefTruth_at_Task.set( beliefTruth_at_Belief ); /* = */
-            } else {
-
-                this.beliefTruth_at_Task.set(
-                    (taskStart == ETERNAL) ? beliefTruth_at_Belief : beliefAtTask(nextBelief)
-                );
-
-                if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) &&
-                    (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || !beliefTruth_at_Task.set())) {
-
-                    double eScale = 1;
-                            //(!taskTruth.set()) ? 1 : 1;
-                                //taskTruth.conf();
-                                //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
-
-                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
-                    if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() >= eviMin) {
-                        if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
-
-
-                            if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME) {
-                                nextBeliefStart = nextBeliefEnd = ETERNAL;
-                                //nextBeliefStart = taskStart; nextBeliefEnd = taskEnd;
-                            } else
-                                nextBeliefEnd = nextBelief.end();
-
-                            nextBelief = SpecialTruthAndOccurrenceTask.the(nextBelief,
-                                this.beliefTruth_at_Task.set(beliefTruth_eternalized),
-                                nextBeliefStart, nextBeliefEnd
-							);
-                        }
-                    }
-
-                }
-
-            }
-
-            if (!beliefTruth_at_Task.set() && !beliefTruth_at_Belief.set())
-                nextBelief = null;
-
-        }
-
-
         Term _beliefTerm;
+
         if (nextBelief != null) {
+            beliefTruth_at_Belief.set( nextBelief.truth() );
+
+            long nextBeliefStart = nextBelief.start();
+            beliefTruth_at_Task.set(
+                (taskStart == ETERNAL || nextBeliefStart == ETERNAL) ?
+                    beliefTruth_at_Belief : beliefAtTask(nextBelief)
+            );
+
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
             _beliefTerm = nextBelief.term();
@@ -320,20 +278,13 @@ public class Derivation extends PreDerivation {
         } else {
             this.beliefTruth_at_Belief.clear();
             this.beliefTruth_at_Task.clear();
-
-//            this.taskStart = _task.start();
-//            this.taskEnd = _task.end(); //HACK reset task start in case it was changed
             this.beliefStart = this.beliefEnd = TIMELESS;
-
             _beliefTerm = nextBeliefTerm;
-                    //!(nextBeliefTerm instanceof Variable) ?
-                    //false; //unshifted, structural only;
-                    //true;
         }
 
         //TODO not whether to shift, but which variable (0..n) to shift against
 
-        this.beliefTerm = deriver.loadBelief(nextBeliefTerm, anon, _taskTerm, _beliefTerm, random);
+        this.beliefTerm = deriver.beliefTerm(nextBeliefTerm, anon, _taskTerm, _beliefTerm, random);
 
         assertAnon(_beliefTerm, beliefTerm, nextBelief);
 
@@ -342,9 +293,8 @@ public class Derivation extends PreDerivation {
 
 
 
-    @Nullable
-    private Truth beliefAtTask(Task nextBelief) {
-        @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur()); //integration-calculated
+    @Nullable private Truth beliefAtTask(Task nextBelief) {
+        @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur(), true); //integration-calculated
         return t!=null && t.evi() >= eviMin ? t : null;
     }
 
@@ -748,3 +698,38 @@ public class Derivation extends PreDerivation {
 }
 
 
+//            if (nextBeliefStart == ETERNAL) {
+//
+//                beliefTruth_at_Task.set( beliefTruth_at_Belief ); /* = */
+//            } else {
+//
+//
+////                if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION && !nextBelief.equals(_task) &&
+////                    (!NAL.derive.ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH || !beliefTruth_at_Task.set())) {
+////
+////                    double eScale = 1;
+////                            //(!taskTruth.set()) ? 1 : 1;
+////                                //taskTruth.conf();
+////                                //Math.min(1, beliefTruth_at_Belief.evi() / taskTruth.evi());
+////
+////                    Truth beliefTruth_eternalized = beliefTruth_at_Belief.eternalized(eScale, eviMin, null /* dont dither */);
+////                    if (beliefTruth_eternalized!=null && beliefTruth_eternalized.evi() >= eviMin) {
+////                        if (Truth.stronger(beliefTruth_eternalized, beliefTruth_at_Task) == beliefTruth_eternalized) {
+////
+////
+////                            if (NAL.derive.ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME) {
+////                                nextBeliefStart = nextBeliefEnd = ETERNAL;
+////                                //nextBeliefStart = taskStart; nextBeliefEnd = taskEnd;
+////                            } else
+////                                nextBeliefEnd = nextBelief.end();
+////
+////                            nextBelief = SpecialTruthAndOccurrenceTask.the(nextBelief,
+////                                this.beliefTruth_at_Task.set(beliefTruth_eternalized),
+////                                nextBeliefStart, nextBeliefEnd
+////							);
+////                        }
+////                    }
+////
+////                }
+////
+//            }

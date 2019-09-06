@@ -92,15 +92,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 6;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
-    public static final int ANSWER_ACTION_ANSWER_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY * 3;
+    public static final int ANSWER_ACTION_ANSWER_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY * 2;
 
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 2f;
+    public static final float ANSWER_TRYING = 1.5f;
 
     /** if false, the tasklink resolution mode is sample */
     public static final boolean TASKLINK_ANSWER_BELIEF = false;
@@ -445,8 +445,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
-        //double ee = TruthFunctions.eternalize(evi);
-        //e = ee + ((evi-ee) / (1.0 + Util.sqr(((double)dt) / dur)));
 
         //cubic decay:
         //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLTEvKDErZV4oLXgpKSIsImNvbG9yIjoiIzAwNzdGRiJ9LHsidHlwZSI6MCwiZXEiOiIxLygxK3gqeCkiLCJjb2xvciI6IiNENDFBMUEifSx7InR5cGUiOjAsImVxIjoiMS8oMSt4KngqeCkiLCJjb2xvciI6IiM4OUFEMDkifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTgiLCIwIiwiMSJdfV0-

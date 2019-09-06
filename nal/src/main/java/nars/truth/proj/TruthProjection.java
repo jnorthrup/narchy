@@ -21,6 +21,7 @@ import nars.time.Tense;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -163,19 +164,8 @@ abstract public class TruthProjection extends TaskList {
 		return valid(evi[i] = evi(t));
 	}
 
-	private double evi(Task task) {
-		long start = this.start;
-		assert(start!=TIMELESS);
-		if (start == ETERNAL) {
-			if (!task.isEternal())
-				throw new WTF("eternal truthpolation requires eternal tasks");
-			return task.evi();
-		} else {
-			//TODO subclass this or param for all these options
-			//return TruthIntegration.evi(task, start, end, now);
-			//return TruthIntegration.eviAbsolute(task, start, end, 0);
-			return TruthIntegration.eviAbsolute(task, start, end, dur /* leak */);
-		}
+	private double evi(Task t) {
+		return TruthIntegration.eviAbsolute(t, start, end, dur /* leak */, false);
 	}
 
 
@@ -184,7 +174,7 @@ abstract public class TruthProjection extends TaskList {
 	 * should be called after all entries are added
 	 */
 	public final boolean commit(boolean shrink, NAL n) {
-		int s = size();
+		int s = size;
 		if (s < minComponents) return false;
 
 		//quick short-circuiting 2-ary test for overlap
@@ -259,46 +249,52 @@ abstract public class TruthProjection extends TaskList {
 		if (s <= 0)
 			return 0;
 
-		int count = 0;
+		double[] evi = this.evi;
 		if (evi == null || evi.length < s)
-			evi = new double[s];
+			evi = this.evi = new double[s];
+
+		int count = 0;
 		for (int i = 0; i < s; i++) {
 			if (update(i))
 				count++;
 		}
 
-		if (count!=s)
-			removeNulls();
+		if (count > 0) {
+			if (count!=s)
+				removeNulls();
 
-		if (count == 0) {
-//			Arrays.fill(evi, 0);
-			return 0;
-		} else {
-			if (count > 1) {
-				ArrayUtil.quickSort(0, s, this::eviComparator, this::swap); //descending
+			if (count > 1)
+				sortAndShuffle();
+		}
 
-				//shuffle spans of equivalent items
-				double last = evi[0];
-				int contig = 0;
-				int i;
-				for (i = 1; i < s; i++) {
-					double ei = evi[i];
-					if (ei == last) {
-						contig++;
-					} else {
-						if (contig > 0) {
-							ArrayUtil.shuffle(i - contig, i, ThreadLocalRandom.current(), this::swap);
-						}
-						last = ei;
-						contig = 0;
-					}
-				}
+		return count;
+	}
+
+	private void sortAndShuffle() {
+		IntIntProcedure swapper = this::swap;
+		int s = size;
+
+		ArrayUtil.quickSort(0, s, this::eviComparator, swapper); //descending
+
+
+		double evi[] = this.evi;
+
+		//shuffle spans of equivalent items
+		double last = evi[0];
+		int contig = 0;
+		int i;
+		for (i = 1; i <= s; i++) {
+			double ei = i < s ? evi[i] : Double.NaN;
+			if (ei != last) {
 				if (contig > 0) {
-					i--;
-					ArrayUtil.shuffle(i - contig, i, ThreadLocalRandom.current(), this::swap);
+					if (i == s) i--;
+					ArrayUtil.shuffle(i - contig, i, ThreadLocalRandom.current(), swapper);
+					contig = 0;
 				}
+				last = ei;
+			} else {
+				contig++;
 			}
-			return count;
 		}
 	}
 
@@ -598,7 +594,7 @@ abstract public class TruthProjection extends TaskList {
 
 	private double eviSum(@Nullable IntPredicate each) {
 		double e = 0;
-		int n = size();
+		int n = size;
 		for (int i = 0; i < n; i++) {
 			if (each == null || each.test(i)) {
 				double ce = evi[i];
@@ -721,7 +717,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	private boolean intermpolate(NAL nar) {
-		int n = size(); //assumes nulls removed
+		int n = size; //assumes nulls removed
 		Map<Term, IEntry> roots = null;
 		Task[] items = this.items;
 		Term root0 = items[0].term().root();
@@ -773,7 +769,7 @@ abstract public class TruthProjection extends TaskList {
 
 		Compound a = (Compound) items[0].term();
 
-		n = size();
+		n = size;
 		if (n > 1) {
 			//Term bestRoot = best.root;
 			double ea = evi[0];
@@ -1073,12 +1069,12 @@ abstract public class TruthProjection extends TaskList {
 	 */
 	@Paper
 	public double coherency() {
-		int s = size();
+		int s = size;
 		if (s == 0) return 0;
 		if (s == 1) return 1;
 
 		double avg = 0;
-		for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+		for (int i = 0, thisSize = this.size; i < thisSize; i++) {
 			if (valid(i))
 				avg += this.items[i].freq();
 		}
@@ -1097,7 +1093,7 @@ abstract public class TruthProjection extends TaskList {
 
 	@Deprecated
 	public boolean valid() {
-		return (active() == size());
+		return (active() == size);
 	}
 
 	@Nullable

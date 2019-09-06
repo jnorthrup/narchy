@@ -17,6 +17,7 @@ import nars.task.util.Revision;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
 import nars.truth.Truth;
+import nars.truth.proj.TruthIntegration;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
@@ -46,7 +47,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
      * immediately returns false if space removed at least one as a result of the scan, ie. by removing
      * an encountered deleted task.
      */
-    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<TaskRegion> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
+    private static boolean findEvictable(Space<TaskRegion> tree, RNode<TaskRegion> next, Top<Task> weakest, Top<RLeaf<TaskRegion>> mergeableLeaf) {
         if (next instanceof RLeaf) {
 
             RLeaf l = (RLeaf) next;
@@ -90,7 +91,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         long now = remember.nar.time();
         //long tableDur = tableDur(now);
 
-        Top<TaskRegion> weakest = new Top<>(new FurthestWeakest(now, 1));
+        Top<Task> weakest = new Top<>(new FurthestWeakest(now, 1));
 
 		Top<RLeaf<TaskRegion>> mergeableLeaf = new Top<>(
 		    //WeakestTemporallyDense(now)
@@ -103,11 +104,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
     private static void compress(Space<TaskRegion> treeRW,
-                                         Top<TaskRegion> theWeakest,
+                                         Top<Task> theWeakest,
                                          Top<RLeaf<TaskRegion>> mergeableLeaf,
                                          Remember r) {
 
-        Task weakest = (Task) theWeakest.get();
+        Task weakest = theWeakest.get();
         TruthProjection merging = null;
         Task merged = null;
 
@@ -431,7 +432,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
     }
 
 
-    static final class FurthestWeakest implements FloatFunction<TaskRegion> {
+    static final class FurthestWeakest implements FloatFunction<Task> {
 
         final long now;
 		final double dur;
@@ -442,8 +443,9 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         }
 
         @Override
-        public float floatValueOf(TaskRegion t) {
-            return -Answer.beliefStrength(t, now, dur);
+        public float floatValueOf(Task t) {
+            //return -Answer.beliefStrength(t, now, dur);
+            return -(float)TruthIntegration.eviFast(t, now);
         }
     }
 

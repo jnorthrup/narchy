@@ -11,7 +11,6 @@ import nars.GameX;
 import nars.NAR;
 import nars.agent.GameTime;
 import nars.agent.NAct;
-import nars.agent.Reward;
 import nars.agent.util.RLBooster;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.NARui;
@@ -58,7 +57,7 @@ public class ArkaNAR extends GameX {
 
     final Arkanoid noid;
 
-    private float prevScore;
+
 
     public static class RLBoosterOnly {
 
@@ -199,15 +198,13 @@ public class ArkaNAR extends GameX {
 
         onFrame(noid::next);
 
-        Reward s = rewardNormalized("score", -1, +1, () -> {
-            float nextScore = noid.score;
-            float dReward = Math.max(-1f, Math.min(1f, nextScore - prevScore));
-            this.prevScore = nextScore;
-
-            //return dReward;
-            return dReward != 0 ? dReward : Float.NaN;
+        reward("die", 0, () -> {
+            return Math.min(1, noid.die - noid.prevDie);
         });
-        s.setDefault($.t(0.5f, 0.9f));
+        reward("score",  () -> {
+            return Math.min(1, noid.score - noid.prevScore);
+        });
+        //s.setDefault($.t(0.5f, 0.9f));
 
         /*actionTriState*/
 
@@ -275,7 +272,8 @@ public class ArkaNAR extends GameX {
      */
     public class Arkanoid extends Canvas implements KeyListener {
 
-        int score;
+        private int prevScore = 0, prevDie = 0;
+        int score = 0, die = 0;
 
 
         public static final int SCREEN_WIDTH = 250;
@@ -514,7 +512,7 @@ public class ArkaNAR extends GameX {
                     velocityY = -BALL_VELOCITY;
                     x = paddle.x;
                     y = paddle.y - 50;
-                    score--;
+                    die++;
                     die();
                 }
 
@@ -607,6 +605,9 @@ public class ArkaNAR extends GameX {
 
 
         public float next() {
+            prevDie = die;
+            prevScore = score;
+
             BALL_VELOCITY = ballSpeed.floatValue();
 
 

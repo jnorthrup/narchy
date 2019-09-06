@@ -155,7 +155,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 
 		for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
 			Task e = pathTasks[i];
-			Truth tCurr = e.truth(offset + e.start(), now, dur);
+			Truth tCurr = e.truth(offset + e.start(), now, dur, true);
 			if (tCurr == null)
 				return false; //too weak
 

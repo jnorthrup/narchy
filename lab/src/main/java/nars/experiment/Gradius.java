@@ -51,10 +51,10 @@ public class Gradius extends GameX {
                 //5; //200fps
         //10;
 
-//        int dx = 2, dy = 2;
-//        int px = 24, py = 24;
-        int dx = 4, dy = 4;
-        int px = 12, py = 12;
+        int dx = 2, dy = 2;
+        int px = 24, py = 24;
+//        int dx = 4, dy = 4;
+//        int px = 12, py = 12;
 
 
         assert px % dx == 0 && py % dy == 0;

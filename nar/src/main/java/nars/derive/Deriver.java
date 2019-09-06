@@ -159,7 +159,7 @@ public class Deriver extends How {
         return rules.pre.apply(d);
     }
 
-    public Term loadBelief(Term b, AnonWithVarShift anon, Term taskTerm, Term beliefTerm, Random random) {
+    public Term beliefTerm(Term b, AnonWithVarShift anon, Term taskTerm, Term beliefTerm, Random random) {
 
 
         boolean shift, shiftRandomOrCompletely;

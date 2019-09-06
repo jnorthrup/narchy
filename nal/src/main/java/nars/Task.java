@@ -28,7 +28,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.proj.TruthIntegration;
-import nars.truth.util.EvidenceEvaluator;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -439,7 +438,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             //tt = t.truthRelative((start+end)/2, n.time(), eviMin);
             //if (tt == null) return null;
 
-            tt = t.truth(start, end, dur); //0 dur
+            tt = t.truth(start, end, dur, true); //0 dur
 
             if (tt == null || tt.evi() < eviMin) return null;
 
@@ -705,31 +704,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return confMean();
     }
 
-    /**
-     * POINT EVIDENCE
-     * <p>
-     * amount of evidence measured at a given point in time with a given duration window
-     * <p>
-     * WARNING check that you arent calling this with (start,end) values
-     *
-     * @param when   time
-     * @param dur    duration period across which evidence can decay before and after its defined start/stop time.
-     *               if (dur <= 0) then no extrapolation is computed
-     * @param minEvi used to fast fail if the result will not exceed the value
-     * @return value >= 0 indicating the evidence
-     */
-    default double evi(long when, final float dur) {
-        long s = start();
-        double ee = evi();
-        if (s == Tense.ETERNAL)
-            //result = new EvidenceEvaluator.EternalEvidenceEvaluator(ee);
-            return ee;
-        else {
-            assert(when!=ETERNAL);
-            return EvidenceEvaluator.of(s, end(), ee, dur, when);
-        }
-    }
-
     @Override
     default Task task() {
         return this;
@@ -888,15 +862,18 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
 
-
     @Nullable
     @Deprecated default Truth truth(long targetStart, long targetEnd, float dur) {
+        return truth(targetStart, targetEnd, dur, false);
+    }
+
+    @Nullable default Truth truth(long start, long end, float dur, boolean eternalize) {
 
         if (isEternal())
             return truth();
         else {
 
-            double e = TruthIntegration.eviAvg(this, targetStart, targetEnd, dur);
+            double e = TruthIntegration.eviAvg(this, start, end, dur, eternalize);
 
             return (e < NAL.truth.EVI_MIN) ?
                 null :

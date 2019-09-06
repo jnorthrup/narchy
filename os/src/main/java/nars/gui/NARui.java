@@ -12,7 +12,6 @@ import jcog.event.Off;
 import jcog.exe.Exe;
 import jcog.learn.ql.HaiQae;
 import jcog.learn.ql.dqn3.DQN3;
-import jcog.math.Quantiler;
 import jcog.pri.VLink;
 import jcog.thing.Thing;
 import nars.AttentionUI;
@@ -88,7 +87,6 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.sqrt;
 import static nars.$.$$;
 import static nars.Op.*;
-import static nars.truth.func.TruthFunctions.w2cSafe;
 import static spacegraph.space2d.container.grid.Gridding.VERTICAL;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
@@ -204,44 +202,44 @@ public class NARui {
     public static Surface MemEdit(NAR nar) {
         return new Gridding(
                 memLoad(nar),
-                memSave(nar),
-                new PushButton("Prune Beliefs", () -> {
-                    nar.runLater(() -> {
-                        //nar.logger.info("Belief prune start");
-//                        final long scaleFactor = 1_000_000;
-                        //Histogram i = new Histogram(1<<20, 5);
-                        Quantiler q = new Quantiler(128 * 1024);
-                        long now = nar.time();
-                        float dur = nar.dur();
-                        nar.tasks(true, false, false, false).forEach(t ->
-                                {
-                                    try {
-                                        float c = (float) w2cSafe(t.evi(now, dur));
-                                        //i.recordValue(Math.round(c * scaleFactor));
-                                        q.add(c);
-                                    } catch (Throwable e) {
-                                        e.printStackTrace();
-                                    }
-                                }
-                        );
-                        //System.out.println("Belief evidence Distribution:");
-                        //Texts.histogramPrint(i, System.out);
-
-                        //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
-                        float confThresh = q.quantile(0.5f);
-                        final int[] removed = {0};
-                        nar.tasks(true, false, false, false, (c, t) -> {
-                            try {
-                                if (w2cSafe(t.evi(now, dur)) < confThresh)
-                                    if (c.remove(t))
-                                        removed[0]++;
-                            } catch (Throwable e) {
-                                e.printStackTrace();
-                            }
-                        });
-                        //nar.logger.info("Belief prune finish: {} tasks removed", removed[0]);
-                    });
-                })
+                memSave(nar)
+//                new PushButton("Prune Beliefs", () -> {
+//                    nar.runLater(() -> {
+//                        //nar.logger.info("Belief prune start");
+////                        final long scaleFactor = 1_000_000;
+//                        //Histogram i = new Histogram(1<<20, 5);
+//                        Quantiler q = new Quantiler(128 * 1024);
+//                        long now = nar.time();
+//                        float dur = nar.dur();
+//                        nar.tasks(true, false, false, false).forEach(t ->
+//                                {
+//                                    try {
+//                                        float c = (float) w2cSafe(t.evi(now, dur));
+//                                        //i.recordValue(Math.round(c * scaleFactor));
+//                                        q.add(c);
+//                                    } catch (Throwable e) {
+//                                        e.printStackTrace();
+//                                    }
+//                                }
+//                        );
+//                        //System.out.println("Belief evidence Distribution:");
+//                        //Texts.histogramPrint(i, System.out);
+//
+//                        //float confThresh = i.getValueAtPercentile(50)/ scaleFactor;
+//                        float confThresh = q.quantile(0.5f);
+//                        final int[] removed = {0};
+//                        nar.tasks(true, false, false, false, (c, t) -> {
+//                            try {
+//                                if (w2cSafe(t.evi(now, dur)) < confThresh)
+//                                    if (c.remove(t))
+//                                        removed[0]++;
+//                            } catch (Throwable e) {
+//                                e.printStackTrace();
+//                            }
+//                        });
+//                        //nar.logger.info("Belief prune finish: {} tasks removed", removed[0]);
+//                    });
+//                })
 
         );
 

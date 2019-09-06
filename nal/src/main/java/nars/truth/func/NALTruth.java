@@ -21,7 +21,7 @@ import static nars.truth.func.TruthFunctions2.weak;
  */
 public enum NALTruth implements TruthFunction {
 
-	Deduction() {
+    @AllowOverlap Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.deduction(T, B, true, minConf);
@@ -42,14 +42,14 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    Post() {
+    @AllowOverlap Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);
         }
     },
 
-    PostWeak() {
+    @AllowOverlap PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, false, minConf);

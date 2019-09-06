@@ -1,7 +1,10 @@
 package nars.truth.proj;
 
 
+import jcog.math.LongInterval;
+import nars.NAL;
 import nars.Task;
+import nars.truth.func.TruthFunctions;
 import nars.truth.util.EvidenceEvaluator;
 
 import static java.lang.Math.max;
@@ -12,13 +15,14 @@ public class TruthIntegration {
 
 
 
-	@Deprecated public static double eviAvg(Task t, long start, long end, float dur) {
-		long range = start == ETERNAL ? 1 : 1 + (end - start);
-		return eviAbsolute(t, start, end, dur) / range;
+	public static double eviAvg(Task t, long start, long end, float dur, boolean eternalize) {
+		assert(start!=ETERNAL);
+		long range = 1 + (end - start);
+		return eviAbsolute(t, start, end, dur, eternalize) / range;
 	}
 
 	public static double evi(Task t) {
-		return eviAbsolute(t, t.start(), t.end(), 0);
+		return eviAbsolute(t, t.start(), t.end(), 0, false);
 	}
 
 
@@ -27,24 +31,39 @@ public class TruthIntegration {
 	 * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
 	 * if qStart==qEnd then it is a point sample
 	 */
-	public static double eviAbsolute(Task t, long qStart, long qEnd, float dur) {
+	static double eviAbsolute(Task t, long qStart, long qEnd, float dur, boolean eternalize) {
 
-		assert (qStart != ETERNAL && qStart <= qEnd);
+		//assert (qStart != ETERNAL && qStart <= qEnd);
 
+		long tStart = t.start();
+		double factor;
 		if (qStart == qEnd) {
-			return t.evi(qStart, dur); //point
+			//point
+			if (tStart == ETERNAL)
+				//result = new EvidenceEvaluator.EternalEvidenceEvaluator(ee);
+				factor = 1;
+			else {
+				assert(qStart != LongInterval.ETERNAL);
+				factor = EvidenceEvaluator.of(tStart, t.end(), dur).applyAsDouble(qStart);
+			}
 		} else {
 			//range
-			long tStart = t.start();
-			double evi = t.evi();
 			if (tStart == ETERNAL) {
 				//eternal task
-				long range = (qEnd - qStart + 1);
-				return evi * range;
+				factor = (qEnd - qStart + 1);
 			} else {
-				long tEnd = t.end();
-				return eviIntegrate(qStart, qEnd, tStart, tEnd, EvidenceEvaluator.of(tStart, tEnd, evi, dur));
+				factor = eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
 			}
+		}
+		if (factor < NAL.truth.EVI_MIN)
+			return 0;
+
+		double e = t.evi();
+		if (!eternalize || factor >= (1-Float.MIN_NORMAL)) {
+			return e * factor;
+		} else {
+			double ee = TruthFunctions.eternalize(e);
+			return ee + (e-ee) * factor;
 		}
 	}
 
@@ -78,7 +97,8 @@ public class TruthIntegration {
 
 	/** for ranking relative relevance of tasks with respect to a time point */
 	public static double eviFast(Task t, long now) {
-		return t.range() * t.evi() / (1 + t.maxTimeTo(now));
+		return t.range() * t.evi() / (1 + 2 * Math.max(now - t.start(), now - t.end())); //penalize long tasks even if they surround now evenly
+		///return t.range() * t.evi() / (1 + t.maxTimeTo(now));
 		//return NAL.evi(t.range() * t.evi(), t.meanTimeTo(now), 1.0f);
 		//return t.range() * t.evi() / (1 + t.meanTimeTo(now));
 		//return t.range() * t.evi() / (1 + t.minTimeTo(now));
@@ -90,7 +110,8 @@ public class TruthIntegration {
 //		return eviIntegrate(qs, qe, ts, te, EvidenceEvaluator.of(ts, te, evi, now));
 //	}
 
-	private static double eviIntegrate(long qs, long qe, long ts, long te, EvidenceEvaluator e) {
+	private static double eviIntegrate(long qs, long qe, long ts, long te, float dur) {
+		EvidenceEvaluator e = EvidenceEvaluator.of(ts, te, dur);
 		if (max(qs, ts) > min(qe, te)) {
 		   //DISJOINT - entirely before, or after //!LongInterval.intersectsRaw(ts, te, qs, qe)) {
 		   return e.integrate2(qs, qe);

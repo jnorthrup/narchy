@@ -714,8 +714,8 @@ public class RevisionTest {
 
         Task a = n.believe(x, 1, 1f);
 
-        assertTrue(TruthIntegration.eviAvg(a, 1, 1, 0) > TruthIntegration.eviAvg(a, 1, 2, 0));
-        assertEquals(0, TruthIntegration.eviAvg(a, 2, 2, 0));
+        assertTrue(TruthIntegration.eviAvg(a, 1, 1, 0, false) > TruthIntegration.eviAvg(a, 1, 2, 0, false));
+        assertEquals(0, TruthIntegration.eviAvg(a, 2, 2, 0, false));
 
         Task a2 = n.believe(x, 1, 1f);
         Task b = n.believe(x, 2, 1f);
