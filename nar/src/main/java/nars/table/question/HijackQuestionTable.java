@@ -77,25 +77,26 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
             if (x.term().equals(y.term())) {
 
-                int sc;
+                //if (Arrays.equals(xStamp, y.stamp())) {
                 long[] yStamp = y.stamp();
-                if ((sc = Stamp.equalsOrContains(xStamp, yStamp))!=0) {
+                int xys = Stamp.equalsOrContains(xStamp, yStamp);
+                if (xys!=Integer.MIN_VALUE) {
                     if (xs == TIMELESS) {
                         xs = x.start(); xe = x.end();
                     }
                     //if (LongInterval.intersectLength(xs, xe, ys, ye)>0) {
                     //if (LongInterval.intersectsSafe(xs, xe, ys, ye)) {
-                    if (y.containsSafe(xs, xe))  {
+                    if ((xys == 0 || xys == 1) && y.containsSafe(xs, xe))  {
                         //x contained within y, so merge
                         //TODO boost y priority if contributes to it, in proportion to range
                         return y;
-                    } else if (y.containedBySafe(xs, xe)) { //TODO y.containedBy(xs,xe)
+                    } else if ((xys == 0 || xys == -1) && y.containedBySafe(xs, xe)) { //TODO y.containedBy(xs,xe)
                         //y contained within x, so remove y.   expect x to get inserted next
                         //TODO boost x priority if contributes to it, in proportion to range
                         remove(y);
                         y.delete();
                         return null;
-                    } else if (y.intersects(xs, xe)) {
+                    } else if (xys==0 && y.intersects(xs, xe)) {
                         long ys = y.start(), ye = y.end();
                         Longerval u = LongInterval.union(xs, xe, ys, ye);
 
@@ -104,7 +105,8 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
                             (float) ((x.priElseZero() * (double)(xe-xs) + y.priElseZero() * (ye-ys)) /  (u.end - u.start));
 
                         //use larger of the 2 stamps (subsume's smaller)
-                        long[] stamp = sc == +1 ? xStamp : yStamp; //TODO determine if this is safe
+                        //long[] stamp = sc == +1 ? xStamp : yStamp; //TODO determine if this is safe
+                        long[] stamp = xStamp;
 
                         Task xy = Task.clone(x, x.term(), null, x.punc(), u.start, u.end, stamp);
                         Task.merge(xy, new Task[] { x, y }, newPri);

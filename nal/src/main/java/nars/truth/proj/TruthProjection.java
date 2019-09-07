@@ -62,6 +62,7 @@ abstract public class TruthProjection extends TaskList {
 	 */
 	public Term term = null;
 
+	static final boolean eternalizeComponents = false;
 
 	/**
 	 * used in final calculation of to start/end time intervals
@@ -166,7 +167,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	private double evi(Task t) {
-		return TruthIntegration.eviAbsolute(t, start, end, dur /* leak */, false);
+		return TruthIntegration.eviAbsolute(t, start, end, dur /* leak */, eternalizeComponents);
 	}
 
 

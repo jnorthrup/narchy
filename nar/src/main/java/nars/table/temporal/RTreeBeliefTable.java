@@ -16,6 +16,7 @@ import nars.task.util.Answer;
 import nars.task.util.Revision;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
 import nars.truth.proj.TruthProjection;
@@ -24,7 +25,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -503,26 +503,21 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		public TaskRegion merge(TaskRegion existing, TaskRegion incoming, RInsertion<TaskRegion> i) {
 
 			Task ex = (Task) existing, in = (Task) incoming;
-			if (Arrays.equals(ex.stamp(), in.stamp())) {
-				Truth t = ex.truth();
-				if (t.equals(in.truth())) {
-					if (ex.term().equals(in.term())) {
+			Truth t = ex.truth();
+			if (t.equals(in.truth())) {
+				if (ex.term().equals(in.term())) {
+					int xys = Stamp.equalsOrContains(ex.stamp(), in.stamp());
+					if (xys != Integer.MIN_VALUE) { //Arrays.equals(ex.stamp(), in.stamp())
 						long is = in.start(), ie = in.end();
 						long es = ex.start(), ee = ex.end();
-						if (Longerval.contains(es, ee, is, ie)) {
-							return merge(ex, i);
-						} else if (Longerval.contains(is, ie, es, ee)) {
+						if ((xys == 0 || xys == -1) && Longerval.containsRaw(is, ie, es, ee)) //incoming contains existing
 							return merge(in, i);
-						} else {
-							if (LongInterval.intersects(is, ie, es, ee)) {
-								//temporal union
-								return merge(Task.clone(ex, ex.term(), t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
-							}
-						}
+						else if ((xys == 0 || xys == +1) && Longerval.containsRaw(es, ee, is, ie)) //existing contais incoming
+							return merge(ex, i);
+						else if (xys == 0 && LongInterval.intersectsRaw(is, ie, es, ee)) //temporal union
+							return merge(Task.clone(ex, ex.term(), t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
 					}
 				}
-
-
 			}
 			return null;
 		}

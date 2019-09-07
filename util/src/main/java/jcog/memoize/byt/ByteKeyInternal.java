@@ -20,17 +20,17 @@ public final class ByteKeyInternal<Y> extends UnitPri implements ByteKey, PriPro
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hash;
     }
 
     @Override
-    public boolean equals(Object obj) {
+    public final boolean equals(Object obj) {
         return ByteKey.equals(this, (ByteKey) obj);
     }
 
     @Override
-    public ByteKeyInternal<Y> x() {
+    public final ByteKeyInternal<Y> x() {
         return this;
     }
 
@@ -40,12 +40,12 @@ public final class ByteKeyInternal<Y> extends UnitPri implements ByteKey, PriPro
     }
 
     @Override
-    public byte[] array() {
+    public final byte[] array() {
         return key;
     }
 
     @Override
-    public int length() {
+    public final int length() {
         return key.length;
     }
 

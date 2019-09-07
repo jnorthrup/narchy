@@ -202,7 +202,7 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
                 case "eqPN":
-                    constraints.add(new EqualPosOrNeg(XS, YS).negIf(negated));
+                    constraints.add((UnifyConstraint)(new EqualPosOrNeg(XS, YS).negIf(negated)));
                     if (negated) negationApplied = true;
                     break;
 
@@ -272,7 +272,7 @@ public class PremiseRule extends ProxyTerm {
                     if (Y instanceof Variable) {
 
                         SubOfConstraint c = new SubOfConstraint(XX, (nars.term.Variable) Y, mode, polarity);
-                        constraints.add(c.negIf(negated));
+                        constraints.add((UnifyConstraint)(c.negIf(negated)));
                     } else {
                         if (polarity == 0)
                             throw new TODO(); //TODO contains(Y) || contains(--Y)
@@ -315,7 +315,7 @@ public class PremiseRule extends ProxyTerm {
                         yNeg = !yNeg;
                     }
 
-                    constraints.add(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated));
+                    constraints.add((UnifyConstraint)(new SubOfConstraint(XX, YY, Event, yNeg ? -1 : +1).negIf(negated)));
 
                     if (!negated) {
                         bigger(XX, YY);

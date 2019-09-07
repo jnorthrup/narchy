@@ -308,14 +308,15 @@ public interface Stamp {
 
     /*
         @return
-             0 no match
-             1 a contains b, or a == b
+             Integer.MIN_VALUE no match
+             0 a == b
+            +1 a contains b
             -1 b contains a
      */
     static int equalsOrContains(long[] a, long[] b) {
 
         if (a.length == b.length) {
-            return Arrays.equals(a, b) ? +1 : 0;
+            return Arrays.equals(a, b) ? 0 : Integer.MIN_VALUE;
         } else {
             boolean swap = a.length < b.length;
             if (swap) {
@@ -324,9 +325,13 @@ public interface Stamp {
                 a = b;
                 b = c;
             }
-            for (long bb : b) {
-                if (ArrayUtil.indexOf(a, bb)==-1)
-                    return 0;
+            nextB: for (long bb : b) {
+                for (long aa : a) {
+                    if (aa == bb)
+                        break nextB; //found, try next B
+                    if (aa > bb)
+                        return Integer.MIN_VALUE; //exceeds value so bb not present in aa
+                }
             }
             return swap ? -1 : +1;
         }
