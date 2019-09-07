@@ -174,24 +174,33 @@ public class AbstractGoalActionConcept extends GameAction {
     }
 
     private  @Nullable Truth truth(@Nullable TruthProjection t, When<NAR> when, int shift) {
-        return t!=null ? t.truth(when.start + shift, when.end+ shift, NAL.truth.EVI_MIN,
-            false, false, null) : null;
+        return t!=null ?
+            t.truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
+            false, false, null) :
+            null;
     }
 
     private Truth actionTruth(int limit, Game g, int shift) {
+        float dur = g.when.dur;
 
         TruthProjection gt = truth(false, limit, g.when, shift);
+        if (gt!=null) {
+            gt.dur(dur);
 
-        Truth nextActionDex = truth(gt, g.when, shift);
-        actionDex = nextActionDex;
-        actionCoh = nextActionDex != null ? gt.coherency() : 0;
-        if (nextActionDex != null)
-            lastNonNullActionDex = actionDex;
+            Truth nextActionDex = truth(gt, g.when, shift);
+            actionDex = nextActionDex;
+            actionCoh = nextActionDex != null ? gt.coherency() : 0;
+            if (nextActionDex != null)
+                lastNonNullActionDex = actionDex;
+        } else {
+            actionDex = null;
+            actionCoh = 0;
+        }
+
 
         Truth actionCuri = curiosity.curiosity(this);
 
         long s = g.when.start, e = g.when.end;
-        float dur = g.when.dur;
         NAR n = g.nar;
 
         Curiosity.CuriosityInjection curiosityInject;

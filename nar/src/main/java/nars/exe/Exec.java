@@ -1,6 +1,7 @@
 package nars.exe;
 
 import jcog.Log;
+import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
 import jcog.util.ConsumerX;
 import nars.NAR;
@@ -56,6 +57,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
 
         if (x instanceof AbstractTask)
             Task.run(x, w);
+        else if (x!=null)
+            throw new WTF(); //HACK temporary
     }
 
 
@@ -216,7 +219,9 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
                     each.accept(x);
                 else {
                     x.scheduled = true;
-                    scheduled.offer(x);
+                    if (!scheduled.offer(x)) {
+                        throw new RuntimeException("scheduled priority queue overflow");
+                    }
                 }
             });
 

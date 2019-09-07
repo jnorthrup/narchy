@@ -231,7 +231,7 @@ public class Factorize {
             if (y.length == 0)
                 return x; //unchanged
 
-            if (Util.or(y, yy -> yy.hasAny(BOOL)))
+            if (Util.or(yy -> yy.hasAny(BOOL), y))
                 return x; //something collapsed, maybe an interaction with a prior member application
 
             if (Util.sum(Term::volume, y) > volMax - 1)

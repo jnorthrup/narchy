@@ -6,17 +6,17 @@
       (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Belief:Intersection, Time:Compose)
         (S --> P), (P --> S), --isVar(S), --isVar(P)   |-   (S <-> P), (Goal:Desire, Time:Task)
 
-      (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Belief:Resemblance, Time:Compose)
-        (M <-> P), (S <-> M), neqRCom(S,P) |- (S <-> P), (Goal:Desire, Time:Task)
+      (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)
+        (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:Desire, Time:Task)
 
-      (M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Time:Compose)
-        (M --> P), (S <-> M), neqRCom(S,P) |- (S --> P), (Goal:Desire, Time:Task)
-       (M <-> P), (S --> M), neqRCom(S,P) |- (S --> P), (Belief:AnalogyX, Time:Compose)
-        (M <-> P), (S --> M), neqRCom(S,P) |- (S --> P), (Goal:Desire, Time:Task)
-      (S --> M), (P <-> M), neqRCom(S,P) |- (S --> P), (Belief:Analogy, Time:Compose)
-        (S --> M), (P <-> M), neqRCom(S,P) |- (S --> P), (Goal:Desire, Time:Task)
-       (M <-> S), (M --> P), neqRCom(S,P) |- (S --> P), (Belief:AnalogyX, Time:Compose)
-         (M <-> S), (M --> P), neqRCom(S,P) |- (S --> P), (Goal:Desire, Time:Task)
+      (M --> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:Analogy, Time:Compose)
+        (M --> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:Desire, Time:Task)
+       (M <-> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:AnalogyX, Time:Compose)
+        (M <-> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:Desire, Time:Task)
+      (S --> M), (P <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:Analogy, Time:Compose)
+        (S --> M), (P <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:Desire, Time:Task)
+       (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Belief:AnalogyX, Time:Compose)
+         (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:Desire, Time:Task)
 
       (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Belief:Undesire, Time:Compose)
             //ReduceConjunction ~= Undesire ~= Divide
@@ -31,12 +31,12 @@
 //      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
 
-      (P --> M), (S --> M), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
-      (M --> P), (M --> S), neqRCom(S,P) |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
+      (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
+      (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
 
 //Structural Analogy
-      ((A-->B) <-> (A-->C)), ((A-->B) <-> (A-->C)), neqRCom(S,P) |- (B <-> C), (Belief:StructuralReductionWeak, Goal:StructuralReductionWeak)
-      ((B-->A) <-> (C-->A)), ((B-->A) <-> (C-->A)), neqRCom(S,P) |- (B <-> C), (Belief:StructuralReductionWeak, Goal:StructuralReductionWeak)
+      ((A-->B) <-> (A-->C)), ((A-->B) <-> (A-->C)), neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralReductionWeak, Goal:StructuralReductionWeak)
+      ((B-->A) <-> (C-->A)), ((B-->A) <-> (C-->A)), neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralReductionWeak, Goal:StructuralReductionWeak)
 
 //   see:
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies

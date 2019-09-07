@@ -9,11 +9,11 @@
 
 //DEDUCTION ---------------------------
 
-    (M --> P), (S --> M), neqRCom(S,P)    |- (S --> P), (Belief:Deduction, Time:Compose)
-    (S --> M), (M --> P), neqRCom(S,P)    |- (S --> P), (Belief:Deduction, Time:Compose)
+    (M --> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")    |- (S --> P), (Belief:Deduction, Time:Compose)
+    (S --> M), (M --> P), neqRCom(S,P), has(S,"."), has(P,".")    |- (S --> P), (Belief:Deduction, Time:Compose)
 
-      (M --> P), (S --> M), neqRCom(S,P)  |- (S --> P), (Goal:Desire, Time:Task)
-      (S --> M), (M --> P), neqRCom(S,P)  |- (S --> P), (Goal:Desire, Time:Task)
+      (M --> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")  |- (S --> P), (Goal:Desire, Time:Task)
+      (S --> M), (M --> P), neqRCom(S,P), has(S,"."), has(P,".")  |- (S --> P), (Goal:Desire, Time:Task)
 
        (S --> P), (S --> M), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
         (S --> P), (M --> P), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
@@ -24,11 +24,11 @@
        (P --> M), (M --> S), task("!"), neqRCom(S,P)   |- (M --> S), (Punctuation:Quest, Time:Compose)
 
 //EXEMPLIFICATION
-    (P --> M), (M --> S), neqRCom(S,P)   |- (S --> P), (Belief:Exemplification, Time:Compose)
-    (M --> P), (S --> M), neqRCom(S,P)   |- (P --> S), (Belief:Exemplification, Time:Compose)
+    (P --> M), (M --> S), neqRCom(S,P), has(S,"."), has(P,".")   |- (S --> P), (Belief:Exemplification, Time:Compose)
+    (M --> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")   |- (P --> S), (Belief:Exemplification, Time:Compose)
 
-      (P --> M), (M --> S), neqRCom(S,P)  |- (S --> P), (Goal:DesireWeak, Time:Task)
-      (M --> P), (S --> M), neqRCom(S,P)  |- (P --> S), (Goal:DesireWeak, Time:Task)
+      (P --> M), (M --> S), neqRCom(S,P), has(S,"."), has(P,".")  |- (S --> P), (Goal:DesireWeak, Time:Task)
+      (M --> P), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")  |- (P --> S), (Goal:DesireWeak, Time:Task)
 
        (S --> P), (P --> M), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
         (S --> P), (M --> S), neqRCom(P,M)  |- (P --> M), (Punctuation:AskAsk, Time:Task)

@@ -34,8 +34,8 @@ abstract class AbstractTimerTest {
     }
 
     protected HashedWheelTimer.WheelModel model(long resolution, int wheels) {
-        AdmissionQueueWheelModel admissionQueue = new AdmissionQueueWheelModel(wheels, resolution);
-        return admissionQueue;
+        //return new AdmissionQueueWheelModel(wheels, resolution);
+        return new QueueWheelModel(wheels, resolution);
     }
 
     protected abstract HashedWheelTimer.WaitStrategy waitStrategy();

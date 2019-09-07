@@ -5,6 +5,7 @@ import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -24,9 +25,6 @@ public class HyperIterator<X>  {
      */
     private X next;
 
-
-//    @Nullable
-//    private NodeFilter<X> nodeFilter = null;
 
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
@@ -53,7 +51,7 @@ public class HyperIterator<X>  {
             restart: do {
                 findingLeaves = false;
                 Object[] items = plan.items;
-                for (int i = 0, itemsLength = plan.size(); i < itemsLength;) {
+                for (int i = 0, itemsLength = plan.size(); i < itemsLength; ) {
                     Object x = items[i];
                     if (x instanceof RBranch) {
                         plan.remove(i);
@@ -74,39 +72,50 @@ public class HyperIterator<X>  {
                     } else
                         i++;
                 }
+
+                //TODO find why findingLeaves isnt sufficient break condition
+
+//                boolean remain = Util.or(x -> x instanceof RBranch,  0, plan.size(), plan.items);
+//                if (remain != findingLeaves)
+//                    throw new WTF();
+
+
+            } while (Util.or(x -> x instanceof RBranch, 0, plan.size(), plan.items)); //HACK
             //} while (findingLeaves);
-            } while (Util.or(plan.items, x -> x instanceof RBranch)); //HACK
 
 
             int leaves = plan.size();
-            assert(leaves > 0);
             if (leaves == 1)
                 leaf((RLeaf<X>) plan.first(), whle);
-            else {
-                //round-robin visit
-                int[] prog = new int[leaves];
-                int n = 0;
-                for (int i = 0; i < leaves; i++) {
-                    short is = ((RLeaf) plan.get(i)).size;
-                    prog[i] = is;
-                    n+= is;
-                }
-                int c = 0;
-                int k = 0;
-                Object[] pp = plan.items;
-                do {
-                    if (k == leaves) k = 0;
-                    int pk = prog[k];
-                    if (pk > 0) {
-                        if (!whle.test( ((RLeaf<X>) pp[k]).data[ --prog[k] ] )) {
-                            break;
-                        }
-                    }
-                    k++;
-                } while (c++ < n);
-
-            }
+            else
+                bfsRoundRobin(whle);
         }
+    }
+
+    private void bfsRoundRobin(Predicate whle) {
+        int leaves = plan.size(); //assert(leaves > 0);
+        int[] prog = new int[leaves];
+        int n = 0;
+        Object[] pp = plan.items;
+        for (int i = 0; i < leaves; i++) {
+            short is = ((RLeaf) pp[i]).size;
+            prog[i] = is;
+            n+= is;
+        }
+        int c = 0;
+        int k = 0;
+        final int o = ThreadLocalRandom.current().nextInt(n * leaves); //shuffles the inner-leaf visiting order
+        do {
+            int pk = prog[k];
+            if (pk > 0) {
+                RLeaf<X> lk = (RLeaf<X>) pp[k];
+                X[] dd = lk.data;
+                if (!whle.test( dd[ (--prog[k] + (o+k)) % lk.size ] ))
+                    break;
+            }
+            k++;
+            if (k == leaves) k = 0;
+        } while (c++ < n);
     }
 
     private static <X> void leaf(RLeaf<X> rl, Predicate whle) {

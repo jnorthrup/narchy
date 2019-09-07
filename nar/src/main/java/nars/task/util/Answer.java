@@ -96,18 +96,17 @@ public final class Answer implements Timed, Predicate<Task> {
 
     /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
     public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd, float confPerTime) {
+        //TODO special impl for confPerTime==0
         return qStart == qEnd ?
-            ((x,min) -> -distanceMin(x, qStart) + x.confMax() * confPerTime) :
-            ((x,min) -> -((float) distanceMin(x, qStart, qEnd)) + x.confMax() * confPerTime) ;
+            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
+            (x,min) -> -(float)(((double)x.minTimeTo(qStart,qEnd))+ x.confMax() * confPerTime) ;
     }
 
     /** temporal distance to point magnitude */
     private static double distanceMid(TaskRegion t, long now, double dur) {
         return t.meanTimeTo(now)/(1+dur);
     }
-    private static float distanceMin(TaskRegion t, long now) {
-        return t.minTimeTo(now);
-    }
+
     /** temporal distance to range magnitude */
     private static double distanceMin(TaskRegion t, long qStart, long qEnd) {
         return t.minTimeTo(qStart, qEnd);

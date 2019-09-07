@@ -1,19 +1,22 @@
 package nars.table.question;
 
+import jcog.Util;
 import jcog.data.NumberX;
 import jcog.math.LongInterval;
+import jcog.math.Longerval;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.truth.Stamp;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
+import static nars.time.Tense.ETERNAL;
 import static nars.time.Tense.TIMELESS;
 
 public class HijackQuestionTable extends PriHijackBag<Task, Task> implements QuestionTable {
@@ -65,42 +68,49 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
         if (isEmpty())
             return null;
 
+        long[] xStamp = x.stamp();
+
         long xs = TIMELESS, xe = TIMELESS;
         for (Task y : this) {
             if (x.equals(y))
                 return y; //found exact
 
+            if (x.term().equals(y.term())) {
 
-            if (Arrays.equals(x.stamp(), y.stamp())) {
-                if (x.term().equals(y.term())) {
-//                    long ye = y.end();
+                int sc;
+                long[] yStamp = y.stamp();
+                if ((sc = Stamp.equalsOrContains(xStamp, yStamp))!=0) {
                     if (xs == TIMELESS) {
                         xs = x.start(); xe = x.end();
                     }
-                    //long ys = y.start();
                     //if (LongInterval.intersectLength(xs, xe, ys, ye)>0) {
                     //if (LongInterval.intersectsSafe(xs, xe, ys, ye)) {
-                        //Longerval u = LongInterval.union(xs, xe, ys, ye);
-                    if (y.contains(xs, xe))  {
+                    if (y.containsSafe(xs, xe))  {
                         //x contained within y, so merge
                         //TODO boost y priority if contributes to it, in proportion to range
                         return y;
-                    } else if (x.contains((LongInterval)y)) { //TODO y.containedBy(xs,xe)
+                    } else if (y.containedBySafe(xs, xe)) { //TODO y.containedBy(xs,xe)
                         //y contained within x, so remove y.   expect x to get inserted next
                         //TODO boost x priority if contributes to it, in proportion to range
                         remove(y);
                         y.delete();
                         return null;
-                    }
-//                        } else {
-//                                float newPri = (float)(((x.priElseZero() * ((double)(xe-xs))) + (y.priElseZero() * (ye-ys))) /  (u.end - u.start));
-//                                Task x2 = Task.clone(x, x.term(), null, x.punc(), xs = u.start, xe = u.end);
-//                                Task.merge(x2, new Task[] { x, y }, newPri);
-//                                remove(y); y.delete();
-//                                x = x2;
-//                        }
+                    } else if (y.intersects(xs, xe)) {
+                        long ys = y.start(), ye = y.end();
+                        Longerval u = LongInterval.union(xs, xe, ys, ye);
 
-                    //}
+                        float newPri = xs == ETERNAL || ys == ETERNAL ?
+                            Util.or(x.priElseZero(), y.priElseZero()) :
+                            (float) ((x.priElseZero() * (double)(xe-xs) + y.priElseZero() * (ye-ys)) /  (u.end - u.start));
+
+                        //use larger of the 2 stamps (subsume's smaller)
+                        long[] stamp = sc == +1 ? xStamp : yStamp; //TODO determine if this is safe
+
+                        Task xy = Task.clone(x, x.term(), null, x.punc(), u.start, u.end, stamp);
+                        Task.merge(xy, new Task[] { x, y }, newPri);
+                        remove(y); y.delete();
+                        return xy;
+                    }
                 }
             }
         }

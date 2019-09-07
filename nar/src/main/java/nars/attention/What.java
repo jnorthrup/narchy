@@ -112,10 +112,10 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         add(loop);
     }
 
-    /** update period (in cycles) */
-    public long durUpdate() {
-        return loop.durCycles();
-    }
+//    /** update period (in cycles) */
+//    public long durUpdate() {
+//        return loop.durCycles();
+//    }
 
     /** perceptual duration (cycles) */
     @Override public float dur() {

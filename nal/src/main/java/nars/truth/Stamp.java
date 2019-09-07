@@ -306,7 +306,31 @@ public interface Stamp {
         return true;
     }
 
+    /*
+        @return
+             0 no match
+             1 a contains b, or a == b
+            -1 b contains a
+     */
+    static int equalsOrContains(long[] a, long[] b) {
 
+        if (a.length == b.length) {
+            return Arrays.equals(a, b) ? +1 : 0;
+        } else {
+            boolean swap = a.length < b.length;
+            if (swap) {
+                //swap
+                long[] c = a;
+                a = b;
+                b = c;
+            }
+            for (long bb : b) {
+                if (ArrayUtil.indexOf(a, bb)==-1)
+                    return 0;
+            }
+            return swap ? -1 : +1;
+        }
+    }
 
 
     boolean isCyclic();

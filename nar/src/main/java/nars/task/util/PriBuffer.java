@@ -323,12 +323,12 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
                         int remain = n;
                         int nEach = (int) Math.ceil(((float) remain) / c);
 
-                        Consumer<FasterList<Task>> targetBatched = (batch) -> batch.forEach(target);
+                        Consumer<FasterList<Task>> targetBatched = batch -> batch.forEach(target);
 
                         for (int i = 0; i < c && remain > 0; i++) {
                             int asked = Math.min(remain, nEach);
                             remain -= asked;
-                            target.input(b, target, asked, nar.exe,
+                            target.input(b, asked, nar.exe,
                                 targetBatched,
                                 NAL.PRE_SORT_TASK_INPUT_BATCH ? Task.sloppySorter : null
                                 );

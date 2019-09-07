@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.math.FloatRange;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
@@ -10,6 +11,8 @@ import nars.link.AtomicTaskLink;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
 import org.jetbrains.annotations.Nullable;
+
+import java.nio.BufferOverflowException;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -43,7 +46,7 @@ public class STMLinkage extends NARPart {
 
         this.capacity = capacity;
         stm = //  new MetalConcurrentQueue<>(capacity);
-                new MpmcAtomicArrayQueue<>(Math.max(2,capacity));
+                new MpmcAtomicArrayQueue<>(Math.max(2, capacity));
         for (int i = 0; i < capacity; i++)
             stm.offer(pair(null,null));
 
@@ -117,7 +120,10 @@ public class STMLinkage extends NARPart {
 
             if (keep(y)) {
                 stm.poll();
-                stm.offer(pair(y, yc));
+                if (!stm.offer(pair(y, yc))) {
+                    if (NAL.DEBUG)
+                        throw new BufferOverflowException();
+                }
             }
         }
 

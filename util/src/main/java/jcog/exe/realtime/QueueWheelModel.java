@@ -1,6 +1,8 @@
 package jcog.exe.realtime;
 
+import jcog.TODO;
 import jcog.Util;
+import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 
 import java.util.Queue;
 import java.util.function.Supplier;
@@ -15,7 +17,12 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 	 */
 	final Queue<TimedFuture>[] q;
 
-	public QueueWheelModel(int wheels, Supplier<Queue<TimedFuture>> queueBuilder, long resolution) {
+	/** thread-safe */
+	public QueueWheelModel(int wheels, long resolution) {
+		this(wheels, resolution, ()->new MpscAtomicArrayQueue<>(32));
+	}
+
+	public QueueWheelModel(int wheels, long resolution, Supplier<Queue<TimedFuture>> queueBuilder) {
 		super(wheels, resolution);
 		assert (wheels > 1);
 		q = new Queue[wheels];
@@ -25,12 +32,12 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 
 	@Override
 	public int run(int c, HashedWheelTimer timer) {
-		Queue<TimedFuture> q = this.q[c];
 
 
 		//TODO if n=2 and the previous or next queue is empty try moving one of the items there. this will distribute items across wheels so each has an ideal 0 or 1 size
 
 		int n = 0, limit = Integer.MAX_VALUE;
+		Queue<TimedFuture> q = this.q[c];
 
 		TimedFuture r;
 		while ((r = q.poll()) != null) {
@@ -43,10 +50,14 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 					r.execute(timer);
 					break;
 				case PENDING:
-				    if (limit == Integer.MAX_VALUE) {
+				    if (limit == Integer.MAX_VALUE)
                         limit = n + q.size(); //defer calculating queue size until the first reinsert otherwise it will keep polling what is offered in this loop
-                    }
-					q.offer(r); //re-insert
+					//re-insert
+					if (!q.offer(r)) {
+						if (!this.q[(c+1)%wheels].offer(r)) { //try the next
+							throw new TODO(); //TODO try all other queues in sequence
+						}
+					}
 					break;
 			}
 			if (n >= limit)

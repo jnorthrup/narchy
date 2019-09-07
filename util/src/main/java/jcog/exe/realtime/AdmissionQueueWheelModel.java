@@ -1,5 +1,6 @@
 package jcog.exe.realtime;
 
+import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.ArrayDeque;
@@ -72,7 +73,8 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
                             r.execute(timer);
                             break;
                         case PENDING:
-                            q.offer(r);
+                            if (!q.offer(r))
+                                throw new TODO();
                             break;
                     }
                 }

@@ -25,7 +25,6 @@ import org.eclipse.collections.api.block.function.primitive.DoubleToFloatFunctio
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
-import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.set.MutableSet;
@@ -1421,13 +1420,6 @@ public enum Util {
         return false;
     }
 
-    public static <X> int or(ToIntFunction<X> value, X... xx) {
-        int y = 0;
-        for (X x : xx)
-            y |= value.applyAsInt(x);
-        return y;
-    }
-
     /** warning: if values are the same then biases towards the first
      * TODO make a random one for cases where equivalents exist
      * */
@@ -2119,49 +2111,24 @@ public enum Util {
                 i++;
         return i;
     }
-    public static <X> boolean and(Predicate<X> p, int from, int to,  X... xx) {
+    public static <X> boolean and(Predicate<X> p, int from, int to,  X[] xx) {
         for (int i = from; i < to; i++)
             if (!p.test(xx[i]))
                 return false;
         return true;
     }
-    public static <X> boolean or(Predicate<X> p, int from, int to,  X... xx) {
+    public static <X> boolean or(Predicate<X> p, int from, int to,  X[] xx) {
         for (int i = from; i < to; i++)
             if (p.test(xx[i]))
                 return true;
         return false;
     }
 
-    public static <X> boolean and(X[] xx, Predicate<X> p) {
+    public static <X> boolean and(Predicate<X> p, X[] xx) {
         return and(p, 0, xx.length, xx);
     }
-    public static <X> boolean or(X[] xx, Predicate<X> p) {
+    public static <X> boolean or(Predicate<X> p, X[] xx) {
         return or(p, 0, xx.length, xx);
-    }
-
-    public static boolean and(float[] xx, FloatPredicate p) {
-        for (float x : xx)
-            if (!p.accept(x))
-                return false;
-        return true;
-    }
-
-    public static <X> boolean andReverse(X[] xx, Predicate<X> p) {
-        for (int i = xx.length - 1; i >= 0; i--) {
-            if (!p.test(xx[i]))
-                return false;
-        }
-        return true;
-    }
-
-    public static <X> boolean and(Predicate<X> p, X... xx) {
-        return and(xx, p);
-    }
-    public static <X> boolean or(Predicate<X> p, X... xx) {
-        for (X x : xx)
-            if (p.test(x))
-                return true;
-        return false;
     }
 
     public static <X> boolean and(X x, Iterable<Predicate<? super X>> p) {

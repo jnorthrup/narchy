@@ -26,7 +26,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
 
     protected TermVector(Term... terms) {
         super(terms);
-        the = Util.and(terms, Term::the);
+        the = Util.and(Term::the, terms);
     }
 
     @Override public int indexOf(/*@NotNull*/ Term t) {

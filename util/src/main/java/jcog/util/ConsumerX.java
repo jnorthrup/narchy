@@ -63,11 +63,6 @@ import java.util.stream.Stream;
     }
 
     default void acceptAll(X[] xx) {
-//        switch (xx.length) {
-//            case 0:  break;
-//            case 1:  accept(xx[0]); break;
-//            default: acceptAll(ArrayIterator.iterator(xx)); break;
-//        }
         for (X x : xx)
             accept(x);
     }
@@ -81,7 +76,7 @@ import java.util.stream.Stream;
 
 //    void input(Bag<ITask, ITask> b, What target, int min);
     /** asynchronously drain N elements from a bag as input */
-    default void input(Sampler<? extends X> taskSampler, ConsumerX<? super X> target, int max, Executor exe, Consumer<FasterList<X>> runner, @Nullable Comparator<X> batchSorter) {
+    default void input(Sampler<? extends X> taskSampler, int max, Executor exe, Consumer<FasterList<X>> runner, @Nullable Comparator<X> batchSorter) {
         Sampler b;
         if  (taskSampler instanceof BufferedBag)
             b = ((BufferedBag) taskSampler).bag;

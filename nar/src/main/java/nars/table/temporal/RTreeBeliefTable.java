@@ -177,33 +177,33 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
 		//tree.readOptimistic(
-		read(
-			t -> {
-				int n = t.size();
-				switch (n) {
-					case 0:
-						return;
-					case 1:
-						t.forEach(((Predicate) a)::test);
-						break;
-					default: {
+		read(t -> {
+			int n = t.size();
+			if (n == 0)
+				return;
 
-						long s = a.start, e = a.end;
-						float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) t.root().bounds()).confMax());
-						float confPerTime = (float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
+			int ac = a.tasks.capacity();
+			if (n <= Math.min(ac, a.ttl)) {
+				t.forEach(((Predicate) a)::test);
+			} else {
 
-						HyperIterator.HyperIteratorRanker<?,TaskRegion> rank = new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e, confPerTime));
-						//
-						int cursorCapacity = Math.min(n, a.tasks.capacity() /* tries? */ );
+				long s = a.start, e = a.end;
+				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) t.root().bounds()).confMax());
+				float confPerTime =
+					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
+					//(a.dur / confMax);
+					(Math.max(1, a.dur) / confMax);
 
-						HyperIterator h = new HyperIterator(new Object[cursorCapacity], rank);
-						//h.dfs(t.root(), whle);
-						h.bfs(t.root(), a);
+				HyperIterator.HyperIteratorRanker<?, TaskRegion> rank =
+					new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e, confPerTime));
 
-						break;
-					}
-				}
-			});
+				int cursorCapacity = Math.min(n, ac /* tries?  .. / tasks per leaf? */);
+
+				HyperIterator h = new HyperIterator(new Object[cursorCapacity], rank);
+				//h.dfs(t.root(), whle);
+				h.bfs(t.root(), a);
+			}
+		});
 	}
 
 	@Override

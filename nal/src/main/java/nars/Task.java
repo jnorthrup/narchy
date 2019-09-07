@@ -314,6 +314,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
         return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, x.stamp()));
     }
+    @Nullable
+    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
+        return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, stamp));
+    }
 
     @Nullable
     static <T extends Task> T clone(Task x, Term newContent, BiFunction<Term, Truth, T> taskBuilder) {

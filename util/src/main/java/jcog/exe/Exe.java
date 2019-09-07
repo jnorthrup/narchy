@@ -36,11 +36,10 @@ public enum Exe {;
 //            new MetalConcurrentQueueWheelModel(64, 32,
 //                    TimeUnit.MILLISECONDS.toNanos(1))
             new QueueWheelModel(256,
-                    ()->
+                TimeUnit.MILLISECONDS.toNanos(1), ()->
                         new MpscAtomicArrayQueue<>(32)
                         //new MpscArrayQueue<>(32)
-                    ,
-                    TimeUnit.MILLISECONDS.toNanos(1)),
+            ),
 
 
             HashedWheelTimer.WaitStrategy.SleepWait,
