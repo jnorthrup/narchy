@@ -138,6 +138,15 @@ abstract public class AbstractDynamicTruth {
 				return null;
 		}
 
+		if (d.model == DynamicConjTruth.ConjIntersection) {
+			//adjust sequence length
+			int r = y.eventRange();
+			if (s!=ETERNAL && r > 0) {
+				if (e - s > r)
+					e-=r;
+			}
+		}
+
 		return TruthProjection.merge(d::arrayCommit, y, t, d.stamp(STAMP_CAPACITY, nar.random()), d.beliefOrGoal, s, e, nar);
 	}
 }

@@ -41,6 +41,7 @@ public enum ConjSpans { ;
 		LongObjectHashMap<MetalBitSet> inter = new LongObjectHashMap<>(n*2);
 
 		//collect extents of tasks
+		long dur = Long.MAX_VALUE;
 		for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
 			Task t = tt.get(i);
 			long s = t.start();
@@ -49,9 +50,17 @@ public enum ConjSpans { ;
 					return null;
 			}
 			long e = t.end();
+			dur = Math.min(dur, e - s);
 			inter.getIfAbsentPut(s, MetalBitSet::full).set(i);
-			if (e!=s) {
-				inter.getIfAbsentPut(e, MetalBitSet::full).set(i);
+		}
+		for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
+			Task t = tt.get(i);
+			long s = t.start();
+			if (s != ETERNAL) {
+				long e = t.end() - dur;
+				if (e != s) {
+					inter.getIfAbsentPut(e, MetalBitSet::full).set(i);
+				}
 			}
 		}
 
@@ -62,7 +71,7 @@ public enum ConjSpans { ;
 			Task t = tt.get(i);
 			long s = t.start();
 			if (s == ETERNAL) continue; //ignore, already added
-			long e = t.end();
+			long e = t.end() - dur;
 			for (int j = 0; j < wn; j++) {
 				LongObjectPair<MetalBitSet> ww = w.get(j);
 				long wj = ww.getOne();

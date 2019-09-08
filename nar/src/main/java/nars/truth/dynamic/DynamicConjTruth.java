@@ -66,50 +66,49 @@ public class DynamicConjTruth {
         }
 
         @Override
-        public Term reconstruct(Compound superterm, long sequenceStart, long startEnd, DynTaskify d) {
+        public Term reconstruct(Compound superterm, long seqStart, long seqEnd, DynTaskify d) {
 
-            ConjBuilder b =
+            ConjBuilder c =
                 //new ConjTree();
                 new ConjList();
 
 
             long end;
-            if (sequenceStart==ETERNAL) {
+            boolean aligned = true;
+            if (seqStart==ETERNAL) {
                 end = ETERNAL;
             } else {
                 long sequenceLatestStart = d.latestStart(); assert(sequenceLatestStart!=ETERNAL);
 
                 //sequenceStart = sequenceStart; //dither now for comparisons in loop
 
-                long range = startEnd - sequenceStart;
+                long range = seqEnd - seqStart;
                 end = sequenceLatestStart + range; //the actual total end of the sequence
-            }
 
-
-            //determine what method to use.  if all the non-eternal tasks have similar spans, then reconstructSequence otherwise reconstructInterval
-            boolean aligned = true;
-            {
-                long s = Long.MAX_VALUE, e = Long.MAX_VALUE;
-                int dither = d.nar.dtDither();
-                for (Task t : d) {
-                    long ts = t.start();
-                    if (ts == ETERNAL) continue;
-                    if (s == Long.MAX_VALUE) {
-                        s = ts; e = t.end();
-                    } else {
-                        if (Math.abs(s - ts) >= dither || Math.abs(e - t.end()) >= dither) {
-                            aligned = false;
-                            break;
+                //determine what method to use.  if all the non-eternal tasks have similar spans, then reconstructSequence otherwise reconstructInterval
+                {
+                    long s = Long.MAX_VALUE, e = Long.MAX_VALUE;
+                    int dither = d.nar.dtDither();
+                    for (Task t : d) {
+                        long ts = t.start();
+                        if (ts == ETERNAL) continue;
+                        if (s == Long.MAX_VALUE) {
+                            s = ts; e = t.end();
+                        } else {
+                            if (Math.abs(s - ts) >= dither || Math.abs(e - t.end()) >= dither) {
+                                aligned = false;
+                                break;
+                            }
                         }
                     }
                 }
             }
 
             boolean result = aligned ?
-                reconstructSequence(sequenceStart, end, d, b) :
-                reconstructInterval(d, b);
+                reconstructSequence(seqStart, end, d, c) :
+                reconstructInterval(d, c);
 
-            return result ? b.term() : null;
+            return result ? c.term() : null;
         }
 
         @Override
@@ -217,7 +216,6 @@ public class DynamicConjTruth {
     static boolean reconstructSequence(long sequenceStart, long end, DynTaskify d, ConjBuilder b) {
         int n = d.size();
 
-
         for (int i = 0; i < n; i++) {
             Task t = d.get(i);
             long s = t.start();
@@ -236,8 +234,8 @@ public class DynamicConjTruth {
         return true;
     }
     static boolean reconstructInterval(DynTaskify d, ConjBuilder b) {
-        @Nullable ConjBuilder bb = ConjSpans.add(d, true, b);
-        return (bb != null);
+        ConjBuilder bb = ConjSpans.add(d, true, b);
+        return bb != null;
     }
 
 }

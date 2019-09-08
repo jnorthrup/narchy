@@ -69,6 +69,9 @@
   (&&,  (X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
     (&&,--(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,--Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
     (&&,--(X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),--X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
+  (&&,  (X==>Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
+    (&&,--(X==>Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,--Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
+    (&&,--(X==>Y),A..+), (X<->Y)         |- substitute((&&,A..+),--X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)
 
 
 

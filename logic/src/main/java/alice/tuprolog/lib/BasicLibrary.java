@@ -24,23 +24,23 @@ import java.util.List;
 
 /**
  * This class defines a set of basic built-in predicates for the tuProlog engine
- * 
+ *
  * Library/Theory dependency: none
- * 
- * 
- * 
+ *
+ *
+ *
  */
 public class BasicLibrary extends PrologLib {
     public BasicLibrary() {
     }
 
-    
-    
-    
+
+
+
 
     /**
      * sets a new theory provided as a text
-     * 
+     *
      * @throws PrologError
      */
     public boolean set_theory_1(Term th) throws PrologError {
@@ -56,8 +56,8 @@ public class BasicLibrary extends PrologLib {
             prolog.setTheory(new Theory(theory.name()));
             return true;
         } catch (InvalidTheoryException ex) {
-            /*Castagna 06/2011*/			
-			
+            /*Castagna 06/2011*/
+
             throw PrologError.syntax_error(prolog, ex.clause, ex.line, ex.pos, new Struct(ex.getMessage()));
 			/**/
         }
@@ -65,7 +65,7 @@ public class BasicLibrary extends PrologLib {
 
     /**
      * adds a new theory provided as a text
-     * 
+     *
      * @throws PrologError
      */
     public boolean add_theory_1(Term th) throws PrologError {
@@ -82,7 +82,7 @@ public class BasicLibrary extends PrologLib {
             return true;
         } catch (InvalidTheoryException ex) {
             /*Castagna 06/2011*/
-        	
+
             throw PrologError.syntax_error(prolog, ex.clause, ex.line, ex.pos, new Struct(ex.getMessage()));
         	/**/
         }
@@ -100,7 +100,7 @@ public class BasicLibrary extends PrologLib {
     }
 
 
-    
+
 
 
 
@@ -115,7 +115,7 @@ public class BasicLibrary extends PrologLib {
 
     /**
      * Loads a library constructed from a theory.
-     * 
+     *
      * @param theory
      *            theory text
      * @param libName
@@ -213,7 +213,7 @@ public class BasicLibrary extends PrologLib {
         prolog.setSpy(false);
         return true;
     }
-    
+
     /*Castagna 16/09*/
     public boolean trace_0() {
         return this.spy_0();
@@ -223,7 +223,7 @@ public class BasicLibrary extends PrologLib {
         return nospy_0();
     }
     /**/
-    
+
     public boolean warning_0() {
         prolog.setWarning(true);
         return true;
@@ -234,9 +234,9 @@ public class BasicLibrary extends PrologLib {
         return true;
     }
 
-    
-    
-    
+
+
+
 
     public static boolean constant_1(Term t) {
         t = t.term();
@@ -296,15 +296,15 @@ public class BasicLibrary extends PrologLib {
         return (t.isGround());
     }
 
-    
-    
-    
+
+
+
 
     private void handleError(Throwable t, int arg) throws PrologError {
-        
+
         if (t instanceof ArithmeticException) {
             ArithmeticException cause = (ArithmeticException) t;
-            
+
             if (cause.getMessage().equals("/ by zero"))
                 throw PrologError.evaluation_error(prolog,
                         arg, "zero_divisor");
@@ -464,7 +464,7 @@ public class BasicLibrary extends PrologLib {
     public static boolean term_greater_than_2(Term arg0, Term arg1) {
         arg0 = arg0.term();
         arg1 = arg1.term();
-        
+
         return arg0.isGreater(arg1);
     }
 
@@ -651,8 +651,8 @@ public class BasicLibrary extends PrologLib {
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            
-            
+
+
             return new NumberTerm.Long(val0n.longValue() >> val1n.longValue());
         } else {
             return null;
@@ -671,8 +671,8 @@ public class BasicLibrary extends PrologLib {
         if (val0 instanceof NumberTerm                && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            
-            
+
+
             return new NumberTerm.Long(val0n.longValue() << val1n.longValue());
         } else {
             return null;
@@ -692,8 +692,8 @@ public class BasicLibrary extends PrologLib {
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            
-            
+
+
             return new NumberTerm.Long(val0n.longValue() & val1n.longValue());
         } else {
             return null;
@@ -713,17 +713,17 @@ public class BasicLibrary extends PrologLib {
                 && val1 instanceof NumberTerm) {
             NumberTerm val0n = (NumberTerm) val0;
             NumberTerm val1n = (NumberTerm) val1;
-            
-            
+
+
             return new NumberTerm.Long(val0n.longValue() | val1n.longValue());
         } else {
             return null;
         }
     }
 
-    
-    
-    
+
+
+
 
     /**
      * bidirectional text/term conversion.
@@ -787,7 +787,7 @@ public class BasicLibrary extends PrologLib {
             for(int i=0; i<st.length(); i++)
             {
             	st2+=st.charAt(i);
-            	
+
             	if (st.charAt(0)=='0' && st.charAt(1)==39 && st.charAt(2)==39 && st.length()==4)
             	{
             		String sti= String.valueOf(st.charAt(3));
@@ -810,19 +810,19 @@ public class BasicLibrary extends PrologLib {
             String iBetween="";
             for(int i=0; i<st2.length(); i++)
             {
-            	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && before) 
+            	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && before)
             		numBefore++;
-            	
+
             	between=false;
-            	if(st2.charAt(i)>='0' && st2.charAt(i)<='9') 
+            	if(st2.charAt(i)>='0' && st2.charAt(i)<='9')
             	{
             		int k=0;
-            		for(int j=i+1; j<st2.length(); j++) 
+            		for(int j=i+1; j<st2.length(); j++)
             		{
-            			if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i>1) 
+            			if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i>1)
             			{
             				k+=i+1;
-            				numBetween+=2; 
+            				numBetween+=2;
             				iBetween= String.valueOf(k) + j;
             				i+=j;
             				j=st2.length();
@@ -831,7 +831,7 @@ public class BasicLibrary extends PrologLib {
             			else if(st2.charAt(j)>='0' && st2.charAt(j)<='9' && j-i==1)
             				k++;
             		}
-            		
+
             		if (!between)
             		{
             			before=false;
@@ -840,7 +840,7 @@ public class BasicLibrary extends PrologLib {
             		else
             			before=false;
             	}
-            	
+
             	if((st2.charAt(i)<'0' || st2.charAt(i)>'9') && after)
             		numAfter++;
             }
@@ -895,7 +895,7 @@ public class BasicLibrary extends PrologLib {
         }
     }
 
-    
+
     public static boolean throw_1(Term error) throws PrologError {
         throw new PrologError(error);
     }
@@ -903,9 +903,9 @@ public class BasicLibrary extends PrologLib {
     @Override
     public String getTheory() {
         return
-        
-        
-        
+
+
+
         "':-'(op( 1200, fx,   ':-')). \n"
                 + ":- op( 1200, xfx,  ':-'). \n"
                 + ":- op( 1200, fx,   '?-'). \n"
@@ -915,7 +915,7 @@ public class BasicLibrary extends PrologLib {
                 + ":- op(  900, fy,   '\\+'). \n"
                 + ":- op(  900, fy,   'not'). \n"
                 +
-                
+
                 ":- op(  700, xfx,  '='). \n"
                 + ":- op(  700, xfx,  '\\='). \n"
                 + ":- op(  700, xfx,  '=='). \n"
@@ -932,7 +932,7 @@ public class BasicLibrary extends PrologLib {
                 + ":- op(  700, xfx,  '=<'). \n"
                 + ":- op(  700, xfx,  '>='). \n"
                 +
-                
+
                 ":- op(  700, xfx,  'is'). \n"
                 + ":- op(  700, xfx,  '=..'). \n"
                 + ":- op(  500, yfx,  '+'). \n"
@@ -950,7 +950,7 @@ public class BasicLibrary extends PrologLib {
                 + ":- op(  200, xfy,  '^'). \n"
                 + ":- op(  200, fy,   '\\'). \n"
                 + ":- op(  200, fy,   '-'). \n"
-                
+
                 //
                 // flag management
                 //
@@ -979,7 +979,7 @@ public class BasicLibrary extends PrologLib {
                 +"'=..'(T, [T]) :- atomic(T), !. \n                                                          "
                 + "'=..'(T,L)  :- compound(T),!, '$tolist'(T,L). \n                                                          "
                 + "'=..'(T,L)  :- nonvar(L), catch('$fromlist'(T,L),Error,false). \n                                                          "
-                
+
                 /* commented by Roberta Calegari 29/04/14 it causes a loop: functor bug issue 14 google code, rewritten functor predicate
                 + "functor(Term, Name, Arity) :- atomic(Term), !, Name = Term, Arity = 0. \n"
                 + "functor(Term, Name, Arity) :- compound(Term), !, Term =.. [Name | Args], length(Args, Arity). \n"
@@ -990,10 +990,10 @@ public class BasicLibrary extends PrologLib {
                 + "functor(Term, Functor, Arity) :- var(Term), atomic(Functor), Arity == 0, !, Term = Functor.\n"
                 + "functor(Term, Functor, Arity) :- var(Term), current_prolog_flag(max_arity, Max), Arity>Max, !, false.\n"
                 + "functor(Term, Functor, Arity) :- var(Term), atom(Functor), number(Arity), Arity > 0, !,length(ArgList, Arity),Term =.. [Functor|ArgList].\n"
-                
+
                 + "functor(_Term, _Functor, _Arity) :-false.\n"
-                
-                
+
+
                 + "arg(N,C,T):- arg_guard(N,C,T), C =.. [_|Args], element(N,Args,T).\n"
                 + "clause(H, B) :- clause_guard(H,B), L = [], '$find'(H, L), copy_term(L, LC), member((':-'(H, B)), LC). \n"
                 +
@@ -1014,14 +1014,14 @@ public class BasicLibrary extends PrologLib {
                 + "A ; B :- A =.. ['->', C, T], !, ('$call'(C), !, '$call'(T) ; '$call'(B)). \n"
                 + "A ; B :- '$call'(A). \n"
                 + "A ; B :- '$call'(B). \n "
-                
-                + "unify_with_occurs_check(X,Y):- "+ /*not_occurs_in(X,Y),*/"!,X=Y.\n" 
+
+                + "unify_with_occurs_check(X,Y):- "+ /*not_occurs_in(X,Y),*/"!,X=Y.\n"
                 /*+ "not_occurs_in(X,Y) :- var(Y), X \\== Y.\n"
                 + "not_occurs_in(X,Y) :- nonvar(Y), constant(Y).\n"
                 + "not_occurs_in(X,Y) :- nonvar(Y), compound(Y), functor(Y,F,N), not_occurs_in(N,X,Y).\n"
                 + "not_occurs_in(N,X,Y) :-	N > 0, arg(N,Y,Arg), not_occurs_in(X,Arg), N1 is N-1, not_occurs_in(N1,X,Y).\n"
                 + "not_occurs_in(0,X,Y).\n"*/
-                
+
                 + "current_op(Pri,Type,Name):-get_operators_list(L),member(op(Pri,Type,Name),L).\n                          "
                 + "once(X) :- myonce(X).\n                                                                                  "
                 + "myonce(X):-X,!.\n                                                                                        "
@@ -1030,13 +1030,13 @@ public class BasicLibrary extends PrologLib {
                 + "not(G)        :- G,!,fail. \n                                                                     "
                 + "not(_). \n"
                 +
-                
+
                 "catch(Goal, Catcher, Handler) :- call(Goal).\n"
-               
-                
-                
-                
-               
+
+
+
+
+
                 + "findall(Template, Goal, Instances) :- \n"
                 + "all_solutions_predicates_guard(Template, Goal, Instances), \n"
                 + "L = [], \n"
@@ -1048,7 +1048,7 @@ public class BasicLibrary extends PrologLib {
                 + "'$append'(CL, L), \n"
                 + "fail. \n"
                 + "'$findall0'(_, _, _). \n"
-                
+
                 + "variable_set(T, []) :- atomic(T), !. \n"
                 + "variable_set(T, [T]) :- var(T), !. \n"
                 + "variable_set([H | T], [SH | ST]) :- \n"
@@ -1086,7 +1086,7 @@ public class BasicLibrary extends PrologLib {
                 + "'$wt_list'([], []). \n"
                 + "'$wt_list'([W + T | STail], [WW + T | WTTail]) :- copy_term(W, WW), '$wt_list'(STail, WTTail). \n"
                 + "'$s_next'(Witness, WT_List, S_Next) :- copy_term(Witness, W2), '$s_next0'(W2, WT_List, S_Next), !. \n"
-                
+
                 /*Roberta Calegari Sep 2013*/
                 +"bagof(Template, Goal, Instances) :- \n"
                 + "all_solutions_predicates_guard(Template, Goal, Instances), \n"
@@ -1094,11 +1094,11 @@ public class BasicLibrary extends PrologLib {
                 + "Witness =.. [witness | Set], \n"
                 + "iterated_goal_term(Goal, G), \n"
                 +"all_solutions_predicates_guard(Template, G, Instances),"
-                + "'splitAndSolve'(Witness, S, Instances,Set,Template,G,Goal). \n"  
-                
-                
-                
-                
+                + "'splitAndSolve'(Witness, S, Instances,Set,Template,G,Goal). \n"
+
+
+
+
                 /*INIT utility function used by bagof*/
                 +"count([],0). \n"
                 +"count([T1|Ts],N):- count(Ts,N1), N is (N1+1). \n"
@@ -1120,7 +1120,7 @@ public class BasicLibrary extends PrologLib {
                 +"list_to_term(E, GoalE), \n"
                 +"findall(Witness + Template, GoalE, S), \n"
                 +"'bag0'(Witness, S, Instances,Set,Template,GoalE). \n"
-                
+
                 +"splitSemicolon(';'(G1,Gs),[G1|Ls]) :-!, splitSemicolon(Gs,Ls). \n"
                 +"splitSemicolon(G1,[G1]). \n"
                 +"aggregateSubgoals(Template, List, OutputList) :- \n"
@@ -1152,15 +1152,15 @@ public class BasicLibrary extends PrologLib {
                 +"S==[] -> fail, !; \n"
                 +"'$wt_list'(S, WT_List), \n"
                 +"'$wt_unify'(Witness, WT_List, Instances,Set,Template,Goal). \n"
-                
-                
-                
-                
+
+
+
+
                 +"'bag0'(Witness, S, Instances,Set,Template,Goal) :- \n"
                 +"'$wt_list'(S, WT_List), \n"
                 +"'$s_next'(Witness, WT_List, S_Next),  \n"
                 +"'bag0'(Witness, S_Next, Instances,Set,Template,Goal). \n"
-   
+
                 /*END utility function used by bagof*/
                 /*+ "bagof(Template, Goal, Instances) :- \n"
                 + "all_solutions_predicates_guard(Template, Goal, Instances), \n"
@@ -1178,30 +1178,33 @@ public class BasicLibrary extends PrologLib {
                 + "'$wt_list'(S, WT_List), \n"
                 + "'$s_next'(Witness, WT_List, S_Next), \n"
                 + "'$bagof0'(Witness, S_Next, Instances). \n"*/
-                
+
                 + "setof(Template, Goal, Instances) :- \n"
                 + "all_solutions_predicates_guard(Template, Goal, Instances), \n"
                 + "bagof(Template, Goal, List), \n"
                 + "quicksort(List, '@<', OrderedList), \n"
                 + "no_duplicates(OrderedList, Instances). \n"
-                
-                
+
+
                 +"forall(A,B):- \\+(call(A),\\+call(B)). \n"
-                
-                
-                
-                
+
+
+
+
                 + "assert(C) :- assertz(C). \n"
-                + "retract(Rule) :- retract_guard(Rule), Rule = ':-'(Head, Body), !, clause(Head, Body), '$retract'(Rule). \n"
-                + "retract(Fact) :- retract_guard(Fact), clause(Fact, true), '$retract'(Fact).\n"
-                + "retractall(Head) :- retract_guard(Head), findall(':-'(Head, Body), clause(Head, Body), L), '$retract_clause_list'(L), !.\n"
+//            /*
+//                + "retract(Rule) :- retract_guard(Rule), Rule = ':-'(Head, Body), !, clause(Head, Body), '$retract'(Rule). \n"
+//                + "retract(Fact) :- retract_guard(Fact), clause(Fact, true), '$retract'(Fact).\n"
+//             */
+				+ "retract(Clause) :-     clause(Head, _),     '$retract'(Clause).\n"
+				+ "retractall(Head) :- retract_guard(Head), findall(':-'(Head, Body), clause(Head, Body), L), '$retract_clause_list'(L), !.\n"
                 + "'$retract_clause_list'([]). \n"
                 + "'$retract_clause_list'([E | T]) :- !, '$retract'(E), '$retract_clause_list'(T). \n"
                 +
-                
-                
-                
-                
+
+
+
+
                 " member(E,L) :- member_guard(E,L), member0(E,L).\n                                                                                     "
                 + "member0(E,[E|_]). \n                                                                       "
                 + "member0(E,[_|L]):- member0(E,L). \n                                                                       "
@@ -1244,7 +1247,7 @@ public class BasicLibrary extends PrologLib {
                 + "   split(X,Tail,Pred,Small,Big).                   \n";
     }
 
-    
+
 
     public boolean arg_guard_3(Term arg0, Term arg1, Term arg2)
             throws PrologError {
@@ -1286,17 +1289,17 @@ public class BasicLibrary extends PrologLib {
 
     public boolean all_solutions_predicates_guard_3(Term arg0, Term arg1,
             Term arg2) throws PrologError {
-    	
+
         arg1 = arg1.term();
-        
+
         if (arg1 instanceof Var){
-        	
+
             throw PrologError.instantiation_error(prolog, 2);
         }
         if (!arg1.isAtomic() && !arg1.isCompound()){
-        	
+
             throw PrologError.type_error(prolog, 2,
-                    "callable", arg1); 
+                    "callable", arg1);
          }
         return true;
     }
@@ -1345,8 +1348,8 @@ public class BasicLibrary extends PrologLib {
         return true;
     }
 
-    
-    
+
+
 
     public boolean $wt_unify_3(Term witness, Term wtList, Term tList) {
         Struct list = (Struct) wtList.term();
@@ -1360,7 +1363,7 @@ public class BasicLibrary extends PrologLib {
         }
         return unify(tList, result);
     }
-    
+
     public boolean $wt_unify_6(Term witness, Term wtList, Term tList, Term varSet,Term temp, Term goal) {
     	/*System.out.println("witness "+witness);
     	System.out.println("wtList "+wtList);
@@ -1368,41 +1371,41 @@ public class BasicLibrary extends PrologLib {
     	System.out.println("varSet "+varSet);
     	System.out.println("template "+temp);
     	*/
-    	
+
     	Struct freeVarList = (Struct) varSet.term();
     	java.util.Iterator<? extends Term> it1 = freeVarList.listIterator();
     	if (it1.hasNext()) {
             prolog.relinkVar(true);
-    		
+
 
             prolog.setBagOFvarSet(varSet);
             prolog.setBagOFgoal(goal);
             if (goal /*(engine.engine).getBagOFbag()*/==null)
                 prolog.setBagOFbag(tList);
-    		
+
     	}
-    		
-    	
-    	
-    	
+
+
+
+
         Struct list = (Struct) wtList.term();
-        
-        
-        
-        
-        
+
+
+
+
+
         Struct result = Struct.emptyList();
         for (java.util.Iterator<? extends Term> it = list.listIterator(); it.hasNext();) {
             Struct element = (Struct) it.next();
-            
+
             Term w = element.sub(0);
             Term t = element.sub(1);
-            
-            
+
+
             if (unify(witness, w)){
-            	
+
             	result.append(t);
-            	
+
                 List<Term> l = prolog.getBagOFres();
                 List<String> lString = prolog.getBagOFresString();
             	if(l==null){
@@ -1410,20 +1413,20 @@ public class BasicLibrary extends PrologLib {
             		lString= new FasterList<>();
             	}
             	l.add(t);
-            	
+
             	lString.add(t.toString());
             	/*for(int m=0; m<l.size(); m++){
             		System.out.println("=====****elemento lista engine.getEngineManager()).getBagOFres()  "+l.get(m));
             	}*/
                 prolog.setBagOFres(l);
                 prolog.setBagOFresString(lString);
-                
+
             }
-        } 
+        }
         return unify(tList, result);
     }
 
-   
+
   public boolean $s_next0_3(Term witness, Term wtList, Term sNext) {
         Struct list = (Struct) wtList.term();
         Struct result = Struct.emptyList();
@@ -1441,7 +1444,7 @@ public class BasicLibrary extends PrologLib {
         Term igt = t.iteratedGoalTerm();
         return unify(igt, goal);
     }
-    
+
     /**
      * Defines some synonyms
      */

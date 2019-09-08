@@ -16,6 +16,7 @@ import nars.task.util.Answer;
 import nars.task.util.Revision;
 import nars.task.util.TaskRegion;
 import nars.task.util.TimeRange;
+import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
@@ -505,7 +506,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			Task ex = (Task) existing, in = (Task) incoming;
 			Truth t = ex.truth();
 			if (t.equals(in.truth())) {
-				if (ex.term().equals(in.term())) {
+				Term exT = ex.term();
+				if (exT.equals(in.term())) {
 					int xys = Stamp.equalsOrContains(ex.stamp(), in.stamp());
 					if (xys != Integer.MIN_VALUE) { //Arrays.equals(ex.stamp(), in.stamp())
 						long is = in.start(), ie = in.end();
@@ -515,7 +517,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 						else if ((xys == 0 || xys == +1) && Longerval.containsRaw(es, ee, is, ie)) //existing contais incoming
 							return merge(ex, i);
 						else if (xys == 0 && LongInterval.intersectsRaw(is, ie, es, ee)) //temporal union
-							return merge(Task.clone(ex, ex.term(), t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
+							return merge(Task.clone(ex, exT, t, ex.punc(), Math.min(is, es), Math.max(ie, ee)), i);
 					}
 				}
 			}

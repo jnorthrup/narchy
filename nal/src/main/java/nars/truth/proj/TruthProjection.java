@@ -88,7 +88,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	@Nullable
-	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, long start, long end, NAL n) {
+	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
 		boolean neg = content instanceof Neg;
 		if (neg)
 			content = content.unneg();
