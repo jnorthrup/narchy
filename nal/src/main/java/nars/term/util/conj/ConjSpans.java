@@ -12,13 +12,14 @@ import org.jetbrains.annotations.Nullable;
 import java.util.List;
 
 import static nars.time.Tense.ETERNAL;
+import static nars.time.Tense.dither;
 
 public enum ConjSpans { ;
 
 	//TODO: boolean inclStart, boolean inclEnd, int intermediateDivisions
 
 	/** returns null on failure */
-	@Nullable public static ConjBuilder add(List<Task> tt, boolean autoNeg, ConjBuilder b) {
+	@Nullable public static ConjBuilder add(List<Task> tt, boolean autoNeg, int dither, ConjBuilder b) {
 		int n = tt.size();
 		if (n == 0)
 			return b; //nothing
@@ -49,7 +50,8 @@ public enum ConjSpans { ;
 				if (!b.add(ETERNAL, t.term().negIf(autoNeg && t.isNegative())))
 					return null;
 			}
-			long e = t.end();
+			s = dither(s, dither, -1);
+			long e = dither(t.end(), dither, +1);
 			dur = Math.min(dur, e - s);
 			inter.getIfAbsentPut(s, MetalBitSet::full).set(i);
 		}
@@ -57,7 +59,7 @@ public enum ConjSpans { ;
 			Task t = tt.get(i);
 			long s = t.start();
 			if (s != ETERNAL) {
-				long e = t.end() - dur;
+				long e = dither(t.end() - dur, dither, +1);
 				if (e != s) {
 					inter.getIfAbsentPut(e, MetalBitSet::full).set(i);
 				}
@@ -71,7 +73,8 @@ public enum ConjSpans { ;
 			Task t = tt.get(i);
 			long s = t.start();
 			if (s == ETERNAL) continue; //ignore, already added
-			long e = t.end() - dur;
+			s = dither(s, dither, -1);
+			long e = dither(t.end() - dur, dither, +1);
 			for (int j = 0; j < wn; j++) {
 				LongObjectPair<MetalBitSet> ww = w.get(j);
 				long wj = ww.getOne();
@@ -80,7 +83,7 @@ public enum ConjSpans { ;
 			}
 		}
 
-		Term[] terms = Util.map(n, N->new Term[N], I-> {
+		Term[] terms = Util.map(n, Term[]::new, I-> {
 			Task ttt = tt.get(I);
 			return ttt.term().negIf(autoNeg && ttt.isNegative());
 		});
