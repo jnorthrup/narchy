@@ -43,10 +43,10 @@ public class Gradius extends GameX {
 
         //TODO coordinate with fps
         g.updateMS =
-                //50; //20fps
+                50; //20fps
                 //30;
                 //25; //40fps
-                20; //50fps
+                //20; //50fps
                 //10; //100fps
                 //5; //200fps
         //10;
@@ -146,17 +146,17 @@ public class Gradius extends GameX {
         initToggle();
         //initBipolar();
 
-        Reward alive = rewardNormalized("alive",  -1, +1, ()->{
+        Reward alive = reward("alive",  1, ()->{
             if (g.paused) return Float.NaN;
 
             if (g.playerDead > 1)
-                return -1f;
+                return -1;
             else
-                return Float.NaN; //return +1;
+                return +1;
         });
         //alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()));
 
-        Reward destroy = rewardNormalized("destroy", 0.75f,0, 1, ()->{
+        Reward destroy = reward("destroy", 1, ()->{
 
             if (g.paused) return Float.NaN;
 
@@ -166,8 +166,8 @@ public class Gradius extends GameX {
 
             lastScore = nextScore;
 
-            //return Util.unitize(r);
-            return r!=0 ? Util.unitize(r) : Float.NaN;
+            return Util.unitize(r);
+            //return r!=0 ? Util.unitize(r) : Float.NaN;
        });
        //destroy.setDefault($.t(0, nar.beliefConfDefault.floatValue()));
 

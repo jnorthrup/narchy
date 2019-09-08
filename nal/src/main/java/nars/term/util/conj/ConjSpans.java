@@ -55,6 +55,8 @@ public enum ConjSpans { ;
 			dur = Math.min(dur, e - s);
 			inter.getIfAbsentPut(s, MetalBitSet::full).set(i);
 		}
+
+		//add adjusted endpoint
 		for (int i = 0, ttSize = tt.size(); i < ttSize; i++) {
 			Task t = tt.get(i);
 			long s = t.start();
