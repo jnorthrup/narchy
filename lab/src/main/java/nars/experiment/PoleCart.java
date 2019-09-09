@@ -41,6 +41,7 @@ import static spacegraph.SpaceGraph.window;
  */
 public class PoleCart extends GameX {
 
+
 	static final boolean beliefPredict = false;
 	boolean speedControl = true;
 

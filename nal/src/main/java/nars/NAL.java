@@ -427,12 +427,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
         e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
 
+        //linear decay WARNING - not finite integral
+        //e = (float) (evi / (1.0 + ((double)dt) / dur));
+
         //cubic decay:
         //http://fooplot.com/#W3sidHlwZSI6MCwiZXEiOiIxLTEvKDErZV4oLXgpKSIsImNvbG9yIjoiIzAwNzdGRiJ9LHsidHlwZSI6MCwiZXEiOiIxLygxK3gqeCkiLCJjb2xvciI6IiNENDFBMUEifSx7InR5cGUiOjAsImVxIjoiMS8oMSt4KngqeCkiLCJjb2xvciI6IiM4OUFEMDkifSx7InR5cGUiOjEwMDAsIndpbmRvdyI6WyIwIiwiMTgiLCIwIiwiMSJdfV0-
         //e = (evi / (1.0 + Util.cube(((double)dt) / dur)));
-
-        //linear decay WARNING - not finite integral
-        //e = (float) (evi / (1.0 + ((double)dt) / dur));
 
         //constant duration linear decay ("trapezoidal")
         //e = (float) (evi * Math.max(0, (1.0 - dt / dur)));

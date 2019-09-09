@@ -1,8 +1,8 @@
 //"Free" Conjunction Decompositions (usually structural deduction and/or questions) which require no premise belief task
 
 //free structural Conjunction/Disjunction decomposition
-C, X, --isVar(X), eventOfPN(C,X), conjParallel(C)    |-   conjWithoutPN(C,X), (Belief:StructuralDeduction, Time:TaskEvent)
-  C, X, --isVar(X), eventOfPN(C,X), conjParallel(C)  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction, Time:TaskEvent)
+C, X, eventOfPN(C,X), conjParallel(C)    |-   conjWithoutPN(C,X), (Belief:StructuralDeduction)
+  C, X, eventOfPN(C,X), conjParallel(C)  |-   conjWithoutPN(C,X), (Goal:StructuralDeduction)
 
 //C, X, conjParallel(C), --isVar(X), eventOfPN(C,X)      |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
 

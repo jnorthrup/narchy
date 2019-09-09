@@ -287,6 +287,7 @@ public class PremiseRule extends ProxyTerm {
 
                 case "in":
                     neq(XX, Y.unneg());
+                    bigger(XS,YS);
                     constraints.add(new SubOfConstraint(XX, ((Variable) Y.unneg()), Recursive, Y instanceof Neg ? -1 : +1));
                     break;
 
