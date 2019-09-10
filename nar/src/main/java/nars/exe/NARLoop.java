@@ -33,9 +33,9 @@ abstract public class NARLoop extends InstrumentedLoop {
 
         @Override
         public final boolean next() {
-            nar.time.next();
             nar.exe.next(nar);
             nar.eventCycle.emit(nar);
+            nar.time.next();
             return true;
         }
     }
@@ -53,9 +53,9 @@ abstract public class NARLoop extends InstrumentedLoop {
 
         @Override
         public final boolean next() {
-            nar.time.next();
             nar.exe.next(nar);
             nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
+            nar.time.next();
             return true;
         }
     }

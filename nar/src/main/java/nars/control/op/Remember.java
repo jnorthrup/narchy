@@ -172,6 +172,8 @@ public class Remember extends AbstractTask {
 
     public void forget(Task x) {
         x.delete();
+        if (x == input)
+            result = x; //complete
     }
 
     public void remember(Task x) {

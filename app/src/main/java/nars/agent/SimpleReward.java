@@ -29,8 +29,8 @@ public class SimpleReward extends ScalarReward {
 //            }
 //        };
 
-        //TODO extract this to separate class
 //        @Nullable EternalTable eteTable = ((BeliefTables) concept.goals()).tableFirst(EternalTable.class);
+
 //        ((BeliefTables)concept.goals()).add(0, new EmptyBeliefTable() {
 //            @Override
 //            public void remember(Remember r) {
@@ -40,20 +40,21 @@ public class SimpleReward extends ScalarReward {
 //                    logger.info("goal contradicts reward:\n{}", i.proof());
 //                    r.nar.proofPrint(i);
 //                    Util.nop();
-//                    //Task.proof(i, r.nar);
-////                    r.forget(i);
+//                    r.forget(i);
 //                }
-//                //else {
-////                    if (!eteTable.isEmpty()) {
-////                        Task eteGoal = eteTable.get(0);
-////                        if (i.conf() < eteGoal.conf() && ArrayUtils.indexOf(i.stamp(), eteGoal.stamp()[0]) != -1) {
-////                            logger.debug("goal subsumed by eternal goal:\n{}", i.proof());
-////                            r.forget(i);
-////                        }
-////                    }
-////                }
+//
 //            }
 //        });
+
+        //else {
+//                    if (!eteTable.isEmpty()) {
+//                        Task eteGoal = eteTable.get(0);
+//                        if (i.conf() < eteGoal.conf() && ArrayUtils.indexOf(i.stamp(), eteGoal.stamp()[0]) != -1) {
+//                            logger.debug("goal subsumed by eternal goal:\n{}", i.proof());
+//                            r.forget(i);
+//                        }
+//                    }
+//                }
 
 //        agent.//alwaysWant
 //                alwaysWantEternally

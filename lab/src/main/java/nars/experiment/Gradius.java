@@ -150,7 +150,7 @@ public class Gradius extends GameX {
             if (g.paused) return Float.NaN;
 
             if (g.playerDead > 1)
-                return -1;
+                return 0;
             else
                 return +1;
         });
