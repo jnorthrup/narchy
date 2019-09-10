@@ -77,6 +77,7 @@ import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
@@ -578,10 +579,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, double conf) throws TaskException {
 
         Task z = Task.tryTask(term, punc,
-            Truth.theDithered(freq, c2w(conf), this),
-            (c, truth) ->
-                NALTask.the(c, punc, truth, time(), start, end, evidence())
-            , false);
+            //Truth.theDithered(freq, c2w(conf), this),
+            $.t(freq, conf),
+            (c, truth) -> NALTask.the(c, punc, truth, time(), start, end, evidence()), false);
 
 
         z.pri(pri);

@@ -17,12 +17,17 @@ abstract public class ScalarReward extends Reward {
 
     public final Signal concept;
     protected final Term id;
+
+    /** target freq */
+    protected final float freq;
+
     boolean negate;
     protected transient volatile float reward = Float.NaN;
 
     ScalarReward(Term id, float freq, Game a) {
         super(id, a);
         this.id = id;
+        this.freq = freq;
         negate = id.op()==NEG;
         concept = newConcept();
         if (concept == null)

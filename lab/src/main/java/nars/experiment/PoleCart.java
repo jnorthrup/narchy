@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
 import jcog.exe.Exe;
+import jcog.exe.Loop;
 import jcog.learn.LivePredictor;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
@@ -12,14 +13,20 @@ import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
 import nars.concept.action.GoalActionConcept;
 import nars.concept.sensor.DigitizedScalar;
 import nars.gui.NARui;
+import nars.impiler.Impiler;
+import nars.impiler.ImpilerDeduction;
 import nars.op.BeliefPredict;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Atomic;
+import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.LongToObjectFunction;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -28,6 +35,7 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
+import static nars.Op.BELIEF;
 import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
@@ -85,16 +93,38 @@ public class PoleCart extends GameX {
 						);
 					}
 
-//                    Loop.of(() -> {
-//
-//						Impiler.impile(what);
-//
-//                        ImpilerDeduction d = new ImpilerDeduction(n);
-//                        d.get(p.actions().get(n.random()).term(), n.time(), false).forEach(t -> {
-//                           System.out.println(t);
-//                           what.accept(t);
-//                        });
-//                    }).setFPS(0.5f);
+                    Loop.of(() -> {
+
+						Impiler.impile(what);
+
+						for (Concept a : p.actions()) {
+							ImpilerDeduction d = new ImpilerDeduction(n);
+							@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term());
+							if (dd!=null)
+							   a.meta("impiler", (Object)dd);
+//							d.get(a.term(), n.time(), false).forEach(t -> {
+//								System.out.println(t);
+//								what.accept(t);
+//							});
+						}
+                    }).setFPS(3f);
+					n.onDur(()->{
+						double dur = (double)n.dur();
+						long now = n.time();
+						for (Concept a : p.actions()) {
+							LongToObjectFunction<Truth> dd = a.meta("impiler");
+							if (dd != null) {
+								for (int pp = 1; pp < 20; pp++) {
+									long w = Math.round(now + pp * dur);
+									Truth x = dd.apply(w);
+									if (x != null) {
+										//System.out.println(a.term() + "\t" + x);
+										n.believe(n.priDefault(BELIEF), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
+									}
+								}
+							}
+						}
+					});
 
 					return p;
 				},

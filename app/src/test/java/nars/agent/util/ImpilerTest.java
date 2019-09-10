@@ -22,8 +22,8 @@ class ImpilerTest {
         n.input("(b ==> c).");
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
-        assertEquals("[$.45 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("c"), false, 0).toString());
+        assertEquals("[$.23 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
+        assertEquals("[$.23 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("c"), false, 0).toString());
 
     }
 
@@ -36,7 +36,7 @@ class ImpilerTest {
         n.input("(    --b ==> d)."); //unlikely
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
+        assertEquals("[$.23 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
     }
     @Test
     public void testEternalInnerNegation_semi_match_fwd1() throws Narsese.NarseseException {
@@ -47,7 +47,7 @@ class ImpilerTest {
         n.input("(      b ==> d). %0.25;0.90%"); //unlikely
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
+        assertEquals("[$.23 ((a&&b)==>c). 0 %1.0;.81%, $.17 ((a&&b)==>d). 0 %.25;.61%]", deduce(d, $$("a"), true, 0).toString());
     }
     @Test
     public void testEternalInnerNegation_must_match_fwd_inverse() throws Narsese.NarseseException {
@@ -58,7 +58,8 @@ class ImpilerTest {
         n.input("(      --b ==> d).");  //likely
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 (((--,b)&&a)==>d). 0 %1.0;.81%, , $.34 ((a&&(--,b))==>d). 0 %.25;.61%]", deduce(d, $$("a"), true, 0).toString());
+        assertEquals("[$.23 (((--,b)&&a)==>d). 0 %1.0;.81%]",
+            deduce(d, $$("a"), true, 0).toString());
     }
 
     @Test
@@ -70,7 +71,7 @@ class ImpilerTest {
         n.input("(        b ==> c).");
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("c"), false, 0).toString());
+        assertEquals("[$.23 ((a&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("c"), false, 0).toString());
     }
 
     @Test
@@ -80,7 +81,7 @@ class ImpilerTest {
         n.input("(b ==> c).");
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 (((--,a)&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
+        assertEquals("[$.23 (((--,a)&&b)==>c). 0 %1.0;.81%]", deduce(d, $$("a"), true, 0).toString());
     }
     @Test
     public void testEternalOuterNegation_FwdEnd() throws Narsese.NarseseException {
@@ -89,7 +90,7 @@ class ImpilerTest {
         n.input("(b ==> --c).");
         Impiler.impile(n);
         ImpilerDeduction d = new ImpilerDeduction(n);
-        assertEquals("[$.45 ((a&&b)==>c). 0 %0.0;.81%]", deduce(d, $$("a"), true, 0).toString());
+        assertEquals("[$.23 ((a&&b)==>c). 0 %0.0;.81%]", deduce(d, $$("a"), true, 0).toString());
     }
 
     @Test

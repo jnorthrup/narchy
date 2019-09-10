@@ -53,7 +53,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 16;
+    static int dur = 32;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;

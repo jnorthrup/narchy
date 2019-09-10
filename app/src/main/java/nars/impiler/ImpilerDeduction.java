@@ -4,6 +4,7 @@ import jcog.data.graph.Node;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.list.FasterList;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.task.NALTask;
@@ -14,9 +15,11 @@ import nars.term.atom.Bool;
 import nars.term.util.conj.ConjBuilder;
 import nars.term.util.conj.ConjTree;
 import nars.truth.MutableTruth;
+import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
+import org.eclipse.collections.api.block.function.primitive.LongToObjectFunction;
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,6 +60,36 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		this.nar = nar;
 	}
 
+
+	public @Nullable LongToObjectFunction<Truth> estimator(Termed target) {
+		List<Task> t = get(target, nar.time(), false);
+		if (t.isEmpty())
+			return null;
+		return ((when)->{
+
+			double F = 0, E = 0;
+			for (Task x : t) {
+				Term subj = x.sub(0);
+				long eStart = when - subj.eventRange();
+				Truth sTruth = nar.beliefTruth(subj, eStart);
+				if (sTruth!=null) {
+					Truth implTruth = x.truth();
+					boolean neg = implTruth.isNegative();
+					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), 0, nar);
+					if (c != null) {
+						c = c.negIf(neg);
+						double ce = c.evi();
+						E += ce;
+						F += c.freq() * ce;
+					}
+				}
+			}
+			if (E > NAL.truth.EVI_MIN) {
+				return PreciseTruth.byEvi((F/E), E);
+			} else
+				return null;
+		});
+	}
 
 	/**
 	 * get the results
@@ -151,11 +184,13 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		long offset = start;
 
 
-		float dur = 0; //?
+		float dur =
+			//0; //?
+			nar.dur();
 
 		for (int i = 0, pathTasksLength = pathTasks.length; i < pathTasksLength; i++) {
 			Task e = pathTasks[i];
-			Truth tCurr = e.truth(offset + e.start(), now, dur, true);
+			Truth tCurr = e.truth(now, now, dur, true);
 			if (tCurr == null)
 				return false; //too weak
 

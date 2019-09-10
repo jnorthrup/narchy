@@ -2,9 +2,13 @@ package nars.agent;
 
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
+import nars.Task;
 import nars.attention.AttnBranch;
 import nars.concept.sensor.ScalarSignal;
 import nars.concept.sensor.Signal;
+import nars.control.op.Remember;
+import nars.table.BeliefTables;
+import nars.table.EmptyBeliefTable;
 import nars.term.Term;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,20 +35,7 @@ public class SimpleReward extends ScalarReward {
 
 //        @Nullable EternalTable eteTable = ((BeliefTables) concept.goals()).tableFirst(EternalTable.class);
 
-//        ((BeliefTables)concept.goals()).add(0, new EmptyBeliefTable() {
-//            @Override
-//            public void remember(Remember r) {
-//                Task i = r.input;
-//
-//                if (Math.abs(i.freq() - freq) > 0.5f) {
-//                    logger.info("goal contradicts reward:\n{}", i.proof());
-//                    r.nar.proofPrint(i);
-//                    Util.nop();
-//                    r.forget(i);
-//                }
-//
-//            }
-//        });
+
 
         //else {
 //                    if (!eteTable.isEmpty()) {
@@ -68,6 +59,25 @@ public class SimpleReward extends ScalarReward {
 //        }, true);
     }
 
+    public void addGuard(boolean log, boolean forget) {
+        ((BeliefTables)concept.goals()).add(0, new EmptyBeliefTable() {
+            @Override
+            public void remember(Remember r) {
+                Task i = r.input;
+
+                if (Math.abs(i.freq() - freq) > 0.5f) {
+                    if (log) {
+                        //logger.info("goal contradicts reward:\n{}", i.proof());
+                        System.out.print("goal contradicts reward\t"); r.nar.proofPrint(i);
+                    }
+                    if (forget) {
+                        r.forget(i);
+                    }
+                }
+
+            }
+        });
+    }
 
     @Override protected Signal newConcept() {
         ScalarSignal concept = new ScalarSignal(id, cause, () -> reward, /*linker, */nar()) {
