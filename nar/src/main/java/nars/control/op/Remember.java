@@ -5,6 +5,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.table.dynamic.SeriesBeliefTable;
@@ -123,11 +124,11 @@ public class Remember extends AbstractTask {
     }
 
     public boolean store(boolean conceptualize) {
-        TaskConcept cc = (TaskConcept)nar.concept(input,conceptualize);
-        if (cc==null)
+        Concept cc = nar.concept(input,conceptualize);
+        if (!(cc instanceof TaskConcept))
             return false;
         else {
-            cc.remember(this);
+            ((TaskConcept)cc).remember(this);
             return true;
         }
     }

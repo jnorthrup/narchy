@@ -1,6 +1,8 @@
 package nars;
 
+import ch.qos.logback.classic.Level;
 import com.google.common.reflect.Reflection;
+import jcog.Log;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.table.DataTable;
@@ -41,6 +43,9 @@ import static tech.tablesaw.aggregate.AggregateFunctions.mean;
 /** periodically, or event-triggered: runs unit tests and broadcasts results */
 public class SelfTest {
 
+    static {
+        Log.root().setLevel(Level.WARN);
+    }
     /** local launcher */
     public static void main(String[] args) {
         SelfTest s = new SelfTest();

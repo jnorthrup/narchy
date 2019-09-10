@@ -30,7 +30,10 @@ public final class Member extends Functor implements The, InlineFunctor<Evaluati
             return null;
 
         Term x = terms.sub(0), y = terms.sub(1);
-        if (x.equals(y) || (y instanceof Compound && y.op()==SETe && y.contains(x)))
+        if (x.equals(y))
+            return Null;
+        boolean ySet = y instanceof Compound && y.opID() == SETe.id;
+        if ((ySet && y.contains(x)))
             return True;
 
         boolean xVar = x instanceof Variable;
@@ -59,7 +62,7 @@ public final class Member extends Functor implements The, InlineFunctor<Evaluati
 
         if (xVar) {
             if (evaluation!=null) {
-                if (y instanceof Compound && y.op()==SETe)
+                if (ySet)
                     evaluation.canBe(x, /*Iterable*/y.subterms());
                 else {
                     if (!evaluation.is(x, y))

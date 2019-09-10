@@ -99,16 +99,16 @@
 //DEDUCTION ----
     (S ==> M),   (M ==> P)    |-     (S ==> P),   (Belief:DeductionPP, Time:Compose)
       (M ==> P), (S ==> M)      |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
-            (S ==> P), (M ==> P), task("?")   |- (S ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (S ==> M), task("?")   |- (M ==> P), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> P), task("?"), hasBelief()   |- (S ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (S ==> M), task("?"), hasBelief()   |- (M ==> P), (Punctuation:Question, Time:Task)
 
     (S ==> M),   (M ==> P)    |-   --(S ==> P), (Belief:DeductionPN, Time:Compose)
       (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
 
     (S ==> M), (--M ==> P)    |-     (S ==> P),   (Belief:DeductionNP, Time:Compose)
       (--M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
-            (S ==> P), (--M ==> P), task("?") |- (S ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (S ==> M), task("?")   |- (--M ==> P), (Punctuation:Question, Time:Task)
+            (S ==> P), (--M ==> P), task("?"), hasBelief() |- (S ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (S ==> M), task("?"), hasBelief()   |- (--M ==> P), (Punctuation:Question, Time:Task)
 
     (S ==> M), (--M ==> P)    |-   --(S ==> P), (Belief:DeductionNN, Time:Compose)
       (--M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
@@ -116,16 +116,16 @@
 //EXEMPLIFICATION
     (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
       (P ==> M), (  M ==> S)     |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
-            (S ==> P), (M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (P ==> M), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> S), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (P ==> M), task("?"), hasBelief()   |- (M ==> S), (Punctuation:Question, Time:Task)
 
     (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
       (P ==> M), (M ==> S)       |- (--S ==> P), (Belief:ExemplificationPN, Time:Compose)
 
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
       (P ==> M), (--M ==> S)     |- (  S ==> P), (Belief:ExemplificationNP, Time:Compose)
-            (S ==> P), (--M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (P ==> M), task("?")   |- (--M ==> S), (Punctuation:Question, Time:Task)
+            (S ==> P), (--M ==> S), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (P ==> M), task("?"), hasBelief()   |- (--M ==> S), (Punctuation:Question, Time:Task)
 
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
       (P ==> M), (--M ==> S)     |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
@@ -134,21 +134,21 @@
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction, Time:Compose)
         (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN, Time:Compose)
-            (S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
-            (S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Task)
-            (--S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Task)
-            (--S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> P), task("?"), hasBelief()   |- (M ==> S), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> S), task("?"), hasBelief()   |- (M ==> P), (Punctuation:Question, Time:Task)
+            (--S ==> P), (M ==> P), task("?"), hasBelief()   |- (M ==> S), (Punctuation:Question, Time:Task)
+            (--S ==> P), (M ==> S), task("?"), hasBelief()   |- (M ==> P), (Punctuation:Question, Time:Task)
 
     (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction, Time:Compose)
         (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN, Time:Compose)
 
     (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB, Time:Compose)
-            (S ==> P), (P ==> M), task("?")   |- (S ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (P ==> M), task("?"), hasBelief()   |- (S ==> M), (Punctuation:Question, Time:Task)
+            (S ==> P), (S ==> M), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
 
     (S ==> M), (P ==> M) |- (P ==> S), (Belief:AbductionPB, Time:Compose)
-            (P ==> S), (P ==> M), task("?")   |- (S ==> M), (Punctuation:Question, Time:Task)
-            (P ==> S), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Task)
+            (P ==> S), (P ==> M), task("?"), hasBelief()   |- (S ==> M), (Punctuation:Question, Time:Task)
+            (P ==> S), (S ==> M), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
 
 
 
@@ -182,8 +182,8 @@
     (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
        (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
 
-        (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAsk, Time:Task)
-        (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAsk, Time:Task)
+        (P ==> M), (S ==> M), hasBelief(), neqPN(P,S)  |- ((P && S) ==> M), (Punctuation:AskAsk, Time:Task)
+        (P ==> M), (S ==> M), hasBelief(), neqPN(P,S)  |- ((P || S) ==> M), (Punctuation:AskAsk, Time:Task)
         //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAll, Time:Compose)
           //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAll, Time:Compose)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)

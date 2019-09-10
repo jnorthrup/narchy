@@ -15,7 +15,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 400;
+    private static final int cycles = 700;
 
     @BeforeEach
     void setup() {
@@ -900,7 +900,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeImplPredConjQuestion() {
         test
-                .ask("( x ==> (&&, y, z) )")
+                .ask("( x ==> (y && z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
                 .mustOutput(cycles, "( x ==>+- z )", QUESTION)
         ;
@@ -909,7 +909,7 @@ public class NAL6Test extends NALTest {
     @Test
     void testDecomposeImplPredDisjQuestion() {
         test
-                .ask("( x ==> (||, y, z) )")
+                .ask("( x ==> (y || z) )")
                 .mustOutput(cycles, "( x ==>+- y )", QUESTION)
                 .mustOutput(cycles, "( x ==>+- z )", QUESTION)
         ;

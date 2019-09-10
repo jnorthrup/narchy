@@ -24,7 +24,8 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 	static final String id = AbstractTangentIndexer.class.getSimpleName();
 
 	public int ttl(Derivation d) {
-		return -1; //permanent
+		//return -1; //permanent
+		return Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS);
 	}
 
 	@Nullable

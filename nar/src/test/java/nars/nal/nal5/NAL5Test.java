@@ -486,6 +486,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_abduction_viaMultiConditionalSyllogism_simple() {
         test.termVolMax(5)
+            .confMin(0.4f)
             .believe("(x ==> y)")
             .believe("((z && x) ==> y)")
             .mustBelieve(cycles, "z", 1.00f, 0.45f);
@@ -493,6 +494,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_antiAbduction_viaMultiConditionalSyllogism_simple_a() {
         test.termVolMax(6)
+            .confMin(0.4f)
                 .believe("(x ==> --y)")
                 .believe("((z && x) ==> y)")
                 .mustBelieve(cycles, "z", 0.00f, 0.45f);
@@ -729,7 +731,7 @@ public class NAL5Test extends NALTest {
     void conditional_induction0SimpleDepVar() {
         test
                 .termVolMax(7)
-                .confMin(0.42f)
+                .confMin(0.43f)
                 .believe("((x1 && #1) ==> c)")
                 .believe("((y1 && #1) ==> c)")
                 .mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f)
@@ -739,7 +741,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar2() {
         
-        test.termVolMax(12).confMin(0.4f);
+        test.termVolMax(12).confMin(0.43f);
         test.believe("((x1 && #1) ==> (a && #1))");
         test.believe("((y1 && #1) ==> (a && #1))");
         test.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -749,7 +751,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleDepVar3() {
         
-        test.nar.termVolMax.set(12);
+        test.termVolMax(12).confMin(0.43f);
         test.believe("((x1 && #1) ==> (a && #1))");
         test.believe("((#1 && #2) ==> (a && #2))");
         test.mustBelieve(cycles, "(x1 ==> #1)", 1.00f, 0.45f);
@@ -759,7 +761,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0SimpleIndepVar() {
 
-        test.termVolMax(8);
+        test.termVolMax(8).confMin(0.43f);
         test.believe("((x1 && $1) ==> (a,$1))");
         test.believe("((y1 && $1) ==> (a,$1))");
         test.mustBelieve(cycles, "(x1 ==> y1)", 1.00f, 0.45f);
@@ -768,7 +770,7 @@ public class NAL5Test extends NALTest {
 
     @Test
     void conditional_induction_3ary() {
-        test.termVolMax(12)
+        test.termVolMax(12).confMin(0.43f)
             .believe("((&&,x1,x2,a) ==> c)")
             .believe("((&&,y1,y2,a) ==> c)")
             .mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -777,7 +779,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction_3ary_some_inner_Neg_other() {
         test.termVolMax(12)
-            .confMin(0.4f)
+            .confMin(0.43f)
                 .believe("((&&,x1,--x2,a) ==> c)")
                 .believe("((&&,y1,y2,a) ==> c)")
                 .mustBelieve(cycles, "((x1&&--x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -785,7 +787,7 @@ public class NAL5Test extends NALTest {
     }
     @Test
     void conditional_induction_3ary_some_inner_Neg_the() {
-        test.termVolMax(12)
+        test.termVolMax(12).confMin(0.43f)
                 .believe("((&&,x1,x2,--a) ==> c)")
                 .believe("((&&,y1,y2,--a) ==> c)")
                 .mustBelieve(cycles, "((x1&&x2) ==> (y1&&y2))", 1.00f, 0.45f)
@@ -795,7 +797,7 @@ public class NAL5Test extends NALTest {
     @Test
     void conditional_induction0NegBothSimple() {
         
-        test.nar.termVolMax.set(9);
+        test.termVolMax(9).confMin(0.43f);
         test.believe("--((x&&a) ==> c)");
         test.believe("--((x&&b) ==> c)");
         test.mustBelieve(cycles, "(a ==> b)", 1.00f, 0.45f);

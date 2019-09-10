@@ -48,9 +48,8 @@ public class Log {
         ca.start();
     }
 
-    private static ch.qos.logback.classic.Logger root() {
-        LoggerContext c = (LoggerContext) LoggerFactory.getILoggerFactory();
-        return c.getLogger(Logger.ROOT_LOGGER_NAME);
+    public static ch.qos.logback.classic.Logger root() {
+        return ((LoggerContext) LoggerFactory.getILoggerFactory()).getLogger(Logger.ROOT_LOGGER_NAME);
     }
 
     public static Logger logger(String c) {

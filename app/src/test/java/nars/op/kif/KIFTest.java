@@ -50,8 +50,8 @@ class KIFTest {
 //        ); // ~= PROLOG
 
         n.termVolMax.set(64);
-//        n.beliefPriDefault.amp(0.01f);
-        n.time.dur(1);
+        n.beliefPriDefault.amp(0.01f);
+        n.time.dur(100);
 
 
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
@@ -90,11 +90,14 @@ class KIFTest {
         //n.input("$1.0 (#1-->ComputerDisplay)!");
         //n.clear();
         w.clear();
-        w.onTask(t->System.out.println(t.toString(true)));
+        w.onTask(t-> {
+            if (!t.isQuestionOrQuest() && !t.isInput())
+                System.out.println(t.toString(true));
+        });
         //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
         w.accept(new EternalTask($$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.t(1, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.5f));
-        w.accept(new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n).priSet(0.5f));
+        w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.1f));
+        w.accept(new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n).priSet(0.1f));
         w.accept(new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.05f));
         w.accept(new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.05f));
         //w.accept(new EternalTask($$("(#x --> Death)"), GOAL, $.t(0, 0.9f), n).priSet(1));

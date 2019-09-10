@@ -371,8 +371,14 @@ public class KIF implements Iterable<Task> {
                 break;
 
             case "equal":
+                y = Equal.the(args.get(0), args.get(1));
+                break;
+
+
             case "<=>":
-                //y = impl(args.get(0), args.get(1), false);
+
+                y = impl(args.get(0), args.get(1), false);
+                break;
                 //                if (!(args.get(0).hasVars() || args.get(1).hasVars())) {
 //
 //                    //y = impl(args.get(0), args.get(1), false);
@@ -380,9 +386,6 @@ public class KIF implements Iterable<Task> {
 //                } else {
 //
 //                }
-                y = Equal.the(args.get(0), args.get(1));
-                
-                break;
 
 
             case "forall":
@@ -661,11 +664,6 @@ public class KIF implements Iterable<Task> {
         }
 
         try {
-
-
-
-
-
             return
                     (implOrEquiv ?
                             IMPL.the(a, b) :
