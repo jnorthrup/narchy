@@ -4,7 +4,6 @@ import jcog.data.list.FasterList;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.TermTransformException;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
@@ -154,8 +153,8 @@ public enum MapSubst { ;
 
     public static TermTransform replace(Term from, Term to) {
 
-        if (from.equals(to))
-            throw new TermTransformException(from, to, "pointless substitution");
+//        if (from.equals(to))
+//            throw new TermTransformException(from, to, "pointless substitution");
 
         return from instanceof Atomic ?
                 new SubstAtomic((Atomic) from, to) :

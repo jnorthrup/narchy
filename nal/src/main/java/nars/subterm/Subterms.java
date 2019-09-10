@@ -1270,7 +1270,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     default Subterms replaceSub(Term from, Term to, Op superOp) {
-        return !impossibleSubTerm(from) ? transformSubs(MapSubst.replace(from, to), superOp) : this;
+        return !from.equals(to) && !impossibleSubTerm(from) ? transformSubs(MapSubst.replace(from, to), superOp) : this;
     }
 
     default Subterms transformSub(int which, Function<Term,Term> f) {

@@ -397,7 +397,7 @@ public interface Compound extends Term, IPair, Subterms {
     default Term replace(Term from, Term to) {
         if (this.equals(from))
             return to;
-        else if (impossibleSubTerm(from))
+        else if (from.equals(to) || impossibleSubTerm(from))
             return this;
         else
             return MapSubst.replace(from, to).applyCompound(this);

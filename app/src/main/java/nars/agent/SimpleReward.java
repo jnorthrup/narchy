@@ -29,6 +29,7 @@ public class SimpleReward extends ScalarReward {
 //            }
 //        };
 
+        //TODO extract this to separate class
 //        @Nullable EternalTable eteTable = ((BeliefTables) concept.goals()).tableFirst(EternalTable.class);
 //        ((BeliefTables)concept.goals()).add(0, new EmptyBeliefTable() {
 //            @Override
