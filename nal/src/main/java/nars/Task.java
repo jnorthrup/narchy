@@ -416,13 +416,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         return t;
     }
-    @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, NAL n) {
-        return project(t, start, end, eviMin, ditherTruth, dtDither, 0, n);
-    }
 
     /**
      * start!=ETERNAL
+     * TODO boolean eternalize=false
      */
     @Nullable
     static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, NAL n) {
@@ -442,7 +439,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             //tt = t.truthRelative((start+end)/2, n.time(), eviMin);
             //if (tt == null) return null;
 
-            tt = t.truth(start, end, dur, true); //0 dur
+            tt = t.truth(start, end, dur, false);
 
             if (tt == null || tt.evi() < eviMin) return null;
 

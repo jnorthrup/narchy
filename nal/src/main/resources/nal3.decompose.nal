@@ -1,16 +1,16 @@
 //NAL3 single premise belief/goal decompose
-(M --> C), X, eventOfPN(C,X)    |-   (M --> conjWithoutPN(C,X)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+(M --> C), X, eventOfPN(C,X)    |-   (M --> conjWithoutPN(C,X)), (Belief:StructuralDeduction)
   (M --> D), X, eventOfPN(D,X)  |- --(M --> conjWithoutPN(D,X)), (Belief:StructuralDeductionN)
-(C --> M), X, eventOfPN(C,X)    |-   (conjWithoutPN(C,X) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+(C --> M), X, eventOfPN(C,X)    |-   (conjWithoutPN(C,X) --> M), (Belief:StructuralDeduction)
   (D --> M), X, eventOfPN(D,X)  |- --(conjWithoutPN(D,X) --> M), (Belief:StructuralDeductionN)
 
-(M --> I), X, eventOfPN(I,X)  |-   (M --> conjWithoutPN(I,X)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-(I --> M), X, eventOfPN(I,X)  |-   (conjWithoutPN(I,X) --> M), (Belief:StructuralDeduction,Goal:StructuralDeduction)
-  //(I <-> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) <-> M)), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
+//(M --> I), X, eventOfPN(I,X)  |-   polarizeTask((M --> conjWithoutPN(I,X))), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+//(I --> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) --> M)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
+  //(I <-> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) <-> M)), (Belief:StructuralDeductionDD)
 
 //Self Factor
-(X --> Y), (X --> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) --> conjWithout(Y,X))), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
-  (X <-> Y), (X <-> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) <-> conjWithout(Y,X))), (Belief:StructuralDeductionDD,Goal:StructuralDeductionDD)
+(X --> Y), (X --> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) --> conjWithout(Y,X))), (Belief:StructuralReduction,Goal:StructuralReduction)
+  (X <-> Y), (X <-> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) <-> conjWithout(Y,X))), (Belief:StructuralReduction,Goal:StructuralReduction)
 
 
 //NAL3 single premise question/quest decompose
@@ -28,9 +28,9 @@
 
 //predicate (intensional)
 (M --> C), (M --> X),  eventOf(C,X)       |-    --(M-->conjWithout(C,   X)), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)
-  (M --> X), (M --> C),  eventOf(C,X)       |-    --(M-->conjWithout(C,   X)), (Belief:DeductionPN, Time:Task)
+  (M --> X), (M --> C),  eventOf(C,X)     |-    --(M-->conjWithout(C,   X)), (Belief:DeductionPN, Time:Task)
 (M --> C), (M --> X),  eventOfNeg(C,X)    |-   --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
- (M --> X), (M --> C),  eventOfNeg(C,X)    |-  --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Time:Task)
+ (M --> X), (M --> C),  eventOfNeg(C,X)   |-  --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Time:Task)
 
   (M --> D), (M --> X),  eventOfNeg(D,X)  |-    (M-->conjWithout(D, --X)), (Belief:DeductionPN, Goal:DeductionPN, Time:Task)
    (M --> X), (M --> D),  eventOfNeg(D,X)  |-    (M-->conjWithout(D, --X)), (Belief:DeductionNP, Time:Task)

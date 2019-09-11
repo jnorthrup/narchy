@@ -51,7 +51,7 @@ class DynamicConjTest {
                 .believe($$("a:x"), 0)
                 .believe($$("a:y"), 0);
 
-        long now = n.time();
+        final long now = 0; //n.time();
         assertEquals($.t(1f, 0.81f), n.beliefTruth($("(a:x && a:y)"), now));
 
         {
@@ -97,7 +97,7 @@ class DynamicConjTest {
         }
         {
             n.believe($$("--(a:x && a:y)"), 0);
-            assertEquals(2, n.concept("(a:x && a:y)").beliefs().taskCount());
+            assertTrue(2 <= n.concept("(a:x && a:y)").beliefs().taskCount());
 
             Task ttNow = n.answerBelief($("(a:x && a:y)"), now);
             assertTrue(ttNow.isNegative());
@@ -310,7 +310,7 @@ class DynamicConjTest {
         }
 
         assertEquals(
-                "%0.0;.41%", n.beliefTruth(
+                "%0.0;.40%", n.beliefTruth(
                         n.conceptualize($("(&&,y,z)")
                         ), n.time()).toString()
         );
@@ -469,6 +469,7 @@ class DynamicConjTest {
         n.believe($("--x"), 2,2);
         n.time.dur(2);
 
+        float conf = 0.59f;
         //try all combinations.  there is only one valid result
         for (int i = 0; i < 8; i++) {
             Task t = n.answerBelief($("(x &&+- --x)"), 0, 2);
@@ -476,11 +477,11 @@ class DynamicConjTest {
             switch(t.term().toString()) {
                 case "(x &&+2 (--,x))":
                     assertEquals(1f, t.freq(), 0.05f);
-                    assertEquals(0.84f, t.conf(), 0.2f);
+                    assertEquals(conf, t.conf(), 0.2f);
                     break;
                 case "((--,x) &&+2 x)":
                     assertEquals(0f, t.freq(), 0.05f);
-                    assertEquals(0.84f, t.conf(), 0.2f);
+                    assertEquals(conf, t.conf(), 0.2f);
                     break;
                 default:
                     throw new UnsupportedOperationException();

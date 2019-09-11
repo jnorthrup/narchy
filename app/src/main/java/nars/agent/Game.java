@@ -11,6 +11,7 @@ import jcog.math.FloatSupplier;
 import jcog.thing.Part;
 import jcog.util.ArrayUtil;
 import nars.$;
+import nars.NAL;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
@@ -328,7 +329,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public Reward reward(Term reward, float freq, FloatSupplier rewardFunc) {
         SimpleReward r = new SimpleReward(reward, freq, rewardFunc, this);
-        r.addGuard(true,true);
+        r.addGuard(
+            NAL.DEBUG,false
+            //true,false
+            );
         return reward(r);
     }
 

@@ -19,7 +19,7 @@ public enum ConjSpans { ;
 	//TODO: boolean inclStart, boolean inclEnd, int intermediateDivisions
 
 	/** returns null on failure */
-	@Nullable public static ConjBuilder add(List<Task> tt, boolean autoNeg, int dither, ConjBuilder b) {
+	@Nullable public static ConjBuilder add(List<Task> tt, int dither, MetalBitSet componentPolarity, ConjBuilder b) {
 		int n = tt.size();
 		if (n == 0)
 			return b; //nothing
@@ -29,7 +29,7 @@ public enum ConjSpans { ;
 			Task t = tt.get(0);
 			long s = t.start();
 			if (s == ETERNAL) {
-				if (!b.add(ETERNAL, t.term().negIf(autoNeg && t.isNegative())))
+				if (!b.add(ETERNAL, t.term().negIf(!componentPolarity.get(0))))
 					return null;
 			}
 			long e = t.end();
@@ -47,7 +47,7 @@ public enum ConjSpans { ;
 			Task t = tt.get(i);
 			long s = t.start();
 			if (s == ETERNAL) {
-				if (!b.add(ETERNAL, t.term().negIf(autoNeg && t.isNegative())))
+				if (!b.add(ETERNAL, t.term().negIf(!componentPolarity.get(i))))
 					return null;
 			}
 			s = dither(s, dither, -1);
@@ -87,7 +87,7 @@ public enum ConjSpans { ;
 
 		Term[] terms = Util.map(n, Term[]::new, I-> {
 			Task ttt = tt.get(I);
-			return ttt.term().negIf(autoNeg && ttt.isNegative());
+			return ttt.term().negIf(!componentPolarity.get(I));
 		});
 
 		//add to builder

@@ -9,8 +9,8 @@
     ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity, Goal:Identity)
 
 //single element set unwrap
-    ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
-    (X --> [I]),  [I]  |- polarizeTask((X --> I)), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
+    ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralReduction, Goal:StructuralReduction)
+    (X --> [I]),  [I]  |- polarizeTask((X --> I)), (Belief:StructuralReduction, Goal:StructuralReduction)
 
 //Set Composition
 
@@ -39,8 +39,8 @@
 
 //Set Decomposition
 
-    (C --> X), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((C --> withoutPN(X,Y))), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
-    (X --> C), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((withoutPN(X,Y) --> C)), (Belief:StructuralDeductionDD, Goal:StructuralDeduction)
+    (C --> X), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((C --> withoutPN(X,Y))), (Belief:StructuralReduction, Goal:StructuralReduction)
+    (X --> C), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((withoutPN(X,Y) --> C)), (Belief:StructuralReduction, Goal:StructuralReduction)
 
 //Set-in-Conjunction Decomposition
     //TODO

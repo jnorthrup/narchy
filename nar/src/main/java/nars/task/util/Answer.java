@@ -266,7 +266,7 @@ public final class Answer implements Timed, Predicate<Task> {
             long ss = start;
             if (ss != ETERNAL) {
                 long ee = end;
-                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, nar);
+                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
             }
         }
 
@@ -283,7 +283,7 @@ public final class Answer implements Timed, Predicate<Task> {
         switch (root.punc()) {
             case BELIEF:
             case GOAL:
-                return task(root.isBelief(), forceProject);
+                return truthProjection().task(eviMin(), ditherTruth, root.isBelief(), forceProject, nar);
 
             case QUESTION:
             case QUEST:
@@ -294,10 +294,6 @@ public final class Answer implements Timed, Predicate<Task> {
 
     private Task taskSample() {
         return tasks.getRoulette(random());
-    }
-
-    private Task task(boolean beliefOrGoal, boolean forceProject) {
-        return truthProjection().task(eviMin(), ditherTruth, beliefOrGoal, forceProject, nar);
     }
 
     private double eviMin() {

@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 350;
+    public static final int cycles = 250;
 
     @BeforeEach
     void setTolerance() {
@@ -977,7 +977,7 @@ public class NAL8Test extends NALTest {
 
 
     @Test
-    void decomposeConjuncitonGoalBeliefRelative() {
+    void decomposeConjunctionGoalBeliefRelative() {
         /*
         wrong: output should be relative to belief
         $.01 ((Y-->trackXY),"+")! 2428⋈2432 %1.0;.20% {3101: Gæ;IM;IÂ} ((%1,%2,eventOfNeg(%1,%2)),(conjDropIfEarliest(%1,(--,%2)),((DeductionPN-->Belief),(DesirePN-->Goal))))

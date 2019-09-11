@@ -28,12 +28,12 @@ public final class DynamicTruthTable extends DynamicTaskTable {
 
         Task y = new DynTaskify(model, beliefOrGoal, a).eval(a.start, a.end);
         if (y!=null) {
-            if (a.test(y)) {
-                if (a.storeDynamic)
-                    a.test(y, this::cacheDynamic);
-                else
-                    a.test(y);
-            }
+
+            if (a.storeDynamic)
+                a.test(y, this::cacheDynamic);
+            else
+                a.test(y);
+
         }
     }
 

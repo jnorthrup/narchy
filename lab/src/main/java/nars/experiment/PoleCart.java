@@ -35,7 +35,7 @@ import java.awt.event.KeyEvent;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
-import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.agent.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
@@ -99,7 +99,7 @@ public class PoleCart extends GameX {
 
 						for (Concept a : p.actions()) {
 							ImpilerDeduction d = new ImpilerDeduction(n);
-							@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term());
+							@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term(), false);
 							if (dd!=null)
 							   a.meta("impiler", (Object)dd);
 //							d.get(a.term(), n.time(), false).forEach(t -> {
@@ -119,7 +119,7 @@ public class PoleCart extends GameX {
 									Truth x = dd.apply(w);
 									if (x != null) {
 										//System.out.println(a.term() + "\t" + x);
-										n.believe(n.priDefault(BELIEF), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
+										n.want(n.priDefault(GOAL), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
 									}
 								}
 							}
@@ -180,7 +180,7 @@ public class PoleCart extends GameX {
 	//200;
 	public final FloatRange tau = new FloatRange(
 		//0.007f, 0.001f, 0.02f
-		0.025f, 0.001f, 0.05f
+		0.019f, 0.001f, 0.05f
 	);
 	//0.01;
 	//0.005;

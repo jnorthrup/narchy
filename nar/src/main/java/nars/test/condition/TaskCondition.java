@@ -89,7 +89,8 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task>, Co
 
     @Override
     public final void accept(Task tasked) {
-        test(tasked);
+        if (!matched)
+            test(tasked);
     }
 
     @Override

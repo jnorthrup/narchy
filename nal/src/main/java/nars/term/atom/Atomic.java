@@ -60,7 +60,7 @@ public interface Atomic extends Term {
 
     @Override
     default boolean equalsRoot(Term x) {
-        return equals(x);
+        return x instanceof Atomic && equals(x);
     }
 
     @Override

@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 1200;
+    private final int cycles = 300;
 
     @Override
     protected NAR nar() {
@@ -993,7 +993,8 @@ public class NAL5Test extends NALTest {
     }
 
     @Test void ConjQuestion() {
-        test.termVolMax(3).input("(x && y).").input("x?")
+        test.termVolMax(3)
+            .input("(x && y).").input("x?")
             //.mustQuestion(cycles, "(x && y)")
             .mustQuestion(cycles, "y")
         ;

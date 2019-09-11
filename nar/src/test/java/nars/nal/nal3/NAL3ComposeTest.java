@@ -1,5 +1,6 @@
 package nars.nal.nal3;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -63,6 +64,7 @@ public class NAL3ComposeTest extends NAL3Test {
                 .mustBelieve(cycles, "(((swan)&(swimmer)) --> bird)", 1f, 0.81f);
     }
 
+    @Disabled
     @Test
     void composeConjSimilarity_dont_introduce_xternal() {
 //        test.nar.onCycle(()->{

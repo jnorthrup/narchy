@@ -7,7 +7,7 @@
        (X ==> A), B, --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeakX, Time:BeliefEvent)
 
        //goal only:
-       B, (X ==> A), --is(X,"#"), --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
+       //B, (X ==> A), --is(X,"#"), --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
 
 
 

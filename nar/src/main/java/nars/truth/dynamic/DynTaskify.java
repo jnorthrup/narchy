@@ -72,7 +72,7 @@ public class DynTaskify extends TaskList {
 
     final boolean beliefOrGoal;
     private final Predicate<Task> filter;
-    final MetalBitSet componentPolarity;
+    public final MetalBitSet componentPolarity;
 
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, float dur, Predicate<Task> filter, NAR nar) {

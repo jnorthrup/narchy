@@ -61,7 +61,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 	}
 
 
-	public @Nullable LongToObjectFunction<Truth> estimator(Termed target) {
+	public @Nullable LongToObjectFunction<Truth> estimator(Termed target, boolean beliefOrGoal) {
 		List<Task> t = get(target, nar.time(), false);
 		if (t.isEmpty())
 			return null;
@@ -71,16 +71,16 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			for (Task x : t) {
 				Term subj = x.sub(0);
 				long eStart = when - subj.eventRange();
-				Truth sTruth = nar.beliefTruth(subj, eStart);
+				Truth sTruth = beliefOrGoal ? nar.beliefTruth(subj, eStart) : nar.goalTruth(subj, eStart);
 				if (sTruth!=null) {
 					Truth implTruth = x.truth();
 					boolean neg = implTruth.isNegative();
-					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), 0, nar);
+					Truth c = NALTruth.Deduction.apply(sTruth, implTruth.negIf(neg), 0, nar); //TODO correct truth func for goal
 					if (c != null) {
-						c = c.negIf(neg);
 						double ce = c.evi();
 						E += ce;
-						F += c.freq() * ce;
+						float cf = c.freq();
+						F += (neg ? 1 - cf : cf) * ce;
 					}
 				}
 			}

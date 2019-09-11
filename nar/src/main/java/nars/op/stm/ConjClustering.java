@@ -1,6 +1,7 @@
 package nars.op.stm;
 
 import jcog.Util;
+import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.math.FloatRange;
@@ -51,7 +52,7 @@ public class ConjClustering extends How implements Consumer<Task> {
     int minDurationsPerLearning = 1;
 
     /** HACK */
-    @Deprecated private int volEstimateInflationFactor = 3;
+    @Deprecated private int volEstimateInflationFactor = 2;
 
     private final Predicate<Task> filter;
 
@@ -491,6 +492,12 @@ public class ConjClustering extends How implements Consumer<Task> {
             DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
                 true, true, null, 0, null, nar
             );
+            MetalBitSet cp = d.componentPolarity;
+            for (int i = 0, xLength = x.length; i < xLength; i++) {
+                Task xx = x[i];
+                if (xx.isNegative())
+                    cp.clear(i);
+            }
 
             d.addAll(x);
 

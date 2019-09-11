@@ -56,8 +56,7 @@ public class ConjUnify {
             if (!var)
                 return false; //TODO allow slightly different constants
 
-            boolean xSeq = Conj.isSeq(x);
-            boolean ySeq = Conj.isSeq(y);
+            boolean xSeq = Conj.isSeq(x), ySeq = Conj.isSeq(y);
             if (xSeq!=ySeq)
                 return false;
 

@@ -412,7 +412,7 @@ public class TestNAR {
 
         c.on(tc, punc);
 
-        if (reportStats)
+        if (reportStats && tc instanceof TaskCondition.DefaultTaskCondition)
             ((TaskCondition.DefaultTaskCondition)tc).similars(maxSimilars);
 
         finished = false;

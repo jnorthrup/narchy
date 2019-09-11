@@ -145,11 +145,13 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	public final Truth truth(long s, long e, double eviMin, boolean dither, boolean tShrink, NAL n) {
-		if (commit(tShrink, n)) {
-			if (s!=TIMELESS) {
-				if (time(s, e))
-					update();
+		if (s!=TIMELESS) {
+			assert(evi==null);
+			if (time(s, e)) {
+				//update(); //done in commit()
 			}
+		}
+		if (commit(tShrink, n)) {
 			return get(eviMin, dither, n);
 		} else
 			return null;

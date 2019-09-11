@@ -1260,9 +1260,8 @@ public enum Conj {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (!(x instanceof Compound) || x.opID() != CONJ.id || x instanceof Sequence)
+        if (!(x instanceof Compound && x.opID() == CONJ.id) && !(x instanceof Sequence))
             return false;
-
 
         int dt = x.dt();
         return dt == DTERNAL ? ConjSeq._isSeq(x) : !dtSpecial(dt);
@@ -1281,8 +1280,7 @@ public enum Conj {
             if (cc == null)
                 return conj;
             else {
-                if (cc.length == 1) return cc[0];
-                else return CONJ.the(XTERNAL, cc);
+                return cc.length == 1 ? cc[0] : CONJ.the(XTERNAL, cc);
             }
         } else {
             ConjList c = ConjList.events(conj);

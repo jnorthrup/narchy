@@ -184,7 +184,7 @@ public class RevisionTest {
         TaskBuilder b = t(0f, 0.5f, 4).evidence(2);
 
         int dur = 9;
-        Truth pt = new LinearTruthProjection(0, 0).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth();
+        Truth pt = new LinearTruthProjection(0, 0).dur(dur).add(Lists.newArrayList(a.apply(n), b.apply(n))).truth();
         @Nullable Truth rt = Revision.revise(a, b);
 
         assertEquals(pt.freq(), rt.freq(), 0.01f);

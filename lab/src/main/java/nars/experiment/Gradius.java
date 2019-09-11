@@ -132,7 +132,7 @@ public class Gradius extends GameX {
 
         actionUnipolar($.inh(id,$$("speed")), (s)->{
            g.SPEED = Util.lerp(s, 0.1f, 4);
-        });
+        }).resolution(0.1f);
 
 
         actionPushButton($.inh(id,$$("fire")), (BooleanProcedure) b -> g.keys[VK_SHOOT] = b);

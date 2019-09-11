@@ -229,7 +229,10 @@ public class DynamicConjTruth {
             else
                 when = s; //Tense.dither(s, dtDither);
 
-            Term x = t.term().negIf(!d.componentPolarity.get(i));
+            Term _x = t.term();
+            boolean cp = d.componentPolarity.get(i);
+
+            Term x = _x.negIf(!cp); //HACK
 
             if (!b.add(when, x))
                 return false;
@@ -237,7 +240,7 @@ public class DynamicConjTruth {
         return true;
     }
     static boolean reconstructInterval(DynTaskify d, ConjBuilder b) {
-        ConjBuilder bb = ConjSpans.add(d, true, d.nar.dtDither(), b);
+        ConjBuilder bb = ConjSpans.add(d, d.nar.dtDither(), d.componentPolarity, b);
         return bb != null;
     }
 

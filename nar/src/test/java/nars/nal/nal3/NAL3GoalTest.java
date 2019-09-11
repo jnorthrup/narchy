@@ -1,7 +1,6 @@
 package nars.nal.nal3;
 
 import nars.NARS;
-import nars.nal.nal8.DecomposeTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.Test;
 
@@ -138,28 +137,7 @@ class NAL3GoalTest {
 
 
 
-    @Test
-    void intersectionGoalDecomposition() {
 
-        new TestNAR(NARS.tmp(3))
-                .termVolMax(8)
-                .input("(Z-->(X&&Y))!")
-//                .input("(X --> Z).")
-                .mustGoal(DecomposeTest.cycles, "(Z-->Y)", 1, 0.81f) //via structural decomposition of intersection, at least
-                .run();
-
-    }
-    @Test
-    void intersectionGoalDecomposition2() {
-
-        new TestNAR(NARS.tmp(3))
-                .termVolMax(8)
-                .input("((X|Y) --> Z)!")
-//                .input("(X --> Z).")
-                .mustGoal(DecomposeTest.cycles, "(Y --> Z)", 1, 0.81f) //via structural decomposition of union, at least
-                .run();
-
-    }
 
     @Test
     void dontFormUselessIntersection() {
