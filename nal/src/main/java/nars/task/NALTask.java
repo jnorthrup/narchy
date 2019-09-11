@@ -1,11 +1,13 @@
 package nars.task;
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.pri.UnitPri;
 import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.term.Term;
+import nars.term.util.conj.Conj;
 import nars.time.When;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -50,6 +52,7 @@ public abstract class NALTask extends UnitPri implements Task {
 
     protected NALTask(Term term, byte punc, @Nullable Truth truth, long start, long end, long creation, long[] stamp) {
         super();
+
         this.term = term;
         this.truth = truth;
         this.punc = punc;

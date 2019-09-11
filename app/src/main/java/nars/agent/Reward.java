@@ -94,7 +94,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 
-        long[] stamp = stamped ? Stamp.UNSTAMPED : nar().evidence();
+        long[] stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
         Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);

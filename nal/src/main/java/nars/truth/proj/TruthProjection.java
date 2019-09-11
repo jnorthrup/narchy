@@ -984,6 +984,9 @@ abstract public class TruthProjection extends TaskList {
 		if (s == 0)
 			return 0;
 
+		if (start!=ETERNAL && start!=TIMELESS && shrink && anySatisfy(x->x.isEternal()))
+			shrink = false; //disable shrinking any further
+
 		boolean changed = false;
 		if (shrink || start == TIMELESS) {
 			long u0, u1;
@@ -1057,6 +1060,7 @@ abstract public class TruthProjection extends TaskList {
 			}
 		}
 		if (this.start != s || this.end != e) {
+
 			this.start = s;
 			this.end = e;
 			return true;

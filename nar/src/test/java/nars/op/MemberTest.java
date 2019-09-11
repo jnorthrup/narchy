@@ -125,5 +125,9 @@ public class MemberTest {
 
 		assertEquals(initPri, priSum[0], 0.01);
 	}
-
+	@Test void member_unwrap_2d() {
+		Assertions.assertEquals(
+			Set.of($$("(a,c)"),$$("(a,d)"),$$("(b,c)"),$$("(b,d)")),
+			Evaluation.eval($$("(&&, member(#x,{a,b}), member(#y,{c,d}), (#x,#y))"), n));
+	}
 }

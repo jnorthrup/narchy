@@ -466,7 +466,7 @@ abstract public class GameX extends Game {
         n.questPriDefault.amp(0.25f);
 
         n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.90f);
+        n.goalConfDefault.set(0.9f);
 
 
         n.emotion.want(MetaGoal.Perceive, -0.005f);
@@ -534,14 +534,13 @@ abstract public class GameX extends Game {
 //        bd.tasklinksPerIteration.set(8);
 
 
-        Deriver bd1 = new Deriver(Derivers.nal(n, 1, 1));
-        Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
-        Deriver bd6 = new Deriver(Derivers.nal(n, 6, 8,"motivation.nal"));
+//        Deriver bd1 = new Deriver(Derivers.nal(n, 1, 1));
+//        Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
+        Deriver bd6 = new Deriver(Derivers.nal(n, 1, 8));
+//        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
+//        bd3_act.time(new ActionTiming());
 
-        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
-        bd3_act.time(new ActionTiming());
-
-        Deriver bd6_act = new Deriver(Derivers.nal(n, 6,8,"motivation.nal"));
+        Deriver bd6_act = new Deriver(Derivers.nal(n, 1,8,"motivation.nal"));
         bd6_act.time(new ActionTiming());
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));

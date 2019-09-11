@@ -54,7 +54,7 @@ public class TruthIntegration {
 			return e * factor;
 		} else {
 			double ee = TruthFunctions.eternalize(e);
-			return (ee * (qEnd - qStart + 1)) + (e-ee) * factor;
+			return (ee * (qEnd - qStart + 1)) + ((e-ee) * factor);
 		}
 	}
 
@@ -87,7 +87,10 @@ public class TruthIntegration {
 
 	/** for ranking relative relevance of tasks with respect to a time point */
 	public static double eviFast(Task t, long now) {
-		return t.range() * t.evi() / (1 + Math.max(now - t.start(), now - t.end())); //penalize long tasks even if they surround now evenly
+		long s = t.start();
+		long e = t.end();
+		return (1+e-s) * t.evi() / (1 + Math.max(now - s, now - e)); //penalize long tasks even if they surround now evenly
+		//return t.range() * t.evi() / (1 + Math.max(now - t.start(), now - t.end())); //penalize long tasks even if they surround now evenly
 		///return t.range() * t.evi() / (1 + t.maxTimeTo(now));
 		//return NAL.evi(t.range() * t.evi(), t.meanTimeTo(now), 1.0f);
 		//return t.range() * t.evi() / (1 + t.meanTimeTo(now));

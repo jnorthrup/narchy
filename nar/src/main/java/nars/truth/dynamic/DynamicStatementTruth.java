@@ -58,10 +58,6 @@ public enum DynamicStatementTruth { ;
             this.subjOrPred = subjOrPred;
         }
 
-        @Override
-        public boolean temporal() {
-            return true;
-        }
 
         @Override
         protected boolean truthNegComponents() {

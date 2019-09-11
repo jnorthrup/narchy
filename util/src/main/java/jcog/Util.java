@@ -1435,6 +1435,12 @@ public enum Util {
         }
         return best;
     }
+    public static <X> float mean(FloatFunction<X> value, X... xx) {
+        float y = 0;
+        for (X x : xx)
+            y += value.floatValueOf(x);
+        return y/xx.length;
+    }
 
     public static <X> float max(FloatFunction<X> value, X... xx) {
         float y = Float.NEGATIVE_INFINITY;

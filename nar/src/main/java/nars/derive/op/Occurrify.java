@@ -498,6 +498,28 @@ public class Occurrify extends TimeGraph {
                 return BeliefProjection.Task;
             }
         },
+        TaskImmediate() {
+
+            @Override
+            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+                return TaskEvent.occurrence(x,d);
+            }
+
+            @Override
+            long[] occurrence(Derivation d) {
+                long[] x = rangeCombine(d, OccMerge.Task);
+                if (x!=null && x[0]!=ETERNAL && x[0]!=TIMELESS) {
+                    long r = x[1] - x[0];
+                    x[0] = d.taskStart;
+                    x[1] = d.taskStart + r;
+                }
+                return x;
+            }
+            @Override
+            public BeliefProjection beliefProjection() {
+                return BeliefProjection.Task;
+            }
+        },
         /** task modulates the truth but the occurrence time to be solved should depend on the belief */
         BeliefEvent() {
 

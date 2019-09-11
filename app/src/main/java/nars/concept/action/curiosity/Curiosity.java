@@ -89,7 +89,8 @@ public class Curiosity {
 
 
         float curiConf =
-                Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue());
+                Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue())
+                    * 1;
                 //nar.confMin.floatValue() * 2;
                 //nar.confMin.floatValue() * 4;
                 //Util.lerp(1/8f, nar.confMin.floatValue(), Param.TRUTH_MAX_CONF);

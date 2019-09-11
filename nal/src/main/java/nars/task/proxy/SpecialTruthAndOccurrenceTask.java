@@ -22,6 +22,9 @@ public class SpecialTruthAndOccurrenceTask extends SpecialOccurrenceTask {
                 return t; //check again
         }
 
+//        if (!(t.toString().contains("(\"")) && !Conj.isSeq(t.term()) && start!=ETERNAL && end-start <=1)
+//            Util.nop(); //TEMPORARY
+
         return new SpecialTruthAndOccurrenceTask(t, tr, start, end);
     }
 

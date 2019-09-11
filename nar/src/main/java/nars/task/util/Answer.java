@@ -253,9 +253,12 @@ public final class Answer implements Timed, Predicate<Task> {
 
         assert(!forceProject || topOrSample);
         Task t = topOrSample ? taskTop(forceProject) : taskSample();
-        if (t == null) {
+        if (t == null)
             return null; //why?  intermpolate?
-        }
+
+//        if (start!=ETERNAL && tasks.items[0].isEternal() && !t.isEternal())
+//            assert(t.range() >= end-start);
+
 
         double eviMin = eviMin();
         if (t.evi() < eviMin)
@@ -325,7 +328,10 @@ public final class Answer implements Timed, Predicate<Task> {
         if (numTasks == 0)
             return null;
 
-        return nar.newProjection(TIMELESS, TIMELESS).with(this.tasks.items, numTasks);
+        return nar.newProjection(
+            //start, end
+            TIMELESS, TIMELESS //auto
+        ).with(this.tasks.items, numTasks);
     }
 
 

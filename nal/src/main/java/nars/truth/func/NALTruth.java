@@ -49,7 +49,7 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    @AllowOverlap PostWeak() {
+    PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, false, minConf);

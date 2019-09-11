@@ -163,7 +163,7 @@ public class NARio extends GameX {
 //        window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);
 
 
-        Reward right = reward("right", () -> {
+        Reward right = reward("right", 0.75f, () -> {
 
             float reward;
             float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
@@ -183,7 +183,7 @@ public class NARio extends GameX {
         });
         right.setDefault($.t(0, 0.75f));
 
-        Reward getCoins = rewardNormalized("money", -1, +1, () -> {
+        Reward getCoins = rewardNormalized("money", 0.9f, -1, +1, () -> {
             int coins = Mario.coins;
             int deltaCoin = coins - lastCoins;
             if (deltaCoin <= 0)
@@ -196,7 +196,7 @@ public class NARio extends GameX {
         });
         getCoins.setDefault($.t(0, 0.75f));
 
-        Reward alive = rewardNormalized("alive",  -1, +1, () -> {
+        Reward alive = rewardNormalized("alive",  1f,-1, +1, () -> {
 //            if (dead)
 //                return -1;
 //

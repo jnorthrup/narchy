@@ -563,7 +563,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
 
 
-    /** TODO make Iterable<Task> x version so that callee's avoid constructing Task[] only for this */
+    /**
+     * TODO to be refined
+     * TODO make Iterable<Task> x version so that callee's avoid constructing Task[] only for this */
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {
         int volSum = Util.sum(TermedDelegate::volume, x);
         double volFactor =
@@ -573,12 +575,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         boolean xHasTruth = x[0].isBeliefOrGoal();
         if (y.isBeliefOrGoal() && xHasTruth) {
             double yConf = y.truth().confDouble();
-            double xConfMax = Util.max(Task::conf, x);
-            confFactor = min(1, (yConf / xConfMax));
+            //double xConfMax = Util.max(Task::conf, x);
+            double xConfMean = Util.mean(Task::conf, x);
+            confFactor = min(1, (yConf / xConfMean));
         } else {
             if (xHasTruth) {
                 //question formation
-                double xConfAvg = Util.sum(Task::conf, x) / x.length;
+                double xConfAvg = Util.mean(Task::conf, x);
                 confFactor = Math.pow(1 - xConfAvg, 2);
                 //confFactor = Math.pow(1 - xConfAvg, x.length);
             } else {
