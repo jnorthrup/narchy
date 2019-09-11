@@ -111,12 +111,14 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     public RNode<X> add(RInsertion<X> x) {
 
 
-        boolean addOrMerge = x.isAddOrMerge(); //save now
+        boolean addOrMerge = x.addOrMerge; //save here before anything
 
         //1. test containment
-        x.setAdd(false);
+        if (addOrMerge)
+            x.addOrMerge = false; //temporarily set to contain/merge mode
+
+        final RNode<X>[] data = this.data;
         if (x.maybeContainedBy(bounds)) {
-            final RNode<X>[] data = this.data;
 
             int s = this.size;
             boolean merged = false;
@@ -142,35 +144,27 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 
         if (!addOrMerge)
             return this;
-        else {
-            x.setAdd(true);
-            return insert(x);
-        }
-    }
 
-    @Nullable
-    private RNode<X> insert(RInsertion<X> x) {
+        //INSERT
+        x.addOrMerge = true; //restore to add mode
 
-        RNode<X>[] data = this.data;
+
         int l = data.length;
         if (size < l) {
 
             addChild(x.model.newLeaf().insert(x));
             grow(x.bounds);
 
-            return this;
-
         } else {
 
             final int bestLeaf = chooseLeaf(x.bounds);
-            RNode<X> dbf = data[bestLeaf];
+            final RNode<X> dbf = data[bestLeaf];
 
             HyperRegion before = dbf.bounds();
             RNode nextBest = dbf.add(x);
             if (nextBest == null) {
-                if (!before.equals(dbf.bounds())) {
+                if (!before.equals(dbf.bounds()))
                     updateBounds();
-                }
                 return null; /*merged*/
             }
 

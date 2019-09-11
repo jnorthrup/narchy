@@ -63,9 +63,9 @@ public final class SubtermMetadataCollector {
             int xstructure = x.structure();
             this.structure |= xstructure;
 
-            if ((xstructure & VAR_PATTERN.bit) != 0) {
+            if ((xstructure & VAR_PATTERN.bit) != 0)
                 this.varPattern += x.varPattern();
-            } if ((xstructure & VAR_DEP.bit) != 0)
+            if ((xstructure & VAR_DEP.bit) != 0)
                 this.varDep += x.varDep();
             if ((xstructure & VAR_INDEP.bit) != 0)
                 this.varIndep += x.varIndep();

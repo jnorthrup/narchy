@@ -24,13 +24,19 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
         the = true;
     }
 
-    protected TermVector(Term... terms) {
+    protected TermVector(Term[] terms) {
         super(terms);
         the = Util.and(Term::the, terms);
     }
 
     @Override public int indexOf(/*@NotNull*/ Term t) {
         return impossibleSubTerm(t) ? -1 : Subterms.super.indexOf(t);
+    }
+
+    @Override
+    public final int hashCodeSubterms() {
+        //assert(hash == Subterms.super.hashCodeSubterms());
+        return hash;
     }
 
     @Override

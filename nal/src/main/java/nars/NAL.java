@@ -92,14 +92,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
     public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
-    public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
+    public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
     public static final int ANSWER_ACTION_ANSWER_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY * 2;
 
 
     /** determines # of answer tries, as a factor of the answer capacities ( >= 1)*/
-    public static final float ANSWER_TRYING = 3f;
+    public static final float ANSWER_TRYING = 2f;
 
     /** if false, the tasklink resolution mode is sample */
     @Deprecated public static final boolean TASKLINK_ANSWER_BELIEF = false;
@@ -160,8 +160,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     public static final int DYN_TASK_MATCH_MODE =
-            //2;
-            1;
+            2;
+            //1;
             //0;
 
 
@@ -228,6 +228,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float ACTION_DESIRE_SHIFT_DUR =
         //0;
         -0.5f;
+
+
+    /** store dynamic and intermediate dynamic results in belief tables after computing each task/subtask */
+    public static final boolean CACHE_DYNAMIC_TASKS = false;
 
 
 	protected static final boolean CONCEPTUALIZE_DYNAMIC_TRANSIENT = false;

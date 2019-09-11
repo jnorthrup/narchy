@@ -17,7 +17,7 @@ public final class BiSubterm extends TermVector {
      * uses an array argument so that the input array can be used directly without needing to create a new one when it calls the superclass constructor
      */
     public BiSubterm(Term x, Term y) {
-        super(x, y);
+        super(new Term[] { x, y });
         this.x = x;
         this.y = y;
         normalized = normalized(this);

@@ -189,7 +189,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			} else {
 
 				long s = a.start, e = a.end;
-				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) t.root().bounds()).confMax());
+				RNode<TaskRegion> tRoot = t.root();
+				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) tRoot.bounds()).confMax());
 				float confPerTime =
 					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
 					//(a.dur / confMax);
@@ -202,7 +203,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 				HyperIterator h = new HyperIterator(new Object[cursorCapacity], rank);
 				//h.dfs(t.root(), whle);
-				h.bfs(t.root(), a);
+				h.bfs(tRoot, a);
 			}
 		});
 	}

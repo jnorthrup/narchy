@@ -129,7 +129,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
             }
         }
 
-        return x.isAddOrMerge() ? insert(x) : this;
+        return x.addOrMerge ? insert(x) : this;
     }
 
 

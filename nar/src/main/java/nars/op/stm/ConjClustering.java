@@ -456,7 +456,7 @@ public class ConjClustering extends How implements Consumer<Task> {
         private Task conjoin(Task[] x, long start) {
 
             DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
-                false, true, null, 0, null, nar
+                false, null, 0, null, nar
             );
             MetalBitSet cp = d.componentPolarity;
             for (int i = 0, xLength = x.length; i < xLength; i++) {

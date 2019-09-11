@@ -301,8 +301,7 @@ public interface LongInterval {
 	}
 
 	default long meanTimeTo(long is, long ie) {
-		if (is == ie) return meanTimeTo(is);
-		else return (meanTimeTo(is) + meanTimeTo(ie)) / 2;
+		return is == ie ? meanTimeTo(is) : (meanTimeTo(is) + meanTimeTo(ie)) / 2;
 	}
 
 	default long meanTimeTo(long x) {

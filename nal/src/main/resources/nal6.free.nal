@@ -33,8 +33,8 @@ C, X, conjParallel(C), --isVar(X), eventOfPN(C,X)      |-   conjWithoutPN(C,X), 
       //(  --D ==> A), X, eventOf(D,X), --isVar(X)      |- polarizeTask((--X ==> A)), (Belief:StructuralReduction)
 
 //conditional deduction
-(  C ==> A), X, eventOf(C,X)  |- polarizeTask((  conjWithout(C,  X) ==> A)), (Belief:DeductionDP, Time:BeliefEvent)
-(  C ==> A), X, eventOfNeg(C,X)  |- polarizeTask((  conjWithout(C,  --X) ==> A)), (Belief:DeductionDN, Time:BeliefEvent)
+(  C ==> A), X, eventOf(C,X)  |- polarizeTask((  conjWithoutUnify(C,  X) ==> A)), (Belief:DeductionDP, Time:BeliefEvent)
+(  C ==> A), X, eventOfNeg(C,X)  |- polarizeTask((  conjWithoutUnify(C,  --X) ==> A)), (Belief:DeductionDN, Time:BeliefEvent)
 
         (  C ==> A), X, eventOfPN(C,X)  |- (  conjWithoutPN(C,  X) ==> A), (Punctuation:AskAsk, Time:Task)
 

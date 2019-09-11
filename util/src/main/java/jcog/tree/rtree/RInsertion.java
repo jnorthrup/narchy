@@ -9,7 +9,7 @@ public class RInsertion<X> {
 
     final HyperRegion bounds;
 
-    private boolean addOrMerge;
+    boolean addOrMerge;
 
     private boolean added, merged;
 
@@ -45,9 +45,6 @@ public class RInsertion<X> {
     }
 
 
-    public boolean isAddOrMerge() {
-        return addOrMerge;
-    }
 
     public boolean added() {
         return added;
@@ -61,11 +58,6 @@ public class RInsertion<X> {
         added = true;
     }
 
-    //TODO setMerged() { ...
-
-    public void setAdd(boolean addOrMerge) {
-        this.addOrMerge = addOrMerge;
-    }
 
     @Nullable
     public X merge(X existing) {

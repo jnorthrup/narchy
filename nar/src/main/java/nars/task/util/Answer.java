@@ -33,7 +33,7 @@ public final class Answer implements Timed, Predicate<Task> {
     public final NAR nar;
 
     /** whether to store any dynamically created tasks that match the query */
-    public boolean storeDynamic = true;
+    public boolean storeDynamic = NAL.CACHE_DYNAMIC_TASKS;
 
 	@Nullable private Term term = null;
 
@@ -405,6 +405,10 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     @Nullable public Task sample() {
-        return tasks.isEmpty() ? null : tasks.getRoulette(random());
+        switch (tasks.size()) {
+            case 0: return null;
+            case 1: return tasks.get(0);
+            default: return tasks.getRoulette(random());
+        }
     }
 }

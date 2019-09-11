@@ -40,7 +40,7 @@ public class DynTaskify extends TaskList {
     static class Component implements Function<DynTaskify,Task> {
         final Term term;
         final BeliefTable table;
-        long start, end;
+        final long start, end;
         final int termVolume;
 
         Component(Term term, BeliefTable _c, long start, long end) {
@@ -66,7 +66,6 @@ public class DynTaskify extends TaskList {
     /** ditherTruth applied only to final result; not to projected subTasks */
     final boolean ditherTruth;
 
-    private final boolean ditherTime;
 
     final float dur;
 
@@ -75,11 +74,10 @@ public class DynTaskify extends TaskList {
     public final MetalBitSet componentPolarity;
 
 
-    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, boolean ditherTime, @Nullable Compound template, float dur, Predicate<Task> filter, NAR nar) {
+    public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, boolean ditherTruth, @Nullable Compound template, float dur, Predicate<Task> filter, NAR nar) {
         super(0);
         this.model = model;
         this.beliefOrGoal = beliefOrGoal;
-        this.ditherTime = ditherTime;
         this.ditherTruth = ditherTruth;
 
         this.template = template;
@@ -93,7 +91,7 @@ public class DynTaskify extends TaskList {
     }
 
     public DynTaskify(AbstractDynamicTruth model, boolean beliefOrGoal, Answer a) {
-        this(model, beliefOrGoal, a.ditherTruth, true, (Compound)a.term(), a.dur, a.filter, a.nar);
+        this(model, beliefOrGoal, a.ditherTruth, (Compound)a.term(), a.dur, a.filter, a.nar);
     }
 
     @Nullable

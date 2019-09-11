@@ -77,13 +77,12 @@ public class TruthIntegration {
 	 * allows ranking task by projected evidence strength to a target query region, but if temporal, the value is not the actual integrated evidence value but a monotonic approximation
 	 */
 	public static double eviFast(Task t, long qStart, long qEnd) {
-		long range = (qEnd - qStart + 1);
 		long tStart = t.start();
-		double tEvi = t.evi();
-		return tStart == ETERNAL ?
-			tEvi * range
+		return t.evi() * (tStart == ETERNAL ?
+			(qEnd - qStart + 1) //qRange
 			:
-			tEvi * Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd));
+			((1 + t.end() - tStart)) / (1.0 + t.meanTimeTo(qStart, qEnd)));
+			//Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd)));
 	}
 
 	/** for ranking relative relevance of tasks with respect to a time point */

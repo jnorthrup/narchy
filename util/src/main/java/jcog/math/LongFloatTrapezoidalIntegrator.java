@@ -8,17 +8,17 @@ import java.util.function.LongToDoubleFunction;
 abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunction { ;
 
 
-    /** /** points must be ordered */
-    public final double integrate(long... x) {
-        switch (x.length) {
-            case 0: return 0;
-            case 1: return applyAsDouble(x[0]); //range=0
-            case 2: return integrate2(x[0], x[1]);
-            default: return integrateN(x);
-
-            //TODO 3-ary case? ex: integrate2(a,b) + integrate2(b,c)
-        }
-    }
+//    /** /** points must be ordered */
+//    public final double integrate(long... x) {
+//        switch (x.length) {
+//            case 0: return 0;
+//            case 1: return applyAsDouble(x[0]); //range=0
+//            case 2: return integrate2(x[0], x[1]);
+//            default: return integrateN(x);
+//
+//            //TODO 3-ary case? ex: integrate2(a,b) + integrate2(b,c)
+//        }
+//    }
 
     public double integrate2(long a, long b) {
         double aa = applyAsDouble(a);
