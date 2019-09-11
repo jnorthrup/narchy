@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.Util;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAL;
@@ -328,9 +329,17 @@ public final class Answer implements Timed, Predicate<Task> {
         if (numTasks == 0)
             return null;
 
+        long s, e;
+        if (start!=ETERNAL && start!=TIMELESS && Util.or((Task t) -> t.intersects(start, end), 0, tasks.size(), tasks.items)) {
+            s = start;
+            e = end;
+        } else {
+            s = e = TIMELESS;
+        }
         return nar.newProjection(
+            s,e
             //start, end
-            TIMELESS, TIMELESS //auto
+            //TIMELESS, TIMELESS //auto
         ).with(this.tasks.items, numTasks);
     }
 

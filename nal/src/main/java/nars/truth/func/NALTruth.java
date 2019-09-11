@@ -35,12 +35,6 @@ public enum NALTruth implements TruthFunction {
 	},
 
 
-    Induction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions.induction(T, B, minConf);
-        }
-    },
 
     @AllowOverlap Post() {
         @Override
@@ -146,12 +140,6 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-//    @AllowOverlap AbductionRecursive() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, NAR n, float minConf) {
-//            return Abduction.apply(B, T, n, minConf);
-//        }
-//    },
 
 
     /**
@@ -183,6 +171,12 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
+    Induction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions.induction(T, B, minConf);
+        }
+    },
     Comparison() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {

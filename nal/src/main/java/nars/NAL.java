@@ -160,8 +160,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     public static final int DYN_TASK_MATCH_MODE =
-            2;
-            //1;
+            //2;
+            1;
             //0;
 
 
