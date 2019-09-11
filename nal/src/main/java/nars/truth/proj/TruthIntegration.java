@@ -2,7 +2,6 @@ package nars.truth.proj;
 
 
 import jcog.math.LongInterval;
-import nars.NAL;
 import nars.Task;
 import nars.truth.func.TruthFunctions;
 import nars.truth.util.EvidenceEvaluator;
@@ -55,15 +54,13 @@ public class TruthIntegration {
 				factor = eviIntegrate(qStart, qEnd, tStart, t.end(), dur);
 			}
 		}
-		if (factor < NAL.truth.EVI_MIN)
-			return 0;
 
 		double e = t.evi();
-		if (!eternalize || factor >= (1-Float.MIN_NORMAL)) {
+		if (!eternalize) {
 			return e * factor;
 		} else {
 			double ee = TruthFunctions.eternalize(e);
-			return ee + (e-ee) * factor;
+			return (ee * (qEnd - qStart + 1)) + (e-ee) * factor;
 		}
 	}
 

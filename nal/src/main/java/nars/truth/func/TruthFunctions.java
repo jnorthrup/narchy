@@ -404,12 +404,12 @@ public final class TruthFunctions {
         return w2cSafe(w, HORIZON);
     }
 
-    public static double w2cSafe(double w) {
-        return w2cSafeDouble(w);
+    public static double w2cSafe(double e) {
+        return w2cSafeDouble(e);
     }
     /** high precision */
-    public static double w2cSafeDouble(double w) {
-        return w2cSafe(w, HORIZON);
+    public static double w2cSafeDouble(double e) {
+        return w2cSafe(e, HORIZON);
     }
 
 
