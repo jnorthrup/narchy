@@ -1,8 +1,5 @@
 package nars;
 
-import jcog.util.ArrayUtil;
-import nars.web.NARWeb;
-
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
@@ -10,73 +7,73 @@ import java.util.function.Supplier;
 
 public class Shell {
 
-    public static final float INITIAL_FPS = 25f;
-    public static final float TERMINAL_DISPLAY_FPS = 8f;
-    static final Supplier<String> stdin = () -> {
-        try {
-            byte[] b = System.in.readAllBytes();
-            return new String(b);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
-        }
-    };
+//    public static final float INITIAL_FPS = 25f;
+//    public static final float TERMINAL_DISPLAY_FPS = 8f;
+//    static final Supplier<String> stdin = () -> {
+//        try {
+//            byte[] b = System.in.readAllBytes();
+//            return new String(b);
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//            return null;
+//        }
+//    };
 
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) {
 
-
-        if (args.length == 0) {
-            System.out.println("Usage:");
-            System.out.println("  gui\t\tstart gui");
-            System.out.println("  telnet <port>\t\tstart telnet server on given port");
-            System.out.println("  http <port>\t\tstart http server on given port");
-            System.out.println("  \"<narsese>\"\t\texecute narsese command"); 
-            
-            narseseStdin();
-
-            
-        } else {
-
-            args = ArrayUtil.subarray(args, 1, args.length);
-
-            switch (args[0]) {
-                case "web":
-                    NARWeb.Single.main(args);
-                    break;
-
-                case "gui":
-                    GUI.main(args);
-                    break;
-//                case "telnet":
-//                    int port = Texts.i(args[0]);
 //
-//                    NAR n = NARchy.core();
-//                    new Thread(() -> {
-//                        try {
-//                            new TextUI(n, port);
-//                        } catch (IOException e) {
-//                            e.printStackTrace();
-//                        }
-//                    }).start();
-//                    n.startFPS(INITIAL_FPS);
+//        if (args.length == 0) {
+//            System.out.println("Usage:");
+//            System.out.println("  gui\t\tstart gui");
+//            System.out.println("  telnet <port>\t\tstart telnet server on given port");
+//            System.out.println("  http <port>\t\tstart http server on given port");
+//            System.out.println("  \"<narsese>\"\t\texecute narsese command");
 //
+//            narseseStdin();
+//
+//
+//        } else {
+//
+//            args = ArrayUtil.subarray(args, 1, args.length);
+//
+//            switch (args[0]) {
+//                case "web":
+//                    NARWeb.Single.main(args);
 //                    break;
-
-                default:
-
-                    if (args.length > 1) {
-                        String[] finalArgs = args;
-                        narsese(() -> finalArgs[1]);
-                    } else {
+//
+//                case "gui":
+//                    GUI.main(args);
+//                    break;
+////                case "telnet":
+////                    int port = Texts.i(args[0]);
+////
+////                    NAR n = NARchy.core();
+////                    new Thread(() -> {
+////                        try {
+////                            new TextUI(n, port);
+////                        } catch (IOException e) {
+////                            e.printStackTrace();
+////                        }
+////                    }).start();
+////                    n.startFPS(INITIAL_FPS);
+////
+////                    break;
+//
+//                default:
+//
+//                    if (args.length > 1) {
+//                        String[] finalArgs = args;
+//                        narsese(() -> finalArgs[1]);
+//                    } else {
                         
                         narseseStdin();
-                    }
-
-                    break;
-
-
-            }
-        }
+//                    }
+//
+//                    break;
+//
+//
+//            }
+//        }
 
 
     }

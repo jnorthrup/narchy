@@ -113,11 +113,11 @@ public enum Tense {
     static long _dither(long t, boolean relative, int dither) {
         //return Util.round(t, dither);
 
-        if (relative && NAL.DT_DITHER_LOGARITHMICALLY && t > dither*dither) {
+        if (relative && NAL.DT_DITHER_LOGARITHMICALLY && t > dither*dither)
             //logarithmic dithering
-            long r = (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log(dither), 1f/dither)), dither);
-            return r;
-        } else return Util.round(t, dither);
+            return (long) Util.round(Math.pow(dither, Util.round(Math.log( t )/Math.log(dither), 1f/dither)), dither);
+        else
+            return Util.round(t, dither);
     }
 
     public static int dither(int dt, NAL n) {

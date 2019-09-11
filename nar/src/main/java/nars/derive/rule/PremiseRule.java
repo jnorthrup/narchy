@@ -292,7 +292,8 @@ public class PremiseRule extends ProxyTerm {
                     break;
 
                 case "hasBelief":
-                    questionSingle = false;
+                    //TODO test negated
+                    questionSingle = !negated;
                     DoublePremiseRequired dpr = new DoublePremiseRequired(true, true, true);
                     pre.add(negated ? dpr.neg() : dpr);
                     if (negated) negationApplied = true;

@@ -274,12 +274,13 @@
 
     //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
 
-    //Anti-conditional Abduction via Multi-conditional Syllogism
-    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DeductionWeakPN, Time:Compose)
-    (C ==> X), (E ==> Y), neq(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DeductionWeakNP, Time:Compose)
-
-    //(C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR, Time:BeliefEvent)
         //TODO disj
+
+
+//    //Anti-conditional Abduction via Multi-conditional Syllogism
+//    (C ==> X), (E ==> Y), neqPN(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DeductionWeakPN, Time:Compose)
+//    (C ==> X), (E ==> Y), neqPN(C,E)      |-    unisubst(--(C&&E), X, Y), (Belief:DeductionWeakNP, Time:Compose)
 
 
 //        (C ==> Z), (X ==> M), eventOf(C,X) |- ((conjWithout(C,X) &&   M) ==> Z), (Belief:InductionPB)

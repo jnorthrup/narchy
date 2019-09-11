@@ -90,16 +90,16 @@ abstract public class AbstractDynamicTruth {
 	public @Nullable Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
 		Term y = reconstruct(template, s, e, d);
 		if (y == null || !y.unneg().op().taskable /*|| y.hasXternal()*/) { //quick tests
-			if (NAL.DEBUG) {
-				//TEMPORARY for debug
-//                  model.evalComponents(answer, (z,start,end)->{
-//                      System.out.println(z);
-//                      nar.conceptualizeDynamic(z).beliefs().match(answer);
-//                      return true;
-//                  });
-//                  model.reconstruct(template, this, s, e);
-//                throw new TermException("DynTaskify template not reconstructed: " + this, template);
-			}
+//			if (NAL.DEBUG) {
+//				//TEMPORARY for debug
+////                  model.evalComponents(answer, (z,start,end)->{
+////                      System.out.println(z);
+////                      nar.conceptualizeDynamic(z).beliefs().match(answer);
+////                      return true;
+////                  });
+////                  model.reconstruct(template, this, s, e);
+////                throw new TermException("DynTaskify template not reconstructed: " + this, template);
+//			}
 			return null;
 		}
 
@@ -107,22 +107,25 @@ abstract public class AbstractDynamicTruth {
 
 
 		boolean absolute = !temporal() || s == LongInterval.ETERNAL || earliest == LongInterval.ETERNAL;
-		for (int i = 0, dSize = d.size(); i < dSize; i++) {
-			Task x = d.get(i);
-			long xStart = x.start();
-			if (xStart != ETERNAL) {
-				long shift = absolute ? 0 : xStart - earliest;
-				long ss = s + shift, ee = e + shift;
-				if (xStart != ss || x.end() != ee) {
-					Task tt = Task.project(x, ss, ee,
-						NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
-						false,
-						1, //no need to dither truth or time here.  maybe in the final calculation though.
-						d.dur,
-						nar);
-					if (tt == null)
-						return null;
-					d.setFast(i, tt);
+		if (!absolute) {
+			for (int i = 0, dSize = d.size(); i < dSize; i++) {
+				Task x = d.get(i);
+				long xStart = x.start();
+				if (xStart != ETERNAL) {
+					long shift = xStart - earliest;
+					long ss = s + shift, ee = e + shift;
+					if (xStart != ss || x.end() != ee) {
+						Task tt = Task.project(x, ss, ee,
+							NAL.truth.EVI_MIN, //minimal truth threshold for accumulating evidence
+							false,
+							1, //no need to dither truth or time here.  maybe in the final calculation though.
+							d.dur,
+							false,
+							nar);
+						if (tt == null)
+							return null;
+						d.setFast(i, tt);
+					}
 				}
 			}
 		}
@@ -144,7 +147,7 @@ abstract public class AbstractDynamicTruth {
 			int r = y.eventRange();
 			if (s!=ETERNAL && r > 0) {
 				if (e - s > r)
-					e-=r;
+					e -= r;
 			}
 		}
 

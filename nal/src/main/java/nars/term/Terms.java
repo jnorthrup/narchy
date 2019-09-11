@@ -478,14 +478,6 @@ public enum Terms {
 	}
 
 
-	private static boolean rCom(Term a, Term b, boolean recurse) {
-
-		return recurse ?
-			a.containsRecursively(b, RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
-			a.contains(RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
-
-	}
-
 	public static boolean eqRCom(Term _x, Term _y) {
 		if (_x == _y) return true;  //fast test
 		Term x = _x.unneg(), y = _y.unneg();
@@ -522,7 +514,7 @@ public enum Terms {
                 if (av == bv)
                     return false; //both atomic or same size (cant contain each other)
 
-                return rCom(x, y, true);
+                return RelationConstraint.rCom(x, y, true);
             }
 
 

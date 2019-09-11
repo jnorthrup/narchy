@@ -7,8 +7,8 @@ import nars.term.Term;
 
 public class BeliefReward extends ScalarReward {
 
-    public BeliefReward(Term id, Game a) {
-        super(id, 1f, a);
+    public BeliefReward(Term id, Game g) {
+        super(id, 1f, true, g);
     }
 
     @Override

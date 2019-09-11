@@ -327,13 +327,14 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return rewardNormalized(rewardTerm(reward), min, max, rewardFunc);
     }
 
-    public Reward reward(Term reward, float freq, FloatSupplier rewardFunc) {
+    public SimpleReward reward(Term reward, float freq, FloatSupplier rewardFunc) {
         SimpleReward r = new SimpleReward(reward, freq, rewardFunc, this);
-        r.addGuard(
-            NAL.DEBUG,false
-            //true,false
-            );
-        return reward(r);
+//        r.addGuard(
+//            NAL.DEBUG,false
+//            //true,false
+//            );
+        reward(r);
+        return r;
     }
 
     /**

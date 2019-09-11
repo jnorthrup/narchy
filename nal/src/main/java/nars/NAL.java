@@ -63,7 +63,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** can be unfair to new inputs if true, so for fairness leave false */
     public static final boolean DYNAMIC_TRUTH_STAMP_OVERLAP_FILTER = true;
 
-    public final static boolean REWARD_GOAL_UNSTAMPED = false;
+
 
 
     public static final boolean VOLMAX_RESTRICTS_INPUT= configIs("VOLMAX_RESTRICTS_INPUT"); //input tasks
@@ -160,9 +160,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
     public static final int DYN_TASK_MATCH_MODE =
-            2;
+            //2;
+            1;
             //0;
-            //1;
 
 
     /**
@@ -721,7 +721,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 4;
+        public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
         @Range(min = 0, max = 64)

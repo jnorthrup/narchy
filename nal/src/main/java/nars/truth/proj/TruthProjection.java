@@ -281,7 +281,7 @@ abstract public class TruthProjection extends TaskList {
 		ArrayUtil.quickSort(0, s, this::eviComparator, swapper); //descending
 
 
-		double evi[] = this.evi;
+		double[] evi = this.evi;
 
 		//shuffle spans of equivalent items
 		double last = evi[0];
@@ -484,9 +484,8 @@ abstract public class TruthProjection extends TaskList {
 
 		@Nullable long[] s0 = stamp(0);
 		if (n == 1) {
-			long[] s = s0;
-			assert (s.length <= capacity);
-			return s;
+			assert (s0.length <= capacity);
+			return s0;
 		}
 
 		if (n == 2) {

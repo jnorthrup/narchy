@@ -161,17 +161,20 @@ class BeliefTableTest {
     @Test
     void testDurationDithering() {
         NAR n = NARS.tmp();
-        n.dtDither.set(3);
-        n.time.dur(3);
+        int dur = 3;
+        n.dtDither.set(dur);
+        n.time.dur(dur);
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.1f);
-        t.inputAt(1, "x. :|:");
-        t.inputAt(2, "y. :|:");
-        t.mustBelieve(5, "(x&|y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
-        t.mustBelieve(5, "(x=|>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
+        t.inputAt(1, "x. |");
+        t.inputAt(dur-1, "y. |");
+        t.mustBelieve(dur*2-1, "(x&&y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
+        t.mustNotOutput(dur*2-1, "(x &&+3 y)", BELIEF);
+        t.mustBelieve(dur*2-1, "(x==>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
+        t.mustNotOutput(dur*2-1, "(x ==>+3 y)", BELIEF);
         n.onTask(tt -> {
-            if (!tt.isInput() && tt.start() % 3 != 0 && tt.end() % 3 != 0 || tt.end() > 0 && tt.start() > 3)
-                fail();
+            if (!tt.isInput() && tt.start() % dur != 0 && tt.end() % dur != 0 || tt.end() > 0 && tt.start() > dur)
+                fail(()->tt + " is not aligned");
         });
         t.test();
     }

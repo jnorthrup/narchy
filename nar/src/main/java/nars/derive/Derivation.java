@@ -444,19 +444,22 @@ public class Derivation extends PreDerivation {
     @Nullable
     private long[] evidenceDouble() {
         if (stampDouble == null) {
-            double te, be, tb;
+            double te, be;
             if (taskPunc == BELIEF || taskPunc == GOAL) {
-
                 te = taskTruth.evi();
                 be = beliefTruth_at_Belief.evi(); //TODO use appropriate beliefTruth projection
-                tb = te / (te + be);
             } else {
-
                 te = _task.priElseZero();
                 be = _belief.priElseZero();
-                double tbe = te + be;
-                tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
             }
+            if (temporal && taskStart!=ETERNAL && beliefStart!=ETERNAL) {
+                te *= _task.range();
+                be *= _belief.range();
+            }
+
+            double tbe = te + be;
+            double tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
+
             long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, random);
             if (stampDouble == null || !Arrays.equals(e, stampDouble))
                 this.stampDouble = e;

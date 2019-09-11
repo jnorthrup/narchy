@@ -14,11 +14,6 @@ public class TruthIntegration {
 
 
 
-	public static double eviAvg(Task t, long start, long end, float dur, boolean eternalize) {
-		assert(start!=ETERNAL);
-		long range = 1 + (end - start);
-		return eviAbsolute(t, start, end, dur, eternalize) / range;
-	}
 
 	public static double evi(Task t) {
 		return eviAbsolute(t, t.start(), t.end(), 0, false);
@@ -30,7 +25,7 @@ public class TruthIntegration {
 	 * interval is: [qStart, qEnd], ie: qStart: inclusive qEnd: inclusive
 	 * if qStart==qEnd then it is a point sample
 	 */
-	static double eviAbsolute(Task t, long qStart, long qEnd, float dur, boolean eternalize) {
+	public static double eviAbsolute(Task t, long qStart, long qEnd, float dur, boolean eternalize) {
 
 		//assert (qStart != ETERNAL && qStart <= qEnd);
 
@@ -39,7 +34,6 @@ public class TruthIntegration {
 		if (qStart == qEnd) {
 			//point
 			if (tStart == ETERNAL)
-				//result = new EvidenceEvaluator.EternalEvidenceEvaluator(ee);
 				factor = 1;
 			else {
 				assert(qStart != LongInterval.ETERNAL);
@@ -115,12 +109,12 @@ public class TruthIntegration {
 	   } else if (ts <= qs && te >= qe) {
 		   //task equals or contains question
 		   return e.integrate2(qs, qe);
-	   } else if (qs >= ts && qe > te) {
+	   } else if (qs >= ts /*&& qe > te*/) {
 		   //question starts during and ends after task
 		   //return e.integrateN(qs, te, Math.min(te + 1, qe), (te + qe) / 2, qe);
 		   //return e.integrateN(qs, te, (te + qe) / 2, qe);
 		   return e.integrateN(qs, te, Math.min(te+1, qe), qe);
-	   } else if (qs < ts && qe <= te) {
+	   } else if (/*qs < ts &&*/ qe <= te) {
 		   //question starts before task and ends during task
 		   return e.integrateN(qs, Math.max(qs, ts-1), ts, qe);
 	   } else {

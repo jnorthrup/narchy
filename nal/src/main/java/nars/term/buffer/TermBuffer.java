@@ -143,7 +143,7 @@ public class TermBuffer {
     private final static byte MAX_CONTROL_CODES = (byte) ops.length;
 
 
-    private final TermBuffer negStart() {
+    private TermBuffer negStart() {
         compoundStart(NEG, DTERNAL);
         return this;
     }
@@ -214,15 +214,8 @@ public class TermBuffer {
      */
     public Term get(int volMax) {
         this.volRemain = volMax;
-
-        Term y = nextTerm(code.arrayDirect(), new int[]{0, code.len});
-
-
-        return y;
+        return nextTerm(code.arrayDirect(), new int[]{0, code.len});
     }
-
-
-
 
     protected Term nextTerm(byte[] bytes, int[] range) {
 
@@ -252,7 +245,6 @@ public class TermBuffer {
 
         Term[] subterms = null;
 
-        subterms:
         for (int i = 0; i < len; ) {
             //assert(range[0] <= range[1]) //check if this is < or <=
 

@@ -273,15 +273,12 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
                 pathsTo(this, new ByteArrayList(0), descendIf, target, receiver);
     }
 
-    @Nullable
     default Term commonParent(List<ByteList> subpaths) {
-        int subpathsSize = subpaths.size();
-        assert (subpathsSize > 1);
+        int subpathsSize = subpaths.size(); //assert (subpathsSize > 1);
 
         int shortest = Integer.MAX_VALUE;
-        for (ByteList subpath : subpaths) {
+        for (ByteList subpath : subpaths)
             shortest = Math.min(shortest, subpath.size());
-        }
 
 
         int i;

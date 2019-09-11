@@ -24,7 +24,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Set;
-import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -660,10 +659,8 @@ public class ConjTree implements ConjBuilder {
                                             return true;
                                         if (xx instanceof Neg) {
                                             Term xu = xx.unneg();
-                                            if (xu.op() == CONJ) {
-                                                if (Conj.eventOf(xu, y, +1) || Conj.eventOf(xu, y, -1)) {
-                                                    return true;
-                                                }
+                                            if (xu instanceof Compound && xu.op() == CONJ) {
+                                                return Conj.eventOf(xu, y, +1) || Conj.eventOf(xu, y, -1);
                                             }
                                         }
                                         return false;
@@ -689,7 +686,7 @@ public class ConjTree implements ConjBuilder {
                 }
 
 
-                if (!simple && Util.or((Predicate<Term>) qq -> qq.op()==CONJ && qq.dt()==XTERNAL, q)) {
+                if (!simple && Util.or(qq -> qq.op()==CONJ && qq.dt()==XTERNAL, q)) {
                     simple = true; //TODO refine
                 }
 
@@ -702,9 +699,7 @@ public class ConjTree implements ConjBuilder {
                     if (y.op()==CONJ && (y.subStructure()&CONJ.bit)!=0) {
                         //test factorization exhaustively
                         try {
-                            y.eventsAND((when, whta) -> {
-                                return true;
-                            }, 0, false, true);
+                            y.eventsAND((when, whta) -> true, 0, false, true);
                         } catch (TermTransformException tte) {
                             if (NAL.DEBUG)
                                 throw tte;

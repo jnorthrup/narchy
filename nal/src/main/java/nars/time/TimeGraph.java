@@ -174,7 +174,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	private static long durMerge(Event a, Event b) {
 		if (a instanceof Absolute && b instanceof Absolute) {
 			long ad = a.dur(), bd = b.dur();
-			return (a.id.op() == IMPL || b.id.op() == IMPL) ?
+			return (ad!=bd && (a.id.op() == IMPL || b.id.op() == IMPL)) ?
 				Math.max(ad, bd) //implications are like temporal pointers, not events.  so they shouldnt shrink duration
 				:
 				Math.min(ad, bd);
@@ -959,9 +959,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			if (unknown != null) {
 
-				return solveDTpair((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu) -> {
-					return each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false));
-				});
+				return solveDTpair((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu) ->
+					each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false)));
 			} else {
 
 				if (validPotentialSolution(nextKnown)) {
@@ -1251,7 +1250,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        return first;
 //    }
 
-	private final boolean solution(Event y) {
+	private boolean solution(Event y) {
 		if (y.start() == TIMELESS && solving.equals(y.id))
 			return true; //HACK eliminate when this happens; regurgitated nothing useful
 

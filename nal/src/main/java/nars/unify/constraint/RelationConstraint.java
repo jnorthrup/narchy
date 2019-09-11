@@ -36,7 +36,15 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
     }
 
-    public final RelationConstraint<U> mirror() {
+	public static boolean rCom(Term a, Term b, boolean recurse) {
+
+		return recurse ?
+			a.containsRecursively(b, NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
+			a.contains(NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
+
+	}
+
+	public final RelationConstraint<U> mirror() {
         return newMirror(y, x);
     }
 

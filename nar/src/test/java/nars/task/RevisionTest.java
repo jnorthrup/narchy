@@ -15,7 +15,6 @@ import nars.test.analyze.BeliefAnalysis;
 import nars.time.Tense;
 import nars.truth.Truth;
 import nars.truth.proj.LinearTruthProjection;
-import nars.truth.proj.TruthIntegration;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -714,8 +713,8 @@ public class RevisionTest {
 
         Task a = n.believe(x, 1, 1f);
 
-        assertTrue(TruthIntegration.eviAvg(a, 1, 1, 0, false) > TruthIntegration.eviAvg(a, 1, 2, 0, false));
-        assertEquals(0, TruthIntegration.eviAvg(a, 2, 2, 0, false));
+        assertTrue(a.eviAvg(1, 1, 0, false) > a.eviAvg(1, 2, 0, false));
+        assertEquals(0, a.eviAvg(2, 2, 0, false));
 
         Task a2 = n.believe(x, 1, 1f);
         Task b = n.believe(x, 2, 1f);

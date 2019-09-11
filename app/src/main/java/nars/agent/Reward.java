@@ -3,7 +3,6 @@ package nars.agent;
 import com.google.common.collect.Iterables;
 import jcog.Util;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.PriNode;
@@ -85,17 +84,17 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
     }
 
-    public void alwaysWantEternally(Termed goal, float freq) {
-        alwaysWantEternally(goal, freq, nar().confDefault(GOAL));
+    public void alwaysWantEternally(Termed goal, float freq, boolean stamped) {
+        alwaysWantEternally(goal, freq, nar().confDefault(GOAL), stamped);
     }
 
-    public void alwaysWantEternally(Termed g, float freq, float conf) {
+    public void alwaysWantEternally(Termed g, float freq, float conf, boolean stamped) {
         Term goal = g.term();
         @Nullable Truth truth = $.t(goal.op()==NEG ? 1-freq : freq, conf);
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 
-        long[] stamp = NAL.REWARD_GOAL_UNSTAMPED ? Stamp.UNSTAMPED : nar().evidence();
+        long[] stamp = stamped ? Stamp.UNSTAMPED : nar().evidence();
         Task t = NALTask.the(goal.unneg(), GOAL, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);

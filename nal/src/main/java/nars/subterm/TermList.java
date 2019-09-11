@@ -50,9 +50,9 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     void ensureExtraCapacityExact(int num) {
-        int l = this.items.length;
-        int oldCapacity = l, minCapacity = l + num;
-        if (minCapacity > oldCapacity)
+        int oldCap = this.items.length;
+        int minCapacity = oldCap + num;
+        if (minCapacity > oldCap)
             this.items = Arrays.copyOf(items, minCapacity);
     }
 

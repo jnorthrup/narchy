@@ -455,47 +455,12 @@ public class ConjClustering extends How implements Consumer<Task> {
 
         private Task conjoin(Task[] x, long start) {
 
-
-//            Truth t;
-//            if (puncOut==BELIEF || puncOut == GOAL) {
-//                double e = c2wSafe((double) conf);
-//                if (e < NAL.truth.EVI_MIN)
-//                    return null;
-//
-//                t = Truth.theDithered(freq, e, nar);
-//                if (t == null)
-//                    return null;
-//            } else {
-//                t = null;
-//            }
-//
-//
-//            int ditherDT = nar.dtDither.intValue();
-//            Term cj = ConjSeq.sequence(x, ditherDT, Op.terms);
-//            if (cj.op() != CONJ)
-//                return null;
-//
-//            ObjectBooleanPair<Term> cp = Task.tryTaskTerm(cj, puncOut, true);
-//            if (cp == null)
-//                return null;
-//
-//            long range = Util.min(LongInterval::range, x) - 1;
-//            long tEnd = start + range;
-//            long[] se = Tense.dither(new long[] { start, tEnd}, nar);
-//            NALTask y = new STMClusterTask(cp, t,
-//                    se[0], se[1],
-//                    Stamp.sample(NAL.STAMP_CAPACITY,
-//                        Stamp.toMutableSet(NAL.STAMP_CAPACITY,nnn->x[nnn].stamp(), x.length),
-//                        nar.random()), puncOut, now);
-
-
             DynTaskify d = new DynTaskify(DynamicConjTruth.ConjIntersection, x[0].isBelief() /* else goal */,
-                true, true, null, 0, null, nar
+                false, true, null, 0, null, nar
             );
             MetalBitSet cp = d.componentPolarity;
             for (int i = 0, xLength = x.length; i < xLength; i++) {
-                Task xx = x[i];
-                if (xx.isNegative())
+                if (x[i].isNegative())
                     cp.clear(i);
             }
 

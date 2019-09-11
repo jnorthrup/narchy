@@ -31,8 +31,10 @@
 //      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
 
-      (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
-      (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Goal:DesireWeak, Time:Compose)
+
+      (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
+      (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
+        //these Comparison rules used to have: Goal:DesireWeak but seems presumptuous, even if weak
 
 //Structural Analogy
       ((A-->B) <-> (A-->C)), ((A-->B) <-> (A-->C)), neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralReductionWeak, Goal:StructuralReductionWeak)

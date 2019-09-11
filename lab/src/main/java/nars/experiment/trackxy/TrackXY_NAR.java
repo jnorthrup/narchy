@@ -253,9 +253,9 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-        final int W = 4, H = 4;
+        //final int W = 4, H = 4;
         //final int W = 3, H = 1;
-        //final int W = 3, H = 3;
+        final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
         ((TaskLinkWhat)a.what()).links.linksMax.set(64);
@@ -357,7 +357,7 @@ public class TrackXY_NAR extends GameX {
 //        new Impiler(n);
 
         NAL.DEBUG = true;
-        n.onTask(tt -> {
+        a.what().eventTask.on(tt -> {
 
 
 
@@ -382,6 +382,8 @@ public class TrackXY_NAR extends GameX {
                             String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
                             System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
                             System.out.println(tt.proof());
+                            n.proofPrint(tt);
+
                             //System.out.println(NAR.proof(tt, n));
                             System.out.println();
 

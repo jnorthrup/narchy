@@ -129,12 +129,10 @@ public enum MapSubst { ;
 
     public static class MapSubstN extends MapSubstWithStructFilter {
         private final Map<? extends Term, Term> xy;
-        private final int xStruct;
 
         public MapSubstN(Map < ? extends Term, Term > xy, int structure){
             super(structure);
             this.xy = xy;
-            this.xStruct = structure;
         }
 
 

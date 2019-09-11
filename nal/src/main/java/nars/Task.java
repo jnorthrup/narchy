@@ -66,9 +66,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                     x.term().concept()
                             .hashCode())
             .thenComparing((Task x) -> -x.priElseZero());
-;
 
-	static boolean equal(Task thiz, Object that) {
+    static boolean equal(Task thiz, Object that) {
         return (thiz == that) ||
                 ((that instanceof Task && thiz.hashCode() == that.hashCode() && Task.equal(thiz, (Task) that)));
     }
@@ -422,7 +421,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * TODO boolean eternalize=false
      */
     @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, NAL n) {
+    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, boolean eternalize, NAL n) {
 
         if (dtDither > 1) {
             start = Tense.dither(start, dtDither, -1);
@@ -439,7 +438,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             //tt = t.truthRelative((start+end)/2, n.time(), eviMin);
             //if (tt == null) return null;
 
-            tt = t.truth(start, end, dur, false);
+            tt = t.truth(start, end, dur, eternalize);
 
             if (tt == null || tt.evi() < eviMin) return null;
 
@@ -868,13 +867,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return truth(targetStart, targetEnd, dur, false);
     }
 
-    @Nullable default Truth truth(long start, long end, float dur, boolean eternalize) {
+    @Nullable default Truth truth(long qStart, long qEnd, float dur, boolean eternalize) {
 
         if (isEternal())
             return truth();
         else {
 
-            double e = TruthIntegration.eviAvg(this, start, end, dur, eternalize);
+            double e = eviAvg(qStart, qEnd, dur, eternalize);
 
             return (e < NAL.truth.EVI_MIN) ?
                 null :
@@ -883,6 +882,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                         e);
         }
     }
+
+    default double eviAvg(long qStart, long qEnd, float dur, boolean eternalize) {
+        assert(qStart!=ETERNAL);
+        long range = 1 + (qEnd - qStart);
+        return TruthIntegration.eviAbsolute(this, qStart, qEnd, dur, eternalize) / range;
+    }
+
 
     @Override
     default double eviMean() {

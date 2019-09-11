@@ -100,7 +100,7 @@ class ImplicationNetworkTest {
         Truth bGoal = bGoals.truth(ETERNAL, n);
         //n.concept(b).print();
         assertNotNull(bGoal);
-        assertEquals(1, bGoals.taskCount());
+        assertTrue(1 <= bGoals.taskCount());
 
         
         

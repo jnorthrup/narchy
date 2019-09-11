@@ -45,7 +45,7 @@ class TruthProjectionTest {
             t.add(T);
             Truth tt = t.truth();
             System.out.println(T + "\t" +
-                    TruthIntegration.eviAvg(T, 0, i, 1, false) + " eviInteg\t => " + tt + ";evi=" + tt.evi());
+                    T.eviAvg(0, i, 1, false) + " eviInteg\t => " + tt + ";evi=" + tt.evi());
 
             /*assertEquals(T.freq(), tt.freq());
             assertEquals(T.evi() * ((float)i)/W, tt.evi(), 0.1f); //percentage of evidence being occluded

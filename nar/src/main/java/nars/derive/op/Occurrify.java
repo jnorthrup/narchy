@@ -108,13 +108,13 @@ public class Occurrify extends TimeGraph {
         final long taskStart = d.taskStart;
         final long beliefStart = d.beliefStart;
 
-        if (d.single || d.beliefStart == ETERNAL)
-            return new long[] { d.taskStart, taskEnd};
+        if (d.single || beliefStart == ETERNAL)
+            return new long[] { taskStart, taskEnd};
         else {
             final long beliefEnd = d.beliefEnd;
-            if (d.taskStart == ETERNAL) {
+            if (taskStart == ETERNAL) {
     //            assert(d.beliefStart!=TIMELESS);
-                return new long[]{d.beliefStart, beliefEnd};
+                return new long[]{ beliefStart, beliefEnd};
             } else {
 
                 long start;
@@ -355,7 +355,7 @@ public class Occurrify extends TimeGraph {
     }
 
     private Term solveDT(Term x, Derivation d, boolean decomposeEvents,OccurrenceSolver occ) {
-        Event e = selectSolution(false, d.occ.know(x,  true,true,decomposeEvents,occ).solutions(x));
+        Event e = selectSolution(false, d.occ.know(x,  true,true, decomposeEvents, occ).solutions(x));
         if (e == null) {
             if (d.taskTerm.hasAny(NEG) || d.beliefTerm.hasAny(NEG) || x.hasAny(NEG)) {
 
@@ -572,8 +572,7 @@ public class Occurrify extends TimeGraph {
                         a = bb; b = tt; dt = tTime - bTime;
                     }
 
-                    if (NAL.derive.TIMEGRAPH_DITHER_EVENTS_INTERNALLY)
-                        dt = Tense.dither(dt, d.ditherDT);
+                    dt = Tense.dither(dt, d.ditherDT);
 
                     y = terms.conjMerge(a, Tense.occToDT(dt), b);
 
@@ -659,19 +658,22 @@ public class Occurrify extends TimeGraph {
             if (occ == null)
                 return null;
 
+            Term y;
             if (!x.hasXternal()) {
-                return pair(x, occ);
+                y = x;
             } else {
 
-                boolean neg = false;if (preUnneg(x, d)) { x = x.unneg();neg = true; }
+                boolean neg = false;
+                if (preUnneg(x, d)) { x = x.unneg();neg = true; }
 
                 d.occ.clear();
 
                 if (occ[0] != TIMELESS && occ[0] != ETERNAL)
                     d.occ.know(x, occ[0], occ[1]);
 
-                return pair(d.occ.solveDT(x, d, decomposeEvents, this).negIf(neg), occ);
+                y = d.occ.solveDT(x, d, decomposeEvents, this).negIf(neg);
             }
+            return pair(y, occ);
 
         }
 

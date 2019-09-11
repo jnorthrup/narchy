@@ -627,7 +627,7 @@ public interface Compound extends Term, IPair, Subterms {
 
 
     @Override default Term root() { return Op.terms.root(this);  }
-    @Override default Term concept() { return Op.terms.concept(this);  }
+    @Override default Term concept() { return TermBuilder.concept(this);  }
 
 
     @Override

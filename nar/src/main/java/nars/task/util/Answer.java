@@ -266,7 +266,7 @@ public final class Answer implements Timed, Predicate<Task> {
             long ss = start;
             if (ss != ETERNAL) {
                 long ee = end;
-                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, nar);
+                t = Task.project(t, ss, ee, eviMin, ditherTruth, ditherTime ? nar.dtDither() : 1, dur, false, nar);
             }
         }
 
