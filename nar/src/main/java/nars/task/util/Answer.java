@@ -283,7 +283,7 @@ public final class Answer implements Timed, Predicate<Task> {
         switch (root.punc()) {
             case BELIEF:
             case GOAL:
-                return truthProjection().task(eviMin(), ditherTruth, root.isBelief(), forceProject, nar);
+                return truthProjection().dur(dur).task(eviMin(), ditherTruth, root.isBelief(), forceProject, nar);
 
             case QUESTION:
             case QUEST:

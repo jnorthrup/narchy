@@ -175,7 +175,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
     private  @Nullable Truth truth(@Nullable TruthProjection t, When<NAR> when, int shift) {
         return t!=null ?
-            t.truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
+            t.dur(when.dur).truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
             false, false, null) :
             null;
     }

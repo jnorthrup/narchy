@@ -117,6 +117,7 @@ public interface TaskTable {
         Answer a = Answer.taskStrength(isBeliefOrGoal,
             isBeliefOrGoal ? NAL.ANSWER_BELIEF_SAMPLE_CAPACITY : NAL.ANSWER_QUESTION_SAMPLE_CAPACITY,
             when.start, when.end, template, filter, when.x);
+        a.dur(when.dur);
 
         match(a);
         return a.isEmpty() ? null : a;

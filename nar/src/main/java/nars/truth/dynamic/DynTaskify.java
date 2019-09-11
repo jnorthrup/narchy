@@ -153,8 +153,8 @@ public class DynTaskify extends TaskList {
                 order[i] = i;
             Component[] cc = c.array();
 
-            IntToFloatFunction smallestFirst = (int j) -> -cc[j].termVolume;
-            //IntToFloatFunction biggestFirst = (int j) -> (cc[j]).termVolume;
+            IntToFloatFunction smallestFirst = (int j) -> +cc[j].termVolume;
+            //IntToFloatFunction biggestFirst = (int j) -> -(cc[j]).termVolume;
             ArrayUtil.sort(order,
                     smallestFirst
                     //biggestFirst

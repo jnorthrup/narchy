@@ -237,7 +237,7 @@ public abstract class TaskLeak extends How {
 
         /** TODO abstract */
         protected When<NAR> focus(What w) {
-            return WhenTimeIs.now(w, 0);
+            return WhenTimeIs.now(w, w.nar.dur());
         }
 
         @Nullable private Task sample(TaskLink link, Term linkTerm, When<NAR> when) {

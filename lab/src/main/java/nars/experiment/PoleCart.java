@@ -107,15 +107,15 @@ public class PoleCart extends GameX {
 //								what.accept(t);
 //							});
 						}
-                    }).setFPS(3f);
+                    }).setFPS(1f);
 					n.onDur(()->{
-						double dur = (double)n.dur();
+						double dur = n.dur()*3;
 						long now = n.time();
 						for (Concept a : p.actions()) {
 							LongToObjectFunction<Truth> dd = a.meta("impiler");
 							if (dd != null) {
-								for (int pp = 1; pp < 20; pp++) {
-									long w = Math.round(now + pp * dur);
+								for (int pp = 1; pp < 4; pp++) {
+									long w = Math.round(now + (2+pp) * dur);
 									Truth x = dd.apply(w);
 									if (x != null) {
 										//System.out.println(a.term() + "\t" + x);

@@ -164,20 +164,22 @@ public interface Compound extends Term, IPair, Subterms {
         return unifiesRecursively(x, (y)->true);
     }
 
+    /** TODO test */
     default boolean unifiesRecursively(Term x, Predicate<Term> preFilter) {
 
         if (x instanceof Compound) {
-            int xv = x.volume();
-            if (!hasAny(Op.Variable) && xv > volume())
+//            int xv = x.volume();
+            if (!hasAny(Op.Variable) /*&& xv > volume()*/)
                 return false; //TODO check
 
             UnifyAny u = new UnifyAny();
 
-            if (u.unifies(this, x)) return true;
+            //if (u.unifies(this, x)) return true;
 
-            return !subterms().recurseTerms(t->t.volume()>=xv, s->{
-                if (s instanceof Compound) {
-                    if (preFilter.test(s) && ((Compound) s).unifiesRecursively(x, preFilter)) {
+            int xOp = x.opID();
+            return !subterms().recurseTerms(s->s.hasAny(1<<xOp)/*t->t.volume()>=xv*/, s->{
+                if (s instanceof Compound && s.opID()==xOp) {
+                    if (preFilter.test(s) && x.unify(s, u)) {
                         return false;
                     }
                 }

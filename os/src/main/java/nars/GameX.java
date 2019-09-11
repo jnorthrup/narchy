@@ -466,7 +466,7 @@ abstract public class GameX extends Game {
         n.questPriDefault.amp(0.25f);
 
         n.beliefConfDefault.set(0.75f);
-        n.goalConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.90f);
 
 
         n.emotion.want(MetaGoal.Perceive, -0.005f);

@@ -91,7 +91,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 8;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
@@ -205,7 +205,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** if true then tasklink targets are named by the concept and not a raw term
      * (which could be temporal or not normalized)
      * */
-    public static final boolean TASKLINK_TARGET_CONCEPT = false;
+    public static final boolean TASKLINK_TARGET_CONCEPT = true;
 
     /** various post-processing of contained variables prior to use in Task content */
     public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;
@@ -580,7 +580,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean PREMISE_KEY_DITHER = false;
 
         /** if true, uses dur=0 for matching/answering which, as a result, restricts includable evidence in the truth projection */
-        public static final boolean ANSWER_HONEST_DUR = true;
+        public static final boolean ANSWER_HONEST_DUR = false;
     }
 
 

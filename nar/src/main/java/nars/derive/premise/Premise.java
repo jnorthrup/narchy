@@ -9,6 +9,7 @@ import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.Derivation;
 import nars.table.BeliefTable;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
 import nars.time.Tense;
@@ -150,6 +151,29 @@ public class Premise  {
 		if (NAL.test.DEBUG_EXTRA) {
 			if (nextBeliefTerm.volume() > d.termVolMax)
 				throw new TermException("excessive volume", nextBeliefTerm); //return null; //WTF
+		}
+		if (belief == null && nextBeliefTerm instanceof Compound && nextBeliefTerm.hasXternal() && taskTerm.volume() > nextBeliefTerm.volume() && !taskTerm.containsRecursively(nextBeliefTerm)) {
+			//structurify: try to match the beliefTerm to a taskTerm component
+			//  emulates (slowly) the termlink id codes from opennars
+			Term[] found = new Term[1];
+			int bOp = nextBeliefTerm.opID();
+			int bStruct = nextBeliefTerm.structure();
+			Term _nextBeliefTerm = nextBeliefTerm;
+			//TODO shuffle recursion order
+			taskTerm.recurseTerms(x->x.hasAll(bStruct), s->{
+				if (s instanceof Compound) {
+					s = s.unneg();
+					if (s.opID() == bOp) {
+						if (_nextBeliefTerm.equalsRoot(s)) {
+							found[0] = s;
+							return false;
+						}
+					}
+				}
+				return true;
+			}, null);
+			if (found[0]!=null)
+				nextBeliefTerm = found[0];
 		}
 
 		if (!d.budget(task, belief))

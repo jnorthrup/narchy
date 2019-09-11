@@ -74,7 +74,9 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
         @Override
         public final double applyAsDouble(long when) {
             long dt = dt(when);
-            return (dt == 0) ? 1 : NAL.evi(1, dt, dur);
+            return (dt == 0) ?
+                1
+                : NAL.evi(1, dt, dur);
         }
 
     }

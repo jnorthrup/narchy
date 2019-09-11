@@ -20,7 +20,7 @@ public class ActionTiming implements TimeFocus {
     public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
 
     /** focus center, 0=present, -1 = full past, +1 full future */
-    public final FloatRange balance = new FloatRange(+1, -1, +1);
+    public final FloatRange balance = new FloatRange(0, -1, +1);
 
     public ActionTiming() {
 
