@@ -194,7 +194,7 @@ public class NAL4Test extends NALTest {
     void concludeImageIntInheritImageExt() {
         test
                 .termVolMax(12)
-//                .confMin(0.6f)
+                .confMin(0.75f)
                 .mustBelieve(cycles, "((neutralization,\\,base) --> (reaction,/,base))", 1.0f, 0.81f)
                 .mustBelieve(cycles, "((neutralization,acid,\\) --> (reaction,acid,/))", 1.0f, 0.81f)
                 .believe("(neutralization --> (acid,base))")
@@ -356,7 +356,7 @@ public class NAL4Test extends NALTest {
     @Test
     void composition_on_both_sides_of_a_statement_2_neg() {
         test
-                .termVolMax(12)
+               .termVolMax(12)
                 .believe("((x|y)-->animal)",1.0f,0.9f)
                 .ask("(((x|y),plant) --> (animal,plant))")
                 .mustBelieve(cycles, "(((x|y),plant) --> (animal,plant))", 1.0f, 0.81f)
@@ -393,6 +393,7 @@ public class NAL4Test extends NALTest {
                 ////                .mustNotOutput(cycles, "((bird,plant) --> (plant,animal))", BELIEF)
         ;
     }
+
     @Test
     void composition_on_both_sides_of_a_statement_3() {
 

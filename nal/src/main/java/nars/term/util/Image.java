@@ -109,7 +109,8 @@ public enum Image {
         return
                 !x.isNormalized()
                         ||
-                        (x instanceof Compound && x.op() == INH &&
+                        (x instanceof Compound &&
+                            x.opID() == INH.id &&
                                 x.hasAll(ImageBits) &&
                                 normalize(x, false, false) == null);
     }

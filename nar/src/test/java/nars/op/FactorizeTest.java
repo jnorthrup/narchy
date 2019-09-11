@@ -2,6 +2,7 @@ package nars.op;
 
 import nars.NARS;
 import nars.term.Term;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -20,6 +21,22 @@ public class FactorizeTest {
                 f.applyAndNormalize($$("(f(a) && f(b))"))
         );
     }
+    @Test
+    void testConjPar2_xternal() {
+        assertEquals(
+            $$("(f(#1) && member(#1,{a,b}))"),
+            f.applyAndNormalize($$("(f(a) &&+- f(b))"))
+        );
+    }
+    @Disabled
+    @Test
+    void testConjPar_in_Seq() {
+        assertEquals(
+            $$("((f(#1) && member(#1,{a,b})) &&+1 f(c))"),
+            f.applyAndNormalize($$("((f(a) && f(b)) &&+1 f(c))"))
+        );
+    }
+
     @Test
     void testDisjPar2() {
         assertEquals(

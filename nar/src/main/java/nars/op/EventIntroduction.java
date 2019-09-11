@@ -4,15 +4,20 @@ import nars.NAR;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.compound.Sequence;
 import nars.term.util.conj.Conj;
 import org.eclipse.collections.api.block.function.primitive.ObjectIntToObjectFunction;
+import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Map;
 import java.util.concurrent.ThreadLocalRandom;
 
+import static nars.Op.CONJ;
 import static nars.Op.IMPL;
 import static nars.time.Tense.DTERNAL;
+import static nars.time.Tense.XTERNAL;
 
 /** introduction applied to subevents and subconditions */
 public abstract class EventIntroduction extends Introduction {
@@ -28,7 +33,8 @@ public abstract class EventIntroduction extends Introduction {
     protected boolean filter(Term next) {
         return /*next.isAny(CONJ.bit | IMPL.bit  ) && Tense.dtSpecial(next.dt()) &&*/
                 //next.count(x -> x instanceof Compound) > 1;
-                next instanceof Compound && next.hasAny(Op.Temporal);
+                next instanceof Compound && next.hasAny(CONJ);
+                    //&& next.hasAny(Op.Temporal);
     }
 
     @Override
@@ -65,8 +71,31 @@ public abstract class EventIntroduction extends Introduction {
 //                return x.hasAny(Op.Variable) ? x :
 //                    impl(x, volMax, x.sub(0), x.sub(1), each);
             case CONJ:
-                if (Conj.isSeq(x))
-                    return x; //HACK dont do sequences
+                if (Conj.isSeq(x)) {
+                    if ((x.subStructure() & CONJ.bit) != 0) {
+                        //search for any embedded parallel conj
+                        Map<Term, Term> replacement = new UnifiedMap(1);
+                        if (!x.eventsAND((when, what) -> {
+                            if (what instanceof Compound && what.op() == CONJ && !Conj.isSeq(what) && what.dt()!=XTERNAL && !replacement.containsKey(what)) {
+                                Term what2 = each.valueOf(what, volMax - (x.volume() - what.volume()) - 1);
+                                if (what2 != null)
+                                    replacement.put(what, what2);
+                            }
+                            return true;
+                        }, 0, false, true /* xternal disabled */))
+                            return x; //fail
+                        if (!replacement.isEmpty()) {
+                            Term xx = x.replace(replacement);
+                            if (!(xx instanceof Bool))
+                                return xx;
+                        }
+                    }
+
+                    return x; //basic sequence, or nothing
+
+                } else {
+                    //ok continue below
+                }
 //
 //                if (x.dt() == XTERNAL || x.hasAny(Op.Variable))
 //                    return x; //unchanged

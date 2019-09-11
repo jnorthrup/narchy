@@ -404,7 +404,7 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term term) {
-            return term.subs() >= subsMin;
+            return term instanceof Compound && term.subs() >= subsMin;
         }
 //
 //        @Override
