@@ -15,11 +15,11 @@ public abstract class AbstractAtomic implements Atomic {
 
 
     /*@Stable*/
-    private final transient byte[] bytesCached;
+    private final transient byte[] bytes;
     private final transient int hash;
 
     protected AbstractAtomic(byte[] raw) {
-        this.bytesCached = raw;
+        this.bytes = raw;
         this.hash = Util.hash(raw);
     }
 
@@ -55,37 +55,35 @@ public abstract class AbstractAtomic implements Atomic {
 
     @Override
     public final byte[] bytes() {
-        return bytesCached;
+        return bytes;
     }
 
     @Override
     public boolean equals(Object u) {
         if (this == u) return true;
-        if (u instanceof Atomic) {
-            if (hashCode() == u.hashCode())
-                return Arrays.equals(bytes(), ((Atomic) u).bytes());
-        }
-        return false;
+        return (u instanceof Atomic) &&
+            (hash == u.hashCode()) &&
+                Arrays.equals(bytes, ((Atomic) u).bytes());
     }
 
     @Override public String toString() {
-        return new String(bytesCached, 3, bytesCached.length-3);
+        return new String(bytes, 3, bytes.length-3);
     }
 
 
     @Override
     public void appendTo(Appendable w) throws IOException {
         
-        if (bytesCached.length==3+1) {
+        if (bytes.length==3+1) {
             
-            w.append((char)bytesCached[3]);
+            w.append((char) bytes[3]);
         } else {
             Atomic.super.appendTo(w);
         }
     }
 
     @Override
-    public int hashCode() {
+    public final int hashCode() {
         return hash;
     }
 

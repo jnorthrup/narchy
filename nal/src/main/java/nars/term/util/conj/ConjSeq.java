@@ -110,8 +110,8 @@ public enum ConjSeq { ;
 
     static boolean _isSeq(Term x) {
         Subterms xx = x.subterms();
-        return xx.hasAny(CONJ) && //inner conjunction
-                xx.subs() == 2 &&
+        return xx.subs() == 2 &&
+                xx.hasAny(CONJ) && //inner conjunction
                 xx.countEquals(Conj::isSeq, 1)
                 && (!xx.hasAny(NEG)
                         ||

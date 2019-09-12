@@ -226,8 +226,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  determines when desire is answered to produce feedback in the present frame.
      *  represents a natural latency between decision and effect. */
     public static final float ACTION_DESIRE_SHIFT_DUR =
-        0;
-        //-0.5f;
+        //0;
+        -0.5f;
 
 
     /** store dynamic and intermediate dynamic results in belief tables after computing each task/subtask */
@@ -556,7 +556,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /** concentrate the temporal region to minimize evidence dilution that a naive temporal union might result in */
 		public static final boolean concentrate = true;
-	}
+        public static final float concentrate_density_threshold = Util.PHI_min_1f;
+    }
 
     /**
      * how the subjective perception of objective truth changes through time

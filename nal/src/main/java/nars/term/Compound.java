@@ -69,13 +69,11 @@ public interface Compound extends Term, IPair, Subterms {
 
         if (((b instanceof Compound) && (!compareHashCode || (A.hashCode() == b.hashCode())))) {
             Compound B = (Compound) b;
-            Op ao = A.op();
-            if (ao == B.op()) {
-                boolean equal =
-                        equalSubs(A, B) && (!ao.temporal || (A.dt() == B.dt()));
-
-                return equal;
-            }
+            int ao = A.opID();
+            return
+                (ao == B.opID()) &&
+                equalSubs(A, B) &&
+                (!Op.the(ao).temporal || (A.dt() == B.dt()));
         }
 
         return false;

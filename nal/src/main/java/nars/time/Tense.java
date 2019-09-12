@@ -58,13 +58,11 @@ public enum Tense {
      * event B before       then order=backward
      * occur at the same time, relative to duration: order = concurrent
      */
-    public static boolean simultaneous(long a, long b, int tolerance) {
-        if (a == b)
+    public static boolean simultaneous(long a, long b, float tolerance) {
+        if (a == b || a == ETERNAL || b == ETERNAL)
             return true;
-        else if (a == ETERNAL || b == ETERNAL || a == TIMELESS || b == TIMELESS)
-            return false;
         else
-            return Math.abs(a-b) >= tolerance;
+            return Math.abs(a-b) <= tolerance;
     }
 
 

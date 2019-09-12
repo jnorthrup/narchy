@@ -4,12 +4,12 @@
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
      B, (X ==> A), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
-       //B, (X ==> A), --is(B,"==>") |- unisubst(X,A,B,"$"), (Goal:Post, Time:TaskImmediate)
+       //B, (X ==> A), --is(B,"==>") |- unisubst(X,A,B,"$"), (                Goal:Post, Time:TaskImmediate)
          (X ==> A), B, --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeakX, Time:BeliefEvent)
 
        //anti-goal
        B, (X ==> A),  --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
-        B, (X ==> A),  --is(B,"==>") |- unisubst((--X && --polarizeBelief(B)),A,B,"$"), (Goal:PostPN, Time:TaskEvent)
+        //B, (X ==> A),  --is(B,"==>") |- unisubst((--X && --polarizeBelief(B)),A,B,"$"), (Goal:PostPN, Time:TaskEvent)
 
 
 

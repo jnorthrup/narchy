@@ -1037,10 +1037,12 @@ public class FasterList<X> extends FastList<X> {
         int s = size;
         if (s > 0) {
             X[] items = this.items;
-            s = Math.min(s, items.length);
-            for (int i = 0; i < s; i++) {
-                if (predicate.test(items[i]))
-                    return true;
+            if (items!=null) { //if deleted
+                s = Math.min(s, items.length);
+                for (int i = 0; i < s; i++) {
+                    if (predicate.test(items[i]))
+                        return true;
+                }
             }
         }
         return false;

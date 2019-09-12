@@ -443,7 +443,10 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, d.beliefTerm.equals(d.taskTerm) ? OccMerge.Earliest : OccMerge.Task);
+                return rangeCombine(d,
+                    //d.beliefTerm.equals(d.taskTerm) ? OccMerge.Earliest : OccMerge.Task
+                    OccMerge.Earliest
+                );
             }
 
             @Override
@@ -468,7 +471,10 @@ public class Occurrify extends TimeGraph {
 
             @Override
             long[] occurrence(Derivation d) {
-                return rangeCombine(d, d.beliefTerm.equals(d.taskTerm) ? OccMerge.Earliest : OccMerge.Belief);
+                return rangeCombine(d,
+                    //d.beliefTerm.equals(d.taskTerm) ? OccMerge.Earliest : OccMerge.Belief
+                    OccMerge.Earliest
+                );
             }
 
             @Override
@@ -516,7 +522,7 @@ public class Occurrify extends TimeGraph {
             }
 
             private void filter(Derivation d, long[] x) {
-                if (x!=null && x[0]!=ETERNAL && x[0]!=TIMELESS) {
+                if (x!=null && x[0]!=ETERNAL && x[0]!=TIMELESS && d.taskStart!=ETERNAL) {
                     long r = x[1] - x[0];
                     x[0] = d.taskStart;
                     x[1] = d.taskStart + r;
@@ -818,7 +824,7 @@ public class Occurrify extends TimeGraph {
 //        d.taskBelief_TimeIntersection[0] != TIMELESS;
 
     private static final Predicate<Derivation> differentTermsOrTimes = d ->
-        !d.taskTerm.equals(d.beliefTerm) || Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT);
+        !d.taskTerm.equals(d.beliefTerm) || !Tense.simultaneous(d.taskStart, d.beliefStart, d.ditherDT);
 
 }
 

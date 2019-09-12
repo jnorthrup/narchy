@@ -78,10 +78,12 @@ public class TruthIntegration {
 	 */
 	public static double eviFast(Task t, long qStart, long qEnd) {
 		long tStart = t.start();
+		long qRange = qEnd - qStart + 1;
 		return t.evi() * (tStart == ETERNAL ?
-			(qEnd - qStart + 1) //qRange
+			qRange //qRange
 			:
-			((1 + t.end() - tStart)) / (1.0 + t.meanTimeTo(qStart, qEnd)));
+			(Math.min(qRange, 1 + t.end() - tStart)) / (1.0 + t.minTimeTo(qStart, qEnd)));
+			//((1 + t.end() - tStart)) / (1.0 + t.meanTimeTo(qStart, qEnd)));
 			//Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd)));
 	}
 

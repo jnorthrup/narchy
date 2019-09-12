@@ -476,12 +476,12 @@ class DynamicConjTest {
             assertNotNull(t);
             switch(t.term().toString()) {
                 case "(x &&+2 (--,x))":
-                    assertEquals(1f, t.freq(), 0.05f);
-                    assertEquals(conf, t.conf(), 0.2f);
+                    assertEquals(1f, t.freq(), 0.4f);
+                    assertEquals(conf, t.conf(), 0.5f);
                     break;
                 case "((--,x) &&+2 x)":
-                    assertEquals(0f, t.freq(), 0.05f);
-                    assertEquals(conf, t.conf(), 0.2f);
+                    assertEquals(0f, t.freq(), 0.4f);
+                    assertEquals(conf, t.conf(), 0.5f);
                     break;
                 default:
                     throw new UnsupportedOperationException();

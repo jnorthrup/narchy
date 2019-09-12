@@ -911,7 +911,16 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                    if (!ii.isEmpty()) {
 //                        Event e = ii.get(0);
 					long es = e.start();
-					start = Math.min(es, start);
+					if (es!=ETERNAL) {
+						if (start == ETERNAL)
+							start = es; //override with specific temporal
+						else
+							start = Math.min(es, start);
+					} else {
+						 if (start == TIMELESS || start == ETERNAL)
+						 	start = es;
+					}
+
 					if (es != ETERNAL) {
 						range = Math.min(e.end() - es, range);
 					}
@@ -937,14 +946,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			}
 			List<Event> ss = subEvents[w];
 			for (Event e : ss) {
-				long start = Long.MAX_VALUE, range = Long.MAX_VALUE;
 				Term nextKnown = e.id;
-				start = e.start();
-				if (start != ETERNAL) {
-					range = e.end() - start;
-				} else {
-					range = 0;
-				}
+				long start = e.start();
+				long range = start != ETERNAL ? e.end() - start : 0;
 				if (!nextAbsolutePermutation(unknown, start, range, nextKnown, each))
 					return false;
 			}
@@ -1120,9 +1124,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        assert (!a.equals(b));
 
 		long aWhen = a.start(), bWhen = b.start();
-		if (aWhen == ETERNAL && bWhen == ETERNAL)
-			dt = 0;
-		else if (aWhen == ETERNAL || bWhen == ETERNAL)
+		if (aWhen == ETERNAL || bWhen == ETERNAL)
 			dt = 0;
 		else {
 			assert (aWhen != TIMELESS && bWhen != TIMELESS);
@@ -1251,7 +1253,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //    }
 
 	private boolean solution(Event y) {
-		if (y.start() == TIMELESS && solving.equals(y.id))
+		if (y instanceof Relative && solving.equals(y.id))
 			return true; //HACK eliminate when this happens; regurgitated nothing useful
 
 		if (validPotentialSolution(y.id)) {
@@ -2068,7 +2070,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 							if (ee instanceof Absolute) {
 								start = EE;
 							} else {
-								long sss = ss.start();
+//								long sss = ss.start();
 								start = SS - dt - b.eventRange();
 							}
 						}
@@ -2102,9 +2104,11 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		protected boolean go(List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path, Node<Event, TimeSpan> n) {
 
 			Event end = n.id();
-
 			if (!(end instanceof Absolute))
 				return true;
+
+			Event start = pathStart(path).id();
+
 
 			long pathEndTime = end.start();
 
@@ -2112,7 +2116,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			long startTime, endTime;
 			if (pathEndTime == ETERNAL) {
 
-				startTime = endTime = ETERNAL;
+				if (start instanceof Absolute) {
+					startTime = start.start();
+					endTime = start.end();
+				} else {
+					startTime = endTime = ETERNAL;
+				}
 
 			} else {
 
@@ -2126,7 +2135,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			}
 
-			return each.test(event(pathStart(path).id().id, startTime, endTime));
+			return each.test(event(start.id, startTime, endTime));
 		}
 
 	}

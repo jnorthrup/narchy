@@ -715,7 +715,7 @@ public enum Op {
     }
 
 
-    public Term the(TermBuilder b, int dt, Term... u) {
+    public Term the(TermBuilder b, int dt, Term[] u) {
         return b.compound(this, dt, u);
     }
 

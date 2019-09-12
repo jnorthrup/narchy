@@ -89,8 +89,7 @@ public class TermList extends FasterList<Term> implements Subterms {
         if ((obj instanceof TermList)) {
             return nonNullEquals(((TermList)obj));
         } else {
-            Subterms ss = ((Subterms)obj);
-            return ss.equalTerms(this);
+            return ((Subterms)obj).equalTerms(this);
         }
     }
 
@@ -112,7 +111,7 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     /** finalization step on constructing a Subterm */
     @Nullable public Subterms commit(Subterms src, Op superOp) {
-        int ys = size();
+        int ys = size;
 
 
 
@@ -152,9 +151,10 @@ public class TermList extends FasterList<Term> implements Subterms {
     }
 
     public Term[] sort() {
-        int s = size();
-        Term[] ii = this.items;
-        Arrays.sort(ii, 0, s);
+        int s = size;
+        if (s > 1) {
+            Arrays.sort(this.items, 0, s);
+        }
         return arrayKeep();
     }
 
@@ -167,24 +167,29 @@ public class TermList extends FasterList<Term> implements Subterms {
 //                sl.toArrayRecycled(Term[]::new) : t;
 
 
-        int s = size();
         Term[] ii = this.items;
-        Arrays.sort(ii, 0, s);
 
+        int s = size;
+        if (s > 1) {
+            Arrays.sort(ii, 0, s);
 
-        Term prev = ii[0];
-        boolean dedup = false;
-        for (int i = 1; i < s; i++) {
-            Term next = ii[i];
-            if (prev.equals(next)) {
-                setFast(i, null);
-                dedup = true;
-            } else {
-                prev = next;
+            Term prev = ii[0];
+            boolean dedup = false;
+            for (int i = 1; i < s; i++) {
+                Term next = ii[i];
+                if (prev.equals(next)) {
+                    ii[i] = null;
+                    dedup = true;
+                } else {
+                    prev = next;
+                }
             }
+            if (dedup)
+                removeNulls();
         }
-        if (dedup)
-            removeNulls();
+
+
+
 
         return arrayKeep();
     }

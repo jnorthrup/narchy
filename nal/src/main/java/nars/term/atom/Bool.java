@@ -2,7 +2,6 @@ package nars.term.atom;
 
 import jcog.Skill;
 import nars.Op;
-import nars.The;
 import nars.term.Term;
 
 import static nars.Op.BOOL;
@@ -18,7 +17,7 @@ import static nars.Op.BOOL;
  *
  *  Implements "Unknown-state logic" (https://en.wikipedia.org/wiki/Ternary_computer)
  */
-@Skill("Ternary_computer") abstract public class Bool extends AbstractAtomic implements The {
+@Skill("Ternary_computer") abstract public class Bool extends Keyword {
 
     /**
      * absolutely nonsense
@@ -78,40 +77,13 @@ import static nars.Op.BOOL;
     public static final Term[] False_Array = new Term[] { False };
 
 
-    private final String label;
-
     private Bool(String label, byte code) {
-        super(new byte[] { BOOL.id, code } );
-        this.label = label;
+        super(BOOL, label, new byte[] { BOOL.id, code });
     }
 
-//    @Override
-//    abstract public boolean equalsNegRoot(Term t);
-
-
-
-    @Override
-    public final boolean equals(Object u) {
-        return u == this;
-    }
-
-    @Override
-    public /*@NotNull*/ Op op() {
-        return BOOL;
-    }
-
-    @Override
-    public String toString() {
-        return label;
-    }
 
     @Override
     abstract public boolean equalsNeg(Term t);
-
-    @Override
-    public final Term concept() {
-        throw new UnsupportedOperationException();
-    }
 
 
 }

@@ -14,10 +14,10 @@ import static java.lang.Math.round;
 public class ActionTiming implements TimeFocus {
 
     /** TODO mutable histogram model for temporal focus duration  */
-    public final FloatRange focusDurs = new FloatRange(1, 0, 32);
+    public final FloatRange focusDurs = new FloatRange(4, 0, 32);
 
     /** TODO mutable histogram model for temporal focus position  */
-    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(16, 0, 32);
 
     /** focus center, 0=present, -1 = full past, +1 full future */
     public final FloatRange balance = new FloatRange(0, -1, +1);

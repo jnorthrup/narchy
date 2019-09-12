@@ -54,7 +54,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     }
 
     UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
-        super($.funcFast(UnifyIf, x, args!=null ? $.inh($.p(args),func) : func));
+        super($.func(UnifyIf, x, args!=null ? $.inh($.p(args),func) : func));
         this.x = x;
     }
 

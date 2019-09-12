@@ -2,9 +2,11 @@ package nars.truth.proj;
 
 import jcog.Paper;
 import jcog.Skill;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
+import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
@@ -145,12 +147,12 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	public final Truth truth(long s, long e, double eviMin, boolean dither, boolean tShrink, NAL n) {
-		if (s!=TIMELESS) {
-			assert(evi==null);
 			if (time(s, e)) {
-				//update(); //done in commit()
+				if (evi!=null)
+					update();
+				//else: done in commit()
 			}
-		}
+
 		if (commit(tShrink, n)) {
 			return get(eviMin, dither, n);
 		} else
@@ -381,43 +383,58 @@ abstract public class TruthProjection extends TaskList {
 	 * TODO refine
 	 * */
 	private void concentrate() {
-		assert(start!=ETERNAL && start!=TIMELESS);
+		//assert(start!=ETERNAL && start!=TIMELESS);
 
 
 		//TODO calculate exact threshold necessary to not dilute further
 		Task[] items = this.items;
 
-		final long us = start, ue = end; //union
+//		long[] uu = unionInterval();
+//		final long us = uu[0], ue = uu[1];
+//		if (us == ue)
+//			return; //all collapse at a point anyway
+
+		final long us = start, ue = end;
+		if (us == TIMELESS)
+			throw new TODO("compute union here");
+		if (us == ue)
+			return;
+
+		double ud = 1 + (ue - us);
+
 
 		//first non-eternal
 		int rootIndex = 0;
 		while (items[rootIndex].isEternal()) rootIndex++;
+		int size = this.size;
+
 		Task root = items[rootIndex];
 		long rs = root.start(); long re = root.end();
 
 		if (rs!=us || re!=ue) {
 			double[] evi = this.evi;
 
-			double ud = ue - us;
-			double eviSum = 0, eviLoss = 0;
-			int size = this.size;
-			for (int i = 0; i < size; i++) {
-				if (!items[i].isEternal()) {
+			double eviSum = 0, eviRoot = 0;
+			for (int i = rootIndex; i < size; i++) {
+				Task ti = items[i];
+				long tis = ti.start();
+				if (tis!=ETERNAL) {
 					double ei = evi[i];
 					eviSum += ei;
 				 	if (i>rootIndex) {
 						//eviOther += ei;
-						eviLoss += ei * ((ud - taskRange(i)) / ud);
-					}
+						long tie = ti.end();
+						eviRoot += ei * ((1+LongInterval.intersectLength(tis, tie, rs,re)) / (tie-tis+1.0));
+					} else
+						eviRoot += ei; //root itself
 				}
 			}
 
 			double densityUnion = eviSum / (1 + ud);
-			long rd = re - rs;
-			double densityRoot = (eviSum  - eviLoss) / (1 + (double) rd);
+			double densityRoot = eviRoot / (1 + re - rs);
 			//System.out.println(Texts.n4(densityRoot) +"/"+ Texts.n4(densityUnion) + " : " + this);
-			double threshold = 0.5f;
-			if ((densityRoot - densityUnion) / densityRoot > threshold) {
+
+			if (densityUnion / densityRoot < NAL.truth.concentrate_density_threshold) {
 				//collapse to root
 				if (time(rs, re))
 					update();
@@ -999,21 +1016,8 @@ abstract public class TruthProjection extends TaskList {
 //				u0 = union[0];
 //				u1 = union[1];
 
-				Task[] items = this.items;
-				boolean hasEvi = evi != null;
-				u0 = Long.MAX_VALUE; u1 = Long.MIN_VALUE;
-				for (int i = 0; i < s; i++) {
-					if (hasEvi ? valid(i) : nonNull(i)) {
-						Task t = items[i];
-						long ts = t.start();
-						if (ts != ETERNAL) {
-							u0 = Math.min(u0, ts); u1 = Math.max(u1, t.end());
-						}
-					}
-				}
-				if (u0 == Long.MAX_VALUE) {
-					u0 = u1 = ETERNAL; //all eternal
-				}
+				long[] union = this.unionInterval();
+				u0 = union[0]; u1 = union[1];
 			} else {
 				Task only = evi != null ? firstValid() : items[firstValidOrNonNullIndex(0)];
 				u0 = only.start();
@@ -1042,17 +1046,38 @@ abstract public class TruthProjection extends TaskList {
 
 		int active = changed || evi == null ? update() : s;
 
-		if (shrink && active>minComponents && start!=ETERNAL &&  NAL.truth.concentrate)
+		if (shrink && active>1 && start!=ETERNAL &&  NAL.truth.concentrate)
 			concentrate();
 
 		return active;
 	}
 
+	protected long[] unionInterval() {
+		long u0 = Long.MAX_VALUE, u1 = Long.MIN_VALUE;
+		Task[] items = this.items;
+		boolean hasEvi = evi != null;
+		int s = size();
+		for (int i = 0; i < s; i++) {
+			if (hasEvi ? valid(i) : nonNull(i)) {
+				Task t = items[i];
+				long ts = t.start();
+				if (ts != ETERNAL) {
+					u0 = Math.min(u0, ts); u1 = Math.max(u1, t.end());
+				}
+			}
+		}
+		if (u0 == Long.MAX_VALUE) {
+			u0 = u1 = ETERNAL; //all eternal
+		}
+		return new long[] { u0, u1 };
+	}
+
+
 	/**
 	 * returns true if the start, end times have changed
 	 */
 	public boolean time(long s, long e) {
-		if (s != TIMELESS) {
+		if (s != TIMELESS && s!=ETERNAL) {
 			int dith = this.ditherDT;
 			if (dith > 1) {
 				s = Tense.dither(s, dith, -1);
@@ -1060,7 +1085,6 @@ abstract public class TruthProjection extends TaskList {
 			}
 		}
 		if (this.start != s || this.end != e) {
-
 			this.start = s;
 			this.end = e;
 			return true;

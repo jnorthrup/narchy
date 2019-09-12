@@ -1,6 +1,5 @@
 package nars.task.util;
 
-import jcog.Util;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import nars.NAL;
@@ -23,7 +22,6 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.time.Tense.TIMELESS;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -330,17 +328,17 @@ public final class Answer implements Timed, Predicate<Task> {
             return null;
 
         long s, e;
-        if (start!=ETERNAL && start!=TIMELESS && Util.or((Task t) -> t.intersects(start, end), 0, tasks.size(), tasks.items)) {
+//        if (start!=ETERNAL && start!=TIMELESS && Util.or((Task t) -> t.intersects(start, end), 0, tasks.size(), tasks.items)) {
             s = start;
             e = end;
-        } else {
-            s = e = TIMELESS;
-        }
+//        } else {
+//            s = e = TIMELESS;
+//        }
         return nar.newProjection(
             s,e
             //start, end
             //TIMELESS, TIMELESS //auto
-        ).with(this.tasks.items, numTasks);
+        ).dur(dur).with(this.tasks.items, numTasks);
     }
 
 

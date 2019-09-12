@@ -243,10 +243,6 @@ public enum Terms {
 //		return subterms.hasAny(Op.NEG) ? subterms.count(x -> x instanceof Neg) : 0;
 //	}
 
-	public static int negatedNonConjCount(Subterms subterms) {
-		return subterms.hasAny(Op.NEG) ? subterms.count(x -> x instanceof Neg && !x.subterms().hasAny(CONJ)) : 0;
-	}
-
 	/**
 	 * returns the most optimal subterm that can be replaced with a variable, or null if one does not meet the criteria
 	 * when there is a chocie, it prefers least aggressive introduction. and then random choice if

@@ -145,10 +145,12 @@ public enum Intermpolate {;
         long[] bw = be.when;
         for (int i = 0; i < s; i++) {
             long ai = aw[i], bi = bw[i];
-            long abi = ai!=bi ? Tense.dither(Util.lerpLong(aProp, ai, bi), dtDither) : ai;
-            if (abi!=ai) {
-                changed = true;
-                aw[i] = abi;
+            if (ai!=bi) {
+                long abi = Tense.dither(Util.lerpLong(aProp, ai, bi), dtDither);
+                if (abi != ai) {
+                    changed = true;
+                    aw[i] = abi;
+                }
             }
         }
         if (!changed)

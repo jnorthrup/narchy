@@ -151,6 +151,13 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         }
 
         @Override
+        public int volume() {
+            return ref.volume() * n;
+        }
+
+        //TODO others
+
+        @Override
         public int indexOf(Term t) {
             return ref.equals(t) ? 0 : -1;
         }
@@ -164,6 +171,32 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         public boolean contains(Term t) {
             return ref.equals(t);
         }
+
+        @Override
+        public int vars() {
+            return ref.vars() * n;
+        }
+
+        @Override
+        public int varDep() {
+            return ref.varDep() * n;
+        }
+
+        @Override
+        public int varIndep() {
+            return ref.varIndep() * n;
+        }
+
+        @Override
+        public int varPattern() {
+            return ref.varPattern() * n;
+        }
+
+        @Override
+        public int varQuery() {
+            return ref.varQuery() * n;
+        }
+
 
         @Override
         public int subs() {

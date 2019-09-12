@@ -3,8 +3,8 @@ package nars.io;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atomic;
 
 import java.io.IOException;
@@ -182,11 +182,11 @@ public enum TermAppender {
 
         final Term sub = neg.unneg();
 
-        if ((sub.op() == CONJ) && sub.hasAny(NEG.bit)) {
+        if ((sub.opID() == CONJ.id) && sub.hasAny(NEG.bit)) {
             int dt;
             if ((((dt = sub.dt()) == DTERNAL) || (dt == XTERNAL))) {
                 Subterms cxx = sub.subterms();
-                if (Terms.negatedNonConjCount(cxx) >= cxx.subs() / 2) {
+                if ((cxx.hasAny(NEG) ? cxx.count(x -> x instanceof Neg && !x.hasAny(CONJ)) : 0) >= cxx.subs() / 2) {
                     disjAppend(cxx, dt, p);
                     return;
                 }

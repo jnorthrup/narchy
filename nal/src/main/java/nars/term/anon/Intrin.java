@@ -75,11 +75,7 @@ import static nars.Op.ImgInt;
     }
 
     public static Term term(short i) {
-        boolean neg = i < 0;
-        if (neg)
-            i = (short) -i;
-
-        return neg ? neg(i) : _term(i);
+        return i < 0 ? neg((short) -i) : _term(i);
     }
 
     static Neg.NegIntrin neg(short i) {
@@ -115,8 +111,14 @@ import static nars.Op.ImgInt;
     }
 
     public static int isVariable(short i, int ifNot) {
-        int m = group(i);
-        return (m == VARDEPs || m== VARINDEPs || m == VARPATTERNs || m == VARQUERYs) ?
-            (i & 0xff) : ifNot;
+        switch (group(i)) {
+            case VARDEPs:
+            case VARINDEPs:
+            case VARPATTERNs:
+            case VARQUERYs:
+                return i & 0xff;
+            default:
+                return ifNot;
+        }
     }
 }
