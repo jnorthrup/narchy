@@ -418,7 +418,7 @@ public class FasterList<X> extends FastList<X> {
     public float maxValue(FloatFunction<? super X> function) {
         float max = Float.NEGATIVE_INFINITY;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            float y = function.floatValueOf(this.get(i));
+            float y = function.floatValueOf(this.items[i]);
             if (y > max)
                 max = y;
         }
@@ -428,7 +428,7 @@ public class FasterList<X> extends FastList<X> {
     public long minValue(ToLongFunction<? super X> function) {
         long min = Long.MAX_VALUE;
         for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
-            long y = function.applyAsLong(this.get(i));
+            long y = function.applyAsLong(this.items[i]);
             if (y < min)
                 min = y;
         }
@@ -761,8 +761,7 @@ public class FasterList<X> extends FastList<X> {
         //if (n > 0) {
         X[] items = this.items;
         int size = this.size;
-        for (int i = 0; i < n; i++)
-            items[size + i] = x[i];
+        if (n >= 0) System.arraycopy(x, 0, items, size + 0, n);
         this.size += n;
         //}
     }

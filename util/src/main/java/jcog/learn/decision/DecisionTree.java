@@ -283,7 +283,7 @@ public class DecisionTree<K, V> {
     /** var is the name of the target value */
     public SortedMap<DecisionNode.LeafNode<V>, List<String>> explainedConditions() {
         SortedMap<DecisionNode.LeafNode<V>, List<String>> map = new TreeMap<>();
-        explanations().entrySet().stream().forEach((e) -> {
+        explanations().entrySet().forEach((e) -> {
             DecisionNode.LeafNode<V> result = e.getKey();
             List<String> cond = e.getValue().stream().map(c ->
                 c.getOne().condition(c.getTwo())

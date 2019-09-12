@@ -45,7 +45,7 @@ public abstract class Lookaround extends UnaryOperator {
         }
 
         if (root instanceof ParentNode)
-            ((ParentNode)root).forEach(n -> checkQuantifiers(n));
+            ((ParentNode)root).forEach(this::checkQuantifiers);
     }
 
     protected boolean isLookbehindValid() {

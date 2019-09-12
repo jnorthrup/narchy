@@ -577,7 +577,7 @@ public class Huffman {
     private void code(Stream<byte[]> data, HuffConfig hc) {
         //System.out.println("Compress Huffman: Building hufftree");
         config = hc;
-        this.maxSymbolLength = hc.maxSymbolLength > 30 ? 30 : hc.maxSymbolLength;
+        this.maxSymbolLength = Math.min(hc.maxSymbolLength, 30);
         freqList = Caffeine.newBuilder().maximumWeight(config.maxSymbolCacheSize).weigher(memoryUsageWeigher)
                 //.initialCapacity(config.maxSymbolCacheSize > Integer.MAX_VALUE ? Integer.MAX_VALUE : (int) config.maxSymbolCacheSize)
                 .build();
@@ -663,7 +663,7 @@ public class Huffman {
         if (isAlt) {
             maxTreeDepth = 26;
         } else {
-            maxTreeDepth = config.maxTreeDepth > 31 ? 31 : config.maxTreeDepth;
+            maxTreeDepth = Math.min(config.maxTreeDepth, 31);
         }
         int freqDivide = 1;
         HuffmanTree objectTree;
@@ -1032,7 +1032,7 @@ public class Huffman {
             workQueue.forEach(ba -> {
                         if (ba.length == 0) return;
                         startIdx = 0;
-                        endIdx = ba.length < maxSymbolLength ? ba.length : maxSymbolLength;
+                        endIdx = Math.min(ba.length, maxSymbolLength);
                         while (true) {
                             symbIdx = findSymblIdx(startIdx, endIdx, ba, symbl2CodLstIdx, symbol2Code);
                             if (symbIdx != -1) {

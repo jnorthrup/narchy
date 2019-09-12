@@ -34,10 +34,10 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         @Override public float merge(float e, float i) {  return Util.or(e, i); }
     },
     min {
-        @Override public float merge(float e, float i) {  return e <= i ? e : i; }
+        @Override public float merge(float e, float i) {  return Math.min(e, i); }
     },
     max {
-        @Override public float merge(float e, float i) {  return e >= i ? e : i; }
+        @Override public float merge(float e, float i) {  return Math.max(e, i); }
     },
     replace {
         @Override public float merge(float e, float i) {  return i; }

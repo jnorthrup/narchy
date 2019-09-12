@@ -90,10 +90,10 @@ public class DefaultStrategy implements RunStrategy {
         if (parameters != null) {
             
             if (parameters.containsKey("terminationCriteriaGenerations")) {
-                terminationCriteriaGenerations = Integer.valueOf(parameters.get("terminationCriteriaGenerations"));
+                terminationCriteriaGenerations = Integer.parseInt(parameters.get("terminationCriteriaGenerations"));
             }
             if (parameters.containsKey("terminationCriteria")) {
-                terminationCriteria = Boolean.valueOf(parameters.get("terminationCriteria"));
+                terminationCriteria = Boolean.parseBoolean(parameters.get("terminationCriteria"));
             }
         }
     }
@@ -289,7 +289,7 @@ public class DefaultStrategy implements RunStrategy {
     }
 
     protected void sortByFirst(List<Ranking> front) {
-        Collections.sort(front, RankingComparator);
+        front.sort(RankingComparator);
     }
 
     @Override
@@ -297,39 +297,35 @@ public class DefaultStrategy implements RunStrategy {
         return this.context;
     }
 
-    final static Comparator<Ranking> RankingComparator = new Comparator<Ranking>() {
+    final static Comparator<Ranking> RankingComparator = (o1, o2) -> {
+        if (o1 == o2) return 0;
 
-        @Override
-        public int compare(Ranking o1, Ranking o2) {
-            if (o1 == o2) return 0;
+        double[] f1 = o1.getFitness();
+        double[] f2 = o2.getFitness();
+        final int n = f1.length;
 
-            double[] f1 = o1.getFitness();
-            double[] f2 = o2.getFitness();
-            final int n = f1.length;
+        double balance = 0;
 
-            double balance = 0;
-
-            for (int i = 0; i < n; i++) {
-                double v1 = f1[i];
-                double v2 = f2[i];
-                if (v1==v2) continue;
-
-                
-                balance += (v1/(v1+v2) - 0.5);
-            }
-
-            
-
-            if (balance > 0) return 1;
-            if (balance < 0) return -1;
+        for (int i = 0; i < n; i++) {
+            double v1 = f1[i];
+            double v2 = f2[i];
+            if (v1==v2) continue;
 
 
-
-
-
-
-            
-            return Integer.compare(o1.hashCode(), o2.hashCode());
+            balance += (v1/(v1+v2) - 0.5);
         }
+
+
+
+        if (balance > 0) return 1;
+        if (balance < 0) return -1;
+
+
+
+
+
+
+
+        return Integer.compare(o1.hashCode(), o2.hashCode());
     };
 }

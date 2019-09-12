@@ -41,20 +41,17 @@ import java.util.*;
  */
 public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
 
-    public static final Comparator<Ranking> comparator = new Comparator<Ranking>() {
-        @Override
-        public int compare(Ranking o1, Ranking o2) {
-            double[] fitness1 = o1.getFitness();
-            double[] fitness2 = o2.getFitness();
-            int compare = 0;
-            for (int i = 0; i < fitness1.length; i++) {
-                compare = Double.compare(fitness1[i], fitness2[i]);
-                if (compare != 0) {
-                    return compare;
-                }
+    public static final Comparator<Ranking> comparator = (o1, o2) -> {
+        double[] fitness1 = o1.getFitness();
+        double[] fitness2 = o2.getFitness();
+        int compare = 0;
+        for (int i = 0; i < fitness1.length; i++) {
+            compare = Double.compare(fitness1[i], fitness2[i]);
+            if (compare != 0) {
+                return compare;
             }
-            return -o1.getDescription().compareTo(o2.getDescription());
         }
+        return -o1.getDescription().compareTo(o2.getDescription());
     };
     private boolean convertToUnmatch = true;
     private boolean isFlagging = false;
@@ -66,13 +63,13 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
         Map<String, String> parameters = configuration.getStrategyParameters();
         if (parameters != null) {
             if (parameters.containsKey("convertToUnmatch")) {
-                convertToUnmatch = Boolean.valueOf(parameters.get("convertToUnmatch"));
+                convertToUnmatch = Boolean.parseBoolean(parameters.get("convertToUnmatch"));
             }
             if (parameters.containsKey("isFlagging")) {
-                isFlagging = Boolean.valueOf(parameters.get("isFlagging"));
+                isFlagging = Boolean.parseBoolean(parameters.get("isFlagging"));
             }
             if (parameters.containsKey("dividePrecisionThreashold")) {
-                dividePrecisionThreashold = Double.valueOf(parameters.get("dividePrecisionThreashold"));
+                dividePrecisionThreashold = Double.parseDouble(parameters.get("dividePrecisionThreashold"));
             }
 
         }
@@ -220,7 +217,7 @@ public class SeparateAndConquerStrategy extends DiversityElitarismStrategy{
      */
     @Override
     protected void sortByFirst(List<Ranking> front) {
-        Collections.sort(front, comparator);
+        front.sort(comparator);
     }
 
     private static Node joinSolutions(List<Node> bests) {

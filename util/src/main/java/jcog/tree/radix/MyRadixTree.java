@@ -578,7 +578,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
     }
 
-    private final boolean tryRemove(X v) {
+    private boolean tryRemove(X v) {
         estSize.decrementAndGet();
         return onRemove(v);
     }

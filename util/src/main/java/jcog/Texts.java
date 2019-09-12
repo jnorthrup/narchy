@@ -516,15 +516,12 @@ public enum Texts {
 
         switch (s) {
             case "0":
-                return 0;
             case "0.00":
                 return 0;
             case "1":
-                return 1.0f;
             case "1.00":
                 return 1.0f;
             case "0.90":
-                return 0.9f;
             case "0.9":
                 return 0.9f;
             case "0.5":
@@ -697,7 +694,7 @@ public enum Texts {
         }
 
         StringBuilder ret = new StringBuilder();
-        for (int i = 0; i < n; i++) ret.append(s);
+        ret.append(s.repeat(Math.max(0, n)));
         return ret.toString();
     }
 
@@ -754,7 +751,7 @@ public enum Texts {
 
     public static void histogramPrint(AbstractHistogram h, boolean percentiles, Appendable out) {
         try {
-            out.append("{n=" + h.getTotalCount() + " avg=" + n4(h.getMean()) + ", min=" + n4(h.getMinValue()) + ", max=" + n4(h.getMaxValue()) + ", stdev=" + n4(h.getStdDeviation()) + '}');
+            out.append("{n=").append(String.valueOf(h.getTotalCount())).append(" avg=").append(n4(h.getMean())).append(", min=").append(n4(h.getMinValue())).append(", max=").append(n4(h.getMaxValue())).append(", stdev=").append(n4(h.getStdDeviation())).append(String.valueOf('}'));
             if (percentiles) {
                 out.append('\n');
             }
@@ -764,7 +761,7 @@ public enum Texts {
         if (percentiles) {
             histogramDecode(h, "", (label, value) -> {
                 try {
-                    out.append(label + ' ' + value + '\n');
+                    out.append(label).append(String.valueOf(' ')).append(String.valueOf(value)).append(String.valueOf('\n'));
                 } catch (IOException e) {
                     throw new WTF(e);
                 }
@@ -944,9 +941,7 @@ public enum Texts {
                         // no rounding involved
                         target.append(intS);
                         target.append(decS);
-                        for (int i = -digits; i > 0; i--) {
-                            target.append('0');
-                        }
+                        target.append("0".repeat(-digits));
                     } else if (digits <= scale) {
                         // decimal part precision is lower than scale,
                         // no rounding involved

@@ -350,7 +350,7 @@ public final class QuickLZ {
 
 
 
-                
+
                 for (int i = 0; i < matchlen; i++) {
                     destination[dst + i] = destination[offset2 + i];
                 }

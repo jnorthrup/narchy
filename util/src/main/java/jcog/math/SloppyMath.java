@@ -126,7 +126,7 @@ public final class SloppyMath {
 	 * @return the larger of <code>a</code> and <code>b</code>.
 	 */
   public static float max(float a, float b) {
-    return (a >= b) ? a : b;
+    return Math.max(a, b);
   }
 
 
@@ -143,7 +143,7 @@ public final class SloppyMath {
 	 * @return the larger of <code>a</code> and <code>b</code>.
 	 */
   public static double max(double a, double b) {
-    return (a >= b) ? a : b;
+    return Math.max(a, b);
   }
 
 
@@ -160,7 +160,7 @@ public final class SloppyMath {
 	 * @return the smaller of <code>a</code> and <code>b.</code>
 	 */
   public static float min(float a, float b) {
-    return (a <= b) ? a : b;
+    return Math.min(a, b);
   }
 
 
@@ -177,7 +177,7 @@ public final class SloppyMath {
 	 * @return the smaller of <code>a</code> and <code>b</code>.
 	 */
   public static double min(double a, double b) {
-    return (a <= b) ? a : b;
+    return Math.min(a, b);
   }
 
 

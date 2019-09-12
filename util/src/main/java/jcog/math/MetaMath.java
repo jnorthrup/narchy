@@ -178,7 +178,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     // Builds the axiomArr array based on the chosen logic familiy
     // and adds to it all user theorems that are valid in that
     // logic family
-    static final Axiom[] buildAxiomArr(int logicFamily) {
+    static Axiom[] buildAxiomArr(int logicFamily) {
         ArrayList<Axiom> axiomVec = new ArrayList<Axiom>(axiomFamily[logicFamily]);
 
         // Build a string with all axiom labels
@@ -200,7 +200,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             while (position != -1) {
                 String userProofStepLabel = userProof.substring(position0 - 1,
                         position + 1);
-                if (axiomLabels.indexOf(userProofStepLabel) == -1
+                if (!axiomLabels.contains(userProofStepLabel)
                         // 5-Jun-2002 (ndm) The condition below was added in case the
                         //   users proof contains hypotheses.
                         && userProofStepLabel.charAt(1) != '$')
@@ -392,8 +392,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         connectiveVec.toArray(connectiveArr);
 
         // Build connective label and map strings for faster lookup
-        connectiveLabels = new String(" ");
-        connectiveLabelMap = new String("");
+        connectiveLabels = " ";
+        connectiveLabelMap = "";
         for (int i = 0; i < connectiveArr.length; i++) {
             connectiveLabels = connectiveLabels + connectiveArr[i].label + " ";
             // Only the valueOf will be used; the other characters are placeholders
@@ -1347,7 +1347,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             if (e.getItem() == "Undo") {
 
                 redoStack.push(currentState.makeClone());
-                currentState = (State) (undoStack.pop());
+                currentState = undoStack.pop();
                 userTheorems = currentState.userThVec;
                 currentFamily = currentState.currentFam;
                 axiomArr = buildAxiomArr(currentFamily);
@@ -1357,7 +1357,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
             } else if (e.getItem() == "Redo") {
                 undoStack.push(currentState.makeClone());
-                currentState = (State) (redoStack.pop());
+                currentState = redoStack.pop();
                 /* [sound] */
                 audioName = "whoosh"; // Sound effect
                 rebuildFlag = true;
@@ -1552,12 +1552,12 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
             int choice;
             // Lookup what the choice corresponds to
-            choice = ((Integer) (axiomChoiceVec.get(
-                    axiom_choices.getSelectedIndex()
+            choice = axiomChoiceVec.get(
+                axiom_choices.getSelectedIndex()
           /* 11-Nov-2015 nm - Subtract 1 to account for dummy menu item
              called "Select axiom:" at top of list. */
-                            - 1
-            ))).intValue();
+                    - 1
+            );
 
             /* [sound] */ // Sound effects
             /* [sound] */
@@ -1797,7 +1797,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     menuString = menuString.substring(0, MAX_AXIOM_CHOICE_LEN - 3) + "...";
                 }
                 axiom_choices.addItem(menuString);
-                axiomChoiceVec.add(new Integer(-i - 1));
+                axiomChoiceVec.add(-i - 1);
             }
         }
 
@@ -1831,7 +1831,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                     }
                 }
                 axiom_choices.addItem(menuString);
-                axiomChoiceVec.add(new Integer(i));
+                axiomChoiceVec.add(i);
             } /* next i */
         } /* next hyps */
 
@@ -2021,7 +2021,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
             g.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
             g.setColor(Color.black);
             if (axiomInfoModeFlag) {
-                if (!axiomArr[infoModeAxiomToShow].proof.equals("")) {
+                if (!axiomArr[infoModeAxiomToShow].proof.isEmpty()) {
                     axiomOrTheorem = "theorem";
                 }
                 g.setFont(new Font("Dialog", Font.BOLD, FONT_SIZE));
@@ -2032,7 +2032,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 g.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
                 token = "Description:  " + axiomArr[infoModeAxiomToShow].description;
                 g.drawString(token, X_INIT, currentY);
-                if (!axiomArr[infoModeAxiomToShow].proof.equals("")) {
+                if (!axiomArr[infoModeAxiomToShow].proof.isEmpty()) {
                     currentY += Y_INCREMENT;
                     token = "Proof:  " + axiomArr[infoModeAxiomToShow].proof;
                     g.drawString(token, X_INIT, currentY);
@@ -2193,7 +2193,7 @@ final class DrawSymbols {
     static int one4thY;
     static int three4thY;
 
-    private static final void setBox(int width) {
+    private static void setBox(int width) {
         leftX = currentX;
         rightX = currentX + width;
         bottomY = currentY;
@@ -2206,104 +2206,123 @@ final class DrawSymbols {
         three4thY = (middleY + topY) / 2;
     }
 
-    private static final void drawToken(String token, short type) {
+    private static void drawToken(String token, short type) {
         Color c = Color.black; // -1 = connective
         if (type == (short) (-1)) {
             // Connective
             g.setColor(c);
             // Compose special tokens
-            if (token.equals("A.")) { // forall
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, topY, middleX, bottomY);
-                g.drawLine(middleX, bottomY, rightX, topY);
-                g.drawLine(one4thX, middleY, three4thX, middleY);
-            } else if (token.equals("->")) { // arrow
-                setBox(fm.stringWidth("M") * 2);
-                g.drawLine(leftX, middleY, rightX, middleY);
-                g.drawLine(middleX, topY, rightX, middleY);
-                g.drawLine(middleX, bottomY, rightX, middleY);
-            } else if (token.equals("<->")) { // double arrow
-                setBox(fm.stringWidth("M") * 3);
-                g.drawLine(leftX, middleY, rightX, middleY);
-                g.drawLine(one4thX, topY, leftX, middleY);
-                g.drawLine(one4thX, bottomY, leftX, middleY);
-                g.drawLine(three4thX, topY, rightX, middleY);
-                g.drawLine(three4thX, bottomY, rightX, middleY);
-            } else if (token.equals("\\/")) { // vee
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, three4thY, middleX, bottomY);
-                g.drawLine(rightX, three4thY, middleX, bottomY);
-            } else if (token.equals("/\\")) { // wedge
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, bottomY, middleX, three4thY);
-                g.drawLine(rightX, bottomY, middleX, three4thY);
-            } else if (token.equals("E.")) { // exists
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, bottomY, rightX, bottomY);
-                g.drawLine(leftX, middleY, rightX, middleY);
-                g.drawLine(leftX, topY, rightX, topY);
-                g.drawLine(rightX, topY, rightX, bottomY);
-            } else if (token.equals("-.")) { // not
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, middleY, rightX, middleY);
-                g.drawLine(rightX, middleY, rightX, bottomY);
-            } else if (token.equals("e.")) { // epsilon
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, middleY, middleX, topY);
-                g.drawLine(middleX, topY, rightX, topY);
-                g.drawLine(leftX, middleY, middleX, bottomY);
-                g.drawLine(middleX, bottomY, rightX, bottomY);
-                g.drawLine(leftX, middleY, three4thX, middleY);
-            } else if (token.equals("u.")) { // union
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, three4thY, leftX, one4thY);
-                g.drawLine(leftX, one4thY, middleX, bottomY);
-                g.drawLine(middleX, bottomY, rightX, one4thY);
-                g.drawLine(rightX, one4thY, rightX, three4thY);
-            } else if (token.equals("i^i")) { // intersection
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, bottomY, leftX, middleY);
-                g.drawLine(leftX, middleY, middleX, three4thY);
-                g.drawLine(middleX, three4thY, rightX, middleY);
-                g.drawLine(rightX, middleY, rightX, bottomY);
-            } else if (token.equals("U.")) { // Union
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, topY, leftX, one4thY);
-                g.drawLine(leftX, one4thY, middleX, bottomY);
-                g.drawLine(middleX, bottomY, rightX, one4thY);
-                g.drawLine(rightX, one4thY, rightX, topY);
-            } else if (token.equals("|^|")) { // Intersection
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, bottomY, leftX, three4thY);
-                g.drawLine(leftX, three4thY, middleX, topY);
-                g.drawLine(middleX, topY, rightX, three4thY);
-                g.drawLine(rightX, three4thY, rightX, bottomY);
-            } else if (token.equals("(_")) { // subset
-                setBox(fm.stringWidth("M"));
-                g.drawLine(rightX, topY, leftX, topY);
-                g.drawLine(leftX, topY, leftX, one4thY);
-                g.drawLine(leftX, one4thY, rightX, one4thY);
-                g.drawLine(leftX, bottomY, rightX, bottomY);
-            } else if (token.equals("(/)")) { // empty set
-                setBox(fm.stringWidth("M"));
-                g.drawOval(leftX, topY, rightX - leftX, bottomY - topY);
-                g.drawLine(leftX, bottomY, rightX, topY);
-            } else if (token.equals("[]")) { // box
-                setBox(fm.stringWidth("M"));
-                g.drawRect(leftX, topY, rightX - leftX, bottomY - topY);
-            } else if (token.equals("<>")) { // diamond
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, middleY, middleX, topY);
-                g.drawLine(middleX, topY, rightX, middleY);
-                g.drawLine(rightX, middleY, middleX, bottomY);
-                g.drawLine(middleX, bottomY, leftX, middleY);
-            } else if (token.equals("_|_")) { // upside-down T (false)
-                setBox(fm.stringWidth("M"));
-                g.drawLine(leftX, bottomY, rightX, bottomY);
-                g.drawLine(middleX, bottomY, middleX, topY);
-            } else { // Output as is
-                g.drawString(token, currentX, currentY);
-                rightX = currentX + fm.stringWidth(token);
+            switch (token) {
+                case "A.":  // forall
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, topY, middleX, bottomY);
+                    g.drawLine(middleX, bottomY, rightX, topY);
+                    g.drawLine(one4thX, middleY, three4thX, middleY);
+                    break;
+                case "->":  // arrow
+                    setBox(fm.stringWidth("M") * 2);
+                    g.drawLine(leftX, middleY, rightX, middleY);
+                    g.drawLine(middleX, topY, rightX, middleY);
+                    g.drawLine(middleX, bottomY, rightX, middleY);
+                    break;
+                case "<->":  // double arrow
+                    setBox(fm.stringWidth("M") * 3);
+                    g.drawLine(leftX, middleY, rightX, middleY);
+                    g.drawLine(one4thX, topY, leftX, middleY);
+                    g.drawLine(one4thX, bottomY, leftX, middleY);
+                    g.drawLine(three4thX, topY, rightX, middleY);
+                    g.drawLine(three4thX, bottomY, rightX, middleY);
+                    break;
+                case "\\/":  // vee
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, three4thY, middleX, bottomY);
+                    g.drawLine(rightX, three4thY, middleX, bottomY);
+                    break;
+                case "/\\":  // wedge
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, bottomY, middleX, three4thY);
+                    g.drawLine(rightX, bottomY, middleX, three4thY);
+                    break;
+                case "E.":  // exists
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, bottomY, rightX, bottomY);
+                    g.drawLine(leftX, middleY, rightX, middleY);
+                    g.drawLine(leftX, topY, rightX, topY);
+                    g.drawLine(rightX, topY, rightX, bottomY);
+                    break;
+                case "-.":  // not
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, middleY, rightX, middleY);
+                    g.drawLine(rightX, middleY, rightX, bottomY);
+                    break;
+                case "e.":  // epsilon
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, middleY, middleX, topY);
+                    g.drawLine(middleX, topY, rightX, topY);
+                    g.drawLine(leftX, middleY, middleX, bottomY);
+                    g.drawLine(middleX, bottomY, rightX, bottomY);
+                    g.drawLine(leftX, middleY, three4thX, middleY);
+                    break;
+                case "u.":  // union
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, three4thY, leftX, one4thY);
+                    g.drawLine(leftX, one4thY, middleX, bottomY);
+                    g.drawLine(middleX, bottomY, rightX, one4thY);
+                    g.drawLine(rightX, one4thY, rightX, three4thY);
+                    break;
+                case "i^i":  // intersection
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, bottomY, leftX, middleY);
+                    g.drawLine(leftX, middleY, middleX, three4thY);
+                    g.drawLine(middleX, three4thY, rightX, middleY);
+                    g.drawLine(rightX, middleY, rightX, bottomY);
+                    break;
+                case "U.":  // Union
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, topY, leftX, one4thY);
+                    g.drawLine(leftX, one4thY, middleX, bottomY);
+                    g.drawLine(middleX, bottomY, rightX, one4thY);
+                    g.drawLine(rightX, one4thY, rightX, topY);
+                    break;
+                case "|^|":  // Intersection
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, bottomY, leftX, three4thY);
+                    g.drawLine(leftX, three4thY, middleX, topY);
+                    g.drawLine(middleX, topY, rightX, three4thY);
+                    g.drawLine(rightX, three4thY, rightX, bottomY);
+                    break;
+                case "(_":  // subset
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(rightX, topY, leftX, topY);
+                    g.drawLine(leftX, topY, leftX, one4thY);
+                    g.drawLine(leftX, one4thY, rightX, one4thY);
+                    g.drawLine(leftX, bottomY, rightX, bottomY);
+                    break;
+                case "(/)":  // empty set
+                    setBox(fm.stringWidth("M"));
+                    g.drawOval(leftX, topY, rightX - leftX, bottomY - topY);
+                    g.drawLine(leftX, bottomY, rightX, topY);
+                    break;
+                case "[]":  // box
+                    setBox(fm.stringWidth("M"));
+                    g.drawRect(leftX, topY, rightX - leftX, bottomY - topY);
+                    break;
+                case "<>":  // diamond
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, middleY, middleX, topY);
+                    g.drawLine(middleX, topY, rightX, middleY);
+                    g.drawLine(rightX, middleY, middleX, bottomY);
+                    g.drawLine(middleX, bottomY, leftX, middleY);
+                    break;
+                case "_|_":  // upside-down T (false)
+                    setBox(fm.stringWidth("M"));
+                    g.drawLine(leftX, bottomY, rightX, bottomY);
+                    g.drawLine(middleX, bottomY, middleX, topY);
+                    break;
+                default:  // Output as is
+                    g.drawString(token, currentX, currentY);
+                    rightX = currentX + fm.stringWidth(token);
+                    break;
             }
             currentX = rightX + 1;
         } else {
@@ -2349,7 +2368,7 @@ final class DrawSymbols {
     }
 
 
-    static final void drawFormula(Graphics wg, int wcurrentY, String formula) {
+    static void drawFormula(Graphics wg, int wcurrentY, String formula) {
         String token;
         int position0;
         int position;
@@ -2386,8 +2405,8 @@ final class DrawSymbols {
 
     // Draw the distinct variable pair list
     // Returns the new currentY
-    static final int drawDistinct(Graphics wg, int wcurrentY,
-                                  ArrayList<String> distinctVarVec) {
+    static int drawDistinct(Graphics wg, int wcurrentY,
+                            ArrayList<String> distinctVarVec) {
         short v;
 
         lastTokenType = (short) (-1); /* Init */
@@ -2425,7 +2444,7 @@ final class PrimFormula {
     static String typesList;
 
     // Get shortest primitive formula
-    static final String pformula(String formula, int start) {
+    static String pformula(String formula, int start) {
         String subformula;
         int position;
         short connNum;
@@ -2448,7 +2467,7 @@ final class PrimFormula {
     } // pformula
 
     // Return variable/connective types in a formula string
-    static final String getTypes(String formula, int start) {
+    static String getTypes(String formula, int start) {
         String typesList;
         int position;
         short connNum;
@@ -2470,18 +2489,18 @@ final class PrimFormula {
                 // Override the type of the first return char (could be
                 // a variable with type not yet known)
                 typesList = typesList + (char) typeNum
-                        + (new String(getTypes(formula, position))).substring(1);
+                        + (getTypes(formula, position)).substring(1);
             }
             return typesList;
         }
     } // getTypes
 
-    static final String getDisplay(String formula, boolean raw) {
+    static String getDisplay(String formula, boolean raw) {
         typesList = getTypes(formula, 0);
         return subGetDisplay(formula, 0, raw);
     }
 
-    static final String subGetDisplay(String formula, int start, boolean raw) {
+    static String subGetDisplay(String formula, int start, boolean raw) {
         // String tokenSeparator = " "; // Separator character between tokens in axiom menu
         String tokenSeparator = ""; // Separator character between tokens in axiom menu
         String subformula;
@@ -2561,14 +2580,14 @@ final class VariableName {
     // each type
 
     // Initialize (e.g. after renormalizing variables)
-    final static void init() {
+    static void init() {
         varNameVec = new ArrayList<String>();
         varTypeVec = new ArrayList<Integer>();
         varSoFar = new int[4]; // Initialized to 0; there are 4 types
     }
 
     // Get name of variable - type must be 0 thru 3 (wff thru digit)
-    final static String name(short var, short type) {
+    static String name(short var, short type) {
         int v;
         int quotient;
         int remainder;
@@ -2577,10 +2596,10 @@ final class VariableName {
         String[] letters = {"PQRSTUWXYZ", "xyzwvutsrqpnmlkjihgfdcba",
                 "ABCDFGHJKLMN", "e"};
         if (var >= varNameVec.size()) { // extend to accomodate variable
-            varNameVec.ensureCapacity((int) (var + 1));
-            varTypeVec.ensureCapacity((int) (var + 1));
+            varNameVec.ensureCapacity(var + 1);
+            varTypeVec.ensureCapacity(var + 1);
         }
-        if (varNameVec.size() <= (int) var || varNameVec.get((int) var) == null) { // hasn't been assigned yet
+        if (varNameVec.size() <= (int) var || varNameVec.get(var) == null) { // hasn't been assigned yet
             while (varNameVec.size() <= (int) var) {
                 varNameVec.add(null);
                 varTypeVec.add(null);
@@ -2591,17 +2610,17 @@ final class VariableName {
             quotient = v / letters[type].length();
             remainder = v % letters[type].length();
             if (quotient == 0) suffix = "";
-            else suffix = Integer.toString((int) (quotient - 1));
-            varNameVec.set((int) var, letters[type].substring(remainder, remainder + 1) + suffix);
-            varTypeVec.set((int) var, new Integer((int) type));
+            else suffix = Integer.toString(quotient - 1);
+            varNameVec.set(var, letters[type].substring(remainder, remainder + 1) + suffix);
+            varTypeVec.set(var, (int) type);
         }
-        return varNameVec.get((int) var);
+        return varNameVec.get(var);
     }
 
     // This is a handy way to find out variable's type, but should only
     // be used after getting the variable's name
-    final static short type(short var) {
-        return (short) (((Integer) (varTypeVec.get((int) var))).intValue());
+    static short type(short var) {
+        return (short) (varTypeVec.get(var).intValue());
     }
 
 } // VariableDisplay
@@ -2685,14 +2704,14 @@ class Axiom {
 
     // Convert RPN character, space-separated strings to RPN numeric strings
     // Connectives are negative, variables are positive
-    private static final String englToNumStr(String englRPN) {
+    private static String englToNumStr(String englRPN) {
         String token;
         int position0;
         int position;
         short varNum;
         short connNum;
         int i;
-        StringBuffer numRPNbuf = new StringBuffer();
+        StringBuilder numRPNbuf = new StringBuilder();
 
         englRPN = englRPN + " ";
         numRPNbuf.ensureCapacity(englRPN.length() / 2);
@@ -2766,7 +2785,7 @@ class State {
     // special State has <step# label,step-ref,step-ref,...> instead of an
     // axiom list.  Used to display detailed proof for the 'Proof Info'
     // option.
-    final static State buildProofInfoState(State currentState) {
+    static State buildProofInfoState(State currentState) {
         // Add proof steps one by one with special unify() mode, keeping all steps
         // Get the axiom-list version of the proof of the top of the stack
         String proof = currentState.proofVec.get(currentState.proofVec.size() - 1);
@@ -2956,11 +2975,11 @@ class Substitution {
     }
 
     // Makes a substitution into a formula
-    final static String makeSubst(String formula, Substitution subst) {
+    static String makeSubst(String formula, Substitution subst) {
         int i;
         i = -1;
         while (true) {
-            i = formula.indexOf((int) subst.substVar, i + 1);
+            i = formula.indexOf(subst.substVar, i + 1);
             if (i < 0) break;
             formula = formula.substring(0, i) + subst.substString
                     + formula.substring(i + 1);
@@ -2969,7 +2988,7 @@ class Substitution {
     }
 
     // Makes a set of substitutions into a formula
-    final static String makeVecSubst(String formula, ArrayList substVec) {
+    static String makeVecSubst(String formula, ArrayList substVec) {
         int i;
         for (i = 0; i < substVec.size(); i++) {
             formula = makeSubst(formula, (Substitution) (substVec.get(i)));
@@ -2993,7 +3012,7 @@ final class Unification {
 
     // Unification algorithm - returns a new State if unification
     // possible, null otherwise
-    final static State unify(Axiom testAxiom, State currentState,
+    static State unify(Axiom testAxiom, State currentState,
                              boolean proofInfoFlag) {
         int i;
         int hyp;
@@ -3141,8 +3160,8 @@ final class Unification {
 
     // Renumber variables in a formula from a axiom, by adding axiom's var #
     // (which must be > 0) to oldMaxVar
-    final static String renumberVars(String axiomFormula) {
-        StringBuffer formulaBuf = new StringBuffer(axiomFormula);
+    static String renumberVars(String axiomFormula) {
+        StringBuilder formulaBuf = new StringBuilder(axiomFormula);
         int i;
         short newVar;
         // Renumber variables
@@ -3159,7 +3178,7 @@ final class Unification {
 
     // Make substitution to hyp's and substVec (substVec is theoretically
     // not necessary but done to speed things up)
-    final static void makeSub(Substitution subst) {
+    static void makeSub(Substitution subst) {
         int hyp;
         int sub;
         for (hyp = 0; hyp < stateHypVec.size(); hyp++) {
@@ -3174,7 +3193,7 @@ final class Unification {
 
     // Rebuild newDistinctVarVec after a substitution
     // Returns true if no distinct variable violations, false if there were
-    final static boolean rebuildDistinct(Substitution subst) {
+    static boolean rebuildDistinct(Substitution subst) {
         int ilimit = newDistinctVarVec.size();
         int i;
         int j;

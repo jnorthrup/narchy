@@ -56,7 +56,7 @@ public class BasicPostprocessor implements Postprocessor {
         Map<String, String> parameters = config.getPostprocessorParameters();
         if(parameters!=null){
             if(parameters.containsKey(PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS)){
-                this.populateOptionalFields = Boolean.valueOf(parameters.get(PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS));
+                this.populateOptionalFields = Boolean.parseBoolean(parameters.get(PARAMETER_NAME_POPULATE_OPTIONAL_FIELDS));
             }
         }
           

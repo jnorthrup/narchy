@@ -236,7 +236,7 @@ public class CircularByteBuffer extends CircularBuffer {
         lock.lock();
         try {
             if (length > 0) {
-                int minSize = this.minSize < 0 ? 0 : this.minSize;
+                int minSize = Math.max(this.minSize, 0);
                 while (writeAt.get() - minSize < length) {
                     try {
                         readCond.await();
@@ -271,7 +271,7 @@ public class CircularByteBuffer extends CircularBuffer {
                         return -1;
                     }
                 }
-                int minSize = this.minSize < 0 ? 0 : this.minSize;
+                int minSize = Math.max(this.minSize, 0);
                 if (writeAt.get() > 0) {
                     if (len > writeAt.get() - minSize)
                         len = writeAt.get() - minSize;

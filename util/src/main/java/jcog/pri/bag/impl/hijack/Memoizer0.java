@@ -5,6 +5,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.*;
@@ -167,7 +168,7 @@ final class Memoizer0 implements InvocationHandler {
          * Sample Slow Implementation (MessageDigest with SHA-512)
          */
         public static class SampleSlowImpl implements SampleInterface {
-            private static final Charset UTF8 = Charset.forName("UTF-8");
+            private static final Charset UTF8 = StandardCharsets.UTF_8;
 
             @Override
             public String hash(final String in) throws NoSuchAlgorithmException {

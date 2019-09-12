@@ -34,7 +34,7 @@ public class ByteShuffler {
         return copy ? Arrays.copyOfRange(order, 0, len) : order;
     }
 
-    public void shuffle(Random rng, Object[] a, int from, int to) {
+    public static void shuffle(Random rng, Object[] a, int from, int to) {
         int len = to - from;
 
         if (len == 2) {

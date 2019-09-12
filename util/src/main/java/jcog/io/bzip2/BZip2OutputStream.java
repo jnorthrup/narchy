@@ -204,10 +204,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
                 weight[nNodes] = ((weight[n1] & 0xffffff00)
                         + (weight[n2] & 0xffffff00))
-                        | (1 + (((weight[n1] & 0x000000ff) >
-                        (weight[n2] & 0x000000ff)) ?
-                        (weight[n1] & 0x000000ff) :
-                        (weight[n2] & 0x000000ff)));
+                        | (1 + (Math.max((weight[n1] & 0x000000ff), (weight[n2] & 0x000000ff))));
 
                 parent[nNodes] = -1;
                 nHeap++;
@@ -530,8 +527,8 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         bsFinishedWithStream();
     }
 
-    private void hbAssignCodes (int[] code, char[] length, int minLen,
-                                int maxLen, int alphaSize) {
+    private static void hbAssignCodes(int[] code, char[] length, int minLen,
+                                      int maxLen, int alphaSize) {
         int n, vec, i;
 
         vec = 0;
@@ -992,7 +989,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         }
     }
 
-    private char med3(char a, char b, char c) {
+    private static char med3(char a, char b, char c) {
         char t;
         if (a > b) {
             t = a;
@@ -1114,9 +1111,9 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 continue;
             }
 
-            n = ((ltLo - lo) < (unLo - ltLo)) ? (ltLo - lo) : (unLo - ltLo);
+            n = Math.min((ltLo - lo), (unLo - ltLo));
             vswap(lo, unLo - n, n);
-            m = ((hi - gtHi) < (gtHi - unHi)) ? (hi - gtHi) : (gtHi - unHi);
+            m = Math.min((hi - gtHi), (gtHi - unHi));
             vswap(unLo, hi - m + 1, m);
 
             n = lo + unLo - ltLo - 1;

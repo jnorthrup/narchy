@@ -156,7 +156,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         private Collection<FromTo<Node<N, E>, E>> out;
 
         public MutableNode(N id) {
-            this(id, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
+            this(id, Collections.<FromTo<Node<N, E>, E>>emptyList(), Collections.<FromTo<Node<N, E>, E>>emptyList());
         }
 
         MutableNode(N id, Collection<FromTo<Node<N, E>, E>> in, Collection<FromTo<Node<N, E>, E>> out) {
@@ -205,14 +205,13 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         }
 
 
-        Collection<FromTo<Node<N, E>, E>> newEdgeCollection() {
-            return new ArrayHashSet<>(2);
+        Collection<FromTo<Node<N, E>, E>> newEdgeCollection(int cap) {
+            return new ArrayHashSet<>(cap);
         }
 
-        Collection<FromTo<Node<N, E>, E>> newEdgeCollection(FromTo... ff) {
-            Collection<FromTo<Node<N, E>, E>> c = newEdgeCollection();
-            for (FromTo f: ff)
-                c.add(f);
+        Collection<FromTo<Node<N, E>, E>> newEdgeCollection(FromTo<Node<N,E>,E>... ff) {
+            Collection<FromTo<Node<N, E>, E>> c = newEdgeCollection(ff.length);
+			Collections.addAll(c, ff);
             return c;
         }
 
@@ -276,7 +275,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
             boolean changed;
             if (s instanceof ArrayUnenforcedSortedSet) {
                 if (((ArrayUnenforcedSortedSet)s).get(0).equals(e)) {
-                    s = Collections.EMPTY_LIST;
+                    s = Collections.emptyList();
                     changed = true;
                 } else {
                     changed = false;

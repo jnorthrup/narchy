@@ -266,7 +266,7 @@ public class InterpolatingMicrosphere {
         double s3 = 0.0D;
         double x1max = 0.0D;
         double x3max = 0.0D;
-        double floatn = (double) v.length;
+        double floatn = v.length;
         double agiant = rgiant / floatn;
 
         for (int norm = 0; norm < v.length; ++norm) {

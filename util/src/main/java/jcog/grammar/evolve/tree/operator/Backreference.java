@@ -41,7 +41,7 @@ public class Backreference extends Leaf<Integer> {
     @Override
     public void describe(StringBuilder builder, DescriptionContext context, RegexFlavour flavour) {
         builder.append('\\');
-        int v = value.intValue();
+        int v = value;
         switch (flavour) {
             case JAVA:
                 builder.append(v);

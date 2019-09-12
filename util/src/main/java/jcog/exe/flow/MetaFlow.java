@@ -238,9 +238,7 @@ public class MetaFlow {
         }
         public void print(PrintStream out) {
             out.println(toStringFromBytes());
-            buffer.reverseForEach(b -> {
-                out.println(b);
-            });
+            buffer.reverseForEach(out::println);
             out.println();
         }
 
@@ -363,8 +361,7 @@ public class MetaFlow {
 //            urls.addAt(f.toURL());
 //        }
 //
-        URL[] urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ci->
-                ci.url()).toArray(URL[]::new);
+        URL[] urls = ClassPath.from(ClassLoader.getSystemClassLoader().getParent()).getAllClasses().stream().map(ClassPath.ResourceInfo::url).toArray(URL[]::new);
         // feed your URLs to a URLClassLoader!
         ClassLoader classloader = new URLClassLoader(urls, ClassLoader.getSystemClassLoader().getParent());
 

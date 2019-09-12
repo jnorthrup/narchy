@@ -629,29 +629,17 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
         float x;
         if (t.x > max) {
             x = max;
-        } else if (t.x < min) {
-            x = min;
-        } else {
-            x = t.x;
-        }
+        } else x = Math.max(t.x, min);
 
         float y;
         if (t.y > max) {
             y = max;
-        } else if (t.y < min) {
-            y = min;
-        } else {
-            y = t.y;
-        }
+        } else y = Math.max(t.y, min);
 
         float z;
         if (t.z > max) {
             z = max;
-        } else if (t.z < min) {
-            z = min;
-        } else {
-            z = t.z;
-        }
+        } else z = Math.max(t.z, min);
 
         set(x, y, z);
     }
@@ -664,9 +652,9 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param t   the source tuple, which will not be modified
      */
     public final void clampMin(float min, v3 t) {
-        set(t.x < min ? min : t.x,
-                t.y < min ? min : t.y,
-                t.z < min ? min : t.z);
+        set(Math.max(t.x, min),
+			Math.max(t.y, min),
+			Math.max(t.z, min));
 
     }
 
@@ -678,9 +666,9 @@ public class v3 implements java.io.Serializable, Cloneable, Tensor {
      * @param t   the source tuple, which will not be modified
      */
     public final void clampMax(float max, v3 t) {
-        set(t.x > max ? max : t.x,
-                t.y > max ? max : t.y,
-                t.z > max ? max : t.z);
+        set(Math.min(t.x, max),
+            Math.min(t.y, max),
+            Math.min(t.z, max));
     }
 
     public final void clamp(v3 min, v3 max) {

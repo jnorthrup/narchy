@@ -256,7 +256,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     @Override
     public void putAll(Map map) {
-        map.keySet().forEach(k -> this.put(k, map.get(k)));
+        map.forEach((k, o) -> this.put(k, o));
     }
 
     @Override
@@ -271,12 +271,12 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     @Override
     public Set<K> keySet() {
-        return entrySet().stream().map(e -> e.getKey()).collect(Collectors.toSet());
+        return entrySet().stream().map(Entry::getKey).collect(Collectors.toSet());
     }
 
     @Override
     public Collection<V> values() {
-        return entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+        return entrySet().stream().map(Entry::getValue).collect(Collectors.toList());
     }
 
     @Override

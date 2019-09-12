@@ -58,10 +58,10 @@ public class FlaggingNgramsTerminalSetBuilder implements TerminalSetBuilder{
         Map<String, String> parameters = configuration.getTerminalSetBuilderParameters();
         if(configuration.getTerminalSetBuilderParameters()!=null){
             if(parameters.containsKey("cumulateScoreMultipliers")){
-                NUMBER_NGRAMS = Integer.valueOf(parameters.get("numberNgrams"));
+                NUMBER_NGRAMS = Integer.parseInt(parameters.get("numberNgrams"));
             }
             if(parameters.containsKey("penalizeNegativeNgrams")){
-                PENALIZE_NEGATIVES_NGRAMS = Boolean.valueOf(parameters.get("penalizeNegativeNgrams"));
+                PENALIZE_NEGATIVES_NGRAMS = Boolean.parseBoolean(parameters.get("penalizeNegativeNgrams"));
             }
         }
         

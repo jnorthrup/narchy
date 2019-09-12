@@ -236,7 +236,7 @@ public class SimpleLSTM  {
 			}
 			else {
 				
-				Arrays.fill(deltaH, (double) 0);
+				Arrays.fill(deltaH, 0);
 			}
 
 			final double outputDeltaScale = SCALE_OUTPUT_DELTA;

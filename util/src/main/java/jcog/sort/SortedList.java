@@ -3,6 +3,8 @@ package jcog.sort;
 
 import jcog.data.list.FasterList;
 
+import java.util.Arrays;
+
 /**
  * insertion sorted list. It is constructed with a comparator that
  * can compare two objects and sorted objects accordingly. When you add an object
@@ -27,8 +29,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
      */
     public SortedList(E[] toSort, E[] scratch) {
         super(0, scratch);
-        for (E e : toSort)
-            add(e);
+		this.addAll(Arrays.asList(toSort));
     }
 
 

@@ -42,7 +42,7 @@ public class FloatNormalizer implements FloatToFloatFunction {
         return normalize(raw, min(), max());
     }
 
-    protected float normalize(float x, float min, float max) {
+    protected static float normalize(float x, float min, float max) {
         if (x != x)
             return Float.NaN;
 

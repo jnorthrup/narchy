@@ -5,6 +5,7 @@ import java.lang.annotation.*;
 import java.lang.ref.SoftReference;
 import java.nio.ByteBuffer;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.text.DateFormat;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
@@ -290,7 +291,7 @@ public final class HttpUtil
 
                 return bytes;
         }
-        public final static Charset UTF8 = Charset.forName("UTF-8");
+        public final static Charset UTF8 = StandardCharsets.UTF_8;
 
         
         public static File findDirectoryIndex(File dir)

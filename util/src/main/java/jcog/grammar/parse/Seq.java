@@ -95,9 +95,7 @@ public class Seq extends CollectionParser {
 		List<String> v = new ArrayList<>();
 		for (Parser p : subparsers) {
 			List<String> w = p.randomExpansion(maxDepth, depth++);
-			for (String aW : w) {
-				v.add(aW);
-			}
+			v.addAll(w);
 		}
 		return v;
 	}

@@ -453,8 +453,8 @@ public class Grok implements Serializable {
                     return text;
                 } else {
                     int increase = replacement.length() - replLength;
-                    increase = increase < 0 ? 0 : increase;
-                    increase *= max > 64 ? 64 : max;
+                    increase = Math.max(increase, 0);
+                    increase *= Math.min(max, 64);
 
                     StringBuilder buf;
                     for (buf = new StringBuilder(text.length() + increase); end != -1; end = text.indexOf(searchString, start)) {

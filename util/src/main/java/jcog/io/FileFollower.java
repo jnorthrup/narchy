@@ -19,6 +19,7 @@ import java.nio.channels.Channels;
 import java.nio.charset.CharacterCodingException;
 import java.nio.charset.Charset;
 import java.nio.charset.IllegalCharsetNameException;
+import java.nio.charset.StandardCharsets;
 import java.text.MessageFormat;
 import java.util.*;
 import java.util.function.Consumer;
@@ -62,7 +63,7 @@ public class FileFollower {
             encoding_ = Charset.forName(System.getProperty("file.encoding"));
         } catch (final IllegalCharsetNameException e) {
             try {
-                encoding_ = Charset.forName("ISO-8859-1");
+                encoding_ = StandardCharsets.ISO_8859_1;
             } catch (final IllegalCharsetNameException e1) {
                 final SortedMap m = Charset.availableCharsets();
                 encoding_ = (Charset) m.get(m.firstKey());
@@ -71,9 +72,7 @@ public class FileFollower {
         final int initOutputDestsSize = (initialOutputDestinations != null) ? initialOutputDestinations.length : 0;
         outputDestinations_ = new ArrayList(initOutputDestsSize);
         if (initialOutputDestinations != null) {
-            for (int i = 0; i < initOutputDestsSize; i++) {
-                outputDestinations_.add(initialOutputDestinations[i]);
-            }
+			outputDestinations_.addAll(Arrays.asList(initialOutputDestinations).subList(0, initOutputDestsSize));
         }
     }
 
@@ -119,7 +118,7 @@ public class FileFollower {
      * Like {@link #stop()}, but this method will not exit until the thread which is following the file has finished
      * executing (i.e., stop synchronously).
      */
-    public synchronized void stopAndWait() throws InterruptedException {
+    public synchronized void stopAndWait() {
         stop();
         while (runnerThread_.isAlive()) {
             Thread.yield();
@@ -349,9 +348,8 @@ public class FileFollower {
         } /* send the supplied string to all OutputDestinations */
 
         void print(final String s) {
-            final Iterator<Consumer<String>> i = outputDestinations_.iterator();
-            while (i.hasNext()) {
-                i.next().accept(s);
+            for (Consumer<String> stringConsumer : outputDestinations_) {
+                stringConsumer.accept(s);
             }
         }
 

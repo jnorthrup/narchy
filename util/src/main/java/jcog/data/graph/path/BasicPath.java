@@ -84,7 +84,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     public List<FromTo<Node<N, E>, E>> fetch(int from, int to) {
         int ncnt = nodeCount();
 
-        if (from < 0) from = (ncnt + from) < 0 ? 0 : ncnt + from;
+        if (from < 0) from = Math.max((ncnt + from), 0);
 
         if (to < 0) to = (ncnt + to) < 0 ? ncnt : ncnt + to;
 

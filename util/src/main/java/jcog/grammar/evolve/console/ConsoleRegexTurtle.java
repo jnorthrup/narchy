@@ -220,10 +220,10 @@ public class ConsoleRegexTurtle {
                 String parameter = args[i];
                 switch (string) {
                     case "-t":
-                        simpleConfig.numberThreads = Integer.valueOf(parameter);
+                        simpleConfig.numberThreads = Integer.parseInt(parameter);
                         break;
                     case "-p":
-                        simpleConfig.populationSize = Integer.valueOf(parameter);
+                        simpleConfig.populationSize = Integer.parseInt(parameter);
                         break;
                     case "-d":
                         simpleConfig.datasetName = parameter;
@@ -233,16 +233,16 @@ public class ConsoleRegexTurtle {
                         simpleConfig.outputFolder = parameter;
                         break;
                     case "-g":
-                        simpleConfig.generations = Integer.valueOf(parameter);
+                        simpleConfig.generations = Integer.parseInt(parameter);
                         break;
                     case "-j":
-                        simpleConfig.numberOfJobs = Integer.valueOf(parameter);
+                        simpleConfig.numberOfJobs = Integer.parseInt(parameter);
                         break;
                     case "-e":
-                        simpleConfig.termination = Double.valueOf(parameter);
+                        simpleConfig.termination = Double.parseDouble(parameter);
                         break;
                     case "-x":
-                        simpleConfig.populateOptionalFields = Boolean.valueOf(parameter);
+                        simpleConfig.populateOptionalFields = Boolean.parseBoolean(parameter);
                         break;
                     case "-h":
                         System.out.println(HELP_MESSAGE);
@@ -251,7 +251,7 @@ public class ConsoleRegexTurtle {
                         simpleConfig.comment = parameter;
                         break;
                     case "-s":
-                        simpleConfig.isStriped = Boolean.valueOf(parameter);
+                        simpleConfig.isStriped = Boolean.parseBoolean(parameter);
                         break;
                     case "-f":
                         simpleConfig.isFlagging = true;

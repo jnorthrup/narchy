@@ -161,10 +161,8 @@ public class Classpath {
                     CUSTOM_ENTRIES.put(url, new WeakReference(entry));
                     return entry;
                 }
-            } catch (MalformedURLException var4) {
+            } catch (MalformedURLException | URISyntaxException var4) {
                 throw new IOException(var4);
-            } catch (URISyntaxException var5) {
-                throw new IOException(var5);
             }
         }
     }
@@ -174,13 +172,11 @@ public class Classpath {
     }
 
     private static void fillClasspath(List<Classpath.ClasspathEntry> classpath, Collection<URL> urls) {
-        Iterator i$ = urls.iterator();
 
-        while (i$.hasNext()) {
-            URL url = (URL) i$.next();
+        for (URL url : urls) {
             if (!isIgnoredJAR(url)) {
                 try {
-                    Classpath.ClasspathEntry entry = newEntry(url);
+                    ClasspathEntry entry = newEntry(url);
                     if (entry == null) {
                         LOGGER.warn("Cannot copy URL content: " + url);
                     } else {
@@ -393,7 +389,7 @@ public class Classpath {
         }
 
         public long size() {
-            return (long) this.data.length;
+            return this.data.length;
         }
     }
 

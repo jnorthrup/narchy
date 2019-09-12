@@ -97,13 +97,13 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
     }
 
     public static void minToOut(v2 a, v2 b, v2 out) {
-        out.x = a.x < b.x ? a.x : b.x;
-        out.y = a.y < b.y ? a.y : b.y;
+        out.x = Math.min(a.x, b.x);
+        out.y = Math.min(a.y, b.y);
     }
 
     public static void maxToOut(v2 a, v2 b, v2 out) {
-        out.x = a.x > b.x ? a.x : b.x;
-        out.y = a.y > b.y ? a.y : b.y;
+        out.x = Math.max(a.x, b.x);
+        out.y = Math.max(a.y, b.y);
     }
 
     /**
@@ -569,8 +569,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @param t   the source tuple, which will not be modified
      */
     public final void clampMin(float min, v2 t) {
-        x = t.x < min ? min : t.x;
-        y = t.y < min ? min : t.y;
+        x = Math.max(t.x, min);
+        y = Math.max(t.y, min);
     }
 
 
@@ -582,8 +582,8 @@ public class v2 implements java.io.Serializable, Cloneable, Tensor {
      * @param t   the source tuple, which will not be modified
      */
     public final void clampMax(float max, v2 t) {
-        x = t.x > max ? max : t.x;
-        y = t.y > max ? max : t.y;
+        x = Math.min(t.x, max);
+        y = Math.min(t.y, max);
     }
 
 

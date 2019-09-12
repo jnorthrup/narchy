@@ -92,13 +92,13 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
                 TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
             }
             if(parameters.containsKey("discardWtokens")){
-                DISCARD_W_TOKENS = Boolean.valueOf(parameters.get("discardWtokens"));
+                DISCARD_W_TOKENS = Boolean.parseBoolean(parameters.get("discardWtokens"));
             }
             if(parameters.containsKey("tokenUnmatchThreashold")){
                 TOKEN_UNMATCH_THREASHOLD = Double.valueOf(parameters.get("tokenUnmatchThreashold"));
             }
             if(parameters.containsKey("addNoContextIndividuals")){
-                ADD_NO_CONTEXT_INDIVIDUALS = Boolean.valueOf(parameters.get("addNoContextIndividuals"));
+                ADD_NO_CONTEXT_INDIVIDUALS = Boolean.parseBoolean(parameters.get("addNoContextIndividuals"));
             }
         }
          
@@ -138,7 +138,7 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
     
     private List<Node> createIndividualsFromExample(Example example,boolean compact, Map<String,Double> winnerMatchTokens, Map<String,Double> winnerUnMatchTokens){
         if(example.getNumberMatches()==0){
-            return Collections.EMPTY_LIST;
+            return Collections.emptyList();
         }
         List<Node> individualsForExample = new LinkedList<>();
         Set<String> matchSet = new HashSet<>(example.getMatchedStrings());

@@ -84,7 +84,7 @@ public class TokenizedTerminalSetBuilder implements TerminalSetBuilder{
                 TOKEN_THREASHOLD = Double.valueOf(parameters.get("tokenThreashold"));
             }
             if(parameters.containsKey("discardWtokens")){
-                DISCARD_W_TOKENS = Boolean.valueOf(parameters.get("discardWtokens"));
+                DISCARD_W_TOKENS = Boolean.parseBoolean(parameters.get("discardWtokens"));
             }
         }
         

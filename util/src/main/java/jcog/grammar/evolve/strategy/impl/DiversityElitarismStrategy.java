@@ -50,7 +50,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         if (parameters != null) {
             
             if (parameters.containsKey("deepDiversity")) {
-                deepDiversity = Boolean.valueOf(parameters.get("deepDiversity"));
+                deepDiversity = Boolean.parseBoolean(parameters.get("deepDiversity"));
             }
         }
     }
@@ -89,7 +89,7 @@ public class DiversityElitarismStrategy extends DefaultStrategy{
         TreeSet<Ranking> r = this.rankings;
 
 
-        Ranking[] rr = r.toArray(new Ranking[r.size()]);
+        Ranking[] rr = r.toArray(new Ranking[0]);
 
 
         while (newPopulation.size() < stepPopSize) {

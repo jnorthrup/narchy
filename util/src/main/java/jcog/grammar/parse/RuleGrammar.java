@@ -97,7 +97,7 @@ public class RuleGrammar extends Grammar {
 		return new Symbol(symbol);
 	}
 
-	class SequenceAssembler implements IAssembler {
+	static class SequenceAssembler implements IAssembler {
 		public void accept(Assembly a) {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();
@@ -112,7 +112,7 @@ public class RuleGrammar extends Grammar {
 		}
 	}
 
-	class AlternationAssembler implements IAssembler {
+	static class AlternationAssembler implements IAssembler {
 		public void accept(Assembly a) {
 			Parser last = (Parser) a.pop();
 			Parser butlast = (Parser) a.pop();

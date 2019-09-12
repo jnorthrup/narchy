@@ -11,9 +11,9 @@ public class SearchStats {
     public String toString() {
         StringBuilder bf = new StringBuilder();
         bf.append(completed ? "Complete search\n" : "Incomplete search\n");
-        bf.append("#solutions  : " + nSolutions + '\n');
-        bf.append("#nodes      : " + nNodes + '\n');
-        bf.append("#fails      : " + nFails + '\n');
+        bf.append("#solutions  : ").append(nSolutions).append('\n');
+        bf.append("#nodes      : ").append(nNodes).append('\n');
+        bf.append("#fails      : ").append(nFails).append('\n');
         return bf.toString();
     }
 }

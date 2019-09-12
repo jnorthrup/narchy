@@ -64,7 +64,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         if (initialCapacity < 0) {
             throw new IllegalArgumentException("initial capacity cannot be less than 0");
         } else {
-            int capacity = this.smallestPowerOfTwoGreaterThan(initialCapacity << 1);
+            int capacity = MyShortIntHashMap.smallestPowerOfTwoGreaterThan(initialCapacity << 1);
             this.allocateTable(capacity);
         }
     }
@@ -147,7 +147,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         return (new MyShortIntHashMap(4)).withKeysValues(key1, value1, key2, value2, key3, value3, key4, value4);
     }
 
-    private int smallestPowerOfTwoGreaterThan(int n) {
+    private static int smallestPowerOfTwoGreaterThan(int n) {
         return n > 1 ? Integer.highestOneBit(n - 1) << 1 : 1;
     }
 
@@ -401,12 +401,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public void putAll(ShortIntMap map) {
-        map.forEachKeyValue(new ShortIntProcedure() {
-            @Override
-            public void value(short key, int value) {
-                MyShortIntHashMap.this.put(key, value);
-            }
-        });
+        map.forEachKeyValue((ShortIntProcedure) (key, value) -> MyShortIntHashMap.this.put(key, value));
     }
 
     @Override
@@ -500,7 +495,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         }
     }
 
-    private final SentinelValues newSentinel() {
+    private SentinelValues newSentinel() {
         _sentinel.clear();
         return _sentinel;
     }
@@ -664,7 +659,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
         }
     }
 
-    private final void addKeyValueAtIndex(short key, int value, int index) {
+    private void addKeyValueAtIndex(short key, int value, int index) {
         if (this.keys[index] == 1) {
             --this.occupiedWithSentinels;
         }
@@ -792,12 +787,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     @Override
     public MyShortIntHashMap withoutAllKeys(ShortIterable keys) {
-        keys.forEach(new ShortProcedure() {
-            @Override
-            public void value(short key) {
-                MyShortIntHashMap.this.removeKey(key);
-            }
-        });
+        keys.forEach((ShortProcedure) key -> MyShortIntHashMap.this.removeKey(key));
         return this;
     }
 
@@ -1038,7 +1028,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     public void compact() {
 
-        this.rehash(this.smallestPowerOfTwoGreaterThan(this.size()));
+        this.rehash(MyShortIntHashMap.smallestPowerOfTwoGreaterThan(this.size()));
     }
 
     private void rehashAndGrow() {
@@ -1063,7 +1053,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
 
     int probe(short element)
     {
-        int index = this.mask((int) element);
+        int index = this.mask(element);
         short keyAtIndex = this.keys[index];
 
         if (keyAtIndex == element || keyAtIndex == EMPTY_KEY)

@@ -72,7 +72,7 @@ public class DefaultTreeEvaluator implements TreeEvaluator {
             }
 
             if (!b.isEmpty())
-                results.add(b.toArray(new Bounds[b.size()]));
+                results.add(b.toArray(new Bounds[0]));
             else
                 results.add(empty);
 

@@ -208,16 +208,12 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
             char x = t.charAt(i);
             switch (x) {
                 case ' ':
-                    return true;
+                case '.':
+                case '+':
+                case '-':
                 case ',':
                     return true;
-                case '-':
-                    return true;
-                case '+':
-                    return true;
-                case '.':
-                    return true;
-                
+
             }
         }
 
@@ -353,9 +349,8 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
     private boolean isNominalValueValid(String name, String token) {
         switch (token) {
             case "?":
-                return true; 
             case "_":
-                return true; 
+                return true;
         }
 
         String[] values = categories(name);
@@ -363,6 +358,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         for (String value : values) {
             if (value.equals(token)) {
                 found = true;
+                break;
             }
         }
         return found;
@@ -440,9 +436,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
             s.append("@data").append(NEW_LINE);
 
-            Iterator<Row> ii = iterator();
-            while (ii.hasNext()) {
-                Row r = ii.next();
+            for (Row r : this) {
                 joinWith(r, s, ",");
                 s.append(NEW_LINE);
             }
@@ -600,7 +594,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
                     defineNominal(n, "true", "false");
                     extractor.add(x -> {
                         try {
-                            return Boolean.toString( ((Boolean) field.get(x)).booleanValue() );
+                            return Boolean.toString((Boolean) field.get(x));
                         } catch (IllegalAccessException e1) {
                             logger.error("field {} : {}", e1);
                             return null;

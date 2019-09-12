@@ -98,7 +98,7 @@ public class Anomalysis {
                 return AnomalyLevel.STRONG;
             } else if (upperWeak==upperWeak && value >= upperWeak) {
                 return AnomalyLevel.WEAK;
-            } else if (lowerStrong==lowerStrong & value <= lowerStrong) {
+            } else if (lowerStrong==lowerStrong && value <= lowerStrong) {
                 return AnomalyLevel.STRONG;
             } else if (lowerWeak==lowerWeak && value <= lowerWeak) {
                 return AnomalyLevel.WEAK;

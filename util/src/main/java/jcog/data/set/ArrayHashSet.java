@@ -64,7 +64,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
     private static final int DEFAULT_SET_CAPACITY = 4;
     public final FasterList<X> list;
-    protected Set<X> set = emptySet();
+    Set<X> set = emptySet();
 
 
     public ArrayHashSet() {

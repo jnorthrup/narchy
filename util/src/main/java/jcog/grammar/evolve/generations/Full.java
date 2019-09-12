@@ -91,12 +91,12 @@ public class Full implements Generation {
         return _tree;
     }
 
-    private final Node randomFunction() {
+    private Node randomFunction() {
         List<Node> functionSet = factory.getFunctionSet();
         return functionSet.get(rng.nextInt(functionSet.size())).cloneTree();
     }
 
-    private final Leaf randomLeaf() {
+    private Leaf randomLeaf() {
         List<Leaf> terminalSet = context.getConfiguration().getNodeFactory().getTerminalSet();
         return terminalSet.get(context.getRandom().nextInt(terminalSet.size())).cloneTree();
     }

@@ -710,16 +710,15 @@ public enum Util {
         return x;
     }
 
-    /**
-     * clamps a value to -1..1 range
-     */
-    public static float clampBi(float p) {
-        if (p > 1f)
-            return 1f;
-        if (p < -1f)
-            return -1f;
-        return p;
-    }
+//    /**
+//     * clamps a value to -1..1 range
+//     */
+//    public static float clampBi(float p) {
+//        if (p > 1f)
+//            return 1f;
+//        return Math.max(p, -1f);
+//        return p;
+//    }
 
     /**
      * discretizes values to nearest finite resolution real number determined by epsilon spacing
@@ -1495,11 +1494,11 @@ public enum Util {
 
     /** should be slightly faster than Math.max() since it assumes the values are finite */
     public static float max(float x, float y) {
-        return x >= y ? x : y;
+        return Math.max(x, y);
     }
     /** should be slightly faster than Math.max() since it assumes the values are finite */
     public static float min(float x, float y) {
-        return x <= y ? x : y;
+        return Math.min(x, y);
     }
 
     public static float max(float... x) {
@@ -1512,10 +1511,10 @@ public enum Util {
     }
 
     public static double min(double x, double y) {
-        return x <= y ? x : y;
+        return Math.min(x, y);
     }
     public static double max(double x, double y) {
-        return x <= y ? y : x;
+        return Math.max(x, y);
     }
 
     public static double min(double... x) {
@@ -2026,7 +2025,7 @@ public enum Util {
      * http:
      * calculate height on a uniform grid, by splitting a quad into two triangles:
      */
-    public static final float lerp2d(float x, float z, float nw, float ne, float se, float sw) {
+    public static float lerp2d(float x, float z, float nw, float ne, float se, float sw) {
 
         x = x - (int) x;
         z = z - (int) z;

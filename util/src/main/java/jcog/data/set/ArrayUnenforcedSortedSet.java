@@ -29,7 +29,7 @@ abstract public class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
     };
 
     private ArrayUnenforcedSortedSet(X... xx) {
-        super((X[])xx);
+        super(xx);
     }
 
     /** assumes u is already sorted and deduplicated */

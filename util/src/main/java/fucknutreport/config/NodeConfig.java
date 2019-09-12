@@ -14,11 +14,10 @@ import java.util.Objects;
 //import kotlin.jvm.internal.Intrinsics;
 
 
-public final class NodeConfig {
+public enum NodeConfig { ;
    private static final Logger logger = Log.logger(NodeConfig.class);
 
    private static final boolean insecure;
-   private static final NodeConfig INSTANCE;
 
    /** @deprecated */
    // $FF: synthetic method
@@ -105,7 +104,7 @@ public final class NodeConfig {
 
    /*@JvmStatic*/
    public static boolean configIs(@NotNull String key, @Nullable Boolean def) {
-      return Boolean.valueOf( get2(key, def!=null ? def.toString() : null, false) );
+      return Boolean.parseBoolean( get2(key, def!=null ? def.toString() : null, false) );
    }
 
 //   // $FF: synthetic method
@@ -160,18 +159,17 @@ public final class NodeConfig {
       return qget2(s, null);
    }
 
-   private NodeConfig() {
-   }
+
 
    static {
-      NodeConfig var0 = new NodeConfig();
+//      NodeConfig var0 = new NodeConfig();
       try {
          System.getProperties().load(Resources.getResource("defaults.ini").openStream());
       } catch (IOException e) {
          e.printStackTrace();
       }
 
-      INSTANCE = var0;
+//      INSTANCE = var0;
       //insecure = Intrinsics.areEqual(System.getProperty("insecure", "false"), String.valueOf(Boolean.TRUE));
       insecure = Objects.equals(System.getProperty("insecure", "false"), String.valueOf(Boolean.TRUE));
    }

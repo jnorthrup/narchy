@@ -130,9 +130,7 @@ class WebSocketSelector extends WebSocketAdapter {
                     }
                 }
 
-            } catch (ClosedSelectorException ex) {
-                return;
-            } catch (CancelledKeyException ex) {
+            } catch (ClosedSelectorException | CancelledKeyException ex) {
                 return;
             } catch (IOException ex) {
 

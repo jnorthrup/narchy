@@ -68,7 +68,7 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
 //        return this;
 //    }
 
-    private double sample(long xPrev, double yPrev, long xNext, double yNext, double sum) {
+    private static double sample(long xPrev, double yPrev, long xNext, double yNext, double sum) {
         Util.assertFinite(yNext);
 
         if (yPrev==yPrev) {

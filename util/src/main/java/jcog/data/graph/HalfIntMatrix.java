@@ -18,6 +18,8 @@ package jcog.data.graph;
 
 import jcog.util.ArrayUtil;
 
+import java.util.Arrays;
+
 /**
  * This class represents a lower (or upper) triangle matrix that stores ints.
  * 
@@ -73,9 +75,7 @@ class HalfIntMatrix {
 		this.size = initialSize;
 		this.initialValue = initialValue;
 		this.matrix = new int[((size * size + size) / 2)];
-		for (int i = 0; i < matrix.length; i++) {
-			matrix[i] = initialValue;
-		}
+		Arrays.fill(matrix, initialValue);
 	}
 
 	/*

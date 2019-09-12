@@ -110,16 +110,14 @@ class HttpSelector implements ConnectionStateChangeListener {
         long now = System.nanoTime();
 
         {
-            Iterator<SelectionKey> it = selector.keys().iterator();
-            while (it.hasNext()) {
-                SelectionKey key = it.next();
-                HttpConnection conn = (HttpConnection) key.attachment();
-                if (now - conn.lastReceivedNS >= TIMEOUT_PERIOD_ms * 1_000_000L) {
-                    key.attach(null);
-                    key.cancel();
-                    conn.timeout();
-                }
-            }
+			for (SelectionKey key : selector.keys()) {
+				HttpConnection conn = (HttpConnection) key.attachment();
+				if (now - conn.lastReceivedNS >= TIMEOUT_PERIOD_ms * 1_000_000L) {
+					key.attach(null);
+					key.cancel();
+					conn.timeout();
+				}
+			}
         }
 
         {

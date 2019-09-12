@@ -235,8 +235,8 @@ public class MLP2 {
 	
 	public void setLayer(int layerIndex, float[][] weight){
 	    for (int i = 0; i < layer[layerIndex].size; i++)
-		    for (int j = 0; j < layer[layerIndex + 1].size; j++)
-		        layer[layerIndex].weight[i][j] = weight[i][j];
+			if (layer[layerIndex + 1].size >= 0)
+				System.arraycopy(weight[i], 0, layer[layerIndex].weight[i], 0, layer[layerIndex + 1].size);
 	}
 	
 	// +-------------------+
@@ -370,12 +370,10 @@ public class MLP2 {
 	// +---------------------+
 
 	public float StochasticLearning(float[] Input, float[] ExpectedOutput){
-		for (int i = 0; i < layer[0].size; i++)
-			layer[0].out[i] = Input[i];
+		if (layer[0].size >= 0) System.arraycopy(Input, 0, layer[0].out, 0, layer[0].size);
 
 		int nLayers = layer.length;
-		for (int i = 0; i < layer[nLayers - 1].size; i++)
-			Expected[i] = ExpectedOutput[i];
+		if (layer[nLayers - 1].size >= 0) System.arraycopy(ExpectedOutput, 0, Expected, 0, layer[nLayers - 1].size);
 		
 		for (int i = 0; i < nLayers - 1; i++) {
 			for (int j = 0; j < layer[i].size; j++) {
@@ -443,11 +441,10 @@ public class MLP2 {
 	        float ReconstructionError = 0.0f;
 	        
 	        for (int sample = 0; sample < nSamples; sample++){
-	            for (int i = 0; i < layer[0].size; i++)
-			        layer[0].out[i] = Input[sample][i];
+				if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 
-		        for (int i = 0; i < layer[nLayers - 1].size; i++)
-			        Expected[i] = ExpectedOutput[sample][i];
+				if (layer[nLayers - 1].size >= 0)
+					System.arraycopy(ExpectedOutput[sample], 0, Expected, 0, layer[nLayers - 1].size);
 			        
 			    Perceptron();
 			    ReconstructionError += SquareError();
@@ -478,7 +475,7 @@ public class MLP2 {
 	// | Batch learning with new setups for learning rate, regularization parameter and file name to save weights |
 	// +----------------------------------------------------------------------------------------------------------+
 	
-	public float BatchLearning(int nSamples, float[][] Input, float[][] ExpectedOutput, float LearningRate, float Lambda, String WeightsFileName) throws IOException {
+	public float BatchLearning(int nSamples, float[][] Input, float[][] ExpectedOutput, float LearningRate, float Lambda, String WeightsFileName) {
 	    this.LearningRate = LearningRate;
 	    this.Lambda = Lambda;
 	    
@@ -493,13 +490,12 @@ public class MLP2 {
 	    float ReconstructionError = 0.0f;
 		int nLayers = layer.length;
 	    for (int sample = 0; sample < nSamples; sample++){
-	        for (int i = 0; i < layer[0].size; i++)
-			    layer[0].out[i] = Input[sample][i];
+			if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 			        
 			Perceptron();
 
-			for (int i = 0; i < layer[nLayers - 1].size; i++)
-			    Expected[i] = ExpectedOutput[sample][i];
+			if (layer[nLayers - 1].size >= 0)
+				System.arraycopy(ExpectedOutput[sample], 0, Expected, 0, layer[nLayers - 1].size);
 			    
 			ReconstructionError += SquareError();
 	    }
@@ -512,15 +508,14 @@ public class MLP2 {
 	// +--------------------------------+
 	
 	public void Predict(float[] Input, float[] PredictedOutput){
-		for (int i = 0; i < layer[0].size; i++)
-			layer[0].out[i] = Input[i];
+		if (layer[0].size >= 0) System.arraycopy(Input, 0, layer[0].out, 0, layer[0].size);
 		
 		Perceptron();
 
 		int nLayers = layer.length;
 
-		for (int i = 0; i < layer[nLayers - 1].size; i++)
-			PredictedOutput[i] = layer[nLayers - 1].out[i];
+		if (layer[nLayers - 1].size >= 0)
+			System.arraycopy(layer[nLayers - 1].out, 0, PredictedOutput, 0, layer[nLayers - 1].size);
 	}
 	
 	// +-------------------------------------------------------------+
@@ -530,16 +525,14 @@ public class MLP2 {
 	public float Predict(float[] Input, float[] ExpectedOutput, float[] PredictedOutput){
 		int nLayers = layer.length;
 
-		for (int i = 0; i < layer[0].size; i++)
-			layer[0].out[i] = Input[i];
+		if (layer[0].size >= 0) System.arraycopy(Input, 0, layer[0].out, 0, layer[0].size);
 		
 		Perceptron();
 
-		for (int i = 0; i < layer[nLayers - 1].size; i++)
-			PredictedOutput[i] = layer[nLayers - 1].out[i];
+		if (layer[nLayers - 1].size >= 0)
+			System.arraycopy(layer[nLayers - 1].out, 0, PredictedOutput, 0, layer[nLayers - 1].size);
 
-	    for (int i = 0; i < layer[nLayers - 1].size; i++)
-		    Expected[i] = ExpectedOutput[i];
+		if (layer[nLayers - 1].size >= 0) System.arraycopy(ExpectedOutput, 0, Expected, 0, layer[nLayers - 1].size);
 		    
 		return SquareError();
 	}
@@ -552,13 +545,12 @@ public class MLP2 {
 		int nLayers = layer.length;
 
 		for (int sample = 0; sample < nSamples; sample++){
-	        for (int i = 0; i < layer[0].size; i++)
-			    layer[0].out[i] = Input[sample][i];
+			if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 		
 		    Perceptron();
 
-		    for (int i = 0; i < layer[nLayers - 1].size; i++)
-			    PredictedOutput[sample][i] = layer[nLayers - 1].out[i];
+			if (layer[nLayers - 1].size >= 0)
+				System.arraycopy(layer[nLayers - 1].out, 0, PredictedOutput[sample], 0, layer[nLayers - 1].size);
 	    }
 	}
 	
@@ -570,16 +562,15 @@ public class MLP2 {
 	    float ReconstructionError = 0.0f;
 	    int nLayers = layer.length;
 	    for (int sample = 0; sample < nSamples; sample++){
-	        for (int i = 0; i < layer[0].size; i++)
-			    layer[0].out[i] = Input[sample][i];
+			if (layer[0].size >= 0) System.arraycopy(Input[sample], 0, layer[0].out, 0, layer[0].size);
 		
 		    Perceptron();
 
-		    for (int i = 0; i < layer[nLayers - 1].size; i++)
-			    PredictedOutput[sample][i] = layer[nLayers - 1].out[i];
+			if (layer[nLayers - 1].size >= 0)
+				System.arraycopy(layer[nLayers - 1].out, 0, PredictedOutput[sample], 0, layer[nLayers - 1].size);
 
-			for (int i = 0; i < layer[nLayers - 1].size; i++)
-		        Expected[i] = ExpectedOutput[sample][i];
+			if (layer[nLayers - 1].size >= 0)
+				System.arraycopy(ExpectedOutput[sample], 0, Expected, 0, layer[nLayers - 1].size);
 		        
 		    ReconstructionError += SquareError();
 	    }

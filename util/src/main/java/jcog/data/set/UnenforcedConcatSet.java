@@ -77,7 +77,7 @@ public class UnenforcedConcatSet<X> extends AbstractSet<X> {
         boolean aEmpty = a == null || a.isEmpty();
         boolean bEmpty = b == null || b.isEmpty();
         if (bEmpty && aEmpty) {
-            nextFree = Collections.EMPTY_SET;
+            nextFree = Collections.emptySet();
         } else if (bEmpty) {
             nextFree = a;
         } else if (aEmpty) {

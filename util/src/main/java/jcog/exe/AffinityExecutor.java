@@ -182,6 +182,6 @@ public class AffinityExecutor implements Executor {
     }
 
     public long[] threadIDs() {
-        return threads.stream().mapToLong(t -> t.getId()).toArray();
+        return threads.stream().mapToLong(Thread::getId).toArray();
     }
 }

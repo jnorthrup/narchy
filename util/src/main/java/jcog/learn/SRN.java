@@ -1,5 +1,6 @@
 package jcog.learn;
 
+import java.util.Arrays;
 import java.util.Random;
 
 /**
@@ -113,9 +114,7 @@ public class SRN  {
     }
 
     protected void clear(double[] array) {
-        for (int i = 0; i < array.length; i++) {
-            array[i] = 0;
-        }
+		Arrays.fill(array, 0);
     }
 
     protected void tanh(double[] array) {

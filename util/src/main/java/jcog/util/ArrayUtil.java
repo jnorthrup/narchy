@@ -1199,8 +1199,9 @@ public enum ArrayUtil {
     public static void reverse(final int[] a) {
         int l = a.length;
         switch (l) {
-            case 0: break;
-            case 1: break;
+            case 0:
+            case 1:
+                break;
             case 2: {
                 int i = a[0];
                 a[0] = a[1];
@@ -1312,7 +1313,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         boolean tmp;
         while (j > i) {
@@ -1342,7 +1343,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         byte tmp;
         while (j > i) {
@@ -1372,7 +1373,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         char tmp;
         while (j > i) {
@@ -1402,7 +1403,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         double tmp;
         while (j > i) {
@@ -1432,7 +1433,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         float tmp;
         while (j > i) {
@@ -1462,7 +1463,7 @@ public enum ArrayUtil {
         if (array == null || array.length <= 1 || (endIndexExclusive - startIndexInclusive <= 1)) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         int tmp;
         while (j > i) {
@@ -1520,7 +1521,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         Object tmp;
         while (j > i) {
@@ -1550,7 +1551,7 @@ public enum ArrayUtil {
         if (array == null) {
             return;
         }
-        int i = startIndexInclusive < 0 ? 0 : startIndexInclusive;
+        int i = Math.max(startIndexInclusive, 0);
         int j = Math.min(array.length, endIndexExclusive) - 1;
         short tmp;
         while (j > i) {

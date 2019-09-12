@@ -363,8 +363,7 @@ public class ClassReloader extends ClassLoader {
     }
 
     private ClassReloader cleanReloader() {
-        Set<String> childReloadableCache = new TreeSet<String>();
-        childReloadableCache.addAll(this.reloadableCache);
+        Set<String> childReloadableCache = new TreeSet<String>(this.reloadableCache);
         ClassLoader firstClassloader = getFirstClassLoader();
         ClassReloader cleanSlate = new ClassReloader(this.classpath, firstClassloader, childReloadableCache, this.specificClassPaths);
         cleanSlate.reloadersCreated = 1;
@@ -529,7 +528,7 @@ public class ClassReloader extends ClassLoader {
 
     protected Class<?> loadAgain(String s) throws ClassNotFoundException {
         Class<?> clazz = null;
-        if (classExist(s, this.classpath.toArray(new String[this.classpath.size()]))) {
+        if (classExist(s, this.classpath.toArray(new String[0]))) {
             clazz = findClass(s);
         } else {
             clazz = loadClassAsReloadable(s);
@@ -563,8 +562,7 @@ public class ClassReloader extends ClassLoader {
         if (this.reloadersCreated == ClassReloader.MAX_RELOADERS_BEFORE_CLEANING) {
             return this.cleanReloader();
         } else {
-            Set<String> childReloadableCache = new TreeSet<String>();
-            childReloadableCache.addAll(this.reloadableCache);
+            Set<String> childReloadableCache = new TreeSet<String>(this.reloadableCache);
             return new ClassReloader(this.classpath, this, childReloadableCache, this.specificClassPaths);
         }
     }

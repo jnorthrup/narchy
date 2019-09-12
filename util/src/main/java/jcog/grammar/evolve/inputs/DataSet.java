@@ -250,8 +250,8 @@ public class DataSet implements Serializable {
             
             int charMargin = (int) Math.max(((match.size() * marginSize) / 2.0),1.0);
             Bounds grownMatch = new Bounds(match.start - charMargin, match.end + charMargin);
-            grownMatch.start = (grownMatch.start >= 0) ? grownMatch.start:0;
-            grownMatch.end = (grownMatch.end <= example.getNumberOfChars()) ? grownMatch.end : example.getNumberOfChars();
+            grownMatch.start = Math.max(grownMatch.start, 0);
+            grownMatch.end = Math.min(grownMatch.end, example.getNumberOfChars());
             savedBounds.add(grownMatch);
         }
         

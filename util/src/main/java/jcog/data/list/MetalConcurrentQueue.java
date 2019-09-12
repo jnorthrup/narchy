@@ -172,7 +172,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
         return i(x, length());
     }
 
-    public int i(int x, int cap) {
+    public static int i(int x, int cap) {
         return (int)( (1L + x + Integer.MAX_VALUE) % cap);
     }
 

@@ -1,6 +1,5 @@
 package jcog.math;
 
-import jcog.Util;
 import org.eclipse.collections.impl.block.factory.Comparators;
 import org.jetbrains.annotations.Nullable;
 
@@ -68,7 +67,8 @@ public class Longerval implements LongInterval, Comparable<Longerval> {
 
     @Override
     public int hashCode() {
-        return Util.hashCombine(start, end);
+        //return Util.hashCombine(start, end);
+        throw new UnsupportedOperationException();
     }
 
     public Longerval union(Longerval other) {

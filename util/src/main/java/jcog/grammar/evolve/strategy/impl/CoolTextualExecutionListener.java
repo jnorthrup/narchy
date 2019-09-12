@@ -108,12 +108,12 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
         } else {
             System.out.printf("[%s] %.2f%%  | %d/%d | ETA: %s\n", progress(doneAll), percAll, jobDone, jobTotal, eta);
         }
-        for (Integer jobId : screen.keySet()) {
+        for (Map.Entry<Integer, String> entry : screen.entrySet()) {
             String color = "";
-            if (remove.contains(jobId)) {
+            if (remove.contains(entry.getKey())) {
                 color = ANSI_GREEN;
             }
-            System.out.println(color + screen.get(jobId) + ANSI_RESET);
+            System.out.println(color + entry.getValue() + ANSI_RESET);
         }
 
         System.out.println("Best: " + ANSI_GREEN + printRegex(best.getSolution()) + ANSI_RESET);
@@ -238,15 +238,11 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     private String progress(int done) {
         StringBuilder builder = new StringBuilder();
 
-        for (int i = 0; i < done; i++) {
-            builder.append('=');
-        }
+        builder.append("=".repeat(Math.max(0, done)));
 
         if (done < 20) {
             builder.append('>');
-            for (int i = 19; i > done; i--) {
-                builder.append(' ');
-            }
+            builder.append(" ".repeat(Math.max(0, 19 - done)));
         }
 
         return builder.toString();

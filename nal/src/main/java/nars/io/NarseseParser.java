@@ -813,7 +813,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
             } else if (p instanceof Term) {
                 if (p == Bool.Null) {
                     stack.clear();
-                    return new FasterList(1).addingAll(Bool.Null);
+                    return NullList;
                 }
                 tt.add((Term) p);
             } else if (p instanceof Op) {
@@ -830,6 +830,7 @@ public class NarseseParser extends BaseParser<Object> implements Narsese.INarses
         return tt;
     }
 
+    private static final FasterList<Term> NullList = new FasterList<Term>(1).addingAll(Bool.Null);
 
     /**
      * whitespace, optional

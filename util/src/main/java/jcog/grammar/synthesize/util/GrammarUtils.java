@@ -301,7 +301,7 @@ public class GrammarUtils {
         @Override
         public Set<V> get(Object k) {
             Set<V> vSet = super.get(k);
-            return vSet == null ? Collections.EMPTY_SET : vSet;
+            return vSet == null ? Collections.emptySet() : vSet;
         }
     }
 

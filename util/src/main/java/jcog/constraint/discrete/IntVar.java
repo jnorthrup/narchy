@@ -273,9 +273,9 @@ public abstract class IntVar {
         Arrays.sort(domain);
         StringBuilder bf = new StringBuilder("{");
         for (int i = 0; i < domain.length - 1; i++) {
-            bf.append(domain[i] + ", ");
+            bf.append(domain[i]).append(", ");
         }
-        bf.append(domain[domain.length - 1] + "}");
+        bf.append(domain[domain.length - 1]).append("}");
         return bf.toString();
     }
 }

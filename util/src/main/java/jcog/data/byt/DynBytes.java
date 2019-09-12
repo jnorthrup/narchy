@@ -290,7 +290,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
         this.len = s;
     }
 
-    public int writeInt(int v, byte[] e, int s) {
+    public static int writeInt(int v, byte[] e, int s) {
         e[s++] = (byte) (v >> 24);
         e[s++] = (byte) (v >> 16);
         e[s++] = (byte) (v >> 8);

@@ -151,7 +151,7 @@ public class CountMinSketch {
     }
 
     public void add(byte val) {
-        add(val);
+        add(new byte[] { val });
     }
 
     public void add(short val) {

@@ -191,12 +191,7 @@ public class Utils {
 
     
     public static void removeEmptyExtractions(List<DataSet.Bounds> extractions) {
-        for (Iterator<Bounds> it = extractions.iterator(); it.hasNext();) {
-            Bounds bounds = it.next();
-            if (bounds.size() == 0) {
-                it.remove();
-            }
-        }
+		extractions.removeIf(bounds -> bounds.size() == 0);
     }
 
     public static void saveFile(String text, String pathOfFile) {
