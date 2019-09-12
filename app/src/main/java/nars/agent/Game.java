@@ -39,6 +39,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -327,8 +328,13 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return rewardNormalized(rewardTerm(reward), min, max, rewardFunc);
     }
 
+
     public SimpleReward reward(Term reward, float freq, FloatSupplier rewardFunc) {
-        SimpleReward r = new SimpleReward(reward, freq, rewardFunc, this);
+        return reward(reward, freq, nar().confDefault(GOAL), rewardFunc);
+    }
+
+    public SimpleReward reward(Term reward, float freq, float conf, FloatSupplier rewardFunc) {
+        SimpleReward r = new SimpleReward(reward, freq, conf, rewardFunc, this);
 //        r.addGuard(
 //            NAL.DEBUG,false
 //            //true,false

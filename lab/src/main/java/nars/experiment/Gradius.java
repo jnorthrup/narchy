@@ -156,7 +156,7 @@ public class Gradius extends GameX {
         });
         //alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()));
 
-        Reward destroy = reward("destroy", 0.75f, ()->{
+        Reward destroy = reward(rewardTerm("destroy"), 1, 0.75f, ()->{
 
             if (g.paused) return Float.NaN;
 

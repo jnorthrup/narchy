@@ -13,10 +13,9 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     void goal_decomposition_1_union() {
         test.termVolMax(8);
-
         test.input("(x --> (bird | swimmer))! %0.9;0.9%");
         test.input("(x --> swimmer). %0.1;0.9%");
-        test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
+        test.mustGoal(cycles, "(x --> bird)", 0.91f, 0.66f);
     }
 //    @Test
 //    void goal_decomposition_1b() {

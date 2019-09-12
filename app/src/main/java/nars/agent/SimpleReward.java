@@ -18,12 +18,12 @@ public class SimpleReward extends ScalarReward {
     private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
     private final FloatSupplier rewardFunc;
 
-    public SimpleReward(Term id, float freq, FloatSupplier r, Game a) {
-        this(id, freq, r, true, a);
+    public SimpleReward(Term id, float freq, float conf, FloatSupplier r, Game a) {
+        this(id, freq, conf, r, true, a);
     }
 
-    public SimpleReward(Term id, float freq, FloatSupplier r, boolean stamped, Game a) {
-        super(id, freq, stamped, a);
+    public SimpleReward(Term id, float freq, float conf, FloatSupplier r, boolean stamped, Game a) {
+        super(id, freq, conf, stamped, a);
 
         this.rewardFunc = r;
 //        TermLinker linker = new TemplateTermLinker((TemplateTermLinker) TemplateTermLinker.of(id)) {

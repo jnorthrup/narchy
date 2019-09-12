@@ -84,9 +84,6 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
     }
 
-    public void alwaysWantEternally(Termed goal, float freq, boolean stamped) {
-        alwaysWantEternally(goal, freq, nar().confDefault(GOAL), stamped);
-    }
 
     public void alwaysWantEternally(Termed g, float freq, float conf, boolean stamped) {
         Term goal = g.term();

@@ -20,19 +20,21 @@ abstract public class ScalarReward extends Reward {
 
     /** target freq */
     protected final float freq;
+    private final float conf;
 
     boolean negate;
     protected transient volatile float reward = Float.NaN;
 
-    ScalarReward(Term id, float freq, boolean stamped, Game g) {
+    ScalarReward(Term id, float freq, float conf, boolean stamped, Game g) {
         super(id, g);
         this.id = id;
         this.freq = freq;
+        this.conf = conf;
         negate = id.op()==NEG;
         concept = newConcept();
-        if (concept == null)
-            throw new NullPointerException("concept null for target: " + id);
-        alwaysWantEternally(concept, freq, stamped);
+//        if (concept == null)
+//            throw new NullPointerException("concept null for target: " + id);
+        alwaysWantEternally(concept, freq, conf, stamped);
     }
 
     @Override

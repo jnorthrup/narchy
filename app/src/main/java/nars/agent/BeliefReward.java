@@ -5,10 +5,12 @@ import jcog.math.FloatRange;
 import nars.concept.sensor.Signal;
 import nars.term.Term;
 
+import static nars.Op.GOAL;
+
 public class BeliefReward extends ScalarReward {
 
     public BeliefReward(Term id, Game g) {
-        super(id, 1f, true, g);
+        super(id, 1f, g.nar().confDefault(GOAL), true, g);
     }
 
     @Override

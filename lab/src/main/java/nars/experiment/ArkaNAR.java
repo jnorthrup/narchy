@@ -11,6 +11,7 @@ import nars.GameX;
 import nars.NAR;
 import nars.agent.GameTime;
 import nars.agent.NAct;
+import nars.agent.SimpleReward;
 import nars.agent.util.RLBooster;
 import nars.concept.sensor.AbstractSensor;
 import nars.gui.NARui;
@@ -198,9 +199,11 @@ public class ArkaNAR extends GameX {
 
         onFrame(noid::next);
 
-        reward("die", 0, () -> {
+        SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> {
             return Math.min(1, noid.die - noid.prevDie);
         });
+        dontDie.addGuard(true,false);
+
         reward("score",  () -> {
             return Math.min(1, noid.score - noid.prevScore);
         });
