@@ -306,11 +306,6 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
 
     @Override
-    public final boolean isLeaf() {
-        return true;
-    }
-
-    @Override
     public final void forEach(Consumer<? super X> consumer) {
 //        short s = this.size;
 //        if (s > 0) {

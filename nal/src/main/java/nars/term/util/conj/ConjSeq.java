@@ -112,11 +112,11 @@ public enum ConjSeq { ;
         Subterms xx = x.subterms();
         return xx.hasAny(CONJ) && //inner conjunction
                 xx.subs() == 2 &&
-                xx.count(Conj::isSeq) == 1
+                xx.countEquals(Conj::isSeq, 1)
                 && (!xx.hasAny(NEG)
                         ||
                         /** TODO weird disjunctive seq cases */
-                        xx.count(xxx -> xxx instanceof Neg && xxx.unneg().op() == CONJ) == 0)
+                        xx.countEquals(xxx -> xxx instanceof Neg && xxx.unneg().opID() == CONJ.id, 0))
                 ;
     }
 

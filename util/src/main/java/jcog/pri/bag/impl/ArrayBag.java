@@ -154,7 +154,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                 return false;
 
             Y removed = a.removeLast();
-            //assert (removed == lastToRemove);
+            assert (removed == lastToRemove);
             //if (!removed) throw new WTF(); //assert(removed);
 
             removeFromMap(lastToRemove);

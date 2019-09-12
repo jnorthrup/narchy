@@ -79,10 +79,6 @@ public final class CounterRNode<X> implements RNode<X> {
         return node.iterateNodes();
     }
 
-    @Override
-    public boolean isLeaf() {
-        return this.node.isLeaf();
-    }
 
     @Override
     public HyperRegion bounds() {

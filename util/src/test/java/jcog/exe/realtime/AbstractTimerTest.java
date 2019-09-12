@@ -5,6 +5,8 @@ import jcog.Texts;
 import jcog.Util;
 import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -354,25 +356,28 @@ abstract class AbstractTimerTest {
         int scheduledTasks =
                 
                 
-                500;
+                30;
 
-        final BlockingQueue<Long> queue = new LinkedBlockingQueue<>();
+        final SummaryStatistics queue = new SynchronizedSummaryStatistics();
 
         for (int i = 0; i < scheduledTasks; i++) {
             final long start = System.nanoTime();
 
             timer.schedule(() -> {
                 long ms = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
-                queue.add(ms);
+                //System.out.println(ms);
+                queue.addValue(ms);
             }, delayTime, TimeUnit.MILLISECONDS);
         }
 
-        for (int i = 0; i < scheduledTasks; i++) {
-            long delay = queue.take();
-            System.out.println(i + " " + delay);
-            assertTrue(delay >= delayTime - tolerance && delay <= delayTime + tolerance,
-                    () -> "Timeout + " + scheduledTasks + " delay must be " + delayTime + " < " + delay + " < " + maxTimeout);
-        }
+        while (queue.getN() < scheduledTasks)
+            Util.sleepMS(delayTime/2);
+
+        double delay = queue.getMean();
+
+        assertTrue(delay >= delayTime - tolerance && delay <= delayTime + tolerance,
+                () -> "Timeout + " + scheduledTasks + " delay must be " + delayTime + " < " + delay + " < " + maxTimeout);
+
     }
 
 }

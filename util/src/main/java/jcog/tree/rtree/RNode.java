@@ -31,10 +31,6 @@ import java.util.stream.Stream;
  * Created by jcairns on 4/30/15.
  */
 public interface RNode<X> extends Nodelike<X> {
-    /**
-     * @return boolean - true if this node is a leaf
-     */
-    boolean isLeaf();
 
     /** recursively */
     Stream<X> streamValues();

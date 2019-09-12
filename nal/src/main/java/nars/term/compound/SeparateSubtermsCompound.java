@@ -140,17 +140,17 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public Stream<Term> subStream() {
+    public final Stream<Term> subStream() {
         return subterms().subStream();
     }
 
     @Override
-    public int count(Op matchingOp) {
+    public final int count(Op matchingOp) {
         return subterms().count(matchingOp);
     }
 
     @Override
-    public int count(Predicate<Term> match) {
+    public final int count(Predicate<Term> match) {
         return subterms().count(match);
     }
 

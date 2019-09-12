@@ -27,7 +27,6 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import static nars.Op.CONJ;
-import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -236,13 +235,13 @@ public enum Terms {
 		return subterms.hasAny(Op.NEG) && subterms.AND((Term t) -> t instanceof Neg);
 	}
 
-	public static int countNegated(Subterms subterms) {
-		return subterms.hasAny(Op.NEG) ? subterms.count(NEG) : 0;
-	}
-
-	public static int negatedCount(Subterms subterms) {
-		return subterms.hasAny(Op.NEG) ? subterms.count(x -> x instanceof Neg) : 0;
-	}
+//	public static int countNegated(Subterms subterms) {
+//		return subterms.hasAny(Op.NEG) ? subterms.count(NEG) : 0;
+//	}
+//
+//	public static int negatedCount(Subterms subterms) {
+//		return subterms.hasAny(Op.NEG) ? subterms.count(x -> x instanceof Neg) : 0;
+//	}
 
 	public static int negatedNonConjCount(Subterms subterms) {
 		return subterms.hasAny(Op.NEG) ? subterms.count(x -> x instanceof Neg && !x.subterms().hasAny(CONJ)) : 0;

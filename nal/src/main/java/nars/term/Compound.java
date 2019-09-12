@@ -512,8 +512,8 @@ public interface Compound extends Term, IPair, Subterms {
 
         boolean decompose;
         int dt;
-        Op o = op();
-        if (o != CONJ) {
+
+        if (opID() != CONJ.id) {
             decompose = false;
             dt = DTERNAL;
         } else {

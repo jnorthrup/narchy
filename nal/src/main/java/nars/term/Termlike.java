@@ -129,7 +129,25 @@ public interface Termlike {
      * counts subterms matching the predicate
      */
     default int count(Predicate<Term> match) {
-        return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
+        //return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
+        int n = subs();
+        int c = 0;
+        for (int i = 0; i < n; i++)
+            if (match.test(sub(i))) c++;
+        return c;
+    }
+    default boolean countEquals(Predicate<Term> match, int n) {
+        int s = subs();
+        if (n > s) return false; //impossible
+        int c = 0;
+        for (int i = 0; i < s; i++) {
+            if (match.test(sub(i))) {
+                c++;
+                if (c > n)
+                    return false;
+            }
+        }
+        return c == n;
     }
 
     /**

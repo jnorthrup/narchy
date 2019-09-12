@@ -86,17 +86,13 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
      * @param n node to be added (can be leaf or branch)
      * @return position of the added node
      */
-    private void addChild(final RNode<X> n) {
+    private void addChild(final RInsertion<X> x) {
+        RNode<X> n = x.model.newLeaf().insert(x);
         data[this.size++] = n;
         HyperRegion b = this.bounds;
         HyperRegion nb = n.bounds();
         this.bounds = b==null ? nb : Util.maybeEqual(b, b.mbr(nb));
-    }
-
-
-    @Override
-    public final boolean isLeaf() {
-        return false;
+        //grow(x.bounds);
     }
 
 
@@ -152,8 +148,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         int l = data.length;
         if (size < l) {
 
-            addChild(x.model.newLeaf().insert(x));
-            grow(x.bounds);
+            addChild(x);
 
         } else {
 
@@ -171,10 +166,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
             //inline
 
             RNode bl;
-            if (size < l && nextBest.size() == 2 && !nextBest.isLeaf()) {
+            if (!(nextBest instanceof RLeaf) && size < l && nextBest.size() == 2) {
                 RNode[] bc = ((RBranch<X>) nextBest).data;
-                bl = bc[0];
                 data[size++] = bc[1];
+                bl = bc[0];
             } else {
                 bl = nextBest;
             }
@@ -197,13 +192,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         for (int i = 0; i < nsize; i++) {
             RNode<X> nBefore = data[i];
 
-//            int rBefore = removed[0];
-
             @Nullable RNode<X> nAfter = nBefore.remove(x, xBounds, model, removed);
-
-//            int rAfter = removed[0];
-//            if (nAfter!=null && nAfter.size()==0)
-//                throw new WTF();
 
             if (nAfter!=nBefore) {
                 data[i] = nAfter;
@@ -218,13 +207,15 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
                         RNode<X> only = firstNonNull();
                         size = 0;
                         return only;
+                    } else {
+
+                        //sort nulls to end
+                        if (i < size) {
+                            arraycopy(data, i + 1, data, i, size - i);
+                            data[size] = null;
+                        }
                     }
 
-                    //sort nulls to end
-                    if (i < size) {
-                        arraycopy(data, i+1, data, i, size-i);
-                        data[size] = null;
-                    }
                 }
 
                 if (nAfter instanceof RLeaf) {
@@ -265,11 +256,12 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         }
 
         FasterList<X> xx = new FasterList<>(childItems);
+        Consumer<X> adder = xx::addWithoutResize;
         for (int i = 0, dataLength = data.length; i < dataLength; i++) {
             RNode<X> x = data[i];
             if (x == null) break;
             if (!(x instanceof RLeaf)) continue;
-            x.forEach(xx::addWithoutResize);
+            x.forEach(adder);
             data[i] = null;
             size--;
         }
@@ -287,9 +279,9 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         }
 
 
-        for (X xxx : xx) {
+        for (X xxx : xx)
             target = reinsert(xxx, target, model, removed);
-        }
+
         return target;
 
     }

@@ -52,9 +52,9 @@ public class RankedN<X> extends TopN<X> {
     @Override
     protected int addAtIndex(int index, X element, float elementRank, int oldSize) {
         int i = super.addAtIndex(index, element, elementRank, oldSize);
-        if (i!=-1) {
+        if (i!=-1)
             insertValue(i, elementRank);
-        }
+
         return i;
     }
 

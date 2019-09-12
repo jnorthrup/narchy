@@ -115,12 +115,13 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
      * returns false if it could not be assigned (enabling callee fast-fail)
      */
     public final boolean is(Term x, Term y) {
-        if (x == Null || y == Null) return false;
 
         if (x.equals(y))
             return true;
 
-        if (y.containsRecursively(x))
+        if (x == Null || y == Null) return false;
+
+        if (y instanceof Compound && y.containsRecursively(x))
             return false; //loop
 
         boolean empty = v==null || v.size()==0;
@@ -134,15 +135,14 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
 
         if (!empty) {
             //replace existing subs
-            if (!subs.replace((sx, sy)-> !x.equals(sx) ? sy.replace(x, y) : sy)) {
+            if (!subs.replace((sx, sy)-> !x.equals(sx) ? sy.replace(x, y) : sy))
                 return false;
-            }
+
         } else {
             ensureReady();
         }
 
-        boolean set = subs.set(x, y);     assert(set);
-        return true;
+        return subs.set(x, y);     //assert(set); //return true;
     }
 
     /**

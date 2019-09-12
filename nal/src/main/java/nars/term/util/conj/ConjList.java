@@ -100,8 +100,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     public int[] contains(ConjList other, BiPredicate<Term,Term> equal, int maxLocations, boolean forward /* or reverse */, @Nullable MetalBitSet hit, int dtTolerance) {
         if (this == other) return new int[] { 0 };
 
-        int s = size();
-        int os = other.size();
+        int s = size;
+        int os = other.size;
         if (os > s) return EMPTY_INT_ARRAY;
         if (s == 0) return new int[] { 0 };
 
@@ -138,7 +138,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     private boolean containsRemainder(ConjList other, int start, boolean forward, BiPredicate<Term, Term> equal, @Nullable MetalBitSet hit, int dtTolerance) {
         if (hit!=null) hit.set(start);
 
-        int os = other.size();
+        int os = other.size;
         if (os == 1)
             return true; //already matched the first term
 
@@ -269,7 +269,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     @Override
     public Term term(TermBuilder B) {
-        int n = size();
+        int n = size;
         if (n == 0)
             return True;
 
@@ -582,16 +582,18 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
     boolean removeAllAt(int f, ConjList x) {
-        int xn = x.size();
+        int xn = x.size;
         boolean removed = false;
+        long[] ww = x.when;
+        Term[] ii = x.items;
         for (int i = 0; i < xn; i++) {
-            removed |= remove(x.when[i] + f, x.get(i));
+            removed |= remove(ww[i] + f, ii[i]);
         }
         return removed;
     }
 
     public long eventRange() {
-        int n = size();
+        int n = size;
         if (n <= 1)
             return 0;
         return when[n-1] - when[0];

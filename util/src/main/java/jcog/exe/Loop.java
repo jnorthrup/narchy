@@ -2,12 +2,14 @@ package jcog.exe;
 
 import jcog.Log;
 import jcog.exe.realtime.FixedRateTimedFuture;
+import jcog.exe.realtime.HashedWheelTimer;
 import org.slf4j.Logger;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import static java.util.concurrent.TimeUnit.NANOSECONDS;
 import static jcog.Texts.n2;
 
 
@@ -125,7 +127,9 @@ abstract public class Loop extends FixedRateTimedFuture {
             starting();
         }
 
-        Exe.timer().scheduleAtFixedRate(this, nextPeriodMS, TimeUnit.MILLISECONDS);
+        HashedWheelTimer t = Exe.timer();
+        init(NANOSECONDS.convert(nextPeriodMS, TimeUnit.MILLISECONDS), t.resolution, t.wheels);
+        t.reschedule(this);
     }
 
     private void _stop() {

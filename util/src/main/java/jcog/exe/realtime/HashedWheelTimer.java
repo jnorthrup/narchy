@@ -209,7 +209,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         r.cancel(false);
     }
 
-    protected final boolean reschedule(TimedFuture<?> r) {
+    public final boolean reschedule(TimedFuture<?> r) {
         assertRunning();
         int c = cursor();
         if (c >= 0) {
@@ -254,11 +254,6 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     public FixedRateTimedFuture scheduleAtFixedRate(Runnable runnable, long delayNS, long periodNS, TimeUnit unit) {
         return scheduleFixedRate(NANOSECONDS.convert(periodNS, unit), NANOSECONDS.convert(delayNS, unit),
                 runnable);
-    }
-
-    public void scheduleAtFixedRate(FixedRateTimedFuture f, long period, TimeUnit unit) {
-        f.init(NANOSECONDS.convert(period, unit), resolution, wheels);
-        reschedule(f);
     }
 
     @Override
@@ -368,10 +363,10 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
         long cycleLen = wheels * resolution;
-        int rounds = (int) (delayNS / cycleLen);
+        int rounds = (int) (((double)delayNS) / cycleLen);
         int firstFireOffset = Util.longToInt( delayNS - rounds * cycleLen );
 
-        return schedule(new OneTimedFuture(Math.max(1, firstFireOffset), rounds, callable));
+        return schedule(new OneTimedFuture(Math.max(0, firstFireOffset), rounds, callable));
     }
 
 

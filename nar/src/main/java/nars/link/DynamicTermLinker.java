@@ -37,7 +37,7 @@ public abstract class DynamicTermLinker implements TermLinker {
         if (u instanceof Img)
             return t; //HACK
 
-        u = u.unneg();
+            u = u.unneg();
         if (depthRemain <= 1 || !(u instanceof Compound) /* || !u.op().conceptualizable */)
             return u;
         else

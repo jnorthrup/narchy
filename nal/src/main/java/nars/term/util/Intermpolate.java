@@ -114,8 +114,13 @@ public enum Intermpolate {;
     }
 
     private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {
-        if (aProp < 0.5f-Float.MIN_NORMAL)
-            return intermpolateSeq(b, a, 1-aProp, nar);
+        if (aProp < 0.5f-Float.MIN_NORMAL) {
+            //swap so that a is the larger proportion
+            Compound c = a;
+            a = b;
+            b = c;
+            aProp = 1 - aProp;
+        }
 
         if (a.volume()!=b.volume())
             return Null; //is there a solution here?

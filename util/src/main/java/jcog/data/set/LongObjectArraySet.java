@@ -123,22 +123,26 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
     private int whenFirstCompare(int ia, int ib) {
         if (ia == ib) return 0;
-        X a = items[ia], b = items[ib];
-        int ab = Long.compare(when[ia], when[ib]);
-        if (ab == 0)
-            return ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
-        else
+        long[] ww = this.when;
+        int ab = Long.compare(ww[ia], ww[ib]);
+        if (ab != 0)
             return ab;
+
+        X[] ii = this.items;
+        X a = ii[ia], b = ii[ib];
+        return ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
     }
 
     private int valueFirstCompare(int ia, int ib) {
         if (ia == ib) return 0;
-        X a = items[ia], b = items[ib];
+        X[] ii = this.items;
+        X a = ii[ia], b = ii[ib];
         int ab = ((Comparable)a).compareTo(b); //TODO non-Comparable compare by obj identity
-        if (ab == 0)
-            return Long.compare(when[ia], when[ib]);
-        else
+        if (ab != 0)
             return ab;
+
+        long[] ww = when;
+        return Long.compare(ww[ia], ww[ib]);
     }
 
     @Override

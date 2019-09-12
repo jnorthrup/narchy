@@ -460,11 +460,11 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 //         * of these per duration. */
 //        private final AtomicReference<Runnable> next = new AtomicReference<>();
 
-        @Override
-        protected void starting() {
-            super.starting();
-//            on = view.nar.onDur(this::commit);
-        }
+//        @Override
+//        protected void starting() {
+//            super.starting();
+////            on = view.nar.onDur(this::commit);
+//        }
 
         @Override
         protected void stopping() {
