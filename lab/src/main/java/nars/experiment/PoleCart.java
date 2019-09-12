@@ -6,12 +6,14 @@ import jcog.Util;
 import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.learn.LivePredictor;
+import jcog.learn.ql.dqn3.DQN3;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.agent.Reward;
+import nars.agent.util.RLBooster;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.action.BiPolarAction;
@@ -32,6 +34,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
@@ -50,7 +53,9 @@ import static spacegraph.SpaceGraph.window;
 public class PoleCart extends GameX {
 
 
+	static final boolean rl = true;
 	static final boolean beliefPredict = false;
+	static final boolean impiler = false;
 	boolean speedControl = true;
 
 	private final DigitizedScalar xVel;
@@ -92,44 +97,57 @@ public class PoleCart extends GameX {
 							what
 						);
 					}
+					if (impiler) {
 
-                    Loop.of(() -> {
+						Loop.of(() -> {
 
-						Impiler.impile(what);
+							Impiler.impile(what);
 
-						for (Concept a : p.actions()) {
-							ImpilerDeduction d = new ImpilerDeduction(n);
-							@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term(), false);
-							if (dd!=null)
-							   a.meta("impiler", (Object)dd);
+							for (Concept a : p.actions()) {
+								ImpilerDeduction d = new ImpilerDeduction(n);
+								@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term(), false);
+								if (dd != null)
+									a.meta("impiler", (Object) dd);
 //							d.get(a.term(), n.time(), false).forEach(t -> {
 //								System.out.println(t);
 //								what.accept(t);
 //							});
-						}
-                    }).setFPS(1f);
-					n.onDur(()->{
-						double dur = n.dur()*3;
-						long now = n.time();
-						for (Concept a : p.actions()) {
-							LongToObjectFunction<Truth> dd = a.meta("impiler");
-							if (dd != null) {
-								for (int pp = 1; pp < 4; pp++) {
-									long w = Math.round(now + (2+pp) * dur);
-									Truth x = dd.apply(w);
-									if (x != null) {
-										//System.out.println(a.term() + "\t" + x);
-										n.want(n.priDefault(GOAL), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
+							}
+						}).setFPS(1f);
+						n.onDur(() -> {
+							double dur = n.dur() * 3;
+							long now = n.time();
+							for (Concept a : p.actions()) {
+								LongToObjectFunction<Truth> dd = a.meta("impiler");
+								if (dd != null) {
+									for (int pp = 1; pp < 4; pp++) {
+										long w = Math.round(now + (2 + pp) * dur);
+										Truth x = dd.apply(w);
+										if (x != null) {
+											//System.out.println(a.term() + "\t" + x);
+											n.want(n.priDefault(GOAL), a.term(), Math.round(w - dur), w, x.freq(), x.conf()); //HACK
+										}
 									}
 								}
 							}
-						}
-					});
+						});
+					}
 
+					if (rl) {
+
+						RLBooster bb = new RLBooster(p, (ii, o) ->
+							//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+							new DQN3(ii, o, Map.of(
+
+							)),
+							2, 3, false);
+						bb.conf.set(0.01f);
+						window(NARui.rlbooster(bb), 500, 500);
+
+					}
 					return p;
 				},
 				threadsEach, fps * 2, 8);
-
 
 
 	}
@@ -369,16 +387,6 @@ public class PoleCart extends GameX {
 
 //        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
-		{
-//        RLBooster bb = new RLBooster(this, (i, o) ->
-//                //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
-//                new DQN3(i, o, Map.of(
-//
-//                )),
-//                2, 3, false);
-//        bb.conf.set(0.01f);
-//        window(NARui.rlbooster(bb), 500, 500);
-		}
 
 		Exe.invokeLater(() ->
 			window(NARui.beliefCharts(nar, this.sensors.stream()

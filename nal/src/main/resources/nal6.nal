@@ -7,8 +7,9 @@
        //B, (X ==> A), --is(B,"==>") |- unisubst(X,A,B,"$"), (Goal:Post, Time:TaskImmediate)
          (X ==> A), B, --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeakX, Time:BeliefEvent)
 
-       //goal only:
-       B, (X ==> A), --is(X,"#"), --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
+       //anti-goal
+       B, (X ==> A),  --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
+        B, (X ==> A),  --is(B,"==>") |- unisubst((--X && --polarizeBelief(B)),A,B,"$"), (Goal:PostPN, Time:TaskEvent)
 
 
 
@@ -26,9 +27,12 @@
           B, (--A ==> C), task("?@"), --is(B,"==>")         |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
 
     //impl unify total transform (without decompose)
-    B, (X ==> A), --is(B,"==>"), is(A,"&&") |-   polarizeBelief(unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel)), (Belief:DeductionDD, Time:TaskEvent)
-    B, (A ==> X), --is(B,"==>"), is(A,"&&") |-   polarizeBelief(unisubst((A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel)), (Belief:DeductionDD, Time:TaskEvent)
-      B, (--A ==> X), --is(B,"==>"), is(A,"&&") |-   polarizeBelief(unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel)), (Belief:DeductionDD, Time:TaskEvent)
+    B, (X ==> A), --is(B,"==>"), is(A,"&&") |-   unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
+     B, (X ==> A), --is(B,"==>"), is(A,"&&") |-   --unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
+    B, (A ==> X), --is(B,"==>"), is(A,"&&") |-   unisubst((A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
+     B, (A ==> X), --is(B,"==>"), is(A,"&&") |-   --unisubst((A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
+      B, (--A ==> X), --is(B,"==>"), is(A,"&&") |-   unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
+       B, (--A ==> X), --is(B,"==>"), is(A,"&&") |-  --unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
 
 
         //antigoal:
@@ -40,7 +44,8 @@
 
 
        //second layer
-       B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,polarizeBelief(X),A..+),C,  polarizeTask(B),novel), (Belief:DeductionDD, Time:TaskEvent)
+       B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Goal:DeductionWeakDP, Time:TaskEvent)
+        B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Goal:DeductionWeakDN, Time:TaskEvent)
 
 
 //            //--is(A,"#"),
