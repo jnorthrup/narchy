@@ -1,6 +1,6 @@
 package nars.task.util;
 
-import jcog.data.list.FasterList;
+import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.PriMap;
@@ -15,10 +15,10 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
-import nars.time.Tense;
 
 import java.util.Iterator;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
@@ -31,90 +31,89 @@ import static jcog.pri.PriMap.newMap;
 abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> {
 
 
+	/**
+	 * returns
+	 * true if the implementation will manage async target suppliying,
+	 * false if it needs periodic flushing
+	 */
+	abstract public void start(ConsumerX<T> target, NAR nar);
+
+	public void stop() {
+	}
+
+	/**
+	 * returns the input task, or the existing task if a pending duplicate was present
+	 */
+	public abstract void put(T x);
 
 
-    /**
-     * returns
-     * true if the implementation will manage async target suppliying,
-     * false if it needs periodic flushing
-     */
-    abstract public boolean async(ConsumerX<T> target);
+	public abstract void clear();
 
-    /**
-     * returns the input task, or the existing task if a pending duplicate was present
-     */
-    public abstract void put(T x);
+	/**
+	 * known or estimated number of tasks present
+	 */
+	abstract public int size();
 
-    public abstract void commit(ConsumerX<T> target, NAR n);
+	abstract public int capacity();
 
-    public abstract void clear();
+	/**
+	 * estimate current utilization: size/capacity (as a value between 0 and 100%)
+	 */
+	public final float load() {
+		return ((float) size()) / capacity();
+	}
 
-    /**
-     * known or estimated number of tasks present
-     */
-    abstract public int size();
+	//TODO
+	//final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
 
-    abstract public int capacity();
-
-    /**
-     * estimate current utilization: size/capacity (as a value between 0 and 100%)
-     */
-    public final float load() {
-        return ((float)size()) / capacity();
-    }
-
-    //TODO
-    //final AtomicLong in = new AtomicLong(), out = new AtomicLong(), drop = new AtomicLong(), merge = new AtomicLong();
-
-    @Override
-    public final void accept(T task) {
-        put(task);
-    }
+	@Override
+	public final void accept(T task) {
+		put(task);
+	}
 
 
-    /**
-     * pass-thru, no buffering
-     */
-    public static class DirectTaskBuffer<T extends Prioritizable> extends PriBuffer<T> {
+	/**
+	 * pass-thru, no buffering
+	 */
+	public static class DirectTaskBuffer<T extends Prioritizable> extends PriBuffer<T> {
 
-        private Consumer<T> each = null;
+		private Consumer<T> each = null;
 
-        public DirectTaskBuffer() {
-        }
+		public DirectTaskBuffer() {
+		}
 
 
-        @Override
-        public final void put(T x) {
-            each.accept(x);
-        }
+		@Override
+		public final void put(T x) {
+			each.accept(x);
+		}
 
-        @Override
-        public boolean async(ConsumerX<T> target) {
-            each = target;
-            return true;
-        }
+		@Override
+		public void start(ConsumerX<T> target, NAR nar) {
+			each = target;
+		}
 
-        @Override
-        public void commit(ConsumerX<T> target, NAR n) {
+		@Override
+		public void stop() {
+			each = null;
+		}
 
-        }
+		@Override
+		public void clear() {
 
-        @Override
-        public void clear() {
+		}
 
-        }
+		@Override
+		public int size() {
+			return 0;
+		}
 
-        @Override
-        public int size() {
-            return 0;
-        }
+		@Override
+		public final int capacity() {
+			return Integer.MAX_VALUE;
+		}
 
-        @Override
-        public final int capacity() {
-            return Integer.MAX_VALUE;
-        }
-
-    }
+	}
 
 //    /**
 //     * TODO
@@ -129,124 +128,152 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 //
 //    }
 
-    /**
-     * buffers in a Map<> for de-duplication prior to a commit that flushes them as input to NAR
-     * does not obey adviced capacity
-     * TODO find old implementation and re-implement this
-     */
-    public static class MapTaskBuffer<X extends Task> extends PriBuffer<X> {
+	/**
+	 * buffers in a Map<> for de-duplication prior to a commit that flushes them as input to NAR
+	 * does not obey adviced capacity
+	 * TODO find old implementation and re-implement this
+	 */
+	public static class MapTaskBuffer<X extends Task> extends SyncPriBuffer<X> {
 
-        final AtomicLong hit = new AtomicLong(0), miss = new AtomicLong(0);
+		final AtomicLong hit = new AtomicLong(0), miss = new AtomicLong(0);
 
-        private final Map<X, X> tasks;
+		private final Map<X, X> tasks;
 
-        public MapTaskBuffer() {
-            tasks = newMap(true);
-        }
+		public MapTaskBuffer() {
+			tasks = newMap(true);
+		}
 
-        @Override
-        public int capacity() {
-            return Integer.MAX_VALUE;
-        }
+		@Override
+		public int capacity() {
+			return Integer.MAX_VALUE;
+		}
 
-        @Override
-        public void clear() {
-            tasks.clear();
-        }
+		@Override
+		public void clear() {
+			tasks.clear();
+		}
 
-        @Override
-        public int size() {
-            return tasks.size();
-        }
+		@Override
+		public int size() {
+			return tasks.size();
+		}
 
-        @Override
-        public final void put(X n) {
-            X p = tasks.putIfAbsent(n, n);
-            if (p != null) {
-                Task.merge(p, n);
-                hit.incrementAndGet();
-            } else {
-                miss.incrementAndGet();
-            }
-        }
+		@Override
+		public final void put(X n) {
+			X p = tasks.putIfAbsent(n, n);
+			if (p != null) {
+				Task.merge(p, n);
+				hit.incrementAndGet();
+			} else {
+				miss.incrementAndGet();
+			}
+		}
 
-        /**
-         * TODO time-sensitive
-         */
-        @Override
-        public void commit(ConsumerX<X> target, NAR n) {
-            Iterator<X> ii = tasks.values().iterator();
-            while (ii.hasNext()) {
-                X r = ii.next();
-                ii.remove();
-                target.accept(r);
-            }
-        }
+		/**
+		 * TODO time-sensitive
+		 */
+		@Override
+		public void commit() {
+			int num = tasks.size();
+			if (num > 0) {
+				Iterator<X> ii = tasks.values().iterator();
+				while (ii.hasNext()) {
+					X r = ii.next();
+					ii.remove();
+					target.accept(r);
+					if (--num <= 0)
+						break; //enough
+				}
+			}
+		}
 
-        @Override
-        public boolean async(ConsumerX<X> target) {
-            return false;
-        }
-    }
 
+	}
 
-    /**
-     * buffers and deduplicates in a Bag<Task,Task> allowing higher priority inputs to evict
-     * lower priority inputs before they are flushed.  commits involve a multi-thread shareable drainer task
-     * allowing multiple inputting threads to fill the bag, potentially deduplicating each's results,
-     * while other thread(s) drain it in prioritized order as input to NAR.
-     */
-    public static class BagTaskBuffer extends PriBuffer<Task> {
+	abstract public static class SyncPriBuffer<X extends Prioritizable> extends PriBuffer<X> {
+		protected ConsumerX<X> target;
+		private Off onCycle;
+		protected NAR nar;
 
-        public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
+		@Override
+		public void start(ConsumerX<X> target, NAR nar) {
+			synchronized (this) {
+				this.nar = nar;
+				this.target = target;
+				this.onCycle = nar.onCycle(this::commit);
+			}
+		}
 
-        /**
-         * perceptual valve
-         * dilation factor
-         * input rate
-         * tasks per cycle
-         */
-        public final FloatRange valve = new FloatRange(0.5f, 0, 1);
+		@Override
+		public final void stop() {
+			synchronized (this) {
+				this.onCycle.close();
+				this.onCycle = null;
+				this.target = null;
+				this.nar = null;
+			}
+		}
 
-        private transient long prev = Long.MIN_VALUE;
-        /**
-         * temporary buffer before input so they can be merged in case of duplicates
-         */
-        public final Bag<Task, Task> tasks;
+		abstract protected void commit();
+	}
 
-        @Override
-        public int capacity() {
-            return capacity.intValue();
-        }
+	/**
+	 * buffers and deduplicates in a Bag<Task,Task> allowing higher priority inputs to evict
+	 * lower priority inputs before they are flushed.  commits involve a multi-thread shareable drainer task
+	 * allowing multiple inputting threads to fill the bag, potentially deduplicating each's results,
+	 * while other thread(s) drain it in prioritized order as input to NAR.
+	 */
+	public static class BagTaskBuffer extends SyncPriBuffer<Task> {
 
-        {
-            final PriMerge merge = NAL.tasklinkMerge;
-            tasks = new SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
-                @Override
-                protected int histogramBins(int s) {
-                    return 0; //disabled
-                }
+		public final IntRange capacity = new IntRange(0, 0, 4 * 1024);
 
-                /**
-                 * merge in the pre-buffer
-                 */
-                @Override
-                protected float merge(Task existing, Task incoming, float incomingPri) {
-                    return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
-                }
+		/**
+		 * perceptual valve
+		 * dilation factor
+		 * input rate
+		 * tasks per cycle
+		 */
+		public final FloatRange valve = new FloatRange(0.5f, 0, 1);
 
-            },
-                    new PriMap<>(merge) {
-                        /**
-                         * merge in the post-buffer
-                         */
-                        @Override
-                        public float merge(Prioritizable existing, Task incoming, float pri, PriMerge merge) {
-                            return Task.merge((Task) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
-                        }
-                    }
-            );
-        }
+		private transient long prev = Long.MIN_VALUE;
+		/**
+		 * temporary buffer before input so they can be merged in case of duplicates
+		 */
+		public final Bag<Task, Task> tasks;
+
+		@Override
+		public int capacity() {
+			return capacity.intValue();
+		}
+
+		{
+			final PriMerge merge = NAL.tasklinkMerge;
+			tasks = new SimpleBufferedBag<>(new PriArrayBag<>(merge, 0) {
+				@Override
+				protected int histogramBins(int s) {
+					return 0; //disabled
+				}
+
+				/**
+				 * merge in the pre-buffer
+				 */
+				@Override
+				protected float merge(Task existing, Task incoming, float incomingPri) {
+					return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Overflow, true);
+				}
+
+			},
+				new PriMap<>(merge) {
+					/**
+					 * merge in the post-buffer
+					 */
+					@Override
+					public float merge(Prioritizable existing, Task incoming, float pri, PriMerge merge) {
+						return Task.merge((Task) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
+					}
+				}
+			);
+		}
 //                new PriArrayBag<ITask>(PriMerge.max, new HashMap()
 //                        //new UnifiedMap()
 //                ) {
@@ -256,99 +283,104 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 //                    }
 //                };
 
-        //new HijackBag...
+		//new HijackBag...
 
 
-        /**
-         * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
-         * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
-         */
-        public BagTaskBuffer(int capacity, float rate) {
-            this.capacity.set(capacity);
-            this.valve.set(rate);
-            this.tasks.setCapacity(capacity);
-        }
+		/**
+		 * @capacity size of buffer for tasks that have been input (and are being de-duplicated) but not yet input.
+		 * input may happen concurrently (draining the bag) while inputs are inserted from another thread.
+		 */
+		public BagTaskBuffer(int capacity, float rate) {
+			this.capacity.set(capacity);
+			this.valve.set(rate);
+			this.tasks.setCapacity(capacity);
+		}
 
 
-        @Override
-        public void clear() {
-            tasks.clear();
-        }
+		@Override
+		public void clear() {
+			tasks.clear();
+		}
 
 //        final AtomicBoolean busy = new AtomicBoolean(false);
 
-        @Override
-        public int size() {
-            return tasks.size();
-        }
-
-        @Override
-        public final boolean async(ConsumerX<Task> target) {
-            return false;
-        }
-
-        @Override
-        public void put(Task x) {
-            tasks.putAsync(x);
-        }
-
-        @Override
-        public void commit(ConsumerX<Task> target, NAR nar) {
-
-            long now = nar.time();
-            if (prev == Long.MIN_VALUE)
-                prev = now - 1;
-
-            long dt = now - prev;
-
-            prev = now;
-
-            Bag<Task, Task> b = this.tasks;
-
-            b.setCapacity(capacity.intValue());
-            b.commit(null);
-
-            int s = b.size();
-            if (s != 0) {
-                int n = Math.min(s, batchSize(Tense.occToDT(dt)/nar.dur()));
-                if (n > 0) {
-                    //TODO target.input(tasks, n, target.concurrency());
-
-                    int c = target.concurrency();
-                    if (c <= 1) {
-                        //one at a time
-                        b.pop(null, n, target);
-                    } else {
-                        //batch
-                        int remain = n;
-                        int nEach = (int) Math.ceil(((float) remain) / c);
-
-                        Consumer<FasterList<Task>> targetBatched = batch -> batch.forEach(target);
-
-                        for (int i = 0; i < c && remain > 0; i++) {
-                            int asked = Math.min(remain, nEach);
-                            remain -= asked;
-                            target.input(b, asked, nar.exe,
-                                targetBatched,
-                                NAL.PRE_SORT_TASK_INPUT_BATCH ? Task.sloppySorter : null
-                                );
-                        }
-                    }
-
-                }
-            }
+		@Override
+		public int size() {
+			return tasks.size();
+		}
 
 
-        }
+		@Override
+		public void put(Task x) {
+			tasks.putAsync(x);
+		}
+
+		@Override
+		public void start(ConsumerX<Task> target, NAR nar) {
+			prev = nar.time();
+			super.start(target, nar);
+		}
+
+		final AtomicInteger pending = new AtomicInteger();
+
+		@Override
+		public void commit() {
+
+			long now = nar.time();
+
+			long dt = now - prev;
+
+			prev = now;
+
+			Bag<Task, Task> b = this.tasks;
+
+			b.setCapacity(capacity.intValue());
+			b.commit(null);
+
+			int s = b.size();
+			if (s > 0) {
+				int cc = target.concurrency();
+				int toRun = cc - pending.getOpaque();
+				if (toRun >= 0) {
+					int n = Math.min(s, batchSize((((float) toRun) / cc) * dt / nar.dur()));
+					if (n > 0) {
+						//TODO target.input(tasks, n, target.concurrency());
 
 
-        /**
-         * TODO abstract
-         */
-        protected int batchSize(float durs) {
-            return (int) Math.ceil( Math.min(durs, 1f) * capacity() * valve.floatValue());
+						if (toRun == 1 || n <= 1) {
+							//one at a time
+							b.pop(null, n, target);
+						} else {
+							//batch
+							int remain = n;
+							int nEach = (int) Math.ceil(((float) remain) / toRun);
 
-            //rateControl.apply(tasks.size(), tasks.capacity());
+
+							for (int i = 0; i < toRun && remain > 0; i++) {
+								int asked = Math.min(remain, nEach);
+								remain -= asked;
+								target.input(b, asked, nar.exe,
+									asked > 2 && NAL.PRE_SORT_TASK_INPUT_BATCH ? Task.sloppySorter : null,
+									pending
+								);
+							}
+						}
+					}
+
+				}
+			}
+
+
+		}
+
+
+		/**
+		 * TODO abstract
+		 */
+		protected int batchSize(float durs) {
+			return (int) Math.ceil(Math.min(durs, 1f) * capacity() * valve.floatValue());
+
+			//rateControl.apply(tasks.size(), tasks.capacity());
 
 //            float v = valve.floatValue();
 //            if (v < ScalarValue.EPSILON)
@@ -357,10 +389,10 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 //                    //dt * v * tasks.capacity()
 //                    v * tasks.capacity()
 //            ));
-        }
+		}
 
 
-    }
+	}
 
 
 //    public static class BagPuncTasksBuffer extends TaskBuffer {

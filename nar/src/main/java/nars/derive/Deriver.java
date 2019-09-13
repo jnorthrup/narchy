@@ -160,11 +160,11 @@ public class Deriver extends How {
         return rules.pre.apply(d);
     }
 
-    public Term beliefTerm(Term b, AnonWithVarShift anon, Term taskTerm, Term beliefTerm, Random random) {
+    public Term beliefTerm(AnonWithVarShift anon, Term taskTerm, Term beliefTerm, Random random) {
 
 
         boolean shift, shiftRandomOrCompletely;
-        if (!b.hasAny(Op.Variable & taskTerm.structure())) {
+        if (!beliefTerm.hasAny(Op.Variable & taskTerm.structure())) {
             shift = shiftRandomOrCompletely = false; //unnecessary
         } else {
             if (beliefTerm.equalsRoot(taskTerm)) {
@@ -178,8 +178,8 @@ public class Deriver extends How {
         }
 
         return shift ?
-            anon.putShift(b, taskTerm, shiftRandomOrCompletely ? random : null) :
-            anon.put(b);
+            anon.putShift(beliefTerm, taskTerm, shiftRandomOrCompletely ? random : null) :
+            anon.put(beliefTerm);
     }
 }
 

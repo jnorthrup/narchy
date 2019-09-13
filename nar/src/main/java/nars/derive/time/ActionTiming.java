@@ -2,13 +2,10 @@ package nars.derive.time;
 
 
 import jcog.math.FloatRange;
-import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.derive.util.TimeFocus;
 import nars.term.Term;
-import nars.time.When;
-import nars.time.event.WhenTimeIs;
 
 import java.util.Random;
 
@@ -29,14 +26,14 @@ public class ActionTiming implements TimeFocus {
 
     }
 
-    float past = 1;
-    float future = 1;
-    @Override
-    public When<NAR> task(What what) {
-        NAR nar = what.nar;
-        float dur = (float) ((what.dur() * horizonDurs.floatValue()/2) * Math.pow( 2, nar.random().nextFloat() * 4));
-        return WhenTimeIs.now(nar, 0, nar.time(), dur*past, dur*future, nar.dtDither());
-    }
+//    float past = 1;
+//    float future = 1;
+//    @Override
+//    public When<NAR> task(What what) {
+//        NAR nar = what.nar;
+//        float dur = (float) ((what.dur() * horizonDurs.floatValue()/2) * Math.pow( 2, nar.random().nextFloat() * 4));
+//        return WhenTimeIs.now(nar, 0, nar.time(), dur*past, dur*future, nar.dtDither());
+//    }
 
     @Override
     public long[] premise(What what, Task task, Term term) {

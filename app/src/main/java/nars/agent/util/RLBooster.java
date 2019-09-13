@@ -111,7 +111,7 @@ public class RLBooster  {
         this.history = history > 1 ? new TensorRing(inD, history) : new ArrayTensor(inD);
         this.agent = agent.apply(inD * history, outD);
 
-        actionFeedback(g.when); //init
+        //actionFeedback(g.when); //init
 
         g.onFrame(()->accept(g));
     }

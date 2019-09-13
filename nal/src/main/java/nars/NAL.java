@@ -177,7 +177,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * but it doesnt maintain the priority ordering
      * (experimental)
      */
-    public static final boolean PRE_SORT_TASK_INPUT_BATCH = false;
+    public static final boolean PRE_SORT_TASK_INPUT_BATCH = true;
 
     public static final int WHATS_CAPACITY = 128;
     public static final int HOWS_CAPACITY = 128;

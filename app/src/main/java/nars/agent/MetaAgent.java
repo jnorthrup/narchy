@@ -158,7 +158,7 @@ abstract public class MetaAgent extends Game {
                 Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
                 nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
 
-            reward("happy", ()->{
+            rewardNormalized(happy, 1, 0, ScalarValue.EPSILON, ()->{
                 float dur = dur();
                 return (float)nar.parts(Game.class)
                     .filter(g -> g!=SelfMetaAgent.this)
@@ -213,7 +213,7 @@ abstract public class MetaAgent extends Game {
             actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
             float initialDur = w.dur();
-            FloatRange durRange = new FloatRange(initialDur, initialDur / 4, initialDur * 4) {
+            FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {
                 @Override
                 public float get() {
                     super.set(((TaskLinkWhat) w).dur);
@@ -237,14 +237,14 @@ abstract public class MetaAgent extends Game {
 
 
 
-            Reward h = rewardNormalized($.inh(gid, happy),  0, ScalarValue.EPSILON, () -> {
+            Reward h = rewardNormalized($.inh(gid, happy),  1, 0, ScalarValue.EPSILON, () -> {
                 //new FloatFirstOrderDifference(nar::time, (() -> {
-                return g.isOn() ? (float)((0.01f + g.dexterity()) *
-                    Math.max(0,g.happiness(dur() /* supervisory dur of the meta-agent */)-0.5f)) : Float.NaN;
+                return g.isOn() ? (//(float)((0.01f + g.dexterity()) *
+                    g.happiness(dur() /* supervisory dur of the meta-agent */)) : Float.NaN;
             });
 
 
-            Reward d = rewardNormalized($.inh(gid, dex),0, nar.confMin.floatValue()/2,
+            Reward d = rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
                 () -> {
 ////            float p = a.proficiency();
 ////            float hp = Util.or(h, p);

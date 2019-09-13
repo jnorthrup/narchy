@@ -262,8 +262,6 @@ public class Derivation extends PreDerivation {
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
 
-        Term _beliefTerm;
-
         if (nextBelief != null) {
             beliefTruth_at_Belief.set( nextBelief.truth() );
 
@@ -273,22 +271,32 @@ public class Derivation extends PreDerivation {
                     beliefTruth_at_Belief : beliefAtTask(nextBelief)
             );
 
+            if (beliefTruth_at_Task.is()) {
+                double te = beliefTruth_at_Task.evi(), be = beliefTruth_at_Belief.evi();
+                this.beliefTruth_mean_TaskBelief.freq(
+                    (beliefTruth_at_Task.freq() * te +  beliefTruth_at_Belief.freq() * be)/(be+te)
+                );
+                this.beliefTruth_mean_TaskBelief.evi((be+te)/2);
+            } else {
+                this.beliefTruth_mean_TaskBelief.clear();
+            }
+
             this.beliefStart = nextBelief.start();
             this.beliefEnd = nextBelief.end();
-            _beliefTerm = nextBelief.term();
 
         } else {
             this.beliefTruth_at_Belief.clear();
             this.beliefTruth_at_Task.clear();
+            this.beliefTruth_mean_TaskBelief.clear();
             this.beliefStart = this.beliefEnd = TIMELESS;
-            _beliefTerm = nextBeliefTerm;
         }
+
 
         //TODO not whether to shift, but which variable (0..n) to shift against
 
-        this.beliefTerm = deriver.beliefTerm(nextBeliefTerm, anon, _taskTerm, _beliefTerm, random);
+        this.beliefTerm = deriver.beliefTerm(anon, _taskTerm, nextBeliefTerm, random);
 
-        assertAnon(_beliefTerm, beliefTerm, nextBelief);
+        assertAnon(nextBeliefTerm, beliefTerm, nextBelief);
 
         return nextBelief;
     }

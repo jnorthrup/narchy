@@ -415,7 +415,7 @@ public class Occurrify extends TimeGraph {
 
             final OccMerge combine = NAL.OCCURRIFY_COMPOSE_UNION_DILUTE ? OccMerge.UnionDilute : OccMerge.Task;
 
-            final BeliefProjection PROJ = combine == OccMerge.Task ? BeliefProjection.Task : BeliefProjection.Belief;
+            final BeliefProjection PROJ = combine == OccMerge.UnionDilute ?  BeliefProjection.Mean : BeliefProjection.Task;
 
             @Override
             @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
@@ -431,7 +431,6 @@ public class Occurrify extends TimeGraph {
             long[] occurrence(Derivation d) {
                 return rangeCombine(d, combine);
             }
-
 
             @Override
             public final BeliefProjection beliefProjection() {
@@ -822,7 +821,13 @@ public class Occurrify extends TimeGraph {
                 return d.beliefTruth_at_Task;
             }
         },
-
+        /** avg of Task and Belief */
+        Mean {
+            @Override
+            public MutableTruth apply(Derivation d) {
+                return d.beliefTruth_mean_TaskBelief;
+            }
+        },
 //        /** belief
 //        Union {
 //

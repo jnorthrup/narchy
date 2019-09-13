@@ -74,7 +74,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
 
-    private final DurNARConsumer loop;
+    private DurNARConsumer loop;
 
 
     /**
@@ -108,11 +108,38 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         super(id);
         this.in = in;
 
-        loop = new DurNARConsumer(!in.async(out) ? this::perceiveCommit : this::commit);
-        add(loop);
     }
 
-//    /** update period (in cycles) */
+    @Override
+    protected void starting(NAR nar) {
+
+        loop = new DurNARConsumer(this::commit);
+        //        int concurrency = nar.exe.concurrency();
+        loop.durs(
+            1
+            //0
+            //1f / (Math.max(1, concurrency-1))
+        );
+
+        add(loop);
+
+        super.starting(nar);
+
+        in.start(out, nar);
+
+
+    }
+
+    @Override
+    protected void stopping(NAR nar) {
+//        loop.close();
+        loop = null;
+
+        in.stop();
+        super.stopping(nar);
+    }
+
+    //    /** update period (in cycles) */
 //    public long durUpdate() {
 //        return loop.durCycles();
 //    }
@@ -122,17 +149,6 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         return dur.floatValue();
     }
 
-    @Override
-    protected void starting(NAR nar) {
-        super.starting(nar);
-
-//        int concurrency = nar.exe.concurrency();
-        loop.durs(
-                1
-                //0
-                //1f / (Math.max(1, concurrency-1))
-        );
-    }
 
     @Override
     public final int concurrency() {
@@ -142,16 +158,6 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
 
 
-    /** perceive the next batch of input, for synchronously (cycle/duration/realtime/etc)
-     *  triggered input buffers */
-    private void perceive(NAR n) {
-        in.commit(out, n);
-    }
-
-    private void perceiveCommit(NAR nar) {
-        perceive(nar);
-        commit(nar);
-    }
 
     /** called periodically, ex: per duration, for maintenance such as gradual forgetting and merging new input.
      *  only one thread will be in this method at a time guarded by an atomic guard */

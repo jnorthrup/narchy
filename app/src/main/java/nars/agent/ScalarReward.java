@@ -47,14 +47,13 @@ abstract public class ScalarReward extends Reward {
 
     @Override
     public final float happiness(float dur) {
-        //     belief(reward) - goal(reward)
 
         float b = rewardFreq(true, dur);
         float g = rewardFreq(false, dur);
         if ((b!=b) || (g!=g))
             return 0; //NaN
         else
-            return (1 - Math.abs(b - g)/Math.max(b,g));
+            return (1 - Math.abs(b - g));
     }
 
     @Override

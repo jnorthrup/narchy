@@ -12,6 +12,7 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -76,37 +77,46 @@ import java.util.stream.Stream;
 
 //    void input(Bag<ITask, ITask> b, What target, int min);
     /** asynchronously drain N elements from a bag as input */
-    default void input(Sampler<? extends X> taskSampler, int max, Executor exe, Consumer<FasterList<X>> runner, @Nullable Comparator<X> batchSorter) {
+    default void input(Sampler<? extends X> taskSampler, int max, Executor exe, @Nullable Comparator<X> batchSorter, AtomicInteger pending) {
+        //Consumer<FasterList<Task>> targetBatched = batch -> batch.forEach(target);
+
         Sampler b;
         if  (taskSampler instanceof BufferedBag)
             b = ((BufferedBag) taskSampler).bag;
         else
             b = taskSampler;
 
+        pending.incrementAndGet();
+
         exe.execute(() -> {
 
-            FasterList batch = drainBuffer.get();
+            try {
+                FasterList batch = drainBuffer.get();
+                batch.ensureCapacity(max);
 
-            if (b instanceof ArrayBag) {
-                ((ArrayBag) b).popBatch(max, true, batch::add);
-            } else {
-                b.pop(null, max, batch::add); //per item.. may be slow
-            }
-
-            int bs = batch.size();
-            if (bs > 0) {
-
-                try {
-
-                    if (bs > 2 && batchSorter!=null) {
-                        batch.sortThis(batchSorter);
-                    }
-
-                    runner.accept(batch);
-
-                } finally {
-                    batch.clear();
+                if (b instanceof ArrayBag) {
+                    ((ArrayBag) b).popBatch(max, true, batch::addFast);
+                } else {
+                    b.pop(null, max, batch::addFast); //per item.. may be slow
                 }
+
+                int bs = batch.size();
+                if (bs > 0) {
+
+                    try {
+
+                        if (bs > 2 && batchSorter != null) {
+                            batch.sortThis(batchSorter);
+                        }
+
+                        acceptAll(batch);
+
+                    } finally {
+                        batch.clear();
+                    }
+                }
+            } finally {
+                pending.decrementAndGet();
             }
         });
 

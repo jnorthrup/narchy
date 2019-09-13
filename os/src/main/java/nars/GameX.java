@@ -76,8 +76,8 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = false;
-    static final boolean initMetaRL = false;
+    static final boolean initMeta = true;
+    static final boolean initMetaRL = true;
     static final boolean metaAllowPause = false;
 
     /**
@@ -295,9 +295,10 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w, 512,
                                 //1024,
-                                //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
+                                //new PriBuffer.DirectTaskBuffer()
+                                new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
                                 //new PriBuffer.MapTaskBuffer()
-                                new PriBuffer.DirectTaskBuffer()
+
                         )
                 )
 //                .attention(() -> new ActiveConcepts(1024))
@@ -541,7 +542,7 @@ abstract public class GameX extends Game {
 //        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
 //        bd3_act.time(new ActionTiming());
 
-        Deriver bd6_act = new Deriver(Derivers.nal(n, 1,8,"motivation.nal"));
+        Deriver bd6_act = new Deriver(Derivers.nal(n, 6,8,"motivation.nal"));
         bd6_act.time(new ActionTiming());
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));

@@ -11,7 +11,6 @@ import jcog.math.FloatSupplier;
 import jcog.thing.Part;
 import jcog.util.ArrayUtil;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
@@ -325,7 +324,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     public Reward rewardNormalized(String reward, float freq, float min, float max, FloatSupplier rewardFunc) {
-        return rewardNormalized(rewardTerm(reward), min, max, rewardFunc);
+        return rewardNormalized(rewardTerm(reward), freq, min, max, rewardFunc);
     }
 
 
@@ -343,12 +342,16 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return r;
     }
 
+    public Reward rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
+        return rewardNormalized(reward, 1, min, max, rewardFunc);
+    }
+
     /**
      * set a default (bi-polar) reward supplier
      */
-    public Reward rewardNormalized(Term reward, float min, float max, FloatSupplier rewardFunc) {
+    public Reward rewardNormalized(Term reward, float freq, float min, float max, FloatSupplier rewardFunc) {
         //.relax(Param.HAPPINESS_RE_SENSITIZATION_RATE);
-        return reward(reward, 1, normalize(rewardFunc, min, max));
+        return reward(reward, freq, normalize(rewardFunc, min, max));
     }
 
     public FloatSupplier normalize(FloatSupplier rewardFunc, float min, float max) {

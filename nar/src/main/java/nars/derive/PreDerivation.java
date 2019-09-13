@@ -25,6 +25,7 @@ public abstract class PreDerivation extends Unify {
     public final MutableTruth taskTruth = new MutableTruth();
     public final MutableTruth beliefTruth_at_Belief = new MutableTruth();
     public final MutableTruth beliefTruth_at_Task = new MutableTruth();
+    public final MutableTruth beliefTruth_mean_TaskBelief = new MutableTruth();
 
     /**
      * choices mapping the available post targets

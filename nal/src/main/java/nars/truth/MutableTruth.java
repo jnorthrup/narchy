@@ -32,6 +32,10 @@ public class MutableTruth implements Truth {
 		return evi;
 	}
 
+	public MutableTruth freq(double f) {
+		return freq((float)f);
+	}
+	
 	public MutableTruth freq(float f) {
 		this.freq = f;
 		return this;

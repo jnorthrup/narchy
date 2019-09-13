@@ -190,14 +190,15 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 				long s = a.start, e = a.end;
 				RNode<TaskRegion> tRoot = t.root();
-				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) tRoot.bounds()).confMax());
-				float confPerTime =
-					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
-					//(a.dur / confMax);
-					(Math.max(1, a.dur) / confMax);
+//				float confMax = Math.max(NAL.truth.TRUTH_EPSILON, ((TaskRegion) tRoot.bounds()).confMax());
+//				float confPerTime =
+//					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
+//					//(a.dur / confMax);
+//					(Math.max(1, a.dur) / confMax);
+				float dur = (float) (tRoot.bounds().range(0) / (1+n));
 
 				HyperIterator.HyperIteratorRanker<?, TaskRegion> rank =
-					new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e, confPerTime));
+					new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e, dur));
 
 				int cursorCapacity = Math.min(n, ac /* tries?  .. / tasks per leaf? */);
 

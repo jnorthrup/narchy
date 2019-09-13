@@ -94,14 +94,19 @@ public final class Answer implements Timed, Predicate<Task> {
         return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.minTimeTo(qStart, qEnd)));
     }
 
-    /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
-    public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd, float confPerTime) {
+//    /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
+//    public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd, float confPerTime) {
+//        //TODO special impl for confPerTime==0
+//        return qStart == qEnd ?
+//            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
+//            (x,min) -> -(float)(((double)x.minTimeTo(qStart,qEnd))+ x.confMax() * confPerTime) ;
+//    }
+    public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd, float dur) {
         //TODO special impl for confPerTime==0
-        return qStart == qEnd ?
-            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
-            (x,min) -> -(float)(((double)x.minTimeTo(qStart,qEnd))+ x.confMax() * confPerTime) ;
+//        return qStart == qEnd ?
+//            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
+            return (x,min) -> (float)(x.confMax() / (1.0 + x.minTimeTo(qStart,qEnd)/dur));
     }
-
     /** temporal distance to point magnitude */
     private static double distanceMid(TaskRegion t, long now, double dur) {
         return t.meanTimeTo(now)/(1+dur);
