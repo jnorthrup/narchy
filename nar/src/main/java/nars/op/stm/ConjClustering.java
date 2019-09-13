@@ -241,10 +241,6 @@ public class ConjClustering extends How implements Consumer<Task> {
             .reversed();
             //.thenComparingFloat(Task::originality);
 
-    @Override
-    public boolean singleton() {
-        return false;
-    }
 
     /** should be safe to be called from multiple threads */
     private void _update(long now) {

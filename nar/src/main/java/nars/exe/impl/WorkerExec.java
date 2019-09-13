@@ -17,15 +17,10 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-	double granularity = 3;
-
-
 	/**
-	 * process sub-timeslice divisor
-	 * TODO auto-calculate
+	 * min # of play's per cycle, in total across all threads
 	 */
-	private long subCycleNS;
-
+	double granularity = 32;
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */
@@ -33,6 +28,11 @@ public class WorkerExec extends ThreadedExec {
 		//1f;
 		//1.5f;
 		2f;
+	/**
+	 * process sub-timeslice divisor
+	 * TODO auto-calculate
+	 */
+	private long subCycleNS;
 
 
 	public WorkerExec(int threads) {
@@ -53,7 +53,7 @@ public class WorkerExec extends ThreadedExec {
 
 		super.update();
 
-		subCycleNS = (long) (((double)(threadWorkTimePerCycle * concurrency())) / granularity);
+		subCycleNS = (long) (((double) (threadWorkTimePerCycle * concurrency())) / granularity);
 	}
 
 	@Override
@@ -74,12 +74,10 @@ public class WorkerExec extends ThreadedExec {
 	private final class WorkPlayLoop implements ThreadedExec.Worker, BooleanSupplier /* kontinue */ {
 
 
+		static final double maxOverUtilization = 1.5;
 		final Random rng;
-
 		private final AtomicBoolean alive = new AtomicBoolean(true);
-
 		private long deadline = Long.MIN_VALUE;
-
 
 		WorkPlayLoop() {
 
@@ -89,23 +87,26 @@ public class WorkerExec extends ThreadedExec {
 		@Override
 		public void run() {
 
-			do {
+			while (alive.getOpaque()) {
 
+				long workStart = nanoTime();
 
-				long worked = work(workResponsibility);
+				work(workResponsibility);
+
+				long workEnd = nanoTime();
+
+				long worked = workEnd - workStart;
 
 				long cycleTimeRemain = cycleIdealNS - worked;
-				if (cycleTimeRemain > 0)
-					play(cycleTimeRemain);
+				if (cycleTimeRemain > 0 && subCycleNS > 0)
+					play(workEnd + cycleTimeRemain);
 
 				sleep();
 
-			} while (alive.getOpaque());
+			}
 		}
 
-		protected long work(float responsibility) {
-
-			long workStart = nanoTime();
+		protected void work(float responsibility) {
 
 
 			int batchSize = -1;
@@ -118,7 +119,7 @@ public class WorkerExec extends ThreadedExec {
 					//initialization once for subsequent attempts
 					int available; //estimate
 					if ((available = in.size()) <= 0)
-						return 0;
+						break;
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
@@ -129,67 +130,54 @@ public class WorkerExec extends ThreadedExec {
 
 			} //while (!queueSafe((available=in.size())));
 
-			long workEnd = nanoTime();
-			return workEnd - workStart;
 
 		}
 
-		static final double maxOverUtilization = 1.5;
-
-		private void play(long playTime) {
-			if (subCycleNS <= 0)
-				return;
+		private void play(long end) {
 
 			AntistaticBag<How> H = nar.how;
 			AntistaticBag<What> W = nar.what;
 
-			long start = nanoTime(), until = start + playTime;
-
 			int idle = 0;
 			while (true) {
+
+				What w;
 				How h = H.sample(rng);
 				if (h != null && h.isOn()) {
-					What w = W.sample(rng);
-					if (w != null && w.isOn()) {
-						if (play(w, h, until))
-							idle = 0; //reset
-					}
-				}
+					w = W.sample(rng);
+					if (!w.isOn()) w = null;
+				} else
+					w = null;
 
-				if (nanoTime() > until)
+				long now = nanoTime();
+				if (now >= end)
 					break;
 
-				if (idle > 0)
-					Util.pauseSpin(idle++);
+				if (w != null) {
+					play(w, h, now, end);
+					idle = 0; //reset
+				} else {
+					Util.pauseSpin(++idle);
+				}
 
 			}
 
 		}
 
-		private boolean play(What w, How h, long until) {
-			boolean singleton = h.singleton();
-			if (!(!singleton || h.busy.compareAndSet(false, true)))
-				return false;
+		private void play(What w, How h, long now, long end) {
 
 			float util = h._utilization;
 			if (!Float.isFinite(util)) util = 1;
 
 			long useNS =
-				(long)(subCycleNS * ((util <= 1) ?
+				(long) (subCycleNS * ((util <= 1) ?
 					((util + 1f) / 2) //less than subcycle but optimistically, more time than it might expect
 					:
 					((1 - (Util.min(util, maxOverUtilization) - 1))))); //penalize up to a certain amount for previous over-utilization
 
-			deadline = Math.min(until, nanoTime() + useNS);
-			//try {
+			deadline = Math.min(end, now + useNS);
+
 			h.runWhile(w, useNS, this);
-			//} finally {
-			if (singleton)
-				h.busy.set(false);
-			//}
-
-			return true;
-
 		}
 
 		/**
@@ -200,8 +188,9 @@ public class WorkerExec extends ThreadedExec {
 			return nanoTime() < deadline;
 		}
 
+		/** TODO improve and interleave naps with play */
 		void sleep() {
-			long i = (long)(WorkerExec.this.threadIdleTimePerCycle * (((double) concurrency()) / exe.maxThreads));
+			long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((double) concurrency()) / exe.maxThreads));
 			if (i > 0) {
 				Util.sleepNS(NapTimeNS);
 				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());

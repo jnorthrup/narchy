@@ -169,7 +169,7 @@ public class Derivation extends PreDerivation {
 
     public Predicate<nars.Task> tasklinkTaskFilter =
         (Task t) ->
-            t.isQuestionOrQuest() || t.evi() >= eviMin;
+            !t.isDeleted() && (t.isQuestionOrQuest() || t.evi() >= eviMin);
 
 	private transient short[] parentCause;
 

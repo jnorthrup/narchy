@@ -315,7 +315,7 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
             int remain = a.length;
             do {
                 How cur = null;
-                boolean single = false;
+                //boolean single = false;
                 for (int i = 0, aLength = a.length; i < aLength; i++) {
                     if (!running)
                         break;
@@ -326,21 +326,21 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
 
                     How next = aa.getOne().getOne();
                     if (cur != next) {
-                        if (cur != null && single) {
-                            if (single) {
-                                cur.busy.set(false);
-                                single = false;
-                            }
-                        }
+//                        if (cur != null && single) {
+//                            if (single) {
+//                                cur.busy.set(false);
+//                                single = false;
+//                            }
+//                        }
 
-                        single = next.singleton();
-                        if (single && !next.busy.compareAndSet(false, true)) {
-                            //TODO skip ahead the same nexts
-                            //while (i < aLength && )
-
-                            single = false;
-                            continue;
-                        }
+//                        single = next.singleton();
+//                        if (single && !next.busy.compareAndSet(false, true)) {
+//                            //TODO skip ahead the same nexts
+//                            //while (i < aLength && )
+//
+//                            single = false;
+//                            continue;
+//                        }
                         cur = next;
                     }
 
@@ -352,9 +352,9 @@ public class ForkJoinExec extends MultiExec implements Thread.UncaughtExceptionH
                     remain--;
 
                 }
-                if (single) {
-                    cur.busy.set(false);
-                }
+//                if (single) {
+//                    cur.busy.set(false);
+//                }
 
 
 //                {

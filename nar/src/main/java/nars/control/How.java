@@ -11,7 +11,6 @@ import nars.time.event.WhenInternal;
 import org.slf4j.Logger;
 
 import java.io.PrintStream;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.BooleanSupplier;
 
@@ -55,10 +54,6 @@ abstract public class How extends PriNARPart {
 
     public abstract void next(What w, BooleanSupplier kontinue);
 
-    /**
-     * TODO varHandle
-     */
-    public final AtomicBoolean busy;
 
     public FloatAveragedWindow utilization = new FloatAveragedWindow(8, 0.5f).clear(1);
 //    final AtomicHistogram utilizationPct = new AtomicHistogram(1, 100000, 3);
@@ -101,19 +96,8 @@ abstract public class How extends PriNARPart {
 
     protected How(Term id, NAR nar) {
         super(id);
-        this.busy = //new Semaphore(singleton() ?  1 : Runtime.getRuntime().availableProcessors());
-                singleton() ? new AtomicBoolean(false) : null;
         if (nar != null)
             nar.start(this);
-    }
-
-
-
-
-    /** by default, causable are singleton.
-     * */
-    @Deprecated @Override public boolean singleton() {
-        return true;
     }
 
 
@@ -228,7 +212,7 @@ abstract public class How extends PriNARPart {
             next(w, whil);
         } catch (Throwable t) {
             logger.error("{} {}", t, this);
-            t.printStackTrace();
+            //t.printStackTrace();
         }
         long end = System.nanoTime();
         use(estTime, end - start);

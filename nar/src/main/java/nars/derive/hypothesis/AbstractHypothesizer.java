@@ -24,26 +24,25 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	public void premises(When<NAR> when, TaskLinks links, Derivation d) {
 		int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
 
-		int nLinks = (int) Math.max(1, premisesPerIteration.floatValue() / termLinksPerTaskLink);
+		int nLinks = Math.max(1, (int)(premisesPerIteration.floatValue() / termLinksPerTaskLink));
 		for (int i = 0; i < nLinks; i++) {
 			TaskLink tasklink = links.sample(d.random);
-			if (tasklink != null)
-				fireTask(when, links, d, termLinksPerTaskLink, tasklink);
-		}
-	}
-
-
-	protected void fireTask(When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink l) {
-
-		Task task = l.get(when, d.tasklinkTaskFilter);
-		if (task != null && !task.isDeleted()) {
-			for (int i = 0; i < termLinksPerTaskLink; i++) {
-				process(links, d, l, task).derive(d);
+			if (tasklink != null) {
+				Task task = tasklink.get(when, d.tasklinkTaskFilter);
+				if (task != null)
+					fireTask(links, d, termLinksPerTaskLink, tasklink, task);
 			}
 		}
 	}
 
-	protected Premise process(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
+	void fireTask(TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink tasklink, Task task) {
+		for (int i1 = 0; i1 < termLinksPerTaskLink; i1++) {
+			process(links, d, tasklink, task).derive(d);
+		}
+	}
+
+
+	@Deprecated protected Premise process(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
 		Term target = tasklink.target(task, d);
 		if (target == null)
 			target = task.term();

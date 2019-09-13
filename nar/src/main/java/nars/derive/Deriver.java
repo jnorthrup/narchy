@@ -133,20 +133,6 @@ public class Deriver extends How {
 
     }
 
-
-    /**
-     * unifier TTL used for matching in premise formation
-     */
-    protected int matchTTL() {
-        return nar.premiseUnifyTTL.intValue();
-    }
-
-
-    @Override
-    public boolean singleton() {
-        return false;
-    }
-
     @Override
     public float value() {
         //TODO cache this between cycles
