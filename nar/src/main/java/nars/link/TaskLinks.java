@@ -155,12 +155,10 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-    public float grow(TaskLink parent, Term from, Term to, byte punc) {
+    public void grow(TaskLink parent, Term from, Term to, byte punc) {
         float take = grow.floatValue();
-        if (take > ScalarValue.EPSILON) {
-            return transfer(from, to, parent, take, sustain.floatValue(), punc);
-        }
-        return 0;
+        if (take > ScalarValue.EPSILON)
+            transfer(from, to, parent, take, sustain.floatValue(), punc);
     }
 
 
@@ -170,11 +168,10 @@ public class TaskLinks implements Sampler<TaskLink> {
      *  sustain=0: move
      *
      * @return*/
-    private float transfer(Term s, Term u, TaskLink parent, float fraction, float sustain, byte punc) {
+    private void transfer(Term s, Term u, TaskLink parent, float fraction, float sustain, byte punc) {
         TaskLink l = AtomicTaskLink.link(s, u);
-        float freed = l.transfer(parent, fraction, sustain, punc);
+        l.transfer(parent, fraction, sustain, punc);
         link(l);
-        return freed;
     }
 
     public final TaskLink link(TaskLink x) {

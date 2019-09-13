@@ -35,7 +35,7 @@ public class TruthIntegration {
 				factor = 1;
 			else {
 				if (qStart == LongInterval.ETERNAL)
-					factor = 0; //HACK
+					factor = 0; //fully eternalize
 				else
 					factor = EvidenceEvaluator.of(tStart, t.end(), dur).applyAsDouble(qStart);
 			}

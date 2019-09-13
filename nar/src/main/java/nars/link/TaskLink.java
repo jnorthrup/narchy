@@ -305,8 +305,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return to();
     }
 
-    /** returns how much priority freed (which will be zero if sustain==1) */
-    float transfer(TaskLink parent, float fraction, float sustain, byte punc);
+    void transfer(TaskLink from, float fraction, float sustain, byte punc);
 
 //    }
 

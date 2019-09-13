@@ -53,7 +53,7 @@ public class WorkerExec extends ThreadedExec {
 
 		super.update();
 
-		subCycleNS = (long) (((double) (threadWorkTimePerCycle * concurrency())) / granularity);
+		subCycleNS = (long) ((threadWorkTimePerCycle * concurrency()) / granularity);
 	}
 
 	@Override
@@ -67,9 +67,6 @@ public class WorkerExec extends ThreadedExec {
 			in.drain(this::executeNow); //initialize
 		}
 	}
-
-	//final Consumer execNow = this::executeNow;
-//    final MessagePassingQueue.Consumer executeNow = WorkerExec.this::executeNow;
 
 	private final class WorkPlayLoop implements ThreadedExec.Worker, BooleanSupplier /* kontinue */ {
 

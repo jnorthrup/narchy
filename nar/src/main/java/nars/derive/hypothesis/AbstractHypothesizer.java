@@ -41,33 +41,73 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		}
 	}
 
-
-	@Deprecated protected Premise process(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
-		Term target = tasklink.target(task, d);
+	@Deprecated protected Premise process(TaskLinks links, Derivation d, TaskLink link, Task task) {
+		Term target = link.target(task, d);
 		if (target == null)
 			target = task.term();
 
 		if (target.op().conceptualizable) {
-			Term reverse = reverse(target, tasklink, task, links, d);
+			Term reverse = reverse(target, link, task, links, d);
 			if (reverse != null)
 				target = reverse;
 		}
 
-		{
-			Term src = task.term();
-			Term forward = forward(src, tasklink, task, d);
+		if (link.isSelf()) {
+			Term src =
+				//task.term();
+				target;
+			Term forward = forward(src, link, task, d);
 			if (forward != null) {
-				if (!forward.op().eventable && !src.containsRecursively(forward)) {
+				if (!forward.op().eventable) { // && !src.containsRecursively(forward)) {
 					//throw new WTF();
+					target = forward;
 				} else {
-					float freed = links.grow(tasklink, src, forward, task.punc());
-					//links.links.depressurize(freed);
+					links.grow(link, src, forward, task.punc());
 				}
 			}
 
 		}
+		//System.out.println(task + "\t" + target);
 		return new Premise(task, target);
 	}
+//	@Deprecated protected Premise process(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
+//		Term target = null;
+//		if (d.random.nextFloat() < 0.5f) {
+//			target = tasklink.target(task, d);
+//		}
+//		if (target == null) {
+//			Term src = task.term();
+//			Term forward = forward(src, tasklink, task, d);
+//			if (forward != null) {
+//				target = forward;
+//			}
+//		}
+//		if (target == null) {
+//			target = task.term();
+//		}
+//
+//		if (target.op().conceptualizable) {
+//			Term reverse = reverse(target, tasklink, task, links, d);
+//			if (reverse != null)
+//				target = reverse;
+//		}
+//
+////		{
+////			Term src = task.term();
+////			Term forward = forward(src, tasklink, task, d);
+////			if (forward != null) {
+////				if (!forward.op().eventable && !src.containsRecursively(forward)) {
+//////					//throw new WTF();
+////				} else {
+////					float freed = links.grow(tasklink, src, forward, task.punc()); //links.links.depressurize(freed);
+////
+////					//target = forward;
+////				}
+////			}
+////		}
+//		System.out.println(task + "\t" + target);
+//		return new Premise(task, target);
+//	}
 
 	@Nullable
 	protected TermLinker linker(Term t) {

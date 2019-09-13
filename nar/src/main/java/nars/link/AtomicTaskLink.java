@@ -1,6 +1,7 @@
 package nars.link;
 
 import jcog.pri.ScalarValue;
+import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
@@ -77,7 +78,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
     @Override
-    protected float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning) {
+    protected float apply(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning) {
         return punc.merge(ith, pri, componentMerge, returning);
     }
 
@@ -87,18 +88,14 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
     @Override
-    public float transfer(TaskLink t, float factor, float sustain, byte punc) {
-//        float free = 0;
+    public void transfer(TaskLink from, float factor, float sustain, byte punc) {
+
         byte i = i(punc);
-        //for (byte i = 0; i < 4; i++) {
-            float xfer = (1-sustain) * this.punc.merge(i, factor * t.priIndex(i), plus, PriReturn.Delta);
-            if (xfer > ScalarValue.EPSILON) {
-                ((AtomicTaskLink)t).merge(i, -xfer, plus, PriReturn.Void);
-            }
-        //}
-        ((AtomicTaskLink)t).invalidate();
-        invalidate();
-        return xfer;
+
+        float xfer = (1-sustain) * merge(i, factor * from.priIndex(i), PriMerge.plus, PriReturn.Delta);
+        if (xfer >= ScalarValue.EPSILON)
+            ((AtomicTaskLink)from).merge(i, -xfer, PriMerge.plus, PriReturn.Delta);
+
     }
 
     @Override

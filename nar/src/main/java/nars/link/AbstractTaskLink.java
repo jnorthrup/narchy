@@ -149,11 +149,6 @@ public abstract class AbstractTaskLink implements TaskLink {
         return false;
     }
 
-    public final TaskLink priMerge(byte punc, float pri) {
-        mergeComponent(punc, pri, NAL.tasklinkMerge);
-        return this;
-    }
-
     public final TaskLink priMerge(byte punc, float pri, PriMerge merge) {
         priMergeGetValue(punc, pri, merge);
         return this;
@@ -170,7 +165,8 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected abstract float priSum();
 
-    protected abstract float merge(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning);
+    /** merge a component; used internally.  does not invalidate so use the high-level methods like merge() */
+    protected abstract float apply(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning);
 
     protected abstract void fill(float pri);
 
@@ -222,9 +218,9 @@ public abstract class AbstractTaskLink implements TaskLink {
         return merge(i(punc), pri, merge, returning);
     }
 
-    private float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
+    protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
         assertFinite(pri);
-        float y = merge(ith, pri, merge::mergeUnitize, returning);
+        float y = apply(ith, pri, merge::mergeUnitize, returning);
 
         if (returning == PriReturn.Delta && y == 0) {
             //no need to invalidate
@@ -259,7 +255,7 @@ public abstract class AbstractTaskLink implements TaskLink {
             boolean changed = false;
             //HACK not fully atomic but at least consistent
             for (int i = 0; i < 4; i++)
-                changed |= merge(i, X, mult, Changed) != 0;
+                changed |= apply(i, X, mult, Changed) != 0;
 
             if (changed)
                 invalidate();
@@ -270,10 +266,10 @@ public abstract class AbstractTaskLink implements TaskLink {
     @Override
     public void priMult(float belief, float goal, float question, float quest) {
         boolean changed;
-        changed = merge(0, belief, mult, Changed) != 0;
-        changed |= merge(1, goal, mult, Changed) != 0;
-        changed |= merge(2, question, mult, Changed) != 0;
-        changed |= merge(3, quest, mult, Changed) != 0;
+        changed = apply(0, belief, mult, Changed) != 0;
+        changed |= apply(1, goal, mult, Changed) != 0;
+        changed |= apply(2, question, mult, Changed) != 0;
+        changed |= apply(3, quest, mult, Changed) != 0;
         if (changed)
             invalidate();
     }

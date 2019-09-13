@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.Util;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
@@ -71,10 +72,14 @@ public abstract class DynamicTermLinker implements TermLinker {
         @Override
         protected int depth(Compound root, Random rng) {
             /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
+            int s = root.subs();
+            if (s == 0)
+                return 1;
+
             float fanoutRatio =
                     //root.volume() / (1f + root.subs());
                     //1 / (1 + ((float)root.volume())/(1+root.subs()));
-                    1 / (1 + (root.volume()-1f)/(1+root.subs()));
+                    1 / (1 + (root.volume()-1f)/s);
 
             float w =
                     fanoutRatio;
@@ -83,9 +88,10 @@ public abstract class DynamicTermLinker implements TermLinker {
                     //(float)Math.pow(fanoutRatio, 1.5f);
 
             float p = rng.nextFloat();
-//            if (p < 1-w*w*w)
-//                return 3;
-            return p < w ? 1 : 2;
+            if (p < 1-w*w)
+                return 3;
+
+            return p >= w ? 2 : 1;
         }
 
         @Override
@@ -113,8 +119,8 @@ public abstract class DynamicTermLinker implements TermLinker {
                     sub.unneg().volume();
                     //sub.unneg().complexity();
             return
-                    //1f / Util.sqrt(v); //inverse sqrt
-                    1f / v; //inverse
+                    1f / Util.sqrt(v); //inverse sqrt
+                    //1f / v; //inverse
                     //1f/(v*v); //inverse_sq
                     //Util.sqrt(v);
                     //v;
