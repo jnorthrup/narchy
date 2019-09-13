@@ -85,12 +85,12 @@ public class MutableTruth implements Truth {
 	}
 
 	@Nullable public PreciseTruth clone() {
-		return set() ? PreciseTruth.byEvi(freq, evi) : null;
+		return is() ? PreciseTruth.byEvi(freq, evi) : null;
 	}
 
 	public MutableTruth set(@Nullable Truth x) {
 		if (this!=x) {
-			if (MutableTruth.isSet(x)) {
+			if (MutableTruth.is(x)) {
 				freq = x.freq();
 				evi = x.evi();
 			} else {
@@ -107,12 +107,12 @@ public class MutableTruth implements Truth {
 	}
 
 	/** whether this instance's state is set to a specific value (true), or clear (false) */
-	public final boolean set() {
+	public final boolean is() {
 		return freq==freq;
 	}
 
-	public static boolean isSet(@Nullable Truth x) {
-		return x!=null && (!(x instanceof MutableTruth) || ((MutableTruth)x).set() );
+	public static boolean is(@Nullable Truth x) {
+		return x!=null && (!(x instanceof MutableTruth) || ((MutableTruth)x).is() );
 	}
 
 	@Override

@@ -38,7 +38,7 @@ public enum ConjMatch { ;
      */
     public static Term beforeOrAfter(Term conj, Term event, boolean includeBefore, boolean includeMatched, boolean includeAfter,  UnifyTransform s, int ttl /*, unifyOrEquals, includeMatchedEvent */) {
         int varBits = ConjMatch.varBits;
-        if (!(conj instanceof Compound) || conj.op() != CONJ || conj.dt()==XTERNAL || conj.equals(event))
+        if (!(conj instanceof Compound) || conj.opID() != CONJ.id || conj.dt()==XTERNAL || conj.equals(event))
             return Null;
 
         if (!event.op().eventable)
@@ -58,7 +58,7 @@ public enum ConjMatch { ;
         boolean eVar = event.hasAny(varBits);
         boolean unify = eVar || conj.hasAny(varBits);
 
-        if (!unify && event.op()!=CONJ) {
+        if (!unify && (!(event instanceof Compound) || event.opID()!=CONJ.id)) {
             if (!Conj.isSeq(conj)) {
                 if (!includeMatched) {
                     //simple parallel remove match case
@@ -66,7 +66,7 @@ public enum ConjMatch { ;
                     Subterms csNext = cs.remove(event);
                     if (csNext==null)
                         return Null;
-                    return cs != csNext ? CONJ.the(csNext) : Null;
+                    return cs != csNext ? (csNext.subs() > 1 ? CONJ.the(csNext) : csNext.sub(0)) : Null;
                 } else
                     throw new TODO();
             } else {

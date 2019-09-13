@@ -45,7 +45,7 @@ public abstract class PreDerivation extends Unify {
     }
 
     public boolean hasBeliefTruth() {
-        return beliefTruth_at_Belief.set() || beliefTruth_at_Task.set();
+        return beliefTruth_at_Belief.is() || beliefTruth_at_Task.is();
     }
 
     public abstract ShortBuffer preDerive();

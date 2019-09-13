@@ -10,6 +10,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.truth.MutableTruth;
+import nars.truth.Truth;
 import nars.truth.func.TruthFunction;
 
 import java.util.function.Predicate;
@@ -128,17 +129,18 @@ public class Truthify extends AbstractPred<Derivation> {
                     beliefTruth = null;
                 } else {
                     beliefTruth = beliefProjection.apply(d);
-                    if (!beliefTruth.set())
+                    if (!beliefTruth.is())
                         return false; //double but beliefTruth not defined
                 }
 
                 TruthFunction f = punc == BELIEF ? belief : goal;
 
                 MutableTruth taskTruth = d.taskTruth;
-                if (!taskTruth.set())
+                if (!taskTruth.is())
                     taskTruth = null;
 
-                if (!d.truth.set(f.apply(taskTruth, beliefTruth, d.confMin, d.nar)).set())
+                Truth ff = f.apply(taskTruth, beliefTruth, d.confMin, d.nar);
+                if (!d.truth.set(ff).is())
                     return false;
 
                 d.truthFunction = f;

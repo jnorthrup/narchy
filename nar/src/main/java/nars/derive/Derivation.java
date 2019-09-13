@@ -88,7 +88,7 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term apply1(Term arg) {
             MutableTruth t = Derivation.this.taskTruth;
-            return arg.negIf(t.set() ? t.isNegative() : random.nextBoolean());
+            return arg.negIf(t.is() ? t.isNegative() : random.nextBoolean());
             //return arg.negIf(t.isNegative());
         }
     };
@@ -96,7 +96,7 @@ public class Derivation extends PreDerivation {
         @Override
         protected Term apply1(Term arg) {
             MutableTruth b = Derivation.this.beliefTruth_at_Belief;
-            return arg.negIf(b.set() ? b.isNegative() : random.nextBoolean());
+            return arg.negIf(b.is() ? b.isNegative() : random.nextBoolean());
 //            return arg.negIf(b.isNegative());
         }
     };
@@ -165,7 +165,8 @@ public class Derivation extends PreDerivation {
     public DerivationTransform transformDerived;
 
     public Predicate<nars.Task> tasklinkTaskFilter =
-        (Task t) -> t.isQuestionOrQuest() || t.evi() >= eviMin;
+        (Task t) ->
+            t.isQuestionOrQuest() || t.evi() >= eviMin;
 
 	private transient short[] parentCause;
 
@@ -296,7 +297,8 @@ public class Derivation extends PreDerivation {
 
     @Nullable private Truth beliefAtTask(Task nextBelief) {
         @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur(), true); //integration-calculated
-        return t!=null && t.evi() >= eviMin ? t : null;
+        //return t!=null && t.evi() >= eviMin ? t : null;
+        return t;
     }
 
     private Task resetTask(final Task nextTask, Task currentTask) {

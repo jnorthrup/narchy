@@ -90,7 +90,7 @@ public final class TruthFunctions {
 
         float fxy = and(x.freq(), y.freq());
 
-        float c = and(fxy, cxy);
+        float c = and(fxy, cxy); if (c < minConf) return null;
         if (!strong)
             c = weak(c);
 

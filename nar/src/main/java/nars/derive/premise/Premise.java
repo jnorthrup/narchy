@@ -96,27 +96,27 @@ public class Premise  {
 	 */
 	@Nullable
 	public Premise match(Derivation d, int matchTTL) {
-		Term beliefTerm = this.beliefTerm;
+		Term nextBeliefTerm = this.beliefTerm;
 
-		if (!beliefTerm.op().taskable || /*beliefTerm.isNormalized() && */beliefTerm.hasAny(VAR_QUERY))
+		if (!nextBeliefTerm.op().taskable || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
 			return this; //structural
 
 		boolean beliefConceptUnifiesTaskConcept = false;
 
 		Term taskTerm = task.term();
-		if (taskTerm.equals(beliefTerm)) {
+		if (taskTerm.equals(nextBeliefTerm)) {
 			beliefConceptUnifiesTaskConcept = true;
-		} else if (taskTerm.opID() == beliefTerm.opID()) {
+		} else if (taskTerm.opID() == nextBeliefTerm.opID()) {
 
-			if (taskTerm.equalsRoot(beliefTerm)) {
+			if (taskTerm.equalsRoot(nextBeliefTerm)) {
 				//difference involving XTERNAL etc
 				beliefConceptUnifiesTaskConcept = true;
-				if (beliefTerm.hasXternal() && !taskTerm.hasXternal())
-					beliefTerm = taskTerm;
+				if (nextBeliefTerm.hasXternal() && !taskTerm.hasXternal())
+					nextBeliefTerm = taskTerm;
 
-			} else if (beliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
+			} else if (nextBeliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
-				Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, beliefTerm, matchTTL);
+				Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, nextBeliefTerm, matchTTL);
 
 				if (unifiedBeliefTerm != null) {
 
@@ -126,7 +126,7 @@ public class Premise  {
 //                            unifiedBeliefTerm.normalize();
 
 //                    beliefTerm = unifiedBeliefTerm.normalize();
-					beliefTerm = unifiedBeliefTerm;
+					nextBeliefTerm = unifiedBeliefTerm;
 
 					beliefConceptUnifiesTaskConcept = true;
 				} else {
@@ -138,7 +138,7 @@ public class Premise  {
 		}
 
 
-		Task belief = match(d, beliefTerm, beliefConceptUnifiesTaskConcept);
+		Task belief = match(d, nextBeliefTerm, beliefConceptUnifiesTaskConcept);
 
 		if (task != belief && task.stamp().length == 0) {
 			//only allow unstamped tasks to apply with stamped beliefs.
@@ -147,7 +147,9 @@ public class Premise  {
 				return null;
 		}
 
-		Term nextBeliefTerm = belief != null ? belief.term() : beliefTerm;//.unneg();
+		if (belief!=null)
+			nextBeliefTerm = belief.term();
+
 		if (NAL.test.DEBUG_EXTRA) {
 			if (nextBeliefTerm.volume() > d.termVolMax)
 				throw new TermException("excessive volume", nextBeliefTerm); //return null; //WTF
@@ -160,7 +162,7 @@ public class Premise  {
 			int bStruct = nextBeliefTerm.structure();
 			Term _nextBeliefTerm = nextBeliefTerm;
 			//TODO shuffle recursion order
-			taskTerm.recurseTerms(x->x.hasAll(bStruct), s->{
+			taskTerm.recurseTerms(x -> x.hasAll(bStruct), s -> {
 				if (s instanceof Compound) {
 					s = s.unneg();
 					if (s.opID() == bOp) {
@@ -172,7 +174,7 @@ public class Premise  {
 				}
 				return true;
 			}, null);
-			if (found[0]!=null)
+			if (found[0] != null)
 				nextBeliefTerm = found[0];
 		}
 
@@ -180,7 +182,8 @@ public class Premise  {
 			return null;
 
 //        System.out.println(task + "\t" + belief + "\t" + nextBeliefTerm);
-		return belief != null ? new MatchedPremise(task, belief, nextBeliefTerm) : this;
+		return belief != null ? new MatchedPremise(task, belief, nextBeliefTerm) :
+			(this.beliefTerm.equals(nextBeliefTerm) ? this : new Premise(task, nextBeliefTerm));
 
 	}
 

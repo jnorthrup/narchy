@@ -279,9 +279,10 @@ abstract public class DecomposeTest extends NALTest {
         void decompose_Conj_Goal_neg_decompose_pos() {
             //adapted form nal3 test
             test.termVolMax(3);
+            test.confMin(0.6f);
             test.input("(a && b)! %0.1;0.9%");
             test.input("b. %0.9;0.9%");
-            test.mustGoal(cycles, "a", 0.1f, 0.73f);
+            test.mustGoal(cycles, "a", 0.19f, 0.66f);
         }
 
         @Test
