@@ -3,7 +3,7 @@ package nars.derive.op;
 import jcog.TODO;
 import jcog.data.set.ArrayHashSet;
 import jcog.decide.Roulette;
-import jcog.math.LongInterval;
+import jcog.math.Longerval;
 import nars.NAL;
 import nars.Op;
 import nars.derive.Derivation;
@@ -132,7 +132,7 @@ public class Occurrify extends TimeGraph {
                         start = beliefStart;
                         break;
                     case Union:
-                        return LongInterval.union(taskStart, taskEnd, beliefStart, beliefEnd).toArray();
+                        return Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd);
                     case Intersect:
                         throw new TODO();
 //                        long[] i = d.taskBelief_TimeIntersection;
@@ -148,18 +148,27 @@ public class Occurrify extends TimeGraph {
 //                        return i;
 
                     case UnionDilute: {
-                        long[] u = LongInterval.union(taskStart, taskEnd, beliefStart, beliefEnd).toArray();
-                        if (d.isBeliefOrGoal()) {
+                        long[] u = Longerval.unionArray(taskStart, taskEnd, beliefStart, beliefEnd);
+                        if (!d.isBeliefOrGoal()) {
+                            return u; //questions or quests
+                        } else {
                             long tRange = 1 + taskEnd - taskStart, bRange = 1 + beliefEnd - beliefStart;
-                            long uRange = 1 + u[1] - u[0];
+                            double uRange = 1.0 + u[1] - u[0];
                             //long iRange = LongInterval.intersectLength(taskStart, taskEnd, beliefStart, beliefEnd);
                             double pct = Math.max(tRange, bRange) / (uRange);
-                            assert(pct <= 1.0);
+                            //assert(pct <= 1.0);
 
-                            if (!d.doubt((float) pct))
-                                return null;
-                        } //TODO else: decrease priority?
-                        return u;
+                            if (d.doubt((float) pct))
+                                return u; //union accepted, diluted as needed
+
+
+                            //try intersection
+                            if (Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, u)!=null)
+                                return u;
+
+                            return null; //fail
+                        }
+
                     }
                     default:
                         throw new UnsupportedOperationException();

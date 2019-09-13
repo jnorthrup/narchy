@@ -31,7 +31,7 @@ public class NAL7Test extends NALTest {
     protected NAR nar() {
         NAR n = NARS
                 //.tmp();
-                .tmp(6, 8);
+                .tmp(1, 8);
         return n;
     }
 
@@ -91,10 +91,11 @@ public class NAL7Test extends NALTest {
      * adapted from: NAL1Test
      */
     @Test
-    void temporalAnalogyNonIntersecting() throws Narsese.NarseseException {
+    void temporalAnalogyNonIntersecting() {
+
         test.nar.believe("<gull <-> swan>", 1f, 0.9f, 0, 1);
         test.nar.believe("<swan --> swimmer>", 1f, 0.9f, 4, 5);
-        test.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, /*<*/0.81f, (s, e) -> s == 4 && e == 5);
+        test.mustBelieve(cycles, "<gull --> swimmer>", 1.0f, /*<*/0.45f, (s, e) -> s == 4 && e == 5);
     }
 
     @Test
