@@ -36,8 +36,10 @@ public class TruthIntegration {
 			if (tStart == ETERNAL)
 				factor = 1;
 			else {
-				assert(qStart != LongInterval.ETERNAL);
-				factor = EvidenceEvaluator.of(tStart, t.end(), dur).applyAsDouble(qStart);
+				if (qStart == LongInterval.ETERNAL)
+					factor = 0; //HACK
+				else
+					factor = EvidenceEvaluator.of(tStart, t.end(), dur).applyAsDouble(qStart);
 			}
 		} else {
 			//range

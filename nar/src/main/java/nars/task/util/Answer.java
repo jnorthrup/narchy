@@ -22,6 +22,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * heuristic task ranking for matching of evidence-aware truth values may be computed in various ways.
@@ -81,16 +82,16 @@ public final class Answer implements Timed, Predicate<Task> {
 
 
     /** for use only in temporal belief tables; eternal tasks not supported since i dont know how to directly compare them with temporals for the purposes of this interface */
-    public static FloatFunction<TaskRegion> beliefStrength(long targetStart, long targetEnd, double dur) {
-        return t -> beliefStrength(t, targetStart, targetEnd, dur);
+    public static FloatFunction<TaskRegion> beliefStrength(long targetStart, long targetEnd) {
+        return t -> beliefStrength(t, targetStart, targetEnd);
     }
 
-    public static float beliefStrength(TaskRegion t, long now, double dur) {
-        return beliefStrength(t, now, now, dur);
+    public static float beliefStrength(TaskRegion t, long now) {
+        return beliefStrength(t, now, now);
     }
 
-    public static float beliefStrength(TaskRegion t, long qStart, long qEnd, double dur) {
-        return (float)(evidence(t, dur) / (1 + distanceMin(t, qStart, qEnd)));
+    private static float beliefStrength(TaskRegion t, long qStart, long qEnd) {
+        return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.minTimeTo(qStart, qEnd)));
     }
 
     /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
@@ -106,18 +107,9 @@ public final class Answer implements Timed, Predicate<Task> {
         return t.meanTimeTo(now)/(1+dur);
     }
 
-    /** temporal distance to range magnitude */
-    private static double distanceMin(TaskRegion t, long qStart, long qEnd) {
-        return t.minTimeTo(qStart, qEnd);
-    }
-    private static double distanceMid(TaskRegion t, long qStart, long qEnd, double dur) {
-        return t.meanTimeTo(qStart, qEnd)/(1+dur);
-    }
-
-    /** evidence magnitude */
-    private static double evidence(TaskRegion t, double dur) {
-        return (t.eviMean() * t.range()/(1+dur));
-    }
+//    private static double distanceMid(TaskRegion t, long qStart, long qEnd, double dur) {
+//        return t.meanTimeTo(qStart, qEnd)/(1+dur);
+//    }
 
     /**
      * for belief or goals (not questions / quests

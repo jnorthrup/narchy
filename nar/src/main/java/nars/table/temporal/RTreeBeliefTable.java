@@ -138,7 +138,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		double weakEvictionValue = -eviFast(weakest, now);
 		double mergeValue = eviFast(merged, now) - merging.sumOfDouble((Task t) -> eviFast(t, now));
 
-		return mergeValue > weakEvictionValue;
+		return mergeValue >= weakEvictionValue;
 	}
 
 	private static void merge(Task merged, TruthProjection merging, Remember r, Space<TaskRegion> treeRW) {
@@ -203,7 +203,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 				HyperIterator h = new HyperIterator(new Object[cursorCapacity], rank);
 				//h.dfs(t.root(), whle);
-				h.bfs(tRoot, a);
+				h.bfs(tRoot, a, a.random());
 			}
 		});
 	}

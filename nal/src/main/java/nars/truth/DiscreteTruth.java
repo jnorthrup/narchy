@@ -56,12 +56,12 @@ public class DiscreteTruth implements Truth {
 
     @Override
     public float freq() {
-        return Truth.freq(hash);
+        return Util.toFloat(Truth.freqI(hash) /* & 0xffff*/, hashDiscretenessCoarse);
     }
 
     @Override
     public float conf() {
-        return Truth.conf(hash);
+        return Util.toFloat(Truth.confI(hash), hashDiscretenessCoarse);
     }
 
     @Override

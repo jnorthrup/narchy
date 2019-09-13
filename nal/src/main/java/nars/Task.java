@@ -893,7 +893,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
 
-    @Override
     default double eviMean() {
         return evi();
     }

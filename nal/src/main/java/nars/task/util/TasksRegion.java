@@ -7,11 +7,12 @@ import jcog.math.Longerval;
 import nars.Op;
 import nars.Task;
 import nars.time.Tense;
-import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import static java.lang.Math.max;
 import static java.lang.Math.min;
+import static nars.truth.Truth.hashDiscretenessCoarse;
+import static nars.truth.Truth.hashDiscretenessFine;
 
 
 public final class TasksRegion extends Longerval implements TaskRegion {
@@ -29,47 +30,79 @@ public final class TasksRegion extends Longerval implements TaskRegion {
      */
     private final int a, b;
 
-    public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
-        super(start, end);
-        a = Truth.truthToInt(freqMin, confMin);
-        b = Truth.truthToInt(freqMax, confMax);
-//        a = Truth.truthToInt(Math.min(freqMin, freqMax), Math.min(confMin, confMax));
-//        b = Truth.truthToInt(Math.max(freqMin, freqMax), Math.max(confMin, confMax));
+    @Deprecated public TasksRegion(long start, long end, float freqMin, float freqMax, float confMin, float confMax) {
+        this(start, end,
+            freqI(freqMin), freqI(freqMax),
+            confI(confMin), confI(confMax)
+            );
     }
 
-    @Override public final float freqMin() { return Truth.freq(a); }
-    @Override public final float freqMax() {
-        return Truth.freq(b);
+    public static int confI(float conf) {
+        return Util.toInt(conf, hashDiscretenessFine);
     }
+
+    public static int freqI(float freq) {
+        return Util.toInt(freq, hashDiscretenessCoarse);
+    }
+
+    TasksRegion(long start, long end, int freqIMin, int freqIMax, int confIMin, int confIMax) {
+        super(start, end);
+        a = (freqIMin << 24) | confIMin;
+        b = (freqIMax << 24) | confIMax;
+    }
+
+    private static float freqF(int h) {
+        return Util.toFloat(freqI(h), hashDiscretenessCoarse);
+    }
+    private static float confF(int c) {
+        return Util.toFloat(confI(c), hashDiscretenessFine);
+    }
+    static int confI(int h) {
+        return h & 0xffffff;
+    }
+    static int freqI(int h) {
+        return h >> 24;
+    }
+
+    @Override public final float freqMin() { return freqF(a); }
+    @Override public final float freqMax() { return freqF(b); }
     @Override public final float confMin() {
-        return Truth.conf(a);
+        return confF(a);
     }
     @Override public final float confMax() {
-        return Truth.conf(b);
+        return confF(b);
     }
 
+    @Override public final int confMinI() { return confI(a); }
+    @Override public final int confMaxI() { return confI(b); }
+    @Override public final int freqMinI() { return freqI(a); }
+    @Override public final int freqMaxI() { return freqI(b); }
 
-    @Override public final int confMinI() { return Truth.confI(a); }
-    @Override public final int confMaxI() { return Truth.confI(b); }
-    @Override public final int freqMinI() { return Truth.freqI(a); }
-    @Override public final int freqMaxI() { return Truth.freqI(b); }
+    public static TasksRegion mbr(TaskRegion r, long xs, long xe, float _ef, float _ec) {
 
-    public static TasksRegion mbr(TaskRegion r, long xs, long xe, float ef, float ec) {
+        long S = r.start();
 
-        long rs = r.start();
+        assert(xs!=ETERNAL && xs!=TIMELESS && xe!=ETERNAL && xe!=TIMELESS);
 
-        assert(xs!=ETERNAL && xs!=TIMELESS && rs!=ETERNAL && rs!=TIMELESS);
+        long E = r.end();
+        int f = r.freqMinI(), F = r.freqMaxI();
+        int c = r.confMinI(), C = r.confMaxI();
 
-        long s = min(rs, xs), e = max(r.end(), xe);
+        int ef = freqI(_ef), ec = confI(_ec);
+        if (r instanceof TasksRegion) {
+            if (xs >= S && xe <= E)
+                if (ec >= c && ec <= C)
+                    if (ef >= f && ef <= F)
+                        return (TasksRegion) r; //conttained
+        }
 
-        TasksRegion y = new TasksRegion(s, e,
-                min(r.freqMin(), ef),
-                max(r.freqMax(), ef),
-                min(r.confMin(), ec),
-                max(r.confMax(), ec)
+        return new TasksRegion(
+            min(S, xs), max(E, xe),
+            min(f, ef), max(F, ef),
+            min(c, ec), max(C, ec)
         );
 
-        return r instanceof TasksRegion ? Util.maybeEqual((TasksRegion) r, y) : y;
+        //return r instanceof TasksRegion ? Util.maybeEqual((TasksRegion) r, y) : y;
     }
 
     @Override
@@ -80,9 +113,10 @@ public final class TasksRegion extends Longerval implements TaskRegion {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        if (!(obj instanceof TasksRegion)) return false;
+        if (!(obj instanceof TasksRegion))
+            return false; //throw new TODO();
         TasksRegion r = (TasksRegion) obj;
-        return start == r.start && end == r.end && a == r.a && b == r.b;
+        return a == r.a && b == r.b && start == r.start && end == r.end;
     }
 
     @Override public String toString() {

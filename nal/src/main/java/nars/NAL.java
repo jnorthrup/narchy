@@ -51,11 +51,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
 
-    /**
-     * return <= 0 to disable
-     */
-    @Deprecated
-    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
+//    /**
+//     * return <= 0 to disable
+//     */
+//    @Deprecated
+//    public static final float TASKLINK_GENERATED_QUESTION_PRI_RATE = 0;
 
 
 
@@ -91,7 +91,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 6;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = ANSWER_BELIEF_MATCH_CAPACITY;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
@@ -277,8 +277,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         public static final int SERIES_MATCH_MIN = 1;
 
-        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.5f;
-        public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.75f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.25f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;
         public static final float CLEAN_MARGIN_DURS =
             0;
             //0.5f;
@@ -537,6 +537,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * minimum resolution for freq and conf components
          */
         public static final float TRUTH_EPSILON = 0.01f;
+
+        /** discrete confidence step for fine-grain 23-bit taskregion conf */
+        public static final double TASK_REGION_CONF_EPSILON = 1.0/(1<<23);
 
         public static final float CONF_MAX = 1f - TRUTH_EPSILON;
         public static final double EVI_MAX = c2wSafe(CONF_MAX);

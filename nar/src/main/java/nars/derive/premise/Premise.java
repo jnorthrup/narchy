@@ -229,7 +229,9 @@ public class Premise  {
 //				t -> !t.equals(task) :
 //				null;
 
-        return task(bb, beliefTerm, timeFocus(beliefTerm, d), beliefFilter, d);
+        Task t = task(bb, beliefTerm, timeFocus(beliefTerm, d), beliefFilter, d);
+
+        return t;
 	}
 
 	@Nullable

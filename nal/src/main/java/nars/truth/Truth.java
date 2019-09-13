@@ -45,8 +45,9 @@ public interface Truth extends Truthed {
     /**
      * truth component resolution corresponding to Param.TRUTH_EPSILON
      */
-    short hashDiscretenessEpsilon = (short)
-            (Math.round(1f / (NAL.truth.TRUTH_EPSILON)));
+    short hashDiscretenessCoarse = (short)
+            (Math.round(1.0 / (NAL.truth.TRUTH_EPSILON)));
+    int hashDiscretenessFine = (int) Math.round(1.0 / (NAL.truth.TASK_REGION_CONF_EPSILON));
 
     /**
      * The hash code of a TruthValue, perfectly condensed,
@@ -62,7 +63,7 @@ public interface Truth extends Truthed {
      * correct behavior of this requires epsilon
      * large enough such that: 0 <= h < 2^15:
      */
-    static int truthToInt(float freq, float conf, short discreteness) {
+    static int truthToInt(float freq, short freqDisc, float conf, short confDisc) {
 
         if (!Float.isFinite(freq) || freq < 0 || freq > 1)
             throw new TruthException("invalid freq", freq);
@@ -70,11 +71,11 @@ public interface Truth extends Truthed {
         if (!Float.isFinite(conf) || conf < 0)
             throw new TruthException("invalid conf", conf);
 
-        int freqHash = Util.toInt(freq, discreteness);
-        int confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), discreteness);
+        int freqHash = Util.toInt(freq, freqDisc);
+        int confHash = Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
         return (freqHash << 16) | confHash;
     }
-    static int truthToInt(double freq, double conf, short discreteness) {
+    static int truthToInt(double freq, short freqDisc, double conf, short confDisc) {
 
         if (!Double.isFinite(freq) || freq < 0 || freq > 1)
             throw new TruthException("invalid freq", freq);
@@ -82,21 +83,18 @@ public interface Truth extends Truthed {
         if (!Double.isFinite(conf) || conf < 0)
             throw new TruthException("invalid conf", conf);
 
-        int freqHash = (int) Util.toInt(freq, discreteness);
-        int confHash = (int) Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), discreteness);
+        int freqHash = (int) Util.toInt(freq, freqDisc);
+        int confHash = (int) Util.toInt(Math.min(NAL.truth.CONF_MAX, conf), confDisc);
         return (freqHash << 16) | confHash;
     }
 
-    static int truthToInt(float x) {
-        return Util.toInt(x, hashDiscretenessEpsilon);
-    }
-
     static int truthToInt(float freq, float conf) {
-        return truthToInt(freq, conf, hashDiscretenessEpsilon);
+        return truthToInt(freq, hashDiscretenessCoarse, conf, hashDiscretenessCoarse);
     }
     static int truthToInt(double freq, double conf) {
-        return truthToInt(freq, conf, hashDiscretenessEpsilon);
+        return truthToInt(freq, hashDiscretenessCoarse, conf, hashDiscretenessCoarse);
     }
+
 
     static float polarity(float freq) {
         return Math.abs(freq - 0.5f) * 2f;
@@ -127,16 +125,8 @@ public interface Truth extends Truthed {
         return new DiscreteTruth(h);
     }
 
-    static float freq(int h) {
-        return Util.toFloat(freqI(h) /* & 0xffff*/, hashDiscretenessEpsilon);
-    }
-
     static int freqI(int h) {
         return h >> 16;
-    }
-
-    static float conf(int h) {
-        return Util.toFloat(confI(h), hashDiscretenessEpsilon);
     }
 
     static int confI(int h) {

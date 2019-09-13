@@ -278,7 +278,7 @@ class RTreeBeliefTableTest {
         table.read(t -> {
             HyperIterator<TaskRegion> h = new HyperIterator(t.model,
                     new TaskRegion[Math.min(c, 32)],
-                    FloatRank.the(Answer.beliefStrength(s, e, dur)));
+                    FloatRank.the(Answer.beliefStrength(s, e)));
             while (h.hasNext()) {
                 seq.add(h.next());
             }

@@ -34,7 +34,7 @@ class RuleInductionTest {
 
         Deriver d = new Deriver(new PremiseRuleSet(n,
 
-                "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDepolarized, Time:Sequence)"
+                "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDD, Time:Sequence)"
 
 
         ));

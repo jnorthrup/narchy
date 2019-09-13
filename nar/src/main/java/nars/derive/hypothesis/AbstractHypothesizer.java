@@ -32,8 +32,10 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		}
 	}
 
+
 	protected void fireTask(When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink l) {
-		Task task = l.get(when);
+
+		Task task = l.get(when, d.tasklinkTaskFilter);
 		if (task != null && !task.isDeleted()) {
 			for (int i = 0; i < termLinksPerTaskLink; i++) {
 				process(links, d, l, task).derive(d);

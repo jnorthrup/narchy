@@ -5,7 +5,7 @@ import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -41,7 +41,7 @@ public class HyperIterator<X>  {
     }
 
     /** gets a set of LeafNode's before round-robin visiting their contents as an iterator */
-    public void bfs(RNode<X> root, Predicate whle) {
+    public void bfs(RNode<X> root, Predicate whle, Random random) {
         if (root instanceof RLeaf) {
             leaf((RLeaf) root, whle);
         } else {
@@ -80,7 +80,7 @@ public class HyperIterator<X>  {
 //                    throw new WTF();
 
 
-            } while (Util.or(x -> x instanceof RBranch, 0, plan.size(), plan.items)); //HACK
+            } while (findingLeaves || Util.or(x -> x instanceof RBranch, 0, plan.size(), plan.items)); //HACK
             //} while (findingLeaves);
 
 
@@ -88,11 +88,11 @@ public class HyperIterator<X>  {
             if (leaves == 1)
                 leaf((RLeaf<X>) plan.first(), whle);
             else
-                bfsRoundRobin(whle);
+                bfsRoundRobin(whle, random);
         }
     }
 
-    private void bfsRoundRobin(Predicate whle) {
+    private void bfsRoundRobin(Predicate whle, Random random) {
         int leaves = plan.size(); //assert(leaves > 0);
         int[] prog = new int[leaves];
         int n = 0;
@@ -104,7 +104,7 @@ public class HyperIterator<X>  {
         }
         int c = 0;
         int k = 0;
-        final int o = ThreadLocalRandom.current().nextInt(n * leaves); //shuffles the inner-leaf visiting order
+        final int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order
         do {
             int pk = prog[k];
             if (pk > 0) {

@@ -88,12 +88,12 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return get(when, null);
     }
 
-    @Nullable default /* final */Task get(When<NAR> when, Predicate<Task> filter) {
+    @Nullable default /* final */Task get(When<NAR> when, @Nullable Predicate<Task> filter) {
         return get(punc(when.x.random()), when, filter);
     }
 
 
-    @Nullable default Task get(byte punc, When<NAR> w, Predicate<Task> filter) {
+    @Nullable default Task get(byte punc, When<NAR> w, @Nullable Predicate<Task> filter) {
 
         Termed x = src(w);
 
@@ -106,34 +106,35 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
                 //beliefOrGoal ? n.conceptualizeDynamic(x) : n.beliefDynamic(x);
                 w.x.tableDynamic(x, punc);
 
-        if (table == null || table.isEmpty()) {
+        if (table == null || table.isEmpty())
             return null;
-        } else {
 
 
-            boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
 
-            //TODO abstract TaskLinkResolver strategy
-            Task y;
-            if ((punc==BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc==GOAL && NAL.TASKLINK_ANSWER_GOAL))
-                y = table.match(w, null, filter, w.dur, false);
-            else
-                y = table.sample(w, null, filter);
+//            boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
 
-            if (y == null) {
-                if (!beliefOrGoal) {
-                    //form question?
-                    float qpri = NAL.TASKLINK_GENERATED_QUESTION_PRI_RATE;
-                    if (qpri > Float.MIN_NORMAL) {
-                        Task.validTaskTerm(x.term(), punc, true);
-                    }
-                }
+        //TODO abstract TaskLinkResolver strategy
+        Task y;
+        if ((punc==BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc==GOAL && NAL.TASKLINK_ANSWER_GOAL))
+            y = table.match(w, null, filter, w.dur, false);
+        else {
+            y = table.sample(w, null, filter);
+        }
 
-//                if (y == null)
-//                    delete(punc); //TODO try another punc?
-            }
+//            if (y == null) {
+//                if (!beliefOrGoal) {
+//                    //form question?
+//                    float qpri = NAL.TASKLINK_GENERATED_QUESTION_PRI_RATE;
+//                    if (qpri > Float.MIN_NORMAL) {
+//                        Task.validTaskTerm(x.term(), punc, true);
+//                    }
+//                }
+//
+////                if (y == null)
+////                    delete(punc); //TODO try another punc?
+//            }
 
-            return y;
+        return y;
 
 //            if (task!=null) {
 //                    byte punc = task.punc();
@@ -160,8 +161,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //                        }
 //                    }
 //            }
-        }
-//        } else {
+        //        } else {
 //            //TODO if target supports dynamic truth, then possibly conceptualize and then match as above?
 //
 //            //form a question/quest task for the missing concept

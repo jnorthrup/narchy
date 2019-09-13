@@ -1,5 +1,6 @@
 package nars.task.util;
 
+import jcog.Util;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
 import jcog.util.ArrayUtil;
@@ -10,8 +11,6 @@ import nars.truth.Truth;
 
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /**
  * 3d cuboid region:
@@ -55,33 +54,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
 
     static TaskRegion mbr(TaskRegion x, Task y) {
-        if (x == y)
-            return x;
-        return TasksRegion.mbr(x, y.start(), y.end(), y.freq(), y.conf());
-    }
-
-    static TaskRegion mbr(TaskRegion x, TaskRegion y) {
-        if (x == y) return x;
-
-        if (y instanceof Task) {
-            assert (!(x instanceof Task)) : "mbr(task,task) should force creation of TasksRegion";
-            return TaskRegion.mbr(x, (Task) y);
-        }
-
-        TasksRegion z = new TasksRegion(
-                Math.min(x.start(), y.start()), Math.max(x.end(), y.end()),
-                Math.min(x.freqMin(), y.freqMin()),
-                Math.max(x.freqMax(), y.freqMax()),
-                Math.min(x.confMin(), y.confMin()),
-                Math.max(x.confMax(), y.confMax())
-        );
-        //may only be valid for non-Tasks
-        if (x instanceof TasksRegion && z.equals(x))
-            return x; //contains or equals y
-        else if (y instanceof TasksRegion && z.equals(y))
-            return y; //contained by y
-        else
-            return z; //enlarged (intersecting or disjoint)
+        return x == y ? x : TasksRegion.mbr(x, y.start(), y.end(), y.freq(), y.conf());
     }
 
     @Override
@@ -121,7 +94,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 1:
                 return (NAL.truth.TRUTH_EPSILON + range(1)) * FREQ_COST;
             case 2:
-                return (NAL.truth.TRUTH_EPSILON + range(2)) * CONF_COST;
+                return (NAL.truth.TASK_REGION_CONF_EPSILON + range(2)) * CONF_COST;
         }
         throw new UnsupportedOperationException();
     }
@@ -132,9 +105,9 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
             case 0:
                 return 1 + (end() - start());
             case 1:
-                return (freqMaxI() - freqMinI()) * NAL.truth.TRUTH_EPSILON;
+                return (1 + freqMaxI() - freqMinI()) * NAL.truth.TRUTH_EPSILON;
             case 2:
-                return (confMaxI() - confMinI()) * NAL.truth.TRUTH_EPSILON;
+                return (1 + confMaxI() - confMinI()) * NAL.truth.TASK_REGION_CONF_EPSILON;
             default:
                 throw new UnsupportedOperationException();
         }
@@ -148,33 +121,57 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 
     @Override
     default TaskRegion mbr(HyperRegion r) {
-        return mbr(this, (TaskRegion) r);
+        if (this == r) return this;
+
+        if (r instanceof Task) {
+            assert (!(this instanceof Task)) : "mbr(task,task) should force creation of TasksRegion";
+            return TaskRegion.mbr(this, (Task) r);
+        } else {
+            TaskRegion R = (TaskRegion) r;
+            if (contains(r))
+                return this;
+            else if (r.contains(this))
+                return R;
+
+            return new TasksRegion(
+                Math.min(start(), R.start()), Math.max(end(), R.end()),
+                Math.min(freqMinI(), R.freqMinI()), Math.max(freqMaxI(), R.freqMaxI()),
+                Math.min(confMinI(), R.confMinI()), Math.max(confMaxI(), R.confMaxI())
+            );
+//            //may only be valid for non-Tasks
+//            if (this instanceof TasksRegion && z.equals(this))
+//                return this; //contains or equals y
+//            else if (r instanceof TasksRegion && z.equals(r))
+//                return (TaskRegion) r; //contained by y
+//            else
+//                return z; //enlarged (intersecting or disjoint)
+        }
     }
 
     @Override
     default /* final */ boolean intersects(HyperRegion _y) {
         if (_y == this) return true;
-        long start = start();
-        if (start == ETERNAL) return true;
 
         TaskRegion y = (TaskRegion) _y;
-        if (y.intersects(start, end())) {
+        if (LongInterval.super.intersects(y)) {
+        //if (y.intersects(start(), end())) {
 
-            int xfa = freqMinI(), yfb = y.freqMaxI();
-            if (xfa <= yfb) {
-                int xca = confMinI(), ycb = y.confMaxI();
-                if (xca <= ycb) {
+            int xca = confMinI(), ycb = y.confMaxI();
+            if (xca <= ycb) {
+                int xfa = freqMinI(), yfb = y.freqMaxI();
+                if (xfa <= yfb) {
+
 
                     boolean xt = this instanceof Task, yt = _y instanceof Task;
                     if (xt && yt)
-                        return true;
+                        return true; //HACK shortcut since tasks currently only have one flat freq but could change with piecewise linear truth
 
-                    int xfb = xt ? xfa : freqMaxI();
-                    int yfa = yt ? yfb : y.freqMinI();
-                    if (xfb >= yfa) {
-                        int xcb = xt ? xca : confMaxI();
-                        int yca = yt ? ycb : y.confMinI();
-                        return xcb >= yca;
+                    int xcb = xt ? xca : confMaxI();
+                    int yca = yt ? ycb : y.confMinI();
+                    if (xcb >= yca) {
+                        int xfb = xt ? xfa : freqMaxI();
+                        int yfa = yt ? yfb : y.freqMinI();
+                        return (xfb >= yfa);
                     }
                 }
             }
@@ -187,10 +184,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         if (x == this) return true;
         TaskRegion t = (TaskRegion) x;
         if (LongInterval.super.contains(((LongInterval)t))) {
-            return freqMinI() <= t.freqMinI() &&
-                    freqMaxI() >= t.freqMaxI() &&
-                    confMinI() <= t.confMinI() &&
-                    confMaxI() >= t.confMaxI();
+            return
+                confMinI() <= t.confMinI() &&
+                confMaxI() >= t.confMaxI() &&
+                freqMinI() <= t.freqMinI() &&
+                freqMaxI() >= t.freqMaxI()
+                ;
         }
         return false;
     }
@@ -199,7 +198,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         switch (dimension) {
             case 0: return maxOrMin ? end() : start();
             case 1: return (maxOrMin ? freqMaxI() : freqMinI())*(NAL.truth.TRUTH_EPSILON);
-            case 2: return (maxOrMin ? confMaxI() : confMinI())*(NAL.truth.TRUTH_EPSILON);
+            case 2: return (maxOrMin ? confMaxI() : confMinI())*(NAL.truth.TASK_REGION_CONF_EPSILON);
             default: return Double.NaN;
         }
     }
@@ -208,7 +207,7 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
         switch (dimension) {
             case 0: return mid();
             case 1: return (freqMinI() + freqMaxI())*(0.5 * NAL.truth.TRUTH_EPSILON);
-            case 2: return (confMinI() + confMaxI())*(0.5 * NAL.truth.TRUTH_EPSILON);
+            case 2: return (confMinI() + confMaxI())*(0.5 * NAL.truth.TASK_REGION_CONF_EPSILON);
             default: return Double.NaN;
         }
     }
@@ -226,9 +225,12 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     float confMax();
 
     default int i(boolean freqOrConf, boolean maxOrMin) {
-        return Truth.truthToInt(freqOrConf ?
-            (maxOrMin ? freqMax() : freqMin()) :
-            (maxOrMin ? confMax() : confMin()));
+        return Util.toInt(
+            freqOrConf ?
+                (maxOrMin ? freqMax() : freqMin()) :
+                (maxOrMin ? confMax() : confMin()),
+
+            freqOrConf ? Truth.hashDiscretenessCoarse : Truth.hashDiscretenessFine);
     }
 
     default int freqMinI() {
@@ -242,10 +244,6 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
     }
     default int confMaxI() {
         return i(false, true);
-    }
-
-	default double eviMean() {
-        return c2wSafe((double)confMean());
     }
 
 }

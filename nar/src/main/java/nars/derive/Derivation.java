@@ -163,11 +163,15 @@ public class Derivation extends PreDerivation {
 
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;
-    private transient short[] parentCause;
+
+    public Predicate<nars.Task> tasklinkTaskFilter =
+        (Task t) -> t.isQuestionOrQuest() || t.evi() >= eviMin;
+
+	private transient short[] parentCause;
 
     /** evi avg */
-    public double eviDouble;
-    public double eviSingle;
+    private double eviDouble;
+    private double eviSingle;
 
     private transient long[] stampDouble, stampSingle;
     private transient int taskUniqueAnonTermCount;
