@@ -134,7 +134,7 @@ public class Derivation extends PreDerivation {
      * current context
      */
     public transient What what = null;
-    public NAR nar;
+    @Deprecated public NAR nar;
     /**
      * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
      */
@@ -160,6 +160,9 @@ public class Derivation extends PreDerivation {
     @Deprecated public final MutableTruth truth = new MutableTruth();
     @Deprecated public transient byte punc;
     @Deprecated public transient TruthFunction truthFunction;
+
+    public transient long time = TIMELESS;
+    public transient float dur = Float.NaN;
 
     public transient Task _task, _belief;
     public DerivationTransform transformDerived;
@@ -305,8 +308,8 @@ public class Derivation extends PreDerivation {
 
     @Nullable private Truth beliefAtTask(Task nextBelief) {
         @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur(), true); //integration-calculated
-        //return t!=null && t.evi() >= eviMin ? t : null;
-        return t;
+        return t!=null && t.evi() >= eviMin ? t : null;
+        //return t;
     }
 
     private Task resetTask(final Task nextTask, Task currentTask) {
@@ -441,9 +444,11 @@ public class Derivation extends PreDerivation {
                 Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
-        this.confMin = n.confMin.floatValue();
+        this.confMin = n.confMin.conf();
         this.eviMin = n.confMin.evi();
         this.termVolMax = n.termVolMax.intValue();
+        this.time = n.time();
+        this.dur = w.dur();
         return this;
     }
 
@@ -591,11 +596,11 @@ public class Derivation extends PreDerivation {
      * current NAR time, set at beginning of derivation
      */
     public final long time() {
-        return nar.time();
+        return time;
     }
 
     public final float dur() {
-        return what.dur();
+        return dur;
     }
 
     public final NAR nar() {

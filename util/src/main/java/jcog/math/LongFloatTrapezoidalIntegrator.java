@@ -22,16 +22,12 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
 
     public double integrate2(long a, long b) {
         double aa = applyAsDouble(a);
-        if (a == b)
-            return aa;
-        else {
-            long range = b-a; //assert(range > 0):"x must be monotonically increasing";
-            double bb = applyAsDouble(b);
-            return (aa + bb) / 2 * (range + 1);
-        }
+        return a == b ?
+            aa :
+            (((b - a) + 1) * (aa + applyAsDouble(b))) / 2;
     }
 
-    public double integrateN(long a, long b, long c) {
+    public double integrate3(long a, long b, long c) {
         if (a == b)
             return integrate2(a, c);
         else if (b == c)
@@ -41,16 +37,16 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
         double ab = (aa+bb), bc = (bb + cc);
         return ((((b-a)+1) * ab) + (((c-b)+1) * bc))/2;
     }
-    public double integrateN(long a, long b, long c, long d) {
+    public double integrate4(long a, long b, long c, long d) {
         if (a == b)
-            return integrateN(a, c, d);
+            return integrate3(a, c, d);
         if (b == c)
-            return integrateN(a, b, d);
+            return integrate3(a, b, d);
         if (c == d)
-            return integrateN(a, b, c);
+            return integrate3(a, b, c);
         double aa = applyAsDouble(a), bb = applyAsDouble(b), cc = applyAsDouble(c), dd = applyAsDouble(d);
         double ab = (aa+bb), bc = (bb + cc), cd = (cc+dd);
-        return ((((b-a)+1) * ab) + (((c-b)+1) * bc) + ((d-c)+1 * cd))/2;
+        return ((((b-a)+1) * ab) + (((c-b)+1) * bc) + (((d-c)+1) * cd))/2;
     }
 
     public double integrateN(long... x) {

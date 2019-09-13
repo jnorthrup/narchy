@@ -6,9 +6,9 @@ import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.truth.Truth;
+import nars.truth.func.TruthFunctions;
 
 import static jcog.math.LongInterval.TIMELESS;
-import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -164,16 +164,16 @@ public class DefaultDerivePri implements DerivePri {
     @Override public float prePri(Derivation d) {
 
         if (d.isBeliefOrGoal()) {
-            //belief or goal conf boost
             //TODO include time range as factor since it's average evi
             double te = d.truth.evi();
-//            double de = d.evi();
-//            double maintained =
-//                    //te / (te + de) //as weight
-//                    TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
-//            ;
-//            return (float) (1 + Math.min(1, maintained));
-            return (float) (1 + w2cSafe(te));
+            double de = d.evi();
+            double maintained =
+                    //te / (te + de) //as weight
+                    TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
+            ;
+            return (float) (1 + (Math.min(1, maintained)));
+            //return (float) (1 + Math.min(1, maintained));
+            //return (float) (1 + sqrt(w2cSafe(te)));
         } else {
             //question
             return 1;

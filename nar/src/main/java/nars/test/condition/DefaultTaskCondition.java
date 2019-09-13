@@ -1,6 +1,5 @@
 package nars.test.condition;
 
-import nars.NAL;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -107,19 +106,19 @@ public class DefaultTaskCondition extends TaskCondition {
 
 		byte punc = this.punc;
 		if (t.punc() == punc) {
-			if (creationTimeMatches() && occurrenceTimeMatches(t)) {
+			if (occurrenceTimeMatches(t) && creationTimeMatches()) {
 				if (((punc != Op.BELIEF) && (punc != Op.GOAL)) || truthMatches(t)) {
 					Term tt = t.term();
 					if (tt.equals(this.term)) {
 						firstMatch = t;
 						return true;
-					} else {
+					}/* else {
 						if (NAL.DEBUG) {
-							if (tt.op() == term.op() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
+							if (tt.opID() == term.opID() && tt.volume() == this.term.volume() && tt.structure() == this.term.structure() && this.term.toString().equals(tt.toString())) {
 								throw new RuntimeException("target construction problem: " + this.term + " .toString() is equal to " + tt + " but inequal otherwise");
 							}
 						}
-					}
+					}*/
 				}
 			}
 		}
