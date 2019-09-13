@@ -7,9 +7,7 @@ import jcog.data.list.FasterList;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.Task;
 import nars.exe.Exec;
-import nars.task.AbstractTask;
 import nars.time.clock.RealTime;
 
 import java.io.IOException;
@@ -169,7 +167,7 @@ abstract public class MultiExec extends Exec {
 
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability)
-                accept(new QueueLatencyMeasurement(nanoTime()));
+                execute(new QueueLatencyMeasurement(nanoTime()));
 
             this.threadWorkTimePerCycle = threadWorkTimePerCycle;
             this.threadIdleTimePerCycle = threadIdleTimePerCycle;
@@ -183,7 +181,7 @@ abstract public class MultiExec extends Exec {
 
     }
 
-    static private class QueueLatencyMeasurement extends AbstractTask {
+    static private class QueueLatencyMeasurement implements Consumer<NAR> {
 
         private final long start;
 
@@ -203,10 +201,9 @@ abstract public class MultiExec extends Exec {
         }
 
         @Override
-        public Task next(Object n) {
+        public void accept(NAR n) {
             long end = nanoTime();
-            queueLatency(start, end, (NAR) n);
-            return null;
+            queueLatency(start, end, n);
         }
     }
 

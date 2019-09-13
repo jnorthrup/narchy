@@ -8,7 +8,6 @@ import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.op.Remember;
-import nars.control.op.TaskEvent;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SeriesBeliefTable.SeriesTask;
@@ -202,7 +201,7 @@ public class SensorBeliefTables extends BeliefTables {
 //                ww.links.link(tl);
             }
 
-            TaskEvent.emit(next, w);
+            w.emit(next);
         }
 
     }

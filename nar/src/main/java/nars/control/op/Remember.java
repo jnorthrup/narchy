@@ -31,8 +31,6 @@ public class Remember extends AbstractTask {
     public Task input;
     @Nullable public Task result = null;
 
-//    public FasterList<Task> remembered = null;
-
     public boolean store;
     public boolean link;
     public boolean notify;

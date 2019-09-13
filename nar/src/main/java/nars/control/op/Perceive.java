@@ -43,7 +43,7 @@ public enum Perceive {
             return xPerceived;
 
         Task executionPerceived = cmd || punc == GOAL && !x.isEternal() ?
-                execOperator(x, n, cmd) : null;
+                execOperator(x, w, cmd) : null;
 
         Task perceived;
         if (executionPerceived != null) {
@@ -123,11 +123,12 @@ public enum Perceive {
 
 
 
-    private static Task execOperator(Task t, NAR n, boolean cmd) {
+    private static Task execOperator(final Task t, What w, boolean cmd) {
         Term maybeOperator = Functor.func(t.term());
         if (maybeOperator == Bool.Null)
             return null;
 
+        NAR n = w.nar;
         Concept oo = n.concept(maybeOperator);
         if (!(oo instanceof Operator))
             return null;
@@ -145,8 +146,9 @@ public enum Perceive {
             //queue.addAt(Operator.error(this, xtt, n.time()));
             return null;
         }
-        if (cmd)
-            queue.add(new TaskEvent(t));
+        if (cmd) {
+            w.emit(t); //queue.add(new TaskEvent(t));
+        }
 
         return task(queue, false);
     }

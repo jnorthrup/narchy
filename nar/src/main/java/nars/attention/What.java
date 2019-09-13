@@ -11,7 +11,6 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.PriNARPart;
-import nars.control.op.TaskEvent;
 import nars.derive.pri.DefaultDerivePri;
 import nars.derive.pri.DerivePri;
 import nars.exe.Exec;
@@ -174,7 +173,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
     public abstract Stream<Concept> concepts();
 
     public void emit(Task t) {
-        TaskEvent.emit(t, this);
+        eventTask.emit(t, t.punc());
     }
 
 

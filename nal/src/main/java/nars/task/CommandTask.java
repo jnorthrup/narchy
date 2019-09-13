@@ -78,7 +78,6 @@ public class CommandTask implements Task {
 
     @Override
     public boolean delete() {
-        
         return false;
     }
 
