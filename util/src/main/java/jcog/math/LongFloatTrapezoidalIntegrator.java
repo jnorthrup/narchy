@@ -27,19 +27,30 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
         else {
             long range = b-a; //assert(range > 0):"x must be monotonically increasing";
             double bb = applyAsDouble(b);
-            return (aa + bb) / 2.0 * (range + 1);
+            return (aa + bb) / 2 * (range + 1);
         }
     }
 
-    public double integrate3(long a, long b, long c) {
+    public double integrateN(long a, long b, long c) {
         if (a == b)
             return integrate2(a, c);
         else if (b == c)
             return integrate2(a, b);
 
         double aa = applyAsDouble(a), bb = applyAsDouble(b), cc = applyAsDouble(c);
-        double ab = (aa+bb)/2.0, bc = (bb + cc)/2.0;
-        return (((b-a)+1) * ab) + (((c-b)+1) * bc);
+        double ab = (aa+bb), bc = (bb + cc);
+        return ((((b-a)+1) * ab) + (((c-b)+1) * bc))/2;
+    }
+    public double integrateN(long a, long b, long c, long d) {
+        if (a == b)
+            return integrateN(a, c, d);
+        if (b == c)
+            return integrateN(a, b, d);
+        if (c == d)
+            return integrateN(a, b, c);
+        double aa = applyAsDouble(a), bb = applyAsDouble(b), cc = applyAsDouble(c), dd = applyAsDouble(d);
+        double ab = (aa+bb), bc = (bb + cc), cd = (cc+dd);
+        return ((((b-a)+1) * ab) + (((c-b)+1) * bc) + ((d-c)+1 * cd))/2;
     }
 
     public double integrateN(long... x) {
@@ -49,6 +60,7 @@ abstract public class LongFloatTrapezoidalIntegrator implements LongToDoubleFunc
         for (int i = 1, xLength = x.length; i < xLength; i++) {
             long xNext = x[i];
             if (xPrev != xNext) {
+                assert(xNext > xPrev);
                 double yNext = applyAsDouble(xNext);
                 sum = sample(xPrev, yPrev, xNext, yNext, sum);
                 yPrev = yNext;

@@ -12,10 +12,10 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
 
     @Test
     void goal_decomposition_1_union() {
-        test.termVolMax(8);
+        test.termVolMax(7);
         test.input("(x --> (bird | swimmer))! %0.9;0.9%");
         test.input("(x --> swimmer). %0.1;0.9%");
-        test.mustGoal(cycles, "(x --> bird)", 0.91f, 0.66f);
+        test.mustGoal(cycles, "(x --> bird)", 0.81f, 0.66f);
     }
 //    @Test
 //    void goal_decomposition_1b() {
@@ -28,7 +28,7 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
     @Test
     @Disabled /* TODO check */
     void goal_decomposition_1_intersection_subj() {
-        test.termVolMax(8);
+        test.termVolMax(5);
         test.input("((bird & swimmer) --> x)! %0.9;0.9%");
         test.input("(swimmer --> x). %0.9;0.9%");
         test.mustGoal(cycles, "(bird --> x)", 0.81f, 0.66f);

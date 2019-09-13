@@ -15,4 +15,9 @@ public class LambdaTaskCondition extends TaskCondition {
     @Override public boolean matches(@Nullable Task task) {
         return tc.test(task);
     }
+
+    /** unknown */
+    @Override protected float value(Task task, float worstDiffNeg) {
+        return 0;
+    }
 }

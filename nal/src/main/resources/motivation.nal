@@ -1,6 +1,6 @@
 //Question Induction
-  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:TaskEvent)
-  X, C, eventOfPN(C,X), --is(X,"==>"), task("?@") |- (polarizeRandom(conjWithoutPN(C,X))==>X), (Punctuation:Question, Time:TaskEvent)
+//  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:TaskEvent)
+//  X, C, eventOfPN(C,X), --is(X,"==>"), task("?@") |- (polarizeRandom(conjWithoutPN(C,X))==>X), (Punctuation:Question, Time:TaskEvent)
     //TODO unified conj question
 
 
@@ -39,20 +39,20 @@
     //G, B, task("!"), neq(G,B), --is(B,"?"), hasBelief() |-    (polarizeTask(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //bifurcate plan
-    G, B, task("@"), --is(B,"?"), hasBelief(), neqPN(G,B)   |-  (polarizeRandom(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
+    //G, B, task("@"), --is(B,"?"), hasBelief(), neqPN(G,B)   |-  (polarizeRandom(G) && polarizeBelief(B)), (Punctuation:Quest, Time:Task)
 
     //bifurcate conj
     //(X && Y), (X && Y) |- ((X && ?1) && --(Y && ?2)), (Punctuation:Ask)
 
     //implication look-ahead
-    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
+    //(X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- ((X && polarizeTask(Y)) ==> ?1), (Punctuation:Question, Time:BeliefEvent)
 
     //implication look-behind
-    (X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
+    //(X==>Y), (X==>Y), task("."), --isVar(X), --isVar(Y), neqPN(X,Y) |- (?1 ==> (  X && polarizeTask(Y))), (Punctuation:Question)
 
 
     //sequence possibility quest
-    C, X, task("@"), eventOfPN(C,X), hasBelief() |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
+    //C, X, task("@"), eventOfPN(C,X), hasBelief() |-  (conjWithoutPN(C,X) && ?1), (Punctuation:Quest)
 
     //rectify goal inversion
     //G, (G && --G), task("!"), hasBelief() |- (?X ==> (polarizeTask(G) && polarizeTask(G))) , (Punctuation:Question, Time:BeliefRelative)
@@ -64,12 +64,12 @@
 
 
     //conj quest to impl question
-    (G && C), B, eqNeg(C,B), task("@"), --is(B,"==>"), hasBelief(), neqPN(B,G) |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:BeliefRelative)
+    (G && C), B, eqNeg(C,B), task("@"), --is(B,"==>"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:BeliefRelative)
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-    B, X, task("@"), --is(B,"==>"), hasBelief(), neqPN(X,B) |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
+    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication
@@ -82,12 +82,12 @@
 
 
     //anti-conjunction containing anti-goal
-    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:Task)
-    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:Task)
-//        G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-//        G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
-    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:Task)
-    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && --conjBefore(C,G)),   (Punctuation:Ask, Time:Task)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:TaskEvent)
+    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:TaskEvent)
+    //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:TaskEvent)
+    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && --conjBefore(C,  G)),   (Punctuation:Ask, Time:TaskEvent)
     //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
     //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
 

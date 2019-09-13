@@ -3,24 +3,24 @@
 // Conditional syllogism && Independent Variable Elimination
 //      If after M, P usually happens, and M happens, it means P is expected to happen
 
-     B, (X ==> A), --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
-       //B, (X ==> A), --is(B,"==>") |- unisubst(X,A,B,"$"), (                Goal:Post, Time:TaskImmediate)
-         (X ==> A), B, --is(B,"==>") |- unisubst(X,A,B,"$"), (Belief:PostWeakX, Time:BeliefEvent)
+     B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Belief:PostWeak, Goal:Post, Time:TaskEvent)
+       //B, (X ==> A), --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (                Goal:Post, Time:TaskImmediate)
+         (X ==> A), B, --is(B,"==>"), --isVar(X) |- unisubst(X,A,B,"$"), (Belief:PostWeakX, Time:BeliefEvent)
 
        //anti-goal
-       B, (X ==> A),  --is(B,"==>") |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
-        //B, (X ==> A),  --is(B,"==>") |- unisubst((--X && --polarizeBelief(B)),A,B,"$"), (Goal:PostPN, Time:TaskEvent)
+      B, (X ==> A),  --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostPN, Time:TaskEvent)
+        //B, (X ==> A),  --is(B,"==>"), --isVar(X) |- unisubst((--X && --polarizeBelief(B)),A,B,"$"), (Goal:PostPN, Time:TaskEvent)
 
 
 
-     B, (  X ==> C), --is(X,"--"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:DeductionWeakPP, Time:TaskEvent)
-     (  X ==> C), B, --is(X,"--"), --is(B,"==>")       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,                       Time:BeliefEvent)
-         B, (  X ==> C), --is(X,"--"), --is(B,"==>")   |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:DeductionWeakPN, Time:TaskEvent)
-         (  X ==> C), B, --is(X,"--"), --is(B,"==>")   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                       Time:BeliefEvent)
-       B, (--X ==> C), --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:DeductionWeakNP, Time:TaskEvent)
-       (--X ==> C), B, --is(B,"==>")                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionPN,                       Time:BeliefEvent)
-           B, (--X ==> C), --is(B,"==>")               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:DeductionWeakNN, Time:TaskEvent)
-           (--X ==> C), B, --is(B,"==>")               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                       Time:BeliefEvent)
+     B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:DeductionWeakPP, Time:TaskEvent)
+     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,                       Time:BeliefEvent)
+         B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:DeductionWeakPN, Time:TaskEvent)
+         (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                       Time:BeliefEvent)
+       B, (--X ==> C), --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:DeductionWeakNP, Time:TaskEvent)
+       (--X ==> C), B, --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionPN,                       Time:BeliefEvent)
+           B, (--X ==> C), --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:DeductionWeakNN, Time:TaskEvent)
+           (--X ==> C), B, --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                       Time:BeliefEvent)
 
        //questions
           B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
@@ -35,8 +35,6 @@
        B, (--A ==> X), --is(B,"==>"), is(A,"&&") |-  --unisubst((--A==>X),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDN, Time:TaskEvent)
 
 
-        //antigoal:
-        //B, (C ==> A), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- --unisubst(C,A,B), (Goal:PostStrongPN, Time:TaskMinusBeliefDT)
 
         //questions
           B, (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
@@ -44,8 +42,8 @@
 
 
        //second layer
-       B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Goal:DeductionWeakDP, Time:TaskEvent)
-        B, ((&&,C,A..+) ==> X), neq(B,C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Goal:DeductionWeakDN, Time:TaskEvent)
+       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Goal:DeductionWeakDP, Time:TaskEvent)
+        B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Goal:DeductionWeakDN, Time:TaskEvent)
 
 
 //            //--is(A,"#"),
@@ -105,16 +103,16 @@
 //DEDUCTION ----
     (S ==> M),   (M ==> P)    |-     (S ==> P),   (Belief:DeductionPP, Time:Compose)
       (M ==> P), (S ==> M)      |-   (S ==> P),   (Belief:DeductionPP, Time:Compose)
-            (S ==> P), (M ==> P), task("?"), hasBelief()   |- (S ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (S ==> M), task("?"), hasBelief()   |- (M ==> P), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> P), task("?")   |- (S ==> M), (Punctuation:Question, Time:Compose)
+            (S ==> P), (S ==> M), task("?")   |- (M ==> P), (Punctuation:Question, Time:Compose)
 
     (S ==> M),   (M ==> P)    |-   --(S ==> P), (Belief:DeductionPN, Time:Compose)
       (S ==> M),   (M ==> P)    |-   (S ==> --P), (Belief:DeductionNP, Time:Compose)
 
     (S ==> M), (--M ==> P)    |-     (S ==> P),   (Belief:DeductionNP, Time:Compose)
       (--M ==> P), (S ==> M)    |-   (S ==> P),     (Belief:DeductionPN, Time:Compose)
-            (S ==> P), (--M ==> P), task("?"), hasBelief() |- (S ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (S ==> M), task("?"), hasBelief()   |- (--M ==> P), (Punctuation:Question, Time:Task)
+            (S ==> P), (--M ==> P), task("?") |- (S ==> M), (Punctuation:Question, Time:Compose)
+            (S ==> P), (S ==> M), task("?")   |- (--M ==> P), (Punctuation:Question, Time:Compose)
 
     (S ==> M), (--M ==> P)    |-   --(S ==> P), (Belief:DeductionNN, Time:Compose)
       (--M ==> P), (S ==> M)    |-   (S ==> --P),   (Belief:DeductionNN, Time:Compose)
@@ -122,16 +120,16 @@
 //EXEMPLIFICATION
     (  M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
       (P ==> M), (  M ==> S)     |- (  S ==> P), (Belief:ExemplificationPP, Time:Compose)
-            (S ==> P), (M ==> S), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (P ==> M), task("?"), hasBelief()   |- (M ==> S), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Compose)
+            (S ==> P), (P ==> M), task("?")   |- (M ==> S), (Punctuation:Question, Time:Compose)
 
     (  M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNP, Time:Compose)
       (P ==> M), (M ==> S)       |- (--S ==> P), (Belief:ExemplificationPN, Time:Compose)
 
     (--M ==> S), (P ==> M)       |- (  S ==> P), (Belief:ExemplificationPN, Time:Compose)
       (P ==> M), (--M ==> S)     |- (  S ==> P), (Belief:ExemplificationNP, Time:Compose)
-            (S ==> P), (--M ==> S), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (P ==> M), task("?"), hasBelief()   |- (--M ==> S), (Punctuation:Question, Time:Task)
+            (S ==> P), (--M ==> S), task("?")   |- (P ==> M), (Punctuation:Question, Time:Compose)
+            (S ==> P), (P ==> M), task("?")   |- (--M ==> S), (Punctuation:Question, Time:Compose)
 
     (--M ==> S), (P ==> M)       |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
       (P ==> M), (--M ==> S)     |- (--S ==> P), (Belief:ExemplificationNN, Time:Compose)
@@ -140,21 +138,16 @@
 
     (M ==> S), (M ==> P) |- (S ==> P), (Belief:Abduction, Time:Compose)
         (M ==> S), (M ==> P) |- (--S ==> --P), (Belief:AbductionNN, Time:Compose)
-            (S ==> P), (M ==> P), task("?"), hasBelief()   |- (M ==> S), (Punctuation:Question, Time:Task)
-            (S ==> P), (M ==> S), task("?"), hasBelief()   |- (M ==> P), (Punctuation:Question, Time:Task)
-            (--S ==> P), (M ==> P), task("?"), hasBelief()   |- (M ==> S), (Punctuation:Question, Time:Task)
-            (--S ==> P), (M ==> S), task("?"), hasBelief()   |- (M ==> P), (Punctuation:Question, Time:Task)
+            (S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Compose)
+            (S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Compose)
+            (--S ==> P), (M ==> P), task("?")   |- (M ==> S), (Punctuation:Question, Time:Compose)
+            (--S ==> P), (M ==> S), task("?")   |- (M ==> P), (Punctuation:Question, Time:Compose)
 
-    (M ==> P), (M ==> S) |- (S ==> P), (Belief:Induction, Time:Compose)
-        (M ==> P), (M ==> S) |- (--S ==> --P), (Belief:InductionNN, Time:Compose)
+    (S ==> M), (P ==> M) |- (S ==> P), (Belief:Induction, Time:Compose)
+        (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionNN, Time:Compose)
+            (S ==> P), (P ==> M), task("?")   |- (S ==> M), (Punctuation:Question, Time:Compose)
+            (S ==> P), (S ==> M), task("?")   |- (P ==> M), (Punctuation:Question, Time:Compose)
 
-    (S ==> M), (P ==> M) |- (S ==> P), (Belief:InductionPB, Time:Compose)
-            (S ==> P), (P ==> M), task("?"), hasBelief()   |- (S ==> M), (Punctuation:Question, Time:Task)
-            (S ==> P), (S ==> M), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
-
-    (S ==> M), (P ==> M) |- (P ==> S), (Belief:AbductionPB, Time:Compose)
-            (P ==> S), (P ==> M), task("?"), hasBelief()   |- (S ==> M), (Punctuation:Question, Time:Task)
-            (P ==> S), (S ==> M), task("?"), hasBelief()   |- (P ==> M), (Punctuation:Question, Time:Task)
 
 
 
@@ -185,11 +178,11 @@
 //TODO: ...Also:VarIntro)
 
     //TODO DynamicImplTruth
-    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
-       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
+    //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
+    //   (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
 
-        (P ==> M), (S ==> M), hasBelief(), neqPN(P,S)  |- ((P && S) ==> M), (Punctuation:AskAsk, Time:Task)
-        (P ==> M), (S ==> M), hasBelief(), neqPN(P,S)  |- ((P || S) ==> M), (Punctuation:AskAsk, Time:Task)
+        (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAsk, Time:Task)
+        (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAsk, Time:Task)
         //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAll, Time:Compose)
           //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAll, Time:Compose)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)
@@ -201,8 +194,8 @@
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
        (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
 
-     (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
-       (M ==> P), (M ==> S), hasBelief(), neq(S,P)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
+     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
+       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
 
 
 //        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)
@@ -231,7 +224,11 @@
 
 
     //Conj/Impl Chain Deduction
-    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   polarizeBelief(((X && conjWithout(C,  polarizeTask(Y))) ==> Z)), (Belief:DeductionDD, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+    (X ==> Y), (--C ==> Z), eventOf(C,Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+
 //    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Compose)
 //      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Compose)
 //    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   ((X && conjWithout(C,--Y)) ==> Z), (Belief:DeductionNP, Time:Compose)

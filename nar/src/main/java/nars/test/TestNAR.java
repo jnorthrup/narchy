@@ -5,6 +5,7 @@ import jcog.event.ByteTopic;
 import nars.*;
 import nars.term.Term;
 import nars.term.util.TermException;
+import nars.test.condition.DefaultTaskCondition;
 import nars.test.condition.LambdaTaskCondition;
 import nars.test.condition.NARCondition;
 import nars.test.condition.TaskCondition;
@@ -298,7 +299,8 @@ public class TestNAR {
      */
 
     public TestNAR mustNotOutputAnything() {
-        //exitOnAllSuccess = false;
+
+        //TODO use LambaTaskCondition
         requireConditions = false;
         nar.onTask(c -> {
             if (!c.isInput())
@@ -382,7 +384,7 @@ public class TestNAR {
         float hf = freqTolerance / 2.0f, hc = confTolerance / 2.0f;
 
         return must(c, punc, mustOrMustNot,
-                new TaskCondition.DefaultTaskCondition(nar,
+                new DefaultTaskCondition(nar,
                     cycleStart, cycleEnd,
                     term, punc,
                     freqMin - hf, freqMax + hf,
@@ -410,10 +412,10 @@ public class TestNAR {
 
     public TestNAR must(ByteTopic<Task> c, byte punc, boolean mustOrMustNot, TaskCondition tc) {
 
-        c.on(tc, punc);
+        c.on(tc::test, punc);
 
-        if (reportStats && tc instanceof TaskCondition.DefaultTaskCondition)
-            ((TaskCondition.DefaultTaskCondition)tc).similars(maxSimilars);
+        if (reportStats && tc instanceof DefaultTaskCondition)
+            tc.similars(maxSimilars);
 
         finished = false;
 

@@ -76,8 +76,8 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = true;
-    static final boolean initMetaRL = true;
+    static final boolean initMeta = false;
+    static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
     /**
@@ -295,8 +295,8 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w, 512,
                                 //1024,
-                                //new PriBuffer.DirectTaskBuffer()
-                                new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
+                                new PriBuffer.DirectTaskBuffer()
+                                //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
                                 //new PriBuffer.MapTaskBuffer()
 
                         )
