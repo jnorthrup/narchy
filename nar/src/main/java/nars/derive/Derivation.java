@@ -568,7 +568,7 @@ public class Derivation extends PreDerivation {
     }
 
     public final void derive(Task t) {
-        try (var __ = nar.emotion.derive_B2_Remember.time()) {
+        try (var __ = nar.emotion.derive_F_Remember.time()) {
 
             Task derived = derivationHistory.putIfAbsent(t, t);
             if (derived == null) {
@@ -586,14 +586,17 @@ public class Derivation extends PreDerivation {
     public boolean derive(Premise p, int deriveTTL) {
 
         int valid = 0, lastValid = -1;
+        short[] can;
 
-        try (var __ = this.nar.emotion.derive_B1_PreFilter.time()) {
+        try (var __ = nar.emotion.derive_C_Pre.time()) {
             p.apply(this);
 
-            short[] can = this.deriver.what(this);
+            can = this.deriver.what(this);
             if (can.length == 0)
                 return false;
+        }
 
+        try (var __ = nar.emotion.derive_D_Truthify.time()) {
             this.preReady();
 
 
@@ -617,27 +620,29 @@ public class Derivation extends PreDerivation {
             this.ready(deriveTTL); //first come first serve, maybe not ideal
         }
 
+        try (var __ = nar.emotion.derive_E_Run.time()) {
 
-        switch (valid) {
-            case 1:
-                //optimized 1-option case
-                //while (post[lastValid].run()) { }
-                post[lastValid].run();
-                break;
-            default:
+            switch (valid) {
+                case 1:
+                    //optimized 1-option case
+                    //while (post[lastValid].run()) { }
+                    post[lastValid].run();
+                    break;
+                default:
 
 //                int j;
 //                do {
 //                    j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);
 //                } while (post[j].run());
 
-                float[] pri = new float[valid];
-                for (int i = 0; i < valid; i++)
-                    pri[i] = post[i].pri;
-                MutableRoulette.run(pri, this.random, wi -> 0, i -> post[i].run());
-                break;
+                    float[] pri = new float[valid];
+                    for (int i = 0; i < valid; i++)
+                        pri[i] = post[i].pri;
+                    MutableRoulette.run(pri, this.random, wi -> 0, i -> post[i].run());
+                    break;
+            }
+            return true;
         }
-        return true;
     }
 
 

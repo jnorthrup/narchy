@@ -72,7 +72,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     //public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
 
     public final FastCounter premiseUnderivable = new FastCounter("premise underivable");
-    public final FastCounter premiseUnbudgetable = new FastCounter("premise unbudgetable");
+    public final FastCounter premiseUnbudgetableOrInvalid = new FastCounter("premise unbudgetable");
     public final FastCounter deriveTask = new FastCounter("derive task");
     public final FastCounter deriveTaskDup = new FastCounter("derive task recent duplicate");
     public final FastCounter deriveUnified = new FastCounter("derive unified");
@@ -90,10 +90,12 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FastCounter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate");
 
 
-    public final Use derive_A_PremiseMatch = new Use("derive A premise match");
-    public final Use derive_B0_Premise =      new Use("derive B derive");
-    public final Use derive_B1_PreFilter =    new Use("derive B1 prefilter");
-    public final Use derive_B2_Remember =     new Use("derive B2 remember");
+    public final Use derive_A_PremiseNew = new Use("derive A");
+    public final Use derive_B_PremiseMatch = new Use("derive B");
+    public final Use derive_C_Pre =    new Use("derive C");
+    public final Use derive_D_Truthify =      new Use("derive D");
+    public final Use derive_E_Run =      new Use("derive E");
+    public final Use derive_F_Remember =     new Use("derive F");
 
     /**
      * the indices of this array correspond to the ordinal() value of the MetaGoal enum values

@@ -111,9 +111,13 @@ public class AnonWithVarShift extends CachedAnon {
         //TODO dont remove if #1,$1 etc... ?
 
         if (!pe) //HACK UnifiedMap doesnt fast fail if size==1
-            putCache.removeIf((k, v)-> k.hasAny(mask));
+            putCache.removeIf(this::involvesMask);
         if (!ge) //HACK UnifiedMap doesnt fast fail if size==1
-            getCache.removeIf((k, v)-> v.hasAny(mask));
+            getCache.removeIf(this::involvesMask);
+    }
+
+    private boolean involvesMask(Term k, Term v) {
+        return k.hasAny(mask);
     }
 
     private void shiftZero() {

@@ -60,15 +60,17 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		FastCounter result;
 
 		Premise p;
-		try (var __ = e.derive_A_PremiseMatch.time()) {
-			p = premise(links, d, tasklink, task).match(d, matchTTL);
+		try (var __ = e.derive_A_PremiseNew.time()) {
+			p = premise(links, d, tasklink, task);
+		}
+		try (var __ = e.derive_B_PremiseMatch.time()) {
+			p = p.match(d, matchTTL);
 		}
 
 		if (p != null) {
 
-			try (var __ = e.derive_B0_Premise.time()) {
-				result = d.derive(p, deriveTTL) ? e.premiseDerived : e.premiseUnderivable;
-			}
+
+			result = d.derive(p, deriveTTL) ? e.premiseDerived : e.premiseUnderivable;
 
 //			if (result == e.premiseUnderivable)
 //				System.err.println("underivable: " + p);
@@ -76,7 +78,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 			//ttlUsed = Math.max(0, deriveTTL - d.ttl);
 
 		} else {
-			result = e.premiseUnbudgetable;
+			result = e.premiseUnbudgetableOrInvalid;
 			//ttlUsed = 0;
 		}
 

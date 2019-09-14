@@ -13,8 +13,7 @@ public class Use {
 	public final String id;
 
 	final static long MAX_TIME_SEC = 10;
-	final static long MIN_TIME_uSEC = 1;
-	final static long MAX_TIME_NS = MAX_TIME_SEC * 1_000_000_000, MIN_TIME_NS = MIN_TIME_uSEC * 1000;
+	final static long MAX_TIME_NS = MAX_TIME_SEC * 1_000_000_000, MIN_TIME_NS = 100;
 
 //	final AtomicLong totalNS = new AtomicLong();
 	final AtomicHistogram timeNS = new AtomicHistogram(MIN_TIME_NS, MAX_TIME_NS, 0);
@@ -70,7 +69,7 @@ public class Use {
 		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt(timeCopy.getTotalCount()) / mean;
 
 		return "mean=" + Texts.timeStr(Math.round(mean)) +
-			"±" + Texts.n2(confInterval*100) + '%';
+			"±" + Texts.n2(confInterval*100) + "% x " + timeCopy.getTotalCount();
 			//+ Texts.histogramString(timeCopy, false);
 	}
 }
