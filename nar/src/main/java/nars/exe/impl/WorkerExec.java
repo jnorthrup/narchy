@@ -96,17 +96,14 @@ public class WorkerExec extends ThreadedExec {
 				long worked = workEnd - workStart;
 
 				long cycleTimeRemain = threadWorkTimePerCycle - worked;
-				if (cycleTimeRemain > 0 && subCycleNS > 0) {
+				if (cycleTimeRemain > 0 && subCycleNS > 0)
 					play(workEnd + cycleTimeRemain);
 
-					sleep();
-				}
-
+				sleep();
 			}
 		}
 
 		protected void work() {
-
 
 			int batchSize = -1;
 			Object next;

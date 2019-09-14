@@ -7,6 +7,7 @@ import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
+import nars.table.dynamic.SeriesBeliefTable;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -24,6 +25,10 @@ public enum Perceive {
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
     public static void perceive(Task x, What w) {
+        //w.link(AtomicTaskLink.link(x.term().concept()).priSet(x.punc(), x.priElseZero()));
+
+        if (x instanceof SeriesBeliefTable.SeriesTask)
+            return; //ignore
 
         NAR n = w.nar;
         n.emotion.perceivedTaskStart.increment();

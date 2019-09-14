@@ -551,19 +551,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     /**
-     * TODO rewrite as ForkJoin recursive task
-     */
-    @Deprecated
-    static void run(Task t, Object w) {
-        Task x = t;
-        do {
-            x = x.next(w);
-        } while (x != null);
-    }
-
-
-
-    /**
      * TODO to be refined
      * TODO make Iterable<Task> x version so that callee's avoid constructing Task[] only for this */
     static void fund(Task y, Task[] x, boolean priCopyOrMove) {
@@ -621,8 +608,6 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         assert(!y.isDeleted());
     }
 
-    @Deprecated
-    Task next(Object w);
 
     /**
      * Causal trace

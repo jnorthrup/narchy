@@ -70,6 +70,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     /** input bag */
     public final PriBuffer<Task> in;
+    private final Consumer<Task> _in;
 
     public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
 
@@ -106,7 +107,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
     protected What(Term id, PriBuffer<Task> in) {
         super(id);
         this.in = in;
-
+        this._in = in instanceof PriBuffer.DirectTaskBuffer ? this.out : in;
     }
 
     @Override
@@ -125,8 +126,6 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         super.starting(nar);
 
         in.start(out, nar);
-
-
     }
 
     @Override
@@ -167,7 +166,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
     abstract public void clear();
 
     public final TaskLink sample() {
-        return sample(nar.random());
+        return sample(random());
     }
 
     public abstract Stream<Concept> concepts();
@@ -194,7 +193,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     @Override
     public final void accept(Task x) {
-        in.put(x);
+        _in.accept(x);
     }
 
 
