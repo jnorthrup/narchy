@@ -247,7 +247,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * creates a snapshot statistics object
      * TODO extract a Method Object holding the snapshot stats with the instances created below as its fields
      */
-    public SortedMap<String, Object> stats() {
+    public synchronized SortedMap<String, Object> stats() {
 
         LongSummaryStatistics beliefs = new LongSummaryStatistics();
         LongSummaryStatistics goals = new LongSummaryStatistics();

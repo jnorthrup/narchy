@@ -14,7 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Collection;
 import java.util.SortedSet;
 
-import static nars.Op.EmptySubterms;
 import static nars.Op.FRAG;
 import static nars.time.Tense.DTERNAL;
 
@@ -25,9 +24,9 @@ public final class Fragment extends LightCompound {
 
     public final static Compound empty = CachedCompound.newCompound(Op.FRAG, DTERNAL, Op.EmptyProduct);
 
-    private Fragment() {
-        super(FRAG.id, EmptySubterms);
-    }
+//    private Fragment() {
+//        super(FRAG.id, EmptySubterms);
+//    }
 
     public Fragment(Subterms x) {
         super(FRAG.id, x);
@@ -43,10 +42,6 @@ public final class Fragment extends LightCompound {
         this(x.toArray(Op.EmptyTermArray));
     }
 
-    /** the ellipsis itself contributes no op */
-    @Override public final int structure() {
-        return subStructure();
-    }
 
     public static Term fragment(Term... x) {
 

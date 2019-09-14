@@ -5,8 +5,10 @@
 package nars.derive.premise;
 
 import jcog.Util;
-import jcog.signal.meter.FastCounter;
-import nars.*;
+import nars.NAL;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
 import nars.derive.Derivation;
 import nars.table.BeliefTable;
 import nars.term.Compound;
@@ -358,33 +360,4 @@ public class Premise  {
 ////        return Integer.compare(System.identityHashCode(this), System.identityHashCode(premise));
 //    }
 
-	public void derive(Derivation d) {
-		FastCounter result;
-
-		NAR nar = d.nar;
-		Emotion e = nar.emotion;
-
-		int matchTTL = nar.premiseUnifyTTL.intValue();
-		int deriveTTL = nar.deriveBranchTTL.intValue();
-
-		int ttlUsed;
-
-		Premise m = match(d, matchTTL);
-		if (m != null) {
-
-			m.apply(d);
-
-			result = d.run(deriveTTL) ? e.premiseFire : e.premiseUnderivable;
-
-			ttlUsed = Math.max(0, deriveTTL - d.ttl);
-
-		} else {
-			result = e.premiseUnbudgetable;
-			ttlUsed = 0;
-		}
-
-		e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-		result.increment();
-
-	}
 }

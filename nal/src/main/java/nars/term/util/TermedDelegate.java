@@ -26,15 +26,15 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().structure();
     }
 
-    @Override
-    default boolean hasAny(int structuralVector) {
-        return term().hasAny(structuralVector);
-    }
-
-    @Override
-    default boolean hasAll(int structuralVector) {
-        return term().hasAny(structuralVector);
-    }
+//    @Override
+//    default boolean hasAny(int structuralVector) {
+//        return term().hasAny(structuralVector);
+//    }
+//
+//    @Override
+//    default boolean hasAll(int structuralVector) {
+//        return term().hasAny(structuralVector);
+//    }
 
     @Override
     default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {

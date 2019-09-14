@@ -1,6 +1,8 @@
 package nars.derive.hypothesis;
 
 import jcog.math.IntRange;
+import jcog.signal.meter.FastCounter;
+import nars.Emotion;
 import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
@@ -22,26 +24,68 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 	@Override
 	public void premises(When<NAR> when, TaskLinks links, Derivation d) {
+
 		int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
 
 		int nLinks = Math.max(1, (int)(premisesPerIteration.floatValue() / termLinksPerTaskLink));
-		for (int i = 0; i < nLinks; i++) {
-			TaskLink tasklink = links.sample(d.random);
-			if (tasklink != null) {
-				Task task = tasklink.get(when, d.tasklinkTaskFilter);
-				if (task != null)
-					fireTask(links, d, termLinksPerTaskLink, tasklink, task);
-			}
+
+		for (int i = 0; i < nLinks; i++)
+			premise(when, links, d, termLinksPerTaskLink);
+	}
+
+	public void premise(When<NAR> when, TaskLinks links, Derivation d, int termLinksPerTaskLink) {
+		TaskLink tasklink = links.sample(d.random);
+		if (tasklink != null) {
+			Task task = tasklink.get(when, d.tasklinkTaskFilter);
+			if (task != null)
+				fireTask(links, d, termLinksPerTaskLink, tasklink, task);
 		}
 	}
 
 	void fireTask(TaskLinks links, Derivation d, int termLinksPerTaskLink, TaskLink tasklink, Task task) {
-		for (int i1 = 0; i1 < termLinksPerTaskLink; i1++) {
-			process(links, d, tasklink, task).derive(d);
-		}
+		for (int i1 = 0; i1 < termLinksPerTaskLink; i1++)
+			firePremise(links, d, tasklink, task);
 	}
 
-	@Deprecated protected Premise process(TaskLinks links, Derivation d, TaskLink link, Task task) {
+	private void firePremise(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
+
+		NAR nar = d.nar;
+		Emotion e = nar.emotion;
+
+		int matchTTL = nar.premiseUnifyTTL.intValue();
+		int deriveTTL = nar.deriveBranchTTL.intValue();
+
+		//int ttlUsed;
+
+		FastCounter result;
+
+		Premise p;
+		try (var __ = e.derive_A_PremiseMatch.time()) {
+			p = premise(links, d, tasklink, task).match(d, matchTTL);
+		}
+
+		if (p != null) {
+
+			try (var __ = e.derive_B0_Premise.time()) {
+				result = d.derive(p, deriveTTL) ? e.premiseDerived : e.premiseUnderivable;
+			}
+
+//			if (result == e.premiseUnderivable)
+//				System.err.println("underivable: " + p);
+
+			//ttlUsed = Math.max(0, deriveTTL - d.ttl);
+
+		} else {
+			result = e.premiseUnbudgetable;
+			//ttlUsed = 0;
+		}
+
+		//e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
+		result.increment();
+
+	}
+
+	@Deprecated protected Premise premise(TaskLinks links, Derivation d, TaskLink link, Task task) {
 		Term target = link.target(task, d);
 		if (target == null)
 			target = task.term();

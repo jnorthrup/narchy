@@ -65,10 +65,7 @@ public final class Interval extends AbstractAtomic implements /*The, */Iterable<
         this.value = value;
     }
 
-    @Override
-    public int structure() {
-        return 0;
-    }
+
 
 //    @Override
 //    public int volume() {

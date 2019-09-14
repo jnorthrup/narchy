@@ -39,7 +39,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
      */
     @Override public int run(int c, HashedWheelTimer timer) {
         if (incoming.clear(this::out, timer) > 0)
-            timer.assertRunning();
+            timer.assertRunning(); //is this necessary?
 
         Queue<TimedFuture<?>> q = wheel[c];
         final int n = q.size();

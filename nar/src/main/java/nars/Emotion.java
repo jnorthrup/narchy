@@ -6,8 +6,8 @@ import jcog.math.FloatAveragedWindow;
 import jcog.signal.meter.ExplainedCounter;
 import jcog.signal.meter.FastCounter;
 import jcog.signal.meter.Meter;
+import jcog.signal.meter.Use;
 import nars.control.MetaGoal;
-import org.HdrHistogram.AtomicHistogram;
 import org.HdrHistogram.Histogram;
 import org.junit.platform.commons.util.ReflectionUtils;
 
@@ -56,10 +56,10 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public final FastCounter perceivedTaskEnd = new FastCounter("perceived task end");
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
-    public final FastCounter premiseFire = new FastCounter("premise fire");
+    public final FastCounter premiseDerived = new FastCounter("premise derived");
 
-    /** amount of remainder TTL from each derivation */
-    public final AtomicHistogram premiseTTL_used = new AtomicHistogram(1, 512, 2);
+//    /** amount of remainder TTL from each derivation */
+//    public final AtomicHistogram premiseTTL_used = new AtomicHistogram(1, 512, 2);
 
     /**
      * increment of cycles that a dur loop lags in its scheduling.
@@ -74,6 +74,7 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FastCounter premiseUnderivable = new FastCounter("premise underivable");
     public final FastCounter premiseUnbudgetable = new FastCounter("premise unbudgetable");
     public final FastCounter deriveTask = new FastCounter("derive task");
+    public final FastCounter deriveTaskDup = new FastCounter("derive task recent duplicate");
     public final FastCounter deriveUnified = new FastCounter("derive unified");
 
     public final ExplainedCounter deriveFailTemporal = new ExplainedCounter("derive fail temporal");
@@ -87,6 +88,13 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FastCounter deriveFailPrioritize = new FastCounter("derive fail prioritize");
     public final FastCounter deriveFailParentDuplicate = new FastCounter("derive fail parent duplicate");
     public final FastCounter deriveFailDerivationDuplicate = new FastCounter("derive fail derivation duplicate");
+
+
+    public final Use derive_A_PremiseMatch = new Use("derive A premise match");
+    public final Use derive_B0_Premise =      new Use("derive B derive");
+    public final Use derive_B1_PreFilter =    new Use("derive B1 prefilter");
+    public final Use derive_B2_Remember =     new Use("derive B2 remember");
+
     /**
      * the indices of this array correspond to the ordinal() value of the MetaGoal enum values
      * TODO convert to AtomicFloatArray or something where each value is volatile

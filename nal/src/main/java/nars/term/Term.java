@@ -602,7 +602,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         return Anom.the(1);
     }
 
-    int structure();
+//    int structure();
 
     default boolean the() {
         return this instanceof The;

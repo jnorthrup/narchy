@@ -32,8 +32,7 @@ import java.util.function.Predicate;
     }
 
     default FloatRank<X> filter(@Nullable Predicate<X> filter) {
-        if (filter == null) return this;
-        return new FilteredFloatRank<>(filter, this);
+        return filter == null ? this : new FilteredFloatRank<>(filter, this);
 
     }
 
@@ -49,7 +48,7 @@ import java.util.function.Predicate;
 
         @Override
         public float rank(X t, float m) {
-            return filter != null && !filter.test(t) ? Float.NaN : rank.floatValueOf(t);
+            return filter != null && !filter.test(t) ? Float.NaN : rank.rank(t,m);
         }
     }
 }

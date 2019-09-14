@@ -243,17 +243,18 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
      */
     @Nullable public X getRoulette(FloatSupplier rng, FloatFunction<X> anyRank) {
         int n = size;
-        if (n == 0)
-            return null;
-        else if (n == 1)
-            return get(0);
-        else {
-            IntToFloatFunction select = i -> anyRank.floatValueOf(get(i));
-            return get(
+        switch (n) {
+            case 0:
+                return null;
+            case 1:
+                return items[0];
+            default:
+                IntToFloatFunction select = i -> anyRank.floatValueOf(items[i]);
+                return get(
                     this instanceof RankedN ?
-                            Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
-                            Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
-            );
+                        Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
+                        Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
+                );
         }
 
     }

@@ -1659,7 +1659,7 @@ public enum Util {
         for (int i = 0; i < count; i++) {
             float w = values.valueOf(i);
             //assert (w == w);
-            if (w == w && w > 0)
+            if (w == w && w > Float.MIN_NORMAL)
                 weightSum += w;
         }
         return weightSum;

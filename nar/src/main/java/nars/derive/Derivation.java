@@ -2,6 +2,8 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
+import jcog.data.map.MRUMap;
+import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.NAR;
@@ -11,6 +13,7 @@ import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
+import nars.derive.premise.Premise;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremiseUnify;
 import nars.eval.Evaluation;
@@ -39,6 +42,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -74,6 +78,9 @@ public class Derivation extends PreDerivation {
 
     public final AnonWithVarShift anon;
     public final UniSubst uniSubstFunctor = new UniSubst(this);
+
+    final MRUMap<Task,Task> derivationHistory = new MRUMap<>(256);
+
     /**
      * second layer additional substitutions
      */
@@ -432,6 +439,7 @@ public class Derivation extends PreDerivation {
         this.what = w;
         //this.deriverMH = deriver.rules.what.compile();
 
+        derivationHistory.clear();
 
         what.derivePri.premise(this);
 
@@ -547,11 +555,85 @@ public class Derivation extends PreDerivation {
     }
 
     public final void derive(Task t) {
-        what.accept(t);
+        try (var __ = nar.emotion.derive_B2_Remember.time()) {
 
-        nar.emotion.deriveTask.increment();
-        use(NAL.derive.TTL_COST_DERIVE_TASK);
+            Task derived = derivationHistory.putIfAbsent(t, t);
+            if (derived == null) {
+                what.accept(t);
+                nar.emotion.deriveTask.increment();
+            } else {
+                nars.Task.merge(derived, t);
+                nar.emotion.deriveTaskDup.increment();
+            }
+            use(NAL.derive.TTL_COST_DERIVE_TASK);
+
+        }
     }
+
+    public boolean derive(Premise p, int deriveTTL) {
+
+        int valid = 0, lastValid = -1;
+
+        try (var __ = this.nar.emotion.derive_B1_PreFilter.time()) {
+            p.apply(this);
+
+            short[] can = this.deriver.what(this);
+            if (can.length == 0)
+                return false;
+
+            this.preReady();
+
+
+            DeriveAction[] branch = this.deriver.rules.branch;
+
+            PostDerivable[] post = this.post;
+            for (int i = 0; i < can.length; i++) {
+                if ((post[i].priSet(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                    lastValid = i;
+                    valid++;
+                }
+            }
+            if (valid == 0)
+                return false;
+
+            if (valid > 1 && valid < can.length) {
+                //sort the valid to the first slots for fastest roulette iteration on the contiguous valid subset
+                Arrays.sort(post, 0, can.length, sortByPri);
+            } //otherwise any order here is valid
+
+            this.ready(deriveTTL); //first come first serve, maybe not ideal
+        }
+
+
+        switch (valid) {
+            case 1:
+                //optimized 1-option case
+                //while (post[lastValid].run()) { }
+                post[lastValid].run();
+                break;
+            default:
+
+//                int j;
+//                do {
+//                    j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);
+//                } while (post[j].run());
+
+                float[] pri = new float[valid];
+                for (int i = 0; i < valid; i++)
+                    pri[i] = post[i].pri;
+                MutableRoulette.run(pri, this.random, wi -> 0, i -> post[i].run());
+                break;
+        }
+        return true;
+    }
+
+
+
+    private static final Comparator<? super PostDerivable> sortByPri = (a, b)->{
+        if (a==b) return 0;
+        int i = Float.compare(a.pri, b.pri);
+        return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
+    };
 
     public boolean doubt(float ratio) {
         return Util.equals(ratio, 1f) || concTruthEvi(ratio * truth.evi());

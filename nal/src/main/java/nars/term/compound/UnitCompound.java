@@ -186,11 +186,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     }
 
     @Override
-    public int structure() {
-        return sub().structure() | opBit();
-    }
-
-    @Override
     public final int structureSurface() {
         return sub().opBit();
     }

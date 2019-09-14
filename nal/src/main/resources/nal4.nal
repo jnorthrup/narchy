@@ -1,28 +1,28 @@
 //image structural transform forward
 
 
-(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), --has(P,"$") |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
-(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), has(P, "--"), --has(P,"$") |- imageInt((I-->P),--X), (Belief:Identity, Goal:Identity)
+(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,X), --has(P,"$") |- imageInt((I-->P),X), (Belief:Identity, Goal:Identity)
+(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,--X), has(P, "--"), --has(P,"$") |- imageInt((I-->P),--X), (Belief:Identity, Goal:Identity)
 
-//    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@"), --has(P,"$") |- imageInt((I-->P),X)
-//    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), has(P, "--"), task("?@"), --has(P,"$") |- imageInt((I-->P),--X)
+//    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,X), task("?@"), --has(P,"$") |- imageInt((I-->P),X)
+//    (I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,--X), has(P, "--"), task("?@"), --has(P,"$") |- imageInt((I-->P),--X)
 
-(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), --has(P,"$") |- imageExt((P-->I),X), (Belief:Identity, Goal:Identity)
-(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), has(P, "--"), --has(P,"$") |- imageExt((P-->I),--X), (Belief:Identity, Goal:Identity)
+(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,X), --has(P,"$") |- imageExt((P-->I),X), (Belief:Identity, Goal:Identity)
+(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,--X), has(P, "--"), --has(P,"$") |- imageExt((P-->I),--X), (Belief:Identity, Goal:Identity)
 
-//    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X), task("?@"), --has(P,"$") |- imageExt((P-->I),X)
-//    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,--X), has(P, "--"), task("?@"), --has(P,"$") |- imageExt((P-->I),--X)
+//    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,X), task("?@"), --has(P,"$") |- imageExt((P-->I),X)
+//    (P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,--X), has(P, "--"), task("?@"), --has(P,"$") |- imageExt((P-->I),--X)
 
 //TODO and these arent right yet
-//(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageInt((I-->substitute(P,X,--X)),--X), (Belief:IdentityN, Goal:IdentityN)
-//(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,2), subOf(P,X) |- imageExt((substitute(P,X,--X)-->I),--X), (Belief:IdentityN, Goal:IdentityN)
+//(I --> P), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,X) |- imageInt((I-->substitute(P,X,--X)),--X), (Belief:IdentityN, Goal:IdentityN)
+//(P --> I), X, is(P,"*"), --subOf(P,/), --subOf(P,\), subsMin(P,1), subOf(P,X) |- imageExt((substitute(P,X,--X)-->I),--X), (Belief:IdentityN, Goal:IdentityN)
 
 
 //image structural transform reverse
-//(X --> P), (X --> P),                is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
-//    (X --> P), (X --> P), task("?@"), is(P,"*"), subsMin(P,2), subOf(P,/) |- imageNormalize((X-->P))
-//(P --> X), (P --> X),                is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
-//    (P --> X), (P --> X), task("?@"), is(P,"*"), subsMin(P,2), subOf(P,\) |- imageNormalize((P-->X))
+//(X --> P), (X --> P),                is(P,"*"), subsMin(P,1), subOf(P,/) |- imageNormalize((X-->P)), (Belief:Identity, Goal:Identity)
+//    (X --> P), (X --> P), task("?@"), is(P,"*"), subsMin(P,1), subOf(P,/) |- imageNormalize((X-->P))
+//(P --> X), (P --> X),                is(P,"*"), subsMin(P,1), subOf(P,\) |- imageNormalize((P-->X)), (Belief:Identity, Goal:Identity)
+//    (P --> X), (P --> X), task("?@"), is(P,"*"), subsMin(P,1), subOf(P,\) |- imageNormalize((P-->X))
 
 
 //1-element product wrap
@@ -33,12 +33,12 @@
      (X<->Y), ((X)<->(Y)), task("?") |- polarizeBelief((X<->Y)), (Belief:BeliefStructuralReductionDD, Punctuation:Belief, Time:Belief)
 
 ////composition on both sides of a statement
-    (A --> B), (X --> Y), subOf(A,X), subOf(B,Y), subsMin(A,2), subsMin(B,2), is(A,"*"), is(B,"*"), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
-      (A --> B), (X --> Y), subOf(A,--X), subOf(B,--Y), subsMin(A,2), subsMin(B,2), is(A,"*"), is(B,"*"), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
-      (A --> B), (X --> Y), subOf(A,--X), subOf(B,Y), subsMin(A,2), subsMin(B,2), is(A,"*"), is(B,"*"), task("?") |- --(A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
-      (A --> B), (X --> Y), subOf(A,X), subOf(B,--Y), subsMin(A,2), subsMin(B,2), is(A,"*"), is(B,"*"), task("?") |- --(A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+    (A --> B), (X --> Y), subOf(A,X), subOf(B,Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+      (A --> B), (X --> Y), subOf(A,--X), subOf(B,--Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- (A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+      (A --> B), (X --> Y), subOf(A,--X), subOf(B,Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- --(A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+      (A --> B), (X --> Y), subOf(A,X), subOf(B,--Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- --(A --> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
 
-    (A <-> B), (X <-> Y), subOf(A,X), subOf(B,Y), subsMin(A,2), subsMin(B,2), is(A,"*"), is(B,"*"), task("?") |- (A <-> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
+    (A <-> B), (X <-> Y), subOf(A,X), subOf(B,Y), subsMin(A,1), subsMin(B,1), is(A,"*"), is(B,"*"), task("?") |- (A <-> B), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Task)
       //(A <-> B), (X <-> Y), TODO
 
     ((X,P) --> Z), (X --> Y), is(Z,"?"), task("?") |- ((X,P) --> (Y,P)), (Belief:BeliefStructuralReduction, Punctuation:Belief, Time:Belief)

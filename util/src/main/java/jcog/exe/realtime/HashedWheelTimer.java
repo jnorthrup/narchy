@@ -49,7 +49,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
     public final long resolution;
     public final int wheels;
 
-    private Thread loop;
+    private volatile Thread loop;
     private final Executor executor;
     private final WaitStrategy waitStrategy;
 
@@ -137,11 +137,9 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
             }
         } while (cursor() >= 0 && !model.isEmpty()); // && !cursor.compareAndSet(c, -1));
 
-        loop = null;
-
         logger.info("{} {} {}", this, cursor() == SHUTDOWN ? "off" : "sleep", System.currentTimeMillis());
 
-
+        loop = null;
     }
 
 //    private void await() {
@@ -198,29 +196,25 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
         boolean ok = model.accept(r, this);
         if (!ok)
-            reject(r);
+            return null;
 
-        assertRunning();
+        //assertRunning();
         return r;
     }
 
     protected <X> void reject(TimedFuture<X> r) {
-        logger.error("spill {}", r);
+        logger.error("reject {}", r);
         r.cancel(false);
     }
 
     public final boolean reschedule(TimedFuture<?> r) {
-        assertRunning();
-        int c = cursor();
-        if (c >= 0) {
-            int offset = r.offset(model.resolution);
-            if (!model.reschedule(idx(c + offset), r)) {
-                reject(r);
-                return false;
-            }
-            return true;
+        int offset = r.offset(model.resolution);
+        int c = cursorActive();
+        if (!model.reschedule(idx(c + offset), r)) {
+            reject(r);
+            return false;
         }
-        return false;
+        return true;
     }
 
     /**
@@ -232,6 +226,16 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
     public final int cursor() {
         return cursor.getOpaque();
+    }
+
+    final int cursorActive() {
+        int c = cursor();
+        if (c!=-1)
+            return c;
+        else {
+            assertRunning();
+            return 0;
+        }
     }
 
 //    public final int idxCursor(int delta) {
@@ -421,12 +425,24 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
 
     void assertRunning() {
-        if (cursor.compareAndSet(-1, 0)) {
-            this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
-            this.loop.setDaemon(daemon);
-            this.loop.setPriority(THREAD_PRI);
-            this.loop.start();
+        if (cursor.compareAndSet(-1, 0))
+            start();
+    }
+
+    private synchronized void start() {
+        if (this.loop!=null) {
+
+            //HACK time grap between cursor==-1 and loop==null (final thread stop signal)
+            Util.sleepMS(10);
+
+            if (this.loop!=null)
+                throw new RuntimeException("loop exists");
         }
+
+        Thread t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
+        t.setDaemon(daemon);
+        t.setPriority(THREAD_PRI);
+        t.start();
     }
 
     @FunctionalInterface

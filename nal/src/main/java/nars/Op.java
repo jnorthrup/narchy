@@ -438,7 +438,7 @@ public enum Op {
         this.hasNumeric = temporal;
 
 
-        this.bit = (1 << ordinal());
+        this.bit = (str.equals("`") || str.equals("‡")) ? 0 : (1 << ordinal()); //fragment and interval have 0 contributing structure
 
         this.atomic = var || java.util.Set.of(".", "+", "B", "/", "‡").contains(str);
 
