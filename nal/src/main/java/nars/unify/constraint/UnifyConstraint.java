@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
+import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
@@ -103,7 +104,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
         private final UnifyConstraint<U>[] cache;
 
         private CompoundConstraint(UnifyConstraint[] c) {
-            super($.funcFast(UnifyIf, c[0].x, $.sFast(c)), c[0].x);
+            super($.func(UnifyIf, c[0].x, Op.SETe.the(c)), c[0].x);
             this.cache = c;
         }
 

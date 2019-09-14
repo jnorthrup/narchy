@@ -41,11 +41,6 @@ abstract public class Truthlet implements Truth {
         return freq(mid());
     }
 
-
-    @Deprecated @Override public final float conf() {
-        return (float) w2cSafe(evi());
-    }
-
     @Deprecated @Override public final double evi() {
         float es = evi(start());
         if (es > 0) {

@@ -86,13 +86,9 @@ public final class PreciseTruth extends DiscreteTruth {
     @Override
     public final double evi() { return e; }
 
-    @Override
-    public final float conf() {
-        return (float) confDouble();
-    }
 
     @Override
-    public double confDouble() {
+    public final double confDouble() {
         return w2cSafe(e);
     }
 

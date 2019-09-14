@@ -2,31 +2,35 @@ package nars.truth;
 
 import jcog.Skill;
 import nars.truth.func.TruthFunctions;
-import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.func.TruthFunctions.w2cSafe;
 
 /** indicates an implementation has, or is associated with a specific TruthValue */
 public interface Truthed  {
 
-    @Skill("Quantum_spin") default float freq() {
-        return truth().freq();
-    }
+    @Skill("Quantum_spin") float freq();
+//    @Skill("Quantum_spin") default float freq() {
+//        return truth().freq();
+//    }
 
     /** a dual (reversible) asymptotic normalization of evi(), see: HORIZON */
     default float conf() {
-        return (float)w2cSafe(evi());
+        return (float)confDouble();
     }
-
-    /** weight of evidence ( confidence converted to weight, 'c2w()' ) */
-    @Skill({"Epistemology", "Evidence_law"}) default double evi() {
-        //return c2wSafe((double)conf());
-        return truth().evi();
+    /** provides high-precision confidence value, if implemented */
+    default double confDouble() {
+        return w2cSafe(evi());
     }
+//    /** weight of evidence ( confidence converted to weight, 'c2w()' ) */
+//    @Skill({"Epistemology", "Evidence_law"}) default double evi() {
+//        //return c2wSafe((double)conf());
+//        return truth().evi();
+//    }
 
+    @Skill({"Epistemology", "Evidence_law"}) double evi();
 
-    @Nullable
-    Truth truth();
+//    @Nullable
+//    Truth truth();
 
     /**
      * Calculate the expectation value of the truth value

@@ -244,21 +244,6 @@ public interface Truth extends Truthed {
         return PreciseTruth.byConf(f, c);
     }
 
-    @Override float freq();
-
-    /** provides high-precision confidence value, if implemented */
-    default double confDouble() {
-        return conf();
-    }
-
-    @Override double evi();
-
-
-    @Nullable
-    @Override
-    default Truth truth() {
-        return this;
-    }
 
     default StringBuilder appendString(StringBuilder sb) {
         return Truth.appendString(sb, 2, freq(), conf());

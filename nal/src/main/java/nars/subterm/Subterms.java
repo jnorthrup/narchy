@@ -110,11 +110,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return sub(i).eventRange();
     }
 
-    @Override
-    default int structure() {
-        return intifyShallow((s, x) -> s | x.structure(), 0);
-    }
-
     default boolean equalTermsIdentical(Subterms x) {
         if (this == x) return true;
         int n = subs();
@@ -169,6 +164,15 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     static int hash(Term[] term) {
         return hash(term, term.length);
+    }
+
+    @Override
+    default int structure() {
+        //return intifyShallow((s, x) -> s | x.structure(), 0);
+        int s = 0, n = subs();
+        for (int i = 0; i < n; i++)
+            s |= sub(i).structure();
+        return s;
     }
 
     static int hash(Term[] term, int n) {

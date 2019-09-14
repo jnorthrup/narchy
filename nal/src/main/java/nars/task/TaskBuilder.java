@@ -37,7 +37,7 @@ import static nars.time.Tense.ETERNAL;
  * once input, input tasks will have unique serial numbers anyway
  */
 @Deprecated
-public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Function<NAL, Task> {
+public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL, Task>, Truthed {
 
 
 	private Term term;
@@ -189,6 +189,12 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Fun
 		return term;
 	}
 
+	public float freq() { return truth.freq(); }
+
+	@Override
+	public double evi() {
+		return truth.evi();
+	}
 
 	public boolean isBeliefOrGoal() {
 		return punc == Op.BELIEF || punc == Op.GOAL;
@@ -199,12 +205,11 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Fun
 	}
 
 	@Nullable
-	@Override
 	public final Truth truth() {
 		return truth;
 	}
 
-	protected final void setTruth(@Nullable Truth t) {
+	private final void setTruth(@Nullable Truth t) {
 
 		if (t == null && isBeliefOrGoal())
 			throw new TaskException(this, "null truth for belief or goal");
@@ -219,7 +224,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Truthed, Fun
 	 * the evidence should be sorted and de-duplicaed prior to calling this
 	 */
 
-	protected TaskBuilder setEvidence(@Nullable long... evidentialSet) {
+	private TaskBuilder setEvidence(@Nullable long... evidentialSet) {
 
 		if (this.evidence != evidentialSet) {
 			this.evidence = evidentialSet;

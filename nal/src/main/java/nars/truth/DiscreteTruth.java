@@ -60,13 +60,13 @@ public class DiscreteTruth implements Truth {
     }
 
     @Override
-    public float conf() {
+    public double confDouble() {
         return Util.toFloat(Truth.confI(hash), hashDiscretenessCoarse);
     }
 
     @Override
     public double evi() {
-        return c2wSafe((double)conf());
+        return c2wSafe(confDouble());
     }
 
     @Override

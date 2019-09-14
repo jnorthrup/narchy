@@ -614,6 +614,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      */
     short[] why();
 
+    Truth truth();
+
+    @Override default float freq() { return truth().freq(); }
+    @Override default double evi() { return truth().evi(); }
+    @Override default double confDouble() { return truth().confDouble(); }
+
     @Override
     default <X extends HyperRegion> Function<X, HyperRegion> mbrBuilder() {
         long s = start(), e = end();

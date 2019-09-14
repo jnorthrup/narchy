@@ -34,7 +34,7 @@ public final class Termify extends ProxyTerm {
     private static final Atom TERMIFY = Atomic.atom(Termify.class.getSimpleName());
 
     public Termify(Term pattern, Truthify truth, Occurrify.OccurrenceSolver time) {
-        super($.funcFast(TERMIFY, pattern, truth));
+        super($.func(TERMIFY, pattern, truth.ref));
 
         this.pattern = pattern;
 

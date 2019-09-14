@@ -5,7 +5,6 @@ import nars.Op;
 import nars.Task;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.truth.Truth;
 import nars.truth.Truthed;
 import org.eclipse.collections.api.block.predicate.primitive.LongLongPredicate;
 import org.jetbrains.annotations.Nullable;
@@ -138,9 +137,7 @@ public class DefaultTaskCondition extends TaskCondition {
 		return time.accept(t.start(), t.end());
 	}
 
-	private boolean truthMatches(Truthed task) {
-
-		Truth tt = task.truth();
+	private boolean truthMatches(Truthed tt) {
 
 		float co = tt.conf();
 		if ((co > confMax) || (co < confMin))
