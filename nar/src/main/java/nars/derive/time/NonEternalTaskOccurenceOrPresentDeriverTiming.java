@@ -16,7 +16,7 @@ public class NonEternalTaskOccurenceOrPresentDeriverTiming implements TimeFocus 
     public NonEternalTaskOccurenceOrPresentDeriverTiming() {
     }
 
-    @Override public long[] premise(What what, Task task, Term term) {
+    @Override public long[] premise(What what, Task task, Term beliefTerm) {
         long ts = task.start();
         if (ts!=ETERNAL) {
             return new long[] {ts, task.end()};

@@ -1,14 +1,15 @@
 package nars.link;
 
+import nars.term.Compound;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
 /** resolves termlinks and grows tasklinks */
-public interface TermLinker {
+public interface TermDecomposer {
 
-    Term sample(Term t, Random rng);
-
+    @Nullable Term decompose(Compound t, Random rng);
 
 }
 

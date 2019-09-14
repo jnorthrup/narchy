@@ -8,8 +8,8 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.premise.Premise;
 import nars.link.*;
+import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -90,96 +90,44 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		if (target == null)
 			target = task.term();
 
-		{
-			if (target.op().conceptualizable) {
-				Term reverse = reverse(target, link, task, links, d);
-				if (reverse != null)
-					target = reverse;
-			}
-		}
 
-		if (link.isSelf()) {
-			Term src =
-				target;
-				//link.from();
-				//task.term();
-			Term forward = forward(src, link, task, d);
+
+		if (target instanceof Compound && !(link instanceof DynamicTaskLink) && link.isSelf()) {
+			Compound src = (Compound) target;	//link.from(); //task.term();
+			Term forward = decompose(src, link, task, d);
 			if (forward != null) {
 				if (!forward.op().eventable) { // && !src.containsRecursively(forward)) {
-					target = forward;
+					//target = forward;
 				} else {
 					links.grow(link, src, forward, task.punc());
-					if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
-						target = forward; //continue as self, or eager traverse the new link
+//					if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
+					target = forward; //continue as self, or eager traverse the new link
 				}
 			}
 		}
 
-
+		if (target.op().conceptualizable) {
+			Term reverse = reverse(target, link, task, links, d);
+			if (reverse != null)
+				target = reverse;
+		}
 
 		//System.out.println(task + "\t" + target);
 		return new Premise(task, target);
 	}
-//	@Deprecated protected Premise process(TaskLinks links, Derivation d, TaskLink tasklink, Task task) {
-//		Term target = null;
-//		if (d.random.nextFloat() < 0.5f) {
-//			target = tasklink.target(task, d);
-//		}
-//		if (target == null) {
-//			Term src = task.term();
-//			Term forward = forward(src, tasklink, task, d);
-//			if (forward != null) {
-//				target = forward;
-//			}
-//		}
-//		if (target == null) {
-//			target = task.term();
-//		}
-//
-//		if (target.op().conceptualizable) {
-//			Term reverse = reverse(target, tasklink, task, links, d);
-//			if (reverse != null)
-//				target = reverse;
-//		}
-//
-////		{
-////			Term src = task.term();
-////			Term forward = forward(src, tasklink, task, d);
-////			if (forward != null) {
-////				if (!forward.op().eventable && !src.containsRecursively(forward)) {
-//////					//throw new WTF();
-////				} else {
-////					float freed = links.grow(tasklink, src, forward, task.punc()); //links.links.depressurize(freed);
-////
-////					//target = forward;
-////				}
-////			}
-////		}
-//		System.out.println(task + "\t" + target);
-//		return new Premise(task, target);
-//	}
 
-	@Nullable
-	protected TermLinker linker(Term t) {
-		return t instanceof Atomic ? null : DynamicTermLinker.Weighted;
+
+	/** selects the decomposition strategy for the given Compound */
+	protected TermDecomposer decomposer(Compound t) {
+		return DynamicTermDecomposer.Weighted;
 	}
 
 	/**
 	 * determines forward growth target. null to disable
 	 * override to provide a custom termlink supplier
 	 */
-	@Nullable
-	protected Term forward(Term target, TaskLink link, Task task, Derivation d) {
-		if (!(link instanceof DynamicTaskLink) && target.op().conceptualizable) {
-			TermLinker linker = linker(target); //TODO custom tasklink-provided termlink strategy
-			if (linker != null) {
-				Term forward = linker.sample(target, d.random);
-				if (!forward.equals(target))
-					return forward;
-			}
-
-		}
-		return null;
+	@Nullable protected Term decompose(Compound src, TaskLink link, Task task, Derivation d) {
+		return decomposer(src).decompose(src, d.random);
 	}
 
 	/**

@@ -7,22 +7,18 @@ import nars.term.Img;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.compound.SeparateSubtermsCompound;
-import nars.term.compound.Sequence;
-import nars.term.util.conj.Conj;
-import nars.term.util.conj.ConjList;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
-import static nars.Op.CONJ;
-
-public abstract class DynamicTermLinker implements TermLinker {
+public abstract class DynamicTermDecomposer implements TermDecomposer {
 
 
-    @Override public final Term sample(Term t, Random rng) {
-        return t instanceof Compound ? sampleDynamic((Compound)t, depth((Compound)t, rng), rng) : t;
+    @Nullable @Override public final Term decompose(Compound t, Random rng) {
+        return sampleDynamic(t, depth(t, rng), rng);
     }
 
-    private Term sampleDynamic(Compound t, int depthRemain, Random rng) {
+    @Nullable private Term sampleDynamic(Compound t, int depthRemain, Random rng) {
 
         Subterms tt = t instanceof SeparateSubtermsCompound ?  t.subterms() : t;
         int n = tt.subs();
@@ -38,7 +34,8 @@ public abstract class DynamicTermLinker implements TermLinker {
         if (u instanceof Img)
             return t; //HACK
 
-            u = u.unneg();
+        u = u.unneg();
+
         if (depthRemain <= 1 || !(u instanceof Compound) /* || !u.op().conceptualizable */)
             return u;
         else
@@ -52,7 +49,7 @@ public abstract class DynamicTermLinker implements TermLinker {
 
 
 
-    public static final DynamicTermLinker Uniform = new DynamicTermLinker() {
+    public static final DynamicTermDecomposer Uniform = new DynamicTermDecomposer() {
         @Override
         protected int depth(Compound root, Random rng) {
             return rng.nextFloat() < 0.5f ? 1 : 2;
@@ -64,7 +61,7 @@ public abstract class DynamicTermLinker implements TermLinker {
     };
 
     /** uses roulette selection on arbitrary subterm weighting function */
-    public static final DynamicTermLinker Weighted = new DynamicTermLinker() {
+    public static final DynamicTermDecomposer Weighted = new DynamicTermDecomposer() {
 //        @Override
 //        protected int depth(Compound root, Random rng) {
 //            return 1;
@@ -83,24 +80,24 @@ public abstract class DynamicTermLinker implements TermLinker {
 
             float w =
                     fanoutRatio;
-                    //(float)Math.sqrt(fanoutRatio);
+                    //Util.sqr(fanoutRatio);
+                    //Util.sqrt(fanoutRatio);
                     //(float)Math.pow(fanoutRatio, 0.75f);
                     //(float)Math.pow(fanoutRatio, 1.5f);
 
             float p = rng.nextFloat();
-            if (p < 1-w*w)
-                return 3;
 
             return p >= w ? 2 : 1;
         }
 
         @Override
         protected Term choose(Subterms s, Term parent, Random rng) {
-            if (parent instanceof Sequence) {
+//            if (parent instanceof Sequence) {
 
-            } else if (parent.op()==CONJ && s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
-                s = ConjList.events(parent).asSubterms(false);
-            }
+//            } else
+//            if (parent.op()==CONJ && s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
+//                s = ConjList.events(parent).asSubterms(false);
+//            }
             return s.subRoulette(this::subValue, rng);
         }
 

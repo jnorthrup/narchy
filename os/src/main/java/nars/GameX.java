@@ -25,6 +25,8 @@ import nars.control.Why;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
+import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
+import nars.derive.util.MixTimeFocus;
 import nars.exe.impl.WorkerExec;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
@@ -539,12 +541,12 @@ abstract public class GameX extends Game {
 
 //        Deriver bd1 = new Deriver(Derivers.nal(n, 1, 1));
 //        Deriver bd2_4 = new Deriver(Derivers.nal(n, 2, 4));
-        Deriver bd6 = new Deriver(Derivers.nal(n, 1, 8));
+//        Deriver bd6 = new Deriver(Derivers.nal(n, 1, 8));
 //        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
 //        bd3_act.time(new ActionTiming());
 
-        Deriver bd6_act = new Deriver(Derivers.nal(n, 6,8,"motivation.nal"));
-        bd6_act.time(new ActionTiming());
+        Deriver bd6_act = new Deriver(Derivers.nal(n, 1,8,"motivation.nal"));
+        bd6_act.time(new MixTimeFocus(new NonEternalTaskOccurenceOrPresentDeriverTiming(), new ActionTiming()));
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
 

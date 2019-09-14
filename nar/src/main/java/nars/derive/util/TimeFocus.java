@@ -17,7 +17,6 @@ import nars.time.event.WhenTimeIs;
  * */
 public interface TimeFocus {
 
-
 	/**
 	 *  default temporal focus to be used throughout multiple successive derivations.
 	 *  constructs a time interval surrounding the present moment, with a diameter of
@@ -28,7 +27,7 @@ public interface TimeFocus {
 	}
 
 	/** premise match focus */
-	long[] premise(What what, Task task, Term belifTerm);
+	long[] premise(What what, Task task, Term beliefTerm);
 
 
 }

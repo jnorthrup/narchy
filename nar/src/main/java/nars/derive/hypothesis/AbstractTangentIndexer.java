@@ -21,7 +21,11 @@ import static nars.Op.ATOM;
  */
 public abstract class AbstractTangentIndexer extends TangentIndexer {
 
-	static final String id = AbstractTangentIndexer.class.getSimpleName();
+	final String id;
+
+	protected AbstractTangentIndexer() {
+		 id = getClass().getSimpleName();
+	}
 
 	public int ttl(Derivation d) {
 		//return -1; //permanent
@@ -29,9 +33,9 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 	}
 
 	@Nullable
-	protected Term tangentRandom(Term target, Derivation d) {
+	protected Term tangentRandom(Compound target, Derivation d) {
 
-		if (target instanceof Compound && target.hasAny(ATOM)) {
+		if (target.hasAny(ATOM)) {
 
 			List<Term> tangent = Snapshot.get(target, d.nar, id, d.time(), ttl(d), (Concept targetConcept, List<Term> t) -> {
 				FasterList<Term> l = d.nar.concepts().filter(c -> {
@@ -56,9 +60,9 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 	abstract public boolean test(Term concept, Term target);
 
 	@Override
-	protected @Nullable Term forward(Term target, TaskLink link, Task task, Derivation d) {
-		Term t = tangentRandom(target, d);
-		return t != null ? t : super.forward(target, link, task, d);
+	protected @Nullable Term decompose(Compound src, TaskLink link, Task task, Derivation d) {
+		Term t = tangentRandom(src, d);
+		return t != null ? t : super.decompose(src, link, task, d);
 	}
 
 }

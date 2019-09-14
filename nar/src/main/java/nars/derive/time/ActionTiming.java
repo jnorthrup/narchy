@@ -36,7 +36,7 @@ public class ActionTiming implements TimeFocus {
 //    }
 
     @Override
-    public long[] premise(What what, Task task, Term term) {
+    public long[] premise(What what, Task task, Term beliefTerm) {
 
         float dur = what.dur() * focusDurs.floatValue();
 
