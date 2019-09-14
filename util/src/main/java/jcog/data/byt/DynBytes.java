@@ -284,10 +284,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void writeInt(int v) {
-        int s = ensureSized(4);
-        byte[] e = this.bytes;
-        s = writeInt(v, e, s);
-        this.len = s;
+        this.len = writeInt(v, this.bytes, ensureSized(4));
     }
 
     public static int writeInt(int v, byte[] e, int s) {
@@ -316,16 +313,7 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void writeFloat(float v) {
-
-//        int s = ensureSized(4);
-//        byte[] e = this.bytes;
-        int bits = Float.floatToIntBits(v);
-        writeInt(bits);
-//        e[s++] = (byte) (bits >> 24);
-//        e[s++] = (byte) (bits >> 16);
-//        e[s++] = (byte) (bits >> 8);
-//        e[s++] = (byte) bits;
-//        this.len = s;
+        writeInt(Float.floatToIntBits(v));
     }
 
     @Override

@@ -51,18 +51,23 @@ public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
         if (x instanceof Compound) {
             return putCompound((Compound) x);
         } else {
-            return putAtomic(x);
+            return putAtomic((Atomic)x);
         }
     }
 
-    final Term putAtomic(Term x) {
-        if (Intrin.intrin(x)) {
-            return putIntrin(x);
-        } else if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
+    /** determines what Atomics are considered intrinsic (and thus not internable) */
+    public boolean intrin(Atomic x) {
+        return Intrin.intrin(x);
+    }
+
+    final Term putAtomic(Atomic x) {
+        if (x instanceof UnnormalizedVariable || x instanceof Interval /* HACK */) {
             return x; //HACK is this necessary?
         }
 
-        if (intern((Atomic)x))
+        if (intrin(x))
+            return putIntrin(x);
+        else if (intern(x))
             return putIntern(x);
         else
             return x; //uninterned

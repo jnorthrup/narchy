@@ -11,7 +11,6 @@ public final class ShortBuffer {
 
     public ShortBuffer(int cap) {
         this.items = new short[cap];
-        size = 0;
     }
 
     public short[] toArray() {
@@ -23,10 +22,7 @@ public final class ShortBuffer {
         if (!clone && this.size == items.length)
             return items;
         else {
-            if (size == 0)
-                return ArrayUtil.EMPTY_SHORT_ARRAY;
-            else
-                return Arrays.copyOf(items, size);
+            return size == 0 ? ArrayUtil.EMPTY_SHORT_ARRAY : Arrays.copyOf(items, size);
         }
     }
 

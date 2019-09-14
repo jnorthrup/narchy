@@ -1,5 +1,5 @@
 //Inheritance -> Quest - generally a plain inheritance is underivable.  here it is reflected into a quest about its desirability
-(A-->B), (A-->B), task("."), --isVar(A), --isVar(B) |- (A-->B), (Punctuation:Quest)
+//(A-->B), (A-->B), task("."), --isVar(A), --isVar(B) |- (A-->B), (Punctuation:Quest)
 
 //Question Induction
 //  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:TaskEvent)

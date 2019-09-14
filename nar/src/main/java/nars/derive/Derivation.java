@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.ShortBuffer;
 import jcog.data.map.MRUMap;
 import jcog.decide.MutableRoulette;
@@ -28,6 +29,7 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.atom.Int;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
@@ -35,6 +37,7 @@ import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.func.TruthFunction;
+import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.map.mutable.MapAdapter;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
@@ -44,7 +47,6 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
-import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
@@ -196,6 +198,7 @@ public class Derivation extends PreDerivation {
      */
     private transient float priSingle, priDouble;
     private Term _taskTerm;
+    private ImmutableMap<Atomic, Term> derivationFunctors;
 //    private MethodHandle deriverMH;
 
     {
@@ -220,9 +223,18 @@ public class Derivation extends PreDerivation {
         ) {
 
             @Override
+            public boolean intrin(Atomic x) {
+                return
+                    //erased types: convert these atoms to Anom for maximum premise key re-use
+                    x instanceof Atom || (
+                    !(x instanceof Int) && !(x instanceof Atom.AtomChar)
+                    && super.intrin(x));
+            }
+
+            @Override
             protected boolean intern(Atomic x) {
-                return !(x instanceof Atom) ||
-                        transformDerived.derivationFunctors.apply(x)==null; //TODO better matcher
+                return //!(x instanceof Atom) ||
+                        !derivationFunctors.containsKey(x); //TODO better matcher
             }
 
 //            @Override
@@ -429,10 +441,7 @@ public class Derivation extends PreDerivation {
 
         NAR p = this.nar, n = w.nar;
         if (p != n) {
-            this.reset();
-            this.nar = n;
-            this.premiseUnify.random(this.random = n.random());
-            this.transformDerived = new DerivationTransform();
+            this.reset(n);
         }
 
         this.deriver = d;
@@ -506,7 +515,9 @@ public class Derivation extends PreDerivation {
      * include any .clear() for data structures in case of emergency we can continue to assume they will be clear on next run()
      */
 
-    private Derivation reset() {
+    private void reset(NAR n) {
+        this.nar = n;
+
         _task = _belief = null;
         taskPunc = 0;
         parentCause = null;
@@ -521,7 +532,6 @@ public class Derivation extends PreDerivation {
         taskUniqueAnonTermCount = 0;
         temporal = false;
 //        taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
-        nar = null;
 
         //clear();
         //anon.clear();
@@ -530,7 +540,10 @@ public class Derivation extends PreDerivation {
         //taskStamp.clear();
         //canCollector.clear();
 
-        return this;
+        this.premiseUnify.random(this.random = n.random());
+        derivationFunctors = DerivationFunctors.get(Derivation.this);
+        this.transformDerived = new DerivationTransform();
+
     }
 
     /**
@@ -739,13 +752,11 @@ public class Derivation extends PreDerivation {
         }
     }
 
+
     /**
      * should be created whenever a different NAR owns this Derivation instance, if ever
      */
     public final class DerivationTransform extends MyUnifyTransform {
-
-        private final Function<Atomic, Term> derivationFunctors = DerivationFunctors.get(Derivation.this);
-//        public transient Function<Variable, Term> xy = null;
 
         @Override
         protected final Term resolveVar(nars.term.Variable x) {
@@ -766,12 +777,19 @@ public class Derivation extends PreDerivation {
 
             } else if (a instanceof Atom) {
 
-                b = derivationFunctors.apply(a);
-
-                if (b == TaskTerm)
+                if (a == TaskTerm)
                     return taskTerm;
-                else if (b == BeliefTerm)
+                else if (a == BeliefTerm)
                     return beliefTerm;
+
+                b = derivationFunctors.get(a);
+
+                if (NAL.DEBUG) {
+                    if (b == TaskTerm)
+                        throw new WTF("should have been detected earlier"); //return taskTerm;
+                    else if (b == BeliefTerm)
+                        throw new WTF("should have been detected earlier"); //return beliefTerm;
+                }
 
             } else
                 return a;

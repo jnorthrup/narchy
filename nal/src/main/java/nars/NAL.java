@@ -580,9 +580,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean PREMISE_FOCUS_TIME_DITHER= configIs("PREMISE_FOCUS_TIME_DITHER");
 
         /**
-         *common variables for the variables matched in premise formation; since the task target is not transformed like the belief target is.
+         common variables for the variables matched in premise formation; since the task target is not transformed like the belief target is.
+         might cause problems, untested
          */
-        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = true;
+        public static final boolean PREMISE_UNIFY_COMMON_VARIABLES = false;
 
         /** TODO use Gödel numbering not this HACK */
         public static final boolean PREMISE_KEY_DITHER = false;

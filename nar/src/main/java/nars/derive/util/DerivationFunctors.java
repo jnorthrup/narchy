@@ -18,12 +18,12 @@ import nars.term.functor.AbstractInlineFunctor2;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.InlineFunctor;
 import nars.util.var.DepIndepVarIntroduction;
+import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.Map;
-import java.util.function.Function;
 
 import static nars.term.atom.Bool.Null;
 import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
@@ -31,7 +31,7 @@ import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
 public enum DerivationFunctors {
 	;
 
-	public static Function<Atomic, Term> get(Derivation d) {
+	public static ImmutableMap<Atomic, Term> get(Derivation d) {
 
 		Map<Atomic, Term> m = new UnifiedMap<>(32, 1f);
 
@@ -136,7 +136,7 @@ public enum DerivationFunctors {
 //            pre.addAt(x);
 //        }
 
-		return Maps.immutable.ofMap(m)::get;
+		return Maps.immutable.ofMap(m);
 
 		//x -> pre.contains(x) ? m.get(x) : null;
 	}
