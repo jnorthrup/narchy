@@ -9,6 +9,7 @@ import nars.control.How;
 import nars.control.channel.CauseChannel;
 import nars.link.TaskLink;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.TemporalTask;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.Terms;
@@ -96,6 +97,7 @@ public class Inperience extends How {
         return y;
     }
 
+
     @Override
     public void next(What w, BooleanSupplier kontinue) {
         NAR n = w.nar;
@@ -118,7 +120,7 @@ public class Inperience extends How {
             Term x = l.from();
             if (x.volume() <= volMaxPre && filter.addIfMissing(x)) {
 
-                Task t = l.get(when);
+                Task t = l.get(when, (z) -> !(z instanceof TemporalTask.Unevaluated));
                 if (t != null) {
 
                     if (isRecursive(t, self)) {
@@ -170,7 +172,7 @@ public class Inperience extends How {
     /** attempt to filter believe(believe(.... */
     private boolean isRecursive(Task t, Term self) {
         Term x = t.term();
-         if (x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
+         if (x.hasAll(INH.bit | PROD.bit) && x.op()==INH && x.sub(0).op()==PROD && x.sub(1).equals(verb(t.punc()))) {
              Term inperiencer = x.sub(0).sub(0);
              if (inperiencer instanceof nars.term.Variable || inperiencer.equals(self))
                  return true;

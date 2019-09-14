@@ -22,10 +22,7 @@ import java.util.function.Predicate;
 
     /** adapter which ignores the minimum */
     static <X> FloatRank<X> the(FloatFunction<X> f) {
-        if (f instanceof FloatRank)
-            return ((FloatRank)f);
-        else
-            return (x, min) -> f.floatValueOf(x);
+        return f instanceof FloatRank ? (FloatRank) f : ((x, min) -> f.floatValueOf(x));
     }
 
 
@@ -52,9 +49,7 @@ import java.util.function.Predicate;
 
         @Override
         public float rank(X t, float m) {
-            if (filter != null && !filter.test(t))
-                return Float.NaN;
-            return rank.floatValueOf(t);
+            return filter != null && !filter.test(t) ? Float.NaN : rank.floatValueOf(t);
         }
     }
 }

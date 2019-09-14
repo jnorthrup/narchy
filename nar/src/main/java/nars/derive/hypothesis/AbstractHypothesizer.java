@@ -46,28 +46,33 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		if (target == null)
 			target = task.term();
 
-		if (target.op().conceptualizable) {
-			Term reverse = reverse(target, link, task, links, d);
-			if (reverse != null)
-				target = reverse;
+		{
+			if (target.op().conceptualizable) {
+				Term reverse = reverse(target, link, task, links, d);
+				if (reverse != null)
+					target = reverse;
+			}
 		}
 
 		if (link.isSelf()) {
 			Term src =
-				link.from();
-				//target;
+				target;
+				//link.from();
 				//task.term();
 			Term forward = forward(src, link, task, d);
 			if (forward != null) {
 				if (!forward.op().eventable) { // && !src.containsRecursively(forward)) {
-					//throw new WTF();
-					//target = forward;
+					target = forward;
 				} else {
 					links.grow(link, src, forward, task.punc());
+					if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
+						target = forward; //continue as self, or eager traverse the new link
 				}
 			}
-
 		}
+
+
+
 		//System.out.println(task + "\t" + target);
 		return new Premise(task, target);
 	}

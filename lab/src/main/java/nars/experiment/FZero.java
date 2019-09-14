@@ -358,7 +358,9 @@ public class FZero extends GameX {
         PreciseTruth bias = $.t(0, 0.001f);
         GoalActionConcept slow = actionUnipolar($.inh(id, "slow"), (x) -> {
             if (x >= 0.5f) {
-                fz.vehicleMetrics[0][6] *= (1 - ((x - 0.5f) * 2));
+                float decay = 1 - ((x - 0.5f) * 2);
+                fz.vehicleMetrics[0][6] *= decay;
+                fz.rotVel *= decay;
                 return x;
             } else {
                 return 0; //no brake

@@ -2,12 +2,15 @@ package nars.control.op;
 
 import jcog.TODO;
 import jcog.data.list.FasterList;
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.Operator;
+import nars.eval.Evaluation;
 import nars.table.dynamic.SeriesBeliefTable;
+import nars.task.TemporalTask;
 import nars.term.Functor;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -56,29 +59,31 @@ public enum Perceive {
 //            perceived = xPerceived;
 //        }
 
-//        if (Evaluation.evalable(x.term())) {
-//            FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
-//            if (rt != null) {
-//                //rt.removeInstance(x); //something was eval, remove the input HACK
-//                //rt.remove(x);
-//
-//                if (!rt.isEmpty()) {
-//                    //move and share input priority fairly:
-//                    float xPri = x.pri();
-//                    float xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
-//                    x.pri(xPriAfter);
-//                    float xp = (xPri - xPriAfter) / rt.size();
-//                    for (Task y : rt)
-//                        y.pri(xp);
-//
-//                    //echo TODO obviousness filter
-//                    //TODO cache the evaluation context in a proxy to the echo'd evaluable percept
+        if (!(x instanceof TemporalTask.Unevaluated) && Evaluation.evalable(x.term())) {
+            FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
+            if (rt != null) {
+                //rt.removeInstance(x); //something was eval, remove the input HACK
+                rt.remove(x); //HACK
+
+                if (!rt.isEmpty()) {
+                    //move and share input priority fairly:
+                    float xPri = x.pri();
+                    float xPriAfter = xPri * NAL.TaskEvalPriDecomposeRate;
+                    x.pri(xPriAfter);
+                    float xp = (xPri - xPriAfter) / rt.size();
+                    for (Task y : rt) {
+                        y.pri(xp);
+                        perceive(y, w); //HACK
+                    }
+
+                    //echo TODO obviousness filter
+                    //TODO cache the evaluation context in a proxy to the echo'd evaluable percept
 //                    rt.add(perceived);
 //
 //                    return task(rt, false);
-//                }
-//            }
-//        }
+                }
+            }
+        }
 
     }
 
