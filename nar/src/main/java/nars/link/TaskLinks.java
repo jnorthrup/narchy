@@ -42,10 +42,6 @@ public class TaskLinks implements Sampler<TaskLink> {
      */
     public final FloatRange decay = new FloatRange(1f, 0, 2);
 
-
-    /** pre-amplifier */
-    public final FloatRange preAmp = new FloatRange(1f, 0, 2f /* 2f */);
-
     /**
      * (post-)Amp: tasklink conductance, propagation rate
      */
@@ -179,7 +175,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
     public TaskLink link(Task task, float pri) {
-        return link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri * preAmp.floatValue()));
+        return link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri));
     }
 
     public Stream<Term> terms() {

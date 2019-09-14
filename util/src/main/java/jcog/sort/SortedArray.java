@@ -346,19 +346,19 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return null;
     }
 
-    /** simply swaps the item at the index with the last item */
-    public final boolean removeFaster(X x, int index) {
-        int s = size;
-        if (s > index) {
-            X[] items = this.items;
-            if (items[index] == x) {
-                //items[index] = null;
-                items[index] = items[SIZE.decrementAndGet(this)];
-                return true;
-            }
-        }
-        return false;
-    }
+//    /** simply swaps the item at the index with the last item */
+//    public final boolean removeFaster(X x, int index) {
+//        int s = size;
+//        if (s > index) {
+//            X[] items = this.items;
+//            if (items[index] == x) {
+//                //items[index] = null;
+//                items[index] = items[SIZE.decrementAndGet(this)];
+//                return true;
+//            }
+//        }
+//        return false;
+//    }
 
     public final boolean removeFast(X x, int index) {
         int totalOffset = this.size - index - 1;

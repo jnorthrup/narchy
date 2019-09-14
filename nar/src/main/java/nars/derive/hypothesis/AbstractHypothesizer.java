@@ -54,13 +54,14 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		if (link.isSelf()) {
 			Term src =
+				link.from();
+				//target;
 				//task.term();
-				target;
 			Term forward = forward(src, link, task, d);
 			if (forward != null) {
 				if (!forward.op().eventable) { // && !src.containsRecursively(forward)) {
 					//throw new WTF();
-					target = forward;
+					//target = forward;
 				} else {
 					links.grow(link, src, forward, task.punc());
 				}

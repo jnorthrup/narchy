@@ -346,10 +346,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                         if (d)
                             y.delete();
 
-                        remove(y, ii, i, !d);
-
-                        if (!next.stop)
-                            tryRecommit(rng, s-1);
+                        samplePopRemove(y, i, !d, next.stop, rng);
 
                     } else {
                         if (rng==null)
@@ -436,9 +433,9 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     private void tryRecommit(Random rng, int size) {
         if (size > 0) {
             if (size==1 || (rngFloat(rng) < 1f / size)) {
-                if (!lock.isWriteLocked()) {
+                //if (!lock.isWriteLocked()) {
                     commit(null);
-                }
+                //}
             }
         }
     }
@@ -637,18 +634,27 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * if y is or can be deleted by callee,
      * then the next commit will fully remove the item whether this fails in weak mode or not.
      */
-    private void remove(Y y, Object[] ii, int suspectedPosition, boolean strong) {
+    private void samplePopRemove(Y y, int suspectedPosition, boolean strong, boolean stop, Random rng) {
 
         long l = strong ? lock.writeLock() : lock.tryWriteLock();
         if (l == 0)
             return;
 
         try {
-            if (ii[suspectedPosition] == y) {
-                boolean removed = table.items.removeFaster(y, suspectedPosition);
-                assert (removed);
-                removeFromMap(y);
+
+            y = removeFromMapIfExists(y);
+            if (y == null)
+                return; //already removed
+
+            boolean removed = table.items.removeFast(y, suspectedPosition);
+            if (!removed) {
+                removed = table.removeItem(y); //exhaustive
             }
+            assert (removed);
+
+            if (!stop)
+                tryRecommit(rng, size());
+
         } finally {
             lock.unlockWrite(l);
         }
@@ -804,7 +810,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
                         table.items.reprioritize(existing, posBefore(existing, priBefore), delta, priAfter, table);
                     } else {
                         //got deleted
-                        if (!table.items.removeFaster(existing, posBefore(existing, priBefore)))
+                        if (!table.items.removeFast(existing, posBefore(existing, priBefore)))
                             throw new ConcurrentModificationException();
                         removeFromMap(existing);
                     }
@@ -850,14 +856,22 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      * remove from list should have occurred before the map removal
      */
     private Y removeFromMap(Y y) {
-        Y removed = table.map.remove(key(y));
+
+        Y removed = removeFromMapIfExists(y);
         if (removed == null)
             throw new WTF();
+
+        return removed;
+    }
+
+    @Nullable private Y removeFromMapIfExists(Y y) {
+        Y removed = table.map.remove(key(y));
+        if (removed == null)
+            return null;
 
         removed(removed);
         return removed;
     }
-
 
     @Override
     public Bag<X, Y> commit(Consumer<Y> update) {
@@ -933,7 +947,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
      *
      * @param n # to remove, if -1 then all are removed
      */
-    private void clear(int n, Consumer<? super Y> each) {
+    public void clear(int n, Consumer<? super Y> each) {
 
         int s = Math.min(n, size());
         if (s > 0) {
