@@ -20,14 +20,15 @@ public class WorkerExec extends ThreadedExec {
 	/**
 	 * min # of play's per cycle, in total across all threads
 	 */
-	double granularity = 32;
+	double granularity = 16;
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */
 	float workResponsibility =
+		Util.PHIf * 2;
 		//1f;
 		//1.5f;
-		2f;
+		//2f;
 	/**
 	 * process sub-timeslice divisor
 	 * TODO auto-calculate
@@ -63,7 +64,7 @@ public class WorkerExec extends ThreadedExec {
 
 	@Override
 	public synchronized void synch() {
-		if (this.exe.running() == 0) {
+		if (this.exe.size() == 0) {
 			in.drain(this::executeNow); //initialize
 		}
 	}
@@ -88,22 +89,23 @@ public class WorkerExec extends ThreadedExec {
 
 				long workStart = nanoTime();
 
-				work(workResponsibility);
+				work();
 
 				long workEnd = nanoTime();
 
 				long worked = workEnd - workStart;
 
-				long cycleTimeRemain = cycleIdealNS - worked;
-				if (cycleTimeRemain > 0 && subCycleNS > 0)
+				long cycleTimeRemain = threadWorkTimePerCycle - worked;
+				if (cycleTimeRemain > 0 && subCycleNS > 0) {
 					play(workEnd + cycleTimeRemain);
 
-				sleep();
+					sleep();
+				}
 
 			}
 		}
 
-		protected void work(float responsibility) {
+		protected void work() {
 
 
 			int batchSize = -1;
@@ -120,12 +122,12 @@ public class WorkerExec extends ThreadedExec {
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Math.max(1, (int) Math.ceil(((responsibility * available) / workGranularity)));
+						Util.clamp((int) Math.ceil(workResponsibility/concurrency() * available), 1, available);
 
 				} else if (--batchSize == 0)
 					break; //enough
 
-			} //while (!queueSafe((available=in.size())));
+			}
 
 
 		}
@@ -187,9 +189,9 @@ public class WorkerExec extends ThreadedExec {
 
 		/** TODO improve and interleave naps with play */
 		void sleep() {
-			long i = (long) (WorkerExec.this.threadIdleTimePerCycle * (((double) concurrency()) / exe.maxThreads));
+			long i = WorkerExec.this.threadIdleTimePerCycle;
 			if (i > 0) {
-				Util.sleepNS(NapTimeNS);
+				Util.sleepNS(i);
 				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
 			}
 		}

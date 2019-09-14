@@ -23,7 +23,7 @@ public class AffinityExecutor implements Executor {
 
 //    private static final Logger logger = LoggerFactory.getLogger(AffinityExecutor.class);
 
-    public final FastCoWList<Thread> threads = new FastCoWList<Thread>(Thread[]::new);
+    public final FastCoWList<Thread> threads = new FastCoWList<>(Thread[]::new);
     public final Semaphore running;
     public final String id;
     public final int maxThreads;

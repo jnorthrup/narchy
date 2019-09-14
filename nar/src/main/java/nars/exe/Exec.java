@@ -1,17 +1,9 @@
 package nars.exe;
 
 import jcog.Log;
-import jcog.WTF;
 import jcog.data.iterator.ArrayIterator;
-import jcog.util.ConsumerX;
 import nars.NAR;
-import nars.Task;
-import nars.attention.What;
 import nars.control.NARPart;
-import nars.control.op.Perceive;
-import nars.task.AbstractTask;
-import nars.task.CommandTask;
-import nars.task.NALTask;
 import nars.time.ScheduledTask;
 import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 import org.slf4j.Logger;
@@ -27,7 +19,7 @@ import java.util.stream.Stream;
 /**
  * manages low level task scheduling and execution
  */
-abstract public class Exec extends NARPart implements Executor, ConsumerX<AbstractTask> {
+abstract public class Exec extends NARPart implements Executor {
 
     public static final Logger logger = Log.logger(Exec.class);
 
@@ -40,27 +32,14 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
      */
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
-
-    private final int concurrencyMax;
+    /**
+     * maximum possible concurrency; should remain constant
+     */
+    public final int concurrencyMax;
 
     protected Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
     }
-
-    /** HACK this needs better */
-    @Deprecated public static void run(Task _x, What w) {
-
-        Task x = _x;
-        while (x instanceof NALTask || x instanceof CommandTask) {
-            x = Perceive.perceive(x, w);
-        }
-
-        if (x instanceof AbstractTask)
-            Task.run(x, w);
-        else if (x!=null)
-            throw new WTF(); //HACK temporary
-    }
-
 
 
 //    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {
@@ -103,15 +82,8 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
     /**
      * current concurrency level; may change
      */
-    @Override
+    //@Override
     abstract public int concurrency();
-
-    /**
-     * maximum possible concurrency; should remain constant
-     */
-    protected final int concurrencyMax() {
-        return concurrencyMax;
-    }
 
     protected final void executeNow(Consumer<NAR> t) {
         try {
@@ -128,31 +100,19 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
         }
     }
 
-    /**
-     * immediately execute a Task
-     */
-    @Override
-    @Deprecated public final void accept(AbstractTask t) {
-//        try {
-        Task.run(t, nar);
-//        } catch (Throwable e) {
-//            logger.warn("{} {}", e, t);
-//        }
-    }
+
 
     /**
      * inline, synchronous
      */
     protected final void executeNow(Object t) {
-        if (t instanceof AbstractTask)
-            accept((AbstractTask) t);
-        else if (t instanceof Consumer)
+        if (t instanceof Consumer)
             executeNow((Consumer)t);
         else
             executeNow((Runnable) t);
     }
 
-    abstract protected void next(NAR nar);
+    abstract protected void next();
 
     public void print(Appendable out) {
         try {
@@ -250,8 +210,7 @@ abstract public class Exec extends NARPart implements Executor, ConsumerX<Abstra
      * flushes the pending work queued for the current time
      */
     public final void synch(NAR n) {
-        this.nar = n; //HACK
-        schedule(x -> x.accept(n));
+        schedule(this::executeNow);
     }
 
     public void throttle(float t) {

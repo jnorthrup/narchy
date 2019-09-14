@@ -22,27 +22,24 @@ abstract public class NARLoop extends InstrumentedLoop {
         nar = n;
     }
 
-    public static NARLoop the(NAR nar) {
-        return nar.exe.concurrent() ? new NARLoopAsync(nar) : new NARLoopSync(nar);
-    }
 
+    public final static class NARLoopSync extends NARLoop {
 
-    private final static class NARLoopSync extends NARLoop {
-
-        NARLoopSync(NAR n) { super(n); }
+        public NARLoopSync(NAR n) { super(n); }
 
         @Override
         public final boolean next() {
-            nar.exe.next(nar);
-            nar.eventCycle.emit(nar);
-            nar.time.next();
+            NAR n = nar;
+            n.exe.next();
+            n.eventCycle.emit(n);
+            n.time.next();
             return true;
         }
     }
 
-    private final static class NARLoopAsync extends NARLoop {
+    public final static class NARLoopAsync extends NARLoop {
 
-        NARLoopAsync(NAR n) {
+        public NARLoopAsync(NAR n) {
             super(n);
         }
 
@@ -53,9 +50,11 @@ abstract public class NARLoop extends InstrumentedLoop {
 
         @Override
         public final boolean next() {
-            nar.exe.next(nar);
-            nar.eventCycle.emitAsync(nar, nar.exe, this::ready);
-            nar.time.next();
+            NAR n = nar;
+            Exec exe = n.exe;
+            exe.next();
+            n.eventCycle.emitAsync(n, exe, this::ready);
+            n.time.next();
             return true;
         }
     }

@@ -104,8 +104,8 @@ abstract public class MultiExec extends Exec {
     }
 
     @Override
-    protected final void next(NAR nar) {
-        nar.exe.schedule(this::execute);
+    protected final void next() {
+        schedule(this::executeNow);
     }
 
     @Override

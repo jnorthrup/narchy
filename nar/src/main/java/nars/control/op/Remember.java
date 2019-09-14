@@ -9,7 +9,6 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.MetaGoal;
 import nars.table.dynamic.SeriesBeliefTable;
-import nars.task.AbstractTask;
 import nars.task.util.TaskException;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -23,7 +22,7 @@ import static nars.Op.GOAL;
  * depending on the status of the insertion, activate links
  * in some proportion of the input task's priority.
  */
-public class Remember extends AbstractTask {
+public class Remember {
 
     /**
      * root input
@@ -101,8 +100,7 @@ public class Remember extends AbstractTask {
         return Remember.class.getSimpleName() + '(' + input + ')';
     }
 
-    @Override
-    public Task next(Object w) {
+    public Task next(What w) {
 
         if (store) {
             if (!store(true))
@@ -112,7 +110,7 @@ public class Remember extends AbstractTask {
        }
 
         if (complete() && !this.result.isDeleted()) {
-            link(this.result, (What)w);
+            link(this.result, w);
         }
 
         if (result!=input)

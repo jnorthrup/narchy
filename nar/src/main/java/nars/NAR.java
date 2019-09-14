@@ -76,8 +76,6 @@ import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
-import static nars.truth.func.TruthFunctions.c2w;
-import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.fusesource.jansi.Ansi.ansi;
 
 
@@ -131,19 +129,20 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         eventOnOff.on(this::indexPartChange);
 
-
         memory.start(this);
 
-        fork(main = whatBuilder.apply(self));
 
         onCycle(this.emotion = new Emotion(this));
 
         Builtin.init(this);
 
-        this.loop = NARLoop.the(this);
+        this.loop = this.exe.concurrent() ? new NARLoop.NARLoopAsync(this) : new NARLoop.NARLoopSync(this);
         start(exe);
 
         synch();
+
+        fork(main = whatBuilder.apply(self));
+
     }
 
     static void outputEvent(Appendable out, String previou, String chan, Object v) throws IOException {

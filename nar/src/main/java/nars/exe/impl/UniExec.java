@@ -29,16 +29,19 @@ public class UniExec extends Exec {
         return false;
     }
 
-    protected void next(NAR nar) {
-        this.nar = nar;
-        nar.exe.schedule(this::executeNow);
+    protected void next() {
+
+
+        schedule(this::executeNow);
+
+        NAR n = this.nar;
 
         /*
         simplest possible implementation: flat 1 work unit per each what
         */
-        for (What w : nar.what) {
+        for (What w : n.what) {
             if (w.isOn()) {
-                for (How h : nar.how) {
+                for (How h : n.how) {
                     if (h.isOn()) {
                         h.next(w, () -> false);
                     }

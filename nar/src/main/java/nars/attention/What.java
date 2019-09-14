@@ -11,9 +11,9 @@ import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.control.PriNARPart;
+import nars.control.op.Perceive;
 import nars.derive.pri.DefaultDerivePri;
 import nars.derive.pri.DerivePri;
-import nars.exe.Exec;
 import nars.link.TaskLink;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
@@ -98,7 +98,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         }
 
         @Deprecated /* HACK */ @Override public void accept(Task x) {
-            Exec.run(x, What.this);
+            Perceive.perceive(x, What.this);
         }
     };
 

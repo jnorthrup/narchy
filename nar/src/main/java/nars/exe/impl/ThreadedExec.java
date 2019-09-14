@@ -22,7 +22,9 @@ abstract public class ThreadedExec extends MultiExec {
 
     final boolean affinity;
     final AffinityExecutor exe;
-    protected int workGranularity = Integer.MAX_VALUE;
+
+    /** cached concurrency (thread count) */
+    private transient int concurrency = 1;
 
 
     public ThreadedExec(int threads) {
@@ -32,7 +34,7 @@ abstract public class ThreadedExec extends MultiExec {
     public ThreadedExec(int maxThreads, boolean affinity) {
         super(maxThreads);
 
-        in = new MpmcAtomicArrayQueue(inputQueueCapacityPerThread * concurrencyMax());
+        in = new MpmcAtomicArrayQueue(inputQueueCapacityPerThread * concurrencyMax);
 
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;
@@ -64,17 +66,51 @@ abstract public class ThreadedExec extends MultiExec {
     @Override
     protected void update() {
 
-        int concurrency = concurrency();
+        _concurrency();
 
-        updateThreads(concurrency);
+        //HACK should somehow work in affinity mode too
+        if (!affinity) {
+            long ci = this.cycleIdealNS;
+            if (ci > 0) {
+                int idealThreads = Util.clamp(
+                    (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax),
+                    1,
+                    concurrencyMax);
 
-        workGranularity =
-                //concurrency() + 1;
-                //Math.max(1, concurrency() - 1);
-                concurrency;
+                //TODO fix this
+                int concurrency = concurrency();
+                if (idealThreads > concurrency) {
+                    //spawn more
+                    int demand;
+                    synchronized (exe) {
+                        demand = idealThreads - _concurrency();
+                        if (demand > 0) {
+                            exe.execute(loop(), demand, false);
+                            _concurrency();
+                        }
+                    }
+                    logger.info("start +{} worker threads (ideal: {} )", demand, idealThreads);
+                } else if (concurrency > idealThreads) {
+                    //stop some
+                    int excess;
+                    synchronized (exe) {
+                        excess = concurrency() - idealThreads;
+                        int c;
+                        while ((c = _concurrency()) > idealThreads)
+                            exe.remove(c - 1);
+                    }
+                    logger.info("stop {} worker threads (ideal: {} )", excess, idealThreads);
+                }
+            }
+        }
+
 
         super.update();
 
+    }
+
+    private int _concurrency() {
+        return concurrency = exe.size();
     }
 
     public final int queueSize() {
@@ -86,41 +122,9 @@ abstract public class ThreadedExec extends MultiExec {
         while ((next = in.poll()) != null) executeNow(next);
     }
 
-    private void updateThreads(int currentThreads) {
-        if (affinity)
-            return;  //HACK should somehow work in affinity mode too
-
-        long ci = this.cycleIdealNS;
-        if (ci > 0) {
-            int idealThreads = Util.clamp(
-                    (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax()),
-                    1,
-                    concurrencyMax());
-
-            //TODO fix this
-            if (idealThreads > currentThreads) {
-                //spawn more
-                int demand = idealThreads - currentThreads;
-                logger.info("start +{} worker threads (ideal: {} )", demand, idealThreads);
-                synchronized (exe) {
-                    exe.execute(loop(), demand, false);
-                }
-            } else if (currentThreads > idealThreads) {
-                //stop some
-                int excess = currentThreads - idealThreads;
-                logger.info("stop {} worker threads (ideal: {} )", excess, idealThreads);
-                synchronized (exe) {
-                    int c;
-                    while ((c = concurrency()) > idealThreads)
-                        exe.remove(c - 1);
-                }
-            }
-        }
-    }
-
     @Override
     public final int concurrency() {
-        return exe.size();
+        return concurrency;
     }
 
 
