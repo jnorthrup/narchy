@@ -1,6 +1,7 @@
 package nars.term.util;
 
 import jcog.Util;
+import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -45,7 +46,7 @@ public enum Image {
 
                 Subterms ss = s.subterms();
                 int n = ss.subs();
-                if (n >= 2 && (ss.structureSurface() & IMG.bit) == 0) {
+                if (n >= NAL.term.imageTransformSubMin && (ss.structureSurface() & IMG.bit) == 0) {
                     Img target = intOrExt ? ImgInt : ImgExt;
 
                     int index = ss.indexOf(x);

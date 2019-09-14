@@ -1,3 +1,6 @@
+//Inheritance -> Quest - generally a plain inheritance is underivable.  here it is reflected into a quest about its desirability
+(A-->B), (A-->B), task("."), --isVar(A), --isVar(B) |- (A-->B), (Punctuation:Quest)
+
 //Question Induction
 //  X, C, eventOfPN(C,X) |- C, (Punctuation:AskAsk, Time:TaskEvent)
 //  X, C, eventOfPN(C,X), --is(X,"==>"), task("?@") |- (polarizeRandom(conjWithoutPN(C,X))==>X), (Punctuation:Question, Time:TaskEvent)
@@ -7,8 +10,8 @@
     //how goal
     G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
 
-    //result of goal/non-goal
-    G, G, task("!") |-         (polarizeRandom(G) ==> ?1), (Punctuation:Question, Time:Task)
+//    //result of goal/non-goal
+//    G, G, task("!") |-         (polarizeRandom(G) ==> ?1), (Punctuation:Question, Time:Task)
 
 //    //is what with goal/non-goal
 //    G, G, task("!") |-           (?1 && polarizeRandom(G)), (Punctuation:Question, Time:Task)
@@ -64,12 +67,12 @@
 
 
     //conj quest to impl question
-    (G && C), B, eqNeg(C,B), task("@"), --is(B,"==>"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:BeliefRelative)
+    //(G && C), B, eqNeg(C,B), task("@"), --is(B,"==>"), hasBelief() |-  (polarizeBelief(B) ==> G), (Punctuation:Question, Time:BeliefRelative)
      //(G && B), B, task("@") |-  (G ==> B), (Punctuation:Question)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-    B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
+    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication

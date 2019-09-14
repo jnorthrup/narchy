@@ -97,7 +97,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 			Term forward = decompose(src, link, task, d);
 			if (forward != null) {
 				if (!forward.op().eventable) { // && !src.containsRecursively(forward)) {
-					//target = forward;
+					target = forward;
 				} else {
 					links.grow(link, src, forward, task.punc());
 //					if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
@@ -119,7 +119,16 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 	/** selects the decomposition strategy for the given Compound */
 	protected TermDecomposer decomposer(Compound t) {
-		return DynamicTermDecomposer.Weighted;
+		switch (t.op()) {
+//			case INH:
+//			case IMPL:
+//				return DynamicTermDecomposer.StatementDecomposer;
+//			case SIM:
+//				return DynamicTermDecomposer.One;
+			default:
+				return DynamicTermDecomposer.Weighted;
+		}
+
 	}
 
 	/**

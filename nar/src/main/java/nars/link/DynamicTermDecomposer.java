@@ -11,8 +11,36 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 
+import static nars.Op.CONJ;
+
 public abstract class DynamicTermDecomposer implements TermDecomposer {
 
+
+    /** force descent to maximum 2 layers */
+    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
+        @Override
+        protected int depth(Compound root, Random rng) {
+            return 2;
+        }
+    };
+    /** force descent to maximum 1 layers */
+    public static final TermDecomposer One = new WeightedDynamicTermDecomposer() {
+        @Override
+        protected int depth(Compound root, Random rng) {
+            return 1;
+        }
+    };
+    public static final TermDecomposer StatementDecomposer = new TermDecomposer() {
+        @Override
+        public @Nullable Term decompose(Compound t, Random rng) {
+            //TODO refine
+            Term sub = t.sub(rng.nextBoolean() ? 0 : 1).unneg();
+            if (sub instanceof Compound && sub.op()==CONJ) {
+                return rng.nextBoolean() ? sub : One.decompose((Compound)sub, rng);
+            }
+            return sub;
+        }
+    };
 
     @Nullable @Override public final Term decompose(Compound t, Random rng) {
         return sampleDynamic(t, depth(t, rng), rng);
@@ -61,34 +89,36 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
     };
 
     /** uses roulette selection on arbitrary subterm weighting function */
-    public static final DynamicTermDecomposer Weighted = new DynamicTermDecomposer() {
-//        @Override
-//        protected int depth(Compound root, Random rng) {
-//            return 1;
-//        }
-        @Override
-        protected int depth(Compound root, Random rng) {
-            /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
-            int s = root.subs();
-            if (s == 0)
-                return 1;
+    public static final DynamicTermDecomposer Weighted = new WeightedDynamicTermDecomposer();
 
-            float fanoutRatio =
-                    //root.volume() / (1f + root.subs());
-                    //1 / (1 + ((float)root.volume())/(1+root.subs()));
-                    1 / (1 + (root.volume()-1f)/s);
+    private static class WeightedDynamicTermDecomposer extends DynamicTermDecomposer {
+        //        @Override
+        //        protected int depth(Compound root, Random rng) {
+        //            return 1;
+        //        }
+                @Override
+                protected int depth(Compound root, Random rng) {
+                    /* https://academo.org/demos/3d-surface-plotter/?expression=(1%2F(1%2Bx%2F(1%2By)))&xRange=0%2C32&yRange=0%2C8&resolution=23 */
+                    int s = root.subs();
+                    if (s == 0)
+                        return 1;
 
-            float w =
-                    fanoutRatio;
-                    //Util.sqr(fanoutRatio);
-                    //Util.sqrt(fanoutRatio);
-                    //(float)Math.pow(fanoutRatio, 0.75f);
-                    //(float)Math.pow(fanoutRatio, 1.5f);
+                    float fanoutRatio =
+                            //root.volume() / (1f + root.subs());
+                            //1 / (1 + ((float)root.volume())/(1+root.subs()));
+                            1 / (1 + (root.volume()-1f)/s);
 
-            float p = rng.nextFloat();
+                    float w =
+                            fanoutRatio;
+                            //Util.sqr(fanoutRatio);
+                            //Util.sqrt(fanoutRatio);
+                            //(float)Math.pow(fanoutRatio, 0.75f);
+                            //(float)Math.pow(fanoutRatio, 1.5f);
 
-            return p >= w ? 2 : 1;
-        }
+                    float p = rng.nextFloat();
+
+                    return p >= w ? 2 : 1;
+                }
 
         @Override
         protected Term choose(Subterms s, Term parent, Random rng) {
@@ -124,5 +154,5 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                     //Util.sqr((float)v);
                     //1; //flat
         }
-    };
+    }
 }

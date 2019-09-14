@@ -678,7 +678,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /** prevent variable introduction from erasing negative compounds,
          *  though content within negatives can be var introduced as normal. */
         public static final boolean VAR_INTRODUCTION_NEG_FILTER = true;
-    }
+
+        /** minimum product subterms for image structural transformations */
+        public static int imageTransformSubMin = 1;
+	}
 
     public enum test {
         ;

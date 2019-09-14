@@ -139,8 +139,8 @@ public class NAL4Test extends NALTest {
 
     @Test
     void structural_transformation_one_arg() {
-        //test.mustBelieve(CYCLES, "(acid --> (reaction,/))", 1.0f, 0.9f);
-        test.mustNotOutput(cycles, "(acid --> (reaction,/))", BELIEF, 0, 1, 0, 1, t->true);
+        test.mustBelieve(cycles, "(acid --> (reaction,/))", 1.0f, 0.9f);
+        //test.mustNotOutput(cycles, "(acid --> (reaction,/))", BELIEF, 0, 1, 0, 1, t->true);
         test.believe("reaction(acid)", 1.0f, 0.9f);
     }
 
