@@ -284,7 +284,8 @@ public class DynBytes implements ByteArrayDataOutput, Appendable, AbstractBytes,
 
     @Override
     public final void writeInt(int v) {
-        this.len = writeInt(v, this.bytes, ensureSized(4));
+        int s = ensureSized(4);
+        this.len = writeInt(v, this.bytes, s);
     }
 
     public static int writeInt(int v, byte[] e, int s) {

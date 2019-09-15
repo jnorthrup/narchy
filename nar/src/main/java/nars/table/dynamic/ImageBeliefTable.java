@@ -1,6 +1,5 @@
 package nars.table.dynamic;
 
-import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
@@ -48,7 +47,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         Task normalized = null;
 
         if (r.store) {
-            r.link = r.notify = false; //proxy store
+            //r.link = r.notify = false; //proxy store
             TaskConcept c = (TaskConcept) r.nar.conceptualize(normal);
             if (c == null)
                 return;
@@ -56,14 +55,14 @@ public class ImageBeliefTable extends DynamicTaskTable {
             c.table(normalized.punc()).remember(r);
         }
 
-        if (r.result!=null && !r.result.isDeleted() && normalized.equals(r.result)) {
-            r.store = false;
-            r.link = r.notify = true;
-            if (normalized!=r.result) {
-                Task.merge(imaged, r.result, PriMerge.replace);
-            }
-            r.remember(imaged);
-        }
+//        if (r.result!=null && !r.result.isDeleted() && normalized.equals(r.result)) {
+//            r.store = false;
+//            r.link = r.notify = true;
+//            if (normalized!=r.result) {
+//                Task.merge(imaged, r.result, PriMerge.replace);
+//            }
+//            r.remember(imaged);
+//        }
     }
 
     /**
@@ -84,13 +83,13 @@ public class ImageBeliefTable extends DynamicTaskTable {
         return transformFromTemplate(t);
     }
 
-    @Override
-    public @Nullable Answer sampleSome(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
-        Answer a = super.sampleSome(when, template, filter);
-        if (a!=null)
-            a.tasks.replace(this::transformFromTemplate);
-        return a;
-    }
+//    @Override
+//    public @Nullable Answer sampleSome(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+//        Answer a = super.sampleSome(when, template, filter);
+//        if (a!=null)
+//            a.tasks.replace(this::transformFromTemplate);
+//        return a;
+//    }
 
     @Nullable private Task transformFromTemplate(Task t) {
         return t != null ? SpecialTermTask.the(t, transformTermFromTemplate(t), false) : null;

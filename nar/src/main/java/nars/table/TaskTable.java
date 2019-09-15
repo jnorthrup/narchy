@@ -123,9 +123,9 @@ public interface TaskTable {
         return a.isEmpty() ? null : a;
     }
 
-    @Nullable default Answer sampleSome(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
-        return sampleAnswer(when, template, filter);
-    }
+//    @Nullable default Answer sampleSome(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+//        return sampleAnswer(when, template, filter);
+//    }
 
     @Nullable default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
         Answer a = sampleAnswer(when, template, filter);

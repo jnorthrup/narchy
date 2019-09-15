@@ -227,7 +227,19 @@ public class Taskify extends ProxyTerm {
         if (start != ETERNAL) {
             assert (start <= end) : "reversed occurrence: " + start + ".." + end;
 
-            int dither = d.ditherDT;
+            int dither =
+                d.ditherDT;
+
+            int dur =
+                d.dtTolerance;
+            long belowDur = dur - (end - start);
+            if (belowDur >= 2) {
+                //expand to perceptual dur since this is used in unification
+                //TODO corresponding evidence dilution
+                start -= belowDur/2;
+                end += belowDur/2;
+            }
+
             if (dither > 1) {
                 S = Tense.dither(start, dither, -1);
                 E = Tense.dither(end, dither, +1);

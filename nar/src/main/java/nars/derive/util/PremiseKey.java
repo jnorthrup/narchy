@@ -32,9 +32,9 @@ public class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
         }
 
         key.writeByte(
-          ((d.hasBeliefTruth() ? 1 : 0) << 3)
-                    |
-            Task.i(d.taskPunc)
+            (Task.i(d.taskPunc) << 1)
+                |
+            (d.hasBeliefTruth() ? 1 : 0)
         );
 
         commit();

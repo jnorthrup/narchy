@@ -933,7 +933,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * computes the average frequency during the given interval
      */
     default float freq(long start, long end) {
-        return truth().freq();
+        return freq();
     }
 
     default boolean isBeliefOrGoal(boolean beliefOrGoal) {

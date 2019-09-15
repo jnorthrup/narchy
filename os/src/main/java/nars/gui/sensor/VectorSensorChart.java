@@ -31,7 +31,6 @@ import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.video.Draw;
 
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 
 import static java.lang.Math.sqrt;
@@ -55,7 +54,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     private long start, end;
 
     /** how much evidence to include in result */
-    public final IntRange truthPrecision = new IntRange(3, 1, 16);
+    public final IntRange truthPrecision = new IntRange(NAL.ANSWER_BELIEF_MATCH_CAPACITY, 1, 16);
 
     /** in durs */
     public final FloatRange timeShift = new FloatRange(0, -64, +64);
@@ -128,7 +127,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     private Consumer<TaskConcept> touchMode = (x) -> { };
     transient public final TaskConcept[][] concept;
 
-    final AtomicBoolean ready = new AtomicBoolean(true);
+//    final AtomicBoolean ready = new AtomicBoolean(true);
 
     transient private Answer answer = null;
     transient private int answerDetail;
@@ -190,7 +189,8 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
                 update(v, new XYConcept() {
                     @Override protected float floatValue(int x, int y, TaskConcept c) {
-                        Truth b = answer.clear(answerTries).match(c.beliefs()).truth();
+                        Truth b = answer.clear(answerTries).match(c.beliefs())
+                            .truth();
                         return b != null ? b.freq() : Float.NaN;
                     }
                 });

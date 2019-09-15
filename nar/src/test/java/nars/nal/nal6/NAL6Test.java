@@ -1267,6 +1267,9 @@ public class NAL6Test extends NALTest {
             .mustBelieve(cycles, "y(#1)", 1f, 0.81f)
         ;
     }
+    @Test void ConjBelief_DepVar_Decompose2() {
+		test.believe("(((#1,_1)-->(_1,#2))&&cmp(#1,#2,_2))").mustBelieve(cycles, "cmp(#1,#2,_2)", 1f, 0.81f);
+	}
 
     @Test void ConjQuestion_2DepVars_Decompose() {
         test

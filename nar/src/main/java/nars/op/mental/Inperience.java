@@ -1,9 +1,7 @@
 package nars.op.mental;
 
-import jcog.bloom.StableBloomFilter;
 import jcog.math.FloatRange;
 import nars.*;
-import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.channel.CauseChannel;
@@ -12,7 +10,6 @@ import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.TemporalTask;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.Image;
@@ -111,14 +108,14 @@ public class Inperience extends How {
 
         //Predicate<Task> taskFilter = t -> accept(volMaxPre, t);
         //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
-        StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+        //StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
 
         When when = WhenTimeIs.now(w);
 
         w.sampleUnique(rng, (TaskLink l) -> {
 
             Term x = l.from();
-            if (x.volume() <= volMaxPre && filter.addIfMissing(x)) {
+            if (x.volume() <= volMaxPre/* && filter.addIfMissing(x)*/) {
 
                 Task t = l.get(when, (z) -> !(z instanceof TemporalTask.Unevaluated));
                 if (t != null) {

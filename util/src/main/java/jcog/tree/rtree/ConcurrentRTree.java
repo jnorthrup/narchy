@@ -116,6 +116,10 @@ public class ConcurrentRTree<X> extends LambdaStampedLock implements Space<X> {
         write(() -> t.forEach(this::remove));
     }
 
+    public final void readIfNonEmpty(Consumer<RTree<X>> x) {
+        if (size() == 0) return;
+        read(x);
+    }
 
     public final void read(Consumer<RTree<X>> x) {
         long l = readLock();

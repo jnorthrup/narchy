@@ -47,24 +47,25 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         long s = a.start, e;
 
         double dur = a.dur;
-        if (s == ETERNAL) {
+
+        if (s == ETERNAL || s == TIMELESS) {
             //choose now as the default focus time
-            long now = a.nar.time();
+            long now = a.time();
             s = (long)Math.floor(now - dur/2);
             e = (long)Math.ceil(now + dur/2);
         } else {
             e = a.end;
         }
 
-        int aTTL = a.ttl; //save
-
         //use at most a specific fraction of the TTL
+        int aTTL = a.ttl; //save
         int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
             NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * (e - s))));
         a.ttl = seriesTTL;
-        series.whileEach(s, e, false, a);
-        int ttlUsed = seriesTTL - a.ttl;
 
+        series.whileEach(s, e, false, a);
+
+        int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
         a.ttl = aTTL - ttlUsed; //restore
     }
 
@@ -181,6 +182,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             if (stamp.length != 1)
                 throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
             this.e = end;
+            setCyclic(true); //prevent being immediately image transformed, etc
         }
 
 

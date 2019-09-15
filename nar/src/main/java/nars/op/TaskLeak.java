@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.bloom.StableBloomFilter;
 import jcog.event.Off;
 import jcog.pri.PLink;
 import jcog.pri.PriMap;
@@ -13,12 +12,10 @@ import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
-import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
 import nars.link.TaskLink;
 import nars.term.Term;
-import nars.term.Terms;
 import nars.time.When;
 import nars.time.event.WhenTimeIs;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -220,15 +217,18 @@ public abstract class TaskLeak extends How {
             Random rng = w.random();
 
             //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
-            StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
+            //StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
 
             w.sampleUnique(rng, (Predicate<? super TaskLink>)(link)->{
 
                 Term linkTerm = link.from();
-                if (filter.addIfMissing(linkTerm) && termFilter.test(link.from())) {
-                    Task x = sample(link, linkTerm, when);
-                    if (x != null)
-                        each.accept(x);
+                //if (filter.addIfMissing(linkTerm))
+                {
+                    if (termFilter.test(link.from())) {
+                        Task x = sample(link, linkTerm, when);
+                        if (x != null)
+                            each.accept(x);
+                    }
                 }
 
                 return kontinue.getAsBoolean();

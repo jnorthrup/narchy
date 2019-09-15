@@ -165,7 +165,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
      */
     @Override
     public boolean whileEach(long minT, long maxT, boolean exactRange, Predicate<? super T> whle) {
-        //assert (minT != ETERNAL);
+        assert (minT != ETERNAL && minT != TIMELESS);
 
 
 //        /*if (exactRange)*/ {
@@ -183,6 +183,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
 //                    return l == null || x.test(l); //OOB
 //                }
 //            }
+
 
         if (exactRange) {
             if ((e < minT) || (s > maxT)) //disjoint
@@ -211,9 +212,9 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                     v = q.peek(head, center + r, len);
 
                     if (v!=null) {
-                        vm = v.start();
-                        if (vm < lastHigh){
-                            v = null; //wrap-around, stop
+                        vm = v.mid();
+                        if (vm < lastHigh || (exactRange && lastHigh >= maxT)){
+                            //wrap-around or OOB: stop
                             increase = false;
                         } else
                             lastHigh = vm;
@@ -226,9 +227,9 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                     u = q.peek(head, center - r, len);
 
                     if (u!=null) {
-                        um = u.start();
-                        if (um > lastLow) {
-                            u = null; //wrap-around, stop
+                        um = u.mid();
+                        if (um > lastLow || (exactRange && lastLow <= minT)) {
+                            //wrap-around or OOB: stop
                             decrease = false;
                         } else
                             lastLow = um;
@@ -258,8 +259,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
                 if (v!=null && !whle.test(v))
                     return false;
 
-
-            } while (r < size);
+            } while ((r < size) && (increase || decrease));
 
         } else {
 

@@ -13,6 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
 import static nars.term.atom.Bool.False;
+import static nars.term.atom.Bool.Null;
 
 @Skill("Negativity_bias") public interface Neg extends Term { ;
 
@@ -33,8 +34,11 @@ import static nars.term.atom.Bool.False;
                         return False; //Allow, assuming && superterm
                     case 1:
                         return u.sub(0).neg();
-                    default:
-                        throw new TermException("fragment with subs >1 can not be negated", u);
+                    default: {
+                        if (NAL.DEBUG)
+                            throw new TermException("fragment with subs >1 can not be negated", u);
+                        return Null;
+                    }
                 }
             }
 

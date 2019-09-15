@@ -43,26 +43,26 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
         else if (size == 1) { items[0].match(a); }
         else {
             //first come first serve
-            ANDshuffled(a.random(), t -> {
-                t.match(a);
-                return a.ttl > 0;
-            });
+//            ANDshuffled(a.random(), t -> {
+//                t.match(a);
+//                return a.ttl > 0;
+//            });
 
 
             //fair round robin
-//        int ttlStart = a.ttl; assert(ttlStart > 0);
-//        int ttlFair = Math.max(1,
-//            //ttlStart /size
-//            ttlStart
-//        );
-//        int[] ttlUsed = new int[1];
-//        ANDshuffled(a.random(), t->{
-//            a.ttl = ttlFair; //restore for next
-//            t.match(a);
-//            ttlUsed[0] += ttlFair - a.ttl;
-//            return true;
-//        });
-//        a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
+        int ttlStart = a.ttl; assert(ttlStart > 0);
+        int ttlFair = Math.max(1,
+            ttlStart /size
+            //ttlStart
+        );
+        int[] ttlUsed = new int[1];
+        ANDshuffled(a.random(), t->{
+            a.ttl = ttlFair; //restore for next
+            t.match(a);
+            ttlUsed[0] += ttlFair - a.ttl;
+            return true;
+        });
+        a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
         }
     }
 

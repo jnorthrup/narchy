@@ -3,7 +3,6 @@ package nars.derive;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.ShortBuffer;
-import jcog.data.map.MRUMap;
 import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import nars.NAL;
@@ -81,7 +80,7 @@ public class Derivation extends PreDerivation {
     public final AnonWithVarShift anon;
     public final UniSubst uniSubstFunctor = new UniSubst(this);
 
-    final MRUMap<Task,Task> derivationHistory = new MRUMap<>(256);
+
 
     /**
      * second layer additional substitutions
@@ -174,6 +173,8 @@ public class Derivation extends PreDerivation {
     public transient float dur = Float.NaN;
 
     public transient Task _task, _belief;
+    public transient Term _beliefTerm;
+
     public DerivationTransform transformDerived;
 
     public Predicate<nars.Task> tasklinkTaskFilter =
@@ -225,28 +226,15 @@ public class Derivation extends PreDerivation {
             @Override
             public boolean intrin(Atomic x) {
                 return
-                    //erased types: convert these atoms to Anom for maximum premise key re-use
-                    x instanceof Atom || (
+                    //erased types: intern these intrins for maximum premise key re-use
                     !(x instanceof Int) && !(x instanceof Atom.AtomChar)
-                    && super.intrin(x));
-            }
-
-            @Override
-            protected boolean intern(Atomic x) {
-                return //!(x instanceof Atom) ||
-                        !derivationFunctors.containsKey(x); //TODO better matcher
+                    && super.intrin(x);
             }
 
 //            @Override
-//            protected final Term putCompound(Compound x) {
-//                putOrGet = true;
-//                return x.transform(this, directTermBuilder  /*termBuilder*/ , NAL.term.COMPOUND_VOLUME_MAX);
-//            }
-//
-//            @Override
-//            protected final Term getCompound(Compound x) {
-//                putOrGet = false;
-//                return x.transform(this, termBuilder, NAL.term.COMPOUND_VOLUME_MAX);
+//            protected boolean intern(Atomic x) {
+//                return //!(x instanceof Atom) ||
+//                        !derivationFunctors.containsKey(x); //TODO better matcher
 //            }
 
         };
@@ -279,6 +267,7 @@ public class Derivation extends PreDerivation {
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
         this.parentCause = null; //invalidate
         this._task = resetTask(nextTask, this._task);
+        this._beliefTerm = nextBeliefTerm;
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
     }
 
@@ -411,7 +400,9 @@ public class Derivation extends PreDerivation {
 
         this.eviSingle = _task.isBeliefOrGoal() ? _task.evi() : 0;
         if (_belief != null) {
-            this.overlapDouble = Stamp.overlapAny(this._task, _belief);
+            this.overlapDouble =
+                Stamp.overlapAny(this._task, _belief);
+                //Stamp.overlap(this._task, _belief);
             this.eviDouble = this.eviSingle + _belief.evi();
         } else {
             this.overlapDouble = false; //N/A
@@ -429,7 +420,6 @@ public class Derivation extends PreDerivation {
 
     @Override
     public final boolean match() {
-
         Predicate<Derivation> f = this.forEachMatch;
         return (f == null) || f.test(this);
     }
@@ -447,8 +437,6 @@ public class Derivation extends PreDerivation {
         this.deriver = d;
         this.what = w;
         //this.deriverMH = deriver.rules.what.compile();
-
-        derivationHistory.clear();
 
         what.derivePri.premise(this);
 
@@ -541,7 +529,7 @@ public class Derivation extends PreDerivation {
         //canCollector.clear();
 
         this.premiseUnify.random(this.random = n.random());
-        derivationFunctors = DerivationFunctors.get(Derivation.this);
+        this.derivationFunctors = DerivationFunctors.get(Derivation.this);
         this.transformDerived = new DerivationTransform();
 
     }
@@ -570,14 +558,9 @@ public class Derivation extends PreDerivation {
     public final void derive(Task t) {
         try (var __ = nar.emotion.derive_F_Remember.time()) {
 
-            Task derived = derivationHistory.putIfAbsent(t, t);
-            if (derived == null) {
-                what.accept(t);
-                nar.emotion.deriveTask.increment();
-            } else {
-                nars.Task.merge(derived, t);
-                nar.emotion.deriveTaskDup.increment();
-            }
+            what.accept(t);
+            nar.emotion.deriveTask.increment();
+
             use(NAL.derive.TTL_COST_DERIVE_TASK);
 
         }

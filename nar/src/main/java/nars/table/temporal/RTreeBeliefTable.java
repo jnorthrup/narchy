@@ -12,6 +12,7 @@ import jcog.tree.rtree.split.AxialSplit;
 import nars.NAL;
 import nars.Task;
 import nars.control.op.Remember;
+import nars.task.ProxyTask;
 import nars.task.util.Answer;
 import nars.task.util.Revision;
 import nars.task.util.TaskRegion;
@@ -178,7 +179,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 
 		//tree.readOptimistic(
-		read(t -> {
+		readIfNonEmpty(t -> {
 			int n = t.size();
 			if (n == 0)
 				return;
@@ -223,16 +224,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		/** buffer removal handling until outside of the locked section */
 
 
-//        Task input;
-//        if (r.input instanceof ProxyTask) {
-//            //dont store TaskProxy's
-//            input = ((ProxyTask) r.input).the();
-//            if (input == null)
-//                throw new WTF();
-//        } else {
-//            input = r.input;
-//        }
+        Task input;
+        if (r.input instanceof ProxyTask) {
+            //dont store TaskProxy's
+            r.input = input = ((ProxyTask) r.input).the();
+            if (input == null)
+                throw new WTF();
+        } else {
+            input = r.input;
+        }
 
+//		Task input;
 //        if (r.input instanceof SpecialTruthAndOccurrenceTask) {
 //            //dont do this for SpecialTermTask coming from Image belief table
 //            input = ((TaskProxy) r.input).the();
@@ -243,7 +245,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //            input = r.input;
 //        }
 
-		Task input = r.input;
+//		Task input = r.input;
 
 		/** TODO only enter write lock after deciding insertion is necessary (not merged with existing)
 		 *    subclass RInsertion to RConcurrentInsertion, storing Stamped Lock lock value along with it */

@@ -101,7 +101,7 @@ public interface TaskSeries<T extends Task> {
     default boolean isEmpty(long start, long end) {
         return whileEach(start, end, true, (x)->{
             //keep looking
-            return !x.intersects(start, end); //found
+            return !x.intersectsRaw(start, end); //found
         });
     }
 

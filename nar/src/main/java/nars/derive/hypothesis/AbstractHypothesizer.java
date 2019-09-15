@@ -72,8 +72,11 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 			result = d.derive(p, deriveTTL) ? e.premiseDerived : e.premiseUnderivable;
 
-//			if (result == e.premiseUnderivable)
-//				System.err.println("underivable: " + p);
+//			if (result == e.premiseUnderivable) {
+//				System.err.println("underivable:\t" + p);
+//			} else {
+//				System.err.println("  derivable:\t" + p);
+//			}
 
 			//ttlUsed = Math.max(0, deriveTTL - d.ttl);
 
@@ -98,7 +101,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 			Compound src = (Compound) target;	//link.from(); //task.term();
 			Term forward = decompose(src, link, task, d);
 			if (forward != null) {
-				if (!forward.op().eventable) { // && !src.containsRecursively(forward)) {
+				if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
 					target = forward;
 				} else {
 					links.grow(link, src, forward, task.punc());
@@ -122,11 +125,12 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	/** selects the decomposition strategy for the given Compound */
 	protected TermDecomposer decomposer(Compound t) {
 		switch (t.op()) {
-//			case INH:
-//			case IMPL:
-//				return DynamicTermDecomposer.StatementDecomposer;
-//			case SIM:
-//				return DynamicTermDecomposer.One;
+			case INH:
+			case IMPL:
+			case SIM:
+				return DynamicTermDecomposer.WeightedImpl;
+			case CONJ:
+				return DynamicTermDecomposer.WeightedConjEvent;
 			default:
 				return DynamicTermDecomposer.Weighted;
 		}

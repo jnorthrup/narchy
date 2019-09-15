@@ -472,6 +472,10 @@ public enum Op {
         set = str.equals("{") || str.equals("[");
     }
 
+    public static boolean hasAny(int existing, Op o) {
+        return hasAny(existing, o.bit);
+    }
+
     public static boolean hasAny(int existing, int possiblyIncluded) {
         return (existing & possiblyIncluded) != 0;
     }

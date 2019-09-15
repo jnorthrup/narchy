@@ -208,14 +208,14 @@ abstract public class TruthProjection extends TaskList {
 				return false;
 			}
 
-			if (active()!=activeBefore) {
+		int active = active();
+			if (active!=activeBefore) {
 				activeBefore = refocus(shrink);
 				if (activeBefore==1)
 					return true; //reduced to one
 			}
 
 
-		int active = active();
 
 		if (active > 1) {
 

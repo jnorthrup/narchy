@@ -28,7 +28,7 @@ public class DirectTangent extends AbstractHypothesizer {
 		//0.33f;
 		float probDirect =
 			//(float) (probBase / Util.sqr(Math.pow(2, target.volume()-1)));
-			(float) (probBase / Math.pow(target.volume(), 2));
+			(float) (probBase / Math.pow(target.volume(), 3));
 		//(float) (probBase / Math.pow(2, target.volume()-1));
 		//probBase * (target.volume() <= 2 ? 1 : 0);
 		//probBase * 1f / Util.sqr(Util.sqr(target.volume()));

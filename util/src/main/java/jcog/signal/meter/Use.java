@@ -13,7 +13,8 @@ public class Use {
 	public final String id;
 
 	final static long MAX_TIME_SEC = 10;
-	final static long MAX_TIME_NS = MAX_TIME_SEC * 1_000_000_000, MIN_TIME_NS = 100;
+	final static long MAX_TIME_NS = MAX_TIME_SEC * 1_000_000_000;
+	final static long MIN_TIME_NS = 10;
 
 //	final AtomicLong totalNS = new AtomicLong();
 	final AtomicHistogram timeNS = new AtomicHistogram(MIN_TIME_NS, MAX_TIME_NS, 0);
