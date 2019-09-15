@@ -416,8 +416,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
     public Term mapTerm(int xy) {
         boolean neg = (xy < 0);
         if (neg) xy = -xy;
-        Term y  = mapSub(xy);
-        return neg ? y.neg() : y;
+        return mapSub(xy).negIf(neg);
     }
 
     private Term mapSub(int xy) {

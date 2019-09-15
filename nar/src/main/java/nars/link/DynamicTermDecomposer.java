@@ -9,6 +9,7 @@ import nars.term.atom.Atomic;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
@@ -19,12 +20,12 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 
 
 //    /** force descent to maximum 2 layers */
-//    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
-//        @Override
-//        protected int depth(Compound root, Random rng) {
-//            return 2;
-//        }
-//    };
+    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
+        @Override
+        protected int depth(Compound root, Random rng) {
+            return 2;
+        }
+    };
     /** force descent to maximum 1 layers */
     public static final TermDecomposer One = new WeightedDynamicTermDecomposer() {
         @Override
@@ -128,7 +129,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         }
     };
 
-    private static class WeightedDynamicTermDecomposer extends DynamicTermDecomposer {
+    private static class WeightedDynamicTermDecomposer extends DynamicTermDecomposer implements FloatFunction<Term> {
         //        @Override
         //        protected int depth(Compound root, Random rng) {
         //            return 1;
@@ -165,17 +166,17 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 //            if (parent.op()==CONJ && s.hasAny(CONJ) && Conj.isSeq(parent) && rng.nextBoolean()) {
 //                s = ConjList.events(parent).asSubterms(false);
 //            }
-            return s.subRoulette(this::subValue, rng);
+            return s.subRoulette(this, rng);
         }
 
-        protected float subValue(Term sub) {
+        @Override public float floatValueOf(Term subterm) {
 //            if (sub instanceof Variable)
 //                return 0.5f;
-            if (sub instanceof Atomic)
+            if (subterm instanceof Atomic)
                 return 1;
 
             int v =
-                    sub.unneg().volume();
+                    subterm.unneg().volume();
                     //sub.unneg().complexity();
             return
                     //Util.sqrt(v);

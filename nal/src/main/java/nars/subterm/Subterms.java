@@ -126,7 +126,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         switch (s) {
             case 0: return null;
             case 1 : return sub(0);
-            default: return sub(Roulette.selectRoulette(s, i -> subFloat(i, subValue) , rng));
+            default: return sub(Roulette.selectRoulette(s, i -> subValue.floatValueOf(sub(i)), rng));
         }
     }
 

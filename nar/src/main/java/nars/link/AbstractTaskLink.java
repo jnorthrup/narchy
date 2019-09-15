@@ -6,7 +6,6 @@ import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.NAL;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -23,8 +22,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     /**
      * source,target as a 2-ary subterm
      */
-    public final Term src;
-    public final Term tgt;
+    public final Term from;
+    public final Term to;
     public final int hash;
 
     static final FloatFloatToFloatFunction plus = PriMerge.plus::mergeUnitize;
@@ -37,8 +36,8 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 
     protected AbstractTaskLink(Term source, Term target, int hash) {
-        this.src = source;
-        this.tgt = target;
+        this.from = source;
+        this.to = target;
         this.hash = hash;
     }
 
@@ -87,14 +86,9 @@ public abstract class AbstractTaskLink implements TaskLink {
         if (this == obj) return true;
         if (obj instanceof TaskLink && hash == obj.hashCode()) {
             TaskLink t = (TaskLink) obj;
-            return from().equals(t.from()) && to().equals(t.to());
+            return from.equals(t.from()) && to.equals(t.to());
         }
         return false;
-    }
-
-    @Override
-    public boolean isSelf() {
-        return src==tgt;
     }
 
     @Override
@@ -104,12 +98,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public final Term from() {
-        return src;
+        return from;
     }
 
     @Override
     public final Term to() {
-        return tgt;
+        return to;
     }
 
     @Override

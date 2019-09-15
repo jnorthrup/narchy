@@ -289,7 +289,16 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
 
     @Nullable default Term reverseMatch(Term term) {
-        return !isSelf() && to().equals(term) ? from() : null;
+        //return to().equals(term) && !isSelf() ? from() : null;
+        //return !isSelf() && to().equals(term) ? from() : null;
+
+        Term t = to();
+        Term f = from();
+        if (t!=f /* self */ && term.equals(t)) {
+            //if (!term.equals(f)) //extra test to be sure
+                return f;
+        }
+        return null;
     }
 
 

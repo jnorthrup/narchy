@@ -56,7 +56,7 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public final FastCounter perceivedTaskEnd = new FastCounter("perceived task end");
     //public final Counter taskActivation_x100 = new FastCounter("task activation pri sum x100");
-    public final FastCounter premiseDerived = new FastCounter("premise derived");
+    public final FastCounter premiseRun = new FastCounter("premise derivation run");
 
 //    /** amount of remainder TTL from each derivation */
 //    public final AtomicHistogram premiseTTL_used = new AtomicHistogram(1, 512, 2);
@@ -71,7 +71,8 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     //public final Counter premiseBurstDuplicate = new FastCounter("premise burst duplicate");
 
-    public final FastCounter premiseUnderivable = new FastCounter("premise underivable");
+    public final FastCounter premiseUnderivable1 = new FastCounter("premise underivable (prefilter)");
+    public final FastCounter premiseUnderivable2 = new FastCounter("premise underivable (truthify)");
     public final FastCounter premiseUnbudgetableOrInvalid = new FastCounter("premise unbudgetable");
     public final FastCounter deriveTask = new FastCounter("derive task");
 

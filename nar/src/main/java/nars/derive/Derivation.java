@@ -5,6 +5,7 @@ import jcog.WTF;
 import jcog.data.ShortBuffer;
 import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
+import jcog.signal.meter.FastCounter;
 import nars.NAL;
 import nars.NAR;
 import nars.Op;
@@ -566,18 +567,20 @@ public class Derivation extends PreDerivation {
         }
     }
 
-    public boolean derive(Premise p, int deriveTTL) {
+    /** returns appropriate Emotion counter representing the result state  */
+    public FastCounter derive(Premise p, int deriveTTL) {
 
-        int valid = 0, lastValid = -1;
         short[] can;
 
         try (var __ = nar.emotion.derive_C_Pre.time()) {
-            p.apply(this);
 
-            can = this.deriver.what(this);
+            can = p.apply(this);
             if (can.length == 0)
-                return false;
+                return nar.emotion.premiseUnderivable1;
+
         }
+
+        int valid = 0, lastValid = -1;
 
         try (var __ = nar.emotion.derive_D_Truthify.time()) {
             this.preReady();
@@ -593,7 +596,7 @@ public class Derivation extends PreDerivation {
                 }
             }
             if (valid == 0)
-                return false;
+                return nar.emotion.premiseUnderivable2;
 
             if (valid > 1 && valid < can.length) {
                 //sort the valid to the first slots for fastest roulette iteration on the contiguous valid subset
@@ -624,7 +627,7 @@ public class Derivation extends PreDerivation {
                     MutableRoulette.run(pri, this.random, wi -> 0, i -> post[i].run());
                     break;
             }
-            return true;
+            return nar.emotion.premiseRun;
         }
     }
 

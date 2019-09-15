@@ -22,13 +22,15 @@ public class DirectTangent extends AbstractHypothesizer {
 	@Override
 	protected Term reverse(Term target, TaskLink link, Task task, TaskLinks links, Derivation d) {
 
-		//< 1 .. 1.0 isnt good
+
 		float probBase =
+			//link.isSelf() && link.from().op()==INH ? 0.9f : 0.5f;
 			0.5f;
+
 		//0.33f;
 		float probDirect =
 			//(float) (probBase / Util.sqr(Math.pow(2, target.volume()-1)));
-			(float) (probBase / Math.pow(target.volume(), 3));
+			(float) (probBase / Math.pow(target.volume(), 2));
 		//(float) (probBase / Math.pow(2, target.volume()-1));
 		//probBase * (target.volume() <= 2 ? 1 : 0);
 		//probBase * 1f / Util.sqr(Util.sqr(target.volume()));
@@ -45,11 +47,12 @@ public class DirectTangent extends AbstractHypothesizer {
 
 	@Nullable
 	public Term sampleReverseMatch(Term target, TaskLink link, TaskLinks links, Derivation d) {
-		final Term[] T = {target};
+		Term source = link.from();
+		final Term[] T = { null };
 		links.sampleUnique(d.random, (ll) -> {
 			if (ll != link) {
 				Term t = ll.reverseMatch(target);
-				if (t != null) {
+				if (t != null && !t.equals(source)) {
 					T[0] = t;
 					return false; //done
 				}

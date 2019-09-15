@@ -66,7 +66,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     @Override
     public AtomicTaskLink clone() {
-        AtomicTaskLink l = new AtomicTaskLink(src, tgt, hash);
+        AtomicTaskLink l = new AtomicTaskLink(from, to, hash);
         ((AtomicFixedPoint4x16bitVector)l.punc).data(((AtomicFixedPoint4x16bitVector)this.punc).data());
         l.invalidate();
         return l;

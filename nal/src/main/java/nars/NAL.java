@@ -734,7 +734,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 3;
+        public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
         @Range(min = 0, max = 64)
@@ -777,9 +777,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
-        public static boolean ETERNALIZE_BELIEF_PROJECTION = false;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = true;
-        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = true;
+//        public static boolean ETERNALIZE_BELIEF_PROJECTION = false;
+//        public static boolean ETERNALIZE_BELIEF_PROJECTION_AND_ETERNALIZE_BELIEF_TIME = true;
+//        public static boolean ETERNALIZE_BELIEF_PROJECTION_ONLY_IF_SUBTHRESH = true;
 
 
     }

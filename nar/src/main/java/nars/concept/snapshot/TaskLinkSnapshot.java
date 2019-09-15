@@ -24,7 +24,6 @@ public final class TaskLinkSnapshot {
 	}
 
 
-
 	/**
 	 * caches an AtomLinks instance in the Concept's meta table, attached by a SoftReference
 	 */
@@ -44,7 +43,7 @@ public final class TaskLinkSnapshot {
 		for (TaskLink t : items) {
 			Term y = t.other(x, xh, reverse);
 			if (y != null)
-				links.put(((AtomicTaskLink)t).clone());
+				links.put(((AtomicTaskLink) t).clone());
 		}
 	}
 
@@ -57,19 +56,21 @@ public final class TaskLinkSnapshot {
 			return null;
 		else {
 			TaskLink l;
-			if (lls == 1) l = (TaskLink) ll[0];
-			else {
-				int li = Roulette.selectRouletteCached(lls, (int i) -> {
 
-					TaskLink x = (TaskLink) ll[i];
-					return x != null && filter.test(x) ?
-						Math.max(ScalarValue.EPSILON, x.priPunc(punc))
-						:
-						Float.NaN;
+			int li = Roulette.selectRouletteCached(lls, (int i) -> {
 
-				}, rng::nextFloat);
-				l = li >= 0 ? (TaskLink)ll[li] : null;
-			}
+				TaskLink x = (TaskLink) ll[i];
+				return x != null && filter.test(x) ?
+					Math.max(ScalarValue.EPSILON,
+					x.priPunc(punc)
+					)
+					:
+					Float.NaN;
+
+			}, rng::nextFloat);
+
+			l = li >= 0 ? (TaskLink) ll[li] : null;
+
 			return l != null ? l.from() : null;
 		}
 

@@ -70,13 +70,13 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		if (p != null) {
 
 
-			result = d.derive(p, deriveTTL) ? e.premiseDerived : e.premiseUnderivable;
+			result = d.derive(p, deriveTTL);
 
-//			if (result == e.premiseUnderivable) {
-//				System.err.println("underivable:\t" + p);
-//			} else {
+			if (result == e.premiseUnderivable1) {
+				//System.err.println("underivable1:\t" + p);
+			} else {
 //				System.err.println("  derivable:\t" + p);
-//			}
+			}
 
 			//ttlUsed = Math.max(0, deriveTTL - d.ttl);
 
@@ -114,8 +114,16 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		if (target.op().conceptualizable) {
 			Term reverse = reverse(target, link, task, links, d);
-			if (reverse != null)
-				target = reverse;
+
+			if (reverse != null) {
+//				if (reverse.equals(link.from())) {
+//					//HACK avoid this
+//					Util.nop();
+//				} else {
+					//links.grow(link, link.from(), reverse, task.punc());
+					target = reverse;
+//				}
+			}
 		}
 
 		//System.out.println(task + "\t" + target);

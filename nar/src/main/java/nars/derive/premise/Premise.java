@@ -54,8 +54,10 @@ public class Premise  {
 //        this.hash = premiseHash(task, beliefTerm);
 	}
 
-	public void apply(Derivation d) {
+	/** @return array of CAN-execute pathways */
+	public short[] apply(Derivation d) {
 		d.reset(this.task, belief(), beliefTerm);
+		return d.deriver.what(d);
 	}
 
 	public Task belief() {
