@@ -218,6 +218,11 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
     }
 
 
+    public void nextSynch() {
+        tryCommit();
+        how.forEach(h -> h.next(this, ()->false));
+    }
+
     @Deprecated public final void next(BooleanSupplier whil) {
         //long start = System.nanoTime();
         try {

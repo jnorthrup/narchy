@@ -3,6 +3,7 @@ package nars.exe.impl;
 import nars.NAR;
 import nars.attention.What;
 import nars.exe.Exec;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BooleanSupplier;
 
@@ -41,7 +42,11 @@ public class UniExec extends Exec {
         BooleanSupplier runUntil = runUntil();
         for (What w : n.what) {
             if (w.isOn()) {
-                w.next(runUntil);
+                if (runUntil == null)
+                    w.nextSynch();
+                else
+                    w.next(runUntil);
+
                 //for (How h : n.how) {
                     //if (h.isOn()) {
                        // h.next(w, () -> false);
@@ -52,8 +57,9 @@ public class UniExec extends Exec {
     }
 
     /* stop condition for each executed What */
+    @Nullable
     protected BooleanSupplier runUntil() {
-        return () -> false;
+        return null;
     }
 
 }
