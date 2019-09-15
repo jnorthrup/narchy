@@ -10,6 +10,8 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
+import nars.control.How;
+import nars.control.PartBag;
 import nars.control.PriNARPart;
 import nars.control.op.Perceive;
 import nars.derive.pri.DefaultDerivePri;
@@ -17,13 +19,18 @@ import nars.derive.pri.DerivePri;
 import nars.link.TaskLink;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
-import nars.time.part.DurNARConsumer;
 import nars.util.Timed;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.Externalizable;
+import java.io.PrintStream;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static java.lang.System.nanoTime;
 
 /**
  *  What?  an attention context described in terms of a prioritized distribution over a subset of Memory.
@@ -65,7 +72,7 @@ import java.util.stream.Stream;
  *  be conceptualized and self-executed.
   */
 @Paper
-abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
+abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed, BooleanSupplier {
 
 
     /** input bag */
@@ -74,7 +81,8 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
 
-    private DurNARConsumer loop;
+    public PartBag<How> how;
+
 
 
     /**
@@ -103,6 +111,8 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
         }
     };
 
+    private float _durPhysical = 1;
+
 
     protected What(Term id, PriBuffer<Task> in) {
         super(id);
@@ -112,41 +122,28 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     @Override
     protected void starting(NAR nar) {
-
-        loop = new DurNARConsumer(this::commit);
-        //        int concurrency = nar.exe.concurrency();
-        loop.durs(
-            1
-            //0
-            //1f / (Math.max(1, concurrency-1))
-        );
-
-        add(loop);
-
+        how = nar.how; //new PartBag<>(NAL.HOWS_CAPACITY)
         super.starting(nar);
-
+        _durPhysical = nar.dur();
         in.start(out, nar);
     }
 
     @Override
     protected void stopping(NAR nar) {
-//        loop.close();
-        loop = null;
-
         in.stop();
         super.stopping(nar);
     }
 
-    //    /** update period (in cycles) */
-//    public long durUpdate() {
-//        return loop.durCycles();
-//    }
 
     /** perceptual duration (cycles) */
     @Override public float dur() {
         return dur.floatValue();
     }
 
+    /** internal physiological duration */
+    public float durPhysical() {
+        return _durPhysical;
+    }
 
     @Override
     public final int concurrency() {
@@ -208,5 +205,64 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
     public final Off onTask(Consumer<Task> listener, byte... punctuations) {
         return eventTask.on(listener, punctuations);
+    }
+
+    final AtomicLong nextUpdate = new AtomicLong(Long.MIN_VALUE);
+
+    public final FloatRange commitDurs = new FloatRange(1, 0.5f, 4);
+
+    public void printPerf(PrintStream out) {
+        for (How h : how) {
+            h.printPerf(out);
+        }
+    }
+
+
+    @Deprecated public final void next(BooleanSupplier whil) {
+        //long start = System.nanoTime();
+        try {
+            tryCommit();
+
+            Random r = random();
+            do {
+                @Nullable How h = how.sample(r);
+                if (h.isOn()) {
+                    int subWhatNS = 1_000_000;
+                    long start = nanoTime();
+                    deadline = start + subWhatNS;
+                    h.next(this, this);
+                    h.use(subWhatNS, nanoTime()-start);
+                }
+            } while (whil.getAsBoolean());
+
+        } catch (Throwable t) {
+            logger.error("{} {}", t, this);
+            //t.printStackTrace();
+        }
+        //long end = System.nanoTime();
+        //use(estTime, end - start);
+    }
+
+    private transient long deadline = Long.MIN_VALUE;
+
+    @Override
+    public final boolean getAsBoolean() {
+        return nanoTime() < deadline;
+    }
+
+
+    private boolean tryCommit() {
+        long nextUpdate = this.nextUpdate.getOpaque();
+        long now = time();
+        if (now > nextUpdate) {
+            long nextNextUpdate = now + (long)Math.ceil(_durPhysical * commitDurs.floatValue());
+            if (this.nextUpdate.compareAndSet(nextUpdate, nextNextUpdate)) {
+
+                _durPhysical = nar.dur();
+                commit(nar);
+                return true;
+            }
+        }
+        return false;
     }
 }

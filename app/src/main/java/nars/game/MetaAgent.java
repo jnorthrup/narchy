@@ -385,6 +385,53 @@ abstract public class MetaAgent extends Game {
         return Math.max(1, ((d + 0.5f) * 2 * initialDur));
     }
 
+//    /** creates a base agent that can be used to interface with external controller
+//     *  it will be consistent as long as the NAR architecture remains the same.
+//     *  TODO kill signal notifying changed architecture and unwiring any created WiredAgent
+//     *  */
+//    public Agenterator agent(FloatSupplier reward, IntIntToObjectFunction<Agent> a) {
+//        AgentBuilder b = new AgentBuilder(reward);
+//        for (MetaGoal m : MetaGoal.values()) {
+//            b.out(5, i->{
+//                float w;
+//                switch(i) {
+//                    default:
+//                    case 0: w = -1; break;
+//                    case 1: w = -0.5f; break;
+//                    case 2: w = 0; break;
+//                    case 3: w = +0.5f; break;
+//                    case 4: w = +1; break;
+//                }
+//                nar.emotion.want(m, w);
+//            });
+//        }
+//
+//        for (Why c : why) {
+//
+//            b.in(() -> {
+//                float ca = c.amp();
+//                return ca==ca ? ca : 0;
+//            });
+//
+////            for (MetaGoal m : MetaGoal.values()) {
+////                Traffic mm = c.credit[m.ordinal()];
+////                b.in(()-> mm.current);
+////            }
+//            //TODO other data
+//        }
+//
+//        for (How c : nar.how) {
+//            b.in(() -> {
+//                PriNode cp = c.pri;
+//                return Util.unitize(cp.priElseZero());
+//            });
+//            //TODO other data
+//        }
+//
+//        return b.get(a);
+//    }
+
+
 //    private static NAgent metavisor(NAgent a) {
 //
 ////        new NARSpeak.VocalCommentary( nar());

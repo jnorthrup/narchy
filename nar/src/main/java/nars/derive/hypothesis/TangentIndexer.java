@@ -25,7 +25,7 @@ public class TangentIndexer extends AbstractHypothesizer {
 
 	protected boolean cache(Term target) {
 		//return target instanceof Atom;
-		return target.volume() <= 3;
+		return target.volume() <= 6;
 	}
 
 	@Override

@@ -35,6 +35,7 @@ import nars.term.Termed;
 import nars.time.part.DurLoop;
 import nars.truth.Truth;
 import nars.util.MemorySnapshot;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToIntFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 import org.jetbrains.annotations.NotNull;
@@ -44,9 +45,12 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.ScrollXY;
 import spacegraph.space2d.container.Splitting;
+import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.NodeVis;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
+import spacegraph.space2d.container.layout.TreeMap2D;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
@@ -76,10 +80,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.function.BiConsumer;
-import java.util.function.Consumer;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 import java.util.stream.StreamSupport;
 
 import static com.jogamp.newt.event.KeyEvent.VK_ENTER;
@@ -134,7 +135,8 @@ public class NARui {
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),
-                "can", () -> ExeCharts.causeProfiler(n),
+                "how", () -> ExeCharts.howChart(n),
+                //"can", () -> ExeCharts.causeProfiler(n),
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
                 "svc", () -> new PartsTable(n),
@@ -929,4 +931,34 @@ public class NARui {
             new PaintUpdateMatrixView(()->dw, dw.length, dw.length/Math.max(1, (int) Math.ceil(sqrt(dw.length))));
     }
 
+    public static <X> Surface focusPanel(Iterable<X> all, FloatFunction<X> pri, Function<X,String> str, NAR nar) {
+
+        Graph2D<X> s = new Graph2D<X>().render((node, g) -> {
+                    X c = node.id;
+
+                    final float epsilon = 0.01f;
+                    //float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
+                    float p = pri.floatValueOf(c);
+                    float v = p; //TODO support separate color fucntion
+                    node.color(p, v, 0.25f);
+
+
+                    //Graph2D G = node.parent(Graph2D.class);
+//                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
+//                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
+
+                    node.pri = Math.max(epsilon, p);
+                })
+                //.layout(fd)
+                .update(new TreeMap2D<>())
+                .build((node) -> {
+                    node.set(new Scale(new ExeCharts.CausableWidget<>(node.id, str.apply(node.id)), 0.9f));
+                });
+
+
+        return DurSurface.get(
+            new Splitting(s, 0.1f, s.configWidget()),
+            nar,
+            () -> s.set(all) );
+    }
 }

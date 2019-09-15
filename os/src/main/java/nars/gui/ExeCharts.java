@@ -4,7 +4,6 @@ import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
-import jcog.exe.Can;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
@@ -20,10 +19,7 @@ import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
-import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.layout.TreeMap2D;
-import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.EnumSwitch;
@@ -37,13 +33,11 @@ import spacegraph.space2d.widget.slider.SliderModel;
 import spacegraph.space2d.widget.text.AbstractLabel;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
-import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
-import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 import static spacegraph.space2d.container.grid.Gridding.row;
 
@@ -136,17 +130,13 @@ public class ExeCharts {
         );
     }
 
-    static class CausableWidget extends Widget {
-        private final How c;
-        private final AbstractLabel label;
+    static class CausableWidget<X> extends Widget {
+        private final X c;
 
-        CausableWidget(How c) {
+        CausableWidget(X c, String s) {
             this.c = c;
-            label = new VectorLabel(new Can(c.id.toString()).id);
-            set(label);
-
+            set(new VectorLabel(s));
         }
-
     }
 
     enum CauseProfileMode implements FloatFunction<How> {
@@ -187,8 +177,8 @@ public class ExeCharts {
          */
     }
 
-    static Surface causeProfiler(NAR nar) {
-        AntistaticBag<How> cc = nar.how;
+    static Surface causeProfiler(AntistaticBag<How> cc, NAR nar) {
+
         int history = 128;
         Plot2D pp = new Plot2D(history,
                 //Plot2D.BarLanes
@@ -206,55 +196,21 @@ public class ExeCharts {
 
         Surface controls = new Gridding(
                 EnumSwitch.the(mode, "Mode"),
-                new PushButton("Print", ()-> {
-                    Appendable t = TextEdit.out();
-                    nar.exe.print(t);
-                    window(t, 400, 400);
-                }),
+//                new PushButton("Print", ()-> {
+//                    Appendable t = TextEdit.out();
+//                    nar.exe.print(t);
+//                    window(t, 400, 400);
+//                }),
                 new PushButton("Clear", ()->pp.series.forEach(Plot2D.Series::clear))
         );
         return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::commit);
     }
 
-    public static Surface focusPanel(NAR nar) {
-
-        Graph2D<How> s = new Graph2D<How>()
-                .render((node, g) -> {
-                    How c = node.id;
-
-                    final float epsilon = 0.01f;
-                    float p = Math.max(Math.max(epsilon, c.pri()), epsilon);
-                    float v = c.value();
-                    node.color(p, v, 0.25f);
-
-
-                    //Graph2D G = node.parent(Graph2D.class);
-//                float parentRadius = node.parent(Graph2D.class).radius(); //TODO cache ref
-//                float r = (float) ((parentRadius * 0.5f) * (sqrt(p) + 0.1f));
-
-                    node.pri = Math.max(epsilon, p);
-                })
-                //.layout(fd)
-                .update(new TreeMap2D<>())
-                .build((node) -> {
-                    node.set(new Scale(new CausableWidget(node.id), 0.9f));
-                });
-
-
-        return DurSurface.get(
-                new Splitting(s,
-                        0.1f, s.configWidget()),
-//        new Gridding(
-//                                new PushButton("Stats")
-//                                .clicking(()->causeSummary(nar, 10)
-//                                )
-//                                , )),
-                nar, () -> {
-                    s.set(nar.how);
-                });
+    public static Surface howChart(NAR n) {
+        return NARui.<How>focusPanel(n.how, h->h.pri(), h -> h.id.toString(), n);
     }
 
-//    private static void causeSummary(NAR nar, int top) {
+    //    private static void causeSummary(NAR nar, int top) {
 //        TopN[] tops = Stream.of(MetaGoal.values()).map(v -> new TopN<>(new Cause[top], (c) ->
 //                (float) c.credit[v.ordinal()].total())).toArray(TopN[]::new);
 //        nar.causes.forEach((Cause c) -> {

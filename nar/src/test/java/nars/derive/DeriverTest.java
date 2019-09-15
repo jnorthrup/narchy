@@ -11,12 +11,10 @@ import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import java.io.PrintStream;
 import java.util.List;
 
 import static nars.$.$$;
 import static nars.Op.QUEST;
-import static nars.derive.Deriver.derivers;
 import static org.junit.jupiter.api.Assertions.*;
 
 /**
@@ -26,13 +24,13 @@ class DeriverTest {
 
     private final List<TestNAR> tests = $.newArrayList();
 
-    private static void print(NAR n, PrintStream p) {
-        derivers(n).forEach(d -> {
-            p.println(d);
-            d.rules.printRecursive(p);
-            p.println();
-        });
-    }
+//    private static void print(NAR n, PrintStream p) {
+//        derivers(n).forEach(d -> {
+//            p.println(d);
+//            d.rules.printRecursive(p);
+//            p.println();
+//        });
+//    }
 
     private static PremiseRuleSet testCompile(String... rules) {
         return testCompile(false, rules);
@@ -56,11 +54,11 @@ class DeriverTest {
         return src;
     }
 
-    @Test
-    void printTrie() {
-
-        print(NARS.tmp(), System.out);
-    }
+//    @Test
+//    void printTrie() {
+//
+//        print(NARS.tmp(), System.out);
+//    }
 
 //    @Test
 //    void testConclusionWithXTERNAL() {

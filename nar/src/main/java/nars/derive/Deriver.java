@@ -23,7 +23,6 @@ import nars.time.When;
 import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
-import java.util.stream.Stream;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -104,9 +103,9 @@ public class Deriver extends How {
         nar.start(this);
     }
 
-    public static Stream<Deriver> derivers(NAR n) {
-        return n.partStream().filter(Deriver.class::isInstance).map(Deriver.class::cast);
-    }
+//    public static Stream<Deriver> derivers(NAR n) {
+//        return n.partStream().filter(Deriver.class::isInstance).map(Deriver.class::cast);
+//    }
 
 
 

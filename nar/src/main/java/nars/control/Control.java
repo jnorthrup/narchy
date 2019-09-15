@@ -7,11 +7,6 @@ import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
-import jcog.func.IntIntToObjectFunction;
-import jcog.learn.Agent;
-import jcog.learn.AgentBuilder;
-import jcog.learn.Agenterator;
-import jcog.math.FloatSupplier;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -80,13 +75,10 @@ import java.util.Arrays;
     }
 
     private void update() {
-
-        schedule();
-
         prioritize();
+        schedule();
+        nar.what.commit();
     }
-
-
 
     public MetaGoal.Report stats(PrintStream out) {
         MetaGoal.Report r = new MetaGoal.Report();
@@ -95,89 +87,10 @@ import java.util.Arrays;
         return r;
     }
 
-
-    private void schedule() {
-
-        AntistaticBag<How> how = nar.how;
-        int n = how.size();
-        if (n == 0)
-            return;
-
-        float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
-
-        long now = nar.time();
-
-
-        final double[] valueRateSumPos = {0}, valueRateSumNeg = {0};
-        how.forEach(c -> {
-
-            boolean sleeping = c.inactive(now);
-            if (sleeping)
-                return;
-
-            float vr;
-            long tUsed = c.used();
-            if (tUsed <= 0) {
-                c.value = Float.NaN;
-                vr = 0;
-            } else {
-                double v = c.value();
-                //double v = Math.max(0, c.value = c.value());
-                //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
-                //vr = (float) (v / (1 + cyclesUsed));
-
-                vr = (float) (v / ((1.0 + tUsed)/1.0E9));
-                assert (vr == vr);
-            }
-
-            c.valueRate = vr;
-            if (vr >= 0)
-                valueRateSumPos[0] += vr;
-            else
-                valueRateSumNeg[0] += vr;
-            if (vr > valMax[0]) valMax[0] = vr;
-            if (vr < valMin[0]) valMin[0] = vr;
-
-        });
-
-        float valRange = valMax[0] - valMin[0];
-        if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
-//            /**
-//             * proportion of time spent in forced curiosity
-//             * TODO move to its own control filter which ensures minimum fair priority among the causables
-//             */
-//            @Deprecated public final FloatRange explorationRate = new FloatRange(0.05f, 0, 1);
-//            float exploreMargin = explorationRate.floatValue() * valRange;
-
-            how.forEach(c -> {
-//                if (c.inactive()) {
-//                    c.pri(0);
-//                } else {
-                    float vNorm = (float) Util.normalize(c.valueRate, valueRateSumNeg[0], +valueRateSumPos[0]);
-                    c.valueRateNormalized = vNorm;
-//                }
-            });
-        } else {
-            //FLAT
-            float pFlat = 1f / n;
-            how.forEach(s -> s.valueRateNormalized = pFlat);
-        }
-
-
-    }
-
-    public void printPerf(PrintStream out) {
-        for (How h : nar.how) {
-            h.printPerf(out);
-        }
-    }
-
     private void prioritize() {
         root.pri(1);
         graph.forEachBF(root, x->x.update(graph));
     }
-
-
 
     /**
      * computes an evaluation amplifier factor, in range 0..2.0.
@@ -256,6 +169,81 @@ import java.util.Arrays;
         return target;
     }
 
+    public void printPerf(PrintStream out) {
+        nar.what.forEach(w -> w.printPerf(out));
+    }
+
+    private void schedule() {
+
+        AntistaticBag<How> how = nar.how;
+        int n = how.size();
+        if (n == 0)
+            return;
+
+        float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
+
+        long now = nar.time();
+
+
+        final double[] valueRateSumPos = {0}, valueRateSumNeg = {0};
+        how.forEach(c -> {
+
+            boolean sleeping = c.inactive(now);
+            if (sleeping)
+                return;
+
+            float vr;
+            long tUsed = c.used();
+            if (tUsed <= 0) {
+                c.value = Float.NaN;
+                vr = 0;
+            } else {
+                double v = c.value();
+                //double v = Math.max(0, c.value = c.value());
+                //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
+                //vr = (float) (v / (1 + cyclesUsed));
+
+                vr = (float) (v / ((1.0 + tUsed)/1.0E9));
+                assert (vr == vr);
+            }
+
+            c.valueRate = vr;
+            if (vr >= 0)
+                valueRateSumPos[0] += vr;
+            else
+                valueRateSumNeg[0] += vr;
+            if (vr > valMax[0]) valMax[0] = vr;
+            if (vr < valMin[0]) valMin[0] = vr;
+
+        });
+
+        float valRange = valMax[0] - valMin[0];
+        if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
+//            /**
+//             * proportion of time spent in forced curiosity
+//             * TODO move to its own control filter which ensures minimum fair priority among the causables
+//             */
+//            @Deprecated public final FloatRange explorationRate = new FloatRange(0.05f, 0, 1);
+//            float exploreMargin = explorationRate.floatValue() * valRange;
+
+            how.forEach(c -> {
+//                if (c.inactive()) {
+//                    c.pri(0);
+//                } else {
+                float vNorm = (float) Util.normalize(c.valueRate, valueRateSumNeg[0], +valueRateSumPos[0]);
+                c.valueRateNormalized = vNorm;
+//                }
+            });
+        } else {
+            //FLAT
+            float pFlat = 1f / n;
+            how.forEach(s -> s.valueRateNormalized = pFlat);
+        }
+
+
+    }
+
+
     static final class TaskChannel extends CauseChannel<Task> {
 
         private final short ci;
@@ -315,49 +303,4 @@ import java.util.Arrays;
     }
 
 
-    /** creates a base agent that can be used to interface with external controller
-     *  it will be consistent as long as the NAR architecture remains the same.
-     *  TODO kill signal notifying changed architecture and unwiring any created WiredAgent
-     *  */
-    public Agenterator agent(FloatSupplier reward, IntIntToObjectFunction<Agent> a) {
-        AgentBuilder b = new AgentBuilder(reward);
-        for (MetaGoal m : MetaGoal.values()) {
-            b.out(5, i->{
-                float w;
-                switch(i) {
-                    default:
-                    case 0: w = -1; break;
-                    case 1: w = -0.5f; break;
-                    case 2: w = 0; break;
-                    case 3: w = +0.5f; break;
-                    case 4: w = +1; break;
-                }
-                nar.emotion.want(m, w);
-            });
-        }
-
-        for (Why c : why) {
-
-            b.in(() -> {
-                float ca = c.amp();
-                return ca==ca ? ca : 0;
-            });
-
-//            for (MetaGoal m : MetaGoal.values()) {
-//                Traffic mm = c.credit[m.ordinal()];
-//                b.in(()-> mm.current);
-//            }
-            //TODO other data
-        }
-
-        for (How c : nar.how) {
-            b.in(() -> {
-                PriNode cp = c.pri;
-                return Util.unitize(cp.priElseZero());
-            });
-            //TODO other data
-        }
-
-        return b.get(a);
-    }
 }

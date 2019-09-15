@@ -13,12 +13,8 @@ import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.util.ArrayUtil;
-import nars.game.Game;
-import nars.game.GameTime;
-import nars.game.MetaAgent;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.game.sensor.VectorSensor;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.control.Why;
@@ -26,8 +22,13 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
+import nars.derive.time.TaskOccurenceTiming;
 import nars.derive.util.MixTimeFocus;
 import nars.exe.impl.WorkerExec;
+import nars.game.Game;
+import nars.game.GameTime;
+import nars.game.MetaAgent;
+import nars.game.sensor.VectorSensor;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
@@ -78,7 +79,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = false;
+    static final boolean initMeta = true;
     static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
@@ -546,7 +547,10 @@ abstract public class GameX extends Game {
 //        bd3_act.time(new ActionTiming());
 
         Deriver bd6_act = new Deriver(Derivers.nal(n, 1,8,"motivation.nal"));
-        bd6_act.time(new MixTimeFocus(new NonEternalTaskOccurenceOrPresentDeriverTiming(), new ActionTiming()));
+        bd6_act.time(new MixTimeFocus(
+            new NonEternalTaskOccurenceOrPresentDeriverTiming(),
+            //new TaskOccurenceTiming(),
+            new ActionTiming()));
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
 

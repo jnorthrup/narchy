@@ -2,12 +2,12 @@ package nars.exe.impl;
 
 import nars.NAR;
 import nars.attention.What;
-import nars.control.How;
 import nars.exe.Exec;
+
+import java.util.function.BooleanSupplier;
 
 /**
  * single thread executor used for testing
- * TODO expand the focus abilities instead of naively executed all Can's a specific # of times per cycle
  */
 public class UniExec extends Exec {
 
@@ -31,7 +31,6 @@ public class UniExec extends Exec {
 
     protected void next() {
 
-
         schedule(this::executeNow);
 
         NAR n = this.nar;
@@ -39,15 +38,22 @@ public class UniExec extends Exec {
         /*
         simplest possible implementation: flat 1 work unit per each what
         */
+        BooleanSupplier runUntil = runUntil();
         for (What w : n.what) {
             if (w.isOn()) {
-                for (How h : n.how) {
-                    if (h.isOn()) {
-                        h.next(w, () -> false);
-                    }
-                }
+                w.next(runUntil);
+                //for (How h : n.how) {
+                    //if (h.isOn()) {
+                       // h.next(w, () -> false);
+                    //}
+                //}
             }
         }
+    }
+
+    /* stop condition for each executed What */
+    protected BooleanSupplier runUntil() {
+        return () -> false;
     }
 
 }

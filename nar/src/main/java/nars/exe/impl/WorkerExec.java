@@ -5,7 +5,6 @@ import jcog.exe.Exe;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
-import nars.control.How;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -18,9 +17,9 @@ public class WorkerExec extends ThreadedExec {
 
 
 	/**
-	 * min # of play's per cycle, in total across all threads
+	 * min # of whats per cycle, in total across all threads
 	 */
-	double granularity = 16;
+	double granularity = 8;
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */
@@ -49,8 +48,6 @@ public class WorkerExec extends ThreadedExec {
 
 	@Override
 	protected void update() {
-		nar.how.commit(null);
-		nar.what.commit(null);
 
 		super.update();
 
@@ -131,26 +128,25 @@ public class WorkerExec extends ThreadedExec {
 
 		private void play(long end) {
 
-			AntistaticBag<How> H = nar.how;
 			AntistaticBag<What> W = nar.what;
 
 			int idle = 0;
 			while (true) {
 
-				What w;
-				How h = H.sample(rng);
-				if (h != null && h.isOn()) {
-					w = W.sample(rng);
-					if (!w.isOn()) w = null;
-				} else
-					w = null;
+				What w = W.sample(rng);
+				if (!w.isOn()) w = null;
 
 				long now = nanoTime();
 				if (now >= end)
 					break;
 
 				if (w != null) {
-					play(w, h, now, end);
+
+					long useNS = subCycleNS;
+					deadline = Math.min(end, now + useNS);
+
+					w.next( this);
+
 					idle = 0; //reset
 				} else {
 					Util.pauseSpin(++idle);
@@ -160,21 +156,7 @@ public class WorkerExec extends ThreadedExec {
 
 		}
 
-		private void play(What w, How h, long now, long end) {
 
-			float util = h._utilization;
-			if (!Float.isFinite(util)) util = 1;
-
-			long useNS =
-				(long) (subCycleNS * ((util <= 1) ?
-					((util + 1f) / 2) //less than subcycle but optimistically, more time than it might expect
-					:
-					((1 - (Util.min(util, maxOverUtilization) - 1))))); //penalize up to a certain amount for previous over-utilization
-
-			deadline = Math.min(end, now + useNS);
-
-			h.runWhile(w, useNS, this);
-		}
 
 		/**
 		 * whether to continue iterating in the how when it calls this back

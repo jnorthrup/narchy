@@ -30,18 +30,18 @@ public class TreeMap2D<X> extends DynamicLayout2D<X> {
         int end = nodes.size() - 1;
         total = areaSum(0, end);
 
-//        RectFloat newBounds = layout(0, end, b);
-//
-//        //normalize
-//        float nw = b.w / newBounds.w;
-//        float nh = b.h / newBounds.h;
-//        nodes.forEach(n -> {
-//            n.x = b.x + (n.x - b.x) * nw;
-//            n.y = b.y + (n.y - b.y) * nh;
-//            n.w *= nw;
-//            n.h *= nh;
-//
-//        });
+        RectFloat newBounds = layout(0, end, b);
+
+        //normalize
+        float nw = b.w / newBounds.w;
+        float nh = b.h / newBounds.h;
+        nodes.forEach(n -> {
+            n.x = b.x + (n.x - b.x) * nw;
+            n.y = b.y + (n.y - b.y) * nh;
+            n.w *= nw;
+            n.h *= nh;
+
+        });
     }
 
 

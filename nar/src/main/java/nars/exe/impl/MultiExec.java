@@ -1,6 +1,5 @@
 package nars.exe.impl;
 
-import com.google.common.base.Joiner;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -10,7 +9,6 @@ import nars.NAR;
 import nars.exe.Exec;
 import nars.time.clock.RealTime;
 
-import java.io.IOException;
 import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
@@ -91,16 +89,6 @@ abstract public class MultiExec extends Exec {
         cycle.close(); cycle = null;
 
         super.stopping(nar);
-    }
-
-    @Deprecated
-    @Override
-    public void print(Appendable out) {
-        try {
-            Joiner.on('\n').appendTo(out, nar.how);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
     }
 
     @Override

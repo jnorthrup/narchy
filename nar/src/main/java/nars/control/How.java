@@ -52,7 +52,7 @@ abstract public class How extends PriNARPart {
     public static final Logger logger = Log.logger(How.class);
 
 
-    public abstract void next(What w, BooleanSupplier kontinue);
+    //public abstract void next(What w, BooleanSupplier kontinue);
 
 
     public FloatAveragedWindow utilization = new FloatAveragedWindow(8, 0.5f).clear(1);
@@ -101,24 +101,24 @@ abstract public class How extends PriNARPart {
     }
 
 
-    /**
-     * sytem time, not necessarily realtime
-     */
-    protected void sleepUntil(long time) {
-        this.sleepUntil = time;
-    }
-
-//    protected void sleepRemainderOfCycle() {
-//        sleepUntil(nar.time()+1);
+//    /**
+//     * sytem time, not necessarily realtime
+//     */
+//    protected void sleepUntil(long time) {
+//        this.sleepUntil = time;
+//    }
+//
+////    protected void sleepRemainderOfCycle() {
+////        sleepUntil(nar.time()+1);
+////    }
+//
+//    public boolean inactive(NAR nar) {
+//        if (sleepUntil == TIMELESS)
+//            return false;
+//        return inactive(nar.time());
 //    }
 
-    public boolean inactive(NAR nar) {
-        if (sleepUntil == TIMELESS)
-            return false;
-        return inactive(nar.time());
-    }
-
-    boolean inactive(long now) {
+    public boolean inactive(long now) {
         if (sleepUntil < now) {
             sleepUntil = TIMELESS;
             return sleeping = true;
@@ -141,7 +141,7 @@ abstract public class How extends PriNARPart {
     public abstract float value();
 
 
-    private void use(long expected, long actual) {
+    public void use(long expected, long actual) {
         useActual.addAndGet(actual);
         double utilization = ((double)actual)/expected;
         //long utilPct = Math.round(utilization * 100);
@@ -177,21 +177,6 @@ abstract public class How extends PriNARPart {
     private final WhenInternal myCause = new AtCause(id);
 
 
-//    /**
-//     * 0..+1
-//     */
-//    public float amp() {
-//        return Math.max(Float.MIN_NORMAL, gain() / 2f);
-//    }
-//
-//    /**
-//     * 0..+2
-//     */
-//    private float gain() {
-//        float v = this.valueRate;
-//        return v == v ? Util.tanhFast(v) + 1f : 0;
-//    }
-
     static private class AtCause extends WhenInternal {
 
         private final Term id;
@@ -206,32 +191,23 @@ abstract public class How extends PriNARPart {
         }
     }
 
-    @Deprecated public final void runWhile(What w, long estTime, BooleanSupplier whil) {
-        long start = System.nanoTime();
-        try {
-            next(w, whil);
-        } catch (Throwable t) {
-            logger.error("{} {}", t, this);
-            //t.printStackTrace();
-        }
-        long end = System.nanoTime();
-        use(estTime, end - start);
-    }
+    @Deprecated public abstract void next(What w, BooleanSupplier kontinue);
 
-    public final void runFor(What w, long durationNS) {
-        long start = System.nanoTime();
 
-        long deadline = start + durationNS;
-
-        try {
-            next(w, () -> System.nanoTime() < deadline);
-        } catch (Throwable t) {
-            logger.error("{} {}", t, this.term());
-        }
-
-        long end = System.nanoTime();
-        use(durationNS, end - start);
-
-    }
+//    public final void runFor(What w, long durationNS) {
+//        long start = System.nanoTime();
+//
+//        long deadline = start + durationNS;
+//
+//        try {
+//            next(w, () -> System.nanoTime() < deadline);
+//        } catch (Throwable t) {
+//            logger.error("{} {}", t, this.term());
+//        }
+//
+//        long end = System.nanoTime();
+//        use(durationNS, end - start);
+//
+//    }
 
 }
