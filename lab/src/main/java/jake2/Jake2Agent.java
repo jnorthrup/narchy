@@ -18,7 +18,7 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.Narsese;
-import nars.concept.sensor.FreqVectorSensor;
+import nars.game.sensor.FreqVectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;

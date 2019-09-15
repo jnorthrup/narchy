@@ -7,12 +7,12 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.agent.Reward;
-import nars.concept.action.BiPolarAction;
-import nars.concept.action.GameAction;
-import nars.concept.action.GoalActionConcept;
-import nars.concept.action.SwitchAction;
-import nars.concept.sensor.DigitizedScalar;
+import nars.game.Reward;
+import nars.game.action.BiPolarAction;
+import nars.game.action.GameAction;
+import nars.game.action.GoalActionConcept;
+import nars.game.action.SwitchAction;
+import nars.game.sensor.DigitizedScalar;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -31,7 +31,7 @@ import java.awt.image.BufferedImage;
 
 import static nars.$.$$;
 import static nars.Op.INH;
-import static nars.agent.GameTime.fps;
+import static nars.game.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 

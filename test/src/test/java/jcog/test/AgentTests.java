@@ -5,7 +5,7 @@ import jcog.learn.Agent;
 import jcog.test.control.CliffWalking;
 import jcog.test.control.InputMatchesChoice;
 import jcog.test.control.OneObviousChoice;
-import nars.agent.util.EmbeddedNAgent;
+import nars.game.util.EmbeddedNAgent;
 import org.eclipse.collections.api.block.function.primitive.IntIntToObjectFunction;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.TestReporter;

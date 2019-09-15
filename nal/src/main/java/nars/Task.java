@@ -170,7 +170,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 punc
         );
 
-        //if (stamp.length > 1) {
+        if (stamp.length > 1) {
 
         if (truth != null)
             h = Util.hashCombine(h, truth.hashCode());
@@ -180,7 +180,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             if (end != start)
                 h = Util.hashCombine(h, end);
         }
-        //}
+        }
 
         if (stamp.length > 0)
             h = Util.hashCombine(h, stamp);

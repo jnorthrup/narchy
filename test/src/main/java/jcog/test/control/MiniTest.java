@@ -1,7 +1,7 @@
 package jcog.test.control;
 
 import nars.NAR;
-import nars.agent.Game;
+import nars.game.Game;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import static nars.$.the;

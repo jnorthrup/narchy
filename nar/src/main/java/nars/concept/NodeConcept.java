@@ -3,7 +3,6 @@ package nars.concept;
 import jcog.data.map.CompactArrayMap;
 import nars.NAR;
 import nars.Task;
-import nars.concept.util.ConceptBuilder;
 import nars.table.BeliefTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
@@ -24,15 +23,8 @@ public class NodeConcept implements Concept {
 
     public final CompactArrayMap<String, Object> meta = new CompactArrayMap<>();
 
-    public NodeConcept(Term term, NAR nar) {
-        this(term, nar.conceptBuilder);
-    }
 
-    public NodeConcept(Term term, ConceptBuilder b) {
-        this(term);
-    }
-
-    protected NodeConcept(Term term) {
+    public NodeConcept(Term term) {
         assert (term.op().conceptualizable): term + " not conceptualizable";
         this.term = term;
         this.hash = term.hashCode();

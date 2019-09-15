@@ -9,7 +9,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.attention.AttnBranch;
 import nars.concept.Concept;
-import nars.concept.sensor.Signal;
+import nars.game.sensor.Signal;
 import nars.table.eternal.EternalDefaultTable;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;

@@ -12,13 +12,13 @@ import jcog.math.FloatRange;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.agent.Reward;
-import nars.agent.util.RLBooster;
+import nars.game.Reward;
+import nars.game.util.RLBooster;
 import nars.attention.What;
 import nars.concept.Concept;
-import nars.concept.action.BiPolarAction;
-import nars.concept.action.GoalActionConcept;
-import nars.concept.sensor.DigitizedScalar;
+import nars.game.action.BiPolarAction;
+import nars.game.action.GoalActionConcept;
+import nars.game.sensor.DigitizedScalar;
 import nars.gui.NARui;
 import nars.impiler.Impiler;
 import nars.impiler.ImpilerDeduction;
@@ -39,7 +39,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.stream.Collectors.toList;
 import static nars.Op.GOAL;
-import static nars.agent.GameTime.fps;
+import static nars.game.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -53,10 +53,10 @@ import static spacegraph.SpaceGraph.window;
 public class PoleCart extends GameX {
 
 
-	static final boolean rl = true;
+	static final boolean rl = false;
 	static final boolean beliefPredict = false;
 	static final boolean impiler = false;
-	boolean speedControl = true;
+	static final boolean speedControl = true;
 
 	private final DigitizedScalar xVel;
 	private final DigitizedScalar x;
@@ -263,6 +263,7 @@ public class PoleCart extends GameX {
 		);
 
 
+
 		//initBipolar();
 		initUnipolar();
 
@@ -430,6 +431,10 @@ public class PoleCart extends GameX {
 				}
 			});
 
+		//curiosity.enable.set(false);
+//		curiosity.goal.set(false);
+//		L.goalDefault($.t(0.5f, 0.1f), nar);
+//		R.goalDefault($.t(0.5f, 0.1f), nar);
 	}
 
 

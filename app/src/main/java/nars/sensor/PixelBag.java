@@ -5,8 +5,8 @@ import jcog.math.v2;
 import jcog.random.SplitMix64Random;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
-import nars.agent.Game;
-import nars.concept.action.GameAction;
+import nars.game.Game;
+import nars.game.action.GameAction;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 

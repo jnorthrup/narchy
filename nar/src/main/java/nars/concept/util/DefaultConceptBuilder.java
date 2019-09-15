@@ -13,9 +13,7 @@ import nars.table.temporal.RTreeBeliefTable;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.Map;
 import java.util.function.Consumer;
 
 public class DefaultConceptBuilder extends ConceptBuilder {
@@ -27,25 +25,20 @@ public class DefaultConceptBuilder extends ConceptBuilder {
         this.alloc = allocator;
     }
 
-
-
-
-
-    @Override
-    public Concept nodeConcept(Term t) {
-        return new NodeConcept(t, this);
+    @Override protected Concept nodeConcept(Term t) {
+        return new NodeConcept(t);
     }
 
 
 
-    private static Map newBagMap(int volume) {
-
-
-        return new UnifiedMap(0, 0.99f);
-        //return new UnifiedMap(0);
-        //return new HashMap(0);
-
-    }
+//    private static Map newBagMap(int volume) {
+//
+//
+//        return new UnifiedMap(0, 0.99f);
+//        //return new UnifiedMap(0);
+//        //return new HashMap(0);
+//
+//    }
 
 
     @Override

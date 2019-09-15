@@ -7,9 +7,9 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.agent.Reward;
-import nars.concept.action.GoalActionConcept;
-import nars.concept.sensor.DigitizedScalar;
+import nars.game.Reward;
+import nars.game.action.GoalActionConcept;
+import nars.game.sensor.DigitizedScalar;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -20,7 +20,7 @@ import java.util.List;
 
 import static java4k.gradius4k.Gradius4K.*;
 import static nars.$.$$;
-import static nars.agent.GameTime.fps;
+import static nars.game.GameTime.fps;
 
 /**
  * Created by me on 4/30/17.

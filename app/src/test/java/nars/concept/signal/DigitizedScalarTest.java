@@ -6,7 +6,7 @@ import jcog.math.FloatNormalized;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.concept.sensor.DigitizedScalar;
+import nars.game.sensor.DigitizedScalar;
 import org.eclipse.collections.api.block.predicate.primitive.FloatPredicate;
 import org.junit.jupiter.api.Test;
 

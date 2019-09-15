@@ -43,7 +43,15 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean SHUFFLE_TERMUTES= configIs("SHUFFLE_TERMUTES");
     public static final boolean DT_DITHER_LOGARITHMICALLY= configIs("DT_DITHER_LOGARITHMICALLY");
 
-    public static final float DEFAULT_CURIOSITY_RATE = 0.05f;
+    public static final float DEFAULT_CURIOSITY_RATE = 0.1f;
+    public static final int CURIOSITY_CAPACITY =
+        2;
+        //1;
+        // NAL.STAMP_CAPACITY / 2;
+
+    public static final long CURIOSITY_TASK_RANGE_DURS = 4;
+
+
 
     public static final int NEG_CACHE_VOL_THRESHOLD = 0;
 
@@ -146,13 +154,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      */
     public static final IntRange causeCapacity = new IntRange(16, 1, 32);
 
-
-    public static final int CURIOSITY_CAPACITY =
-            1;
-            // NAL.STAMP_CAPACITY / 2;
-
-    public static final long CURIOSITY_TASK_RANGE_DURS = 3;
-//    public static final boolean DEBUG_TASK_LOG= configIs("DEBUG_TASK_LOG");
 
 
 

@@ -6,7 +6,7 @@ import jcog.test.control.BooleanReactionTest;
 import nars.NAL;
 import nars.NAR;
 import nars.NARS;
-import nars.agent.Game;
+import nars.game.Game;
 
 import java.util.function.Function;
 

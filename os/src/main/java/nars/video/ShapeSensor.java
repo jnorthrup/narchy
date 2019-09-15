@@ -15,7 +15,7 @@ import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.agent.Game;
+import nars.game.Game;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;

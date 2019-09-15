@@ -9,7 +9,7 @@ import jcog.table.DataTable;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
-import nars.agent.GameTime;
+import nars.game.GameTime;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
