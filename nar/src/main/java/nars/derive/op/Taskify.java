@@ -91,9 +91,22 @@ public class Taskify extends ProxyTerm {
         return y;
     }
 
-    void temporalTask(Term x, Derivation d) {
+    private @Nullable Task taskTemporal(Term x, Derivation d) {
+
+        Pair<Term, long[]> o;
+        try (var __ = d.nar.emotion.derive_E_Run3_Taskify_1_Occurrify.time()) {
+            o = occurrify(x, d);
+        }
+        if (o == null)
+            return null;
 
 
+        long[] occ = o.getTwo();
+        return task(o.getOne(), occ[0], occ[1], d);
+    }
+
+    @Nullable
+    private Pair<Term, long[]> occurrify(Term x, Derivation d) {
         Pair<Term, long[]> timing = termify.time.occurrence(x, d);
         if (timing == null) {
             if (NAL.test.DEBUG_OCCURRIFY)
@@ -101,15 +114,14 @@ public class Taskify extends ProxyTerm {
             else {
                 d.nar.emotion.deriveFailTemporal.increment();
             }
-            return;
+            return null;
         }
-
 
 
         long[] occ = timing.getTwo();
         assertOccValid(d, occ);
 
-        Term y = timing.getOne();
+        final Term y = timing.getOne();
 
         if (NAL.derive.DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL && (d.punc == BELIEF || d.punc == GOAL)) {
             if (DerivationFailure.failure(y, d.punc)) {
@@ -122,21 +134,20 @@ public class Taskify extends ProxyTerm {
                     d.truth.clear(); //may be unnecessary
                 } else {
                     d.nar.emotion.deriveFailTemporal.increment();
-                    return; //fail
+                    return null;
                 }
 
             } //else: ok
         } else {
             if (DerivationFailure.failure(y, d) != Success) {
                 d.nar.emotion.deriveFailTemporal.increment();
-                return;
+                return null;
             }
         }
 
         if (NAL.test.DEBUG_ENSURE_DITHERED_DT)
             assertDithered(y, d.ditherDT);
-
-        taskify(y, occ[0], occ[1], d);
+        return timing;
     }
 
     private void assertOccValid(Derivation d, long[] occ) {
@@ -163,7 +174,7 @@ public class Taskify extends ProxyTerm {
     /**
      * note: the return value here shouldnt matter so just return true anyway
      */
-    protected void taskify(Term x0, long start, long end, Derivation d) {
+    @Nullable private Task task(Term x0, long start, long end, Derivation d) {
 
         final byte punc = d.punc;
         if (punc == 0)
@@ -182,7 +193,7 @@ public class Taskify extends ProxyTerm {
         if (xn == null) {
             nar.emotion.deriveFailTaskify.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
-            return;
+            return null;
         }
         Term x = xn.getOne();
 
@@ -215,7 +226,7 @@ public class Taskify extends ProxyTerm {
             if (tru == null) {
                 nar.emotion.deriveFailTaskifyTruthUnderflow.increment();
                 spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
-                return;
+                return null;
             }
 
         } else {
@@ -256,12 +267,12 @@ public class Taskify extends ProxyTerm {
         /** compares taskTerm un-anon */
         if (isSame(x, punc, tru, S, E, d._task.term(), d._task, nar)) {
             same(d, nar);
-            return;
+            return null;
         }
         /** compares beliefTerm un-anon */
         if (d._belief != null && isSame(x, punc, tru, S, E, d._belief.term(), d._belief, nar)) {
             same(d, nar);
-            return;
+            return null;
         }
 
         //abbreviate TODO combine this with anon step by editing the substitution map
@@ -278,7 +289,7 @@ public class Taskify extends ProxyTerm {
         if (priority != priority) {
             nar.emotion.deriveFailPrioritize.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
-            return;
+            return null;
         }
 
         //these must be applied before possible merge on input to derivedTask bag
@@ -289,8 +300,7 @@ public class Taskify extends ProxyTerm {
 
         t.pri(priority);
 
-
-        d.derive(t);
+        return t;
 
     }
 
@@ -327,6 +337,10 @@ public class Taskify extends ProxyTerm {
         }
 
         return false;
+    }
+
+    public final Task task(Term y, Derivation d) {
+        return d.temporal ? taskTemporal(y, d) : task(y, ETERNAL, ETERNAL, d);
     }
 
     //    @Deprecated

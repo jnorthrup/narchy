@@ -8,7 +8,6 @@ import nars.attention.What;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.BooleanSupplier;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -66,13 +65,13 @@ public class WorkerExec extends ThreadedExec {
 		}
 	}
 
-	private final class WorkPlayLoop implements ThreadedExec.Worker, BooleanSupplier /* kontinue */ {
+	private final class WorkPlayLoop implements ThreadedExec.Worker {
 
 
 		static final double maxOverUtilization = 1.5;
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
-		private long deadline = Long.MIN_VALUE;
+
 
 		WorkPlayLoop() {
 
@@ -92,9 +91,9 @@ public class WorkerExec extends ThreadedExec {
 
 				long worked = workEnd - workStart;
 
-				long cycleTimeRemain = threadWorkTimePerCycle - worked;
-				if (cycleTimeRemain > 0 && subCycleNS > 0)
-					play(workEnd + cycleTimeRemain);
+				long playTime = threadWorkTimePerCycle - worked;
+				if (playTime > 0 && subCycleNS > 0)
+					play(workEnd, playTime);
 
 				sleep();
 			}
@@ -126,14 +125,28 @@ public class WorkerExec extends ThreadedExec {
 
 		}
 
-		private void play(long end) {
+		private void play(long playStart, long playTime) {
 
 			AntistaticBag<What> W = nar.what;
 
+			Object[] ww = W.items();
+			int n = W.size();
+			n = Math.min(ww.length, n); //safety
+			if (n == 0)
+				return;
+
+			/** granularity=1 means no additional timeslice 'redundancy', >1 means finer timeslices for improved fairness at expense of throughput and overhead */
+			float whatGranularity = 1;
+			/** global concurrency, indicates a factor to inflate the time that this thread can visit each what */
+			int concurrency = concurrency();
+
+
 			int idle = 0;
+			long end = playStart + playTime;
+			float mass = W.mass();
 			while (true) {
 
-				What w = W.sample(rng);
+				What w = (What) ww[rng.nextInt(n)];
 				if (!w.isOn()) w = null;
 
 				long now = nanoTime();
@@ -142,12 +155,19 @@ public class WorkerExec extends ThreadedExec {
 
 				if (w != null) {
 
-					long useNS = subCycleNS;
-					deadline = Math.min(end, now + useNS);
+					float p = w.priElseZero();
+					if (p > Float.MIN_NORMAL) {
+						double priNormalized = n > 1 && mass > Float.MIN_NORMAL ?
+							Util.unitize(p / mass) :
+							1f / n;
 
-					w.next( this);
+						long useNS = Math.round(playTime * priNormalized * concurrency / whatGranularity);
+
+						w.next(now, Math.min(end-now, useNS));
+					}
 
 					idle = 0; //reset
+
 				} else {
 					Util.pauseSpin(++idle);
 				}
@@ -158,13 +178,6 @@ public class WorkerExec extends ThreadedExec {
 
 
 
-		/**
-		 * whether to continue iterating in the how when it calls this back
-		 */
-		@Override
-		public final boolean getAsBoolean() {
-			return nanoTime() < deadline;
-		}
 
 		/** TODO improve and interleave naps with play */
 		void sleep() {

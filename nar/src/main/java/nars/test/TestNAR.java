@@ -182,7 +182,7 @@ public class TestNAR {
                 t.log("mustNot", t.isFalse(), logger);
 
             nar.emotion.print(System.out);
-            nar.stats(System.out);
+            nar.stats(true, true, System.out);
             //nar.control.stats(System.out);
 
         }

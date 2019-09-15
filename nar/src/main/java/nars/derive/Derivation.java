@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
+import java.util.Random;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
@@ -306,13 +307,36 @@ public class Derivation extends PreDerivation {
 
         //TODO not whether to shift, but which variable (0..n) to shift against
 
-        this.beliefTerm = deriver.beliefTerm(anon, _taskTerm, nextBeliefTerm, random);
+        this.beliefTerm = beliefTerm(anon, _taskTerm, nextBeliefTerm, random);
 
         assertAnon(nextBeliefTerm, beliefTerm, nextBelief);
 
         return nextBelief;
     }
+    /** t = raw task term, b = raw belief term */
+    public Term beliefTerm(AnonWithVarShift anon, Term t, Term b, Random random) {
 
+
+        boolean shift, shiftRandomOrCompletely;
+        if (!b.hasAny(Op.Variable & t.structure())) {
+            shift = shiftRandomOrCompletely = false; //unnecessary
+        } else {
+            if (b.equalsRoot(t)) {
+                shift = random.nextFloat() < deriver.PREMISE_SHIFT_EQUALS_ROOT; //structural identity
+            } else if (b.containsRecursively(t) || t.containsRecursively(b)) {
+                shift = random.nextFloat() < deriver.PREMISE_SHIFT_CONTAINS_RECURSIVELY;
+            } else {
+                shift = random.nextFloat() < deriver.PREMISE_SHIFT_OTHER;
+            }
+            shiftRandomOrCompletely = shift && random.nextFloat() < deriver.PREMISE_SHIFT_RANDOM;
+        }
+
+        return shift ?
+            anon.putShift(b, t, shiftRandomOrCompletely ? random : null) :
+                (t.equals(b) ?
+                    this._taskTerm /* re-use */ :
+                    anon.put(b));
+    }
 
 
     @Nullable private Truth beliefAtTask(Task nextBelief) {
@@ -556,15 +580,13 @@ public class Derivation extends PreDerivation {
             return y;
     }
 
-    public final void derive(Task t) {
-        try (var __ = nar.emotion.derive_F_Remember.time()) {
+    public final void remember(Task t) {
 
-            what.accept(t);
-            nar.emotion.deriveTask.increment();
+        what.accept(t);
+        nar.emotion.deriveTask.increment();
 
-            use(NAL.derive.TTL_COST_DERIVE_TASK);
+        use(NAL.derive.TTL_COST_DERIVE_TASK);
 
-        }
     }
 
     /** returns appropriate Emotion counter representing the result state  */
@@ -735,6 +757,7 @@ public class Derivation extends PreDerivation {
         byte p = this.punc;
         return p == BELIEF || p == GOAL;
     }
+
 
     abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
 

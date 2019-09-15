@@ -287,8 +287,6 @@ public class Tetris extends GameX {
                 System.out.println();
             });
 
-
-            n.stats(System.out);
         }
     }
 

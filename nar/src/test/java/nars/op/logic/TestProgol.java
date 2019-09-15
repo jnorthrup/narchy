@@ -200,10 +200,10 @@ class TestProgol {
                 "homeothermic(cat).\n");
 
         n.freqResolution.set(0.25f);
-        n.stats(System.out);
+        //n.stats(System.out);
         
         n.run(100);
-        n.stats(System.out);
+        //n.stats(System.out);
 
     }
 }

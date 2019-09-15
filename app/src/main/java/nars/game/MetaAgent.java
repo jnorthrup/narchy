@@ -45,9 +45,6 @@ abstract public class MetaAgent extends Game {
             grow = Atomic.the("forget"),
             remember = Atomic.the("remember"),
 
-            /** tasklink activation factor */
-            amplify = Atomic.the("amplify"),
-
             /** internal truth frequency precision */
             exact = Atomic.the("exact"),
 

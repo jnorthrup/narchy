@@ -248,59 +248,60 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * creates a snapshot statistics object
      * TODO extract a Method Object holding the snapshot stats with the instances created below as its fields
      */
-    public synchronized SortedMap<String, Object> stats() {
-
-        LongSummaryStatistics beliefs = new LongSummaryStatistics();
-        LongSummaryStatistics goals = new LongSummaryStatistics();
-        LongSummaryStatistics questions = new LongSummaryStatistics();
-        LongSummaryStatistics quests = new LongSummaryStatistics();
-
-
-        HashBag clazz = new HashBag();
-        HashBag rootOp = new HashBag();
-
-        Histogram volume = new Histogram(1, term.COMPOUND_VOLUME_MAX, 3);
-
-
+    public synchronized SortedMap<String, Object> stats(boolean concepts, boolean emotions) {
         SortedMap<String, Object> x = new TreeMap();
 
-
-        {
-
-            concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
-
-                Term ct = c.term();
-                volume.recordValue(ct.volume());
-                rootOp.add(ct.op());
-                clazz.add(ct.getClass().toString());
-
-                beliefs.accept(c.beliefs().taskCount());
-                goals.accept(c.goals().taskCount());
-                questions.accept(c.questions().taskCount());
-                quests.accept(c.quests().taskCount());
-            });
+        if (concepts) {
+            LongSummaryStatistics beliefs = new LongSummaryStatistics();
+            LongSummaryStatistics goals = new LongSummaryStatistics();
+            LongSummaryStatistics questions = new LongSummaryStatistics();
+            LongSummaryStatistics quests = new LongSummaryStatistics();
 
 
-            if (loop.isRunning()) {
-                loop.stats("loop", x);
+            HashBag clazz = new HashBag();
+            HashBag rootOp = new HashBag();
+
+            Histogram volume = new Histogram(1, term.COMPOUND_VOLUME_MAX, 3);
+
+            {
+                concepts().filter(xx -> !(xx instanceof Functor)).forEach(c -> {
+
+                    Term ct = c.term();
+                    volume.recordValue(ct.volume());
+                    rootOp.add(ct.op());
+                    clazz.add(ct.getClass().toString());
+
+                    beliefs.accept(c.beliefs().taskCount());
+                    goals.accept(c.goals().taskCount());
+                    questions.accept(c.questions().taskCount());
+                    quests.accept(c.quests().taskCount());
+                });
+
+
+                if (loop.isRunning()) {
+                    loop.stats("loop", x);
+                }
+
+                x.put("time", time());
+
+
+                x.put("concept count", memory.size());
             }
 
-            x.put("time", time());
+            x.put("belief count", ((double) beliefs.getSum()));
+            x.put("goal count", ((double) goals.getSum()));
 
+            Util.toMap(rootOp, "concept op", x::put);
 
-            x.put("concept count", memory.size());
+            Texts.histogramDecode(volume, "concept volume", 4, x::put);
+
+            Util.toMap(clazz, "concept class", x::put);
+
         }
 
-        x.put("belief count", ((double) beliefs.getSum()));
-        x.put("goal count", ((double) goals.getSum()));
-
-        Util.toMap(rootOp, "concept op", x::put);
-
-        Texts.histogramDecode(volume, "concept volume", 4, x::put);
-
-        Util.toMap(clazz, "concept class", x::put);
-
-        emotion.commit(x::put);
+        if (emotions) {
+            emotion.commit(x::put);
+        }
 
         return x;
 
@@ -1385,9 +1386,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return answer!=null ? Task.negIf(answer, negate) : null;
     }
 
-    public SortedMap<String, Object> stats(Appendable out) {
+    public SortedMap<String, Object> stats(boolean concepts, boolean emotions, Appendable out) {
 
-        SortedMap<String, Object> stat = stats();
+        SortedMap<String, Object> stat = stats(concepts, emotions);
         stat.forEach((k, v) -> {
             try {
                 out.append(k.replace(" ", "/")).append(" \t ").append(v.toString()).append('\n');

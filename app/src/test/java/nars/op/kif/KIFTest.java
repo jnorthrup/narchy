@@ -1,6 +1,5 @@
 package nars.op.kif;
 
-import com.google.common.base.Joiner;
 import jcog.Util;
 import nars.*;
 import nars.attention.TaskLinkWhat;
@@ -81,7 +80,7 @@ class KIFTest {
         ).forEach((Iterable ww) ->
             ww.forEach((x) -> w.accept((Task)x)));
 
-        System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
+        //System.out.println(Joiner.on("\n").join(n.stats().entrySet()));
 
 
 //        n.log();

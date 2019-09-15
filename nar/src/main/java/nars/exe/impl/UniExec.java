@@ -3,9 +3,8 @@ package nars.exe.impl;
 import nars.NAR;
 import nars.attention.What;
 import nars.exe.Exec;
-import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BooleanSupplier;
+import static java.lang.System.nanoTime;
 
 /**
  * single thread executor used for testing
@@ -39,13 +38,13 @@ public class UniExec extends Exec {
         /*
         simplest possible implementation: flat 1 work unit per each what
         */
-        BooleanSupplier runUntil = runUntil();
+        long timesliceNS = timeSliceNS();
         for (What w : n.what) {
             if (w.isOn()) {
-                if (runUntil == null)
+                if (timesliceNS == Long.MIN_VALUE)
                     w.nextSynch();
                 else
-                    w.next(runUntil);
+                    w.next(nanoTime(), timesliceNS);
 
                 //for (How h : n.how) {
                     //if (h.isOn()) {
@@ -56,10 +55,9 @@ public class UniExec extends Exec {
         }
     }
 
-    /* stop condition for each executed What */
-    @Nullable
-    protected BooleanSupplier runUntil() {
-        return null;
+    /* absolute stop time (in systemNS) for the next executed What; return Long.MIN_VALUE to use immediate */
+    protected long timeSliceNS() {
+        return Long.MIN_VALUE;
     }
 
 }

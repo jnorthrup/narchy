@@ -29,7 +29,7 @@ class MetaGoalTest {
 
     private static void analyzeCauses(NAR n) {
 
-        SortedMap<String, Object> x = n.stats();
+        SortedMap<String, Object> x = n.stats(true, true);
         x.forEach((k, v) -> {
             System.out.println(k + '\t' + v);
         });

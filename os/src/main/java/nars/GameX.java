@@ -519,7 +519,7 @@ abstract public class GameX extends Game {
 
         Loop.of(()->{
             n.control.printPerf(System.out);
-            n.stats(System.out);
+            n.stats(false, true, System.out);
             //n.control.stats(System.out);
             System.out.println();
         }).setFPS(0.25f);

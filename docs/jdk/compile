@@ -20,6 +20,9 @@ CXX="/usr/bin/g++" CC="/usr/bin/gcc" BUILD_CC="/usr/bin/gcc" BUILD_CXX="/usr/bin
 	--with-extra-cxxflags="-Ofast -march=native -w" \
 	--without-jtreg \
     --enable-full-docs=no \
-    --with-native-debug-symbols=none
+    --with-target-bits=64 \
+    --with-native-debug-symbols=none \
+    --with-jvm-features=graal,aot \
+    --enable-aot=yes
     
 time remake jdk

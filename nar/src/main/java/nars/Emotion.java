@@ -96,6 +96,10 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final Use derive_C_Pre =    new Use("derive C");
     public final Use derive_D_Truthify =      new Use("derive D");
     public final Use derive_E_Run =      new Use("derive E");
+    public final Use derive_E_Run1_Unify =      new Use("derive unify");
+    public final Use derive_E_Run2_Subst =      new Use("derive subst");
+    public final Use derive_E_Run3_Taskify =      new Use("derive taskify");
+    public final Use derive_E_Run3_Taskify_1_Occurrify =      new Use("derive occurrify");
     public final Use derive_F_Remember =     new Use("derive F");
 
     /**

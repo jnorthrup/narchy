@@ -2,7 +2,6 @@ package nars.derive;
 
 import jcog.Util;
 import nars.NAR;
-import nars.Op;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
@@ -16,11 +15,8 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
-import nars.term.Term;
-import nars.term.anon.AnonWithVarShift;
 import nars.time.When;
 
-import java.util.Random;
 import java.util.Set;
 import java.util.function.BooleanSupplier;
 
@@ -145,27 +141,7 @@ public class Deriver extends How {
         return rules.pre.apply(d);
     }
 
-    public Term beliefTerm(AnonWithVarShift anon, Term taskTerm, Term beliefTerm, Random random) {
 
-
-        boolean shift, shiftRandomOrCompletely;
-        if (!beliefTerm.hasAny(Op.Variable & taskTerm.structure())) {
-            shift = shiftRandomOrCompletely = false; //unnecessary
-        } else {
-            if (beliefTerm.equalsRoot(taskTerm)) {
-                shift = random.nextFloat() < PREMISE_SHIFT_EQUALS_ROOT; //structural identity
-            } else if (beliefTerm.containsRecursively(taskTerm) || taskTerm.containsRecursively(beliefTerm)) {
-                shift = random.nextFloat() < PREMISE_SHIFT_CONTAINS_RECURSIVELY;
-            } else {
-                shift = random.nextFloat() < PREMISE_SHIFT_OTHER;
-            }
-            shiftRandomOrCompletely = shift && random.nextFloat() < PREMISE_SHIFT_RANDOM;
-        }
-
-        return shift ?
-            anon.putShift(beliefTerm, taskTerm, shiftRandomOrCompletely ? random : null) :
-            anon.put(beliefTerm);
-    }
 }
 
 

@@ -203,8 +203,6 @@ class BooleanTest {
             System.out.println();
         }
 
-        n.stats(System.out);
-
     }
 
 

@@ -1,5 +1,7 @@
 package nars.derive.op;
 
+import nars.Emotion;
+import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.util.DerivationFailure;
 import nars.term.Term;
@@ -8,7 +10,6 @@ import nars.term.buffer.EvalTermBuffer;
 import java.util.function.Predicate;
 
 import static nars.derive.util.DerivationFailure.Success;
-import static nars.time.Tense.ETERNAL;
 
 public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivation> {
 
@@ -24,18 +25,29 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
     @Override
     public boolean test(Derivation d) {
 
-        d.nar.emotion.deriveUnified.increment();
+        Emotion emotion = d.nar.emotion;
 
-        Term x = taskify.termify.pattern(d);
+        emotion.deriveUnified.increment();
 
-        Term y = d.transformDerived.apply(x); //x.transform(d.transformDerived, this, workVolMax);
+        Term y;
 
+        try (var __ = emotion.derive_E_Run2_Subst.time()) {
+            y = d.transformDerived.apply(taskify.termify.pattern(d));
+        }
 
         if (Success == DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
-            if (d.temporal)
-                taskify.temporalTask(y, d);
-            else
-                taskify.taskify(y, ETERNAL, ETERNAL, d);
+
+            Task t;
+
+            try (var __ = emotion.derive_E_Run3_Taskify.time()) {
+                t = taskify.task(y, d);
+            }
+
+            if (t != null) {
+                try (var __ = emotion.derive_F_Remember.time()) {
+                    d.remember(t);
+                }
+            }
         }
 
         return true; //tried.size() < forkLimit;
