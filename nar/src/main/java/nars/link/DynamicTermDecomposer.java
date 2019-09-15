@@ -1,6 +1,5 @@
 package nars.link;
 
-import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -19,13 +18,13 @@ import static nars.Op.CONJ;
 public abstract class DynamicTermDecomposer implements TermDecomposer {
 
 
-    /** force descent to maximum 2 layers */
-    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
-        @Override
-        protected int depth(Compound root, Random rng) {
-            return 2;
-        }
-    };
+//    /** force descent to maximum 2 layers */
+//    public static final TermDecomposer Two = new WeightedDynamicTermDecomposer() {
+//        @Override
+//        protected int depth(Compound root, Random rng) {
+//            return 2;
+//        }
+//    };
     /** force descent to maximum 1 layers */
     public static final TermDecomposer One = new WeightedDynamicTermDecomposer() {
         @Override
@@ -33,17 +32,17 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
             return 1;
         }
     };
-    public static final TermDecomposer StatementDecomposer = new TermDecomposer() {
-        @Override
-        public @Nullable Term decompose(Compound t, Random rng) {
-            //TODO refine
-            Term sub = t.sub(rng.nextBoolean() ? 0 : 1).unneg();
-            if (sub instanceof Compound && sub.op()==CONJ) {
-                return rng.nextBoolean() ? sub : One.decompose((Compound)sub, rng);
-            }
-            return sub;
-        }
-    };
+//    public static final TermDecomposer StatementDecomposer = new TermDecomposer() {
+//        @Override
+//        public @Nullable Term decompose(Compound t, Random rng) {
+//            //TODO refine
+//            Term sub = t.sub(rng.nextBoolean() ? 0 : 1).unneg();
+//            if (sub instanceof Compound && sub.op()==CONJ) {
+//                return rng.nextBoolean() ? sub : One.decompose((Compound)sub, rng);
+//            }
+//            return sub;
+//        }
+//    };
 
     @Nullable @Override public Term decompose(Compound t, Random rng) {
         return sampleDynamic(t, depth(t, rng), rng);
@@ -88,16 +87,16 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
 
 
 
-    public static final DynamicTermDecomposer Uniform = new DynamicTermDecomposer() {
-        @Override
-        protected int depth(Compound root, Random rng) {
-            return rng.nextFloat() < 0.5f ? 1 : 2;
-        }
-
-        @Override protected Term subtermDecide(Subterms s, Term parent, Random rng) {
-            return s.sub(rng);
-        }
-    };
+//    public static final DynamicTermDecomposer Uniform = new DynamicTermDecomposer() {
+//        @Override
+//        protected int depth(Compound root, Random rng) {
+//            return rng.nextFloat() < 0.5f ? 1 : 2;
+//        }
+//
+//        @Override protected Term subtermDecide(Subterms s, Term parent, Random rng) {
+//            return s.sub(rng);
+//        }
+//    };
 
     /** uses roulette selection on arbitrary subterm weighting function */
     public static final DynamicTermDecomposer Weighted = new WeightedDynamicTermDecomposer();
@@ -118,14 +117,14 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         @Override
         public @Nullable Term decompose(Compound t, Random rng) {
             Term subjOrPred = subterm(t, rng);
-            if (subjOrPred instanceof Compound && subjOrPred.op()==CONJ && rng.nextBoolean()) {
-                return WeightedConjEvent.decompose((Compound)subjOrPred, rng);
+            if (subjOrPred instanceof Compound && rng.nextBoolean()) {
+                if (subjOrPred.op() == CONJ)
+                    return WeightedConjEvent.decompose((Compound) subjOrPred, rng);
+                else
+                    return Weighted.decompose((Compound) subjOrPred, rng);
+            } else {
+                return subjOrPred;
             }
-            return (subjOrPred instanceof Compound && rng.nextBoolean()) ?
-                Weighted.decompose((Compound)subjOrPred, rng)//provides potential for extra depth  (3)
-                :
-                subjOrPred
-                ;
         }
     };
 
@@ -169,13 +168,6 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
             return s.subRoulette(this::subValue, rng);
         }
 
-//        private float _subValue(Term sub) {
-//            if (sub instanceof Img || sub instanceof Interval /* HACK */)
-//                return 0;
-//            else
-//                return subValue(sub);
-//        }
-
         protected float subValue(Term sub) {
 //            if (sub instanceof Variable)
 //                return 0.5f;
@@ -186,11 +178,11 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                     sub.unneg().volume();
                     //sub.unneg().complexity();
             return
-                    Util.sqrt(v);
+                    //Util.sqrt(v);
                     //1f / Util.sqrt(v); //inverse sqrt
                     //1f / v; //inverse
                     //1f/(v*v); //inverse_sq
-                    //v;
+                    v;
                     //Util.sqr((float)v);
                     //1; //flat
         }

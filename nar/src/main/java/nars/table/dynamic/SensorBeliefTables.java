@@ -64,7 +64,7 @@ public class SensorBeliefTables extends BeliefTables {
         if (x instanceof SeriesTask)
             return; //already inserted when constructed, dont allow any other way
 
-        if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS && !x.isEternal() && !x.isInput()) {
+        if (NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS && !x.isEternal() /*&& !x.isInput()*/) {
             if (absorbNonSignal(r)) {
                 r.forget(x);
                 return;
@@ -82,9 +82,8 @@ public class SensorBeliefTables extends BeliefTables {
         if (seriesEnd == Tense.TIMELESS)
             seriesEnd = seriesStart;
 
-        int cleanMargin = 0; //cleanMarginCycles(r.nar);
+        int cleanMargin = cleanMarginCycles(r.nar.dur());
         long ss = seriesStart + cleanMargin;
-
         long ee = seriesEnd - cleanMargin;
         return ss < ee && series.absorbNonSignal(r.input, ss, ee);
     }

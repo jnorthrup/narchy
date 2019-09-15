@@ -105,7 +105,8 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 					target = forward;
 				} else {
 					links.grow(link, src, forward, task.punc());
-//					if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
+					//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
+					//if (d.random.nextBoolean())
 					target = forward; //continue as self, or eager traverse the new link
 				}
 			}
@@ -125,9 +126,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	/** selects the decomposition strategy for the given Compound */
 	protected TermDecomposer decomposer(Compound t) {
 		switch (t.op()) {
-			case INH:
 			case IMPL:
-			case SIM:
 				return DynamicTermDecomposer.WeightedImpl;
 			case CONJ:
 				return DynamicTermDecomposer.WeightedConjEvent;

@@ -57,7 +57,7 @@ public class SelfTest {
         s.unitTestsByPackage("nars.nal.nal6");
         s.unitTestsByPackage("nars.nal.nal7");
         s.unitTestsByPackage("nars.nal.nal8");
-        s.run(6);
+        s.run(4);
     }
 
 
