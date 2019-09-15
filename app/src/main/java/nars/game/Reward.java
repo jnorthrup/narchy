@@ -1,6 +1,7 @@
 package nars.game;
 
 import com.google.common.collect.Iterables;
+import jcog.Skill;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.$;
@@ -38,7 +39,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     final PriNode attn;
 
-    protected final FasterList<Task> reinforcement = new FasterList();
+	@Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
+    protected final FasterList<Task> reinforcement = new FasterList<>();
 
     protected Reward(Term id, Game g) {
         this.game = g;
@@ -128,10 +130,11 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		reinforce();
 	}
 
-	private void reinforce() {
+	/** called each update to refresh reinforcement tasks */
+	protected void reinforce() {
 		int n = reinforcement.size();
 		if (n > 0) {
-			float pri = attn.pri() / n;
+			float pri = attn.pri();// / n;
 			for (Task t : reinforcement)
 				t.pri(pri);
 			game.what().acceptAll(reinforcement);

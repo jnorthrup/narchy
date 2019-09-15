@@ -13,7 +13,7 @@ public class MutableTruth implements Truth {
 
 	}
 
-	public MutableTruth(float f, float evi) {
+	public MutableTruth(float f, double evi) {
 		freq = f; this.evi = evi;
 	}
 

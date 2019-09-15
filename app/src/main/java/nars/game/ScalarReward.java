@@ -1,6 +1,7 @@
 package nars.game;
 
 import com.google.common.collect.Iterators;
+import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.game.sensor.Signal;
@@ -28,6 +29,10 @@ abstract public class ScalarReward extends Reward {
 
     boolean negate;
     protected transient volatile float reward = Float.NaN;
+
+    final MutableTruth RimplA =
+        //$.t(0.5f, 0.05f);
+        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 
     ScalarReward(Term id, float freq, float conf, boolean stamped, Game g) {
         super(id, g);
@@ -65,15 +70,21 @@ abstract public class ScalarReward extends Reward {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
         reinforceGoal(concept, freq, conf, stamped);
 
-        Truth RimplA =
-            //$.t(0.5f, 0.05f);
-            new MutableTruth(0.5f, 0.05f);
+
 
         g.actions().forEach(a -> {
             Term A = a.term();
             reinforce(IMPL.the(Rpos, A), BELIEF, RimplA, stamped);
             reinforce(IMPL.the(Rneg, A), BELIEF, RimplA, stamped);
         });
+    }
+
+    @Override
+    protected void reinforce() {
+        NAR nar = game.nar;
+        float strength = 1;
+        RimplA.conf( Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength );
+        super.reinforce();
     }
 
     protected abstract float reward(Game a);

@@ -19,13 +19,15 @@
 
 
      B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:InductionPP, Time:TaskEvent)
-     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,                       Time:BeliefEvent)
+     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,                   Time:BeliefEvent)
          B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:InductionPN, Time:TaskEvent)
-         (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                       Time:BeliefEvent)
+         (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                   Time:BeliefEvent)
        B, (--X ==> C), --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:InductionNP, Time:TaskEvent)
-       (--X ==> C), B, --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionPN,                       Time:BeliefEvent)
+       (--X ==> C), B, --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionPN,                   Time:BeliefEvent)
            B, (--X ==> C), --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:InductionNN, Time:TaskEvent)
-           (--X ==> C), B, --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                       Time:BeliefEvent)
+           (--X ==> C), B, --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                   Time:BeliefEvent)
+
+        //induction antigoal not valid since it will assume only one precondition polarity applies yet it may be the case that both pos and neg precondition apply
 
        //questions
           B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
@@ -186,8 +188,8 @@
     //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
     //   (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
 
-        (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAsk, Time:Task)
-        (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAsk, Time:Task)
+    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAsk, Time:Task)
+      (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAsk, Time:Task)
         //(P ==> M), (S ==> M)  |- ((P && S) ==> M), (Punctuation:AskAll, Time:Compose)
           //(P ==> M), (S ==> M)  |- ((P || S) ==> M), (Punctuation:AskAll, Time:Compose)
             //(P ==> M), (S ==> M), task("?")  |- (P || S), (Punctuation:Question)
@@ -229,10 +231,10 @@
 
 
     //Conj/Impl Chain Deduction
-    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
-    (X ==> Y), (C ==> Z), eventOfNeg(C,Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
-    (X ==> Y), (--C ==> Z), eventOf(C,Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
-    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOf(C,Y), --isVar(Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOfNeg(C,Y), --isVar(Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+    (X ==> Y), (--C ==> Z), eventOf(C,Y), --isVar(Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y), --isVar(Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
 
 //    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Compose)
 //      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Compose)
