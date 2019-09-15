@@ -182,7 +182,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
             if (stamp.length != 1)
                 throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
             this.e = end;
-            setCyclic(true); //prevent being immediately image transformed, etc
+            //setCyclic(true); //prevent being immediately image transformed, etc
         }
 
 
@@ -190,7 +190,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
         @Override
         protected int hashCalculate(long start, long end, long[] stamp) {
             //TODO also involve Term?
-            return Util.hashCombine(term().hashCode(), Util.hashCombine(stamp[0], start));
+            return Util.hashCombine(term.hashCode(), Util.hashCombine(stamp[0], start));
         }
 
 

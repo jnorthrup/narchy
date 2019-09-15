@@ -325,7 +325,7 @@ public class Opjects extends DefaultTermizer {
                     NALTask.the(nt, BELIEF, PreciseTruth.byEvi(invokeFreq, invokeEvi), start, start, end, nar.evidence());
             //if (NAL.DEBUG) {
             //}
-            feedback.setCyclic(true); //prevent immediate structural transforms
+            //feedback.setCyclic(true); //prevent immediate structural transforms
             feedback.priMax(beliefPri);
             return feedback;
         }
