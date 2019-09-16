@@ -64,7 +64,7 @@ public class Deriver extends How {
     }
 
     public Deriver(Set<PremiseRuleProto> rules, NAR nar) {
-        this(PremiseRuleCompiler.the(rules), nar);
+        this(PremiseRuleCompiler.the(rules, nar), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
@@ -74,7 +74,7 @@ public class Deriver extends How {
     }
 
     public Deriver(PremiseRuleProtoSet rules, TimeFocus timing, Hypothesizer hypothesize) {
-        this(PremiseRuleCompiler.the(rules), hypothesize, timing, rules.nar);
+        this(PremiseRuleCompiler.the(rules, rules.nar), hypothesize, timing, rules.nar);
     }
 
     public Deriver(PremiseRuleProtoSet rules, Hypothesizer hypothesize) {

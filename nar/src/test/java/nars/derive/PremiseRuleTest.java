@@ -127,7 +127,8 @@ class PremiseRuleTest {
     void testMinSubsRulePredicate() {
 
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleProtoSet(NARS.shell(), "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"));
+        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleProtoSet(NARS.shell(),
+            "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"));
         d.printRecursive();
         assertNotNull(d);
     }

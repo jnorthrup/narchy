@@ -942,15 +942,12 @@ public class PremiseRule extends ProxyTerm {
 
     private PREDICATE[] preconditions() {
         int rules = pre.size();
-        PREDICATE[] PRE = pre.toArray(new PREDICATE[rules + 1 /* extra to be filled in later stage */]);
-
-        assert (PRE[PRE.length - 1] == null);
+        PREDICATE[] PRE = pre.toArray(new PREDICATE[rules]);
 
         if (rules > 1) {
             Arrays.sort(PRE, 0, rules, sortByCostIncreasing);
             assert (PRE[0].cost() <= PRE[rules - 2].cost()); //increasing cost
         }
-
 
         //not working yet:
 //        for (int i = 0, preLength = PRE.length; i < preLength; i++) {

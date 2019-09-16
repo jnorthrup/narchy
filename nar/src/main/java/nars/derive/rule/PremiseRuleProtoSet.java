@@ -25,7 +25,7 @@ import java.util.stream.StreamSupport;
  */
 public class PremiseRuleProtoSet extends TreeSet<PremiseRuleProto> {
 
-    public final NAR nar;
+    @Deprecated public final NAR nar;
 
     public PremiseRuleProtoSet(NAR nar, String... rules) {
         this(nar, PremiseRule.parse(rules));
@@ -37,7 +37,7 @@ public class PremiseRuleProtoSet extends TreeSet<PremiseRuleProto> {
     }
 
     private PremiseRuleProto compile(PremiseRule x) {
-        return new PremiseRuleProto(x, nar);
+        return new PremiseRuleProto(x);
     }
 
     private final static Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {

@@ -735,7 +735,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 1;
+        public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
         @Range(min = 0, max = 64)

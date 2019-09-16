@@ -32,26 +32,18 @@ class DeriverTest {
 //        });
 //    }
 
-    private static PremiseRuleProtoSet testCompile(String... rules) {
+    private static DeriverRules testCompile(String... rules) {
         return testCompile(false, rules);
     }
 
-    private static PremiseRuleProtoSet testCompile(boolean debug, String... rules) {
+    private static DeriverRules testCompile(boolean debug, String... rules) {
 
         assertNotEquals(0, rules.length);
 
 
         PremiseRuleProtoSet src = new PremiseRuleProtoSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
-        DeriverRules d = PremiseRuleCompiler.the(src);
-
-        if (debug) {
-
-
-        }
-
-
-        return src;
+        return PremiseRuleCompiler.the(src);
     }
 
 //    @Test

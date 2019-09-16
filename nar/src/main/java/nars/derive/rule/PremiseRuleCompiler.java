@@ -2,8 +2,8 @@ package nars.derive.rule;
 
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.memoize.CaffeineMemoize;
 import jcog.tree.perfect.TrieNode;
+import nars.NAR;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.DeriveAction;
@@ -30,26 +30,32 @@ import java.util.function.Function;
 public enum PremiseRuleCompiler {
     ;
 
-    public static DeriverRules the(Set<PremiseRuleProto> r) {
-        return the.apply(r);
+//    public static DeriverRules the(Set<PremiseRuleProto> r, NAR nar) {
+//        return the.apply(r);
+//    }
+
+//    private static final Function<Set<PremiseRuleProto>, DeriverRules> the =
+//            //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
+//            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
+
+    public static DeriverRules the(PremiseRuleProtoSet rr) {
+        return the(rr, rr.nar);
     }
 
-    private static final Function<Set<PremiseRuleProto>, DeriverRules> the =
-            //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
-            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
-
-    private static DeriverRules _the(Set<PremiseRuleProto> rr) {
+    public static DeriverRules the(Set<PremiseRuleProto> rr, NAR nar) {
         return _the(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
             //DeriverPlanner.ConceptMetaMemoizer
+            , nar
         );
     }
 
-    private static DeriverRules _the(Set<PremiseRuleProto> rr, PreDeriver preDeriver) {
+    private static DeriverRules _the(Set<PremiseRuleProto> rr, PreDeriver preDeriver, NAR nar) {
 
         /** indexed by local (deriver-specific) id */
-        int n = rr.size(), i = 0;
+        int n = rr.size();
+        short i = 0;
         assert(n > 0);
 
         DeriveAction[] rootBranches = new DeriveAction[n];
@@ -57,16 +63,19 @@ public enum PremiseRuleCompiler {
 
         for (PremiseRuleProto r : rr) {
 
-            RoaringBitmap idR = new RoaringBitmap();
-            idR.add(i);
+
 
             PREDICATE<Derivation>[] condition = r.condition;
-            assert (condition[condition.length - 1] == null); //null placeholder left for this
-            condition[condition.length - 1] = new Branchify(/* branch ID */  idR);
 
-            DeriveAction action = r.action;
-            DeriveAction added = path.put(List.of(condition), action); assert (added == null);
-            rootBranches[i] = action;
+            FasterList<PREDICATE<Derivation>> pre = new FasterList<>(condition.length + 1);
+            pre.addAll(condition);
+
+            pre.add(new Branchify(/* branch ID */  i));
+
+            DeriveAction added = path.put(pre,
+                rootBranches[i] = r.action.apply(nar)
+            );
+            assert (added == null);
 
             i++;
         }

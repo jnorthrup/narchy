@@ -4,8 +4,11 @@ import jcog.util.ArrayUtil;
 import nars.$;
 import nars.derive.Derivation;
 import nars.term.atom.Atomic;
+import nars.term.atom.Int;
 import nars.term.control.AbstractPred;
 import org.roaringbitmap.RoaringBitmap;
+
+import static nars.Op.SETe;
 
 /**
  * remembers the possiblity of a derivation branch
@@ -18,6 +21,15 @@ public final class Branchify extends AbstractPred<Derivation> {
 
     private static final Atomic CAN = Atomic.the("can");
 
+
+//    public Branchify(int id) {
+//        this(RoaringBitmap.bitmapOf(id));
+//    }
+
+    public Branchify(short id) {
+        super($.func(CAN, SETe.the(Int.the(id))));
+        this.can = new short[] { id };
+    }
 
     public Branchify(RoaringBitmap can) {
         super($.func(CAN, $.sete(can)));

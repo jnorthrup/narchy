@@ -11,6 +11,8 @@ import nars.term.Terms;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
 
+import java.util.function.Function;
+
 /**
  * an intermediate representation of a premise rule
  * with fully expanded opcodes
@@ -24,31 +26,35 @@ import nars.term.control.PREDICATE;
 public class PremiseRuleProto implements Comparable<PremiseRuleProto> {
 
     final PREDICATE<Derivation>[] condition;
-    final DeriveAction action;
+    final Function<NAR,DeriveAction> action;
 
-    private final PremiseRule rule;
+    final PremiseRule rule;
 
-    PremiseRuleProto(PremiseRule rule, NAR nar) {
-
+    PremiseRuleProto(PREDICATE<Derivation>[] condition, Function<NAR,DeriveAction> action, PremiseRule rule) {
+        this.condition = condition;
+        this.action = action;
         this.rule = rule;
-
-        int k = 0;
-        PREDICATE<Derivation>[] y = new PREDICATE[1 + rule.CONSTRAINTS.size() ];
-        for (PREDICATE p : rule.CONSTRAINTS)
-            y[k++] = p;
-
-        RuleWhy cause = nar.newCause(s -> new RuleWhy(this.rule, s));
-        Taskify taskify = new Taskify(rule.termify, cause);
-        y[k++] =
-            new DirectPremisify
-            //new CachingPremisify //<- not ready yet
-                (rule.taskPattern, rule.beliefPattern, isFwd(), taskify);
-
-        this.condition = rule.PRE.clone(); //clone because it gets modified per instantiation
-        this.action = action(y, cause);
     }
 
-    private DeriveAction action(PREDICATE<Derivation>[] y, RuleWhy cause) {
+    PremiseRuleProto(PremiseRule rule) {
+        this(rule.PRE, (nar) -> {
+            int k = 0;
+            PREDICATE<Derivation>[] y = new PREDICATE[1 + rule.CONSTRAINTS.size() ];
+            for (PREDICATE p : rule.CONSTRAINTS)
+                y[k++] = p;
+
+            RuleWhy cause = nar.newCause(s -> new RuleWhy(rule, s));
+            Taskify taskify = new Taskify(rule.termify, cause);
+            y[k] =
+                new DirectPremisify
+                    //new CachingPremisify //<- not ready yet
+                    (rule.taskPattern, rule.beliefPattern, isFwd(rule.taskPattern, rule.beliefPattern), taskify);
+
+            return action(y, cause, rule);
+        }, rule);
+    }
+
+    private static DeriveAction action(PREDICATE<Derivation>[] y, RuleWhy cause, PremiseRule rule) {
         PREDICATE<Derivation> yy = AND.the(y);
 
         Truthify truthify = rule.truthify;
@@ -60,12 +66,10 @@ public class PremiseRuleProto implements Comparable<PremiseRuleProto> {
     }
 
     /** task,belief or belief,task ordering heuristic */
-    private boolean isFwd() {
+    private static boolean isFwd(Term T, Term B) {
 
         int dir = 0; //-1 !fwd, 0=undecided yet, +1 = fwd
 
-        Term T = rule.taskPattern;
-        Term B = rule.beliefPattern;
         if (T.equals(B)) {
             dir = +1; //equal, so use convention
         }
