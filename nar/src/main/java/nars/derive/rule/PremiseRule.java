@@ -758,23 +758,7 @@ public class PremiseRule extends ProxyTerm {
         throw new TODO();
     }
 
-    PremiseRule(PremiseRule raw) {
-        super((/*index.rule*/(raw.ref)));
 
-        this.termify = raw.termify;
-        this.PRE = raw.PRE.clone(); //because it gets modified when adding Branchify suffix
-        this.CONSTRAINTS = raw.CONSTRAINTS;
-        this.source = raw.source;
-        this.truthify = raw.truthify;
-        this.constraints = raw.constraints;
-        this.pre = raw.pre;
-        this.time = raw.time;
-        this.beliefTruth = raw.beliefTruth;
-        this.goalTruth = raw.goalTruth;
-        this.taskPattern = raw.taskPattern;
-        this.beliefPattern = raw.beliefPattern;
-
-    }
 
     private static Term rule(String ruleSrc) throws Narsese.NarseseException {
         return new MyPremiseRuleNormalization().apply(

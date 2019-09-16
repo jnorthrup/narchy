@@ -11,13 +11,17 @@ import static nars.$.$$;
 public class PremiseRuleBuilder {
 
     public final Term taskPattern, beliefPattern;
-    private final Term concPattern;
+    public final Term concPattern;
+
     final Set<Term> modifiers = new TreeSet();
 
     public PremiseRuleBuilder(String taskPattern, String beliefPattern, String concPattern) {
-        this.taskPattern = $$(taskPattern);
-        this.beliefPattern = $$(beliefPattern);
-        this.concPattern = $$(concPattern);
+        this($$(taskPattern), $$(beliefPattern), $$(concPattern));
+    }
+    public PremiseRuleBuilder(Term taskPattern, Term beliefPattern, Term concPattern) {
+        this.taskPattern = taskPattern;
+        this.beliefPattern = beliefPattern;
+        this.concPattern = concPattern;
     }
 
     public PremiseRule get() {

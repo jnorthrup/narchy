@@ -104,7 +104,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 				if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
 					target = forward;
 				} else {
-					
+
 					links.grow(link, src, forward, task.punc());
 
 					//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
@@ -118,13 +118,12 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 			Term reverse = reverse(target, link, task, links, d);
 
 			if (reverse != null) {
-//				if (reverse.equals(link.from())) {
-//					//HACK avoid this
-//					Util.nop();
-//				} else {
-					//links.grow(link, link.from(), reverse, task.punc());
-					target = reverse;
-//				}
+				assert(!reverse.equals(link.from()));
+				assert(reverse.op().conceptualizable);
+				target = reverse;
+
+				//extra links: dont seem necessary
+				//links.grow(link, link.from(), reverse, task.punc());
 			}
 		}
 

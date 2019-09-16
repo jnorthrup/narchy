@@ -23,24 +23,24 @@ import java.util.stream.StreamSupport;
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-public class PremiseRuleSet extends TreeSet<PremiseRuleProto> {
+public class PremiseRuleProtoSet extends TreeSet<PremiseRuleProto> {
 
     public final NAR nar;
 
-    public PremiseRuleSet(NAR nar, String... rules) {
+    public PremiseRuleProtoSet(NAR nar, String... rules) {
         this(nar, PremiseRule.parse(rules));
     }
 
-    public PremiseRuleSet(NAR nar, Stream<PremiseRule> parsed) {
+    public PremiseRuleProtoSet(NAR nar, Stream<PremiseRule> r) {
         this.nar = nar;
-        parsed.distinct()
-                .map(x -> new PremiseRuleProto(x, nar))
-                .forEach(this::add);
+        r.distinct().map(this::compile).collect(Collectors.toCollection(()->this));
     }
 
+    private PremiseRuleProto compile(PremiseRule x) {
+        return new PremiseRuleProto(x, nar);
+    }
 
-    private final static Function<String, Collection<PremiseRule>> ruleCache =
-            CaffeineMemoize.build((String n) -> {
+    private final static Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
         try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
@@ -49,14 +49,14 @@ public class PremiseRuleSet extends TreeSet<PremiseRuleProto> {
             e.printStackTrace();
             bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
-        return (PremiseRule.parse(load(bb)).collect(Collectors.toSet()));
+        return PremiseRule.parse(load(bb)).collect(Collectors.toSet());
 
     }, 32, false);
 
 
 
     public static Supplier<Collection<PremiseRule>> file(String n) {
-        return ()->PremiseRuleSet.ruleCache.apply(n);
+        return ()-> PremiseRuleProtoSet.ruleFileCache.apply(n);
     }
 
     private static Stream<String> load(byte[] data) {

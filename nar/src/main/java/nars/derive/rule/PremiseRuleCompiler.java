@@ -17,7 +17,6 @@ import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 import nars.term.util.map.TermPerfectTrie;
-import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -39,65 +38,42 @@ public enum PremiseRuleCompiler {
             //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
             CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
 
-    private static DeriverRules _the(Set<PremiseRuleProto> r) {
-        assert (!r.isEmpty());
+    private static DeriverRules _the(Set<PremiseRuleProto> rr) {
+        return _the(rr,
+            new PreDeriver.CentralMemoizer()
+            //PreDeriver.DIRECT_DERIVATION_RUNNER
+            //DeriverPlanner.ConceptMetaMemoizer
+        );
+    }
+
+    private static DeriverRules _the(Set<PremiseRuleProto> rr, PreDeriver preDeriver) {
 
         /** indexed by local (deriver-specific) id */
-        int n = r.size();
-
-        /** map preconditions to conclusions by local conclusion id.
-         * the key is an array with a null placeholder at the end to be completed later in this stage
-         * */
-        final List<Pair<PREDICATE<Derivation>[], DeriveAction>> pairs = new FasterList<>(n);
-
-//        int o = Op.unique();
-//        MetalBitSet mustAtomize = MetalBitSet.bits(o);
-        r.forEach(rule -> {
-//            mustAtomize.setAll(rule.taskPattern.structure(), o);
-//            mustAtomize.setAll(rule.beliefPattern.structure(), o);
-            pairs.add(rule.rule);
-        });
-//        int mustAtomizableStructure = ((MetalBitSet.IntBitSet)mustAtomize).intValue() & ((1 << (o+1))-1);
-        //int nonAtomizableStructure = (~((MetalBitSet.IntBitSet)mustAtomize).intValue()) & ((1 << (o+1))-1);
-
-        final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
-
+        int n = rr.size(), i = 0;
+        assert(n > 0);
 
         DeriveAction[] rootBranches = new DeriveAction[n];
+        final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
 
-        for (int i = 0; i < n; i++) {
-            Pair<PREDICATE<Derivation>[], DeriveAction> pair = pairs.get(i);
-
-            DeriveAction POST = pair.getTwo();
-
-            PREDICATE<Derivation>[] pre = pair.getOne();
+        for (PremiseRuleProto r : rr) {
 
             RoaringBitmap idR = new RoaringBitmap();
             idR.add(i);
 
-            assert (pre[pre.length - 1] == null); //null placeholder left for this
-            pre[pre.length - 1] = new Branchify(/* branch ID */  idR);
+            PREDICATE<Derivation>[] condition = r.condition;
+            assert (condition[condition.length - 1] == null); //null placeholder left for this
+            condition[condition.length - 1] = new Branchify(/* branch ID */  idR);
 
-            DeriveAction added = path.put(List.of(pre), POST);
-            assert (added == null);
+            DeriveAction action = r.action;
+            DeriveAction added = path.put(List.of(condition), action); assert (added == null);
+            rootBranches[i] = action;
 
-            rootBranches[i] = POST;
+            i++;
         }
 
         assert (!path.isEmpty());
 
-
-        DeriverRules rr = new DeriverRules(
-                PremiseRuleCompiler.compile(path),
-                rootBranches,
-//                mustAtomizableStructure,
-
-                //PreDeriver.DIRECT_DERIVATION_RUNNER
-                new PreDeriver.CentralMemoizer()
-                //DeriverPlanner.ConceptMetaMemoizer
-        );
-//        print(rr, System.out, 2);
-        return rr;
+        return new DeriverRules(PremiseRuleCompiler.compile(path), rootBranches, preDeriver);
     }
 
 

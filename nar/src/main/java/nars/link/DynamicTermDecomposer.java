@@ -6,6 +6,7 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Img;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
@@ -171,8 +172,8 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         }
 
         @Override public float floatValueOf(Term subterm) {
-//            if (sub instanceof Variable)
-//                return 0.5f;
+            if (subterm instanceof Variable)
+                return 0.5f;
             if (subterm instanceof Atomic)
                 return 1;
 

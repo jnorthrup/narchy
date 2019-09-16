@@ -11,7 +11,7 @@ import nars.derive.hypothesis.TangentIndexer;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRuleCompiler;
 import nars.derive.rule.PremiseRuleProto;
-import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.PremiseRuleProtoSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
@@ -69,15 +69,15 @@ public class Deriver extends How {
             throw new RuntimeException("rules empty");
     }
 
-    public Deriver(PremiseRuleSet rules) {
+    public Deriver(PremiseRuleProtoSet rules) {
         this(rules, rules.nar);
     }
 
-    public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypothesize) {
+    public Deriver(PremiseRuleProtoSet rules, TimeFocus timing, Hypothesizer hypothesize) {
         this(PremiseRuleCompiler.the(rules), hypothesize, timing, rules.nar);
     }
 
-    public Deriver(PremiseRuleSet rules, Hypothesizer hypothesize) {
+    public Deriver(PremiseRuleProtoSet rules, Hypothesizer hypothesize) {
         this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypothesize);
     }
 
