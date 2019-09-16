@@ -16,7 +16,7 @@ public final class UnaryConstraint<U extends Unify> extends UnifyConstraint<U> {
         super(x, !termMatcher.getClass().isAnonymousClass() ?
                         termMatcher.getClass().getSimpleName() :
                         termMatcher.getClass().toString(),
-                ($.p(termMatcher.param() != null ? termMatcher.param() : Op.EmptyProduct).negIf(!trueOrFalse)));
+                $.p(termMatcher.param() != null ? termMatcher.param() : Op.EmptyProduct).negIf(!trueOrFalse));
         if (this.toString().contains("$1\""))
             throw new WTF();
         this.termMatcher = termMatcher;

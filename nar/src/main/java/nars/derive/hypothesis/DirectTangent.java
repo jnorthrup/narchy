@@ -2,6 +2,7 @@ package nars.derive.hypothesis;
 
 import nars.Task;
 import nars.derive.Derivation;
+import nars.link.AbstractTaskLink;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.term.Term;
@@ -30,7 +31,7 @@ public class DirectTangent extends AbstractHypothesizer {
 		//0.33f;
 		float probDirect =
 			//(float) (probBase / Util.sqr(Math.pow(2, target.volume()-1)));
-			(float) (probBase / Math.pow(target.volume(), 3));
+			(float) (probBase / Math.pow(target.volume(), 2));
 		//(float) (probBase / Math.pow(2, target.volume()-1));
 		//probBase * (target.volume() <= 2 ? 1 : 0);
 		//probBase * 1f / Util.sqr(Util.sqr(target.volume()));
@@ -46,15 +47,26 @@ public class DirectTangent extends AbstractHypothesizer {
 	}
 
 	@Nullable
-	public Term sampleReverseMatch(Term target, TaskLink link, TaskLinks links, Derivation d) {
-		Term source = link.from();
-		final Term[] T = { null };
-		links.sampleUnique(d.random, (ll) -> {
-			if (ll != link) {
-				Term t = ll.reverseMatch(target);
-				if (t != null && !t.equals(source)) {
-					T[0] = t;
-					return false; //done
+	public Term sampleReverseMatch(Term target, TaskLink x, TaskLinks links, Derivation d) {
+
+		int targetHash = target.hashCodeShort();
+		int fromHash = ((AbstractTaskLink) x).fromHash();
+		Term source = x.from();
+
+		final Term[] T = {null};
+		links.sampleUnique(d.random, y -> {
+			if (y != x && !y.isSelf()) {
+				AbstractTaskLink Y = (AbstractTaskLink) y;
+				if (Y.toHash() == targetHash && (Y.fromHash() != fromHash)) {
+					Term yt = y.to();
+					if (target.equals(yt)) {
+						Term yf = y.from();
+						if (!source.equals(yf)) {
+							//if (!term.equals(f)) //extra test to be sure
+							T[0] = yf;
+							return false; //done
+						}
+					}
 				}
 			}
 			return true;

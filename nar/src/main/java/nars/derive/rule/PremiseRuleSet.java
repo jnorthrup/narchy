@@ -1,6 +1,7 @@
 package nars.derive.rule;
 
 import com.google.common.base.Splitter;
+import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;
 import nars.NAR;
@@ -8,9 +9,7 @@ import nars.NAR;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collection;
-import java.util.TreeSet;
 import java.util.function.Function;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -23,20 +22,30 @@ import java.util.stream.StreamSupport;
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-public class PremiseRuleSet extends TreeSet<PremiseRule> {
+public class PremiseRuleSet {
 
     @Deprecated public final NAR nar;
+    public final ArrayHashSet<PremiseRule> rules;
 
     public PremiseRuleSet(NAR nar, String... rules) {
-        this(nar, PremiseRuleBuilder.parse(rules));
+        this(nar, MetaNarsesePremiseRuleBuilder.parse(rules));
     }
 
-    public PremiseRuleSet(NAR nar, Stream<PremiseRuleBuilder> r) {
+    public PremiseRuleSet(NAR nar, Stream<PremiseRule> r) {
+        this(nar);
+        r.collect(Collectors.toCollection(()->rules));
+    }
+
+    public PremiseRuleSet(NAR nar, ArrayHashSet<PremiseRule> r) {
         this.nar = nar;
-        r.distinct().map(PremiseRuleBuilder::get).collect(Collectors.toCollection(()->this));
+        this.rules = r;
     }
 
-    private final static Function<String, Collection<PremiseRuleBuilder>> ruleFileCache = CaffeineMemoize.build((String n) -> {
+    public PremiseRuleSet(NAR nar) {
+        this(nar, new ArrayHashSet<>(1024));
+    }
+
+    private final static Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
         try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
@@ -45,14 +54,14 @@ public class PremiseRuleSet extends TreeSet<PremiseRule> {
             e.printStackTrace();
             bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
-        return PremiseRuleBuilder.parse(load(bb)).collect(Collectors.toSet());
+        return MetaNarsesePremiseRuleBuilder.parse(load(bb)).collect(Collectors.toList());
 
-    }, 32, false);
+    }, 64, false);
 
 
 
-    public static Supplier<Collection<PremiseRuleBuilder>> file(String n) {
-        return ()-> PremiseRuleSet.ruleFileCache.apply(n);
+    public static Collection<PremiseRule> file(String n) {
+        return PremiseRuleSet.ruleFileCache.apply(n);
     }
 
     private static Stream<String> load(byte[] data) {
@@ -79,5 +88,8 @@ public class PremiseRuleSet extends TreeSet<PremiseRule> {
     }
 
 
+    public int size() {
+        return rules.size();
+    }
 }
 

@@ -8,6 +8,7 @@ import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
 import java.util.List;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -94,7 +95,39 @@ abstract public class AND<X> extends AbstractPred<X> {
         /*@Stable*/
         private final PREDICATE<X> a, b, c;
 
+        final MethodHandle A, B, C;
         private AND3(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
+            super(new PREDICATE[] { a, b, c });
+            this.a = a; this.b = b; this.c = c;
+            this.A = a.method();
+            this.B = b.method();
+            this.C = c.method();
+        }
+
+        @Override
+        public final boolean test(X x) {
+            //return a.test(x) && b.test(x) && c.test(x);
+            try {
+                return ((boolean)A.invokeExact(x)) && ((boolean)B.invokeExact(x)) && ((boolean)C.invokeExact(x));
+            } catch (Throwable throwable) {
+                throw new RuntimeException(throwable);
+            }
+        }
+
+        public PREDICATE<X> first() {
+            return a;
+        }
+
+        public PREDICATE<X> last() {
+            return c;
+        }
+
+    }
+    private final static class AND3Simple<X> extends AND<X> {
+        /*@Stable*/
+        private final PREDICATE<X> a, b, c;
+
+        private AND3Simple(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
             this.a = a; this.b = b; this.c = c;
         }

@@ -6,7 +6,7 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.unify.Unify;
 
-public class SubOfConstraint extends RelationConstraint<Unify> {
+public class SubOfConstraint<U extends Unify> extends RelationConstraint<U> {
     private final boolean forward;
 
     private final SubtermCondition containment;

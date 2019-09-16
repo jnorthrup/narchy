@@ -9,15 +9,15 @@ import nars.control.Why;
 import nars.derive.hypothesis.Hypothesizer;
 import nars.derive.hypothesis.TangentIndexer;
 import nars.derive.rule.DeriverRules;
-import nars.derive.rule.PremiseRuleCompiler;
 import nars.derive.rule.PremiseRule;
+import nars.derive.rule.PremiseRuleCompiler;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
 import nars.time.When;
 
-import java.util.Set;
+import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -63,18 +63,18 @@ public class Deriver extends How {
         return this;
     }
 
-    public Deriver(Set<PremiseRule> rules, NAR nar) {
+    public Deriver(Collection<PremiseRule> rules, NAR nar) {
         this(PremiseRuleCompiler.the(rules, nar), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
 
     public Deriver(PremiseRuleSet rules) {
-        this(rules, rules.nar);
+        this(rules.rules, rules.nar);
     }
 
     public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypothesize) {
-        this(PremiseRuleCompiler.the(rules, rules.nar), hypothesize, timing, rules.nar);
+        this(PremiseRuleCompiler.the(rules), hypothesize, timing, rules.nar);
     }
 
     public Deriver(PremiseRuleSet rules, Hypothesizer hypothesize) {

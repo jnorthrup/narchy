@@ -1,6 +1,5 @@
 package nars.unify.constraint;
 
-import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
 import nars.$;
 import nars.NAL;
@@ -15,6 +14,9 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -22,7 +24,14 @@ import java.util.stream.Stream;
 /** must be stateless */
 public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
+    private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>();
+
     public static final UnifyConstraint[] None = new UnifyConstraint[0];
+
+    public static UnifyConstraint intern(UnifyConstraint x) {
+        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
+        return y != null ? y : x;
+    }
 
 //    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {
 //        return c == null || !c.anySatisfyWith((cc,X) -> cc.invalid(X, u), x);
@@ -67,47 +76,43 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
      */
     abstract public boolean invalid(Term x, U f);
 
-
-
-    static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
-
     /**
      * returns a stream of constraints bundled by any multiple respective targets, and sorted by cost increasing
      */
-    public static Stream<UnifyConstraint> the(Stream<UnifyConstraint> c) {
-
-//        ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
-//        c.forEach(x -> m.put(x.x, x));
-//
-//        return m.asMap().values().stream()
-
+    public static <U extends Unify> UnifyConstraint<U>[] the(Stream<UnifyConstraint<U>> c) {
         return c.collect(Collectors.groupingBy(x -> x.x, Collectors.toList())).values().stream()
-            .map(cc -> {
-            int ccn = cc.size();
-
-            assert (ccn > 0);
-            if (ccn == 1) {
-                return cc.iterator().next();
-            } else {
-                UnifyConstraint<?>[] d = cc.toArray(new UnifyConstraint[ccn]);
-                Arrays.sort(d, PREDICATE.sortByCostIncreasing);
-
-                if (NAL.test.DEBUG_EXTRA) {
-                    final Term target = d[0].x;
-                    for (int i = 1; i < d.length; i++)
-                        assert (d[i].x.equals(target));
-                }
-
-                return new CompoundConstraint(d);
-            }
-        }).sorted(PREDICATE.sortByCostIncreasing);
+            .map(CompoundConstraint::the)
+            .sorted(PREDICATE.sortByCostIncreasing)
+            .map(UnifyConstraint::intern)
+            .toArray(x -> x == 0 ? UnifyConstraint.None : new UnifyConstraint[x]);
     }
 
     /** TODO group multiple internal relationconstraints for the same target so only one xy(target) lookup invoked to use with all */
-    private static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
+    public static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
 
         private final UnifyConstraint<U>[] subConstraint;
         private final float cost;
+
+        public static <U extends Unify> UnifyConstraint<U> the(List<UnifyConstraint<U>> cc) {
+
+            int ccn = cc.size();
+
+            if (ccn == 0)
+                throw new UnsupportedOperationException();
+            else if (ccn == 1)
+                return cc.get(0);
+
+            UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
+            Arrays.sort(d, PREDICATE.sortByCostIncreasing);
+
+            if (NAL.test.DEBUG_EXTRA) {
+                final Term target = d[0].x;
+                for (int i = 1; i < d.length; i++)
+                    assert (d[i].x.equals(target));
+            }
+
+            return new CompoundConstraint<>(d);
+        }
 
         private CompoundConstraint(UnifyConstraint[] c) {
             super(c[0].x, Op.SETe.the(Util.map(
@@ -124,8 +129,8 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
         }
 
         @Override
-        public boolean invalid(Term x, Unify f) {
-            for (UnifyConstraint c : subConstraint)
+        public boolean invalid(Term x, U f) {
+            for (UnifyConstraint<U> c : subConstraint)
                 if (c.invalid(x, f))
                     return true;
 

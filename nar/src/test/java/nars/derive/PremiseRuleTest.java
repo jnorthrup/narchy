@@ -4,10 +4,7 @@ import nars.$;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.premise.PatternTermBuilder;
-import nars.derive.rule.DeriverRules;
-import nars.derive.rule.PremiseRuleBuilder;
-import nars.derive.rule.PremiseRuleCompiler;
-import nars.derive.rule.PremiseRuleSet;
+import nars.derive.rule.*;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -78,7 +75,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = new PremiseRuleBuilder("A, A |- (A,A), (Belief:Intersection)");
+            PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
 
 
@@ -89,18 +86,18 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = new PremiseRuleBuilder("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
 
-            assertEquals(vv, x.ref.volume());
+            assertEquals(vv, x.id.volume());
 
 
         }
         {
 
 
-            PremiseRuleBuilder x = new PremiseRuleBuilder("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
 
-            assertEquals(vv, x.ref.volume());
+            assertEquals(vv, x.id.volume());
 
         }
 //        {
@@ -110,15 +107,15 @@ class PremiseRuleTest {
 //
 //            PremiseRuleSource x = PremiseRuleSource.parse(" <A --> B>, <B --> A>, task(\"!\") |- <A <-> (A,B)>,  (Belief:Intersection, Punctuation:Question)");
 //
-//            assertEquals(25, x.ref.volume());
+//            assertEquals(25, x.id.volume());
 //
 //        }
 
 
-        PremiseRuleBuilder x = new PremiseRuleBuilder("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
+        PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
 
 
-        assertEquals(vv, x.ref.volume());
+        assertEquals(vv, x.id.volume());
 
     }
 
@@ -135,7 +132,7 @@ class PremiseRuleTest {
 
     @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
-                ()->new PremiseRuleBuilder("X,Y |- (X,Z), (Belief:Analogy)"));
+                ()-> MetaNarsesePremiseRuleBuilder.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
     }
 
     @Test
@@ -143,10 +140,15 @@ class PremiseRuleTest {
         assertConcPattern("X,Y |- (X && Y), (Belief:Analogy)", "(%1 &&+- %2)");
         assertConcPattern("X,Y |- (X,(X && Y)), (Belief:Analogy)", "(%1,(%1 &&+- %2))");
         assertConcPattern("(X,%A..+),Y |- (&&,X,%A..+), (Belief:Analogy)", "(%1 &&+- %2..+)");
-        assertEquals(
-            "( &&+- ,%1..+)", new PremiseRuleBuilder("(%A..+),Y |- (&&,%A..+), (Belief:Analogy)").conclusion().toString());
+        assertConcPattern("(%A..+),Y |- (&&,%A..+), (Belief:Analogy)", "( &&+- ,%1..+)");
     }
 
+    @Test
+    void deduplciateSame() throws Narsese.NarseseException {
+        String s = "X,Y |- (X && Y), (Belief:Analogy)";
+        PremiseRuleSet r = new PremiseRuleSet(NARS.shell(), s, s);
+        assertEquals(1, r.rules.size());
+    }
 
     @Test void NoXternalInSect() throws Narsese.NarseseException {
         assertConcPattern("(X,Y), Z |- (Z-->(X&&Y)), (Belief:Intersection)", "(%3-->(%1&&%2))");
@@ -157,8 +159,10 @@ class PremiseRuleTest {
 
     }
 
-    private static void assertConcPattern(String r, String s) throws Narsese.NarseseException {
-        assertEq(s, new PremiseRuleBuilder(r).conclusion());
+    @Deprecated private static void assertConcPattern(String r, String s) throws Narsese.NarseseException {
+        MetaNarsesePremiseRuleBuilder p = MetaNarsesePremiseRuleBuilder.parse(r);
+        p.get();
+        assertEq(s, p.conclusion());
     }
 
     @Test
@@ -238,7 +242,7 @@ class PremiseRuleTest {
 
         d.printRecursive();
         String s = d.what.toString();
-        assertTrue(s.contains("Unifiability("), () -> s); //TODO this and other cases
+        assertTrue(s.contains("Unifiability"), () -> s); //TODO this and other cases
     }
 
     @Test
@@ -292,7 +296,9 @@ class PremiseRuleTest {
     @Test
     void testTryFork() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(), "X,Y |- (X&&Y), (Belief:Intersection)", "X,Y |- (||,X,Y), (Belief:Union)"));
+        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
+            "X,Y |- (X&&Y), (Belief:Intersection)",
+            "X,Y |- (||,X,Y), (Belief:Union)"));
 /*
 TODO - share unification state for different truth/conclusions
     TruthFork {
@@ -322,9 +328,15 @@ TODO - share unification state for different truth/conclusions
 
     @Test
     void printTermRecursive() throws Narsese.NarseseException {
-        Compound y = (Compound) new PremiseRuleBuilder("(S --> P), S |- (P --> S), (Belief:Conversion)").ref;
+        Compound y = (Compound) MetaNarsesePremiseRuleBuilder.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
         Terms.printRecursive(System.out, y);
     }
 
+    @Test void testNativeDeriveAction() {
+
+            DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
+                "X,Y |- (X&&Y), (Belief:Intersection)",
+                "X,Y |- (||,X,Y), (Belief:Union)"));
+    }
 
 }

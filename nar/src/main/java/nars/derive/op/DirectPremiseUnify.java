@@ -13,7 +13,7 @@ import nars.term.Term;
  * coverage of the choices as well as a choice for heuristic
  * decision.
  * */
-public class DirectPremiseUnify extends Premisify {
+public class DirectPremiseUnify extends PremiseUnify {
 
     private final boolean patternsEqual;
 
@@ -26,6 +26,8 @@ public class DirectPremiseUnify extends Premisify {
 
         boolean single = patternsEqual && d.taskTerm.equals(d.beliefTerm);
 
+        boolean fwd = single || fwd(d);
+
         //first
         boolean unified = unify(d, fwd, single);
 
@@ -36,6 +38,8 @@ public class DirectPremiseUnify extends Premisify {
 
         return true;
     }
+
+
 
 
 }

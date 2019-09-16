@@ -154,7 +154,11 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	}
 
 	/**
-	 * @param target the final target of the tasklink (not necessarily link.to() in cases where it's dynamic)
+	 * @param target the final target of the tasklink (not necessarily link.to() in cases where it's dynamic).
+	 *
+	 *               this term is where the tasklink "reflects" or "bounces" to
+	 *               find an otherwise unlinked tangent concept
+	 *
 	 *               resolves reverse termlink
 	 *               return null to avoid reversal
 	 * @param links

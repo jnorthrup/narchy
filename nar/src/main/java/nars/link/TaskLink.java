@@ -287,22 +287,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //
 
 
-
-    @Nullable default Term reverseMatch(Term term) {
-        //return to().equals(term) && !isSelf() ? from() : null;
-        //return !isSelf() && to().equals(term) ? from() : null;
-
-        Term t = to();
-        Term f = from();
-        if (t!=f /* self */ && term.equals(t)) {
-            //if (!term.equals(f)) //extra test to be sure
-                return f;
-        }
-        return null;
-    }
-
-
-
     /** the termlink which is finally resolved by the tasklink.  defaults to to()
      *  but can be overridden for dynamic / virtual termlinks.
      *  return null to re-use task's term, cancelling any forward/reverse dynamics

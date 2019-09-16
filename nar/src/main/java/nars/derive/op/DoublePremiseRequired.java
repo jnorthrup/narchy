@@ -3,6 +3,7 @@ package nars.derive.op;
 import nars.$;
 import nars.Op;
 import nars.Task;
+import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;

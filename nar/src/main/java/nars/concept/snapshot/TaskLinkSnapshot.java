@@ -41,9 +41,11 @@ public final class TaskLinkSnapshot {
 
 		int xh = x.hashCodeShort();
 		for (TaskLink t : items) {
-			Term y = t.other(x, xh, reverse);
-			if (y != null)
-				links.put(((AtomicTaskLink) t).clone());
+			if (!t.isSelf()) {
+				Term y = t.other(x, xh, reverse);
+				if (y != null)
+					links.put(((AtomicTaskLink) t).clone());
+			}
 		}
 	}
 

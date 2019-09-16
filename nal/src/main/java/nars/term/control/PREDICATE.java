@@ -7,6 +7,9 @@ import nars.term.ProxyTerm;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
+import java.lang.invoke.MethodHandle;
+import java.lang.invoke.MethodHandles;
+import java.lang.invoke.MethodType;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.Iterator;
@@ -61,15 +64,15 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
     }
 
 
-//    default MethodHandle compile() {
-//        try {
-//            return MethodHandles.lookup().findVirtual(getClass(), "test",
-//                MethodType.methodType(boolean.class, MethodType.genericMethodType(1))
-//            ).bindTo(this);
-//        } catch (NoSuchMethodException | IllegalAccessException e) {
-//            throw new RuntimeException(e);
-//        }
-//    }
+    default MethodHandle method() {
+        try {
+            return MethodHandles.lookup().findVirtual(getClass(), "test",
+                MethodType.methodType(boolean.class, MethodType.genericMethodType(1))
+            ).bindTo(this);
+        } catch (NoSuchMethodException | IllegalAccessException e) {
+            throw new RuntimeException(e);
+        }
+    }
 
     @Nullable
     static <X> PREDICATE<X> compileAnd(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {

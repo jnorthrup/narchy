@@ -52,8 +52,6 @@ class CommonVariableTest {
     void testInvalid() {
         assertThrows(Throwable.class, ()-> {
             Variable p1p1 = common(p1, p1);
-
-            assertEquals("#x1y1", p1p1.toString());
         });
     }
 

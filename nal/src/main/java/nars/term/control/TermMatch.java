@@ -5,8 +5,8 @@ import jcog.data.list.FasterList;
 import nars.$;
 import nars.Op;
 import nars.term.Term;
-import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.unify.Unify;
 import nars.unify.constraint.TermMatcher;
 
 import java.util.function.Function;
@@ -16,9 +16,9 @@ import java.util.function.Function;
  * decodes a target from a provied context (X)
  * and matches it according to the matcher impl
  */
-public final class TermMatch<X> extends AbstractTermMatchPred<X> {
+public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
 
-    static final Atom IN_ATOM = Atomic.atom("in");
+
 
     public final TermMatcher match;
     private final boolean trueOrFalse;

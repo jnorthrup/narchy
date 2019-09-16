@@ -19,7 +19,7 @@ public final class RuleWhy extends Why {
 		super(id);
 		this.rule = rule;
 		this.ruleString = rule.source;
-		this.term = $.p(rule.ref, $.the(id));
+		this.term = $.p(rule.id, $.the(id));
 	}
 
 	@Override

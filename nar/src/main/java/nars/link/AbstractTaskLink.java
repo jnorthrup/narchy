@@ -42,7 +42,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     protected AbstractTaskLink(Term source, Term target) {
-        this(source, target,
+        this(source, Util.maybeEqual(source,target),
             //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
             hash(source, target)
         );
@@ -68,6 +68,8 @@ public abstract class AbstractTaskLink implements TaskLink {
         return hashMatch ? other(x, reverse) : null;
     }
 
+
+
     public final int toHash() {
         return (hash >>> 16);
     }
@@ -75,6 +77,10 @@ public abstract class AbstractTaskLink implements TaskLink {
         return (hash & 0xffff);
     }
 
+    @Override
+    public final boolean isSelf() {
+        return from == to;
+    }
 
     @Override
     public final TaskLink id() {

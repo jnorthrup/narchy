@@ -2,7 +2,7 @@ package nars.derive.op;
 
 import nars.$;
 import nars.derive.PreDerivation;
-import nars.derive.rule.PremiseRuleBuilder;
+import nars.derive.rule.MetaNarsesePremiseRuleBuilder;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -11,7 +11,6 @@ import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.term.var.ellipsis.Ellipsislike;
-import nars.unify.Unify;
 
 import java.util.Collection;
 
@@ -29,13 +28,13 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
      * from = non-ellipsis target to check if present as a subterm of what appears at to
      */
     public CommutativeConstantPreFilter(byte[] ellipsisPath, byte[] contentPath, boolean ellipsisInTaskOrBelief /* direction */) {
-        super($.func(id, PremiseRuleBuilder.pathTerm(ellipsisPath), PremiseRuleBuilder.pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
+        super($.func(id, MetaNarsesePremiseRuleBuilder.pathTerm(ellipsisPath), MetaNarsesePremiseRuleBuilder.pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
         this.ellipsisInTaskOrBelief = ellipsisInTaskOrBelief;
         this.ellipsisPath = ellipsisPath;
         this.contentPath = contentPath;
     }
 
-    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<? extends Unify>> pre) {
+    public static void tryFilter(boolean commInTaskOrBelief, Term taskPattern, Term beliefPattern, Collection<PREDICATE<PreDerivation>> pre) {
 
         Term commutiveContainer = (commInTaskOrBelief) ? taskPattern : beliefPattern;
 

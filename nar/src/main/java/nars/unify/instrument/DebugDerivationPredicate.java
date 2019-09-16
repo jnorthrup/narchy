@@ -2,7 +2,7 @@ package nars.unify.instrument;
 
 import jcog.Texts;
 import nars.derive.Derivation;
-import nars.derive.op.Premisify;
+import nars.derive.op.PremiseUnify;
 import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
@@ -26,7 +26,7 @@ public class DebugDerivationPredicate extends InstrumentedDerivationPredicate {
         } else {
 
             Ansi.Color fg;
-            if (p instanceof Premisify) {
+            if (p instanceof PremiseUnify) {
                 fg = Ansi.Color.MAGENTA;
             } else {
                 fg = Ansi.Color.YELLOW;

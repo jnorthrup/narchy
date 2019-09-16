@@ -112,8 +112,8 @@ public class ProxyTerm implements SameSubtermsCompound {
         if (this == o) return true;
         if (o instanceof ProxyTerm)
             o = ((ProxyTerm)o).ref;
-        if (o instanceof Termed)
-            o = ((Termed)o).term();
+//        if (o instanceof Termed)
+//            o = ((Termed)o).term();
         return ref.equals(o);
     }
 

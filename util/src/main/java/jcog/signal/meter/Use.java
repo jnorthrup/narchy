@@ -67,10 +67,13 @@ public class Use {
 		//https://www.mathsisfun.com/data/confidence-interval.html
 		double mean = timeCopy.getMean();
 		double Z = 0.9; //90%
-		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt(timeCopy.getTotalCount()) / mean;
+		long N = timeCopy.getTotalCount();
+		double confInterval = Z * timeCopy.getStdDeviation()/Math.sqrt(N) / mean;
 
-		return "mean=" + Texts.timeStr(Math.round(mean)) +
-			"±" + Texts.n2(confInterval*100) + "% x " + timeCopy.getTotalCount();
+		return
+			Texts.timeStr(mean * N) + //total time, estimate
+			" mean=" + Texts.timeStr(Math.round(mean)) +
+			"±" + Texts.n2(confInterval*100) + "% x " + N;
 			//+ Texts.histogramString(timeCopy, false);
 	}
 }

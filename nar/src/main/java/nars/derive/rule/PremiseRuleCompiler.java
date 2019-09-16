@@ -9,7 +9,7 @@ import nars.derive.Derivation;
 import nars.derive.DeriveAction;
 import nars.derive.PreDeriver;
 import nars.derive.op.Branchify;
-import nars.derive.op.Premisify;
+import nars.derive.op.PremiseUnify;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.control.AND;
@@ -39,10 +39,10 @@ public enum PremiseRuleCompiler {
 //            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
 
     public static DeriverRules the(PremiseRuleSet rr) {
-        return the(rr, rr.nar);
+        return the(rr.rules, rr.nar);
     }
 
-    public static DeriverRules the(Set<PremiseRule> rr, NAR nar) {
+    public static DeriverRules the(Collection<PremiseRule> rr, NAR nar) {
         return _the(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
@@ -51,7 +51,7 @@ public enum PremiseRuleCompiler {
         );
     }
 
-    private static DeriverRules _the(Set<PremiseRule> rr, PreDeriver preDeriver, NAR nar) {
+    private static DeriverRules _the(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar) {
 
         /** indexed by local (deriver-specific) id */
         int n = rr.size();
@@ -62,8 +62,6 @@ public enum PremiseRuleCompiler {
         final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
 
         for (PremiseRule r : rr) {
-
-
 
             PREDICATE<Derivation>[] condition = r.condition;
 
@@ -95,9 +93,9 @@ public enum PremiseRuleCompiler {
             DeriverRules r = (DeriverRules) p;
             r.print(out, indent);
 
-        } else if (p instanceof Premisify) {
-            out.println(((Premisify)p).term());
-            print(((Premisify)p).taskify, out, indent + 2);
+        } else if (p instanceof PremiseUnify) {
+            out.println(((PremiseUnify)p).term());
+            print(((PremiseUnify)p).taskify, out, indent + 2);
             TermPerfectTrie.indent(indent);
             out.println("}");
         } else if (p instanceof AND) {

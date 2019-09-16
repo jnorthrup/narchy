@@ -25,7 +25,7 @@ public class TangentIndexer extends AbstractHypothesizer {
 
 	protected boolean cache(Term target) {
 		//return target instanceof Atom;
-		return target.volume() <= 6;
+		return target.volume() <= 3;
 	}
 
 	@Override
@@ -40,7 +40,7 @@ public class TangentIndexer extends AbstractHypothesizer {
 		} else {
 			float probBase = 0.5f;
 			probability =
-				(float) (probBase / Math.pow(target.volume(), 3));
+				(float) (probBase / Math.pow(target.volume(), 2));
 		}
 
 		//1f/Math.max(2,link.from().volume());
@@ -63,27 +63,27 @@ public class TangentIndexer extends AbstractHypothesizer {
 			});
 
 			if (match != null) {
-
-				Term source = link.from();
-				Term result = !match.links.isEmpty() ?
-	//				match.sample(((Predicate<TaskLink>) link::equals).negate(),
-	//						task.punc(), d.random) : null;
-					match.sample(x -> {
-							Term f = x.from();
-							return !f.equals(source) && (source==target || !f.equals(target));
-						},
-						task.punc(), d.random) : null;
-//				if (result!=null && (result.equals(source) || result.equals(target)))
-//					result = null; //HACK throw new WTF();
-
-				return result;
+				if (match.links.isEmpty()) {
+					return null;
+				} else {
+					Term source = link.from();
+					Term result = match.sample(x -> !source.equals(x.from()),
+						task.punc(), d.random);
+//					if (result!=null && (result.equals(link.from()) || result.equals(target)))
+//						result = null; //HACK throw new WTF();
+					return result;
+				}
 			}
 		}
 
 		Term result = DirectTangent.the.sampleReverseMatch(target, link, links, d);
-//		if (result!=null && (result.equals(link.from()) || result.equals(target)))
-//			result = null; //HACK throw new WTF();
-		return result;
+		if (result == null)
+			return null;
+		else {
+//			if (result != null && (result.equals(link.from()) || result.equals(target)))
+//				result = null; //HACK throw new WTF();
+			return result;
+		}
 
 	}
 
