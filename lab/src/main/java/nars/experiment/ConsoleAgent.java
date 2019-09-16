@@ -50,7 +50,7 @@ public class ConsoleAgent extends GameX {
     public final Loop noise;
 
     public ConsoleAgent(int w, int h, NAR nar) {
-        super("target", nar);
+        super("target");
 
         this.WIDTH = w; this.HEIGHT = h;
         R = new TestConsole(

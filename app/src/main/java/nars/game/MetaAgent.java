@@ -11,17 +11,16 @@ import jcog.pri.ScalarValue;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
-import nars.game.util.RLBooster;
 import nars.attention.PriNode;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.game.action.GoalActionConcept;
 import nars.control.MetaGoal;
+import nars.game.action.GoalActionConcept;
+import nars.game.util.RLBooster;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.time.ScheduledTask;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.BooleanProcedure;
 
 import java.util.Map;
@@ -42,7 +41,7 @@ abstract public class MetaAgent extends Game {
 
             /** tasklink forget factor */
             forget = Atomic.the("forget"),
-            grow = Atomic.the("forget"),
+            grow = Atomic.the("grow"),
             remember = Atomic.the("remember"),
 
             /** internal truth frequency precision */
@@ -81,7 +80,7 @@ abstract public class MetaAgent extends Game {
 
 
     protected MetaAgent(Term id, float fps, NAR nar) {
-        super(id, GameTime.fps(fps), nar);
+        super(id, GameTime.fps(fps));
         this.nar = nar;
     }
 
@@ -102,7 +101,7 @@ abstract public class MetaAgent extends Game {
 
         public SelfMetaAgent(NAR nar, float fps) {
             super($.inh(nar.self(), $$("meta")),  fps, nar);
-            NAR n = this.nar = nar;
+            NAR n = nar;
 
             Term SELF = n.self();
 
@@ -161,7 +160,7 @@ abstract public class MetaAgent extends Game {
                     .filter(g -> g!=SelfMetaAgent.this)
                     .mapToDouble(g -> g.happiness(dur))
                     .average()
-                    .getAsDouble();
+                    .orElseGet(()->0);
             });
 
 //        ThreadCPUTimeTracker.getCPUTime()
@@ -360,11 +359,12 @@ abstract public class MetaAgent extends Game {
     }
     protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
         //FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
-        FloatToFloatFunction f = (z)->z;
+        //FloatToFloatFunction f = (z)->z;
         actionUnipolar(t, true, (v)->v, (x)->{
-            float y = f.valueOf(x);
-            r.accept(Util.lerp(y, min, max));
-            return y;
+            //float y = f.valueOf(x);
+            if (x==x)
+                r.accept(Util.lerp(x, min, max));
+            return x;
         });
         //.resolution(0.1f);
     }

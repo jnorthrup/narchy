@@ -103,6 +103,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
         return U.getAndSetInt(obj, this.offset, newValue);
     }
 
+
     public final int getAndAdd(T obj, int delta) {
         return delta == 0 ? get(obj) : U.getAndAddInt(obj, this.offset, delta);
     }

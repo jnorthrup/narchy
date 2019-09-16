@@ -193,7 +193,7 @@ public class GameTest {
 
         NAR nar = NARS.tmp();
         nar.time.dur(dur);
-        Game a = new Game("x", GameTime.durs(dursPerFrame), nar);
+        Game a = new Game("x", GameTime.durs(dursPerFrame));
 
         a.onFrame(()->{
             aFrames.add(nar.time());

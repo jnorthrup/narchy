@@ -39,7 +39,7 @@ public class Gradius extends GameX {
     }
 
     public Gradius(NAR nar) {
-        super("g", fps(25), nar);
+        super("g", fps(25));
 
         //TODO coordinate with fps
         g.updateMS =
@@ -156,7 +156,7 @@ public class Gradius extends GameX {
         });
         //alive.setDefault($.t(1, nar.beliefConfDefault.floatValue()));
 
-        Reward destroy = reward(rewardTerm("destroy"), 1, 0.75f, ()->{
+        Reward destroy = reward(rewardTerm("destroy"), 1, ()->{
 
             if (g.paused) return Float.NaN;
 

@@ -65,9 +65,9 @@ public class TrackXY_NAR extends GameX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super("trackXY",
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(1),
-                //FrameTrigger.fps(fps),
-                nar);
+                GameTime.durs(1)
+			//FrameTrigger.fps(fps),
+		);
 
         int W = xy.W;
         int H = xy.H;

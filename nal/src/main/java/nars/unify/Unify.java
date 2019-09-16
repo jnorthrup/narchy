@@ -156,8 +156,7 @@ public abstract class Unify extends Versioning<Term> {
 
             chain[next].mutate(chain, next, this);
 
-            //return use(Param.TTL_MUTATE_COMPONENT);
-            return true;
+            return use(NAL.derive.TTL_COST_MUTATE_COMPONENT);
 
         } else {
 

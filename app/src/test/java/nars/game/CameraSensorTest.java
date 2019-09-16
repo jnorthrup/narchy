@@ -115,7 +115,7 @@ public class CameraSensorTest {
 
     static class MyGame extends Game {
         public MyGame(NAR n) {
-            super("tmp", n);
+            super("tmp");
         }
 
         public void now(long l) {

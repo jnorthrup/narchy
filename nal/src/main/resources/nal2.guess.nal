@@ -21,3 +21,5 @@
 //(Y --> X), (Y --> Z), is(X,"#")  |- (Y --> {X,Z}), (Belief:Intersection)
 //(X --> Y), (Z --> Y), is(X,"#")  |- ({X,Z} --> Y), (Belief:Union)
 
+//Set-in-Conjunction Decomposition
+    //TODO

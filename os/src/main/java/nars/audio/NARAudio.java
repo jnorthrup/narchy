@@ -29,7 +29,7 @@ public class NARAudio extends WaveIn {
     public NARAudio(Term id, NAR nar, SignalInput src, float fps) {
         super($.quote(src.toString()/*HACK*/), src, fps);
 
-        Game h = new Game("hear", nar);
+        Game h = new Game("hear");
 
         /**
          * buffer time in seconds

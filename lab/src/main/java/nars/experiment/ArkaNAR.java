@@ -148,8 +148,8 @@ public class ArkaNAR extends GameX {
         this(Atomic.atom("noid"),nar, cam, numeric);
     }
 
-    public ArkaNAR(Term term, NAR nar, boolean cam, boolean numeric) {
-        super(term, GameTime.fps(fps), nar);
+    public ArkaNAR(Term term, NAR n, boolean cam, boolean numeric) {
+        super(term, GameTime.fps(fps), n);
 
 
         noid = new Arkanoid();
@@ -202,7 +202,7 @@ public class ArkaNAR extends GameX {
         SimpleReward dontDie = (SimpleReward) reward("die", 0, () -> {
             return Math.min(1, noid.die - noid.prevDie);
         });
-        dontDie.addGuard(true,false);
+        //dontDie.addGuard(true,false);
 
         reward("score",  () -> {
             return Math.min(1, noid.score - noid.prevScore);

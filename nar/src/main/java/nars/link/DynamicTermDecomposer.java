@@ -1,5 +1,6 @@
 package nars.link;
 
+import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -179,11 +180,11 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
                     subterm.unneg().volume();
                     //sub.unneg().complexity();
             return
-                    //Util.sqrt(v);
                     //1f / Util.sqrt(v); //inverse sqrt
                     //1f / v; //inverse
                     //1f/(v*v); //inverse_sq
-                    v;
+                    Util.sqrt(v);
+                    //v;
                     //Util.sqr((float)v);
                     //1; //flat
         }

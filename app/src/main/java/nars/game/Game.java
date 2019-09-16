@@ -14,6 +14,7 @@ import nars.$;
 import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
+import nars.control.NARPart;
 import nars.game.action.BiPolarAction;
 import nars.game.action.GameAction;
 import nars.game.action.curiosity.Curiosity;
@@ -22,10 +23,10 @@ import nars.game.sensor.GameLoop;
 import nars.game.sensor.ScalarSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
-import nars.control.NARPart;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.time.Tense;
 import nars.time.When;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -38,7 +39,6 @@ import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -76,11 +76,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
-    public final PriNode rewardPri, actionPri, sensorPri;
+    public PriNode rewardPri, actionPri, sensorPri;
 
 
     /** the context representing the experience of the game */
-    @Deprecated private final What what;
+    @Deprecated private What what;
 
     public final Term id;
 
@@ -93,49 +93,40 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
             Cycles.Interleaved;
+
     public float confDefaultBelief;
 
 
-    @Deprecated public Game(String id, NAR n) {
-        this(id, GameTime.durs(1), n);
-    }
 
-    @Deprecated public Game(String id, GameTime time, NAR n) {
-        this($.$$(id), time, n);
-    }
-
-    public Game(Term id, GameTime time, NAR nar) {
-        this(time, id ,nar);
-        (this.nar=nar).start(this);
-    }
-
-
-    static final Atom ENVIRONMENT = Atomic.atom("env");
+    static final Atom GAME = Atomic.atom(Game.class.getSimpleName().toLowerCase());
 
     static Term env(Term x) {
-        return $.func(ENVIRONMENT, x);
+        return $.func(GAME, x);
     }
 
+    public Game(String id) {
+        this(id, GameTime.durs(1));
+    }
 
-    public Game(GameTime time, Term id, NAR nar) {
+    public Game(String id, GameTime time) {
+        this($.$$(id), time);
+    }
+
+    //@Deprecated private final static InheritableThreadLocal<NAR> _nar = new InheritableThreadLocal<>();
+
+    @Deprecated public Game(Term id, GameTime time, NAR n) {
+        this(id, time);
+        this.nar = n;
+        //_nar.set(n);
+
+        nar.runLater(()->n.start(this));
+    }
+
+    public Game(Term id, GameTime time) {
         super(env(id));
-//        this.nar = experience.nar;
 
         this.id = id;
-
-        this.what = nar.fork(id, true);
-
         this.time = time;
-
-        PriNode pri = what.pri;
-
-        this.actionPri = nar.control.input((Term)$.inh(id,ACTION), PriNode.Merge.And,
-            pri, nar.goalPriDefault);
-        this.sensorPri = nar.control.input((Term)$.inh(id,SENSOR), PriNode.Merge.And,
-            pri, nar.beliefPriDefault);
-        this.rewardPri = nar.control.input((Term)$.inh(id,REWARD), PriNode.Merge.And,
-            pri, nar.goalPriDefault
-            ); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
         add(time.clock(this));
     }
@@ -203,27 +194,25 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     @Override
     public final <A extends GameAction> A addAction(A c) {
+        if (actions.OR(e -> e.term().equals(c.term())))
+            throw new RuntimeException("action exists with the ID: " + c.term());
         actions.add(c);
-
-        nar().add(c);
-        addAttention(actionPri, c);
         return c;
     }
 
 
     @Override
     public final <S extends GameLoop> S addSensor(S s) {
-        if (s instanceof NARPart) {
-            nar.start(((NARPart)s));
-        }
-
         //TODO check for existing
         sensors.add(s);
-        addAttention(sensorPri, s);
         return s;
     }
 
     private void addAttention(PriNode target, Object s) {
+        if (s instanceof NARPart) {
+            nar.start(((NARPart)s));
+        }
+
         if (s instanceof VectorSensor) {
 
             nar.control.input(((VectorSensor) s).pri, target);
@@ -256,7 +245,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     @Override
     public long time() {
-        return nar.time();
+        return now;
     }
 
     public String summary() {
@@ -276,17 +265,48 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      */
     //@Override
     protected void starting(NAR nar) {
+        super.starting(nar);
+
+        this.now = nar.time();
+        this.what = nar.fork(id, true);
+
+        PriNode pri = what.pri;
+
+        this.actionPri = nar.control.input($.inh(id,ACTION), PriNode.Merge.And,
+            pri, nar.goalPriDefault);
+        this.sensorPri = nar.control.input($.inh(id,SENSOR), PriNode.Merge.And,
+            pri, nar.beliefPriDefault);
+        this.rewardPri = nar.control.input($.inh(id,REWARD), PriNode.Merge.And,
+            pri, nar.goalPriDefault
+        ); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
 
         sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.start((NARPart) s));
+        sensors.forEach(s -> addAttention(sensorPri, s));
 
+        actions.forEach(a -> nar.add(a));
+        actions.forEach(a -> addAttention(actionPri, a));
+
+        rewards.forEach(r -> addAttention(rewardPri, r));
+
+        rewards.forEach(r -> r.init(this));
     }
 
 
     //@Override
     protected void stopping(NAR nar) {
 
+        nar.control.remove(actionPri); actionPri = null;
+        nar.control.remove(rewardPri); rewardPri = null;
+        nar.control.remove(sensorPri); sensorPri = null;
+
         sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.stop((NARPart)s));
+        //actions.forEach(a -> nar.remove((PermanentConcept)a)); //TODO
+
+        this.what.close();
+        this.what = null;
+
+        this.nar = null;
 
     }
 
@@ -329,11 +349,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 
     public SimpleReward reward(Term reward, float freq, FloatSupplier rewardFunc) {
-        return reward(reward, freq, nar().confDefault(GOAL), rewardFunc);
-    }
-
-    public SimpleReward reward(Term reward, float freq, float conf, FloatSupplier rewardFunc) {
-        SimpleReward r = new SimpleReward(reward, freq, conf, rewardFunc, this);
+        SimpleReward r = new SimpleReward(reward, freq, rewardFunc, this);
 //        r.addGuard(
 //            NAL.DEBUG,false
 //            //true,false
@@ -394,7 +410,6 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             throw new RuntimeException("reward exists with the ID: " + r.term());
 
         rewards.add(r);
-        addAttention(rewardPri, r);
         return r;
     }
 
@@ -486,24 +501,25 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 
         try {
+            int dither = nar.dtDither();
 
-            long now = nar.time();
+            long now =
+                Tense.dither(nar.time(), dither);
+
             long prev = this.now;
             if (prev == ETERNAL) {
                 this.now = now;
-                prev = now-1;
+                prev = now-dither;
             }
             if (now <= prev)
                 return; //too early
-            this.now = now;
 
-            time.next(now);
+            time.next(this.now = now);
 
 //            System.out.println(this + " "  + state().toString() + " " + (now - prev));
 
-            float dur = durPhysical();
+            float dur = dur();
             long lastEnd = when!=null ? when.end : Math.round(now-dur/2-1);
-            int dither = nar.dtDither();
             long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - dur/2));
             long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + dur/2 - 1)));
             this.when = new When<>(nextStart, nextEnd, dur, nar);

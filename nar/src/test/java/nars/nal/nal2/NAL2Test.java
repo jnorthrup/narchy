@@ -338,6 +338,12 @@ public class NAL2Test extends NALTest {
         test.mustBelieve(cycles*2, "<{Mars,Venus} --> planetX>", 0.9f, 0.81f);
     }
 
+    @Test void questionDecomposition1() {
+        test.believe("<{Mars,Pluto,Venus} --> planetX>", 1.0f, 0.9f);
+        test.ask("<{Pluto} --> planetX>");
+        test.mustBelieve(cycles, "<{Pluto} --> planetX>", 1f, 0.81f);
+    }
+
 //    @Test void testDepVarLift() { //single premise
 //        test.believe("(#1-->x)", 1.0f, 0.9f);
 //        test.mustBelieve(cycles, "({#1}-->x)", 1f, 0.81f);

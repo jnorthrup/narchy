@@ -73,8 +73,8 @@ public class FZero extends GameX {
 
     public FZero(Term id, NAR n) {
         super(id,
-                fps(fps),
-                n);
+                fps(fps)
+        );
 
 
 //        Param.DEBUG = true;

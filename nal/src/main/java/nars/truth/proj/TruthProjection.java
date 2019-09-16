@@ -219,10 +219,9 @@ abstract public class TruthProjection extends TaskList {
 
 		if (active > 1) {
 
-			if (!intermpolate(n)) {
-				//clearFast();
+			if (items[0].term() instanceof Compound && !intermpolate(n))
 				return false;
-			}
+
 
 			active = active();
 		}

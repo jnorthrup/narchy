@@ -227,8 +227,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      *  determines when desire is answered to produce feedback in the present frame.
      *  represents a natural latency between decision and effect. */
     public static final float ACTION_DESIRE_SHIFT_DUR =
-        //0;
-        -0.5f;
+        0;
+        //-0.5f;
 
 
     /** store dynamic and intermediate dynamic results in belief tables after computing each task/subtask */
@@ -310,12 +310,12 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 //            , 0, 2f);
 
     /** max tolerance time (in durations) for unification of temporal terms */
-    public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );
+    public final FloatRange unifyTimeToleranceDurs = new FloatRange(0.5f, 0, 2 );
 
     @Deprecated
     public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
     public final IntRange premiseUnifyTTL = new IntRange(1 * derive.TTL_UNISUBST_MAX, 1, 32);
-    public final IntRange deriveBranchTTL = new IntRange(6 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    public final IntRange deriveBranchTTL = new IntRange(4 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it
@@ -735,7 +735,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
+        public static final int TIMEGRAPH_ITERATIONS = 1;
 
 
         @Range(min = 0, max = 64)
@@ -745,6 +745,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         @Range(min = 0, max = 64)
         public static final int TTL_COST_MUTATE = 1;
+
+
+        public static final int TTL_COST_MUTATE_COMPONENT = 1;
+
         /**
          * cost of a complete task derivation
          */

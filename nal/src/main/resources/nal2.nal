@@ -38,12 +38,14 @@
         //(A --> C), (B --> C), task("!"), neq(A,B),is(A,"+"),is(B,"+") |- (union(A,B) --> C), (Goal:Induction)
 
 //Set Decomposition
+    (C --> X), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- (C --> withoutPN(X,Y)), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Task)
+    (X --> C), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- (withoutPN(X,Y) --> C), (Belief:StructuralDeduction, Goal:StructuralDeduction, Time:Task)
 
-    (C --> X), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((C --> withoutPN(X,Y))), (Belief:StructuralReduction, Goal:StructuralReduction)
-    (X --> C), Y, is(X,{"{","["}), subOfPN(X,Y), subsMin(X,2) |- polarizeTask((withoutPN(X,Y) --> C)), (Belief:StructuralReduction, Goal:StructuralReduction)
-
-//Set-in-Conjunction Decomposition
-    //TODO
+//Set Question Decomposition
+    ({E}-->X), (S-->X), task("?"), is(S,"{"), subOf(S,E) |- ({E} --> X), (Belief:BeliefStructuralDeduction, Time:Belief)
+      ([E]-->X), (S-->X), task("?"), is(S,"["), subOf(S,E) |- ([E] --> X), (Belief:BeliefStructuralDeduction, Time:Belief)
+    (X-->{E}), (X-->S), task("?"), is(S,"{"), subOf(S,E) |- (X-->{E}), (Belief:BeliefStructuralDeduction, Time:Belief)
+      (X-->[E]), (X-->S), task("?"), is(S,"["), subOf(S,E) |- (X-->[E]), (Belief:BeliefStructuralDeduction, Time:Belief)
 
 //Set Un-recurser
     ({ (V-->K), A..* }-->M), M |- ({V} --> (M,K)), (Belief:StructuralDeduction, Goal:StructuralDeduction)

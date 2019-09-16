@@ -104,7 +104,9 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 				if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
 					target = forward;
 				} else {
+					
 					links.grow(link, src, forward, task.punc());
+
 					//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
 					//if (d.random.nextBoolean())
 					target = forward; //continue as self, or eager traverse the new link

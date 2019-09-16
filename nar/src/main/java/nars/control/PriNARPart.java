@@ -13,6 +13,7 @@ public class PriNARPart extends NARPart implements Prioritizable {
 	public PriNARPart(@Nullable Term id) {
 		super(id);
 		this.pri = new PriNode(this.id).output(PriNode.Branch.Equal);
+		this.pri.amp.set(1);
 		this.pri.pri(0.5f);
 	}
 
@@ -30,13 +31,14 @@ public class PriNARPart extends NARPart implements Prioritizable {
 
 	@Override
 	public final float pri() {
-		return pri.asFloat();
+		return pri.pri();
 	}
 
 	@Override
 	public final float pri(float p) {
-		pri.amp(p);
-		return pri.amp.floatValue();
+		return pri.priSetAndGet(p);
+//		pri.amp(p);
+//		return pri.amp.floatValue();
 	}
 
 }

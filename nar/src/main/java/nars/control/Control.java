@@ -75,9 +75,10 @@ import java.util.Arrays;
     }
 
     private void update() {
+        nar.what.commit(null);
+        nar.how.commit(null);
         prioritize();
         schedule();
-        nar.what.commit();
     }
 
     public MetaGoal.Report stats(PrintStream out) {
@@ -170,7 +171,7 @@ import java.util.Arrays;
     }
 
     public void printPerf(PrintStream out) {
-        nar.what.forEach(w -> w.printPerf(out));
+        //nar.what.forEach(w -> w.printPerf(out));
     }
 
     private void schedule() {

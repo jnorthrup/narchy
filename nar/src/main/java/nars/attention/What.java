@@ -232,7 +232,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 		Random r = random();
 		long now;
 
-		int runs = 0;
+//		int runs = 0;
 
 		do {
 			@Nullable How h = how.sample(r);
@@ -243,7 +243,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 				deadline = start + howNS;
 				try {
 					h.next(this, this);
-					runs++;
+//					runs++;
 				} catch (Throwable t) {
 					logger.error("{} {}", t, this);
 					//t.printStackTrace();

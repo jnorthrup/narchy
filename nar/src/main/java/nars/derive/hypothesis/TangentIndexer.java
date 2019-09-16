@@ -36,11 +36,11 @@ public class TangentIndexer extends AbstractHypothesizer {
 		float probability;
 		Op srcOp = link.from().op();
 		if ((srcOp == INH || srcOp == SIM) && link.from().contains/* non-recursively */(target)) {
-			probability = 0.75f; //HACK
+			probability = 0.9f; //HACK
 		} else {
 			float probBase = 0.5f;
 			probability =
-				(float) (probBase / Math.pow(target.volume(), 3));
+				(float) (probBase / Math.pow(target.volume(), 2));
 		}
 
 		//1f/Math.max(2,link.from().volume());

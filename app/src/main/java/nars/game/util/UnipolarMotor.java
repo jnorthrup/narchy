@@ -19,7 +19,7 @@ public class UnipolarMotor implements GameAction.MotorFunction {
         this.ifGoalMissing = ifGoalMissing;
         this.update = update;
         this.truther = truther;
-        this.lastF = 0.5f;
+        this.lastF = Float.NaN;
     }
 
     @Override

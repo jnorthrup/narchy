@@ -226,7 +226,7 @@ public class PoleCart extends GameX {
 	}
 
 	public PoleCart(Term id, NAR nar) {
-		super(id, fps(fps), nar);
+		super(id, fps(fps));
 
 
 		pos = 0.;

@@ -39,7 +39,7 @@ public class SideCraft extends GameX {
     }
 
     public SideCraft(NAR nar) throws Narsese.NarseseException {
-        super("cra", nar);
+        super("cra");
 
         this.craft = new SideScrollMinicraft();
 

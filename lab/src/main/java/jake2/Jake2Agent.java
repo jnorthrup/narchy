@@ -129,7 +129,7 @@ public class Jake2Agent extends GameX implements Runnable {
     final PlayerData player = new PlayerData();
 
     public Jake2Agent(NAR nar) throws Narsese.NarseseException {
-        super("q", nar);
+        super("q");
 
 
 //        Bitmap2DSensor<PixelBag> vision = senseCameraRetina(

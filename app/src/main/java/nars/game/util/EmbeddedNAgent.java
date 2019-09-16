@@ -44,7 +44,7 @@ public class EmbeddedNAgent extends Agent {
 
         n.time.dur(DUR_CYCLES);
 
-        this.env = new Game("agent", n);
+        this.env = new Game("agent");
 
         this.sense = IntStream.range(0, inputs).mapToObj(i -> env.sense($.inh($.the(i), env.id), ()-> senseValue[i])
         ).toArray(GameLoop[]::new);

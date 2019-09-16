@@ -34,7 +34,7 @@ public class Line1DContinuous extends Game {
     final float[] ins;
 
     public Line1DContinuous(NAR n, int size, IntToFloatFunction target) {
-        super("x", GameTime.durs(1), n);
+        super("x", GameTime.durs(1));
         this.size = size;
         ins = new float[size * 2];
         this.targetFunc = target;

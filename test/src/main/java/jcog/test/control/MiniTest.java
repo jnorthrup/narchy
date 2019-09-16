@@ -12,7 +12,7 @@ abstract public class MiniTest extends Game {
     public final SummaryStatistics dex = new SummaryStatistics();
 
     public MiniTest(NAR n) {
-        super(MiniTest.class.getSimpleName(), n);
+        super(MiniTest.class.getSimpleName());
         //statPrint = n.emotion.printer(System.out);
 
         reward(the("reward"), 1f, () -> {

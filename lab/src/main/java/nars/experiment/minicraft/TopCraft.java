@@ -25,7 +25,7 @@ public class TopCraft extends GameX {
     private Bitmap2DSensor<PixelBag> pixels;
 
     public TopCraft(NAR nar) throws Narsese.NarseseException {
-        super("cra", nar);
+        super("cra");
 
         this.craft = new TopDownMinicraft();
         TopDownMinicraft.start(craft);

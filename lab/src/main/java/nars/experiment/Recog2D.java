@@ -65,7 +65,7 @@ public class Recog2D extends GameX {
     static final int FPS = 32;
 
     public Recog2D(NAR n) {
-        super("x", n);
+        super("x");
 
 
         w = 12; h = 14;

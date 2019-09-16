@@ -124,6 +124,11 @@ public final class AtomicFloatFieldUpdater<X>  {
         return intBitsToFloat(INT.getAndSet(x, floatToIntBits(value)));
     }
 
+    public float setAndGet(X x, float value) {
+        INT.set(x, floatToIntBits(value));
+        return value;
+    }
+
 
     public float getAndSetZero(X x) {
         return intBitsToFloat(INT.getAndSet(x, iZero));

@@ -25,7 +25,7 @@ class SensorBeliefTablesTest {
     void test1() {
         NAR n = NARS.shell();
 
-        Game a = new Game("a", n);
+        Game a = new Game("a");
 
         AtomicFloat xx = new AtomicFloat(0);
 

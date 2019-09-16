@@ -17,12 +17,13 @@ import static nars.Op.*;
 /** base class for reward which represents current belief truth as the reward value  */
 abstract public class ScalarReward extends Reward {
 
-    public final Signal concept;
-    protected final Term id;
+    public Signal concept;
+
 
     /** target freq */
-    protected final float freq;
-    private final float conf;
+
+
+    final MutableTruth goal = new MutableTruth();
 
     /** whether reinforcement tasks are stamped */
     private final boolean stamped;
@@ -34,14 +35,12 @@ abstract public class ScalarReward extends Reward {
         //$.t(0.5f, 0.05f);
         new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 
-    ScalarReward(Term id, float freq, float conf, boolean stamped, Game g) {
+    ScalarReward(Term id, float freq, boolean stamped, Game g) {
         super(id, g);
-        this.id = id;
-        this.freq = freq;
-        this.conf = conf;
+
+        goal.freq(freq);
         negate = id.op()==NEG;
         this.stamped = stamped;
-        concept = newConcept();
 //        if (concept == null)
 //            throw new NullPointerException("concept null for target: " + id);
 
@@ -68,9 +67,7 @@ abstract public class ScalarReward extends Reward {
      * */
     protected void reinforceInit(Game g) {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
-        reinforceGoal(concept, freq, conf, stamped);
-
-
+        reinforce(Rpos, GOAL, goal, stamped);
 
         g.actions().forEach(a -> {
             Term A = a.term();
@@ -82,6 +79,9 @@ abstract public class ScalarReward extends Reward {
     @Override
     protected void reinforce() {
         NAR nar = game.nar;
+
+        goal.conf(nar.confDefault(GOAL));
+
         float strength = 1;
         RimplA.conf( Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength );
         super.reinforce();
@@ -102,9 +102,15 @@ abstract public class ScalarReward extends Reward {
 
     @Override
     protected float rewardFreq(boolean beliefOrGoal, float dur) {
-        NAR n = nar();
-        BeliefTable bt = beliefOrGoal ? concept.beliefs() : concept.goals();
-        Truth t = bt.truth(n.time(), dur, n);
+        Signal c = this.concept;
+        if (c==null)
+            return Float.NaN;
+
+        BeliefTable bt = beliefOrGoal ? c.beliefs() : c.goals();
+
+
+        Truth t = bt.truth(game.time(), dur, nar());
+
         if (t!=null) {
             float f = t.freq();
             return negate ? 1 - f : f;
@@ -112,7 +118,6 @@ abstract public class ScalarReward extends Reward {
             return Float.NaN;
     }
 
-    abstract protected Signal newConcept();
 
     @Override
     public final Iterator<Concept> iterator() {

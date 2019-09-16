@@ -2,15 +2,12 @@ package nars.game;
 
 import jcog.TODO;
 import jcog.math.FloatRange;
-import nars.game.sensor.Signal;
 import nars.term.Term;
-
-import static nars.Op.GOAL;
 
 public class BeliefReward extends ScalarReward {
 
     public BeliefReward(Term id, Game g) {
-        super(id, 1f, g.nar().confDefault(GOAL), true, g);
+        super(id, 1f, true, g);
     }
 
     @Override
@@ -18,10 +15,6 @@ public class BeliefReward extends ScalarReward {
         return rewardFreq(true, a.dur());
     }
 
-    @Override
-    protected Signal newConcept() {
-        throw new TODO();
-    }
 
     @Override
     public FloatRange resolution() {

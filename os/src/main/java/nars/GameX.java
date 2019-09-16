@@ -22,7 +22,6 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.derive.time.TaskOccurenceTiming;
 import nars.derive.util.MixTimeFocus;
 import nars.exe.impl.WorkerExec;
 import nars.game.Game;
@@ -66,6 +65,7 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static jcog.Texts.n4;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -79,7 +79,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = true;
+    static final boolean initMeta = false;
     static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
@@ -97,16 +97,20 @@ abstract public class GameX extends Game {
 //    }
 
     @Deprecated
-    public GameX(String id, NAR nar) {
-        this(id, GameTime.durs(1), nar);
+    public GameX(String id) {
+        this(id, GameTime.durs(1));
     }
 
-    public GameX(String id, GameTime gameTime, NAR nar) {
-        super(id, gameTime, nar);
+    public GameX(String id, GameTime gameTime) {
+        super(id, gameTime);
     }
 
-    public GameX(Term id, GameTime gameTime, NAR nar) {
-        super(id, gameTime, nar);
+    public GameX(Term id, GameTime gameTime) {
+        super(id, gameTime);
+    }
+
+    public GameX(Term id, GameTime gameTime, NAR n) {
+        super(id, gameTime, n);
     }
 
     @Deprecated public static NAR runRT(Function<NAR, Game> init, float narFPS) {
@@ -187,14 +191,15 @@ abstract public class GameX extends Game {
                 MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps);
                 if (initMetaRL)
                     self.addRLBoost();
-                self.pri(0.3f);
+                n.start(self);
+                //self.pri(0.3f);
 
                 Exe.invokeLater(() -> {
                     n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
                         float fps = _fps;
                         MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, metaAllowPause);
-                        gm.pri(0.1f);
-
+                        n.start(gm);
+                        //gm.pri(0.1f);
 
                     });
                 });
@@ -799,8 +804,8 @@ abstract public class GameX extends Game {
                     float vE = lerp(vSmooth, ee/2, 1-ee/2);
                     h.pri(vE);
                 });
-//                nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
-//                System.out.println();
+                //nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
+                //System.out.println();
             }
         });
     }

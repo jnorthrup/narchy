@@ -227,4 +227,8 @@ abstract public class Loop extends FixedRateTimedFuture {
         return periodMS.getOpaque();
     }
 
+    /** period in seconds */
+    public double periodS() {
+        return periodMS.getOpaque()*0.001;
+    }
 }

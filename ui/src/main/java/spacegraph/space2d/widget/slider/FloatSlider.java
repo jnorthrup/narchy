@@ -120,7 +120,7 @@ public class FloatSlider extends Widget implements FloatSupplier {
             ObjectFloatProcedure<SliderModel> c0 = c;
             c = (each,x) -> {
                 //chain
-                ((NumberX)input).getAndSet(x);
+                ((NumberX)input).set(x);
                 c0.value(each,x);
                 updateText();
             };

@@ -38,7 +38,7 @@ public class NARio extends GameX {
     private Mario theMario = null;
 
     public NARio(NAR nar) {
-        super("nario", fps(fps), nar);
+        super("nario", fps(fps));
 
 
         game = new MarioComponent(

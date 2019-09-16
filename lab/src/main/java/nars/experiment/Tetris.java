@@ -6,7 +6,6 @@ import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.NARS;
 import nars.game.GameTime;
 import nars.game.action.GoalActionConcept;
 import nars.op.java.Opjects;
@@ -64,12 +63,13 @@ public class Tetris extends GameX {
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
                 GameTime.fps(FPS),
-                //FrameTrigger.durs(1),
-                n);
+            //FrameTrigger.durs(1),
+            n
+        );
 
 
         state = opjects ?
-                actionsReflect() :
+                actionsReflect(n) :
                 new TetrisState(width, height, timePerFall);
 
         easy = state.easy;
@@ -149,9 +149,7 @@ public class Tetris extends GameX {
         GameX.runRT(n -> {
 
             Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-//            window(Splitting.column(new ObjectSurface(t), 0.9f,
-//                    new VectorSensorView(t.pixels, t).withControls())
-//                    , 400, 900);
+            n.start(t);
 
         },  FPS * 2);
 
@@ -167,7 +165,7 @@ public class Tetris extends GameX {
 
     }
 
-    private TetrisState actionsReflect() {
+    private TetrisState actionsReflect(NAR nar) {
 
         Opjects oo = new Opjects(nar.fork((Term)$.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
@@ -265,30 +263,6 @@ public class Tetris extends GameX {
     }
 
 
-    public static class OfflineTetris {
-        public static void main(String[] args) {
-
-
-            NAR n = NARS.tmp();
-            n.time.dur(4);
-            n.freqResolution.set(0.02f);
-            n.confResolution.set(0.02f);
-
-
-            new Tetris(n, Tetris.tetris_width, Tetris.tetris_height, 2);
-            n.run(200);
-
-
-            n.concepts().forEach(c -> {
-                System.out.println(c);
-                c.tasks().forEach(t -> {
-                    System.out.println("\t" + t.toString(true));
-                });
-                System.out.println();
-            });
-
-        }
-    }
 
 
     public static class TetrisPiece {

@@ -4,7 +4,6 @@ import com.google.common.collect.Iterables;
 import jcog.Skill;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import nars.$;
 import nars.NAR;
 import nars.Task;
 import nars.attention.PriNode;
@@ -21,9 +20,8 @@ import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
+import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
 /** TODO extends AgentLoop */
@@ -31,11 +29,12 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);
 
-    protected final Game game;
+    @Deprecated protected final Game game;
+	public final Term id;
 
-    protected final CauseChannel<Task> in;
+	protected CauseChannel<Task> in;
 
-    protected final short[] cause;
+    protected short[] cause;
 
     final PriNode attn;
 
@@ -43,14 +42,13 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     protected final FasterList<Task> reinforcement = new FasterList<>();
 
     protected Reward(Term id, Game g) {
+    	this.id = id;
         this.game = g;
 
-        g.nar.control.input(this.attn = new PriNode(id), g.rewardPri);
+        this.attn = new PriNode(id);
 
-        in = g.nar.newChannel(id);
-
-        cause = new short[] {  in.id };
     }
+
 
 
     @Override
@@ -87,11 +85,6 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
     }
 
-
-    public void reinforceGoal(Termed g, float freq, float conf, boolean stamped) {
-        @Nullable Truth truth = $.t(g.term().op()==NEG ? 1-freq : freq, conf);
-        reinforce(g, GOAL, truth, stamped);
-    }
 
     public void reinforce(Termed g, byte punc, Truth truth, boolean stamped) {
         Term goal = g.term();
@@ -177,4 +170,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 	}
 
+	@Deprecated public void init(Game g) {
+
+	}
 }

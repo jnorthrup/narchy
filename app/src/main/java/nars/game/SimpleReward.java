@@ -6,7 +6,6 @@ import nars.Task;
 import nars.attention.AttnBranch;
 import nars.control.op.Remember;
 import nars.game.sensor.ScalarSignal;
-import nars.game.sensor.Signal;
 import nars.table.BeliefTables;
 import nars.table.EmptyBeliefTable;
 import nars.term.Term;
@@ -16,12 +15,12 @@ public class SimpleReward extends ScalarReward {
 //    private static final Logger logger = LoggerFactory.getLogger(SimpleReward.class);
     private final FloatSupplier rewardFunc;
 
-    public SimpleReward(Term id, float freq, float conf, FloatSupplier r, Game a) {
-        this(id, freq, conf, r, true, a);
+    public SimpleReward(Term id, float freq, FloatSupplier r, Game a) {
+        this(id, freq, r, true, a);
     }
 
-    public SimpleReward(Term id, float freq, float conf, FloatSupplier r, boolean stamped, Game a) {
-        super(id, freq, conf, stamped, a);
+    public SimpleReward(Term id, float freq, FloatSupplier r, boolean stamped, Game a) {
+        super(id, freq, stamped, a);
 
         this.rewardFunc = r;
 //        TermLinker linker = new TemplateTermLinker((TemplateTermLinker) TemplateTermLinker.of(id)) {
@@ -67,7 +66,7 @@ public class SimpleReward extends ScalarReward {
             public void remember(Remember r) {
                 Task i = r.input;
 
-                if (Math.abs(i.freq() - freq) > 0.5f) {
+                if (Math.abs(i.freq() - goal.freq()) > 0.5f) {
                     if (log) {
                         //logger.info("goal contradicts reward:\n{}", i.proof());
                         System.out.print("goal contradicts reward\t"); r.nar.proofPrint(i);
@@ -81,17 +80,7 @@ public class SimpleReward extends ScalarReward {
         });
     }
 
-    @Override protected Signal newConcept() {
-        ScalarSignal concept = new ScalarSignal(id, cause, () -> reward, /*linker, */nar()) {
-            @Override
-            protected AttnBranch newAttn(Term term) {
-                return new AttnBranch(term, this.components());
-            }
-        };
-        if (!concept.pri.equals(attn))
-            nar().control.input(concept.pri, attn);
-        return concept;
-    }
+
 
     @Override
     public FloatRange resolution() {
@@ -100,7 +89,7 @@ public class SimpleReward extends ScalarReward {
 
     @Override
     public Term term() {
-        return concept.term();
+        return id;
     }
 
     @Override
@@ -108,4 +97,21 @@ public class SimpleReward extends ScalarReward {
         return rewardFunc.asFloat();
     }
 
+    @Override
+    public void init(Game g) {
+        super.init(g);
+
+        in = g.nar.newChannel(id);
+
+        cause = new short[] {  in.id };
+
+        concept = new ScalarSignal(id, cause, () -> reward, /*linker, */g.nar) {
+            @Override
+            protected AttnBranch newAttn(Term term) {
+                return new AttnBranch(term, this.components());
+            }
+        };
+//        if (!concept.pri.equals(attn))
+//            nar().control.input(concept.pri, attn);
+    }
 }

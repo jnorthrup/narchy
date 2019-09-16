@@ -553,13 +553,14 @@ import static nars.Op.BELIEF;
     }
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
-        What n = what();
-        final long[] last = {Math.round(n.time() - durations * n.dur())};
+
+        final long[] last = {Long.MIN_VALUE};
 
         return (x)->{
             if (x) {
-                long now = n.time();
-                if (now - last[0] >= durations * n.dur()) {
+                What w = what();
+                long now = w.time();
+                if (now - last[0] >= durations * w.dur()) {
                     if (f.accept(true)) {
                         last[0] = now;
                         return true;

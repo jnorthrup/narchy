@@ -59,8 +59,8 @@ abstract public class GameTime {
             double unitsPerSec = 1/t.secondsPerUnit();
             double secondsPerFrame = 1/loop.getFPS();
             double unitsPerFrame = unitsPerSec * secondsPerFrame;
-            this.dur = Math.max(1, (int)Math.round(unitsPerFrame));
-            return now + Math.round(t.secondsToUnits(loop.periodMS.getOpaque()*0.001));
+            this.dur = (float) Math.max(1, unitsPerFrame);
+            return now + Math.round(t.secondsToUnits(loop.periodS()));
         }
 
         @Override protected NARPart clock(Game g) {
@@ -72,7 +72,7 @@ abstract public class GameTime {
             return new NARSubLoop();
         }
 
-        private class NARSubLoop extends NARPart {
+        private final class NARSubLoop extends NARPart {
             @Override
             protected void starting(NAR nar) {
                 loop.setFPS(initialFPS);
@@ -111,8 +111,8 @@ abstract public class GameTime {
         @Override
         public long next(long now) {
             DurLoop l = this.loop;
-            this.dur = Tense.occToDT(loop.durCycles());
-            return l !=null ?  now + l.durCycles() : now;
+            this.dur = Tense.occToDT(l.durCycles());
+            return now + l.durCycles();
         }
     }
 //    /** measured in # of cycles */

@@ -48,7 +48,7 @@ public abstract class RealTime extends Time {
     }
 
     @Override
-    public long nextStamp() {
+    public final long nextStamp() {
         return nextStamp.getAndIncrement();
     }
 

@@ -57,8 +57,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     public Bitmap2DSensor(@Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, P src, float defaultFreq, NAR n) {
         super(pixelTerm.apply(0,1)
                     .replace(Map.of(
-                        Int.the(0), $.varDep(1),
-                        Int.the(1), $.varDep(2))
+                        Int.the(0), $.func("range", Int.the(0), Int.the(src.width()-1)),
+                        Int.the(1), $.func("range", Int.the(0), Int.the(src.height()-1)))
         ), n);
         this.width = src.width();
         this.height = src.height();
