@@ -206,10 +206,7 @@ public interface Termlike {
     boolean impossibleSubTerm(Termlike target);
     boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf);
 
-    default boolean containsPosOrNeg(Term x) {
-        return false;
-    }
-    default boolean containsNeg(Term x) { return false; }
+
 
     /**
      * if root is true, the root()'s of the terms will be compared

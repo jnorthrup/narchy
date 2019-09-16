@@ -21,16 +21,16 @@ class UnifyConstraintTest {
     void testNeqComRecursiveConstraint() throws Narsese.NarseseException {
         RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf c = new RelationConstraint.NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf($.varQuery(1), $.varQuery(2));
         assertFalse(
-                c.invalid($.$("X"), $.$("Y"), null)
+                !c.valid($.$("X"), $.$("Y"), null)
         );
         assertFalse(
-                c.invalid($.$("X"), $.$("f(X,Y)"), null)
+                !c.valid($.$("X"), $.$("f(X,Y)"), null)
         );
         assertTrue(
-                c.invalid($.$("X"), $.$("(X && Y)"), null)
+                !c.valid($.$("X"), $.$("(X && Y)"), null)
         );
         assertTrue(
-                c.invalid($.$("X"), $.$("(X|Y)"), null)
+                !c.valid($.$("X"), $.$("(X|Y)"), null)
         );
     }
 

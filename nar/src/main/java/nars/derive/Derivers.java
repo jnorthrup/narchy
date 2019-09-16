@@ -2,15 +2,15 @@ package nars.derive;
 
 import jcog.data.list.FasterList;
 import nars.NAR;
-import nars.derive.rule.PremiseRule;
-import nars.derive.rule.PremiseRuleProtoSet;
+import nars.derive.rule.PremiseRuleBuilder;
+import nars.derive.rule.PremiseRuleSet;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
-import static nars.derive.rule.PremiseRuleProtoSet.file;
+import static nars.derive.rule.PremiseRuleSet.file;
 
 /**
  * utility class for working witih Deriver's
@@ -18,9 +18,9 @@ import static nars.derive.rule.PremiseRuleProtoSet.file;
 public enum Derivers { ;
 
     /** HACK range is inclusive */
-    private static Stream<Supplier<Collection<PremiseRule>>> standard(int minLevel, int maxLevel, String... otherFiles) {
+    private static Stream<Supplier<Collection<PremiseRuleBuilder>>> standard(int minLevel, int maxLevel, String... otherFiles) {
 
-        List<Supplier<Collection<PremiseRule>>> f = new FasterList<>(16);
+        List<Supplier<Collection<PremiseRuleBuilder>>> f = new FasterList<>(16);
 
         for (int level = minLevel; level <= maxLevel; level++) {
             switch (level) {
@@ -82,19 +82,19 @@ public enum Derivers { ;
 
 
     /** standard ruleset */
-    public static PremiseRuleProtoSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {
+    public static PremiseRuleSet nal(NAR nar, int minLevel, int maxLevel, String... extraFiles) {
         return rules(nar, standard(minLevel, maxLevel, extraFiles)        );
     }
 
-    public static PremiseRuleProtoSet files(NAR nar, String... filename) {
-        return rules(nar, Stream.of(filename).map(PremiseRuleProtoSet::file));
+    public static PremiseRuleSet files(NAR nar, String... filename) {
+        return rules(nar, Stream.of(filename).map(PremiseRuleSet::file));
     }
 
-    private static PremiseRuleProtoSet rules(NAR nar, Stream<Supplier<Collection<PremiseRule>>> src) {
-        return new PremiseRuleProtoSet(nar, src.flatMap(x->x.get().stream()));
+    private static PremiseRuleSet rules(NAR nar, Stream<Supplier<Collection<PremiseRuleBuilder>>> src) {
+        return new PremiseRuleSet(nar, src.flatMap(x->x.get().stream()));
     }
 
-    public static PremiseRuleProtoSet parse(NAR nar, String... rules) {
-        return new PremiseRuleProtoSet(nar, rules);
+    public static PremiseRuleSet parse(NAR nar, String... rules) {
+        return new PremiseRuleSet(nar, rules);
     }
 }

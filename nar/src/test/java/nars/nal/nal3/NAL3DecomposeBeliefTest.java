@@ -14,7 +14,7 @@ import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.assertFalse;
 
 public class NAL3DecomposeBeliefTest extends NAL3Test {
 
@@ -329,9 +329,9 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 //        assertTrue(cn.contains(xn));
 //        assertTrue(cp.contains(xp));
 
-            assertTrue(
+            assertFalse(
                 new SubOfConstraint($.varDep(1), $.varDep(2), SubtermCondition.Subterm)
-                    .invalid(cn, xp, null)
+                    .valid(cn, xp, null)
             );
         }
 

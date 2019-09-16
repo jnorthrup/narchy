@@ -174,14 +174,16 @@ public abstract class Unify extends Versioning<Term> {
     public Term resolveVar(final Variable x) {
         int s = this.size;
 
-        if (s == 0) return x;
+        if (s == 0) return x; //nothing assigned
 
 
         Term /*Variable*/ z = x, y;
 
-        int safety = Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) + 1;
+        int safety = NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT;
+            //Math.min(s, NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) + 1;
 
-        while (var(z)) {
+        do {
+
             y = xy.get(z);
 
             if (y==null)
@@ -190,17 +192,11 @@ public abstract class Unify extends Versioning<Term> {
             if (y==x || !(y instanceof Variable))
                 return y; //cycle or early exit
 
-            if (--safety == 0) {
-                if (NAL.DEBUG)
-                    throw new WTF("var cycle detected");
-                else
-                    return Bool.Null;
-            }
-
             z = y;
 
-        }
-        return z;
+        } while (--safety > 0);
+
+        throw new WTF("var cycle detected");
     }
 
 //    /** UNTESTED */

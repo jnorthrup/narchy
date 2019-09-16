@@ -10,8 +10,8 @@ import nars.derive.hypothesis.Hypothesizer;
 import nars.derive.hypothesis.TangentIndexer;
 import nars.derive.rule.DeriverRules;
 import nars.derive.rule.PremiseRuleCompiler;
-import nars.derive.rule.PremiseRuleProto;
-import nars.derive.rule.PremiseRuleProtoSet;
+import nars.derive.rule.PremiseRule;
+import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
@@ -63,21 +63,21 @@ public class Deriver extends How {
         return this;
     }
 
-    public Deriver(Set<PremiseRuleProto> rules, NAR nar) {
+    public Deriver(Set<PremiseRule> rules, NAR nar) {
         this(PremiseRuleCompiler.the(rules, nar), nar);
         if (rules.isEmpty())
             throw new RuntimeException("rules empty");
     }
 
-    public Deriver(PremiseRuleProtoSet rules) {
+    public Deriver(PremiseRuleSet rules) {
         this(rules, rules.nar);
     }
 
-    public Deriver(PremiseRuleProtoSet rules, TimeFocus timing, Hypothesizer hypothesize) {
+    public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypothesize) {
         this(PremiseRuleCompiler.the(rules, rules.nar), hypothesize, timing, rules.nar);
     }
 
-    public Deriver(PremiseRuleProtoSet rules, Hypothesizer hypothesize) {
+    public Deriver(PremiseRuleSet rules, Hypothesizer hypothesize) {
         this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypothesize);
     }
 

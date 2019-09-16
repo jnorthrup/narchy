@@ -104,8 +104,8 @@ public class SubtermsTest {
     }
 
     @Test void BiSubtermsContainsNeg() {
-        assertTrue( $$("(--x &&+1 x)").containsNeg($$("x")) );
-        assertTrue( $$("(--x &&+1 x)").containsNeg($$("--x")) );
+        assertTrue( ((Compound)$$("(--x &&+1 x)")).containsNeg($$("x")) );
+        assertTrue( ((Compound)$$("(--x &&+1 x)")).containsNeg($$("--x")) );
         assertTrue( $$("(--x &&+1 x)").contains($$("x")) );
         assertTrue( $$("(--x &&+1 x)").contains($$("--x")) );
     }

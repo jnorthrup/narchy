@@ -13,12 +13,12 @@ class SubOfConstraintTest {
     void testEventOf_Commutive() {
 
         SubOfConstraint c = new SubOfConstraint($.varPattern(1), $.varPattern(2), Event, +1);
-        assertTrue(c.valid($$("(x&&y)"), $$("x")));
-        assertTrue(!c.valid($$("(x&&y)"), $$("z")));
+		assertTrue(c.valid($$("(x&&y)"), $$("x"), null));
+		assertTrue(!c.valid($$("(x&&y)"), $$("z"), null));
 
-        assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("(y&|z)")));
-        assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("x")));
-        assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("y")));
+		assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("(y&|z)"), null));
+		assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("x"), null));
+		assertTrue(c.valid($$("(x &&+1 (y&|z))"), $$("y"), null));
 
     }
 

@@ -1,6 +1,7 @@
 package nars.unify.constraint;
 
 import nars.subterm.util.SubtermCondition;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.unify.Unify;
@@ -56,23 +57,28 @@ public class SubOfConstraint extends RelationConstraint<Unify> {
     }
 
     public final boolean invalid(Term x, Term y, Unify context) {
-        SubtermCondition c = this.containment;
 
-        Term container = forward ? x : y;
+        Term _container = forward ? x : y;
+        if (!(_container instanceof Compound))
+            return true;
+        Compound container = (Compound)_container;
+
 
         Term content = forward ? y : x;
+//        if (container.volume() <= content.volume())
+//            return true; //doesnt seem to happen, probably eliminated by bigger-than constraint
+
+        SubtermCondition c = this.containment;
         switch (polarityCompare) {
-            case 1: return !c.test(container, content);
+            case +1: return !c.test(container, content);
             case -1: return !c.test(container, content.neg());
-            case 0: return !c.test(container, content) && !c.test(container, content.neg());
+            case  0: return !c.test(container, content) && !c.test(container, content.neg());
             default:
                 throw new UnsupportedOperationException();
         }
 
     }
 
-    public final boolean valid(Term x, Term y) {
-        return !invalid(x, y, null);
-    }
+
 
 }

@@ -5145,9 +5145,10 @@ public enum ArrayUtil {
         return result;
     }
 
-    public static <X> X[] prepend(final X element, final X[] x, IntFunction<X[]> arrayBuilder) {
+
+    public static <X> X[] prepend(final X element, final X[] x) {
         int len = x.length;
-        X[] y = arrayBuilder.apply(len + 1);
+        X[] y = Arrays.copyOf(x, len + 1);
         y[0] = element;
         System.arraycopy(x, 0, y, 1, len);
         return y;

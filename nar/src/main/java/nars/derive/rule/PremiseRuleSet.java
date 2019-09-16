@@ -23,24 +23,20 @@ import java.util.stream.StreamSupport;
  * intermediate representation of a set of compileable Premise Rules
  * TODO remove this class, just use Set<PremiseDeriverProto>'s
  */
-public class PremiseRuleProtoSet extends TreeSet<PremiseRuleProto> {
+public class PremiseRuleSet extends TreeSet<PremiseRule> {
 
     @Deprecated public final NAR nar;
 
-    public PremiseRuleProtoSet(NAR nar, String... rules) {
-        this(nar, PremiseRule.parse(rules));
+    public PremiseRuleSet(NAR nar, String... rules) {
+        this(nar, PremiseRuleBuilder.parse(rules));
     }
 
-    public PremiseRuleProtoSet(NAR nar, Stream<PremiseRule> r) {
+    public PremiseRuleSet(NAR nar, Stream<PremiseRuleBuilder> r) {
         this.nar = nar;
-        r.distinct().map(this::compile).collect(Collectors.toCollection(()->this));
+        r.distinct().map(PremiseRuleBuilder::get).collect(Collectors.toCollection(()->this));
     }
 
-    private PremiseRuleProto compile(PremiseRule x) {
-        return new PremiseRuleProto(x);
-    }
-
-    private final static Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
+    private final static Function<String, Collection<PremiseRuleBuilder>> ruleFileCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
         try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {
@@ -49,14 +45,14 @@ public class PremiseRuleProtoSet extends TreeSet<PremiseRuleProto> {
             e.printStackTrace();
             bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
-        return PremiseRule.parse(load(bb)).collect(Collectors.toSet());
+        return PremiseRuleBuilder.parse(load(bb)).collect(Collectors.toSet());
 
     }, 32, false);
 
 
 
-    public static Supplier<Collection<PremiseRule>> file(String n) {
-        return ()-> PremiseRuleProtoSet.ruleFileCache.apply(n);
+    public static Supplier<Collection<PremiseRuleBuilder>> file(String n) {
+        return ()-> PremiseRuleSet.ruleFileCache.apply(n);
     }
 
     private static Stream<String> load(byte[] data) {

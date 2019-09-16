@@ -29,10 +29,6 @@ import static nars.term.atom.Bool.Null;
  */
 public interface Atomic extends Term {
 
-
-
-
-
     @Override
     default boolean containsRecursively(Term t) {
         return false;

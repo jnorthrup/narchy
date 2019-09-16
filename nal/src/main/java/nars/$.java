@@ -196,6 +196,12 @@ public enum $ { ;
     public static Term p(Term... t) {
         return PROD.the(t);
     }
+    public static Term pOrOnly(Term... t) {
+        if (t.length == 1)
+            return t[0];
+        else
+            return p(t);
+    }
 
     /**
      * creates from a sublist of a list

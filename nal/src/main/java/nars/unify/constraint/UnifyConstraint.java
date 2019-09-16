@@ -1,9 +1,7 @@
 package nars.unify.constraint;
 
-import com.google.common.collect.ListMultimap;
 import com.google.common.collect.MultimapBuilder;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
 import nars.Op;
@@ -17,12 +15,14 @@ import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 
 /** must be stateless */
 public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
+
+    public static final UnifyConstraint[] None = new UnifyConstraint[0];
 
 //    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {
 //        return c == null || !c.anySatisfyWith((cc,X) -> cc.invalid(X, u), x);
@@ -46,16 +46,14 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     private final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Variable x;
 
-    UnifyConstraint(Term id, Variable x) {
-        this((Variable)x, (Term)id, null);
-    }
 
     UnifyConstraint(Variable x, String func, @Nullable Term... args) {
         this(x, Atomic.atom(func), args);
     }
 
     UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
-        super($.func(UnifyIf, x, args!=null ? $.inh($.p(args),func) : func));
+        super($.func(UnifyIf, args!=null && args.length > 0 ?
+            new Term[] { x, func, $.pOrOnly(args) } : new Term[] { x, func}));
         this.x = x;
     }
 
@@ -70,14 +68,21 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     abstract public boolean invalid(Term x, U f);
 
 
-    /**
-     * groups the constraints into their respective targets
-     */
+
     static final MultimapBuilder.ListMultimapBuilder matchConstraintMapBuilder = MultimapBuilder.hashKeys(4).arrayListValues(4);
-    public static FasterList<UnifyConstraint> the(Collection<UnifyConstraint> c) {
-        ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
-        c.forEach(x -> m.put(x.x, x));
-        return m.asMap().values().stream().map(cc -> {
+
+    /**
+     * returns a stream of constraints bundled by any multiple respective targets, and sorted by cost increasing
+     */
+    public static Stream<UnifyConstraint> the(Stream<UnifyConstraint> c) {
+
+//        ListMultimap<Term, UnifyConstraint> m = matchConstraintMapBuilder.build();
+//        c.forEach(x -> m.put(x.x, x));
+//
+//        return m.asMap().values().stream()
+
+        return c.collect(Collectors.groupingBy(x -> x.x, Collectors.toList())).values().stream()
+            .map(cc -> {
             int ccn = cc.size();
 
             assert (ccn > 0);
@@ -95,27 +100,32 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
                 return new CompoundConstraint(d);
             }
-        }).collect(Collectors.toCollection(FasterList::new));
-
+        }).sorted(PREDICATE.sortByCostIncreasing);
     }
 
+    /** TODO group multiple internal relationconstraints for the same target so only one xy(target) lookup invoked to use with all */
     private static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
 
-        private final UnifyConstraint<U>[] cache;
+        private final UnifyConstraint<U>[] subConstraint;
+        private final float cost;
 
         private CompoundConstraint(UnifyConstraint[] c) {
-            super($.func(UnifyIf, c[0].x, Op.SETe.the(c)), c[0].x);
-            this.cache = c;
+            super(c[0].x, Op.SETe.the(Util.map(
+                //extract the unique UnifyIf parameter
+                cc -> $.pOrOnly(cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)), new Term[c.length], c)
+            ));
+            this.subConstraint = c;
+            this.cost = Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, subConstraint);
         }
 
         @Override
         public float cost() {
-            return Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, cache);
+            return cost;
         }
 
         @Override
         public boolean invalid(Term x, Unify f) {
-            for (UnifyConstraint c : cache)
+            for (UnifyConstraint c : subConstraint)
                 if (c.invalid(x, f))
                     return true;
 

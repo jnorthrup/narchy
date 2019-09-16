@@ -1,19 +1,16 @@
 package nars.unify.constraint;
 
 import jcog.WTF;
-import nars.$;
+import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Term;
-import nars.term.Terms;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.INH;
-import static nars.Op.NEG;
+import java.util.function.BiFunction;
 
 /** tests a relation between two terms which may be involved (and prevened) from unifying */
 abstract public class RelationConstraint<U extends Unify> extends UnifyConstraint<U> {
@@ -21,20 +18,28 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
     public final Variable y;
 
-    private RelationConstraint(Term id, Variable x, Variable y) {
-        super(id, x);
-        assert(!x.equals(y));
-        this.y = y;
-    }
-
     @Deprecated
     protected RelationConstraint(String func, Variable x, Variable y, Term... args) {
         this(Atomic.atom(func), x, y, args);
     }
 
-    protected RelationConstraint(Atom func, Variable x, Variable y, Term... args) {
-        this($.func(func, x, args.length > 0 ? $.p(y, $.p(args)) : y), x, y);
+    protected RelationConstraint(Term func, Variable x, Variable y, Term... args) {
+        super(x, func, ArrayUtil.prepend(y, args));
+        this.y = y;
     }
+
+    @Override
+    public final boolean invalid(Term x, U f) {
+        Term yy = f.resolveVar(y);
+        return (yy == null || yy != y) && invalid(x, yy, f);
+    }
+
+    abstract public boolean invalid(Term x, Term y, U context);
+
+    public final boolean valid(Term x, Term y, U context) {
+        return !invalid(x, y, context);
+    }
+
 
 	public static boolean rCom(Term a, Term b, boolean recurse) {
 
@@ -60,27 +65,32 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 //        return negate ? neg() : this;
 //    }
 
-    @Override
-    public final boolean invalid(Term x, U f) {
-        Term yy = f.resolveVar(y);
-        return yy != y && invalid(x, yy, f);
-    }
-
-    abstract public boolean invalid(Term x, Term y, U context);
 
     /** override to implement subsumption elimination */
     public boolean remainInAndWith(RelationConstraint<U> c) {
         return true;
     }
 
-    public static final class NegRelationConstraint<U extends Unify> extends RelationConstraint<U> {
+    public boolean invalid(Term t, Term b, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY, U u) {
+
+        Term x = extractX.apply(t, b);
+        if (x != null) {
+            Term y = extractY.apply(t, b);
+            if (y!=null)
+                return !invalid(x, y, u);
+        }
+        return true; //<- does this happen?
+
+    }
+
+	public static final class NegRelationConstraint<U extends Unify> extends RelationConstraint<U> {
 
         public final RelationConstraint<U> r;
 
         private NegRelationConstraint(RelationConstraint<U> r) {
             super(r.ref.neg(), r.x, r.y);
             this.r = r;
-            assert(!(r instanceof NegRelationConstraint) && (r.ref.op()!=NEG));
+            assert(!(r instanceof NegRelationConstraint) && (!(r.ref instanceof Neg)));
         }
 
         @Override
@@ -91,19 +101,19 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        protected RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new NegRelationConstraint(this);
+        protected RelationConstraint<U> newMirror(Variable newX, Variable newY) {
+            return new NegRelationConstraint<>(this);
             //return new NegRelationConstraint(r.mirror());
         }
 
         @Override
-        public RelationConstraint neg() {
+        public RelationConstraint<U> neg() {
             return r;
         }
 
         @Override
         public boolean invalid(Term x, Term y, U context) {
-            return !r.invalid(x, y, context);
+            return r.valid(x, y, context);
         }
 
         @Override
@@ -254,16 +264,20 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
-            if (x.equals(y))
-                return false;
-            Op xo = x.op();
-            if (xo.set && y.op()== xo) {
-                Subterms xx = x.subterms(), yy = y.subterms();
-                //TODO check heuristic direction
-                if (xx.volume() < yy.volume())
-                    return !xx.containsAny(yy);
-                else
-                    return !yy.containsAny(xx);
+
+            if (x instanceof Compound && y instanceof Compound) {
+                Op xo = x.op();
+                if (xo.set && y.opID() == xo.id) {
+                    Subterms xx = x.subterms(), yy = y.subterms();
+                    if (xx.equals(yy))
+                        return true;
+
+                    //TODO check heuristic direction
+                    if (xx.volume() < yy.volume())
+                        return !xx.containsAny(yy);
+                    else
+                        return !yy.containsAny(xx);
+                }
             }
             return false;
         }
@@ -284,10 +298,14 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
             return 0.1f;
         }
 
+
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
+            if (!(x instanceof Compound) || !(y instanceof Compound))
+                return false;
+
             Op xo = x.op();
-            return xo.set && (xo == y.op());
+            return xo.set && (xo.id == y.opID());
         }
     }
 
@@ -309,37 +327,37 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
         @Override
         public boolean invalid(Term x, Term y, Unify context) {
-            return x != y && x.subs() != y.subs();
+            return !(y instanceof Compound) || (x != y && x.subs() != y.subs());
         }
 
     }
 
-    /**
-     * if both are inheritance, prohibit if the subjects or predicates match.  this is to exclude
-     * certain derivations which occurr otherwise in NAL1..NAL3
-     */
-    public static final class NoCommonInh extends RelationConstraint {
-
-        public NoCommonInh(Variable target, Variable other) {
-            super("noCommonInh", target, other);
-        }
-
-        @Override
-        protected RelationConstraint newMirror(Variable newX, Variable newY) {
-            return new NoCommonInh(newX, newY);
-        }
-
-        @Override
-        public float cost() {
-            return 0.2f;
-        }
-
-        @Override
-        public boolean invalid(Term x, Term y, Unify context) {
-            return (x.op() == INH && y.op() == INH && (x.sub(0).equals(y.sub(0)) || x.sub(1).equals(y.sub(1))));
-        }
-
-    }
+//    /**
+//     * if both are inheritance, prohibit if the subjects or predicates match.  this is to exclude
+//     * certain derivations which occurr otherwise in NAL1..NAL3
+//     */
+//    public static final class NoCommonInh extends RelationConstraint {
+//
+//        public NoCommonInh(Variable target, Variable other) {
+//            super("noCommonInh", target, other);
+//        }
+//
+//        @Override
+//        protected RelationConstraint newMirror(Variable newX, Variable newY) {
+//            return new NoCommonInh(newX, newY);
+//        }
+//
+//        @Override
+//        public float cost() {
+//            return 0.2f;
+//        }
+//
+//        @Override
+//        public boolean invalid(Term x, Term y, Unify context) {
+//            return (x.op() == INH && y.op() == INH && (x.sub(0).equals(y.sub(0)) || x.sub(1).equals(y.sub(1))));
+//        }
+//
+//    }
 
     /**
      * containment test of x to y's subterms and y to x's subterms

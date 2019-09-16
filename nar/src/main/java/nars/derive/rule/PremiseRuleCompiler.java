@@ -38,11 +38,11 @@ public enum PremiseRuleCompiler {
 //            //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
 //            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
 
-    public static DeriverRules the(PremiseRuleProtoSet rr) {
+    public static DeriverRules the(PremiseRuleSet rr) {
         return the(rr, rr.nar);
     }
 
-    public static DeriverRules the(Set<PremiseRuleProto> rr, NAR nar) {
+    public static DeriverRules the(Set<PremiseRule> rr, NAR nar) {
         return _the(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
@@ -51,7 +51,7 @@ public enum PremiseRuleCompiler {
         );
     }
 
-    private static DeriverRules _the(Set<PremiseRuleProto> rr, PreDeriver preDeriver, NAR nar) {
+    private static DeriverRules _the(Set<PremiseRule> rr, PreDeriver preDeriver, NAR nar) {
 
         /** indexed by local (deriver-specific) id */
         int n = rr.size();
@@ -61,7 +61,7 @@ public enum PremiseRuleCompiler {
         DeriveAction[] rootBranches = new DeriveAction[n];
         final TermPerfectTrie<PREDICATE<Derivation>, DeriveAction> path = new TermPerfectTrie<>();
 
-        for (PremiseRuleProto r : rr) {
+        for (PremiseRule r : rr) {
 
 
 

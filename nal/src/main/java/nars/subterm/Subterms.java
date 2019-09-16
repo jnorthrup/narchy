@@ -63,6 +63,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return indexOf(x) != -1;
     }
 
+
     default boolean containsInstance(Term t) {
         return ORwith((u, tt) -> tt == u, t);
     }
@@ -1054,7 +1055,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     /*@NotNull*/
     default Term[] subRangeArray(int from, int to) {
-        if (from == 0 && to == subs()) {
+        int n = subs();
+        if (from == Integer.MIN_VALUE) from = 0;
+        if (to == Integer.MAX_VALUE) to = n;
+
+        if (from == 0 && to == n) {
             return arrayShared();
 
         } else {

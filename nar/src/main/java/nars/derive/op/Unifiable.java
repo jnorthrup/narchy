@@ -3,7 +3,7 @@ package nars.derive.op;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.rule.PremiseRule;
+import nars.derive.rule.PremiseRuleBuilder;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Neg;
@@ -23,11 +23,11 @@ public enum Unifiable { ;
     private static final Atomic UnifyPreFilter = Atomic.the("unifiable");
 
 
-    public static void constrainSubstitute(Subterms a, PremiseRule p) {
+    public static void constrainSubstitute(Subterms a, PremiseRuleBuilder p) {
         //TODO for strict case
     }
 
-    public static void constrainUnifiable(Subterms a, PremiseRule p) {
+    public static void constrainUnifiable(Subterms a, PremiseRuleBuilder p) {
 
         Term x = /*unwrapPolarize...*/(a.sub(1));
         if (x instanceof Variable) {
@@ -52,7 +52,7 @@ public enum Unifiable { ;
         }
     }
 
-    public static void constraintEvent(Subterms a, PremiseRule p, boolean unifiable) {
+    public static void constraintEvent(Subterms a, PremiseRuleBuilder p, boolean unifiable) {
         Term conj = a.sub(0);
         if (conj instanceof Variable) {
             Term x = a.sub(1);

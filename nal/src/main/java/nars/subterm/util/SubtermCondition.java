@@ -1,5 +1,6 @@
 package nars.subterm.util;
 
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 
@@ -8,12 +9,12 @@ import java.util.function.BiPredicate;
 /**
  * tests various potential relations between a containing target and a subterm
  */
-public enum SubtermCondition implements BiPredicate<Term, Term> {
+public enum SubtermCondition implements BiPredicate<Compound, Term> {
 
 
     Subterm() {
         @Override
-        public boolean test(Term container, Term x) {
+        public boolean test(Compound container, Term x) {
             return container.contains(x);
         }
 
@@ -24,7 +25,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     SubtermNeg() {
         @Override
-        public boolean test(Term container, Term x) {
+        public boolean test(Compound container, Term x) {
             return container.containsNeg(x);
         }
 
@@ -37,7 +38,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 //    Subsect() {
 //
 //        @Override
-//        public boolean test(Term container, Term x) {
+//        public boolean test(Compound container, Term x) {
 //            //return x.op()==CONJ ? x.AND(container::contains) : container.contains(x);
 //            return Conj.eventOf(container, x);
 //        }
@@ -50,7 +51,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 //    SubsectNeg() {
 //
 //        @Override
-//        public boolean test(Term container, Term x) {
+//        public boolean test(Compound container, Term x) {
 //            //return x.op()==CONJ ? x.AND(container::containsNeg) : container.containsNeg(x);
 //            return Conj.eventOf(container, x.neg());
 //        }
@@ -62,7 +63,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     Recursive() {
         @Override
-        public boolean test(Term container, Term x) {
+        public boolean test(Compound container, Term x) {
             return container.containsRecursively(x);
         }
 
@@ -73,7 +74,7 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 
     Event() {
         @Override
-        public final boolean test(Term container, Term x) {
+        public final boolean test(Compound container, Term x) {
             return Conj.eventOf(container, x);
             //return Conj._eventOf(container, x, Tense.ETERNAL);
         }
@@ -84,12 +85,12 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
     },
 //    EventFirst() {
 //        @Override
-//        public final boolean test(Term container, Term x) {
+//        public final boolean test(Compound container, Term x) {
 //            return Conj.isEventFirstOrLast(container, x,  true);
 //        }
 //
 //        @Override
-//        public boolean testContainer(Term container) {
+//        public boolean testContainer(Compound container) {
 //            return container.op()==CONJ;
 //        }
 //
@@ -99,12 +100,12 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 //    },
 //    EventLast() {
 //        @Override
-//        public final boolean test(Term container, Term x) {
+//        public final boolean test(Compound container, Term x) {
 //            return Conj.isEventFirstOrLast(container, x,false);
 //        }
 //
 //        @Override
-//        public boolean testContainer(Term container) {
+//        public boolean testContainer(Compound container) {
 //            return container.op()==CONJ;
 //        }
 //
@@ -118,11 +119,11 @@ public enum SubtermCondition implements BiPredicate<Term, Term> {
 //     */
 //    EventsAny() {
 //        @Override
-//        public boolean testContainer(Term container) {
+//        public boolean testContainer(Compound container) {
 //            return container.op()==CONJ;
 //        }
 //        @Override
-//        public boolean test(Term container, Term x) {
+//        public boolean test(Compound container, Term x) {
 //            if (container.op() != CONJ)
 //                return false;
 //

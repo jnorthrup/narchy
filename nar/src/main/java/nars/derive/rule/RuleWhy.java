@@ -11,11 +11,11 @@ import nars.term.Term;
  */
 public final class RuleWhy extends Why {
 
-	public final PremiseRule rule;
+	public final PremiseRuleBuilder rule;
 	public final String ruleString;
 	public final Term term;
 
-	RuleWhy(PremiseRule rule, short id) {
+	RuleWhy(PremiseRuleBuilder rule, short id) {
 		super(id);
 		this.rule = rule;
 		this.ruleString = rule.source;
