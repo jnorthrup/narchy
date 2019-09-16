@@ -40,7 +40,7 @@ public class TangentIndexer extends AbstractHypothesizer {
 		} else {
 			float probBase = 0.5f;
 			probability =
-				(float) (probBase / Math.pow(target.volume(), 2));
+				(float) (probBase / Math.pow(target.volume(), 3));
 		}
 
 		//1f/Math.max(2,link.from().volume());

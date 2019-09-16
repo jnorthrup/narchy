@@ -267,7 +267,11 @@ public class Derivation extends PreDerivation {
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
     public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
-        this.parentCause = null; //invalidate
+
+        //TODO maybe can be re-used:
+        this.stampDouble = stampSingle = null;
+        this.parentCause = null;
+
         this._task = resetTask(nextTask, this._task);
         this._beliefTerm = nextBeliefTerm;
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
@@ -403,22 +407,6 @@ public class Derivation extends PreDerivation {
      */
     void preReady() {
 
-        boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
-//        if (eternalCompletely) {
-//            this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = ETERNAL;
-//        } else if ((_belief != null) && taskStart == ETERNAL) {
-//            this.taskBelief_TimeIntersection[0] = beliefStart;
-//            this.taskBelief_TimeIntersection[1] = beliefEnd;
-//        } else if ((_belief == null) || beliefStart == ETERNAL) {
-//            this.taskBelief_TimeIntersection[0] = taskStart;
-//            this.taskBelief_TimeIntersection[1] = taskEnd;
-//        } else /*if (_belief != null)*/ {
-//            if (null == Longerval.intersectionArray(taskStart, taskEnd, beliefStart, beliefEnd, this.taskBelief_TimeIntersection)) {
-//                this.taskBelief_TimeIntersection[0] = this.taskBelief_TimeIntersection[1] = TIMELESS; //no intersection
-//            }
-//        }
-        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
-
 
         this.overlapSingle = _task.isCyclic();
 
@@ -437,7 +425,8 @@ public class Derivation extends PreDerivation {
 
     public void ready(int ttl) {
 
-        this.stampDouble = stampSingle = null;
+        boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
+        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
 
         setTTL(ttl);
     }
@@ -605,14 +594,14 @@ public class Derivation extends PreDerivation {
         int valid = 0, lastValid = -1;
 
         try (var __ = nar.emotion.derive_D_Truthify.time()) {
-            this.preReady();
 
+            this.preReady();
 
             DeriveAction[] branch = this.deriver.rules.branch;
 
             PostDerivable[] post = this.post;
             for (int i = 0; i < can.length; i++) {
-                if ((post[i].priSet(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                if ((post[i].can(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }

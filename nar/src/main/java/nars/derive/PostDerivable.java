@@ -19,25 +19,10 @@ public class PostDerivable {
         this.d = d;
     }
 
-    /** returns <= 0 for impossible */
-    private float pri(DeriveAction a, Derivation d) {
 
-        byte punc = a.truth.preFilter(d);
-        if (punc == 0)
-            return 0f; //disabled or not applicable to the premise
 
+    public float can(DeriveAction a, Derivation d) {
         float p = a.pri(d);
-        if (p <= Float.MIN_NORMAL)
-            return 0;
-
-        if (!a.truth.test(d))
-            return 0;
-
-        return p * d.what.derivePri.prePri(d);
-    }
-
-    public float priSet(DeriveAction a, Derivation d) {
-        float p = pri(a, d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;
             this.truth.set( d.truth );
@@ -49,11 +34,6 @@ public class PostDerivable {
             this.action = null;
             this.pri = 0;
             return 0;
-            //shouldnt be necessary to keep setting:
-//            this.concTruth = null;
-//            this.concPunc = 0;
-//            this.concSingle = false;
-//            this.truthFunction = null;
         }
     }
 
