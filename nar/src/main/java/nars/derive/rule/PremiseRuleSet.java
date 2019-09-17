@@ -1,11 +1,13 @@
 package nars.derive.rule;
 
 import com.google.common.base.Splitter;
+import jcog.TODO;
 import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.derive.action.PatternPremiseAction;
+import nars.derive.action.PremiseAction;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,6 +48,7 @@ public class PremiseRuleSet {
         this(nar, new ArrayHashSet<>(1024));
     }
 
+
     private final static Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
@@ -85,7 +88,6 @@ public class PremiseRuleSet {
 
         });
 
-
     }
 
 
@@ -94,8 +96,13 @@ public class PremiseRuleSet {
     }
 
     public final DeriverProgram compile() {
-        return PremiseRuleCompiler.the(rules, nar);
+        return compile(a -> a);
     }
+
+    public final DeriverProgram compile(Function<PremiseAction,PremiseAction> actionTransform) {
+        return PremiseRuleCompiler.the(rules, nar, actionTransform);
+    }
+
 
     public final PremiseRuleSet add(String... metalNALRules) {
         return add(PatternPremiseAction.parse(metalNALRules));

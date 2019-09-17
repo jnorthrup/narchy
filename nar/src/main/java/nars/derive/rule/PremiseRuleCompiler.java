@@ -33,16 +33,17 @@ enum PremiseRuleCompiler {
 //            //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
 //            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
 
-    public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar) {
+    public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
         return _the(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
             //DeriverPlanner.ConceptMetaMemoizer
-            , nar
+            , nar,
+            functionTransform
         );
     }
 
-    private static DeriverProgram _the(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar) {
+    private static DeriverProgram _the(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
 
         /** indexed by local (deriver-specific) id */
         int n = rr.size();
@@ -62,7 +63,7 @@ enum PremiseRuleCompiler {
             pre.add(new FORKABLE(/* branch ID */  i));
 
             PremiseAction added = path.put(pre,
-                rootBranches[i] = r.action.apply(nar)
+                rootBranches[i] = functionTransform.apply(r.action.apply(nar))
             );
             assert (added == null);
 
@@ -71,7 +72,7 @@ enum PremiseRuleCompiler {
 
         assert (!path.isEmpty());
 
-        return new DeriverProgram(PremiseRuleCompiler.compile(path), rootBranches, preDeriver);
+        return new DeriverProgram(PremiseRuleCompiler.compile(path), rootBranches, preDeriver, nar);
     }
 
 

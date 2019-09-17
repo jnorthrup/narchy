@@ -37,7 +37,7 @@ import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinkage2;
+import nars.op.stm.STMLinker;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.task.DerivedTask;
@@ -553,7 +553,7 @@ abstract public class GameX extends Game {
 
         Deriver bd6_act = new Deriver(
             Derivers.nal(n, 1,8,"motivation.nal")
-                .add(new STMLinkage2(1)));
+                .add(new STMLinker(1)));
 
         bd6_act.time(new MixTimeFocus(
             new NonEternalTaskOccurenceOrPresentDeriverTiming(),

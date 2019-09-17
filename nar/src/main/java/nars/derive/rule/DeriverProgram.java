@@ -1,6 +1,7 @@
 package nars.derive.rule;
 
 import jcog.Texts;
+import nars.NAR;
 import nars.Op;
 import nars.control.Why;
 import nars.derive.Derivation;
@@ -33,9 +34,12 @@ public class DeriverProgram {
     public final PremiseAction[] branch;
 
     public final PreDeriver pre;
+    public final NAR nar;
 
 
-    DeriverProgram(PREDICATE<Derivation> what, PremiseAction[] actions, PreDeriver pre) {
+    DeriverProgram(PREDICATE<Derivation> what, PremiseAction[] actions, PreDeriver pre, NAR nar) {
+
+        this.nar = nar;
 
         this.what = what;
 

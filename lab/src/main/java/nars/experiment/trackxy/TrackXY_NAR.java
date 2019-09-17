@@ -54,7 +54,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 32;
+    static int dur = 4;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;
@@ -206,13 +206,13 @@ public class TrackXY_NAR extends GameX {
 //        n.questPriDefault.amp(0.05f);
 
 
-        n.freqResolution.set(0.05f);
+        n.freqResolution.set(0.01f);
 //        n.confResolution.set(0.05f);
 
 
         //n.freqResolution.set(0.04f);
 
-        n.termVolMax.set(30);
+        n.termVolMax.set(24);
         //n.dtDither.set(Math.max(1, durMS));
 
 
@@ -245,7 +245,7 @@ public class TrackXY_NAR extends GameX {
 
         ConjClustering cjB = new ConjClustering(n, BELIEF,
                 //x -> true,
-                2, 8, Task::isInput
+                2, 4, Task::isInput
         );
 
 

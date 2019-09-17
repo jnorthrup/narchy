@@ -5,8 +5,9 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.derive.Deriver;
+import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
-import nars.op.stm.STMLinkage;
+import nars.op.stm.STMLinker;
 import nars.term.Term;
 import nars.time.Tense;
 import nars.truth.Truth;
@@ -24,29 +25,39 @@ import static org.junit.jupiter.api.Assertions.*;
 class RuleInductionTest {
     @Test
     void test1() {
-        int dur = 3;
+        int dur = 2;
         int loops = 10;
-        int period = 3;
-        int dutyPeriod = 1;
+        int period = dur * 4;
+        int dutyPeriod = period/2;
 
         NAR n = NARS.shell();
         n.termVolMax.set(8);
 
-        Deriver d = new Deriver(new PremiseRuleSet(n,
+        DeriverProgram r = new PremiseRuleSet(n,
 
-                "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarize(B,task) &&+- polarize(A,belief)), (Belief:IntersectionDD, Time:Sequence)"
+            "B, A, --is(A,\"==>\"),--is(B,\"==>\") |- (polarizeTask(B) &&+- polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)"
 
 
-        ));
-        new STMLinkage(n, 1);
+        ).add(new STMLinker(1)).compile();
+//            .wrap(a -> {
+//            return new PremiseActionProxy(a) {
+//
+//            }
+//        })
+        r.print();
+
+        Deriver d = new Deriver(r);
+
+
+
 
         n.time.dur(dur);
 
-        //n.log();
+        n.log();
 
-        Term aConjB = $$("(a &&+" + dutyPeriod + " b)");
+        Term aConjB = $$("(a &&+" + dutyPeriod + " --a)");
         Term aConjB_root = aConjB.concept();
-        Term aImpB = $$("(a ==>+" + dutyPeriod + " b)");
+        Term aImpB = $$("(a ==>+" + dutyPeriod + " --a)");
 
         PairedStatsAccumulator aConjB_exp = new PairedStatsAccumulator();
 
@@ -70,12 +81,10 @@ class RuleInductionTest {
 
 
             n.believe("a", Tense.Present, 1, 0.9f);
-            if (i > 0) {
-
-
-            }
+//            n.believe("b", Tense.Present, 0, 0.9f);
             n.run(dutyPeriod);
-            n.believe("b", Tense.Present, 1, 0.9f);
+//            n.believe("b", Tense.Present, 1, 0.9f);
+            n.believe("a", Tense.Present, 0, 0.9f);
             n.run(period - dutyPeriod);
 
             long now = n.time();

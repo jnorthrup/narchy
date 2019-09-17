@@ -17,7 +17,7 @@ import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
 import nars.derive.premise.Premise;
 import nars.derive.util.DerivationFunctors;
-import nars.derive.util.PremiseUnify;
+import nars.derive.util.PremisePreUnify;
 import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
@@ -72,7 +72,7 @@ public class Derivation extends PreDerivation {
     public static final Atom SUBSTITUTE = Atomic.atom("substitute");
     public static final Atom CONJ_WITHOUT = Atomic.atom("conjWithout");
 
-    public final PremiseUnify premiseUnify = new PremiseUnify();
+    public final PremisePreUnify premisePreUnify = new PremisePreUnify();
 
 //    public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);
 
@@ -206,7 +206,7 @@ public class Derivation extends PreDerivation {
 //    private MethodHandle deriverMH;
 
     {
-        premiseUnify.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
+        premisePreUnify.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
     }
 
     /**
@@ -458,7 +458,7 @@ public class Derivation extends PreDerivation {
         ditherDT =
                 n.dtDither(); //FINE
                 //w.dur(); //COARSE
-        this.dtTolerance = uniSubstFunctor.u.dtTolerance = premiseUnify.dtTolerance =
+        this.dtTolerance = uniSubstFunctor.u.dtTolerance = premisePreUnify.dtTolerance =
                 //n.dtDither(); //FINE
                 //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
@@ -543,7 +543,7 @@ public class Derivation extends PreDerivation {
         //taskStamp.clear();
         //canCollector.clear();
 
-        this.premiseUnify.random(this.random = n.random());
+        this.premisePreUnify.random(this.random = n.random());
         this.derivationFunctors = DerivationFunctors.get(Derivation.this);
         this.transformDerived = new DerivationTransform();
 

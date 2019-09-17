@@ -59,7 +59,9 @@ public class FZero extends GameX {
 //            }, GOAL);
 
 
-            return new FZero($.the("fz"), n);
+            FZero f = new FZero($.the("fz"), n);
+            n.start(f);
+            return f;
 
 
         }, fps*2);
@@ -73,7 +75,7 @@ public class FZero extends GameX {
 
     public FZero(Term id, NAR n) {
         super(id,
-                fps(fps)
+                fps(fps), n
         );
 
 
@@ -239,13 +241,13 @@ public class FZero extends GameX {
         Reward race = rewardNormalized("race", -1, +1, (() -> {
             return Util.clamp(progress * 0.5f, -1, +1);
         }));
-        race.resolution().set(0.1f);
+        //race.resolution().set(0.1f);
 
         FloatAveragedWindow f = new FloatAveragedWindow(64, 0.25f, 0).mode(FloatAveragedWindow.Mode.Mean);
         Reward race2 = rewardNormalized("RaceRace", -1, +1, (() -> {
             return f.valueOf(Util.clamp(progress * 0.5f, -1, +1));
         }));
-        race2.resolution().set(0.1f);
+        //race2.resolution().set(0.1f);
 
 //        rewardNormalized("efficient", 0, +1, (() -> {
 //

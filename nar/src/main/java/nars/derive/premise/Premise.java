@@ -120,7 +120,7 @@ public class Premise  {
 
 			} else if (nextBeliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
-				Term unifiedBeliefTerm = d.premiseUnify.unified(taskTerm, nextBeliefTerm, matchTTL);
+				Term unifiedBeliefTerm = d.premisePreUnify.unified(taskTerm, nextBeliefTerm, matchTTL);
 
 				if (unifiedBeliefTerm != null) {
 
@@ -211,7 +211,7 @@ public class Premise  {
 		}
 
 		return beliefTable != null && !beliefTable.isEmpty() ?
-			tryMatch(beliefTerm, beliefTable, beliefConceptUnifiesTaskConcept, d) : null;
+			tryMatch(beliefTerm, beliefTable, d) : null;
 
 	}
 
@@ -228,17 +228,15 @@ public class Premise  {
 	}
 
 
-	private Task tryMatch(Term beliefTerm, BeliefTable bb, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
+	private Task tryMatch(Term beliefTerm, BeliefTable bb, Derivation d) {
 
-		Predicate<Task> beliefFilter =
-			null; //allow task=belief
-//			beliefConceptUnifiesTaskConcept && task.punc() == BELIEF ?
-//				t -> !t.equals(task) :
-//				null;
-
-        Task t = task(bb, beliefTerm, timeFocus(beliefTerm, d), beliefFilter, d);
+        Task t = task(bb, beliefTerm, timeFocus(beliefTerm, d), this::taskNotEquals, d);
 
         return t;
+	}
+
+	private boolean taskNotEquals(Task x) {
+		return !x.equals(task);
 	}
 
 	@Nullable

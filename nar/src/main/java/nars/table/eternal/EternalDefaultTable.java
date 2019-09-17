@@ -67,7 +67,6 @@ public class EternalDefaultTable extends DynamicTaskTable {
         EternalDefaultTable tb = new EternalDefaultTable(c, t, punc, n);
 
         BeliefTables tables = (BeliefTables) c.table(punc);
-        assert(!tables.isEmpty()): "other tables should precede this in BeliefTables chain";
 
         tables.add(tb);
 

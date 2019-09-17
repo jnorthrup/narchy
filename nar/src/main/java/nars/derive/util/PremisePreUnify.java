@@ -7,11 +7,11 @@ import org.jetbrains.annotations.Nullable;
 
 /** used to determine a premise's "belief task" for the provided "belief term",
  *  and other premise functionality at the start of a derivation */
-public class PremiseUnify extends UnifySubst {
+public class PremisePreUnify extends UnifySubst {
 
     private Term beliefTerm, beliefTermUnified;
 
-    public PremiseUnify() {
+    public PremisePreUnify() {
         super(Premise.var, null);
     }
 

@@ -1,6 +1,5 @@
 package jcog.data.byt;
 
-import jcog.WTF;
 import jcog.data.pool.MetalPool;
 
 public class RecycledDynBytes extends DynBytes {
@@ -9,7 +8,7 @@ public class RecycledDynBytes extends DynBytes {
         super(bufferSize);
     }
 
-    private transient MetalPool pool = null;
+    //private transient MetalPool pool = null;
 
     static final int MAX_KEY_CAPACITY = 8192;
     //final static ThreadLocal<DequePool<byte[]>> bytesPool = DequePool.threadLocal(()->new byte[MAX_KEY_CAPACITY]);
@@ -23,7 +22,7 @@ public class RecycledDynBytes extends DynBytes {
 
         RecycledDynBytes r = pool.get();
         //assert(r.pool == null);
-        r.pool = pool;
+        //r.pool = pool;
         return r;
     }
 
@@ -52,13 +51,12 @@ public class RecycledDynBytes extends DynBytes {
 
     @Override
     public void close() {
-        MetalPool p = pool;
-        if (p==null)
-            throw new WTF("already closed");
+        //MetalPool p = pool;
+        //if (p==null) throw new WTF("already closed");
 
         clear();
-        this.pool = null; //not necessary since threadlocal
-        p.put(this);
+        //this.pool = null; //not necessary since threadlocal
+        bytesPool.get().put(this);
     }
 
 

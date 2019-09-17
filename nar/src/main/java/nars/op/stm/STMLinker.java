@@ -1,5 +1,6 @@
 package nars.op.stm;
 
+import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
@@ -15,9 +16,14 @@ import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
 
-public class STMLinkage2 extends NativePremiseAction {
+public class STMLinker extends NativePremiseAction {
 
-	public final FloatRange strength = new FloatRange(0.5f, 0f, 1f);
+	public final FloatRange strength = new FloatRange(1f, 0f, 1f);
+
+	@Override
+	protected float pri(Derivation d) {
+		return 1.0f;
+	}
 
 //    private final Cause cause;
 
@@ -26,11 +32,11 @@ public class STMLinkage2 extends NativePremiseAction {
 
 	{
 		taskPattern($.varPattern(1));
-		beliefPattern($.varPattern(2));
-		taskPunc(true, true, false, false);
+		beliefPattern($.varPattern(1));
+		taskPunc(true, true, true, true);
 	}
 
-	public STMLinkage2(int capacity) {
+	public STMLinker(int capacity) {
 		super();
 
 		this.capacity = capacity;
@@ -47,18 +53,28 @@ public class STMLinkage2 extends NativePremiseAction {
 		if (next.equals(prev))
 			return false;
 
-		float pri = factor * next.priElseZero() * prev.priElseZero();
-		//TODO time distance factor
+		/* pri split bidirectionally so * 0.5 */
+		float pri = 0.5f * factor * pri(next, prev);
 
 		if (pri >= ScalarValue.EPSILON) {
-			TaskLinkWhat w = (TaskLinkWhat) d.what;
-			Term att = next.term().concept(), btt = prev.term().concept();
-			if (!att.equals(btt)) {
-				link(att, btt, next.punc(), pri, w);
-				link(btt, att, prev.punc(), pri, w);
+			long dt = next.minTimeTo(prev);
+			pri = (float) NAL.evi(pri, dt, d.dur);
+
+			if (pri >= ScalarValue.EPSILON) {
+				TaskLinkWhat w = (TaskLinkWhat) d.what;
+				Term att = next.term().concept(), btt = prev.term().concept();
+				if (!att.equals(btt)) {
+					link(att, btt, next.punc(), pri, w);
+					link(btt, att, prev.punc(), pri, w);
+				}
 			}
 		}
 		return true;
+	}
+
+	private static float pri(Task next, Task prev) {
+		return Util.mean(next.priElseZero(), prev.priElseZero());
+			//Util.or(next.priElseZero(), prev.priElseZero());
 	}
 
 	static void link(Term a, Term b, byte punc, float pri, TaskLinkWhat w) {
@@ -154,8 +170,4 @@ public class STMLinkage2 extends NativePremiseAction {
 //		}
 //	}
 
-	@Override
-	protected float pri(Derivation d) {
-		return 1.0f;
-	}
 }

@@ -60,29 +60,31 @@ public class Deriver extends How {
         return this;
     }
 
-    public Deriver(PremiseRuleSet rules) {
-        this(rules.compile(), rules.nar);
-    }
 
     public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypothesize) {
-        this(rules.compile(), hypothesize, timing, rules.nar);
+        this(rules.compile(), hypothesize, timing);
     }
 
     public Deriver(PremiseRuleSet rules, Hypothesizer hypothesize) {
         this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypothesize);
     }
 
-    @Deprecated public Deriver(DeriverProgram rules, NAR nar) {
+    public Deriver(PremiseRuleSet rules) {
+        this(rules.compile());
+    }
+
+    public Deriver(DeriverProgram rules) {
         this(rules, new TangentIndexer(),
                 //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);
                 //new TaskOccurenceDeriverTiming();
-                new NonEternalTaskOccurenceOrPresentDeriverTiming(),
-                nar);
+                new NonEternalTaskOccurenceOrPresentDeriverTiming()
+        );
     }
 
-    public Deriver(DeriverProgram rules, Hypothesizer hypothesize, TimeFocus timing, NAR nar) {
+    public Deriver(DeriverProgram rules, Hypothesizer hypothesize, TimeFocus timing) {
         super();
+        NAR nar = rules.nar;
         this.rules = rules;
         this.hypothesize = hypothesize;
         this.timing = timing;

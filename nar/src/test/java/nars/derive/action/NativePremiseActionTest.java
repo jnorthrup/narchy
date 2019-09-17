@@ -43,7 +43,7 @@ class NativePremiseActionTest {
 			).compile();
 		d.print();
 
-		new Deriver(d, n);
+		new Deriver(d);
 
 		n.log();
 		n.believe("(x,y)");
