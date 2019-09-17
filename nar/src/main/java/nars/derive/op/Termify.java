@@ -8,9 +8,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.transform.Retemporalize;
 
-import static nars.Op.QUEST;
-import static nars.Op.QUESTION;
-
 /**
  * Derivation target construction step of the derivation process that produces a derived task
  * <p>

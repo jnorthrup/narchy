@@ -1,6 +1,5 @@
 package nars.op.stm;
 
-import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
@@ -73,8 +72,11 @@ public class STMLinker extends NativePremiseAction {
 	}
 
 	private static float pri(Task next, Task prev) {
-		return Util.mean(next.priElseZero(), prev.priElseZero());
+		return
+			Math.min(next.priElseZero(), prev.priElseZero());
+			//Util.mean(next.priElseZero(), prev.priElseZero());
 			//Util.or(next.priElseZero(), prev.priElseZero());
+			//Util.and(next.priElseZero(), prev.priElseZero());
 	}
 
 	static void link(Term a, Term b, byte punc, float pri, TaskLinkWhat w) {
