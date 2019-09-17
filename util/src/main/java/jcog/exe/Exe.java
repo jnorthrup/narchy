@@ -15,7 +15,12 @@ import java.util.concurrent.TimeUnit;
  */
 public enum Exe { ;
 
-    final static org.slf4j.Logger logger = LoggerFactory.getLogger(Exe.class);
+
+    public static boolean PROFILE =
+        //true;
+        false;
+
+	final static org.slf4j.Logger logger = LoggerFactory.getLogger(Exe.class);
 
     /**
      * global timer

@@ -1,6 +1,7 @@
 package jcog.signal.meter;
 
 import jcog.Texts;
+import jcog.exe.Exe;
 import org.HdrHistogram.AtomicHistogram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,26 +39,30 @@ public class Use {
 		timeNS.reset();
 	}
 
-	public static final class time implements AutoCloseable {
+	@FunctionalInterface public interface SafeAutocloseable extends AutoCloseable {
+		void close();
+	}
+
+	public final class time implements SafeAutocloseable {
 
 		final long start;
-		final Use use;
 
-		time(Use use) {
-			this.use = use;
+		time() {
 			this.start = System.nanoTime();
 		}
 
 		@Override
 		public void close() {
 			long end = System.nanoTime();
-			use.timeNS(end-start);
+			timeNS(end-start);
 		}
 	}
 
-	public time time() {
-		return new time(this);
+	public SafeAutocloseable time() {
+		return Exe.PROFILE ? new time() : NullAutocloseable;
 	}
+
+	static final SafeAutocloseable NullAutocloseable = () -> { };
 
 	@Override
 	public String toString() {

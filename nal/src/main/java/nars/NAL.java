@@ -110,8 +110,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final float ANSWER_TRYING = 2f;
 
     /** if false, the tasklink resolution mode is sample */
-    @Deprecated public static final boolean TASKLINK_ANSWER_BELIEF = false;
-    @Deprecated public static final boolean TASKLINK_ANSWER_GOAL = false;
+    @Deprecated public static final boolean TASKLINK_ANSWER_BELIEF = true;
+    @Deprecated public static final boolean TASKLINK_ANSWER_GOAL = true;
 
 
     public static final boolean DEBUG_SIMILAR_DERIVATIONS= false;

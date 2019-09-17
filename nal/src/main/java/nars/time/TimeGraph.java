@@ -822,9 +822,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		if (s0 == 3) {
 
+//			Term[] abc = xx.arrayClone();
+//			ArrayUtil.sort(abc, (t)->t.volume());
+
 			Term a = xx.sub(0), b = xx.sub(1), c = xx.sub(2);
 
-			return solveDT((Compound) CONJ.the(XTERNAL, c, b),
+			return solveDT((Compound) CONJ.the(XTERNAL, b, c),
 				bc -> solveDT((Compound) CONJ.the(XTERNAL, bc.id, a), each
 				));
 
@@ -849,12 +852,22 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		return true;
 	}
 
-	private boolean solveDT_2(Compound x, Predicate<Event> each) {
-		return solveDT_2(x, x.subterms(), each);
-	}
+//	private boolean solveDT_2(Compound x, Predicate<Event> each) {
+//		return solveDT_2(x, x.subterms(), each);
+//	}
 
 	private boolean solveDT_2(Compound x, Subterms xx, Predicate<Event> each) {
 		Term a = xx.sub(0), b = (xx.subs() > 1 ? xx.sub(1) : a /* repeat */);
+		return solveDT_2(x, a, b, each);
+	}
+
+	private boolean solveDT_2(Compound x, Term a, Term b, Predicate<Event> each) {
+		if (x.op()==CONJ && a.volume() > b.volume()) {
+			//swap for optimization.  doenst work with IMPL though
+			Term c = a;
+			a = b;
+			b = c;
+		}
 
 		return solveDTAbsolutePair(x, each, a, b) && solveDTpair(x, a, b, each);
 	}
@@ -963,7 +976,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			if (unknown != null) {
 
-				return solveDTpair((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu) ->
+				return solveDT_2((Compound) CONJ.the(XTERNAL, nextKnown, unknown), nextKnown, unknown, (nu) ->
 					each.test(nu instanceof Absolute ? nu : event(nu.id, start, start + range, false)));
 			} else {
 

@@ -3,7 +3,6 @@ package nars.game;
 import com.google.common.collect.Iterators;
 import nars.NAL;
 import nars.NAR;
-import nars.Op;
 import nars.concept.Concept;
 import nars.game.sensor.Signal;
 import nars.table.BeliefTable;
@@ -72,9 +71,10 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
-            //reinforce(IMPL.the(Rpos, A), BELIEF, RimplA, stamped);
-            //reinforce(IMPL.the(Rneg, A), BELIEF, RimplA, stamped);
+            //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
+
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplA, stamped);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplA, stamped);
         });
     }
 

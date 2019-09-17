@@ -7590,6 +7590,12 @@ public enum ArrayUtil {
         quickSort(left, right, (a,b)->a==b ? 0 : Float.compare(v.floatValueOf(x[a]), v.floatValueOf(x[b])), (a,b)->swapObj(x, a, b));
     }
 
+    /** modifies order of input array */
+    public static <X> X[] sort(X[] x,  FloatFunction<X> v) {
+        sort(x, 0, x.length, v);
+        return x;
+    }
+
     /**
      * modifies input
      */

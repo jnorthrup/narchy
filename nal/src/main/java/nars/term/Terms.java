@@ -473,7 +473,7 @@ public enum Terms {
 
 
 	public static boolean eqRCom(Term x, Term y) {
-		if (x.equals(y))
+		if (x.equalsPosOrNeg(y))
 			return true;
 
 		if (x instanceof Neg && y instanceof Neg) {

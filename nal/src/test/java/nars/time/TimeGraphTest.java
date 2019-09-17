@@ -221,6 +221,7 @@ class TimeGraphTest {
         */
         TimeGraph C = newTimeGraph(1);
         C.know($("(((b &&+5 c) &&+5 d) ==>-15 a)"), 6);
+        assertSolved("((b &&+5 c) ==>+- a)", C, "((b &&+5 c) ==>-10 a)");
         assertSolved("((b &&+10 d) ==>+- a)", C, "((b &&+10 d) ==>-15 a)");
     }
 
