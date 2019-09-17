@@ -56,6 +56,8 @@ public class SensorBeliefTables extends BeliefTables {
 
         add(new MyRTreeBeliefTable());
 
+        /* series will override the r-tree table */
+        matchMode = 0;
     }
 
     @Override

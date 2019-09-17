@@ -205,6 +205,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     /** if true then tasklink targets are named by the concept and not a raw term
      * (which could be temporal or not normalized)
+     * should probably always be true
      * */
     public static final boolean TASKLINK_TARGET_CONCEPT = true;
 
@@ -251,7 +252,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public enum signal {
         ;
 
-        public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= configIs("SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS");
+        public static final boolean SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS= true;
         public static final int SIGNAL_BELIEF_TABLE_SERIES_SIZE = 128;
         /**
          * maximum time (in durations) that a signal task can stretch the same value
@@ -735,7 +736,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 1;
+        public static final int TIMEGRAPH_ITERATIONS = 2;
 
 
         @Range(min = 0, max = 64)

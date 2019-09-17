@@ -40,11 +40,11 @@ public enum Image {
 
             int prodSub = intOrExt ? 1 : 0;
 
-            Term s = t.sub(prodSub);
+            Term prod = t.sub(prodSub);
 
-            if (s.op() == PROD) {
+            if (prod.op() == PROD) {
 
-                Subterms ss = s.subterms();
+                Subterms ss = prod.subterms();
                 int n = ss.subs();
                 if (n >= NAL.term.imageTransformSubMin && (ss.structureSurface() & IMG.bit) == 0) {
                     Img target = intOrExt ? ImgInt : ImgExt;

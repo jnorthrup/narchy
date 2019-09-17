@@ -289,9 +289,8 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 
     /** the termlink which is finally resolved by the tasklink.  defaults to to()
      *  but can be overridden for dynamic / virtual termlinks.
-     *  return null to re-use task's term, cancelling any forward/reverse dynamics
      */
-    @Nullable default Term target(Task task, Derivation d) {
+    default Term target(Task task, Derivation d) {
         return to();
     }
 

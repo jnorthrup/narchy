@@ -24,12 +24,12 @@ package jcog.data.list;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.atomic.MetalAtomicReferenceArray;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -54,7 +54,7 @@ import java.util.stream.Stream;
      * <p>
      * Created by jcairns on 5/28/14.
  */
-public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
+public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
 
     // the sequence number of the start of the queue
@@ -79,7 +79,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
             int c = length();
             h = i(h, c);
             while(true) {
-                X next = getOpaque(h);
+                X next = getFast(h);
                 if (next != null)
                     each.accept(next);
                 /*else
@@ -148,7 +148,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
                 if (canTake(tail, 1)) {
 
                     // tailSeq is valid and got access without contention
-                    set(it, x);
+                    setFast(it, x);
 
                     take(tail, 1);
 
@@ -200,7 +200,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
             // check if we can update the sequence
             if (canPut(head, 1)) {
 
-                final X pollObj = getAndSet(ih, null);
+                final X pollObj = getAndSetFast(ih, null);
 
                 put(head, 1);
 
@@ -229,12 +229,12 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
     }
 
     public final X peek(int head, int delta) {
-        return getOpaque(i( head + delta) );
+        return getFast(i( head + delta) );
     }
-    
+
     /** if capacity is known it can be provided here to elide method call */
     public final X peek(int head, int delta, int length) {
-        return getOpaque(i( head + delta, length) );
+        return getFast(i( head + delta, length) );
     }
 
     /** oldest element */
@@ -382,7 +382,7 @@ public class MetalConcurrentQueue<X> extends AtomicReferenceArray<X>  {
 
                 if (canPut(head, 1)) {
                     //get, nullify, and advance
-                    X next = getAndSet(ih, null);
+                    X next = getAndSetFast(ih, null);
                     put(head, 1);
 
                     //callback

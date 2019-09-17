@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
+import jcog.data.atomic.MetalAtomicReferenceArray;
 import jcog.data.list.table.Table;
 import jcog.pri.Forgetting;
 import jcog.pri.Prioritizable;
@@ -45,21 +46,21 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 
     private volatile int mass, pressure, capacity;
 
-    protected static <X, Y> void forEachActive(Bag<X, Y> bag, AtomicReferenceArray<Y> map, Consumer<? super Y> e) {
+    protected static <X, Y> void forEachActive(Bag<X, Y> bag, MetalAtomicReferenceArray<Y> map, Consumer<? super Y> e) {
         forEach(map, bag::active, e);
     }
 
-    private static <Y> void forEach(AtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
+    private static <Y> void forEach(MetalAtomicReferenceArray<Y> map, Predicate<Y> accept, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
-            Y v = map.getOpaque(j);
+            Y v = map.getFast(j);
             if (v != null && accept.test(v)) {
                 e.accept(v);
             }
         }
     }
-    protected static <Y> void forEach(AtomicReferenceArray<Y> map, int max, Consumer<? super Y> e) {
+    protected static <Y> void forEach(MetalAtomicReferenceArray<Y> map, int max, Consumer<? super Y> e) {
         for (int c = map.length(), j = 0; j < c; j++) {
-            Y v = map.getOpaque(j);
+            Y v = map.getFast(j);
             if (v != null) {
                 e.accept(v);
                 if (--max <= 0)

@@ -4,9 +4,6 @@ import jcog.Util;
 import sun.misc.Unsafe;
 
 import java.lang.reflect.Field;
-import java.security.AccessController;
-import java.security.PrivilegedActionException;
-import java.security.PrivilegedExceptionAction;
 import java.util.concurrent.atomic.AtomicIntegerFieldUpdater;
 
 public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldUpdater<T> {
@@ -19,23 +16,23 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
 //        private final Class<T> tclass;
 
     public MetalAtomicIntegerFieldUpdater(final Class<T> tclass, final String fieldName) {
-        Field field;
+
 //            int modifiers;
         try {
-            field = AccessController.doPrivileged((PrivilegedExceptionAction<Field>)
-                    () -> tclass.getDeclaredField(fieldName));
+            //field = AccessController.doPrivileged((PrivilegedExceptionAction<Field>)
+            Field field = tclass.getDeclaredField(fieldName);
             field.trySetAccessible();
-//                modifiers = field.getModifiers();
+            this.offset = U.objectFieldOffset(field);
+
+            //                modifiers = field.getModifiers();
             ////ReflectUtil.ensureMemberAccess(caller, tclass, (Object)null, modifiers);
             //ClassLoader cl = tclass.getClassLoader();
 //                ClassLoader ccl = caller.getClassLoader();
             //if (ccl != null && ccl != cl && (cl == null || !isAncestor(cl, ccl))) {
             //  ReflectUtil.checkPackageAccess(tclass);
             //}
-        } catch (PrivilegedActionException var8) {
-            throw new RuntimeException(var8.getException());
-        } catch (Exception var9) {
-            throw new RuntimeException(var9);
+        } catch (Throwable t) {
+            throw new RuntimeException(t);
         }
 
 //            if (field.getType() != Integer.TYPE) {
@@ -45,7 +42,6 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
 //            } else {
         //this.cclass = Modifier.isProtected(modifiers) && tclass.isAssignableFrom(caller) && !isSamePackage(tclass, caller) ? caller : tclass;
 //                this.tclass = tclass;
-        this.offset = U.objectFieldOffset(field);
 //            }
 
         //    private static final VarHandle INT;

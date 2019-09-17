@@ -289,10 +289,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
         @Override
         public Term target(Task task, Derivation d) {
-            if (task.op()==CONJ)
-                return null; //structural ex: decompose
-            else
-                return superPixel(d.random); //single pixel, so choose a target for comparison
+            return task.term();
         }
 
 

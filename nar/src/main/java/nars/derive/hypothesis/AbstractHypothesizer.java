@@ -10,8 +10,12 @@ import nars.derive.premise.Premise;
 import nars.link.*;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.util.Image;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
+
+import static nars.Op.INH;
+import static nars.Op.PROD;
 
 /**
  * unbuffered
@@ -27,7 +31,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		int termLinksPerTaskLink = this.termLinksPerTaskLink.intValue();
 
-		int nLinks = Math.max(1, (int)(premisesPerIteration.floatValue() / termLinksPerTaskLink));
+		int nLinks = Math.max(1, (int) (premisesPerIteration.floatValue() / termLinksPerTaskLink));
 
 		for (int i = 0; i < nLinks; i++)
 			premise(when, links, d, termLinksPerTaskLink);
@@ -90,42 +94,54 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 	}
 
-	@Deprecated protected Premise premise(TaskLinks links, Derivation d, TaskLink link, Task task) {
+	@Deprecated
+	protected Premise premise(TaskLinks links, Derivation d, TaskLink link, Task task) {
 		Term target = link.target(task, d);
-		if (target == null)
-			target = task.term();
+
+		if (target instanceof Compound && !(link instanceof DynamicTaskLink)) {
 
 
+			/*if (link.isSelf())*/ {
 
-		if (target instanceof Compound && !(link instanceof DynamicTaskLink) && link.isSelf()) {
+				if (d.random.nextFloat() < 1f / Math.pow(target.volume(), 1)) {
+					//experiment: if self, this pass-thru = direct structural transform
+				} else {
+					//decompose
+					Compound src = (Compound) target;    //link.from(); //task.term();
+					Term forward = decompose(src, link, task, d);
+					if (forward != null) {
+						if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
+							target = forward;
+						} else {
 
-			if (d.random.nextFloat() < 1f / Math.pow(target.volume(),2)) {
-				//direct structural transform
-			} else {
-				//decompose
-				Compound src = (Compound) target;    //link.from(); //task.term();
-				Term forward = decompose(src, link, task, d);
-				if (forward != null) {
-					if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
-						target = forward;
-					} else {
+							//experiment: dynamic image transform
+							if (target.opID() == INH.id && d.random.nextFloat() < 0.5f) { //task.term().isAny(INH.bit | SIM.bit)
+								Term t0 = target.sub(0),  t1 = target.sub(1);
+								boolean t0p = t0.opID() == PROD.id, t1p = t1.opID() == PROD.id;
+								if ((t0p || t1p) && (!forward.equals(t0) && !forward.equals(t1))) {
+									Term it = t0p ? Image.imageExt(target, forward) : Image.imageInt(target, forward);
+									if (it instanceof Compound && it.op().conceptualizable)
+										return new Premise(task, it);
+								}
+							}
 
-						links.grow(link, src, forward, task.punc());
+							links.grow(link, src, forward, task.punc());
 
-						//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
-						//if (d.random.nextBoolean())
-						target = forward; //continue as self, or eager traverse the new link
+							//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
+							//if (d.random.nextBoolean())
+							target = forward; //continue as self, or eager traverse the new link
+						}
 					}
 				}
 			}
 		}
 
 		if (target.op().conceptualizable) {
-			Term reverse = reverse(target, link, task, links, d);
+			Term reverse = reverse(target.root(), link, task, links, d);
 
 			if (reverse != null) {
-				assert(!reverse.equals(link.from()));
-				assert(reverse.op().conceptualizable);
+				assert (!reverse.equals(link.from()));
+				assert (reverse.op().conceptualizable);
 				target = reverse;
 
 				//extra links: dont seem necessary
@@ -138,7 +154,9 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	}
 
 
-	/** selects the decomposition strategy for the given Compound */
+	/**
+	 * selects the decomposition strategy for the given Compound
+	 */
 	protected TermDecomposer decomposer(Compound t) {
 		switch (t.op()) {
 			case IMPL:
@@ -155,16 +173,17 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	 * determines forward growth target. null to disable
 	 * override to provide a custom termlink supplier
 	 */
-	@Nullable protected Term decompose(Compound src, TaskLink link, Task task, Derivation d) {
+	@Nullable
+	protected Term decompose(Compound src, TaskLink link, Task task, Derivation d) {
 		return decomposer(src).decompose(src, d.random);
 	}
 
 	/**
 	 * @param target the final target of the tasklink (not necessarily link.to() in cases where it's dynamic).
-	 *
+	 *               <p>
 	 *               this term is where the tasklink "reflects" or "bounces" to
 	 *               find an otherwise unlinked tangent concept
-	 *
+	 *               <p>
 	 *               resolves reverse termlink
 	 *               return null to avoid reversal
 	 * @param links

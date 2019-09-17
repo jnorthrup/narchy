@@ -7,13 +7,9 @@ import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.NAL;
-import nars.Op;
-import nars.task.util.TaskException;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Bool;
 import nars.term.util.Image;
-import nars.term.util.TermException;
 
 import static nars.Task.i;
 
@@ -40,20 +36,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
                     target
         ;
 
-        if (source instanceof Bool)
-            throw new TermException("source bool", source);
-//        if (target instanceof Bool)
-//            throw new TermException("source bool", target);
 
-        Op so = source.op();
-        if (!so.taskable)
-            throw new TaskException(source, "source term not taskable");
-        if (!so.conceptualizable)
-            throw new TaskException(source, "source term not conceptualizable");
-//        if (NAL.DEBUG) {
-//            if (!source.isNormalized())
-//                throw new TaskException(source, "source term not normalized and can not name a task");
-//        }
 
         return new AtomicTaskLink(source, target);
     }
@@ -66,10 +49,10 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     @Override
     public AtomicTaskLink clone() {
-        AtomicTaskLink l = new AtomicTaskLink(from, to, hash);
-        ((AtomicFixedPoint4x16bitVector)l.punc).data(((AtomicFixedPoint4x16bitVector)this.punc).data());
-        l.invalidate();
-        return l;
+        AtomicTaskLink clone = new AtomicTaskLink(from, to, hash);
+        ((AtomicFixedPoint4x16bitVector)clone.punc).data(((AtomicFixedPoint4x16bitVector)this.punc).data());
+        clone.invalidate();
+        return clone;
     }
 
 

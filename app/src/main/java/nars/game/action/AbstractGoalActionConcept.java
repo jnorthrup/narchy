@@ -3,11 +3,10 @@ package nars.game.action;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.game.Game;
-import nars.game.action.curiosity.Curiosity;
-import nars.game.action.curiosity.CuriosityTask;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
+import nars.game.Game;
+import nars.game.action.curiosity.CuriosityTask;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
@@ -18,7 +17,6 @@ import nars.task.util.Answer;
 import nars.task.util.series.RingBufferTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
-import nars.time.Tense;
 import nars.time.When;
 import nars.truth.Truth;
 import nars.truth.proj.TruthProjection;
@@ -37,14 +35,14 @@ import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 public class AbstractGoalActionConcept extends GameAction {
 
 
-    @Nullable private Curiosity curiosity = null;
+//    @Nullable private Curiosity curiosity = null;
 
 
-    /** disables revision merge so that revisions, not being CuriosityTask and thus intercepted, cant directly
-     *  contaminate the normal derived goal table
-     *  and compete (when curiosity confidence is stronger) with authentic derived
-     *  goals which we are trying to learn to form and remember. */
-    private final SeriesBeliefTable curiosityTable;
+//    /** disables revision merge so that revisions, not being CuriosityTask and thus intercepted, cant directly
+//     *  contaminate the normal derived goal table
+//     *  and compete (when curiosity confidence is stronger) with authentic derived
+//     *  goals which we are trying to learn to form and remember. */
+//    private final SeriesBeliefTable curiosityTable;
 
     /**
      * current estimate
@@ -82,9 +80,8 @@ public class AbstractGoalActionConcept extends GameAction {
 
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
-        GOALS.add(curiosityTable =
-                new CuriosityBeliefTable(term));
         GOALS.add(mutableGoals);
+        //GOALS.add(curiosityTable = new CuriosityBeliefTable(term));
     }
 
     public void goalDefault(Truth t, NAR n) {
@@ -95,13 +92,10 @@ public class AbstractGoalActionConcept extends GameAction {
         return n.newChannel(this);
     }
 
-    public AbstractGoalActionConcept updateCuriosity(Curiosity curiosity) {
-        this.curiosity = curiosity;
-        return this;
-    }
-
-
-
+//    public AbstractGoalActionConcept updateCuriosity(Curiosity curiosity) {
+//        this.curiosity = curiosity;
+//        return this;
+//    }
 
     @Override
     public double dexterity() {
@@ -165,7 +159,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
         this.beliefTruth = truth(truth(true, limitBelief, g.when, perceptShift), g.when, perceptShift);
 
-        updateCuriosity(g.curiosity);
+//        updateCuriosity(g.curiosity);
 
         this.actionTruth = actionTruth(limitGoal, g, perceptShift);
 
@@ -197,52 +191,54 @@ public class AbstractGoalActionConcept extends GameAction {
         }
 
 
-        Truth actionCuri = curiosity.curiosity(this);
-
-        long s = g.when.start, e = g.when.end;
-        NAR n = g.nar;
-
-        Curiosity.CuriosityInjection curiosityInject;
-        if (actionCuri != null) {
-            curiosityInject = Curiosity.CuriosityInjection.Override;
-
-//            float confMin = n.confMin.floatValue();
-//            if (actionCuri.conf() < confMin) {
-//                //boost sub-threshold confidence to minimum
-//                actionCuri = $.t(actionCuri.freq(), confMin);
+//        Truth actionCuri = curiosity.curiosity(this);
+//
+//        long s = g.when.start, e = g.when.end;
+//        NAR n = g.nar;
+//
+//        Curiosity.CuriosityInjection curiosityInject;
+//        if (actionCuri != null) {
+//            curiosityInject = Curiosity.CuriosityInjection.Override;
+//
+////            float confMin = n.confMin.floatValue();
+////            if (actionCuri.conf() < confMin) {
+////                //boost sub-threshold confidence to minimum
+////                actionCuri = $.t(actionCuri.freq(), confMin);
+////            }
+//
+//            //pre-load curiosity for the future
+//            if (curiosity.goal.getOpaque()) {
+//                long curiStart = s;
+//                long curiEnd = Math.round(curiStart + dur * (n.random().nextFloat()*NAL.CURIOSITY_TASK_RANGE_DURS)); //(1 + (curiosity.Math.max(curiStart, e);
+//
+//                long[] se = Tense.dither(new long[] { curiStart, curiEnd }, n);
+//                curiStart = se[0];
+//                curiEnd = se[1];
+//
+//                g.what().accept(
+//                        curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
+//                );
 //            }
+//
+//
+//        } else {
+//            curiosityInject = curiosity.injection.get();
+//
+//            //use existing curiosity
+//            Answer a = Answer.
+//				taskStrength(true, 1, s, e, term, null, n)
+//                    .dur(dur)
+//                    .match(curiosityTable);
+//            actionCuri = a.truth();
+//        }
+//
+//        if (actionDex != null || actionCuri != null) {
+//            actionTruth = curiosityInject.inject(actionDex, actionCuri);
+//        } else {
+//            actionTruth = null;
+//        }
 
-            //pre-load curiosity for the future
-            if (curiosity.goal.getOpaque()) {
-                long curiStart = s;
-                long curiEnd = Math.round(curiStart + dur * (n.random().nextFloat()*NAL.CURIOSITY_TASK_RANGE_DURS)); //(1 + (curiosity.Math.max(curiStart, e);
-
-                long[] se = Tense.dither(new long[] { curiStart, curiEnd }, n);
-                curiStart = se[0];
-                curiEnd = se[1];
-
-                g.what().accept(
-                        curiosity(actionCuri /*goal*/, curiStart, curiEnd, n)
-                );
-            }
-
-
-        } else {
-            curiosityInject = curiosity.injection.get();
-
-            //use existing curiosity
-            Answer a = Answer.
-				taskStrength(true, 1, s, e, term, null, n)
-                    .dur(dur)
-                    .match(curiosityTable);
-            actionCuri = a.truth();
-        }
-
-        if (actionDex != null || actionCuri != null) {
-            actionTruth = curiosityInject.inject(actionDex, actionCuri);
-        } else {
-            actionTruth = null;
-        }
+        actionTruth = actionDex;
 
         return actionTruth;
     }

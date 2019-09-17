@@ -6,7 +6,11 @@ import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.Op;
+import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.atom.Bool;
+import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.assertFinite;
@@ -46,6 +50,21 @@ public abstract class AbstractTaskLink implements TaskLink {
             //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
             hash(source, target)
         );
+
+        if (source instanceof Bool)
+            throw new TermException("source bool", source);
+        if (target instanceof Bool)
+            throw new TermException("target bool", target);
+
+        Op so = source.op();
+        if (!so.taskable)
+            throw new TaskException(source, "source term not taskable");
+        if (!so.conceptualizable)
+            throw new TaskException(source, "source term not conceptualizable");
+//        if (NAL.DEBUG) {
+//            if (!source.isNormalized())
+//                throw new TaskException(source, "source term not normalized and can not name a task");
+//        }
     }
 
     private static int hash(Term source, Term target) {

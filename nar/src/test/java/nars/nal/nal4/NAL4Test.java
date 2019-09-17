@@ -2,8 +2,10 @@ package nars.nal.nal4;
 
 import nars.NAR;
 import nars.NARS;
+import nars.nal.nal7.NAL7Test;
 import nars.term.util.Image;
 import nars.test.NALTest;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
@@ -18,6 +20,11 @@ public class NAL4Test extends NALTest {
 
 
     private static final int cycles = 250;
+
+    @BeforeEach
+    void setTolerance() {
+        test.confTolerance(NAL7Test.CONF_TOLERANCE_FOR_PROJECTIONS); //for NAL4 Identity / StructuralReduction option
+    }
 
     @Override
     protected NAR nar() {

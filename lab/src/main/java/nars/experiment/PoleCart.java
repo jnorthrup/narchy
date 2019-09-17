@@ -78,6 +78,7 @@ public class PoleCart extends GameX {
 						instances > 1 ?
 							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
 							$.the(PoleCart.class.getSimpleName()), n);
+					n.start(p);
 					Iterable<? extends Termed> predicting = Iterables.concat(
 						p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
 					);
@@ -226,7 +227,7 @@ public class PoleCart extends GameX {
 	}
 
 	public PoleCart(Term id, NAR nar) {
-		super(id, fps(fps));
+		super(id, fps(fps), nar);
 
 
 		pos = 0.;

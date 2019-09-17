@@ -20,6 +20,10 @@ import java.util.stream.Stream;
  */
 public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable {
 
+    static final int ORDERED = 0, SHUFFLE_FIRST_COME_FIRST_SERVE = 1, SHUFFLE_ROUND_ROBIN = 2;
+
+    protected int matchMode = 2;
+
     public BeliefTables(int capacity) {
         super(0, new BeliefTable[capacity]);
     }
@@ -42,28 +46,44 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
         if (size == 0) return;
         else if (size == 1) { items[0].match(a); }
         else {
-            //first come first serve
-//            ANDshuffled(a.random(), t -> {
-//                t.match(a);
-//                return a.ttl > 0;
-//            });
+            switch (matchMode) {
+                case ORDERED:
+                    allSatisfy(t -> {
+                        t.match(a);
+                        return a.ttl > 0;
+                    });
+                    break;
 
+                case SHUFFLE_FIRST_COME_FIRST_SERVE:
+                    ANDshuffled(a.random(), t -> {
+                        t.match(a);
+                        return a.ttl > 0;
+                    });
+                    break;
 
-            //fair round robin
-        int ttlStart = a.ttl; assert(ttlStart > 0);
-        int ttlFair = Math.max(1,
-            ttlStart /size
-            //ttlStart
-        );
-        int[] ttlUsed = new int[1];
-        ANDshuffled(a.random(), t->{
-            a.ttl = ttlFair; //restore for next
-            t.match(a);
-            ttlUsed[0] += ttlFair - a.ttl;
-            return true;
-        });
-        a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
+                case SHUFFLE_ROUND_ROBIN:
+                    //fair round robin
+                    int ttlStart = a.ttl;
+                    assert (ttlStart > 0);
+                    int ttlFair = Math.max(1,
+                        ttlStart / size
+                        //ttlStart
+                    );
+                    int[] ttlUsed = new int[1];
+                    ANDshuffled(a.random(), t -> {
+                        a.ttl = ttlFair; //restore for next
+                        t.match(a);
+                        ttlUsed[0] += ttlFair - a.ttl;
+                        return true;
+                    });
+                    a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
+                    break;
+
+                default:
+                    throw new UnsupportedOperationException();
+            }
         }
+
     }
 
 

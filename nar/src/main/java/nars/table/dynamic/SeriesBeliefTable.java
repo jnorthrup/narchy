@@ -1,6 +1,7 @@
 package nars.table.dynamic;
 
 import jcog.Util;
+import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Task;
 import nars.table.BeliefTable;
@@ -44,29 +45,33 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
     @Override
     public final void match(Answer a) {
-        long s = a.start, e;
+        long seriesStart = series.start();
+        if (seriesStart!=TIMELESS) {
+            long s = a.start, e;
 
-        double dur = a.dur;
+            double dur = a.dur;
 
-        if (s == ETERNAL || s == TIMELESS) {
-            //choose now as the default focus time
-            long now = a.time();
-            s = (long)Math.floor(now - dur/2);
-            e = (long)Math.ceil(now + dur/2);
-        } else {
-            e = a.end;
+            if (s == ETERNAL || s == TIMELESS) {
+                //choose now as the default focus time
+                long now = a.time();
+                s = (long)Math.floor(now - dur/2);
+                e = (long)Math.ceil(now + dur/2);
+            } else {
+                e = a.end;
+            }
+
+            //use at most a specific fraction of the TTL
+            int aTTL = a.ttl; //save
+            long range = Math.max(1, LongInterval.intersectLength(seriesStart, series.end(), s, e));
+            int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
+                NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * range)));
+            a.ttl = seriesTTL;
+
+            series.whileEach(s, e, false, a);
+
+            int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
+            a.ttl = aTTL - ttlUsed; //restore
         }
-
-        //use at most a specific fraction of the TTL
-        int aTTL = a.ttl; //save
-        int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
-            NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * (e - s))));
-        a.ttl = seriesTTL;
-
-        series.whileEach(s, e, false, a);
-
-        int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
-        a.ttl = aTTL - ttlUsed; //restore
     }
 
 
@@ -136,7 +141,8 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
                 //if (LongInterval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
                     //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
-                    return !series.isEmpty(tStart, tEnd);
+                //TODO store ranges tested for series rather than keep scanning for each one
+                    return !series.isEmpty(Math.max(seriesStart, tStart), Math.min(seriesEnd, tEnd));
                 //}
             }
         }

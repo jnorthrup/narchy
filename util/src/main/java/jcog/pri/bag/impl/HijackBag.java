@@ -6,6 +6,7 @@ import jcog.Skill;
 import jcog.Util;
 import jcog.data.NumberX;
 import jcog.data.atomic.MetalAtomicIntegerFieldUpdater;
+import jcog.data.atomic.MetalAtomicReferenceArray;
 import jcog.decide.Roulette;
 import jcog.mutex.SpinMutex;
 import jcog.mutex.SpinMutexArray;
@@ -28,12 +29,13 @@ import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
+import static jcog.data.atomic.MetalAtomicReferenceArray.EMPTY_ARRAY;
 import static jcog.pri.bag.impl.HijackBag.Mode.*;
 
 /**
  * unsorted priority queue with stochastic replacement policy
  * <p>
- * it uses a AtomicReferenceArray<> to hold the data but Unsafe CAS operations might perform better (i couldnt get them to work like NBHM does).  this is necessary when an index is chosen for replacement that it makes certain it was replacing the element it thought it was (that it hadnt been inter-hijacked by another thread etc).  on an insert i issue a ticket to the thread and store this in a small ConcurrentHashMap<X,Integer>.  this spins in a busy putIfAbsent loop until it can claim the ticket for the object being inserted. this is to prevent the case where two threads try to insert the same object and end-up puttnig two copies in adjacent hash indices.  this should be rare so the putIfAbsent should usually work on the first try.  when it exits the update critical section it removes the key,value ticket freeing it for another thread.  any onAdded and onRemoved subclass event handling happen outside of this critical section, and all cases seem to be covered.
+ * it uses a MetalAtomicReferenceArray<> to hold the data but Unsafe CAS operations might perform better (i couldnt get them to work like NBHM does).  this is necessary when an index is chosen for replacement that it makes certain it was replacing the element it thought it was (that it hadnt been inter-hijacked by another thread etc).  on an insert i issue a ticket to the thread and store this in a small ConcurrentHashMap<X,Integer>.  this spins in a busy putIfAbsent loop until it can claim the ticket for the object being inserted. this is to prevent the case where two threads try to insert the same object and end-up puttnig two copies in adjacent hash indices.  this should be rare so the putIfAbsent should usually work on the first try.  when it exits the update critical section it removes the key,value ticket freeing it for another thread.  any onAdded and onRemoved subclass event handling happen outside of this critical section, and all cases seem to be covered.
  * <p>
  * <p>
  * although its called Bag (because of its use in other parts of this project) think of it like a sawed-off non-blocking hashmap with prioritized cells that compete with each other on insert. the way it works is like a probing hashtable but there is no guarantee something will be inserted.
@@ -49,8 +51,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     private static final MetalAtomicIntegerFieldUpdater<Bag> SIZE =
             new MetalAtomicIntegerFieldUpdater(HijackBag.class, "size");
 
-    private static final AtomicReferenceFieldUpdater<HijackBag, AtomicReferenceArray> MAP =
-            AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, AtomicReferenceArray.class, "map");
+    private static final AtomicReferenceFieldUpdater<HijackBag, MetalAtomicReferenceArray> MAP =
+            AtomicReferenceFieldUpdater.newUpdater(HijackBag.class, MetalAtomicReferenceArray.class, "map");
 
     private static final SpinMutex mutex = new SpinMutexArray();
     private static final AtomicInteger serial = new AtomicInteger();
@@ -71,7 +73,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     /**
      * TODO make non-public
      */
-    volatile AtomicReferenceArray<V> map = EMPTY_ARRAY;
+    volatile MetalAtomicReferenceArray<V> map = EMPTY_ARRAY;
 
 
     /**
@@ -82,7 +84,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
 
 
-    private static final AtomicReferenceArray EMPTY_ARRAY = new AtomicReferenceArray(0);
+
 
     public final int reprobes;
 
@@ -132,9 +134,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     protected void resize(int newSpace) {
-        final AtomicReferenceArray<V>[] prev = new AtomicReferenceArray[1];
+        final MetalAtomicReferenceArray<V>[] prev = new MetalAtomicReferenceArray[1];
 
-        AtomicReferenceArray<V> next = newSpace != 0 ? new AtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
+        MetalAtomicReferenceArray<V> next = newSpace != 0 ? new MetalAtomicReferenceArray<>(newSpace) : EMPTY_ARRAY;
         if (next == MAP.updateAndGet(this, (x) -> {
             if (x.length() != newSpace) {
                 prev[0] = x;
@@ -156,8 +158,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     @Override
     public void clear() {
 
-        AtomicReferenceArray current = MAP.get(this);
-        AtomicReferenceArray<V> x = (current == null || reshrink(space())) ? reset(spaceMin()) : current;
+        MetalAtomicReferenceArray current = MAP.get(this);
+        MetalAtomicReferenceArray<V> x = (current == null || reshrink(space())) ? reset(spaceMin()) : current;
 
         for (int i = 0; i < x.length(); i++) {
             V xi = x.getAndSet(i, null);
@@ -178,12 +180,12 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     @Nullable
-    private AtomicReferenceArray<V> reset(int space) {
+    private MetalAtomicReferenceArray<V> reset(int space) {
 
         if (SIZE.getAndSet(this, 0) != 0) {
-            AtomicReferenceArray<V> newMap = new AtomicReferenceArray<>(space);
+            MetalAtomicReferenceArray<V> newMap = new MetalAtomicReferenceArray<>(space);
 
-            AtomicReferenceArray<V> prevMap = MAP.getAndSet(this, newMap);
+            MetalAtomicReferenceArray<V> prevMap = MAP.getAndSet(this, newMap);
 
             if (prevMap == newMap)
 
@@ -203,11 +205,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     }
 
     public float density() {
-        AtomicReferenceArray<V> m = map;
+        MetalAtomicReferenceArray<V> m = map;
         int mm = m.length();
         int filled = 0;
         for (int i = 0; i < mm; i++) {
-            if (m.getOpaque(i) != null)
+            if (m.getFast(i) != null)
                 filled++;
         }
         return ((float) filled) / mm;
@@ -224,7 +226,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      */
     private V update(/*@NotNull*/ Object k, @Nullable V incoming /* null to remove */, Mode mode, @Nullable NumberX overflowing) {
 
-        AtomicReferenceArray<V> map = MAP.get(this);
+        MetalAtomicReferenceArray<V> map = MAP.get(this);
         int c = map.length();
         if (c == 0)
             return null;
@@ -269,9 +271,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                     return _get(k, kHash, start, c, map);
                 case REMOVE:
                     for (int i = start, j = reprobes; j > 0; j--) {
-                        V v = map.getAcquire(i);
+                        V v = map.getFast(i);
                         if (v != null && keyEquals(k, kHash, v)) {
-                            if (map.compareAndExchangeRelease(i, v, null) == v) {
+                            if (map.compareAndSetRelease(i, v, null)) {
                                 toReturn = toRemove = v;
                                 break;
                             }
@@ -310,7 +312,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
                                 assert (next != null);
                                 if (next != v) {
-                                    if (map.compareAndExchangeRelease(i, v, next) != v) {
+                                    if (!map.compareAndSetRelease(i, v, next)) {
 //                                        throw new WTF("merge mismatch: " + v);
 //                                        //the previous value likely got hijacked by another thread
 //                                        //restart?
@@ -344,7 +346,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                             //assert(victimWeakest!=-1);
 
                             if ((victimIndex >= 0 && victimValue == null) || (victimValue != null && replace(incomingPri, victimValue, victimPri))) {
-                                if (map.weakCompareAndSetRelease(victimIndex, victimValue, incoming)) {
+                                if (map.compareAndSetRelease(victimIndex, victimValue, incoming)) {
                                     toRemove = victimValue;
                                     toReturn = toAdd = incoming;
                                     break; //done
@@ -401,9 +403,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         return toReturn;
     }
 
-    private V _get(Object k, int kHash, int start, int c, AtomicReferenceArray<V> map) {
+    private V _get(Object k, int kHash, int start, int c, MetalAtomicReferenceArray<V> map) {
         for (int i = start, j = reprobes; j > 0; j--) {
-            V v = map.getOpaque(i);
+            V v = map.getFast(i);
             if (v != null && keyEquals(k, kHash, v))
                 return v;
 
@@ -595,7 +597,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
         restart:
         while ((s = size()) > 0) {
-            final AtomicReferenceArray<V> map = this.map;
+            final MetalAtomicReferenceArray<V> map = this.map;
             int c = map.length();
             if (c == 0)
                 break;
@@ -623,7 +625,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
             int windowSize = 0;
 
             while ((mapNullSeen + windowSize) < c /*&& size > 0*/) {
-                V v = map.getOpaque(i);
+                V v = map.getFast(i);
 
                 if (v != null) {
                     float p = priElse(v, 0);
@@ -688,7 +690,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                 float p = Float.NaN;
                 mapNullSeen = 0;
                 do {
-                    v0 = map.getOpaque(i = Util.next(i, direction, c));
+                    v0 = map.getFast(i = Util.next(i, direction, c));
                     if (v0 == null) {
                         if (mapNullSeen++ >= c)
                             break restart;
@@ -712,11 +714,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         }
     }
 
-    private void evict(AtomicReferenceArray<V> map, int i, V potentialVictimPri) {
+    private void evict(MetalAtomicReferenceArray<V> map, int i, V potentialVictimPri) {
         evict(map, i, potentialVictimPri, true);
     }
 
-    private void evict(AtomicReferenceArray<V> map, int i, V victim, boolean updateSize) {
+    private void evict(MetalAtomicReferenceArray<V> map, int i, V victim, boolean updateSize) {
         if (map.compareAndSet(i, victim, null)) {
 
             //if the map is still active
@@ -758,7 +760,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
     @Override
     public Stream<V> stream() {
-        final AtomicReferenceArray<V> map = this.map;
+        final MetalAtomicReferenceArray<V> map = this.map;
         return IntStream.range(0, map.length())
                 .mapToObj(map::get).filter(Objects::nonNull);
     }
@@ -768,11 +770,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
      * encountered or null if totally empty
      */
     public V next(int offset, Predicate<V> each) {
-        final AtomicReferenceArray<V> map = this.map;
+        final MetalAtomicReferenceArray<V> map = this.map;
         int n = map.length();
         V xx = null;
         for (int i = offset; i < n; i++) {
-            V x = map.getOpaque(i);
+            V x = map.getFast(i);
             if (x != null) {
                 if (!each.test(xx = x)) {
                     break;
@@ -804,11 +806,11 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
         int count = 0;
 
-        AtomicReferenceArray<V> map = this.map;
+        MetalAtomicReferenceArray<V> map = this.map;
 
         int len = map.length();
         for (int i = 0; i < len; i++) {
-            V f = map.getOpaque(i);
+            V f = map.getFast(i);
 
             if (f == null)
                 continue;
