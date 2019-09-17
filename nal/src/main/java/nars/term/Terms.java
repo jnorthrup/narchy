@@ -13,7 +13,6 @@ import nars.term.compound.PatternCompound;
 import nars.term.util.TermHasher;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsislike;
-import nars.unify.constraint.RelationConstraint;
 import org.eclipse.collections.api.LazyIterable;
 import org.eclipse.collections.api.iterator.MutableIntIterator;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
@@ -474,44 +473,34 @@ public enum Terms {
 
 
 	public static boolean eqRCom(Term x, Term y) {
-//		if (_x == _y) return true;  //fast test
-//		Term x = _x.unneg(), y = _y.unneg();
 		if (x.equals(y))
 			return true;
 
+		if (x instanceof Neg && y instanceof Neg) {
+			x = x.unneg(); y = y.unneg();
+		}
+
 		boolean xc = x instanceof Compound, yc = y instanceof Compound;
 		if (!xc && !yc)
-			return false; //done
+			return false; //both atomics, done
 
-//        if (Term.coRecursiveStructure(x.structure(), y.structure()) != Term.commonStructure(x, y))
-//            Util.nop();
 
-		if (!Term.commonStructure(x.structure() & ~(Op.CONJ.bit), y.structure() & ~(Op.CONJ.bit)))
+		if (!Term.commonStructure(x.structure(), y.structure()))
 			return false;
 
-		if (yc && y.op() == CONJ) {
-			return y.subterms().ORwith((Y, X) -> eqRCom(X, Y.unneg()), x); //AND?
-		} else if (xc && x.op() == CONJ) {
-			return x.subterms().ORwith((X, Y) -> eqRCom(X.unneg(), Y), y); //AND?
-		} else
-		    {
 
-                int av = x.volume(), bv = y.volume();
+		int av = x.volume(), bv = y.volume();
+		if (av == bv)
+			return false; //both atomic or same size (cant contain each other)
 
-                //a > b |- a contains b?
-                if (av < bv) {
-                    Term c = x;
-                    x = y;
-                    y = c;
-                }
+		//a > b |- a contains b?
+		if (av < bv) {
+			Term c = x;
+			x = y;
+			y = c;
+		}
 
-
-                if (av == bv)
-                    return false; //both atomic or same size (cant contain each other)
-
-                return RelationConstraint.rCom(x, y, true);
-            }
-
+		return x.containsRecursively(y, false, Op.statementLoopyContainer);
 
 	}
 

@@ -162,7 +162,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 
         @Override
         public boolean hasXternal() {
-            return dt()==XTERNAL || (hasAny(Op.Temporal) && subterms().hasXternal());
+            return dt()==XTERNAL || subterms().hasXternal();
         }
     }
 

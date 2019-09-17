@@ -340,7 +340,8 @@ public class Taskify extends ProxyTerm {
     }
 
     public final Task task(Term y, Derivation d) {
-        return d.temporal ? taskTemporal(y, d) : task(y, ETERNAL, ETERNAL, d);
+        return d.temporal || y.hasXternal() /*Occurrify.temporal(y)*/ ?
+            taskTemporal(y, d) : task(y, ETERNAL, ETERNAL, d);
     }
 
     //    @Deprecated

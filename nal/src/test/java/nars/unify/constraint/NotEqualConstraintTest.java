@@ -16,11 +16,12 @@ class NotEqualConstraintTest {
     void testNeqRComConj() {
         assertEqRCom("left", "((--,left)&&(--,rotate))");
         assertEqRCom("--left", "((--,left)&&(--,rotate))");
-        assertEqRCom("(left&&rotate)", "((--,left)&&(--,rotate))");
-        assertEqRCom("(--left&&rotate)", "((--,left)&&(--,rotate))");
-        assertEqRCom("(--left && --rotate)", "((--,left)&&(--,rotate))");
         assertEqRCom("x", "(x&&y)");
         assertEqRCom("--x", "(--x&&y)");
+
+//        assertEqRCom("(left&&rotate)", "((--,left)&&(--,rotate))");
+//        assertEqRCom("(--left&&rotate)", "((--,left)&&(--,rotate))");
+//        assertEqRCom("(--left && --rotate)", "((--,left)&&(--,rotate))");
     }
 
 //    @Test

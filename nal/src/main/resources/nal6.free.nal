@@ -13,7 +13,10 @@ C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:
 //  C, X, --isVar(X), hasBelief(), conjSequence(C) |- conjAfter(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 
 
-    //impl conj/disj pred belief and question free structural implication decomposition
+    //impl disj subj belief free structural decomposition
+    (--D ==> A), X, eventOfPN(D,X), --isVar(X)   |-   (--conjWithoutPN(D,  X)==>A), (Belief:StructuralReduction,  Time:Task)
+
+    //impl conj/disj pred belief and question free structural decomposition
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction,  Time:Task)
     (A ==> C), X, eventOfPN(C,X), --isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN, Time:Task)
 

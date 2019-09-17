@@ -260,7 +260,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 4;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
@@ -274,10 +274,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          *  max tasked matched by series table, in case the answer limit is higher.
          *  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
         public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR =
-                1;
-                //1f/SIGNAL_STRETCH_LIMIT_DURS;
+                //1;
+                1f/Math.max(1, SIGNAL_STRETCH_LIMIT_DURS/2);
 
-        public static final int SERIES_MATCH_MIN = 1;
+        public static final int SERIES_MATCH_MIN = 2;
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.25f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;

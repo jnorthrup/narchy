@@ -48,7 +48,7 @@ public final class Termify extends ProxyTerm {
 
 
     public final Term pattern(Derivation d) {
-        return (d.temporal || (d.punc == QUESTION || d.punc == QUEST)) ?
+        return (d.temporal) ?
                 pattern : patternEternal;
     }
 }

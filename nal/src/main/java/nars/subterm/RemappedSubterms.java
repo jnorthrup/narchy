@@ -152,7 +152,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
         @Override
         public int volume() {
-            return ref.volume() * n;
+            return 1 + ref.volume() * n;
         }
 
         //TODO others

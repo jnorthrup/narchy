@@ -41,15 +41,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
     }
 
 
-	public static boolean rCom(Term a, Term b, boolean recurse) {
-
-		return recurse ?
-			a.containsRecursively(b, NotEqualAndNotRecursiveSubtermOf.root, Op.statementLoopyContainer) :
-			a.contains(NotEqualAndNotRecursiveSubtermOf.root ? b.root() : b);
-
-	}
-
-	public final RelationConstraint<U> mirror() {
+    public final RelationConstraint<U> mirror() {
         return newMirror(y, x);
     }
 
@@ -365,11 +357,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
     public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
         public static final Atom neqRCom = Atomic.atom("neqRCom");
-        /**
-         * TODO move to subclass
-         */
-        @Deprecated
-        public static final boolean root = false;
+
 
         public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {
             super(neqRCom, x, y);
@@ -382,7 +370,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
         @Override
         public float cost() {
-            return 0.5f;
+            return 0.4f;
         }
 
         @Override

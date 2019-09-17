@@ -276,14 +276,15 @@ public enum Op {
     /**
      * True wrapped in a subterm as the only element
      */
-//    public static final Subterms TrueSubterm = HeapTermBuilder.the.subterms(True);
+
     /**
      * False wrapped in a subterm as the only element
+     * determines what compound terms can shield subterms from recursion restrictions
      */
     public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
     public static final Predicate<Term> statementLoopyContainer = x -> !x.isAny(
-        Op.PROD.bit
-        //Op.PROD.bit | Op.SETe.bit | Op.SETi.bit
+        //Op.PROD.bit
+        Op.PROD.bit | Op.SETe.bit | Op.SETi.bit
         //Op.PROD.bit | Op.CONJ.bit
         //Op.PROD.bit | Op.INH.bit | Op.SIM.bit | Op.IMPL.bit
 

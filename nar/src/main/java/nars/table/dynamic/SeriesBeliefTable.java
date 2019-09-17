@@ -30,180 +30,186 @@ import static nars.time.Tense.TIMELESS;
  */
 public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 
-    public final AbstractTaskSeries<T> series;
+	public final AbstractTaskSeries<T> series;
 
 
-    public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
-        super(c, beliefOrGoal);
-        this.series = s;
-    }
+	public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
+		super(c, beliefOrGoal);
+		this.series = s;
+	}
 
-    @Override
-    public int taskCount() {
-        return series.size();
-    }
+	/**
+	 * adjust CONJ concepts for series task generation
+	 */
+	protected static Term taskTerm(Term x) {
+		return x.opID() == CONJ.id ? ((Compound) x).dt(0) : x;
+	}
 
-    @Override
-    public final void match(Answer a) {
-        long seriesStart = series.start();
-        if (seriesStart!=TIMELESS) {
-            long s = a.start, e;
+	@Override
+	public int taskCount() {
+		return series.size();
+	}
 
-            double dur = a.dur;
+	@Override
+	public final void match(Answer a) {
+		long seriesStart = series.start();
+		if (seriesStart != TIMELESS) {
+			long s = a.start, e;
 
-            if (s == ETERNAL || s == TIMELESS) {
-                //choose now as the default focus time
-                long now = a.time();
-                s = (long)Math.floor(now - dur/2);
-                e = (long)Math.ceil(now + dur/2);
-            } else {
-                e = a.end;
-            }
+			double dur = a.dur;
 
-            //use at most a specific fraction of the TTL
-            int aTTL = a.ttl; //save
-            long range = Math.max(1, LongInterval.intersectLength(seriesStart, series.end(), s, e));
-            int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
-                NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * range)));
-            a.ttl = seriesTTL;
+			if (s == ETERNAL || s == TIMELESS) {
+				//choose now as the default focus time
+				long now = a.time();
+				s = (long) Math.floor(now - dur / 2);
+				e = (long) Math.ceil(now + dur / 2);
+			} else {
+				e = a.end;
+			}
 
-            series.whileEach(s, e, false, a);
+			//use at most a specific fraction of the TTL
+			int aTTL = a.ttl; //save
+			long range = Math.max(1, LongInterval.intersectLength(seriesStart, series.end(), s, e));
+			int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
+				NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * range)));
+			a.ttl = seriesTTL;
 
-            int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
-            a.ttl = aTTL - ttlUsed; //restore
-        }
-    }
+			series.whileEach(s, e, false, a);
 
+			int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
+			a.ttl = aTTL - ttlUsed; //restore
+		}
+	}
 
-    @Override
-    public void clear() {
-        series.clear();
-    }
+	@Override
+	public void clear() {
+		series.clear();
+	}
 
-    @Override
-    public Stream<? extends Task> taskStream() {
-        return series.stream();
-    }
+	@Override
+	public Stream<? extends Task> taskStream() {
+		return series.stream();
+	}
 
-    @Override
-    public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
-        series.forEach(minT, maxT, true, x);
-    }
+	@Override
+	public void forEachTask(long minT, long maxT, Consumer<? super Task> x) {
+		series.forEach(minT, maxT, true, x);
+	}
 
-    @Override
-    public void forEachTask(Consumer<? super Task> action) {
-        series.forEach(action);
-    }
+	@Override
+	public void forEachTask(Consumer<? super Task> action) {
+		series.forEach(action);
+	}
 
-    /** TODO only remove tasks which are weaker than the sensor */
-    void clean(List<BeliefTable> tables, int marginCycles) {
-        if (!NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
-            return;
+	/**
+	 * TODO only remove tasks which are weaker than the sensor
+	 */
+	void clean(List<BeliefTable> tables, int marginCycles) {
+		if (!NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
+			return;
 
-        long sStart = series.start(), sEnd;
-        if (sStart != TIMELESS && (sEnd = series.end()) != TIMELESS) {
+		long sStart = series.start(), sEnd;
+		if (sStart != TIMELESS && (sEnd = series.end()) != TIMELESS) {
 
-            long finalEnd = sEnd - marginCycles, finalStart = sStart + marginCycles;
-            if (finalStart < finalEnd) {
+			long finalEnd = sEnd - marginCycles, finalStart = sStart + marginCycles;
+			if (finalStart < finalEnd) {
 
-                Predicate<Task> cleaner = t -> absorbNonSignal(t, finalStart, finalEnd);
+				Predicate<Task> cleaner = t -> absorbNonSignal(t, finalStart, finalEnd);
 
-                for (int i = 0, tablesSize = tables.size(); i < tablesSize; i++) {
-                    TaskTable b = tables.get(i);
-                    if (b!=this && !(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
-                        ((TemporalBeliefTable)b).removeIf(cleaner, finalStart, finalEnd);
-                    }
-                }
-            }
+				for (int i = 0, tablesSize = tables.size(); i < tablesSize; i++) {
+					TaskTable b = tables.get(i);
+					if (b != this && !(b instanceof DynamicTaskTable) && !(b instanceof EternalTable)) {
+						((TemporalBeliefTable) b).removeIf(cleaner, finalStart, finalEnd);
+					}
+				}
+			}
 
-        }
-    }
+		}
+	}
 
-
-    /**
-     * used for if you can cache seriesStart,seriesEnd for a batch of calls
-     * TODO only remove tasks which are weaker than the sensor
-     */
-    boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
+	/**
+	 * used for if you can cache seriesStart,seriesEnd for a batch of calls
+	 * TODO only remove tasks which are weaker than the sensor
+	 */
+	boolean absorbNonSignal(Task t, long seriesStart, long seriesEnd) {
 
 //        if (t.isGoal())
 //            throw new WTF();
-        //assert(!t.isGoal());
-
-        if (t.isDeleted())
-            return true;
-
-        long tStart = t.start();
-        if (tStart != ETERNAL && seriesStart <= tStart) {
-//            if (seriesStart != TIMELESS && seriesEnd != TIMELESS /* allow prediction 'suffix' */) {
-            long tEnd = t.end();
-            if (seriesEnd >= tEnd) {
-
-                //if (LongInterval.intersectLength(tStart, tEnd, seriesStart, seriesEnd) != -1) {
-                    //TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
-                //TODO store ranges tested for series rather than keep scanning for each one
-                    return !series.isEmpty(Math.max(seriesStart, tStart), Math.min(seriesEnd, tEnd));
-                //}
-            }
-        }
-        return false;
-
-    }
-
-    /**
-     * adjust CONJ concepts for series task generation
-     */
-    protected static Term taskTerm(Term x) {
-        return x.opID() == CONJ.id ? ((Compound) x).dt(0) : x;
-    }
+		//assert(!t.isGoal());
 
 
-    public final void add(T nextT) {
-        series.compress();
-        series.push(nextT);
-    }
+		if (t.isDeleted())
+			return true;
 
-    public final long start() {
-        return series.start();
-    }
+		long tStart = t.start();
+		if (tStart == ETERNAL)
+			return false;
 
-    public final long end() {
-        return series.end();
-    }
+		if (seriesEnd < tStart)
+			return false; //occurs after series ends
 
+		long tEnd = t.end();
+		if (seriesStart > tEnd)
+			return false; //occurs before series starts
 
-    /**
-     * has special equality and hashcode convention allowing the end to stretch;
-     * otherwise it would be seen as unique when tested after stretch
-     */
-    public static final class SeriesTask extends SignalTask {
+		//intersects with series range:
 
-        /**
-         * current endpoint
-         */
-        protected long e;
-
-        SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
-            super(SeriesBeliefTable.taskTerm(term), punc, value, start, start, end, stamp);
-            if (stamp.length != 1)
-                throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
-            this.e = end;
-            //setCyclic(true); //prevent being immediately image transformed, etc
-        }
+		if (tEnd > seriesEnd)
+			return false; //predicts future of series
 
 
+		//TODO actually absorb (transfer) the non-series task priority in proportion to the amount predicted, gradually until complete absorption
+		//TODO store ranges tested for series rather than keep scanning for each one
+		return !series.isEmpty(Math.max(seriesStart, tStart), Math.min(seriesEnd, tEnd));
+	}
 
-        @Override
-        protected int hashCalculate(long start, long end, long[] stamp) {
-            //TODO also involve Term?
-            return Util.hashCombine(term.hashCode(), Util.hashCombine(stamp[0], start));
-        }
+	public final void add(T nextT) {
+		series.compress();
+		series.push(nextT);
+	}
+
+	public final long start() {
+		return series.start();
+	}
+
+	public final long end() {
+		return series.end();
+	}
 
 
-        /** series tasks can be assumed to be universally unique */
-        @Override
-        public boolean equals(Object x) {
-            return this == x;
+	/**
+	 * has special equality and hashcode convention allowing the end to stretch;
+	 * otherwise it would be seen as unique when tested after stretch
+	 */
+	public static final class SeriesTask extends SignalTask {
+
+		/**
+		 * current endpoint
+		 */
+		protected long e;
+
+		SeriesTask(Term term, byte punc, Truth value, long start, long end, long[] stamp) {
+			super(SeriesBeliefTable.taskTerm(term), punc, value, start, start, end, stamp);
+			if (stamp.length != 1)
+				throw new UnsupportedOperationException("requires stamp of length 1 so it can be considered an Input Task and thus have consistent hashing even while its occurrrence time is stretched");
+			this.e = end;
+			//setCyclic(true); //prevent being immediately image transformed, etc
+		}
+
+
+		@Override
+		protected int hashCalculate(long start, long end, long[] stamp) {
+			//TODO also involve Term?
+			return Util.hashCombine(term.hashCode(), Util.hashCombine(stamp[0], start));
+		}
+
+
+		/**
+		 * series tasks can be assumed to be universally unique
+		 */
+		@Override
+		public boolean equals(Object x) {
+			return this == x;
 //            if (x instanceof SeriesTask) {
 //                //TODO also involve Term?
 //                Task xx = (Task) x;
@@ -211,19 +217,18 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 //                    return false;
 //                return stamp()[0] == xx.stamp()[0] && start() == xx.start() && term().equals(xx.term());
 //            }
-        }
+		}
 
-        public void setEnd(long e) {
-            this.e = e;
-        }
+		public void setEnd(long e) {
+			this.e = e;
+		}
 
-        @Override
-        public long end() {
-            return e;
-        }
+		@Override
+		public long end() {
+			return e;
+		}
 
-    }
-
+	}
 
 
 }

@@ -1135,6 +1135,31 @@ public class NAL6Test extends NALTest {
                 .mustQuestion(cycles, "y")
         ;
     }
+    @Test
+    void testImplSubjDisjDecompose() {
+        test
+            .believe("((a||b) ==> y)", 0.75f, 0.9f)
+            .mustBelieve(cycles, "(a ==> y)", 0.75f, 0.81f)
+        ;
+    }
+    @Test
+    void testImplSubjDisjDeduction() {
+        test
+            .logDebug()
+            .termVolMax(7)
+            .believe("((a||b) ==> y)")
+            .believe("a")
+            //.mustNotOutput(cycles, "(a==>y)", BELIEF,1,1, 0.45f,0.45f,ETERNAL)
+            .mustNotOutput(cycles, "(a ==>+- (a==>y))", QUESTION)
+
+// TODO
+            .mustNotOutput(cycles, "(((--,a) &&+- b) ==>+- y)", QUESTION)
+            .mustQuestion(cycles, "(((--,a)&&b)==>y)")
+
+            .mustNotOutput(cycles, "(a ==>+- (a==>y))", QUESTION)
+            .mustBelieve(cycles, "y", 1, 0.81f)
+        ;
+    }
 
     @Test
     void testImplSubjNegQuestion() {

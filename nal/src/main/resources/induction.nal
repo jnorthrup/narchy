@@ -10,9 +10,8 @@ B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief
 B, A, --is(A,"==>") |- polarizeTask(varIntro((polarizeBelief(A) ==> B))), (Belief:InductionDD, Time:BeliefRelative)
 
 //question form:
-B, A, task("."), --is(A,"==>"), hasBelief() |-          (polarizeBelief(A) ==> B), (Punctuation:Question, Time:BeliefRelative)
-B, A, task("."), --is(A,"==>"), hasBelief() |- varIntro((polarizeBelief(A) ==> B)), (Punctuation:Question, Time:BeliefRelative)
-        //B, A, --is(A,"==>") |- (--A ==> B), (Belief:InductionPN, Time:BeliefRelative, Also:VarIntro)
+//B, A, task("?"), --is(A,"==>"), --is(B,"==>"), hasBelief() |-          (polarizeBelief(A) ==> B), (Punctuation:Question, Time:BeliefRelative)
+//B, A, task("?"), --is(A,"==>"), --is(B,"==>"), hasBelief() |- varIntro((polarizeBelief(A) ==> B)), (Punctuation:Question, Time:BeliefRelative)
 
 
 
