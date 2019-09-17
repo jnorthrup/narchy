@@ -9,11 +9,11 @@ import jcog.table.DataTable;
 import jcog.test.control.TrackXY;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.*;
-import nars.game.GameTime;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
+import nars.game.GameTime;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
@@ -35,6 +35,7 @@ import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static jcog.Texts.n2;
+import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
@@ -63,10 +64,11 @@ public class TrackXY_NAR extends GameX {
     private final TrackXY track;
 
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
-        super("trackXY",
+        super($$("trackXY"),
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(1)
+                GameTime.durs(1),
 			//FrameTrigger.fps(fps),
+            nar
 		);
 
         int W = xy.W;
@@ -253,11 +255,12 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-        //final int W = 4, H = 4;
+        final int W = 4, H = 4;
         //final int W = 3, H = 1;
-        final int W = 3, H = 3;
+        //final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
+        a.start(n);
         ((TaskLinkWhat)a.what()).links.linksMax.set(64);
 
         Table t = DataTable.create(DoubleColumn.create("tx"),DoubleColumn.create("cx"));

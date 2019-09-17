@@ -97,9 +97,9 @@ public class SensorBeliefTables extends BeliefTables {
         SeriesTask x = add(value, when);
 
         if (x !=null) {
-            series.clean(this, cleanMarginCycles(when.dur));
             x.cause(cause);
             remember(x, what, pri, link, when.dur);
+            series.clean(this, cleanMarginCycles(when.dur));
         }
 
         this.current = x;

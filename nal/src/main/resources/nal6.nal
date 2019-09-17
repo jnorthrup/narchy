@@ -303,8 +303,8 @@
 //          (--(&&,M,A..+) ==> X), (--(&&,A..+) ==> Y) |- unisubst((--M ==> Y),Y,X,"$"), (Belief:AbductionPB)
 //
 
-    //general implication induction
-    (A ==> B), X, --eqPN(A,X), --is(X,"==>")  |- polarizeTask(((A && polarizeBelief(X)) ==> B)), (Belief:InductionDD)
+    //general implication induction SUSPECT
+    //(A ==> B), X, --eqPN(A,X), --is(X,"==>")  |- polarizeTask(((A && polarizeBelief(X)) ==> B)), (Belief:InductionDD)
 
 
 
