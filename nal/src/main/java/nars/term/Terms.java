@@ -473,9 +473,9 @@ public enum Terms {
 	}
 
 
-	public static boolean eqRCom(Term _x, Term _y) {
-		if (_x == _y) return true;  //fast test
-		Term x = _x.unneg(), y = _y.unneg();
+	public static boolean eqRCom(Term x, Term y) {
+//		if (_x == _y) return true;  //fast test
+//		Term x = _x.unneg(), y = _y.unneg();
 		if (x.equals(y))
 			return true;
 

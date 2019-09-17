@@ -35,7 +35,7 @@ class RuleInductionTest {
 
         DeriverProgram r = new PremiseRuleSet(n,
 
-            "B, A, --is(A,\"==>\"),--is(B,\"==>\") |- (polarizeTask(B) &&+- polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)"
+            "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarizeTask(B) &&+- polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)"
 
 
         ).add(new STMLinker(1)).compile();

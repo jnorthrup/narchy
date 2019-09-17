@@ -5,8 +5,9 @@ import nars.NAR;
 import nars.Op;
 import nars.control.Why;
 import nars.derive.Derivation;
-import nars.derive.action.PremiseAction;
 import nars.derive.PreDeriver;
+import nars.derive.action.PatternPremiseAction;
+import nars.derive.action.PremiseAction;
 import nars.derive.op.FORKABLE;
 import nars.derive.op.PremiseUnify;
 import nars.term.control.AND;
@@ -88,12 +89,25 @@ public class DeriverProgram {
             for (short c : b.can) {
                 print(branch[c], out, indent+2);
             }
-            Texts.indent(indent);
-            out.println("}");
+            Texts.indent(indent);out.println("}");
 
+
+        } else if (x instanceof PremiseAction) {
+            PremiseAction a = (PremiseAction)x;
+
+            out.println(a.why.id + " ==> {");
+            Object aa = a;
+            if (a instanceof PatternPremiseAction.TruthifyDeriveAction)
+                aa = ((PatternPremiseAction.TruthifyDeriveAction)a).action;
+            else
+                aa = a.toString();
+
+            print(aa, out, indent + 2);
+
+            Texts.indent(indent);out.println("}");
 
         } else if (x instanceof PremiseUnify) {
-            out.println(((PremiseUnify)x).term());
+            out.println(((PremiseUnify)x).term() + " ==> {");
             print(((PremiseUnify)x).taskify, out, indent + 2);
             Texts.indent(indent);
             out.println("}");

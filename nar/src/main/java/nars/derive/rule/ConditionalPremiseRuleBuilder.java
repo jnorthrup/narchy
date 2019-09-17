@@ -182,7 +182,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 
 			case "neqRCom":
-				neqRoot(Xvs, Yvs);
+				neq(Xvs, Yvs);
 				constraints.add(new NotEqualConstraint.NotEqualAndNotRecursiveSubtermOf(Xvs, Yvs));
 				break;
 
@@ -625,7 +625,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 						if (yInB.length < yInT.length) yInT = null;
 						else yInB = null;
 					}
-					return ConstraintAsPremisePredicate.the(cc, xInT, xInB, yInT, yInB);
+					return ConstraintAsPremisePredicate.the(cc, x, y, xInT, xInB, yInT, yInB);
 				}
 			}
 
@@ -638,7 +638,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 					if (xInB.length < xInT.length) xInT = null;
 					else xInB = null;
 				}
-				return ConstraintAsPremisePredicate.the(cc, xInT, xInB, null, null);
+				return ConstraintAsPremisePredicate.the(cc, x, null, xInT, xInB, null, null);
 			}
 
 		}
