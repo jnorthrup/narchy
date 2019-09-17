@@ -553,7 +553,7 @@ abstract public class GameX extends Game {
 
         Deriver bd6_act = new Deriver(
             Derivers.nal(n, 1,8,"motivation.nal")
-                .add(new STMLinkage2()));
+                .add(new STMLinkage2(1)));
 
         bd6_act.time(new MixTimeFocus(
             new NonEternalTaskOccurenceOrPresentDeriverTiming(),

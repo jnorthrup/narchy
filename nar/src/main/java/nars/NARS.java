@@ -15,7 +15,7 @@ import nars.exe.impl.UniExec;
 import nars.memory.CaffeineMemory;
 import nars.memory.Memory;
 import nars.memory.SimpleMemory;
-import nars.op.stm.STMLinkage;
+import nars.op.stm.STMLinkage2;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.time.Time;
@@ -105,8 +105,8 @@ public class NARS {
         return then((n)-> {
 
                 PremiseRuleSet r = Derivers.nal(n, minLevel, maxLevel);
-//                if (maxLevel >= 7)
-//                    r.add(new STMLinkage2());
+                if (maxLevel >= 7)
+                    r.add(new STMLinkage2(1));
 
                 new Deriver(r);
             });
@@ -140,8 +140,8 @@ public class NARS {
             if (nalMax > 0)
                 withNAL(nalMin, nalMax);
 
-            if (nalMax >= 7)
-                then((nn)->new STMLinkage(nn, 1));
+//            if (nalMax >= 7)
+//                then((nn)->new STMLinkage(nn, 1));
 
             then((n)->{
 
