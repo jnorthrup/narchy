@@ -11,6 +11,7 @@ import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 
 import static nars.Op.*;
 
+/** tests premise Task punctuation */
 public final class PuncMap extends AbstractPred<PreDerivation> {
     //private final BytePredicate taskPunc;
 
@@ -31,7 +32,7 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
         return enable.accept(b) ? p.valueOf(b) : 0;
     }
 
-    private PuncMap(byte belief, byte goal, byte question, byte quest) {
+    public PuncMap(byte belief, byte goal, byte question, byte quest) {
         super($.func(U, $.p(Op.puncAtom(belief), Op.puncAtom(goal), Op.puncAtom(question), Op.puncAtom(quest))));
         this.belief = belief; this.goal = goal; this.question = question; this.quest = quest;
     }

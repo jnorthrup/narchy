@@ -12,6 +12,7 @@ import nars.derive.action.PatternPremiseAction;
 import nars.derive.op.CommutativeConstantPreFilter;
 import nars.derive.op.ConstraintAsPremisePredicate;
 import nars.derive.op.DoublePremiseRequired;
+import nars.derive.op.PuncMap;
 import nars.derive.util.PremiseTermAccessor;
 import nars.subterm.Subterms;
 import nars.subterm.util.SubtermCondition;
@@ -93,6 +94,10 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 			throw new TermException("belief pattern can never be NEG", beliefPattern);
 		if (beliefPattern.op() == Op.ATOM)
 			throw new TermException("belief target must contain no atoms", beliefPattern);
+	}
+
+	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest) {
+		pre.add(new PuncMap(belief ? Byte.MAX_VALUE : 0, goal ? Byte.MAX_VALUE : 0, question ? Byte.MAX_VALUE : 0, quest ? Byte.MAX_VALUE : 0));
 	}
 
 	/** adds a condition opcode

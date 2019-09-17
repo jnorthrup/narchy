@@ -9,6 +9,7 @@ import nars.concept.util.ConceptBuilder;
 import nars.concept.util.DefaultConceptBuilder;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.rule.PremiseRuleSet;
 import nars.exe.Exec;
 import nars.exe.impl.UniExec;
 import nars.memory.CaffeineMemory;
@@ -101,9 +102,14 @@ public class NARS {
      * adds a deriver with the standard rules for the given range (inclusive) of NAL levels
      */
     @Deprecated public NARS withNAL(int minLevel, int maxLevel) {
-        return then((n)->
-                new Deriver(Derivers.nal(n, minLevel, maxLevel))
-            );
+        return then((n)-> {
+
+                PremiseRuleSet r = Derivers.nal(n, minLevel, maxLevel);
+//                if (maxLevel >= 7)
+//                    r.add(new STMLinkage2());
+
+                new Deriver(r);
+            });
     }
 
     public NARS what(Function<Term,What> what) {
@@ -134,9 +140,8 @@ public class NARS {
             if (nalMax > 0)
                 withNAL(nalMin, nalMax);
 
-            if (nalMax >= 7) {
+            if (nalMax >= 7)
                 then((nn)->new STMLinkage(nn, 1));
-            }
 
             then((n)->{
 

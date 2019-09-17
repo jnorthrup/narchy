@@ -37,6 +37,7 @@ import nars.op.Factorize;
 import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinkage2;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
 import nars.task.DerivedTask;
@@ -65,7 +66,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import static jcog.Texts.n4;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -551,7 +551,10 @@ abstract public class GameX extends Game {
 //        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
 //        bd3_act.time(new ActionTiming());
 
-        Deriver bd6_act = new Deriver(Derivers.nal(n, 1,8,"motivation.nal"));
+        Deriver bd6_act = new Deriver(
+            Derivers.nal(n, 1,8,"motivation.nal")
+                .add(new STMLinkage2()));
+
         bd6_act.time(new MixTimeFocus(
             new NonEternalTaskOccurenceOrPresentDeriverTiming(),
             //new TaskOccurenceTiming(),
