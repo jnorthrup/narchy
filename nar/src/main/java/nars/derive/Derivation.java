@@ -339,7 +339,7 @@ public class Derivation extends PreDerivation {
         return shift ?
             anon.putShift(b, t, shiftRandomOrCompletely ? random : null) :
                 (t.equals(b) ?
-                    this._taskTerm /* re-use */ :
+                    this.taskTerm /* re-use */ :
                     anon.put(b));
     }
 

@@ -1,6 +1,7 @@
 package nars.derive;
 
 import nars.$;
+import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.action.NativePremiseAction;
@@ -329,34 +330,5 @@ TODO - share unification state for different truth/conclusions
         Terms.printRecursive(System.out, y);
     }
 
-    @Test void testNativeDeriveAction_combined_with_MetaNAL() {
-
-        DeriverProgram d = new PremiseRuleSet(NARS.shell())
-            .add(
-                new NativePremiseAction() {
-
-                    {
-                        taskPattern("(%A,%B,%C)");
-                    }
-
-                    @Override
-                    protected void run(Derivation d) {
-                        System.out.println("match: " + d);
-                    }
-
-                    @Override
-                    protected float pri(Derivation d) {
-                        return 0.5f;
-                    }
-
-                }
-            )
-            .add(
-                "X,Y |- (X&&Y), (Belief:Intersection)",
-                "{X},Y |- (X&&Y), (Belief:Deduction)",
-                "{X},Y |- (||,X,Y), (Belief:Union)"
-            ).compile();
-        d.print();
-    }
 
 }

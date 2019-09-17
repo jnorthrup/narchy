@@ -98,18 +98,24 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 
 		if (target instanceof Compound && !(link instanceof DynamicTaskLink) && link.isSelf()) {
-			Compound src = (Compound) target;	//link.from(); //task.term();
-			Term forward = decompose(src, link, task, d);
-			if (forward != null) {
-				if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
-					target = forward;
-				} else {
 
-					links.grow(link, src, forward, task.punc());
+			if (d.random.nextFloat() < 1f / Math.pow(target.volume(),2)) {
+				//direct structural transform
+			} else {
+				//decompose
+				Compound src = (Compound) target;    //link.from(); //task.term();
+				Term forward = decompose(src, link, task, d);
+				if (forward != null) {
+					if (!forward.op().conceptualizable) { // && !src.containsRecursively(forward)) {
+						target = forward;
+					} else {
 
-					//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
-					//if (d.random.nextBoolean())
-					target = forward; //continue as self, or eager traverse the new link
+						links.grow(link, src, forward, task.punc());
+
+						//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
+						//if (d.random.nextBoolean())
+						target = forward; //continue as self, or eager traverse the new link
+					}
 				}
 			}
 		}

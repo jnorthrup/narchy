@@ -23,6 +23,7 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 		return p;
 	}
 
+
 	@Override
 	protected final PremiseAction action(RuleWhy cause) {
 		return new MyDeriveAction(cause);
