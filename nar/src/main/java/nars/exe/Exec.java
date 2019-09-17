@@ -5,7 +5,7 @@ import jcog.data.iterator.ArrayIterator;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.time.ScheduledTask;
-import org.jctools.queues.atomic.MpscAtomicArrayQueue;
+import org.jctools.queues.MpscArrayQueue;
 import org.slf4j.Logger;
 
 import java.io.IOException;
@@ -24,7 +24,7 @@ abstract public class Exec extends NARPart implements Executor {
     public static final Logger logger = Log.logger(Exec.class);
 
     private final static int TIME_QUEUE_CAPACITY = 2 * 1024;
-    final MpscAtomicArrayQueue<ScheduledTask> toSchedule = new MpscAtomicArrayQueue<>(TIME_QUEUE_CAPACITY);
+    final MpscArrayQueue<ScheduledTask> toSchedule = new MpscArrayQueue<>(TIME_QUEUE_CAPACITY);
     final PriorityQueue<ScheduledTask> scheduled = new PriorityQueue<>(TIME_QUEUE_CAPACITY /* estimate capacity */);
 
     /**

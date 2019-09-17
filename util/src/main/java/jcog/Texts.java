@@ -835,6 +835,11 @@ public enum Texts {
 		return levenshteinDistance(a, b) / ((float) len);
 	}
 
+	public static void indent(int amount) {
+		for (int i = 0; i < amount; i++)
+			System.out.print(' ');
+	}
+
 
 	/**
 	 * This class implements fast, thread-safe format of a double value

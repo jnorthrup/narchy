@@ -9,7 +9,7 @@ import nars.concept.Concept;
 import nars.control.NARPart;
 import nars.link.AtomicTaskLink;
 import org.eclipse.collections.api.tuple.Pair;
-import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
+import org.jctools.queues.MpmcArrayQueue;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
@@ -33,7 +33,7 @@ public class STMLinkage extends NARPart {
 
 //    private final Cause cause;
 
-    private final MpmcAtomicArrayQueue<Pair<Task, Concept>> stm;
+    private final MpmcArrayQueue<Pair<Task, Concept>> stm;
     private final int capacity;
 
     public STMLinkage(NAR nar, int capacity) {
@@ -46,7 +46,7 @@ public class STMLinkage extends NARPart {
 
         this.capacity = capacity;
         stm = //  new MetalConcurrentQueue<>(capacity);
-                new MpmcAtomicArrayQueue<>(Math.max(2, capacity));
+                new MpmcArrayQueue<>(Math.max(2, capacity));
         for (int i = 0; i < capacity; i++)
             stm.offer(pair(null,null));
 

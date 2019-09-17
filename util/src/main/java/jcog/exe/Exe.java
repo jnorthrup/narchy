@@ -2,7 +2,7 @@ package jcog.exe;
 
 import jcog.exe.realtime.HashedWheelTimer;
 import jcog.exe.realtime.QueueWheelModel;
-import org.jctools.queues.atomic.MpscAtomicArrayQueue;
+import org.jctools.queues.MpscArrayQueue;
 import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executor;
@@ -24,8 +24,7 @@ public enum Exe { ;
 
             new QueueWheelModel(256,
                 TimeUnit.MILLISECONDS.toNanos(1), ()->
-                        new MpscAtomicArrayQueue<>(32)
-                        //new MpscArrayQueue<>(32)
+                        new MpscArrayQueue<>(32)
             ),
 
             HashedWheelTimer.WaitStrategy.SleepWait,

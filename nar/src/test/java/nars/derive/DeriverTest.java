@@ -4,8 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.op.Occurrify;
-import nars.derive.rule.DeriverRules;
-import nars.derive.rule.PremiseRuleCompiler;
+import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.AfterEach;
@@ -32,19 +31,19 @@ class DeriverTest {
 //        });
 //    }
 
-    private static DeriverRules testCompile(String... rules) {
+    private static DeriverProgram testCompile(String... rules) {
         return testCompile(false, rules);
     }
 
-    private static DeriverRules testCompile(boolean debug, String... rules) {
+    private static DeriverProgram testCompile(boolean debug, String... rules) {
 
         assertNotEquals(0, rules.length);
 
 
         PremiseRuleSet src = new PremiseRuleSet(NARS.shell(), rules);
         assertNotEquals(0, src.size());
-        return PremiseRuleCompiler.the(src);
-    }
+		return src.compile();
+	}
 
 //    @Test
 //    void printTrie() {
@@ -92,10 +91,10 @@ class DeriverTest {
     @Test
     void testAmbiguousPunctuation() {
         assertThrows(Throwable.class, () -> {
-            PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                    "Y, Y |- (?1 &| Y), ()"
-            ));
-        });
+			new PremiseRuleSet(NARS.shell(),
+					"Y, Y |- (?1 &| Y), ()"
+			).compile();
+		});
     }
 
     @Test

@@ -96,7 +96,7 @@ abstract public class PremiseUnify extends AbstractPred<Derivation> {
             default:
                 /* decide dynamically according to heuristic function of the premise values */
 
-                //return true;
+                return true;
 
 //                int taskVol = d.taskTerm.volume();
 //                int beliefVol = d.beliefTerm.volume();
@@ -105,7 +105,7 @@ abstract public class PremiseUnify extends AbstractPred<Derivation> {
 //                if (taskVol < beliefVol)
 //                    return true;
 
-                return d.random.nextBoolean();
+                //return d.random.nextBoolean();
         }
     }
 }

@@ -19,7 +19,6 @@ import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.InlineFunctor;
 import nars.util.var.DepIndepVarIntroduction;
 import org.eclipse.collections.api.map.ImmutableMap;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.factory.Maps;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
@@ -91,12 +90,8 @@ public enum DerivationFunctors {
 
 			/** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
 			Functor.f1Inline("varIntro", x -> {
-				Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
-				if (result != null && result.getOne().op().conceptualizable) {
-					d.retransform.putAll(result.getTwo());
-					return result.getOne();
-				}
-				return Null;
+				Term y = DepIndepVarIntroduction.the.apply(x, nar.random(), d.retransform);
+				return y == null ? Null : y;
 			}),
 
 			new AbstractInlineFunctor1("negateRandomSubterm") {

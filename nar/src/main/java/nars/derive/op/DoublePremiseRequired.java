@@ -3,7 +3,6 @@ package nars.derive.op;
 import nars.$;
 import nars.Op;
 import nars.Task;
-import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
@@ -12,11 +11,11 @@ import static nars.Op.*;
 
 public class DoublePremiseRequired extends AbstractPred<PreDerivation> {
 
-    final static Atomic key = $.the("DoublePremise");
+    final static Atomic D = $.the("DoublePremise");
     final boolean ifBelief, ifGoal, ifQuestionOrQuest;
 
     public DoublePremiseRequired(boolean ifBelief, boolean ifGoal, boolean ifQuestionOrQuest) {
-        super($.func(key,
+        super($.func(D,
                 ifBelief ? Task.BeliefAtom : Op.EmptyProduct,
                 ifGoal ? Task.GoalAtom : Op.EmptyProduct,
                 ifQuestionOrQuest ? Task.Que : Op.EmptyProduct));

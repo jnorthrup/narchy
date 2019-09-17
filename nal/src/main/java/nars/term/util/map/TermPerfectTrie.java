@@ -1,6 +1,7 @@
 package nars.term.util.map;
 
 import com.google.common.base.Joiner;
+import jcog.Texts;
 import jcog.tree.perfect.Trie;
 import jcog.tree.perfect.TrieNode;
 import jcog.tree.perfect.TrieSequencer;
@@ -46,7 +47,7 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
 
             out.print(n.childCount() + "|" + n.getSize() + "  ");
 
-            indent(from * 4);
+            Texts.indent(from * 4);
 
             out.println(Joiner.on(" , ").join(seq.subList(from, n.end())
                     
@@ -115,13 +116,6 @@ public class TermPerfectTrie<K extends Term, V> extends Trie<List<K>, V> impleme
             endDepth.addValue(currentDepth[0]);
         });
     }
-
-    public static void indent(int amount) {
-        for (int i = 0; i < amount; i++) {
-            System.out.print(' ');
-        }
-    }
-
 
 
     /**

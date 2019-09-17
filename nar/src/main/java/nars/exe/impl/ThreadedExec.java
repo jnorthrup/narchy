@@ -6,7 +6,7 @@ import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;
 import nars.NAR;
-import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
+import org.jctools.queues.MpmcArrayQueue;
 
 import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
@@ -18,7 +18,7 @@ abstract public class ThreadedExec extends MultiExec {
 
     static final int inputQueueCapacityPerThread = 512;
 
-    protected final MpmcAtomicArrayQueue in;
+    protected final MpmcArrayQueue in;
 
     final boolean affinity;
     final AffinityExecutor exe;
@@ -34,7 +34,7 @@ abstract public class ThreadedExec extends MultiExec {
     public ThreadedExec(int maxThreads, boolean affinity) {
         super(maxThreads);
 
-        in = new MpmcAtomicArrayQueue(inputQueueCapacityPerThread * concurrencyMax);
+        in = new MpmcArrayQueue(inputQueueCapacityPerThread * concurrencyMax);
 
         this.exe = new AffinityExecutor(maxThreads);
         this.affinity = affinity;

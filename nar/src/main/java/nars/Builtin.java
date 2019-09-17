@@ -331,9 +331,8 @@ public class Builtin {
 
         /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
         nar.add(Functor.f1Inline("varIntro", x -> {
-            Pair<Term, Map<Term, Term>> result = DepIndepVarIntroduction.the.apply(x, nar.random());
-            //return result != null ? result.getOne() : Null;
-            return result != null && result.getOne().op().conceptualizable ? result.getOne() : x;
+            Term result = DepIndepVarIntroduction.the.apply(x, nar.random(), null);
+            return result != null ? result : Null;
         }));
 
         /** subterm, but specifically inside an ellipsis. otherwise pass through */

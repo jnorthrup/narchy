@@ -24,7 +24,7 @@
  */
 package jcog.signal.buffer;
 
-import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
+import org.jctools.queues.MpmcArrayQueue;
 
 import java.util.Queue;
 import java.util.concurrent.ExecutorService;
@@ -50,7 +50,7 @@ public abstract class CircularBuffer {
     public int viewPtr = 0; //TODO long?
     protected final AtomicInteger readAt = new AtomicInteger();
     protected final AtomicInteger writeAt = new AtomicInteger();
-    protected Queue<BufMark> marks = new MpmcAtomicArrayQueue<>(64);
+    protected Queue<BufMark> marks = new MpmcArrayQueue<>(64);
     protected volatile boolean wasMarked = false;
 
     // If blocking is true when reading, the minimum size that the buffer can be for the read to not block.

@@ -22,7 +22,7 @@ import static nars.Op.*;
  * After temporalization, truth may be recalculated.  the confidence
  * will not exceed the prior value calculated here.
  */
-public class Truthify extends AbstractPred<Derivation> {
+public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator {
 
     private final TruthFunction belief;
 

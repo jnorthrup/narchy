@@ -15,7 +15,7 @@ public final class RuleWhy extends Why {
 	public final String ruleString;
 	public final Term term;
 
-	RuleWhy(PremiseRuleBuilder rule, short id) {
+	public RuleWhy(PremiseRuleBuilder rule, short id) {
 		super(id);
 		this.rule = rule;
 		this.ruleString = rule.source;

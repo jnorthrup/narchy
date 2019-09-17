@@ -3,8 +3,12 @@ package nars.derive;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
+import nars.derive.action.NativePremiseAction;
+import nars.derive.action.PatternPremiseAction;
 import nars.derive.premise.PatternTermBuilder;
-import nars.derive.rule.*;
+import nars.derive.rule.DeriverProgram;
+import nars.derive.rule.PremiseRuleBuilder;
+import nars.derive.rule.PremiseRuleSet;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -75,7 +79,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("A, A |- (A,A), (Belief:Intersection)");
+            PremiseRuleBuilder x = PatternPremiseAction.parse("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
 
 
@@ -86,7 +90,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleBuilder x = PatternPremiseAction.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -95,7 +99,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleBuilder x = PatternPremiseAction.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -112,7 +116,7 @@ class PremiseRuleTest {
 //        }
 
 
-        PremiseRuleBuilder x = MetaNarsesePremiseRuleBuilder.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
+        PremiseRuleBuilder x = PatternPremiseAction.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
 
 
         assertEquals(vv, x.id.volume());
@@ -124,15 +128,14 @@ class PremiseRuleTest {
     void testMinSubsRulePredicate() {
 
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-            "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)"));
-        d.printRecursive();
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "(A-->B),B,is(B,\"[\"),subsMin(B,2) |- (A-->dropAnySet(B)), (Belief:StructuralDeduction)").compile();
         assertNotNull(d);
     }
 
     @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
-                ()-> MetaNarsesePremiseRuleBuilder.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
+                ()-> PatternPremiseAction.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
     }
 
     @Test
@@ -160,28 +163,26 @@ class PremiseRuleTest {
     }
 
     @Deprecated private static void assertConcPattern(String r, String s) throws Narsese.NarseseException {
-        MetaNarsesePremiseRuleBuilder p = MetaNarsesePremiseRuleBuilder.parse(r);
+        PatternPremiseAction p = PatternPremiseAction.parse(r);
         p.get();
-        assertEq(s, p.conclusion());
+        assertEq(s, p.termify.pattern);
     }
 
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleBelief() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "X,Y |- (X&&Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "X,Y |- (X&&Y), (Belief:Intersection)").compile();
 
-        d.printRecursive();
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
 
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleGoal() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "X,Y |- (X&&Y), (Goal:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "X,Y |- (X&&Y), (Goal:Intersection)").compile();
 
-        d.printRecursive();
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
 
@@ -203,7 +204,7 @@ class PremiseRuleTest {
         assertRuleContains(r, inc, null);
     }
     static void assertRuleContains(String r, @Nullable String inc, @Nullable String exc) {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(), r));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(), r).compile();
         //d.printRecursive();
         String rs = d.what.toString();
         if (inc!=null)
@@ -215,21 +216,19 @@ class PremiseRuleTest {
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleQuestionOverride() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "X,Y,task(\"?\") |- (X&&Y), (Punctuation:Belief,Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "X,Y,task(\"?\") |- (X&&Y), (Punctuation:Belief,Belief:Intersection)").compile();
 
-        d.printRecursive();
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
 
     @Test
     void testInferQuestionPunctuationFromTaskRequirement() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)"
-        ));
-        d.printRecursive();
-//        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "Y, Y, task(\"?\") |- (?1 &| Y), (Punctuation:Question)"
+        ).compile();
+        //        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
         String w = d.what.toString();
         assertTrue(w.contains("PuncMap((0,0,\"?\",0))"));
     }
@@ -237,57 +236,56 @@ class PremiseRuleTest {
     @Test
     void testSubIfUnifyPrefilter() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "X,Y |- unisubst(what,X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "X,Y |- unisubst(what,X,Y), (Belief:Intersection)").compile();
 
-        d.printRecursive();
         String s = d.what.toString();
         assertTrue(s.contains("Unifiability"), () -> s); //TODO this and other cases
     }
 
     @Test
     void testOpIsPreFilter() {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "X,Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
         assertTrue(s.contains("Is(taskTerm,\"*\")"), () -> s);
     }
 
     @Test
     void testOpIsPreFilterSubPath() {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
         assertTrue(d.what.toString().contains("IsHas"), () -> d.what.toString());
     }
 
     @Test
     void testOpIsPreFilterSubPathNot() {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "((Z),X),Y, --is(X,\"{\") |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
         assertTrue(s.contains("(--,Is("), () -> s);
     }
 
     @Test
     void testOpIsPreFilterSubPathRepeatIsOKButChooseShortestPath() {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "((X),X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
         assertTrue(s.contains("Is("), () -> s); //and not: (0,0)
     }
 
     @Test
     void testSubMinSuper() {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "((X),X),Y,subsMin(Y,2) |- (X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "((X),X),Y,subsMin(Y,2) |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
         assertTrue(s.contains("SubsMin(beliefTerm,2)"), () -> s); //and not: (0,0)
     }
 
     @Test
     void testSubMinSub() {
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
-                "((X),Z),Y,subsMin(X,2) |- (X,Y), (Belief:Intersection)"));
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
+            "((X),Z),Y,subsMin(X,2) |- (X,Y), (Belief:Intersection)").compile();
         String s = d.what.toString();
         assertTrue(s.contains("SubsMin("), () -> s); //and not: (0,0)
     }
@@ -296,9 +294,9 @@ class PremiseRuleTest {
     @Test
     void testTryFork() {
 
-        DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
+        DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "X,Y |- (X&&Y), (Belief:Intersection)",
-            "X,Y |- (||,X,Y), (Belief:Union)"));
+            "X,Y |- (||,X,Y), (Belief:Union)").compile();
 /*
 TODO - share unification state for different truth/conclusions
     TruthFork {
@@ -321,22 +319,44 @@ TODO - share unification state for different truth/conclusions
         unify(task,%1)
         unify(belief,%2) {
  */
-        d.printRecursive();
 
     }
 
 
     @Test
     void printTermRecursive() throws Narsese.NarseseException {
-        Compound y = (Compound) MetaNarsesePremiseRuleBuilder.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
+        Compound y = (Compound) PatternPremiseAction.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
         Terms.printRecursive(System.out, y);
     }
 
-    @Test void testNativeDeriveAction() {
+    @Test void testNativeDeriveAction_combined_with_MetaNAL() {
 
-            DeriverRules d = PremiseRuleCompiler.the(new PremiseRuleSet(NARS.shell(),
+        DeriverProgram d = new PremiseRuleSet(NARS.shell())
+            .add(
+                new NativePremiseAction() {
+
+                    {
+                        taskPattern("(%A,%B,%C)");
+                    }
+
+                    @Override
+                    protected void run(Derivation d) {
+                        System.out.println("match: " + d);
+                    }
+
+                    @Override
+                    protected float pri(Derivation d) {
+                        return 0.5f;
+                    }
+
+                }
+            )
+            .add(
                 "X,Y |- (X&&Y), (Belief:Intersection)",
-                "X,Y |- (||,X,Y), (Belief:Union)"));
+                "{X},Y |- (X&&Y), (Belief:Deduction)",
+                "{X},Y |- (||,X,Y), (Belief:Union)"
+            ).compile();
+        d.print();
     }
 
 }

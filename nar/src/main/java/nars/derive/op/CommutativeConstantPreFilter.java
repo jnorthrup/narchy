@@ -2,7 +2,7 @@ package nars.derive.op;
 
 import nars.$;
 import nars.derive.PreDerivation;
-import nars.derive.rule.MetaNarsesePremiseRuleBuilder;
+import nars.derive.action.PatternPremiseAction;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -28,7 +28,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
      * from = non-ellipsis target to check if present as a subterm of what appears at to
      */
     public CommutativeConstantPreFilter(byte[] ellipsisPath, byte[] contentPath, boolean ellipsisInTaskOrBelief /* direction */) {
-        super($.func(id, MetaNarsesePremiseRuleBuilder.pathTerm(ellipsisPath), MetaNarsesePremiseRuleBuilder.pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
+        super($.func(id, PatternPremiseAction.pathTerm(ellipsisPath), PatternPremiseAction.pathTerm(contentPath), ellipsisInTaskOrBelief ? Task : Belief));
         this.ellipsisInTaskOrBelief = ellipsisInTaskOrBelief;
         this.ellipsisPath = ellipsisPath;
         this.contentPath = contentPath;

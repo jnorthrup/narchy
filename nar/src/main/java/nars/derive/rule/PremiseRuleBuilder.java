@@ -1,7 +1,7 @@
 package nars.derive.rule;
 
 import nars.derive.Derivation;
-import nars.derive.DeriveAction;
+import nars.derive.action.PremiseAction;
 import nars.derive.PreDerivation;
 import nars.derive.util.PremiseTermAccessor;
 import nars.term.Term;
@@ -21,7 +21,7 @@ public abstract class PremiseRuleBuilder {
 	protected abstract PREDICATE<PreDerivation>[] conditions();
 
 	/** called for each instance of a rule.  avoid recomputing invariants here that could otherwise be computed in conditions() */
-	protected abstract DeriveAction action(RuleWhy cause);
+	protected abstract PremiseAction action(RuleWhy cause);
 
 	@Override
 	public String toString() {

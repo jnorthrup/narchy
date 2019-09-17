@@ -8,7 +8,7 @@ import org.codehaus.janino.ExpressionEvaluator;
 import org.java_websocket.WebSocket;
 import org.java_websocket.framing.CloseFrame;
 import org.java_websocket.handshake.ClientHandshake;
-import org.jctools.queues.atomic.MpscAtomicArrayQueue;
+import org.jctools.queues.MpscArrayQueue;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Parameter;
@@ -148,7 +148,7 @@ public class EvalSocket<X> implements HttpModel {
 
 
         final AtomicBoolean pending = new AtomicBoolean(false);
-        final MpscAtomicArrayQueue<String> q = new MpscAtomicArrayQueue<>(MAX_QUEUE_SIZE);
+        final MpscArrayQueue<String> q = new MpscArrayQueue<>(MAX_QUEUE_SIZE);
 
         JsSession(WebSocket s, X context) {
             this.socket = s;

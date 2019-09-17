@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;
 import nars.NAR;
+import nars.derive.action.PatternPremiseAction;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,7 @@ public class PremiseRuleSet {
     public final ArrayHashSet<PremiseRule> rules;
 
     public PremiseRuleSet(NAR nar, String... rules) {
-        this(nar, MetaNarsesePremiseRuleBuilder.parse(rules));
+        this(nar, PatternPremiseAction.parse(rules));
     }
 
     public PremiseRuleSet(NAR nar, Stream<PremiseRule> r) {
@@ -54,7 +55,7 @@ public class PremiseRuleSet {
             e.printStackTrace();
             bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
-        return MetaNarsesePremiseRuleBuilder.parse(load(bb)).collect(Collectors.toList());
+        return PatternPremiseAction.parse(load(bb)).collect(Collectors.toList());
 
     }, 64, false);
 
@@ -91,5 +92,33 @@ public class PremiseRuleSet {
     public int size() {
         return rules.size();
     }
+
+    public final DeriverProgram compile() {
+        return PremiseRuleCompiler.the(rules, nar);
+    }
+
+    public final PremiseRuleSet add(String... metalNALRules) {
+        return add(PatternPremiseAction.parse(metalNALRules));
+    }
+
+    public final PremiseRuleSet add(PremiseRuleBuilder r) {
+        return add(r.get());
+    }
+
+    public final PremiseRuleSet add(PremiseRule r) {
+        this.rules.add(r);
+        return this;
+    }
+
+    public final PremiseRuleSet add(Collection<PremiseRule> r) {
+        this.rules.addAll(r);
+        return this;
+    }
+
+    public final PremiseRuleSet add(Stream<PremiseRule> r) {
+        r.collect(Collectors.toCollection(()->this.rules));
+        return this;
+    }
+
 }
 

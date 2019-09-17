@@ -12,6 +12,7 @@ import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.control.CauseMerge;
+import nars.derive.action.PremiseAction;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
 import nars.derive.premise.Premise;
@@ -597,7 +598,7 @@ public class Derivation extends PreDerivation {
 
             this.preReady();
 
-            DeriveAction[] branch = this.deriver.rules.branch;
+            PremiseAction[] branch = this.deriver.rules.branch;
 
             PostDerivable[] post = this.post;
             for (int i = 0; i < can.length; i++) {

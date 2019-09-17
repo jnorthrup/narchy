@@ -91,12 +91,12 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
-    private final static class AND3<X> extends AND<X> {
+    private final static class AND3_MH<X> extends AND<X> {
         /*@Stable*/
         private final PREDICATE<X> a, b, c;
 
         final MethodHandle A, B, C;
-        private AND3(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
+        private AND3_MH(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
             this.a = a; this.b = b; this.c = c;
             this.A = a.method();
@@ -123,11 +123,11 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
-    private final static class AND3Simple<X> extends AND<X> {
+    private final static class AND3<X> extends AND<X> {
         /*@Stable*/
         private final PREDICATE<X> a, b, c;
 
-        private AND3Simple(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
+        private AND3(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
             this.a = a; this.b = b; this.c = c;
         }
@@ -147,11 +147,6 @@ abstract public class AND<X> extends AbstractPred<X> {
 
     }
 
-
-
-
-
-
     public static @Nullable <D> PREDICATE<D> the(List<PREDICATE<D>> cond) {
         int s = cond.size();
         switch (s) {
@@ -161,7 +156,7 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
     }
 
-    public static @Nullable <D> PREDICATE<D> the(Term... cond) {
+    public static @Nullable <D> PREDICATE<D> the(Term[] cond) {
         int s = cond.length;
         switch (s) {
             case 0: return null;

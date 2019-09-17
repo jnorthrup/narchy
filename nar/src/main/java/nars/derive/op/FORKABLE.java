@@ -15,24 +15,24 @@ import static nars.Op.SETe;
  * valid for the premise.  a choice which "can" be tried
  * (ie. according to value rank)
  */
-public final class Branchify extends AbstractPred<Derivation> {
+public final class FORKABLE extends AbstractPred<Derivation> {
 
     public final short[] can;
 
-    private static final Atomic CAN = Atomic.the("can");
+    private static final Atomic F = Atomic.the("forkable");
 
 
 //    public Branchify(int id) {
 //        this(RoaringBitmap.bitmapOf(id));
 //    }
 
-    public Branchify(short id) {
-        super($.func(CAN, SETe.the(Int.the(id))));
+    public FORKABLE(short id) {
+        super($.func(F, SETe.the(Int.the(id))));
         this.can = new short[] { id };
     }
 
-    public Branchify(RoaringBitmap can) {
-        super($.func(CAN, $.sete(can)));
+    public FORKABLE(RoaringBitmap can) {
+        super($.func(F, $.sete(can)));
         this.can = ArrayUtil.toShort(can.toArray());
     }
 

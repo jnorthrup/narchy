@@ -14,7 +14,6 @@ import nars.term.Variable;
 import nars.term.util.cache.Intermed;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
-import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
@@ -57,8 +56,8 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     private static boolean validIndepVarSuperterm(Op o) { return o.statement; }
 
     @Nullable @Override
-    public Pair<Term, Map<Term, Term>> apply(Term x, Random rng) {
-        return x.hasAny(ConjOrStatementBits) ? super.apply(x, rng) : null;
+    public Term apply(Term x, Random rng, @Nullable Map<Term, Term> retransform) {
+        return x.hasAny(ConjOrStatementBits) ? super.apply(x, rng, retransform) : null;
     }
 
     @Override

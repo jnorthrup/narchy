@@ -8,16 +8,13 @@ import nars.control.How;
 import nars.control.Why;
 import nars.derive.hypothesis.Hypothesizer;
 import nars.derive.hypothesis.TangentIndexer;
-import nars.derive.rule.DeriverRules;
-import nars.derive.rule.PremiseRule;
-import nars.derive.rule.PremiseRuleCompiler;
+import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
 import nars.time.When;
 
-import java.util.Collection;
 import java.util.function.BooleanSupplier;
 
 /**
@@ -31,7 +28,7 @@ import java.util.function.BooleanSupplier;
  */
 public class Deriver extends How {
 
-    public DeriverRules rules;
+    public DeriverProgram rules;
 
     public Hypothesizer hypothesize;
 
@@ -48,7 +45,7 @@ public class Deriver extends How {
     float PREMISE_SHIFT_OTHER = 0.9f;
     float PREMISE_SHIFT_RANDOM = 0.75f;
 
-    public Deriver rules(DeriverRules rules) {
+    public Deriver rules(DeriverProgram rules) {
         this.rules = rules;
         return this;
     }
@@ -63,25 +60,19 @@ public class Deriver extends How {
         return this;
     }
 
-    public Deriver(Collection<PremiseRule> rules, NAR nar) {
-        this(PremiseRuleCompiler.the(rules, nar), nar);
-        if (rules.isEmpty())
-            throw new RuntimeException("rules empty");
-    }
-
     public Deriver(PremiseRuleSet rules) {
-        this(rules.rules, rules.nar);
+        this(rules.compile(), rules.nar);
     }
 
     public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypothesize) {
-        this(PremiseRuleCompiler.the(rules), hypothesize, timing, rules.nar);
+        this(rules.compile(), hypothesize, timing, rules.nar);
     }
 
     public Deriver(PremiseRuleSet rules, Hypothesizer hypothesize) {
         this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypothesize);
     }
 
-    @Deprecated public Deriver(DeriverRules rules, NAR nar) {
+    @Deprecated public Deriver(DeriverProgram rules, NAR nar) {
         this(rules, new TangentIndexer(),
                 //new TaskOrPresentTiming(nar);
                 //new AdHocDeriverTiming(nar);
@@ -90,7 +81,7 @@ public class Deriver extends How {
                 nar);
     }
 
-    public Deriver(DeriverRules rules, Hypothesizer hypothesize, TimeFocus timing, NAR nar) {
+    public Deriver(DeriverProgram rules, Hypothesizer hypothesize, TimeFocus timing, NAR nar) {
         super();
         this.rules = rules;
         this.hypothesize = hypothesize;

@@ -13,7 +13,7 @@ import net.beadsproject.beads.ugens.Clock;
 import net.beadsproject.beads.ugens.FuncGen;
 import net.beadsproject.beads.ugens.Gain;
 import net.beadsproject.beads.ugens.RecordToSample;
-import org.jctools.queues.atomic.MpmcAtomicArrayQueue;
+import org.jctools.queues.MpmcArrayQueue;
 import spacegraph.audio.Audio;
 import spacegraph.audio.SoundSource;
 
@@ -93,7 +93,7 @@ public class AudioContext {
 
 
     private Queue newQueue() {
-        return new MpmcAtomicArrayQueue<>(64);
+        return new MpmcArrayQueue<>(64);
     }
 
     /**

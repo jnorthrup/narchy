@@ -1,5 +1,7 @@
 package nars.derive;
 
+import nars.NAL;
+import nars.derive.action.PremiseAction;
 import nars.truth.MutableTruth;
 import nars.truth.func.TruthFunction;
 
@@ -13,7 +15,7 @@ public class PostDerivable {
 
     private TruthFunction truthFunction;
     private boolean single;
-    private DeriveAction action;
+    private PremiseAction action;
 
     PostDerivable(PreDerivation d) {
         this.d = d;
@@ -21,7 +23,7 @@ public class PostDerivable {
 
 
 
-    public float can(DeriveAction a, Derivation d) {
+    public float can(PremiseAction a, Derivation d) {
         float p = a.pri(d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;
@@ -37,16 +39,20 @@ public class PostDerivable {
         }
     }
 
-    @Deprecated public boolean apply(Derivation d) {
+
+    public final boolean run() {
+        Derivation d = (Derivation) this.d;
+        d.clear();
+        d.retransform.clear();
+        d.forEachMatch = null;
+
         d.truth.set(truth);
         d.punc = punc;
         d.single = single;
         d.truthFunction = truthFunction;
-        return true;
-    }
 
+        action.run(d);
 
-    public final boolean run() {
-        return action.run(this);
+        return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 }

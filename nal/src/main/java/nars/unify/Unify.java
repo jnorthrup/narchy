@@ -370,16 +370,16 @@ public abstract class Unify extends Versioning<Term> {
 
     public Unify clear(@Nullable Consumer<Versioned<Term>> each) {
 
-        constrained.clear(ConstrainedVersionedTerm::unconstrain);
+        if (size > 0) {
+            constrained.clear(ConstrainedVersionedTerm::unconstrain);
 
-        if (each!=null)
-            revert(0, each);
-        else
-            revert(0);
+            if (each != null)
+                revert(0, each);
+            else
+                revert(0);
+        }
 
         termutes.clear();
-
-        //varDepth = 0;
 
         return this;
     }

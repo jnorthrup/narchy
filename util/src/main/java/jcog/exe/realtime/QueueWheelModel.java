@@ -2,7 +2,6 @@ package jcog.exe.realtime;
 
 import jcog.TODO;
 import jcog.Util;
-import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 
 import java.util.Queue;
 import java.util.function.Supplier;
@@ -16,11 +15,6 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 	 * the wheels (array of queues)
 	 */
 	final Queue<TimedFuture>[] q;
-
-	/** thread-safe */
-	public QueueWheelModel(int wheels, long resolution) {
-		this(wheels, resolution, ()->new MpscAtomicArrayQueue<>(32));
-	}
 
 	public QueueWheelModel(int wheels, long resolution, Supplier<Queue<TimedFuture>> queueBuilder) {
 		super(wheels, resolution);
@@ -54,9 +48,10 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
                         limit = n + q.size(); //defer calculating queue size until the first reinsert otherwise it will keep polling what is offered in this loop
 					//re-insert
 					if (!q.offer(r)) {
-						if (!this.q[(c+1)%wheels].offer(r)) { //try the next
+						//OVERFLOW
+						if (!reschedule((c+1)%wheels, r))
 							throw new TODO(); //TODO try all other queues in sequence
-						}
+
 					}
 					break;
 			}

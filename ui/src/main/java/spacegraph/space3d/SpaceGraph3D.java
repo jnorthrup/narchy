@@ -31,6 +31,7 @@ import com.jogamp.opengl.glu.GLUquadric;
 import com.jogamp.opengl.util.texture.Texture;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
+import org.jctools.queues.MpscArrayQueue;
 import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space3d.phys.Dynamics3D;
@@ -69,7 +70,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
     public final Dynamics3D<X> dyn;
 
     @Deprecated
-    private final MpscAtomicArrayQueue<Spatial> toRemove = new MpscAtomicArrayQueue<>(1024);
+    private final MpscArrayQueue<Spatial> toRemove = new MpscArrayQueue<>(1024);
 
     private final FasterList<AbstractSpace<X>> inputs = new FasterList<>(1);
 

@@ -7,6 +7,7 @@ import org.HdrHistogram.ConcurrentHistogram;
 import org.HdrHistogram.Histogram;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
+import org.jctools.queues.MpscArrayQueue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -37,7 +38,7 @@ abstract class AbstractTimerTest {
 
     protected HashedWheelTimer.WheelModel model(long resolution, int wheels) {
         //return new AdmissionQueueWheelModel(wheels, resolution);
-        return new QueueWheelModel(wheels, resolution);
+        return new QueueWheelModel(wheels, resolution, ()->new MpscArrayQueue<>(32));
     }
 
     protected abstract HashedWheelTimer.WaitStrategy waitStrategy();

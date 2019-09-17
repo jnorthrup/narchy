@@ -3,8 +3,6 @@ package nars.util.var;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -12,7 +10,8 @@ import java.util.Random;
 
 abstract class VarIntroduction {
 
-    @Nullable Pair<Term, Map<Term, Term>> apply(final Term x, Random rng) {
+    /** returns null if not applicable */
+    @Nullable Term apply(final Term x, Random rng, @Nullable Map<Term,Term> retransform) {
 
         if (x.complexity() < 2) 
             return null;
@@ -27,13 +26,13 @@ abstract class VarIntroduction {
         if (v != null && !(v instanceof Bool)) {
             Term y = x.replace(u, v);
             if (y != null && y.op().conceptualizable && !y.equals(x)) {
-                return Tuples.pair(y, Map.of(u, v));
+                if (retransform!=null)
+                    retransform.put(u, v);
+                return y;
             }
         }
 
-
         return null;
-
     }
 
     /** determine the choice of subterms which can be replaced with a variable */
