@@ -33,7 +33,7 @@ abstract public class ScalarReward extends Reward {
 
     final MutableTruth RimplA =
         //$.t(0.5f, 0.05f);
-        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
+        new MutableTruth(1, NAL.truth.EVI_MIN);
 
     ScalarReward(Term id, float freq, boolean stamped, Game g) {
         super(id, g);
@@ -85,7 +85,7 @@ abstract public class ScalarReward extends Reward {
 
         goal.conf(nar.confDefault(GOAL));
 
-        float strength = 4;
+        float strength = 1;
         RimplA.conf( Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength ));
         super.reinforce();
     }

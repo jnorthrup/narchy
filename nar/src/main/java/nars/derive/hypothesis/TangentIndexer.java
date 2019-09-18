@@ -1,6 +1,8 @@
 package nars.derive.hypothesis;
 
+import jcog.TODO;
 import jcog.data.list.table.Table;
+import nars.NAL;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
@@ -62,29 +64,28 @@ public class TangentIndexer extends AbstractHypothesizer {
 				return s;
 			});
 
-			if (match != null) {
-				if (match.links.isEmpty()) {
-					return null;
-				} else {
-					Term source = link.from();
-					Term result = match.sample(x -> !source.equals(x.from()),
-						task.punc(), d.random);
-//					if (result!=null && (result.equals(link.from()) || result.equals(target)))
-//						result = null; //HACK throw new WTF();
-					return result;
-				}
-			}
-		}
+			if (match == null || match.isEmpty())
+				return null;
 
-		Term result = DirectTangent.the.sampleReverseMatch(target, link, links, d);
-		if (result == null)
-			return null;
-		else {
+			Term source = link.from();
+			Term result = match.sample(x -> !source.equals(x.from()), task.punc(), d.random);
+			if (result!=null && (result.equals(link.from()))) {
+				if (NAL.DEBUG)
+					throw new TODO();
+				result = null; //HACK throw new WTF();
+			}
+			return result;
+		} else {
+
+			Term result = DirectTangent.the.sampleReverseMatch(target, link, links, d);
+			if (result == null)
+				return null;
+			else {
 //			if (result != null && (result.equals(link.from()) || result.equals(target)))
 //				result = null; //HACK throw new WTF();
-			return result;
+				return result;
+			}
 		}
-
 	}
 
 

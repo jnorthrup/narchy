@@ -85,4 +85,7 @@ public final class TaskLinkSnapshot {
 	}
 
 
+	public final boolean isEmpty() {
+		return links.isEmpty();
+	}
 }
