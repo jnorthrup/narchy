@@ -12,9 +12,11 @@ import org.eclipse.collections.impl.tuple.Tuples;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayDeque;
+import java.util.Collections;
 import java.util.List;
 import java.util.Queue;
 
+import static jcog.data.graph.search.TraveLog.id;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
@@ -29,12 +31,14 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
  */
 abstract public class Search<N, E> {
 
-    protected static final List empty = List.of();
     public final TraveLog log;
 
 
     protected Search() {
-        this(new TraveLog.IntHashTraveLog(32));
+        this(
+            //new TraveLog.IntHashTraveLog(0)
+            new TraveLog.RoaringHashTraveLog()
+        );
     }
 
     private Search(TraveLog log) {
@@ -65,16 +69,23 @@ abstract public class Search<N, E> {
 
     abstract protected boolean go(List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path, Node<N, E> next);
 
+    protected boolean visit(Node n) {
+        return log.visit(id(n));
+    }
+    protected boolean visited(Node n) {
+        return log.hasVisited(id(n));
+    }
+
     private boolean bfsNode(Node<N, E> start, Queue<Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>>> q) {
 //        if (start == null)
 //            return true;  //??
 
-        if (!log.visit(start))
+        if (!visit(start))
             return true; //reached a root via a previous root
 
         q.clear();
 
-        q.add(Tuples.pair(empty, start));
+        q.add(Tuples.pair(Collections.EMPTY_LIST, start));
 
         Pair<List<BooleanObjectPair<FromTo<Node<N, E>, E>>>, Node<N, E>> n;
         while ((n = q.poll()) != null) {
@@ -85,7 +96,7 @@ abstract public class Search<N, E> {
 
             for (FromTo<Node<N, E>, E> e : find(at, path)) {
                 Node<N, E> next = next(e, at, path);
-                if (next == null || !log.visit(next))
+                if (next == null || !visit(next))
                     continue;
 
                 q.add(Tuples.pair(
@@ -143,33 +154,31 @@ abstract public class Search<N, E> {
     }
 
 
-    private boolean dfsNode(Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
+    private boolean dfsNode(final Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {
+        boolean result = true;
 
-        if (!log.visit(n))
-            return true;
+        if (visit(n)) {
+            for (FromTo<Node<N, E>, E> e : find(n, path)) {
 
-        Node<N, E> at;
+                Node<N, E> next = next(e, n, path);
 
-        for (FromTo<Node<N, E>, E> e : find(at = n, path)) {
+                if (next == null || visited(next))
+                    continue;
 
-            Node<N, E> next = next(e, at, path);
+                BooleanObjectPair<FromTo<Node<N, E>, E>> move = pair(next == e.to(), e);
 
-            if (next == null || log.hasVisited(next))
-                continue;
+                path.add(move);
 
-            BooleanObjectPair<FromTo<Node<N, E>, E>> move = pair(next == e.to(), e);
+                if (!go(path, next) || !dfsNode(next, path)) {
+                    result = false;
+                    break;
+                }
 
-            path.add(move);
-
-            if (!go(path, next) || !dfsNode(next, path))
-                return false;
-
-            at = n;
-
-            path.remove(path.size() - 1);
+                ((FasterList)path).removeLastFast();
+            }
         }
 
-        return true;
+        return result;
     }
 
     protected Iterable<FromTo<Node<N, E>, E>> find(Node<N, E> n, List<BooleanObjectPair<FromTo<Node<N, E>, E>>> path) {

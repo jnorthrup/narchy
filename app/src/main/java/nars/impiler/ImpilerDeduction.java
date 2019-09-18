@@ -23,6 +23,7 @@ import org.eclipse.collections.api.block.function.primitive.LongToObjectFunction
 import org.eclipse.collections.api.tuple.primitive.BooleanObjectPair;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 
 import static nars.NAL.STAMP_CAPACITY;
@@ -113,13 +114,13 @@ public class ImpilerDeduction extends Search<Term, Task> {
 			this.now = nar.time();
 
 			bfs(rootNode);
-			super.clear(); //clear search log
+			clear(); //clear search log
 
 			if (in != null)
 				return in;
 		}
 
-		return List.of();
+		return Collections.EMPTY_LIST;
 	}
 
 	/**
@@ -129,11 +130,11 @@ public class ImpilerDeduction extends Search<Term, Task> {
 	protected Iterable<FromTo<Node<Term, Task>, Task>> find(Node<Term, Task> n, List<BooleanObjectPair<FromTo<Node<Term, Task>, Task>>> path) {
 
 		if (path.size() >= recursionMin && !deduce(path))
-			return empty; //boundary
+			return Collections.EMPTY_LIST; //boundary
 
 		//path may have grown?
 		if (path.size() + 1 > recursionMax)
-			return empty;
+			return Collections.EMPTY_LIST;
 
 		return n.edges(!forward, forward);
 	}

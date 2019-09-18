@@ -243,8 +243,8 @@ public class PatrickTests extends NALTest {
 
 
         n.termVolMax.set(60);
-        n.beliefPriDefault.amp(0.05f);
-        n.questionPriDefault.amp(0.9f);
+        n.beliefPriDefault.pri(0.05f);
+        n.questionPriDefault.pri(0.9f);
 
         n.input("<#x --> P>. %0.0;0.25%");
 

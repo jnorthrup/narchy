@@ -174,11 +174,11 @@ public class Lab<X> {
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
-        return optilive(procedure, Stream.of(goal).map(Goal::new).collect(toList()), List.of());
+        return optilive(procedure, Stream.of(goal).map(Goal::new).collect(toList()), Collections.EMPTY_LIST);
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, Goal<Y>... goal) {
-        return optilive(procedure, List.of(goal), List.of());
+        return optilive(procedure, List.of(goal), Collections.EMPTY_LIST);
     }
 
     public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, List<Goal<Y>> goal, List<Sensor<Y, ?>> sensors) {
@@ -208,10 +208,10 @@ public class Lab<X> {
      * provies procedure and goal; no additional experiment sensors
      */
     public <E> Optimize<X, E> optimize(Function<Supplier<X>, E> procedure, FloatFunction<E> goal) {
-        return optimize(procedure, new Goal<>(goal), List.of());
+        return optimize(procedure, new Goal<>(goal), Collections.EMPTY_LIST);
     }
     public <E> Optimize<X, E> optimize(Function<Supplier<X>, E> procedure, ToDoubleFunction<E> goal) {
-        return optimize(procedure, new Goal<>(goal), List.of());
+        return optimize(procedure, new Goal<>(goal), Collections.EMPTY_LIST);
     }
 
     /**

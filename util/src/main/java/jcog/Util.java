@@ -29,6 +29,7 @@ import org.eclipse.collections.api.list.primitive.ByteList;
 import org.eclipse.collections.api.list.primitive.ImmutableByteList;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.api.set.primitive.IntSet;
+import org.eclipse.collections.impl.EmptyIterator;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.eclipse.collections.impl.factory.primitive.ByteLists;
 import org.eclipse.collections.impl.factory.primitive.IntSets;
@@ -72,7 +73,11 @@ public enum Util {
 
 
     public static final Unsafe unsafe;
-    public static float sqrtMIN_NORMAL = (float)Math.sqrt(Float.MIN_NORMAL);
+
+    public static final Iterator emptyIterator = EmptyIterator.getInstance();
+	public static final Iterable emptyIterable = ()->emptyIterator;
+
+	public static float sqrtMIN_NORMAL = (float)Math.sqrt(Float.MIN_NORMAL);
 
     static {
         try {

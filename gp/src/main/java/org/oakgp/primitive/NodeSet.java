@@ -24,6 +24,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+import static java.util.Collections.EMPTY_LIST;
+
 /**
  * Represents the range of possible constants to use during a genetic programming run.
  */
@@ -53,7 +55,7 @@ public class NodeSet<N> {
      */
     public List<N> asList(NodeType type) {
         N[] t = get(type);
-        return t!=null ? List.of(t) : List.of();
+        return t!=null ? List.of(t) : EMPTY_LIST;
     }
 
     @Nullable

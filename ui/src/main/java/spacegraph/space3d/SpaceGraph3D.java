@@ -32,7 +32,6 @@ import com.jogamp.opengl.util.texture.Texture;
 import jcog.data.list.FasterList;
 import jcog.signal.wave2d.Bitmap2D;
 import org.jctools.queues.MpscArrayQueue;
-import org.jctools.queues.atomic.MpscAtomicArrayQueue;
 import spacegraph.input.finger.util.FPSLook;
 import spacegraph.space3d.phys.Dynamics3D;
 import spacegraph.space3d.phys.collision.DefaultCollisionConfiguration;

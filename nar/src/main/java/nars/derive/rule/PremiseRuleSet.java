@@ -1,7 +1,6 @@
 package nars.derive.rule;
 
 import com.google.common.base.Splitter;
-import jcog.TODO;
 import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;

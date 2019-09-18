@@ -1,9 +1,9 @@
 package jcog.sort;
 
 import com.google.common.collect.Iterators;
+import jcog.Util;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
-import java.util.Collections;
 import java.util.Iterator;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
@@ -61,6 +61,6 @@ public class Top<T> implements TopFilter<T> {
     @Override
     public final Iterator<T> iterator() {
         T t = the;
-        return t == null ? Collections.emptyIterator() : Iterators.singletonIterator(t);
+        return t == null ? Util.emptyIterator : Iterators.singletonIterator(t);
     }
 }

@@ -44,8 +44,8 @@ class TestProloglike {
                 "(red($x) <=> (--,blue($x)))",
                 "car(vw_beatle)", "car(ford_escort)", "bike(harley_davidson)", "red(vw_beatle)", "blue(ford_escort)", "blue(harley_davidson)"
         );
-        
-        n.questionPriDefault.amp(0.99f);
+
+        n.questionPriDefault.pri(0.99f);
         n.question("fun(?x)", ETERNAL, (q, a) -> {
             
             System.out.println(a.proof());

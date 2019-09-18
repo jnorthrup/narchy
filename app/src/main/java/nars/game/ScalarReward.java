@@ -71,10 +71,11 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
 
             reinforce(IMPL.the(Rpos, A), BELIEF, RimplA, stamped);
             reinforce(IMPL.the(Rneg, A), BELIEF, RimplA, stamped);
+
+            //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
         });
     }
 
@@ -84,8 +85,8 @@ abstract public class ScalarReward extends Reward {
 
         goal.conf(nar.confDefault(GOAL));
 
-        float strength = 1;
-        RimplA.conf( Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength );
+        float strength = 4;
+        RimplA.conf( Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength ));
         super.reinforce();
     }
 

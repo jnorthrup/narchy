@@ -80,10 +80,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 	private static final Event[] EMPTY_EVENT_ARRAY = Event.EmptyArray;
 
-
-	private static final Iterable empty = List.of();
-	private static final Iterator emptyIterator = Collections.emptyIterator();
-
 	@Deprecated /* TODO shuffle */ private static final Comparator<FromTo<Node<Event, TimeSpan>, TimeSpan>> temporalProximity = (a, b) -> {
 		//TODO provenance preference: prefer edges tagged by the opposite source (task -> belief, rather than task -> task)
 		if (a == b) return 0;
@@ -1945,7 +1941,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		protected Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> find(Node<Event, TimeSpan> n, List<BooleanObjectPair<FromTo<Node<Event, TimeSpan>, TimeSpan>>> path) {
 
 
-			Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing = this.existing ? existing(n) : empty;
+			Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> existing = this.existing ? existing(n) : Collections.EMPTY_LIST;
 
 
 			if (!this.tangent && !tangentNeg)
@@ -1953,18 +1949,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			else {
 				@Deprecated Term nid = n.id().id;
 				Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangent =
-					this.tangent ? tangent(n, nid) : empty;
+					this.tangent ? tangent(n, nid) : Collections.EMPTY_LIST;
 
 
 				//TODO only tangentNeg if existing and tangent produced no results
 				Iterable<FromTo<Node<Event, TimeSpan>, TimeSpan>> tangentNeg =
-					this.tangentNeg ? tangent(n, nid.neg()) : empty;
+					this.tangentNeg ? tangent(n, nid.neg()) : Collections.EMPTY_LIST;
 
-				if (tangent == empty && tangentNeg == empty)
+				if (tangent == Collections.EMPTY_LIST && tangentNeg == Collections.EMPTY_LIST)
 					return existing;
-				else if (tangent == empty)
+				else if (tangent == Collections.EMPTY_LIST)
 					return Iterables.concat(existing, tangentNeg);
-				else if (tangentNeg == empty)
+				else if (tangentNeg == Collections.EMPTY_LIST)
 					return Iterables.concat(existing, tangent);
 				else
 					return Iterables.concat(existing, tangent, tangentNeg);
@@ -1975,7 +1971,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			//return n.edges(true, true, x -> log.hasNotVisited(x.other(n)));
 
-			return sortEdges(n.edges(true, true, x -> !log.hasVisited(x.other(n))));
+			return sortEdges(n.edges(true, true, x -> !visited(x.other(n))));
 		}
 
 		Iterable<FromTo<Node<Event, nars.time.TimeSpan>, TimeSpan>> tangent(Node<Event, TimeSpan> root, Term t) {
@@ -1983,7 +1979,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			return () -> {
 				Iterable<Event> ee = events(t);
 				if (ee == null) {
-					return emptyIterator;
+					return Util.emptyIterator;
 				} else {
 
 //                if (root.id().id.equals(t)) {
@@ -1993,16 +1989,18 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 					Iterable<Event> eee = shuffleAndSort(ee);
 					if (eee == null)
-						return emptyIterator;
+						return Util.emptyIterator;
+
 
 					return Iterators.transform(
 						Iterators.filter(
 							Iterators.transform(eee.iterator(), TimeGraph.this::node),
-							n -> n != null && n != root && !log.hasVisited(n)
+							n -> n != null && n != root && !visited(n)
 						),
 						n -> {
 							//assert(root.id().start()root.id() instanceof Absolute != n.id() instanceof Absolute)
 							//return new ImmutableDirectedEdge(root, TS_ZERO, n);
+
 							return new LazyMutableDirectedEdge<>(root, TS_ZERO, n);
 						}
 					);

@@ -11,6 +11,7 @@ import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -43,7 +44,7 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 					return !ct.equals(target) && test(ct, target);
 				}).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
 				if (l.isEmpty())
-					return List.of();
+					return Collections.EMPTY_LIST;
 				else {
 					l.trimToSize();
 					return l;

@@ -3,9 +3,12 @@ package spacegraph.space2d.widget.meta;
 import com.google.common.collect.Streams;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
+import jcog.math.FloatSupplier;
 import jcog.math.IntRange;
 import jcog.math.MutableEnum;
+import jcog.pri.PLink;
 import jcog.reflect.AutoBuilder;
+import jcog.util.FloatConsumer;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.ReSurface;
@@ -16,7 +19,9 @@ import spacegraph.space2d.container.unit.MutableUnitContainer;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.EnumSwitch;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.port.FloatRangePort;
+import spacegraph.space2d.widget.port.FloatPort;
+import spacegraph.space2d.widget.port.util.Wiring;
+import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.slider.IntSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
@@ -159,9 +164,11 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
                 new VectorLabel(x.toString())
         );
         classer.put(FloatRange.class, (FloatRange x, Object relation) -> {
-            FloatRangePort f = new FloatRangePort(x);
-            f.slider.text(objLabel(x, relation));
-            return f;
+            return new BindingFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set);
+        });
+
+        classer.put(PLink.class, (PLink x, Object relation) -> {
+            return new BindingFloatSlider(objLabel(x, relation), 0, 1, x, x::pri);
         });
 
         classer.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
@@ -347,4 +354,43 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
             return super.canRender(r);
         }
     }
+    public final class BindingFloatSlider extends FloatPort {
+
+        //private static final float EPSILON = 0.001f;
+
+
+        private final boolean autoUpdate = true; //TODO configurable rate
+        public final FloatSlider slider;
+        private final FloatSupplier get;
+
+
+        public BindingFloatSlider(String label, float min, float max, FloatSupplier get, FloatConsumer set) {
+            super();
+
+            this.get = get;
+            slider = new FloatSlider(get.asFloat(), min, max);
+            //.on((FloatProcedure) spacegraph.space2d.widget.port.FloatRangePort.this::out);
+
+            set(LabeledPane.the(label, slider));
+
+            on(set::accept);
+        }
+
+
+        @Override
+        protected void renderContent(ReSurface r) {
+            if (autoUpdate) {
+                if (active())
+                    slider.set(this.get.asFloat());
+            }
+
+            super.renderContent(r);
+        }
+
+        @Override
+        protected void onWired(Wiring w) {
+            out();
+        }
+    }
+
 }

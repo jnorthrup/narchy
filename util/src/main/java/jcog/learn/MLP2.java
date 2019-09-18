@@ -13,7 +13,6 @@ package jcog.learn;
 import jcog.Util;
 
 import java.io.BufferedInputStream;
-import java.io.IOException;
 import java.util.Arrays;
 import java.util.Random;
 

@@ -90,11 +90,12 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
         }
 
         @Override
-        public float pri(float p) {
+        public ScalarValue pri(float p) {
             if (p == p) {
                 p = Util.unitize(p);
             }
-            return this.pri = p;
+            this.pri = p;
+            return this;
         }
 
         @Override
@@ -105,8 +106,8 @@ public interface PriProxy<X, Y> extends UnitPrioritizable, Supplier<Y> {
         @Override
         public boolean delete() {
             if (PriProxy.super.delete()) {
-                clear();
                 this.pri = Float.NaN;
+                clear();
                 return true;
             }
             return false;

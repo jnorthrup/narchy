@@ -455,7 +455,7 @@ abstract public class GameX extends Game {
 
 
     public static void config(NAR n) {
-        n.main.pri.amp(0);  //HACK
+        n.main.pri(0);  //HACK
         n.what.remove(n.main.id); //HACK
 
         n.dtDither.set(
@@ -470,10 +470,10 @@ abstract public class GameX extends Game {
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 
-        n.beliefPriDefault.amp(0.25f);
-        n.goalPriDefault.amp(0.25f);
-        n.questionPriDefault.amp(0.25f);
-        n.questPriDefault.amp(0.25f);
+        n.beliefPriDefault.pri(0.25f);
+        n.goalPriDefault.pri(0.25f);
+        n.questionPriDefault.pri(0.25f);
+        n.questPriDefault.pri(0.25f);
 
         n.beliefConfDefault.set(0.75f);
         n.goalConfDefault.set(0.9f);

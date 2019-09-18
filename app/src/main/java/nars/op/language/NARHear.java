@@ -145,18 +145,17 @@ public class NARHear extends Loop {
                         $.func("hear", next);
 
         long now = nar.time();
-        nar.input(
-                NALTask.the(term, BELIEF, $.t(1, (nar.confDefault(BELIEF) * confFactor)), now, now,
-                        Math.round(now + nar.dur()), nar.evidence())
-//            new TruthletTask(
-//                target,
-//                BELIEF,
-//                Truthlet.impulse(
-//                        now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,
-//                        c2w(nar.confDefault(BELIEF)*confFactor)
-//                ),
-//                nar)
-                .priSet(nar.priDefault(BELIEF) * priorityFactor)
+		//            new TruthletTask(
+		//                target,
+		//                BELIEF,
+		//                Truthlet.impulse(
+		//                        now, now+1 /* TODO use realtime to translate wordDelayMS to cycles */, 1f, 0f,
+		//                        c2w(nar.confDefault(BELIEF)*confFactor)
+		//                ),
+		//                nar)
+		nar.input(
+			((Task) NALTask.the(term, BELIEF, $.t(1, (nar.confDefault(BELIEF) * confFactor)), now, now,
+				Math.round(now + nar.dur()), nar.evidence())).<Task>pri(nar.priDefault(BELIEF) * priorityFactor)
         );
     }
 

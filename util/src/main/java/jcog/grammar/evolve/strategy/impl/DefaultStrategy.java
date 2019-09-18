@@ -37,7 +37,10 @@ import jcog.grammar.evolve.variations.Variation;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.*;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.TreeSet;
 import java.util.function.BiConsumer;
 
 /**

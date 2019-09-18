@@ -23,6 +23,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.StringTokenizer;
 
+import static java.util.Collections.EMPTY_LIST;
+
 /**
  * @author Alex Benini
  * <p>
@@ -56,7 +58,7 @@ public class StateEnd extends State {
                 relinkVar(e);
 
         } else {
-            vars = List.of();
+            vars = EMPTY_LIST;
             goal = e.startGoal;
         }
 

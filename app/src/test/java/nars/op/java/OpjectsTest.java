@@ -172,9 +172,9 @@ public class OpjectsTest {
         final SimpleClass x = objs.a("x", SimpleClass.class);
 
 
-        n.beliefPriDefault.amp(0.05f);
-        n.questionPriDefault.amp(0.05f);
-        n.questPriDefault.amp(0.05f);
+        n.beliefPriDefault.pri(0.05f);
+        n.questionPriDefault.pri(0.05f);
+        n.questPriDefault.pri(0.05f);
         n.freqResolution.set(0.1f);
         n.time.dur(10);
         n.termVolMax.set(30);

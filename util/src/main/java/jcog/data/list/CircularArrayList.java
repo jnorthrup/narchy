@@ -1,5 +1,7 @@
 package jcog.data.list;
 
+import jcog.Util;
+
 import java.io.Serializable;
 import java.util.*;
 import java.util.function.Consumer;
@@ -44,7 +46,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
     public Iterator<E> iterator() {
         final int max = size;
         if (max == 0)
-            return Collections.emptyIterator();
+            return Util.emptyIterator;
 
         return new Iterator<>() {
 

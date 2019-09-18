@@ -147,12 +147,14 @@ abstract public class MetaAgent extends Game {
             });
 
             float priFactorMin = 0.1f, priFactorMax = 4f;
-            actionUnipolar($.inh(SELF, beliefPri), nar.beliefPriDefault.amp.subRange(
-                Math.max(nar.beliefPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-                nar.beliefPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
-            actionUnipolar($.inh(SELF, goalPri), nar.goalPriDefault.amp.subRange(
-                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
+            actionUnipolar($.inh(SELF, beliefPri), (FloatConsumer)nar.beliefPriDefault::pri);
+//                .subRange(
+//                Math.max(nar.beliefPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+//                nar.beliefPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
+            actionUnipolar($.inh(SELF, goalPri), (FloatConsumer)nar.goalPriDefault::pri);
+//                .subRange(
+//                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+//                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
 
             rewardNormalized(happy, 1, 0, ScalarValue.EPSILON, ()->{
                 float dur = dur();
@@ -342,16 +344,13 @@ abstract public class MetaAgent extends Game {
 //        return Util.lerp(c, min, curiMax);
 //    }
 
-    protected void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode,Object> g) {
+    void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
         actionCtlPriNode(s);
-        s.neighbors(g, false,true).forEach((Node<PriNode,Object> x) -> {
-            PriNode xid = x.id();
-            actionCtlPriNode(xid);//, $.p(base, s.get()));
-        });
+        s.node(g).nodes(false, true).forEach((Node<PriNode,Object> x) -> actionCtlPriNode(x.id()));
     }
 
-    protected void actionCtlPriNode(PriNode attnSensor) {
-        actionCtl(attnSensor.get(), attnSensor.amp);
+    void actionCtlPriNode(PriNode attnSensor) {
+        actionCtl(attnSensor.get(), 0, 1, attnSensor::priSetAndGet);
     }
 
     protected void actionCtl(Term t, FloatRange r) {

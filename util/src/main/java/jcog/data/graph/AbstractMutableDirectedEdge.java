@@ -10,28 +10,29 @@ public abstract class AbstractMutableDirectedEdge<N, E> implements FromTo<Node<N
     protected Node<N, E> to;
     protected E id;
 
-    public AbstractMutableDirectedEdge(Node<N, E> from, Node<N, E> to, @Nullable E id) {
-        this.from = from;
-        this.to = to;
-        this.id = id;
-        rehash();
+    protected AbstractMutableDirectedEdge() {
+
     }
 
-    public void setFrom(Node<N, E> from) {
+    protected AbstractMutableDirectedEdge(Node<N, E> from, Node<N, E> to, @Nullable E id) {
+        set(from, to, id);
+    }
+
+    public void from(Node<N, E> from) {
         if (!this.from.equals(from)) {
             this.from = from;
             rehash();
         }
     }
 
-    public void setTo(Node<N, E> to) {
+    public void to(Node<N, E> to) {
         if (!this.to.equals(to)) {
             this.to = to;
             rehash();
         }
     }
 
-    public void setID(E id) {
+    public void id(E id) {
         if (!Objects.equals(this.id, id)) {
             this.id = id;
             rehash();
@@ -73,5 +74,12 @@ public abstract class AbstractMutableDirectedEdge<N, E> implements FromTo<Node<N
     @Override
     public String toString() {
         return from + " => " + id + " => " + to;
+    }
+
+    public void set(Node<N, E> from, Node<N, E> to, E id) {
+        this.from = from;
+        this.to = to;
+        this.id = id;
+        rehash();
     }
 }

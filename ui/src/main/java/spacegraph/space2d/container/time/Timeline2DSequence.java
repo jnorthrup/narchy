@@ -1,5 +1,6 @@
 package spacegraph.space2d.container.time;
 
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.Longerval;
 import jcog.signal.Tensor;
@@ -53,11 +54,11 @@ public class Timeline2DSequence implements Timeline2D.EventBuffer<Pair<Longerval
         int v = buffer.volume();
         int sampleStart = sample(start);
         if (sampleStart > v + 1)
-            return List.of(); //starts after
+            return Util.emptyIterable; //starts after
         sampleStart = Math.max(0, sampleStart);
         int sampleEnd = sample(end);
         if (sampleEnd < - 1)
-            return List.of(); //ends before
+            return Util.emptyIterable; //ends before
         sampleEnd = Math.min(v, sampleEnd);
 
 

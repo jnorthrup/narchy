@@ -24,6 +24,8 @@ import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
+
 /**
  * @author Alex Benini
  */
@@ -102,7 +104,7 @@ public class PrologSolve {
 
 	public List<PrologContext> getExecutionStack() {
 		PrologContext t = currentContext;
-		if (t == null) return List.of();
+		if (t == null) return EMPTY_LIST;
 
 		List<PrologContext> l = new FasterList<>(1);
 		do {

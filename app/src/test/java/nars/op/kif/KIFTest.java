@@ -16,6 +16,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import static nars.$.$$;
@@ -49,7 +50,7 @@ class KIFTest {
 //        ); // ~= PROLOG
 
         n.termVolMax.set(64);
-        n.beliefPriDefault.amp(0.01f);
+        n.beliefPriDefault.pri(0.01f);
         n.time.dur(100);
 
 
@@ -74,7 +75,7 @@ class KIFTest {
                     return k;
                 } catch (IOException e) {
                     e.printStackTrace();
-                    return List.of();
+                    return Collections.EMPTY_LIST;
                 }
             }
         ).forEach((Iterable ww) ->
@@ -94,11 +95,11 @@ class KIFTest {
                 System.out.println(t.toString(true));
         });
         //w.accept(new EternalTask($$("(#x --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(1));
-        w.accept(new EternalTask($$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.t(1, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n).priSet(0.1f));
-        w.accept(new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.05f));
-        w.accept(new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n).priSet(0.05f));
+        w.accept(((Task) new EternalTask($$("(patient(#p,#a) && ({#p}-->Organism))"), BELIEF, $.t(1, 0.9f), n)).pri(0.1f));
+        w.accept(((Task) new EternalTask($$("({#x} --> Damaging)"), GOAL, $.t(0, 0.9f), n)).pri(0.1f));
+        w.accept(((Task) new EternalTask($$("({#x} --> CausingHappiness)"), GOAL, $.t(1, 0.9f), n)).pri(0.1f));
+        w.accept(((Task) new EternalTask($$("(Death --> Damaging)"), BELIEF, $.t(1, 0.9f), n)).pri(0.05f));
+        w.accept(((Task) new EternalTask($$("(Unhappiness --> Damaging)"), BELIEF, $.t(1, 0.9f), n)).pri(0.05f));
         //w.accept(new EternalTask($$("(#x --> Death)"), GOAL, $.t(0, 0.9f), n).priSet(1));
         //w.accept(new EternalTask($$("(?x ==> (?y --> Damaging))"), QUESTION, null, n).priSet(1));
         //n.input("$1.0 possesses(I,#everything)!");

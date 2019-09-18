@@ -7,6 +7,7 @@ import spacegraph.space3d.transform.EdgeDirected3D;
 import spacegraph.space3d.transform.Flatten;
 import spacegraph.util.Active;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 
@@ -18,7 +19,7 @@ import java.util.function.Consumer;
 public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     private SpaceGraph3D<X> space;
-    List<Spatial<X>> active = List.of();
+    List<Spatial<X>> active = Collections.EMPTY_LIST;
 
 
     @Override

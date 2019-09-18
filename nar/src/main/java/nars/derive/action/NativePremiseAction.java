@@ -3,8 +3,8 @@ package nars.derive.action;
 import nars.$;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
-import nars.derive.rule.RuleWhy;
 import nars.derive.rule.ConditionalPremiseRuleBuilder;
+import nars.derive.rule.RuleWhy;
 import nars.term.control.PREDICATE;
 
 abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder  {

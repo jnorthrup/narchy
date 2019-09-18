@@ -1,5 +1,6 @@
 package jcog.data.set;
 
+import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 
 import java.io.Serializable;
@@ -191,7 +192,7 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
         while (START < keys.length && !status.get(START))
             START++;
         if (START == keys.length)
-            return Collections.emptyIterator();
+            return Util.emptyIterator;
 
         final int startPos = START;
 

@@ -1,5 +1,6 @@
 package jcog.data.list;
 
+import com.google.common.collect.Iterators;
 import jcog.Util;
 import jcog.util.ArrayUtil;
 import jcog.util.FloatFloatToFloatFunction;
@@ -682,6 +683,8 @@ public class FasterList<X> extends FastList<X> {
         switch (size) {
             case 0:
                 return Collections.emptyIterator();
+            case 1:
+                return Iterators.singletonIterator(items[0]);
             default:
                 return new FasterListIterator<>(this);
         }

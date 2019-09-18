@@ -58,8 +58,7 @@ import java.util.Arrays;
             new ConcurrentFastIteratingHashMap<>(new Node[0])
             //PriMap.newMap(false)
     );
-    private final PriNode root = PriNode.constant("root", 1);
-    private final NodeGraph.MutableNode<PriNode,Object> rootNode = graph.addNode(root);
+
 
 
 
@@ -89,8 +88,14 @@ import java.util.Arrays;
     }
 
     private void prioritize() {
-        root.pri(1);
-        graph.forEachBF(root, x->x.update(graph));
+
+
+        graph.nodes().forEach(x->{
+            //if (x.edgeCount(true, false)==0) { //root
+
+                x.id().update(graph);
+            //}
+        });
     }
 
     /**
@@ -112,13 +117,8 @@ import java.util.Arrays;
         return MetaGoal.privaluate(why, effect);
     }
 
-
-    /** attaches a priority node to the priority graph
-     */
     public Node<nars.attention.PriNode, Object> add(PriNode p) {
-        NodeGraph.MutableNode<PriNode, Object> a = graph.addNode(p);
-        graph.addEdgeByNode(rootNode, "pri", a);
-        return a;
+        return graph.addNode(p);
     }
 
     public boolean remove(PriNode p) {

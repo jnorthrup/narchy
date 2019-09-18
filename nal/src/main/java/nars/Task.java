@@ -916,16 +916,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     byte punc();
 
-    /**
-     * fluent form of pri(x) which returns this class
-     */
-    default Task priSet(float p) {
-        this.pri(p);
-        return this;
-    }
 
     default Task pri(NAL defaultPrioritizer) {
-        return priSet(defaultPrioritizer.priDefault(punc()));
+        return pri(defaultPrioritizer.priDefault(punc()));
     }
 
 

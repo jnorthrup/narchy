@@ -38,10 +38,10 @@ public class NARchy extends NARS {
 
         nar.dtDither.set(20);
 
-        nar.beliefPriDefault.amp(0.5f);
-        nar.goalPriDefault.amp(0.5f);
-        nar.questionPriDefault.amp(0.5f);
-        nar.questPriDefault.amp(0.5f);
+        nar.beliefPriDefault.pri(0.5f);
+        nar.goalPriDefault.pri(0.5f);
+        nar.questionPriDefault.pri(0.5f);
+        nar.questPriDefault.pri(0.5f);
 
         nar.start(new ConjClustering(nar, BELIEF,
                 16, 256, t->true

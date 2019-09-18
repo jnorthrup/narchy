@@ -2,6 +2,7 @@ package jcog.data.iterator;
 
 import com.google.common.collect.Iterators;
 import jcog.TODO;
+import jcog.Util;
 
 import java.util.Iterator;
 import java.util.List;
@@ -9,8 +10,6 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
-
-import static java.util.Collections.emptyIterator;
 
 /** TODO optionally skip nulls */
 public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
@@ -61,14 +60,14 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
 
     public static <E> Iterator<E> iterator(E... e) {
         if (e == null)
-            return emptyIterator();
+            return Util.emptyIterator;
         else
             return ArrayIterator.iterateN(e, e.length);
     }
 
     public static <E> Iterable<E> iterable(E... e) {
         if (e == null)
-            return List.of();
+            return Util.emptyIterable;
         else {
             switch (e.length) {
                 case 1:
@@ -86,7 +85,7 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     public static <E> Iterator<E> iterateN(E[] e, int size) {
         switch (size) {
             case 0:
-                return emptyIterator();
+                return Util.emptyIterator;
             case 1:
                 return Iterators.singletonIterator(e[0]);
             default:
@@ -103,10 +102,10 @@ public class ArrayIterator<E> implements Iterator<E>, Iterable<E> {
     public static <E> Iterator<E> iterateNonNullN(E[] e, int size) {
         switch (size) {
             case 0:
-                return emptyIterator();
+                return Util.emptyIterator;
             case 1:
                 E ee = e[0];
-                return ee!=null ? Iterators.singletonIterator(ee) : emptyIterator();
+                return ee!=null ? Iterators.singletonIterator(ee) : Util.emptyIterator;
             default:
                 return new ArrayIteratorNonNull<>(e, size);
         }

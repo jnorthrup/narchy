@@ -28,6 +28,7 @@ import nars.time.event.WhenTimeIs;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BooleanSupplier;
 
@@ -310,7 +311,7 @@ public class Impiler {
 		@Override
 		public Iterable<FromTo<Node<Term, Task>, Task>> edges(boolean in, boolean out) {
 			assert (in ^ out);
-			return tasks.isEmpty() ? List.of() : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
+			return tasks.isEmpty() ? Collections.EMPTY_LIST : Iterables.filter(Iterables.transform(tasks, (tLink) -> {
 				boolean td = tLink.direction;
 				if ((out && td) || (in && !td)) {
 					Task tt = tLink.get();

@@ -785,35 +785,36 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         Y result;
 
-        float over, delta;
+        float delta;
         float priBefore = existing.pri();
 
         try {
 
-            over = merge(existing, incoming, incomingPri);
+            delta = merge(existing, incoming, incomingPri);
 
-            float priAfter = existing.pri();
-            if (priAfter != priAfter) {
-                priAfter = 0;
-                result = null;
-            } else {
+//            float priAfter = existing.pri();
+//            if (priAfter != priAfter) {
+//                priAfter = 0;
+//                result = null;
+//            } else {
                 result = existing;
-            }
+//            }
 
-            delta = priAfter - priBefore;
+            //delta = priAfter - priBefore;
 
             if (sortContinuously()) {
-                if (result == null || Math.abs(delta) >= ScalarValue.EPSILON) {
+                if (Math.abs(delta) >= ScalarValue.EPSILON) {
                     //if removed, or significant change occurred
 
-                    if (result != null) {
-                        table.items.reprioritize(existing, posBefore(existing, priBefore), delta, priAfter, table);
-                    } else {
-                        //got deleted
-                        if (!table.items.removeFast(existing, posBefore(existing, priBefore)))
-                            throw new ConcurrentModificationException();
-                        removeFromMap(existing);
-                    }
+                    //if (result != null) {
+                    float priAfter = priBefore + delta;
+                    table.items.reprioritize(existing, posBefore(existing, priBefore), delta, priAfter, table);
+//                    } else {
+//                        //got deleted
+//                        if (!table.items.removeFast(existing, posBefore(existing, priBefore)))
+//                            throw new ConcurrentModificationException();
+//                        removeFromMap(existing);
+//                    }
                 }
             }
         } finally {
@@ -822,8 +823,11 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         //incoming.delete();
 
-        if (over != 0 && overflow != null)
-            overflow.add(over);
+        if (overflow != null) {
+            float over = Math.max(0, incomingPri - delta);
+            if (over > 0)
+                overflow.add(over);
+        }
 
         if (Math.abs(delta) > Float.MIN_NORMAL) {
             pressurize(delta);
@@ -835,7 +839,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     protected float merge(Y existing, Y incoming, float incomingPri) {
-        return merge().merge(existing, incomingPri, PriReturn.Overflow);
+        return merge().merge(existing, incomingPri, PriReturn.Delta);
     }
 
     /**

@@ -4,6 +4,7 @@ import jcog.decide.Roulette;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.impl.PriArrayBag;
 import jcog.pri.op.PriMerge;
+import jcog.pri.op.PriReturn;
 import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.term.Term;
@@ -17,7 +18,12 @@ import java.util.function.Predicate;
  */
 public final class TaskLinkSnapshot {
 
-	public final PriArrayBag<TaskLink> links = new PriArrayBag<>(PriMerge.replace, 0);
+	public final PriArrayBag<TaskLink> links = new PriArrayBag<>(PriMerge.replace, 0) {
+		@Override
+		protected float merge(TaskLink existing, TaskLink incoming, float incomingPri) {
+			return existing.merge(incoming, merge(), PriReturn.Delta);
+		}
+	};
 
 
 	public TaskLinkSnapshot() {

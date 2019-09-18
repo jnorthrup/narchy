@@ -6,6 +6,8 @@ import spacegraph.space3d.widget.SimpleGraph3D;
 import java.io.File;
 import java.util.List;
 
+import static java.util.Collections.EMPTY_LIST;
+
 public class SimpleTreeTest {
     /** from: guava */
     static final SuccessorsFunction<File> FILE_TREE = path ->
@@ -16,7 +18,7 @@ public class SimpleTreeTest {
         if (dir.isDirectory()) {
             return List.of(dir.listFiles());
         } else
-            return List.of();
+            return EMPTY_LIST;
     }
 
     public static void main(String[] args)  {

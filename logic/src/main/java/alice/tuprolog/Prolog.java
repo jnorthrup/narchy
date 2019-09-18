@@ -22,13 +22,13 @@ import alice.tuprolog.lib.BasicLibrary;
 import alice.tuprolog.lib.IOLibrary;
 import alice.tuprolog.lib.ISOLibrary;
 import com.google.common.collect.Lists;
+import jcog.Util;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -944,7 +944,7 @@ public class Prolog {
                 }
             };
         } catch (Exception e) {
-            return Collections.emptyIterator();
+            return Util.emptyIterator;
         }
     }
 

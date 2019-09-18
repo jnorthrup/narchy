@@ -41,8 +41,8 @@ public class TaskIO {
 
             long cre = in.readLong();
 
-            return NALTask.the(term, punc, truth, cre, start, end, evi).priSet(pri);
-        } else {
+			return ((Task) NALTask.the(term, punc, truth, cre, start, end, evi)).pri(pri);
+		} else {
             return new CommandTask(term);
         }
     }

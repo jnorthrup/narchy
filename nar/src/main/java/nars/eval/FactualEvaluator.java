@@ -14,6 +14,7 @@ import nars.unify.Unify;
 import nars.unify.UnifyAny;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Function;
@@ -215,7 +216,7 @@ public class FactualEvaluator extends Evaluator {
             for (Term xx : x.subterms()) {
                 List<Term> m = resolve(xx);
                 if (m.isEmpty())
-                    m = List.of(); //use the immutable instance
+                    m = Collections.EMPTY_LIST;
                 //TODO trim list?
                 matches.add(m);
             }

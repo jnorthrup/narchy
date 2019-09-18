@@ -36,7 +36,7 @@ import spacegraph.space2d.widget.windo.Windo;
 import spacegraph.space2d.widget.windo.util.Box2DGraphEditPhysics;
 import spacegraph.space2d.widget.windo.util.GraphEditPhysics;
 
-import java.util.List;
+import java.util.Collections;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -267,7 +267,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
 
     public Iterable<FromTo<Node<spacegraph.space2d.Surface, Wire>, Wire>> edges(Surface s) {
         Node<spacegraph.space2d.Surface, Wire> n = links.node(s);
-        return n != null ? n.edges(true, true) : List.of();
+        return n != null ? n.edges(true, true) : Collections.EMPTY_LIST;
     }
 
 

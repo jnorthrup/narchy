@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -296,7 +297,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
         if (executor instanceof ExecutorService)
             return ((ExecutorService) this.executor).shutdownNow();
         else
-            return List.of();
+            return Collections.EMPTY_LIST;
     }
 
     @Override

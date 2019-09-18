@@ -1,15 +1,12 @@
 package nars.game.sensor;
 
 import com.google.common.collect.Iterables;
-import jcog.data.graph.MapNodeGraph;
-import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
-import nars.game.Game;
 import nars.attention.AttnBranch;
-import nars.attention.PriNode;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
+import nars.game.Game;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
@@ -43,40 +40,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     protected VectorSensor(Term rootID, NAR n) {
         super(rootID, n);
 
-        //HACK
-        pri = new AttnBranch(this.id, this) {
-
-            int size = -1;
-
-            float priComponent;
-
-            @Override
-            public void update(MapNodeGraph<PriNode, Object> graph) {
-                if (size <= 0) {
-                    //init size
-                    try {
-                        size = Iterables.size(components());
-                    } catch (Throwable t) {
-                        size = 0; //HACK
-                    }
-                }
-
-                super.update(graph);
-                priComponent = super.pri();
-            }
-
-            @Override
-            public float pri() {
-                return super.pri() * size;
-            }
-
-            @Override
-            public float priComponent() {
-                return priComponent;
-            }
-        };
-        pri.output(PriNode.Branch.One_Div_N);
-
+        this.pri = new AttnBranch(this.id, this);
         this.in = n.newChannel(id != null ? id : this);
         this.cause = new short[] { in.id };
     }
@@ -97,7 +61,8 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
     @Override
     public void update(Game g) {
 
-        FloatSupplier aPri = pri::priComponent;
+        float aPri = pri.pri() / size();
+
         //float quality = Util.sqrt(attn.amp.floatValue());
         //Random rng = g.random();
         for (Signal s : this) {

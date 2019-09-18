@@ -1,10 +1,8 @@
 package nars.derive;
 
 import nars.$;
-import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.action.NativePremiseAction;
 import nars.derive.action.PatternPremiseAction;
 import nars.derive.premise.PatternTermBuilder;
 import nars.derive.rule.DeriverProgram;

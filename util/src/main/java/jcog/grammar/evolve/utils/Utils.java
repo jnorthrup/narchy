@@ -18,7 +18,6 @@
 package jcog.grammar.evolve.utils;
 
 import jcog.grammar.evolve.inputs.DataSet;
-import jcog.grammar.evolve.inputs.DataSet.Bounds;
 import jcog.grammar.evolve.objective.Ranking;
 import jcog.grammar.evolve.tree.Node;
 import jcog.grammar.evolve.tree.RegexRange;
@@ -30,7 +29,10 @@ import org.eclipse.collections.impl.set.mutable.primitive.CharHashSet;
 
 import java.io.*;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;

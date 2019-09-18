@@ -29,7 +29,7 @@ public class NAL4MultistepTest extends NALTest {
         tester.nar.termVolMax.set($$("(likes(cat,[blue]) <-> likes({tom},[blue]))").volume()+2);
 
         //tester.nar.freqResolution.setAt(0.05f);
-        tester.nar.questionPriDefault.amp(0.5f);
+        tester.nar.questionPriDefault.pri(0.5f);
         tester.confTolerance(0.4f);
 
         tester.input("({sky} --> [blue]).");

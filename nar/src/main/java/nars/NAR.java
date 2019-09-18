@@ -403,7 +403,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         List<Task> l = Narsese.tasks(text, this);
         switch (l.size()) {
             case 0:
-                return List.of();
+                return Collections.EMPTY_LIST;
             case 1:
                 input(l.get(0));
                 return l;

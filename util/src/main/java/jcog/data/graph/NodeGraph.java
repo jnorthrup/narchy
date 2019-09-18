@@ -2,6 +2,7 @@ package jcog.data.graph;
 
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Iterators;
+import jcog.Util;
 import jcog.data.graph.path.FromTo;
 import jcog.data.graph.search.Search;
 import jcog.data.set.ArrayHashSet;
@@ -173,7 +174,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         public Iterable<FromTo<Node<N, E>, E>> edges(boolean in, boolean out) {
             boolean ie = !in || this.in.isEmpty();
             boolean oe = !out || this.out.isEmpty();
-            if (ie && oe) return List.of();
+            if (ie && oe) return Util.emptyIterable;
             else if (ie) return this.out;
             else if (oe) return this.in;
             else return Iterables.concat(this.out, this.in);
@@ -181,7 +182,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         @Override public Iterator<FromTo<Node<N,E>,E>> edgeIterator(boolean in, boolean out) {
             boolean ie = !in || this.in.isEmpty();
             boolean oe = !out || this.out.isEmpty();
-            if (ie && oe) return Collections.emptyIterator();
+            if (ie && oe) return Util.emptyIterator;
             else if (ie) return this.out.iterator();
             else if (oe) return this.in.iterator();
             else return Iterators.concat(this.out.iterator(), this.in.iterator());

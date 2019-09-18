@@ -35,6 +35,7 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -419,7 +420,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 
         List<Class> roots = roots(cfrom, false, true, true, false);
         if (roots.isEmpty())
-            return List.of();
+            return Collections.EMPTY_LIST;
 
         List<Function<X, Y>> convertors = new FasterList(roots.size());
         for( Class cf : roots ){

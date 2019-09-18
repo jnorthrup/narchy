@@ -28,7 +28,7 @@ public abstract class AtomicPri implements ScalarValue {
 
 
     /** initialized to zero */
-    private final int pri = iZero;
+    public final int pri = iZero;
 
     /** initialized to zero */
     public AtomicPri() {
@@ -58,23 +58,14 @@ public abstract class AtomicPri implements ScalarValue {
     @Override
     public final float priElse(float valueIfDeleted) {
         float f = pri();
-        if (f == f)
-            return f;
-        else
-            return valueIfDeleted;
+        return f == f ? f : valueIfDeleted;
     }
 
     @Override
     public final float priGetAndSetZero() {
         return PRI.getAndSetZero(this);
     }
-    @Override
-    public final float priGetAndSet(float x) {
-        return PRI.getAndSet(this, x);
-    }
-    public final float priSetAndGet(float x) {
-        return PRI.setAndGet(this, x);
-    }
+
 
     @Override
     public final float priGetAndDelete() {
@@ -125,13 +116,21 @@ public abstract class AtomicPri implements ScalarValue {
         return _pri() == iNaN;
     }
 
+    @Override
+    public final float priGetAndSet(float p) {
+        return PRI.INT.getAndSet(this, floatToIntBits(post().valueOf(p)));
+    }
 
+    @Override public float priSetAndGet(float p) {
+        float v = post().valueOf(p);
+        PRI.INT.set(this, floatToIntBits(v));
+        return v;
+    }
 
     /** set */
-    @Override public final float pri(float p) {
+    @Override public final <P extends ScalarValue> P pri(float p) {
         PRI.INT.set(this, floatToIntBits(post().valueOf(p)));
-        //INT.setAt(this, floatToIntBits(v(p)));
-        return p;
+        return (P) this;
     }
 
 //    /** update */

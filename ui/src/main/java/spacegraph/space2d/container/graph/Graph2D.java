@@ -19,6 +19,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.space2d.widget.textedit.TextEdit;
 import spacegraph.video.Draw;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -41,7 +42,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     //public AtomicFloat scale = new AtomicFloat(1);
 
 
-    private List<Graph2DRenderer<X>> renderers = List.of();
+    private List<Graph2DRenderer<X>> renderers = Collections.EMPTY_LIST;
 
     private final Pool<EdgeVis<X>> edgePool = new MetalPool<>() {
         @Override
@@ -242,7 +243,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     @Override
     public TextEdit clear() {
-        set(List.of());
+        set(Collections.EMPTY_LIST);
         return null;
     }
 

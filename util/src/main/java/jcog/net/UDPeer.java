@@ -846,8 +846,9 @@ public class UDPeer extends UDP {
 
 
         @Override
-        public float pri(float p) {
-            return this.pri = Util.unitize(p);
+        public Msg pri(float p) {
+            this.pri = Util.unitize(p);
+            return this;
         }
 
         @Override

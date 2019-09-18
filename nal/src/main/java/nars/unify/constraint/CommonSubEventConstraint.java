@@ -1,12 +1,9 @@
 package nars.unify.constraint;
 
-import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.util.conj.ConjUnify;
 import nars.unify.Unify;
-
-import static nars.Op.CONJ;
 
 public final class CommonSubEventConstraint extends RelationConstraint {
 

@@ -1,9 +1,9 @@
 package nars.unify;
 
+import jcog.Util;
 import nars.term.Term;
 import nars.unify.unification.DeterministicUnification;
 
-import java.util.List;
 import java.util.function.Function;
 
 /**
@@ -19,9 +19,10 @@ public interface Unification extends Function<Term,Iterable<Term>> {
      * TODO distinguish between deterministically impossible and those which stopped before exhausting permutations
      */
     Unification Null = new Unification() {
+
         @Override
         public Iterable<Term> apply(Term x) {
-            return List.of();
+            return Util.emptyIterable;
         }
 
         @Override

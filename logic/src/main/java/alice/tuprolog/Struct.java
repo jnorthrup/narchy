@@ -17,6 +17,7 @@
  */
 package alice.tuprolog;
 
+import jcog.Util;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.*;
@@ -168,7 +169,7 @@ public class Struct extends Term {
 
         @Override
         public Iterator<Term> listIterator() {
-            return Collections.emptyIterator();
+            return Util.emptyIterator;
         }
     };
 

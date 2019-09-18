@@ -1,5 +1,6 @@
 package nars.task;
 
+import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
 import nars.Task;
 import nars.term.Term;
@@ -66,8 +67,8 @@ public class CommandTask implements Task {
     }
 
     @Override
-    public float pri(float ignored) {
-        return 0;
+    public ScalarValue pri(float ignored) {
+        return this;
     }
 
     @Override

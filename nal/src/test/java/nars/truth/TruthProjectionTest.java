@@ -4,7 +4,6 @@ import nars.$;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.proj.LinearTruthProjection;
-import nars.truth.proj.TruthIntegration;
 import org.junit.jupiter.api.Test;
 
 import java.util.concurrent.atomic.AtomicInteger;

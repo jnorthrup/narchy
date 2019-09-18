@@ -3,9 +3,9 @@ package nars.game.sensor;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
-import nars.game.Game;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
+import nars.game.Game;
 import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
@@ -91,7 +91,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
         return Signal.truthDithered(nextValue, resolution().floatValue(), g);
     }
 
-    public void update(FloatSupplier pri, short[] cause, Game g) {
+    public void update(float pri, short[] cause, Game g) {
 
         float prevValue = currentValue;
 
@@ -113,7 +113,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
     @Override
     public void update(Game g) {
-        update(this::pri, cause(), g);
+        update(this.pri(), cause(), g);
     }
 
     abstract public short[] cause();

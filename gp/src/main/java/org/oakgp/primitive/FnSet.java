@@ -18,6 +18,7 @@ package org.oakgp.primitive;
 import org.oakgp.function.Fn;
 import org.oakgp.util.Signature;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
@@ -59,7 +60,7 @@ public final class FnSet extends NodeSet<Fn> {
      */
     public List<Fn> asList(Signature signature) {
         Fn[] elements = get(signature);
-        return elements != null ? List.of(elements) : List.of();
+        return elements != null ? List.of(elements) : Collections.EMPTY_LIST;
     }
 
     public Fn[] get(Signature signature) {

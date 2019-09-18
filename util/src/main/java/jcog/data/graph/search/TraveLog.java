@@ -3,20 +3,39 @@ package jcog.data.graph.search;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
+import org.roaringbitmap.RoaringBitmap;
 
 /** search log history for detecting cycles, reachability, etc */
 public interface TraveLog {
     void clear();
 
     /** returns false if it was already added */
-    boolean visit(Node n);
+    boolean visit(int n);
 
-    void unvisit(Node n);
+    void unvisit(int n);
 
-    boolean hasVisited(Node n);
+    boolean hasVisited(int n);
 
-    static int serial(Node n) {
+    public static int id(Node n) {
         return ((NodeGraph.AbstractNode)n).serial;
+    }
+
+    final class RoaringHashTraveLog extends RoaringBitmap implements TraveLog {
+
+        @Override
+        public boolean visit(int n) {
+            return checkedAdd(n);
+        }
+
+        @Override
+        public void unvisit(int n) {
+            remove(n);
+        }
+
+        @Override
+        public boolean hasVisited(int n) {
+            return contains(n);
+        }
     }
 
     final class IntHashTraveLog extends IntHashSet implements TraveLog {
@@ -26,18 +45,18 @@ public interface TraveLog {
         }
 
         @Override
-        public boolean visit(Node n) {
-            return add(serial(n));
+        public boolean visit(int n) {
+            return add(n);
         }
 
         @Override
-        public void unvisit(Node n) {
-            remove(serial(n));
+        public void unvisit(int n) {
+            remove(n);
         }
 
         @Override
-        public boolean hasVisited(Node n) {
-            return contains(serial(n));
+        public boolean hasVisited(int n) {
+            return contains(n);
         }
 
     }

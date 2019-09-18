@@ -6,8 +6,8 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.game.GameTime;
 import nars.experiment.pacman.PacmanGame;
+import nars.game.GameTime;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.SwingBitmap2D;
 

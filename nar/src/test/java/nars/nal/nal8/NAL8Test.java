@@ -3,6 +3,7 @@ package nars.nal.nal8;
 import nars.$;
 import nars.Narsese;
 import nars.Op;
+import nars.Task;
 import nars.nal.nal7.NAL7Test;
 import nars.task.NALTask;
 import nars.term.Term;
@@ -68,9 +69,9 @@ public class NAL8Test extends NALTest {
             $1.0 (dx-->noid). 1743⋈1763 %.46;.90% {1743: _gpeß~Èkw}
          */
 
-        test
-                .input(NALTask.the($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), (long) 5, (long) 10, (long) 20, new long[]{100}).priSet(0.5f))
-                .input(NALTask.the($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), (long) 4, (long) 5, (long) 25, new long[]{101}).priSet(0.5f))
+		test
+                .input(((Task) NALTask.the($.$("(a-->b)"), GOAL, $.t(1f, 0.9f), (long) 5, (long) 10, (long) 20, new long[]{100})).<Task>pri(0.5f))
+                .input(((Task) NALTask.the($.$("(c-->b)"), BELIEF, $.t(1f, 0.9f), (long) 4, (long) 5, (long) 25, new long[]{101})).<Task>pri(0.5f))
                 .mustGoal(cycles, "(a-->c)", 1f, 0.4f,
 
                         x -> x >= 5 && x <= 25

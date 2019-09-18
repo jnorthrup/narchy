@@ -15,6 +15,8 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import java.util.List;
 import java.util.Random;
 
+import static java.util.Collections.EMPTY_LIST;
+
 /**
  * Termutator-permuted Unification
  *      not thread-safe
@@ -65,7 +67,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
     public Iterable<Term> apply(Term x) {
         switch (size()) {
             case 0:
-                return List.of();
+                return Util.emptyIterable;
             case 1:
                 return first().apply(x);
             default:
@@ -88,7 +90,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
     public List<DeterministicUnification> listClone() {
         FasterList<DeterministicUnification> l = list;
         switch (l.size()) {
-            case 0: return List.of();
+            case 0: return EMPTY_LIST;
             case 1: return List.of(l.getOnly());
             default: return list.clone();
         }

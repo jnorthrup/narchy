@@ -274,7 +274,7 @@ public class InputParser implements Closeable {
 	public static List<String> tokenizeLine(String input) {
 
 		if (input == null || input.isEmpty())
-			return List.of();
+			return Collections.EMPTY_LIST;
 
 		List<String> stringParts = new FasterList<String>();
 

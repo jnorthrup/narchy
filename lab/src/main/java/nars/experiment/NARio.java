@@ -5,18 +5,18 @@ import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
-import nars.game.Reward;
 import nars.attention.PriNode;
-import nars.game.action.AbstractGoalActionConcept;
-import nars.game.action.BiPolarAction;
-import nars.game.action.GoalActionConcept;
-import nars.game.sensor.DigitizedScalar;
-import nars.game.sensor.SelectorSensor;
 import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.MarioComponent;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 import nars.experiment.mario.sprites.Mario;
+import nars.game.Reward;
+import nars.game.action.AbstractGoalActionConcept;
+import nars.game.action.BiPolarAction;
+import nars.game.action.GoalActionConcept;
+import nars.game.sensor.DigitizedScalar;
+import nars.game.sensor.SelectorSensor;
 import nars.gui.NARui;
 import nars.sensor.PixelBag;
 import nars.video.AutoclassifiedBitmap;
@@ -25,8 +25,8 @@ import javax.swing.*;
 import java.util.List;
 
 import static nars.$.$$;
-import static nars.game.GameTime.fps;
 import static nars.experiment.mario.level.Level.*;
+import static nars.game.GameTime.fps;
 import static spacegraph.SpaceGraph.window;
 
 public class NARio extends GameX {

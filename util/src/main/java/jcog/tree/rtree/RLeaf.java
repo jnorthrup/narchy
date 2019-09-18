@@ -25,7 +25,6 @@ import jcog.tree.rtree.util.CounterRNode;
 import jcog.tree.rtree.util.Stats;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
@@ -61,7 +60,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
 
     @Override
     public Iterator<RNode<X>> iterateNodes() {
-        return Collections.emptyIterator();
+        return Util.emptyIterator;
     }
 
     @Override

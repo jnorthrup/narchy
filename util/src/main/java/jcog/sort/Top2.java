@@ -2,6 +2,7 @@ package jcog.sort;
 
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import jcog.Util;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.*;
@@ -84,7 +85,7 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
     @Override
     public Iterator<T> iterator() {
         if (a == null)
-            return Collections.emptyIterator();
+            return Util.emptyIterator;
         else if (b == null)
             return Iterators.singletonIterator(a);
         else
@@ -93,13 +94,9 @@ public class Top2<T> extends AbstractCollection<T> implements Consumer<T> {
 
     @Override
     public int size() {
-        if (a == null) {
-            return 0;
-        } else if (b == null) {
-            return 1;
-        } else {
-            return 2;
-        }
+        if (a == null) return 0;
+        else if (b == null) return 1;
+        else return 2;
     }
 
     @Override

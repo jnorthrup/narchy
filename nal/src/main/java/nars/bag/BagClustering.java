@@ -13,6 +13,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -113,7 +114,7 @@ public class BagClustering<X> {
 
         int s = bag.size();
         if (s == 0)
-            return List.of();
+            return Collections.EMPTY_LIST;
         else {
 
             int cc = net.centroidCount();
@@ -129,7 +130,7 @@ public class BagClustering<X> {
                 }
             });
             if (x.isEmpty())
-                return List.of();
+                return Collections.EMPTY_LIST;
 
             return x.values();
         }

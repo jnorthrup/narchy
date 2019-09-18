@@ -24,12 +24,13 @@ package jcog.tree.rtree;
 import jcog.data.list.FasterList;
 import jcog.tree.rtree.util.Stats;
 
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
+
+import static java.util.Collections.EMPTY_LIST;
 
 /**
  * Created by jcovert on 12/30/15.
@@ -176,17 +177,16 @@ public interface Space<X> extends Nodelike<X> {
 
     Stream<X> stream();
 
-    default Iterator<X> iterator() {
-        int s = size();
-        if (s == 0)
-            return Collections.emptyIterator();
+    Iterator<X> iterator();
 
-
-        return stream().iterator();
-//        List<T> snapshot = new FasterList(s);
-//        forEach(snapshot::addAt);
-//        return snapshot.iterator();
-    }
+//    default Iterator<X> iterator() {
+//        int s = size();
+//        if (s == 0)
+//            return Util.emptyIterator;
+//
+//
+//        return stream().iterator();
+//    }
 
     default List<X> asList() {
         int s = size();
@@ -195,7 +195,7 @@ public interface Space<X> extends Nodelike<X> {
             this.forEach(l::add);
             return l;
         } else {
-            return List.of();
+            return EMPTY_LIST;
         }
     }
 

@@ -18,12 +18,12 @@
 package alice.tuprolog;
 
 import alice.util.Tools;
+import jcog.Util;
 
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayDeque;
-import java.util.Collections;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.function.Predicate;
@@ -196,7 +196,7 @@ public class Theories {
 
         @Override
         public Iterator iterator() {
-            return Collections.emptyIterator();
+            return Util.emptyIterator;
         }
 
         @Override

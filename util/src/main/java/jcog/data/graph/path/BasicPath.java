@@ -31,6 +31,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -69,7 +70,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         if (endIndex < 0) throw new IllegalArgumentException("endIndex<0");
 
         int ncnt = nodeCount();
-        if (ncnt == 0 || ncnt == 1) return List.of(); //empty
+        if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
 
         List<E> l = new ArrayList<>();
@@ -90,7 +91,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
 
         to = Math.min(list.size(), to);
 
-        if (ncnt == 0 || ncnt == 1) return List.of(); //empty
+        if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
         int dir = to - from;
 

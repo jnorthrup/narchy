@@ -60,11 +60,11 @@ public class NAgentOptimize {
 //                        (NAR n, float f) -> n.beliefPriDefault.setAt(f))
                 .var("questionPriDefault", 0, 1f, 0.1f,
                         (NAR n, float f) -> {
-                            n.questionPriDefault.amp(f);
-                            n.questPriDefault.amp(f);
+                            n.questionPriDefault.pri(f);
+                            n.questPriDefault.pri(f);
                         })
                 .var("goalPriDefault", 0, 1f, 0.1f,
-                        (NAR n, float f) -> n.goalPriDefault.amp(f))
+                    (NAR n, float f) -> n.goalPriDefault.pri(f))
 
 //                .var("derivationComplexityExponent", 1f, 3f, 0.5f,
 //                        (NAR n, float f) -> Deriver.derivers(n).forEach(x ->

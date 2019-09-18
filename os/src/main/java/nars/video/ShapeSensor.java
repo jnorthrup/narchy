@@ -15,10 +15,10 @@ import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.game.Game;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
+import nars.game.Game;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Int;
@@ -256,8 +256,8 @@ public class ShapeSensor extends NARPart {
             NAR n = what.nar;
             long now = n.time();
             for (Term x : image) {
-                Task xx = new SignalTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                        now, last, now, new long[] { n.time.nextStamp() }).priSet(n.priDefault(BELIEF));
+                Task xx = ((Task) new SignalTask($.inh(x, id), BELIEF, $.t(1f, n.confDefault(BELIEF)),
+                    now, last, now, new long[]{n.time.nextStamp()})).pri(n.priDefault(BELIEF));
                 t.accept(xx, what);
             }
         }

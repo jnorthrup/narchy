@@ -30,10 +30,10 @@ public class ProNALTest {
         );
 
         NAR n = NARS.tmp(6);
-        n.questPriDefault.amp(1f);
-        n.beliefPriDefault.amp(0.5f);
+		n.questPriDefault.pri(1f);
+		n.beliefPriDefault.pri(0.5f);
 
-        Set<String> answers = new TreeSet();
+		Set<String> answers = new TreeSet();
         for (nars.term.Term xx : PrologToNAL.N(t)) {
             if (Functor.isFunc(xx)) {
 

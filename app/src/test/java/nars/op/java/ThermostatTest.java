@@ -38,7 +38,7 @@ public class ThermostatTest {
         n.confResolution.set(0.05f);
         //n.activateConceptRate.setAt(0.1f);
 
-        n.goalPriDefault.amp(0.5f);
+        n.goalPriDefault.pri(0.5f);
         //n.emotion.want(MetaGoal.Believe, -0.1f);
 
         float exeThresh = 0.51f;

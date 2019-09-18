@@ -7,7 +7,7 @@ import spacegraph.space2d.widget.port.util.Wiring;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.LabeledPane;
 
-public class FloatRangePort extends FloatPort {
+@Deprecated public class FloatRangePort extends FloatPort {
 
     //private static final float EPSILON = 0.001f;
 

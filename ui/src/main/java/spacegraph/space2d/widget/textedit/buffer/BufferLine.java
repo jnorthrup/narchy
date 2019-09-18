@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.textedit.buffer;
 
 import jcog.data.list.FasterList;
 
+import java.util.Collections;
 import java.util.List;
 
 public class BufferLine implements Comparable<BufferLine> {
@@ -56,7 +57,7 @@ public class BufferLine implements Comparable<BufferLine> {
 
         int cs = chars.size();
         if (col == cs)
-            return List.of(); //EOL, nothing
+            return Collections.EMPTY_LIST; //EOL, nothing
 
         FasterList<BufferChar> results = new FasterList<>(cs-col);
         while (cs-- > col) {

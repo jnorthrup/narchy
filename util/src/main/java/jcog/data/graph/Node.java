@@ -3,6 +3,7 @@ package jcog.data.graph;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
+import jcog.Util;
 import jcog.data.graph.edge.ImmutableDirectedEdge;
 import jcog.data.graph.path.FromTo;
 import jcog.data.list.FasterList;
@@ -10,9 +11,9 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
-import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
@@ -33,13 +34,13 @@ public interface Node<N, E> {
         FasterList<FromTo<Node<N, E>, E>> l = new FasterList(edgeIterator(in, out));
         int s = l.size();
         if (s == 0)
-            return List.of();
+            return Util.emptyIterable;
 
         if (filter!=null) {
             if (l.removeIf(filter.negate())) {
                 s = l.size();
                 if (s == 0)
-                    return List.of();
+                    return Util.emptyIterable;
             }
         }
 
@@ -53,7 +54,7 @@ public interface Node<N, E> {
     default Iterable<FromTo<Node<N,E>,E>> edges(boolean in, boolean out, @Nullable Predicate<FromTo<Node<N,E>,E>> filter) {
         Iterable<FromTo<Node<N, E>, E>> l = edges(in, out);
         if (l instanceof Collection && ((Collection)l).isEmpty())
-            return List.of();
+            return Util.emptyIterable;
         else
             return filter != null ? Iterables.filter(l, filter::test) : l;
     }
@@ -63,7 +64,7 @@ public interface Node<N, E> {
     /** TODO Iterator version of this, like edges and edgesIterator */
     default Iterable<? extends Node<N,E>> nodes(boolean in, boolean out) {
         if (!in && !out)
-            return List.of();
+            return Collections.EMPTY_LIST;
 
         Function<FromTo<Node<N, E>, E>, Node<N, E>> other = x -> x.other(this);
         Iterable<Node<N, E>> i = in ? transform(edges(true, false), other) : null;

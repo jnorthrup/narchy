@@ -1,5 +1,7 @@
 package jcog.grammar.parse;
 
+import jcog.Util;
+
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -170,7 +172,7 @@ public class Terminal extends Parser {
 	}
 
 	public Iterable<Parser> children() {
-		return List.of();
+		return Util.emptyIterable;
 	}
 
 	@Override

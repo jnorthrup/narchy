@@ -29,7 +29,7 @@ class AIMATests {
 //        n.attn.decay.set(0.1f);
 //        n.confResolution.set(0.05f);
 
-        n.questionPriDefault.amp(0.8f);
+        n.questionPriDefault.pri(0.8f);
 
 //        ObjectIntHashMap<Term> terms = new ObjectIntHashMap();
 //        n.onTask(t -> {

@@ -33,8 +33,9 @@ public class CLink<X extends Prioritizable> extends RoaringBitmap implements Pri
     }
 
     @Override
-    public float pri(float p) {
-        return ref.pri(p);
+    public CLink pri(float p) {
+        ref.pri(p);
+        return this;
     }
 
 

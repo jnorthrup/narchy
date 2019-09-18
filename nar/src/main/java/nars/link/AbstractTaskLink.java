@@ -16,7 +16,6 @@ import org.jetbrains.annotations.Nullable;
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
-import static jcog.signal.tensor.AtomicFixedPoint4x16bitVector.SHORT_TO_FLOAT_SCALE;
 import static nars.Task.i;
 
 public abstract class AbstractTaskLink implements TaskLink {
@@ -252,10 +251,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 
     @Override
-    public float pri(float p) {
-        //TODO fully atomic
-        float e = pri();
-        if (e > 1f/SHORT_TO_FLOAT_SCALE * 4) { return priMult(  p/ e); } else { fill(p); return p; }
+    public AbstractTaskLink pri(float p) {
+//        //TODO fully atomic
+//        float e = pri();
+//        priMult(  p/ e); } else { fill(p);  }
+//        return this;
+        throw new UnsupportedOperationException();
     }
 
     @Override

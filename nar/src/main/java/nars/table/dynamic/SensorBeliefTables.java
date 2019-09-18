@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import jcog.math.FloatSupplier;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -94,7 +93,7 @@ public class SensorBeliefTables extends BeliefTables {
         return Math.round(NAL.signal.CLEAN_MARGIN_DURS * dur);
     }
 
-    public void input(Truth value, FloatSupplier pri, short[] cause, What what, When<NAR> when, @Deprecated boolean link) {
+    public void input(Truth value, float pri, short[] cause, What what, When<NAR> when, @Deprecated boolean link) {
 
         SeriesTask x = add(value, when);
 
@@ -180,16 +179,16 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     /** link and emit */
-    private void remember(Task next, What w, FloatSupplier pri, boolean link, float dur) {
+    private void remember(Task next, What w, float pri, boolean link, float dur) {
 
         Task prev = this.current;
 
         if (prev!=next) {
-            float nextPri = pri.asFloat() *
+            float nextPri = pri *
                     lerp((float) SensorBeliefTables.surprise(prev, next, dur),
                             minSurprise, 1);
 
-            next.priSet(nextPri);
+            next.pri(nextPri);
 
             if (link) {
                 TaskLinkWhat ww = (TaskLinkWhat) w;

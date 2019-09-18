@@ -41,11 +41,11 @@ public class MarkovChain<T> {
     /**
      * Node that marks the beginning of a phrase. All Markov phrases start here.
      */
-    public final Chain START = new Chain(List.of());
+    public final Chain START = new Chain(Collections.EMPTY_LIST);
     /**
      * Node that signals the end of a phrase. This node should have no edges.
      */
-    public final Chain END = new Chain(List.of());
+    public final Chain END = new Chain(Collections.EMPTY_LIST);
 
 
     /**

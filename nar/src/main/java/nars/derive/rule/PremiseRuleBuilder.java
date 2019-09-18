@@ -1,8 +1,8 @@
 package nars.derive.rule;
 
 import nars.derive.Derivation;
-import nars.derive.action.PremiseAction;
 import nars.derive.PreDerivation;
+import nars.derive.action.PremiseAction;
 import nars.derive.util.PremiseTermAccessor;
 import nars.term.Term;
 import nars.term.control.PREDICATE;

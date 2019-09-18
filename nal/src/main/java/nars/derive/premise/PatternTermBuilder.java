@@ -3,7 +3,6 @@ package nars.derive.premise;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.Variable;
 import nars.term.compound.PatternCompound;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.Retemporalize;
@@ -11,7 +10,6 @@ import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
 import org.jetbrains.annotations.Nullable;
 
-import static nars.Op.*;
 import static nars.term.var.ellipsis.Ellipsis.firstEllipsis;
 
 /**

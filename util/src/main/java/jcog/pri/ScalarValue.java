@@ -1,8 +1,6 @@
 package jcog.pri;
 
-import jcog.math.FloatSupplier;
 import jcog.util.FloatFloatToFloatFunction;
-import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 /**
  * general purpose value.  consumes and supplies 32-bit float numbers
@@ -29,9 +27,14 @@ public interface ScalarValue extends Prioritized {
             (float)Math.sqrt(EPSILON);
 
     /** setter
-     *  @return value after set
+     *  @return this instance
      * */
-    float pri(float p);
+    <P extends ScalarValue> P pri(float p);
+
+    default float priSetAndGet(float p) {
+        pri(p);
+        return p;
+    }
 
     /** getter.  returns NaN to indicate deletion */
     float pri();
@@ -40,14 +43,8 @@ public interface ScalarValue extends Prioritized {
         return Float.floatToIntBits(pri());
     }
 
-    default float pri(FloatSupplier update) {
-        return pri(update.asFloat());
-    }
-    default float pri(FloatToFloatFunction update) {
-        return pri(update.valueOf(pri()));
-    }
     default float pri(FloatFloatToFloatFunction update, float x) {
-        return pri(update.apply(pri(), x));
+        return priSetAndGet(update.apply(pri(), x));
     }
 
     /** implementations can provide a faster non-value-returning strategy */
@@ -150,9 +147,11 @@ public interface ScalarValue extends Prioritized {
         private float pri;
 
         @Override
-        public float pri(float p) {
-            return this.pri = p;
+        public PlainScalarValue pri(float p) {
+            this.pri = p;
+            return this;
         }
+
 
         @Override
         public final float pri() {

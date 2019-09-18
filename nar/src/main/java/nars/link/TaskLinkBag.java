@@ -51,7 +51,7 @@ public class TaskLinkBag extends SimpleBufferedBag<TaskLink, TaskLink> {
 
         @Override
         protected float merge(TaskLink existing, TaskLink incoming, float incomingPri) {
-            return existing.merge(incoming, merge(), PriReturn.Overflow);
+            return existing.merge(incoming, merge(), PriReturn.Delta);
         }
         @Override
         protected float sortedness() {
