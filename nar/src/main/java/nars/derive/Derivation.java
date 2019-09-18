@@ -3,7 +3,6 @@ package nars.derive;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.ShortBuffer;
-import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
 import nars.NAL;
@@ -259,7 +258,9 @@ public class Derivation extends PreDerivation {
             e = new TermTransformException(x, null, "invalid Derivation Anon: null");
         else if (y instanceof Bool)
             e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");
-        else if (NAL.DEBUG && x instanceof Compound && x.op() != y.op())
+        else if (y instanceof Neg)
+            e = new TermTransformException(x, y, "invalid Derivation Anon: Neg");
+        else if (NAL.DEBUG && x instanceof Compound && x.opID() != y.opID())
             e = new TermTransformException(x, y, "invalid Derivation Anon: Op changed");
         else if (NAL.DEBUG && x.volume() != y.volume())
             e = new TermTransformException(x, y, "invalid Derivation Anon: Volume Changed");
@@ -613,7 +614,7 @@ public class Derivation extends PreDerivation {
 
             PostDerivable[] post = this.post;
             for (int i = 0; i < can.length; i++) {
-                if ((post[i].can(branch[can[i]], this)) >= Float.MIN_NORMAL) {
+                if ((post[i].can(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }
@@ -629,27 +630,9 @@ public class Derivation extends PreDerivation {
             this.ready(deriveTTL); //first come first serve, maybe not ideal
         }
 
+
         try (var __ = nar.emotion.derive_E_Run.time()) {
-
-            switch (valid) {
-                case 1:
-                    //optimized 1-option case
-                    //while (post[lastValid].run()) { }
-                    post[lastValid].run();
-                    break;
-                default:
-
-//                int j;
-//                do {
-//                    j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);
-//                } while (post[j].run());
-
-                    float[] pri = new float[valid];
-                    for (int i = 0; i < valid; i++)
-                        pri[i] = post[i].pri;
-                    MutableRoulette.run(pri, this.random, wi -> 0, i -> post[i].run());
-                    break;
-            }
+            PostDerivable.run(valid, lastValid, this);
             return nar.emotion.premiseRun;
         }
     }

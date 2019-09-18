@@ -529,7 +529,12 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		//TODO dangerous, check before using
 		constraints.add(new VolumeCompare(x, y, true, +1));
 	}
-	protected void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean trueOrFalse) {
+
+	public void match(boolean taskOrBelief, byte[] path, TermMatcher m) {
+		match(taskOrBelief, path, m, true);
+	}
+
+	public void match(boolean taskOrBelief, byte[] path, TermMatcher m, boolean trueOrFalse) {
 		pre.add(new TermMatch(m, trueOrFalse, TaskOrBelief(taskOrBelief).path(path), cost(path.length)));
 	}
 

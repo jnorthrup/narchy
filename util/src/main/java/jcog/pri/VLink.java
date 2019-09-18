@@ -12,7 +12,7 @@ import java.util.function.Consumer;
  * c) vector coordinates
  * d) current centroid id(s)
  */
-public final class VLink<X> extends PLinkHashCached<X> {
+public final class VLink<X> extends HashedPLink<X> {
 
     /**
      * feature vector representing the item as learned by clusterer

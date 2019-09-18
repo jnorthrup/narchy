@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import nars.NAR;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
@@ -9,6 +10,7 @@ import nars.control.Why;
 import nars.derive.hypothesis.AbstractHypothesizer;
 import nars.derive.hypothesis.Hypothesizer;
 import nars.derive.hypothesis.TangentIndexer;
+import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
@@ -117,13 +119,30 @@ public class Deriver extends How {
 
 
 
+        int bufferCap = 8;
+        int runBatch = bufferCap / 2;
+
+        PLinkArrayBag<Premise> p = d.premises;
+        p.capacity(bufferCap);
 
         do {
 
-            hypo.hypothesize(links, d);
+
+            int cap = p.capacity();
+            p.commit();
+            int tries = 2 * (cap - p.size()); //TODO penalize duplicates more
+            do {
+                d.add(hypo.hypothesize(links, d));
+            } while (p.size() < cap && --tries > 0);
+
+            p.pop(null, runBatch, (nextPremise)->
+                d.derive(nextPremise.get())
+            );
+
 
         } while (kontinue.getAsBoolean());
 
+        p.clear();
     }
 
     @Override

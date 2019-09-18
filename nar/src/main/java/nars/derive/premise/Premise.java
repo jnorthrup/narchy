@@ -341,8 +341,10 @@ public class Premise  {
 
 	@Override
 	public final int hashCode() {
+		Task b = belief();
+		return Util.hashCombine(task.hashCode(), b ==null ? beliefTerm.hashCode() : b.hashCode());
 		//return (int) (hash >> 10) /* shift down about 10 bits to capture all 3 elements in the hash otherwise the task hash is mostly excluded */;
-		throw new UnsupportedOperationException();
+		//throw new UnsupportedOperationException();
 	}
 
 	@Override

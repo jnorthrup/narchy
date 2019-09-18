@@ -268,6 +268,9 @@ public enum Op {
      */
     public static final int Temporal = or(Op.CONJ, Op.IMPL);
     public static final int Variable = or(Op.VAR_PATTERN, Op.VAR_INDEP, Op.VAR_DEP, Op.VAR_QUERY);
+
+
+
     public static final Term[] EmptyTermArray = new Term[0];
     public static final Subterms EmptySubterms = new ArrayTermVector(EmptyTermArray);
     public static final Compound EmptyProduct = TermBuilder.newCompound(Op.PROD, EmptySubterms);
@@ -308,7 +311,8 @@ public enum Op {
         new MemoizingTermBuilder();
 
 
-    static {
+
+	static {
         for (Op o : Op.values()) {
             int l = o.minLevel;
             if (l < 0) l = 0;
@@ -741,6 +745,15 @@ public enum Op {
         static final IntIntPair GTETwo = pair(2, NAL.term.SUBTERMS_MAX);
 
     }
+    private static int _conceptualizable;
+    static {
+        int c = 0;
+        for (Op x : Op.ops)
+            if (x.conceptualizable)
+                c |= x.bit;
+        Op._conceptualizable = c;
+    }
+    public static final int Conceptualizable = _conceptualizable;
 
     public static class InvalidPunctuationException extends RuntimeException {
         public InvalidPunctuationException(byte c) {

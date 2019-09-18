@@ -1,7 +1,7 @@
 package nars.memory;
 
 import jcog.pri.PLink;
-import jcog.pri.PLinkHashCached;
+import jcog.pri.HashedPLink;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.concept.Concept;
@@ -129,7 +129,7 @@ public class HijackMemory extends Memory {
 
     public @Nullable Concept create(Term key) {
         Concept kc = nar.conceptBuilder.apply(key);
-        PLink<Concept> inserted = table.put(new PLinkHashCached<>(kc, priPut(key, kc)));
+        PLink<Concept> inserted = table.put(new HashedPLink<>(kc, priPut(key, kc)));
         if (inserted == null) {
             return kc;
         } else {
@@ -153,7 +153,7 @@ public class HijackMemory extends Memory {
         PLink<Concept> existing = table.get(key);
         if (existing==null || (existing.get()!=value && !(existing.get() instanceof PermanentConcept))) {
 //            remove(key);
-            PLink<Concept> inserted = table.put(new PLinkHashCached<>(value, initialTask));
+            PLink<Concept> inserted = table.put(new HashedPLink<>(value, initialTask));
             /* other */
             if (inserted == null && (value instanceof PermanentConcept)) {
                 throw new RuntimeException("unresolvable hash collision between PermanentConcepts: " + null + ' ' + value);

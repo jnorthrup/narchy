@@ -1,11 +1,9 @@
 package nars.derive.hypothesis;
 
 import jcog.data.list.FasterList;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.Derivation;
-import nars.link.TaskLink;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
@@ -51,8 +49,12 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 				}
 			});
 
-			if (tangent != null && !tangent.isEmpty())
-				return tangent.get(d.random.nextInt(tangent.size())); //System.out.println(target + "\t" + tangent);
+			if (tangent != null) {
+				int ts = tangent.size();
+				if (ts > 0) {
+					return tangent.get(ts > 1 ? d.random.nextInt(ts) : 0); //System.out.println(target + "\t" + tangent);
+				}
+			}
 
 		}
 		return null;
@@ -60,10 +62,10 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 
 	abstract public boolean test(Term concept, Term target);
 
-	@Override
-	protected @Nullable Term decompose(Compound src, Task task, Derivation d) {
-		Term t = tangentRandom(src, d);
-		return t != null ? t : super.decompose(src, task, d);
-	}
+//	@Override
+//	protected @Nullable Term decompose(Compound src, Task task, Derivation d) {
+//		Term t = tangentRandom(src, d);
+//		return t != null ? t : super.decompose(src, task, d);
+//	}
 
 }

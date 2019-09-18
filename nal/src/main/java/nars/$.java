@@ -106,6 +106,9 @@ public enum $ { ;
         return Util.map(Atomic::the, new Term[id.length], id);
     }
 
+
+
+
     public static Atomic the(char c) {
         if (Character.isDigit(c))
             return Int.the(Character.digit(c, 10));

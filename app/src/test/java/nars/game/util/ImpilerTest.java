@@ -131,7 +131,7 @@ class ImpilerTest {
         NAR n = NARS.tmp(1);
 
         final int[] edges = {0};
-        Impiler.ImplGrapher t = new Impiler.ImplGrapher(n) {
+        Impiler.ImplGrapher t = new Impiler.ImplGrapher() {
 //            @Override
 //            protected float leak(Task next) {
 //                //System.out.println(this + " leak " + next);

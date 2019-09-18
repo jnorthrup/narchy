@@ -1,8 +1,8 @@
 package nars.derive.hypothesis;
 
-import jcog.math.IntRange;
-import jcog.signal.meter.FastCounter;
-import nars.*;
+import nars.NAL;
+import nars.Op;
+import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.derive.Derivation;
@@ -14,44 +14,29 @@ import nars.table.TaskTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.term.util.Image;
 import nars.time.When;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.*;
+import static jcog.util.ArrayUtil.EMPTY_BYTE_ARRAY;
+import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 
 /**
  * unbuffered
  */
 abstract public class AbstractHypothesizer implements Hypothesizer {
 
-	public final IntRange nLinks = new IntRange(2, 1, 32);
 
-	public final IntRange iterPerTaskLink = new IntRange(1, 1, 8);
 
-	@Override
-	public void hypothesize(TaskLinks links, Derivation d) {
-
-		int iterPerTaskLink = this.iterPerTaskLink.intValue();
-
-		int nLinks = this.nLinks.intValue();
-
-		for (int i = 0; i < nLinks; i++)
-			fireTaskLink(links, d, iterPerTaskLink);
-	}
-
-	void fireTaskLink(TaskLinks links, Derivation d, int iterPerTaskLink) {
+	@Override public Premise hypothesize(TaskLinks links, Derivation d) {
 		TaskLink tasklink = links.sample(d.random);
-		if (tasklink == null) return;
+		if (tasklink == null) return null;
 
 
-		Premise p = new Premise(tasklink);
-
-		for (int n = 0; n < iterPerTaskLink; n++)
-			firePremise(p, d);
+		return new Premise(tasklink);
 	}
 
 
@@ -73,86 +58,9 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 //	}
 
-	protected void firePremise(Premise _p, Derivation d) {
-
-		Premise p = match(d, _p);
-
-		NAR nar = d.nar;
-		int deriveTTL = nar.deriveBranchTTL.intValue();
-
-		FastCounter result = d.derive(p, deriveTTL);
-
-		Emotion e = nar.emotion;
-		if (result == e.premiseUnderivable1) {
-			//System.err.println("underivable1:\t" + p);
-		} else {
-//				System.err.println("  derivable:\t" + p);
-		}
-
-		//ttlUsed = Math.max(0, deriveTTL - d.ttl);
-
-		//e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-		result.increment();
-	}
-
-	private Premise match(Derivation d, Premise p) {
-		if (p.task.punc()!=COMMAND) //matchable?
-			return p.match(d,d.nar.premiseUnifyTTL.intValue());
-		else
-			return p;
-	}
-
-	protected Premise premise(Task task, TaskLink link, TaskLinks links, Derivation d) {
-		Term target = link.target(task, d);
-
-		if (target instanceof Compound) {
-			//experiment: dynamic image transform
-			if (target.opID() == INH.id && d.random.nextFloat() < 0.1f) { //task.term().isAny(INH.bit | SIM.bit)
-				Term t0 = target.sub(0),  t1 = target.sub(1);
-				boolean t0p = t0 instanceof Compound && t0.opID() == PROD.id, t1p = t1 instanceof Compound && t1.opID() == PROD.id;
-				if ((t0p || t1p)) {
-
-					Term forward = DynamicTermDecomposer.One.decompose((Compound)(t0p ? t0 : t1), d.random); //TODO if t0 && t1 choose randomly
-					if (forward!=null) {
-						Term it = t0p ? Image.imageExt(target, forward) : Image.imageInt(target, forward);
-						if (it instanceof Compound && it.op().conceptualizable)
-							return new Premise(task, it);
-					}
-				}
-			}
 
 
-		}
 
-
-		//System.out.println(task + "\t" + target);
-		return new Premise(task, target);
-	}
-
-
-	/**
-	 * selects the decomposition strategy for the given Compound
-	 */
-	protected TermDecomposer decomposer(Compound t) {
-		switch (t.op()) {
-			case IMPL:
-				return DynamicTermDecomposer.WeightedImpl;
-			case CONJ:
-				return DynamicTermDecomposer.WeightedConjEvent;
-			default:
-				return DynamicTermDecomposer.Weighted;
-		}
-
-	}
-
-	/**
-	 * determines forward growth target. null to disable
-	 * override to provide a custom termlink supplier
-	 */
-	@Nullable
-	protected Term decompose(Compound src, Task task, Derivation d) {
-		return decomposer(src).decompose(src, d.random);
-	}
 
 	/**
 	 * @param target the final target of the tasklink (not necessarily link.to() in cases where it's dynamic).
@@ -179,8 +87,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 			Task task = get((TaskLink)t, d.when, d.tasklinkTaskFilter);
 			if (task != null) {
-				Premise p = new Premise(task);
-				((AbstractHypothesizer)d.deriver.hypo).firePremise(p, d);
+				d.add(new Premise(task));
 			}
 		}
 
@@ -243,7 +150,14 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 	public static class ReverseLink extends TaskAction {
 
 		public ReverseLink() {
-			//allow anything
+
+			//belief term must be conceptualizable
+			match(false, EMPTY_BYTE_ARRAY, new TermMatcher.Is(Op.Conceptualizable) {
+				@Override
+				public boolean test(Term x) {
+					return super.test(x);
+				}
+			}, true);
 		}
 
 		@Override
@@ -266,14 +180,14 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 				//extra links: dont seem necessary
 				//links.grow(link, link.from(), reverse, task.punc());
 
-				h.firePremise(new Premise(task, reverse), d);
+				d.add(new Premise(task, reverse));
 			}
 
 		}
 
 		@Override
 		protected float pri(Derivation d) {
-			return 2;
+			return 2/(1f+d.beliefTerm.volume());
 		}
 	}
 
@@ -292,7 +206,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 			Compound src = (Compound) srcTask.term();
 
 			@Deprecated AbstractHypothesizer h = (AbstractHypothesizer) d.deriver.hypo;
-			Term tgt = h.decompose(src, srcTask, d);
+			Term tgt = decompose(src, srcTask, d);
 			if (tgt!=null) {
 				assert(!tgt.equals(src));
 				if (tgt.op().conceptualizable) {
@@ -303,12 +217,8 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 					links.link(l);
 				}
 
-				Premise pp = new Premise(srcTask, tgt);
-
-				h.firePremise(pp, d);
+				d.add(new Premise(srcTask, tgt));
 			}
-
-
 
 
 ////TODO
@@ -329,9 +239,74 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		}
 
+		/**
+		 * selects the decomposition strategy for the given Compound
+		 */
+		protected TermDecomposer decomposer(Compound t) {
+			switch (t.op()) {
+				case IMPL:
+					return DynamicTermDecomposer.WeightedImpl;
+				case CONJ:
+					return DynamicTermDecomposer.WeightedConjEvent;
+				default:
+					return DynamicTermDecomposer.Weighted;
+			}
+
+		}
+
+		/**
+		 * determines forward growth target. null to disable
+		 * override to provide a custom termlink supplier
+		 */
+		@Nullable
+		protected Term decompose(Compound src, Task task, Derivation d) {
+			return decomposer(src).decompose(src, d.random);
+		}
+
+
+
 		@Override
 		protected float pri(Derivation d) {
 			return 4;
 		}
 	}
+
+	public static class ImageUnfold extends TaskAction {
+
+		{
+			single();
+		}
+
+		@Override
+		protected void accept(Task y, Derivation d) {
+			//TODO
+//			Term target = link.target(task, d);
+//
+//			if (target instanceof Compound) {
+//				//experiment: dynamic image transform
+//				if (target.opID() == INH.id && d.random.nextFloat() < 0.1f) { //task.term().isAny(INH.bit | SIM.bit)
+//					Term t0 = target.sub(0),  t1 = target.sub(1);
+//					boolean t0p = t0 instanceof Compound && t0.opID() == PROD.id, t1p = t1 instanceof Compound && t1.opID() == PROD.id;
+//					if ((t0p || t1p)) {
+//
+//						Term forward = DynamicTermDecomposer.One.decompose((Compound)(t0p ? t0 : t1), d.random); //TODO if t0 && t1 choose randomly
+//						if (forward!=null) {
+//							Term it = t0p ? Image.imageExt(target, forward) : Image.imageInt(target, forward);
+//							if (it instanceof Compound && it.op().conceptualizable)
+//								return new Premise(task, it);
+//						}
+//					}
+//				}
+//
+//			}
+
+		}
+
+		@Override
+		protected float pri(Derivation d) {
+			return 1;
+		}
+	}
+
+
 }

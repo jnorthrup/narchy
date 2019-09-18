@@ -1,27 +1,58 @@
 package nars.derive;
 
-import nars.NAL;
+import jcog.decide.MutableRoulette;
 import nars.derive.action.PremiseAction;
 import nars.truth.MutableTruth;
+import nars.truth.PreciseTruth;
 import nars.truth.func.TruthFunction;
+
+import java.util.function.Predicate;
 
 public class PostDerivable {
 
-    public final PreDerivation d;
     public final MutableTruth truth = new MutableTruth();
 
-    public float pri;
-    private byte punc;
+    public transient float pri;
+    private transient byte punc;
 
-    private TruthFunction truthFunction;
-    private boolean single;
-    private PremiseAction action;
+    private transient TruthFunction truthFunction;
+    private transient boolean single;
+    private transient PremiseAction action;
 
-    PostDerivable(PreDerivation d) {
-        this.d = d;
+    PostDerivable() {
+
     }
 
+    public static void run(int valid, int lastValid, Derivation d) {
+        PostDerivable[] post = d.post;
+        switch (valid) {
+            case 1:
+                //optimized 1-option case
+                //while (post[lastValid].run()) { }
+                post[lastValid].run(d);
+                break;
+            default:
 
+//
+
+                //HACK copy post so that recursive calls wont affect it when it drops back to this one
+                //temporary until a central BFS-like bag can dispatch streams of preferred actions
+                //Predicate<Derivation>[] pp = new Predicate[valid];
+                float[] pri = new float[valid];
+                for (int i = 0; i < valid; i++) {
+                    PostDerivable pi = post[i];
+                    pri[i] = pi.pri;
+                    //pp[i] = pi.clone();
+                }
+                MutableRoulette.run(pri, d.random, wi -> 0, i -> post[i].run(d));
+
+                //alternate roulette:
+                //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
+
+                break;
+        }
+
+    }
 
     public float can(PremiseAction a, Derivation d) {
         float p = a.pri(d);
@@ -39,21 +70,15 @@ public class PostDerivable {
         }
     }
 
+    /** an immutable clone runnable only version */
+    public Predicate<Derivation> clone() {
+        PreciseTruth truth = this.truth.clone();
+        PremiseAction action = this.action;
+        TruthFunction truthFunction = this.truthFunction;
+        return d -> d.run(truth, punc, single, truthFunction, action);
+    }
 
-    public final boolean run() {
-        Derivation d = (Derivation) this.d;
-        d.clear();
-        d.retransform.clear();
-        d.forEachMatch = null;
-
-        d.truth.set(truth);
-        d.punc = punc;
-        d.single = single;
-        d.truthFunction = truthFunction;
-
-        System.out.println(d + " " + action);
-        action.run(d);
-
-        return d.use(NAL.derive.TTL_COST_BRANCH);
+    public final boolean run(Derivation d) {
+        return d.run(truth, punc, single, truthFunction, action);
     }
 }

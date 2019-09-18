@@ -20,7 +20,6 @@ import nars.game.action.GoalActionConcept;
 import nars.game.sensor.DigitizedScalar;
 import nars.game.util.RLBooster;
 import nars.gui.NARui;
-import nars.impiler.Impiler;
 import nars.impiler.ImpilerDeduction;
 import nars.op.BeliefPredict;
 import nars.term.Term;
@@ -102,7 +101,8 @@ public class PoleCart extends GameX {
 
 						Loop.of(() -> {
 
-							Impiler.impile(what);
+							//TODO
+							//Impiler.impile(what);
 
 							for (Concept a : p.actions()) {
 								ImpilerDeduction d = new ImpilerDeduction(n);
