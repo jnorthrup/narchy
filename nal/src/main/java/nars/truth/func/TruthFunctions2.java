@@ -244,13 +244,22 @@ public enum TruthFunctions2 {
     public static Truth pre(Truth X, Truth XimplY, boolean weak, float minConf) {
         float c = confCompose(X, XimplY);
         if (c < minConf) return null;
-        float cc = c *
-                (NAL.truth.preSoft ? X.freq() //soft polarity match (inverse bleed through)
-                : Math.max(0, 2 * (X.freq()-0.5f))); //hard polarity match
+
+        float xf = X.freq();
+        float cc = c * xf;
+//                *
+//                (preSoft ? X.freq() //soft polarity match (inverse bleed through)
+//                : Math.max(0, 2 * (X.freq()-0.5f))); //hard polarity match
+        ;
         if (weak)
             cc = weak(cc);
         if (cc < minConf) return null;
-        return tt(XimplY.freq(), cc);
+
+        float f = XimplY.freq();
+
+
+
+        return tt(f, cc);
     }
 
     /**

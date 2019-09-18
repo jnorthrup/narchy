@@ -552,8 +552,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 //Float.MIN_NORMAL;
                 Double.MIN_NORMAL;
 
-        /** switch between soft and hard pre decision truth function */
-        public static final boolean preSoft = true;
 
         /** optimistic maximization of PreciseTruth evidence components when determined equal (by DiscreteTruth's .conf() semantics)
          * TODO find way to make this work only when evidence ranges are the same otherwise a short range could boost a weaker large range unfairly

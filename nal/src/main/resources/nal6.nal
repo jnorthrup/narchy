@@ -18,20 +18,29 @@
         //deduction is commutive
 
 
-     B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP, Goal:InductionPP, Time:TaskEvent)
-     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,                   Time:BeliefEvent)
-         B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Goal:InductionPN, Time:TaskEvent)
-         (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                   Time:BeliefEvent)
-       B, (--X ==> C), --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP, Goal:InductionNP, Time:TaskEvent)
-       (--X ==> C), B, --is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionPN,                   Time:BeliefEvent)
-           B, (--X ==> C), --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Goal:InductionNN, Time:TaskEvent)
-           (--X ==> C), B, --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                   Time:BeliefEvent)
+    B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   polarizeBelief(unisubst(C,X,B,"$")),  (Goal:DesireWeakPDX, Time:TaskEvent)
+    B, (--X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   polarizeBelief(unisubst(C,X,B,"$")),  (Goal:DesireWeakNDX, Time:TaskEvent)
+
+     B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   polarizeBelief(unisubst(C,X,B,"$")),  (Belief:DeductionPD, Time:TaskEvent)
+     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   polarizeTask(unisubst(C,X,B,"$")),  (Belief:DeductionDP,                   Time:BeliefEvent)
+
+//         B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN, Time:TaskEvent)
+//         (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                   Time:BeliefEvent)
+
+       B, (--X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)     |-   polarizeBelief(unisubst(C,X,B,"$")),  (Belief:DeductionND, Time:TaskEvent)
+       (--X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)     |-   polarizeTask(unisubst(C,X,B,"$")),  (Belief:DeductionDN,                   Time:BeliefEvent)
+
+//           B, (--X ==> C), --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN, Time:TaskEvent)
+//           (--X ==> C), B, --is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                   Time:BeliefEvent)
 
         //induction antigoal not valid since it will assume only one precondition polarity applies yet it may be the case that both pos and neg precondition apply
 
        //questions
           B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          B, (--A ==> C), task("?@"), --is(B,"==>")         |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          B, (--A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")         |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+        //questions
+          B, (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
     //impl unify total transform (without decompose)
     B, (X ==> A), --is(B,"==>"), is(A,"&&") |-   unisubst((X==>A),chooseUnifiableSubEvent(A,polarizeTask(B)),polarizeTask(B),novel), (Belief:DeductionDP, Time:TaskEvent)
@@ -43,14 +52,12 @@
 
 
 
-        //questions
-          B, (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
 
 
        //second layer
-       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Goal:DeductionWeakDP, Time:TaskEvent)
-        B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Goal:DeductionWeakDN, Time:TaskEvent)
+       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,polarizeBelief(X),A..+), C, polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
+//       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Time:TaskEvent)
+//        B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Time:TaskEvent)
 
 
 //            //--is(A,"#"),

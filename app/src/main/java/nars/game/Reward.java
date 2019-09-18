@@ -17,7 +17,6 @@ import nars.term.Termed;
 import nars.term.util.TermedDelegate;
 import nars.truth.DiscreteTruth;
 import nars.truth.PreciseTruth;
-import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
@@ -86,13 +85,12 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     }
 
 
-    public void reinforce(Termed g, byte punc, Truth truth, boolean stamped) {
+    public void reinforce(Termed g, byte punc, Truth truth, long[] stamp) {
         Term goal = g.term();
 
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 
-        long[] stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
         Task t = NALTask.the(goal.unneg(), punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         reinforcement.add(t);

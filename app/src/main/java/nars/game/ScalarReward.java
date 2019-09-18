@@ -8,6 +8,7 @@ import nars.game.sensor.Signal;
 import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.truth.MutableTruth;
+import nars.truth.Stamp;
 import nars.truth.Truth;
 
 import java.util.Iterator;
@@ -31,9 +32,12 @@ abstract public class ScalarReward extends Reward {
     boolean negate;
     protected transient volatile float reward = Float.NaN;
 
-    final MutableTruth RimplA =
+    final MutableTruth RimplAPos =
+        new MutableTruth(1, NAL.truth.EVI_MIN);
+    final MutableTruth RimplANeg =
+        new MutableTruth(0, NAL.truth.EVI_MIN);
+    final MutableTruth RimplAMaybe =
         new MutableTruth(0.5f, NAL.truth.EVI_MIN);
-
     ScalarReward(Term id, float freq, boolean stamped, Game g) {
         super(id, g);
 
@@ -66,16 +70,28 @@ abstract public class ScalarReward extends Reward {
      * */
     protected void reinforceInit(Game g) {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
-        reinforce(Rpos, GOAL, goal, stamped);
+
+
+        reinforce(Rpos, GOAL, goal, newStamp());
 
         g.actions().forEach(a -> {
             Term A = a.term();
 
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplA, stamped);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplA, stamped);
+            long[] rImplStamp = newStamp(); //shared
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStamp);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStamp);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStamp);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, rImplStamp);
 
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStamp);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStamp);
             //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
         });
+    }
+
+    long[] newStamp() {
+        long[] stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
+        return stamp;
     }
 
     @Override
@@ -85,7 +101,10 @@ abstract public class ScalarReward extends Reward {
         goal.conf(nar.confDefault(GOAL));
 
         float strength = 1;
-        RimplA.conf( Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength ));
+        float c = Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
+        RimplAPos.conf(c);
+        RimplANeg.conf(c);
+        RimplAMaybe.conf(c);
         super.reinforce();
     }
 
