@@ -16,7 +16,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL5Test extends NALTest {
 
-    private final int cycles = 300;
+    private final int cycles = 800;
 
     @Override
     protected NAR nar() {
@@ -554,7 +554,7 @@ public class NAL5Test extends NALTest {
     void conditional_abduction_viaMultiConditionalSyllogism() {
 
         test
-                .termVolMax(11).confMin(0.44f)
+                .termVolMax(11).confMin(0.43f)
                 .believe("(flying:robin ==> bird:robin)")
                 .believe("((swimmer:robin && flying:robin) ==> bird:robin)")
                 .mustBelieve(cycles, "swimmer:robin", 1.00f, 0.45f);

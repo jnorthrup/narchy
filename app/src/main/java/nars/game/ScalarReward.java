@@ -7,6 +7,7 @@ import nars.concept.Concept;
 import nars.game.sensor.Signal;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -76,22 +77,28 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
 
             long[] rImplStamp = newStamp(); //shared
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStamp);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStamp);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStamp);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, rImplStamp);
 
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStamp);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStamp);
             //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
         });
     }
 
-    long[] newStamp() {
+    protected long[] newStamp() {
         long[] stamp = !stamped ? Stamp.UNSTAMPED : nar().evidence();
         return stamp;
+    }
+
+    public void reinforce(Termed x, byte punc, Truth truth) {
+        reinforce(x, punc, truth, newStamp());
     }
 
     @Override

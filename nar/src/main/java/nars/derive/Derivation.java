@@ -22,10 +22,7 @@ import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
-import nars.term.Compound;
-import nars.term.Functor;
-import nars.term.Term;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -98,19 +95,27 @@ public class Derivation extends PreDerivation {
     public final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
-            MutableTruth t = Derivation.this.taskTruth;
-            return arg.negIf(t.is() ? t.isNegative() : random.nextBoolean());
-            //return arg.negIf(t.isNegative());
+            return polarize(arg, Derivation.this.taskTruth);
         }
     };
+
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            MutableTruth b = Derivation.this.beliefTruth_at_Belief;
-            return arg.negIf(b.is() ? b.isNegative() : random.nextBoolean());
-//            return arg.negIf(b.isNegative());
+            return polarize(arg, Derivation.this.beliefTruth_at_Belief);
         }
     };
+
+    private Term polarize(Term arg, MutableTruth t) {
+        boolean tNeg = t.isNegative();
+        if (t.is()) {
+            if (tNeg != (arg instanceof Neg))
+                arg = arg.neg(); //invert to expected polarity
+        } else
+            arg = arg.negIf(random.nextBoolean());
+        return arg;
+    }
+
     /**
      * cant be inline since the value will be cached and repeated
      */

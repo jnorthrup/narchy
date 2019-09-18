@@ -347,12 +347,11 @@ public class NAL6Test extends NALTest {
     @Test
     void multiple_variable_elimination() {
 
-        TestNAR tester = test;
-        tester.nar.termVolMax.set(16);
-        tester.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
-        tester.believe("({lock1} --> lock)");
-        tester.mustBelieve(cycles, "(($1 --> key) ==> open($1, {lock1}))", 1.00f,
-                0.73f);
+        test.termVolMax(16);
+        test.believe("((($x --> key) && ($y --> lock)) ==> open($x, $y))");
+        test.believe("({lock1} --> lock)");
+        test.mustBelieve(cycles, "((({lock1}-->lock)&&($1-->key))==>open($1,{lock1}))", 1.00f, 0.81f);
+        test.mustBelieve(cycles, "(($1 --> key) ==> open($1, {lock1}))", 1.00f, 0.73f);
 
 
     }
