@@ -3,7 +3,7 @@ package nars.io;
 import com.google.common.io.ByteArrayDataOutput;
 import nars.Op;
 import nars.Task;
-import nars.task.CommandTask;
+import nars.task.AbstractCommandTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.Truth;
@@ -43,7 +43,7 @@ public class TaskIO {
 
 			return ((Task) NALTask.the(term, punc, truth, cre, start, end, evi)).pri(pri);
 		} else {
-            return new CommandTask(term);
+            return new AbstractCommandTask(term);
         }
     }
 

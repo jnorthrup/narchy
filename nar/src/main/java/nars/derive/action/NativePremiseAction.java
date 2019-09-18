@@ -17,7 +17,7 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 	protected PREDICATE<PreDerivation>[] conditions() {
 		PREDICATE<PreDerivation>[] p = super.conditions();
 
-		this.id = $.p($.p(p), $.identity(this));
+		this.id = $.impl($.p(p), $.identity(this));
 		this.source = id.toString();
 
 		return p;
@@ -32,8 +32,13 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 	private final class MyDeriveAction extends PremiseAction {
 
-		public MyDeriveAction(RuleWhy cause) {
+		MyDeriveAction(RuleWhy cause) {
 			super(cause);
+		}
+
+		@Override
+		public String toString() {
+			return why.name.sub(1).toString();
 		}
 
 		@Override

@@ -2,6 +2,7 @@ package nars.table.dynamic;
 
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
@@ -78,7 +79,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
      * wraps resulting task as an Image proxy
      */
     @Override
-    public Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    public Task sample(When<What> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
         Task t = super.sample(when, template, filter);
         return transformFromTemplate(t);
     }

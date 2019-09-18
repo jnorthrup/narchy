@@ -9,10 +9,7 @@ import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.derive.action.PatternPremiseAction;
-import nars.derive.op.CommutativeConstantPreFilter;
-import nars.derive.op.ConstraintAsPremisePredicate;
-import nars.derive.op.DoublePremiseRequired;
-import nars.derive.op.PuncMap;
+import nars.derive.op.*;
 import nars.derive.util.PremiseTermAccessor;
 import nars.subterm.Subterms;
 import nars.subterm.util.SubtermCondition;
@@ -21,7 +18,7 @@ import nars.term.*;
 import nars.term.control.PREDICATE;
 import nars.term.control.TermMatch;
 import nars.term.util.TermException;
-import nars.term.var.UnnormalizedVariable;
+import nars.term.var.VarPattern;
 import nars.unify.constraint.*;
 import org.eclipse.collections.api.set.MutableSet;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
@@ -44,7 +41,9 @@ import static nars.unify.constraint.RelationConstraint.*;
  * but oblivious to the action implementation */
 public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
-	static final UnnormalizedVariable ANY_TERM = new UnnormalizedVariable(Op.VAR_PATTERN, "_");
+	public static final VarPattern TheTask = $.varPattern(1);
+	static final Variable ANY_TERM = $.varPattern(1);
+		//new UnnormalizedVariable(Op.VAR_PATTERN, "_");
 
 	public Term taskPattern = ANY_TERM, beliefPattern = ANY_TERM;
 
@@ -76,9 +75,22 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		}
 	}
 
-	/** single premise */
+	/** single premise, matching anything */
+	public final void single() {
+		single(TheTask);
+	}
+
 	public final void single(Term taskPattern) {
+		single(taskPattern, null);
+	}
+
+	/** single premise */
+	public final void single(Term taskPattern, @Nullable Term beliefPattern) {
 		taskPattern(taskPattern);
+		if (beliefPattern!=null)
+			beliefPattern(beliefPattern);
+		taskPunc(true,true,true,true,false);
+		hasBelief(false);
 		this.beliefPattern = this.taskPattern;
 	}
 
@@ -109,7 +121,24 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest) {
-		pre.add(new PuncMap(belief ? Byte.MAX_VALUE : 0, goal ? Byte.MAX_VALUE : 0, question ? Byte.MAX_VALUE : 0, quest ? Byte.MAX_VALUE : 0));
+		taskPunc(belief, goal, question, quest, false);
+	}
+	public void taskPunc(byte... puncs) {
+		if (puncs==null || puncs.length == 0)
+			return; //no filtering
+
+		taskPunc(
+			ArrayUtil.indexOf(puncs, BELIEF)!=-1,
+			ArrayUtil.indexOf(puncs, GOAL)!=-1,
+			ArrayUtil.indexOf(puncs, QUESTION)!=-1,
+			ArrayUtil.indexOf(puncs, QUEST)!=-1
+		);
+	}
+
+
+	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest, boolean command) {
+		byte accepts = PuncMap.TRUE;
+		pre.add(new PuncMap(belief ? accepts : 0, goal ? accepts : 0, question ? accepts : 0, quest ? accepts : 0, command ? accepts : 0));
 	}
 
 	/** adds a condition opcode
@@ -273,10 +302,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 			case "hasBelief":
 				//TODO test negated
-				questionSingle = !negated;
-				DoublePremiseRequired dpr = new DoublePremiseRequired(true, true, true);
-				pre.add(negated ? dpr.neg() : dpr);
-				if (negated) negationApplied = true;
+				hasBelief(!negated);  negationApplied = negated;
 				break;
 
 			case "conjParallel":
@@ -431,6 +457,11 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		}
 
 		_negationApplied[0] = negationApplied;
+	}
+
+	public void hasBelief(boolean trueOrFalse) {
+		questionSingle = !trueOrFalse;
+		pre.add(new SingleOrDoublePremise(!trueOrFalse));
 	}
 
 	protected void guardOpVolStruct(PremiseTermAccessor r, Term root) {
@@ -727,6 +758,9 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		CommutativeConstantPreFilter.tryFilter(false, taskPattern, beliefPattern, pre);
 		guardOpVolStruct(BeliefTerm, beliefPattern);
 
+		if (taskPattern.equals(beliefPattern)) {
+			pre.add(TaskBeliefTermsEqual.the);
+		}
 
 
 	}

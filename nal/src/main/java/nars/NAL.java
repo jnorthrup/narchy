@@ -589,8 +589,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         /** TODO use Gödel numbering not this HACK */
         public static final boolean PREMISE_KEY_DITHER = false;
 
-        /** if true, uses dur=0 for matching/answering which, as a result, restricts includable evidence in the truth projection */
-        public static final boolean ANSWER_HONEST_DUR = false;
     }
 
 

@@ -5,23 +5,15 @@ import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
-import nars.derive.Derivation;
 import nars.game.Game;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
-import nars.link.AbstractTaskLink;
-import nars.link.DynamicTaskLink;
-import nars.subterm.Subterms;
-import nars.subterm.TermList;
-import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.atom.Int;
-import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 import org.jetbrains.annotations.Nullable;
@@ -31,9 +23,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static java.lang.Math.max;
-import static jcog.Util.clamp;
 import static nars.Op.BELIEF;
-import static nars.Op.CONJ;
 
 /** TODO generalize beyond any 2D specific that this class was originally designed for */
 public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
@@ -86,11 +76,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         n.start(this);
     }
 
-    protected AbstractTaskLink newLink() {
-        return
-                new ConjunctionSuperPixelTaskLink();
-                //new PixelSelectorTaskLink();
-    }
 
     public Bitmap2DSensor<P> mode(FloatFloatToObjectFunction<Truth> mode) {
         this.mode = mode;
@@ -227,99 +212,99 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return concepts.get(rng);
     }
 
-    private class PixelSelectorTaskLink extends DynamicTaskLink {
-        PixelSelectorTaskLink() {
-            super(term());
-        }
-
-
-        @Override public Termed src(When<NAR> when) {
-            return Bitmap2DSensor.this.get(when.x.random());
-        }
-
-
-        /** saccade shape */
-        @Override public Term target(Task task, Derivation d) {
-            //return task.term();
-            //return randomPixel(d.random).term();
-
-            //random adjacent cell
-            Bitmap2DConcepts.PixelSignal ps = (Bitmap2DConcepts.PixelSignal) d.nar.concept(task.term());
-            if (ps!=null) {
-                int xx = clamp(ps.x + d.random.nextInt(3) - 1, 0, width-1),
-                        yy = clamp(ps.y + d.random.nextInt(3) - 1, 0, height-1);
-                return concepts.get(xx, yy).term();
-            } else
-                return null;
-//
-//        Term[] nn;
-//        Term center = pixelTerm.apply(xx, yy);
-//        if (linkNESW) {
-//            List<Term> neighbors = new FasterList(4);
-//            if (xx > 0)
-//                neighbors.add(pixelTerm.apply(xx - 1, yy));
-//            if (yy > 0)
-//                neighbors.add(pixelTerm.apply(xx, yy - 1));
-//            if (xx < width - 1)
-//                neighbors.add(pixelTerm.apply(xx + 1, yy));
-//            if (yy < height - 1)
-//                neighbors.add(pixelTerm.apply(xx, yy + 1));
-//
-//            nn = neighbors.toArray(EmptyTermArray);
-//        } else {
-//            nn = EmptyTermArray;
+//    private class PixelSelectorTaskLink extends DynamicTaskLink {
+//        PixelSelectorTaskLink() {
+//            super(term());
 //        }
-//        return TemplateTermLinker.of(center, nn);
+//
+//
+//        @Override public Termed src(When<NAR> when) {
+//            return Bitmap2DSensor.this.get(when.x.random());
+//        }
+//
+//
+//        /** saccade shape */
+//        @Override public Term target(Task task, Derivation d) {
+//            //return task.term();
+//            //return randomPixel(d.random).term();
+//
+//            //random adjacent cell
+//            Bitmap2DConcepts.PixelSignal ps = (Bitmap2DConcepts.PixelSignal) d.nar.concept(task.term());
+//            if (ps!=null) {
+//                int xx = clamp(ps.x + d.random.nextInt(3) - 1, 0, width-1),
+//                        yy = clamp(ps.y + d.random.nextInt(3) - 1, 0, height-1);
+//                return concepts.get(xx, yy).term();
+//            } else
+//                return null;
+////
+////        Term[] nn;
+////        Term center = pixelTerm.apply(xx, yy);
+////        if (linkNESW) {
+////            List<Term> neighbors = new FasterList(4);
+////            if (xx > 0)
+////                neighbors.add(pixelTerm.apply(xx - 1, yy));
+////            if (yy > 0)
+////                neighbors.add(pixelTerm.apply(xx, yy - 1));
+////            if (xx < width - 1)
+////                neighbors.add(pixelTerm.apply(xx + 1, yy));
+////            if (yy < height - 1)
+////                neighbors.add(pixelTerm.apply(xx, yy + 1));
+////
+////            nn = neighbors.toArray(EmptyTermArray);
+////        } else {
+////            nn = EmptyTermArray;
+////        }
+////        return TemplateTermLinker.of(center, nn);
+////    }
+//        }
 //    }
-        }
-    }
 
-    private class ConjunctionSuperPixelTaskLink extends DynamicTaskLink {
-
-        final static int MAX_WIDTH = 2, MAX_HEIGHT = 2;
-
-        ConjunctionSuperPixelTaskLink() {
-            super(term());
-        }
-
-        @Override
-        public Termed src(When<NAR> when) {
-            return superPixel(when.x.random());
-        }
-
-
-        @Override
-        public Term target(Task task, Derivation d) {
-            return task.term();
-        }
-
-
-        @Nullable
-        private Term superPixel(Random rng) {
-            int batchX = max(rng.nextInt(Math.min(width, MAX_WIDTH)+1),1),
-                batchY = max(rng.nextInt(Math.min(height, MAX_HEIGHT)+1), 1);
-            int px = rng.nextInt(concepts.width - batchX+1);
-            int py = rng.nextInt(concepts.height - batchY+1);
-            TermList subterms = (batchX*batchY > 1) ? new TermList(batchX * batchY) : null;
-            for (int i = px; i < px+batchX; i++) {
-                for (int j = py; j < py+batchY; j++) {
-                    Signal ij = concepts.get(i, j);
-                    Term ijt = ij.term();
-                    if (subterms==null)
-                        return ijt; //only one pixel, unnegated
-                    Task current = ((SensorBeliefTables) (ij.beliefs())).current();
-                    if (current!=null) {
-                        subterms.add(ijt.negIf(current.isNegative()));
-                    }
-                }
-            }
-            switch (subterms.size()) {
-                case 0: return null;
-                case 1: return subterms.get(0);
-                default: return CONJ.the(0, (Subterms) subterms);
-            }
-        }
-
-    }
+//    private class ConjunctionSuperPixelTaskLink extends DynamicTaskLink {
+//
+//        final static int MAX_WIDTH = 2, MAX_HEIGHT = 2;
+//
+//        ConjunctionSuperPixelTaskLink() {
+//            super(term());
+//        }
+//
+//        @Override
+//        public Termed src(When<NAR> when) {
+//            return superPixel(when.x.random());
+//        }
+//
+//
+//        @Override
+//        public Term target(Task task, Derivation d) {
+//            return task.term();
+//        }
+//
+//
+//        @Nullable
+//        private Term superPixel(Random rng) {
+//            int batchX = max(rng.nextInt(Math.min(width, MAX_WIDTH)+1),1),
+//                batchY = max(rng.nextInt(Math.min(height, MAX_HEIGHT)+1), 1);
+//            int px = rng.nextInt(concepts.width - batchX+1);
+//            int py = rng.nextInt(concepts.height - batchY+1);
+//            TermList subterms = (batchX*batchY > 1) ? new TermList(batchX * batchY) : null;
+//            for (int i = px; i < px+batchX; i++) {
+//                for (int j = py; j < py+batchY; j++) {
+//                    Signal ij = concepts.get(i, j);
+//                    Term ijt = ij.term();
+//                    if (subterms==null)
+//                        return ijt; //only one pixel, unnegated
+//                    Task current = ((SensorBeliefTables) (ij.beliefs())).current();
+//                    if (current!=null) {
+//                        subterms.add(ijt.negIf(current.isNegative()));
+//                    }
+//                }
+//            }
+//            switch (subterms.size()) {
+//                case 0: return null;
+//                case 1: return subterms.get(0);
+//                default: return CONJ.the(0, (Subterms) subterms);
+//            }
+//        }
+//
+//    }
 
 }

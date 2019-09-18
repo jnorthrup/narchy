@@ -16,10 +16,10 @@ public final class RuleWhy extends Why {
 	public final Term term;
 
 	public RuleWhy(PremiseRuleBuilder rule, short id) {
-		super(id);
+		super(id, rule.id);
 		this.rule = rule;
 		this.ruleString = rule.source;
-		this.term = $.p(rule.id, $.the(id));
+		this.term = $.p(rule.id, rule.id);
 	}
 
 	@Override

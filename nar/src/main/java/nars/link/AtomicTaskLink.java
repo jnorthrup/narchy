@@ -6,12 +6,12 @@ import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
+import nars.$;
 import nars.NAL;
+import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Image;
-
-import static nars.Task.i;
 
 
 public class AtomicTaskLink extends AbstractTaskLink {
@@ -73,7 +73,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
     @Override
     public void transfer(TaskLink from, float factor, float sustain, byte punc) {
 
-        byte i = i(punc);
+        byte i = Task.i(punc);
 
         float xfer = (1-sustain) * merge(i, factor * from.priIndex(i), PriMerge.plus, PriReturn.Delta);
         if (xfer >= ScalarValue.EPSILON)
@@ -122,5 +122,11 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     private final WritableTensor punc =
             new AtomicFixedPoint4x16bitVector();
-            //new AtomicFloatArray(4);
+
+    @Override
+    public Term term() {
+        return isSelf() ? from : $.pFast(from, to); //HACK
+    }
+
+    //new AtomicFloatArray(4);
 }

@@ -18,12 +18,14 @@
         //deduction is commutive
 
 
-
-     B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   polarizeBelief(unisubst(C,X,B,"$")),  (Belief:DeductionPD, Time:TaskEvent)
-     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   polarizeTask(unisubst(C,X,B,"$")),  (Belief:DeductionDP, Time:BeliefEvent)
-
-     B, (--X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)     |-   polarizeBelief(unisubst(C,X,B,"$")),  (Belief:DeductionND, Time:TaskEvent)
-     (--X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)     |-   polarizeTask(unisubst(C,X,B,"$")),  (Belief:DeductionDN, Time:BeliefEvent)
+     B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,  Time:TaskEvent)
+     (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Belief:DeductionPP,                   Time:BeliefEvent)
+         B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionPN,  Time:TaskEvent)
+         (  X ==> C), B, --is(X,"--"), --is(B,"==>"), --isVar(C)   |- --unisubst(C,X,B,"$"),  (Belief:DeductionNP,                   Time:BeliefEvent)
+       B, (--X ==> C), --is(X,"--"),--is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionNP,  Time:TaskEvent)
+       (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionPN,                   Time:BeliefEvent)
+           B, (--X ==> C), --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,  Time:TaskEvent)
+           (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                   Time:BeliefEvent)
 
     //TODO refine
         B, (  X ==> C), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Goal:DesireWeakPPX, Time:TaskEvent)

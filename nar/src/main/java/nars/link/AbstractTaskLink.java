@@ -7,6 +7,7 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.Op;
+import nars.Task;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -16,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
-import static nars.Task.i;
 
 public abstract class AbstractTaskLink implements TaskLink {
 
@@ -233,7 +233,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     private float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
-        return merge(i(punc), pri, merge, returning);
+        return merge(Task.i(punc), pri, merge, returning);
     }
 
     protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {

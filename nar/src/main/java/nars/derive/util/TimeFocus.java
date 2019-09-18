@@ -1,9 +1,8 @@
 package nars.derive.util;
 
-import nars.NAL;
-import nars.NAR;
 import nars.Task;
 import nars.attention.What;
+import nars.derive.Derivation;
 import nars.term.Term;
 import nars.time.When;
 import nars.time.event.WhenTimeIs;
@@ -22,8 +21,9 @@ public interface TimeFocus {
 	 *  constructs a time interval surrounding the present moment, with a diameter of
 	 *  1 duration.
 	 * */
-	default When<NAR> task(What what) {
-		return WhenTimeIs.now(what, NAL.premise.ANSWER_HONEST_DUR ? 0 : what.dur());
+	default When<What> now(Derivation d) {
+		float dur = d.dur;
+		return WhenTimeIs.now(d.what, dur, d.time, dur/2, dur/2, d.ditherDT);
 	}
 
 	/** premise match focus */

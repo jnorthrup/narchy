@@ -103,7 +103,8 @@ abstract public class WhenTimeIs extends ScheduledTask {
     }
 
     public static When<NAR> now(What w, float dur) {
-        return now(w.nar, dur, w.nar.dtDither());
+        NAR n = w.nar;
+        return now(n, dur, n.dtDither());
     }
 
     public static <T extends Timed> When<T> since(long when, T t) {

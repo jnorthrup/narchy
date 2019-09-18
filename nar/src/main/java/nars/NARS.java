@@ -105,8 +105,11 @@ public class NARS {
         return then((n)-> {
 
                 PremiseRuleSet r = Derivers.nal(n, minLevel, maxLevel);
+
                 if (maxLevel >= 7)
                     r.add(new STMLinker(1));
+
+
 
                 new Deriver(r);
             });

@@ -2,12 +2,15 @@ package nars.derive.op;
 
 import nars.$;
 import nars.Op;
+import nars.Task;
 import nars.derive.PreDerivation;
+import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import static nars.Op.*;
 
@@ -15,30 +18,55 @@ import static nars.Op.*;
 public final class PuncMap extends AbstractPred<PreDerivation> {
     //private final BytePredicate taskPunc;
 
-    private static final Atom U = (Atom) Atomic.the(PuncMap.class.getSimpleName());
+    public static final byte FALSE = 0, TRUE = 1;
+    public static final PuncMap All = new PuncMap(TRUE, TRUE, TRUE, TRUE, TRUE);
 
-    byte belief, goal, question, quest;
+    byte belief, goal, question, quest, command;
 
-
-    public static PuncMap get(BytePredicate enable, ByteToByteFunction p) {
-        return new PuncMap(
-                p(enable, p, BELIEF),
-                p(enable, p, GOAL),
-                p(enable, p, QUESTION),
-                p(enable, p, QUEST));
-    }
-
-    private static byte p(BytePredicate enable, ByteToByteFunction p, byte b) {
+    public static byte p(BytePredicate enable, ByteToByteFunction p, byte b) {
         return enable.accept(b) ? p.valueOf(b) : 0;
     }
 
-    public PuncMap(byte belief, byte goal, byte question, byte quest) {
-        super($.func(U, $.p(Op.puncAtom(belief), Op.puncAtom(goal), Op.puncAtom(question), Op.puncAtom(quest))));
-        this.belief = belief; this.goal = goal; this.question = question; this.quest = quest;
+    public PuncMap(byte belief, byte goal, byte question, byte quest, byte command) {
+        super(id(belief, goal, question, quest, command));
+        this.belief = belief;
+        this.goal = goal;
+        this.question = question;
+        this.quest = quest;
+        this.command = command;
+    }
+
+
+
+    private static Term id(byte belief, byte goal, byte question, byte quest, byte command) {
+        Atom PUNC = Atomic.atom("punc");
+        if (belief != 0 && goal != 0&& question!= 0 && quest!= 0 && command!= 0) {
+            return PUNC;
+        } else {
+            java.util.Set<Term> s = new UnifiedSet(5);
+            if (belief!=0) s.add(idTerm(Task.BeliefAtom, belief));
+            if (goal!=0) s.add(idTerm(Task.GoalAtom, goal));
+            if (question!=0) s.add(idTerm(Task.QuestionAtom, question));
+            if (quest!=0) s.add(idTerm(Task.QuestAtom, quest));
+            if (command!=0) s.add(idTerm(Task.CommandAtom, command));
+            Term tt;
+            if (s.size() == 1)
+                tt = s.iterator().next(); //HACK
+            else
+                tt = SETe.the(s);
+
+            return $.func(PUNC, tt);
+        }
+    }
+
+    private static Term idTerm(Atom puncAtom, byte value) {
+        if (value == 0) return puncAtom.neg();
+        else if (value == 1) return puncAtom;
+        else return $.p(puncAtom, Op.puncAtom(value));
     }
 
     public boolean all() {
-        return belief!=0 && goal!=0 && question!=0 && quest!=0;
+        return belief!=0 && goal!=0 && question!=0 && quest!=0 && command!=0;
     }
 
     @Override
@@ -51,19 +79,21 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
         return get(d.taskPunc)!=0;
     }
 
-    public byte get(byte in) {
-        byte y = 0;
+    public final byte get(byte in) {
+        byte y;
         switch(in) {
             case BELIEF: y = belief; break;
             case GOAL: y = goal; break;
             case QUESTION: y = question; break;
             case QUEST: y = quest; break;
+            case COMMAND: y = command; break;
+            default: y = 0; break;
         }
         return y;
     }
 
     /** any output punctuation match */
-    public final boolean outAny(byte p) {
-        return belief==p || goal==p || question==p || quest==p;
+    final boolean outAny(byte p) {
+        return belief==p || goal==p || question==p || quest==p || command==p;
     }
 }

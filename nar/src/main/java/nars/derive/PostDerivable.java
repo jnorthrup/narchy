@@ -51,6 +51,7 @@ public class PostDerivable {
         d.single = single;
         d.truthFunction = truthFunction;
 
+        System.out.println(d + " " + action);
         action.run(d);
 
         return d.use(NAL.derive.TTL_COST_BRANCH);

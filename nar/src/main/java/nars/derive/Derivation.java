@@ -31,6 +31,7 @@ import nars.term.atom.Int;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
+import nars.time.When;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -106,6 +107,9 @@ public class Derivation extends PreDerivation {
             else return polarize(arg, Derivation.this.beliefTruth_at_Belief);
         }
     };
+
+    /** characterizes the present moment, when it starts and ends */
+    public When<What> when;
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
@@ -475,6 +479,7 @@ public class Derivation extends PreDerivation {
         this.termVolMax = n.termVolMax.intValue();
         this.time = n.time();
         this.dur = w.dur();
+        this.when = deriver.timing.now(this);
         return this;
     }
 
@@ -608,7 +613,7 @@ public class Derivation extends PreDerivation {
 
             PostDerivable[] post = this.post;
             for (int i = 0; i < can.length; i++) {
-                if ((post[i].can(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                if ((post[i].can(branch[can[i]], this)) >= Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }

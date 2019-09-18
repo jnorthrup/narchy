@@ -3,6 +3,7 @@ package nars.table;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.control.op.Remember;
 import nars.table.question.QuestionTable;
 import nars.task.util.Answer;
@@ -94,8 +95,8 @@ public interface TaskTable {
                 .task(true, forceProject, ditherTruth) : null;
     }
 
-    @Nullable default /* final */ Task match(When<NAR> w, @Nullable Term template, Predicate<Task> filter, float dur, boolean ditherTruth) {
-        return match(w.start, w.end, false, template, filter, dur, w.x, ditherTruth); }
+    @Nullable default /* final */ Task match(When<What> w, @Nullable Term template, Predicate<Task> filter, float dur, boolean ditherTruth) {
+        return match(w.start, w.end, false, template, filter, dur, w.x.nar, ditherTruth); }
 
     @Nullable default /* final */ Task match(long start, long end, Term template, float dur, NAR nar) {
         return match(start, end, template, null, dur, nar); }
@@ -107,7 +108,11 @@ public interface TaskTable {
         return match(start, end, true, template, filter, dur, n, false);
     }
 
-    @Nullable private Answer sampleAnswer(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    @Nullable private Answer sampleAnswer(When<What> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+        return sampleAnswer(when.start, when.end, template, filter, when.dur, when.x.nar);
+    }
+
+    @Deprecated @Nullable default Answer sampleAnswer(long start, long end, @Nullable Term template, @Nullable Predicate<Task> filter, float dur, NAR nar) {
 
         if (isEmpty())
             return null;
@@ -116,8 +121,8 @@ public interface TaskTable {
 
         Answer a = Answer.taskStrength(isBeliefOrGoal,
             isBeliefOrGoal ? NAL.ANSWER_BELIEF_SAMPLE_CAPACITY : NAL.ANSWER_QUESTION_SAMPLE_CAPACITY,
-            when.start, when.end, template, filter, when.x);
-        a.dur(when.dur);
+            start, end, template, filter, nar);
+        a.dur(dur);
 
         match(a);
         return a.isEmpty() ? null : a;
@@ -127,7 +132,7 @@ public interface TaskTable {
 //        return sampleAnswer(when, template, filter);
 //    }
 
-    @Nullable default Task sample(When<NAR> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
+    @Nullable default Task sample(When<What> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
         Answer a = sampleAnswer(when, template, filter);
         return a==null ? null : a.sample();
     }

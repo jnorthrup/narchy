@@ -3,7 +3,7 @@ package nars.op.mental;
 import jcog.math.FloatRange;
 import nars.*;
 import nars.derive.Derivation;
-import nars.derive.action.NativeTaskTransformAction;
+import nars.derive.action.TaskTransformAction;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -29,7 +29,7 @@ import static nars.Op.*;
  *
  * snapshots of belief table aggregates, rather than individual tasks
  */
-public class Inperience extends NativeTaskTransformAction {
+public class Inperience extends TaskTransformAction {
 
 
     public static final Atomic believe = Atomic.the("believe");
@@ -47,6 +47,7 @@ public class Inperience extends NativeTaskTransformAction {
 
     public Inperience(NAR n) {
         super(n);
+        single(); //all but command
     }
 
     public static Term reifyQuestion(Term x, byte punc, Term self) {

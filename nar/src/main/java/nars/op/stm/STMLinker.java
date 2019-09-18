@@ -7,14 +7,14 @@ import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Derivation;
-import nars.derive.action.NativeTaskFireAction;
+import nars.derive.action.TaskAction;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
 
-public class STMLinker extends NativeTaskFireAction {
+public class STMLinker extends TaskAction {
 
 	public final FloatRange strength = new FloatRange(1f, 0f, 1f);
 
@@ -29,7 +29,7 @@ public class STMLinker extends NativeTaskFireAction {
 
 	public STMLinker(int capacity) {
 		super();
-
+		single(); //all but command
 		this.capacity = capacity;
 		this.stm = new MetalConcurrentQueue<>(capacity);
 	}

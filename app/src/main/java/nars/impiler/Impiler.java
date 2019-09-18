@@ -31,6 +31,7 @@ import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
@@ -50,18 +51,18 @@ public class Impiler {
 	 */
 	private static final String IMPILER_NODE = ImplGrapher.class.getSimpleName();
 
-	public static void init(NAR n) {
-
-//        Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
-		Impiler.ImpilerDeducer d = new Impiler.ImpilerDeducer(n);
-
-		ImplGrapher t = new ImplGrapher(n) {
-			@Override
-			public float value() {
-				return d.value();
-			}
-		};
-	}
+//	public static void init(NAR n) {
+//
+////        Impiler.ImpilerSolver s = new Impiler.ImpilerSolver(32, 2, n);
+//		Impiler.ImpilerDeducer d = new Impiler.ImpilerDeducer(n);
+//
+//		ImplGrapher t = new ImplGrapher(n) {
+//			@Override
+//			public float value() {
+//				return d.value();
+//			}
+//		};
+//	}
 
 	@Nullable
 	public static ImplNode node(Termed x, boolean createIfMissing, NAR nar) {
@@ -132,18 +133,18 @@ public class Impiler {
 		});
 	}
 
-	/** a task from each relevant TaskLink in a bag */
-	public static void impile(What w) {
-		NAR n = w.nar;
-		When<NAR> nxow = WhenTimeIs.now(w);
-		for (TaskLink tl : ((TaskLinkWhat) w).links.links) {
-			if (filter(tl.from())) {
-				Task tt = tl.get(BELIEF, nxow, null);
-				if (tt != null)
-					Impiler.impile(tt, n);
-			}
-		}
-	}
+//	/** a task from each relevant TaskLink in a bag */
+//	public static void impile(What w) {
+//		NAR n = w.nar;
+//		When<NAR> nxow = WhenTimeIs.now(w);
+//		for (TaskLink tl : ((TaskLinkWhat) w).links.links) {
+//			if (filter(tl.from())) {
+//				Task tt = tl.get(BELIEF, nxow, null);
+//				if (tt != null)
+//					Impiler.impile(tt, n);
+//			}
+//		}
+//	}
 
 	/**
 	 * try to add/update a task in the graph
@@ -205,26 +206,23 @@ public class Impiler {
 	 * searches forward, discovering shortcuts in the downstream impl graph
 	 * TODO configurable trigger, dont just extend TaskLeak
 	 */
-	static class ImpilerDeducer extends TaskLeak {
+	static class ImpilerDeducer  {
 
 		private final CauseChannel<Task> in;
 
 		ImpilerDeducer(NAR n) {
-			super(n);
 			in = n.newChannel(this);
 		}
 
-		@Override
-		public void next(What w, BooleanSupplier kontinue) {
-			super.next(w, kontinue);
-		}
+//		@Override
+//		public void next(What w, BooleanSupplier kontinue) {
+//			super.next(w, kontinue);
+//		}
 
-		@Override
 		protected boolean filter(Term term) {
 			return !term.hasVars();
 		}
 
-		@Override
 		protected float leak(Task next, What what) {
 			return deduce(next, what, true);
 		}
@@ -244,11 +242,11 @@ public class Impiler {
 
 		}
 
-
-		@Override
-		public float value() {
-			return in.value();
-		}
+//
+//		@Override
+//		public float value() {
+//			return in.value();
+//		}
 
 	}
 
@@ -256,36 +254,30 @@ public class Impiler {
 	 * builds the implication graph in concept metadata fields
 	 * TODO configurable trigger, dont just extend TaskLeak
 	 */
-	public static class ImplGrapher extends TaskLeak {
+	public static class ImplGrapher  {
 
 
 //        final static long whenStart = ETERNAL, whenEnd = ETERNAL;
 
-		public ImplGrapher(NAR n) {
-			super(n, BELIEF);
-		}
+//		public ImplGrapher(NAR n) {
+//			super(n, BELIEF);
+//		}
 
 //        @Override
 //        protected boolean filter(Task next) {
 //            return next.punc() == BELIEF;
 //        }
 
-		@Override
 		protected boolean filter(Term term) {
 			return filter(term);
 		}
 
-		@Override
 		protected float leak(Task t, What what) {
 			_impile(t, what.nar);
 			return 1;
 		}
 
-		@Override
-		@Deprecated
-		public float value() {
-			return 0;
-		}
+
 	}
 
 	static class ImplNode extends NodeGraph.AbstractNode<Term, Task> {

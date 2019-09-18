@@ -467,7 +467,7 @@ abstract public class GameX extends Game {
 
         n.termVolMax.set(42);
 
-        n.confMin.set(1e-3);
+        n.confMin.set(1e-10);
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 

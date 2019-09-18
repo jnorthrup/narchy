@@ -61,9 +61,9 @@ public abstract class AbstractTangentIndexer extends TangentIndexer {
 	abstract public boolean test(Term concept, Term target);
 
 	@Override
-	protected @Nullable Term decompose(Compound src, TaskLink link, Task task, Derivation d) {
+	protected @Nullable Term decompose(Compound src, Task task, Derivation d) {
 		Term t = tangentRandom(src, d);
-		return t != null ? t : super.decompose(src, link, task, d);
+		return t != null ? t : super.decompose(src, task, d);
 	}
 
 }

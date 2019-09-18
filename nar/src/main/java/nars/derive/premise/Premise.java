@@ -10,7 +10,9 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.derive.Derivation;
+import nars.link.TaskLink;
 import nars.table.BeliefTable;
+import nars.task.AbstractCommandTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
@@ -41,16 +43,29 @@ public class Premise  {
 		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
 		//Op.Variable //all
 		;
+
 	public final Task task;
 	public final Term beliefTerm;
 //    public final long hash;
 
+	/** pre */
+	public Premise(TaskLink t) {
+		this(t, t.term() /* HACK */ );
+	}
+
+	/** structural */
+	public Premise(Task t) {
+		this(t, t.term());
+	}
+
+	public Premise(Term taskTerm, Term beliefTerm) {
+		this.task = new AbstractCommandTask(taskTerm);
+		this.beliefTerm = beliefTerm;
+	}
 
 	public Premise(Task task, Term beliefTerm) {
-		super();
 		this.task = task;
 		this.beliefTerm = beliefTerm;
-
 //        this.hash = premiseHash(task, beliefTerm);
 	}
 
@@ -221,7 +236,7 @@ public class Premise  {
 
 
 	private Task task(BeliefTable bb, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
-		float dur = NAL.premise.ANSWER_HONEST_DUR ? 0 : d.dur();
+		float dur = d.dur();
 
 		return bb.matching(when[0], when[1], beliefTerm, beliefFilter, dur, d.nar())
 			.task(true, false, false);

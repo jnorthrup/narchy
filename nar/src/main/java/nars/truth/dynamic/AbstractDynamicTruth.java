@@ -9,9 +9,9 @@ import nars.Task;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
 import nars.table.dynamic.DynamicTruthTable;
+import nars.task.util.Answer;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.time.When;
 import nars.truth.Truth;
 import nars.truth.proj.TruthProjection;
 import org.eclipse.collections.api.block.function.primitive.ObjectBooleanToObjectFunction;
@@ -67,7 +67,8 @@ abstract public class AbstractDynamicTruth {
 				x = table.match(subStart, subEnd, subTerm, filter, dur, nar);
 				break;
 			case 2:
-				x = table.sample(new When<>(subStart, subEnd, dur, nar), subTerm, filter);
+				@Nullable Answer a = table.sampleAnswer(subStart, subEnd, subTerm, filter, dur, nar);
+				x = a!=null ? a.sample() : null;
 				break;
 			default:
 				throw new UnsupportedOperationException();

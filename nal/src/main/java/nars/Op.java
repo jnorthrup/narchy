@@ -7,7 +7,7 @@ import nars.subterm.ArrayTermVector;
 import nars.subterm.DisposableTermList;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
-import nars.task.CommandTask;
+import nars.task.AbstractCommandTask;
 import nars.term.Compound;
 import nars.term.Img;
 import nars.term.Term;
@@ -15,7 +15,6 @@ import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.atom.Int;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
 import nars.term.util.builder.HeapTermBuilder;
@@ -567,28 +566,30 @@ public enum Op {
         return ops[id];
     }
 
-
     public static Atomic puncAtom(byte b) {
         switch (b) {
             case BELIEF: return Task.BeliefAtom;
             case QUESTION: return Task.QuestionAtom;
             case GOAL: return Task.GoalAtom;
             case QUEST: return Task.QuestAtom;
+            case 1: return Bool.True;
+            case 0: return Bool.False;
+            default: throw new UnsupportedOperationException();
         }
-        return Int.the(0);
+
     }
 
     public static Task believe(Term x) {
-        return new CommandTask($.func(Task.BeliefAtom, x));
+        return new AbstractCommandTask($.func(Task.BeliefAtom, x));
     }
     public static Task ask(Term x) {
-        return new CommandTask($.func(Task.QuestionAtom, x));
+        return new AbstractCommandTask($.func(Task.QuestionAtom, x));
     }
     public static Task want(Term x) {
-        return new CommandTask($.func(Task.GoalAtom, x));
+        return new AbstractCommandTask($.func(Task.GoalAtom, x));
     }
     public static Task how(Term x) {
-        return new CommandTask($.func(Task.QuestAtom, x));
+        return new AbstractCommandTask($.func(Task.QuestAtom, x));
     }
 
     public final Term the(Subterms s) {

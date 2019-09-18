@@ -6,6 +6,7 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
+import nars.derive.hypothesis.AbstractHypothesizer;
 import nars.derive.hypothesis.Hypothesizer;
 import nars.derive.hypothesis.TangentIndexer;
 import nars.derive.rule.DeriverProgram;
@@ -13,7 +14,6 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
-import nars.time.When;
 
 import java.util.function.BooleanSupplier;
 
@@ -30,7 +30,7 @@ public class Deriver extends How {
 
     public DeriverProgram rules;
 
-    public Hypothesizer hypothesize;
+    public Hypothesizer hypo;
 
     /**
      * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation
@@ -51,7 +51,7 @@ public class Deriver extends How {
     }
 
     public Deriver hypothesize(Hypothesizer premises) {
-        this.hypothesize = premises;
+        this.hypo = premises;
         return this;
     }
 
@@ -61,16 +61,23 @@ public class Deriver extends How {
     }
 
 
-    public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypothesize) {
-        this(rules.compile(), hypothesize, timing);
+    public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypo) {
+        this(rules.compile(), hypo, timing);
     }
 
-    public Deriver(PremiseRuleSet rules, Hypothesizer hypothesize) {
-        this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypothesize);
+    public Deriver(PremiseRuleSet rules, Hypothesizer hypo) {
+        this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypo);
     }
 
     public Deriver(PremiseRuleSet rules) {
-        this(rules.compile());
+        this(rules
+            //HACK add standard derivation behaviors
+            .add(new AbstractHypothesizer.TaskResolve())
+            .add(new AbstractHypothesizer.CompoundDecompose())
+            .add(new AbstractHypothesizer.ReverseLink())
+            .compile()
+            .print()
+        );
     }
 
     public Deriver(DeriverProgram rules) {
@@ -82,11 +89,11 @@ public class Deriver extends How {
         );
     }
 
-    public Deriver(DeriverProgram rules, Hypothesizer hypothesize, TimeFocus timing) {
+    public Deriver(DeriverProgram rules, Hypothesizer hypo, TimeFocus timing) {
         super();
         NAR nar = rules.nar;
         this.rules = rules;
-        this.hypothesize = hypothesize;
+        this.hypo = hypo;
         this.timing = timing;
 
         nar.start(this);
@@ -107,15 +114,13 @@ public class Deriver extends How {
 
         Derivation d = Derivation.derivation.get().next(this, w);
 
-        When<NAR> now = d.deriver.timing.task(w);
+
 
 
 
         do {
 
-            hypothesize.premises(
-                now, //maybe update if these are long cycles
-                links, d);
+            hypo.hypothesize(links, d);
 
         } while (kontinue.getAsBoolean());
 

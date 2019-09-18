@@ -1,128 +1,90 @@
 package nars.task;
 
-import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
 import nars.Task;
-import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.COMMAND;
 
-/** base task suitable only for command tasks.
- * no truth, no stamp, no creation, no occurrence, no cause.  hardcoded ';' puntuation
- */
-public class CommandTask implements Task {
-    public final Term term;
-    private final int hash;
+public interface CommandTask extends Task {
 
-    public CommandTask(Term term) {
-        this.hash = Task.hash(
-                this.term = term,
-                null,
-                COMMAND,
-                TIMELESS,
-                TIMELESS,
-                ArrayUtil.EMPTY_LONG_ARRAY);
-    }
+	@Override
+	default boolean isInput() {
+		return true;
+	}
 
-    @Override
-    public final boolean isInput() {
-        return true;
-    }
+	@Override
+	default short[] why() {
+		return ArrayUtil.EMPTY_SHORT_ARRAY;
+	}
 
-    @Override
-    public int hashCode() {
-        return hash;
-    }
+	@Override
+	default boolean isCyclic() {
+		return false;
+	}
 
-    @Override
-    public boolean equals(Object that) {
-        return Task.equal(this, that);
-    }
+	@Override
+	default void setCyclic(boolean b) {
 
-    @Override
-    public @Nullable Appendable toString(boolean showStamp) {
-        return new StringBuilder(32).append(term).append(';');
-    }
+	}
 
-    @Override
-    public String toString() {
-        return term + ";";
-    }
+	@Override
+	default long start() {
+		return ETERNAL; //TODO maybe TIMELESS
+	}
 
-    @Override
-    public final short[] why() {
-        return ArrayUtil.EMPTY_SHORT_ARRAY;
-    }
+	@Override
+	default long end() {
+		return ETERNAL; //TODO maybe TIMELESS
+	}
 
-    @Override
-    public byte punc() {
-        return COMMAND;
-    }
+	@Override
+	default long[] stamp() {
+		return ArrayUtil.EMPTY_LONG_ARRAY;
+	}
 
-    @Override
-    public float freq(long start, long end) {
-        return Float.NaN;
-    }
+	@Override
+	@Nullable
+	default Truth truth() {
+		return null;
+	}
 
-    @Override
-    public ScalarValue pri(float ignored) {
-        return this;
-    }
 
-    @Override
-    public boolean delete() {
-        return false;
-    }
+	@Override
+	default byte punc() {
+		return COMMAND;
+	}
 
-    @Override
-    public float pri() {
-        return 0;
-    }
+	@Override
+	default float freq(long start, long end) {
+		return Float.NaN;
+	}
 
-    @Override
-    public Term term() {
-        return term;
-    }
+	@Override
+	default boolean delete() {
+		return false;
+	}
 
-    @Override
-    public boolean isCyclic() {
-        return false;
-    }
+	@Override
+	default CommandTask pri(float ignored) {
+		return this;
+	}
 
-    @Override
-    public void setCyclic(boolean b) {
-        
-    }
+	@Override
+	default float pri() {
+		return 0;
+	}
 
-    @Override
-    public long creation() {
-        return ETERNAL;
-    }
+	@Override
+	default long creation() {
+		return ETERNAL;
+	}
 
-    @Override
-    public void setCreation(long creation) {
-        //ignored
-    }
+	@Override
+	default void setCreation(long creation) {
+		//ignored
+	}
 
-    @Override
-    public long start() {
-        return ETERNAL;
-    }
 
-    @Override
-    public long end() {
-        return ETERNAL;
-    }
-
-    @Override
-    public long[] stamp() {
-        return ArrayUtil.EMPTY_LONG_ARRAY;
-    }
-
-    @Override
-    public @Nullable Truth truth() {
-        return null;
-    }
 }

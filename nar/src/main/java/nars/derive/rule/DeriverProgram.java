@@ -60,12 +60,13 @@ public class DeriverProgram {
 
 
 
-    public void print() {
-        print(System.out);
+    public DeriverProgram print() {
+        return print(System.out);
     }
 
-    public void print(PrintStream p) {
+    public DeriverProgram print(PrintStream p) {
         print(p, 0);
+        return this;
     }
 
     public void print(PrintStream p, int indent) {

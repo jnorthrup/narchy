@@ -6,7 +6,6 @@ import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
 import jcog.pri.Forgetting;
-import jcog.pri.ScalarValue;
 import jcog.pri.bag.Sampler;
 import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
@@ -151,11 +150,6 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-    public void grow(TaskLink parent, Term from, Term to, byte punc) {
-        float take = grow.floatValue();
-        if (take > ScalarValue.EPSILON)
-            transfer(from, to, parent, take, sustain.floatValue(), punc);
-    }
 
 
 

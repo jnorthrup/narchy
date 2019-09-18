@@ -1,14 +1,14 @@
 package nars.derive.action;
 
-import nars.$;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.term.var.VarPattern;
 
-public abstract class NativeTaskFireAction extends NativePremiseAction {
-	protected static final VarPattern TheTask = $.varPattern(1);
+public abstract class TaskAction extends NativePremiseAction {
 	@Deprecated
 	public int volMax;
+
+	protected TaskAction() {
+	}
 
 	@Override
 	protected final void run(Derivation d) {

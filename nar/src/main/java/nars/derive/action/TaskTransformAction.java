@@ -7,17 +7,22 @@ import nars.derive.Derivation;
 import nars.task.NALTask;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class NativeTaskTransformAction extends NativeTaskFireAction {
+import static nars.Op.*;
+
+public abstract class TaskTransformAction extends TaskAction {
 
 	private final short[] cause;
 	private final Why why;
 
-	public NativeTaskTransformAction(NAR n) {
+	public TaskTransformAction(NAR n) {
+		this(n, BELIEF, GOAL, QUESTION, QUEST);
+	}
+
+	public TaskTransformAction(NAR n, byte... puncs) {
 		this.why = n.newCause(this);
 		this.cause = new short[] { why.id };
-		taskPattern(TheTask);
-		beliefPattern(TheTask);
-		taskPunc(true, true, true, true);
+		single();
+		taskPunc(puncs);
 	}
 
 	@Override public final float pri(Derivation d) {

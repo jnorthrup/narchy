@@ -6,18 +6,13 @@ import jcog.decide.Roulette;
 import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
-import nars.NAL;
-import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.table.TaskTable;
+import nars.task.CommandTask;
 import nars.term.Term;
-import nars.term.Termed;
-import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.Task.p;
@@ -29,7 +24,7 @@ import static nars.Task.p;
  * <p>
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks
  */
-public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
+public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, CommandTask {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
@@ -63,10 +58,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
 //            b.putAsync(x);
 //        }
 //    }
-    /** by default, the src term of the link is the materialized from() reference.  however Dynamic TaskLink can override this behavior */
-    default Termed src(When<NAR> when) {
-        return from();
-    }
+
 
     /**
      * sample punctuation by relative priority
@@ -84,111 +76,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink> {
         return priPunc(rng);
     }
 
-    @Nullable default /* final */Task get(When<NAR> when) {
-        return get(when, null);
-    }
-
-    @Nullable default /* final */Task get(When<NAR> when, @Nullable Predicate<Task> filter) {
-        return get(punc(when.x.random()), when, filter);
-    }
-
-
-    @Nullable default Task get(byte punc, When<NAR> w, @Nullable Predicate<Task> filter) {
-
-        Termed x = src(w);
-
-        if (punc == 0)
-            punc = randomPunc(x.term(), w.x.random()); //flat-lined tasklink
-
-        TaskTable table =
-                //n.concept(t);
-                //n.conceptualizeDynamic(x);
-                //beliefOrGoal ? n.conceptualizeDynamic(x) : n.beliefDynamic(x);
-                w.x.tableDynamic(x, punc);
-
-        if (table == null || table.isEmpty())
-            return null;
-
-
-
-//            boolean beliefOrGoal = punc == BELIEF || punc == GOAL;
-
-        //TODO abstract TaskLinkResolver strategy
-        Task y;
-        if ((punc==BELIEF && NAL.TASKLINK_ANSWER_BELIEF) || (punc==GOAL && NAL.TASKLINK_ANSWER_GOAL))
-            y = table.match(w, null, filter, w.dur, false);
-        else {
-            y = table.sample(w, null, filter);
-        }
-
-//            if (y == null) {
-//                if (!beliefOrGoal) {
-//                    //form question?
-//                    float qpri = NAL.TASKLINK_GENERATED_QUESTION_PRI_RATE;
-//                    if (qpri > Float.MIN_NORMAL) {
-//                        Task.validTaskTerm(x.term(), punc, true);
-//                    }
-//                }
-//
-////                if (y == null)
-////                    delete(punc); //TODO try another punc?
-//            }
-
-        return y;
-
-//            if (task!=null) {
-//                    byte punc = task.punc();
-//                    //dynamic question answering
-//                    Term taskTerm = task.target();
-//                    if ((punc==QUESTION || punc == QUEST) && !taskTerm.hasAny(Op.VAR_QUERY /* ineligible to be present in actual belief/goal */)) {
-//
-//                        BeliefTables aa = (BeliefTables) c.tableAnswering(punc);
-//                        /*@Nullable DynamicTaskTable aa = answers.tableFirst(DynamicTaskTable.class);
-//                        if (aa!=null)*/ {
-//
-//                            //match an answer emulating a virtual self-termlink being matched during premise formation
-//                            Task q = task;
-//                            Task a = aa.answer(q.start(), q.end(), taskTerm, null, n);
-//                            if (a != null) {
-//
-//
-//
-//                                //decrease tasklink too?
-//
-//                                q.onAnswered(a, n);
-//                                n.input(a);
-//                            }
-//                        }
-//                    }
-//            }
-        //        } else {
-//            //TODO if target supports dynamic truth, then possibly conceptualize and then match as above?
-//
-//            //form a question/quest task for the missing concept
-//            byte punc;
-//            switch (this.punc) {
-//                case BELIEF:
-//                    punc = QUESTION;
-//                    break;
-//                case GOAL:
-//                    punc = QUEST;
-//                    break;
-//                case QUESTION:
-//                case QUEST:
-//                    punc = this.punc;
-//                    break;
-//                default:
-//                    throw new UnsupportedOperationException();
-//            }
-//
-//            task = new UnevaluatedTask(target, punc, null, n.time(), se[0], se[1], n.evidence());
-//            if (Param.DEBUG)
-//                task.log("Tasklinked");
-//            task.pri(link.priElseZero());
-
-//        }
-        //return null;
-    }
 
     /** TODO refine
      *  TODO query var -> only questions/quests

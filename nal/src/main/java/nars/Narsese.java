@@ -17,7 +17,7 @@ import com.google.common.annotations.VisibleForTesting;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.io.NarseseParser;
-import nars.task.CommandTask;
+import nars.task.AbstractCommandTask;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -167,7 +167,7 @@ public final class Narsese {
 
         if (punct == COMMAND) {
 
-            return new CommandTask(content);
+            return new AbstractCommandTask(content);
         }
 
         Object _t = x[3];

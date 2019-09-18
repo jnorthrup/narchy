@@ -50,6 +50,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     Atom GoalAtom =  $.quote(String.valueOf((char)GOAL));
     Atom QuestionAtom =  $.quote(String.valueOf((char)QUESTION));
     Atom QuestAtom =  $.quote(String.valueOf((char)QUEST));
+    Atom CommandAtom =  $.quote(String.valueOf((char)COMMAND));
+
     Atom Que = Atomic.atom(String.valueOf((char) QUESTION) + (char) QUEST);
 
     Term VAR_DEP_1 = $.varDep(1);
