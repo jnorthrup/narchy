@@ -3,8 +3,8 @@ package nars.table.dynamic;
 import jcog.Util;
 import jcog.math.LongInterval;
 import nars.NAL;
-import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
 import nars.table.eternal.EternalTable;
@@ -107,7 +107,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 	/**
 	 * TODO only remove tasks which are weaker than the sensor
 	 */
-	void clean(List<BeliefTable> tables, int marginCycles) {
+	public void clean(List<BeliefTable> tables, int marginCycles) {
 		if (!NAL.signal.SIGNAL_TABLE_FILTER_NON_SIGNAL_TEMPORAL_TASKS)
 			return;
 
@@ -181,61 +181,53 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
 	/** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
 	 *             the interface itself (ex: clock rate) */
-	public SeriesTask add(@Nullable Truth next, When<NAR> when) {
+	public SeriesTask add(@Nullable Truth next, When<What> when, short[] cause) {
 
 		long nextStart = when.start, nextEnd = when.end;
 
 		AbstractTaskSeries<SeriesTask> series = this.series;
 
 		SeriesTask last = series.last();
-		if (last != null) {
-			long lastEnd = last.end();
-
-			long gapCycles = (nextStart - lastEnd);
-			float dur = when.dur;
-			if (gapCycles <= series.latchDurs() * dur) {
-
-				if (next!=null) {
-					long lastStart = last.start();
-					long stretchCycles = (nextStart - lastStart);
-					boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
-					if (stretchable) {
-						if (last.truth().equals(next)) {
-							//continue, if not excessively long
-
-
-							//Truth lastEnds = last.truth(lastEnd, 0);
-							//if (lastEnds!=null && lastEnds.equals(next)) {
-							//stretch
-							stretch(last, nextEnd);
-							return last;
-
-						}
-					}
-				}
-
-				//form new task either because the value changed, or because the latch duration was exceeded
-
-
-                /*if (next == null) {
-                    //guess that the signal stopped midway between (starting) now and the end of the last
-                    long midGap = Math.min(nextStart-1, lastEnd + dur/2);
-                    stretch(last, midGap);*/
-
-
-				//stretch the previous to the current starting point for the new task
-				if (lastEnd < nextStart-1)
-					stretch(last, nextStart-1);
-
+		if (last != null && lastContinues(next, when.dur, nextStart, nextEnd, series, last))
+			return last;
+		else {
+			if (next == null)
+				return null;
+			else {
+				SeriesTask s = newTask(this.term, this.punc(), nextStart, nextEnd, next, when.x.nar);
+				s.cause(cause);
+				this.add(s);
+				return s;
 			}
 		}
+	}
 
-		if (next == null)
-			return null;
+	private boolean lastContinues(@Nullable Truth next, float dur, long nextStart, long nextEnd, AbstractTaskSeries<SeriesTask> series, SeriesTask last) {
+		long lastEnd = last.end();
 
-		SeriesTask nextT = newTask(this.term, this.punc(), nextStart, nextEnd, next, when.x);
-		this.add(nextT);
-		return nextT;
+		long gapCycles = (nextStart - lastEnd);
+
+		if (gapCycles <= series.latchDurs() * dur) {
+
+			if (next!=null) {
+				long lastStart = last.start();
+				long stretchCycles = (nextStart - lastStart);
+				boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
+				if (stretchable && last.truth().equals(next)) {
+					//continue, if not excessively long
+					stretch(last, nextEnd);
+					return true;
+				}
+			}
+
+			//form new task either because the value changed, or because the latch duration was exceeded
+			if (lastEnd < nextStart-1) {
+				//stretch the previous to the current starting point for the new task
+				stretch(last, nextStart - 1);
+			}
+
+		}
+		return false;
 	}
 
 	private SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {

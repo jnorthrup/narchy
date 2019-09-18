@@ -4,24 +4,35 @@ import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
-import jcog.pri.PLink;
+import jcog.math.FloatRange;
+import jcog.pri.Prioritized;
+import jcog.pri.UnitPri;
 import nars.$;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.DoubleDoubleToDoubleFunction;
 
-public class PriNode extends PLink<Term> {
+public class PriNode implements Prioritized {
+
+    public final Term id;
 
     @Deprecated transient private Node<PriNode, Object> _node;
 
     protected Merge input = Merge.Plus;
 
+    protected final UnitPri pri = new UnitPri(0);
+
     public PriNode(Object id) {
-        super($.identity(id), 0);
+        this.id = $.identity(id);
     }
 
     @Override
     public String toString() {
         return id + " pri=" + pri();
+    }
+
+    @Override
+    public final float pri() {
+        return pri.pri();
     }
 
 
@@ -68,10 +79,17 @@ public class PriNode extends PLink<Term> {
         Node<PriNode, Object> node = node(graph);
         //fanOut = node.edgeCount(false,true); //TODO cache
 
-        this.pri(node.edgeCount(true, false) > 0 ?
-            (float) input.merge(node.nodes( true, false))
+        float p = node.edgeCount(true, false) > 0 ?
+            (float) input.merge(node.nodes(true, false))
             :
-            0);
+            0;
+
+        this.pri.pri( in(p) );
+    }
+
+    /** override to manipulate the incoming priority value (ex: transfer function) */
+    protected float in(float p) {
+        return p;
     }
 
     /** re-parent */
@@ -90,8 +108,8 @@ public class PriNode extends PLink<Term> {
         }
     }
 
-    public static PriNode source(String name, float value) {
-        return new Mutable(name, value);
+    public static PriNode.Source source(String name, float value) {
+        return new Source(name, value);
     }
 
     /** cached
@@ -104,34 +122,24 @@ public class PriNode extends PLink<Term> {
     }
 
     /** variably adjustable priority source */
-    public static class Mutable extends PriNode {
+    public static class Source extends PriNode {
 
-        public Mutable(Object id, float p) {
+        public final FloatRange in = new FloatRange(0.5f, 0, 1);
+
+        public Source(Object id, float p) {
             super(id);
-            pri(p);
+            this.pri.pri(p);
         }
 
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
-            //nothing
+            //assert(_node.edgeCount(true,false)==0);
+            this.pri.pri(in.get());
+        }
+
+        public void pri(float p) {
+            in.set(p);
         }
     }
 
-    private static final class Constant extends Mutable {
-        private final float value;
-
-        private Constant(String name, float value) {
-            super(name, value);
-            this.value = value;
-        }
-        @Override
-        public void update(MapNodeGraph<PriNode, Object> graph) {
-            //nothing
-        }
-        @Override
-        public float pri() {
-            return value;
-        }
-
-    }
 }

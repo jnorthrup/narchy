@@ -11,6 +11,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AntistaticBag;
+import nars.attention.PriAmp;
 import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
@@ -159,8 +160,11 @@ import java.util.Arrays;
     public final PriNode input(Term target, PriNode.Merge mode, PriNode... sources) {
         return input(new PriNode(target), mode, sources);
     }
+    public final PriAmp amp(Term target, PriNode.Merge mode, PriNode... sources) {
+        return input(new PriAmp(target), mode, sources);
+    }
 
-    private PriNode input(PriNode target, @Nullable PriNode.Merge mode, PriNode... sources) {
+    private <P extends PriNode> P input(P target, @Nullable PriNode.Merge mode, PriNode... sources) {
         if (mode!=null)
             target.input(mode);
 

@@ -14,6 +14,7 @@ import jcog.signal.tensor.WritableTensor;
 import nars.$;
 import nars.NAR;
 import nars.Task;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
@@ -199,8 +200,9 @@ public class RLBooster  {
 //        long end = now + dur/2;
 
 
-        long start = g.when.start;
-        long end = g.when.end;
+        When<What> w = g.nowWhat;
+        long start = w.start;
+        long end = w.end;
         float[] ii = input(start, end);
         _in = ii;
         if (history instanceof TensorRing) {
@@ -209,7 +211,7 @@ public class RLBooster  {
             ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
         }
 
-        int a = agent.act(actionFeedback(g.when), (float) reward, Util.toFloat(history.doubleArray()));
+        int a = agent.act(actionFeedback(w), (float) reward, Util.toFloat(history.doubleArray()));
         int buttons = (actionDiscretization-1)*actions.length;
         if (a >= buttons) {
             //nothing action, or otherwise beyond range of action buttons

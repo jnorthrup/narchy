@@ -2,6 +2,7 @@ package nars.game.action;
 
 import nars.NAL;
 import nars.NAR;
+import nars.attention.What;
 import nars.game.Game;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
@@ -94,7 +95,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
 //    }
 
-    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<NAR> g, int shift) {
+    @Nullable public TruthProjection truth(boolean beliefsOrGoals, int componentsMax, When<What> g, int shift) {
         BeliefTable t = (beliefsOrGoals ? beliefs() : goals());
 
         if (t.isEmpty())
@@ -104,7 +105,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
         float dur = g.dur;
         long s = g.start+shift, e = g.end+shift;
-        Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x).dur(dur);
+        Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar).dur(dur);
 
         a.clear(tries).time(s, e);
 
@@ -120,36 +121,36 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
         int limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;
 
-        When<NAR> when = g.when;
+        When<What> w = g.nowWhat;
 
-        int perceptShift = (int) ((when.end - when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+        int perceptShift = (int) ((w.end - w.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
         this.nextFeedback = updateAction(
-            this.beliefTruth = truth(truth(true, limitBelief, when, perceptShift), when, perceptShift),
-            this.actionTruth = actionTruth(limitGoal, g, perceptShift),
+            this.beliefTruth = truth(truth(true, limitBelief, w, perceptShift), w, perceptShift),
+            this.actionTruth = actionTruth(limitGoal, w, perceptShift),
             g);
 
-        input(nextFeedback, g);
+        input(nextFeedback, pri(), cause, w);
     }
 
     /** returns feedback truth value */
     @Nullable abstract protected Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g);
 
-    private  @Nullable Truth truth(@Nullable TruthProjection t, When<NAR> when, int shift) {
+    private  @Nullable Truth truth(@Nullable TruthProjection t, When when, int shift) {
         return t!=null ?
             t.dur(when.dur).truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
             false, false, null) :
             null;
     }
 
-    private Truth actionTruth(int limit, Game g, int shift) {
-        float dur = g.when.dur;
+    private Truth actionTruth(int limit, When<What> w, int shift) {
+        float dur = w.dur;
 
-        TruthProjection gt = truth(false, limit, g.when, shift);
+        TruthProjection gt = truth(false, limit, w, shift);
         if (gt!=null) {
             gt.dur(dur);
 
-            Truth nextActionDex = truth(gt, g.when, shift);
+            Truth nextActionDex = truth(gt, w, shift);
             actionDex = nextActionDex;
             actionCoh = nextActionDex != null ? gt.coherency() : 0;
 

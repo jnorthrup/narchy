@@ -379,8 +379,7 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
         @Override
         protected void renderContent(ReSurface r) {
             if (autoUpdate) {
-                if (active())
-                    slider.set(this.get.asFloat());
+                slider.set(this.get.asFloat());
             }
 
             super.renderContent(r);

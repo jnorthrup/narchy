@@ -4,10 +4,12 @@ import jcog.decide.DecideSoftmax;
 import jcog.decide.Deciding;
 import jcog.math.FloatSupplier;
 import nars.NAR;
+import nars.attention.What;
 import nars.game.Game;
 import nars.game.sensor.DigitizedScalar;
 import nars.game.sensor.Signal;
 import nars.term.Term;
+import nars.time.When;
 import nars.truth.Truth;
 
 import java.util.function.IntPredicate;
@@ -53,7 +55,9 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     @Override
     public void update(Game g) {
 
-        int d = decide(g.when.start, g.when.end);
+        When<What> w = g.nowWhat;
+
+        int d = decide(w.start, w.end);
 
         if (d!=-1 && action.test(d))
             value.set((d +0.5f)/exp.length);

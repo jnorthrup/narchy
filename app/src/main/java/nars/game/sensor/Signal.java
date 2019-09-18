@@ -3,6 +3,7 @@ package nars.game.sensor;
 import jcog.math.FloatSupplier;
 import nars.$;
 import nars.NAR;
+import nars.attention.What;
 import nars.concept.PermanentConcept;
 import nars.concept.TaskConcept;
 import nars.game.Game;
@@ -10,6 +11,7 @@ import nars.table.BeliefTable;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.When;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -100,25 +102,30 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
     }
 
     /** pre-commit phase */
-    public boolean input(@Nullable Truth next, Game g) {
+    public final boolean input(@Nullable Truth next, short[] cause, When<What> w) {
         //Truth prevValue = currentValue;
         Truth nextValue = (currentValue = next);
 
-        return this.inputting = ((SensorBeliefTables) beliefs()).input(nextValue, g.when);
+        return this.inputting = ((SensorBeliefTables) beliefs()).input(nextValue, w, cause);
     }
 
     /** combined phases */
-    public boolean input(Truth next, float pri, short[] cause, Game g) {
-        if (input(next, g)) {
-            commit(pri, cause, g);
-            return true;
-        }
-        return false;
+    public final void input(Truth next, float pri, short[] cause, When<What> g) {
+        input(next, cause, g);
+        commit(pri, g);
     }
 
     /** post-commit phase */
-    public void commit(float pri, short[] cause, Game g) {
-        ((SensorBeliefTables) beliefs()).commit(pri, cause, g.what(), g.when.dur, autoTaskLink());
+    public final void commit(float pri, When<What> w) {
+        SensorBeliefTables b = (SensorBeliefTables) beliefs();
+
+        float dur = w.dur;
+
+        if (inputting)
+            b.remember(w.x, pri, autoTaskLink(), dur);
+
+        b.series.clean(b, SensorBeliefTables.cleanMarginCycles(dur));
+
     }
 
 

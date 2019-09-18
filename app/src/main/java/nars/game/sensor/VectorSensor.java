@@ -5,11 +5,13 @@ import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttnBranch;
+import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.time.When;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 
@@ -64,24 +66,24 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
     public void update(Game g) {
 
 
-        // Signal.truthDithered(nextValue, resolution().floatValue(), g);
         float res = this.res.floatValue();
 
         FloatToObjectFunction<Truth> truther = Signal.truther(res, g.confDefaultBelief, g);
+
+        When<What> w = g.nowWhat;
 
         //pre-commit
         int active = 0;
         for (ComponentSignal s : this) {
             //if (quality >= 1 || rng.nextFloat() < quality )
-            if (s.input(truther.valueOf(s.value(g)), g))
+            if (s.input(truther.valueOf(s.value(g)), cause, w))
                 active++;
         }
         if (active > 0) {
             //post-commit phase
             float aPri = pri.pri() / active;
             for (ComponentSignal s : this) {
-                if (s.inputting)
-                    s.commit(aPri, cause, g);
+                s.commit(aPri, w);
             }
         }
     }

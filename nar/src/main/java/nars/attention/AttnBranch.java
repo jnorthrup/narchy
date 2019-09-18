@@ -18,10 +18,9 @@ import java.util.stream.Stream;
  * https://en.wikipedia.org/wiki/Average_absolute_deviation
  */
 @Paper
-public class AttnBranch extends PriNode {
+public class AttnBranch extends PriAmp {
 
     private final Iterable<? extends Termed> components;
-
 
     //final MiniPID control = new MiniPID(0.5f, 0.5f, 0.5f);
 
@@ -43,10 +42,7 @@ public class AttnBranch extends PriNode {
         return Streams.stream(components).map(nar::concept).filter(Objects::nonNull);
     }
 
-
-
-
-//    @Override protected float myDemand(NAR n) {
+    //    @Override protected float myDemand(NAR n) {
 //
 //
 ////        pris.clear();

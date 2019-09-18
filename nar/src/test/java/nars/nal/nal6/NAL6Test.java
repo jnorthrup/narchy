@@ -1145,14 +1145,12 @@ public class NAL6Test extends NALTest {
     @Test
     void testImplSubjDisjDeduction() {
         test
-            .logDebug()
             .termVolMax(7)
             .believe("((a||b) ==> y)")
             .believe("a")
             //.mustNotOutput(cycles, "(a==>y)", BELIEF,1,1, 0.45f,0.45f,ETERNAL)
             .mustNotOutput(cycles, "(a ==>+- (a==>y))", QUESTION)
 
-// TODO
             .mustNotOutput(cycles, "(((--,a) &&+- b) ==>+- y)", QUESTION)
             .mustQuestion(cycles, "(((--,a)&&b)==>y)")
 

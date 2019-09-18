@@ -22,7 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class NAL8Test extends NALTest {
 
-    public static final int cycles = 250;
+    public static final int cycles = 100;
 
     @BeforeEach
     void setTolerance() {

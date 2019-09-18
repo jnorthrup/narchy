@@ -2,7 +2,6 @@ package nars.table.dynamic;
 
 import jcog.Util;
 import nars.NAL;
-import nars.NAR;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
@@ -30,7 +29,7 @@ public class SensorBeliefTables extends BeliefTables {
 
     public final SeriesBeliefTable series;
 
-    private SeriesTask current = null;
+    private SeriesTask prev = null, current = null;
 
     /** priority factor for new tasks which are fully unsurprising */
     private float minSurprise = NAL.signal.SENSOR_SURPRISE_MIN_DEFAULT;
@@ -56,6 +55,10 @@ public class SensorBeliefTables extends BeliefTables {
 
         /* series will override the r-tree table */
         matchMode = 0;
+    }
+
+    @Deprecated public static int cleanMarginCycles(float dur) {
+        return Math.round(NAL.signal.CLEAN_MARGIN_DURS * dur);
     }
 
     @Override
@@ -88,41 +91,26 @@ public class SensorBeliefTables extends BeliefTables {
         return ss < ee && series.absorbNonSignal(r.input, ss, ee);
     }
 
-    @Deprecated static protected int cleanMarginCycles(float dur) {
-        return Math.round(NAL.signal.CLEAN_MARGIN_DURS * dur);
-    }
 
 
     /** pre-commit */
-    public boolean input(Truth value, When<NAR> when) {
-        SeriesTask next = series.add(value, when);
-        Task prev = this.current;
-        boolean novel = current!=null && current!=prev;
+    public boolean input(Truth value, When<What> when, short[] cause) {
+        SeriesTask next = series.add(value, when, cause);
+        SeriesTask prev = this.current;
+        boolean novel = next!=null && next!=prev;
+        this.prev = prev;
         this.current = next;
         return novel;
     }
 
 
-
-    /** post-commit */
-    public void commit(float pri, short[] cause, What what, float dur, @Deprecated boolean link) {
-        SeriesTask x = current;
-        x.cause(cause);
-        remember(x, what, pri, link, dur);
-        this.current = x;
-    }
-
-
-
-
-
-
     /** link and emit */
-    private void remember(Task next, What w, float pri, boolean link, float dur) {
+    public void remember(What w, float pri, boolean link, float dur) {
 
-        Task prev = this.current;
+        Task prev = this.prev;
+        Task next = this.current;
+        //assert(prev!=next);
 
-        if (prev!=next) {
             float nextPri = pri *
                     lerp((float) SensorBeliefTables.surprise(prev, next, dur),
                             minSurprise, 1);
@@ -141,9 +129,9 @@ public class SensorBeliefTables extends BeliefTables {
             }
 
             w.emit(next);
-        }
 
-        series.clean(this, cleanMarginCycles(dur));
+
+
     }
 
     /**

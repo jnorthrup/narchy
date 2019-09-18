@@ -13,7 +13,7 @@ import java.util.List;
 public abstract class UniSignal extends Signal {
 	private final FloatRange res;
 
-	private final short[] cause;
+	protected final short[] cause;
 	public final AttnBranch pri;
 
 	public UniSignal(Term term, @Nullable short[] cause, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {

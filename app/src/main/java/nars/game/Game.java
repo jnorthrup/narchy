@@ -12,12 +12,16 @@ import jcog.thing.Part;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
+import nars.attention.PriAmp;
 import nars.attention.PriNode;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.game.action.ActionSignal;
 import nars.game.action.BiPolarAction;
-import nars.game.sensor.*;
+import nars.game.sensor.GameLoop;
+import nars.game.sensor.Signal;
+import nars.game.sensor.UniSignal;
+import nars.game.sensor.VectorSensor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -69,8 +73,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final AtomicInteger iteration = new AtomicInteger(0);
 
-    public PriNode rewardPri, actionPri, sensorPri;
-
+    public PriAmp rewardPri, actionPri, sensorPri;
 
     /** the context representing the experience of the game */
     @Deprecated private What what;
@@ -80,8 +83,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public volatile long now = ETERNAL;
 
-
-    public When<NAR> when = null;
+    public When<What> nowWhat = null;
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -260,11 +262,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         PriNode pri = what.pri;
 
-        this.actionPri = nar.control.input($.inh(id,ACTION), PriNode.Merge.And,
+        this.actionPri = nar.control.amp($.inh(id,ACTION), PriNode.Merge.And,
             pri, nar.goalPriDefault);
-        this.sensorPri = nar.control.input($.inh(id,SENSOR), PriNode.Merge.And,
+        this.sensorPri = nar.control.amp($.inh(id,SENSOR), PriNode.Merge.And,
             pri, nar.beliefPriDefault);
-        this.rewardPri = nar.control.input($.inh(id,REWARD), PriNode.Merge.And,
+        this.rewardPri = nar.control.amp($.inh(id,REWARD), PriNode.Merge.And,
             pri, nar.goalPriDefault
         ); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
@@ -507,10 +509,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 //            System.out.println(this + " "  + state().toString() + " " + (now - prev));
 
             float dur = dur();
-            long lastEnd = when!=null ? when.end : Math.round(now-dur/2-1);
+            long lastEnd = nowWhat !=null ? nowWhat.end : Math.round(now-dur/2-1);
             long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - dur/2));
             long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + dur/2 - 1)));
-            this.when = new When<>(nextStart, nextEnd, dur, nar);
+            this.nowWhat = new When<>(nextStart, nextEnd, dur, what);
 
             this.confDefaultBelief = nar().confDefault(BELIEF);
 

@@ -11,6 +11,7 @@ import jcog.pri.ScalarValue;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
+import nars.attention.PriAmp;
 import nars.attention.PriNode;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
@@ -344,17 +345,19 @@ abstract public class MetaAgent extends Game {
 //    }
 
     void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
-        actionCtlPriNode(s);
-        s.node(g).nodes(false, true).forEach((Node<PriNode,Object> x) -> actionCtlPriNode(x.id()));
+        if (s instanceof PriAmp)
+            actionCtlPriNode((PriAmp)s);
+        s.node(g).nodes(false, true).forEach((Node<PriNode,Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
     }
 
-    void actionCtlPriNode(PriNode attnSensor) {
-        actionCtl(attnSensor.get(), 0, 1, attnSensor::priSetAndGet);
+    void actionCtlPriNode(PriAmp a) {
+        actionCtl(a.id, a.amp);
     }
 
     protected void actionCtl(Term t, FloatRange r) {
         actionCtl(t, r.min, r.max, r::set);
     }
+
     protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
         //FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
         //FloatToFloatFunction f = (z)->z;

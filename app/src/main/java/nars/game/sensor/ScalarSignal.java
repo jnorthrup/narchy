@@ -39,7 +39,7 @@ public class ScalarSignal extends UniSignal {
 
     @Override
     public void update(Game g) {
-        input(next(g), this.pri(), cause(), g);
+        input(next(g), this.pri(), cause(), g.nowWhat);
     }
 
     public final Truth next(Game g) {
