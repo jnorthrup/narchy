@@ -6,7 +6,11 @@ import jcog.data.list.FasterIntArrayList;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
-import nars.*;
+import nars.$;
+import nars.NAL;
+import nars.NAR;
+import nars.Op;
+import nars.attention.What;
 import nars.eval.Evaluation;
 import nars.eval.Evaluator;
 import nars.term.Functor;
@@ -73,11 +77,11 @@ public class Arithmeticize {
 
         public ArithmeticIntroduction(NAR n) {
             super(n);
+            //hasAny(TheTask, Op.INT);
+            //TODO vol >= 3
+
         }
 
-        public ArithmeticIntroduction(NAR n, int capacity) {
-            super(n, capacity);
-        }
 
         @Override
         protected boolean filter(Term x) {
@@ -87,27 +91,27 @@ public class Arithmeticize {
                             volMax >= x.volume() + VOLUME_MARGIN /* for && equals(x,y)) */;
         }
 
+//        @Override
+//        protected float pri(Task t) {
+////            if (t instanceof SignalTask)
+////                return Float.NaN; //dont apply to signal names directly
+//
+//            float p = super.pri(t);
+//            Term tt = t.term();
+//            int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
+//
+//            assert (numInts > 0);
+//            if (numInts < 2)
+//                return Float.NaN;
+//
+//
+//            float intTerms = Util.unitize(numInts / (((float) tt.volume() - numInts)));
+//            return p * intTerms;
+//        }
+
         @Override
-        protected float pri(Task t) {
-//            if (t instanceof SignalTask)
-//                return Float.NaN; //dont apply to signal names directly
-
-            float p = super.pri(t);
-            Term tt = t.term();
-            int numInts = tt.intifyRecurse((n, sub) -> sub.op() == INT ? n + 1 : n, 0);
-
-            assert (numInts > 0);
-            if (numInts < 2)
-                return Float.NaN;
-
-
-            float intTerms = Util.unitize(numInts / (((float) tt.volume() - numInts)));
-            return p * intTerms;
-        }
-
-        @Override
-        protected Term apply(Term x, int volMax) {
-            Random random = nar.random();
+        protected Term applyUnnormalized(Term x, int volMax, What w) {
+            Random random = w.random();
             return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / x.volume()), random);
         }
     }

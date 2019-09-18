@@ -4,6 +4,7 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
+import nars.derive.Derivation;
 import nars.task.TemporalTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -17,47 +18,52 @@ public abstract class Introduction extends TaskLeakTransform {
         super(nar);
     }
 
-    protected Introduction(NAR nar, int capacity) {
-        super(capacity, nar);
-    }
 
     /** returns the new, transformed target or null if the task should not be cloned */
     @Nullable
-    protected abstract Term newTerm(Term x);
+    protected abstract Term apply(Term x, What what);
 
     @Override
-    protected float leak(Task xx, What what) {
+    protected final void accept(Task t, Derivation d) {
 
-        Term x = xx.term();
-        Term y = newTerm(x);
+        Term x = t.term();
+        if (!filter(x))
+            return;
 
-        if(y!=null && !x.equals(y) && !(y instanceof Bool)) {
-            Term yu = y.unneg();
-            if (yu.volume() <= volMax && yu.op().conceptualizable) {
+        What w = d.what;
+
+        Term y1 = apply(x, w);
+
+        if(y1 !=null && !x.equals(y1) && !(y1 instanceof Bool)) {
+            Term yu = y1.unneg();
+            if (/*yu.volume() <= volMax &&*/ yu.op().conceptualizable) {
                 if (!yu.equals(x)) {
 
-                    Task yy = Task.clone(xx, y, xx.truth(), xx.punc(),
-                            (c, t) -> {
-                                if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
-                                    return null;
-
-                                long now = what.time();
-                                return tasksUnevaluated() ?
-                                        new TemporalTask.Unevaluated(c, xx, t, now) :
-                                        new TemporalTask(c, xx, t, now);
-                            });
-
-                    if (yy != null) {
-                        yy.pri(0); //HACK
-                        Task.fund(yy, xx, priFactor.floatValue(), true);
-                        in.accept(yy, what);
-                        return 1;
-                    }
+                    taskify(t, x, y1, w);
                 }
             }
         }
 
-        return 0;
+    }
+
+    private void taskify(Task xt, Term x, Term y1, What w) {
+        Task yy = Task.clone(xt, y1, xt.truth(), xt.punc(),
+                (c, t) -> {
+                    if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
+                        return null;
+
+                    long now = w.time();
+                    return tasksUnevaluated() ?
+                            new TemporalTask.Unevaluated(c, xt, t, now) :
+                            new TemporalTask(c, xt, t, now);
+                });
+
+        if (yy != null) {
+            yy.pri(0); //HACK
+            Task.fund(yy, xt, priFactor.floatValue(), true);
+            in.accept(yy, w);
+            return;
+        }
     }
 
     /** return true to produce Unevaluated tasks, which can prevent circular processing */

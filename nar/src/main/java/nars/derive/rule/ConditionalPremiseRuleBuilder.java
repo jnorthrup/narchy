@@ -76,6 +76,18 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		}
 	}
 
+	/** single premise */
+	public final void single(Term taskPattern) {
+		taskPattern(taskPattern);
+		this.beliefPattern = this.taskPattern;
+	}
+
+//	/** double premise */
+//	public final void doubl(Term taskPattern, Term beliefPattern) {
+//		taskPattern(taskPattern);
+//		beliefPattern(beliefPattern);
+//	}
+
 	public void taskPattern(Term x) {
 
 		this.taskPattern = patternify(x);
@@ -92,8 +104,8 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 		if (beliefPattern instanceof Neg)
 			throw new TermException("belief pattern can never be NEG", beliefPattern);
-		if (beliefPattern.op() == Op.ATOM)
-			throw new TermException("belief target must contain no atoms", beliefPattern);
+//		if (beliefPattern.op() == Op.ATOM)
+//			throw new TermException("belief target must contain no atoms", beliefPattern);
 	}
 
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest) {
@@ -670,6 +682,9 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	public void hasAny(Term x, Op o, boolean trueOrFalse) {
+		if (o == INT)
+			throw new RuntimeException("Premise Key memoizing erases Integers"); //HACK TODO
+
 		match(x, new TermMatcher.Has(o, true), trueOrFalse);
 	}
 

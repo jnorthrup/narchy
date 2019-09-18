@@ -2,28 +2,24 @@ package nars.op;
 
 import nars.NAR;
 import nars.Op;
+import nars.Task;
+import nars.attention.What;
+import nars.derive.Derivation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import nars.term.compound.Sequence;
 import nars.term.util.conj.Conj;
-import org.eclipse.collections.api.block.function.primitive.ObjectIntToObjectFunction;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
-import java.util.concurrent.ThreadLocalRandom;
 
 import static nars.Op.CONJ;
-import static nars.Op.IMPL;
-import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 /** introduction applied to subevents and subconditions */
 public abstract class EventIntroduction extends Introduction {
-    EventIntroduction(NAR nar, int capacity) {
-        super(nar, capacity);
-    }
 
     EventIntroduction(NAR nar) {
         super(nar);
@@ -38,24 +34,26 @@ public abstract class EventIntroduction extends Introduction {
     }
 
     @Override
-    protected final @Nullable Term newTerm(Term xx) {
-        Term y = applyAndNormalize(xx, volMax-2);
+    protected final @Nullable Term apply(Term xx, What what) {
+        Term y = applyAndNormalize(xx, what);
         return y != xx ? y : null;
     }
 
+
+    @Deprecated
     Term applyAndNormalize(Term x) {
-        return applyAndNormalize(x, Integer.MAX_VALUE);
+        return applyAndNormalize(x, null);
     }
 
-    private Term applyAndNormalize(Term x, int volMax) {
-        Term y = apply(x, this::apply, volMax);
+    private Term applyAndNormalize(Term x, What w) {
+        Term y = applyUnnormalized(x, w);
         return y!=null && !x.equals(y) && y.volume() <= volMax ? y.normalize() : x;
     }
 
-    abstract protected Term apply(Term x, int volMax);
+    abstract protected Term applyUnnormalized(Term x, int volMax, What w);
 
     /** dont separate in conj and impl components if variables because renormalization will cause them to become distinct HACK */
-    public static Term apply(Term x, ObjectIntToObjectFunction<Term,Term> each, int volMax) {
+    public Term applyUnnormalized(Term x, What w) {
         if (volMax <= 0 || x instanceof Sequence)
             return x; //HACK incompatible with sequences for now
 
@@ -63,7 +61,7 @@ public abstract class EventIntroduction extends Introduction {
         switch (xo) {
             case NEG:
                 Term xu = x.unneg();
-                Term y = each.valueOf(xu, volMax - 1);
+                Term y = applyUnnormalized(xu, volMax-1, w);
                 return y != null && y != xu ? y.neg() : x;
             case IMPL:
                 return x; //HACK dont support IMPL since they can conflict when &&'d with the factor
@@ -77,7 +75,7 @@ public abstract class EventIntroduction extends Introduction {
                         Map<Term, Term> replacement = new UnifiedMap(1);
                         if (!x.eventsAND((when, what) -> {
                             if (what instanceof Compound && what.op() == CONJ && !Conj.isSeq(what) && what.dt()!=XTERNAL && !replacement.containsKey(what)) {
-                                Term what2 = each.valueOf(what, volMax - (x.volume() - what.volume()) - 1);
+                                Term what2 = applyUnnormalized(what, volMax - (x.volume() - what.volume()) - 1, w);
                                 if (what2 != null)
                                     replacement.put(what, what2);
                             }
@@ -106,7 +104,7 @@ public abstract class EventIntroduction extends Introduction {
 //                    return each.valueOf(x, volMax - 1);
                 break;
         }
-        return each.valueOf(x, volMax);
+        return applyUnnormalized(x, volMax, w);
     }
 
 //    public static Term conjSeq(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectFunction<Term, Term> each) {
@@ -122,29 +120,30 @@ public abstract class EventIntroduction extends Introduction {
 //        else
 //            return x; //unchanged
 //    }
-    public static Term impl(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectFunction<Term, Term> each) {
-        int dt = x.dt();
-        if (dt == DTERNAL) dt = 0; //HACK
 
-        boolean phase = ThreadLocalRandom.current().nextBoolean();
-        Term subjFactored = null, predFactored = null;
-        for (int i = 0; i < 2; i++) {
-            if ((i == 0 && phase) || (i==1 && !phase)) {
-                subjFactored = apply(subj, each, volMax - pred.volume() - 1);
-                if (subjFactored == null) subjFactored = subj;
-            }
-
-            if ((i == 1 && phase) || (i==0 && !phase)) {
-                predFactored = apply(pred, each, volMax - subj.volume() - 1);
-                if (predFactored == null) predFactored = pred;
-            }
-        }
-
-        if ((!subj.equals(subjFactored)) || (!pred.equals(predFactored)))
-            return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), predFactored);
-        else
-            return x; //unchanged
-    }
+//    public static Term impl(Term x, int volMax, Term subj, Term pred, ObjectIntToObjectFunction<Term, Term> each) {
+//        int dt = x.dt();
+//        if (dt == DTERNAL) dt = 0; //HACK
+//
+//        boolean phase = ThreadLocalRandom.current().nextBoolean();
+//        Term subjFactored = null, predFactored = null;
+//        for (int i = 0; i < 2; i++) {
+//            if ((i == 0 && phase) || (i==1 && !phase)) {
+//                subjFactored = applyUnnormalized(subj, each, volMax - pred.volume() - 1);
+//                if (subjFactored == null) subjFactored = subj;
+//            }
+//
+//            if ((i == 1 && phase) || (i==0 && !phase)) {
+//                predFactored = applyUnnormalized(pred, each, volMax - subj.volume() - 1);
+//                if (predFactored == null) predFactored = pred;
+//            }
+//        }
+//
+//        if ((!subj.equals(subjFactored)) || (!pred.equals(predFactored)))
+//            return IMPL.the(subjFactored, dt + (subjFactored.eventRange() - subj.eventRange()), predFactored);
+//        else
+//            return x; //unchanged
+//    }
 
 
 }

@@ -6,6 +6,7 @@ import jcog.memoize.Memoizers;
 import nars.$;
 import nars.NAR;
 import nars.Op;
+import nars.attention.What;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.Variable;
@@ -225,7 +226,7 @@ public class Factorize {
         }
 
         @Override
-        protected Term apply(Term x, int volMax) {
+        protected Term applyUnnormalized(Term x, int volMax, What w) {
 
             Term[] y = factorize.apply(x.subterms().commuted());
             if (y.length == 0)

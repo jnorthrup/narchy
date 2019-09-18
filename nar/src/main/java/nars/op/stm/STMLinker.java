@@ -3,19 +3,17 @@ package nars.op.stm;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
-import nars.$;
 import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Derivation;
-import nars.derive.action.NativePremiseAction;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
 
-public class STMLinker extends NativePremiseAction {
+public class STMLinker extends nars.derive.action.NativeTaskFireAction {
 
 	public final FloatRange strength = new FloatRange(1f, 0f, 1f);
 
@@ -24,26 +22,15 @@ public class STMLinker extends NativePremiseAction {
 		return 1.0f;
 	}
 
-//    private final Cause cause;
-
 	private final MetalConcurrentQueue<Task> stm;
 	private final int capacity;
 
-	{
-		taskPattern($.varPattern(1));
-		beliefPattern($.varPattern(1));
-		taskPunc(true, true, true, true);
-	}
 
 	public STMLinker(int capacity) {
 		super();
 
 		this.capacity = capacity;
-		stm = new MetalConcurrentQueue<>(capacity);
-			//new MpmcArrayQueue<>(Math.max(2, capacity));
-//		for (int i = 0; i < capacity; i++)
-//			stm.offer(null);
-
+		this.stm = new MetalConcurrentQueue<>(capacity);
 	}
 
 	private static boolean link(Task next, @Nullable Task prev, float factor, Derivation d) {
@@ -92,17 +79,9 @@ public class STMLinker extends NativePremiseAction {
 	}
 
 	@Override
-	protected void run(Derivation d) {
-
-		if (filter(d._task))
-			accept(d._task, d);
-//		else if (d._belief != null && filter(d._belief)))
-//			accept(d._belief, d)
-
-	}
-
-	private void accept(Task y, Derivation d) {
-
+	protected void accept(Task y, Derivation d) {
+		if (!filter(y))
+			return;
 
 //            if (y.isEternal()) {
 //                if (eternalize) {

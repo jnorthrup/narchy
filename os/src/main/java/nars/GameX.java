@@ -553,7 +553,10 @@ abstract public class GameX extends Game {
 
         Deriver bd6_act = new Deriver(
             Derivers.nal(n, 1,8,"motivation.nal")
-                .add(new STMLinker(1)));
+                .add(new STMLinker(1))
+                .add(new Arithmeticize.ArithmeticIntroduction(n))
+                .add(new Factorize.FactorIntroduction(n))
+        );
 
         bd6_act.time(new MixTimeFocus(
             new NonEternalTaskOccurenceOrPresentDeriverTiming(),
@@ -615,9 +618,6 @@ abstract public class GameX extends Game {
         }
 
 
-        Introduction arith = new Arithmeticize.ArithmeticIntroduction(n);
-
-        Introduction factorizer = new Factorize.FactorIntroduction(n);
 
 
         new Inperience(n);

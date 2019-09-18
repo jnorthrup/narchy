@@ -12,7 +12,10 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactorizeTest {
 
-    public static final Factorize.FactorIntroduction f = new Factorize.FactorIntroduction(NARS.shell());
+    public static final Factorize.FactorIntroduction f = new Factorize.FactorIntroduction(NARS.shell()); {
+        f.volMax = Integer.MAX_VALUE; //HACK
+    }
+
 
     @Test
     void testConjPar2() {

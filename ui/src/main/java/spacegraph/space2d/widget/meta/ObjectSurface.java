@@ -368,8 +368,7 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
             super();
 
             this.get = get;
-            slider = new FloatSlider(get.asFloat(), min, max);
-            //.on((FloatProcedure) spacegraph.space2d.widget.port.FloatRangePort.this::out);
+            slider = new FloatSlider(get.asFloat(), min, max).on(set::accept);
 
             set(LabeledPane.the(label, slider));
 
