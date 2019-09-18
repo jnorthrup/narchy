@@ -207,6 +207,7 @@ public class TrackXY_NAR extends GameX {
 
 
         n.freqResolution.set(0.01f);
+        n.confMin.evi(NAL.truth.EVI_MIN);
 //        n.confResolution.set(0.05f);
 
 

@@ -20,6 +20,10 @@ public class FloatRange extends MutableFloat /*AtomicFloat*/ {
         super.set(Util.clamp(value, min, max));
     }
 
+    public final void set(double value) {
+        set((float)value);
+    }
+
     public static FloatRange unit(float initialValue) {
         return new FloatRange(initialValue, 0, 1);
     }

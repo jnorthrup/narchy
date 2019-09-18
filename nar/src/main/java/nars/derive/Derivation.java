@@ -102,13 +102,14 @@ public class Derivation extends PreDerivation {
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            return polarize(arg, Derivation.this.beliefTruth_at_Belief);
+            if (single) return arg.negIf(random.nextBoolean());
+            else return polarize(arg, Derivation.this.beliefTruth_at_Belief);
         }
     };
 
     private Term polarize(Term arg, MutableTruth t) {
-        boolean tNeg = t.isNegative();
         if (t.is()) {
+			boolean tNeg = t.isNegative();
             if (tNeg != (arg instanceof Neg))
                 arg = arg.neg(); //invert to expected polarity
         } else
