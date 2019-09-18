@@ -2,12 +2,8 @@ package nars.op.mental;
 
 import jcog.math.FloatRange;
 import nars.*;
-import nars.attention.What;
-import nars.control.How;
-import nars.control.channel.CauseChannel;
-import nars.link.TaskLink;
-import nars.table.dynamic.SeriesBeliefTable;
-import nars.task.TemporalTask;
+import nars.derive.Derivation;
+import nars.derive.action.NativeTaskTransformAction;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -19,9 +15,6 @@ import nars.time.When;
 import nars.time.event.WhenTimeIs;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
-import java.util.function.BooleanSupplier;
 
 import static nars.Op.*;
 
@@ -36,7 +29,7 @@ import static nars.Op.*;
  *
  * snapshots of belief table aggregates, rather than individual tasks
  */
-public class Inperience extends How {
+public class Inperience extends NativeTaskTransformAction {
 
 
     public static final Atomic believe = Atomic.the("believe");
@@ -51,12 +44,9 @@ public class Inperience extends How {
 
     public final FloatRange priFactor = new FloatRange(0.1f, 0, 2f);
 
-    private final CauseChannel<Task> in;
 
     public Inperience(NAR n) {
-        super();
-        this.in = n.newChannel(id);
-        n.start(this);
+        super(n);
     }
 
     public static Term reifyQuestion(Term x, byte punc, Term self) {
@@ -94,15 +84,15 @@ public class Inperience extends How {
         return y;
     }
 
-
     @Override
-    public void next(What w, BooleanSupplier kontinue) {
-        NAR n = w.nar;
+    protected Task transform(Task x, Derivation d) {
+
+        NAR n = d.nar;
 
         int volMax = n.termVolMax.intValue();
-        int volMaxPre = volMax-VOL_SAFETY_MARGIN;
+//        int volMaxPre = volMax-VOL_SAFETY_MARGIN;
         float beliefConf = n.confDefault(BELIEF);
-        Random rng = w.random();
+//        Random rng = d.random;
 
         Term self = n.self();
 
@@ -110,32 +100,31 @@ public class Inperience extends How {
         //StableBloomFilter<Task> filter = Terms.newTaskBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
         //StableBloomFilter<Term> filter = Terms.newTermBloomFilter(rng, ((TaskLinkWhat) w).links.links.size());
 
-        When when = WhenTimeIs.now(w);
+//        When when = WhenTimeIs.now(d.what);
+//
+//        w.sampleUnique(rng, (TaskLink l) -> {
+//
+//            Term x = l.from();
+//            if (x.volume() <= volMaxPre/* && filter.addIfMissing(x)*/) {
+//
+//                Task t = l.get(when, (z) -> !(z instanceof TemporalTask.Unevaluated));
+//                if (t != null) {
 
-        w.sampleUnique(rng, (TaskLink l) -> {
-
-            Term x = l.from();
-            if (x.volume() <= volMaxPre/* && filter.addIfMissing(x)*/) {
-
-                Task t = l.get(when, (z) -> !(z instanceof TemporalTask.Unevaluated));
-                if (t != null) {
-
-                    if (isRecursive(t, self)) {
+                    if (isRecursive(x, self)) {
                         //avoid cyclic
                         //TODO refine
                         //Util.nop();
                     } else {
 
-                        Task u = reflect(volMax, beliefConf, self, t, when);
-                        if (u!=null)
-                            w.accept(u);
+                        return reflect(volMax, beliefConf, self, x, WhenTimeIs.now(d.what));
                     }
-                }
-            }
+//                }
+//            }
 
-            return kontinue.getAsBoolean();
-        });
+//            return kontinue.getAsBoolean();
+//        });
 
+        return null;
     }
 
     @Nullable private Task reflect(int volMax, float beliefConf, Term self, Task t, When when) {
@@ -177,19 +166,19 @@ public class Inperience extends How {
          return false;
     }
 
-    private boolean accept(int volMax, Task t) {
-        if (t instanceof SeriesBeliefTable.SeriesTask)
-            return false;
-
-        Term tt = t.term();
-        if (tt.volume() > volMax)
-            return false;
-
-//        if (tt.hasAny(Op.CONJ))
-//            return false; //HACK temporary
-
-        return true;
-    }
+//    private boolean accept(int volMax, Task t) {
+//        if (t instanceof SeriesBeliefTable.SeriesTask)
+//            return false;
+//
+//        Term tt = t.term();
+//        if (tt.volume() > volMax)
+//            return false;
+//
+////        if (tt.hasAny(Op.CONJ))
+////            return false; //HACK temporary
+//
+//        return true;
+//    }
 
     @Nullable private Term validReification(Term r, int volMax) {
         if (r.op().taskable && r.volume() <= volMax) {
@@ -200,10 +189,7 @@ public class Inperience extends How {
         return null;
     }
 
-    @Override
-    public float value() {
-        return in.value();
-    }
+
 
     private static final class InperienceTask extends SignalTask {
 

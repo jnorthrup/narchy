@@ -79,7 +79,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = true;
+    static final boolean initMeta = false;
     static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
@@ -556,6 +556,7 @@ abstract public class GameX extends Game {
                 .add(new STMLinker(1))
                 .add(new Arithmeticize.ArithmeticIntroduction(n))
                 .add(new Factorize.FactorIntroduction(n))
+                .add(new Inperience(n))
         );
 
         bd6_act.time(new MixTimeFocus(
@@ -620,7 +621,7 @@ abstract public class GameX extends Game {
 
 
 
-        new Inperience(n);
+
 
         //new Abbreviation("z", 2, 5, n);
 

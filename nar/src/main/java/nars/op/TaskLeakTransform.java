@@ -4,11 +4,7 @@ import jcog.Paper;
 import jcog.Skill;
 import jcog.util.ArrayUtil;
 import nars.NAR;
-import nars.Task;
-import nars.attention.What;
-import nars.control.channel.CauseChannel;
-import nars.derive.Derivation;
-import nars.derive.action.NativeTaskFireAction;
+import nars.derive.action.NativeTaskTransformAction;
 import nars.term.Term;
 
 import static nars.Op.*;
@@ -18,23 +14,15 @@ import static nars.Op.*;
  *  Leak it will receive. */
 @Paper
 @Skill({"Queing_theory","Feedback"})
-abstract public class TaskLeakTransform extends NativeTaskFireAction {
-
-    protected final CauseChannel<Task> in;
-    private final byte[] puncs;
+abstract public class TaskLeakTransform extends NativeTaskTransformAction {
 
 
     protected TaskLeakTransform(NAR nar, byte... puncs) {
-
+        super(nar);
         taskPunc(puncs);
-
-        this.puncs = puncs;
-        this.in = nar.newChannel(this);//.buffered();
     }
 
-    @Override public float pri(Derivation d) {
-        return 0.5f + in.value();
-    }
+
 
     public void taskPunc(byte... puncs) {
         if (puncs==null || puncs.length == 0)

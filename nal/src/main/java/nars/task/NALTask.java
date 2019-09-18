@@ -87,7 +87,7 @@ public abstract class NALTask extends UnitPri implements Task {
     }
 
     /**
-     * set the cause[]
+     * because... set the cause[]
      */
     public NALTask cause(short[] ignored) {
         return this;

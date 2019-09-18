@@ -32,8 +32,7 @@ abstract public class ScalarReward extends Reward {
     protected transient volatile float reward = Float.NaN;
 
     final MutableTruth RimplA =
-        //$.t(0.5f, 0.05f);
-        new MutableTruth(1, NAL.truth.EVI_MIN);
+        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 
     ScalarReward(Term id, float freq, boolean stamped, Game g) {
         super(id, g);

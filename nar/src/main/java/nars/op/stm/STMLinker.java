@@ -7,13 +7,14 @@ import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Derivation;
+import nars.derive.action.NativeTaskFireAction;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
 
-public class STMLinker extends nars.derive.action.NativeTaskFireAction {
+public class STMLinker extends NativeTaskFireAction {
 
 	public final FloatRange strength = new FloatRange(1f, 0f, 1f);
 
@@ -79,8 +80,8 @@ public class STMLinker extends nars.derive.action.NativeTaskFireAction {
 	}
 
 	@Override
-	protected void accept(Task y, Derivation d) {
-		if (!filter(y))
+	protected void accept(Task x, Derivation d) {
+		if (!filter(x))
 			return;
 
 //            if (y.isEternal()) {
@@ -99,7 +100,7 @@ public class STMLinker extends nars.derive.action.NativeTaskFireAction {
 		boolean novel;
 		if (capacity == 1) {
 			//optimized 1-ary case
-			novel = link(y, stm.peek(), factor, d);
+			novel = link(x, stm.peek(), factor, d);
 		} else {
 			//TODO test
 			//int i = 0;
@@ -108,15 +109,15 @@ public class STMLinker extends nars.derive.action.NativeTaskFireAction {
 			for (int i = 0; i < capacity; i++) {
 				Task z = stm.peek(h, i);
 				//for (Task z : stm) {
-				novel &= link(y, z, factor, d);
+				novel &= link(x, z, factor, d);
 				//if (++i == capacity) break;
 				//}
 			}
 		}
 
-		if (novel && keep(y)) {
+		if (novel && keep(x)) {
 			stm.poll();
-			if (!stm.offer(y)) {
+			if (!stm.offer(x)) {
 				if (NAL.DEBUG)
 					throw new BufferOverflowException();
 			}

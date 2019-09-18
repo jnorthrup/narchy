@@ -24,11 +24,11 @@ public abstract class Introduction extends TaskLeakTransform {
     protected abstract Term apply(Term x, What what);
 
     @Override
-    protected final void accept(Task t, Derivation d) {
+    protected final Task transform(Task t, Derivation d) {
 
         Term x = t.term();
         if (!filter(x))
-            return;
+            return null;
 
         What w = d.what;
 
@@ -38,15 +38,15 @@ public abstract class Introduction extends TaskLeakTransform {
             Term yu = y1.unneg();
             if (/*yu.volume() <= volMax &&*/ yu.op().conceptualizable) {
                 if (!yu.equals(x)) {
-
-                    taskify(t, x, y1, w);
+                    return taskify(t, x, y1, w);
                 }
             }
         }
 
+        return null;
     }
 
-    private void taskify(Task xt, Term x, Term y1, What w) {
+    private Task taskify(Task xt, Term x, Term y1, What w) {
         Task yy = Task.clone(xt, y1, xt.truth(), xt.punc(),
                 (c, t) -> {
                     if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
@@ -61,9 +61,8 @@ public abstract class Introduction extends TaskLeakTransform {
         if (yy != null) {
             yy.pri(0); //HACK
             Task.fund(yy, xt, priFactor.floatValue(), true);
-            in.accept(yy, w);
-            return;
         }
+        return yy;
     }
 
     /** return true to produce Unevaluated tasks, which can prevent circular processing */
