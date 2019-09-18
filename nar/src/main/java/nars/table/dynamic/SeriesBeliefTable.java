@@ -3,6 +3,7 @@ package nars.table.dynamic;
 import jcog.Util;
 import jcog.math.LongInterval;
 import nars.NAL;
+import nars.NAR;
 import nars.Task;
 import nars.table.BeliefTable;
 import nars.table.TaskTable;
@@ -13,7 +14,9 @@ import nars.task.util.series.AbstractTaskSeries;
 import nars.task.util.signal.SignalTask;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.time.When;
 import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Consumer;
@@ -28,12 +31,12 @@ import static nars.time.Tense.TIMELESS;
  * adds a TaskSeries additional Task buffer which can be evaluated from, or not depending
  * if a stored task is available or not.
  */
-public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
+public class SeriesBeliefTable extends DynamicTaskTable {
 
-	public final AbstractTaskSeries<T> series;
+	public final AbstractTaskSeries<SeriesTask> series;
 
 
-	public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<T> s) {
+	public SeriesBeliefTable(Term c, boolean beliefOrGoal, AbstractTaskSeries<SeriesTask> s) {
 		super(c, beliefOrGoal);
 		this.series = s;
 	}
@@ -163,7 +166,7 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 		return !series.isEmpty(Math.max(seriesStart, tStart), Math.min(seriesEnd, tEnd));
 	}
 
-	public final void add(T nextT) {
+	public final void add(SeriesTask nextT) {
 		series.compress();
 		series.push(nextT);
 	}
@@ -176,6 +179,73 @@ public class SeriesBeliefTable<T extends Task> extends DynamicTaskTable {
 		return series.end();
 	}
 
+	/** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
+	 *             the interface itself (ex: clock rate) */
+	public SeriesTask add(@Nullable Truth next, When<NAR> when) {
+
+		long nextStart = when.start, nextEnd = when.end;
+
+		AbstractTaskSeries<SeriesTask> series = this.series;
+
+		SeriesTask last = series.last();
+		if (last != null) {
+			long lastEnd = last.end();
+
+			long gapCycles = (nextStart - lastEnd);
+			float dur = when.dur;
+			if (gapCycles <= series.latchDurs() * dur) {
+
+				if (next!=null) {
+					long lastStart = last.start();
+					long stretchCycles = (nextStart - lastStart);
+					boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
+					if (stretchable) {
+						if (last.truth().equals(next)) {
+							//continue, if not excessively long
+
+
+							//Truth lastEnds = last.truth(lastEnd, 0);
+							//if (lastEnds!=null && lastEnds.equals(next)) {
+							//stretch
+							stretch(last, nextEnd);
+							return last;
+
+						}
+					}
+				}
+
+				//form new task either because the value changed, or because the latch duration was exceeded
+
+
+                /*if (next == null) {
+                    //guess that the signal stopped midway between (starting) now and the end of the last
+                    long midGap = Math.min(nextStart-1, lastEnd + dur/2);
+                    stretch(last, midGap);*/
+
+
+				//stretch the previous to the current starting point for the new task
+				if (lastEnd < nextStart-1)
+					stretch(last, nextStart-1);
+
+			}
+		}
+
+		if (next == null)
+			return null;
+
+		SeriesTask nextT = newTask(this.term, this.punc(), nextStart, nextEnd, next, when.x);
+		this.add(nextT);
+		return nextT;
+	}
+
+	private SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {
+		return new SeriesTask(term, punc, truth, s, e, nar.evidence());
+	}
+
+	static private void stretch(SeriesTask t, long e) {
+//        System.out.println("stretch " + t.end() + " .. " +  e + " (" + (e - t.end()) + " cycles)");
+		t.setEnd(e);
+	}
 
 	/**
 	 * has special equality and hashcode convention allowing the end to stretch;

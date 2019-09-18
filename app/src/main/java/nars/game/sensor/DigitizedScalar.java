@@ -12,7 +12,6 @@ import org.apache.commons.math3.exception.OutOfRangeException;
 
 import java.util.Iterator;
 import java.util.List;
-import java.util.stream.Stream;
 
 import static nars.Op.BELIEF;
 import static nars.Op.SETe;
@@ -45,17 +44,11 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         }
     }
 
-    public final List<Signal> sensors;
-
-
-
-    public final Stream<Signal> stream() {
-        return sensors.stream();
-    }
+    public final List<ComponentSignal> sensors;
 
 
     @Override
-    public Iterator<Signal> iterator() {
+    public Iterator<ComponentSignal> iterator() {
         return sensors.iterator();
     }
 
@@ -191,12 +184,10 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
         int i = 0;
         for (Term s : states) {
             final int ii = i++;
-            Signal sc = new ScalarSignal(s, cause,
-                    () -> {
-                    float x = freqer.truth(asFloat(), ii, states.length);
-                    return Util.equals(x, defaultFreq) ? Float.NaN : x;
-                },
-                nar);
+            ComponentSignal sc = newComponent(s, () -> {
+                float x = freqer.truth(asFloat(), ii, states.length);
+                return Util.equals(x, defaultFreq) ? Float.NaN : x;
+            });
 
             if (defaultFreq==defaultFreq)
                 EternalDefaultTable.add(sc, defaultFreq, nar);

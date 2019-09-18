@@ -12,8 +12,7 @@ import nars.$;
 import nars.NAR;
 import nars.concept.Concept;
 import nars.game.Game;
-import nars.game.sensor.ScalarSignal;
-import nars.game.sensor.Signal;
+import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.VectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.term.Term;
@@ -42,7 +41,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private static final Logger logger = LoggerFactory.getLogger(AutoclassifiedBitmap.class);
 
     public final Autoencoder ae;
-    private final FasterList<Signal> signals;
+    private final FasterList<ComponentSignal> signals;
 
     public final FloatRange alpha = new FloatRange(1f, 0, 1);
     public final FloatRange noise = new FloatRange(0.01f, 0, 1);
@@ -189,14 +188,12 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
         Term r = root;
 
-        short[] cause = new short[] { nar.newCause(id).id } ;
-
         for (int i = 0; i < nw; i++) {
             for (int j = 0; j < nh; j++) {
                 for (int f = 0; f < features; f++) {
                     Term term = coord(r, i, j, f);
                     int x = i, y = j, ff = f;
-                    signals.add( new ScalarSignal(term, cause, () -> encoded[x][y][ff], nar) );
+                    signals.add( newComponent(term, () -> encoded[x][y][ff]) );
                 }
             }
         }
@@ -215,7 +212,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
     }
 
     @Override
-    public Iterator<Signal> iterator() {
+    public Iterator<ComponentSignal> iterator() {
         return signals.iterator();
     }
 

@@ -17,7 +17,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
-import nars.game.action.GameAction;
+import nars.game.action.ActionSignal;
 import nars.game.sensor.GameLoop;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
@@ -48,7 +48,7 @@ public class RLBooster  {
     public final FloatRange conf = new FloatRange(0.1f, 0f, 1f);
     public final float[] input;
     final int inD, outD;
-    final GameAction[] actions;
+    final ActionSignal[] actions;
     private final CauseChannel<Task> in;
     private final List<Term> inputs;
     private final int actionDiscretization;
@@ -149,7 +149,7 @@ public class RLBooster  {
 
         float[] feedback = fb == null ? new float[actions()] : fb;
 
-        for (GameAction s : actions) {
+        for (ActionSignal s : actions) {
             Truth t = n.beliefTruth(s, prev, now);
             float tf = t!=null ? truthFeedback(t) : Float.NaN;
             float y = tf != tf ? noise() : tf;

@@ -1,23 +1,19 @@
 package nars.game.sensor;
 
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.NAR;
-import nars.attention.AttnBranch;
+import nars.game.Game;
 import nars.table.BeliefTable;
 import nars.term.Term;
+import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
-
-public class ScalarSignal extends Signal {
+/** unisignal from float value source */
+public class ScalarSignal extends UniSignal {
     public final FloatSupplier source;
-    private final FloatRange res;
-
-    private final short[] cause;
-    public final AttnBranch pri;
 
     public ScalarSignal(Term term, FloatSupplier signal, NAR n) {
-        this(term, new short[] { n.newCause(term).id }, signal, n);
+        this(term, null, signal, n);
     }
 
     public ScalarSignal(Term term, short[] cause, FloatSupplier signal, NAR n) {
@@ -27,37 +23,27 @@ public class ScalarSignal extends Signal {
                 n);
     }
 
-    public ScalarSignal(Term term, short[] cause, FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
-        super(term, beliefTable, goalTable, n);
+    protected ScalarSignal(Term term, BeliefTable beliefTable, BeliefTable goalTable,  NAR n) {
+        this(term,  null, null, beliefTable, goalTable, n);
+    }
+
+    protected ScalarSignal(Term term, @Nullable short[] cause, @Nullable FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
+        super(term, cause, beliefTable, goalTable, n);
+
 
         this.source = signal;
-        this.res = FloatRange.unit(n.freqResolution);
 
-        this.cause = cause;
 
-        this.pri = newAttn(term);
     }
+
 
     @Override
-    public float pri() {
-        return pri.pri();
+    public void update(Game g) {
+        input(next(g), this.pri(), cause(), g);
     }
 
-    protected AttnBranch newAttn(Term term) {
-        return new AttnBranch(term, List.of(this));
+    public final Truth next(Game g) {
+        return truth(source.asFloat(), g);
     }
 
-    @Override public float nextValue() {
-        return source.asFloat();
-    }
-
-    @Override
-    public final FloatRange resolution() {
-        return res;
-    }
-
-    @Override
-    public short[] cause() {
-        return cause;
-    }
 }

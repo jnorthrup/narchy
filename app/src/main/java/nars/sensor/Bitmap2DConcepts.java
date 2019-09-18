@@ -3,12 +3,11 @@ package nars.sensor;
 import jcog.Util;
 import jcog.data.iterator.Array2DIterable;
 import jcog.func.IntIntToObjectFunction;
-import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.NAL;
-import nars.NAR;
-import nars.attention.AttnBranch;
 import nars.concept.Concept;
+import nars.game.Game;
+import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.table.eternal.EternalDefaultTable;
 import nars.term.Term;
@@ -24,46 +23,39 @@ import java.util.stream.Stream;
 /**
  * rectangular region of pixels
  */
-public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
+public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentSignal> {
 
     /** [y][x] */
-    public final Signal[][] matrix;
+    public final ComponentSignal[][] matrix;
     public final int width, height, area;
     public final P src;
 
-    public final Array2DIterable<Signal> iter;
+    public final Array2DIterable<ComponentSignal> iter;
     private final IntIntToObjectFunction<nars.term.Term> pixelTerm;
     private final float defaultFreq;
-    private final short[] cause;
-    private final FloatRange res;
-    private final AttnBranch pri
-            ;
 
-    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, FloatRange res, AttnBranch pri, float defaultFreq, NAR n) {
+    protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, float defaultFreq, Bitmap2DSensor<?> s) {
 
         this.width = src.width();
         this.height = src.height();
         this.area = width * height;
         assert (area > 0);
 
-        this.res = res;
-        this.pri = pri;
         this.src = src;
 
-        this.matrix = new Signal[height][width];
+        this.matrix = new ComponentSignal[height][width];
+
 
         this.pixelTerm = pixelTerm;
-
-        cause = new short[] { n.newCause(this).id };
 
         this.defaultFreq = defaultFreq;
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
 
                 Term sid = pixelTerm.apply(x, y);
-                Signal sc = new PixelSignal(sid, x,y, n);
+                PixelSignal sc = new PixelSignal(sid, x,y, s);
                 if (defaultFreq==defaultFreq) {
-                    EternalDefaultTable.add(sc, defaultFreq, n);
+                    EternalDefaultTable.add(sc, defaultFreq, s.nar);
                 }
 
                 matrix[y][x] = sc;
@@ -90,7 +82,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
      * iterate columns (x) first, then rows (y)
      */
     @Override
-    final public Iterator<Signal> iterator() {
+    final public Iterator<ComponentSignal> iterator() {
         return iter.iterator();
     }
 
@@ -105,7 +97,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
     public void print(PrintStream out) {
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                float b = matrix[j][i].asFloat();
+                float b = matrix[j][i].value;
                 out.print(b >= 0.5f ? '*' : ' ');
             }
             out.println();
@@ -141,39 +133,22 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<Signal> {
 
     public final int size() { return area; }
 
-    class PixelSignal extends Signal {
+
+
+    class PixelSignal extends ComponentSignal {
 
         public final int x, y;
 
-        PixelSignal(Term sid, int x, int y, NAR n) {
-            super(sid, n);
+        PixelSignal(Term sid, int x, int y, Bitmap2DSensor s) {
+            super(sid, s);
             this.x = x; this.y = y;
         }
 
         @Override
-        public float nextValue() {
+        protected float value(Game g) {
             return Bitmap2DConcepts.this.nextValue(x, y);
         }
 
-        @Override
-        protected boolean autoTaskLink() {
-            return true;
-        }
-
-        @Override
-        public short[] cause() {
-            return cause;
-        }
-
-        @Override
-        public float pri() {
-            return pri.pri();
-        }
-
-        @Override
-        public FloatRange resolution() {
-            return res;
-        }
     }
 
 

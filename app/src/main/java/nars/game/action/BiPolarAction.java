@@ -1,5 +1,6 @@
 package nars.game.action;
 
+import jcog.TODO;
 import jcog.Util;
 import nars.$;
 import nars.NAR;
@@ -15,6 +16,7 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.BooleanToObjectFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
@@ -64,15 +66,16 @@ public class BiPolarAction extends AbstractSensor {
 
 
         this.pos = new AbstractGoalActionConcept(pos, n) {
+
             @Override
-            protected CauseChannel<Task> channel(NAR n) {
-                return BiPolarAction.this.cause;
+            protected @Nullable Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g) {
+                throw new TODO();
             }
         };
         this.neg = new AbstractGoalActionConcept(neg, n) {
             @Override
-            protected CauseChannel<Task> channel(NAR n) {
-                return BiPolarAction.this.cause;
+            protected @Nullable Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g) {
+                throw new TODO();
             }
         };
         this.attn = new AttnBranch(id, List.of(pos, neg));
@@ -174,8 +177,8 @@ public class BiPolarAction extends AbstractSensor {
             Pb = Nb = null;
         }
 
-        pos.feedback(Pb, causeArray, g);
-        neg.feedback(Nb, causeArray, g);
+//        pos.feedback(Pb, causeArray, g);
+//        neg.feedback(Nb, causeArray, g);
 
     }
 

@@ -9,7 +9,6 @@ import nars.GameX;
 import nars.NAR;
 import nars.game.Reward;
 import nars.game.action.BiPolarAction;
-import nars.game.action.GameAction;
 import nars.game.action.GoalActionConcept;
 import nars.game.action.SwitchAction;
 import nars.game.sensor.DigitizedScalar;
@@ -479,13 +478,13 @@ public class FZero extends GameX {
 
     }
 
-    public GameAction initUnipolarLinear(float fwdFactor) {
+    public void initUnipolarLinear(float fwdFactor) {
 //        final float[] _a = {0};
 //        final MiniPID fwdFilter = new MiniPID(0.5f, 0.3, 0.2f);
         float fwdSpeed = 7;
 
         //return actionHemipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, (a0) -> {
-        return actionUnipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
+        actionUnipolar($.inh(id,$$("fwd")) /* $.func("vel", id, $.the("move"))*/, true, (x) -> Float.NaN /*0.5f*/, (a0) -> {
             float a =
                     //_a[0] = (float) fwdFilter.out(_a[0], a0);
                     a0;

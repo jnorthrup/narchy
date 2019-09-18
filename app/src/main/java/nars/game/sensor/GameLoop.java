@@ -20,7 +20,7 @@ public interface GameLoop extends Termed {
     void update(Game a);
 
     /** numeric resolution of scalar signals */
-    FloatRange resolution();
+    @Deprecated FloatRange resolution();
 
     /** the components of the sensor, of which there may be one or more concepts */
     Iterable<Termed> components();

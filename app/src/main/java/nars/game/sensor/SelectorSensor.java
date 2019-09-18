@@ -11,7 +11,7 @@ import java.util.function.IntSupplier;
 
 public class SelectorSensor extends VectorSensor {
 
-    final List<Signal> choices;
+    final List<ComponentSignal> choices;
     private final short[] cause;
 
     public SelectorSensor(IntSupplier value, int[] values, IntFunction<Term> termizer, NAR n) {
@@ -20,7 +20,10 @@ public class SelectorSensor extends VectorSensor {
         this.cause = new short[] { n.newCause(id).id } ;
         choices = new FasterList<>(values.length);
         for (int e : values) {
-            choices.add(new ScalarSignal(termizer.apply(e), cause, () -> value.getAsInt() == e ? 1f : 0f, n));
+            choices.add(newComponent(
+                termizer.apply(e),
+                () -> value.getAsInt() == e ? 1f : 0f)
+            );
         }
 
     }
@@ -31,7 +34,7 @@ public class SelectorSensor extends VectorSensor {
     }
 
     @Override
-    public Iterator<Signal> iterator() {
+    public Iterator<ComponentSignal> iterator() {
         return choices.iterator();
     }
 }

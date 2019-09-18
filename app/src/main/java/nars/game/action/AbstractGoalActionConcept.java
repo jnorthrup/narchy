@@ -2,47 +2,27 @@ package nars.game.action;
 
 import nars.NAL;
 import nars.NAR;
-import nars.Task;
-import nars.control.channel.CauseChannel;
-import nars.control.op.Remember;
 import nars.game.Game;
-import nars.game.action.curiosity.CuriosityTask;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
-import nars.table.dynamic.SeriesBeliefTable;
 import nars.table.eternal.EternalDefaultTable;
 import nars.table.temporal.RTreeBeliefTable;
 import nars.task.util.Answer;
-import nars.task.util.series.RingBufferTaskSeries;
-import nars.task.util.signal.SignalTask;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
 import nars.truth.proj.TruthProjection;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.Predicate;
-
 import static nars.Op.GOAL;
-import static nars.game.sensor.Signal.truthDithered;
 import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
 
 /**
  * ActionConcept which is driven by Goals that are interpreted into feedback Beliefs
  */
-public class AbstractGoalActionConcept extends GameAction {
-
-
-//    @Nullable private Curiosity curiosity = null;
-
-
-//    /** disables revision merge so that revisions, not being CuriosityTask and thus intercepted, cant directly
-//     *  contaminate the normal derived goal table
-//     *  and compete (when curiosity confidence is stronger) with authentic derived
-//     *  goals which we are trying to learn to form and remember. */
-//    private final SeriesBeliefTable curiosityTable;
+public abstract class AbstractGoalActionConcept extends ActionSignal {
 
     /**
      * current estimate
@@ -57,13 +37,7 @@ public class AbstractGoalActionConcept extends GameAction {
     /** current action coherence value */
     private double actionCoh;
 
-    /**
-     * latches the last non-null actionDex, used for echo/sustain
-     * TODO make this more complex like a replay buffer in DQN
-     */
-    public @Nullable Truth lastNonNullActionDex;
-
-    final short[] causeArray;
+    @Nullable private Truth nextFeedback = null;
 
     protected AbstractGoalActionConcept(Term term, NAR n) {
         this(term, new RTreeBeliefTable(), n);
@@ -76,8 +50,6 @@ public class AbstractGoalActionConcept extends GameAction {
                 ,new BeliefTables(),
                 n);
 
-        causeArray = new short[] { n.newCause(term).id };
-
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
         GOALS.add(mutableGoals);
@@ -86,10 +58,6 @@ public class AbstractGoalActionConcept extends GameAction {
 
     public void goalDefault(Truth t, NAR n) {
         EternalDefaultTable.add(this, t, GOAL, n);
-    }
-
-    protected CauseChannel<Task> channel(NAR n) {
-        return n.newChannel(this);
     }
 
 //    public AbstractGoalActionConcept updateCuriosity(Curiosity curiosity) {
@@ -119,8 +87,8 @@ public class AbstractGoalActionConcept extends GameAction {
 //            1f;
 
 
-    static final Predicate<Task> withoutCuriosity =
-            t -> !(t instanceof CuriosityTask);// && !t.isEternal();  /* filter curiosity tasks? */
+//    static final Predicate<Task> withoutCuriosity =
+//            t -> !(t instanceof CuriosityTask);// && !t.isEternal();  /* filter curiosity tasks? */
 
 //    public final org.eclipse.collections.api.tuple.Pair<Truth, long[]> truth(boolean beliefsOrGoals, int componentsMax, long prev, long now, NAR n) {
 //        return truth(beliefsOrGoals, componentsMax, prev, now, n.dur(), n);
@@ -136,10 +104,7 @@ public class AbstractGoalActionConcept extends GameAction {
 
         float dur = g.dur;
         long s = g.start+shift, e = g.end+shift;
-        Answer a = Answer.taskStrength(true, limit, s, e, term,
-                withoutCuriosity
-                //null
-                , g.x).dur(dur);
+        Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x).dur(dur);
 
         a.clear(tries).time(s, e);
 
@@ -155,16 +120,20 @@ public class AbstractGoalActionConcept extends GameAction {
         int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
         int limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;
 
-        int perceptShift = (int)((g.when.end - g.when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+        When<NAR> when = g.when;
 
-        this.beliefTruth = truth(truth(true, limitBelief, g.when, perceptShift), g.when, perceptShift);
+        int perceptShift = (int) ((when.end - when.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
-//        updateCuriosity(g.curiosity);
+        this.nextFeedback = updateAction(
+            this.beliefTruth = truth(truth(true, limitBelief, when, perceptShift), when, perceptShift),
+            this.actionTruth = actionTruth(limitGoal, g, perceptShift),
+            g);
 
-        this.actionTruth = actionTruth(limitGoal, g, perceptShift);
-
-
+        input(nextFeedback, g);
     }
+
+    /** returns feedback truth value */
+    @Nullable abstract protected Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth, Game g);
 
     private  @Nullable Truth truth(@Nullable TruthProjection t, When<NAR> when, int shift) {
         return t!=null ?
@@ -183,8 +152,7 @@ public class AbstractGoalActionConcept extends GameAction {
             Truth nextActionDex = truth(gt, g.when, shift);
             actionDex = nextActionDex;
             actionCoh = nextActionDex != null ? gt.coherency() : 0;
-            if (nextActionDex != null)
-                lastNonNullActionDex = actionDex;
+
         } else {
             actionDex = null;
             actionCoh = 0;
@@ -245,22 +213,11 @@ public class AbstractGoalActionConcept extends GameAction {
 
 
 
-    @Nullable SignalTask curiosity(Truth goal, long pStart, long pEnd, NAR n) {
-        long[] evi = n.evidence();
-
-        SignalTask t = new CuriosityTask(term, goal, n.time(), pStart, pEnd, evi);
-        t.priMax(attn.pri());
-        t.cause(causeArray);
-        return t;
-    }
-
-    protected void feedback(@Nullable Truth f, short[] cause, Game g) {
-
-        if (f!=null)
-            f = truthDithered(f.freq(), resolution().floatValue(), g);
-
-        ((SensorBeliefTables) beliefs()).input(f, attn.pri(), cause, g.what(), g.when,true);
-    }
+//    protected void feedback(@Nullable Truth f, short[] cause, Game g) {
+//        if (f!=null)
+//            f = truthDithered(f.freq(), resolution().floatValue(), g);
+//        ((SensorBeliefTables) beliefs()).input(f, attn.pri(), cause, g.what(), g.when,true);
+//    }
 
 
 
@@ -268,18 +225,4 @@ public class AbstractGoalActionConcept extends GameAction {
         return actionTruth;
     }
 
-
-    private static class CuriosityBeliefTable extends SeriesBeliefTable {
-        CuriosityBeliefTable(Term term) {
-            super(term, false, new RingBufferTaskSeries<>(NAL.CURIOSITY_CAPACITY));
-        }
-
-        @Override
-        @Deprecated public void remember(Remember r) {
-            if (r.input instanceof CuriosityTask) {
-                add(r.input);
-                r.remember(r.input);
-            }
-        }
-    }
 }

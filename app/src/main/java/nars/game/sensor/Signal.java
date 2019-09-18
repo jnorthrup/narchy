@@ -13,7 +13,8 @@ import nars.term.Termed;
 import nars.truth.DiscreteTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.function.Function;
@@ -26,7 +27,7 @@ import java.util.function.Function;
  * In vector analysis, a scalar quantity is considered to be a quantity that has magnitude or size, but no motion. An example is pressure; the pressure of a gas has a certain value of so many pounds per square inch, and we can measure it, but the notion of pressure does not involve the notion of movement of the gas through space. Therefore pressure is a scalar quantity, and it's a gross, external quantity since it's a scalar. Note, however, the dramatic difference here between the physics of the situation and mathematics of the situation. In mathematics, when you say something is a scalar, you're just speaking of a number, without having a direction attached to it. And mathematically, that's all there is to it; the number doesn't have an internal structure, it doesn't have internal motion, etc. It just has magnitude - and, of course, location, which may be attachment to an object.
  * http://www.cheniere.org/misc/interview1991.htm#Scalar%20Detector
  */
-abstract public class Signal extends TaskConcept implements GameLoop, FloatFunction<Term>, FloatSupplier, PermanentConcept {
+abstract public class Signal extends TaskConcept implements GameLoop, PermanentConcept {
 
 
     /**
@@ -40,7 +41,8 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
     public static Function<FloatSupplier, FloatFloatToObjectFunction<Truth>> DIFF = (conf) ->
             ((prev, next) -> (next == next) ? ((prev == prev) ? $.t((next - prev) / 2f + 0.5f, conf.asFloat()) : $.t(0.5f, conf.asFloat())) : $.t(0.5f, conf.asFloat()));
 
-    private volatile float currentValue = Float.NaN;
+    private volatile Truth currentValue = null;
+    boolean inputting;
 
 //    public Signal(Term term, FloatSupplier signal, NAR n) {
 //        this(term, n.newCause(term).id, signal, n);
@@ -65,20 +67,24 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
 
 
     @Override
-    public Iterable<Termed> components() {
+    public final Iterable<Termed> components() {
         return List.of(this);
     }
 
+//    @Override
+//    public float floatValueOf(Term anObject /* ? */) {
+//        return this.currentValue;
+//    }
 
-    @Override
-    public float floatValueOf(Term anObject /* ? */) {
-        return this.currentValue;
+    public final Truth value() {
+        return currentValue;
     }
 
-
-    @Override
-    public float asFloat() {
-        return currentValue;
+    public static FloatToObjectFunction<Truth> truther(float freqRes, float conf, Game g) {
+        float c = g.ditherConf(conf);
+        return (float nextValue) ->
+            nextValue==nextValue ?
+                DiscreteTruth.the(g.ditherFreq(nextValue, freqRes),c) : null;
     }
 
     public static Truth truthDithered(float nextValue, float freqRes, Game g) {
@@ -87,37 +93,38 @@ abstract public class Signal extends TaskConcept implements GameLoop, FloatFunct
             g.ditherConf(g.confDefaultBelief)
         );
     }
-    protected Truth truth(float prevValue, float nextValue, Game g) {
-        return Signal.truthDithered(nextValue, resolution().floatValue(), g);
+    protected Truth truth(float nextValue, Game g) {
+        return nextValue == nextValue ?
+            Signal.truthDithered(nextValue, resolution().floatValue(), g) :
+            null;
     }
 
-    public void update(float pri, short[] cause, Game g) {
+    /** pre-commit phase */
+    public boolean input(@Nullable Truth next, Game g) {
+        //Truth prevValue = currentValue;
+        Truth nextValue = (currentValue = next);
 
-        float prevValue = currentValue;
-
-        float nextValue = (currentValue = nextValue());
-
-        ((SensorBeliefTables) beliefs()).input(
-                nextValue == nextValue ?
-                    truth(prevValue, nextValue, g) : null,
-                pri, cause,
-                g.what(), g.when, autoTaskLink());
+        return this.inputting = ((SensorBeliefTables) beliefs()).input(nextValue, g.when);
     }
 
-    abstract public float nextValue();
+    /** combined phases */
+    public boolean input(Truth next, float pri, short[] cause, Game g) {
+        if (input(next, g)) {
+            commit(pri, cause, g);
+            return true;
+        }
+        return false;
+    }
+
+    /** post-commit phase */
+    public void commit(float pri, short[] cause, Game g) {
+        ((SensorBeliefTables) beliefs()).commit(pri, cause, g.what(), g.when.dur, autoTaskLink());
+    }
+
 
     /** whether to tasklink on change; returns false in batch signal cases */
     protected boolean autoTaskLink() {
         return true;
     }
-
-    @Override
-    public void update(Game g) {
-        update(this.pri(), cause(), g);
-    }
-
-    abstract public short[] cause();
-
-    abstract public float pri();
 
 }

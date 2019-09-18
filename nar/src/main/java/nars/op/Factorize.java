@@ -218,6 +218,7 @@ public class Factorize {
 
         public FactorIntroduction( NAR nar) {
             super(nar);
+            isNot(TheTask, IMPL);
         }
 
         @Override

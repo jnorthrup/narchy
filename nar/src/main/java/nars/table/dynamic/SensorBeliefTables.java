@@ -17,7 +17,6 @@ import nars.term.Term;
 import nars.time.Tense;
 import nars.time.When;
 import nars.truth.Truth;
-import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.lerp;
 
@@ -29,9 +28,9 @@ import static jcog.Util.lerp;
  */
 public class SensorBeliefTables extends BeliefTables {
 
-    public final SeriesBeliefTable<SeriesTask> series;
+    public final SeriesBeliefTable series;
 
-    private Task current = null;
+    private SeriesTask current = null;
 
     /** priority factor for new tasks which are fully unsurprising */
     private float minSurprise = NAL.signal.SENSOR_SURPRISE_MIN_DEFAULT;
@@ -48,8 +47,8 @@ public class SensorBeliefTables extends BeliefTables {
                 new RingBufferTaskSeries<>(  capacity ));
     }
 
-    private SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<Task> s) {
-        super(new SeriesBeliefTable<>(term, beliefOrGoal, s));
+    private SensorBeliefTables(Term term, boolean beliefOrGoal, AbstractTaskSeries<SeriesTask> s) {
+        super(new SeriesBeliefTable(term, beliefOrGoal, s));
 
         this.series = tableFirst(SeriesBeliefTable.class); assert(series!=null);
 
@@ -93,89 +92,29 @@ public class SensorBeliefTables extends BeliefTables {
         return Math.round(NAL.signal.CLEAN_MARGIN_DURS * dur);
     }
 
-    public void input(Truth value, float pri, short[] cause, What what, When<NAR> when, @Deprecated boolean link) {
 
-        SeriesTask x = add(value, when);
+    /** pre-commit */
+    public boolean input(Truth value, When<NAR> when) {
+        SeriesTask next = series.add(value, when);
+        Task prev = this.current;
+        boolean novel = current!=null && current!=prev;
+        this.current = next;
+        return novel;
+    }
 
-        if (x !=null) {
-            x.cause(cause);
-            remember(x, what, pri, link, when.dur);
-            series.clean(this, cleanMarginCycles(when.dur));
-        }
 
+
+    /** post-commit */
+    public void commit(float pri, short[] cause, What what, float dur, @Deprecated boolean link) {
+        SeriesTask x = current;
+        x.cause(cause);
+        remember(x, what, pri, link, dur);
         this.current = x;
     }
 
-//    long[] eviShared = null;
-
-    /** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
-     *             the interface itself (ex: clock rate) */
-    private SeriesTask add(@Nullable Truth next, When<NAR> when) {
-
-        long nextStart = when.start;
-        long nextEnd = when.end;
-
-        AbstractTaskSeries<SeriesTask> series = this.series.series;
-
-        SeriesTask last = series.last();
-        if (last != null) {
-            long lastEnd = last.end();
-
-            long gapCycles = (nextStart - lastEnd);
-            float dur = when.dur;
-            if (gapCycles <= series.latchDurs() * dur) {
-
-                if (next!=null) {
-                    long lastStart = last.start();
-                    long stretchCycles = (nextStart - lastStart);
-                    boolean stretchable = stretchCycles <= series.stretchDurs() * dur;
-                    if (stretchable) {
-                        if (last.truth().equals(next)) {
-                            //continue, if not excessively long
 
 
-                            //Truth lastEnds = last.truth(lastEnd, 0);
-                            //if (lastEnds!=null && lastEnds.equals(next)) {
-                            //stretch
-                            stretch(last, nextEnd);
-                            return last;
 
-                        }
-                    }
-                }
-
-                //form new task either because the value changed, or because the latch duration was exceeded
-
-
-                /*if (next == null) {
-                    //guess that the signal stopped midway between (starting) now and the end of the last
-                    long midGap = Math.min(nextStart-1, lastEnd + dur/2);
-                    stretch(last, midGap);*/
-
-
-                //stretch the previous to the current starting point for the new task
-                if (lastEnd < nextStart-1)
-                    stretch(last, nextStart-1);
-
-            }
-        }
-
-        if (next == null)
-            return null;
-
-        SeriesTask nextT = newTask(this.series.term, this.series.punc(), nextStart, nextEnd, next, when.x);
-        this.series.add(nextT);
-        return nextT;
-    }
-
-    private SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {
-        return new SeriesTask(term, punc, truth, s, e, nar.evidence());
-    }
-
-    static private void stretch(SeriesTask t, long e) {
-//        System.out.println("stretch " + t.end() + " .. " +  e + " (" + (e - t.end()) + " cycles)");
-        t.setEnd(e);
-    }
 
 
     /** link and emit */
@@ -204,6 +143,7 @@ public class SensorBeliefTables extends BeliefTables {
             w.emit(next);
         }
 
+        series.clean(this, cleanMarginCycles(dur));
     }
 
     /**

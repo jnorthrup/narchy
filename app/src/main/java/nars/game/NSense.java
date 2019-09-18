@@ -313,9 +313,9 @@ public interface NSense {
 
         nar.control.input(pn.attn, g.actionPri);
 
-        nar.control.input(pn.pos.attn, pn.attn);
+        nar.control.input(pn.pos.pri, pn.attn);
 
-        nar.control.input(pn.neg.attn, pn.attn);
+        nar.control.input(pn.neg.pri, pn.attn);
 
         return pn;
     }

@@ -22,7 +22,7 @@ public class FreqVectorSensor extends VectorSensor {
     /**TODO abstract */
     final SlidingDFT dft;
 
-    private final Signal[] component;
+    private final ComponentSignal[] component;
     private final int freqMax;
 
     float[] freqValue;
@@ -43,12 +43,12 @@ public class FreqVectorSensor extends VectorSensor {
         center = new FloatRange(freqMax/2, 0, freqMax);
         bandwidth = new FloatRange(freqMax, 0, freqMax);
 
-        component = new Signal[components];
+        component = new ComponentSignal[components];
         componentValue = new float[components];
         freqValue = new float[fftSize];
         for (int i= 0; i < components; i++) {
             int finalI = i;
-            component[i] = new ScalarSignal(termizer.apply(i), cause, ()->componentValue[finalI], n);
+            component[i] = newComponent(termizer.apply(i), ()->componentValue[finalI]);
             freqValue[i] = 0;
         }
 
@@ -91,7 +91,7 @@ public class FreqVectorSensor extends VectorSensor {
     }
 
     @Override
-    public Iterator<Signal> iterator() {
+    public Iterator<ComponentSignal> iterator() {
         return ArrayIterator.iterator(component);
     }
 }

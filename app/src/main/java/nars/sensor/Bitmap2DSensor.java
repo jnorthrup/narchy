@@ -10,6 +10,7 @@ import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.derive.Derivation;
 import nars.game.Game;
+import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
 import nars.link.AbstractTaskLink;
@@ -63,13 +64,13 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         this.width = src.width();
         this.height = src.height();
 
-        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, res, pri, defaultFreq, n);
+        this.concepts = new Bitmap2DConcepts<>(src, pixelTerm, defaultFreq, this);
         this.src = concepts.src;
 
 
         if (src instanceof PixelBag) {
             //HACK steal the actions for this attn group
-            ((PixelBag)src).actions.forEach(aa -> n.control.input(aa.attn, pri));
+            ((PixelBag)src).actions.forEach(aa -> n.control.input(aa.pri, pri));
         }
 
         /** modes */
@@ -217,7 +218,7 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
 
 
     @Override
-    public final Iterator<Signal> iterator() {
+    public final Iterator<ComponentSignal> iterator() {
         return concepts.iterator();
     }
 

@@ -3,7 +3,7 @@ package nars.game;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.game.action.GameAction;
+import nars.game.action.ActionSignal;
 import nars.term.atom.Atomic;
 
 import java.util.Arrays;
@@ -49,7 +49,7 @@ public class Line1DContinuous extends Game {
             sense($.func("e", atom("x"), $.the(i)), () -> ins[size + ii]);
         }
 
-        GameAction a;
+        ActionSignal a;
 
         actionBipolar($.inh(Atomic.the("move"), Atomic.the("x")), (v) -> {
 

@@ -15,14 +15,9 @@ import nars.NAR;
 import nars.attention.PriNode;
 import nars.attention.What;
 import nars.control.NARPart;
+import nars.game.action.ActionSignal;
 import nars.game.action.BiPolarAction;
-import nars.game.action.GameAction;
-import nars.game.action.curiosity.Curiosity;
-import nars.game.action.curiosity.DefaultCuriosity;
-import nars.game.sensor.GameLoop;
-import nars.game.sensor.ScalarSignal;
-import nars.game.sensor.Signal;
-import nars.game.sensor.VectorSensor;
+import nars.game.sensor.*;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
@@ -69,12 +64,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private final static Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
 
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
-    public final FastCoWList<GameAction> actions = new FastCoWList<>(GameAction[]::new);
+    public final FastCoWList<ActionSignal> actions = new FastCoWList<>(ActionSignal[]::new);
     public final FastCoWList<Reward> rewards = new FastCoWList<>(Reward[]::new);
 
     public final AtomicInteger iteration = new AtomicInteger(0);
-
-    public final Curiosity curiosity = DefaultCuriosity.defaultCuriosity(this);
 
     public PriNode rewardPri, actionPri, sensorPri;
 
@@ -141,12 +134,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      */
     public double dexterity() {
         int a = actions.size();
-        double result = a == 0 ? 0 : actions.sumBy(GameAction::dexterity);
+        double result = a == 0 ? 0 : actions.sumBy(ActionSignal::dexterity);
         return a > 0 ? result / a : 0;
     }
     public double coherency() {
         int a = actions.size();
-        double result = a == 0 ? 0 : actions.sumBy(GameAction::coherency);
+        double result = a == 0 ? 0 : actions.sumBy(ActionSignal::coherency);
         return a > 0 ? result / a : 0;
     }
 
@@ -193,7 +186,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     @Override
-    public final <A extends GameAction> A addAction(A c) {
+    public final <A extends ActionSignal> A addAction(A c) {
         if (actions.OR(e -> e.term().equals(c.term())))
             throw new RuntimeException("action exists with the ID: " + c.term());
         actions.add(c);
@@ -209,26 +202,21 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     private void addAttention(PriNode target, Object s) {
-        if (s instanceof NARPart) {
+        if (s instanceof NARPart)
             nar.start(((NARPart)s));
-        }
 
         if (s instanceof VectorSensor) {
-
             nar.control.input(((VectorSensor) s).pri, target);
         } else if (s instanceof Signal) {
 
-            if (s instanceof ScalarSignal)
-                nar.control.input(((ScalarSignal) s).pri, target);
+            if (s instanceof UniSignal)
+                nar.control.input(((UniSignal) s).pri, target);
             else
                 throw new TODO();
 
         } else if (s instanceof Reward) {
 
             nar.control.input(((Reward) s).attn, target);
-        } else if (s instanceof GameAction) {
-
-            nar.control.input(((GameAction) s).attn, target);
         } else if (s instanceof BiPolarAction) {
 
             nar.control.input(((BiPolarAction) s).attn, target);
@@ -544,11 +532,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     protected void act() {
         //ActionConcept[] aaa = actions.array();
-        GameAction[] aaa = actions.array().clone();
+        ActionSignal[] aaa = actions.array().clone();
         ArrayUtil.shuffle(aaa, random()); //HACK shuffle cloned copy for thread safety
 
         //TODO fork here
-        for (GameAction a : aaa)
+        for (ActionSignal a : aaa)
             update(a);
     }
 
@@ -639,7 +627,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 //    }
 
 
-    public FastCoWList<GameAction> actions() {
+    public FastCoWList<ActionSignal> actions() {
         return actions;
     }
 

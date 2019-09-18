@@ -11,7 +11,7 @@ import nars.$;
 import nars.NAL;
 import nars.NAR;
 import nars.attention.What;
-import nars.game.action.GameAction;
+import nars.game.action.ActionSignal;
 import nars.game.action.GoalActionConcept;
 import nars.game.util.UnipolarMotor;
 import nars.term.Term;
@@ -93,7 +93,7 @@ import static nars.Op.BELIEF;
     }
 
 
-    <A extends GameAction> A addAction(A c);
+    <A extends ActionSignal> A addAction(A c);
 
     @Nullable
     default GoalActionConcept actionTriStateContinuous(Term s, IntPredicate i) {
@@ -145,8 +145,8 @@ import static nars.Op.BELIEF;
     }
 
     @Nullable
-    default GameAction actionTriStatePWM(Term s, IntConsumer i) {
-        GameAction m = new GoalActionConcept(s, (b, d) -> {
+    default ActionSignal actionTriStatePWM(Term s, IntConsumer i) {
+        ActionSignal m = new GoalActionConcept(s, (b, d) -> {
 
 
             int ii;
@@ -532,7 +532,7 @@ import static nars.Op.BELIEF;
      */
     default GoalActionConcept actionUnipolar(Term s, boolean freqOrExp, FloatToFloatFunction ifGoalMissing, FloatToFloatFunction update) {
 
-        GameAction.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
+        ActionSignal.MotorFunction motor = new UnipolarMotor(freqOrExp, ifGoalMissing, update,
             (feedbackFreq,goalConf) ->
                 $.t(feedbackFreq,
                         nar().confDefault(BELIEF)

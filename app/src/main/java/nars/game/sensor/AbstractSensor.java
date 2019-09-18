@@ -16,6 +16,8 @@ abstract public class AbstractSensor extends NARPart implements GameLoop {
     protected AbstractSensor(Term id, NAR n) {
         super(id);
 
+        this.nar = n; //HACK
+
         //defaults
         res = FloatRange.unit( n.freqResolution );
 

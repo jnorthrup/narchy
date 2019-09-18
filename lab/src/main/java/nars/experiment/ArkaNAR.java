@@ -85,7 +85,6 @@ public class ArkaNAR extends GameX {
 
             , 4, 2, true);
 
-            a.curiosity.rate.set(0);
 
             window(new Splitting(
                         NARui.game(a),

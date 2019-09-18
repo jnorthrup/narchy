@@ -1,20 +1,22 @@
 package nars.game.sensor;
 
 import com.google.common.collect.Iterables;
+import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttnBranch;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
-import nars.table.dynamic.SensorBeliefTables;
 import nars.term.Term;
 import nars.term.Termed;
+import nars.truth.Truth;
+import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunction;
 
 /**
  * base class for a group of concepts representing a sensor 'vector'
  */
-abstract public class VectorSensor extends AbstractSensor implements Iterable<Signal> {
+abstract public class VectorSensor extends AbstractSensor implements Iterable<ComponentSignal> {
 
 
     public final CauseChannel<Task> in;
@@ -50,26 +52,58 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Si
      */
     abstract public int size();// {return Iterables.size(this);}
 
-    /** surPRIse */
-    public double surprise() {
-        double s = 0;
-        for (Signal c : this)
-            s += ((SensorBeliefTables)c.beliefs()).surprise();
-        return s;
-    }
+//    /** surPRIse */
+//    public double surprise() {
+//        double s = 0;
+//        for (Signal c : this)
+//            s += ((SensorBeliefTables)c.beliefs()).surprise();
+//        return s;
+//    }
 
     @Override
     public void update(Game g) {
 
-        float aPri = pri.pri() / size();
 
-        //float quality = Util.sqrt(attn.amp.floatValue());
-        //Random rng = g.random();
-        for (Signal s : this) {
-            s.resolution().set(res);
+        // Signal.truthDithered(nextValue, resolution().floatValue(), g);
+        float res = this.res.floatValue();
+
+        FloatToObjectFunction<Truth> truther = Signal.truther(res, g.confDefaultBelief, g);
+
+        //pre-commit
+        int active = 0;
+        for (ComponentSignal s : this) {
             //if (quality >= 1 || rng.nextFloat() < quality )
-            s.update(aPri, cause, g);
+            if (s.input(truther.valueOf(s.value(g)), g))
+                active++;
+        }
+        if (active > 0) {
+            //post-commit phase
+            float aPri = pri.pri() / active;
+            for (ComponentSignal s : this) {
+                if (s.inputting)
+                    s.commit(aPri, cause, g);
+            }
         }
     }
 
+    protected ComponentSignal newComponent(Term id, FloatSupplier f) {
+        return new LambdaComponentSignal(id, f, this);
+    }
+
+    private static final class LambdaComponentSignal extends ComponentSignal {
+
+        private final FloatSupplier f;
+
+        public LambdaComponentSignal(Term id, FloatSupplier f, VectorSensor v) {
+            super(id, v);
+            this.f = f;
+        }
+
+
+
+        @Override
+        protected float value(Game g) {
+            return f.asFloat();
+        }
+    }
 }

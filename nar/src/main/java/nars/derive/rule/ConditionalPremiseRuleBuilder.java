@@ -661,9 +661,15 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	public void is(Term x, Op o) {
 		is(x, o.bit);
 	}
+	public void isNot(Term x, Op o) {
+		isNot(x, o.bit);
+	}
 
 	public void is(Term x, int struct) {
 		is(x, struct, false);
+	}
+	public void isNot(Term x, int struct) {
+		is(x, struct, true);
 	}
 
 	//new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);

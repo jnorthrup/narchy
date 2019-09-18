@@ -6,7 +6,7 @@ import jcog.random.SplitMix64Random;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.game.Game;
-import nars.game.action.GameAction;
+import nars.game.action.ActionSignal;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
@@ -49,7 +49,7 @@ public class PixelBag implements Bitmap2D {
             1f;
 
 
-    public List<GameAction> actions;
+    public List<ActionSignal> actions;
 
     private final boolean inBoundsOnly = false;
 

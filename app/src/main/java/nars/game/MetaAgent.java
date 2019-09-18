@@ -91,7 +91,6 @@ abstract public class MetaAgent extends Game {
                 new DQN3(i, o, Map.of(
                 )),
                 4, 5, true);
-        curiosity.rate.set(0);
 //        window(grid(NARui.rlbooster(metaBoost), 800, 800);
         return this;
     }
@@ -207,8 +206,8 @@ abstract public class MetaAgent extends Game {
 //        float priMin = 0.1f, priMax = 1;
 //        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
 
-            float curiMin = 0.005f, curiMax = 0.05f;
-            actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
+//            float curiMin = 0.005f, curiMax = 0.05f;
+//            actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
             float initialDur = w.dur();
             FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {

@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.game.Game;
 import nars.term.Term;
 import nars.truth.Truth;
+import org.jetbrains.annotations.Nullable;
 
 
 /**
@@ -20,21 +21,8 @@ public class GoalActionConcept extends AbstractGoalActionConcept {
     }
 
     @Override
-    public void update(Game g) {
-
-        super.update(g);
-
-        Truth goal = actionTruth;
-
-        Truth fb = this.motor.apply(null,
-                //curi!=null ? (goal!=null ? Revision.revise(curi, goal) : curi) : goal
-                goal
-        );
-
-        feedback(fb, causeArray, g);
+    protected @Nullable Truth updateAction(@Nullable Truth beliefTruth, @Nullable Truth actionTruth,Game g) {
+        return this.motor.apply(beliefTruth, actionTruth);
     }
-
-
-
 
 }
