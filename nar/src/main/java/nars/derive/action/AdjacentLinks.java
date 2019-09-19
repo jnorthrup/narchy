@@ -8,6 +8,7 @@ import nars.derive.adjacent.AdjacentConcepts;
 import nars.derive.premise.AbstractPremise;
 import nars.term.Term;
 import nars.unify.constraint.TermMatcher;
+import nars.unify.constraint.VolumeCompare;
 
 import static jcog.util.ArrayUtil.EMPTY_BYTE_ARRAY;
 
@@ -19,27 +20,31 @@ public class AdjacentLinks extends TaskAction {
 
 		this.adj = adj;
 
-		//belief term must be conceptualizable
 		taskPunc(true,true,true,true);
+
+		constraints.add(new VolumeCompare(TheTask, TheBelief, false, -1).neg()); //belief <= task
+		//bigger(TheTask, TheBelief); //belief < task
+
+
+		//belief term must be conceptualizable
 		match(false, EMPTY_BYTE_ARRAY, new TermMatcher.Is(Op.Conceptualizable), true);
 	}
 
 	@Override
 	protected void accept(Task y, Derivation d) {
 
-		Term from = d._task.term();
-		Term to = d._beliefTerm.root();
+		Task task = d._task;
+		Term from = task.term();
+		Term to = d._beliefTerm;
 
 		if (!to.op().conceptualizable)
 			return; //HACK the matcher isnt 100% in case of INT beliefTerm, since premiseKey erases it
 
-
-		Task task = d._task;
-
-		Term reverse = adj.adjacent(from, to, task.punc(), ((TaskLinkWhat)d.what).links, d);
+		Term reverse = adj.adjacent(from.root(), to.root(), task.punc(), ((TaskLinkWhat)d.what).links, d);
 
 		if (reverse != null) {
 			assert (!reverse.equals(from));
+			assert (!reverse.equals(to));
 			assert (reverse.op().conceptualizable);
 
 			//extra links: dont seem necessary
@@ -53,6 +58,6 @@ public class AdjacentLinks extends TaskAction {
 	@Override
 	protected float pri(Derivation d) {
 		//return 2;
-		return (float) (0.5f/Math.pow(d.beliefTerm.volume(), 2));
+		return (float) (0.5f/Math.pow(d.beliefTerm.volume(), 3));
 	}
 }

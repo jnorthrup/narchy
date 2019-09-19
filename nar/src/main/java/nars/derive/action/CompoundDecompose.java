@@ -32,8 +32,10 @@ public class CompoundDecompose extends NativePremiseAction {
 
 		Term tgt = decompose(src, d);
 		if (tgt!=null) {
-			assert(!tgt.equals(src));
+
 			if (tgt.op().conceptualizable) {
+				assert(!tgt.equals(src));
+
 				TaskLinks links = ((TaskLinkWhat) d.what).links;
 
 				TaskLink l = AtomicTaskLink.link(src, tgt);
@@ -41,8 +43,7 @@ public class CompoundDecompose extends NativePremiseAction {
 				links.link(l);
 			}
 
-//						//if (d.random.nextBoolean())
-//						target = forward; //continue as self, or eager traverse the new link
+
 			d.add(new AbstractPremise(srcTask, tgt));
 		}
 

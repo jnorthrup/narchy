@@ -224,10 +224,19 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
         long stop = _start + useNS;
 
+		tryCommit();
+
         int n = how.size();
+        if (n == 0)
+        	return;
+        if (n == 1) {
+        	//special case: no slicing
+			next(how.get(0), useNS, _start);
+			return;
+		}
+
         long howNS = useNS / n; //TODO refine
 
-        tryCommit();
 
 		Random r = random();
 		long now;
@@ -238,19 +247,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 			@Nullable How h = how.sample(r);
 			long start = nanoTime();
 			if (h.isOn()) {
-
-
-				deadline = start + howNS;
-				try {
-					h.next(this, this);
-//					runs++;
-				} catch (Throwable t) {
-					logger.error("{} {}", t, this);
-					//t.printStackTrace();
-				}
-
-				now = nanoTime();
-				h.use(howNS, now - start);
+				now = next(h, howNS, start);
 			} else
 				now = start;
 
@@ -260,6 +257,22 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
 		//long end = System.nanoTime();
 		//use(estTime, end - start);
+	}
+
+	protected long next(@Nullable How h, long ns, long start) {
+		long now;
+		deadline = start + ns;
+		try {
+			h.next(this, this);
+//					runs++;
+		} catch (Throwable t) {
+			logger.error("{} {}", t, this);
+			//t.printStackTrace();
+		}
+
+		now = nanoTime();
+		h.use(ns, now - start);
+		return now;
 	}
 
 	@Override

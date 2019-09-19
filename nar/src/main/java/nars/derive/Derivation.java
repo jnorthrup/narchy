@@ -5,10 +5,7 @@ import jcog.WTF;
 import jcog.data.ShortBuffer;
 import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
-import nars.NAL;
-import nars.NAR;
-import nars.Op;
-import nars.Task;
+import nars.*;
 import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.derive.action.PremiseAction;
@@ -110,6 +107,8 @@ public class Derivation extends PreDerivation {
 
     /** characterizes the present moment, when it starts and ends */
     public When<What> when;
+
+    transient Deriver.DeriverExecutor exe = null;
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
@@ -458,6 +457,11 @@ public class Derivation extends PreDerivation {
         return (f == null) || f.test(this);
     }
 
+    /** queue a premise for execution */
+    public final void add(Premise p) {
+        exe.add(p);
+    }
+
     /**
      * update some cached values that will be used for one or more derivation iterations
      */
@@ -489,7 +493,29 @@ public class Derivation extends PreDerivation {
         this.time = n.time();
         this.dur = w.dur();
         this.when = deriver.timing.now(this);
+
+        Deriver.DeriverExecutor e = deriver.exe.get();
+        this.exe = e;
+        e.init(this);
+
         return this;
+    }
+
+    protected void derive(Premise p, int deriveTTL) {
+
+        FastCounter result = _derive(p, deriveTTL);
+
+        Emotion e = nar.emotion;
+        if (result == e.premiseUnderivable1) {
+            //System.err.println("underivable1:\t" + p);
+        } else {
+//				System.err.println("  derivable:\t" + p);
+        }
+
+        //ttlUsed = Math.max(0, deriveTTL - d.ttl);
+
+        //e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
+        result.increment();
     }
 
     @Nullable
@@ -606,7 +632,7 @@ public class Derivation extends PreDerivation {
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    public FastCounter derive(Premise P, int deriveTTL) {
+    public FastCounter _derive(Premise P, int deriveTTL) {
 
         Premise p = P instanceof AbstractPremise ?
             ((AbstractPremise)P).match(Deriver.PremiseUnifyVars,this, nar.premiseUnifyTTL.intValue()) :

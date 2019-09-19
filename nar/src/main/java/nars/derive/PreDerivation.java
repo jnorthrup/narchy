@@ -2,17 +2,9 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
-import jcog.pri.HashedPLink;
-import jcog.pri.PLink;
-import jcog.pri.PriReference;
-import jcog.pri.bag.Bag;
-import jcog.pri.bag.impl.hijack.PLinkHijackBag;
-import jcog.pri.op.PriMerge;
-import jcog.signal.meter.FastCounter;
-import nars.*;
+import nars.NAL;
+import nars.Op;
 import nars.derive.action.PremiseAction;
-import nars.derive.premise.Premise;
-import nars.link.TaskLink;
 import nars.term.Term;
 import nars.truth.MutableTruth;
 import nars.truth.Truth;
@@ -76,55 +68,10 @@ public abstract class PreDerivation extends Unify {
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
-    /** queue of pending premises to fire
-     *  TODO use a bag to deduplicate and rank
-     * */
-    final Bag<Premise, PLink<Premise>> premises =
-        //new PLinkArrayBag<>(PriMerge.max, 0); //locking issues
-        new PLinkHijackBag<>(PriMerge.max, 0, 3); //locking issues
 
-    public boolean add(Premise p) {
-        HashedPLink<Premise> x = new HashedPLink<>(p, pri(p));
-        PriReference<Premise> y = premises.put(x);
-        use(NAL.derive.TTL_COST_PREMISE);
-        return x == y && !x.isDeleted(); //non-duplicate and accepted
-    }
 
-    protected float pri(Premise p) {
-        float TASKLINK_RATE = 1f; //1 / deriver.links ...
-        //float TASK_STRUCTURE_RATE = 1;//0.5f;
 
-        Task t = p.task();
-        Task b = p.belief();
-        if (t instanceof TaskLink)
-            return t.priElseZero() * TASKLINK_RATE;
-        else if (b!=null)
-            return Util.or(t.priElseZero(), p.belief().priElseZero());
-        else
-            return t.pri();// * (p.beliefTerm.equals(t.term()) ? TASK_STRUCTURE_RATE : 1);
-    }
 
-    protected void derive(Premise p) {
-
-        Derivation d = (Derivation) this;
-
-        NAR nar = d.nar;
-        int deriveTTL = nar.deriveBranchTTL.intValue();
-
-        FastCounter result = d.derive(p, deriveTTL);
-
-        Emotion e = nar.emotion;
-        if (result == e.premiseUnderivable1) {
-            //System.err.println("underivable1:\t" + p);
-        } else {
-//				System.err.println("  derivable:\t" + p);
-        }
-
-        //ttlUsed = Math.max(0, deriveTTL - d.ttl);
-
-        //e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-        result.increment();
-    }
 
 
 

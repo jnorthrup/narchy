@@ -215,9 +215,7 @@ public class FasterList<X> extends FastList<X> {
      * removes last item or returns null if empty, similar to Queue.poll()
      */
     public final X poll() {
-        if (size == 0)
-            return null;
-        return removeLast();
+        return size == 0 ? null : removeLast();
     }
 
     @Override

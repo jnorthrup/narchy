@@ -42,6 +42,7 @@ import jcog.TODO;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -290,7 +291,16 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return this;
     }
 
-    private final class ArrayHashSetIterator implements ListIterator<X> {
+    /** removes the last item in the list, or null if empty */
+    @Nullable
+    public X poll() {
+        X x = list.poll();
+        if (x != null)
+            set.remove(x);
+        return x;
+    }
+
+	private final class ArrayHashSetIterator implements ListIterator<X> {
 
         private final ListIterator<X> arrayListIterator;
         private X lastElementProvided;
