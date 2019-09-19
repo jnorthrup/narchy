@@ -18,6 +18,7 @@ import nars.term.*;
 import nars.term.control.PREDICATE;
 import nars.term.control.TermMatch;
 import nars.term.util.TermException;
+import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
 import nars.unify.constraint.*;
 import org.eclipse.collections.api.set.MutableSet;
@@ -42,8 +43,8 @@ import static nars.unify.constraint.RelationConstraint.*;
 public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 	public static final VarPattern TheTask = $.varPattern(1);
-	static final Variable ANY_TERM = $.varPattern(1);
-		//new UnnormalizedVariable(Op.VAR_PATTERN, "_");
+	static final Variable ANY_TERM =
+		new UnnormalizedVariable(Op.VAR_PATTERN, "_");
 
 	public Term taskPattern = ANY_TERM, beliefPattern = ANY_TERM;
 
@@ -57,7 +58,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	public final MutableSet<UnifyConstraint<Derivation>> constraints = new UnifiedSet<>();
 
 
-	@Deprecated transient protected boolean questionSingle = true;
+	@Deprecated transient protected boolean forceDouble = false;
 
 	public void taskPattern(String x)  {
 		try {
@@ -89,9 +90,12 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		taskPattern(taskPattern);
 		if (beliefPattern!=null)
 			beliefPattern(beliefPattern);
+		else
+			this.beliefPattern = this.taskPattern;
+
 		taskPunc(true,true,true,true,false);
 		hasBelief(false);
-		this.beliefPattern = this.taskPattern;
+
 	}
 
 //	/** double premise */
@@ -460,7 +464,6 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	public void hasBelief(boolean trueOrFalse) {
-		questionSingle = !trueOrFalse;
 		pre.add(new SingleOrDoublePremise(!trueOrFalse));
 	}
 

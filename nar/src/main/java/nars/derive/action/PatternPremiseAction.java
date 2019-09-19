@@ -22,6 +22,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AND;
 import nars.term.control.PREDICATE;
+import nars.term.util.TermException;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.truth.func.NALTruth;
@@ -584,20 +585,22 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
         if (!tp.all())
             pre.add(tp); //add filter to allow only the mapped types
 
-//        if (doubleBelief || doubleGoal) {
-//            if (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable)
-//                throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
-//
-//            boolean forBelief = doubleBelief && tp.get(BELIEF)==BELIEF;
-//            boolean forGoal = doubleGoal && tp.get(GOAL)==GOAL;
-//            boolean forQ = (doubleBelief && (tp.get(QUESTION)==BELIEF || tp.get(QUEST)==BELIEF))
-//                ||
-//                (doubleGoal && (tp.get(QUESTION)==GOAL || tp.get(QUEST)==GOAL));
-//            if (forBelief || forGoal || forQ)
-//                pre.add(new DoublePremiseRequired(forBelief, forGoal, forQ));
-//        }
+        if (doubleBelief || doubleGoal) {
+            if (beliefPattern.op() != VAR_PATTERN && !beliefPattern.op().taskable)
+                throw new TermException("double premise may be required and belief pattern is not taskable", beliefPattern);
 
-        this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, questionSingle, time));
+            boolean forBelief = doubleBelief && tp.get(BELIEF)==BELIEF;
+            boolean forGoal = doubleGoal && tp.get(GOAL)==GOAL;
+            boolean forQ = (doubleBelief && (tp.get(QUESTION)==BELIEF || tp.get(QUEST)==BELIEF))
+                ||
+                (doubleGoal && (tp.get(QUESTION)==GOAL || tp.get(QUEST)==GOAL));
+            if (forBelief || forGoal || forQ) {
+                //pre.add(new S(forBelief, forGoal, forQ));
+                pre.add(new SingleOrDoublePremise(new PuncMap(forBelief, forGoal, forQ, forQ), false));
+            }
+        }
+
+        this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, time));
 
         this.termify = new Termify(conclusion(concTerm), truthify, time);
 

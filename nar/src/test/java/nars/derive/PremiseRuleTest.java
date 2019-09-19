@@ -173,6 +173,8 @@ class PremiseRuleTest {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "X,Y |- (X&&Y), (Belief:Intersection)").compile();
 
+        d.print();
+
         assertTrue(d.what.toString().contains("DoublePremise"));
     }
 
@@ -188,14 +190,14 @@ class PremiseRuleTest {
     @Test
     void testDoubleOnlyTruthAddsRequiresDoubleBeliefOrGoal() {
         assertRuleContains("X,Y |- (X&&Y), (Belief:Intersection,Goal:Intersection)",
-                "DoublePremise(\".\",\"!\",())");
+                "DoublePremise(({\"!\",\".\"}),punc)");
     }
     @Test
     void testDoubleOnlyForSinglePremiseQuestWithGoalPunc() {
         String r = "G, B, task(\"@\")  |- (polarize(G,task) && polarize(B,belief)), (Goal:DesireWeak, Punctuation:Goal)";
         assertRuleContains(r,
-            "DoublePremise((),(),\"?@\")",
-                "DoublePremise((),\"!\",())");
+            "DoublePremise(({\"?\",\"@\"}),punc)",
+                "DoublePremise((\"!\"),punc)");
 
     }
 
@@ -229,7 +231,7 @@ class PremiseRuleTest {
         ).compile();
         //        assertEquals("((\"?\"-->task),can({0}))", d.what.toString());
         String w = d.what.toString();
-        assertTrue(w.contains("PuncMap((0,0,\"?\",0))"));
+        assertTrue(w.contains("punc((\"?\",\"?\"))"), ()->w);
     }
 
     @Test

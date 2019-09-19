@@ -35,8 +35,8 @@ enum PremiseRuleCompiler {
 
     public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
         return _the(rr,
-            new PreDeriver.CentralMemoizer()
-            //PreDeriver.DIRECT_DERIVATION_RUNNER
+            //new PreDeriver.CentralMemoizer()
+            PreDeriver.DIRECT_DERIVATION_RUNNER
             //DeriverPlanner.ConceptMetaMemoizer
             , nar,
             functionTransform

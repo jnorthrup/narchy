@@ -109,8 +109,6 @@ public class NARS {
                 if (maxLevel >= 7)
                     r.add(new STMLinker(1));
 
-
-
                 new Deriver(r);
             });
     }

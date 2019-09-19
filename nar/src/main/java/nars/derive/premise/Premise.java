@@ -12,7 +12,6 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.link.TaskLink;
 import nars.table.BeliefTable;
-import nars.task.AbstractCommandTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
@@ -21,7 +20,8 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.VAR_QUERY;
+import static nars.Op.COMMAND;
+import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 
 /**
@@ -50,7 +50,9 @@ public class Premise  {
 
 	/** pre */
 	public Premise(TaskLink t) {
-		this(t, t.term() /* HACK */ );
+		this(t,
+			t.to()
+		);
 	}
 
 	/** structural */
@@ -58,15 +60,10 @@ public class Premise  {
 		this(t, t.term());
 	}
 
-	public Premise(Term taskTerm, Term beliefTerm) {
-		this.task = new AbstractCommandTask(taskTerm);
-		this.beliefTerm = beliefTerm;
-	}
 
 	public Premise(Task task, Term beliefTerm) {
 		this.task = task;
 		this.beliefTerm = beliefTerm;
-//        this.hash = premiseHash(task, beliefTerm);
 	}
 
 	/** @return array of CAN-execute pathways */
@@ -115,9 +112,10 @@ public class Premise  {
 	 */
 	@Nullable
 	public Premise match(Derivation d, int matchTTL) {
+
 		Term nextBeliefTerm = this.beliefTerm;
 
-		if (!nextBeliefTerm.op().taskable || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
+		if (nextBeliefTerm == Null || !nextBeliefTerm.op().taskable || task.punc()==COMMAND)// || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
 			return this; //structural
 
 		boolean beliefConceptUnifiesTaskConcept = false;
@@ -197,8 +195,7 @@ public class Premise  {
 				nextBeliefTerm = found[0];
 		}
 
-		if (!d.budget(task, belief))
-			return null;
+
 
 //        System.out.println(task + "\t" + belief + "\t" + nextBeliefTerm);
 		return belief != null ? new MatchedPremise(task, belief, nextBeliefTerm) :
@@ -236,9 +233,9 @@ public class Premise  {
 
 
 	private Task task(BeliefTable bb, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
-		float dur = d.dur();
+		float dur = 0; //d.dur();
 
-		return bb.matching(when[0], when[1], beliefTerm, beliefFilter, dur, d.nar())
+		return bb.matching(when[0], when[1], beliefTerm, beliefFilter, dur, d.nar)
 			.task(true, false, false);
 	}
 
@@ -247,7 +244,7 @@ public class Premise  {
 
         Task t = task(bb, beliefTerm, timeFocus(beliefTerm, d), this::taskNotEquals, d);
 
-        return t;
+		return t!=null && t.equals(task) ? null : t; //HACK the filter helps but is not 100%
 	}
 
 	private boolean taskNotEquals(Task x) {

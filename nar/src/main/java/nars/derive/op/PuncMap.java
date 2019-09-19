@@ -27,6 +27,10 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
         return enable.accept(b) ? p.valueOf(b) : 0;
     }
 
+    public PuncMap(boolean belief, boolean goal, boolean question, boolean quest) {
+        this((byte)(belief ? 1 : 0), (byte)(goal ? 1: 0), (byte)(question ? 1 : 0), (byte)(quest ? 1 : 0), (byte)0);
+    }
+
     public PuncMap(byte belief, byte goal, byte question, byte quest, byte command) {
         super(id(belief, goal, question, quest, command));
         this.belief = belief;

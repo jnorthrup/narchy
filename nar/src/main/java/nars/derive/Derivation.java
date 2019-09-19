@@ -23,10 +23,7 @@ import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
+import nars.term.atom.*;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
@@ -236,11 +233,16 @@ public class Derivation extends PreDerivation {
         ) {
 
             @Override
+            protected boolean intern(Atomic x) {
+                return  !(x instanceof Img) && !(x instanceof Keyword); //dont ANOM
+            }
+
+            @Override
             public boolean intrin(Atomic x) {
                 return
                     //erased types: intern these intrins for maximum premise key re-use
-                    !(x instanceof Int) && !(x instanceof Atom.AtomChar)
-                    && super.intrin(x);
+                    !(x instanceof Int) && !(x instanceof Atom.AtomChar) &&
+                    super.intrin(x);
             }
 
 //            @Override
@@ -256,8 +258,8 @@ public class Derivation extends PreDerivation {
         TermTransformException e = null;
         if (y == null)
             e = new TermTransformException(x, null, "invalid Derivation Anon: null");
-        else if (y instanceof Bool)
-            e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");
+        /* else if (y instanceof Bool)
+            e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");*/
         else if (y instanceof Neg)
             e = new TermTransformException(x, y, "invalid Derivation Anon: Neg");
         else if (NAL.DEBUG && x instanceof Compound && x.opID() != y.opID())
@@ -287,6 +289,8 @@ public class Derivation extends PreDerivation {
         this._task = resetTask(nextTask, this._task);
         this._beliefTerm = nextBeliefTerm;
         this._belief = resetBelief(nextBelief, nextBeliefTerm);
+
+        budget(_task, _belief);
     }
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
@@ -399,7 +403,7 @@ public class Derivation extends PreDerivation {
         return nextTask;
     }
 
-    public boolean budget(Task task, Task belief) {
+    private boolean budget(Task task, Task belief) {
         float taskPri = task.priElseZero();
         float priSingle = taskPri;
         float priDouble = belief == null ?
@@ -592,7 +596,9 @@ public class Derivation extends PreDerivation {
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    public FastCounter derive(Premise p, int deriveTTL) {
+    public FastCounter derive(Premise _p, int deriveTTL) {
+
+        Premise p = _p.match(this, nar.premiseUnifyTTL.intValue());
 
         short[] can;
 
@@ -637,6 +643,9 @@ public class Derivation extends PreDerivation {
         }
     }
 
+    public boolean hasBeliefTruth() {
+        return _belief!=null && (beliefTruth_at_Belief.is() || beliefTruth_at_Task.is());
+    }
 
 
     private static final Comparator<? super PostDerivable> sortByPri = (a, b)->{

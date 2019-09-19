@@ -10,6 +10,7 @@ public class MatchedPremise extends Premise {
     public MatchedPremise(Task task, Task belief, Term beliefTerm) {
         super(task, beliefTerm);
         this.belief = belief;
+        assert(!task.equals(belief));
     }
 
     @Override

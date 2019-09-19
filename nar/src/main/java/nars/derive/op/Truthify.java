@@ -32,7 +32,7 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
      * 0 double premise
      * -1 disabled
      */
-    final byte beliefMode, goalMode, questionMode;
+    final byte beliefMode, goalMode;
     final private boolean beliefOverlap, goalOverlap;
 
     final TruthFunction goal;
@@ -47,7 +47,7 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
     private final Predicate<Derivation> timeFilter;
 
 
-    private Truthify(Term id, PuncMap punc, TruthFunction belief, TruthFunction goal, boolean questionSingle, Occurrify.OccurrenceSolver time) {
+    private Truthify(Term id, PuncMap punc, TruthFunction belief, TruthFunction goal, Occurrify.OccurrenceSolver time) {
         super(id);
         this.punc = punc;
         this.timeFilter = time.filter();
@@ -71,18 +71,14 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
             goalOverlap = false; //N/A
         }
 
-        this.questionMode = (byte) (questionSingle ? 1 : 0);
     }
 
     private static final Atomic TRUTH = Atomic.the("truth");
-    private static final Atomic QUESTION_SINGLE = Atomic.the("?");
-    private static final Atomic QUESTION_DOUBLE = Atomic.the("??");
 
-    public static Truthify the(PuncMap punc, TruthFunction beliefTruthOp, TruthFunction goalTruthOp, boolean questionSingle, Occurrify.OccurrenceSolver time) {
+    public static Truthify the(PuncMap punc, TruthFunction beliefTruthOp, TruthFunction goalTruthOp, Occurrify.OccurrenceSolver time) {
 
-        boolean outQQ = !questionSingle && (punc.outAny(QUESTION) || punc.outAny(QUEST));
 
-        FasterList<Term> args = new FasterList<>(outQQ ? 5 : 4);
+        FasterList<Term> args = new FasterList<>(4);
 
         args.add(punc);
 
@@ -92,15 +88,11 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
         String goalLabel = goalTruthOp != null ? goalTruthOp.toString() : null;
         args.add(goalLabel != null ? Atomic.the(goalLabel) : Op.EmptyProduct);
 
-        if (outQQ)
-            args.add(QUESTION_DOUBLE);
-
         args.add(time.term);
 
         return new Truthify( $.func(TRUTH, args.toArrayRecycled(Term[]::new)),
                 punc,
                 beliefTruthOp, goalTruthOp,
-                questionSingle,
                 time);
     }
 
@@ -112,10 +104,10 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
     @Override
     public final boolean test(Derivation d) {
 
-        d.truth.clear(); //<- may not be necessary
-        d.single = false;
-        d.punc = 0;
-        d.truthFunction = null;
+        ///d.truth.clear(); //<- may not be necessary
+        //d.single = false;
+        //d.punc = 0;
+        //d.truthFunction = null;
 
         boolean single;
 
@@ -128,6 +120,8 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
                 if (single) {
                     beliefTruth = null;
                 } else {
+                    if (!d.hasBeliefTruth())
+                        return false;
                     beliefTruth = beliefProjection.apply(d);
                     if (!beliefTruth.is())
                         return false; //double but beliefTruth not defined
@@ -149,7 +143,7 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
 
             case QUEST:
             case QUESTION:
-                single = questionMode == 1;
+                single = true; //questionMode == 1;
                 break;
 
             case 0:
@@ -181,7 +175,9 @@ public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator 
             case GOAL: m = goalMode; break;
             case QUESTION:
             case QUEST:
-                m = questionMode; break;
+                m = 1;//questionMode;
+                //if this is reverted, it should be changed to use d.overlapSingle and never d.overlapDouble
+                break;
         }
         if(m == -1)
             return 0;

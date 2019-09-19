@@ -1,5 +1,6 @@
 package jcog.pri.bag.impl;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.NumberX;
@@ -350,7 +351,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
                     } else {
                         if (rng==null)
-                            throw new WTF("this will continue to spin on 0th item"); //HACK
+                            throw new TODO("without a fix, this will continue to spin on 0th item"); //HACK
                     }
 
                     if (next.stop)

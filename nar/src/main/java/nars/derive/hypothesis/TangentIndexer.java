@@ -3,7 +3,6 @@ package nars.derive.hypothesis;
 import jcog.TODO;
 import jcog.data.list.table.Table;
 import nars.NAL;
-import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
@@ -13,9 +12,6 @@ import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
-
-import static nars.Op.INH;
-import static nars.Op.SIM;
 
 /**
  * caches ranked reverse atom termlinks in concept meta table
@@ -35,15 +31,15 @@ public class TangentIndexer extends AbstractHypothesizer {
 	protected Term reverse(Term target, TaskLink link, Task task, TaskLinks links, Derivation d) {
 
 
-		float probability;
-		Op srcOp = link.from().op();
-		if ((srcOp == INH || srcOp == SIM) && link.from().contains/* non-recursively */(target)) {
-			probability = 0.9f; //HACK
-		} else {
-			float probBase = 0.5f;
-			probability =
-				(float) (probBase / Math.pow(target.volume(), 2));
-		}
+//		float probability;
+//		Op srcOp = link.from().op();
+//		if ((srcOp == INH || srcOp == SIM) && link.from().contains/* non-recursively */(target)) {
+//			probability = 0.9f; //HACK
+//		} else {
+//			float probBase = 0.5f;
+//			probability =
+//				(float) (probBase / Math.pow(target.volume(), 2));
+//		}
 
 		//1f/Math.max(2,link.from().volume());
 		//1-1f/Math.max(2,link.from().volume());
@@ -53,8 +49,8 @@ public class TangentIndexer extends AbstractHypothesizer {
 		//1 - 1f / (1 + s.volume());
 		//1 - 1f / (1 + t.volume());
 
-		if (d.random.nextFloat() > probability)
-			return null;
+//		if (d.random.nextFloat() > probability)
+//			return null;
 
 		if (cache(target)) {
 			TaskLinkSnapshot match = Snapshot.get(target, d.nar, links.links.id(false, true), d.time(), Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), (Concept T, TaskLinkSnapshot s) -> {

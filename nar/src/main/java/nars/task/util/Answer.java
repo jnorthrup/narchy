@@ -269,7 +269,8 @@ public final class Answer implements Timed, Predicate<Task> {
             }
         }
 
-        return t;
+        return (filter==null || filter.test(t)) ? t :
+            null;
     }
 
     private Task taskTop(boolean forceProject) {

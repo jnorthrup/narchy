@@ -83,12 +83,11 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		@Override
 		protected void run(Derivation d) {
-			Task t = d._task;
+			Task x = d._task;
 
-			Task task = get((TaskLink)t, d.when, d.tasklinkTaskFilter);
-			if (task != null) {
-				d.add(new Premise(task));
-			}
+			Task y = get((TaskLink)x, d.when, d.tasklinkTaskFilter);
+			if (y != null) // && !x.equals(y))
+				d.add(new Premise(y));
 		}
 
 		@Nullable Task get(TaskLink t, When<What> when, @Nullable Predicate<Task> filter) {
@@ -143,7 +142,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		@Override
 		protected float pri(Derivation d) {
-			return 4;
+			return 1;
 		}
 	}
 
@@ -152,12 +151,8 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		public ReverseLink() {
 
 			//belief term must be conceptualizable
-			match(false, EMPTY_BYTE_ARRAY, new TermMatcher.Is(Op.Conceptualizable) {
-				@Override
-				public boolean test(Term x) {
-					return super.test(x);
-				}
-			}, true);
+			taskPunc(true,true,true,true);
+			match(false, EMPTY_BYTE_ARRAY, new TermMatcher.Is(Op.Conceptualizable), true);
 		}
 
 		@Override
@@ -187,7 +182,8 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		@Override
 		protected float pri(Derivation d) {
-			return 2/(1f+d.beliefTerm.volume());
+			//return 2;
+			return 0.5f/(1f+d.beliefTerm.volume());
 		}
 	}
 
@@ -205,18 +201,18 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 			Compound src = (Compound) srcTask.term();
 
-			@Deprecated AbstractHypothesizer h = (AbstractHypothesizer) d.deriver.hypo;
-			Term tgt = decompose(src, srcTask, d);
+
+			Term tgt = decompose(src, d);
 			if (tgt!=null) {
 				assert(!tgt.equals(src));
 				if (tgt.op().conceptualizable) {
 					TaskLinks links = ((TaskLinkWhat) d.what).links;
 
 					TaskLink l = AtomicTaskLink.link(src, tgt);
-					l.getAndSetPriPunc(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
+					((AtomicTaskLink)l).priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 					links.link(l);
 				}
-
+				
 				d.add(new Premise(srcTask, tgt));
 			}
 
@@ -259,7 +255,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		 * override to provide a custom termlink supplier
 		 */
 		@Nullable
-		protected Term decompose(Compound src, Task task, Derivation d) {
+		protected Term decompose(Compound src, Derivation d) {
 			return decomposer(src).decompose(src, d.random);
 		}
 
@@ -267,7 +263,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		@Override
 		protected float pri(Derivation d) {
-			return 4;
+			return 1;
 		}
 	}
 

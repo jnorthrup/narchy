@@ -188,9 +188,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected abstract void fill(float pri);
 
-    public float getAndSetPriPunc(byte index, float next) {
-        return merge(index, next, PriMerge.replace, Post);
-    }
+
 
     @Override abstract public String toString();
 

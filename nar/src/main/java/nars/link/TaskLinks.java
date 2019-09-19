@@ -25,8 +25,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.Util.PHI_min_1f;
-
 /**
  * essentially a wrapper for a TaskLink bag for use as a self-contained attention set
  */
@@ -44,14 +42,17 @@ public class TaskLinks implements Sampler<TaskLink> {
     /**
      * (post-)Amp: tasklink conductance, propagation rate
      */
-    public final FloatRange grow = new FloatRange(1 - PHI_min_1f, 0, 1f /* 2f */);
+    public final FloatRange grow = new FloatRange(
+        //1 - PHI_min_1f,
+        1,
+        0, 1f /* 2f */);
 
-    /**
-     * tasklink retention rate:
-     * 0 = deducts all propagated priority from source tasklink (full resistance)
-     * 1 = deducts no propagated priority (superconductive)
-     **/
-    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
+//    /**
+//     * tasklink retention rate:
+//     * 0 = deducts all propagated priority from source tasklink (full resistance)
+//     * 1 = deducts no propagated priority (superconductive)
+//     **/
+//    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
     private final PriMerge merge = NAL.tasklinkMerge;
 
 
@@ -169,7 +170,8 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
     public TaskLink link(Task task, float pri) {
-        return link(AtomicTaskLink.link(task.term()).priSet(task.punc(), pri));
+        AbstractTaskLink x = AtomicTaskLink.link(task.term()).priSet(task.punc(), pri);
+        return link(x);
     }
 
     public Stream<Term> terms() {

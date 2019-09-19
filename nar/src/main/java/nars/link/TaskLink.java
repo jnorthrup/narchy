@@ -34,7 +34,7 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
     float priIndex(byte index);
 
 
-    float getAndSetPriPunc(byte punc, float next);
+
 
 
 //    static void link(TaskLink x, NAR nar, @Nullable OverflowDistributor<Bag> overflow) {

@@ -6,7 +6,6 @@ import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.$;
 import nars.NAL;
 import nars.Task;
 import nars.term.Compound;
@@ -125,7 +124,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     @Override
     public Term term() {
-        return isSelf() ? from : $.pFast(from, to); //HACK
+        return from;
     }
 
     //new AtomicFloatArray(4);

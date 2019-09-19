@@ -1,6 +1,7 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.pri.PriReference;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import nars.NAR;
 import nars.attention.TaskLinkWhat;
@@ -17,7 +18,9 @@ import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLinks;
 
+import java.util.Random;
 import java.util.function.BooleanSupplier;
+import java.util.function.Consumer;
 
 /**
  * an individual deriver process: executes a particular Deriver model
@@ -78,7 +81,7 @@ public class Deriver extends How {
             .add(new AbstractHypothesizer.CompoundDecompose())
             .add(new AbstractHypothesizer.ReverseLink())
             .compile()
-            .print()
+//            .print()
         );
     }
 
@@ -117,27 +120,42 @@ public class Deriver extends How {
         Derivation d = Derivation.derivation.get().next(this, w);
 
 
+        int innerLoops = 4;
 
 
-        int bufferCap = 8;
-        int runBatch = bufferCap / 2;
+        int bufferCap = 4;
+        int runBatch = 4;
 
         PLinkArrayBag<Premise> p = d.premises;
+        p.clear();
         p.capacity(bufferCap);
+
+        Consumer<PriReference<Premise>> each = (nextPremise) -> d.derive(nextPremise.get());
+        Random rng = d.random;
 
         do {
 
-
             int cap = p.capacity();
-            p.commit();
-            int tries = 2 * (cap - p.size()); //TODO penalize duplicates more
-            do {
-                d.add(hypo.hypothesize(links, d));
-            } while (p.size() < cap && --tries > 0);
 
-            p.pop(null, runBatch, (nextPremise)->
-                d.derive(nextPremise.get())
-            );
+            for (int i = 0; i < innerLoops; i++) {
+                int tries = 1 + (cap - p.size()); //TODO penalize duplicates more
+                do {
+                    Premise x = hypo.hypothesize(links, d);
+                    if (x!=null) {
+                        if (d.add(x) && p.size() >= cap)
+                            break;
+                    }
+                } while (--tries > 0);
+
+                //System.out.println();
+                //p.print();
+                //System.out.println();
+
+                p.commit(null);
+                p.pop(null, runBatch, each);
+//                p.commit();
+//                p.sample(rng, runBatch, each);
+            }
 
 
         } while (kontinue.getAsBoolean());

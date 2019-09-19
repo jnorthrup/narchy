@@ -3,6 +3,7 @@ package nars.derive;
 import jcog.Util;
 import jcog.data.ShortBuffer;
 import jcog.pri.HashedPLink;
+import jcog.pri.PriReference;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.meter.FastCounter;
@@ -19,8 +20,6 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
-
-import static nars.Op.COMMAND;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
  * used for first stage winnowing to determine the (memoizable) set of possible forkable outcomes */
@@ -54,9 +53,7 @@ public abstract class PreDerivation extends Unify {
         post = Util.map(MAX_FANOUT, PostDerivable[]::new, i->new PostDerivable());
     }
 
-    public boolean hasBeliefTruth() {
-        return beliefTruth_at_Belief.is() || beliefTruth_at_Task.is();
-    }
+    public abstract boolean hasBeliefTruth();
 
     public abstract ShortBuffer preDerive();
 
@@ -83,27 +80,29 @@ public abstract class PreDerivation extends Unify {
      * */
     final PLinkArrayBag<Premise> premises = new PLinkArrayBag(PriMerge.max, 0);
 
-    public void add(Premise p) {
-        premises.putAsync(new HashedPLink<>(p, pri(p)));
+    public boolean add(Premise p) {
+        HashedPLink<Premise> x = new HashedPLink<>(p, pri(p));
+        PriReference<Premise> y = premises.put(x);
+        use(NAL.derive.TTL_COST_PREMISE);
+        return x == y && !x.isDeleted(); //non-duplicate and accepted
     }
 
     protected float pri(Premise p) {
-        float TASKLINK_RATE = 0.1f; //1 / deriver.links ...
-        float TASK_STRUCTURE_RATE = 0.5f;
+        float TASKLINK_RATE = 1f; //1 / deriver.links ...
+        //float TASK_STRUCTURE_RATE = 1;//0.5f;
 
         Task t = p.task;
         if (t instanceof TaskLink)
-            return t.pri() * TASKLINK_RATE;
+            return t.priElseZero() * TASKLINK_RATE;
         else if (p instanceof MatchedPremise)
             return Util.or(t.priElseZero(), p.belief().priElseZero());
         else
-            return t.pri() * (p.beliefTerm.equals(t.term()) ? TASK_STRUCTURE_RATE : 1);
+            return t.pri();// * (p.beliefTerm.equals(t.term()) ? TASK_STRUCTURE_RATE : 1);
     }
 
-    protected void derive(Premise _p) {
+    protected void derive(Premise p) {
 
         Derivation d = (Derivation) this;
-        Premise p = match(d, _p);
 
         NAR nar = d.nar;
         int deriveTTL = nar.deriveBranchTTL.intValue();
@@ -123,11 +122,6 @@ public abstract class PreDerivation extends Unify {
         result.increment();
     }
 
-    private Premise match(Derivation d, Premise p) {
-        if (p.task.punc()!=COMMAND) //matchable?
-            return p.match(d,d.nar.premiseUnifyTTL.intValue());
-        else
-            return p;
-    }
+
 
 }

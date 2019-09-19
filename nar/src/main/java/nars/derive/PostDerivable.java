@@ -25,31 +25,24 @@ public class PostDerivable {
 
     public static void run(int valid, int lastValid, Derivation d) {
         PostDerivable[] post = d.post;
-        switch (valid) {
-            case 1:
-                //optimized 1-option case
-                //while (post[lastValid].run()) { }
-                post[lastValid].run(d);
-                break;
-            default:
+        if (valid == 1) {//optimized 1-option case
+            //while (post[lastValid].run()) { }
+            post[lastValid].run(d);
+        } else {//
 
-//
+            //HACK copy post so that recursive calls wont affect it when it drops back to this one
+            //temporary until a central BFS-like bag can dispatch streams of preferred actions
+            //Predicate<Derivation>[] pp = new Predicate[valid];
+            float[] pri = new float[valid];
+            for (int i = 0; i < valid; i++) {
+                PostDerivable pi = post[i];
+                pri[i] = pi.pri;
+                //pp[i] = pi.clone();
+            }
+            MutableRoulette.run(pri, d.random, wi -> 0, i -> post[i].run(d));
 
-                //HACK copy post so that recursive calls wont affect it when it drops back to this one
-                //temporary until a central BFS-like bag can dispatch streams of preferred actions
-                //Predicate<Derivation>[] pp = new Predicate[valid];
-                float[] pri = new float[valid];
-                for (int i = 0; i < valid; i++) {
-                    PostDerivable pi = post[i];
-                    pri[i] = pi.pri;
-                    //pp[i] = pi.clone();
-                }
-                MutableRoulette.run(pri, d.random, wi -> 0, i -> post[i].run(d));
-
-                //alternate roulette:
-                //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
-
-                break;
+            //alternate roulette:
+            //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
         }
 
     }
