@@ -4,6 +4,7 @@ import jcog.memoize.Memoizers;
 import jcog.memoize.byt.ByteHijackMemoize;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.util.PremiseKey;
+import nars.link.TaskLink;
 import nars.term.util.builder.InterningTermBuilder;
 
 import java.util.function.Function;
@@ -15,7 +16,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 @FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
     /** memory-less, evaluated exhaustively each */
-    PreDeriver DIRECT_DERIVATION_RUNNER = p->p.preDerive().toArray(false);
+    PreDeriver DIRECT_DERIVATION_RUNNER = p->p.preDerive().toArray();
 
 
     final class CentralMemoizer implements PreDeriver {
@@ -24,7 +25,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
         public CentralMemoizer() {
             whats = Memoizers.the.memoizeByte(this + "_" + PreDeriver.class.getSimpleName(),
-                    Memoizers.DEFAULT_MEMOIZE_CAPACITY*2,
+                    Memoizers.DEFAULT_MEMOIZE_CAPACITY,
                     bd -> ((PreDerivation) bd.x).preDerive().toArray(true));
         }
 
@@ -39,8 +40,9 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
 
         /** decides what premises can be interned */
         protected boolean intern(PreDerivation d) {
-            //return true;
-            return d.taskTerm.volume() + d.beliefTerm.volume() <= 4 * InterningTermBuilder.volMaxDefault;
+            return
+                !(((Derivation)d)._task instanceof TaskLink) &&
+                (d.taskTerm.volume() + d.beliefTerm.volume() <= 2 * InterningTermBuilder.volMaxDefault);
         }
 
     }

@@ -132,7 +132,9 @@ public final class TruthFunctions {
      * @return Truth value of the conclusion, or null if either truth is analytic already
      */
     public static Truth induction(Truth a, Truth b, float minConf) {
-        float c = w2cSafe(confCompose(a, b) * b.freq());
+        float ab = confCompose(a, b);
+        if (ab < minConf) return null;
+        float c = w2cSafe(ab * b.freq());
         return c >= minConf ? $.tt(a.freq(), c) : null;
     }
 

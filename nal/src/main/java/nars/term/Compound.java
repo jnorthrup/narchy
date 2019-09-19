@@ -56,6 +56,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
+import static nars.term.atom.Bool.True;
 import static nars.time.Tense.*;
 
 /**
@@ -751,9 +752,12 @@ public interface Compound extends Term, IPair, Subterms {
         if (yOp.commutative) {
             int ys = yy.subs();
             if (ys == 1) {
-                Term y0 = yy.sub(0);
-                if (!(y0 instanceof Ellipsislike) && y0.op()!=FRAG)
-                    return y0;
+                if (yOp == CONJ) {
+                    Term y0 = yy.sub(0);
+                    if (!(y0 instanceof Ellipsislike) && y0.op() != FRAG)
+                        return y0;
+                } else
+                    Util.nop();
             }
             if (ydt!=XTERNAL && xdt==ydt && dtSpecial(ydt)) {
                 int xs = x.subs();
@@ -766,6 +770,11 @@ public interface Compound extends Term, IPair, Subterms {
                         if (xx.equalTermsIdentical(ySorted))
                             return x;
 
+                    } else {
+                        if (yOp == SIM) {
+                            //similarity collapse to identity
+                            return True;
+                        }
                     }
                     yy = ySorted; //use the pre-sorted version since
                     ys = yss;
@@ -787,10 +796,10 @@ public interface Compound extends Term, IPair, Subterms {
                     return Bool.False;
                 int yys = yy.subs();
                 if (yys == 0)
-                    return Bool.True;
+                    return True;
                 if (yys == 2) {
-                    if (yy.sub(0)==Bool.True) return yy.sub(1);
-                    if (yy.sub(1)==Bool.True) return yy.sub(0);
+                    if (yy.sub(0)== True) return yy.sub(1);
+                    if (yy.sub(1)== True) return yy.sub(0);
                 }
             }
 
@@ -799,8 +808,14 @@ public interface Compound extends Term, IPair, Subterms {
 
             if (ydt == 0) ydt = DTERNAL; //HACK
 
-            if (xx == yy && yOp == xOp && xdt == ydt)
-                return x; //remains unchanged
+            if (xx == yy && yOp == xOp) {
+                if (xdt == ydt)
+                    return x; //remains totally unchanged
+//                if ((xdt == 0 || xdt == DTERNAL) && (!yy.hasAny(CONJ))) {
+//                    //specializing to temporal from eternal: shortcut
+//                    return CachedCompound.newCompound(yOp, ydt, yy);
+//                }
+            }
         }
 
         return f.compound(yOp, ydt, yy);

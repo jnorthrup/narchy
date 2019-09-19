@@ -203,9 +203,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return s;
     }
 
-    private void addAttention(PriNode target, Object s) {
-        if (s instanceof NARPart)
-            nar.start(((NARPart)s));
+    private void init(PriNode target, Object s) {
 
         if (s instanceof VectorSensor) {
             nar.control.input(((VectorSensor) s).pri, target);
@@ -219,13 +217,20 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         } else if (s instanceof Reward) {
 
             nar.control.input(((Reward) s).attn, target);
-        } else if (s instanceof BiPolarAction) {
+            ((Reward)s).init(this);
 
+        } else if (s instanceof BiPolarAction)
             nar.control.input(((BiPolarAction) s).attn, target);
-        } else if (s instanceof PriNode)
+        else if (s instanceof PriNode)
             nar.control.input(((PriNode) s), target);
         else
             throw new TODO();
+
+        if (s instanceof NARPart)
+            nar.start(((NARPart) s));
+
+        if (s instanceof ActionSignal)
+            nar.add((ActionSignal)s); //register action concepts
     }
 
     public Random random() {
@@ -271,15 +276,13 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         ); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
 
 
-        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.start((NARPart) s));
-        sensors.forEach(s -> addAttention(sensorPri, s));
 
-        actions.forEach(a -> nar.add(a));
-        actions.forEach(a -> addAttention(actionPri, a));
+        sensors.forEach(s -> init(sensorPri, s));
 
-        rewards.forEach(r -> addAttention(rewardPri, r));
+        actions.forEach(a -> init(actionPri, a));
 
-        rewards.forEach(r -> r.init(this));
+        rewards.forEach(r -> init(rewardPri, r));
+
     }
 
 

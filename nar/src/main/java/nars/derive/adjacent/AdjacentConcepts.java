@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 
 	/**
 	 * samples an adjacent concept term
+	 * probably want to use the concept id for each term
 	 *
 	 * @param to the final to of the tasklink (not necessarily link.to() in cases where it's dynamic).
 	 *               <p>

@@ -141,6 +141,12 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
+    @AllowOverlap AbductionRecursive() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return Abduction.apply(T, B, minConf, n);
+        }
+    },
 
 
     /**

@@ -18,11 +18,11 @@ import static nars.Op.ATOM;
 /**
  * caches results of an exhaustive search (ex: of all or some concepts in memory) and supplies tangents using this
  */
-public abstract class AbstractTangentIndexer extends TangentIndexer {
+public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
 	final String id;
 
-	protected AbstractTangentIndexer() {
+	protected AbstractAdjacentIndexer() {
 		 id = getClass().getSimpleName();
 	}
 

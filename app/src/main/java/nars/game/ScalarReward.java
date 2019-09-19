@@ -77,12 +77,12 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
 
-//            long[] rImplStampP = newStamp(), rImplStampN = newStamp(); //shared
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
+            long[] rImplStampP = newStamp(), rImplStampN = newStamp(); //shared
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStampN);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStampP);

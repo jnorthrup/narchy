@@ -9,13 +9,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.Op.BELIEF;
-import static nars.Op.QUESTION;
+import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 1000;
+    private static final int cycles = 400;
 
     @BeforeEach
     void setup() {
@@ -675,19 +674,56 @@ public class NAL6Test extends NALTest {
     }
 
     @Test
-    void GoalMatchSubjOfImplWithVariable() {
+    void GoalMatchSubjOfImplWithVariable_Pos() {
         test
-                .believe("(x($1)==>y($1))")
+            .confMin(0f)
+            .believe("(x($1)==>y($1))")
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "y(a)", 1.00f, 0.45f);
+                .mustGoal(cycles, "y(a)", 1.00f, 0.45f)
+                .mustNotOutput(cycles, "y(a)", GOAL, 0.00f, 0.5f, 0, 0.9f, t->true)
+        ;
+    }
+
+    @Test
+    void GoalMatchSubjOfImplWithVariable_PosWeak() {
+        test
+            .confMin(0f)
+            .believe("(x($1)==>y($1))", 0.75f, 0.9f)
+            .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
+            .mustGoal(cycles, "y(a)", 0.75f, 0.45f)
+        ;
+    }
+
+    @Test
+    void GoalMatchNegatedSubjOfImplWithVariable() {
+        test
+            .confMin(0f)
+            .believe("(--x($1)==>y($1))")
+            .goal("x(a)", Tense.Eternal, 0.00f, 0.90f)
+            .mustGoal(cycles, "y(a)", 1.00f, 0.45f)
+            .mustNotOutput(cycles, "y(a)", GOAL, 0f, 0.5f, 0, 0.9f, t->true)
+        ;
+    }
+    @Test
+    void GoalMatchNegatedSubjOfImplWithVariable_Neg() {
+        test
+            .confMin(0)
+            .believe("(--x($1) ==> --y($1))")
+            .goal("x(a)", Tense.Eternal, 0.00f, 0.90f)
+            .mustGoal(cycles, "y(a)", 0.00f, 0.45f)
+            .mustNotOutput(cycles, "y(a)", GOAL, 0.5f, 1f, 0, 0.9f, t->true)
+        ;
     }
 
     @Test
     void GoalMatchSubjOfImplWithVariableNeg() {
         test
+            .confMin(0)
                 .believe("--(x($1)==>y($1))")
                 .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
-                .mustGoal(cycles, "--y(a)", 1.00f, 0.45f);
+                .mustGoal(cycles, "y(a)", 0.00f, 0.45f)
+                .mustNotOutput(cycles, "y(a)", GOAL, 0.5f, 1f, 0, 0.9f, t->true)
+        ;
     }
 
     @Test

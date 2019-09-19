@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
 
-public class FirstOrderIndexer extends AbstractTangentIndexer {
+public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 	@Override
 	public boolean test(Term concept, Term target) {
 		if (concept instanceof Compound) {

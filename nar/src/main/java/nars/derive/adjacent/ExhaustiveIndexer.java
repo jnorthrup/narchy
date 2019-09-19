@@ -5,7 +5,7 @@ import nars.term.Term;
 
 import static nars.Op.ATOM;
 
-public class ExhaustiveIndexer extends AbstractTangentIndexer {
+public class ExhaustiveIndexer extends AbstractAdjacentIndexer {
 	@Override
 	public boolean test(Term t, Term target) {
 		return t instanceof Compound &&

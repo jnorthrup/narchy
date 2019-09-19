@@ -345,10 +345,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
             stop();
 
+            what.clear();
+            how.clear();
+
             //clear();
             memory.clear();
 
             exe.delete();
+
 
             super.delete();
         }
@@ -1184,11 +1188,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     public final <P extends PermanentConcept> P add(P c) {
 
-
         memory.set(c);
 
         conceptBuilder.start(c);
-
 
         return c;
     }

@@ -17,13 +17,14 @@ public final class ShortBuffer {
         return toArray(false);
     }
 
-    public short[] toArray(boolean clone) {
+    public final short[] toArray(boolean clone) {
         int size = this.size;
-        if (!clone && this.size == items.length)
+        if (size == 0)
+            return ArrayUtil.EMPTY_SHORT_ARRAY;
+        else if (!clone && this.size == items.length)
             return items;
-        else {
-            return size == 0 ? ArrayUtil.EMPTY_SHORT_ARRAY : Arrays.copyOf(items, size);
-        }
+        else
+            return Arrays.copyOf(items, size);
     }
 
     public void add(short i) {

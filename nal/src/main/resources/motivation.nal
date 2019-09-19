@@ -1,3 +1,7 @@
+//how goal
+G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
+
+
 //Inheritance -> Quest - generally a plain inheritance is underivable.  here it is reflected into a quest about its desirability
 //(A-->B), (A-->B), task("."), --isVar(A), --isVar(B) |- (A-->B), (Punctuation:Quest)
 
@@ -12,8 +16,6 @@
     //TODO unified conj question
 
 
-    //how goal
-    G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
 
 //    //result of goal/non-goal
 //    G, G, task("!") |-         (polarizeRandom(G) ==> ?1), (Punctuation:Question, Time:Task)
@@ -77,7 +79,7 @@
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
+//    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication
@@ -89,20 +91,20 @@
 //    (&&,G,X,A..*), (&&,H,Y,B..*), eqNeg(G,H), neq(X,Y), hasBelief()  |- ((polarizeRandom(X) && polarizeRandom(Y)) --> ?1), (Punctuation:Ask)
 
 
-    //anti-conjunction containing anti-goal
-    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:TaskEvent)
-    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:TaskEvent)
-    //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
-    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:TaskEvent)
-    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && --conjBefore(C,  G)),   (Punctuation:Ask, Time:TaskEvent)
-    //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
-    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
+//    //anti-conjunction containing anti-goal
+//    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && negateEvents(conjBefore(C,--G))), (Punctuation:Ask, Time:TaskEvent)
+//    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && negateEvents(conjBefore(C,  G))),   (Punctuation:Ask, Time:TaskEvent)
+//    //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && negateEvents(conjBefore(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+//    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && negateEvents(conjBefore(C,  G))),   (Goal:DeductionWeakNP, Time:TaskEvent)
+//    G, C, eventOfNeg(C,G), --eventOf(C,G), hasBelief()  |- (  G && --conjBefore(C,--G)), (Punctuation:Ask, Time:TaskEvent)
+//    G, C, eventOf(C,G), --eventOfNeg(C,G), hasBelief()  |- (--G && --conjBefore(C,  G)),   (Punctuation:Ask, Time:TaskEvent)
+//    //    G, C, eventOfNeg(C,G), --eventOf(C,G), neq(G,C)  |- (  G && --conjBefore(C,--G)), (Goal:DeductionWeakPP, Time:TaskEvent)
+//    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
 
 
 //    //anti-specific deduction: "conjunction contraposition"
-//    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-//    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
 //    G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP)

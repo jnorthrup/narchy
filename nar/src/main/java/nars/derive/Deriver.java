@@ -8,6 +8,7 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
+import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -18,14 +19,14 @@ import nars.control.Why;
 import nars.derive.action.AdjacentLinks;
 import nars.derive.action.CompoundDecompose;
 import nars.derive.action.TaskResolve;
-import nars.derive.adjacent.TangentIndexer;
+import nars.derive.adjacent.AdjacentIndexer;
 import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
-import nars.link.TaskLink;
 import nars.link.TaskLinks;
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -51,9 +52,14 @@ public class Deriver extends How {
 		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
 		//Op.Variable //all
 		;
-	final Supplier<DeriverExecutor> exe =
+
+
+	final Supplier<DeriverExecutor> _exe =
 		() ->//new BagDeriverExecutor();
 			new QueueDeriverExecutor();
+
+	final ThreadLocal<DeriverExecutor> exe = ThreadLocal.withInitial(_exe);
+
 	public DeriverProgram rules;
 
 
@@ -79,7 +85,7 @@ public class Deriver extends How {
 				.add(new TaskResolve())
 				.add(new CompoundDecompose(true))
 				//.add(new CompoundDecompose(false))
-				.add(new AdjacentLinks(new TangentIndexer()))
+				.add(new AdjacentLinks(new AdjacentIndexer()))
                 //TODO functor evaluator
 				.compile()
 //           .print()
@@ -166,26 +172,27 @@ public class Deriver extends How {
 		public abstract void add(Premise p);
 
         static protected float pri(Premise p) {
-            float TASKLINK_RATE = 1f; //1 / deriver.links ...
-            //float TASK_STRUCTURE_RATE = 1;//0.5f;
-
-            Task t = p.task();
-            Task b = p.belief();
-            if (t instanceof TaskLink)
-                return t.priElseZero() * TASKLINK_RATE;
-            else if (b != null)
-                return Util.or(t.priElseZero(), p.belief().priElseZero());
+            Task t = p.task(), b = p.belief();
+			float tPri = t.priElseZero();
+            if (b != null)
+                return
+					//Util.or(
+					//Util.min(
+					Util.mean(
+						tPri, b.priElseZero()
+					);
             else
-                return t.pri();// * (p.beliefTerm.equals(t.term()) ? TASK_STRUCTURE_RATE : 1);
+                return tPri;
         }
 
     }
 
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
-        int premiseTTL = 5;
+        int premiseTTL = 4;
+        int capacity = premiseTTL;
 
-		final ArrayHashSet<Premise> queue = new ArrayHashSet(premiseTTL/2);
+		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
 		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
         int ttl;
 
@@ -197,26 +204,28 @@ public class Deriver extends How {
 		@Override
 		public void next() {
 
-            queue.clear();
             //novel.clear();
-            ttl = premiseTTL - 1;
 
             Premise p = premise();
-            if (p==null)
-                return;
-
-            run(p);
+            if (p!=null)
+            	queue.add(p);
 
             int s = queue.size();
             if (s == 0)
                 return;
+
             if (s > 1) {
-                queue.list.sortThisByFloat(z -> DeriverExecutor.pri(z)); //ascending order because it poll's from the end
-            }
-			Premise derived;
-			/* LIFO */
-			while ((derived = queue.poll()) != null) {
-				run(derived);
+				//queue.list.sortThisByFloat(DeriverExecutor::pri); //ascending order because it poll's from the end
+				Object[] qq = queue.list.array();
+				ArrayUtil.sort(qq, 0, s, (FloatFunction) x -> DeriverExecutor.pri((Premise) x));
+				//assert(DeriverExecutor.pri(queue.list.get(0)) <= DeriverExecutor.pri(queue.list.get(s-1)));
+			}
+
+			ttl = premiseTTL;
+
+			Premise r;
+			while ((r = queue.poll()) != null) {
+				run(r);
 				if (--ttl <= 0)
 					break;
 			}
@@ -226,14 +235,15 @@ public class Deriver extends How {
 		@Override
 		public void add(Premise p) {
 			if (/*novel.putIfAbsent(p,p)==null && */ queue.add(p)) {
+                int qs = queue.size();
+                if (qs >= capacity)
+                    d.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
 
-//                int qs = queue.size();
-//                if (qs >= ttl)
-//                    d.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
 
 //                else if (qs == 0)
 //                    novel.clear();
             }
+
 		}
 	}
 

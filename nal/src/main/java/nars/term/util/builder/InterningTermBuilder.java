@@ -35,7 +35,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 8;
+    public static final int volMaxDefault = 12;
     private static final int ATOM_INTERNING_LENGTH_MAX = 10;
 
     /**
@@ -260,9 +260,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     }
 
     private boolean internable(Subterms subterms) {
-        if (subterms.volume() > volInternedMax)
-            return false;
-        return subterms.AND(InterningTermBuilder::internableSub);
+        return subterms.volume() <= volInternedMax && subterms.AND(InterningTermBuilder::internableSub);
     }
 
     private boolean internable(Term[] subterms) {

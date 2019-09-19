@@ -54,7 +54,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 16;
+    static int dur = 4;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;
@@ -66,7 +66,7 @@ public class TrackXY_NAR extends GameX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super($$("trackXY"),
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(1),
+                GameTime.durs(4),
 			//FrameTrigger.fps(fps),
             nar
 		);
@@ -101,8 +101,8 @@ public class TrackXY_NAR extends GameX {
             this.cam = null;
         }
 
-        //actionPushButton();
-        actionPushButtonMutex();
+        actionPushButton();
+        //actionPushButtonMutex();
         //actionSwitch();
         //actionTriState();
 
@@ -207,7 +207,7 @@ public class TrackXY_NAR extends GameX {
 
 
         n.freqResolution.set(0.01f);
-        n.confMin.evi(NAL.truth.EVI_MIN);
+        //n.confMin.evi(NAL.truth.EVI_MIN);
 //        n.confResolution.set(0.05f);
 
 

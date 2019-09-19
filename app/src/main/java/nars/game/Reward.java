@@ -23,7 +23,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFu
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
-/** TODO extends AgentLoop */
+/** TODO extend UniSignal */
 public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Concept> {
 
     //public final FloatRange motivation = new FloatRange(1f, 0, 1f);

@@ -10,9 +10,8 @@ import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.table.BeliefTable;
-import nars.term.Compound;
-import nars.term.Term;
-import nars.term.Termed;
+import nars.term.*;
+import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
@@ -20,7 +19,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 import static nars.Op.COMMAND;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.ETERNAL;
 
 /** immutable premise */
@@ -35,10 +33,15 @@ public class AbstractPremise implements Premise {
 	}
 
 	public AbstractPremise(Termed task, Termed belief) {
+		assert(valid(task));
+		assert(valid(belief));
 		this.task = task;
 		this.belief = belief;
 	}
 
+	private static boolean valid(Termed x) {
+		return !(x instanceof Neg) && !(x instanceof Bool) && !(x instanceof Img);
+	}
 
 
 	@Override
@@ -87,7 +90,7 @@ public class AbstractPremise implements Premise {
 		Task task = (Task)this.task;
 		Term nextBeliefTerm = (Term) this.belief;
 
-		if (nextBeliefTerm == Null || !nextBeliefTerm.op().taskable || task.punc()==COMMAND)// || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
+		if (!nextBeliefTerm.op().taskable || task.punc()==COMMAND)// || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
 			return this; //structural
 
 		boolean beliefConceptUnifiesTaskConcept = false;

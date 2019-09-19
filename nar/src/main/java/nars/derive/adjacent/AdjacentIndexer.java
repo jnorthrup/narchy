@@ -16,13 +16,13 @@ import org.jetbrains.annotations.Nullable;
  * caches ranked reverse atom termlinks in concept meta table
  * stateless
  */
-public class TangentIndexer implements AdjacentConcepts {
+public class AdjacentIndexer implements AdjacentConcepts {
 
 	int ATOM_TANGENT_REFRESH_DURS = 1;
 
 	protected boolean cache(Term target) {
 		//return target instanceof Atom;
-		return target.volume() <= 3;
+		return target.volume() <= 5;
 	}
 
 	@Override

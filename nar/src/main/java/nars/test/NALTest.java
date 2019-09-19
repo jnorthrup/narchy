@@ -64,8 +64,8 @@ public abstract class NALTest {
         try {
             test.test();
         } finally {
+            test.nar.delete();
             test = null;
-            //test.nar.delete();
         }
     }
 

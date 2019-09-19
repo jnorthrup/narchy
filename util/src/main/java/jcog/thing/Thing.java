@@ -207,8 +207,11 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
     /*@Override*/
-    public void delete() {
+    public synchronized void delete() {
+        eventOnOff.clear();
+
         parts.keySet().forEach(this::remove);
+        assert(parts.isEmpty());
     }
 
     public final Stream<Part<T>> partStream() {
