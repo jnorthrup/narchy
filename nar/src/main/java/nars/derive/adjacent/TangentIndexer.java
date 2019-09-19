@@ -1,9 +1,8 @@
-package nars.derive.hypothesis;
+package nars.derive.adjacent;
 
 import jcog.TODO;
 import jcog.data.list.table.Table;
 import nars.NAL;
-import nars.Task;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.concept.snapshot.TaskLinkSnapshot;
@@ -17,7 +16,7 @@ import org.jetbrains.annotations.Nullable;
  * caches ranked reverse atom termlinks in concept meta table
  * stateless
  */
-public class TangentIndexer extends AbstractHypothesizer {
+public class TangentIndexer implements AdjacentConcepts {
 
 	int ATOM_TANGENT_REFRESH_DURS = 1;
 
@@ -28,7 +27,7 @@ public class TangentIndexer extends AbstractHypothesizer {
 
 	@Override
 	@Nullable
-	protected Term reverse(Term target, TaskLink link, Task task, TaskLinks links, Derivation d) {
+	public Term adjacent(Term from, Term to, byte punc, TaskLinks links, Derivation d) {
 
 
 //		float probability;
@@ -52,8 +51,8 @@ public class TangentIndexer extends AbstractHypothesizer {
 //		if (d.random.nextFloat() > probability)
 //			return null;
 
-		if (cache(target)) {
-			TaskLinkSnapshot match = Snapshot.get(target, d.nar, links.links.id(false, true), d.time(), Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), (Concept T, TaskLinkSnapshot s) -> {
+		if (cache(to)) {
+			TaskLinkSnapshot match = Snapshot.get(to, d.nar, links.links.id(false, true), d.time(), Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), (Concept T, TaskLinkSnapshot s) -> {
 				if (s == null)
 					s = new TaskLinkSnapshot();
 				s.commit(T.term(), links.links, ((Table<?, TaskLink>) links.links).capacity(), true);
@@ -63,9 +62,8 @@ public class TangentIndexer extends AbstractHypothesizer {
 			if (match == null || match.isEmpty())
 				return null;
 
-			Term source = link.from();
-			Term result = match.sample(x -> !source.equals(x.from()), task.punc(), d.random);
-			if (result!=null && (result.equals(link.from()))) {
+			Term result = match.sample(x -> !from.equals(x.from()), punc, d.random);
+			if (result!=null && (result.equals(from))) {
 				if (NAL.DEBUG)
 					throw new TODO();
 				result = null; //HACK throw new WTF();
@@ -73,14 +71,7 @@ public class TangentIndexer extends AbstractHypothesizer {
 			return result;
 		} else {
 
-			Term result = DirectTangent.the.sampleReverseMatch(target, link, links, d);
-			if (result == null)
-				return null;
-			else {
-//			if (result != null && (result.equals(link.from()) || result.equals(target)))
-//				result = null; //HACK throw new WTF();
-				return result;
-			}
+			return DirectTangent.the.adjacent(from, to, punc, links, d);
 		}
 	}
 

@@ -268,6 +268,7 @@ public class AbstractPremise implements Premise {
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) return true;
+		if (!(obj instanceof AbstractPremise)) return false;
 		AbstractPremise p = (AbstractPremise) obj;
 		return p.task.equals(task) && p.belief.equals(belief);
 	}

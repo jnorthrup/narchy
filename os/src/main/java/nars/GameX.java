@@ -22,7 +22,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.derive.util.MixTimeFocus;
+import nars.derive.util.MixedTimeFocus;
 import nars.exe.impl.WorkerExec;
 import nars.game.Game;
 import nars.game.GameTime;
@@ -34,7 +34,6 @@ import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
-import nars.op.Introduction;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinker;
@@ -557,13 +556,14 @@ abstract public class GameX extends Game {
                 .add(new STMLinker(1))
                 .add(new Arithmeticize.ArithmeticIntroduction(n))
                 .add(new Factorize.FactorIntroduction(n))
-                .add(new Inperience(n))
+                .add(new Inperience(n)),
+            new MixedTimeFocus(
+                new NonEternalTaskOccurenceOrPresentDeriverTiming(),
+                //new TaskOccurenceTiming(),
+                new ActionTiming()
+            )
         );
 
-        bd6_act.time(new MixTimeFocus(
-            new NonEternalTaskOccurenceOrPresentDeriverTiming(),
-            //new TaskOccurenceTiming(),
-            new ActionTiming()));
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
 

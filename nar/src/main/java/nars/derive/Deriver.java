@@ -1,17 +1,19 @@
 package nars.derive;
 
 import jcog.Util;
+import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.Bag;
 import nars.NAR;
 import nars.Op;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
 import nars.control.Why;
-import nars.derive.hypothesis.AbstractHypothesizer;
-import nars.derive.hypothesis.Hypothesizer;
-import nars.derive.hypothesis.TangentIndexer;
+import nars.derive.action.AdjacentLinks;
+import nars.derive.action.CompoundDecompose;
+import nars.derive.action.TaskResolve;
+import nars.derive.adjacent.TangentIndexer;
 import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
@@ -45,7 +47,6 @@ public class Deriver extends How {
 
     public DeriverProgram rules;
 
-    public Hypothesizer hypo;
 
     /**
      * determines the temporal focus of (TODO tasklink and ) belief resolution to be matched during premise formation
@@ -60,65 +61,31 @@ public class Deriver extends How {
     float PREMISE_SHIFT_OTHER = 0.9f;
     float PREMISE_SHIFT_RANDOM = 0.75f;
 
-    public Deriver rules(DeriverProgram rules) {
-        this.rules = rules;
-        return this;
-    }
-
-    public Deriver hypothesize(Hypothesizer premises) {
-        this.hypo = premises;
-        return this;
-    }
-
-    public Deriver time(TimeFocus timing) {
-        this.timing = timing;
-        return this;
-    }
-
-
-    public Deriver(PremiseRuleSet rules, TimeFocus timing, Hypothesizer hypo) {
-        this(rules.compile(), hypo, timing);
-    }
-
-    public Deriver(PremiseRuleSet rules, Hypothesizer hypo) {
-        this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming(), hypo);
-    }
 
     public Deriver(PremiseRuleSet rules) {
+        this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming());
+    }
+
+    public Deriver(PremiseRuleSet rules, TimeFocus timing) {
         this(rules
-            //HACK add standard derivation behaviors
-            .add(new AbstractHypothesizer.TaskResolve())
-            .add(new AbstractHypothesizer.CompoundDecompose())
-            .add(new AbstractHypothesizer.ReverseLink())
+            //HACK adds standard derivation behaviors
+            .add(new TaskResolve())
+            .add(new CompoundDecompose())
+            .add(new AdjacentLinks(new TangentIndexer()))
             .compile()
-//            .print()
-        );
+//           .print()
+        ,
+        timing);
     }
 
-    public Deriver(DeriverProgram rules) {
-        this(rules, new TangentIndexer(),
-                //new TaskOrPresentTiming(nar);
-                //new AdHocDeriverTiming(nar);
-                //new TaskOccurenceDeriverTiming();
-                new NonEternalTaskOccurenceOrPresentDeriverTiming()
-        );
-    }
-
-    public Deriver(DeriverProgram rules, Hypothesizer hypo, TimeFocus timing) {
+    public Deriver(DeriverProgram rules, TimeFocus timing) {
         super();
         NAR nar = rules.nar;
         this.rules = rules;
-        this.hypo = hypo;
         this.timing = timing;
 
         nar.start(this);
     }
-
-//    public static Stream<Deriver> derivers(NAR n) {
-//        return n.partStream().filter(Deriver.class::isInstance).map(Deriver.class::cast);
-//    }
-
-
 
     @Override
     public final void next(What w, final BooleanSupplier kontinue) {
@@ -136,7 +103,7 @@ public class Deriver extends How {
         int bufferCap = 2;
         int runBatch = 2;
 
-        PLinkArrayBag<Premise> p = d.premises;
+        Bag<Premise, PLink<Premise>> p = d.premises;
         p.clear();
         p.capacity(bufferCap);
 
@@ -150,7 +117,7 @@ public class Deriver extends How {
             for (int i = 0; i < innerLoops; i++) {
                 int tries = 1 + (cap - p.size()); //TODO penalize duplicates more
                 do {
-                    Premise x = hypo.hypothesize(links, d);
+                    Premise x = hypothesize(links, d);
                     if (x!=null) {
                         if (d.add(x) && p.size() >= cap)
                             break;
@@ -162,7 +129,8 @@ public class Deriver extends How {
                 //System.out.println();
 
                 p.commit(null);
-                p.pop(null, runBatch, each);
+                p.pop(rng, runBatch, each); //HijackBag
+                //p.pop(null, runBatch, each); //ArrayBag
 //                p.commit();
 //                p.sample(rng, runBatch, each);
             }
@@ -171,6 +139,10 @@ public class Deriver extends How {
         } while (kontinue.getAsBoolean());
 
         p.clear();
+    }
+
+    public final Premise hypothesize(TaskLinks links, Derivation d) {
+        return links.sample(d.random);
     }
 
     @Override

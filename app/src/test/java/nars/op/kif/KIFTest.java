@@ -5,8 +5,8 @@ import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.hypothesis.ExhaustiveIndexer;
-import nars.derive.hypothesis.FirstOrderIndexer;
+import nars.derive.action.AdjacentLinks;
+import nars.derive.adjacent.ExhaustiveIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.EternalTask;
@@ -38,10 +38,12 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 1,8, "motivation.nal"));
 
-        new Deriver(Derivers.nal(n, 1,8),
-            //new FirstOrderIndexer()
-            new ExhaustiveIndexer()
-            );
+        new Deriver(Derivers.nal(n, 1,8).add(
+            new AdjacentLinks(
+                new ExhaustiveIndexer()
+                //new FirstOrderIndexer()
+            )
+        ));
 //        new Deriver(Derivers.nal(n, 1,8), new CommonAtomIndexer());
 
 //        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8),
@@ -136,7 +138,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 6,8));
 
-        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
+//        new Deriver(Derivers.nal(n, /*NAL*/6, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
 
         KIF k = new KIF(t);
         n.input(k.tasks());
@@ -169,7 +171,7 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 5,8));
 
-        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
+//        new Deriver(Derivers.nal(n, /*NAL*/5, /*NAL*/8), new FirstOrderIndexer()); // ~= PROLOG
         n.log();
 
         KIF k = new KIF(t);

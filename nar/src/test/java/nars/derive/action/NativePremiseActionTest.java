@@ -5,7 +5,6 @@ import nars.NARS;
 import nars.Narsese;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
-import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import org.junit.jupiter.api.Test;
 
@@ -15,7 +14,7 @@ class NativePremiseActionTest {
 	void testNativeDeriveAction_combined_with_MetaNAL() throws Narsese.NarseseException {
 
 		NAR n = NARS.shell();
-		DeriverProgram d = new PremiseRuleSet(n)
+		PremiseRuleSet d = new PremiseRuleSet(n)
 			.add(
 				new NativePremiseAction() {
 
@@ -40,8 +39,7 @@ class NativePremiseActionTest {
 //                "X,Y |- (X&&Y), (Belief:Intersection)",
 //                "{X},Y |- (X&&Y), (Belief:Deduction)",
 //                "{X},Y |- (||,X,Y), (Belief:Union)"
-			).compile();
-		d.print();
+			);
 
 		new Deriver(d);
 

@@ -1,4 +1,4 @@
-package nars.derive.hypothesis;
+package nars.derive.adjacent;
 
 import jcog.data.list.FasterList;
 import nars.concept.Concept;

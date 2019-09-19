@@ -978,7 +978,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
 
     private Sampler<Y> popBatch(int n, @Nullable Consumer<Y> popped) {
-        return popBatch(n, true, popped);
+        return popBatch(n, false, popped);
     }
 
     public Sampler<Y> popBatch(int n, boolean block, @Nullable Consumer<Y> popped) {

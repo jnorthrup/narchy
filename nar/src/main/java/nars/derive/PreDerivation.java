@@ -3,14 +3,15 @@ package nars.derive;
 import jcog.Util;
 import jcog.data.ShortBuffer;
 import jcog.pri.HashedPLink;
+import jcog.pri.PLink;
 import jcog.pri.PriReference;
-import jcog.pri.bag.impl.PLinkArrayBag;
+import jcog.pri.bag.Bag;
+import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.action.PremiseAction;
 import nars.derive.premise.Premise;
-import nars.derive.premise.AbstractPremise;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.truth.MutableTruth;
@@ -78,7 +79,9 @@ public abstract class PreDerivation extends Unify {
     /** queue of pending premises to fire
      *  TODO use a bag to deduplicate and rank
      * */
-    final PLinkArrayBag<Premise> premises = new PLinkArrayBag(PriMerge.max, 0);
+    final Bag<Premise, PLink<Premise>> premises =
+        //new PLinkArrayBag<>(PriMerge.max, 0); //locking issues
+        new PLinkHijackBag<>(PriMerge.max, 0, 3); //locking issues
 
     public boolean add(Premise p) {
         HashedPLink<Premise> x = new HashedPLink<>(p, pri(p));

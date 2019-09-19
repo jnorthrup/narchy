@@ -677,8 +677,8 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 						ArrayUtil.swapObj(wVal, windowSize - 1, which);
 						ArrayUtil.swapFloat(wPri, windowSize - 1, which);
                     }
-                    windowSize--;
                     remove(key(v));
+                    if (windowSize > size()) windowSize--;
                 }
 
                 if (map != this.map)

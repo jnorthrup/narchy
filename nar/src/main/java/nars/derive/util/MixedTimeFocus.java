@@ -5,11 +5,11 @@ import nars.attention.What;
 import nars.term.Term;
 
 /** TODO weighted version */
-public class MixTimeFocus implements TimeFocus {
+public class MixedTimeFocus implements TimeFocus {
 
 	final TimeFocus[] choices;
 
-	public MixTimeFocus(TimeFocus... choices) {
+	public MixedTimeFocus(TimeFocus... choices) {
 		this.choices = choices;
 		assert(choices.length > 1);
 	}

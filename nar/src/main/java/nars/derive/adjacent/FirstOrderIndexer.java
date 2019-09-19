@@ -1,4 +1,4 @@
-package nars.derive.hypothesis;
+package nars.derive.adjacent;
 
 import nars.Op;
 import nars.term.Compound;

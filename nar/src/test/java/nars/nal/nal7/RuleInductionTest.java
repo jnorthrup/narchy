@@ -5,7 +5,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.Task;
 import nars.derive.Deriver;
-import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.op.stm.STMLinker;
 import nars.term.Term;
@@ -33,22 +32,22 @@ class RuleInductionTest {
         NAR n = NARS.shell();
         n.termVolMax.set(8);
 
-        DeriverProgram r = new PremiseRuleSet(n,
+        PremiseRuleSet r = new PremiseRuleSet(n,
 
             "B, A, --is(A,\"==>\"),--is(B,\"==>\"), neq(A,B) |- (polarizeTask(B) &&+- polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)"
 
 
-        ).add(new STMLinker(1)).compile();
+        ).add(new STMLinker(1));
 //            .wrap(a -> {
 //            return new PremiseActionProxy(a) {
 //
 //            }
 //        })
-        r.print();
+
 
         Deriver d = new Deriver(r);
 
-
+        d.rules.print();
 
 
         n.time.dur(dur);
