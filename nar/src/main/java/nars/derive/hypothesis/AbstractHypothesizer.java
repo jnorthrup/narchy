@@ -191,7 +191,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		public CompoundDecompose() {
 			super();
-			single(); //all but command
+			//single();
 			match(TheTask, new TermMatcher.SubsMin((short)1));
 		}
 
@@ -212,7 +212,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 					((AtomicTaskLink)l).priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 					links.link(l);
 				}
-				
+
 				d.add(new Premise(srcTask, tgt));
 			}
 

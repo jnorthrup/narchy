@@ -42,11 +42,10 @@ import static nars.unify.constraint.RelationConstraint.*;
  * but oblivious to the action implementation */
 public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
-	public static final VarPattern TheTask = $.varPattern(1);
-	static final Variable ANY_TERM =
-		new UnnormalizedVariable(Op.VAR_PATTERN, "_");
+	/** for convenient usage */
+	protected static final VarPattern TheTask = $.varPattern(1), TheBelief = $.varPattern(2);
 
-	public Term taskPattern = ANY_TERM, beliefPattern = ANY_TERM;
+	public Term taskPattern = TheTask, beliefPattern = TheBelief;
 
 
 	protected transient UnifyConstraint<Derivation>[] CONSTRAINTS;
