@@ -1,6 +1,8 @@
 package nars.op;
 
 import nars.*;
+import nars.derive.Deriver;
+import nars.derive.rule.PremiseRuleSet;
 import nars.op.stm.ConjClustering;
 import nars.table.BeliefTable;
 import nars.time.Tense;
@@ -20,7 +22,7 @@ class ConjClusteringTest {
         NAR n = NARS.shell();
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, 4, ccap, Task::isInput);
-        n.start(c);
+        new Deriver(new PremiseRuleSet(n).add(c));
         n.run(1); //HACK
 
 
@@ -40,7 +42,7 @@ class ConjClusteringTest {
         NAR n = NARS.shell();
         int ccap = 4;
         ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, 4, ccap, Task::isInput);
-        n.start(c);
+        new Deriver(new PremiseRuleSet(n).add(c));
         n.log();
         n.run(1); //HACK
 
@@ -68,7 +70,7 @@ class ConjClusteringTest {
 
         int ccap = 8;
         ConjClustering c = new ConjClustering(n, BELIEF, 2, ccap, (t) -> t.isInput());
-        n.start(c);
+        new Deriver(new PremiseRuleSet(n).add(c));
 
         n.inputAt(1, "$1.0 x. |");
         n.inputAt(2, "$1.0 y. |");

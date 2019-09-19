@@ -2,7 +2,7 @@ package nars.unify.instrument;
 
 import jcog.Texts;
 import nars.derive.Derivation;
-import nars.derive.op.PremiseUnify;
+import nars.derive.action.op.PremiseUnify;
 import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;

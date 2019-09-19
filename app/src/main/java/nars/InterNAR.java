@@ -102,7 +102,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, ActiveQuestion
             }
             @Override
             public float value() {
-                return recv.value();
+                return recv.pri();
             }
 
             @Override

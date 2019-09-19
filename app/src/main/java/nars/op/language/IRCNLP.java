@@ -198,11 +198,7 @@ public class IRCNLP extends IRC {
         Deriver d = new Deriver(Derivers.nal(n, 1, 8));
 //        d.timing = new ActionTiming(n);
 
-        ConjClustering conjClusterBinput = new ConjClustering(n, BELIEF,
-                32, 256, Task::isInput
-                //t->true,
-        );
-        n.start(conjClusterBinput);
+
 
         /*@NotNull Default n = new Default(new Default.DefaultTermIndex(4096),
             new RealTime.DS(true),

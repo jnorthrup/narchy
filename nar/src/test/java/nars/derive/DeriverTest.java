@@ -3,7 +3,7 @@ package nars.derive;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.derive.op.Occurrify;
+import nars.derive.action.op.Occurrify;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.test.TestNAR;

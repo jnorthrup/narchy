@@ -6,7 +6,7 @@ import nars.NAR;
 import nars.derive.Derivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.PremiseAction;
-import nars.derive.op.FORKABLE;
+import nars.derive.util.Forkable;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.control.AND;
@@ -60,7 +60,7 @@ enum PremiseRuleCompiler {
             FasterList<PREDICATE<Derivation>> pre = new FasterList<>(condition.length + 1);
             pre.addAll(condition);
 
-            pre.add(new FORKABLE(/* branch ID */  i));
+            pre.add(new Forkable(/* branch ID */  i));
 
             PremiseAction added = path.put(pre,
                 rootBranches[i] = functionTransform.apply(r.action.apply(nar))
@@ -179,15 +179,15 @@ enum PremiseRuleCompiler {
         if (x.size() > 1) {
             RoaringBitmap r = new RoaringBitmap();
             x.removeIf(zz -> {
-                if (zz instanceof FORKABLE) {
-                    for (short cc : ((FORKABLE) zz).can)
+                if (zz instanceof Forkable) {
+                    for (short cc : ((Forkable) zz).can)
                         r.add(cc);
                     return true;
                 }
                 return false;
             });
             if (!r.isEmpty()) {
-                FORKABLE bb = new FORKABLE(r);
+                Forkable bb = new Forkable(r);
                 if (x.isEmpty()) {
                     return bb;
                 } else {

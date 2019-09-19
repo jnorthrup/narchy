@@ -6,11 +6,8 @@ import nars.exe.impl.WorkerExec;
 import nars.memory.CaffeineMemory;
 import nars.op.language.NARHear;
 import nars.op.language.NARSpeak;
-import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
 import spacegraph.audio.speech.NativeSpeechDispatcher;
-
-import static nars.Op.BELIEF;
 
 public class NARchy extends NARS {
 
@@ -42,10 +39,6 @@ public class NARchy extends NARS {
         nar.goalPriDefault.pri(0.5f);
         nar.questionPriDefault.pri(0.5f);
         nar.questPriDefault.pri(0.5f);
-
-        nar.start(new ConjClustering(nar, BELIEF,
-                16, 256, t->true
-        ));
 
         new Deriver(Derivers.nal(nar, 1, 8, "motivation.nal"));
 

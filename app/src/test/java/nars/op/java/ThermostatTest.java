@@ -4,7 +4,6 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Task;
-import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.Tense;
 import org.jetbrains.annotations.Nullable;
@@ -12,8 +11,6 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Method;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
-
-import static nars.Op.BELIEF;
 
 public class ThermostatTest {
 
@@ -44,7 +41,7 @@ public class ThermostatTest {
         float exeThresh = 0.51f;
 
 
-        n.start(new ConjClustering(n, BELIEF, 2, 8, (t) -> true));
+//        n.start(new ConjClustering(n, BELIEF, 2, 8, (t) -> true));
 
 
         boolean[] training = new boolean[]{true};

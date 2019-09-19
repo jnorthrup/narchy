@@ -1,7 +1,8 @@
-package nars.derive.util;
+package nars.derive.time;
 
 import nars.Task;
 import nars.attention.What;
+import nars.derive.util.TimeFocus;
 import nars.term.Term;
 
 /** TODO weighted version */

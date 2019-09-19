@@ -1,4 +1,4 @@
-package nars.derive.op;
+package nars.derive.util;
 
 import jcog.util.ArrayUtil;
 import nars.$;
@@ -15,7 +15,7 @@ import static nars.Op.SETe;
  * valid for the premise.  a choice which "can" be tried
  * (ie. according to value rank)
  */
-public final class FORKABLE extends AbstractPred<Derivation> {
+public final class Forkable extends AbstractPred<Derivation> {
 
     public final short[] can;
 
@@ -26,12 +26,12 @@ public final class FORKABLE extends AbstractPred<Derivation> {
 //        this(RoaringBitmap.bitmapOf(id));
 //    }
 
-    public FORKABLE(short id) {
+    public Forkable(short id) {
         super($.func(F, SETe.the(Int.the(id))));
         this.can = new short[] { id };
     }
 
-    public FORKABLE(RoaringBitmap can) {
+    public Forkable(RoaringBitmap can) {
         super($.func(F, $.sete(can)));
         this.can = ArrayUtil.toShort(can.toArray());
     }

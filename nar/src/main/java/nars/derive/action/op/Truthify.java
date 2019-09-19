@@ -1,11 +1,12 @@
-package nars.derive.op;
+package nars.derive.action.op;
 
 import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.op.Occurrify.BeliefProjection;
+import nars.derive.action.op.Occurrify.BeliefProjection;
+import nars.derive.util.PuncMap;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
@@ -22,7 +23,7 @@ import static nars.Op.*;
  * After temporalization, truth may be recalculated.  the confidence
  * will not exceed the prior value calculated here.
  */
-public class Truthify extends AbstractPred<Derivation> implements ForkEvaluator {
+public class Truthify extends AbstractPred<Derivation> {
 
     private final TruthFunction belief;
 

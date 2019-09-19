@@ -51,7 +51,7 @@ public class ExeCharts {
 
         BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 //Util.tanhFast(
-                    gain.floatValue() * nar.control.why.get(i).value()
+                    gain.floatValue() * nar.control.why.get(i).pri()
                 //)
                 , s, Draw::colorBipolar);
 

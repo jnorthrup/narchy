@@ -25,8 +25,8 @@ abstract public class CauseChannel<X extends Prioritizable>  {
         return why.name + "<-" + super.toString();
     }
 
-    public float value() {
-        return why.value();
+    public float pri() {
+        return why.pri();
     }
 
     public final void accept(X x, ConsumerX<? super X> target) {

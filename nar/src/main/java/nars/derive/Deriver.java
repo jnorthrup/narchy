@@ -36,10 +36,14 @@ import java.util.function.Consumer;
  */
 public class Deriver extends How {
 
+    int innerLoops = 4;
+    int bufferCap = 4;
+    int runBatch = bufferCap/2;
+
     /**
      * variable types unifiable in premise formation
      */
-    public static int PremiseUnifyVars =
+    public static final int PremiseUnifyVars =
         //VAR_QUERY.bit
         Op.VAR_QUERY.bit | Op.VAR_DEP.bit
         //Op.Variable //all
@@ -70,7 +74,8 @@ public class Deriver extends How {
         this(rules
             //HACK adds standard derivation behaviors
             .add(new TaskResolve())
-            .add(new CompoundDecompose())
+            .add(new CompoundDecompose(true))
+            .add(new CompoundDecompose(false))
             .add(new AdjacentLinks(new TangentIndexer()))
             .compile()
 //           .print()
@@ -97,11 +102,6 @@ public class Deriver extends How {
         Derivation d = Derivation.derivation.get().next(this, w);
 
 
-        int innerLoops = 4;
-
-
-        int bufferCap = 2;
-        int runBatch = 2;
 
         Bag<Premise, PLink<Premise>> p = d.premises;
         p.clear();
@@ -148,7 +148,7 @@ public class Deriver extends How {
     @Override
     public float value() {
         //TODO cache this between cycles
-        double  v = Util.sumDouble(Why::value, rules.causes());
+        double  v = Util.sumDouble(Why::pri, rules.causes());
         //System.out.println(this + " " + v);
         return (float) v;
     }

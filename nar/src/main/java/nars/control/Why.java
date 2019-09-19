@@ -70,7 +70,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
         }
     }
 
-    public float value() {
+    public float pri() {
         //return value;
         return pri;
     }
@@ -102,7 +102,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
      * 0..+2
      */
     private float gain() {
-        return Util.tanhFast(value()) + 1f;
+        return Util.tanhFast(pri()) + 1f;
     }
 
 

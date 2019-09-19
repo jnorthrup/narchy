@@ -1,4 +1,4 @@
-package nars.derive.op;
+package nars.derive.util;
 
 import nars.$;
 import nars.Op;

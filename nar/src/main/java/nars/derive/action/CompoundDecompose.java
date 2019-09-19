@@ -3,7 +3,6 @@ package nars.derive.action;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Derivation;
-import nars.derive.action.TaskAction;
 import nars.derive.premise.AbstractPremise;
 import nars.link.*;
 import nars.term.Compound;
@@ -11,16 +10,22 @@ import nars.term.Term;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
 
-public class CompoundDecompose extends TaskAction {
+public class CompoundDecompose extends NativePremiseAction {
 
-	public CompoundDecompose() {
+	private final boolean taskOrBelief;
+
+	public CompoundDecompose(boolean taskOrBelief) {
 		super();
-		match(TheTask, new TermMatcher.SubsMin((short)1));
+		this.taskOrBelief = taskOrBelief;
+		match(taskOrBelief ? TheTask : TheBelief, new TermMatcher.SubsMin((short)1));
+
+		if (!taskOrBelief)
+			hasBelief(true);
 	}
 
 	@Override
-	protected void accept(Task y, Derivation d) {
-		Task srcTask = d._task;
+	protected void run(Derivation d) {
+		Task srcTask = taskOrBelief ? d._task : d._belief;
 
 		Compound src = (Compound) srcTask.term();
 
@@ -36,6 +41,8 @@ public class CompoundDecompose extends TaskAction {
 				links.link(l);
 			}
 
+//						//if (d.random.nextBoolean())
+//						target = forward; //continue as self, or eager traverse the new link
 			d.add(new AbstractPremise(srcTask, tgt));
 		}
 
@@ -49,9 +56,7 @@ public class CompoundDecompose extends TaskAction {
 //
 //
 //
-//						//if (d.random.nextFloat() > 1f / Math.sqrt(task.term().volume()))
-//						//if (d.random.nextBoolean())
-//						target = forward; //continue as self, or eager traverse the new link
+
 //					}
 //				}
 		//}
@@ -70,7 +75,6 @@ public class CompoundDecompose extends TaskAction {
 			default:
 				return DynamicTermDecomposer.Weighted;
 		}
-
 	}
 
 	/**
@@ -82,10 +86,8 @@ public class CompoundDecompose extends TaskAction {
 		return decomposer(src).decompose(src, d.random);
 	}
 
-
-
 	@Override
 	protected float pri(Derivation d) {
-		return 1;
+		return (float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
 	}
 }

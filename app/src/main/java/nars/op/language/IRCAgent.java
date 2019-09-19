@@ -218,7 +218,6 @@ public class IRCAgent extends IRC {
                 .exe(new WorkerExec(4))
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
-        n.start(new ConjClustering(n, BELIEF, 4, 16));
 
         n.termVolMax.set(24);
 

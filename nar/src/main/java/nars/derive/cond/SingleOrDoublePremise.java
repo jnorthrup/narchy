@@ -1,15 +1,15 @@
-package nars.derive.op;
+package nars.derive.cond;
 
 import nars.$;
 import nars.derive.PreDerivation;
+import nars.derive.util.PuncMap;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 
 
-public class SingleOrDoublePremise extends AbstractPred<PreDerivation> {
+public final class SingleOrDoublePremise extends AbstractPred<PreDerivation> {
 
-    final static Atomic D = Atomic.atom("DoublePremise");
-    final static Atomic S = Atomic.atom("SinglePremise");
+    private final static Atomic S = Atomic.atom("SinglePremise"), D = Atomic.atom("DoublePremise");
 
     private final PuncMap requires;
     private final boolean singleOrDouble;

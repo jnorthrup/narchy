@@ -25,7 +25,7 @@ import java.util.function.Consumer;
  * interface for controlled draining of a bag
  * "leaky bucket" model
  */
-public abstract class TaskLeak extends How {
+@Deprecated public abstract class TaskLeak extends How {
 
 
 

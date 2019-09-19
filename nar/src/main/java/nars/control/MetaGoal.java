@@ -161,7 +161,7 @@ public enum MetaGoal {
         float value = 0;
         Object[] vv = values.array();
         for (short c : effect)
-            value += ((Why) vv[c]).value();
+            value += ((Why) vv[c]).pri();
 
 
         return value / effects;

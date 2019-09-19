@@ -1,4 +1,4 @@
-package nars.derive.op;
+package nars.derive.cond;
 
 import nars.$;
 import nars.derive.PreDerivation;

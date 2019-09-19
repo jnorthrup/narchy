@@ -22,7 +22,7 @@ import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
-import nars.derive.util.MixedTimeFocus;
+import nars.derive.time.MixedTimeFocus;
 import nars.exe.impl.WorkerExec;
 import nars.game.Game;
 import nars.game.GameTime;
@@ -68,6 +68,7 @@ import java.util.function.Supplier;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -556,7 +557,10 @@ abstract public class GameX extends Game {
                 .add(new STMLinker(1))
                 .add(new Arithmeticize.ArithmeticIntroduction(n))
                 .add(new Factorize.FactorIntroduction(n))
-                .add(new Inperience(n)),
+                .add(new Inperience(n))
+                .add(new ConjClustering(n, BELIEF,  BELIEF, 8, 64, t->true))
+                .add(new ConjClustering(n, GOAL, GOAL, 4, 32, t->true))
+            ,
             new MixedTimeFocus(
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(),
                 //new TaskOccurenceTiming(),
@@ -588,14 +592,13 @@ abstract public class GameX extends Game {
 //        new STMLinkage(n, 1);
 
         //tiered
-        List<ConjClustering> conjClusters = List.of(
-                new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 16, 256, t->true)
+
+
                 //,new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 32, 256, t->!t.isInput())//t instanceof DerivedTask),
                 //new ConjClustering(n, BELIEF, /* QUESTION */ BELIEF, 2, 16, t->!(t instanceof DerivedTask) && !t.isInput())
                 //, new ConjClustering(n, GOAL,  QUEST /* GOAL*/, 16, 64)
                 //, new ConjClustering(n, GOAL,  GOAL /* GOAL*/, 16, 64)
-        );
-        conjClusters.forEach(c -> n.start(c));
+
 
 //        SpaceGraph.window(grid(conjClusters, c -> NARui.clusterView(c, n)), 700, 700);
 

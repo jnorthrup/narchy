@@ -11,9 +11,10 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.bag.BagClustering;
-import nars.control.How;
 import nars.control.PartBag;
 import nars.control.channel.CauseChannel;
+import nars.derive.Derivation;
+import nars.derive.action.TaskAction;
 import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.truth.Stamp;
@@ -34,7 +35,9 @@ import java.util.function.Predicate;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.confCompose;
 
-public class ConjClustering extends How implements Consumer<Task> {
+public class ConjClustering extends TaskAction implements Consumer<Task> {
+
+    @Deprecated static final int ITERATIONS = 1; //temporary
 
     public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
@@ -65,9 +68,7 @@ public class ConjClustering extends How implements Consumer<Task> {
     private final AtomicBoolean busy = new AtomicBoolean(false);
     private volatile long now;
     private volatile long lastLearn;
-
-
-
+    @Deprecated private NAR nar;
 
 
     /** default that configures with belief/goal -> question/quest output mode */
@@ -86,6 +87,10 @@ public class ConjClustering extends How implements Consumer<Task> {
     public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity, Predicate<Task> filter) {
         super();
 
+        single();
+        taskPunc(puncIn);
+        //TODO other filters
+
         this.in = nar.newChannel(this);
 
         this.puncIn = puncIn;
@@ -94,7 +99,6 @@ public class ConjClustering extends How implements Consumer<Task> {
         this.filter = filter;
         /** TODO make this a constructor parameter */
         this.model = new BagClustering.Dimensionalize<>(4) {
-
 
             @Override
             public void coord(Task t, double[] c) {
@@ -136,16 +140,19 @@ public class ConjClustering extends How implements Consumer<Task> {
         this.data = new BagClustering<>(model, centroids, capacity);
 
 
-
-    }
-
-    @Override
-    protected void starting(NAR nar) {
-
-        super.starting(nar);
-
+        this.nar = nar;
         _update(nar.time());
+
+
     }
+
+//    @Override
+//    protected void starting(NAR nar) {
+//
+//        super.starting(nar);
+//
+//        _update(nar.time());
+//    }
 
 
     protected float pri(Task t) {
@@ -160,23 +167,29 @@ public class ConjClustering extends How implements Consumer<Task> {
     }
 
 
-    //final WeakIdentityMap<What,What> whats = WeakIdentityMap.newConcurrentHashMap();
-    final PartBag<What> whats = new PartBag<>(16) {
-        //TODO store off() somewhere so it can be called when an entry is evicted. maybe use MetaMap for What like Concept
+//    //final WeakIdentityMap<What,What> whats = WeakIdentityMap.newConcurrentHashMap();
+//    final PartBag<What> whats = new PartBag<>(16) {
+//        //TODO store off() somewhere so it can be called when an entry is evicted. maybe use MetaMap for What like Concept
+//
+//        @Override public void onAdd(What w) {
+//            super.onAdd(w);
+//            synchronized (this) {
+//                Off off = w.onTask(ConjClustering.this, puncIn);
+//            }
+//        }
+//    };
 
-        @Override public void onAdd(What w) {
-            super.onAdd(w);
-            synchronized (this) {
-                Off off = w.onTask(ConjClustering.this, puncIn);
-            }
-        }
-    };
 
-    @Override public void next(What w, BooleanSupplier kontinue /* max tasks generated per centroid, >=1 */) {
+    @Override
+    protected void accept(Task x, Derivation d) {
 
-        whats.putAsync(w); //register
+        //accept(y);
+        if (filter(x))
+            data.put(x, pri(x));
+        else
+            return;
 
-        tryLearn();
+        tryLearn(d);
 
         CentroidConjoiner conjoiner = this.conjoiners.get();
 
@@ -199,23 +212,25 @@ public class ConjClustering extends How implements Consumer<Task> {
         if (cc == 0)
             return;
         if (cc > 1)
-            centroids.shuffleThis(w.nar.random());
+            centroids.shuffleThis(nar.random());
 
         //round robin
+        int iterations = ITERATIONS;
         do {
 
             centroids.removeIf((Predicate<TaskList>)(i ->
-                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, w) == 0 || i.size() <= 1));
+                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, d.what) == 0 || i.size() <= 1));
 
-        } while (!centroids.isEmpty() && kontinue.getAsBoolean());
+        } while (!centroids.isEmpty() && --iterations > 0);
 
         //in.acceptAll(conjoiner.out, w);
     }
 
-    public void tryLearn() {
+    public void tryLearn(Derivation d) {
         if (busy.compareAndSet(false, true)) {
             try {
-                learn();
+                this.nar = d.nar;
+                learn(d.time);
             } finally {
                 busy.set(false);
             }
@@ -223,8 +238,7 @@ public class ConjClustering extends How implements Consumer<Task> {
     }
 
     /** called from one thread at a time */
-    public void learn() {
-        now = nar.time();
+    public void learn(long now) {
 
         if (now - lastLearn >= minDurationsPerLearning* nar.dur()) {
             _update(now);
@@ -264,8 +278,14 @@ public class ConjClustering extends How implements Consumer<Task> {
     }
 
     @Override
-    public final float value() {
-        return in.value();
+    public final float pri(Derivation d) {
+        Task t = d._task;
+
+        //prefilter
+        if (t.isEternal())
+            return 0;
+
+        return pri(t) + in.pri();
     }
 
     @Override public final void accept(Task t) {

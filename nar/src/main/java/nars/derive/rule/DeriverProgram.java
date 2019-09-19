@@ -8,8 +8,8 @@ import nars.derive.Derivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.PatternPremiseAction;
 import nars.derive.action.PremiseAction;
-import nars.derive.op.FORKABLE;
-import nars.derive.op.PremiseUnify;
+import nars.derive.util.Forkable;
+import nars.derive.action.op.PremiseUnify;
 import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
@@ -82,9 +82,9 @@ public class DeriverProgram {
             DeriverProgram r = (DeriverProgram) x;
             r.print(out, indent);
 
-        } else if (x instanceof FORKABLE) {
+        } else if (x instanceof Forkable) {
 
-            FORKABLE b = (FORKABLE)x;
+            Forkable b = (Forkable)x;
 
             out.println(b + " {");
             for (short c : b.can) {

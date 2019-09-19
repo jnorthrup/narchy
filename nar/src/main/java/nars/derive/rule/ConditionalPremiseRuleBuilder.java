@@ -9,8 +9,9 @@ import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.derive.action.PatternPremiseAction;
-import nars.derive.op.*;
+import nars.derive.cond.*;
 import nars.derive.util.PremiseTermAccessor;
+import nars.derive.util.PuncMap;
 import nars.subterm.Subterms;
 import nars.subterm.util.SubtermCondition;
 import nars.term.Variable;
@@ -18,7 +19,6 @@ import nars.term.*;
 import nars.term.control.PREDICATE;
 import nars.term.control.TermMatch;
 import nars.term.util.TermException;
-import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
 import nars.unify.constraint.*;
 import org.eclipse.collections.api.set.MutableSet;
@@ -140,6 +140,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 
 	public void taskPunc(boolean belief, boolean goal, boolean question, boolean quest, boolean command) {
+		pre.removeIf(x -> x instanceof PuncMap); //remove any existing
 		byte accepts = PuncMap.TRUE;
 		pre.add(new PuncMap(belief ? accepts : 0, goal ? accepts : 0, question ? accepts : 0, quest ? accepts : 0, command ? accepts : 0));
 	}

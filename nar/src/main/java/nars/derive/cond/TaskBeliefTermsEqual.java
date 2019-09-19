@@ -1,4 +1,4 @@
-package nars.derive.op;
+package nars.derive.cond;
 
 import nars.derive.PreDerivation;
 import nars.term.atom.Atomic;

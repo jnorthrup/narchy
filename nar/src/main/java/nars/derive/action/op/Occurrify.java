@@ -1,4 +1,4 @@
-package nars.derive.op;
+package nars.derive.action.op;
 
 import jcog.TODO;
 import jcog.data.set.ArrayHashSet;

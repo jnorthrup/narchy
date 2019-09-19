@@ -386,6 +386,6 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
     @Override
     public float value() {
-        return in.value();
+        return in.pri();
     }
 }

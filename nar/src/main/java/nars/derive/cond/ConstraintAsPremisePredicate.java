@@ -1,4 +1,4 @@
-package nars.derive.op;
+package nars.derive.cond;
 
 import jcog.data.list.FasterList;
 import nars.$;
