@@ -10,6 +10,7 @@ import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.action.PremiseAction;
 import nars.derive.premise.Premise;
+import nars.derive.premise.AbstractPremise;
 import nars.link.TaskLink;
 import nars.term.Term;
 import nars.truth.MutableTruth;

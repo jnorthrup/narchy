@@ -8,6 +8,7 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.Task;
 import nars.derive.Derivation;
+import nars.derive.premise.Premise;
 import nars.task.CommandTask;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -24,7 +25,7 @@ import static nars.Task.p;
  * <p>
  * note: seems to be important for Tasklink to NOT implement Termed when use with common Map's with Termlinks
  */
-public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, CommandTask {
+public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, CommandTask, Premise {
 
     TaskLink[] EmptyTaskLinkArray = new TaskLink[0];
 
@@ -183,7 +184,16 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
 
     void transfer(TaskLink from, float fraction, float sustain, byte punc);
 
-//    }
+
+    @Override default CommandTask task() { return this; }
+
+    @Override default @Nullable Task belief() { return null; }
+
+    @Override default Term taskTerm() { return from(); }
+
+    @Override default Term beliefTerm() { return to(); }
+
+    //    }
 
     //    public static class CompactTaskLink extends AtomicQuad16Vector implements TaskLink {
 //        /**

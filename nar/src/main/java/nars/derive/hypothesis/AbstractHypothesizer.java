@@ -9,6 +9,7 @@ import nars.derive.Derivation;
 import nars.derive.action.NativePremiseAction;
 import nars.derive.action.TaskAction;
 import nars.derive.premise.Premise;
+import nars.derive.premise.AbstractPremise;
 import nars.link.*;
 import nars.table.TaskTable;
 import nars.term.Compound;
@@ -36,7 +37,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		if (tasklink == null) return null;
 
 
-		return new Premise(tasklink);
+		return tasklink;
 	}
 
 
@@ -87,7 +88,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 			Task y = get((TaskLink)x, d.when, d.tasklinkTaskFilter);
 			if (y != null) // && !x.equals(y))
-				d.add(new Premise(y));
+				d.add(new AbstractPremise(y));
 		}
 
 		@Nullable Task get(TaskLink t, When<What> when, @Nullable Predicate<Task> filter) {
@@ -179,7 +180,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 				//extra links: dont seem necessary
 				//links.grow(link, link.from(), reverse, task.punc());
 
-				d.add(new Premise(task, reverse));
+				d.add(new AbstractPremise(task, reverse));
 			}
 
 		}
@@ -216,7 +217,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 					links.link(l);
 				}
 
-				d.add(new Premise(srcTask, tgt));
+				d.add(new AbstractPremise(srcTask, tgt));
 			}
 
 

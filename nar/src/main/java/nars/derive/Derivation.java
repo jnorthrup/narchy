@@ -14,6 +14,7 @@ import nars.control.CauseMerge;
 import nars.derive.action.PremiseAction;
 import nars.derive.op.Occurrify;
 import nars.derive.op.UnifyMatchFork;
+import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremisePreUnify;
@@ -23,7 +24,10 @@ import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
-import nars.term.atom.*;
+import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
+import nars.term.atom.Int;
+import nars.term.atom.Keyword;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
@@ -595,16 +599,24 @@ public class Derivation extends PreDerivation {
 
     }
 
-    /** returns appropriate Emotion counter representing the result state  */
-    public FastCounter derive(Premise _p, int deriveTTL) {
+    /** loads the premise and determines the set of CAN-execute pathways */
+    private short[] apply(Premise p) {
+        reset(p.task(), p.belief(), p.beliefTerm());
+        return deriver.what(this);
+    }
 
-        Premise p = _p.match(Deriver.PremiseUnifyVars,this, nar.premiseUnifyTTL.intValue());
+    /** returns appropriate Emotion counter representing the result state  */
+    public FastCounter derive(Premise P, int deriveTTL) {
+
+        Premise p = P instanceof AbstractPremise ?
+            ((AbstractPremise)P).match(Deriver.PremiseUnifyVars,this, nar.premiseUnifyTTL.intValue()) :
+            P;
 
         short[] can;
 
         try (var __ = nar.emotion.derive_C_Pre.time()) {
 
-            can = p.apply(this);
+            can = apply(p);
             if (can.length == 0)
                 return nar.emotion.premiseUnderivable1;
 
