@@ -460,6 +460,7 @@ public class Derivation extends PreDerivation {
     /** queue a premise for execution */
     public final void add(Premise p) {
         exe.add(p);
+        use(NAL.derive.TTL_COST_DERIVE_PREMISE);
     }
 
     /**

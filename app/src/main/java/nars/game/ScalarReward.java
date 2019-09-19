@@ -81,12 +81,12 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
 
             long[] rImplStampP = newStamp(), rImplStampN = newStamp(); //shared
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStampP);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStampN);
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStampP);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, rImplStampN);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStampP);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStampN);
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStampP);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, rImplStampN);
 
             //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
         });

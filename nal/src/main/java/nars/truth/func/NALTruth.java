@@ -28,7 +28,7 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    DeductionWeak() {
+    @AllowOverlap DeductionWeak() {
 		@Override
 		public Truth apply(Truth T, Truth B, float minConf, NAL n) {
 			return TruthFunctions.deduction(T, B, false, minConf);
@@ -37,19 +37,19 @@ public enum NALTruth implements TruthFunction {
 
 
 
-    Post() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.post(T, B, true, minConf);
-        }
-    },
+//    Post() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.post(T, B, true, minConf);
+//        }
+//    },
 
-    PostWeak() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions2.post(T, B, false, minConf);
-        }
-    },
+//    PostWeak() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return TruthFunctions2.post(T, B, false, minConf);
+//        }
+//    },
 
 
     /**

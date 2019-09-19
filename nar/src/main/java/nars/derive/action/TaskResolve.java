@@ -7,7 +7,7 @@ import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.link.TaskLink;
 import nars.table.TaskTable;
-import nars.term.Termed;
+import nars.term.Term;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -18,6 +18,12 @@ import static nars.Op.GOAL;
 
 public class TaskResolve extends NativePremiseAction {
 
+	public static final TaskResolve the = new TaskResolve();
+
+	private TaskResolve() {
+
+	}
+
 	{
 		taskPunc(false,false,false,false,true); //commands only
 	}
@@ -26,22 +32,26 @@ public class TaskResolve extends NativePremiseAction {
 	protected void run(Derivation d) {
 		Task x = d._task;
 
-		Task y = get((TaskLink)x, d.when, d.tasklinkTaskFilter);
+		Task y = get((TaskLink)x, d);
 		if (y != null) // && !x.equals(y))
 			d.add(new AbstractPremise(y));
 	}
 
+	@Nullable public Task get(TaskLink t, Derivation d) {
+		return get(t, d.when, d.tasklinkTaskFilter);
+	}
+
 	@Nullable Task get(TaskLink t, When<What> when, @Nullable Predicate<Task> filter) {
-		return get(t, t.punc(when.x.random()), when, filter);
+		return get(t.from(), t.punc(when.x.random()), when, filter);
 	}
 
 
-	@Nullable Task get(TaskLink t, byte punc, When<What> w, @Nullable Predicate<Task> filter) {
+	@Nullable Task get(Term x, byte punc, When<What> w, @Nullable Predicate<Task> filter) {
 
-		Termed x = t.from();
+
 
 		if (punc == 0)
-			punc = TaskLink.randomPunc(x.term(), w.x.random()); //flat-lined tasklink
+			punc = TaskLink.randomPunc(x, w.x.random()); //flat-lined tasklink
 
 		TaskTable table =
 			//n.concept(t);

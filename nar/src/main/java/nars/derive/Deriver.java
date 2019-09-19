@@ -20,11 +20,13 @@ import nars.derive.action.AdjacentLinks;
 import nars.derive.action.CompoundDecompose;
 import nars.derive.action.TaskResolve;
 import nars.derive.adjacent.AdjacentIndexer;
+import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
+import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
@@ -82,7 +84,7 @@ public class Deriver extends How {
 	public Deriver(PremiseRuleSet rules, TimeFocus timing) {
 		this(rules
 				//HACK adds standard derivation behaviors
-				.add(new TaskResolve())
+				.add(TaskResolve.the)
 				.add(new CompoundDecompose(true))
 				//.add(new CompoundDecompose(false))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
@@ -121,7 +123,7 @@ public class Deriver extends How {
 
 	}
 
-	public final Premise hypothesize(Derivation d) {
+	public final TaskLink hypothesize(Derivation d) {
 		return ((TaskLinkWhat) d.what).links.sample(d.random);  //HACK
 	}
 
@@ -150,7 +152,18 @@ public class Deriver extends How {
 		 * gets next premise
 		 */
 		protected final Premise premise() {
-			return d.deriver.hypothesize(d);
+			TaskLink x = d.deriver.hypothesize(d);
+
+			//Pre-resolve
+			if (x!=null) {
+				Task y = TaskResolve.the.get(x, d);
+				if (y != null) // && !x.equals(y))
+					return new AbstractPremise(y, x.to());
+				else
+					return x; //maybe the link can be resolved after further transformation
+			}
+
+			return null;
 		}
 
 		/**
@@ -189,8 +202,8 @@ public class Deriver extends How {
 
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
-        int premiseTTL = 4;
-        int capacity = premiseTTL;
+        int premisesPerIter = 3;
+        int capacity = premisesPerIter;
 
 		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
 		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
@@ -205,6 +218,7 @@ public class Deriver extends How {
 		public void next() {
 
             //novel.clear();
+			queue.clear();
 
             Premise p = premise();
             if (p!=null)
@@ -221,7 +235,7 @@ public class Deriver extends How {
 				//assert(DeriverExecutor.pri(queue.list.get(0)) <= DeriverExecutor.pri(queue.list.get(s-1)));
 			}
 
-			ttl = premiseTTL;
+			ttl = premisesPerIter;
 
 			Premise r;
 			while ((r = queue.poll()) != null) {

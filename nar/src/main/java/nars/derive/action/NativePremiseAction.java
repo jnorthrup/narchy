@@ -7,6 +7,7 @@ import nars.derive.rule.ConditionalPremiseRuleBuilder;
 import nars.derive.rule.RuleWhy;
 import nars.term.control.PREDICATE;
 
+/** stateless by default */
 abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder  {
 
 	protected abstract void run(Derivation d);

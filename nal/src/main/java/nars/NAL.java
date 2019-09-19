@@ -778,6 +778,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final boolean DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL = configIs("DERIVE_QUESTION_FROM_AMBIGUOUS_BELIEF_OR_GOAL");
 
+        public static final int TTL_COST_DERIVE_PREMISE = TTL_COST_DERIVE_TASK / 2;
 
 
 //        public static boolean ETERNALIZE_BELIEF_PROJECTION = false;
