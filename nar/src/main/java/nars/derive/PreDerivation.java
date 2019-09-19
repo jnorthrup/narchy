@@ -9,7 +9,6 @@ import jcog.pri.op.PriMerge;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.derive.action.PremiseAction;
-import nars.derive.premise.MatchedPremise;
 import nars.derive.premise.Premise;
 import nars.link.TaskLink;
 import nars.term.Term;
@@ -91,10 +90,11 @@ public abstract class PreDerivation extends Unify {
         float TASKLINK_RATE = 1f; //1 / deriver.links ...
         //float TASK_STRUCTURE_RATE = 1;//0.5f;
 
-        Task t = p.task;
+        Task t = p.task();
+        Task b = p.belief();
         if (t instanceof TaskLink)
             return t.priElseZero() * TASKLINK_RATE;
-        else if (p instanceof MatchedPremise)
+        else if (b!=null)
             return Util.or(t.priElseZero(), p.belief().priElseZero());
         else
             return t.pri();// * (p.beliefTerm.equals(t.term()) ? TASK_STRUCTURE_RATE : 1);

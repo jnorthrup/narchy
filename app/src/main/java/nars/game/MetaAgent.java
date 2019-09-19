@@ -43,7 +43,7 @@ abstract public class MetaAgent extends Game {
             /** tasklink forget factor */
             forget = Atomic.the("forget"),
             grow = Atomic.the("grow"),
-            remember = Atomic.the("remember"),
+
 
             /** internal truth frequency precision */
             exact = Atomic.the("exact"),
@@ -195,7 +195,7 @@ abstract public class MetaAgent extends Game {
 
             actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
             actionCtl($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
-            actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
+            //actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
 
             //actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
 

@@ -4,6 +4,7 @@ import jcog.Util;
 import jcog.pri.PriReference;
 import jcog.pri.bag.impl.PLinkArrayBag;
 import nars.NAR;
+import nars.Op;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
@@ -32,6 +33,15 @@ import java.util.function.Consumer;
  * the current level of code complexity makes this non-obvious
  */
 public class Deriver extends How {
+
+    /**
+     * variable types unifiable in premise formation
+     */
+    public static int PremiseUnifyVars =
+        //VAR_QUERY.bit
+        Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+        //Op.Variable //all
+        ;
 
     public DeriverProgram rules;
 
@@ -123,8 +133,8 @@ public class Deriver extends How {
         int innerLoops = 4;
 
 
-        int bufferCap = 4;
-        int runBatch = 4;
+        int bufferCap = 2;
+        int runBatch = 2;
 
         PLinkArrayBag<Premise> p = d.premises;
         p.clear();

@@ -160,6 +160,10 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 			Term target = d._beliefTerm.root();
 
+			if (!target.op().conceptualizable)
+				return; //HACK the matcher isnt 100% in case of INT beliefTerm, since premiseKey erases it
+
+
 			@Deprecated AbstractHypothesizer h = (AbstractHypothesizer) d.deriver.hypo;
 
 			Task task = d._task;
@@ -183,7 +187,7 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 		@Override
 		protected float pri(Derivation d) {
 			//return 2;
-			return 0.5f/(1f+d.beliefTerm.volume());
+			return (float) (0.5f/Math.pow(d.beliefTerm.volume(), 2));
 		}
 	}
 
@@ -191,7 +195,6 @@ abstract public class AbstractHypothesizer implements Hypothesizer {
 
 		public CompoundDecompose() {
 			super();
-			//single();
 			match(TheTask, new TermMatcher.SubsMin((short)1));
 		}
 

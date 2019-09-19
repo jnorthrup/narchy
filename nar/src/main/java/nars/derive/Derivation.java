@@ -598,7 +598,7 @@ public class Derivation extends PreDerivation {
     /** returns appropriate Emotion counter representing the result state  */
     public FastCounter derive(Premise _p, int deriveTTL) {
 
-        Premise p = _p.match(this, nar.premiseUnifyTTL.intValue());
+        Premise p = _p.match(Deriver.PremiseUnifyVars,this, nar.premiseUnifyTTL.intValue());
 
         short[] can;
 

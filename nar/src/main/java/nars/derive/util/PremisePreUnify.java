@@ -1,6 +1,6 @@
 package nars.derive.util;
 
-import nars.derive.premise.Premise;
+import nars.derive.Deriver;
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
@@ -12,7 +12,7 @@ public class PremisePreUnify extends UnifySubst {
     private Term beliefTerm, beliefTermUnified;
 
     public PremisePreUnify() {
-        super(Premise.var, null);
+        super(Deriver.PremiseUnifyVars, null);
     }
 
 
