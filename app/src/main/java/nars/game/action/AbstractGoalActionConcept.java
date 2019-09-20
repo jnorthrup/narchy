@@ -103,11 +103,10 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
         int limit = componentsMax, tries = (int)Math.ceil(limit * NAL.ANSWER_TRYING);
 
-        float dur = g.dur;
         long s = g.start+shift, e = g.end+shift;
-        Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar).dur(dur);
+        Answer a = Answer.taskStrength(true, limit, s, e, term, null, g.x.nar);
 
-        a.clear(tries).time(s, e);
+        a.clear(tries).time(s, e).dur(g.dur);
 
         t.match(a);
 
@@ -138,18 +137,15 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
     private  @Nullable Truth truth(@Nullable TruthProjection t, When when, int shift) {
         return t!=null ?
-            t.dur(when.dur).truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
+            t.truth(when.start + shift, when.end + shift, NAL.truth.EVI_MIN,
             false, false, null) :
             null;
     }
 
     private Truth actionTruth(int limit, When<What> w, int shift) {
-        float dur = w.dur;
 
         TruthProjection gt = truth(false, limit, w, shift);
         if (gt!=null) {
-            gt.dur(dur);
-
             Truth nextActionDex = truth(gt, w, shift);
             actionDex = nextActionDex;
             actionCoh = nextActionDex != null ? gt.coherency() : 0;

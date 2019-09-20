@@ -234,10 +234,14 @@ public interface LongInterval {
 		long s = start();
 		if (s == ETERNAL) return 0;
 		long e = end();
-		return Math.max(
-			max(Math.abs(s - a), Math.abs(s - b)),
-			max(Math.abs(e - a), Math.abs(e - b))
-		);
+		long ul = LongInterval.unionLength(s, e, a, b);
+
+//		long sasbeaeb = Math.max(
+//			max(Math.abs(s - a), Math.abs(s - b)),
+//			max(Math.abs(e - a), Math.abs(e - b))
+//		);
+
+		return ul;
 	}
 
 

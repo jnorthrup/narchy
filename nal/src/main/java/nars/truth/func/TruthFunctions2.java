@@ -249,8 +249,9 @@ public enum TruthFunctions2 {
 
         float xf = X.freq();
 
-        float cc = c * xf;
-        //f = Util.lerp(xf, 0.5f, f);
+        float cc = c * xf
+            * Math.abs(f - 0.5f)*2;
+            //f = Util.lerp(xf, 0.5f, f);
 
         if (cc < minConf) return null;
 //                *

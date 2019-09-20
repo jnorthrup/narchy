@@ -138,8 +138,8 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         }
     }
 
-    @Override
-    protected final void start(NAR nar) {
+    /** MAKE SURE NOT TO CALL THIS DIRECTLY; IT WILL BE INVOKED.  LIKELY YOU WANT: n.start(x) NOT x.start(a) */
+    @Override protected final void start(NAR nar) {
 
         NAR prevNar = this.nar;
         if (!(prevNar == null || prevNar == nar))

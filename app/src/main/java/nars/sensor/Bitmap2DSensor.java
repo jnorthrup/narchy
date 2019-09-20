@@ -73,7 +73,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
                         nar.confDefault(BELIEF)).value(p, v);
 
         mode = SET;
-        n.start(this);
     }
 
 

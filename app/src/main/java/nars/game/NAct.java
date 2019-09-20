@@ -414,13 +414,12 @@ import static nars.Op.BELIEF;
         return actionPushButton(t, on, midThresh());
     }
 
-    default FloatSupplier midHighThresh() {
-        return () -> 0.5f + 0.25f;
-    }
-
     default FloatSupplier midThresh() {
 
-        return () -> 0.5f + nar().freqResolution.get();
+        return () ->
+            //0.5f + nar().freqResolution.get()/2;
+            0.5f;
+
         //return () -> 0.66f;
         ///return () -> 0.5f + ScalarValue.EPSILON;
         //return () -> 0.5f + nar().freqResolution.get()/2f; ///<-ok for freq
@@ -433,7 +432,7 @@ import static nars.Op.BELIEF;
 
 
         FloatToFloatFunction ifGoalMissing =
-                x -> 0; //Float.NaN;
+                x -> Float.NaN;
 
         GoalActionConcept x = actionUnipolar(t, true, ifGoalMissing, (f) -> {
             boolean posOrNeg = f >= thresh.asFloat();

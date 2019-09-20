@@ -367,7 +367,7 @@ public class FZero extends GameX {
                 return 0; //no brake
             }
         });
-        slow.goalDefault(bias, nar);
+//        slow.goalDefault(bias, nar);
     }
 
     /** TODO correct ackerman/tank drive vehicle dynamics */
@@ -403,12 +403,12 @@ public class FZero extends GameX {
             return x;
         });
 
-        PreciseTruth bias = $.t(0, 0.001f);
-
-        for (GoalActionConcept x : new GoalActionConcept[] { l, r } ) {
-            x.goalDefault(bias, nar);
-            x.resolution(res);
-        }
+//        PreciseTruth bias = $.t(0, 0.001f);
+//
+//        for (GoalActionConcept x : new GoalActionConcept[] { l, r } ) {
+//            x.goalDefault(bias, nar);
+//            x.resolution(res);
+//        }
 
     }
 

@@ -54,7 +54,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 4;
+    static int dur = 16;
 
     static float camResolution = 0.1f;
     static int experimentTime = 3000000;
@@ -66,7 +66,7 @@ public class TrackXY_NAR extends GameX {
     protected TrackXY_NAR(NAR nar, TrackXY xy) {
         super($$("trackXY"),
                 //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(4),
+                GameTime.durs(1),
 			//FrameTrigger.fps(fps),
             nar
 		);
@@ -182,7 +182,6 @@ public class TrackXY_NAR extends GameX {
 
         NARS nb = new NARS.DefaultNAR(0, true)
                 .exe(new UniExec())
-                //.time(new RealTime.MS().dur(durMS))
                 .time(new CycleTime().dur(dur))
                 .index(
                         new CaffeineMemory(2 * 1024 * 10)
@@ -223,7 +222,10 @@ public class TrackXY_NAR extends GameX {
                 1, 8
                 //2, 8
                 //, "motivation.nal"
-        ));
+        ).add(new ConjClustering(n, BELIEF,
+                //x -> true,
+                2, 4, Task::isInput
+        )));
         //{
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -244,10 +246,10 @@ public class TrackXY_NAR extends GameX {
 //        };
 
 
-        ConjClustering cjB = new ConjClustering(n, BELIEF,
-                //x -> true,
-                2, 4, Task::isInput
-        );
+//        ConjClustering cjB = new ConjClustering(n, BELIEF,
+//                //x -> true,
+//                2, 4, Task::isInput
+//        );
 
 
 //            window(new Gridding(
@@ -261,8 +263,6 @@ public class TrackXY_NAR extends GameX {
         //final int W = 3, H = 3;
 
         TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
-        a.start(n);
-        ((TaskLinkWhat)a.what()).links.linksMax.set(64);
 
         Table t = DataTable.create(DoubleColumn.create("tx"),DoubleColumn.create("cx"));
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
@@ -294,6 +294,9 @@ public class TrackXY_NAR extends GameX {
 //
 //        }
 
+        //a.start(n);
+        n.start(a);
+        ((TaskLinkWhat)a.what()).links.linksMax.set(64);
 
         if (gui) {
             //n.runLater(() -> {

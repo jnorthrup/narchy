@@ -37,7 +37,7 @@ public class Gradius extends GameX {
     public static void main(String[] args) {
         GameX.runRT(nn -> {
             Gradius g = new Gradius(nn);
-            g.start(nn);
+            nn.start(g);
             return g;
         }, 40f);
     }
@@ -93,18 +93,16 @@ public class Gradius extends GameX {
                 for (int j = 0; j < dy; j++) {
                     int ii = i;
                     int jj = j;
-                    Term Pbig = $.p(big, $.p($.the(ii), $.the(jj)));
+                    Term Pbig = //$.p(big, $.p($.the(ii), $.the(jj)));
+                        $.p(Atomic.atom("c" + ii),Atomic.atom("c" + jj));
+
                     //Term subSection = $.p(id, $.the(ii), $.the(jj));
                     Bitmap2DSensor c = senseCamera((x, y) ->
-                                    $.inh(
-                                        id,
-                                        $.p(Pbig, $.p(small, $.p($.the(x), $.the(y))))
-                                    ),
+                                    $.inh(id, $.p(Pbig, $.the(x), $.the(y))),
                             //$.p(
                             //$.inh(
 //                                        $.p(x, y),
 //                                        subSection
-//                                ),
                             new ScaledBitmap2D(() -> g.image, px, py)
                                     .crop(
                                             (float) i / dx, (float) j / dy,

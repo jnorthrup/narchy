@@ -325,7 +325,7 @@ public final class Answer implements Timed, Predicate<Task> {
             s,e
             //start, end
             //TIMELESS, TIMELESS //auto
-        ).with(this.tasks.items, numTasks);
+        ).dur(dur).with(this.tasks.items, numTasks);
     }
 
 

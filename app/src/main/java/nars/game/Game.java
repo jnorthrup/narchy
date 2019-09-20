@@ -114,7 +114,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         this.nar = n;
         //_nar.set(n);
 
-        nar.runLater(()->n.start(this));
+//        nar.runLater(()->n.start(this));
     }
 
     public Game(Term id, GameTime time) {
@@ -189,8 +189,9 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     @Override
     public final <A extends ActionSignal> A addAction(A c) {
-        if (actions.OR(e -> e.term().equals(c.term())))
-            throw new RuntimeException("action exists with the ID: " + c.term());
+        Term ct = c.term();
+        if (actions.OR(e -> e.term().equals(ct)))
+            throw new RuntimeException("action exists with the ID: " + ct);
         actions.add(c);
         return c;
     }
@@ -198,7 +199,10 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     @Override
     public final <S extends GameLoop> S addSensor(S s) {
-        //TODO check for existing
+        Term st = s.term();
+        if (sensors.OR(e -> e.term().equals(st)))
+            throw new RuntimeException("sensor exists with the ID: " + st);
+
         sensors.add(s);
         return s;
     }

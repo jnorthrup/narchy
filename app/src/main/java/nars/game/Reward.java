@@ -126,7 +126,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 	protected void reinforce() {
 		int n = reinforcement.size();
 		if (n > 0) {
-			float pri = this.pri.pri();// / n;
+			float pri = this.pri.pri();
 			for (Task t : reinforcement)
 				t.pri(pri);
 			game.what().acceptAll(reinforcement);

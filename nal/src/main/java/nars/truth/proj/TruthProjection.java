@@ -717,7 +717,11 @@ abstract public class TruthProjection extends TaskList {
 
 	/** task evidence leak dur */
 	public TruthProjection dur(float dur) {
-		this.dur = dur;
+		if (!Util.equals(this.dur, dur)) {
+			this.dur = dur;
+			update();
+		}
+
 		return this;
 	}
 

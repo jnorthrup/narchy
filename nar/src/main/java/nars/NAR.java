@@ -351,9 +351,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             //clear();
             memory.clear();
 
-            exe.delete();
-
-
             super.delete();
         }
     }

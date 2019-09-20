@@ -1,13 +1,13 @@
 package nars.experiment;
 
 import jcog.math.FloatRange;
+import jcog.pri.ScalarValue;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.game.GameTime;
-import nars.game.action.GoalActionConcept;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -17,8 +17,6 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
-
-import static nars.experiment.Tetris.TetrisState.CW;
 
 /**
  * Created by me on 7/28/16.
@@ -89,14 +87,14 @@ public class Tetris extends GameX {
 
 
 
-        rewardNormalized("score", 0 /* ignore decrease */, 1,
+        rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
                 state::score
                 //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
         );
 //        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
 //                1 - ((float) state.rowsFilled) / state.height
 //        ));
-        reward("density", () -> {
+        rewardNormalized("density", 0, ScalarValue.EPSILON, () -> {
 
             int filled = 0;
             for (float s : state.grid) {
@@ -118,8 +116,8 @@ public class Tetris extends GameX {
 
 
         actionPushButtonLR();
-        //actionPushButtonLR_proportional();
         actionPushButtonRotateFall();
+        //actionPushButtonLR_proportional();
         //actionsToggle();
         //actionsTriState();
 
@@ -194,10 +192,12 @@ public class Tetris extends GameX {
             $.inh(id,"fall");
 
     void actionPushButtonLR() {
-        GoalActionConcept[] lr = actionPushButtonMutex(LEFT, RIGHT,
-                b -> b && state.act(TetrisState.LEFT),
-                b -> b && state.act(TetrisState.RIGHT)
-        );
+        actionPushButton(LEFT, (b)->b && state.act(TetrisState.LEFT));
+        actionPushButton(RIGHT, (b)->b && state.act(TetrisState.RIGHT));
+//        GoalActionConcept[] lr = actionPushButtonMutex(LEFT, RIGHT,
+//                b -> b && state.act(TetrisState.LEFT),
+//                b -> b && state.act(TetrisState.RIGHT)
+//        );
 //        for (GoalActionConcept x : lr)
 //            x.goalDefault($.t(0, 0.001f), nar); //bias
     }
@@ -233,10 +233,12 @@ public class Tetris extends GameX {
     void actionPushButtonRotateFall() {
 
         int debounceDurs = 2;
-        actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
+        //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
+        actionPushButton(ROT, b -> b && state.act(TetrisState.CW));
 
-        if (canFall)
+        if (canFall) {
             actionPushButton(FALL, debounce(b -> b && state.act(TetrisState.FALL), debounceDurs * 2));
+        }
 
     }
 
@@ -244,7 +246,7 @@ public class Tetris extends GameX {
     void actionsTriState() {
 
 
-        actionTriState($.func("X", id), i -> {
+        actionTriState($.inh(id, "X"), i -> {
             switch (i) {
                 case -1:
                     return state.act(TetrisState.LEFT);
@@ -257,7 +259,7 @@ public class Tetris extends GameX {
         });
 
 
-        actionPushButton($.func("R", id), () -> state.act(CW));
+        actionPushButton(ROT, () -> state.act(TetrisState.CW));
 
 
     }

@@ -201,7 +201,6 @@ public class AutoclassifiedBitmap extends VectorSensor {
         logger.info("{} pixels in={},{} ({}) x {},{} x features={} : encoded={}", this, pw, ph, (pw * ph), nw, nh, features, signals.size());
         game.addSensor(this);
 
-        nar.start(this);
     }
 
 

@@ -8,7 +8,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.action.op.*;
-import nars.derive.cond.*;
+import nars.derive.cond.SingleOrDoublePremise;
 import nars.derive.premise.PremiseRuleNormalization;
 import nars.derive.rule.ConditionalPremiseRuleBuilder;
 import nars.derive.rule.PremiseRule;
@@ -690,6 +690,14 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
                 } else if (f.equals(Derivation.CONJ_WITHOUT)) {
                     Unifiable.constraintEvent(a, PatternPremiseAction.this, false);
                 }
+
+                Term cc = a.sub(0);
+                if (cc.op()==VAR_PATTERN) {
+                    if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER) || f.equals(ConjMatch.CONJ_WITHOUT_UNIFY)) {
+                        is(cc, Op.CONJ);
+                    }
+                }
+
             }
             return super.applyPosCompound(c);
         }

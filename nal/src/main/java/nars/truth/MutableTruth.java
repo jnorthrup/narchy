@@ -1,7 +1,5 @@
 package nars.truth;
 
-import jcog.Util;
-import nars.NAL;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.truth.func.TruthFunctions.c2w;
@@ -81,18 +79,19 @@ public class MutableTruth implements Truth {
 
 	@Override
 	public final int hashCode() {
-		throw new UnsupportedOperationException();
+		//throw new UnsupportedOperationException();
+		return System.identityHashCode(this);
 	}
 
 	@Override
 	public final boolean equals(Object x) {
 		//throw new UnsupportedOperationException();
-		//return this == obj; //no other equality allowed
-		return this == x || (
-			Util.equals(freq, ((Truth)x).freq(), NAL.truth.TRUTH_EPSILON)
-			&&
-			Util.equals(conf(), ((Truth)x).conf(), NAL.truth.TRUTH_EPSILON)
-		);
+		return this == x; //no other equality allowed
+//		return this == x || (
+//			Util.equals(freq, ((Truth)x).freq(), NAL.truth.TRUTH_EPSILON)
+//			&&
+//			Util.equals(conf(), ((Truth)x).conf(), NAL.truth.TRUTH_EPSILON)
+//		);
 	}
 
 	@Nullable public PreciseTruth clone() {

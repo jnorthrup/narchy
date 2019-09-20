@@ -86,8 +86,25 @@ abstract public class NAL6DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "z", 1f, 0.81f)
             ;
         }
-
-
+        @Test
+        void testDecomposeDisj2() {
+            test
+                .termVolMax(16)
+                .believe("(||, a,b,c,d,e)")
+                .believe("--a")
+                .mustBelieve(cycles, "(||,b,c,d,e)", 1f, 0.81f)
+            ;
+        }
+        @Test
+        void testDecomposeDisj3() {
+            //test weak truth value to distinguish the result from structural deduction
+            test
+                .termVolMax(12)
+                .believe("--((--a &&+1 --b) &&+1 --c)", 0.8f, 0.8f)
+                .believe("--a", 0.9f, 0.9f)
+                .mustBelieve(cycles, "(--b &&+1 --c)", 0.28f, 0.75f) //<--??
+            ;
+        }
         @Test
         void testDecomposeDisjNeg2() {
             test

@@ -2,11 +2,8 @@ package spacegraph.input.finger;
 
 import jcog.exe.Loop;
 import jcog.math.v2;
-import jcog.random.XoRoShiRo128PlusRandom;
 import spacegraph.SpaceGraph;
 import spacegraph.video.OrthoSurfaceGraph;
-
-import java.util.Random;
 
 /** satellite cursor attached to a Finger */
 abstract public class SubFinger extends Finger {
@@ -41,7 +38,7 @@ abstract public class SubFinger extends Finger {
     public static class PolarSubFinger extends SubFinger {
 
         private Loop on;
-        final Random rng = new XoRoShiRo128PlusRandom();
+//        final Random rng = new XoRoShiRo128PlusRandom();
 
         /** radius in proportion to of min window dimension */
         float radius = 0.2f;

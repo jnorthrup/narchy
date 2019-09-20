@@ -265,6 +265,7 @@ public class Thing<T, P /* service key */  /* context */> {
             });
             return true;
         } else {
+            //logger.info("{} already starting or started", x);
             return false;
         }
     }
@@ -295,8 +296,10 @@ public class Thing<T, P /* service key */  /* context */> {
             });
 
             return true;
-        } else
+        } else {
+            //logger.info("{} already stopping or stopped", x);
             return false;
+        }
     }
 
 
