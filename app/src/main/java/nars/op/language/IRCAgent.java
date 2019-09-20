@@ -7,7 +7,6 @@ import nars.attention.What;
 import nars.exe.impl.WorkerExec;
 import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
-import nars.op.stm.ConjClustering;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.NotNull;
 import org.pircbotx.exception.IrcException;
@@ -18,8 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-
-import static nars.Op.BELIEF;
 
 /**
  * $0.9;0.9;0.99$

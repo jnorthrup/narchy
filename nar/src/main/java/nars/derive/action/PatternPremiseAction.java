@@ -1,5 +1,6 @@
 package nars.derive.action;
 
+import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import nars.$;
@@ -517,7 +518,8 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
                 }
             }
 
-            assert (concBelief || concQuest || concQuestion || concGoal);
+            if (!(concBelief || concQuest || concQuestion || concGoal))
+                throw new WTF();
         }
 
 

@@ -77,12 +77,12 @@ public final class Fragment extends LightCompound {
 
 
 
-    public static Term matchedExcept(Subterms matched, byte... except) {
+    public static Term matchedExcept(Subterms matched, int[] except) {
 
         int ll = matched.subs();
         if (except.length == ll-1) {
             //choose only the unmatched subterm
-            for (byte i = 0; i < ll; i++) {
+            for (int i = 0; i < ll; i++) {
                 if (ArrayUtil.indexOf(except, i)==-1)
                     return matched.sub(i);
             }
@@ -100,7 +100,7 @@ public final class Fragment extends LightCompound {
         }
     }
 
-    @Nullable public static Term matchedExcept(Term[] matched, byte... except) {
+    @Nullable public static Term matchedExcept(Term[] matched, int... except) {
         int ll = matched.length;
         int ee = except.length;
         int ml = ll - ee;
@@ -110,7 +110,7 @@ public final class Fragment extends LightCompound {
         int j = 0;
         main:
         for (int i = 0; i < ll; i++) {
-            for (byte anExcept : except)
+            for (int anExcept : except)
                 if (i == anExcept)
                     continue main;
 

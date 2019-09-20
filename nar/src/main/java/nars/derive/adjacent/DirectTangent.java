@@ -1,6 +1,5 @@
 package nars.derive.adjacent;
 
-import jcog.WTF;
 import nars.derive.Derivation;
 import nars.link.AbstractTaskLink;
 import nars.link.TaskLinks;

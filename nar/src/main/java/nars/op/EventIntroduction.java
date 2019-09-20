@@ -2,9 +2,7 @@ package nars.op;
 
 import nars.NAR;
 import nars.Op;
-import nars.Task;
 import nars.attention.What;
-import nars.derive.Derivation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;

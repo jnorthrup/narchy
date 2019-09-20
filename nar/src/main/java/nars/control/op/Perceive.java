@@ -41,8 +41,10 @@ public enum Perceive {
 
         Remember xPerceived = !cmd ? Remember.the(x, n) : null;
 
+        if (xPerceived!=null) {
 //        if (x instanceof UnevaluatedTask) {
             xPerceived.next(w);
+        }
 //            return;
 //        }
 

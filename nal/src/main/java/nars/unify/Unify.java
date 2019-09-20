@@ -415,31 +415,27 @@ public abstract class Unify extends Versioning<Term> {
 
     /** how many matchable variables are present */
     public int vars(Term x) {
+        int vb = this.varBits;
         if (x instanceof Compound) {
-            if (x.hasAny(varBits)) {
+            if (x.hasAny(vb)) {
                 int v = 0;
-                if (0 != (varBits & Op.VAR_PATTERN.bit)) v += x.varPattern();
-                if (0 != (varBits & Op.VAR_QUERY.bit)) v += x.varQuery();
-                if (0 != (varBits & Op.VAR_DEP.bit)) v += x.varDep();
-                if (0 != (varBits & Op.VAR_INDEP.bit)) v += x.varIndep();
+                if (0 != (vb & Op.VAR_PATTERN.bit)) v += x.varPattern();
+                if (0 != (vb & Op.VAR_QUERY.bit)) v += x.varQuery();
+                if (0 != (vb & Op.VAR_DEP.bit)) v += x.varDep();
+                if (0 != (vb & Op.VAR_INDEP.bit)) v += x.varIndep();
                 return v;
             }
         } else if (x instanceof Variable) {
-            if (0!=(varBits & x.opBit())) return 1;
+            if (0!=(vb & x.opBit())) return 1;
         }
         return 0;
     }
 
-    public final boolean canPut(Term target, Term value) {
-        return target instanceof Variable && canPut(target.op(), value);
-    }
 
     /** can x be assigned to y (y <= x) */
-    public final boolean canPut(Op target, Term value) {
-        if (!var(target))
-            return false;
+    public static final boolean canPut(Op x, Op y) {
         int exc;
-        switch (target) {
+        switch (x) {
             case VAR_DEP:
                 exc = Op.VAR_PATTERN.bit | Op.VAR_QUERY.bit | Op.VAR_INDEP.bit | Op.VAR_DEP.bit;
                 break;
@@ -455,7 +451,7 @@ public abstract class Unify extends Versioning<Term> {
             default:
                 return false;
         }
-        return !value.hasAny(exc);
+        return (exc & y.bit) == 0; //!value.hasAny(exc);
     }
 
 
@@ -524,36 +520,39 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final Term resolveTerm(Term x) {
-        return resolveTerm(x, false);
+        return resolveTerm(x, false, false);
     }
     public final Term resolveTermRecurse(Term x) {
-        return resolveTerm(x, true);
+        return resolveTerm(x, true, true);
     }
 
     /** full resolution of a term */
-    public final Term resolveTerm(Term _x, boolean recurse) {
-        if (this.size == 0 && !recurse)
+    public final Term resolveTerm(Term _x, boolean resolve, boolean recurse) {
+        int s = this.size;
+        if (s == 0 && !recurse && !resolve)
             return _x;
 
         boolean neg = _x instanceof Neg;
         Term x = neg ? _x.unneg() : _x;
 
         Term y;
-        if (this.size > 0) {
-            boolean vx = var(x);
-            y = vx ? resolveVar((Variable) x) : x;
+        if (resolve && s > 0 && x instanceof Variable) {
+            Variable X = (Variable) x;
+            y = var(X) ? resolveVar(X) : x;
         } else
             y = x;
 
-        if (recurse && y instanceof Compound && y.hasAny(varBits)) {
-            Term z = transform().applyPosCompound((Compound) y); //recurse
-            //Term z = transform().applyCompound((Compound) y); //recurse
-            //Term z = y.replace(xy); //recurse
-
-            y = z;
+        if (recurse) {
+            if (y instanceof Compound /* && y.hasAny(varBits)*/) {
+                y = transform().applyPosCompound((Compound)y); //recurse (full transform)
+//            } else if (!(y instanceof Variable) && !(y instanceof Img) /* etc */) {
+//                yy = transform().apply(y); //recurse (full transform)
+//                y = yy;
+            }
+            //y = y.replace(xy); //recurse (sub only)
         }
 
-        return x!=y ? y.negIf(neg) : _x;
+        return !x.equals(y) ? (neg ? y.neg() : y) : _x;
     }
 
     public final Subterms resolveSubs(Subterms x) {
@@ -561,10 +560,6 @@ public abstract class Unify extends Versioning<Term> {
     }
     public final Subterms resolveSubsRecurse(Subterms x) {
         return x.transformSubs(this::resolveTermRecurse, null);
-    }
-
-    @Nullable public final TermList resolveListIfChanged(Subterms x) {
-        return resolveListIfChanged(x, false);
     }
 
     @Nullable public final TermList resolveListIfChanged(Subterms x, boolean recurse) {
@@ -646,13 +641,10 @@ public abstract class Unify extends Versioning<Term> {
 
         @Override
         public Term applyPosCompound(Compound x) {
-            boolean recurse = evalInline();
-
-            if (!recurse && (size==0 || !x.hasAny(varBits))) {
+            if (evalInline() || (size != 0 && x.hasAny(varBits)))
+                return super.applyPosCompound(x);
+            else
                 return x;
-            }
-
-            return super.applyPosCompound(x);
         }
     }
 

@@ -13,12 +13,9 @@ import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.op.PriMerge;
 import nars.NAR;
 import nars.Task;
-import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
-import nars.link.TaskLink;
-import nars.op.TaskLeak;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
@@ -30,10 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.io.PrintStream;
 import java.util.Collections;
 import java.util.List;
-import java.util.function.BooleanSupplier;
-import java.util.function.Consumer;
 
-import static nars.Op.BELIEF;
 import static nars.Op.IMPL;
 
 /**

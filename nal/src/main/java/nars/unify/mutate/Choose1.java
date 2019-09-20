@@ -131,23 +131,17 @@ public class Choose1 extends Termutator.AbstractTermutator {
     @Override
     public void mutate(Termutator[] chain, int current, Unify u) {
 
-//        Term xEllipsis = null;
-
         int l = yy.length-1;
         int shuffle = u.random.nextInt(yy.length); 
 
         int start = u.size();
 
-        for (Term x = this.x /*u.resolveTerm(this.x,false)*/; l >=0; l--) {
+        for (Term x = u.resolveTerm(this.x); l >=0; l--) {
 
             int iy = (shuffle + l) % yy.length;
             Term y = yy[iy];
             if (x.unify(y, u)) {
-//                if (xEllipsis == null) {
-//                    //cache this resolved value since it will be used repeatedly in iterations
-//                    xEllipsis = u.resolveTerm(this.xEllipsis,false); //technically, this should only helpful if not the first in the chain
-//                }
-                if (xEllipsis.unify( Fragment.matchedExcept(yy, (byte) iy), u)) {
+                if (xEllipsis.unify( Fragment.matchedExcept(yy, iy), u)) {
                     if (!u.tryMutate(chain, current))
                         break;
                 }

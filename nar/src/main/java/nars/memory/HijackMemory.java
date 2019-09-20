@@ -1,7 +1,7 @@
 package nars.memory;
 
-import jcog.pri.PLink;
 import jcog.pri.HashedPLink;
+import jcog.pri.PLink;
 import jcog.pri.bag.impl.hijack.PriHijackBag;
 import nars.NAR;
 import nars.concept.Concept;

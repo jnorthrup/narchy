@@ -848,29 +848,25 @@ public interface Subterms extends Termlike, Iterable<Term> {
      */
     static int possiblyUnifiableWhileEliminatingEqualAndConstants(TermList xx, TermList yy, Unify u) {
 
-        int n = xx.size();
+        int xxs = xx.size();
 
         //assert(yy.size()==n);
-        if (yy.size()!=n)
+        if (yy.size()!=xxs)
             return -1;
 
-
-
-        for (int i = 0; i < n; ) {
+        for (int i = 0; i < xxs; ) {
 //            Term xi = u.resolvePosNeg(xx.get(i));
             Term xi = xx.get(i);
             if (yy.removeFirst(xi)) {
                 xx.removeFast(i);
-                n--;
+                xxs--;
             } else {
                 i++;
             }
         }
 
-        int xxs = xx.size();
         if (xxs == 0)
             return +1; //all eliminated
-
 
         if (possiblyUnifiable(xx, yy, u.varBits)) {
 //            if (xxs == 1)
@@ -914,11 +910,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * assumes that equality, structure commonality, and equal subterm count have been tested
      */
     static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
-        TermList xx = u.resolveListIfChanged(x), yy = u.resolveListIfChanged(y);
-
+        TermList xx = u.resolveListIfChanged(x, false);
         if (xx == null) xx = x.toList();
+
+        TermList yy = u.resolveListIfChanged(y, false);
         if (yy == null) yy = y.toList();
 
+        //TermList xx = x.toList(), yy = y.toList();
 
         int i = possiblyUnifiableWhileEliminatingEqualAndConstants(xx, yy, u);
         switch (i) {
@@ -927,7 +925,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
             case +1:
                 return true;
         }
-
 
         if (xx.subs() == 1) {
 //                    Term x0 = xx.getFirstFast();

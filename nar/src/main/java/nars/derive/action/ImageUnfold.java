@@ -2,7 +2,6 @@ package nars.derive.action;
 
 import nars.Task;
 import nars.derive.Derivation;
-import nars.derive.action.TaskAction;
 
 public class ImageUnfold extends TaskAction {
 

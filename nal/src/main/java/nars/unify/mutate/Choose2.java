@@ -162,19 +162,25 @@ public class Choose2 extends Termutator.AbstractTermutator {
         Term xEllipsis = u.resolveTerm(this.xEllipsis);
 
         int[] c = null;
+
+        final TermList tl = new TermList(2);
+        tl.setSize(2);
+        Term[] tll = tl.array();
+
         while (ccc.hasNext() || !phase) {
 
             c = phase ? ccc.next() : c;
 
             int c0 = c[0], c1 = c[1];
 
-            if (Subterms.unifyLinear(x, new TermList(yy.sub(c0), yy.sub(c1)), u)) {
-                if (xEllipsis.unify(Fragment.matchedExcept(yy, (byte)c0, (byte)c1), u)) {
+            tll[0] = yy.sub(c0); tll[1] = yy.sub(c1);
+
+            if (Subterms.unifyLinear(x, tl, u)) {
+                if (xEllipsis.unify(Fragment.matchedExcept(yy, c), u)) {
                     if (!u.tryMutate(chain, current))
                         break;
                 }
             }
-
 
             if (!u.revertLive(start))
                 break;

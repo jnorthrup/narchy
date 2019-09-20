@@ -39,8 +39,8 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
     @Override
     public @Nullable Termutator preprocess(Unify u) {
-        TermList x = u.resolveListIfChanged(this.x);
-        TermList y = u.resolveListIfChanged(this.y);
+		TermList x = u.resolveListIfChanged(this.x, false);
+		TermList y = u.resolveListIfChanged(this.y, false);
         if (x!=null || y!=null) {
             if (x == null) x = this.x.toList();
             if (y == null) y = this.y.toList();

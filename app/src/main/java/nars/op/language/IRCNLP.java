@@ -11,7 +11,6 @@ import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
 import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
-import nars.op.stm.ConjClustering;
 import nars.term.Term;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;

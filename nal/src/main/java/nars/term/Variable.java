@@ -39,26 +39,37 @@ public interface Variable extends Atomic, UnifyFirst {
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {
             Op xop = x.op();
-            if (u.var(xop)) {
-                if (xop != VAR_PATTERN && y instanceof Variable) {
-                    if (u.commonVariables) {
-                        if (!(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
-                            if (xop == y.op())
-                                return CommonVariable.unify((Variable) x, (Variable) y, u);
-                        }
+            boolean xAssign;
+            if (y instanceof Variable)  {
+                Op yop = y.op();
+
+                if (xop.id > yop.id) {
+                    //swap for variable rank
+                    Term z = x; Op zop = xop;
+                    x = y; xop = yop;
+                    y = z; yop = zop;
+                }
+                if (xop == yop && u.commonVariables && xop != VAR_PATTERN) {
+                    if (!(x instanceof Ellipsis) && !(y instanceof Ellipsis)) {
+                        return CommonVariable.unify((Variable) x, (Variable) y, u);
                     }
                 }
+                xAssign = Unify.canPut(xop, yop);
+            } else
+                xAssign = true;
 
-                if (u.canPut(xop, y)) {
-                    if (u.putXY((Variable) x, y))
-                        return true;
-                }
+            if (xAssign) {
+                if (u.putXY((Variable) x, y))
+                    return true;
             }
         }
 
-        if (u.canPut(y, x)) {
-            if (u.putXY((Variable) y, x))
-                return true;
+        if (y instanceof Variable) {
+            Op yop;
+            if (u.var(yop = y.op()) && Unify.canPut(yop, x.op())) {
+                if (u.putXY((Variable) y, x))
+                    return true;
+            }
         }
 
         return false;
@@ -102,39 +113,41 @@ public interface Variable extends Atomic, UnifyFirst {
             return true;
 
         //Term x = u.resolveVar(this);
-        //Term x = u.resolveTerm(this, false);
-        Term x = u.resolveTermRecurse(this);
-        if (x != this && x.equals(y0))
-            return true;
+        Term x = u.resolveTerm(this, true, false);
+        //Term x = u.resolveTermRecurse(this);
+//        if (x != this && x.equals(y0))
+//            return true;
 
-        Term y = u.resolveTermRecurse(y0);
+        Term y = u.resolveTerm(y0, true, false);
         //Term y = u.resolveTerm(y0);
-        if (y != y0 && x.equals(y))
+//        if (y != y0 && x.equals(y))
+//            return true;
+        if ((x!=this || y!=y0) && (x.equals(y)))
             return true;
 
         //unify variable negation mobius
 
-        if (x instanceof Neg && y instanceof Neg) {
+        boolean xn = x instanceof Neg;
+        boolean yn = y instanceof Neg;
+        if (xn && yn) {
             x = x.unneg();
             y = y.unneg();
         } else {
-
-            //mobius pos/neg unification resolution
-            boolean done = false;
-            if (x instanceof Neg && neggable(y)) {
+            //swap neg for variable order
+            if (xn && !yn && y instanceof Variable) {
                 Term xu = x.unneg();
-                if (u.canPut(xu, y)) {
+                if (xu instanceof Variable && xu.op().id < y.op().id) {
                     x = xu;
                     y = y.neg();
-                    done = true;
-                }
-            }
-            if (!done && y instanceof Neg && neggable(x)) {
+                } else if (y.equals(xu))
+                    return false;
+            } else if (yn && !xn) {
                 Term yu = y.unneg();
-                if (u.canPut(yu, x)) {
+                if (yu instanceof Variable && yu.op().id < x.op().id) {
                     y = yu;
                     x = x.neg();
-                }
+                } else if (x.equals(yu))
+                    return false;
             }
         }
 

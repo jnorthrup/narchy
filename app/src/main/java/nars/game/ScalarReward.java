@@ -95,8 +95,14 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
 
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
+
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
+
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
@@ -104,10 +110,6 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
 
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg);
