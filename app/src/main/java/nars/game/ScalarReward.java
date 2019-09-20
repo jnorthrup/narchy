@@ -84,12 +84,18 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
 
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStampP);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStampN);
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStampP);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, rImplStampN);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, rImplStampP);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, rImplStampN);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, rImplStampP);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, rImplStampN);
 
+//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos, rImplStampP);
+//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos, rImplStampN);
+//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplANeg, rImplStampP);
+//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg, rImplStampN);
 
+            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAMaybe, rImplStampP);
+            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAMaybe, rImplStampP);
 
             //reinforce(IMPL.the(Op.DISJ(Rpos,Rneg), A), BELIEF, RimplA, stamped);
         });
@@ -108,13 +114,16 @@ abstract public class ScalarReward extends Reward {
     protected void reinforce() {
         NAR nar = game.nar;
 
-        goal.conf(nar.confDefault(GOAL));
+        float cMax = nar.confDefault(GOAL);
+        goal.conf(cMax);
 
         float strength = 1;
-        float c = Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
-        RimplAPos.conf(c);
-        RimplANeg.conf(c);
-        RimplAMaybe.conf(c);
+        float cMin =
+            Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
+            //cMax / 2;
+        RimplAPos.conf(cMin);
+        RimplANeg.conf(cMin);
+        RimplAMaybe.conf(cMin);
         super.reinforce();
     }
 

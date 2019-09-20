@@ -245,8 +245,14 @@ public enum TruthFunctions2 {
         float c = confCompose(X, XimplY);
         if (c < minConf) return null;
 
+        float f = XimplY.freq();
+
         float xf = X.freq();
+
         float cc = c * xf;
+        //f = Util.lerp(xf, 0.5f, f);
+
+        if (cc < minConf) return null;
 //                *
 //                (preSoft ? X.freq() //soft polarity match (inverse bleed through)
 //                : Math.max(0, 2 * (X.freq()-0.5f))); //hard polarity match
@@ -254,10 +260,6 @@ public enum TruthFunctions2 {
         if (weak)
             cc = weak(cc);
         if (cc < minConf) return null;
-
-        float f = XimplY.freq();
-
-
 
         return tt(f, cc);
     }

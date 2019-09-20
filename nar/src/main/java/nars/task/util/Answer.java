@@ -86,12 +86,9 @@ public final class Answer implements Timed, Predicate<Task> {
         return t -> beliefStrength(t, targetStart, targetEnd);
     }
 
-    public static float beliefStrength(TaskRegion t, long now) {
-        return beliefStrength(t, now, now);
-    }
 
     private static float beliefStrength(TaskRegion t, long qStart, long qEnd) {
-        return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.minTimeTo(qStart, qEnd)));
+        return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.maxTimeTo(qStart, qEnd)));
     }
 
 //    /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
@@ -105,7 +102,7 @@ public final class Answer implements Timed, Predicate<Task> {
         //TODO special impl for confPerTime==0
 //        return qStart == qEnd ?
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
-            return (x,min) -> (float)(x.confMax() / (1.0 + x.minTimeTo(qStart,qEnd)/dur));
+            return (x,min) -> (float)(x.confMax() / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
     }
 
     /**
@@ -191,7 +188,7 @@ public final class Answer implements Timed, Predicate<Task> {
                         (t, m) -> {
                             float pri = t.pri(); // * t.originality();
                             if (pri == pri && pri > m)
-                                return (float) (pri / (1 + t.minTimeTo(start, end)));
+                                return (float) (pri / (1 + t.maxTimeTo(start, end)));
                                 //return (float) (pri / (1 + Math.log(1+t.minTimeTo(start, end))));
                             return Float.NaN;
                         };

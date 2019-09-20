@@ -82,7 +82,7 @@ public class TruthIntegration {
 		return t.evi() * (tStart == ETERNAL ?
 			qRange //qRange
 			:
-			(Math.min(qRange, 1 + t.end() - tStart)) / (1.0 + t.minTimeTo(qStart, qEnd)));
+			(Math.min(qRange, 1 + t.end() - tStart)) / (1.0 + t.maxTimeTo(qStart, qEnd)));
 			//((1 + t.end() - tStart)) / (1.0 + t.meanTimeTo(qStart, qEnd)));
 			//Math.min(range, t.range()) / (1 + t.minTimeTo(qStart, qEnd)));
 	}

@@ -228,14 +228,30 @@ public enum NALTruth implements TruthFunction {
                     Intersection.apply(T, B, minConf, n);
         }
     },
-
+    Pre() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions2.pre(T, B, false, minConf);
+        }
+    },
     PreWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.pre(T, B, true, minConf);
         }
     },
-
+    Post() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions2.post(T, B, true, minConf);
+        }
+    },
+    PostWeak() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions2.post(T, B, false, minConf);
+        }
+    },
     @Deprecated IntersectionPB() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
