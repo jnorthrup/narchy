@@ -56,7 +56,7 @@ public interface Variable extends Atomic, UnifyFirst {
                 }
                 xAssign = Unify.canPut(xop, yop);
             } else
-                xAssign = true;
+                xAssign = !y.containsRecursively(x);
 
             if (xAssign) {
                 if (u.putXY((Variable) x, y))
@@ -66,7 +66,7 @@ public interface Variable extends Atomic, UnifyFirst {
 
         if (y instanceof Variable) {
             Op yop;
-            if (u.var(yop = y.op()) && Unify.canPut(yop, x.op())) {
+            if (u.var(yop = y.op()) && Unify.canPut(yop, x.op() ) && !x.containsRecursively(y)) {
                 if (u.putXY((Variable) y, x))
                     return true;
             }
