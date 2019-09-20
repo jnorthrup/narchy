@@ -135,7 +135,7 @@ abstract public class ScalarReward extends Reward {
         float strength = 1;
         float cMin =
             //Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
-            cMax / 2;
+            cMax / 3;
         //RimplAPos.freq(goal.freq());
         //RimplANeg.freq(1 - goal.freq());
         RimplAPos.conf(cMin);

@@ -102,7 +102,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
 
         TermList yy = new TermList(this.yy);
         Subterms yy2 = u.resolveSubsRecurse(yy);
-        if (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2) {
+        if (yy2!=null && (xEllipsis!=this.xEllipsis || x!=this.x || yy!=yy2 )) {
 
             if (xEllipsis instanceof Ellipsis) {
 

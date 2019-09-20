@@ -21,10 +21,7 @@ import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
-import nars.term.atom.Int;
-import nars.term.atom.Keyword;
+import nars.term.atom.*;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
@@ -196,8 +193,7 @@ public class Derivation extends PreDerivation {
 	private transient short[] parentCause;
 
     /** evi avg */
-    private double eviDouble;
-    private double eviSingle;
+    private double eviDouble, eviSingle;
 
     private transient long[] stampDouble, stampSingle;
     private transient int taskUniqueAnonTermCount;
@@ -237,7 +233,8 @@ public class Derivation extends PreDerivation {
 
             @Override
             protected boolean intern(Atomic x) {
-                return  !(x instanceof Img) && !(x instanceof Keyword); //dont ANOM
+                //dont ANOM's:
+                return  !(x instanceof Img) && !(x instanceof Keyword);
             }
 
             @Override
@@ -258,23 +255,23 @@ public class Derivation extends PreDerivation {
     }
 
     static private void assertAnon(Term x, @Nullable Term y, @Nullable nars.Task cause) {
-        TermTransformException e = null;
+        TermTransformException e;
         if (y == null)
             e = new TermTransformException(x, null, "invalid Derivation Anon: null");
-        /* else if (y instanceof Bool)
-            e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");*/
+        else if (y instanceof Bool)
+            e = new TermTransformException(x, y, "invalid Derivation Anon: Bool");
         else if (y instanceof Neg)
             e = new TermTransformException(x, y, "invalid Derivation Anon: Neg");
         else if (NAL.DEBUG && x instanceof Compound && x.opID() != y.opID())
             e = new TermTransformException(x, y, "invalid Derivation Anon: Op changed");
         else if (NAL.DEBUG && x.volume() != y.volume())
             e = new TermTransformException(x, y, "invalid Derivation Anon: Volume Changed");
+        else
+            return;
 
-        if (e != null) {
-            if (cause != null)
-                cause.delete();
-            throw e;
-        }
+        if (cause != null)
+            cause.delete();
+        throw e;
     }
 
     /**

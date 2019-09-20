@@ -42,7 +42,7 @@ import static nars.Op.GOAL;
 public class TrackXY_NAR extends GameX {
 
     static boolean
-            sourceNumerics = false,
+            sourceNumerics = true,
             targetNumerics = false,
             targetCam = !targetNumerics,
             gui = true;

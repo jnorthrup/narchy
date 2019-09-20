@@ -39,10 +39,8 @@
     X, C, has(C,"--")                                      |-  conjAfter(C, --X),  (Belief:DeductionNP,     Time:TaskEvent)
 
     D, X, --isVar(X), has(D,"--")                   |-  --conjAfter(D, --X),  (Belief:DeductionNN, Time:BeliefEvent)
-      D, X, --isVar(X), has(D,"--"), --eventOf(D,X)     |-  --conjAfter(D, --X),  (Goal:DeductionWeakNN, Time:BeliefEvent)
 
     D, X, --isVar(X)                                |-  --conjAfter(D,   X),  (Belief:DeductionNP, Time:BeliefEvent)
-      D, X, --isVar(X), --eventOfNeg(D,X)                |-  --conjAfter(D,   X),  (Goal:DeductionWeakNP, Time:BeliefEvent)
 
     //sub-sequence leading to goal
     X, C, --conjParallel(C)                     |-  conjBefore(C,   X),  (Belief:DeductionPP,   Time:TaskEvent)
@@ -50,8 +48,8 @@
     X, C, has(C,"--"), --conjParallel(C)        |-  conjBefore(C, --X),  (Belief:DeductionNP,   Time:TaskEvent)
       C, X, has(C,"--"), --conjParallel(C)      |-  conjBefore(C, --X),  (Belief:DeductionPN, Time:BeliefEvent)
 
-    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)
-    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DeductionPN, Time:BeliefEvent)
+    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DesirePP, Time:BeliefEvent)
+    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DesirePN, Time:BeliefEvent)
     X, C                                                 |-  conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskEvent)
     X, C, has(C,"--")                                    |-  conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskEvent)
     X, C, --eventOfNeg(C,X), --conjParallel(C)           |-  conjAfter(C,   X),         (  Goal:DeductionWeakPP, Time:TaskEvent)

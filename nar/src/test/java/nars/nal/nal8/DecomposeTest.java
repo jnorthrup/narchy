@@ -4,6 +4,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
+import nars.time.Tense;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -134,7 +135,7 @@ abstract public class DecomposeTest extends NALTest {
                     .input("(||,a,b)!")
                     .input("--a.")
                     .mustGoal(cycles, "b", 1f, 0.81f)
-                    .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f, t -> true)
+                    .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f)
             ;
         }
 
@@ -188,6 +189,16 @@ abstract public class DecomposeTest extends NALTest {
                     .input("(&&, a, --b)! %0.9%")
                     .input("a. %0.9%")
                     .mustGoal(cycles, "b", 0.1f, 0.73f);
+        }
+
+        @Test
+        void testConjPos_NegCond() {
+            test
+                .termVolMax(3)
+                .confMin(0)
+                .goal("(&&, a, b)", Tense.Eternal, 1, 0.45f)
+                .believe("a", Tense.Eternal, 0.35f, 0.94f)
+                .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0, 1);
         }
 
     }
