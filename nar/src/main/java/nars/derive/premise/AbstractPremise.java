@@ -85,7 +85,7 @@ public class AbstractPremise implements Premise {
 	 * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
 	 */
 	@Nullable
-	public AbstractPremise match(int var, Derivation d, int matchTTL) {
+	public Premise match(int var, Derivation d, int matchTTL) {
 
 		Task task = (Task)this.task;
 		Term nextBeliefTerm = (Term) this.belief;

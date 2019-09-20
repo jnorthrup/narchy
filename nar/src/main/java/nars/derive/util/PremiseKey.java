@@ -6,10 +6,9 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.io.TermIO;
-import nars.unify.Unify;
 
 /** TODO use Gödel numbering to represent a term's unique dt's as independent but canonical numbers ? */
-public class PremiseKey extends ByteKeyExternalWithParameter<Unify> {
+public class PremiseKey extends ByteKeyExternalWithParameter<PreDerivation> {
 
     public PremiseKey(PreDerivation d) {
         this(d, ((Derivation)d).ditherDT);

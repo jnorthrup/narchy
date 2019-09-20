@@ -107,14 +107,6 @@ public final class Answer implements Timed, Predicate<Task> {
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
             return (x,min) -> (float)(x.confMax() / (1.0 + x.minTimeTo(qStart,qEnd)/dur));
     }
-    /** temporal distance to point magnitude */
-    private static double distanceMid(TaskRegion t, long now, double dur) {
-        return t.meanTimeTo(now)/(1+dur);
-    }
-
-//    private static double distanceMid(TaskRegion t, long qStart, long qEnd, double dur) {
-//        return t.meanTimeTo(qStart, qEnd)/(1+dur);
-//    }
 
     /**
      * for belief or goals (not questions / quests

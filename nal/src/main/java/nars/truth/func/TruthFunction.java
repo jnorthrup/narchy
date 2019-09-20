@@ -63,17 +63,34 @@ public interface TruthFunction {
      * */
     final class RepolarizedTruth extends ProxyTruthFunction {
 
-        final int task, belief;
+        final int taskPolarity, beliefPolarity;
         private final String suffix;
+        final boolean swap;
 
         RepolarizedTruth(TruthFunction o, int taskPolarity, int beliefPolarty, String suffix) {
+            this(o, taskPolarity, beliefPolarty, false, suffix);
+        }
+
+        RepolarizedTruth(TruthFunction o, int taskPolarity, int beliefPolarty, boolean swap, String suffix) {
             super(o);
-            this.task = taskPolarity; this.belief = beliefPolarty;
+            this.taskPolarity = taskPolarity; this.beliefPolarity = beliefPolarty;
             this.suffix = suffix;
+            this.swap = swap;
+        }
+
+        /** special handling for applying the polarization to the original inputs before swapping */
+        RepolarizedTruth swapped() {
+            assert(!swap);
+            return new RepolarizedTruth(o, beliefPolarity, taskPolarity,true,suffix);
         }
 
         @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, float minConf, NAL n) {
-            return o.apply(repolarize(T, task), repolarize(B, belief), minConf, n);
+            if (swap) {
+                @Nullable Truth x = T;
+                T = B;
+                B = x;
+            }
+            return o.apply(repolarize(T, taskPolarity), repolarize(B, beliefPolarity), minConf, n);
         }
 
         @Nullable private static Truth repolarize(@Nullable Truth t, int polarity) {
@@ -86,7 +103,7 @@ public interface TruthFunction {
         }
 
         @Override public final String toString() {
-            return o + suffix;
+            return o + suffix + (swap ? "X" : "");
         }
     }
 

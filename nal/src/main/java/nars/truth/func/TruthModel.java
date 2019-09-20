@@ -2,6 +2,7 @@ package nars.truth.func;
 
 import nars.term.Term;
 import nars.term.atom.Atomic;
+import nars.truth.func.TruthFunction.RepolarizedTruth;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -51,20 +52,20 @@ public class TruthModel {
 		_add(t); //default, no modifiers
 		_add(t, "PP"); //PP
 
-		_add(new TruthFunction.RepolarizedTruth(t, -1, +1, "N"));
-		_add(new TruthFunction.RepolarizedTruth(t, -1, +1, "NP"));
+		_add(new RepolarizedTruth(t, -1, +1, "N"));
+		_add(new RepolarizedTruth(t, -1, +1, "NP"));
 
-		_add(new TruthFunction.RepolarizedTruth(t, 0, 0, "DD"));
+		_add(new RepolarizedTruth(t, 0, 0, "DD"));
 
 		if (!t.single()) {
 
-			_add(new TruthFunction.RepolarizedTruth(t, +1, -1, "PN"));
-			_add(new TruthFunction.RepolarizedTruth(t, -1, -1, "NN"));
+			_add(new RepolarizedTruth(t, +1, -1, "PN"));
+			_add(new RepolarizedTruth(t, -1, -1, "NN"));
 
-			_add(new TruthFunction.RepolarizedTruth(t, +1, 0, "PD"));
-			_add(new TruthFunction.RepolarizedTruth(t, -1, 0, "ND"));
-			_add(new TruthFunction.RepolarizedTruth(t, 0, +1, "DP"));
-			_add(new TruthFunction.RepolarizedTruth(t, 0, -1, "DN"));
+			_add(new RepolarizedTruth(t, +1, 0, "PD"));
+			_add(new RepolarizedTruth(t, -1, 0, "ND"));
+			_add(new RepolarizedTruth(t, 0, +1, "DP"));
+			_add(new RepolarizedTruth(t, 0, -1, "DN"));
 		}
 	}
 
@@ -76,7 +77,8 @@ public class TruthModel {
 	protected void _add(TruthFunction t, String postfix) {
 		String name = t + postfix;
 		__add(name, t);
-		__add(name + "X", new TruthFunction.SwappedTruth(t));
+		__add(name + "X",
+			t instanceof RepolarizedTruth ?  ((RepolarizedTruth)t).swapped() : new TruthFunction.SwappedTruth(t));
 	}
 
 	private void __add(String name, TruthFunction t) {

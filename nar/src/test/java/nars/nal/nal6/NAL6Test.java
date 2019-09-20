@@ -563,6 +563,7 @@ public class NAL6Test extends NALTest {
             .mustBelieve(cycles, "((#1 --> lock) && open({key1}, #1))", 1.00f, 0.81f);
     }
 
+
     @Test
     void second_level_variable_unification_neg() {
         /* there is a lock which is opened by all non-keys */
@@ -691,6 +692,7 @@ public class NAL6Test extends NALTest {
             .believe("(x($1)==>y($1))", 0.75f, 0.9f)
             .goal("x(a)", Tense.Eternal, 1.00f, 0.90f)
             .mustGoal(cycles, "y(a)", 0.75f, 0.45f)
+//            .mustGoal(cycles, "y(a)", 0.25f, 0.1f)
         ;
     }
 

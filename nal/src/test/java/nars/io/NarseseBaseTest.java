@@ -575,7 +575,7 @@ class NarseseBaseTest extends NarseseTest {
 
 
     @Test void EllipsisMatch_Fragment() {
-        assertEq("`a,b,c`", Fragment.fragment($$("a"), $$("b"), $$("c")));
+        assertEq("`a,b,c`", Fragment.fragment(new Term[] { $$("a"), $$("b"), $$("c")}) );
         assertEq("`a,b,c`", "`a,b,c`");
         assertEquals(FRAG, $$("`a,b,c`").op());
         assertEquals(3, $$("`a,b,c`").subs());

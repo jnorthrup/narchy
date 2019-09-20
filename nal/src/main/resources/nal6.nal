@@ -31,7 +31,6 @@
         B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:AbductionRecursivePP, Time:TaskEvent)
         B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:AbductionRecursiveNP, Time:TaskEvent)
 
-
         //B, (--X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Goal:DesireNP, Time:TaskEvent)
         //B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |- --unisubst(C,X,B,"$"),  (Goal:AbductionPN, Time:TaskEvent)
         //B, (--X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |- --unisubst(C,X,B,"$"),  (Goal:AbductionNN, Time:TaskEvent)
@@ -69,7 +68,8 @@
 
 
        //second layer
-       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,polarizeBelief(X),A..+), C, polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
+       B, (A ==> X), is(A,"&&")       |-   conjWithoutUnify((polarizeBelief(X) && A),polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
+       //B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,polarizeBelief(X),A..+), C, polarizeTask(B)), (Belief:DeductionDD, Time:TaskEvent)
 //       B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,X,A..+),C,  polarizeTask(B)), (Belief:DeductionDP, Time:TaskEvent)
 //        B, ((&&,C,A..+) ==> X), neq(B,C), --isVar(C)       |-   unisubst((&&,--X,A..+),C,  polarizeTask(B)), (Belief:DeductionDN, Time:TaskEvent)
 

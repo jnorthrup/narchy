@@ -759,7 +759,7 @@ public interface Compound extends Term, IPair, Subterms {
                 } else
                     Util.nop();
             }
-            if (ydt!=XTERNAL && xdt==ydt && dtSpecial(ydt)) {
+            if (xdt == ydt && ydt != XTERNAL && dtSpecial(ydt)) {
                 int xs = x.subs();
                 if (ys == xs){
                     //pre-sort because it may be identical

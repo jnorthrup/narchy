@@ -1,8 +1,6 @@
 package nars.derive.adjacent;
 
-import jcog.TODO;
 import jcog.data.list.table.Table;
-import nars.NAL;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.concept.snapshot.TaskLinkSnapshot;
@@ -22,7 +20,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 
 	protected boolean cache(Term target) {
 		//return target instanceof Atom;
-		return target.volume() <= 5;
+		return target.volume() <= 3;
 	}
 
 	@Override
@@ -62,13 +60,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 			if (match == null || match.isEmpty())
 				return null;
 
-			Term result = match.sample(x -> !from.equals(x.from()), punc, d.random);
-			if (result!=null && (result.equals(from))) {
-				if (NAL.DEBUG)
-					throw new TODO();
-				result = null; //HACK throw new WTF();
-			}
-			return result;
+			return match.sample(x -> !from.equals(x.from()), punc, d.random);
 		} else {
 
 			return DirectTangent.the.adjacent(from, to, punc, links, d);

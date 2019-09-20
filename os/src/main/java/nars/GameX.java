@@ -79,7 +79,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = false;
+    static final boolean initMeta = true;
     static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
@@ -301,7 +301,7 @@ abstract public class GameX extends Game {
         return new NARS()
 
                 .what(
-                        (w) -> new TaskLinkWhat(w, 1024,
+                        (w) -> new TaskLinkWhat(w, 512,
                                 //1024,
                                 new PriBuffer.DirectTaskBuffer()
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
@@ -353,7 +353,7 @@ abstract public class GameX extends Game {
                                         //32*1024
                                         //64 * 1024
                                         //128*1024
-                                        Math.round(ramGB * 128 * 1024)
+                                        Math.round(ramGB * 256 * 1024)
                                 )
                                 :
                                 CaffeineMemory.soft()

@@ -141,25 +141,7 @@ public interface LongInterval {
 		return (start == ETERNAL) || (start == when) || ((when >= start) && (when <= end()));
 	}
 
-	/**
-	 * finds the nearest point inside this interval to the provided point, which may
-	 * intersect or not with this interval.
-	 */
-	default long nearestPointInternal(long x) {
-		long s = start();
-		if (s == ETERNAL)
-			return ETERNAL;
-		long e = end();
-		if (s <= x && e >= x)
-			return x;
-		else {
-			long m = (s + e) / 2L;
-			if (Math.abs(m - x) <= Math.abs(m - x))
-				return s;
-			else
-				return e;
-		}
-	}
+
 
 	/**
 	 * finds the nearest point inside this interval to the provided range, which may be
@@ -195,28 +177,11 @@ public interface LongInterval {
 		}
 	}
 
-	static long minTimeTo(LongInterval x, long when) {
-		long s = x.start();
-		if (s == ETERNAL || s == when)
-			return 0;
-
-		//assert (when != ETERNAL);
-		long e = x.end();
-
-		return minTimeTo(when, s, e);
-	}
 
 	static long minTimeTo(long when, long s, long e) {
-		if (s <= when && e >= when)
-			//internal
-			return 0;
-		else {
-			//external
-			long ds = Math.abs(s - when);
-			return s == e ?
-				ds :
-				Math.min(ds, Math.abs(e - when));
-		}
+		return (s <= when && e >= when) ?
+			0 /* internal */ :
+			Math.min(Math.abs(s - when), Math.abs(e - when)); /* external */
 	}
 
 
@@ -234,10 +199,6 @@ public interface LongInterval {
 	 */
 	default long minTimeTo(long a, long b) {
 
-		//return minTimeTo(this, a, b);
-
-		//assert (b >= a): a + " > " + b;
-
 		if (a == ETERNAL)
 			return 0;
 
@@ -246,21 +207,21 @@ public interface LongInterval {
 			return 0;
 
 		if (a == TIMELESS || s == TIMELESS)
-		    return TIMELESS;
-		//assert (a != TIMELESS && s != TIMELESS);
-
-		//if (!intersectsRaw(a, b, s, e)) {
-		long sa = Math.abs(s - a);
+			return TIMELESS;
 
 		long e = end();
+		if (e!=s) {
+			//check for intersects
+			if (intersectsRaw(a,b,s,e))
+				return 0;
+		}
 
+
+		long sa = Math.abs(s - a);
 		if (a == b) {
 			return s == e ? sa : Math.min(sa, Math.abs(e - b));
 		} else {
-			long sb = Math.abs(s - b);
-			if (sb == 0)
-				return 0;
-			long sab = Math.min(sa, sb);
+			long sab = Math.min(sa, Math.abs(s - b));
 			return s == e ? sab : Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
 		}
 		//} else {
@@ -268,47 +229,19 @@ public interface LongInterval {
 		//}
 	}
 
-	static long minTimeTo(LongInterval x, long a, long b) {
 
-		//assert (b >= a): a + " > " + b;
 
-		if (a == ETERNAL)
-			return 0;
 
-		long s = x.start();
-		if (s == ETERNAL)
-			return 0;
-
-		long e = x.end();
-		assert (a != TIMELESS && s != TIMELESS);
-		if (intersectsRaw(a, b, s, e)) {
-			return 0;
-		} else {
-			long sa = Math.abs(s - a);
-			if (a == b) {
-				return s == e ? sa : Math.min(sa, Math.abs(e - b));
-			} else {
-				long sab = Math.min(sa, Math.abs(s - b));
-				return s == e ? sab : Math.min(sab, Math.min(Math.abs(e - a), Math.abs(e - b)));
-
-			}
-		}
-	}
-
-	default long meanTimeTo(LongInterval i) {
-		if (i == this) return 0;
-		return meanTimeTo(i.start(), i.end());
-	}
-
-	default long meanTimeTo(long is, long ie) {
-		return is == ie ? meanTimeTo(is) : (meanTimeTo(is) + meanTimeTo(ie)) / 2;
-	}
 
 	default long meanTimeTo(long x) {
-		if (x == ETERNAL) return 0;
+		if (x == ETERNAL)
+			return 0;
 		long start = start();
-		if (start == ETERNAL) return 0;
+		if (start == ETERNAL || start == x) return 0;
 		long end = end();
+		if (x <= end && x >= start)
+			return 0; //contained
+
 		long distToStart = Math.abs(start - x);
 		if (end == start) {
 			return distToStart;

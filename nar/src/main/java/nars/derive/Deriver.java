@@ -135,10 +135,6 @@ public class Deriver extends How {
 		return (float) v;
 	}
 
-	public final short[] what(PreDerivation d) {
-		return rules.pre.apply(d);
-	}
-
 	public abstract static class DeriverExecutor {
 
 		protected Derivation d;

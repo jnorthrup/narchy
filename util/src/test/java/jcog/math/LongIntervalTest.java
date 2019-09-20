@@ -77,4 +77,35 @@ class LongIntervalTest {
         assertEquals(1546, t.nearestPointExternal(1546, 1546));
     }
 
+    @Test void testMinTimeTo() {
+        Longerval t = new Longerval(1530, 1545);
+        assertEquals(0, t.minTimeTo(1530)); //left edge
+        assertEquals(0, t.minTimeTo(1537)); //internal
+        assertEquals(0, t.minTimeTo(1545)); //right edge
+
+        assertEquals(10, t.minTimeTo(1520)); //before
+        assertEquals(10, t.minTimeTo(1555)); //after
+
+        assertEquals(0, t.minTimeTo(ETERNAL)); //eternal
+    }
+
+    @Test void testMinTimeToRange() {
+        Longerval t = new Longerval(1530, 1545);
+        assertEquals(0, t.minTimeTo(1530,1532)); //internal
+        assertEquals(0, t.minTimeTo(1520,1531)); //intersect
+        assertEquals(5, t.minTimeTo(1520,1525)); //disjoint before
+    }
+
+    @Test void testMeanTimeTo() {
+        Longerval t = new Longerval(1530, 1545);
+        assertEquals(0, t.meanTimeTo(1530)); //left edge
+        assertEquals(0, t.meanTimeTo(1537)); //internal
+        assertEquals(0, t.meanTimeTo(1545)); //right edge
+
+        assertEquals(17, t.meanTimeTo(1520)); //before
+        assertEquals(13, t.meanTimeTo(1551)); //after
+
+        assertEquals(0, t.meanTimeTo(ETERNAL)); //eternal
+    }
+
 }

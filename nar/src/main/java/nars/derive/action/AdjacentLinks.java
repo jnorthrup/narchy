@@ -1,5 +1,7 @@
 package nars.derive.action;
 
+import jcog.WTF;
+import nars.NAL;
 import nars.Op;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
@@ -43,9 +45,11 @@ public class AdjacentLinks extends TaskAction {
 		Term reverse = adj.adjacent(from.root(), to.root(), task.punc(), ((TaskLinkWhat)d.what).links, d);
 
 		if (reverse != null) {
-			assert (!reverse.equals(from));
-			assert (!reverse.equals(to));
 			assert (reverse.op().conceptualizable);
+			if (NAL.DEBUG) {
+				if (reverse.equals(from)) throw new WTF();
+				if (reverse.equals(to)) throw new WTF();
+			}
 
 			//extra links: dont seem necessary
 			//links.grow(link, link.from(), reverse, task.punc());

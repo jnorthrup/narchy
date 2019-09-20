@@ -439,14 +439,14 @@ public class TermBuffer {
             if (y == null || y == Bool.Null)
                 return false;
             else {
-                if (y.op() == FRAG) {
+                if (y instanceof Fragment) {
                     Subterms s = y.subterms();
                     if (s.subs() > 0) {
                         Subterms s2 = s.transformSubs(f, null);
                         if (s2 != s) {
                             if (s2 == null)
                                 return false;
-                            y = new Fragment(s2);
+                            y = Fragment.fragment(s2);
                         }
                     }
                 }

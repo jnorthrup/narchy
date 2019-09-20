@@ -15,18 +15,27 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
  *  this is returned as a short[] of conclusions id's. */
 @FunctionalInterface public interface PreDeriver extends Function<PreDerivation,short[]> {
 
-    /** memory-less, evaluated exhaustively each */
-    PreDeriver DIRECT_DERIVATION_RUNNER = p->p.preDerive().toArray();
+    /** memory-less, evaluated exhaustively each (can re-use the array result) */
+    PreDeriver DIRECT_DERIVATION_RUNNER = p -> p.preDerive().toArray();
 
+    /** runs, and clones so no possibilty of sharing array result */
+    static short[] run(PreDerivation d) {
+        return d.preDerive().toArray(true);
+    }
+
+    static short[] run(PremiseKey d) {
+        return run(d.x);
+    }
 
     final class CentralMemoizer implements PreDeriver {
 
         final ByteHijackMemoize<PremiseKey, short[]> whats;
 
         public CentralMemoizer() {
-            whats = Memoizers.the.memoizeByte(this + "_" + PreDeriver.class.getSimpleName(),
-                    Memoizers.DEFAULT_MEMOIZE_CAPACITY,
-                    bd -> ((PreDerivation) bd.x).preDerive().toArray(true));
+            whats = Memoizers.the.memoizeByte(
+                this + "_" + PreDeriver.class.getSimpleName(),
+                   Memoizers.DEFAULT_MEMOIZE_CAPACITY,
+                   PreDeriver::run);
         }
 
         @Override
@@ -34,7 +43,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             if (intern(d)) {
                 return whats.apply(new PremiseKey(d));
             } else {
-                return d.preDerive().toArray(true);
+                return PreDeriver.run(d);
             }
         }
 
@@ -48,6 +57,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
     }
 
 
+
     /** experimental: caches the memoizations in Concept meta maps.
      *  this is likely wasteful even though it attempts to use Soft ref's
      *  TODO use Concept Snapshot API
@@ -59,7 +69,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
             "ConceptMetaMemoizer" + d.deriver.id.toString(), d.time(), -1, (c, w) -> {
             if (w == null) {
                 int capacity = 512;
-                w = new ByteHijackMemoize<>(k -> ((PreDerivation) k.x).preDerive().toArray(true),
+                w = new ByteHijackMemoize<>(PreDeriver::run,
                     capacity,
                     DEFAULT_HIJACK_REPROBES, false);
             }
@@ -69,7 +79,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         if (whats!=null)
             return whats.apply(new PremiseKey(d));
         else
-            return preDerivation.preDerive().toArray(false); //failsafe
+            return run(preDerivation); //failsafe
     };
 
 }

@@ -284,12 +284,25 @@ public abstract class AbstractTaskLink implements TaskLink {
     @Override
     public void priMult(float belief, float goal, float question, float quest) {
         boolean changed;
-        changed = apply(0, belief, mult, Changed) != 0;
+        changed  = apply(0, belief, mult, Changed) != 0;
         changed |= apply(1, goal, mult, Changed) != 0;
         changed |= apply(2, question, mult, Changed) != 0;
         changed |= apply(3, quest, mult, Changed) != 0;
         if (changed)
             invalidate();
+    }
+
+
+    @Nullable public final Term matchReverse(Term from, int fromHash, Term to, int toHash) {
+        int f = fromHash();
+        if (f != fromHash &&
+            f != toHash &&
+            toHash() == toHash &&
+            to.equals(this.to) &&
+            !from.equals(this.from))
+                return this.from;
+        else
+            return null;
     }
 
 //    @Override

@@ -11,7 +11,6 @@ import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collection;
 import java.util.SortedSet;
 
 import static nars.Op.FRAG;
@@ -22,28 +21,38 @@ import static nars.time.Tense.DTERNAL;
  */
 public final class Fragment extends LightCompound {
 
+    public static Term fragment(SortedSet<Term> x) {
+        int num = x.size();
+        switch (num) {
+            case 0:
+                return empty;
+            case 1:
+                return x.first();
+            default:
+                return new Fragment(x.toArray(Op.EmptyTermArray));
+        }
+    }
+    public static Term fragment(/*@NotNull*/ Subterms y, int from, int to) {
+        int len = to-from;
+        switch (len) {
+            case 0:
+                return Fragment.empty;
+            case 1:
+                return y.sub(from);
+            default:
+                return fragment(y.subRangeArray(from, to));
+        }
+    }
+
+    public static Term fragment(Subterms s) {
+        return fragment(s, 0, s.subs());
+    }
+
+
     public final static Compound empty = CachedCompound.newCompound(Op.FRAG, DTERNAL, Op.EmptyProduct);
 
-//    private Fragment() {
-//        super(FRAG.id, EmptySubterms);
-//    }
 
-    public Fragment(Subterms x) {
-        super(FRAG.id, x);
-        assert(x.subs() > 1 || (x.subs() == 0 && empty == null /* HACK */));
-    }
-
-    private Fragment(Term[] x) {
-        super(FRAG, x);
-        assert(x.length > 1 || (x.length == 0 && empty == null /* HACK */));
-    }
-
-    private Fragment(Collection<Term> x) {
-        this(x.toArray(Op.EmptyTermArray));
-    }
-
-
-    public static Term fragment(Term... x) {
+    public static Term fragment(Term[] x) {
 
         switch (x.length) {
             case 0:
@@ -56,19 +65,17 @@ public final class Fragment extends LightCompound {
 
     }
 
-
-
-    public static Term fragment(SortedSet<Term> x) {
-        int num = x.size();
-        switch (num) {
-            case 0:
-                return empty;
-            case 1:
-                return x.first();
-            default:
-                return new Fragment(x);
-        }
+    private Fragment(Subterms x) {
+        super(FRAG.id, x);
+        assert(x.subs() > 1 || (x.subs() == 0 && empty == null /* HACK */));
     }
+
+    private Fragment(Term[] x) {
+        super(FRAG, x);
+        assert(x.length > 1 || (x.length == 0 && empty == null /* HACK */));
+    }
+
+
 
     public static Term matchedExcept(Subterms matched, byte... except) {
 
@@ -100,7 +107,6 @@ public final class Fragment extends LightCompound {
 
         Term[] t = new Term[ml];
 
-
         int j = 0;
         main:
         for (int i = 0; i < ll; i++) {
@@ -111,19 +117,6 @@ public final class Fragment extends LightCompound {
             t[j++] = matched[i];
         }
         return fragment(t);
-    }
-
-    public static Term fragment(/*@NotNull*/ Subterms y, int from, int to) {
-
-        int len = to-from;
-        switch (len) {
-            case 0:
-                return Fragment.empty;
-            case 1:
-                return y.sub(from);
-            default:
-                return fragment(y.subRangeArray(from, to));
-        }
     }
 
 

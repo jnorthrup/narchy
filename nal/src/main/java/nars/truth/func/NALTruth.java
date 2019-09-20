@@ -28,7 +28,7 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    @AllowOverlap DeductionWeak() {
+    DeductionWeak() {
 		@Override
 		public Truth apply(Truth T, Truth B, float minConf, NAL n) {
 			return TruthFunctions.deduction(T, B, false, minConf);

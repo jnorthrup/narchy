@@ -18,7 +18,7 @@ C, Y, is(C,"&&"), has(C,"#"), neq(C,Y), --isVar(Y), has(C,"--")  |- conjWithoutU
 C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:AskAll)
 
 
-((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDD, Time:TaskEvent)
+//((&&,B,A..+) ==> X), (E ==> Y)          |-    unisubst((&&,A..+),(polarizeTask(X) && B),(polarizeBelief(Y) && E)), (Belief:AbductionDD, Time:TaskEvent)
 
     //Conditional Abduction via Multi-conditional Syllogism
     (C ==> X), (E ==> Y), eventOf(C,E)      |-    conjWithout(C,E), (Belief:AbductionPB, Time:Compose)
@@ -64,13 +64,13 @@ C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:As
 
 //      ex: ((f(x) && f($1)) ==> g($1))  |-   (f(x) ==> g(x))
 
-    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y), --isVar(X), --isVar(Y)   |- unisubst(((&&,X,Y,A..*) ==> Z),X,Y,novel), (Belief:StructuralReduction)
-      ((&&,X,--Y,A..*) ==> Z), X, --isVar(X), --isVar(Y)   |- unisubst(((&&,X,--Y,A..*) ==> Z),X,Y,novel), (Belief:StructuralReduction)
-    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y), --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,Y,A..*)),X,Y,novel), (Belief:StructuralReduction)
-      (Z ==> (&&,X,--Y,A..*)), X, --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,--Y,A..*)),X,Y,novel), (Belief:StructuralReduction)
-
-    (&&,X,Y,A..*), X, neq(X,Y), --isVar(X), --isVar(Y)       |- unisubst((&&,X,Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-      (&&,X,--Y,A..*), X, --isVar(X), --isVar(Y)   |- unisubst((&&,X,--Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//    ((&&,X,Y,A..*) ==> Z), X, neq(X,Y), --isVar(X), --isVar(Y)   |- unisubst(((&&,X,Y,A..*) ==> Z),X,Y,novel), (Belief:StructuralReduction)
+//      ((&&,X,--Y,A..*) ==> Z), X, --isVar(X), --isVar(Y)   |- unisubst(((&&,X,--Y,A..*) ==> Z),X,Y,novel), (Belief:StructuralReduction)
+//    (Z ==> (&&,X,Y,A..*)), X, neq(X,Y), --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,Y,A..*)),X,Y,novel), (Belief:StructuralReduction)
+//      (Z ==> (&&,X,--Y,A..*)), X, --isVar(X), --isVar(Y)    |- unisubst((Z ==> (&&,X,--Y,A..*)),X,Y,novel), (Belief:StructuralReduction)
+//
+//    (&&,X,Y,A..*), X, neq(X,Y), --isVar(X), --isVar(Y)       |- unisubst((&&,X,Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
+//      (&&,X,--Y,A..*), X, --isVar(X), --isVar(Y)   |- unisubst((&&,X,--Y,A..*),X,Y,novel), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 //implication comparison: common cause or common effect
 (X==>Z), (Y==>Z), neqPN(X,Y), hasBelief(), task(".") |- ((X && --Y) ==> Z), (Punctuation:Question, Time:Compose)

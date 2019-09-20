@@ -1,5 +1,6 @@
 package nars.derive.adjacent;
 
+import jcog.WTF;
 import nars.derive.Derivation;
 import nars.link.AbstractTaskLink;
 import nars.link.TaskLinks;
@@ -20,23 +21,17 @@ public class DirectTangent implements AdjacentConcepts {
 	@Override
 	public Term adjacent(Term from, Term to, byte punc, TaskLinks links, Derivation d) {
 
-		int fromHash = from.hashCodeShort(), toHash = to.hashCodeShort();
+		int fromHash = from.hashCodeShort();
+		int toHash = to.hashCodeShort();
 
 		final Term[] T = {null};
 		links.sampleUnique(d.random, y -> {
-			if (!y.isSelf()) {
-				AbstractTaskLink Y = (AbstractTaskLink) y;
-				if (Y.toHash() == toHash && (Y.fromHash() != fromHash)) {
-					Term yt = y.to();
-					if (to.equals(yt)) {
-						Term yf = y.from();
-						if (!from.equals(yf)) {
-							//if (!term.equals(f)) //extra test to be sure
-							T[0] = yf;
-							return false; //done
-						}
-					}
-				}
+			AbstractTaskLink Y = (AbstractTaskLink) y;
+			Term z = Y.matchReverse(from, fromHash, to, toHash);
+			if (z!=null) {
+				//if (!term.equals(f)) //extra test to be sure
+				T[0] = z;
+				return false; //done
 			}
 			return true;
 		});

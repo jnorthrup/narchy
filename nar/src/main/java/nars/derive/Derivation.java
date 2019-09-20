@@ -626,27 +626,26 @@ public class Derivation extends PreDerivation {
 
     }
 
-    /** loads the premise and determines the set of CAN-execute pathways */
-    private short[] apply(Premise p) {
-        reset(p.task(), p.belief(), p.beliefTerm());
-        return deriver.what(this);
-    }
-
     /** returns appropriate Emotion counter representing the result state  */
     public FastCounter _derive(Premise P, int deriveTTL) {
 
-        Premise p = P instanceof AbstractPremise ?
-            ((AbstractPremise)P).match(Deriver.PremiseUnifyVars,this, nar.premiseUnifyTTL.intValue()) :
-            P;
+        Premise p;
+        if (P instanceof AbstractPremise) {
+            try (var __ = nar.emotion.derive_B_PremiseMatch.time()) {
+                p = ((AbstractPremise) P).match(Deriver.PremiseUnifyVars, this, nar.premiseUnifyTTL.intValue());
+            }
+        } else
+            p = P;
 
         short[] can;
 
         try (var __ = nar.emotion.derive_C_Pre.time()) {
 
-            can = apply(p);
+            reset(p.task(), p.belief(), p.beliefTerm());
+
+            can = deriver.rules.pre.apply(this);
             if (can.length == 0)
                 return nar.emotion.premiseUnderivable1;
-
         }
 
         int valid = 0, lastValid = -1;

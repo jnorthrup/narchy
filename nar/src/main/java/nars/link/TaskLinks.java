@@ -65,7 +65,7 @@ public class TaskLinks implements Sampler<TaskLink> {
     /**
      * capacity of the links bag
      */
-    public final IntRange linksMax = new IntRange(256, 0, 8192) {
+    public final IntRange linksMax = new IntRange(256, 0, 2048) {
         @Override
         @Deprecated
         protected void changed() {
