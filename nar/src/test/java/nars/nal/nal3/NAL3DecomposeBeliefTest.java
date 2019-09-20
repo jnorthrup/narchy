@@ -20,54 +20,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
 
     static final int cycles = 1350;
 
-    @ValueSource(floats = { 0.7f, 0.8f, 0.9f })
-    @ParameterizedTest
-    void compound_decomposition_two_premises_Negative_DiffIntensional(float freq) {
-        String known = "(robin --> swimmer)";
-        String composed = "--(robin --> (mammal && swimmer))";
-        String unknown = "(robin --> mammal)";
 
-        TestNAR test = testDecomposeNegDiff(freq, known, composed, unknown);
-
-        //test.mustNotOutput(cycles, "<robin --> --swimmer>", BELIEF, 0, 1, 0, 1, ETERNAL);
-
-        //test neqRCom
-        test.mustNotOutput(cycles, "((mammal-swimmer)-->swimmer)", BELIEF, 0, 1, 0, 1, ETERNAL);
-        test.mustNotOutput(cycles, "((mammal-swimmer)-->mammal)", BELIEF, 0, 1, 0, 1, ETERNAL);
-    }
-
-    @ValueSource(floats = { 0.7f, 0.8f, 0.9f /* TODO 1f should produce no output, add special test case */})
-    @ParameterizedTest
-    void compound_decomposition_two_premises_Negative_DiffExtensional(float freq) {
-        String known = "(b-->x)";
-        String composed = "--((a && b) --> x)";
-        String unknown = "(a --> x)";
-
-        testDecomposeNegDiff(freq, known, composed, unknown);
-    }
-
-    private TestNAR testDecomposeNegDiff(float freq, String known, String composed, String unknown) {
-        test
-                .termVolMax(8)
-                .confMin(0.5f)
-                .believe(known, freq, 0.9f)
-                .believe(composed, 0.0f, 0.9f)
-        ;
-
-//        if (freq == 0 || freq == 1) {
-//            //0.81 conf
-//            test.mustBelieve(cycles, unknown, freq, 0.81f);
-//        } else {
-            test.mustBelieve(cycles, unknown, freq, freq, 0, 0.81f); //up to 0.81 conf
-//        }
-
-//        float confThresh = 0.15f;
-//        if (freq > 0)
-//            test.mustNotOutput(cycles, known, BELIEF, 0, freq - Param.truth.TRUTH_EPSILON, confThresh, 1, ETERNAL);
-//        if (freq < 1)
-//            test.mustNotOutput(cycles, known, BELIEF, freq + Param.truth.TRUTH_EPSILON, 1, confThresh, 1, ETERNAL);
-        return test;
-    }
     @Test
     void diff_compound_decomposition_single3_intersect() {
         test.termVolMax(8);
@@ -108,6 +61,33 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
         tester.believe("((dinosaur && ant) --> youth)", 0.9f, 0.9f);
         tester.mustBelieve(cycles, "(dinosaur --> youth)", 0.9f, 0.73f);
 
+    }
+
+    @Test void sect_compound_decomposition_double_pred_union() {
+        /*
+        <robin --> (|,bird,swimmer)>. 'Robin is a type of bird or a type of swimmer.
+        <robin --> swimmer>. %0.00% 'Robin is not a type of swimmer.
+        |-
+        <robin --> bird>. %1.00;0.81% 'Robin is a type of bird.
+        */
+        test.believe("(robin --> (bird|swimmer))");
+        test.believe("--(robin --> swimmer)");
+        test.mustBelieve(cycles, "(robin --> bird)", 1f, 0.81f);
+        test.mustNotOutput(cycles, "(robin --> bird)", BELIEF, 0f, 0.5f, 0, 1)
+        ;
+    }
+    @Test void sect_compound_decomposition_double_pred_diff() {
+        /*
+        <robin --> swimmer>. %0.00% 'Robin is not a type of swimmer.
+        <robin --> (-,mammal,swimmer)>. %0.00% 'Robin is not a nonswimming mammal.
+        |-
+        ''outputMustContain('<robin --> mammal>. %0.00;0.81%') 'Robin is not a type of mammal.
+        */
+        test.believe("(robin --> (swimmer && --mammal))");
+        test.believe("--(robin --> swimmer)");
+        test.mustBelieve(cycles, "--(robin --> mammal)", 1f, 0.81f);
+        test.mustNotOutput(cycles, "(robin --> mammal)", BELIEF, 0.5f, 1f, 0, 1)
+        ;
     }
 
 

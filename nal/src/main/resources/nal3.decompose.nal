@@ -9,8 +9,8 @@
   //(I <-> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) <-> M)), (Belief:StructuralDeductionDD)
 
 //Self Factor
-(X --> Y), (X --> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) --> conjWithout(Y,X))), (Belief:StructuralReduction,Goal:StructuralReduction)
-  (X <-> Y), (X <-> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) <-> conjWithout(Y,X))), (Belief:StructuralReduction,Goal:StructuralReduction)
+(X --> Y), (X --> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) --> conjWithout(Y,X))), (Belief:StructuralReduction)
+  (X <-> Y), (X <-> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) <-> conjWithout(Y,X))), (Belief:StructuralReduction)
 
 
 //NAL3 single premise question/quest decompose
@@ -27,23 +27,26 @@
     //(S --> M), ((&,S,A_1..n) --> M) |- ((&,A_1..n) --> M), (Truth:DecomposeNegativePositivePositive)
 
 //predicate (intensional)
-(M --> C), (M --> X),  eventOf(C,X)       |-    --(M-->conjWithout(C,   X)), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)
+//  (M --> D), (M --> X),  eventOf(D,X)     |-  (M-->conjWithout(D,   X)), (Belief:DeductionPP, Time:Task)
+//   (M --> X), (M --> D),  eventOf(D,X)     |-  (M-->conjWithout(D,   X)), (Belief:DeductionPP, Time:Task)
+//  (M --> D), (M --> X),  eventOfNeg(D,X)  |-    (M-->conjWithout(D, --X)), (Belief:DeductionPN, Time:Task)
+//   (M --> X), (M --> D),  eventOfNeg(D,X)  |-    (M-->conjWithout(D, --X)), (Belief:DeductionNP, Time:Task)
+
+(M --> C), (M --> X),  eventOf(C,X)       |-    --(M-->conjWithout(C,   X)), (Belief:DeductionNP, Time:Task)
   (M --> X), (M --> C),  eventOf(C,X)     |-    --(M-->conjWithout(C,   X)), (Belief:DeductionPN, Time:Task)
-(M --> C), (M --> X),  eventOfNeg(C,X)    |-   --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
+(M --> C), (M --> X),  eventOfNeg(C,X)    |-   --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Time:Task)
  (M --> X), (M --> C),  eventOfNeg(C,X)   |-  --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Time:Task)
 
-  (M --> D), (M --> X),  eventOfNeg(D,X)  |-    (M-->conjWithout(D, --X)), (Belief:DeductionPN, Goal:DeductionPN, Time:Task)
-   (M --> X), (M --> D),  eventOfNeg(D,X)  |-    (M-->conjWithout(D, --X)), (Belief:DeductionNP, Time:Task)
-  (M --> D), (M --> X),  eventOf(D,X)     |-  (M-->conjWithout(D,   X)), (Belief:DeductionPP, Goal:DeductionPP, Time:Task)
-   (M --> X), (M --> D),  eventOf(D,X)     |-  (M-->conjWithout(D,   X)), (Belief:DeductionPP, Time:Task)
+
 
 //subject (extensional)
-(C --> M), (X --> M),  eventOf(C,X)       |-   --(conjWithout(C,   X)-->M), (Belief:DeductionNP, Goal:DeductionNP, Time:Task)
+// (D --> M), (X --> M),  eventOf(D,X)     |-   (conjWithout(D,   X)-->M), (Belief:DeductionPP, Time:Task)
+//   (X --> M), (D --> M),  eventOf(D,X)     |-   (conjWithout(D,   X)-->M), (Belief:DeductionPP, Time:Task)
+//  (D --> M), (X --> M),  eventOfNeg(D,X)  |-    (conjWithout(D, --X)-->M), (Belief:DeductionPN, Time:Task)
+//   (X --> M), (D --> M),  eventOfNeg(D,X)  |-   (conjWithout(D, --X)-->M), (Belief:DeductionNP, Time:Task)
+
+(C --> M), (X --> M),  eventOf(C,X)       |-   --(conjWithout(C,   X)-->M), (Belief:DeductionNP, Time:Task)
  (X --> M), (C --> M),  eventOf(C,X)       |-  --(conjWithout(C,   X)-->M), (Belief:DeductionPN, Time:Task)
-(C --> M), (X --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Goal:DeductionNN, Time:Task)
+(C --> M), (X --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
  (X --> M), (C --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
 
-  (D --> M), (X --> M),  eventOfNeg(D,X)  |-    (conjWithout(D, --X)-->M), (Belief:DeductionPN, Goal:DeductionPN, Time:Task)
-   (X --> M), (D --> M),  eventOfNeg(D,X)  |-   (conjWithout(D, --X)-->M), (Belief:DeductionNP, Time:Task)
-  (D --> M), (X --> M),  eventOf(D,X)     |-   (conjWithout(D,   X)-->M), (Belief:DeductionPP, Goal:DeductionPP, Time:Task)
-   (X --> M), (D --> M),  eventOf(D,X)     |-   (conjWithout(D,   X)-->M), (Belief:DeductionPP, Time:Task)

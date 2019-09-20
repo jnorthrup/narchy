@@ -198,8 +198,8 @@ public class Deriver extends How {
 
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
-        int premisesPerIter = 3;
-        int capacity = premisesPerIter;
+        int premisesPerIter = 4;
+        int capacity = 8;
 
 		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
 		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
@@ -214,7 +214,7 @@ public class Deriver extends How {
 		public void next() {
 
             //novel.clear();
-			queue.clear();
+			//queue.clear();
 
             Premise p = premise();
             if (p!=null)
