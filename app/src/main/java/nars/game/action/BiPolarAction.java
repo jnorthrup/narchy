@@ -31,7 +31,7 @@ public class BiPolarAction extends AbstractSensor {
     private final Polarization model;
     private final FloatToFloatFunction motor;
 
-    public final PriNode attn;
+    public final PriNode pri;
     private final CauseChannel<Task> cause;
     private final short[] causeArray;
 
@@ -78,7 +78,7 @@ public class BiPolarAction extends AbstractSensor {
                 throw new TODO();
             }
         };
-        this.attn = new AttnBranch(id, List.of(pos, neg));
+        this.pri = new AttnBranch(id, List.of(pos, neg));
 
 //                //TemplateTermLinker.of(neg),
 //                //TemplateTermLinker.of(neg, 4, pos),

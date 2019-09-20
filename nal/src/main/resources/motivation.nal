@@ -27,7 +27,7 @@ G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
     //G, G, task("!") |- (#X ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
 
     //hypothesize goal consequence (bridge from Goal to Belief)
-    //G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
+    G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDD, Time:Task)
 
 //    //hypothesize goal co-occurrence (bridge from Goal to Belief)
 //    G, G, task("!") |-   (  polarizeTask(G) && #X), (Punctuation:Belief, Belief:StructuralDeductionDepolarized, Time:Task)
@@ -79,7 +79,7 @@ G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
      //(G && B), B, task("@") |-  (--G ==> B), (Punctuation:Question)
 
 //quest to 'how' impl question
-//    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
+    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
 
 //contrasting conjunction to implication
@@ -102,7 +102,7 @@ G, G, task("!") |-         (?1 ==> G) , (Punctuation:Question, Time:Task)
 //    //    G, C, eventOf(C,G), --eventOfNeg(C,G), neq(G,C)  |- (--G && --conjBefore(C,G)),   (Goal:DeductionWeakNP, Time:TaskEvent)
 
 
-//    //anti-specific deduction: "conjunction contraposition"
+    //anti-specific deduction: "conjunction contraposition"
     G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
     G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
 

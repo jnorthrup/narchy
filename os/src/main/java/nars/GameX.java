@@ -15,9 +15,7 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.util.ArrayUtil;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.control.MetaGoal;
-import nars.control.NARPart;
-import nars.control.Why;
+import nars.control.*;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
@@ -79,7 +77,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = true;
+    static final boolean initMeta = false;
     static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
@@ -524,7 +522,7 @@ abstract public class GameX extends Game {
         addGovernor(n);
 
         Loop.of(()->{
-            n.control.printPerf(System.out);
+            //n.how.forEach(w -> w.printPerf(System.out));
             n.stats(false, true, System.out);
             //n.control.stats(System.out);
             System.out.println();
@@ -753,7 +751,7 @@ abstract public class GameX extends Game {
     private static void addGovernor(NAR n) {
         int gHist = 3;
         float momentum = 0.5f;
-        float explorationRate = 0.15f;
+        float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
@@ -791,27 +789,32 @@ abstract public class GameX extends Game {
             public void accept(NAR nn) {
                 MetaGoal.value(nn, reval);
 
-                int numHow = nn.how.size();
-                nn.how.forEach(h -> {
+                PartBag<How> H = nn.how;
+
+                int numHow = H.size();
+                if (numHow == 1) {
+                    H.get(0).pri(1);
+                } else {
+
+                    H.forEach(h -> {
 
 
-
-
-                    FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
-                    if (g == null)
-                        h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
+                        FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
+                        if (g == null)
+                            h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
                                 FloatAveragedWindow.Mode.Exponential
                                 //FloatAveragedWindow.Mode.Mean
-                        );
+                            );
 
-                    float v = h.valueRateNormalized;
-                    if (v != v) v = 0;
+                        float v = h.valueRateNormalized;
+                        if (v != v) v = 0;
 
-                    float vSmooth = g.valueOf(v);
-                    float ee = explorationRate;
-                    float vE = lerp(vSmooth, ee/2, 1-ee/2);
-                    h.pri(vE);
-                });
+                        float vSmooth = g.valueOf(v);
+                        float ee = explorationRate;
+                        float vE = lerp(vSmooth, ee / 2, 1 - ee / 2);
+                        h.pri(vE);
+                    });
+                }
                 //nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
                 //System.out.println();
             }

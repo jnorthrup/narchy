@@ -35,7 +35,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     protected short[] cause;
 
-    final PriNode attn;
+    final PriNode pri;
 
 	@Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
     protected final FasterList<Task> reinforcement = new FasterList<>();
@@ -44,7 +44,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     	this.id = id;
         this.game = g;
 
-        this.attn = new PriNode(id);
+        this.pri = new PriNode(id);
 
     }
 
@@ -126,7 +126,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 	protected void reinforce() {
 		int n = reinforcement.size();
 		if (n > 0) {
-			float pri = attn.pri();// / n;
+			float pri = this.pri.pri();// / n;
 			for (Task t : reinforcement)
 				t.pri(pri);
 			game.what().acceptAll(reinforcement);

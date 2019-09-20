@@ -28,28 +28,12 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    DeductionWeak() {
+    @AllowOverlap DeductionWeak() {
 		@Override
 		public Truth apply(Truth T, Truth B, float minConf, NAL n) {
 			return TruthFunctions.deduction(T, B, false, minConf);
 		}
 	},
-
-
-
-//    Post() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-//            return TruthFunctions2.post(T, B, true, minConf);
-//        }
-//    },
-
-//    PostWeak() {
-//        @Override
-//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-//            return TruthFunctions2.post(T, B, false, minConf);
-//        }
-//    },
 
 
     /**
@@ -133,6 +117,12 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
+    Induction() {
+        @Override
+        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+            return TruthFunctions.induction(T, B, minConf);
+        }
+    },
 
 	@Skill("Sherlock_Holmes#Holmesian_deduction") Abduction() {
         @Override
@@ -141,12 +131,12 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    @AllowOverlap AbductionRecursive() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return Abduction.apply(T, B, minConf, n);
-        }
-    },
+//    @AllowOverlap AbductionRecursive() {
+//        @Override
+//        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
+//            return Abduction.apply(T, B, minConf, n);
+//        }
+//    },
 
 
     /**
@@ -178,12 +168,6 @@ public enum NALTruth implements TruthFunction {
         }
     },
 
-    Induction() {
-        @Override
-        public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
-            return TruthFunctions.induction(T, B, minConf);
-        }
-    },
     Comparison() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {

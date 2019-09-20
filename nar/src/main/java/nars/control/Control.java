@@ -174,9 +174,6 @@ import java.util.Arrays;
         return target;
     }
 
-    public void printPerf(PrintStream out) {
-        //nar.what.forEach(w -> w.printPerf(out));
-    }
 
     private void schedule() {
 

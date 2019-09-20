@@ -28,8 +28,8 @@
            (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionNN,                   Time:BeliefEvent)
 
     //goal prediction
-        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:AbductionRecursivePP, Time:TaskEvent)
-        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:AbductionRecursiveNP, Time:TaskEvent)
+        B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:AbductionPP, Time:TaskEvent)
+        B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:AbductionNP, Time:TaskEvent)
 
         //B, (--X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |-   unisubst(C,X,B,"$"),  (Goal:DesireNP, Time:TaskEvent)
         //B, (  X ==> C), --is(X,"--"), --is(B,"==>"), --isVar(C)       |- --unisubst(C,X,B,"$"),  (Goal:AbductionPN, Time:TaskEvent)

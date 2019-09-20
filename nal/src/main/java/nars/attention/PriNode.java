@@ -11,6 +11,7 @@ import nars.$;
 import nars.term.Term;
 import org.eclipse.collections.api.block.function.primitive.DoubleDoubleToDoubleFunction;
 
+/** TODO make abstract, only use UnitPri pri in certain impl that actually need to store it and dont just copy an outside value like Source */
 public class PriNode implements Prioritized {
 
     public final Term id;
@@ -19,7 +20,7 @@ public class PriNode implements Prioritized {
 
     protected Merge input = Merge.Plus;
 
-    protected final UnitPri pri = new UnitPri(0);
+    public final UnitPri pri = new UnitPri(0);
 
     public PriNode(Object id) {
         this.id = $.identity(id);
@@ -122,19 +123,24 @@ public class PriNode implements Prioritized {
     }
 
     /** variably adjustable priority source */
-    public static class Source extends PriNode {
+    public static final class Source extends PriNode {
 
-        public final FloatRange in = new FloatRange(0.5f, 0, 1);
+        public final FloatRange in;
 
         public Source(Object id, float p) {
             super(id);
-            this.pri.pri(p);
+            in = new FloatRange(p, 0, 1);
+            _pri(p);
+        }
+
+        private void _pri(float x) {
+            this.pri.pri(x);
         }
 
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
             //assert(_node.edgeCount(true,false)==0);
-            this.pri.pri(in.get());
+            _pri(in.get());
         }
 
         public void pri(float p) {

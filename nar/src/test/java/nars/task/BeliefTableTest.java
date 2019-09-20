@@ -8,7 +8,6 @@ import nars.table.dynamic.DynamicTruthTable;
 import nars.term.Term;
 import nars.test.TestNAR;
 import nars.test.analyze.BeliefAnalysis;
-import nars.time.Tense;
 import nars.truth.Truth;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
@@ -167,7 +166,7 @@ class BeliefTableTest {
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.1f);
         t.inputAt(1, "x. |");
-        t.inputAt(dur-1, "y. |");
+        t.inputAt(dur*2-1, "y. |");
         t.mustBelieve(dur*2-1, "(x&&y)", 1f, 0.81f, s -> true  /* TODO test occ = 0..3 */);
         t.mustNotOutput(dur*2-1, "(x &&+3 y)", BELIEF);
         t.mustBelieve(dur*2-1, "(x==>y)", 1f, 0.45f, s -> true  /* TODO test occ = 0..3 */);
@@ -189,8 +188,8 @@ class BeliefTableTest {
         n.time.dur(2);
         int a = 1;
         int b = 2;
-        n.inputAt(a, "a:x. :|:");
-        n.inputAt(b, "a:y. :|:");
+        n.inputAt(a, "a:x. |");
+        n.inputAt(b, "a:y. |");
         n.run(b + 1);
 
 
@@ -220,31 +219,29 @@ class BeliefTableTest {
 
     @Test
     void testBestMatchImplSimple() throws Narsese.NarseseException {
-        for (Tense t : new Tense[]{Present/*, Eternal*/}) {
-            NAR n = NARS.shell();
+        NAR n = NARS.shell();
 
-            n.believe("(a ==>+0 b)", t, 1f, 0.9f);
-            n.believe("(a ==>+5 b)", t, 1f, 0.9f);
-            n.believe("(a ==>-5 b)", t, 1f, 0.9f);
+        n.believe("(a ==> b)", Present, 1f, 0.9f);
+        n.believe("(a ==>+5 b)", Present, 1f, 0.9f);
+        n.believe("(a ==>-5 b)", Present, 1f, 0.9f);
 
-            long when = t == Present ? 0 : ETERNAL;
+        long when = 0;
 
-            //for (int dt = 3; dt < 7; dt++) {
-            { int dt = 3;
-                Term tt = IMPL.the((Term)$.$("a"), +dt, $.$("b"));
-                Task fwd = n.answer(tt, BELIEF, when);
-                assertEquals("(a ==>+3 b)", fwd.term().toString(), ()->tt + " -> " + fwd);
-            }
-
-            Task bwd = n.answer($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
-            assertEquals("(a ==>-2 b)", bwd.term().toString());
-
-
-            Task x = n.answer($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
-            System.out.println(x);
-
-
+        //for (int dt = 3; dt < 7; dt++) {
+        { int dt = 3;
+            Term tt = IMPL.the((Term)$.$("a"), +dt, $.$("b"));
+            Task fwd = n.answer(tt, BELIEF, when);
+            assertEquals("(a ==>+3 b)", fwd.term().toString(), ()->tt + " -> " + fwd);
         }
+
+        //TODO
+        Task bwd = n.answer($.impl($.$("a"), -5, $.$("b")), BELIEF, when);
+        assertEquals("(a ==>-2 b)", bwd.term().toString());
+
+
+        Task x = n.answer($.impl($.$("a"), DTERNAL, $.$("b")), BELIEF, when);
+        System.out.println(x);
+
 
     }
 

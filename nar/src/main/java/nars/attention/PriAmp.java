@@ -12,7 +12,7 @@ public class PriAmp extends PriNode {
 	}
 
 	@Override
-	protected float in(float p) {
+	protected final float in(float p) {
 		return amp.floatValue() * p;
 	}
 }

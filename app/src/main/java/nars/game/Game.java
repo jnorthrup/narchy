@@ -216,11 +216,11 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         } else if (s instanceof Reward) {
 
-            nar.control.input(((Reward) s).attn, target);
+            nar.control.input(((Reward) s).pri, target);
             ((Reward)s).init(this);
 
         } else if (s instanceof BiPolarAction)
-            nar.control.input(((BiPolarAction) s).attn, target);
+            nar.control.input(((BiPolarAction) s).pri, target);
         else if (s instanceof PriNode)
             nar.control.input(((PriNode) s), target);
         else

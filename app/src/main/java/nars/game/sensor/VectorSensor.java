@@ -82,9 +82,8 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
         if (active > 0) {
             //post-commit phase
             float aPri = pri.pri() / active;
-            for (ComponentSignal s : this) {
+            for (ComponentSignal s : this)
                 s.commit(aPri, w);
-            }
         }
     }
 

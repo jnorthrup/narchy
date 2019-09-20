@@ -311,11 +311,11 @@ public interface NSense {
         g.addAction(pn.neg);
         g.onFrame(aa->pn.update(g));
 
-        nar.control.input(pn.attn, g.actionPri);
+        nar.control.input(pn.pri, g.actionPri);
 
-        nar.control.input(pn.pos.pri, pn.attn);
+        nar.control.input(pn.pos.pri, pn.pri);
 
-        nar.control.input(pn.neg.pri, pn.attn);
+        nar.control.input(pn.neg.pri, pn.pri);
 
         return pn;
     }

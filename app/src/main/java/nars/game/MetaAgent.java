@@ -8,6 +8,7 @@ import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
+import jcog.pri.UnitPri;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.NAR;
@@ -17,6 +18,8 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.MetaGoal;
 import nars.game.action.GoalActionConcept;
+import nars.game.sensor.GameLoop;
+import nars.game.sensor.VectorSensor;
 import nars.game.util.RLBooster;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
@@ -48,9 +51,11 @@ abstract public class MetaAgent extends Game {
             /** internal truth frequency precision */
             exact = Atomic.the("exact"),
 
-            PRI = Atomic.the("pri"),
-            beliefPri = Atomic.the("beliefPri"),
-            goalPri = Atomic.the("goalPri"),
+            belief = Atomic.the("belief"),
+            goal = Atomic.the("goal"),
+
+            conf = Atomic.the("conf"),
+            pri = Atomic.the("pri"),
 
             play = Atomic.the("play"),
             input = Atomic.the("input"),
@@ -146,12 +151,12 @@ abstract public class MetaAgent extends Game {
 
             });
 
-            float priFactorMin = 0.1f, priFactorMax = 4f;
-            actionUnipolar($.inh(SELF, beliefPri), (FloatConsumer)nar.beliefPriDefault::pri);
-//                .subRange(
-//                Math.max(nar.beliefPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-//                nar.beliefPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
-            actionUnipolar($.inh(SELF, goalPri), (FloatConsumer)nar.goalPriDefault::pri);
+
+            actionCtl($.inh(SELF, $.p(belief,pri)), nar.beliefPriDefault.pri);
+            //actionCtl($.inh(SELF, $.p(belief,conf)), nar.beliefConfDefault);
+            actionCtl($.inh(SELF, $.p(goal,pri)), nar.goalPriDefault.pri);
+            //actionCtl($.inh(SELF, $.p(goal,conf)), nar.goalConfDefault);
+
 //                .subRange(
 //                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
 //                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
@@ -251,6 +256,32 @@ abstract public class MetaAgent extends Game {
                     return g.isOn() ? (float) g.dexterity() : Float.NaN;
                 });
 
+            for (GameLoop s : g.sensors) {
+                if (s instanceof VectorSensor) {
+                    actionCtl($.inh(gid, $.p(((VectorSensor) s).id, pri)), ((VectorSensor)s).pri.amp);
+                }
+//                if (!(s instanceof Signal)) { //HACK only if compound sensor
+//                    Term target = s.target();
+//
+//                    //HACK
+//                    if (s instanceof DigitizedScalar)
+//                        target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
+//
+//                    //HACK TODO divide by # of contained concepts, reported by Sensor interface
+//                    float maxPri;
+//                    if (s instanceof Bitmap2DSensor) {
+//                        maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
+//                    } else {
+//                        maxPri = 1;
+//                    }
+//
+//                    m.actionUnipolar($.func("aware", target), (p) -> {
+//                        FloatRange pp = s.pri();
+//                        pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
+//                    });
+//
+//                }
+            }
 
             //TODO other Emotion sensors
 
@@ -358,6 +389,10 @@ abstract public class MetaAgent extends Game {
         actionCtl(t, r.min, r.max, r::set);
     }
 
+    protected void actionCtl(Term t, UnitPri r) {
+        actionCtl(t, 9, 1, r::pri);
+    }
+
     protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
         //FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
         //FloatToFloatFunction f = (z)->z;
@@ -460,29 +495,6 @@ abstract public class MetaAgent extends Game {
 //        m.senseNumber($.func("busy", id), new FloatNormalized(() ->
 //                (float) Math.log(1 + m.nar().emotion.busyVol.getMean()), 0, 1).relax(0.05f));
 ////
-////        for (Sensor s : sensors) {
-////            if (!(s instanceof Signal)) { //HACK only if compound sensor
-////                Term target = s.target();
-////
-////                //HACK
-////                if (s instanceof DigitizedScalar)
-////                    target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
-////
-////                //HACK TODO divide by # of contained concepts, reported by Sensor interface
-////                float maxPri;
-////                if (s instanceof Bitmap2DSensor) {
-////                    maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
-////                } else {
-////                    maxPri = 1;
-////                }
-////
-////                m.actionUnipolar($.func("aware", target), (p) -> {
-////                    FloatRange pp = s.pri();
-////                    pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
-////                });
-////
-////            }
-////        }
 //
 ////        actionUnipolar($.inh(this.nar.self(), $.the("deep")), (d) -> {
 ////            if (d == d) {

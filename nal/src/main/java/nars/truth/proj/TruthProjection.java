@@ -9,6 +9,7 @@ import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
+import nars.Op;
 import nars.Task;
 import nars.task.DynamicTruthTask;
 import nars.task.ProxyTask;
@@ -736,52 +737,66 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	private boolean intermpolate(NAL nar) {
-		int n = size; //assumes nulls removed
-		Map<Term, IEntry> roots = null;
 		Task[] items = this.items;
-		Term root0 = items[0].term().root();
+		Term term0 = items[0].term();
+		if (!term0.hasAny(Op.Temporal))
+			return true;
+
+		int n = size; //assumes nulls removed
+
+		//TODO special 2-ary case
+
+		Map<Term, IEntry> roots = null;
+		Term root0 = term0.root();
 		@Nullable double[] evi = this.evi;
+		boolean allEqual = true;
 		for (int i = 1; i < n; i++) {
-			Term iRoot = items[i].term().root();
-			if (roots == null) {
-				if (!root0.equals(iRoot)) {
-					roots = new UnifiedMap<>(n - i + 1);
-					IEntry ie = new IEntry(root0);
-					roots.put(root0, ie);
-					for (int j = 0; j < i; j++)
-						ie.add(j, evi[j]); //add existing evidence until the first that change (i)
+			Term termI = items[i].term();
+			if (!termI.equals(term0))
+				allEqual = false;
+			else {
+				Term rootI = termI.root();
+				if (roots == null) {
+					if (!root0.equals(rootI)) {
+						roots = new UnifiedMap<>(n - i + 1);
+						IEntry ie = new IEntry(root0);
+						roots.put(root0, ie);
+						for (int j = 0; j < i; j++)
+							ie.add(j, evi[j]); //add existing evidence until the first that change (i)
+					}
+				}
+				if (roots != null) {
+					roots.computeIfAbsent(rootI, IEntry::new).add(i, evi[i]);
 				}
 			}
-			if (roots != null) {
-				roots.computeIfAbsent(iRoot, IEntry::new).add(i, evi[i]);
-			}
+
 		}
-		if (roots == null)
+		if (allEqual)
 			return true; //no intermpolation necessary
+		if (roots != null) {
+			//different roots, so choose one and remove the others
 
-		if (minComponents > 1) {
-			//eliminate roots for which less than minComponents are present
-			roots.values().removeIf(ii -> {
-				if (ii.id.getCardinality() < minComponents) {
-					intermpolateRemove(ii);
-					return true;
-				}
+
+			if (minComponents > 1) {
+				//eliminate roots for which less than minComponents are present
+				roots.values().removeIf(ii -> {
+					if (ii.id.getCardinality() < minComponents) {
+						intermpolateRemove(ii);
+						return true;
+					}
+					return false;
+				});
+			}
+			int es = roots.size();
+			if (es < minComponents)
 				return false;
-			});
-		}
 
-		int es = roots.size();
-		if (es < minComponents) {
-			//clearFast();
-			return false;
-		}
-
-
-		FasterList<Map.Entry<Term, IEntry>> e = new FasterList<>(roots.entrySet());
-		e.sortThisByDouble(x -> -x.getValue().eviSum);
-//		IEntry best = e.get(0).getValue();
-		for (int i = 1; i < es; i++) {
-			intermpolateRemove(e.get(i).getValue());
+			FasterList<Map.Entry<Term, IEntry>> e = new FasterList<>(roots.entrySet());
+			e.sortThisByDouble(x -> -x.getValue().eviSum);
+			//		IEntry best = e.get(0).getValue();
+			for (int i = 1; i < es; i++) {
+				intermpolateRemove(e.get(i).getValue());
+			}
 		}
 
 		removeNulls();
