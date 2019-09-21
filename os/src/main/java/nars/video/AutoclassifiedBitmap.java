@@ -83,7 +83,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
         return new Gridding(
                 new BitmapMatrixView(ae.W),
 
-                new ObjectSurface<>(this),
+                new ObjectSurface(this),
 
                 new BitmapMatrixView(pixRecon),
 

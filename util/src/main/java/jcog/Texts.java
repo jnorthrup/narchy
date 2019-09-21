@@ -572,13 +572,22 @@ public enum Texts {
 
 	}
 
-	public static int count(String s, char x) {
+	public static int countRows(String s, char x) {
 		int c = 0;
 		for (int i = 0; i < s.length(); i++)
 			if (s.charAt(i) == x)
 				c++;
 
 		return c;
+	}
+	public static int countCols(String next) {
+		int cols = 0;
+		int n = 0, nn = 0;
+		while ((nn = next.indexOf('\n', n))!=-1) {
+			cols = Math.max(cols, nn - n);
+			n = nn;
+		}
+		return cols;
 	}
 
 	public static String n2(float... v) {

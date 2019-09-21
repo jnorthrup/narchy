@@ -6,13 +6,12 @@ import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.console.BitmapTextGrid;
-
-import java.util.Arrays;
+import spacegraph.util.math.Color4f;
 
 public class BitmapLabel extends AbstractLabel {
 
     private final BitmapTextGrid view;
-    static final float minPixelsToBeVisible = 7;
+//    static final float minPixelsToBeVisible = 7;
 
     private volatile RectFloat textBounds;
 
@@ -36,14 +35,14 @@ public class BitmapLabel extends AbstractLabel {
         String prev = text;
         if (prev==null || !prev.equals(next)) {
 
-            int rows = 1 + Texts.count(next, '\n');
+            int rows = 1 + Texts.countRows(next, '\n');
             boolean resized;
             if (rows == 1) {
                 resized = view.resize(next.length(), 1);
             } else {
                 //HACK do better
-                int cols = Arrays.stream(next.split("\n")).mapToInt(String::length).max().getAsInt();
-                resized = view.resize(cols, rows);
+                //int cols = Arrays.stream(next.split("\n")).mapToInt(String::length).max().getAsInt();
+                resized = view.resize(Texts.countCols(next), rows);
             }
 
             super.text(next);
@@ -53,34 +52,25 @@ public class BitmapLabel extends AbstractLabel {
         return this;
     }
 
+
     @Override
     protected void doLayout(float dtS) {
-        int c = view.cols, r = view.rows;
-        if (c > 0 && r > 0) {
-            textBounds = AspectAlign.innerBounds(bounds, (r * characterAspectRatio) / c);
-        } else
-            textBounds = bounds; //nothing
+        int r = view.rows; if (r > 0) {
+            int c = view.cols; if (c > 0) {
+                textBounds = AspectAlign.innerBounds(bounds, (r * characterAspectRatio) / c);
+                return;
+            }
+        }
+
+        textBounds = bounds; //nothing
     }
 
     @Override
-    protected void renderContent(ReSurface r) {
+    protected final void renderContent(ReSurface r) {
         view.pos(bounds);
         view.renderIfVisible(r);
     }
 
-//    @Override
-//    protected boolean preRender(ReSurface r) {
-//        return r.visP(bounds, minPixelsToBeVisible) > 0; //HACK TODO
-//    }
-
-    protected void layoutText() {
-
-
-        if (view.cols > 0 && view.rows > 0) {
-            textBounds = AspectAlign.innerBounds(bounds, (view.rows * characterAspectRatio) / view.cols);
-        } else
-            textBounds = bounds; //nothing
-    }
 
     public BitmapLabel alpha(float a) {
         this.view.alpha(a);
@@ -123,15 +113,17 @@ public class BitmapLabel extends AbstractLabel {
 
             clearBackground(); //may not be necessary if only one line and all characters are used but in multiline the matrix currently isnt regular so some chars will not be redrawn
 
-            int n = text.length();
+            String s = BitmapLabel.this.text;
+            int n = s.length();
             int row = 0, col =0;
+            final Color4f fg = BitmapLabel.this.fgColor, bg = BitmapLabel.this.bgColor;
             for (int i = 0; i < n; i++) {
-                char c = text.charAt(i);
+                char c = s.charAt(i);
                 if (c == '\n') {
                     row++;
                     col = 0;
                 } else {
-                    redraw(c, col++, row, fgColor, bgColor);
+                    redraw(c, col++, row, fg, bg);
                 }
             }
             return true;

@@ -49,7 +49,7 @@ $ jshell --startup startups/custom-startup
         } else if (o instanceof Surface) {
             return window((Surface) o, w, h);
         } else {
-            return window(new ObjectSurface<>(o), w, h);
+            return window(new ObjectSurface(o), w, h);
         }
     }
 

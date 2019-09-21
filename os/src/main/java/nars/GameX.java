@@ -25,9 +25,7 @@ import nars.exe.impl.WorkerExec;
 import nars.game.Game;
 import nars.game.GameTime;
 import nars.game.MetaAgent;
-import nars.game.sensor.VectorSensor;
 import nars.gui.NARui;
-import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
@@ -49,16 +47,13 @@ import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.grid.Gridding;
-import spacegraph.space2d.container.unit.AspectAlign;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.meter.PaintUpdateMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
-import spacegraph.space2d.widget.port.SupplierPort;
 import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.List;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
@@ -126,40 +121,7 @@ abstract public class GameX extends Game {
 
 
     public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
-        FasterList l = new FasterList();
-        NAR n = runRT(l, init, threads, narFPS);
-
-        Exe.invokeLater(()->{
-
-            n.parts(Game.class).map((Game g) ->
-                SupplierPort.button(g.toString(), ()->
-//                    new ObjectSurface(List.of(
-                        NARui.game(g)
-//                        g.sensors.list,
-//                        g.actions.list,
-//                        g.rewards.list
-//                    ))
-            )).forEach(l::add);
-
-            n.parts(VectorSensor.class).map((VectorSensor v) -> {
-                if (v instanceof Bitmap2DSensor) {
-                    int w = ((Bitmap2DSensor) v).width, h = ((Bitmap2DSensor) v).height;
-                    return new AspectAlign(new VectorSensorChart(v, w, h, n).withControls(), ((float)h)/w );
-                } else {
-                    return SupplierPort.button(v.toString(), () -> new VectorSensorChart(v, n).withControls());
-                }
-            }).forEach(l::add);
-
-            l.add(SupplierPort.button("att", () -> NARui.top(n)));
-            l.add(SupplierPort.button("top", () -> NARui.attentionUI(n)));
-
-            window(l, 1024, 800);
-        });
-
-        return n;
-    }
-
-    public static NAR runRT(List<Object> space, Consumer<NAR> init, int threads, float narFPS) {
+//        FasterList l = new FasterList();
 
         NAR n = baseNAR(narFPS / DURATIONs, threads);
 
@@ -220,6 +182,36 @@ abstract public class GameX extends Game {
 //                g.add(new SupplierPort<>("top", Surface.class, () -> NARui.top(n))).posRel(0, 0, 0.25f, 0.25f);
 //            });
 //        } );
+
+
+
+
+//        //DurSurface.get()
+//
+//            n.parts(Game.class).map((Game g) ->
+//                Surplier.button(g.toString(), ()->
+////                    new ObjectSurface(List.of(
+//                        NARui.game(g)
+////                        g.sensors.list,
+////                        g.actions.list,
+////                        g.rewards.list
+////                    ))
+//            )).forEach(l::add);
+//
+//            n.parts(VectorSensor.class).map((VectorSensor v) -> {
+//                if (v instanceof Bitmap2DSensor) {
+//                    int w = ((Bitmap2DSensor) v).width, h = ((Bitmap2DSensor) v).height;
+//                    return new AspectAlign(new VectorSensorChart(v, w, h, n).withControls(), ((float)h)/w );
+//                } else {
+//                    return Surplier.button(v.toString(), () -> new VectorSensorChart(v, n).withControls());
+//                }
+//            }).forEach(l::add);
+
+            //l.add(Surplier.button("top", () -> NARui.top(n)));
+            //l.add(Surplier.button("att", () -> NARui.attentionUI(n)));
+
+
+            window(NARui.top(n), 1024, 800);
 
 
         return n;

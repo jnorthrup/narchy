@@ -1,5 +1,6 @@
 package spacegraph.space2d.container.layout;
 
+import jcog.Util;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.FloatRange;
 import jcog.math.v2;
@@ -20,18 +21,18 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     private float AUTOSCALE = 0f;
 
 
-    public final FloatRange repelSpeed = new FloatRange(0.05f, 0, 1f);
+    public final FloatRange repelSpeed = new FloatRange(0.25f, 0, 2f);
 
-    public final FloatRange attractSpeed = new FloatRange(0.05f, 0, 1f);
+    public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 2);
 
     /** in (visible) graph radii */
-    public final FloatRange nodeScale = new FloatRange(0.25f, 0.04f, 1.5f);
+    public final FloatRange nodeScale = new FloatRange(0.9f, 0.04f, 1.5f);
 
     /** in node radii */
-    public final FloatRange nodeSpacing  = new FloatRange(2f, 0.25f, 16f);
+    public final FloatRange nodeSpacing  = new FloatRange(Util.PHIf, 0.25f, 8f);
 
     /** 1.0 - momentum LERP */
-    public final FloatRange speed = new FloatRange(0.5f, 0f, 1f);
+    public final FloatRange speed = new FloatRange(0.1f, 0f, 1f);
 
 
 

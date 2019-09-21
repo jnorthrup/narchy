@@ -8,12 +8,12 @@ import spacegraph.space2d.widget.button.CheckBox;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
 
-public class SupplierPort<T> extends ConstantPort<T> {
+public class Surplier<T> extends ConstantPort<T> {
 
     private final AtomicReference<T> built = new AtomicReference(null);
     private final Supplier<T> builder;
 
-    public SupplierPort(String label, Class<? super T> type, Supplier<T> builder) {
+    public Surplier(String label, Class<? super T> type, Supplier<T> builder) {
         super(type);
         this.builder = builder;
         CheckBox toggle;
@@ -61,6 +61,6 @@ public class SupplierPort<T> extends ConstantPort<T> {
     }
 
     public static Surface button(String label, Supplier<Surface> s) {
-        return new SupplierPort<>(label, Surface.class, s);
+        return new Surplier<>(label, Surface.class, s);
     }
 }

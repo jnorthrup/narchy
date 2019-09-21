@@ -9,7 +9,7 @@ import spacegraph.space2d.widget.button.PushButton;
 public class OKSurface extends Splitting {
 
     public OKSurface(Object content) {
-        this(new ObjectSurface<>(content));
+        this(new ObjectSurface(content));
     }
 
     public OKSurface(Surface content) {

@@ -7,7 +7,7 @@ import spacegraph.space2d.container.EmptySurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.widget.port.ConstantPort;
-import spacegraph.space2d.widget.port.SupplierPort;
+import spacegraph.space2d.widget.port.Surplier;
 import spacegraph.video.VideoSource;
 import spacegraph.video.VideoSurface;
 import spacegraph.video.VideoTransform;
@@ -59,7 +59,7 @@ public class SignalGraphTest {
         GraphEdit2D w = GraphEdit2D.window(1024, 1024);
 
         for (WebCam c : WebCam.theFirst(10)) {
-            w.add(new SupplierPort(c.toString(), Surface.class, () -> {
+            w.add(new Surplier(c.toString(), Surface.class, () -> {
                 return Splitting.row(new ConstantPort(c), 0.1f, new VideoSurface(c));
                 ///return new PushButton("cam1");
             })).posRel(0, 0, 0.25f, 0.2f);

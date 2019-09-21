@@ -71,10 +71,10 @@ public class Launcher {
         Set<Class<? extends GameX>> envs = new Reflections("nars").getSubTypesOf(GameX.class);
 
         Surface m = grid(
-                new ObjectSurface<>(
+                new ObjectSurface(
                         envs.stream().map(Experiment::new).collect(toList())
                 ),
-                new ObjectSurface<>(
+                new ObjectSurface(
                         List.of(new MainRunner(() -> GUI.main(new String[]{})))
 //                            List.of(new MainRunner(OSMTest.class))
                 )

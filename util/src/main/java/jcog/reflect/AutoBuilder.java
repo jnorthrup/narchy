@@ -3,6 +3,7 @@ package jcog.reflect;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Sets;
 import jcog.TODO;
+import jcog.WTF;
 import jcog.data.bit.AtomicMetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.func.TriFunction;
@@ -16,10 +17,7 @@ import org.jetbrains.annotations.Nullable;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.*;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-import java.util.function.Predicate;
-import java.util.function.Supplier;
+import java.util.function.*;
 
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -30,7 +28,7 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class AutoBuilder<X, Y> {
 
     public final Map<Class, TriFunction/*<Field, Object, Object, Object>*/> annotation;
-    public final Map<Class, BiFunction<? super X, Object /* relation */, Y>> onClass;
+    public final Map<Class, BiFunction<X, Object /* relation */, Y>>[] onClass;
     public final Map<Predicate, Function<X, Y>> onCondition;
 
     final AutoBuilding<X, Y> building;
@@ -38,11 +36,13 @@ public class AutoBuilder<X, Y> {
 
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
 
-    public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building, Map<Class, BiFunction<? super X, Object, Y>> onClass) {
+    public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building, Map<Class, BiFunction<X, Object, Y>>[] onClass) {
         this.building = building;
         this.maxDepth = maxDepth;
         this.annotation = new HashMap();
         this.onClass = onClass;
+        if (onClass.length <= 0)
+            throw new WTF();
         this.onCondition = new HashMap<>();
     }
 
@@ -79,7 +79,8 @@ public class AutoBuilder<X, Y> {
             classBuilders(obj, builders); //TODO check subtypes/supertypes etc
             if (!builders.isEmpty()) {
                 target.add(pair(obj,
-                        () -> builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).iterator()
+                        //builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
+                        builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
                 ));
             }
         }
@@ -117,10 +118,13 @@ public class AutoBuilder<X, Y> {
 
         //exhaustive search
         // TODO cache in a type graph
-        onClass.forEach((k, v) -> {
+        BiConsumer<Class, BiFunction<X, Object, Y>> matcher = (k, v) -> {
             if (k.isAssignableFrom(xc))
                 ll.add((BiFunction) v);
-        });
+        };
+        for (Map<Class, BiFunction<X, Object, Y>> onClass : this.onClass) {
+            onClass.forEach(matcher);
+        }
     }
 
     public void clear() {

@@ -356,7 +356,7 @@ public class TrackXY_NAR extends GameX {
                         gl.glColor4f(1, 0, 0, 0.9f);
                         Draw.rect(at.move(x(), y(), 0.01f), gl);
                     }
-                }.withControls(), 0.1f, new ObjectSurface<>(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+                }.withControls(), 0.1f, new ObjectSurface(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
             }
             //});
         }

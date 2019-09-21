@@ -1,7 +1,8 @@
 package nars;
 
-import jcog.Util;
+import jcog.data.graph.Node;
 import jcog.event.Off;
+import jcog.pri.Prioritized;
 import nars.attention.PriNode;
 import nars.attention.What;
 import nars.gui.DurSurface;
@@ -11,12 +12,15 @@ import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.layout.ForceDirected2D;
 import spacegraph.space2d.widget.meta.ObjectSurface;
+import spacegraph.space2d.widget.port.Surplier;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.util.MutableRectFloat;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
@@ -46,37 +50,60 @@ public class AttentionUI {
 	}
 
 	public static Surface attentionGraph(NAR n) {
-		Graph2D<PriNode> aaa = new Graph2D<PriNode>()
-			.build(x -> {
-				x.set(LabeledPane.the(x.id.toString(), new ObjectSurface<>(x.id, 2)));
-			})
-			.render((node, graph) -> {
-				n.control.graph.node(node.id).nodes(false, true).forEach(c -> {
-					EdgeVis<PriNode> e = graph.edge(node, c.id());
-					if (e != null) {
-						e.weight(1f);
-						e.color(0.5f, 0.5f, 0.5f);
-					}
-				});
-				float s = node.id.pri();
-				float d = 0.5f * node.id.pri();
+		Graph2D aaa = new Graph2D<>()
+			.build(x ->
+				x.set(Surplier.button(x.id.toString(), () ->LabeledPane.the(x.id.toString(),
+					new ObjectSurface(x.id, 2, ObjectSurface.builtin,
+						Map.of(
+							//TODO nars specific renderers
+						)))))
+			).render((xx, graph) -> {
+				Object x = xx.id;
+				Node<PriNode, Object> nn = n.control.graph.node(x);
+				if (nn!=null) {
+					nn.nodes(false, true).forEach(c -> {
+						EdgeVis<Object> e = graph.edge(xx, c.id());
+						if (e != null) {
+							e.weight(1f);
+							e.color(0.5f, 0.5f, 0.5f);
+						}
+					});
+				}
+				if (x instanceof Prioritized) {
+					Prioritized node = (Prioritized)x;
+					float s = node.pri();
+					xx.pri = s;
+
+					float d = 0.5f * node.pri();
 //                            float r = Math.min(1, s/d);
-				node.color(Math.min(d, 1), Math.min(s, 1), 0);
+					xx.color(Math.min(d, 1), Math.min(s, 1), 0);
+				} else {
+					//..infer priority of unprioitized items, ex: by graph metrics in relation to prioritized
+				}
 
 			})
 			.update(new ForceDirected2D<>() {
 				@Override
-				protected void size(MutableRectFloat<PriNode> m, float a) {
-					float q =
-						m.node.id.pri();
-
+				protected void size(MutableRectFloat m, float a) {
+					float q = m.node.pri;
 					float s = (float) (Math.sqrt((Math.max(0, q))));
-					s = Util.clamp(s * a, 2, 32);
-					m.size(s, s);
+					//w = Util.clamp(s * a, 2, 32);
+					float w = 2 + s * a;
+					m.size(w, w);
 				}
 			});
 		return DurSurface.get(aaa.widget(), n, () -> {
-			aaa.set(n.control.graph.nodeIDs());
+
+			Stream s =
+				//Stream.concat(Stream.of(n.control.graph.nodeIDs()), n.partStream());
+				n.partStream();
+
+//			s = s.peek(x -> {
+//				System.out.println(x.getClass()  + "\t" + x);
+//			});
+
+			aaa.set(s::iterator);
+
 		}).live();
 	}
 

@@ -23,7 +23,7 @@ public class LabeledPane extends Splitting {
 
         //.trim() ?
 
-        return new LabeledPane(new BitmapLabel(label), content);
+        return new LabeledPane(new VectorLabel(label), content);
     }
 
 //    @Override

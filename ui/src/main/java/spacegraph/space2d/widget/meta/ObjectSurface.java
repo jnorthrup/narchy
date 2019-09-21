@@ -36,7 +36,7 @@ import static java.util.stream.Collectors.toList;
 /**
  * constructs a representative surface for an object by reflection analysis
  */
-public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
+public class ObjectSurface extends MutableUnitContainer<Surface> {
 
     private static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
 
@@ -48,15 +48,11 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
                 outer.add(l);
         }
 
-        Surface y = collectionSurface(outer);
-//        if (y!=null && !(obj instanceof Surface))
-//            y = LabeledPane.the(obj.getClass().getSimpleName() + System.identityHashCode(obj), y);
-        return y;
-
-
+        return collectionSurface(outer);
     };
 
-    private static Surface collectionSurface(List<Surface> x) {
+
+    @Nullable private static Surface collectionSurface(List<Surface> x) {
         Surface y = null;
         int xs = x.size();
         switch (xs) {
@@ -85,34 +81,38 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
     final AutoBuilder<Object, Surface> builder;
 
     /**
-     * root
+     * root of the object graph
      */
-    private final X obj;
+    private final Object obj;
 
-    public static ObjectSurface<Object> the(Object x) {
-        return new ObjectSurface<>(x);
+    public static ObjectSurface the(Object x) {
+        return new ObjectSurface(x);
     }
 
-    public static ObjectSurface<Object> the(Object... x) {
-        return new ObjectSurface<>(List.of(x));
+    public static ObjectSurface the(Object... x) {
+        return new ObjectSurface(List.of(x));
     }
 
 
-    public ObjectSurface(X x) {
+    public ObjectSurface(Object x) {
         this(x, 1);
         if (x == null)
             throw new NullPointerException();
     }
 
-    public ObjectSurface(X x, int depth) {
-        this(x, DefaultObjectSurfaceBuilder, depth);
+
+    public ObjectSurface(Object x, int depth) {
+        this(x, depth, builtin);
+    }
+    public ObjectSurface(Object x, int depth, Map<Class, BiFunction<?, Object, Surface>>... classers) {
+        this(x, DefaultObjectSurfaceBuilder, depth, classers);
     }
 
-    public ObjectSurface(X x, AutoBuilder.AutoBuilding<?, Surface> builder, int maxDepth) {
-        this(x, new AutoBuilder(maxDepth, builder, classer));
+    public ObjectSurface(Object x, AutoBuilder.AutoBuilding<Object, Surface> builder, int maxDepth, Map<Class, BiFunction<?, Object, Surface>>... classers) {
+        this(x, new AutoBuilder(maxDepth, builder, classers));
     }
 
-    public ObjectSurface(X x, AutoBuilder<Object, Surface> builder) {
+    public ObjectSurface(Object x, AutoBuilder<Object, Surface> builder) {
         super();
         this.obj = x;
         this.builder = builder;
@@ -150,37 +150,37 @@ public class ObjectSurface<X> extends MutableUnitContainer<Surface> {
         super.starting();
     }
 
-    protected String label(X obj) {
+    protected String label(Object obj) {
         return obj.toString();
     }
 
-    static final Map<Class, BiFunction<?,?,Surface>> classer = new HashMap();
+    public static final Map<Class, BiFunction<?, Object, Surface>> builtin = new HashMap();
     {
 //        builder.annotation(Essence.class, (x, xv, e) -> {
 //           return xv; //forward  //TODO
 //        });
 
-        classer.put(Map.Entry.class, (Map.Entry x, Object relation) ->
+        builtin.put(Map.Entry.class, (Map.Entry x, Object relation) ->
                 new VectorLabel(x.toString())
         );
-        classer.put(FloatRange.class, (FloatRange x, Object relation) -> {
+        builtin.put(FloatRange.class, (FloatRange x, Object relation) -> {
             return new BindingFloatSlider(objLabel(x, relation), x.min, x.max, x, x::set);
         });
 
-        classer.put(PLink.class, (PLink x, Object relation) -> {
+        builtin.put(PLink.class, (PLink x, Object relation) -> {
             return new BindingFloatSlider(objLabel(x, relation), 0, 1, x, x::pri);
         });
 
-        classer.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
+        builtin.put(IntRange.class, (IntRange x, Object relation) -> !(x instanceof MutableEnum) ? new MyIntSlider(x, relationLabel(relation)) : null);
 
-        classer.put(Runnable.class, (Runnable x, Object relation) -> new PushButton(objLabel(x, relation), x));
-        classer.put(AtomicBoolean.class, (AtomicBoolean x, Object relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
+        builtin.put(Runnable.class, (Runnable x, Object relation) -> new PushButton(objLabel(x, relation), x));
+        builtin.put(AtomicBoolean.class, (AtomicBoolean x, Object relation) -> new MyAtomicBooleanCheckBox(objLabel(x, relation), x));
 
-        classer.put(MutableEnum.class, (MutableEnum x, Object relation) -> EnumSwitch.the(x, relationLabel(relation)));
+        builtin.put(MutableEnum.class, (MutableEnum x, Object relation) -> EnumSwitch.the(x, relationLabel(relation)));
 
-        classer.put(String.class, (String x, Object relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
+        builtin.put(String.class, (String x, Object relation) -> new VectorLabel(x)); //TODO support multi-line word wrap etc
 
-        classer.put(Collection.class, (Collection cx, Object relation) -> {
+        builtin.put(Collection.class, (Collection cx, Object relation) -> {
             if (cx.isEmpty())
                 return null;
 

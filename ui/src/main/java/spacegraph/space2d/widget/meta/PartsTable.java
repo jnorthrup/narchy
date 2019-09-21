@@ -84,7 +84,7 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
                     ).set(Bordering.W, new PartToggle(context, pe));
                 }
                 case 1: {
-                    return new ObjectSurface<>(p);
+                    return new ObjectSurface(p);
                 }
             }
         } catch (Exception e) {

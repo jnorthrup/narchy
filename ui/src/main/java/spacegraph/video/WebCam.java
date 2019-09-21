@@ -172,7 +172,7 @@ public class WebCam extends VideoSource implements WebcamListener {
             });
 
             add(bmp);
-            add(new ObjectSurface<>(mix));
+            add(new ObjectSurface(mix));
         }
 
 

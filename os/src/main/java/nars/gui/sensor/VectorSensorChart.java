@@ -501,7 +501,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
                 goalCheckBox( "Goal~", 0.5f),
                 goalCheckBox( "Goal+-", 1f, 0f),
                 goalCheckBox( "Goal+", 1f)
-            ), new ObjectSurface<>(view)
+            ), new ObjectSurface(view)
                     //TODO attn node plot: supply/demand
                     //new FloatSlider("Supply", view.sensor.attn.supply)
             );

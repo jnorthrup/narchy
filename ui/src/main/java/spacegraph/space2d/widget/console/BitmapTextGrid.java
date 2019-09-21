@@ -10,7 +10,6 @@ import spacegraph.util.math.Color4f;
 import spacegraph.video.Tex;
 
 import java.awt.*;
-import java.awt.font.FontRenderContext;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.io.IOException;
@@ -26,15 +25,15 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     /**
      * pixel scale of each rendered character bitmap
      */
-    static final int DEFAULT_FONT_SCALE = 64;
+    static final int DEFAULT_FONT_SCALE = 96;
     private static final Logger logger = Log.logger(BitmapTextGrid.class);
     private static volatile Font defaultFont;
     final AtomicBoolean invalidBmp = new AtomicBoolean(false), invalidTex = new AtomicBoolean(false);
     private final Tex tex = new Tex().mipmap(true);
     @Deprecated
     private final Color cursorColor = new Color(255, 200, 0, 127);
-    private final boolean antialias = true;
-    private final boolean quality = true;
+    private final boolean antialias = false;
+    private final boolean quality = false;
     protected int cursorCol, cursorRow;
     protected int fontWidth, fontHeight;
     private BufferedImage backbuffer = null;
@@ -80,7 +79,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 //        resize(cols, rows);
 //    }
 
-    private void ensureBufferSize() {
+    private void allocate() {
 
         BufferedImage bPrev = this.backbuffer;
         int pw = pixelWidth();
@@ -89,56 +88,53 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             if (bPrev.getWidth() == pw && bPrev.getHeight() == ph) return;
         }
 
-        BufferedImage b = new BufferedImage(pixelWidth(), pixelHeight(), BufferedImage.TYPE_INT_ARGB);
+        BufferedImage b = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_ARGB);
 
-        b.setAccelerationPriority(1f);
+        //b.setAccelerationPriority(1f);
 
-        Graphics2D g = b.createGraphics();
+        Graphics2D next = b.createGraphics();
 //        System.out.println(cols + "," + rows + "\t" + b + "\t" + g);
 
         if (antialias) {
-            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON
+            next.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_ON
             );
-            g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+        } else {
+            next.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_OFF
+            );
+
+        }
+        if (quality)
+            next.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
                     RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY
                     //RenderingHints.VALUE_ALPHA_INTERPOLATION_DEFAULT
                     //RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
             );
-        } else {
-            g.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
-                    RenderingHints.VALUE_TEXT_ANTIALIAS_OFF
+        else
+            next.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
+                RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
             );
-            g.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
-                    RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
-            );
-        }
 
-        g.setRenderingHint(RenderingHints.KEY_RENDERING,
-                quality ? RenderingHints.VALUE_RENDER_QUALITY
-                        :
-                        //RenderingHints.VALUE_RENDER_SPEED
-                        RenderingHints.VALUE_RENDER_DEFAULT
+        next.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, quality ?
+            RenderingHints.VALUE_FRACTIONALMETRICS_ON :
+            RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+
+        next.setRenderingHint(RenderingHints.KEY_RENDERING, quality ?
+            RenderingHints.VALUE_RENDER_QUALITY :
+            RenderingHints.VALUE_RENDER_SPEED
+//          RenderingHints.VALUE_RENDER_DEFAULT
         );
 
-//        AlphaComposite composite = AlphaComposite.getInstance(AlphaComposite.CLEAR, 0.0f);
-//        backbufferGraphics.setComposite(composite);
-//        backbufferGraphics.clearRect(0,0,pixelWidth(), pixelHeight());
-        if (this.backbufferGraphics != null) {
-            this.backbufferGraphics.dispose();
-        }
 
-        this.backbufferGraphics = g;
+        Graphics2D prev = this.backbufferGraphics;
+        if (prev != null)
+            prev.dispose();
+
+        this.backbufferGraphics = next;
         this.backbuffer = b;
 
-        //backbufferGraphics.setComposite(AlphaComposite.getInstance(AlphaComposite.SRC));
-        //backbufferGraphics.setBackground(new Color(0,0,0,0.5f));
-
-        //backbufferGraphics.setColor(new Color(0,0,0,0.5f));
-        //backbufferGraphics.fillRect(0,0,pixelWidth(), pixelHeight());
-        //backbufferGraphics.drawImage(this.backbuffer, 0, 0, null);
-
-        g.setFont(font);
+        next.setFont(font);
 
     }
 
@@ -163,7 +159,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         if (invalidBmp.compareAndSet(true, false)) {
             //synchronized (this) {
-                ensureBufferSize();
+                allocate();
                 renderText();
             //}
             invalidTex.set(true);
@@ -177,15 +173,13 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             try {
 
                 if (tex.profile != null) {
-                    if (!tex.set(backbuffer, gl)) {
+                    if (!tex.set(backbuffer, gl))
                         invalidTex.set(true); //try again later
-                    }
                 } else
                     invalidTex.set(true); //try again
 
             } catch (Throwable t) {
                 t.printStackTrace(); //HACK
-                //invalid.set(true);
             }
         }
         tex.paint(gl, textBounds(), alpha);
@@ -260,15 +254,13 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 //        resize(c, r);
 //    }
 
-    private FontRenderContext getFontRenderContext() {
-        return new FontRenderContext(null,
-                antialias ?
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON :
-                        RenderingHints.VALUE_TEXT_ANTIALIAS_OFF,
-                quality ?
-                        RenderingHints.VALUE_FRACTIONALMETRICS_ON :
-                        RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
-    }
+//    private FontRenderContext getFontRenderContext() {
+//        return new FontRenderContext(null,
+//                antialias ?
+//                        RenderingHints.VALUE_TEXT_ANTIALIAS_ON :
+//                        RenderingHints.VALUE_TEXT_ANTIALIAS_OFF,
+// );
+//    }
 
 
     private int pixelWidth() {

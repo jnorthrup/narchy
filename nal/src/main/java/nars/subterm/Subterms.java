@@ -910,10 +910,10 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * assumes that equality, structure commonality, and equal subterm count have been tested
      */
     static boolean unifyCommute(Subterms x, Subterms y, Unify u) {
-        TermList xx = u.resolveListIfChanged(x, false);
+        TermList xx = u.resolveListIfChanged(x, true);
         if (xx == null) xx = x.toList();
 
-        TermList yy = u.resolveListIfChanged(y, false);
+        TermList yy = u.resolveListIfChanged(y, true);
         if (yy == null) yy = y.toList();
 
         //TermList xx = x.toList(), yy = y.toList();

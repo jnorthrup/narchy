@@ -110,16 +110,13 @@ public class Tex {
 //        if (!ready())
 //            return false;
 
-        DataBuffer b = i.getRaster().getDataBuffer();
-//        if (b instanceof DataBufferInt)
-        Object o = b instanceof DataBufferInt ? ((DataBufferInt) b).getData() : ((DataBufferByte)b).getData();
+        DataBuffer x = i.getRaster().getDataBuffer();
 
-        int W = i.getWidth(), H = i.getHeight();
-        _set(o, W, H, i.getColorModel());
-//        else if (b instanceof DataBufferByte) {
-//            _set(((DataBufferByte) b).getData(), W, H);
-//        } else
-//            throw new TODO();
+        Object y = x instanceof DataBufferInt ?
+            ((DataBufferInt) x).getData() :
+            ((DataBufferByte)x).getData();
+
+        _set(y, i.getWidth(), i.getHeight(), i.getColorModel());
 
         updated.set(true);
         return true;
@@ -161,7 +158,7 @@ public class Tex {
                 data.setBuffer(buffer);
             } else {
 
-                TextureData dataBefore = null;
+//                TextureData dataBefore = null;
 //                if (dataBefore != null)
 //                    dataBefore.destroy();
 

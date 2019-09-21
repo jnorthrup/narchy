@@ -285,7 +285,7 @@ public class ClassReloader extends ClassLoader {
 
         URI pkgLocal = clazz.getResource(".").toURI();
 
-        int depth = Texts.count(clazz.getPackage().getName(), '.')+1;
+        int depth = Texts.countRows(clazz.getPackage().getName(), '.')+1;
         for  (int i = 0; i < depth; i++) {
             pkgLocal = pkgLocal.resolve("..");
         }
