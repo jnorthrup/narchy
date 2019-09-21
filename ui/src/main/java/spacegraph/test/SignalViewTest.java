@@ -101,13 +101,13 @@ public class SignalViewTest {
                     n.udp.setFPS(fps);
             }), new PushButton("?")));
 
-            Exe.invokeLater(() -> {
+            Exe.runLater(() -> {
                 GraphEdit2D g = new GraphEdit2D();
                 center(g);
 
                 Util.sleepMS(2000);
 
-                Exe.invokeLater(() -> {
+                Exe.runLater(() -> {
                     Surface local = new RealTimeLine(n);
                     Windo ll = g.add(local).sizeRel(0.25f, 0.25f);
 
@@ -360,7 +360,7 @@ public class SignalViewTest {
         public void connectAll() {
 
             for (AudioSource in : AudioSource.all()) {
-                Exe.invokeLater(() -> {
+                Exe.runLater(() -> {
                     try {
                         in.start();
                         add(in);
@@ -371,7 +371,7 @@ public class SignalViewTest {
             }
 
             for (Webcam ww : Webcam.getWebcams()) {
-                Exe.invokeLater(() -> {
+                Exe.runLater(() -> {
                     add(ww);
                 });
             }

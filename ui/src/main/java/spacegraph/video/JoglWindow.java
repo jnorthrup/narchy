@@ -237,7 +237,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //solution is to queue this to the global timer which starts the self-invoking loop
 
         //GLWorkerThread.invokeLater(()-> {
-        Exe.invokeLater(() -> {
+        Exe.runLater(() -> {
 
             setSize(w, h);
             window.setSize(w, h);

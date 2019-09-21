@@ -56,7 +56,7 @@ public class SignalGraphTest {
 
     public static void main(String[] args) {
 
-        GraphEdit2D w = GraphEdit2D.window(1024, 1024);
+        GraphEdit2D w = GraphEdit2D.graphWindow(1024, 1024);
 
         for (WebCam c : WebCam.theFirst(10)) {
             w.add(new Surplier(c.toString(), Surface.class, () -> {

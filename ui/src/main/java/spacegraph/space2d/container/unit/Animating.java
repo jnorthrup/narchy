@@ -59,7 +59,7 @@ public class Animating<X extends Surface> extends UnitContainer<X> implements An
             waiting -= dt;
             if (waiting < 0) {
                 if (async) {
-                    Exe.invoke(this::update);
+                    Exe.run(this::update);
                 } else {
                     update();
                 }

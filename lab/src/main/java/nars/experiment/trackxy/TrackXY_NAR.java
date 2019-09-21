@@ -2,6 +2,7 @@ package nars.experiment.trackxy;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.exe.Exe;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.ArrayBitmap2D;
@@ -38,75 +39,76 @@ import static jcog.Texts.n2;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
+import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends GameX {
 
-    static boolean
-            sourceNumerics = true,
-            targetNumerics = false,
-            targetCam = !targetNumerics,
-            gui = true;
+	static boolean
+		sourceNumerics = true,
+		targetNumerics = false,
+		targetCam = !targetNumerics,
+		gui = true;
 
-    //W = 3, H = 1;
-    //W = 5, H = 1;
+	//W = 3, H = 1;
+	//W = 5, H = 1;
 //    public static final int derivationStrength = 2;
 
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-    static int dur = 16;
+	static int dur = 16;
 
-    static float camResolution = 0.1f;
-    static int experimentTime = 3000000;
-    final public AtomicBoolean trainer = new AtomicBoolean(false);
-    final public AtomicBoolean log = new AtomicBoolean(true);
-    final Bitmap2DSensor cam;
-    private final TrackXY track;
+	static float camResolution = 0.1f;
+	static int experimentTime = 3000000;
+	final public AtomicBoolean trainer = new AtomicBoolean(false);
+	final public AtomicBoolean log = new AtomicBoolean(true);
+	final Bitmap2DSensor cam;
+	private final TrackXY track;
 
-    protected TrackXY_NAR(NAR nar, TrackXY xy) {
-        super($$("trackXY"),
-                //FrameTrigger.cycles(W*H*2),
-                GameTime.durs(1),
+	protected TrackXY_NAR(NAR nar, TrackXY xy) {
+		super($$("trackXY"),
+			//FrameTrigger.cycles(W*H*2),
+			GameTime.durs(1),
 			//FrameTrigger.fps(fps),
-            nar
+			nar
 		);
 
-        int W = xy.W;
-        int H = xy.H;
-        this.track = new TrackXY(W, H);
+		int W = xy.W;
+		int H = xy.H;
+		this.track = new TrackXY(W, H);
 
-        assert (sourceNumerics | targetNumerics | targetCam);
+		assert (sourceNumerics | targetNumerics | targetCam);
 
-        if (sourceNumerics) {
-            senseNumberBi($.inh(id,"sx"), new FloatNormalized(() -> track.cx, 0, W - 1));
-            if (H > 1)
-                senseNumberBi($.inh(id,"sy"), new FloatNormalized(() -> track.cy, 0, H - 1));
-        }
+		if (sourceNumerics) {
+			senseNumberBi($.inh(id, "sx"), new FloatNormalized(() -> track.cx, 0, W - 1));
+			if (H > 1)
+				senseNumberBi($.inh(id, "sy"), new FloatNormalized(() -> track.cy, 0, H - 1));
+		}
 
 
-        if (targetNumerics) {
-            senseNumberBi($.inh(id,"tx"), new FloatNormalized(() -> track.tx, 0, W));
-            if (H > 1)
-                senseNumberBi($.inh(id,"ty"), new FloatNormalized(() -> track.ty, 0, H));
-        }
+		if (targetNumerics) {
+			senseNumberBi($.inh(id, "tx"), new FloatNormalized(() -> track.tx, 0, W));
+			if (H > 1)
+				senseNumberBi($.inh(id, "ty"), new FloatNormalized(() -> track.ty, 0, H));
+		}
 
-        if (targetCam) {
-            Bitmap2DSensor<ArrayBitmap2D> c = new Bitmap2DSensor<>(id, track.grid, nar);
-            c.resolution(camResolution);
-            addSensor(c);
-            /*id*/
-            this.cam = c;
+		if (targetCam) {
+			Bitmap2DSensor<ArrayBitmap2D> c = new Bitmap2DSensor<>(id, track.grid, nar);
+			c.resolution(camResolution);
+			addSensor(c);
+			/*id*/
+			this.cam = c;
 
-        } else {
-            this.cam = null;
-        }
+		} else {
+			this.cam = null;
+		}
 
-        actionPushButton();
-        //actionPushButtonMutex();
-        //actionSwitch();
-        //actionTriState();
+		actionPushButton();
+		//actionPushButtonMutex();
+		//actionSwitch();
+		//actionTriState();
 
-        //actionAccelerate();
+		//actionAccelerate();
 
 //        {
 //            curiosity.enable.set(false);
@@ -135,8 +137,8 @@ public class TrackXY_NAR extends GameX {
 //            });
 //        } else {
 
-        FloatSupplier nearness = () -> Util.sqr(1f - (track.dist() / track.distMax()));
-        reward("near",nearness);
+		FloatSupplier nearness = () -> Util.sqr(1f - (track.dist() / track.distMax()));
+		reward("near", nearness);
 
 //        FloatSupplier notLeft  = () -> ( 1f - Util.max(0,track.tx - track.cx) / track.W );
 //        FloatSupplier notRight = () -> ( 1f - Util.max(0,track.cx - track.tx) / track.W );
@@ -151,45 +153,52 @@ public class TrackXY_NAR extends GameX {
 //        }
 
 
-        //rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
+		//rewardNormalized($.the("better"), -0.1f,  +0.1f, new FloatFirstOrderDifference(nar::time, nearness) );
 
 //        }
 
-        track.randomize();
+		track.randomize();
 
-        onFrame(track::act);
+		onFrame(track::act);
 
-        onFrame(() -> {
+		onFrame(() -> {
 
-            if (trainer.getOpaque()) {
-                long now = nar.time();
-                int durMS = Math.round(dur());
-                if (track.ty < track.cy) {
-                    nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
-                } else if (track.ty > track.cy) {
-                    nar().want(0.1f, $.the("up"), now, now + durMS, 1f, 0.02f);
-                }
-                if (track.tx < track.cx) {
-                    nar().want(0.1f, $.the("left"), now, now + durMS, 1f, 0.02f);
-                } else if (track.tx > track.cx) {
-                    nar().want(0.1f, $.the("right"), now, now + durMS, 1f, 0.02f);
-                }
-            }
-        });
-    }
+			if (trainer.getOpaque()) {
+				long now = nar.time();
+				int durMS = Math.round(dur());
+				if (track.ty < track.cy) {
+					nar().want(0.1f, $.the("down"), now, now + durMS, 1f, 0.02f);
+				} else if (track.ty > track.cy) {
+					nar().want(0.1f, $.the("up"), now, now + durMS, 1f, 0.02f);
+				}
+				if (track.tx < track.cx) {
+					nar().want(0.1f, $.the("left"), now, now + durMS, 1f, 0.02f);
+				} else if (track.tx > track.cx) {
+					nar().want(0.1f, $.the("right"), now, now + durMS, 1f, 0.02f);
+				}
+			}
+		});
+	}
 
-    public static void main(String[] args) {
-
-        NARS nb = new NARS.DefaultNAR(0, true)
-                .exe(new UniExec())
-                .time(new CycleTime().dur(dur))
-                .index(
-                        new CaffeineMemory(2 * 1024 * 10)
-                        //new HijackConceptIndex(4 * 1024, 4)
-                );
+	public static void main(String[] args) {
+		//n.runLater(() -> {
 
 
-        NAR n = nb.get();
+		GraphEdit2D g = new GraphEdit2D();
+		g.resize(800, 800);
+		window(g, 1000, 1000);
+		g.windoSizeMinRel(0.02f, 0.02f);
+
+		NARS nb = new NARS.DefaultNAR(0, true)
+			.exe(new UniExec())
+			.time(new CycleTime().dur(dur))
+			.index(
+				new CaffeineMemory(2 * 1024 * 10)
+				//new HijackConceptIndex(4 * 1024, 4)
+			);
+
+
+		NAR n = nb.get();
 
 //        Param.DEBUG = true;
 //        n.run(10); //skip:
@@ -205,33 +214,33 @@ public class TrackXY_NAR extends GameX {
 //        n.questPriDefault.amp(0.05f);
 
 
-        n.freqResolution.set(0.01f);
-        //n.confMin.evi(NAL.truth.EVI_MIN);
+		n.freqResolution.set(0.01f);
+		//n.confMin.evi(NAL.truth.EVI_MIN);
 //        n.confResolution.set(0.05f);
 
 
-        //n.freqResolution.set(0.04f);
+		//n.freqResolution.set(0.04f);
 
-        n.termVolMax.set(24);
-        //n.dtDither.set(Math.max(1, durMS));
+		n.termVolMax.set(24);
+		//n.dtDither.set(Math.max(1, durMS));
 
 
-        Deriver d = new Deriver(Derivers.nal(n,
-                //6, 8
-                //"induction.goal.nal"
-                1, 8
-                //2, 8
-                //, "motivation.nal"
-        ).add(new ConjClustering(n, BELIEF,
-                //x -> true,
-                2, 4, Task::isInput
-        )));
-        //{
+		Deriver d = new Deriver(Derivers.nal(n,
+			//6, 8
+			//"induction.goal.nal"
+			1, 8
+			//2, 8
+			//, "motivation.nal"
+		).add(new ConjClustering(n, BELIEF,
+			//x -> true,
+			2, 4, Task::isInput
+		)));
+		//{
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
 //                        return conclusion == GOAL ? 1 : 0.01f; //super.puncFactor(conclusion);
 //                    }
-        //};
+		//};
 //        d.timing = new ActionTiming();
 
 
@@ -258,28 +267,28 @@ public class TrackXY_NAR extends GameX {
 //
 //            ), 400, 300);
 
-        final int W = 4, H = 4;
-        //final int W = 3, H = 1;
-        //final int W = 3, H = 3;
+		final int W = 4, H = 4;
+		//final int W = 3, H = 1;
+		//final int W = 3, H = 3;
 
-        TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
+		TrackXY_NAR a = new TrackXY_NAR(n, new TrackXY(W, H));
 
-        Table t = DataTable.create(DoubleColumn.create("tx"),DoubleColumn.create("cx"));
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            try {
-                File f = new File("/tmp/x.csv");
-                System.out.println("writing perf metrics: " + f);
-                t.write().csv(f);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }));
-        a.onFrame(f->{
-            synchronized (t) {
-                ((DoubleColumn) t.column(0)).append((double) a.track.tx);
-                ((DoubleColumn) t.column(1)).append((double) a.track.cx);
-            }
-        });
+		Table t = DataTable.create(DoubleColumn.create("tx"), DoubleColumn.create("cx"));
+		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+			try {
+				File f = new File("/tmp/x.csv");
+				System.out.println("writing perf metrics: " + f);
+				t.write().csv(f);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}));
+		a.onFrame(f -> {
+			synchronized (t) {
+				((DoubleColumn) t.column(0)).append((double) a.track.tx);
+				((DoubleColumn) t.column(1)).append((double) a.track.cx);
+			}
+		});
 
 //        //if (rl) {
 //        {
@@ -294,21 +303,16 @@ public class TrackXY_NAR extends GameX {
 //
 //        }
 
-        //a.start(n);
-        n.start(a);
-        ((TaskLinkWhat)a.what()).links.linksMax.set(64);
-
-        if (gui) {
-            //n.runLater(() -> {
+		//a.start(n);
+		n.start(a);
+		((TaskLinkWhat) a.what()).links.linksMax.set(64);
 
 
-            GraphEdit2D g = GraphEdit2D.window(800, 800);
-            g.windoSizeMinRel(0.02f, 0.02f);
-
-
-            g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
-            g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-            g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+		Exe.runLater(() -> {
+			g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+			g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
+			g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+		});
 
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
@@ -344,77 +348,76 @@ public class TrackXY_NAR extends GameX {
 //                }).sizeRel(0.25f, 0.25f);
 
 
-            //window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
+		//window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 //            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
-            if (a.cam != null) {
-                g.add(Splitting.column(new VectorSensorChart(a.cam, a) {
-                    @Override
-                    protected void paint(GL2 gl, ReSurface reSurface) {
-                        super.paint(gl, reSurface);
-                        RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-                        gl.glColor4f(1, 0, 0, 0.9f);
-                        Draw.rect(at.move(x(), y(), 0.01f), gl);
-                    }
-                }.withControls(), 0.1f, new ObjectSurface(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
-            }
-            //});
-        }
+		if (a.cam != null) {
+			g.add(Splitting.column(new VectorSensorChart(a.cam, a) {
+				@Override
+				protected void paint(GL2 gl, ReSurface reSurface) {
+					super.paint(gl, reSurface);
+					RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+					gl.glColor4f(1, 0, 0, 0.9f);
+					Draw.rect(at.move(x(), y(), 0.01f), gl);
+				}
+			}.withControls(), 0.1f, new ObjectSurface(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+
+			//});
+		}
 
 //        new Impiler(n);
 
-        NAL.DEBUG = true;
-        a.what().eventTask.on(tt -> {
+		NAL.DEBUG = true;
+		a.what().eventTask.on(tt -> {
 
 
-
-            if (!tt.isInput()) {
-                if (tt instanceof DerivedTask) {
-                    Term ttt = tt.term();
-                    boolean l = ttt.equals(a.actions.get(0).term());
-                    boolean r = ttt.equals(a.actions.get(1).term());
-                    if (l || r) {
-
-
-                        //if (n.concept(tt) instanceof ActionConcept)
-                        long window = 64;
-                        float dur = n.dur();
-                        long now = n.time();
-                        if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
-
-                            float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
-                            float needsDir = a.track.tx - a.track.cx;
+			if (!tt.isInput()) {
+				if (tt instanceof DerivedTask) {
+					Term ttt = tt.term();
+					boolean l = ttt.equals(a.actions.get(0).term());
+					boolean r = ttt.equals(a.actions.get(1).term());
+					if (l || r) {
 
 
-                            String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
-                            System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-                            System.out.println(tt.proof());
-                            n.proofPrint(tt);
+						//if (n.concept(tt) instanceof ActionConcept)
+						long window = 64;
+						float dur = n.dur();
+						long now = n.time();
+						if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
 
-                            //System.out.println(NAR.proof(tt, n));
-                            System.out.println();
-
-                        }
-
-
-                    }
-
-                }
-            }
-        }, GOAL);
-
-        n.synch();
-        n.run(experimentTime);
+							float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
+							float needsDir = a.track.tx - a.track.cx;
 
 
-        //printGoals(n);
-        //printImpls(n);
+							String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
+							System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+							System.out.println(tt.proof());
+							n.proofPrint(tt);
 
-        //n.stats(System.out);
-        //n.conceptsActive().forEach(System.out::println);
+							//System.out.println(NAR.proof(tt, n));
+							System.out.println();
 
-        //n.tasks().forEach(System.out::println);
-    }
+						}
+
+
+					}
+
+				}
+			}
+		}, GOAL);
+
+		n.synch();
+		n.run(experimentTime);
+
+
+		//printGoals(n);
+		//printImpls(n);
+
+		//n.stats(System.out);
+		//n.conceptsActive().forEach(System.out::println);
+
+		//n.tasks().forEach(System.out::println);
+	}
 
 //    public static void printGoals(NAR n) {
 //        float dur = n.dur();
@@ -427,8 +430,7 @@ public class TrackXY_NAR extends GameX {
 //    }
 
 
-
-    private void actionAccelerate() {
+	private void actionAccelerate() {
 //        actionDial($.inh($.p(id, $.the("speed")), $.the(-1)),
 //                $.inh($.p(id, $.the("speed")), $.the(+1)),
 //                        track.controlSpeed, 100);
@@ -438,18 +440,18 @@ public class TrackXY_NAR extends GameX {
 //            return true; //TODO check change
 //        });
 
-        //FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
-        actionUnipolar($.inh(id, $.the("speed")), (float a) -> {
+		//FloatAveragedWindow _controlSpeed = new FloatAveragedWindow(8, 0.05f);
+		actionUnipolar($.inh(id, $.the("speed")), (float a) -> {
 //            System.out.println(a);
-            //track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
-            float cc = (float) Math.pow(a, 1f);
-            //float c = _controlSpeed.valueOf(cc);
-            float c = Util.lerp(cc, 0.01f, 0.2f);
-            track.controlSpeed.set(c);
-            return c;
-            //TODO check change
-        });
-    }
+			//track.controlSpeed.add(Math.pow(((a-0.5)*2),3)/100f);
+			float cc = (float) Math.pow(a, 1f);
+			//float c = _controlSpeed.valueOf(cc);
+			float c = Util.lerp(cc, 0.01f, 0.2f);
+			track.controlSpeed.set(c);
+			return c;
+			//TODO check change
+		});
+	}
 
 
 //        private void actionSwitch() {
@@ -501,84 +503,84 @@ public class TrackXY_NAR extends GameX {
 //            SpaceGraph.window(NARui.beliefCharts(s.sensors, nar), 300, 300);
 //        }
 
-    private void actionTriState() {
+	private void actionTriState() {
 
-        if (track.grid.height() > 1) {
-            actionTriState($.p($.the("Y"), id), (dy) -> {
-                float py = track.cy;
-                track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * dy, 0, track.grid.height() - 1);
-                return !Util.equals(py, track.cy, 0.01f);
-            });
-        }
+		if (track.grid.height() > 1) {
+			actionTriState($.p($.the("Y"), id), (dy) -> {
+				float py = track.cy;
+				track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * dy, 0, track.grid.height() - 1);
+				return !Util.equals(py, track.cy, 0.01f);
+			});
+		}
 
-        actionTriState($.p($.the("X"), id), (dx) -> {
-            float px = track.cx;
-            track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * dx, 0, track.grid.width() - 1);
-            return !Util.equals(px, track.cx, 0.01f);
-        });
-    }
-
-
-    private void actionPushButton() {
+		actionTriState($.p($.the("X"), id), (dx) -> {
+			float px = track.cx;
+			track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue() * dx, 0, track.grid.width() - 1);
+			return !Util.equals(px, track.cx, 0.01f);
+		});
+	}
 
 
-        actionPushButton($.inh(id,"right"), (b) -> {
-            if (b)
-                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-        });
-        actionPushButton($.inh(id,"left"), (b) -> {
-            if (b)
-                track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-        });
+	private void actionPushButton() {
 
-        if (track.grid.height() > 1) {
-            actionPushButton($.inh(id,"up"), (b) -> {
-                if (b)
-                    track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-            });
-            actionPushButton($.inh(id,"down"), (b) -> {
-                if (b)
-                    track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-            });
-        }
 
-    }
+		actionPushButton($.inh(id, "right"), (b) -> {
+			if (b)
+				track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+		});
+		actionPushButton($.inh(id, "left"), (b) -> {
+			if (b)
+				track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+		});
 
-    private void actionPushButtonMutex() {
+		if (track.grid.height() > 1) {
+			actionPushButton($.inh(id, "up"), (b) -> {
+				if (b)
+					track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+			});
+			actionPushButton($.inh(id, "down"), (b) -> {
+				if (b)
+					track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+			});
+		}
 
-        if (track.grid.height() > 1) {
-            actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), (b) -> {
-                if (b) {
-                    float pcy = track.cy;
-                    track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-                    return track.cy != pcy;
-                } else
-                    return false;
-            }, (b) -> {
-                if (b) {
-                    float pcy = track.cy;
-                    track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-                    return track.cy != pcy;
-                } else
-                    return false;
-            });
-        }
+	}
 
-        actionPushButtonMutex($.inh(id,$.the("left")), $.inh(id,$.the("right")), (b) -> {
-            if (b) {
-                float pcx = track.cx;
-                track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-                return track.cx != pcx;
-            } else
-                return false;
-        }, (b) -> {
-            if (b) {
-                float pcx = track.cx;
-                track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-                return track.cx != pcx;
-            } else
-                return false;
-        });
-    }
+	private void actionPushButtonMutex() {
+
+		if (track.grid.height() > 1) {
+			actionPushButtonMutex($.inh(id, $.the("up")), $.inh(id, $.the("down")), (b) -> {
+				if (b) {
+					float pcy = track.cy;
+					track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+					return track.cy != pcy;
+				} else
+					return false;
+			}, (b) -> {
+				if (b) {
+					float pcy = track.cy;
+					track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
+					return track.cy != pcy;
+				} else
+					return false;
+			});
+		}
+
+		actionPushButtonMutex($.inh(id, $.the("left")), $.inh(id, $.the("right")), (b) -> {
+			if (b) {
+				float pcx = track.cx;
+				track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+				return track.cx != pcx;
+			} else
+				return false;
+		}, (b) -> {
+			if (b) {
+				float pcx = track.cx;
+				track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
+				return track.cx != pcx;
+			} else
+				return false;
+		});
+	}
 
 }

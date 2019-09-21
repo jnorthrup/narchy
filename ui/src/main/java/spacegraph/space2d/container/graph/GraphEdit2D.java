@@ -80,7 +80,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         clipBounds = false; //TODO only if fencing
     }
 
-    public static <X extends Surface> GraphEdit2D window(int w, int h) {
+    public static <X extends Surface> GraphEdit2D graphWindow(int w, int h) {
         GraphEdit2D g = new GraphEdit2D();
         SpaceGraph.window(g, w, h);
         //.dev();

@@ -1,30 +1,42 @@
 package nars;
 
+import com.google.common.collect.Streams;
 import jcog.data.graph.Node;
 import jcog.event.Off;
+import jcog.exe.Exe;
 import jcog.pri.Prioritized;
 import nars.attention.PriNode;
 import nars.attention.What;
+import nars.game.sensor.VectorSensor;
 import nars.gui.DurSurface;
+import nars.gui.NARui;
+import nars.gui.sensor.VectorSensorChart;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.StackingMap;
 import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
+import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.layout.ForceDirected2D;
+import spacegraph.space2d.container.unit.Scale;
 import spacegraph.space2d.widget.meta.ObjectSurface;
 import spacegraph.space2d.widget.port.Surplier;
 import spacegraph.space2d.widget.slider.FloatSlider;
 import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.LabeledPane;
+import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 
+import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.stream.Stream;
 
 import static java.util.stream.Collectors.toList;
 
 public class AttentionUI {
+
 
 //    static class NodeUI extends Gridding {
 //        public final PriNode node;
@@ -49,18 +61,32 @@ public class AttentionUI {
 		return DurSurface.get(w, n, w::commit);
 	}
 
-	public static Surface attentionGraph(NAR n) {
-		Graph2D aaa = new Graph2D<>()
-			.build(x ->
-				x.set(Surplier.button(x.id.toString(), () ->LabeledPane.the(x.id.toString(),
-					new ObjectSurface(x.id, 2, ObjectSurface.builtin,
-						Map.of(
-							//TODO nars specific renderers
-						)))))
-			).render((xx, graph) -> {
-				Object x = xx.id;
-				Node<PriNode, Object> nn = n.control.graph.node(x);
-				if (nn!=null) {
+	public static GraphEdit2D graphGraph(NAR n) {
+		GraphEdit2D g = new GraphEdit2D();
+		g.resize(800, 800);
+		//g.windoSizeMinRel(0.02f, 0.02f);
+
+		Exe.runLater(() -> {
+//		g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+			//g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
+			g.add(NARui.attentionUI(n)).resize(400.25f, 400.25f);
+		});
+		return g;
+	}
+
+	@Deprecated
+	public static Surface objectGraphs(NAR n) {
+		ObjectGraphs g = new ObjectGraphs(n,
+			Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())::iterator,
+			Map.of(
+				NAR.class, (NAR nn, Object relation) -> new VectorLabel(nn.self().toString()),
+				VectorSensor.class, (VectorSensor v, Object relation) -> new VectorSensorChart(v, n)
+				//PriNode.class, (PriNode v, Object relation)-> ...
+
+				//TODO nars specific renderers
+			), (xx, graph) -> {
+				Node<PriNode, Object> nn = n.control.graph.node(xx.id);
+				if (nn != null) {
 					nn.nodes(false, true).forEach(c -> {
 						EdgeVis<Object> e = graph.edge(xx, c.id());
 						if (e != null) {
@@ -69,8 +95,32 @@ public class AttentionUI {
 						}
 					});
 				}
+		});
+
+		//n.partStream().forEach(g::add);
+
+		return DurSurface.get(g, n, () -> {
+
+			//Stream s =
+			//Stream.concat(Stream.of(n.control.graph.nodeIDs()), n.partStream());
+			//n.partStream();
+
+//			s = s.peek(x -> {
+//				System.out.println(x.getClass()  + "\t" + x);
+//			});
+
+
+			//aaa.set(s::iterator);
+
+		}).every(16);
+	}
+
+	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {
+		return new Graph2D<>()
+			.render((xx, graph) -> {
+				Object x = xx.id;
 				if (x instanceof Prioritized) {
-					Prioritized node = (Prioritized)x;
+					Prioritized node = (Prioritized) x;
 					float s = node.pri();
 					xx.pri = s;
 
@@ -81,30 +131,91 @@ public class AttentionUI {
 					//..infer priority of unprioitized items, ex: by graph metrics in relation to prioritized
 				}
 
-			})
+			}, renderer)
 			.update(new ForceDirected2D<>() {
 				@Override
 				protected void size(MutableRectFloat m, float a) {
 					float q = m.node.pri;
 					float s = (float) (Math.sqrt((Math.max(0, q))));
 					//w = Util.clamp(s * a, 2, 32);
-					float w = 2 + s * a;
+					float w = 10 + 2 + s * a;
 					m.size(w, w);
 				}
 			});
-		return DurSurface.get(aaa.widget(), n, () -> {
 
-			Stream s =
-				//Stream.concat(Stream.of(n.control.graph.nodeIDs()), n.partStream());
-				n.partStream();
 
-//			s = s.peek(x -> {
-//				System.out.println(x.getClass()  + "\t" + x);
-//			});
+	}
 
-			aaa.set(s::iterator);
+	static class ObjectGraphs extends StackingMap {
+		public static final float INNER_CONTENT_SCALE = 0.9f;
+		private final Map<Class, BiFunction<?, Object, Surface>> builders;
+		private final Graph2D.Graph2DRenderer<Object> renderer;
 
-		}).live();
+		ObjectGraphs(Object root, Iterable content, Map<Class, BiFunction<?, Object, Surface>> builders, Graph2D.Graph2DRenderer<Object> renderer) {
+			this.builders = builders;
+			this.renderer = renderer;
+			layer(root, content);
+
+
+		}
+
+		public void layer(Object key, @Nullable Iterable content) {
+
+			if (content != null)
+				computeIfAbsent(key, oo -> graph(objectGraph(renderer)).set(content).widget().pos(bounds));
+			else
+				remove(key);
+
+
+		}
+
+		private Graph2D<Object> graph(Graph2D<Object> g) {
+			g.build(x ->
+				{
+					Object xid = x.id;
+					String label = xid.toString();
+					x.set(Surplier.button(label, () -> new Scale(
+						LabeledPane.the(label,
+							new ObjectSurface(xid, 2,
+								builders, ObjectSurface.builtin)
+						), INNER_CONTENT_SCALE)));
+
+
+					//new CheckBox(xid.toString()).on((boolean v) -> {
+//if (v) {
+//							Surface o = new ObjectSurface(x, new AutoBuilder<Object, Surface>(
+//								2, ObjectSurface.DefaultObjectSurfaceBuilder,
+//								new Map[] { ObjectSurface.builtin }));
+//
+//							if (o instanceof ContainerSurface) {
+//								ContainerSurface c = (ContainerSurface)o;
+//								int cc = c.childrenCount();
+//								if (cc == 1) {
+//									c.forEach(ccc -> {
+//										layer(xid, List.of(ccc));
+//									});
+//								} else {
+//									List<Surface> components = new FasterList(cc);
+//
+//									c.forEach(components::add);
+//									layer(xid, components);
+//								}
+//							} else if (o!=null) {
+//								layer(xid, List.of(o));
+//							}
+//						} else
+//							layer(xid, null);
+
+
+				}
+			);
+			return g;
+		}
+
+		public void layer(Object o) {
+			layer(o, List.of(o));
+		}
+
 	}
 
 	private static class WhatMixer extends Gridding {

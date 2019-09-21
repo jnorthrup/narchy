@@ -1110,8 +1110,13 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final DurLoop onDur(Runnable on) {
+        return onDur(on, true);
+    }
+
+    public final DurLoop onDur(Runnable on, boolean autostart) {
         DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
-        start(r);
+        if (autostart)
+            start(r);
         return r;
     }
 

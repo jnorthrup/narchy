@@ -22,7 +22,7 @@ public class Surplier<T> extends ConstantPort<T> {
         toggle.on((boolean tb)->{
             if (tb) {
                 toggle.enabled(false);
-                Exe.invoke(()->{
+                Exe.run(()->{
                     if (!toggle.on())
                         return; //toggled off while waiting to execute
 

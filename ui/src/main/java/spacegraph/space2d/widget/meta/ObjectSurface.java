@@ -38,7 +38,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class ObjectSurface extends MutableUnitContainer<Surface> {
 
-    private static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
+    public static final AutoBuilder.AutoBuilding<Object, Surface> DefaultObjectSurfaceBuilder = (@Nullable Object ctx, List<Pair<Object, Iterable<Surface>>> target, @Nullable Object obj) -> {
 
         List<Surface> outer = new FasterList(0, EmptySurfaceArray);
 
@@ -78,7 +78,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
     }
 
-    final AutoBuilder<Object, Surface> builder;
+    public final AutoBuilder<Object, Surface> builder;
 
     /**
      * root of the object graph

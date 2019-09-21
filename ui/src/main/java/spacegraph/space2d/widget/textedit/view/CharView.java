@@ -42,7 +42,7 @@ import spacegraph.video.Tex;
     gl.glEnd();
 
     texture.disable(gl);
-    tt.delete(gl);
+    tt.delete();
   }
 
 

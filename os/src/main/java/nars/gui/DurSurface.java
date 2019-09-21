@@ -20,7 +20,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     public static final double minUpdateTimeSeconds = 1 / 30.0; /* 30fps */
 
     protected final NAR nar;
-    DurLoop dur;
+    final DurLoop dur;
     final long minUpdateTimeNS;
     private boolean autolayout;
     volatile long nextUpdate = System.nanoTime();
@@ -32,32 +32,30 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         super(x);
         this.nar = nar;
         this.minUpdateTimeNS = Math.round(minUpdateTimeS*1.0e9);
+        dur = nar.onDur(this::updateIfShowing, false);
         nextUpdate = System.nanoTime();
     }
 
     @Override
     protected void starting() {
-        if (dur ==null)
-            dur = nar.onDur(this::updateIfShowing);
-        else
-            nar.start(dur);
+
+        nar.start(dur);
 
         super.starting();
     }
 
     @Override
     protected void stopping() {
-        if (dur !=null) {
-            dur.delete();
-            dur = null;
-        }
+
+        nar.stop(dur);
 
         super.stopping();
     }
 
     /** sets the update period dur multiplier */
     public DurSurface durs(float durs) {
-        throw new jcog.TODO();
+        dur.durs(durs);
+        return this;
     }
 
     public static DurSurface get(Surface x, NAR n, Runnable eachDur) {
@@ -143,7 +141,12 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
         return get(narConsumer, n, (Consumer<NAR>)narConsumer);
     }
 
-    public DurSurface<S> live() {
+    public DurSurface<S> every(float durs) {
+        this.durs(durs);
+        return every();
+    }
+
+    public DurSurface<S> every() {
         //if caching, during pre-render step if not invalid, then only call .layout()
         autolayout = true;
         return this;

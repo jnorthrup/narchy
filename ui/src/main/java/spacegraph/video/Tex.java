@@ -31,7 +31,7 @@ public class Tex {
 
     private final AtomicBoolean updated = new AtomicBoolean(false);
     public com.jogamp.opengl.util.texture.Texture texture;
-    public GLProfile profile;
+    public GL2 gl;
     /**
      * weird rotation correction.. dunno why yet
      */
@@ -90,10 +90,10 @@ public class Tex {
     }
 
     private void ready(GL2 gl) {
-        if (profile == null)
-            profile = gl.getGLProfile();
+        if (this.gl == null)
+            this.gl = gl;
         else
-            assert(profile == gl.getGLProfile());
+            assert(this.gl == gl);
     }
 
     public boolean set(BufferedImage i, GL2 gl) {
@@ -149,6 +149,7 @@ public class Tex {
 
         synchronized (this) {
 
+            GLProfile profile = this.gl.getGLProfile();
             this.src = x;
 
             Buffer buffer = x instanceof int[] ? IntBuffer.wrap((int[]) x) : ByteBuffer.wrap((byte[]) x);
@@ -157,10 +158,6 @@ public class Tex {
                 data.setHeight(height);
                 data.setBuffer(buffer);
             } else {
-
-//                TextureData dataBefore = null;
-//                if (dataBefore != null)
-//                    dataBefore.destroy();
 
                 if (color.getNumColorComponents()==1) {
                     //grayscale
@@ -243,7 +240,7 @@ public class Tex {
     }
 
     public final boolean ready() {
-        return profile != null;
+        return gl != null;
     }
 
     public void stop(Surface x) {
@@ -260,11 +257,15 @@ public class Tex {
 //        }
     }
 
-    public void delete(GL2 gl) {
-        texture.destroy(gl);
-        texture = null;
-        profile = null;
-        src = null;
+    public void delete() {
+        Texture tt = this.texture;
+        if (tt!=null) {
+            tt.destroy(gl);
+            this.texture = null;
+        }
+        this.gl = null;
+        this.data = null;
+        this.src = null;
     }
 
 
@@ -283,5 +284,11 @@ public class Tex {
                 t.set(b);
             super.paint(gl, reSurface);
         }
-    }
+
+		@Override
+		public boolean delete() {
+        	this.tex.delete();
+			return super.delete();
+		}
+	}
 }

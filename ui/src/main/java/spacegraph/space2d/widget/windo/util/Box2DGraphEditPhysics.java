@@ -119,7 +119,7 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
     public Box2DGraphEditPhysics() {
         this.physics = new Dynamics2D();
-        physics.setSubStepping(true);
+        physics.setSubStepping(false);
         physics.setWarmStarting(true);
         physics.setContinuousPhysics(true);
         physics.setAllowSleep(true);

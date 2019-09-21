@@ -134,7 +134,7 @@ abstract public class ContainerSurface extends Surface {
         return null;
     }
 
-    protected abstract int childrenCount();
+    public abstract int childrenCount();
 
 
     @Override

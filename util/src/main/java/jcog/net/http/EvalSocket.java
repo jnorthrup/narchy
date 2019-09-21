@@ -165,7 +165,7 @@ public class EvalSocket<X> implements HttpModel {
                 socket.close(CloseFrame.TOOBIG, "Overflow");
 
             if (pending.compareAndSet(false, true)) {
-                Exe.invokeLater(this);
+                Exe.runLater(this);
             }
         }
 

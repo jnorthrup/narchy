@@ -143,8 +143,8 @@ public class MutableRectFloat<X> extends v2 {
      */
     public void clamp(RectFloat bounds) {
         if ((x != x) || (y != y)) randomize(bounds);
-        x = Util.clamp(x, bounds.left() + w / 2, bounds.right() - w / 2);
-        y = Util.clamp(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
+        x = Util.clampSafe(x, bounds.left() + w / 2, bounds.right() - w / 2);
+        y = Util.clampSafe(y, bounds.bottom() + h / 2, bounds.top() - h / 2);
     }
 
     private void randomize(RectFloat bounds) {

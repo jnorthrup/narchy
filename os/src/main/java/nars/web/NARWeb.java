@@ -290,7 +290,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
         public void accept(Task t) {
             if (out.put(t)!=null) {
                 if (busy.compareAndSet(false, true)) {
-                    Exe.invoke(this::drain);
+                    Exe.run(this::drain);
                 }
             }
         }

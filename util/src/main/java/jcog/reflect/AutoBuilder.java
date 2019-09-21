@@ -31,10 +31,14 @@ public class AutoBuilder<X, Y> {
     public final Map<Class, BiFunction<X, Object /* relation */, Y>>[] onClass;
     public final Map<Predicate, Function<X, Y>> onCondition;
 
+    int maxClassBuilders/* per object*/ = 1;
+    boolean recurseOnlyUnmatched = true;
+
     final AutoBuilding<X, Y> building;
     private final int maxDepth;
 
     private final Set<Object> seen = Sets.newSetFromMap(new IdentityHashMap());
+
 
     public AutoBuilder(int maxDepth, AutoBuilding<X, Y> building, Map<Class, BiFunction<X, Object, Y>>[] onClass) {
         this.building = building;
@@ -61,7 +65,7 @@ public class AutoBuilder<X, Y> {
         List<Pair<X, Iterable<Y>>> target = new FasterList<>();
 
 
-        FasterList<BiFunction<Object, Object, Y>> builders = new FasterList();
+        FasterList<BiFunction<Object, Object, Y>> builders = new FasterList(maxClassBuilders);
 
 //        {
 //            if (!onCondition.isEmpty()) {
@@ -75,21 +79,22 @@ public class AutoBuilder<X, Y> {
 //            }
 //        }
 
-        {
-            classBuilders(obj, builders); //TODO check subtypes/supertypes etc
-            if (!builders.isEmpty()) {
-                target.add(pair(obj,
-                        //builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
-                        builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
-                ));
+        classBuilders(obj, builders); //TODO check subtypes/supertypes etc
+        if (!builders.isEmpty()) {
+            target.add(pair(obj,
+                    //builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull)::iterator
+                    builders.stream().map(b -> b.apply(obj, relation)).filter(Objects::nonNull).limit(maxClassBuilders)::iterator
+            ));
+        }
+
+            if (builders.isEmpty() || !recurseOnlyUnmatched) {
+
+                //if (bb.isEmpty()) {
+                if (depth <= maxDepth) {
+                    collectFields(root, obj, parentRepr, target, depth + 1);
+                }
+
             }
-        }
-
-        //if (bb.isEmpty()) {
-        if (depth <= maxDepth) {
-            collectFields(root, obj, parentRepr, target, depth + 1);
-        }
-
 //        if (obj instanceof Map) {
 //            ((Map<?,?>) obj).entrySet().stream()
 //                    .map((Map.Entry<?,?> x) ->
@@ -107,7 +112,8 @@ public class AutoBuilder<X, Y> {
 //        }*/
 
 
-        return building.build(root, target, obj);
+            return building.build(root, target, obj);
+
     }
 
     private void classBuilders(X x, FasterList<BiFunction</* X */Object, Object, Y>> ll) {
@@ -118,12 +124,19 @@ public class AutoBuilder<X, Y> {
 
         //exhaustive search
         // TODO cache in a type graph
-        BiConsumer<Class, BiFunction<X, Object, Y>> matcher = (k, v) -> {
-            if (k.isAssignableFrom(xc))
-                ll.add((BiFunction) v);
-        };
         for (Map<Class, BiFunction<X, Object, Y>> onClass : this.onClass) {
-            onClass.forEach(matcher);
+            for (Map.Entry<Class, BiFunction<X, Object, Y>> entry : onClass.entrySet()) {
+                Class k = entry.getKey();
+                BiFunction<X, Object, Y> v = entry.getValue();
+                if (k.isAssignableFrom(xc)) {
+                    if (v == null)
+                        break; //an interrupt
+
+                    ll.add((BiFunction) v);
+                    if (ll.size() > maxClassBuilders)
+                        break;
+                }
+            }
         }
     }
 
@@ -168,8 +181,10 @@ public class AutoBuilder<X, Y> {
                 if (fVal != null && fVal != x) {
                     X z = (X) fVal;
                     Y w = build(c, parentRepr, f, z, depth);
-                    if (w != null)
-                        target.add(pair(z, List.of(w)));
+                    if (w != null) {
+                        List<Y> ww = List.of(w); //HACK
+                        target.add(pair(z, ww.subList(0, Math.min(ww.size(), maxClassBuilders))));
+                    }
                 }
             } catch (IllegalAccessException e) {
                 e.printStackTrace();

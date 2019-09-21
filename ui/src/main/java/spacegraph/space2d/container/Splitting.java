@@ -166,7 +166,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
     }
 
     @Override
-    protected int childrenCount() {
+    public int childrenCount() {
         return 2;
     }
 

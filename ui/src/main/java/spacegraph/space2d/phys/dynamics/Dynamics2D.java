@@ -564,7 +564,8 @@ public class Dynamics2D {
 
     private void sync() {
         Runnable next;
-        while ((next = queue.poll()) != null)
+        int s = queue.size();
+        while (((next = queue.poll()) != null) && --s > 0)
             next.run();
     }
 

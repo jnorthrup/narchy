@@ -129,7 +129,7 @@ protected void layoutChild(Surface aChild, float newPW, float newPH)
     }
 
     @Override
-    protected int childrenCount() {
+    public int childrenCount() {
         return 0;
     }
 

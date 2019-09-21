@@ -145,7 +145,7 @@ abstract public class GameX extends Game {
 
 
         if (initMeta) {
-            Exe.invokeLater(() -> {
+            Exe.runLater(() -> {
 
                 float _fps = 24;
                 MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps);
@@ -154,7 +154,7 @@ abstract public class GameX extends Game {
                 n.start(self);
                 //self.pri(0.3f);
 
-                Exe.invokeLater(() -> {
+                Exe.runLater(() -> {
                     n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
                         float fps = _fps;
                         MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, metaAllowPause);
@@ -211,7 +211,9 @@ abstract public class GameX extends Game {
             //l.add(Surplier.button("att", () -> NARui.attentionUI(n)));
 
 
+        n.runLater(()-> {
             window(NARui.top(n), 1024, 800);
+        });
 
 
         return n;

@@ -109,11 +109,14 @@ public class NARui {
 
     public static Surface top(NAR n) {
         return new Bordering(
-            AttentionUI.attentionGraph(n))
-            .east(new TabMenu(menu(n)/* , new WallMenuView() */ ))
-            .north(ExeCharts.runPanel(n))
-            //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
-            ;
+                    AttentionUI.
+
+                        objectGraphs(n)
+                        //graphGraph(n)
+                    ).east(new TabMenu(menu(n)/* , new WallMenuView() */ ))
+                    .north(ExeCharts.runPanel(n))
+                    //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
+                    ;
     }
 
     public static HashMap<String, Supplier<Surface>> parts(Thing p) {
@@ -264,7 +267,7 @@ public class NARui {
                 new Gridding(
                         mode,
                         new PushButton("save").clicked(() -> {
-                            Exe.invokeLater(() -> {
+                            Exe.runLater(() -> {
                                 try {
                                     nar.output(new File(path.text()), false);
                                 } catch (IOException e) {
@@ -559,7 +562,7 @@ public class NARui {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's
 
-        }).live();
+        }).every();
     }
 
     public static Surface taskBufferView(PriBuffer b, NAR n) {
@@ -594,7 +597,7 @@ public class NARui {
         //TODO watch for added and removed What's for live update
 
         Map<String,Supplier<Surface>> global = new HashMap();
-        global.put("Attention", ()-> AttentionUI.attentionGraph(n));
+        global.put("Attention", ()-> AttentionUI.objectGraphs(n));
         global.put("What", ()-> AttentionUI.whatMixer(n));
 
 

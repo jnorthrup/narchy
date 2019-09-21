@@ -66,7 +66,7 @@ public class IRL {
         URL u = Osm.url("https://api.openstreetmap.org", lonMin, latMin, lonMax, latMax);
         osm.id = u.toExternalForm();
 
-        Exe.invokeLater(() -> user.get(u.toString(), () -> {
+        Exe.runLater(() -> user.get(u.toString(), () -> {
             try {
                 logger.info("Downloading {}", u);
                 return u.openStream().readAllBytes();

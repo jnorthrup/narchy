@@ -63,7 +63,7 @@ public class WindowToggleButton extends CheckBox implements WindowListener {
                 this.space = SpaceGraph.window(spacer.get(), width, height);
 
 //                space.pre(s -> {
-                Exe.invokeLater(()->{
+                Exe.runLater(()->{
                     GLWindow w = space.video.window;
                     
                         w.addWindowListener(this);

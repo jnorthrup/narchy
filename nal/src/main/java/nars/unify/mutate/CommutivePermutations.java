@@ -84,8 +84,9 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
     public void mutate(Termutator[] chain, int current, Unify u) {
 
 
-        Subterms x = this.x, y = this.y;
-//        Subterms xx = u.resolve(this.x), yy = u.resolve(this.y);
+        ///Subterms x = this.x, y = this.y;
+        Subterms x = u.resolveListIfChanged(this.x, false), y = u.resolveListIfChanged(this.y, false);
+        if (x == null) x = this.x; if (y == null) y = this.y;
 
 //        Subterms xx = u.resolve(this.x);
 //        Subterms yy = u.resolve(this.y);

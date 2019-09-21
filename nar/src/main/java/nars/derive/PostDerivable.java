@@ -8,6 +8,7 @@ import nars.truth.func.TruthFunction;
 
 import java.util.function.Predicate;
 
+/** recycled slot describing potential deriver action */
 public class PostDerivable {
 
     public final MutableTruth truth = new MutableTruth();
@@ -30,15 +31,10 @@ public class PostDerivable {
             post[lastValid].run(d);
         } else {//
 
-            //HACK copy post so that recursive calls wont affect it when it drops back to this one
-            //temporary until a central BFS-like bag can dispatch streams of preferred actions
-            //Predicate<Derivation>[] pp = new Predicate[valid];
+
             float[] pri = new float[valid];
-            for (int i = 0; i < valid; i++) {
-                PostDerivable pi = post[i];
-                pri[i] = pi.pri;
-                //pp[i] = pi.clone();
-            }
+            for (int i = 0; i < valid; i++)
+                pri[i] = post[i].pri;
             MutableRoulette.run(pri, d.random, wi -> 0, i -> post[i].run(d));
 
             //alternate roulette:

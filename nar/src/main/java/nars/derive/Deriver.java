@@ -90,7 +90,7 @@ public class Deriver extends How {
 				.add(new AdjacentLinks(new AdjacentIndexer()))
                 //TODO functor evaluator
 				.compile()
-//           .print()
+           .print()
 			,
 			timing);
 	}

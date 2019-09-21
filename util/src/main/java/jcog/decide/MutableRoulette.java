@@ -2,6 +2,7 @@ package jcog.decide;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.pri.ScalarValue;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 
@@ -109,8 +110,9 @@ public class MutableRoulette {
         }
 
         if (n == 0 || s < n * EPSILON) {
-            Arrays.fill(w, 1);
-            s = n = w.length;
+            Arrays.fill(w, ScalarValue.EPSILON);
+            s = ScalarValue.EPSILON * n;
+            n = w.length;
         }
 
         int l = w.length;
@@ -137,25 +139,24 @@ public class MutableRoulette {
      * weight array may be modified
      */
     public static void run(float[] weights, Random rng, FloatToFloatFunction weightUpdate, IntPredicate choose) {
-        switch (weights.length) {
-            case 0:
-                throw new UnsupportedOperationException();
+        if (weights.length > 1)
+            runN(weights, rng, weightUpdate, choose);
+        else if (weights.length == 1)
+            run1(weights[0], weightUpdate, choose);
+        //TODO optimized 2-ary case
+        else
+            throw new UnsupportedOperationException();
+    }
 
-            case 1: {
-                float theWeight = weights[0];
-                while (choose.test(0) && ((theWeight = weightUpdate.valueOf(theWeight)) > EPSILON)) {
-                }
-                break;
-            }
+    public static void runN(float[] weights, Random rng, FloatToFloatFunction weightUpdate, IntPredicate choose) {
+        MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
+        while (r.next(choose)) {
+        }
+    }
 
-            //TODO optimized n=2 case
-
-            default: {
-                MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
-                while (r.next(choose)) {
-                }
-                break;
-            }
+    public static void run1(float weight, FloatToFloatFunction weightUpdate, IntPredicate choose) {
+        float theWeight = weight;
+        while (choose.test(0) && ((theWeight = weightUpdate.valueOf(theWeight)) > EPSILON)) {
         }
     }
 

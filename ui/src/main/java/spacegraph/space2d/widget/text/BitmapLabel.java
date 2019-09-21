@@ -10,24 +10,35 @@ import spacegraph.util.math.Color4f;
 
 public class BitmapLabel extends AbstractLabel {
 
-    private final BitmapTextGrid view;
+    private BitmapTextGrid view;
 //    static final float minPixelsToBeVisible = 7;
 
     private volatile RectFloat textBounds;
+
+    public BitmapLabel() {
+        this("");
+    }
 
     public BitmapLabel(String text) {
         super();
 
         textBounds = bounds;
 
-        view = new MyBitmapTextGrid();
-        view.start(this);
 
+
+        view = new MyBitmapTextGrid();
         text(text);
     }
 
-    public BitmapLabel() {
-        this("");
+    @Override
+    protected void starting() {
+        view.start(this);
+    }
+
+    @Override
+    protected void stopping() {
+        view.delete();
+        super.stopping();
     }
 
     @Override
@@ -55,14 +66,14 @@ public class BitmapLabel extends AbstractLabel {
 
     @Override
     protected void doLayout(float dtS) {
+        RectFloat b = bounds;
         int r = view.rows; if (r > 0) {
             int c = view.cols; if (c > 0) {
-                textBounds = AspectAlign.innerBounds(bounds, (r * characterAspectRatio) / c);
-                return;
+                b = AspectAlign.innerBounds(b, (r * characterAspectRatio) / c);
             }
         }
-
-        textBounds = bounds; //nothing
+        textBounds = b;
+        view.invalidate();
     }
 
     @Override

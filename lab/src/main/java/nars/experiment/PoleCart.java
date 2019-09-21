@@ -391,7 +391,7 @@ public class PoleCart extends GameX {
 //        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
 
 
-		Exe.invokeLater(() ->
+		Exe.runLater(() ->
 			window(NARui.beliefCharts(nar, this.sensors.stream()
 				.flatMap(s -> Streams.stream(s.components()))
 				.collect(toList())), 900, 900)

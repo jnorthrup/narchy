@@ -34,7 +34,7 @@ public enum Exe { ;
 
             HashedWheelTimer.WaitStrategy.SleepWait,
             //HashedWheelTimer.WaitStrategy.YieldingWait,
-            Exe::invoke);
+            Exe::run);
 
     private static Executor executor = ForkJoinPool.commonPool();
 
@@ -43,12 +43,12 @@ public enum Exe { ;
     }
 
     /** soon */
-    public static void invoke(Runnable r) {
+    public static void run(Runnable r) {
         executor.execute(r);
     }
 
     /** later */
-    public static void invokeLater(Runnable r) {
+    public static void runLater(Runnable r) {
         timer.submit(r);
     }
 

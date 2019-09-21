@@ -6,6 +6,7 @@ import nars.NAL;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
@@ -52,7 +53,6 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     abstract public float cost();
 
 
-    private final static Atomic UnifyIf = Atomic.the("unifyIf");
     public final Variable x;
 
 
@@ -61,8 +61,8 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
     }
 
     UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
-        super($.func(UnifyIf, args!=null && args.length > 0 ?
-            new Term[] { x, func, $.pOrOnly(args) } : new Term[] { x, func}));
+        super(args!=null && args.length > 0 ?
+            $.impl( x, $.p(func, $.pOrOnly(args))) : $.impl( x, func));
         this.x = x;
     }
 
@@ -114,10 +114,15 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
             return new CompoundConstraint<>(d);
         }
 
+        static final Atom AND = Atomic.atom("&&");
+
         private CompoundConstraint(UnifyConstraint[] c) {
-            super(c[0].x, Op.SETe.the(Util.map(
+            super(c[0].x, AND, Op.SETe.the(Util.map(
                 //extract the unique UnifyIf parameter
-                cc -> $.pOrOnly(cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)), new Term[c.length], c)
+                cc -> $.pOrOnly(
+                    cc.sub(1)
+                    //cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)
+                    ), new Term[c.length], c)
             ));
             this.subConstraint = c;
             this.cost = Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, subConstraint);

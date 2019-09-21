@@ -25,7 +25,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     /**
      * pixel scale of each rendered character bitmap
      */
-    static final int DEFAULT_FONT_SCALE = 96;
+    static final int DEFAULT_FONT_SCALE = 32;
     private static final Logger logger = Log.logger(BitmapTextGrid.class);
     private static volatile Font defaultFont;
     final AtomicBoolean invalidBmp = new AtomicBoolean(false), invalidTex = new AtomicBoolean(false);
@@ -44,6 +44,12 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     protected BitmapTextGrid() {
         font(defaultFont());
         fontSize(DEFAULT_FONT_SCALE);
+    }
+
+    @Override
+    public boolean delete() {
+        tex.delete();
+        return super.delete();
     }
 
     private static Font defaultFont() {
@@ -90,7 +96,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
 
         BufferedImage b = new BufferedImage(pw, ph, BufferedImage.TYPE_INT_ARGB);
 
-        //b.setAccelerationPriority(1f);
+        b.setAccelerationPriority(1f);
 
         Graphics2D next = b.createGraphics();
 //        System.out.println(cols + "," + rows + "\t" + b + "\t" + g);
@@ -116,9 +122,9 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
                 RenderingHints.VALUE_ALPHA_INTERPOLATION_SPEED
             );
 
-        next.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, quality ?
-            RenderingHints.VALUE_FRACTIONALMETRICS_ON :
-            RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
+//        next.setRenderingHint(RenderingHints.KEY_FRACTIONALMETRICS, quality ?
+//            RenderingHints.VALUE_FRACTIONALMETRICS_ON :
+//            RenderingHints.VALUE_FRACTIONALMETRICS_OFF);
 
         next.setRenderingHint(RenderingHints.KEY_RENDERING, quality ?
             RenderingHints.VALUE_RENDER_QUALITY :
@@ -172,9 +178,10 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         if (invalidTex.compareAndSet(true, false)) {
             try {
 
-                if (tex.profile != null) {
-                    if (!tex.set(backbuffer, gl))
+                if (tex.gl != null) {
+                    if (!tex.set(backbuffer, gl)) {
                         invalidTex.set(true); //try again later
+                    }
                 } else
                     invalidTex.set(true); //try again
 

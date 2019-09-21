@@ -15,7 +15,9 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
         new ConcurrentFastIteratingHashSet<SubPart<T>>(SubPart.EmptyArray);
 
 
-    /** TODO weakref? volatile? */
+    /**
+     * TODO rename 'nar' to 'id' to complete generic-ization
+     * TODO weakref? volatile? */
     public T nar;
 
     /**

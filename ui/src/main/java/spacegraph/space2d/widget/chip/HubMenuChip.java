@@ -30,7 +30,7 @@ public class HubMenuChip extends Bordering {
             ExpandingChip ii = new ExpandingChip(name, i);
             ContainerSurface iii = g.add(ii).posRel(bounds, 1, 1, 0.1f, 0.1f); //TODO radial layout
 
-            Exe.invokeLater(()-> g.addWire(new Wire(HubMenuChip.this, ii)));
+            Exe.runLater(()-> g.addWire(new Wire(HubMenuChip.this, ii)));
 
         });
 

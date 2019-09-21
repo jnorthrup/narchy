@@ -53,7 +53,7 @@ public class GraphEditTest {
         public static void main(String[] args) {
 
 
-            GraphEdit2D s = GraphEdit2D.window(1000, 1000);
+            GraphEdit2D s = GraphEdit2D.graphWindow(1000, 1000);
 
             Surface mux = new Gridding(HORIZONTAL, LabeledPane.the("->", new Gridding(VERTICAL,
                     new Port(),
@@ -124,7 +124,7 @@ public class GraphEditTest {
         {
             //Audio.the().play(TinySpeech.say("eee", 60, 1 ), 1, 1, 0 );
 
-            GraphEdit2D g = window(1000, 1000);
+            GraphEdit2D g = graphWindow(1000, 1000);
 
             {
                 TextEdit e = new TextEdit(8, 1).text("a b c d e");
@@ -258,7 +258,7 @@ public class GraphEditTest {
     public static class AutoAdaptTest {
 
         public static void main(String[] args) {
-            GraphEdit2D w = GraphEdit2D.window(1000, 1000);
+            GraphEdit2D w = GraphEdit2D.graphWindow(1000, 1000);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
             w.add(new IntPort()).posRel(0.5f,0.5f,0.05f,0.05f);
@@ -271,7 +271,7 @@ public class GraphEditTest {
     public static class SproutPortTest {
 
         public static void main(String[] args) {
-            GraphEdit2D w = GraphEdit2D.window(1000, 1000);
+            GraphEdit2D w = GraphEdit2D.graphWindow(1000, 1000);
 
             //w.addBox(0f, 0f, 0.2f, 0.2f, 0.01f);
 

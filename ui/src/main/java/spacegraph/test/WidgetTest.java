@@ -171,7 +171,7 @@ public class WidgetTest {
             protected void starting() {
                 super.starting();
                 pos(((Surface)parent).bounds); //HACK
-                Exe.invokeLater(()->{
+                Exe.runLater(()->{
                     physics.invokeLater(() -> o.accept(this)); //() -> {
                 });
             }

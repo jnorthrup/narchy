@@ -235,7 +235,7 @@ public class SLAMTest extends JPanel {
                         frames.clear();
                         running[0] = null;
                     };
-                    Exe.invokeLater(running[0]);
+                    Exe.runLater(running[0]);
                 }
             }
         });
