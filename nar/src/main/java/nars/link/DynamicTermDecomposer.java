@@ -121,7 +121,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         public @Nullable Term decompose(Compound t, Random rng) {
             Term subjOrPred = subterm(t, rng);
             if (subjOrPred instanceof Compound && rng.nextBoolean()) {
-                if (subjOrPred.op() == CONJ)
+                if (subjOrPred.opID() == CONJ.id)
                     return WeightedConjEvent.decompose((Compound) subjOrPred, rng);
                 else
                     return Weighted.decompose((Compound) subjOrPred, rng);

@@ -677,7 +677,7 @@ public class NAL7Test extends NALTest {
         tester.inputAt(t, component + ". |");
         tester.inputAt(t + dt, "enter(John,room). |");
 
-        tester.mustBelieve((12 * (t + Math.max(3, dt)) + Math.max(3, dt) + 1) /** approx */,
+        tester.mustBelieve((6 * (t + Math.max(3, dt)) + Math.max(3, dt) + 1) /** approx */,
                 '(' + component + " ==>+" + dt + " enter(John,room))",
                 1.00f, 0.45f,
                 t);
@@ -1267,6 +1267,7 @@ public class NAL7Test extends NALTest {
     void testPreconditionCombineNeg() {
 
         test
+            .termVolMax(6)
                 .believe("(x ==>+5 z)")
                 .believe("(--y ==>+5 z)")
                 .mustBelieve(cycles, "( (x && --y) ==>+5 z)", 1f, 0.81f);
@@ -1276,6 +1277,7 @@ public class NAL7Test extends NALTest {
     void testPropositionalDecompositionPositive() {
 
         test
+            .termVolMax(3)
                 .believe("s")
                 .believe("(s && a)")
                 .mustBelieve(cycles, "a", 1f, 0.81f);
