@@ -51,7 +51,6 @@ import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.container.grid.KeyValueGrid;
 import spacegraph.space2d.container.layout.TreeMap2D;
 import spacegraph.space2d.container.unit.Scale;
-import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.ButtonSet;
 import spacegraph.space2d.widget.button.CheckBox;
 import spacegraph.space2d.widget.button.PushButton;
@@ -97,7 +96,9 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class NARui {
 
     public static Surface beliefChart(Termed x, NAR nar) {
-        return new Widget(new MetaFrame(new BeliefTableChart(x, nar)));
+        return /*new Widget*/(
+            new MetaFrame(new BeliefTableChart(x, nar))
+        );
      }
     public static Surface beliefCharts(NAR nar, Termed... x) {
         return beliefCharts(nar, ArrayIterator.iterable(x));
@@ -460,7 +461,7 @@ public class NARui {
 
     }
 
-    public static Gridding beliefIcons(List<? extends Termed> c, NAR nar) {
+    public static Gridding beliefIcons(NAR nar, List<? extends Termed> c) {
 
         BiConsumer<Concept, spacegraph.space2d.phys.common.Color3f> colorize = (concept, color) -> {
             if (concept != null) {

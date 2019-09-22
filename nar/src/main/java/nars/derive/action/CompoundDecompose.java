@@ -18,14 +18,13 @@ public class CompoundDecompose extends NativePremiseAction {
 	public CompoundDecompose(boolean taskOrBelief) {
 		super();
 
-
 		this.taskOrBelief = taskOrBelief;
 		match(taskOrBelief ? TheTask : TheBelief, new TermMatcher.SubsMin((short)1));
 
 		if (!taskOrBelief)
 			hasBelief(true);
 //		else
-//			hasBelief(false); //structural
+//			hasBelief(false); //only structural
 	}
 
 	@Override
@@ -93,9 +92,9 @@ public class CompoundDecompose extends NativePremiseAction {
 	}
 
 	@Override
-	protected float pri(Derivation d) {
+	public float pri(Derivation d) {
+		return 1;
 		//return (float) Math.min(1, (0.1f * Math.sqrt(((float)((taskOrBelief ? d._task : d._belief).volume())))/2f));
-
-		return 0.25f *(float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
+		//return 1 - 1/(float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
 	}
 }

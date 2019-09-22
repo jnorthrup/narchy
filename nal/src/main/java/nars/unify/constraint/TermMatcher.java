@@ -163,7 +163,8 @@ abstract public class TermMatcher {
     }
 
     /**
-     * has the target in its structure, one of the true bits of the provide vector ("has any")
+     * has the target in its structure, meaning it either IS or HAS
+     * one of the true bits of the provide vector ("has any")
      */
     public final static class Has extends TermMatcher {
         private static final Atom ANY = (Atom) Atomic.the("any");
@@ -204,7 +205,7 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term term) {
-            return (anyOrAll ? term.hasAny(struct) : term.hasAll(struct)) && (volMin == 0 || term.volume() >= volMin);
+            return (anyOrAll ? term.hasAny(struct) : term.hasAll(struct)) && (volMin <= 1 || term.volume() >= volMin);
         }
 
 //        @Override

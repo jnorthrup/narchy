@@ -96,7 +96,7 @@ public class NAL1Test extends NALTest {
     void backwardInference2() {
 
         test
-                .confMin(0.9f)
+//                .confMin(0.9f)
                 .termVolMax(3)
                 .believe("(x --> y)")
                 .ask("(x --> z)")

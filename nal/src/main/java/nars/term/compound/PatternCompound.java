@@ -229,7 +229,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             for (int k = 0; k < s; k++) {
 
                 Term xk = xx.sub(k);
-                Term xxk = u.resolveTerm(xk);
+                Term xxk = u.resolveTermRecurse(xk);
 
                 if (xk.equals(ellipsis)) {
                     if (xxk.equals(xk))

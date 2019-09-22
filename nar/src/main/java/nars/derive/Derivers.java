@@ -48,6 +48,7 @@ public enum Derivers { ;
                     f.addAll(file("induction.nal"));
 
                     f.addAll(file("nal6.nal"));
+                    f.addAll(file("nal6.strong.nal"));
                     f.addAll(file("nal6.decompose.nal"));
                     f.addAll(file("nal6.free.nal"));
                     f.addAll(file("nal6.guess.nal"));

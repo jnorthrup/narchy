@@ -32,12 +32,12 @@ C, X, eventOf(C,X), eventOfNeg(C,X) |- (conjWithoutPN(X) ==> X), (Punctuation:As
 
 
 
-  B, (C ==> X), --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
-     (C ==> X), B, --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
-    B, (--C ==> X), --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
-       (--C ==> X), B, --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
-  B, (X ==> C), --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
-    (X ==> C), B, --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
+//  B, (C ==> X), --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
+//     (C ==> X), B, --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
+//    B, (--C ==> X), --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
+//       (--C ==> X), B, --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
+//  B, (X ==> C), --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:BeliefEvent)
+//    (X ==> C), B, --isVar(X), hasBelief() |- unisubst(X,C,B), (Punctuation:AskAsk, Time:TaskEvent)
 
 //    B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&") |- unisubst(X,chooseUnifiableSubEvent(A,B),B), (Punctuation:Ask, Time:Task)
 //      B, (X ==> A), --isVar(X), --is(B,"==>"), is(A,"&&"), has(A,"--") |- unisubst(X,chooseUnifiableSubEvent(A,--B),--B), (Punctuation:Ask, Time:Task)

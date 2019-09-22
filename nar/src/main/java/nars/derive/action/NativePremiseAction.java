@@ -12,7 +12,7 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 	protected abstract void run(Derivation d);
 
-	protected abstract float pri(Derivation d);
+	abstract public float pri(Derivation d);
 
 	@Override
 	protected PREDICATE<PreDerivation>[] conditions() {
@@ -43,7 +43,7 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 		}
 
 		@Override
-		public float pri(Derivation d) {
+		public final float priHeuristic(Derivation d) {
 			return NativePremiseAction.this.pri(d);
 		}
 

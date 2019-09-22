@@ -864,11 +864,6 @@ public class Derivation extends PreDerivation {
     public final class DerivationTransform extends MyUnifyTransform {
 
         @Override
-        public Term applyVariable(Variable x) {
-            return Derivation.this.resolveTermRecurse(x);
-        }
-
-        @Override
         public Term applyAtomicConstant(Atomic a) {
             if (a instanceof Atom) {
 

@@ -77,7 +77,11 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
             }
 
 
-            return o1.toString().compareTo(o2.toString());
+//            int ih = Integer.compare(o1.hashCode(), o2.hashCode());
+//            if (ih!=0)
+//                return ih;
+
+            return o1.toString().compareTo(o2.toString()); //HACK
 
         } else if (t1 == CONSTANT) {
             return -1;
@@ -98,8 +102,8 @@ public final class NodeComparator implements Comparator<Node>, Serializable {
         if (x instanceof Comparable) {
             return ((Comparable)x).compareTo(y);
         } else {
-            int i = Integer.compare(x.hashCode(), y.hashCode());
-            if (i!=0) return i;
+//            int i = Integer.compare(x.hashCode(), y.hashCode());
+//            if (i!=0) return i;
             return x.toString().compareTo(y.toString());
         }
     }

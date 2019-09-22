@@ -114,7 +114,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 int ys = yy2.subs();
 
                 //TODO reduce to Subterms.unifyCommutive test
-                if (ys == 1 && xEllipsis.op()==FRAG && xEllipsis.subs()==0) {
+                if (ys == 1 && xEllipsis instanceof Fragment && xEllipsis.subs()==0) {
                     return Termutator.result(x.unify(yy.sub(0), u));
                 }
 

@@ -6,6 +6,7 @@ import com.google.common.primitives.Longs;
 import jcog.Log;
 import jcog.Texts;
 import jcog.Util;
+import jcog.WTF;
 import jcog.data.byt.DynBytes;
 import jcog.event.ByteTopic;
 import jcog.event.ListTopic;
@@ -1653,6 +1654,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     @Nullable public BeliefTable tableDynamic(Termed concept, boolean beliefOrGoal) {
         //heavyweight, concept construction involved
+        if (!concept.term().op().conceptualizable) {
+            if (NAL.DEBUG)
+                throw new WTF();
+            return null;
+        }
 //        Concept c = conceptualizeDynamic(su);
 //        if (!(c instanceof TaskConcept))
 //            return null;

@@ -18,6 +18,7 @@ import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
+import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -1338,7 +1339,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 }
             }
 
-            if (yi instanceof Compound && yi.op() == FRAG) {
+            if (yi instanceof Fragment) {
 
                 Subterms ee = yi.subterms();
                 if (ee==Op.EmptyProduct || ee.subs()==0) {

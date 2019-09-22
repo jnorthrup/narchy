@@ -47,7 +47,7 @@ public class ImageUnfold extends NativePremiseAction {
 	}
 
 	@Override
-	protected float pri(Derivation d) {
-		return 0.1f;
+	public float pri(Derivation d) {
+		return 1f;
 	}
 }

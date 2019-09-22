@@ -213,6 +213,7 @@ class ImplicationNetworkTest {
             BeliefTable bBeliefs = n.concept(b).beliefs();
             bBeliefs.print();
             Truth bBelief = bBeliefs.truth(ETERNAL, n);
+            assertNotNull(bBelief);
             assertEquals("%0.0;.81%", bBelief.toString());
         }
 

@@ -724,7 +724,7 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
          * TO BE REFINED
          */
         @Override
-        public final float pri(Derivation d) {
+        public final float priHeuristic(Derivation d) {
 
             float causeValue = why.amp();
             if (causeValue < Float.MIN_NORMAL)

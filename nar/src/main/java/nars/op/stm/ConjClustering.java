@@ -275,13 +275,14 @@ public class ConjClustering extends TaskAction implements Consumer<Task> {
 
     @Override
     public final float pri(Derivation d) {
-        Task t = d._task;
-
-        //prefilter
-        if (t.isEternal())
-            return 0;
-
-        return 0.1f * (pri(t) + in.pri());
+        return pri(d._task);
+//        Task t = d._task;
+//
+//        //prefilter
+//        if (t.isEternal())
+//            return 0;
+//
+//        return 0.1f * (pri(t) + in.pri());
     }
 
     @Override public final void accept(Task t) {

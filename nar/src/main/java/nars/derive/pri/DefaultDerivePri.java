@@ -16,11 +16,6 @@ import static jcog.math.LongInterval.TIMELESS;
  */
 public class DefaultDerivePri implements DerivePri {
 
-    /**
-     * master derivation gain factor
-     */
-    public final FloatRange gain = new FloatRange(1f, 0f, 2f);
-
     public final FloatRange questionGain = new FloatRange(Util.PHI_min_1f, 0f, 2f);
 
 
@@ -36,7 +31,7 @@ public class DefaultDerivePri implements DerivePri {
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
 
-    public final FloatRange simplicityExponent = new FloatRange(1.5f, 0f, 4f);
+    public final FloatRange simplicityExponent = new FloatRange(1f, 0f, 4f);
 
 
     /** importance of frequency polarity in result */
@@ -57,10 +52,10 @@ public class DefaultDerivePri implements DerivePri {
             factor = questionGain.floatValue() * factorCmpl;
         }
 
-        //factor *= factorEviAbsolute(t,d);
-                  //factorMaintainAverageEvidence(t,d);
+        factor *= //factorEviAbsolute(t,d);
+                  factorMaintainAverageEvidence(t,d);
 
-        float y = this.gain.floatValue() * postAmp(t, d.parentPri(), factor);
+        float y = postAmp(t, d.parentPri(), factor);
         return Util.clamp(y, ScalarValue.EPSILON, 1);
     }
 

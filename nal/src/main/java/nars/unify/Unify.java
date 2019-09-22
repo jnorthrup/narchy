@@ -498,7 +498,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final Term resolveTerm(Term x) {
-        return resolveTerm(x, false, false);
+        return resolveTerm(x, true, false);
     }
     public final Term resolveTermRecurse(Term x) {
         return resolveTerm(x, true, true);
@@ -514,20 +514,20 @@ public abstract class Unify extends Versioning<Term> {
         Term x = neg ? _x.unneg() : _x;
 
         Term y;
-        if (resolve && s > 0 && x instanceof Variable) {
-            Variable X = (Variable) x;
-            y = var(X) ? resolveVar(X) : x;
-        } else
+        if (resolve && s > 0 && var(x))
+            y = resolveVar((Variable)x);
+        else
             y = x;
 
         if (recurse) {
+            MyUnifyTransform tt = transform();
             if (y instanceof Compound /* && y.hasAny(varBits)*/) {
-                y = transform().applyPosCompound((Compound)y); //recurse (full transform)
+                y = tt.applyPosCompound((Compound)y); //recurse (full transform)
 //            } else if (!(y instanceof Variable) && !(y instanceof Img) /* etc */) {
 //                yy = transform().apply(y); //recurse (full transform)
 //                y = yy;
-            } else if (! (y instanceof Variable))
-                y = transform().applyAtomic((Atomic)y);
+            } else if (!(y instanceof Variable))
+                y = tt.applyAtomicConstant((Atomic)y);
         }
 
         return x!=y ? (neg ? y.neg() : y) : _x;
@@ -628,17 +628,18 @@ public abstract class Unify extends Versioning<Term> {
 
     protected class MyUnifyTransform extends AbstractUnifyTransform {
 
-        @Override public Term applyVariable(Variable v) {
-            return Unify.this.resolveVar(v);
+        @Override public final Term applyVariable(Variable v) {
+            //return Unify.this.resolveVar(v, true);
+            return Unify.this.resolveTermRecurse(v);
         }
 
-//        @Override
-//        public Term applyPosCompound(Compound x) {
-//            if (evalInline() || (size != 0 && x.hasAny(varBits)))
-//                return super.applyPosCompound(x);
-//            else
-//                return x;
-//        }
+        @Override
+        public final Term applyPosCompound(Compound x) {
+            if (evalInline() || (size != 0 && x.hasAny(varBits)))
+                return super.applyPosCompound(x);
+            else
+                return x;
+        }
     }
 
 }

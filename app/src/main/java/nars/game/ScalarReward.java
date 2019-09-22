@@ -92,21 +92,21 @@ abstract public class ScalarReward extends Reward {
 //                reinforce(CONJ.the(rTarget, A), BELIEF, RimplRandomP);
 //                reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplRandomN);
 
-            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
-            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
-
+//
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg);
-//
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
+
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
 
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);

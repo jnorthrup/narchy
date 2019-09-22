@@ -92,7 +92,7 @@ public class TaskResolve extends NativePremiseAction {
 	}
 
 	@Override
-	protected float pri(Derivation d) {
+	public float pri(Derivation d) {
 		return 1;
 	}
 }

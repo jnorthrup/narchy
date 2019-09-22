@@ -106,7 +106,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** determines answer capacity in proportion to STAMP_CAPACITY.
      *  determines the rate of evidence accumulation via projection, dynamic truth, etc */
 
-    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 4;
+    public static final int ANSWER_BELIEF_MATCH_CAPACITY = 5;
     public static final int ANSWER_BELIEF_SAMPLE_CAPACITY = 3;
     public static final int ANSWER_QUESTION_SAMPLE_CAPACITY = 2;
 
@@ -728,7 +728,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
 
 
-        public static final int TTL_UNISUBST_MAX = 4;
+        public static final int TTL_UNISUBST_MAX = 3;
 
         public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
 

@@ -18,10 +18,7 @@ public class STMLinker extends TaskAction {
 
 	public final FloatRange strength = new FloatRange(1f, 0f, 1f);
 
-	@Override
-	protected float pri(Derivation d) {
-		return 0.05f;
-	}
+
 
 	private final MetalConcurrentQueue<Task> stm;
 	private final int capacity;
@@ -59,6 +56,11 @@ public class STMLinker extends TaskAction {
 			}
 		}
 		return true;
+	}
+
+	@Override
+	public float pri(Derivation d) {
+		return 1;
 	}
 
 	private static float pri(Task next, Task prev) {

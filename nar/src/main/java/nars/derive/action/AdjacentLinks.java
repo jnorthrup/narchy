@@ -64,8 +64,8 @@ public class AdjacentLinks extends TaskAction {
 	}
 
 	@Override
-	protected float pri(Derivation d) {
-		//return 2;
-		return (float) (0.5f/Math.pow(d.beliefTerm.volume(), 2));
+	public float pri(Derivation d) {
+		//return 1;
+		return (float) (0.9f/Math.pow(d.beliefTerm.volume(), 3));
 	}
 }

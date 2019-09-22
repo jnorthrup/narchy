@@ -14,7 +14,7 @@ import static nars.time.Tense.ETERNAL;
 
 public class NAL6Test extends NALTest {
 
-    private static final int cycles = 400;
+    private static final int cycles = 200;
 
     @BeforeEach
     void setup() {
@@ -1348,6 +1348,16 @@ public class NAL6Test extends NALTest {
         ;
     }
 
+    @Test void conjImplSubjNonsensical() {
+        //n.believe("(good ==> reward)", 1, 0.9f);
+        //n.believe("(bad ==> reward)", 0, 0.9f);
+        test
+            .believe("(good ==> reward)", 1, 0.9f)
+            .believe("(bad ==> reward)", 0, 0.9f)
+            .mustNotOutput(cycles, "((bad&&good)==>reward)", BELIEF,0, 1, 0, 1)
+            .mustBelieve(cycles, "((--bad&&good)==>reward)", 1f, 0.81f)
+        ;
+    }
 //    @Test
 //    void testImplToDisj_Subj() {
 //        //reverse of: https://github.com/opencog/opencog/blob/master/opencog/pln/rules/wip/or-transformation.scm

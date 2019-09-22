@@ -28,8 +28,8 @@ class NativePremiseActionTest {
 					}
 
 					@Override
-					protected float pri(Derivation d) {
-						return 0.5f;
+					public float pri(Derivation d) {
+						return 1;
 					}
 
 				}

@@ -47,13 +47,13 @@ import java.util.function.Supplier;
  * the current level of code complexity makes this non-obvious
  */
 public class Deriver extends How {
-    int innerLoops = 2;
+    int innerLoops = 1;
 
 	/**
 	 * variable types unifiable in premise formation
 	 */
 	public static final int PremiseUnifyVars =
-		//VAR_QUERY.bit
+		//Op.VAR_QUERY.bit
 		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
 		//Op.Variable //all
 		;
@@ -78,7 +78,7 @@ public class Deriver extends How {
 	float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
 	float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
 	float PREMISE_SHIFT_OTHER = 0.9f;
-	float PREMISE_SHIFT_RANDOM = 0.75f;
+	float PREMISE_SHIFT_RANDOM = 0.5f;
 
 	public Deriver(PremiseRuleSet rules) {
 		this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming());
@@ -209,7 +209,7 @@ public class Deriver extends How {
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
 		int hypotheses = 1;
-        int premisesPerIter = 2;
+        int premisesPerIter = 3;
         int capacity = 4;
 
 		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);

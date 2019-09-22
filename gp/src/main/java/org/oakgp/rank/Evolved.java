@@ -32,30 +32,9 @@ public final class Evolved extends NLink<Node> {
     }
 
     @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-
-        if (o instanceof Evolved) {
-            Evolved r = (Evolved) o;
-            return this.id.equals(r.id) && this.pri() == r.pri();
-        } else {
-            return false;
-        }
+    public boolean equals(Object that) {
+        return this==that;
     }
-
-
-//    @Override
-//    public int compareTo(Evolved o) {
-//        if (this == o) return 0;
-//
-//        int result = Double.compare(pri(), o.pri());
-//        if (result == 0) {
-//
-//            return Integer.compare(o.id.size(), id.size());
-//        } else {
-//            return result;
-//        }
-//    }
 
     @Override
     public String toString() {
