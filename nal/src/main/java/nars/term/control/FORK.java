@@ -6,6 +6,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -19,7 +20,17 @@ public class FORK<X> extends AbstractPred<X> {
     /*@Stable*/
     public final PREDICATE<X>[] branch;
 
-    public FORK(PREDICATE<X>[] actions) {
+    public FORK(Collection<PREDICATE<X>> actions) {
+        this(sort(actions.toArray(PREDICATE.EmptyPredicateArray)));
+    }
+
+    private static <X> PREDICATE<X>[] sort(PREDICATE<X>[] x) {
+        if (x.length > 1)
+            Arrays.sort(x);
+        return x;
+    }
+
+    private FORK(PREDICATE<X>[] actions) {
         super(
                 $.sFast(actions)
         );
@@ -76,21 +87,13 @@ public class FORK<X> extends AbstractPred<X> {
 
     }
 
-
     @Nullable
-    public static <X> PREDICATE<X> fork(Collection<PREDICATE<X>> x, Function<PREDICATE<X>[], PREDICATE<X>> builder) {
-        PREDICATE<X>[] xx = x.toArray(PREDICATE.EMPTY_PREDICATE_ARRAY);
-        Arrays.sort(xx);
-        return fork(xx, builder);
-    }
-
-    @Nullable
-    private static <X> PREDICATE<X> fork(PREDICATE<X>[] n, Function<PREDICATE<X>[], PREDICATE<X>> builder) {
-        switch (n.length) {
+    public static <X> PREDICATE<X> fork(List<PREDICATE<X>> n, Function<List<PREDICATE<X>>, PREDICATE<X>> builder) {
+        switch (n.size()) {
             case 0:
                 return null;
             case 1:
-                return n[0];
+                return n.iterator().next();
             default:
                 return builder.apply(n);
         }

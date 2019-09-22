@@ -474,7 +474,7 @@ abstract public class GameX extends Game {
 
         n.emotion.want(MetaGoal.Perceive, -0.005f);
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.02f);
+        n.emotion.want(MetaGoal.Desire, 0.03f);
 
 
 //

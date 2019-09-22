@@ -1,6 +1,5 @@
 package nars.derive.rule;
 
-import nars.$;
 import nars.control.Why;
 import nars.term.Term;
 
@@ -19,7 +18,7 @@ public final class RuleWhy extends Why {
 		super(id, rule.id);
 		this.rule = rule;
 		this.ruleString = rule.source;
-		this.term = $.p(rule.id, rule.id);
+		this.term = rule.id;
 	}
 
 	@Override

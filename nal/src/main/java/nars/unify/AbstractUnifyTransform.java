@@ -9,15 +9,18 @@ import java.util.function.Function;
 
 public abstract class AbstractUnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
-	abstract protected Term resolveVar(Variable v);
-
 	@Override
-	public Term applyAtomic(Atomic x) {
-		if (x instanceof Variable) {
-			Term y = resolveVar((Variable) x);
-//                if (y != null)
-				return y;
-		}
+	public final Term applyAtomic(Atomic x) {
+		return x instanceof Variable ? applyVariable((Variable) x) : applyAtomicConstant(x);
+	}
+
+	/** to be overridden */
+	public Term applyAtomicConstant(Atomic x) {
+		return x;
+	}
+
+	/** to be overridden */
+	public Term applyVariable(Variable x) {
 		return x;
 	}
 
@@ -28,7 +31,7 @@ public abstract class AbstractUnifyTransform extends AbstractTermTransform.NegOb
 			this.resolve = resolve;
 		}
 
-		@Override protected Term resolveVar(Variable v) {
+		@Override public Term applyVariable(Variable v) {
 			return resolve.apply(v);
 		}
 	}

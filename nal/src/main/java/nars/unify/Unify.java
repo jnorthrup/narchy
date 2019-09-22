@@ -11,6 +11,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.subterm.TermList;
 import nars.term.*;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
@@ -78,7 +79,7 @@ public abstract class Unify extends Versioning<Term> {
 //     * TODO use a real stack of arbitrarily length for detecting cycles */
 //    public int varDepth = 0;
 
-    private final FasterList<ConstrainedVersionedTerm> constrained = new FasterList();
+    protected final FasterList<ConstrainedVersionedTerm> constraints = new FasterList();
 
 
     /**
@@ -239,21 +240,7 @@ public abstract class Unify extends Versioning<Term> {
      * NOT thread safe, use from single thread only at a time
      */
     public final boolean unify(Term x, Term y, boolean finish) {
-
-        //assert(ttl > 0): "needs some TTL";
-
-        if (x.unify(y, this)) {
-
-            if (finish)
-                return matches();
-//            else {
-//                if (!couldMatch())
-//                    return false;
-//                else
-            return true;
-//            }
-        }
-        return false;
+        return x.unify(y, this) && (!finish || matches());
     }
 
 
@@ -285,21 +272,17 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     @Deprecated public final Unification unification(Term x, Term y, int discoveryTTL) {
-        Unification u = unification(x, y);
+        Unification u;
+        if (!unify(x, y, false)) {
+            clear();
+            u = Null;
+        } else {
+            u = unification(true);
+        }
         if (u instanceof Termutifcation) {
             ((Termutifcation)u).discover(this, Integer.MAX_VALUE, discoveryTTL);
         }
         return u;
-    }
-
-    /** will have been cleared() */
-    protected Unification unification(Term x, Term y) {
-        if (!unify(x, y, false)) {
-            clear();
-            return Null;
-        } else {
-            return unification(true);
-        }
     }
 
     /** called after unifying 'start' mode to test if unification can proceed to 'finish' mode */
@@ -370,14 +353,7 @@ public abstract class Unify extends Versioning<Term> {
 
     public Unify clear(@Nullable Consumer<Versioned<Term>> each) {
 
-        if (size > 0) {
-            constrained.clear(ConstrainedVersionedTerm::unconstrain);
-
-            if (each != null)
-                revert(0, each);
-            else
-                revert(0);
-        }
+        revert(0, each);
 
         termutes.clear();
 
@@ -459,12 +435,12 @@ public abstract class Unify extends Versioning<Term> {
         forEach(versionedToBiConsumer(each));
     }
 
-    private void revertTerms(int when, BiConsumer<Term, Term> each) {
-        if (each==null)
-            revert(0);
-        else
-            revert(when, versionedToBiConsumer(each));
-    }
+//    private void revertTerms(int when, BiConsumer<Term, Term> each) {
+//        if (each==null)
+//            revert(0);
+//        else
+//            revert(when, versionedToBiConsumer(each));
+//    }
 
     static private Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
         return (Versioned<Term> v)->{
@@ -494,11 +470,13 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    public final void constrain(UnifyConstraint<?> m) {
+    public final void constrain(UnifyConstraint m) {
         ConstrainedVersionedTerm target = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(m.x);
-        target.constrain(m);
-        constrained.add(target);
+        target.constraint = m;
+        xy.context.add(target.unconstrain);
     }
+
+
 
     public final boolean unifyDT(Term x, Term y) {
         int xdt = x.dt();
@@ -548,11 +526,11 @@ public abstract class Unify extends Versioning<Term> {
 //            } else if (!(y instanceof Variable) && !(y instanceof Img) /* etc */) {
 //                yy = transform().apply(y); //recurse (full transform)
 //                y = yy;
-            }
-            //y = y.replace(xy); //recurse (sub only)
+            } else if (! (y instanceof Variable))
+                y = transform().applyAtomic((Atomic)y);
         }
 
-        return !x.equals(y) ? (neg ? y.neg() : y) : _x;
+        return x!=y ? (neg ? y.neg() : y) : _x;
     }
 
     public final Subterms resolveSubs(Subterms x) {
@@ -589,29 +567,43 @@ public abstract class Unify extends Versioning<Term> {
         /**
          * lazily constructed
          */
-        public UnifyConstraint<Unify> constraint;
+        public UnifyConstraint constraint;
+
+        final Versioned unconstrain = new Versioned() {
+
+            @Override
+            public Object get() {
+                assert(constraint!=null);
+                return constraint;
+            }
+
+            @Override
+            public void pop() {
+                //if (NAL.DEBUG) {  assert(constraint != null && value==null); }
+                assert(constraint!=null);
+                constraint = null;
+            }
+
+            @Override
+            public boolean set(Object nextValue, Versioning context) {
+                throw new UnsupportedOperationException();
+            }
+
+            @Override
+            public boolean replace(Object y, Versioning context) {
+                throw new UnsupportedOperationException();
+            }
+        };
 
         ConstrainedVersionedTerm(Term key) {
             super(key);
         }
-
 
         @Override protected boolean valid(Term x, Versioning<Term> context) {
             UnifyConstraint<Unify> c = this.constraint;
             return c == null || !c.invalid(x, (Unify)context);
         }
 
-        void constrain(UnifyConstraint c) {
-//            if (constraint!=null)
-//                throw new WTF("constraint replacement: " + constraint + " -> " + c);
-//            assert(constraint == null);
-            constraint = c;
-        }
-
-        void unconstrain() {
-            //if (NAL.DEBUG) {  assert(constraint != null && value==null); }
-            constraint = null;
-        }
     }
 
     /** extension adapter, can be used to extend a Unify */
@@ -635,17 +627,18 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     protected class MyUnifyTransform extends AbstractUnifyTransform {
-        @Override protected Term resolveVar(Variable v) {
+
+        @Override public Term applyVariable(Variable v) {
             return Unify.this.resolveVar(v);
         }
 
-        @Override
-        public Term applyPosCompound(Compound x) {
-            if (evalInline() || (size != 0 && x.hasAny(varBits)))
-                return super.applyPosCompound(x);
-            else
-                return x;
-        }
+//        @Override
+//        public Term applyPosCompound(Compound x) {
+//            if (evalInline() || (size != 0 && x.hasAny(varBits)))
+//                return super.applyPosCompound(x);
+//            else
+//                return x;
+//        }
     }
 
 }

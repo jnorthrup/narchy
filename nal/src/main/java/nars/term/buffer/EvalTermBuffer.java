@@ -38,7 +38,7 @@ public class EvalTermBuffer extends TermBuffer {
 
     private static final TermTransform DeferredEvaluator = new AbstractTermTransform.NegObliviousTermTransform() {
         @Override
-        protected Term applyPosCompound(Compound x) {
+		public Term applyPosCompound(Compound x) {
             if (x instanceof DeferredEval) {
                 DeferredEval e = (DeferredEval) x;
 

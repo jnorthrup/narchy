@@ -58,6 +58,7 @@ public class DefaultDerivePri implements DerivePri {
         }
 
         factor *= factorEviAbsolute(t,d);
+                  //factorMaintainAverageEvidence(t,d);
 
         float y = this.gain.floatValue() * postAmp(t, d.parentPri(), factor);
         return Util.clamp(y, ScalarValue.EPSILON, 1);
@@ -142,6 +143,9 @@ public class DefaultDerivePri implements DerivePri {
 
 
     float factorMaintainAverageEvidence(Task t, Derivation d) {
+
+        if (t.isQuestionOrQuest())
+            return 1;
 
         double eParent = d.evi();
         double eDerived = t.evi();

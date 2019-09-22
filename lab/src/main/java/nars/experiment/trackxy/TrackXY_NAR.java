@@ -19,6 +19,7 @@ import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
 import nars.op.stm.ConjClustering;
+import nars.op.stm.STMLinker;
 import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
@@ -44,7 +45,7 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends GameX {
 
 	static boolean
-		sourceNumerics = true,
+		sourceNumerics = false,
 		targetNumerics = false,
 		targetCam = !targetNumerics,
 		gui = true;
@@ -231,10 +232,13 @@ public class TrackXY_NAR extends GameX {
 			1, 8
 			//2, 8
 			//, "motivation.nal"
-		).add(new ConjClustering(n, BELIEF,
+		)
+		.add(new STMLinker(1))
+		.add(new ConjClustering(n, BELIEF,
 			//x -> true,
 			2, 4, Task::isInput
 		)));
+
 		//{
 //                    @Override
 //                    public float puncFactor(byte conclusion) {
@@ -302,17 +306,73 @@ public class TrackXY_NAR extends GameX {
 //            a.curiosity.enable.set(false);
 //
 //        }
-
-		//a.start(n);
 		n.start(a);
-		((TaskLinkWhat) a.what()).links.linksMax.set(64);
+		((TaskLinkWhat) a.what()).links.linksMax.set(128);
 
+
+		n.synch();
 
 		Exe.runLater(() -> {
 			g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
 			g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
 			g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+
+			if (a.cam != null) {
+				g.add(Splitting.column(new VectorSensorChart(a.cam, a) {
+					@Override
+					protected void paint(GL2 gl, ReSurface reSurface) {
+						super.paint(gl, reSurface);
+						RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
+						gl.glColor4f(1, 0, 0, 0.9f);
+						Draw.rect(at.move(x(), y(), 0.01f), gl);
+					}
+				}.withControls(), 0.1f, new ObjectSurface(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+
+				//});
+			}
+
+//        new Impiler(n);
+
+			NAL.DEBUG = true;
+			a.what().eventTask.on(tt -> {
+
+
+				if (!tt.isInput()) {
+					if (tt instanceof DerivedTask) {
+						Term ttt = tt.term();
+						boolean l = ttt.equals(a.actions.get(0).term());
+						boolean r = ttt.equals(a.actions.get(1).term());
+						if (l || r) {
+
+
+							//if (n.concept(tt) instanceof ActionConcept)
+							long window = 64;
+							float dur = n.dur();
+							long now = n.time();
+							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
+
+								float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
+								float needsDir = a.track.tx - a.track.cx;
+
+
+								String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
+								System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+								System.out.println(tt.proof());
+								n.proofPrint(tt);
+
+								//System.out.println(NAR.proof(tt, n));
+								System.out.println();
+
+							}
+
+
+						}
+
+					}
+				}
+			}, GOAL);
 		});
+		n.run(experimentTime);
 
 
 //                g.build(a, new AutoBuilder<>(2, (context, features, obj) -> {
@@ -351,63 +411,8 @@ public class TrackXY_NAR extends GameX {
 		//window.addAt(new ExpandingChip("x", ()->NARui.top(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 //            window.addAt(new HubMenuChip(new PushButton("NAR"), NARui.menu(n))).posRel(0.8f,0.8f,0.25f,0.25f);
 
-		if (a.cam != null) {
-			g.add(Splitting.column(new VectorSensorChart(a.cam, a) {
-				@Override
-				protected void paint(GL2 gl, ReSurface reSurface) {
-					super.paint(gl, reSurface);
-					RectFloat at = cellRect(a.track.cx, a.track.cy, 0.5f, 0.5f);
-					gl.glColor4f(1, 0, 0, 0.9f);
-					Draw.rect(at.move(x(), y(), 0.01f), gl);
-				}
-			}.withControls(), 0.1f, new ObjectSurface(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
-
-			//});
-		}
-
-//        new Impiler(n);
-
-		NAL.DEBUG = true;
-		a.what().eventTask.on(tt -> {
 
 
-			if (!tt.isInput()) {
-				if (tt instanceof DerivedTask) {
-					Term ttt = tt.term();
-					boolean l = ttt.equals(a.actions.get(0).term());
-					boolean r = ttt.equals(a.actions.get(1).term());
-					if (l || r) {
-
-
-						//if (n.concept(tt) instanceof ActionConcept)
-						long window = 64;
-						float dur = n.dur();
-						long now = n.time();
-						if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
-
-							float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
-							float needsDir = a.track.tx - a.track.cx;
-
-
-							String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
-							System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-							System.out.println(tt.proof());
-							n.proofPrint(tt);
-
-							//System.out.println(NAR.proof(tt, n));
-							System.out.println();
-
-						}
-
-
-					}
-
-				}
-			}
-		}, GOAL);
-
-		n.synch();
-		n.run(experimentTime);
 
 
 		//printGoals(n);

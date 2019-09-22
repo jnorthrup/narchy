@@ -5,6 +5,7 @@ import org.junit.jupiter.api.Test;
 import java.util.TreeSet;
 
 import static nars.$.$$;
+import static nars.unify.Unification.Null;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class UnificationTest {
@@ -12,8 +13,15 @@ class UnificationTest {
     @Test
     void test1() {
 
-        Unification u = new UnifyAny().unification($$("(#1-->x)"),$$("(a-->x)"));
-//        assertTrue(u.toString().startsWith("unification((#1-->x),(a-->x),○"));
+        Unification u;
+        Unify unify = new UnifyAny();
+        if (!unify.unify($$("(#1-->x)"), $$("(a-->x)"), false)) {
+            unify.clear();
+            u = Null;
+        } else {
+            u = unify.unification(true);
+        }
+        //        assertTrue(u.toString().startsWith("unification((#1-->x),(a-->x),○"));
 
         assertSubst("[(x,a)]", u, "(x,#1)");
         assertSubst("[(a&&x)]", u, "(x && #1)");

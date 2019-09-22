@@ -48,7 +48,7 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 		}
 
 		@Override
-		public void run(Derivation d) {
+		public final void run(Derivation d) {
 			NativePremiseAction.this.run(d);
 		}
 	}

@@ -19,6 +19,9 @@ public class ProxyTerm implements SameSubtermsCompound {
     public final /*HACK make unpublic */ Term ref;
 
     public ProxyTerm(Term t) {
+        if (t == null)
+            throw new NullPointerException();
+
         if (t instanceof ProxyTerm)
             throw new WTF(t + " instanceof ProxyTerm; caught attempt to proxy a proxy in " + getClass());
 

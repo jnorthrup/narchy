@@ -14,6 +14,8 @@ import static nars.Op.SETe;
  * remembers the possiblity of a derivation branch
  * valid for the premise.  a choice which "can" be tried
  * (ie. according to value rank)
+ *
+ * a probabalistic goto instruction
  */
 public final class Forkable extends AbstractPred<Derivation> {
 

@@ -33,9 +33,7 @@ abstract public class PremiseUnify extends AbstractPred<Derivation> {
     protected final boolean unify(Derivation d, boolean dir, boolean finish) {
 
         if (finish) {
-            UnifyMatchFork t = d.termifier;
-            d.forEachMatch = t;
-            t.reset(taskify);
+            d.termifier.set(taskify);
         }
 
         return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);

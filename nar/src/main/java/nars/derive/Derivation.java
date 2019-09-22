@@ -3,6 +3,8 @@ package nars.derive;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.ShortBuffer;
+import jcog.data.list.FasterList;
+import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
 import nars.*;
@@ -13,6 +15,7 @@ import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
+import nars.derive.rule.PremiseRule;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremisePreUnify;
 import nars.eval.Evaluation;
@@ -22,6 +25,7 @@ import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.*;
+import nars.term.control.PREDICATE;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
@@ -152,10 +156,7 @@ public class Derivation extends PreDerivation {
      */
     public transient What what = null;
     @Deprecated public NAR nar;
-    /**
-     * current MatchTerm to receive matches at the end of the Termute chain; set prior to a complete match by the matchee
-     */
-    public Predicate<Derivation> forEachMatch;
+
 
     public transient float confMin;
     public transient double eviMin;
@@ -450,8 +451,7 @@ public class Derivation extends PreDerivation {
 
     @Override
     public final boolean match() {
-        Predicate<Derivation> f = this.forEachMatch;
-        return (f == null) || f.test(this);
+        return termifier.test(this);
     }
 
     /** queue a premise for execution */
@@ -496,23 +496,6 @@ public class Derivation extends PreDerivation {
         e.init(this);
 
         return this;
-    }
-
-    protected void derive(Premise p, int deriveTTL) {
-
-        FastCounter result = _derive(p, deriveTTL);
-
-        Emotion e = nar.emotion;
-        if (result == e.premiseUnderivable1) {
-            //System.err.println("underivable1:\t" + p);
-        } else {
-//				System.err.println("  derivable:\t" + p);
-        }
-
-        //ttlUsed = Math.max(0, deriveTTL - d.ttl);
-
-        //e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-        result.increment();
     }
 
     @Nullable
@@ -623,11 +606,12 @@ public class Derivation extends PreDerivation {
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    public FastCounter _derive(Premise P, int deriveTTL) {
+    FastCounter derive(Premise P, int deriveTTL) {
 
         Premise p;
+        Emotion e = nar.emotion;
         if (P instanceof AbstractPremise) {
-            try (var __ = nar.emotion.derive_B_PremiseMatch.time()) {
+            try (var __ = e.derive_B_PremiseMatch.time()) {
                 p = ((AbstractPremise) P).match(Deriver.PremiseUnifyVars, this, nar.premiseUnifyTTL.intValue());
             }
         } else
@@ -635,46 +619,127 @@ public class Derivation extends PreDerivation {
 
         short[] can;
 
-        try (var __ = nar.emotion.derive_C_Pre.time()) {
+        try (var __ = e.derive_C_Pre.time()) {
 
-            reset(p.task(), p.belief(), p.beliefTerm());
+            //try {
+                reset(p.task(), p.belief(), p.beliefTerm());
+            //} catch
 
             can = deriver.rules.pre.apply(this);
             if (can.length == 0)
-                return nar.emotion.premiseUnderivable1;
+                return e.premiseUnderivable1;
         }
 
         int valid = 0, lastValid = -1;
 
-        try (var __ = nar.emotion.derive_D_Truthify.time()) {
+        try (var __ = e.derive_D_Truthify.time()) {
 
             this.preReady();
 
             PremiseAction[] branch = this.deriver.rules.branch;
 
-            PostDerivable[] post = this.post;
+            PremiseActionable[] self = this.post;
             for (int i = 0; i < can.length; i++) {
-                if ((post[i].can(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                if ((self[i].can(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }
             }
             if (valid == 0)
-                return nar.emotion.premiseUnderivable2;
+                return e.premiseUnderivable2;
 
             if (valid > 1 && valid < can.length) {
                 //sort the valid to the first slots for fastest roulette iteration on the contiguous valid subset
-                Arrays.sort(post, 0, can.length, sortByPri);
-            } //otherwise any order here is valid
+                //otherwise any order here is valid
+                Arrays.sort(self, 0, can.length, sortByPri);
+            }
 
+        }
+
+
+        try (var __ = e.derive_E_Run.time()) {
             this.ready(deriveTTL); //first come first serve, maybe not ideal
+            //PremiseActionable.runDirect(valid, lastValid, this);
+            runCompiled(valid, lastValid, this);
+            return e.premiseRun;
+        }
+    }
+
+    private void runCompiled(int valid, int lastValid, Derivation derivation) {
+        if (valid == 1) {
+            PremiseActionable.runDirect(valid, lastValid, derivation);
+            return;
         }
 
+        int instructionChunk = Math.min(4, ttl); //HACK
 
-        try (var __ = nar.emotion.derive_E_Run.time()) {
-            PostDerivable.run(valid, lastValid, this);
-            return nar.emotion.premiseRun;
-        }
+        int ic = 0;
+//        float[] pri = new float[valid];
+//        for (int i = 0; i < valid; i++)
+//            pri[i] = post[i].pri;
+        Random rng = random;
+        MutableRoulette roulette = new MutableRoulette(valid, i -> post[i].pri, wi -> 0, rng);
+        FasterList<PREDICATE<Derivation>> program = new FasterList<>(512, PREDICATE.EmptyPredicateArray);
+        FasterList<PremiseRule> rules = new FasterList();
+
+        do {
+
+            program.clear/*Fast*/();
+
+            int nextChunkEnd = Math.min(ic + instructionChunk, valid), k;
+            for (k = 0; ic < nextChunkEnd; k++, ic++) {
+                int next = roulette.next();
+                if (next == -1)
+                    break; //?
+                PremiseActionable a = post[next];
+
+                a.compile(program);
+//                if (!(a.action instanceof NativePremiseAction)) {
+//
+//
+//                    if (!PremiseRuleCompiler.factorFork(rules, x -> AND.the(rules)).test(this))
+//                        break;
+//
+//                } else {
+//                    program.add((PREDICATE)a);
+//                }
+            }
+
+//            {
+//                //A. direct interpet
+                PREDICATE[] _program = program.array();
+                for (int i = 0, programSize = program.size(); i < programSize; i++) {
+                    if (!_program[i].test(this))
+                        break;
+                }
+//            }
+
+
+
+
+
+        } while (ic < valid);
+
+    }
+
+    private void ensureClear() {
+
+        if (size!=0)
+            throw new WTF();
+        if (!termutes.isEmpty())
+            throw new WTF();
+
+    }
+
+    public void apply(Truth truth, byte punc, boolean single) {
+        //ensureClear();
+        this.clear();
+
+        this.retransform.clear();
+        this.truth.set(truth);
+        this.punc = punc;
+        this.single = single;
+        //this.truthFunction = truthFunction;
     }
 
     public boolean hasBeliefTruth() {
@@ -682,7 +747,7 @@ public class Derivation extends PreDerivation {
     }
 
 
-    private static final Comparator<? super PostDerivable> sortByPri = (a, b)->{
+    private static final Comparator<? super PremiseActionable> sortByPri = (a, b)->{
         if (a==b) return 0;
         int i = Float.compare(a.pri, b.pri);
         return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));
@@ -708,7 +773,7 @@ public class Derivation extends PreDerivation {
     }
 
     public final float parentPri() {
-        return (single ? priSingle : priDouble);
+        return single ? priSingle : priDouble;
     }
 
 //    public float parentEvi() {
@@ -800,42 +865,33 @@ public class Derivation extends PreDerivation {
     public final class DerivationTransform extends MyUnifyTransform {
 
         @Override
-        protected final Term resolveVar(nars.term.Variable x) {
-            throw new UnsupportedOperationException(/* not used */);
+        public Term applyVariable(Variable x) {
+            return Derivation.this.resolveTermRecurse(x);
         }
 
-        /**
-         * only returns derivation-specific functors.  other functors must be evaluated at task execution time
-         */
         @Override
-        public final Term applyAtomic(Atomic a) {
-
-
-            Term b;
-            if (a instanceof Variable) {
-
-                b = Derivation.this.resolveTermRecurse(a);
-
-            } else if (a instanceof Atom) {
+        public Term applyAtomicConstant(Atomic a) {
+            if (a instanceof Atom) {
 
                 if (a == TaskTerm)
                     return taskTerm;
                 else if (a == BeliefTerm)
                     return beliefTerm;
 
-                b = derivationFunctors.get(a);
+                Term b = derivationFunctors.get(a);
 
-                if (NAL.DEBUG) {
-                    if (b == TaskTerm)
-                        throw new WTF("should have been detected earlier"); //return taskTerm;
-                    else if (b == BeliefTerm)
-                        throw new WTF("should have been detected earlier"); //return beliefTerm;
+                if (b!=null) {
+                    if (NAL.DEBUG) {
+                        if (b == TaskTerm)
+                            throw new WTF("should have been detected earlier"); //return taskTerm;
+                        else if (b == BeliefTerm)
+                            throw new WTF("should have been detected earlier"); //return beliefTerm;
+                    }
+                    return b;
                 }
+            }
 
-            } else
-                return a;
-
-            return b != null ? b : a;
+            return a;
         }
 
         @Override

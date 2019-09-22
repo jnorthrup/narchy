@@ -101,7 +101,7 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
         }
 
 
-        protected Term applyPosCompound(Compound x) {
+        public Term applyPosCompound(Compound x) {
             return AbstractTermTransform.super.applyCompound(x);
         }
 

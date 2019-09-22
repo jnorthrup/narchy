@@ -24,17 +24,28 @@ public class DirectPremiseUnify extends PremiseUnify {
 
     @Override public boolean test(Derivation d) {
 
-        boolean single = patternsEqual && d.taskTerm.equals(d.beliefTerm);
+        boolean single = patternsEqual;
+        //assert(!(single && !d.taskTerm.equals(d.beliefTerm))); //should be eliminated by prefilters
+        if (single && !d.taskTerm.equals(d.beliefTerm))
+            return false;
 
         boolean fwd = single || fwd(d);
 
-        //first
-        boolean unified = unify(d, fwd, single);
-
-        if (unified && !single) {
-            //second
-            unify(d, !fwd, true);
+        int before = d.size();
+        if (before!=0) {
+            d.revert(0); //TODO ensure avoided the need for this and remove
+            //assert(before==0);
         }
+
+        if (unify(d, fwd, single) && !single) {
+            if (d.live())
+                unify(d, !fwd, true);
+        }
+
+        d.clear(); //revert(0);
+
+        if (!d.live())
+            return false; //break
 
         return true;
     }

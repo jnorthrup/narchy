@@ -89,6 +89,8 @@ public class CompoundDecompose extends NativePremiseAction {
 
 	@Override
 	protected float pri(Derivation d) {
-		return (float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
+		return (float) (0.05f * Math.sqrt(((float)((taskOrBelief ? d._task : d._belief).volume()))));
+
+		//return (float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
 	}
 }

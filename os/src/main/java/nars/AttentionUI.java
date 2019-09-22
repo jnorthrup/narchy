@@ -7,10 +7,13 @@ import jcog.exe.Exe;
 import jcog.pri.Prioritized;
 import nars.attention.PriNode;
 import nars.attention.What;
+import nars.concept.Concept;
 import nars.game.sensor.VectorSensor;
 import nars.gui.DurSurface;
 import nars.gui.NARui;
+import nars.gui.concept.ConceptSurface;
 import nars.gui.sensor.VectorSensorChart;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.StackingMap;
 import spacegraph.space2d.container.graph.EdgeVis;
@@ -80,20 +83,34 @@ public class AttentionUI {
 			Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())::iterator,
 			Map.of(
 				NAR.class, (NAR nn, Object relation) -> new VectorLabel(nn.self().toString()),
-				VectorSensor.class, (VectorSensor v, Object relation) -> new VectorSensorChart(v, n)
+				VectorSensor.class, (VectorSensor v, Object relation) -> new VectorSensorChart(v, n),
+				//GameLoop.class, (GameLoop g, Object relation) -> g.components()
+				DurSurface.class, (x,y)->{
+					return null;
+				},
+				Concept.class, (Concept c, Object relation) -> new ConceptSurface(c, n)
 				//PriNode.class, (PriNode v, Object relation)-> ...
 
 				//TODO nars specific renderers
 			), (xx, graph) -> {
+//
+//				if (xx.id instanceof PriNode) {
+//					EdgeVis<Object> eID = graph.edge(xx, ((PriNode)(xx.id)).id);
+//					if (eID!=null)
+//						eID.weight(1f).color(0.2f, 0.2f, 0.5f);
+//				}
 				Node<PriNode, Object> nn = n.control.graph.node(xx.id);
 				if (nn != null) {
+					//to identity object
+
+
 					nn.nodes(false, true).forEach(c -> {
 						EdgeVis<Object> e = graph.edge(xx, c.id());
 						if (e != null) {
-							e.weight(1f);
-							e.color(0.5f, 0.5f, 0.5f);
+							e.weight(1f).color(0.5f, 0.5f, 0.5f);
 						}
 					});
+
 				}
 		});
 
@@ -174,11 +191,9 @@ public class AttentionUI {
 				{
 					Object xid = x.id;
 					String label = xid.toString();
-					x.set(Surplier.button(label, () -> new Scale(
-						LabeledPane.the(label,
-							new ObjectSurface(xid, 2,
-								builders, ObjectSurface.builtin)
-						), INNER_CONTENT_SCALE)));
+
+					boolean lazy = false;
+					x.set(lazy ? Surplier.button(label, () -> icon(xid, label)) : icon(xid,label));
 
 
 					//new CheckBox(xid.toString()).on((boolean v) -> {
@@ -210,6 +225,15 @@ public class AttentionUI {
 				}
 			);
 			return g;
+		}
+
+		@NotNull
+		private Scale icon(Object xid, String label) {
+			return new Scale(
+				LabeledPane.the(label,
+					new ObjectSurface(xid, 2,
+						builders, ObjectSurface.builtin)
+				), INNER_CONTENT_SCALE);
 		}
 
 		public void layer(Object o) {

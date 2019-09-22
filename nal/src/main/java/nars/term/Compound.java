@@ -808,13 +808,8 @@ public interface Compound extends Term, IPair, Subterms {
 
             if (ydt == 0) ydt = DTERNAL; //HACK
 
-            if (xx == yy && yOp == xOp) {
-                if (xdt == ydt)
-                    return x; //remains totally unchanged
-//                if ((xdt == 0 || xdt == DTERNAL) && (!yy.hasAny(CONJ))) {
-//                    //specializing to temporal from eternal: shortcut
-//                    return CachedCompound.newCompound(yOp, ydt, yy);
-//                }
+            if (xdt == ydt && xx == yy && yOp == xOp) {
+                return x; //remains totally unchanged
             }
         }
 

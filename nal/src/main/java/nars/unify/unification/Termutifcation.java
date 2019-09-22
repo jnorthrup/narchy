@@ -116,7 +116,7 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
         }
 
         @Override
-        public Term resolveVar(Variable x) {
+        @Deprecated public Term resolveVar(Variable x) {
             Term y = parent.resolveVar(x);
             if (y != null && y != x) {
                 if (size==0 || !var(y))

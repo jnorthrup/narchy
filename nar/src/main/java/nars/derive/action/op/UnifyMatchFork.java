@@ -18,7 +18,7 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
     public UnifyMatchFork() {
     }
 
-    public void reset(Taskify taskify) {
+    public void set(Taskify taskify) {
         this.taskify = taskify;
     }
 

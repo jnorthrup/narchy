@@ -1,6 +1,5 @@
 package nars.derive.cond;
 
-import jcog.data.list.FasterList;
 import nars.$;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
@@ -13,6 +12,7 @@ import nars.unify.constraint.UnaryConstraint;
 import nars.unify.constraint.UnifyConstraint;
 
 import java.util.Iterator;
+import java.util.List;
 import java.util.function.BiFunction;
 
 abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C extends UnifyConstraint<U>> extends ConstraintAsPredicate<U,C> {
@@ -90,7 +90,7 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
         }
 
         @Override
-        public boolean reduceIn(FasterList<PREDICATE<PreDerivation>> p) {
+        public boolean reduceIn(List<PREDICATE<PreDerivation>> p) {
             boolean mod = false;
 
             for (Iterator<PREDICATE<PreDerivation>> iterator = p.iterator(); iterator.hasNext(); ) {

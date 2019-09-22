@@ -23,7 +23,7 @@ public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTe
 
     @Nullable
     @Override
-    protected final Term applyPosCompound(final Compound x) {
+	public final Term applyPosCompound(final Compound x) {
         return x.hasAny(Op.Temporal) ? transformTemporal(x, dt(x)) : x;
     }
 

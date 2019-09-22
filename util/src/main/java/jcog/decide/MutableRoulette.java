@@ -56,7 +56,7 @@ public class MutableRoulette {
         this(count, initialWeights, (x -> x), rng);
     }
 
-    private MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
+    public MutableRoulette(int count, IntToFloatFunction initialWeights, FloatToFloatFunction weightUpdate, Random rng) {
         this(Util.map(count, initialWeights), weightUpdate, rng);
     }
 

@@ -1,6 +1,7 @@
 package nars.derive.rule;
 
 import jcog.data.list.FasterList;
+import jcog.data.set.ArrayHashSet;
 import jcog.tree.perfect.TrieNode;
 import nars.NAR;
 import nars.derive.Derivation;
@@ -13,6 +14,7 @@ import nars.term.control.AND;
 import nars.term.control.FORK;
 import nars.term.control.PREDICATE;
 import nars.term.util.map.TermPerfectTrie;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
@@ -22,19 +24,11 @@ import java.util.function.Function;
 /**
  * high-level interface for compiling premise deriver rules
  */
-enum PremiseRuleCompiler {
+public enum PremiseRuleCompiler {
     ;
 
-//    public static DeriverRules the(Set<PremiseRuleProto> r, NAR nar) {
-//        return the.apply(r);
-//    }
-
-//    private static final Function<Set<PremiseRuleProto>, DeriverRules> the =
-//            //Memoizers.the.memoize(PremiseDeriverCompiler.class.getSimpleName(), 64, PremiseDeriverCompiler::_the);
-//            CaffeineMemoize.build(PremiseRuleCompiler::_the, 64, false);
-
     public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
-        return _the(rr,
+        return compile(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
             //DeriverPlanner.ConceptMetaMemoizer
@@ -43,15 +37,15 @@ enum PremiseRuleCompiler {
         );
     }
 
-    private static DeriverProgram _the(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
+    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
 
         /** indexed by local (deriver-specific) id */
         int n = rr.size();
         short i = 0;
         assert(n > 0);
 
-        PremiseAction[] rootBranches = new PremiseAction[n];
-        final TermPerfectTrie<PREDICATE<Derivation>, PremiseAction> path = new TermPerfectTrie<>();
+        PremiseAction[] roots = new PremiseAction[n];
+        final TermPerfectTrie<PREDICATE<Derivation>, PremiseAction> paths = new TermPerfectTrie<>();
 
         for (PremiseRule r : rr) {
 
@@ -62,17 +56,17 @@ enum PremiseRuleCompiler {
 
             pre.add(new Forkable(/* branch ID */  i));
 
-            PremiseAction added = path.put(pre,
-                rootBranches[i] = functionTransform.apply(r.action.apply(nar))
+            PremiseAction added = paths.put(pre,
+                roots[i] = functionTransform.apply(r.action.apply(nar))
             );
             assert (added == null);
 
             i++;
         }
 
-        assert (!path.isEmpty());
+        assert (!paths.isEmpty());
 
-        return new DeriverProgram(PremiseRuleCompiler.compile(path), rootBranches, preDeriver, nar);
+        return new DeriverProgram(PremiseRuleCompiler.compile(paths), roots, preDeriver, nar);
     }
 
 
@@ -84,17 +78,17 @@ enum PremiseRuleCompiler {
 
 
     @Nullable
-    static Set<PREDICATE<Derivation>> compile(TrieNode<List<PREDICATE<Derivation>>, PremiseAction> node) {
+    static List<PREDICATE<Derivation>> compile(TrieNode<List<PREDICATE<Derivation>>, PremiseAction> node) {
 
 
-        Set<PREDICATE<Derivation>> bb = new HashSet();
+        UnifiedSet<PREDICATE<Derivation>> bb = new UnifiedSet();
 
 
         node.forEach(n -> {
 
-            Set<PREDICATE<Derivation>> branches = compile(n);
+            List<PREDICATE<Derivation>> branches = compile(n);
 
-            PREDICATE<Derivation> branch = PREDICATE.compileAnd(
+            PREDICATE<Derivation> branch = PREDICATE.andFlat(
                     n.seq().subList(n.start(), n.end()),
                     //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
                     branches != null ? factorFork(branches, FORK::new) : null
@@ -108,11 +102,11 @@ enum PremiseRuleCompiler {
             return null;
         else {
             //return compileSwitch(bb, 2);
-            return bb;
+            return bb.toList();
         }
     }
 
-    private static PREDICATE<Derivation> factorFork(Set<PREDICATE<Derivation>> _x, Function<PREDICATE<Derivation>[], PREDICATE<Derivation>> builder) {
+    public static PREDICATE<Derivation> factorFork(Collection<PREDICATE<Derivation>> _x, Function<List<PREDICATE<Derivation>>, PREDICATE<Derivation>> builder) {
 
         int n = _x.size();
         if (n == 0)
@@ -121,11 +115,13 @@ enum PremiseRuleCompiler {
         if (n == 1)
             return _x.iterator().next();
 
-        FasterList<PREDICATE<Derivation>> x = new FasterList<>(_x);
+        ArrayHashSet<PREDICATE<Derivation>> x = new ArrayHashSet<>();
+        x.addAll(_x);
+        FasterList<PREDICATE<Derivation>> X = x.list;
 
         Map<PREDICATE, SubCond> conds = new HashMap(x.size());
         for (int b = 0, xSize = n; b < xSize; b++) {
-            PREDICATE  p = x.get(b);
+            PREDICATE  p = X.get(b);
             if (p instanceof AND) {
                 int bb = b;
                 ((AND) p).subStream().forEach((xx)-> SubCond.bumpCond(conds, (PREDICATE)xx, bb));
@@ -134,6 +130,7 @@ enum PremiseRuleCompiler {
             } else {
                 SubCond.bumpCond(conds, p, b);
             }
+            b++;
         }
 
         if (!conds.isEmpty()) {
@@ -141,7 +138,7 @@ enum PremiseRuleCompiler {
             if (fx.size() < 2) {
 
             } else {
-                Collection<PREDICATE<Derivation>> bundle = null;
+                List<PREDICATE<Derivation>> bundle = null;
                 int i = 0;
                 Iterator<PREDICATE<Derivation>> xx = x.iterator();
                 while (xx.hasNext()) {
@@ -154,7 +151,7 @@ enum PremiseRuleCompiler {
                             if (pxSub.contains(fx.p)) {
                                 px = AND.the(pxSub.removing(fx.p));
                             }
-                            if (bundle == null) bundle = new HashSet();
+                            if (bundle == null) bundle = new FasterList();
                             bundle.add(px);
                         } else {
 
@@ -167,7 +164,7 @@ enum PremiseRuleCompiler {
                     x.add(AND.the(new Term[] { fx.p, FORK.fork(bundle, (Function)builder  )}));
 
                     if (x.size() == 1)
-                        return x.get(0);
+                        return x.iterator().next();
                 }
             }
 
@@ -196,7 +193,7 @@ enum PremiseRuleCompiler {
             }
         }
 
-        return FORK.fork(x, builder);
+        return FORK.fork(X, builder);
     }
 
 //    private static Set<PREDICATE<Derivation>> compileSwitch(Set<PREDICATE<Derivation>> branches, int minCases) {

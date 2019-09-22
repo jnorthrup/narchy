@@ -16,7 +16,7 @@ import static java.util.stream.Collectors.toList;
 
 public class VersionMap<X, Y> implements Map<X, Y> {
 
-    protected final Versioning context;
+    public final Versioning context;
     public final Map<X, Versioned<Y>> map;
 
 

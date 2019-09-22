@@ -5,7 +5,6 @@ import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.action.op.Occurrify.BeliefProjection;
 import nars.derive.util.PuncMap;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -33,26 +32,26 @@ public class Truthify extends AbstractPred<Derivation> {
      * 0 double premise
      * -1 disabled
      */
-    final byte beliefMode, goalMode;
-    final private boolean beliefOverlap, goalOverlap;
+    public final byte beliefMode;
+    public final byte goalMode;
+    public final boolean beliefOverlap;
+    public final boolean goalOverlap;
 
     final TruthFunction goal;
-    final BeliefProjection beliefProjection;
 
     /**
      * punctuation transfer function
      * maps input punctuation to output punctuation. a result of zero cancels
      */
-    private final PuncMap punc;
+    public final PuncMap punc;
 
-    private final Predicate<Derivation> timeFilter;
+    private final Occurrify.OccurrenceSolver time;
 
 
     private Truthify(Term id, PuncMap punc, TruthFunction belief, TruthFunction goal, Occurrify.OccurrenceSolver time) {
         super(id);
         this.punc = punc;
-        this.timeFilter = time.filter();
-        this.beliefProjection = time.beliefProjection();
+        this.time = time;
         this.belief = belief;
 
         if (belief != null) {
@@ -110,6 +109,10 @@ public class Truthify extends AbstractPred<Derivation> {
         //d.punc = 0;
         //d.truthFunction = null;
 
+        Predicate<Derivation> tf = time.filter();
+        if (tf!=null && !tf.test(d))
+            return false;
+
         boolean single;
 
         byte punc = this.punc.get(d.taskPunc);
@@ -123,7 +126,7 @@ public class Truthify extends AbstractPred<Derivation> {
                 } else {
                     if (!d.hasBeliefTruth())
                         return false;
-                    beliefTruth = beliefProjection.apply(d);
+                    beliefTruth = time.beliefProjection().apply(d);
                     if (!beliefTruth.is())
                         return false; //double but beliefTruth not defined
                 }
@@ -158,63 +161,6 @@ public class Truthify extends AbstractPred<Derivation> {
         d.single = single;
 
         return true;
-    }
-
-
-    /**
-     * returns the byte of punctuation of the task that the derivation ultimately will produce if completed.
-     * or 0 if the derivation is impossible.
-     */
-    public final byte preFilter(Derivation d) {
-
-
-        byte o = this.punc.get(d.taskPunc);
-
-        int m = -1;
-        switch (o) {
-            case BELIEF: m = beliefMode; break;
-            case GOAL: m = goalMode; break;
-            case QUESTION:
-            case QUEST:
-                m = 1;//questionMode;
-                //if this is reverted, it should be changed to use d.overlapSingle and never d.overlapDouble
-                break;
-        }
-        if(m == -1)
-            return 0;
-        boolean single = (m == 1);
-        boolean overlapping = (single ? d.overlapSingle : d.overlapDouble);
-        switch (o) {
-            case GOAL:
-            case BELIEF: {
-                //allow overlap?
-                if (overlapping && !((o == BELIEF) ? beliefOverlap : goalOverlap))
-                    return 0;
-                break;
-            }
-            case QUEST:
-            case QUESTION:
-                if (overlapping)
-                    return 0;
-
-                break;
-
-            default:
-                throw new UnsupportedOperationException();
-        }
-
-        if (!single) {
-            if (beliefProjection.apply(d) == null)
-                return 0;
-        }
-
-        if (timeFilter != null) {
-            if (!timeFilter.test(d)) {
-                return 0;
-            }
-        }
-
-        return o;
     }
 
 

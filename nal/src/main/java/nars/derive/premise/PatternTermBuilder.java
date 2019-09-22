@@ -56,7 +56,8 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
         }
 
         @Override
-        protected @Nullable Term applyPosCompound(Compound x) {
+		@Nullable
+		public Term applyPosCompound(Compound x) {
             if (xternalize) {
                 x = (Compound) Retemporalize.retemporalizeAllToXTERNAL.applyCompound(x);
 //                if (!(x instanceof Compound))

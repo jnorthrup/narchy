@@ -12,6 +12,7 @@ import nars.control.channel.CauseChannel;
 import nars.game.sensor.GameLoop;
 import nars.table.eternal.EternalDefaultTable;
 import nars.task.NALTask;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.term.util.TermedDelegate;
@@ -91,8 +92,12 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
-
-        Task t = NALTask.the(goal.unneg(), punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
+		if (goal instanceof Neg) {
+			throw new UnsupportedOperationException();
+//			goal = goal.unneg();
+//			truth = truth.neg();
+		}
+        Task t = NALTask.the(goal, punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         reinforcement.add(t);
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
@@ -127,6 +132,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		int n = reinforcement.size();
 		if (n > 0) {
 			float pri = this.pri.pri();
+				// *1f/Util.sqrt(n); //not too large or it will compete with the signal itself
 			for (Task t : reinforcement)
 				t.pri(pri);
 			game.what().acceptAll(reinforcement);

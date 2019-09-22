@@ -86,14 +86,14 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            reinforce(CONJ.the(rTarget, A), GOAL, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget, A.neg()), GOAL, RimplAPos, stamp);
+//            reinforce(CONJ.the(rTarget, A), GOAL, RimplAPos, stamp);
+//            reinforce(CONJ.the(rTarget, A.neg()), GOAL, RimplAPos, stamp);
 
 //                reinforce(CONJ.the(rTarget, A), BELIEF, RimplRandomP);
 //                reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplRandomN);
 
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
+            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
+            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
@@ -102,7 +102,7 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg);
-
+//
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
@@ -115,7 +115,10 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
 
-
+//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos);
+//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos);
+//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplANeg);
+//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg);
 
             //reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos);
             //reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos);
@@ -152,8 +155,8 @@ abstract public class ScalarReward extends Reward {
 
         float strength = 1;
         float cMin =
-            //Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
-            cMax / 3;
+            Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
+            //cMax / 3;
 
         RimplRandomP.conf(cMin); RimplRandomN.conf(cMin);
         RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());

@@ -1,14 +1,17 @@
 package nars.derive.action;
 
+import nars.NAL;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleWhy;
+import nars.term.control.AbstractPred;
 
 /** rankable branch in the derivation fork */
-public abstract class PremiseAction {
+public abstract class PremiseAction extends AbstractPred<Derivation> {
 
 	public final RuleWhy why;
 
 	public PremiseAction(RuleWhy cause) {
+		super(cause.term);
 		this.why = cause;
 	}
 
@@ -25,4 +28,10 @@ public abstract class PremiseAction {
 	public abstract float pri(Derivation d);
 
 	public abstract void run(Derivation d);
+
+	@Override
+	public final boolean test(Derivation d) {
+		run(d);
+		return d.use(NAL.derive.TTL_COST_BRANCH);
+	}
 }

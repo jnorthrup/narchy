@@ -8,7 +8,9 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
+import jcog.signal.meter.FastCounter;
 import jcog.util.ArrayUtil;
+import nars.Emotion;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -90,7 +92,6 @@ public class Deriver extends How {
 				.add(new AdjacentLinks(new AdjacentIndexer()))
                 //TODO functor evaluator
 				.compile()
-           .print()
 			,
 			timing);
 	}
@@ -165,13 +166,21 @@ public class Deriver extends How {
 		/**
 		 * run a premise
 		 */
-		@Deprecated
-		protected void run(Premise p) {
-			run(p, d.nar.deriveBranchTTL.intValue());
-		}
-
 		protected void run(Premise p, int ttl) {
-			d.derive(p, ttl);
+
+			FastCounter result = d.derive(p, ttl);
+
+			Emotion e = d.nar.emotion;
+			if (result == e.premiseUnderivable1) {
+				//System.err.println("underivable1:\t" + p);
+			} else {
+	//				System.err.println("  derivable:\t" + p);
+			}
+
+			//ttlUsed = Math.max(0, deriveTTL - d.ttl);
+
+			//e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
+			result.increment();
 		}
 
 		public abstract void next();
@@ -199,7 +208,7 @@ public class Deriver extends How {
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
         int premisesPerIter = 4;
-        int capacity = 8;
+        int capacity = premisesPerIter;
 
 		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
 		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
@@ -234,8 +243,10 @@ public class Deriver extends How {
 			ttl = premisesPerIter;
 
 			Premise r;
+			int branchTTL = d.nar.deriveBranchTTL.intValue();
 			while ((r = queue.poll()) != null) {
-				run(r);
+				//TODO scale ttl by the priority normalized relative to the other items in the queue
+				run(r, branchTTL);
 				if (--ttl <= 0)
 					break;
 			}
@@ -275,8 +286,7 @@ public class Deriver extends How {
 			bag.clear();
 			bag.capacity(bufferCap);
 
-			each = (nextPremise) -> run(nextPremise.get());
-
+			each = (p) -> run(p.get(), d.nar.deriveBranchTTL.intValue());
 		}
 
 		@Override

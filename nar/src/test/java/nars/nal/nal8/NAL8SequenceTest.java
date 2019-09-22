@@ -26,7 +26,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 /** test precision of sequence execution (planning) */
 public class NAL8SequenceTest extends NALTest {
 
-    public static final int cycles = 1750;
+    public static final int cycles = 400;
 
     @BeforeEach void init() {
         test.termVolMax(26);
@@ -195,9 +195,9 @@ public class NAL8SequenceTest extends NALTest {
         String g = "(a &&+1 ((b(#1)&&c) &&+1 ((&&,c(#1),d(x,#1)) &&+1 d)))";
         String b = "c(x)";
         test
-            .goal(g)
+            .believe(g)
             .believe( b )
-            .mustGoal(cycles, "((&&,d(x,x)) &&+1 d)", 1, 0.81f) //81% for one step
+            .mustBelieve(cycles, "((&&,d(x,x)) &&+1 d)", 1, 0.81f) //81% for one step
         ;
     }
 

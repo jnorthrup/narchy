@@ -175,7 +175,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
         }
 
         @Override
-        protected Term applyPosCompound(Compound x) {
+        public Term applyPosCompound(Compound x) {
             Term a = super.applyPosCompound(x);
             return a instanceof Compound && !a.hasAny(Op.Variable) ? abbreviateTerm((Compound) a) : a;
         }

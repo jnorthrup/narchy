@@ -686,8 +686,7 @@ public class Occurrify extends TimeGraph {
         /**
          * gets the optional premise pre-filter for this consequence.
          */
-        @Nullable
-        public Predicate<Derivation> filter() {
+        @Nullable public Predicate<Derivation> filter() {
             return null;
         }
 

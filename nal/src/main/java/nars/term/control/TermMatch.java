@@ -9,6 +9,7 @@ import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import nars.unify.constraint.TermMatcher;
 
+import java.util.List;
 import java.util.function.Function;
 
 
@@ -49,7 +50,7 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
 
 
     @Override
-    public boolean reduceIn(FasterList<PREDICATE<X>> p) {
+    public boolean reduceIn(List<PREDICATE<X>> p) {
         if (resolveCost == 0)
             return false; //dont bother grouping root accessors
 
@@ -65,9 +66,9 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
         }
         if (other!=null) {
 
-            int myIndex = p.indexOfInstance(this);
+            int myIndex = ((FasterList)p).indexOfInstance(this);
             TermMatch a = this; p.remove(this);
-            TermMatch b = other; p.removeFirstInstance(other);
+            TermMatch b = other; ((FasterList)p).removeFirstInstance(other);
             if (a.match.cost() > b.match.cost()) {
                 TermMatch x = a;
                 a = b;

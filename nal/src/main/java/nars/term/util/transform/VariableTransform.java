@@ -17,7 +17,7 @@ public abstract class VariableTransform extends AbstractTermTransform.NegOblivio
 
 
     @Override
-    protected Term applyPosCompound(Compound x) {
+    public Term applyPosCompound(Compound x) {
         return preFilter(x) ? super.applyPosCompound(x) : x;
     }
 

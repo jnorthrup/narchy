@@ -23,7 +23,7 @@ abstract public class AND<X> extends AbstractPred<X> {
 
     AND(PREDICATE<X>[] cond) {
         super(
-                $.pFast(cond)
+                $.p(cond)
         );
 
         for (PREDICATE<X> x : cond)

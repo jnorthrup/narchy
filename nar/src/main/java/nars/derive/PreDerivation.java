@@ -2,13 +2,9 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
-import nars.NAL;
 import nars.Op;
-import nars.derive.action.PremiseAction;
 import nars.term.Term;
 import nars.truth.MutableTruth;
-import nars.truth.Truth;
-import nars.truth.func.TruthFunction;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,39 +34,17 @@ public abstract class PreDerivation extends Unify {
 	/**
 	 * post-derivation lookahead buffer
 	 */
-	final PostDerivable[] post;
+	final PremiseActionable[] post;
 
 
     protected PreDerivation(@Nullable Op type, Random random, int stackMax) {
         super(type, random, stackMax);
-        post = Util.map(MAX_FANOUT, PostDerivable[]::new, i->new PostDerivable());
+        post = Util.map(MAX_FANOUT, PremiseActionable[]::new, i->new PremiseActionable());
     }
 
     public abstract boolean hasBeliefTruth();
 
     public abstract ShortBuffer preDerive();
-
-
-    public boolean run(Truth truth, byte punc, boolean single, TruthFunction truthFunction, PremiseAction action) {
-        Derivation d = (Derivation) this;
-        d.clear();
-        d.retransform.clear();
-        d.forEachMatch = null;
-
-        d.truth.set(truth);
-        d.punc = punc;
-        d.single = single;
-        d.truthFunction = truthFunction;
-
-        //System.out.println(d + " " + action);
-        action.run(d);
-
-        return d.use(NAL.derive.TTL_COST_BRANCH);
-    }
-
-
-
-
 
 
 

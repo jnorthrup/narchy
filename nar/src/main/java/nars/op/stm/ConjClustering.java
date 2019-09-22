@@ -84,7 +84,6 @@ public class ConjClustering extends TaskAction implements Consumer<Task> {
     public ConjClustering(NAR nar, byte puncIn, byte puncOut, int centroids, int capacity, Predicate<Task> filter) {
         super();
 
-        single();
         taskPunc(puncIn);
         //TODO other filters
 
@@ -282,7 +281,7 @@ public class ConjClustering extends TaskAction implements Consumer<Task> {
         if (t.isEternal())
             return 0;
 
-        return pri(t) + in.pri();
+        return 0.1f * (pri(t) + in.pri());
     }
 
     @Override public final void accept(Task t) {

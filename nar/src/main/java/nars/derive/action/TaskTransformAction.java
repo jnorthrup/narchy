@@ -26,7 +26,7 @@ public abstract class TaskTransformAction extends TaskAction {
 	}
 
 	@Override public final float pri(Derivation d) {
-		return 0.5f + why.pri(); //TODO
+		return 0.05f + why.pri(); //TODO
 	}
 
 	@Override

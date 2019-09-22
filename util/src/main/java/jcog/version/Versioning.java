@@ -1,5 +1,7 @@
 package jcog.version;
 
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Arrays;
 import java.util.function.Consumer;
 
@@ -63,29 +65,30 @@ public class Versioning<X> {
      * returns whether any revert was actually applied
      */
     public final void revert(int when) {
-
-        final int sizeBefore = size;
-        if (sizeBefore <= when)
-            return;
-
-        int sizeAfter = sizeBefore;
-        final Versioned[] i = this.items;
-
-        do {
-
-            i[--sizeAfter].pop();
-
-        } while (sizeAfter > when);
-
-        this.size = sizeAfter;
-
-        Arrays.fill(i, when, sizeBefore, null);
-
+//
+        revert(when, null);
+//        final int sizeBefore = size;
+//        if (sizeBefore <= when)
+//            return;
+//
+//        int sizeAfter = sizeBefore;
+//        final Versioned[] i = this.items;
+//
+//        do {
+//
+//            i[--sizeAfter].pop();
+//
+//        } while (sizeAfter > when);
+//
+//        this.size = sizeAfter;
+//
+//        Arrays.fill(i, when, sizeBefore, null);
+//
 
     }
 
 
-    protected final boolean revert(int when, Consumer<Versioned<X>> each) {
+    protected final boolean revert(int when, @Nullable Consumer each) {
 
         final int sizePrev;
         if ((sizePrev = size) <= when)
@@ -94,18 +97,26 @@ public class Versioning<X> {
         int sizeNext = sizePrev;
         final Versioned[] i = this.items;
 
-        while (sizeNext>when) {
-            Versioned<X> victim = i[--sizeNext];
-            each.accept(victim);
-            victim.pop();
+        if (each!=null) {
+            while (sizeNext > when) {
+                Versioned victim = i[--sizeNext];
+                each.accept(victim);
+                victim.pop();
+            }
+        } else {
+            while (sizeNext > when) {
+                i[--sizeNext].pop();
+            }
         }
-        Arrays.fill(i, when, sizePrev, null);
+
         this.size = sizeNext;
+        Arrays.fill(i, when, sizePrev, null);
+
 
         return true;
     }
 
-    public Versioning clear() {
+    public Versioning<X> clear() {
         revert(0);
         return this;
     }
@@ -131,7 +142,7 @@ public class Versioning<X> {
     }
 
     public final void setTTL(int ttl) {
-        assert (ttl > 0);
+//        assert (ttl > 0);
         this.ttl = ttl;
     }
 

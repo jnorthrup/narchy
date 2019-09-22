@@ -20,7 +20,7 @@ public class STMLinker extends TaskAction {
 
 	@Override
 	protected float pri(Derivation d) {
-		return 1.0f;
+		return 0.1f;
 	}
 
 	private final MetalConcurrentQueue<Task> stm;
@@ -29,7 +29,8 @@ public class STMLinker extends TaskAction {
 
 	public STMLinker(int capacity) {
 		super();
-		single(); //all but command
+		taskPunc(true,true,false,false);//all but questions and commands
+
 		this.capacity = capacity;
 		this.stm = new MetalConcurrentQueue<>(capacity);
 	}
@@ -37,7 +38,9 @@ public class STMLinker extends TaskAction {
 	private static boolean link(Task next, @Nullable Task prev, float factor, Derivation d) {
 		if (prev == null)
 			return true;
-		if (next.equals(prev))
+
+		Term att = next.term().concept(), btt = prev.term().concept();
+		if (att.equals(btt))
 			return false;
 
 		/* pri split bidirectionally so * 0.5 */
@@ -49,7 +52,6 @@ public class STMLinker extends TaskAction {
 
 			if (pri >= ScalarValue.EPSILON) {
 				TaskLinkWhat w = (TaskLinkWhat) d.what;
-				Term att = next.term().concept(), btt = prev.term().concept();
 				if (!att.equals(btt)) {
 					link(att, btt, next.punc(), pri, w);
 					link(btt, att, prev.punc(), pri, w);

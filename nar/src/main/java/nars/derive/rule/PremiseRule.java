@@ -26,6 +26,7 @@ public class PremiseRule extends ProxyTerm  {
 
     public PremiseRule(Term id, PREDICATE<Derivation>[] condition, Function<NAR, PremiseAction> action) {
         super(id);
+
         this.condition = condition;
         this.action = action;
     }
