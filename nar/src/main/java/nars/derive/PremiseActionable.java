@@ -1,5 +1,6 @@
 package nars.derive;
 
+import jcog.Texts;
 import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
 import nars.$;
@@ -70,14 +71,13 @@ public class PremiseActionable  implements Predicate<Derivation> {
 //    }
 
 
-    public float can(PremiseAction a, Derivation d) {
+    public float pri(PremiseAction a, Derivation d) {
         float p = a.pri(d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;
             this.truth.set( d.truth );
             this.punc = d.punc;
             this.single = d.single;
-            this.truthFunction = d.truthFunction;
             return this.pri = p;
         } else {
             this.action = null;
@@ -89,7 +89,9 @@ public class PremiseActionable  implements Predicate<Derivation> {
     @Override public final boolean test(Derivation d) {
         d.apply(truth, punc, single);
 
-        //System.out.println(d + " " + action);
+        if (NAL.TRACE) {
+            System.out.println("$" + Texts.n4(action.pri(d)) + " " + action + "\t" + d);
+        }
         action.run(d);
 
         return d.use(NAL.derive.TTL_COST_BRANCH);

@@ -6,6 +6,7 @@ import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.link.*;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
@@ -16,11 +17,15 @@ public class CompoundDecompose extends NativePremiseAction {
 
 	public CompoundDecompose(boolean taskOrBelief) {
 		super();
+
+
 		this.taskOrBelief = taskOrBelief;
 		match(taskOrBelief ? TheTask : TheBelief, new TermMatcher.SubsMin((short)1));
 
 		if (!taskOrBelief)
 			hasBelief(true);
+//		else
+//			hasBelief(false); //structural
 	}
 
 	@Override
@@ -32,7 +37,7 @@ public class CompoundDecompose extends NativePremiseAction {
 
 		Term tgt = decompose(src, d);
 		if (tgt!=null) {
-
+			assert(!(tgt instanceof Neg));
 			if (tgt.op().conceptualizable) {
 				assert(!tgt.equals(src));
 
@@ -89,8 +94,8 @@ public class CompoundDecompose extends NativePremiseAction {
 
 	@Override
 	protected float pri(Derivation d) {
-		return (float) (0.05f * Math.sqrt(((float)((taskOrBelief ? d._task : d._belief).volume()))));
+		//return (float) Math.min(1, (0.1f * Math.sqrt(((float)((taskOrBelief ? d._task : d._belief).volume())))/2f));
 
-		//return (float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
+		return 0.25f *(float) Math.sqrt(((float)d._task.volume()) / (d.hasBeliefTruth() ? d.beliefTerm.volume() : 1)) ;
 	}
 }

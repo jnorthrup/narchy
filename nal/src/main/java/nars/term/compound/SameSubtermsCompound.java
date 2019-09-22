@@ -1,6 +1,5 @@
 package nars.term.compound;
 
-import jcog.TODO;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
@@ -24,6 +23,12 @@ public interface SameSubtermsCompound extends Compound {
         return !inSuperCompound.test(this) ||
                 whileTrue.test(this) &&
                 AND(s -> s.recurseTerms(inSuperCompound, whileTrue, this));
+    }
+
+    @Override
+    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
+        return !aSuperCompoundMust.test(this) ||
+            whileTrue.test(this, superterm) && AND(s -> s.recurseTerms(aSuperCompoundMust, whileTrue, this));
     }
 
     @Override
@@ -53,8 +58,5 @@ public interface SameSubtermsCompound extends Compound {
         return false;
     }
 
-    @Override
-    default boolean recurseTerms(Predicate<Compound> inSuperCompound, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
-        throw new TODO();
-    }
+
 }

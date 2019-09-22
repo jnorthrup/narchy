@@ -33,6 +33,13 @@ import static nars.truth.func.TruthFunctions.c2wSafe;
  */
 public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
+    public static boolean TRACE = false;
+
+    /**
+     * use this for advanced error checking, at the expense of lower performance.
+     * it is enabled for unit tests automatically regardless of the value here.
+     */
+    public static boolean DEBUG = false;
 
     public static final Retemporalize conceptualization =
             Conceptualization.FlattenAndDeduplicateConj
@@ -221,8 +228,8 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** probability of unifying subterms randomly (not using any heuristics as usual) */
     public static final float SUBTERM_UNIFY_ORDER_RANDOM_PROBABILITY = 0.05f;
 
-    /** seems safe and will reduce equivalent permutations cluttering tasklink bags */
-    public static final boolean TASKLINK_NORMALIZE_IMAGES = true;
+//    /** seems safe and will reduce equivalent permutations cluttering tasklink bags */
+//    public static final boolean TASKLINK_NORMALIZE_IMAGES = false;
 
     /** relative time when the desire is actually read (negative values mean past, ex: half duration ago),
      *  determines when desire is answered to produce feedback in the present frame.
@@ -244,6 +251,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
             1f;
 
     public static final float TaskEvalPriDecomposeRate = 0.5f;
+
 
 
     /**
@@ -293,11 +301,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean STRONG_COMPOSITION = false;
     }
 
-    /**
-     * use this for advanced error checking, at the expense of lower performance.
-     * it is enabled for unit tests automatically regardless of the value here.
-     */
-    public static boolean DEBUG;
 
 //    /**
 //     * when merging dt's, ratio of the maximum difference in dt allowed

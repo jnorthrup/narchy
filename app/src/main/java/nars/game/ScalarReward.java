@@ -155,8 +155,8 @@ abstract public class ScalarReward extends Reward {
 
         float strength = 1;
         float cMin =
-            Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
-            //cMax / 3;
+            //Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
+            cMax / 3;
 
         RimplRandomP.conf(cMin); RimplRandomN.conf(cMin);
         RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());

@@ -26,13 +26,13 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
     public final FloatRange attractSpeed = new FloatRange(0.25f, 0, 2);
 
     /** in (visible) graph radii */
-    public final FloatRange nodeScale = new FloatRange(0.9f, 0.04f, 1.5f);
+    public final FloatRange nodeScale = new FloatRange(0.2f, 0.04f, 1.5f);
 
     /** in node radii */
-    public final FloatRange nodeSpacing  = new FloatRange(Util.PHIf, 0.25f, 8f);
+    public final FloatRange nodeSpacing  = new FloatRange(Util.PHIf, 0.5f, 3f);
 
     /** 1.0 - momentum LERP */
-    public final FloatRange speed = new FloatRange(0.1f, 0f, 1f);
+    public final FloatRange speed = new FloatRange(0.5f, 0f, 1f);
 
 
 
@@ -144,7 +144,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
             v2 delta = new v2(b.cx() - px, b.cy() - py);
             float len = delta.normalize();
-            if (len > idealLen) {
+//            if (len > idealLen) {
 //            len = len * (1+Util.tanhFast(len - (scale)))/2;
 
 
@@ -160,7 +160,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
                     a.move(delta.x, delta.y);
                     b.move(-delta.x, -delta.y);
                 }
-            }
+//            }
         });
 
     }

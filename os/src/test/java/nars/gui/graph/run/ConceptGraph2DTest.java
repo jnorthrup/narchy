@@ -41,12 +41,14 @@ class ConceptGraph2DTest {
         public static void main(String[] args) {
             NAR n = NARS
                     //.tmp(4);
-                    .threadSafe(4);
-            n.termVolMax.set(5);
+                    .threadSafe(6);
+            n.termVolMax.set(6);
 
             window(BagregateConceptGraph2D.get(n), 1200, 800 );
 
-            n.startFPS(4f);
+            n.startFPS(1f);
+
+            n.log();
 
             n.want("reward");
             n.believe("(good ==> reward)", 1, 0.9f);

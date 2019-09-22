@@ -20,6 +20,7 @@ import nars.control.How;
 import nars.control.Why;
 import nars.derive.action.AdjacentLinks;
 import nars.derive.action.CompoundDecompose;
+import nars.derive.action.ImageUnfold;
 import nars.derive.action.TaskResolve;
 import nars.derive.adjacent.AdjacentIndexer;
 import nars.derive.premise.AbstractPremise;
@@ -46,7 +47,7 @@ import java.util.function.Supplier;
  * the current level of code complexity makes this non-obvious
  */
 public class Deriver extends How {
-    int innerLoops = 1;
+    int innerLoops = 2;
 
 	/**
 	 * variable types unifiable in premise formation
@@ -87,10 +88,12 @@ public class Deriver extends How {
 		this(rules
 				//HACK adds standard derivation behaviors
 				.add(TaskResolve.the)
+
 				.add(new CompoundDecompose(true))
 				//.add(new CompoundDecompose(false))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
-                //TODO functor evaluator
+				.add(new ImageUnfold())
+				//TODO functor evaluator
 				.compile()
 			,
 			timing);
@@ -156,8 +159,6 @@ public class Deriver extends How {
 				Task y = TaskResolve.the.get(x, d);
 				if (y != null) // && !x.equals(y))
 					return new AbstractPremise(y, x.to());
-				else
-					return x; //maybe the link can be resolved after further transformation
 			}
 
 			return null;
@@ -207,8 +208,9 @@ public class Deriver extends How {
 
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
-        int premisesPerIter = 4;
-        int capacity = premisesPerIter;
+		int hypotheses = 1;
+        int premisesPerIter = 2;
+        int capacity = 4;
 
 		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
 		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
@@ -224,12 +226,12 @@ public class Deriver extends How {
 
             //novel.clear();
 			//queue.clear();
+			int branchTTL = d.nar.deriveBranchTTL.intValue();
 
-            Premise p = premise();
-            if (p!=null)
-            	queue.add(p);
+			for (int h = 0; h < hypotheses; h++)
+				hypothesize(branchTTL);
 
-            int s = queue.size();
+			int s = queue.size();
             if (s == 0)
                 return;
 
@@ -243,7 +245,6 @@ public class Deriver extends How {
 			ttl = premisesPerIter;
 
 			Premise r;
-			int branchTTL = d.nar.deriveBranchTTL.intValue();
 			while ((r = queue.poll()) != null) {
 				//TODO scale ttl by the priority normalized relative to the other items in the queue
 				run(r, branchTTL);
@@ -251,6 +252,13 @@ public class Deriver extends How {
 					break;
 			}
 
+		}
+
+		public void hypothesize(int branchTTL) {
+			Premise p = premise();
+			if (p!=null) {
+				run(p, branchTTL);
+			}
 		}
 
 		@Override

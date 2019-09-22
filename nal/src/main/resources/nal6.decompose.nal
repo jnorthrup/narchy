@@ -50,8 +50,14 @@
 
     C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DesirePP, Time:BeliefEvent)
     C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DesirePN, Time:BeliefEvent)
-    X, C                                                 |-  conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskEvent)
-    X, C, has(C,"--")                                    |-  conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskEvent)
+    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DesireNP, Time:BeliefEvent)
+    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DesireNN, Time:BeliefEvent)
+
+    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskEvent)
+    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
+
     X, C, --eventOfNeg(C,X), --conjParallel(C)           |-  conjAfter(C,   X),         (  Goal:DeductionWeakPP, Time:TaskEvent)
     X, C, has(C,"--"), --eventOf(C,X), --conjParallel(C) |-  conjAfter(C, --X),         (  Goal:DeductionWeakNP, Time:TaskEvent)
 

@@ -33,7 +33,6 @@ import nars.time.When;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunction;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.map.mutable.MapAdapter;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -177,7 +176,6 @@ public class Derivation extends PreDerivation {
     @Deprecated public transient boolean single;
     @Deprecated public final MutableTruth truth = new MutableTruth();
     @Deprecated public transient byte punc;
-    @Deprecated public transient TruthFunction truthFunction;
 
     public transient long time = TIMELESS;
     public transient float dur = Float.NaN;
@@ -207,7 +205,7 @@ public class Derivation extends PreDerivation {
      * or whether to continue deriving during the procedure.
      */
     private transient float priSingle, priDouble;
-    private Term _taskTerm;
+    public Term _taskTerm;
     private ImmutableMap<Atomic, Term> derivationFunctors;
 //    private MethodHandle deriverMH;
 
@@ -610,6 +608,7 @@ public class Derivation extends PreDerivation {
 
         Premise p;
         Emotion e = nar.emotion;
+
         if (P instanceof AbstractPremise) {
             try (var __ = e.derive_B_PremiseMatch.time()) {
                 p = ((AbstractPremise) P).match(Deriver.PremiseUnifyVars, this, nar.premiseUnifyTTL.intValue());
@@ -640,7 +639,7 @@ public class Derivation extends PreDerivation {
 
             PremiseActionable[] self = this.post;
             for (int i = 0; i < can.length; i++) {
-                if ((self[i].can(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                if ((self[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }
@@ -659,8 +658,8 @@ public class Derivation extends PreDerivation {
 
         try (var __ = e.derive_E_Run.time()) {
             this.ready(deriveTTL); //first come first serve, maybe not ideal
-            //PremiseActionable.runDirect(valid, lastValid, this);
-            runCompiled(valid, lastValid, this);
+            PremiseActionable.runDirect(valid, lastValid, this);
+            //runCompiled(valid, lastValid, this);
             return e.premiseRun;
         }
     }
@@ -768,7 +767,7 @@ public class Derivation extends PreDerivation {
     /**
      * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
      */
-    public final float preAmp(byte concPunc) {
+    public final float preAmp(byte taskPunc, byte concPunc) {
         return what.derivePri.preAmp(concPunc);
     }
 

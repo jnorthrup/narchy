@@ -900,7 +900,16 @@ public class NAL6Test extends NALTest {
         test.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 1.00f, 0.90f);
         test.believe("sentence(bmw,is,car)", 0.00f, 0.90f);
         test.mustBelieve(cycles, "car:bmw", 1.00f, 0.81f);
+        test.mustNotOutput(cycles, "car:bmw", BELIEF, 0, 0.5f, 0, 1f);
+    }
 
+    @Test
+    void strong_unification_neg_neg() {
+        test.termVolMax(12);
+        test.believe("( --sentence($a,is,$b) ==> ($a --> $b) )", 0.00f, 0.90f);
+        test.believe("sentence(bmw,is,car)", 0.00f, 0.90f);
+        test.mustBelieve(cycles, "car:bmw", 0.00f, 0.81f);
+        test.mustNotOutput(cycles, "car:bmw", BELIEF, 0.5f, 1f, 0, 1f);
     }
 
     @Test

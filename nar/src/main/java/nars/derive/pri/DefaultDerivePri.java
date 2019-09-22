@@ -57,7 +57,7 @@ public class DefaultDerivePri implements DerivePri {
             factor = questionGain.floatValue() * factorCmpl;
         }
 
-        factor *= factorEviAbsolute(t,d);
+        //factor *= factorEviAbsolute(t,d);
                   //factorMaintainAverageEvidence(t,d);
 
         float y = this.gain.floatValue() * postAmp(t, d.parentPri(), factor);

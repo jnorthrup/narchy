@@ -730,14 +730,11 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
             if (causeValue < Float.MIN_NORMAL)
                 return 0f; //disabled
 
-
-
-
             byte punc = truth.punc.get(d.taskPunc);
             if (punc == 0)
                 return 0;
 
-            float puncFactor = d.preAmp(punc);
+            float puncFactor = d.preAmp(d.taskPunc, punc);
             if (puncFactor < Float.MIN_NORMAL)
                 return 0f; //entirely disabled by deriver
 
@@ -751,8 +748,7 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
                     //if this is reverted, it should be changed to use d.overlapSingle and never d.overlapDouble
                     break;
                 default:
-                    if(NAL.DEBUG) throw new WTF();
-                    return 0f;
+                    throw new WTF();
             }
 
 

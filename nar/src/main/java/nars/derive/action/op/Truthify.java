@@ -107,7 +107,6 @@ public class Truthify extends AbstractPred<Derivation> {
         ///d.truth.clear(); //<- may not be necessary
         //d.single = false;
         //d.punc = 0;
-        //d.truthFunction = null;
 
         Predicate<Derivation> tf = time.filter();
         if (tf!=null && !tf.test(d))
@@ -140,8 +139,6 @@ public class Truthify extends AbstractPred<Derivation> {
                 Truth ff = f.apply(taskTruth, beliefTruth, d.confMin, d.nar);
                 if (!d.truth.set(ff).is())
                     return false;
-
-                d.truthFunction = f;
 
                 break;
 

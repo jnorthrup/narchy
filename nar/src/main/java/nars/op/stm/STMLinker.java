@@ -20,7 +20,7 @@ public class STMLinker extends TaskAction {
 
 	@Override
 	protected float pri(Derivation d) {
-		return 0.1f;
+		return 0.05f;
 	}
 
 	private final MetalConcurrentQueue<Task> stm;

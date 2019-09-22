@@ -10,7 +10,6 @@ import nars.NAL;
 import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.util.Image;
 
 
 public class AtomicTaskLink extends AbstractTaskLink {
@@ -21,11 +20,11 @@ public class AtomicTaskLink extends AbstractTaskLink {
 //        if ((target instanceof Variable || target instanceof Int) && !source.containsRecursively(target))
 //            throw new WTF();
 
-        if (NAL.TASKLINK_NORMALIZE_IMAGES) {
-            source = Image.imageNormalize(source);
-            if (target instanceof Compound)
-                target = Image.imageNormalize(target);
-        }
+//        if (NAL.TASKLINK_NORMALIZE_IMAGES) {
+//            source = Image.imageNormalize(source);
+//            if (target instanceof Compound)
+//                target = Image.imageNormalize(target);
+//        }
 
         source = source.concept();
         target = target == null ? source /* loop */ :
