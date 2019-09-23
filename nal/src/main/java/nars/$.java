@@ -22,6 +22,7 @@ import nars.term.control.LambdaPred;
 import nars.term.control.PREDICATE;
 import nars.term.obj.JsonTerm;
 import nars.term.util.SetSectDiff;
+import nars.term.util.TermException;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
 import nars.term.var.VarPattern;
@@ -681,14 +682,12 @@ public enum $ { ;
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
-        if (intTerm instanceof Int && intTerm.op() == INT)
+        if (intTerm instanceof Int && intTerm instanceof Int)
             return ((Int) intTerm).i;
-
 
         throw new NumberFormatException();
 
     }
-
     public static int intValue(Term intTerm, int ifNotInt) {
         return intTerm instanceof Int && intTerm.op() == INT ? ((Int) intTerm).i : ifNotInt;
     }
@@ -696,7 +695,6 @@ public enum $ { ;
     public static Term fromJSON(String j) {
         return JsonTerm.the(j);
     }
-
 
     public static Compound pFast(Subterms x) {
         if (x.subs() == 0) return Op.EmptyProduct;
@@ -706,7 +704,7 @@ public enum $ { ;
     public static Compound pFast(Term... x) {
         if (x.length == 0) return Op.EmptyProduct;
         else return new LightCompound(Op.PROD, x);
-        //return new LighterCompound(PROD, x);
+                    //new LighterCompound(PROD, x);
     }
 
     public static Compound sFast(Subterms x) {
@@ -727,11 +725,11 @@ public enum $ { ;
     }
 
     public static Compound sFast(boolean sort, Term[] x) {
-        if (x.length == 0) throw new UnsupportedOperationException();
+        if (x.length == 0) throw new TermException("empty set");
         if (sort && x.length > 1)
             x = Terms.commute(x);
         return new LightCompound(Op.SETe, x);
-        //return new LighterCompound(Op.SETe, x);
+                //new LighterCompound(Op.SETe, x);
     }
 
     public static Term sFast(RoaringBitmap b) {

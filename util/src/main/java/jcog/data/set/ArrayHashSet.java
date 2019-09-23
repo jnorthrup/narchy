@@ -47,6 +47,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 /**
  * Analogous to {@link java.util.LinkedHashSet}, but with an {@link java.util.ArrayList} instead of a {@link java.util.LinkedList},
@@ -145,6 +146,11 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public void forEach(Consumer<? super X> action) {
         list.forEach(action);
+    }
+
+    @Override
+    public final Stream<X> stream() {
+        return list.stream();
     }
 
     @Override

@@ -107,29 +107,19 @@ public interface Variable extends Atomic, UnifyFirst {
     @Override
     @Paper
     @Skill({"Prolog", "Unification_(computer_science)", "Negation", "Möbius_strip", "Total_order", "Recursion"})
-    default boolean unify(Term y0, Unify u) {
+    default boolean unify(Term _y, Unify u) {
 
-        if (equals(y0))
+        if (equals(_y))
             return true;
 
-        //Term x = u.resolveVar(this);
-        Term x = u.resolveTerm(this, true, false);
-        //Term x = u.resolveTermRecurse(this);
-//        if (x != this && x.equals(y0))
-//            return true;
-
-        Term y = u.resolveTerm(y0, true, false);
-        //Term y = u.resolveTerm(y0);
-//        if (y != y0 && x.equals(y))
-//            return true;
-        if ((x!=this || y!=y0) && (x.equals(y)))
-            return true;
+        Term x = u.resolveTerm(this, false);
+        Term y = u.resolveTerm(_y, false);
 
         //unify variable negation mobius
-
         boolean xn = x instanceof Neg;
         boolean yn = y instanceof Neg;
         if (xn && yn) {
+            //unnegate both
             x = x.unneg();
             y = y.unneg();
         } else {
@@ -140,14 +130,20 @@ public interface Variable extends Atomic, UnifyFirst {
                     x = xu;
                     y = y.neg();
                 } else if (y.equals(xu))
-                    return false;
-            } else if (yn && !xn) {
+                    return false; //x != --x
+            } else if (yn && !xn && x instanceof Variable) {
                 Term yu = y.unneg();
                 if (yu instanceof Variable && yu.op().id < x.op().id) {
                     y = yu;
                     x = x.neg();
                 } else if (x.equals(yu))
-                    return false;
+                    return false; //x != --x
+            }
+        }
+        if (xn == yn) {
+            if (x!=this || y!=_y) {
+                if (x.equals(y))
+                    return true;
             }
         }
 

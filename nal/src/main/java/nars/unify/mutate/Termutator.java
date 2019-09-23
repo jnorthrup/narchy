@@ -39,20 +39,19 @@ public interface Termutator {
     }
 
     Termutator[] TerminateTermutator = new Termutator[0];
-    Termutator NullTermutator = new AbstractTermutator(Atomic.atom("NullTermutator")) {
 
-        @Override
-        public void mutate(Termutator[] chain, int current, Unify u) {
+
+    /** null termutator - interrupts unification */
+    Termutator CUT = new AbstractTermutator(Atomic.atom("CUT")) {
+        @Override public void mutate(Termutator[] chain, int current, Unify u) {
             u.tryMutate(chain, current);
         }
     };
 
-    /** constant result for return from preprocess() call */
-    static Termutator result(boolean b) {
-        if (b)
-            return Termutator.NullTermutator; //success
-        else
-            return null; //fail
+    /** constant result for return from preprocess() call
+     * */
+    static Termutator result(boolean success) {
+        return success ? Termutator.CUT : null;
     }
 
 }

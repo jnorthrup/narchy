@@ -215,9 +215,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-//    /**
-//     * recursively
-//     */
     static boolean commonSubtermsRecursive(/*@NotNull*/ Term a, /*@NotNull*/ Term b, boolean excludeVariables) {
 
         Subterms aa = a.subterms();
@@ -230,7 +227,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         if (commonStructure == 0)
             return false;
 
-        Set<Term> scratch = new UnifiedSet<>(4);
+        Set<Term> scratch = new UnifiedSet<>(0);
         aa.recurseSubtermsToSet(commonStructure, scratch, true);
         return bb.recurseSubtermsToSet(commonStructure, scratch, false);
     }

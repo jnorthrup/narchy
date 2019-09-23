@@ -4,13 +4,13 @@ import jcog.data.list.FasterList;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.Derivation;
-import nars.term.Compound;
+import nars.link.TaskLinks;
 import nars.term.Term;
-import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static nars.Op.ATOM;
@@ -31,16 +31,18 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 		return Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS);
 	}
 
-	@Nullable
-	protected Term tangentRandom(Compound target, Derivation d) {
+	@Override
+	public @Nullable Term adjacent(Term from, Term to, byte punc, TaskLinks links, Derivation d) {
 
-		if (target.hasAny(ATOM)) {
+		if (to.hasAny(ATOM)) {
 
-			List<Term> tangent = Snapshot.get(target, d.nar, id, d.time(), ttl(d), (Concept targetConcept, List<Term> t) -> {
-				FasterList<Term> l = d.nar.concepts().filter(c -> {
+			List<Term> tangent = Snapshot.get(to, d.nar, id, d.time(), ttl(d), (Concept targetConcept, List<Term> t) -> {
+				//TOO SLOW, impl indexes
+				FasterList<Term> l = d.nar.concepts().map(c -> {
 					Term ct = c.term();
-					return !ct.equals(target) && test(ct, target);
-				}).map(Termed::term).collect(Collectors.toCollection(FasterList::new));
+					return (!ct.equals(to) && test(ct, to)) ? ct : null;
+				}).filter(Objects::nonNull).collect(Collectors.toCollection(FasterList::new));
+
 				if (l.isEmpty())
 					return Collections.EMPTY_LIST;
 				else {
@@ -62,10 +64,5 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
 	abstract public boolean test(Term concept, Term target);
 
-//	@Override
-//	protected @Nullable Term decompose(Compound src, Task task, Derivation d) {
-//		Term t = tangentRandom(src, d);
-//		return t != null ? t : super.decompose(src, task, d);
-//	}
 
 }

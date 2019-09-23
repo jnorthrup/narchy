@@ -6,7 +6,6 @@ import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.action.AdjacentLinks;
-import nars.derive.adjacent.CommonAtomIndexer;
 import nars.derive.adjacent.ExhaustiveIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
@@ -43,8 +42,9 @@ class KIFTest {
             .add(new AdjacentLinks(
                 new ExhaustiveIndexer()
                 //new FirstOrderIndexer()
-            )).add(new AdjacentLinks(new CommonAtomIndexer())
-        ));
+            ))
+            //.add(new AdjacentLinks(new CommonAtomIndexer()))
+        );
 
         n.termVolMax.set(64);
         n.beliefPriDefault.pri(0.01f);
@@ -347,7 +347,7 @@ class KIFTest {
     public void testCapabilityExtension() throws IOException {
 
         KIF k = KIF.file("/home/me/sumo/Merge.kif");
-        k.tasks.forEach(bb -> System.out.println(bb));
+        k.assertions.forEach(bb -> System.out.println(bb));
 
     }
 

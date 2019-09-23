@@ -5,14 +5,14 @@ import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.Task;
+import nars.unify.UnifyAny;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 class AnswerTest {
 
@@ -24,7 +24,14 @@ class AnswerTest {
     @Test
     void testMatchPartialXternalDifferentVolume() throws Narsese.NarseseException {
         beliefQuery("((x &&+1 (x &&+1 y)) ==> z)",
-                new String[]{"((x &&+- y) ==> z)"});
+            new String[]{"((x &&+- y) ==>+- z)"});
+    }
+    @Test
+    void testMatchPartialXternalDifferentVolume_Partial() throws Narsese.NarseseException {
+        assertTrue($$("((x &&+1 (x &&+1 y)) ==> z)")
+            .unify($$("((x &&+- y)          ==> z)"), new UnifyAny()));
+        beliefQuery("((x &&+1 (x &&+1 y)) ==> z)",
+                new String[]{"((x &&+- y)       ==> z)"});
     }
 
     static void beliefQuery(String belief, String[] queries) throws Narsese.NarseseException {

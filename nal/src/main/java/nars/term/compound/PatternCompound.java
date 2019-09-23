@@ -331,7 +331,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                             if (t == null)
                                 return false;
                             else {
-                                if (t!=Termutator.NullTermutator)
+                                if (t!=Termutator.CUT)
                                     u.termutes.add(t);
                                 return true;
                             }
@@ -345,7 +345,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                         if (t == null)
                             return false;
                         else {
-                            if (t!=Termutator.NullTermutator)
+                            if (t!=Termutator.CUT)
                                 u.termutes.add(t);
                             return true;
                         }

@@ -26,7 +26,6 @@ import java.util.Map;
 import java.util.Random;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
-import java.util.function.Function;
 
 import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
@@ -139,9 +138,7 @@ public abstract class Unify extends Versioning<Term> {
     }
 
 
-    public static Function<Term, Term> transform(Function<Variable,Term> resolve) {
-        return new AbstractUnifyTransform.LambdaUnifyTransform(resolve);
-    }
+
 
     /**
      * called each time all variables are satisfied in a unique way
@@ -318,7 +315,7 @@ public abstract class Unify extends Versioning<Term> {
                 if (y == null) {
                     termutes.clear();
                     return Termutator.TerminateTermutator;
-                } else if (y == Termutator.NullTermutator) {
+                } else if (y == Termutator.CUT) {
                     tl.remove(i);
                     i--;
                     ts--;
@@ -498,23 +495,23 @@ public abstract class Unify extends Versioning<Term> {
     }
 
     public final Term resolveTerm(Term x) {
-        return resolveTerm(x, true, false);
+        return resolveTerm(x, false);
     }
     public final Term resolveTermRecurse(Term x) {
-        return resolveTerm(x, true, true);
+        return resolveTerm(x, true);
     }
 
     /** full resolution of a term */
-    public final Term resolveTerm(Term _x, boolean resolve, boolean recurse) {
+    public final Term resolveTerm(Term _x,  boolean recurse) {
         int s = this.size;
-        if (s == 0 && !recurse && !resolve)
+        if (s == 0 && !recurse)
             return _x;
 
         boolean neg = _x instanceof Neg;
         Term x = neg ? _x.unneg() : _x;
 
         Term y;
-        if (resolve && s > 0 && var(x))
+        if (s > 0 && var(x))
             y = resolveVar((Variable)x);
         else
             y = x;
@@ -522,7 +519,8 @@ public abstract class Unify extends Versioning<Term> {
         if (recurse) {
             MyUnifyTransform tt = transform();
             if (y instanceof Compound /* && y.hasAny(varBits)*/) {
-                y = tt.applyPosCompound((Compound)y); //recurse (full transform)
+                if (y.hasAny(varBits))
+                    y = tt.applyPosCompound((Compound)y); //recurse (full transform)
 //            } else if (!(y instanceof Variable) && !(y instanceof Img) /* etc */) {
 //                yy = transform().apply(y); //recurse (full transform)
 //                y = yy;
@@ -629,17 +627,17 @@ public abstract class Unify extends Versioning<Term> {
     protected class MyUnifyTransform extends AbstractUnifyTransform {
 
         @Override public final Term applyVariable(Variable v) {
-            //return Unify.this.resolveVar(v, true);
-            return Unify.this.resolveTermRecurse(v);
+            return Unify.this.resolveVar(v);
+            //return Unify.this.resolveTermRecurse(v);
         }
 
-        @Override
-        public final Term applyPosCompound(Compound x) {
-            if (evalInline() || (size != 0 && x.hasAny(varBits)))
-                return super.applyPosCompound(x);
-            else
-                return x;
-        }
+//        @Override
+//        public final Term applyPosCompound(Compound x) {
+//            if (evalInline() || (size != 0 && x.hasAny(varBits)))
+//                return super.applyPosCompound(x);
+//            else
+//                return x;
+//        }
     }
 
 }

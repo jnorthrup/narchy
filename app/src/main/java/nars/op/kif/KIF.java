@@ -87,11 +87,11 @@ public class KIF implements Iterable<Task> {
 
 
 	public Stream<Task> tasks() {
-        return tasks.stream().map(Op::believe);
+        return assertions.stream().map(Op::believe);
     }
 
 
-    public final ArrayHashSet<Term> tasks = new ArrayHashSet<>();
+    public final ArrayHashSet<Term> assertions = new ArrayHashSet<>();
             //new TreeSet();
 
     private final KIFParser kif;
@@ -146,7 +146,7 @@ public class KIF implements Iterable<Task> {
                 try {
                     Term y = formulaToTerm(x, 0);
                     if (y != null) {
-                        tasks.add(y);
+                        assertions.add(y);
                     }
                 } catch (Exception e) {
                     logger.error("{} {}", x, e.getMessage());
@@ -183,7 +183,7 @@ public class KIF implements Iterable<Task> {
                 if (fxy instanceof Bool) {
                     logger.error("bad function {} {} {}", f, s.domain, s.range);
                 } else {
-                    tasks.add(fxy);
+                    assertions.add(fxy);
                 }
             }
 
@@ -191,7 +191,7 @@ public class KIF implements Iterable<Task> {
 
         if (symmetricRelations.size()>1 /*SymmetricRelation exists in the set initially */) {
 
-            tasks.removeIf(belief -> {
+            assertions.removeIf(belief -> {
                 if (belief.op() == INH) {
                     Term fn = belief.sub(1);
                     if (symmetricRelations.contains(fn)) {
@@ -205,7 +205,7 @@ public class KIF implements Iterable<Task> {
                         Term b = ab.sub(1);
                         Term symmetric = INH.the(CONJ.the(PROD.the(a, b), PROD.the(b, a)), fn);
 
-                        tasks.add(symmetric);
+                        assertions.add(symmetric);
                         return true;
                     }
                 }
@@ -213,7 +213,7 @@ public class KIF implements Iterable<Task> {
             });
         }
 
-        tasks.removeIf(b -> {
+        assertions.removeIf(b -> {
             if (b.hasAny(BOOL)) {
                 return true;
             }

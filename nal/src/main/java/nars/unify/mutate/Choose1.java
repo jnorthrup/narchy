@@ -14,8 +14,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.SortedSet;
 
-import static nars.Op.FRAG;
-
 /**
  * choose 1 at a time from a set of N, which means iterating up to N
  */
@@ -37,16 +35,12 @@ public class Choose1 extends Termutator.AbstractTermutator {
         assert(yFree.length >= 2): Arrays.toString(yFree) + " must offer choice";
 
         yy = yFree;
-        
-
 
         this.xEllipsis = xEllipsis;
         this.x = x;
 
         //int ml = yy.length - 1;
         //assert(ml >= xEllipsis.minArity);
-
-
     }
 
     @Nullable public static Termutator choose1(Ellipsis ellipsis, Term x, SortedSet<Term> yFree, Unify u) {
@@ -58,7 +52,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         switch (ys) {
             case 1:
                 assert (ellipsis.minArity == 0);
-                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? NullTermutator : null;
+                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? CUT : null;
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
@@ -70,9 +64,9 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 if (!a && !b) {
                     return null; //impossible
                 } else if (a && !b) {
-                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? NullTermutator : null;
+                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? CUT : null;
                 } else if (/*b &&*/ !a) {
-                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? NullTermutator : null;
+                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? CUT : null;
                 } //else: continue below
                 break;
 //                            default:
@@ -92,7 +86,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         Term xEllipsis = u.resolveTermRecurse(this.xEllipsis);
         if (this.xEllipsis != xEllipsis && this.xEllipsis instanceof Ellipsis && !(xEllipsis instanceof Ellipsis)) {
             //became non-ellipsis
-            int es = xEllipsis.op() == FRAG ? xEllipsis.subs() : 1;
+            int es = xEllipsis instanceof Fragment ? xEllipsis.subs() : 1;
             if (((Ellipsis) this.xEllipsis).minArity > es) {
                 return null; //assigned to less arity than required
             }

@@ -6,6 +6,7 @@ import jcog.Log;
 import jcog.TODO;
 import jcog.Texts;
 import jcog.table.DataTable;
+import jcog.util.ArrayUtil;
 import org.gridkit.nanocloud.Cloud;
 import org.gridkit.nanocloud.CloudFactory;
 import org.gridkit.nanocloud.RemoteNode;
@@ -51,13 +52,13 @@ public class SelfTest {
         SelfTest s = new SelfTest();
         s.unitTestsByPackage("nars.nal.nal1");
         s.unitTestsByPackage("nars.nal.nal2");
-        s.unitTestsByPackage("nars.nal.nal3");
-        s.unitTestsByPackage("nars.nal.nal4");
-        s.unitTestsByPackage("nars.nal.nal5");
-        s.unitTestsByPackage("nars.nal.nal6");
-        s.unitTestsByPackage("nars.nal.nal7");
-        s.unitTestsByPackage("nars.nal.nal8");
-        s.run(4);
+//        s.unitTestsByPackage("nars.nal.nal3");
+//        s.unitTestsByPackage("nars.nal.nal4");
+//        s.unitTestsByPackage("nars.nal.nal5");
+//        s.unitTestsByPackage("nars.nal.nal6");
+//        s.unitTestsByPackage("nars.nal.nal7");
+//        s.unitTestsByPackage("nars.nal.nal8");
+        s.run(2);
     }
 
 
@@ -92,13 +93,13 @@ public class SelfTest {
         selector.accept(b);
 
         return ()->{
-            Launcher lf = LauncherFactory.create(launcherConfig);
 
 
             MyTestExecutionListener exe = new MyTestExecutionListener();
             DataTable results = newTable();
             exe.setTable(results);
 
+            Launcher lf = LauncherFactory.create(launcherConfig);
             lf.registerTestExecutionListeners(exe);
             lf.execute(b.build());
 
@@ -258,6 +259,7 @@ public class SelfTest {
 
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {
+                report(all);
                 save(all, "/home/me/d/tests1.csv");
             } catch (IOException e) {
                 e.printStackTrace();
@@ -267,7 +269,9 @@ public class SelfTest {
 
         ExecutorService exe = Executors.newFixedThreadPool(threads);
 
-        experiments.forEach(experiment -> {
+        Supplier<DataTable>[] experiments = this.experiments.toArray(new Supplier[0]);
+        ArrayUtil.shuffle(experiments, ThreadLocalRandom.current());
+        for (Supplier<DataTable> experiment : experiments) {
             for (int i = 0; i < repeats; i++) {
                 exe.execute(() -> {
                     DataTable d = experiment.get();
@@ -283,7 +287,7 @@ public class SelfTest {
                     d.clear();
                 });
             }
-        });
+        }
 
         try {
             exe.shutdown();
@@ -307,7 +311,7 @@ public class SelfTest {
             os.close();
             logger.info("saved {}", filename);
 
-            report(d);
+
         }
 
     }
