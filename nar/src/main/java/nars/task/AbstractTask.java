@@ -23,17 +23,6 @@
 // */
 //public abstract class AbstractTask implements Task {
 //
-//    public static Task multiTask(@Nullable Collection<Task> next) {
-//        if (next == null) return null;
-//        switch (next.size()) {
-//            case 0:
-//                return null;
-//            case 1:
-//                return Util.only(next);
-//            default:
-//                return new TasksArray(next.toArray(Task[]::new), true);
-//        }
-//    }
 //
 //    public final byte punc() {
 //        return 0;

@@ -1,6 +1,5 @@
 package nars.control.op;
 
-import jcog.TODO;
 import jcog.data.list.FasterList;
 import nars.NAL;
 import nars.NAR;
@@ -18,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import static nars.Op.COMMAND;
+import static nars.Op.GOAL;
 
 /**
  * transforms an input task into any smaller sub-tasks that constitute the perception process
@@ -39,27 +39,20 @@ public enum Perceive {
         byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
-        Remember xPerceived = !cmd ? Remember.the(x, n) : null;
+        if (cmd || punc == GOAL && !x.isEternal())
+            if (execOperator(x, w))
+                return;
 
-        if (xPerceived!=null) {
+        Remember perceived = !cmd ? Remember.the(x, n) : null;
+
+        if (perceived!=null) {
 //        if (x instanceof UnevaluatedTask) {
-            xPerceived.next(w);
+            perceived.next(w);
         }
 //            return;
 //        }
 
-//        Task executionPerceived = cmd || punc == GOAL && !x.isEternal() ?
-//                execOperator(x, w, cmd) : null;
-//
-//        Remember perceived;
-//        if (executionPerceived != null) {
-//            if (xPerceived != null)
-//                perceived = task(new FasterList<Task>(2).with(executionPerceived, xPerceived), false);
-//            else
-//                perceived = executionPerceived;
-//        } else {
-//            perceived = xPerceived;
-//        }
+
 
         if (!(x instanceof TemporalTask.Unevaluated) && Evaluation.evalable(x.term())) {
             FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
@@ -161,35 +154,45 @@ public enum Perceive {
 
 
 
-    private static Task execOperator(final Task t, What w, boolean cmd) {
-        Term maybeOperator = Functor.func(t.term());
+    private static boolean execOperator(final Task x, What w) {
+        Term maybeOperator = Functor.func(x.term());
         if (maybeOperator == Bool.Null)
-            return null;
+            return false;
 
         NAR n = w.nar;
         Concept oo = n.concept(maybeOperator);
         if (!(oo instanceof Operator))
-            return null;
+            return false;
 
-        FasterList<Task> queue = new FasterList(cmd ? 2 : 1);
+        Task next;
 
         Operator o = (Operator) oo;
         try {
-            Task yy = o.model.apply(t, n);
-            if (yy != null && !t.equals(yy))
-                queue.add(yy);
+            Task y = o.model.apply(x, n);
+            if (y == null)
+                return false;
+            if (y.equals(x)) {
+                //if debug... warn
+                return true; //self; but dont execute
+            }
+
+            next = y;
 
         } catch (Throwable xtt) {
-            logger.error("{} operator {} exception {}", t, o, xtt);
+            logger.error("{} operator {} exception {}", x, o, xtt);
             //queue.addAt(Operator.error(this, xtt, n.time()));
-            return null;
+            return false;
         }
-        if (cmd) {
-            w.emit(t); //queue.add(new TaskEvent(t));
-        }
+//        if (cmd) {
+//            w.emit(x); //queue.add(new TaskEvent(t));
+//        }
+        //assert(next!=null);
+        Perceive.perceive(next, w);
+        return true;
 
+        //queue.forEach(q -> Perceive.perceive(q, w));
         //return task(queue, false);
-        throw new TODO();
+        //throw new TODO();
     }
 
 }

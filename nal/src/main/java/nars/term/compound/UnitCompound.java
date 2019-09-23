@@ -8,7 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.transform.AbstractTermTransform;
-import nars.unify.Unify;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.jetbrains.annotations.Nullable;
 
@@ -245,10 +244,10 @@ public abstract class UnitCompound implements SameSubtermsCompound {
         return !aSuperCompoundMust.test(this) || (whileTrue.test(this) && sub().recurseTermsOrdered(aSuperCompoundMust, whileTrue, this));
     }
 
-    @Override
-    public boolean unifySubterms(Term y, Unify u) {
-        return y.subs()==1 && sub().unify(y.sub(0), u);
-    }
+//    @Override
+//    public boolean unifySubterms(Compound y, Unify u) {
+//        return y.subs()==1 && sub().unify(y.sub(0), u);
+//    }
 
     @Override
     public Term transform(AbstractTermTransform f, Op newOp, int ydt) {

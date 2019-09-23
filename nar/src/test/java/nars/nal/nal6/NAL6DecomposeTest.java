@@ -5,6 +5,7 @@ import nars.NARS;
 import nars.test.NALTest;
 import nars.test.TestNAR;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.Op.BELIEF;
@@ -236,7 +237,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
 //
 
 
-        @Test
+        @Test @Disabled
         void impl_conjunction_subj_conj_decompose_conditional_neg() {
             test
 
@@ -330,6 +331,7 @@ abstract public class NAL6DecomposeTest extends NALTest {
             ;
         }
 
+        @Disabled
         @Test
         void impl_disjunction_subj_decompose_conditional() {
 
@@ -390,8 +392,8 @@ abstract public class NAL6DecomposeTest extends NALTest {
         void testDecomposeImplSubjConjQuestion() {
             test
                     .ask("( (&&, y, z) ==> x )")
-                    .mustOutput(cycles, "( y ==>+- x )", QUESTION)
-                    .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+                    .mustOutput(cycles, "( y ==> x )", QUESTION)
+                    .mustOutput(cycles, "( z ==> x )", QUESTION)
             ;
         }
 
@@ -399,8 +401,8 @@ abstract public class NAL6DecomposeTest extends NALTest {
         void testDecomposeImplSubjDisjQuestion() {
             test
                     .ask("( (||, y, z) ==> x )")
-                    .mustOutput(cycles, "( y ==>+- x )", QUESTION)
-                    .mustOutput(cycles, "( z ==>+- x )", QUESTION)
+                    .mustOutput(cycles, "( y ==> x )", QUESTION)
+                    .mustOutput(cycles, "( z ==> x )", QUESTION)
             ;
         }
 

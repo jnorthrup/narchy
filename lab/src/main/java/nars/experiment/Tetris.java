@@ -9,6 +9,7 @@ import nars.GameX;
 import nars.NAR;
 import nars.game.GameTime;
 import nars.game.action.GoalActionConcept;
+import nars.gui.sensor.VectorSensorChart;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
@@ -18,6 +19,8 @@ import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
+
+import static spacegraph.SpaceGraph.window;
 
 /**
  * Created by me on 7/28/16.
@@ -40,6 +43,7 @@ public class Tetris extends GameX {
 
     public final Bitmap2DSensor<Bitmap2D> pixels;
     private final TetrisState state;
+    private final Bitmap2DSensor<Bitmap2D> gridVision;
 
 
     public Tetris(NAR nar) {
@@ -81,7 +85,7 @@ public class Tetris extends GameX {
                 return state.seen[y * w + x] > 0 ? 1f : 0f;
             }
         };
-        Bitmap2DSensor<Bitmap2D> vision = addSensor(pixels = new Bitmap2DSensor<>(
+        gridVision = addSensor(pixels = new Bitmap2DSensor<>(
                 (x, y) -> $.inh(id, $.p(x, y)),
                 //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
                 grid, /*0,*/ n));
@@ -149,6 +153,8 @@ public class Tetris extends GameX {
 
             Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
             n.start(t);
+
+            window(new VectorSensorChart(t.gridVision, t), 500, 300);
 
         },  FPS * 2);
 

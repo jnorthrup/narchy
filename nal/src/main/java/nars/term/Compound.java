@@ -32,6 +32,7 @@ import nars.subterm.Subterms;
 import nars.term.anon.Anon;
 import nars.term.atom.Bool;
 import nars.term.buffer.TermBuffer;
+import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermTransformException;
 import nars.term.util.builder.TermBuilder;
@@ -282,17 +283,17 @@ public interface Compound extends Term, IPair, Subterms {
                 ||
                 (y instanceof UnifyFirst && y.unify(this, u))
                 ||
-                (y instanceof Compound && (equals(y) || (opID() == y.opID() && unifySubterms(y, u))))
+                (y instanceof Compound && (equals(y) || (opID() == y.opID() && unifySubterms((Compound)y, u))))
 
                 ;
     }
 
 
-    default boolean unifySubterms(Term y, Unify u) {
+    default boolean unifySubterms(Compound y, Unify u) {
 
-        Term x = this;
-        Subterms xx = x.subterms();
-        Subterms yy = y.subterms();
+        Compound x = this;
+        Subterms xx = x instanceof SeparateSubtermsCompound ? x.subterms() : x;
+        Subterms yy = y instanceof SeparateSubtermsCompound ? y.subterms() : y;
 
         Op o = op();
         if (o.temporal) {

@@ -1,6 +1,5 @@
 package nars.gui.graph.run;
 
-import jcog.Util;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;
@@ -62,30 +61,28 @@ class ConceptGraph2DTest {
 //                }
             });
 
-            n.time.dur(25);
+            n.time.dur(2);
             n.termVolMax.set(9);
             n.freqResolution.set(0.01f);
 
             Surface g = BagregateConceptGraph2D.get(n);
-            long now = n.time();
-            long next = Math.round(now + ((double)n.dur()));
             window(new Splitting(g, 0.2f, new Gridding(
                 new Splitting(
                     new Splitting(
                         new PushButton("good+").clicked(()->
-                            n.believe($$("good"), now, next, 1f, 0.9f)
+                            n.believe($$("good"), n.time(), Math.round(n.time() + ((double)n.dur())), 1f, 0.9f)
                         ), 0.5f,
                         new PushButton("good-").clicked(()->
-                            n.believe($$("good"), now, next, 0f, 0.9f)
+                            n.believe($$("good"), n.time(), Math.round(n.time() + ((double)n.dur())), 0f, 0.9f)
                         )
                     ),
                     0.5f,
                     new Splitting(
                         new PushButton("bad+").clicked(()->
-                            n.believe($$("bad"), now, next, 1f, 0.9f)
+                            n.believe($$("bad"), n.time(), Math.round(n.time() + ((double)n.dur())), 1f, 0.9f)
                         ), 0.5f,
                         new PushButton("bad-").clicked(()->
-                            n.believe($$("bad"), now, next, 0f, 0.9f)
+                            n.believe($$("bad"), n.time(), Math.round(n.time() + ((double)n.dur())), 0f, 0.9f)
                         )
                     )
                     ),
@@ -99,7 +96,7 @@ class ConceptGraph2DTest {
                 )
             )), 1200, 800 );
 
-            n.startFPS(4f);
+            n.startFPS(8f);
 
             n.log();
 

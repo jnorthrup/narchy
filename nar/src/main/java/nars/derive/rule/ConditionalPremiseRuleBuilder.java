@@ -302,9 +302,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 
 			case "in":
-				neq(Xv, y.unneg());
-				bigger(Xvs,Yvs);
-				constraints.add(new SubOfConstraint<>(Xv, ((Variable) y.unneg()), Recursive, y instanceof Neg ? -1 : +1));
+				containsRecursively(Xv, y);
 				break;
 
 			case "hasBelief":
@@ -464,6 +462,11 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		}
 
 		_negationApplied[0] = negationApplied;
+	}
+
+	public void containsRecursively(Variable x, Term y) {
+		neq(x, y.unneg());
+		constraints.add(new SubOfConstraint<>(x, ((Variable) y.unneg()), Recursive, y instanceof Neg ? -1 : +1));
 	}
 
 	public void hasBelief(boolean trueOrFalse) {

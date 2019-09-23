@@ -151,8 +151,8 @@
 //TODO: ...Also:VarIntro)
 
 
-    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
-       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
+//    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
+//       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
 //    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB, Time:Compose)
 //       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB, Time:Compose)
 
@@ -167,10 +167,10 @@
 
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
-       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
+       //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
-       (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
+       //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
 
 
 //        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)

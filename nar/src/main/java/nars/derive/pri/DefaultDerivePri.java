@@ -16,7 +16,10 @@ import static jcog.math.LongInterval.TIMELESS;
  */
 public class DefaultDerivePri implements DerivePri {
 
-    public final FloatRange questionGain = new FloatRange(Util.PHI_min_1f, 0f, 2f);
+    public final FloatRange questionGain = new FloatRange(
+        1
+        //Util.PHI_min_1f
+        , 0f, 2f);
 
 
     /**

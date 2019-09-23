@@ -69,12 +69,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
             this.ellipsis = ellipsis;
         }
 
-        abstract protected boolean matchEllipsis(Term y, Unify subst);
-
-        @Override
-        public final boolean unifySubterms(Term y, Unify u) {
-            return matchEllipsis(y, u);
-        }
+        abstract public boolean unifySubterms(Compound y, Unify subst);
     }
 
 
@@ -114,7 +109,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
          * this is not tested for either
          */
         @Override
-        protected boolean matchEllipsis(Term y, Unify u) {
+        public boolean unifySubterms(Compound y, Unify u) {
             Subterms Y = y.subterms();
             int xi = 0, yi = 0;
             int xsize = subs();
@@ -201,7 +196,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
          * @param y the compound being matched to this
          */
         @Override
-        protected boolean matchEllipsis(Term Y, Unify u) {
+        public boolean unifySubterms(Compound Y, Unify u) {
 //            if ((dt != XTERNAL) && Y.op().temporal && !Y.isCommutative())
 //                throw new TODO();
 

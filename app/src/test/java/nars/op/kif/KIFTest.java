@@ -6,7 +6,7 @@ import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.action.AdjacentLinks;
-import nars.derive.adjacent.ExhaustiveIndexer;
+import nars.derive.adjacent.FirstOrderIndexer;
 import nars.link.TaskLinks;
 import nars.memory.RadixTreeMemory;
 import nars.task.EternalTask;
@@ -40,15 +40,15 @@ class KIFTest {
 
         new Deriver(Derivers.nal(n, 1,8)
             .add(new AdjacentLinks(
-                new ExhaustiveIndexer()
-                //new FirstOrderIndexer()
+                //new ExhaustiveIndexer()
+                new FirstOrderIndexer()
             ))
             //.add(new AdjacentLinks(new CommonAtomIndexer()))
         );
 
         n.termVolMax.set(64);
         n.beliefPriDefault.pri(0.01f);
-        n.time.dur(100);
+        n.time.dur(10000);
         //TaskLinkWhat w = (TaskLinkWhat) n.what();
 
         TaskLinkWhat w = n.fork(new TaskLinkWhat($$("sumo_x"), new TaskLinks(), new PriBuffer.DirectTaskBuffer<>()));

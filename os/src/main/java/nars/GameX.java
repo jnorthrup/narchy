@@ -551,7 +551,7 @@ abstract public class GameX extends Game {
                 .add(new Factorize.FactorIntroduction(n))
                 .add(new Inperience(n))
                 .add(new ConjClustering(n, BELIEF,  BELIEF, 8, 64, t->true))
-                .add(new ConjClustering(n, GOAL, GOAL, 4, 32, t->true))
+                //.add(new ConjClustering(n, GOAL, GOAL, 4, 32, t->true))
             ,
             new MixedTimeFocus(
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(),

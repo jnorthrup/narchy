@@ -197,7 +197,8 @@ public class Deriver extends How {
                 return
 					//Util.or(
 					//Util.min(
-					Util.mean(
+					//Util.mean(
+					Util.sum(
 						tPri, b.priElseZero()
 					);
             else

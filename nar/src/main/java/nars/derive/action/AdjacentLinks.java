@@ -29,6 +29,8 @@ public class AdjacentLinks extends TaskAction {
 		constraints.add(new VolumeCompare(TheTask, TheBelief, false, -1).neg()); //belief <= task
 		//bigger(TheTask, TheBelief); //belief < task
 
+		//containsRecursively(TheTask,TheBelief);
+
 
 		//belief term must be conceptualizable
 		match(false, EMPTY_BYTE_ARRAY, new TermMatcher.Is(Op.Conceptualizable), true);
