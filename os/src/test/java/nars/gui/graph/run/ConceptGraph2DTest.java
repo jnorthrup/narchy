@@ -61,7 +61,7 @@ class ConceptGraph2DTest {
 //                }
             });
 
-            n.time.dur(25);
+            n.time.dur(10);
             n.termVolMax.set(9);
             n.freqResolution.set(0.01f);
 

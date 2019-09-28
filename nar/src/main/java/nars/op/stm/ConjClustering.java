@@ -32,7 +32,7 @@ import java.util.function.Predicate;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.confCompose;
 
-public class ConjClustering extends TaskAction implements Consumer<Task> {
+public class ConjClustering extends TaskAction {
 
     @Deprecated static final int ITERATIONS = 1; //temporary
 
@@ -285,10 +285,6 @@ public class ConjClustering extends TaskAction implements Consumer<Task> {
 //        return 0.1f * (pri(t) + in.pri());
     }
 
-    @Override public final void accept(Task t) {
-        if (filter(t))
-            data.put(t, pri(t));
-    }
 
     public boolean filter(Task t) {
         return !t.isEternal()
@@ -327,7 +323,7 @@ public class ConjClustering extends TaskAction implements Consumer<Task> {
         private int conjoinCentroid(int limit, FasterList<Task> in, What w) {
 
             int s = in.size();
-            if (s == 0)
+            if (s < 2)
                 return 0;
 
 

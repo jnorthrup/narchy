@@ -1,6 +1,7 @@
 package nars.truth.proj;
 
 
+import jcog.WTF;
 import jcog.math.LongInterval;
 import nars.Task;
 import nars.truth.func.TruthFunctions;
@@ -34,9 +35,11 @@ public class TruthIntegration {
 			if (tStart == ETERNAL)
 				factor = 1;
 			else {
-				if (qStart == LongInterval.ETERNAL)
+				if (qStart == LongInterval.ETERNAL) {
+					if (!eternalize)
+						throw new WTF();
 					factor = 0; //fully eternalize
-				else
+				} else
 					factor = EvidenceEvaluator.of(tStart, t.end(), dur).applyAsDouble(qStart);
 			}
 		} else {

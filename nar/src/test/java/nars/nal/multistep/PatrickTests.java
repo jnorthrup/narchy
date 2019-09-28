@@ -87,29 +87,29 @@ public class PatrickTests extends NALTest {
         */
 
 
-        TestNAR tt = test;
+        TestNAR n = test;
 
 
         int cycles = 2000;
 
-        tt.confTolerance(0.5f);
+        n.confTolerance(0.5f);
 
 //        tt.nar.freqResolution.set(0.25f);
 //        tt.nar.confResolution.set(0.02f);
 
-        tt.nar.time.dur(100);
-        tt.nar.termVolMax.set(18);
+//        n.nar.time.dur(100);
+        n.nar.termVolMax.set(18);
 
-        tt.nar.dtDither.set(5);
+        n.nar.dtDither.set(5);
 
-        tt.input(
+        n.input(
                 "made_of(toothbrush,plastic).",
-                "( ( made_of($1, plastic) &| lighter(I, $1) ) ==>+10 <$1 --> [heated]>).",
+                "( ( made_of($1, plastic) && lighter(I, $1) ) ==>+10 <$1 --> [heated]>).",
                 "(<$1 --> [heated]> ==>+10 <$1 --> [melted]>).",
-                "(<$1 --> [melted]> =|> <$1 --> [pliable]>).",
-                "(<$1 --> [pliable]> =|> <$1 --> [melted]>).",
-                "(( <$1 --> [pliable]> &| reshape(I,$1)) ==>+10 <$1 --> [hardened]>).",
-                "(<$1 --> [hardened]> =|> <$1 --> [unscrews]>).",
+                "(<$1 --> [melted]> ==> <$1 --> [pliable]>).",
+                "(<$1 --> [pliable]> ==> <$1 --> [melted]>).",
+                "(( <$1 --> [pliable]> && reshape(I,$1)) ==>+10 <$1 --> [hardened]>).",
+                "(<$1 --> [hardened]> ==> <$1 --> [unscrews]>).",
 
 
                 "(toothbrush --> [unscrews])! |"
@@ -120,7 +120,7 @@ public class PatrickTests extends NALTest {
 //           System.out.println(t.proof());
 //        },GOAL);
 
-        tt.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
+        n.mustGoal(cycles, "lighter(I, toothbrush)", 1f,
                 0.2f,
 
                 t -> t >= 0

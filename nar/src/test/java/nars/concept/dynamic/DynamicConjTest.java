@@ -70,6 +70,7 @@ class DynamicConjTest {
         {
             //remain eternal
             Task xy = n.belief($("(a:x && a:y)"), ETERNAL);
+            assertNotNull(xy);
             assertEquals(0, xy.start()); //exact time since it was what was stored
             assertEquals("((x-->a)&&(y-->a))", xy.term().toString());
             assertEquals($.t(1f, 0.81f), xy.truth());

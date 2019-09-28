@@ -21,20 +21,32 @@ import static nars.truth.func.TruthFunctions2.weak;
  */
 public enum NALTruth implements TruthFunction {
 
-	@AllowOverlap Deduction() {
+	Deduction() {
         @Override
         public Truth apply(Truth T, Truth B, float minConf, NAL n) {
             return TruthFunctions.deduction(T, B, true, minConf);
         }
     },
 
-    @AllowOverlap DeductionWeak() {
+    @AllowOverlap DeductionRecursive() {
+        @Override
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            return TruthFunctions.deduction(T, B, true, minConf);
+        }
+    },
+
+    DeductionWeak() {
 		@Override
 		public Truth apply(Truth T, Truth B, float minConf, NAL n) {
 			return TruthFunctions.deduction(T, B, false, minConf);
 		}
 	},
-
+    @AllowOverlap DeductionRecursiveWeak() {
+        @Override
+        public Truth apply(Truth T, Truth B, float minConf, NAL n) {
+            return TruthFunctions.deduction(T, B, false, minConf);
+        }
+    },
 
     /**
      * similar to structural deduction but keeps the same input frequency, only reducing confidence
@@ -228,25 +240,25 @@ public enum NALTruth implements TruthFunction {
                     Intersection.apply(T, B, minConf, n);
         }
     },
-    Pre() {
+    @AllowOverlap Pre() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.pre(T, B, false, minConf);
         }
     },
-    PreWeak() {
+    @AllowOverlap PreWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.pre(T, B, true, minConf);
         }
     },
-    Post() {
+    @AllowOverlap Post() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, true, minConf);
         }
     },
-    PostWeak() {
+    @AllowOverlap PostWeak() {
         @Override
         public Truth apply(final Truth T, final Truth B, float minConf, NAL n) {
             return TruthFunctions2.post(T, B, false, minConf);

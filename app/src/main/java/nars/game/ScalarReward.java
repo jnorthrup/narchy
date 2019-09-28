@@ -99,7 +99,7 @@ abstract public class ScalarReward extends Reward {
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
-//
+
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos);

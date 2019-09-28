@@ -265,7 +265,7 @@ public final class Answer implements Timed, Predicate<Task> {
     private Task taskTop(boolean forceProject) {
         Task root = tasks.first();
         int s = tasks.size();
-        if (s == 1 && (!forceProject || (root.start() == start && root.end() == end)))
+        if (s == 1 && (!forceProject || start==ETERNAL || (root.start() == start && root.end() == end)))
             return root;
 
         //compare alternate roots, as they might match better with tasks below
