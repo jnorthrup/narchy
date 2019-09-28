@@ -204,17 +204,17 @@ public enum Intermpolate {;
     static int merge(int adt, int bdt, float aProp) {
 
 
-//        int range = Math.max(Math.abs(adt), Math.abs(bdt));
+        int range = Math.max(Math.abs(adt), Math.abs(bdt));
         int ab = Util.lerpInt(aProp, bdt, adt);
-//        int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
-//        float ratio = ((float) delta) / range;
-//        if (ratio < nar.intermpolationRangeLimit.floatValue()) {
+        int delta = Math.max(Math.abs(ab - adt), Math.abs(ab - bdt));
+        float ratio = ((float) delta) / range;
+        if (ratio < 1) { //nar.intermpolationRangeLimit.floatValue()) {
             return ab;
-//        } else {
+        } else {
 //            //invalid
-//            return XTERNAL;
+            return XTERNAL;
 //            //discard temporal information//return DTERNAL;
-//        }
+        }
     }
 
     public static Term intermpolate(/*@NotNull*/ Compound a, /*@NotNull*/ Compound b, float aProp, NAL nar) {

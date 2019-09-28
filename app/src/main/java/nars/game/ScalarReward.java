@@ -78,7 +78,7 @@ abstract public class ScalarReward extends Reward {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
         Term rTarget = goal.isPositive() ? Rpos : Rneg;
 
-        reinforce(Rpos, GOAL, goal, newStamp());
+        reinforce(concept.term(), GOAL, goal, newStamp());
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
 //        reinforce(CONJ.the(Rpos.neg(), $.varDep(1)), GOAL, RimplAPos);
 
@@ -86,10 +86,11 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            reinforce(CONJ.the(rTarget, A), GOAL, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget, A.neg()), GOAL, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stamp);
+            //setCyclic to prevent decompose
+            reinforce(CONJ.the(rTarget, A), GOAL, RimplAPos, stamp).setCyclic(true);
+            reinforce(CONJ.the(rTarget, A.neg()), GOAL, RimplAPos, stamp).setCyclic(true);
+            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stamp).setCyclic(true);
+            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stamp).setCyclic(true);
 
 //                reinforce(CONJ.the(rTarget, A), BELIEF, RimplRandomP);
 //                reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplRandomN);
@@ -155,7 +156,7 @@ abstract public class ScalarReward extends Reward {
         float cMax = nar.confDefault(GOAL);
         goal.conf(cMax);
 
-        float strength = 1;
+        float strength = 1f;
         float cMin =
             Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
             //cMax / 3;

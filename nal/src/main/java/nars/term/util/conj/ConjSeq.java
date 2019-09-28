@@ -292,10 +292,22 @@ public enum ConjSeq { ;
             //sequence of repeating terms
             right = left; //share identity
             if (dt < 0)
-                dt = Math.abs(dt); //use positive dt only
+                dt = -dt; //use positive dt only
         }
 
+//        if (left.hasAny(CONJ) && right.hasAny(CONJ)) {
+//            ConjBuilder c = //new ConjList();
+//                new ConjTree();
+//            if (!c.addConjEvent(0, left))
+//                return Null;
+//            if (!c.addConjEvent(dt, right))
+//                return Null;
+//            if (c.eventOccurrences()!=2)
+//                return c.term(HeapTermBuilder.the);
+//        }
+
         return B.newCompound(CONJ, dt, left, right);
+//        return B.conj(dt, left, right);
 
     }
 

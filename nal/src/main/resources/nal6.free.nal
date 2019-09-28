@@ -5,37 +5,31 @@ C, X, eventOfPN(C,X), conjParallel(C)    |-   conjWithoutPN(C,X), (Belief:Struct
 //D, X, eventOfPN(D,X), conjParallel(D)    |- --conjWithoutPN(D,X), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
 
-C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
-  X, C, conjParallel(C), eventOfPN(C,X)   |-   conjWithoutPN(C,X), (Punctuation:AskAsk)
+C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:AskAsk, Time:BeliefEvent)
+  X, C, conjParallel(C), eventOfPN(C,X)   |-   conjWithoutPN(C,X), (Punctuation:AskAsk, Time:TaskEvent)
 
 //C, X, --isVar(X), hasBelief()                  |- conjWithoutUnify(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 //  C, X, --isVar(X), hasBelief()                  |- conjBefore(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 //  C, X, --isVar(X), hasBelief(), conjSequence(C) |- conjAfter(C,  polarizeBelief(X)), (Punctuation:AskAsk, Time:BeliefEvent)
 
     //impl conj subj belief free structural decomposition
-    (  C ==> A), X, --is(C,"--"), eventOfPN(C,X), --isVar(X)   |- (  conjWithoutPN(C, X)==>A), (Belief:StructuralReduction,  Time:Task)
+    (  C ==> A), X, eventOfPN(C,X), --isVar(X)   |-   (  conjWithoutPN(C, X)==>A), (Belief:StructuralDeduction,  Time:Task)
+    (  C ==> A), X, eventOfPN(C,X), --isVar(X)   |- --(  conjWithoutPN(C, X)==>A), (Belief:StructuralDeductionN,  Time:Task)
+//    (  C ==> A), X, --is(C,"--"), eventOfPN(C,X), --isVar(X)   |- polarizeTask((  conjWithoutPN(C, X)==>A)), (Belief:StructuralDeductionDD,  Time:Task)
 
     //impl disj subj belief free structural decomposition
-    (--D ==> A), X, --is(D,"--"), eventOfPN(D,X), --isVar(X)   |- (--conjWithoutPN(D, X)==>A), (Belief:StructuralReduction,  Time:Task)
+    (--D ==> A), X, eventOfPN(D,X), --isVar(X)   |-   (--conjWithoutPN(D, X)==>A), (Belief:StructuralDeduction,  Time:Task)
+    (--D ==> A), X, eventOfPN(D,X), --isVar(X)   |- --(--conjWithoutPN(D, X)==>A), (Belief:StructuralDeductionN,  Time:Task)
+//    (--D ==> A), X, eventOfPN(D,X), --isVar(X)   |- (--conjWithoutPN(D, X)==>A), (Belief:StructuralReduction,  Time:Task)
+    //(--D ==> A), X, --is(D,"--"), eventOfPN(D,X), --isVar(X)   |- polarizeTask((--conjWithoutPN(D, X)==>A)), (Belief:StructuralDeductionDD,  Time:Task)
 
     //impl conj/disj pred belief and question free structural decomposition
-    (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDD,  Time:Task)
-    //(A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction,  Time:Task)
-    //(A ==> C), X, eventOfPN(C,X), --isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN, Time:Task)
+    //(A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   polarizeTask((A ==> conjWithoutPN(C,  X))), (Belief:StructuralDeductionDD,  Time:Task)
+    (A ==> C), X, eventOfPN(C,X), --isVar(X)   |-   (A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeduction,  Time:Task)
+    (A ==> C), X, eventOfPN(C,X), --isVar(X)   |- --(A ==> conjWithoutPN(C,  X)), (Belief:StructuralDeductionN, Time:Task)
 
          (A ==> C), X,  eventOfPN(C,X), task("?"), --isVar(X)   |- (A ==> conjWithoutPN(C,  X)), (Punctuation:Question, Time:Task)
 
-        //conditional impl abduction TODO test
-//        (A ==> C), X, eventOf(C,X), --isVar(X)     |-   (A ==> conjWithoutUnify(C,  X)), (Belief:AbductionPP, Time:BeliefEvent)
-//        (A ==> C), X, eventOfNeg(C,X), --isVar(X)  |-   (A ==> conjWithoutUnify(C,--X)), (Belief:AbductionPN, Time:BeliefEvent)
-//        (A ==> C), X, eventOfNeg(C,X), --isVar(X)  |- --(A ==> conjWithoutUnify(C,--X)), (Belief:AbductionNN, Time:BeliefEvent)
-//        (A ==> C), X, eventOf(C,X), --isVar(X)     |- --(A ==> conjWithoutUnify(C,  X)), (Belief:AbductionNP, Time:BeliefEvent)
-
-//conditional deduction
-(  C ==> A), X, eventOf(C,X), --isVar(X)     |- polarizeTask((  conjWithoutUnify(C,  X) ==> A)), (Belief:DeductionDP, Time:BeliefEvent)
-(  C ==> A), X, eventOfNeg(C,X), --isVar(X)  |- polarizeTask((  conjWithoutUnify(C,--X) ==> A)), (Belief:DeductionDN, Time:BeliefEvent)
-(--D ==> A), X, eventOfNeg(D,X), --isVar(X)  |- polarizeTask((--conjWithoutUnify(D,--X) ==> A)), (Belief:DeductionDN, Time:BeliefEvent)
-(--D ==> A), X, eventOf(D,X), --isVar(X)     |- polarizeTask((--conjWithoutUnify(D,  X) ==> A)), (Belief:DeductionDP, Time:BeliefEvent)
 
         (    C ==> A), X, eventOfPN(C,X), --isVar(X), task("?")  |- (   conjWithoutPN(C,  X) ==> A), (Punctuation:Question, Time:Task)
         (  --D ==> A), X, eventOfPN(D,X), --isVar(X), task("?")  |- ( --conjWithoutPN(D,  X) ==> A), (Punctuation:Question, Time:Task)
@@ -45,3 +39,15 @@ C, X, conjParallel(C), eventOfPN(C,X)     |-   conjWithoutPN(C,X), (Punctuation:
 
         //(A ==> C), (A ==> C), task("?"), --isVar(C)                 |- C, (Punctuation:Question)
         //(C ==> A), (C ==> A), task("?"), --isVar(C), --eqPN(A,C)    |- C, (Punctuation:Question)
+
+        //conditional impl abduction TODO test
+//        (A ==> C), X, eventOf(C,X), --isVar(X)     |-   (A ==> conjWithoutUnify(C,  X)), (Belief:AbductionPP, Time:BeliefEvent)
+//        (A ==> C), X, eventOfNeg(C,X), --isVar(X)  |-   (A ==> conjWithoutUnify(C,--X)), (Belief:AbductionPN, Time:BeliefEvent)
+//        (A ==> C), X, eventOfNeg(C,X), --isVar(X)  |- --(A ==> conjWithoutUnify(C,--X)), (Belief:AbductionNN, Time:BeliefEvent)
+//        (A ==> C), X, eventOf(C,X), --isVar(X)     |- --(A ==> conjWithoutUnify(C,  X)), (Belief:AbductionNP, Time:BeliefEvent)
+
+//conditional deduction
+//(  C ==> A), X, eventOf(C,X), --isVar(X)     |- polarizeTask((  conjWithoutUnify(C,  X) ==> A)), (Belief:DeductionDP, Time:BeliefEvent)
+//(  C ==> A), X, eventOfNeg(C,X), --isVar(X)  |- polarizeTask((  conjWithoutUnify(C,--X) ==> A)), (Belief:DeductionDN, Time:BeliefEvent)
+//(--D ==> A), X, eventOfNeg(D,X), --isVar(X)  |- polarizeTask((--conjWithoutUnify(D,--X) ==> A)), (Belief:DeductionDN, Time:BeliefEvent)
+//(--D ==> A), X, eventOf(D,X), --isVar(X)     |- polarizeTask((--conjWithoutUnify(D,  X) ==> A)), (Belief:DeductionDP, Time:BeliefEvent)

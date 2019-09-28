@@ -104,21 +104,21 @@ public class Truthify extends AbstractPred<Derivation> {
     @Override
     public final boolean test(Derivation d) {
 
-        ///d.truth.clear(); //<- may not be necessary
-        //d.single = false;
-        //d.punc = 0;
-
         Predicate<Derivation> tf = time.filter();
         if (tf!=null && !tf.test(d))
             return false;
 
         boolean single;
-
         byte punc = this.punc.get(d.taskPunc);
         switch (punc) {
             case BELIEF:
             case GOAL:
                 single = (punc == BELIEF ? beliefMode : goalMode) == 1;
+
+                boolean overlapping = (single ? d.overlapSingle : d.overlapDouble);
+                if (overlapping && !(punc == BELIEF ? beliefOverlap : goalOverlap))
+                    return false;
+
                 MutableTruth beliefTruth;
                 if (single) {
                     beliefTruth = null;
@@ -145,6 +145,8 @@ public class Truthify extends AbstractPred<Derivation> {
             case QUEST:
             case QUESTION:
                 single = true; //questionMode == 1;
+                if (d.overlapSingle)
+                    return false;
                 break;
 
             case 0:

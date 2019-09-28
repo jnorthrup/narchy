@@ -6,11 +6,9 @@ import nars.Op;
 import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
-import nars.term.var.ellipsis.Ellipsislike;
 import nars.unify.Unify;
 import nars.unify.UnifyFirst;
 
-import static nars.Op.FRAG;
 import static nars.Op.VAR_PATTERN;
 import static nars.term.atom.Bool.Null;
 
@@ -22,9 +20,9 @@ import static nars.term.atom.Bool.Null;
  **/
 public interface Variable extends Atomic, UnifyFirst {
 
-    private static boolean neggable(Term t) {
-        return !(t instanceof Ellipsislike) && (t.op() != FRAG);
-    }
+//    private static boolean neggable(Term t) {
+//        return !(t instanceof Ellipsislike) && (t.op() != FRAG);
+//    }
 
 //    private static boolean unifyConst(Unify u, Term x, Term y) {
 //        if (u.varDepth < NAL.unify.UNIFY_VAR_RECURSION_DEPTH_LIMIT) {
@@ -39,7 +37,6 @@ public interface Variable extends Atomic, UnifyFirst {
     private static boolean unifyVar(Unify u, Term x, Term y) {
         if (x instanceof Variable) {
             Op xop = x.op();
-            boolean xAssign;
             if (y instanceof Variable)  {
                 Op yop = y.op();
 
@@ -54,11 +51,8 @@ public interface Variable extends Atomic, UnifyFirst {
                         return CommonVariable.unify((Variable) x, (Variable) y, u);
                     }
                 }
-                xAssign = Unify.canPut(xop, yop);
-            } else
-                xAssign = !y.containsRecursively(x);
-
-            if (xAssign) {
+            }
+            if (Unify.canPut(xop, y)) {
                 if (u.putXY((Variable) x, y))
                     return true;
             }
@@ -66,7 +60,7 @@ public interface Variable extends Atomic, UnifyFirst {
 
         if (y instanceof Variable) {
             Op yop;
-            if (u.var(yop = y.op()) && Unify.canPut(yop, x.op() ) && !x.containsRecursively(y)) {
+            if (u.var(yop = y.op()) && Unify.canPut(yop, x ) && !x.containsRecursively(y)) {
                 if (u.putXY((Variable) y, x))
                     return true;
             }
@@ -112,8 +106,8 @@ public interface Variable extends Atomic, UnifyFirst {
         if (equals(_y))
             return true;
 
-        Term x = u.resolveTerm(this, false);
-        Term y = u.resolveTerm(_y, false);
+        Term x = u.resolveTerm(this, true);
+        Term y = u.resolveTerm(_y, true);
 
         //unify variable negation mobius
         boolean xn = x instanceof Neg;

@@ -34,18 +34,20 @@ class TemporalTermTest {
 
 
 
-    @Test void InvalidInh() {
+    @Test void validInh() {
         assertEq("(x-->(x))", "(x-->(x))"); //valid
         assertEq("x(x)", "((x)-->x)"); //valid
         assertEq("(x-->(x,x))", "(x-->(x,x))"); //valid
-        assertInvalidTerms("((x-->r)-->(r&&c))");
+    }
+    @Test void InvalidInh() {
         assertInvalidTerms("(x-->{x,y})");
         assertInvalidTerms("(x<->{x,y})");
         assertInvalidTerms("(x-->(x<->y))");
         assertInvalidTerms("(x<->(x<->y))");
     }
 
-    @Test void InvalidInh_NegConjComponent() {
+    @Test void InvalidInh_ConjComponent() {
+        assertInvalidTerms("((x-->r)-->(r&&c))");
         assertInvalidTerms("((x-->r)-->((--,r)&&c))");
     }
 

@@ -3,7 +3,10 @@ package nars.derive.action;
 import jcog.WTF;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
-import nars.*;
+import nars.$;
+import nars.Builtin;
+import nars.Narsese;
+import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.action.op.*;
 import nars.derive.cond.SingleOrDoublePremise;
@@ -726,10 +729,6 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
         @Override
         public final float priHeuristic(Derivation d) {
 
-            float causeValue = why.amp();
-            if (causeValue < Float.MIN_NORMAL)
-                return 0f; //disabled
-
             byte punc = truth.punc.get(d.taskPunc);
             if (punc == 0)
                 return 0;
@@ -738,49 +737,11 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
             if (puncFactor < Float.MIN_NORMAL)
                 return 0f; //entirely disabled by deriver
 
-            int m;
-            switch (punc) {
-                case BELIEF: m = truth.beliefMode; break;
-                case GOAL: m = truth.goalMode; break;
-                case QUESTION:
-                case QUEST:
-                    m = 1;//questionMode;
-                    //if this is reverted, it should be changed to use d.overlapSingle and never d.overlapDouble
-                    break;
-                default:
-                    throw new WTF();
-            }
-
-
-            boolean single = (m == 1);
-            boolean overlapping = (single ? d.overlapSingle : d.overlapDouble);
-            switch (punc) {
-                case GOAL:
-                case BELIEF: {
-                    //allow overlap?
-                    if (overlapping && !((punc == BELIEF) ? truth.beliefOverlap : truth.goalOverlap))
-                        return 0;
-                    if (!single && time.beliefProjection().apply(d) == null)
-                        return 0;
-                    break;
-                }
-                case QUEST:
-                case QUESTION:
-                    if (overlapping)
-                        return 0;
-
-                    break;
-
-                default:
-                    throw new UnsupportedOperationException();
-            }
-
-
 
             if (!truth.test(d))
                 return 0;
 
-            return causeValue * puncFactor * d.what.derivePri.prePri(d);
+            return puncFactor * d.what.derivePri.prePri(d);
         }
 
         @Override

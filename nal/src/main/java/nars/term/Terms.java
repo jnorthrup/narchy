@@ -486,21 +486,28 @@ public enum Terms {
 			return false; //both atomics, done
 
 
+
 		if (!Term.commonStructure(x.structure(), y.structure()))
 			return false;
 
 
-		int av = x.volume(), bv = y.volume();
-		if (av == bv)
+		int xv = x.volume(), yv = y.volume();
+		if (xv == yv)
 			return false; //both atomic or same size (cant contain each other)
 
 		//a > b |- a contains b?
-		if (av < bv) {
+		if (xv < yv) {
 			Term c = x;
 			x = y;
 			y = c;
 		}
 
+//		Term finalX = x;
+//		return !y.recurseTerms(yy -> statementLoopyContainer.test(yy), yy -> {
+//			if (finalX.containsRecursively(yy, false, Op.statementLoopyContainer ))
+//				return false;
+//			return true;
+//		}, null);
 		return x.containsRecursively(y, false, Op.statementLoopyContainer);
 
 	}

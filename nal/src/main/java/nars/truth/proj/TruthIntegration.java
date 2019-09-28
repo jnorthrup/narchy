@@ -1,6 +1,7 @@
 package nars.truth.proj;
 
 
+import jcog.Util;
 import jcog.WTF;
 import jcog.math.LongInterval;
 import nars.Task;
@@ -92,10 +93,10 @@ public class TruthIntegration {
 
 	/** for ranking relative relevance of tasks with respect to a time point */
 	public static double eviFast(Task t, long now) {
-		long s = t.start();
+		long s = t.start();  //assert(s!=ETERNAL);
 		long e = t.end();
-		return (1+e-s) * t.evi() / (1 + Math.max(now - s, now - e)); //penalize long tasks even if they surround now evenly
-		//return t.range() * t.evi() / (1 + Math.max(now - t.start(), now - t.end())); //penalize long tasks even if they surround now evenly
+		return (1+e-s) * t.evi() / (1 + Util.mean((double)Math.abs(now - s), Math.abs(now - e)));
+		//return (1+e-s) * t.evi() / (1 + Math.max(Math.abs(now - s), Math.abs(now - e))); //penalize long tasks even if they surround now evenly
 		///return t.range() * t.evi() / (1 + t.maxTimeTo(now));
 		//return NAL.evi(t.range() * t.evi(), t.meanTimeTo(now), 1.0f);
 		//return t.range() * t.evi() / (1 + t.meanTimeTo(now));

@@ -6,7 +6,6 @@ import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.truth.Truth;
-import nars.truth.func.TruthFunctions;
 
 import static jcog.math.LongInterval.TIMELESS;
 
@@ -47,16 +46,15 @@ public class DefaultDerivePri implements DerivePri {
                     //= factorComplexityAbsolute(t, d);
                     //= factorComplexityRelative2(t, d);
 
-        float factor;
+        float factor = factorCmpl;
         if (t.isBeliefOrGoal()) {
-            factor = factorCmpl * factorPolarity(t.freq()); //<-- absolute is much better
-            //factor = factorCmpl * factorEviRelative(t, d) * factorPolarity(t.freq());
+            factor = factorPolarity(t.freq());
         } else {
-            factor = questionGain.floatValue() * factorCmpl;
+            factor = questionGain.floatValue();
         }
 
-        factor *= //factorEviAbsolute(t,d);
-                  factorMaintainAverageEvidence(t,d);
+        factor *= factorEviAbsolute(t,d);
+                  //factorMaintainAverageEvidence(t,d);
 
         float y = postAmp(t, d.parentPri(), factor);
         return Util.clamp(y, ScalarValue.EPSILON, 1);
@@ -165,21 +163,22 @@ public class DefaultDerivePri implements DerivePri {
 
     @Override public float prePri(Derivation d) {
 
-        if (d.isBeliefOrGoal()) {
-            //TODO include time range as factor since it's average evi
-            double te = d.truth.evi();
-            double de = d.evi();
-            double maintained =
-                    //te / (te + de) //as weight
-                    TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
-            ;
-            return (float) (1 + (Math.min(1, maintained)));
-            //return (float) (1 + Math.min(1, maintained));
-            //return (float) (1 + sqrt(w2cSafe(te)));
-        } else {
-            //question
-            return 1;
-        }
+        return 1;
+//        if (d.isBeliefOrGoal()) {
+//            //TODO include time range as factor since it's average evi
+//            double te = d.truth.evi();
+//            double de = d.evi();
+//            double maintained =
+//                    te / (te + de) //as weight
+//                    //TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
+//            ;
+//            return (float) (1 + (Math.min(1, maintained)));
+//            //return (float) (1 + Math.min(1, maintained));
+//            //return (float) (1 + sqrt(w2cSafe(te)));
+//        } else {
+//            //question
+//            return 1;
+//        }
     }
 }
 /*

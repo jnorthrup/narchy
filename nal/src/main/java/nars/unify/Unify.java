@@ -406,7 +406,7 @@ public abstract class Unify extends Versioning<Term> {
 
 
     /** can x be assigned to y (y <= x) */
-    public static final boolean canPut(Op x, Op y) {
+    public static final boolean canPut(Op x, Term y) {
         int exc;
         switch (x) {
             case VAR_DEP:
@@ -424,7 +424,8 @@ public abstract class Unify extends Versioning<Term> {
             default:
                 return false;
         }
-        return (exc & y.bit) == 0; //!value.hasAny(exc);
+        //return (exc & y.bit) == 0;
+        return !y.hasAny(exc);
     }
 
 

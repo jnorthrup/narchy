@@ -10,7 +10,6 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
 import org.eclipse.collections.api.block.predicate.primitive.ByteObjectPredicate;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
@@ -1260,11 +1259,11 @@ public enum Conj {
      * whether the conjunction is a sequence (includes check for factored inner sequence)
      */
     public static boolean isSeq(Term x) {
-        if (!(x instanceof Compound && x.opID() == CONJ.id) && !(x instanceof Sequence))
-            return false;
-
-        int dt = x.dt();
-        return dt == DTERNAL ? ConjSeq._isSeq(x) : !dtSpecial(dt);
+        if (x instanceof Compound && x.opID() == CONJ.id) {// || (x instanceof Sequence))
+            int dt = x.dt();
+            return dt == DTERNAL ? ConjSeq._isSeq(x) : !dtSpecial(dt);
+        }
+        return false;
     }
 
     public static ConjBuilder diff(Term include, long includeAt, Term exclude, long excludeAt) {

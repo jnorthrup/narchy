@@ -2,7 +2,7 @@ package nars.truth;
 
 import org.jetbrains.annotations.Nullable;
 
-import static nars.truth.func.TruthFunctions.c2w;
+import static nars.truth.func.TruthFunctions.c2wSafe;
 
 public class MutableTruth implements Truth {
 
@@ -46,11 +46,11 @@ public class MutableTruth implements Truth {
 	}
 
 	public MutableTruth conf(float c) {
-		evi = c2w(c);
+		evi = c2wSafe(c);
 		return this;
 	}
 	public MutableTruth conf(double c) {
-		evi = c2w(c);
+		evi = c2wSafe(c);
 		return this;
 	}
 

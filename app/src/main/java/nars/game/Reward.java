@@ -89,7 +89,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 
 
-    public void reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
+    public Task reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
         Term goal = x.term();
 
 
@@ -102,6 +102,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         Task t = NALTask.the(goal, punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
         reinforcement.add(t);
+        return t;
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
 //        eteTable.insert(t); //insert directly
         //game.what().accept(t);

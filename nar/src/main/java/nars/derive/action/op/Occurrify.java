@@ -108,7 +108,7 @@ public class Occurrify extends TimeGraph {
         final long taskStart = d.taskStart;
         final long beliefStart = d.beliefStart;
 
-        if (d.single || beliefStart == ETERNAL)
+        if (/*d.single ||*/ beliefStart == TIMELESS ||  beliefStart == ETERNAL)
             return new long[] { taskStart, taskEnd};
         else {
             final long beliefEnd = d.beliefEnd;

@@ -44,6 +44,7 @@ import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.ellipsis.Ellipsislike;
+import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.UnifyAny;
 import nars.unify.UnifyFirst;
@@ -740,7 +741,7 @@ public interface Compound extends Term, IPair, Subterms {
             return Null;
 
         //try eval first (even if untransformed)
-        if (yOp == INH && f.evalInline()) {
+        if (yOp == INH && f.evalInline() && yy.subs()==2) {
             Term v = AbstractTermTransform.evalInhSubs(yy);
             if (v != null)
                 return v;
@@ -755,10 +756,9 @@ public interface Compound extends Term, IPair, Subterms {
             if (ys == 1) {
                 if (yOp == CONJ) {
                     Term y0 = yy.sub(0);
-                    if (!(y0 instanceof Ellipsislike) && y0.op() != FRAG)
+                    if (!(y0 instanceof Ellipsislike) && !(y0 instanceof Fragment))
                         return y0;
-                } else
-                    Util.nop();
+                }
             }
             if (xdt == ydt && ydt != XTERNAL && dtSpecial(ydt)) {
                 int xs = x.subs();
@@ -772,7 +772,7 @@ public interface Compound extends Term, IPair, Subterms {
                             return x;
 
                     } else {
-                        if (yOp == SIM) {
+                        if (yss == 1 && yOp == SIM) {
                             //similarity collapse to identity
                             return True;
                         }
