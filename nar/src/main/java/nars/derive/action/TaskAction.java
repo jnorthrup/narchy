@@ -4,8 +4,7 @@ import nars.Task;
 import nars.derive.Derivation;
 
 public abstract class TaskAction extends NativePremiseAction {
-	@Deprecated
-	public int volMax;
+	@Deprecated public int volMax;
 
 	protected TaskAction() {
 	}

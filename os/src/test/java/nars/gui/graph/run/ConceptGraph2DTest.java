@@ -1,5 +1,6 @@
 package nars.gui.graph.run;
 
+import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;
@@ -35,12 +36,12 @@ class ConceptGraph2DTest {
             Surface g = BagregateConceptGraph2D.get(n);
 
             OrthoSurfaceGraph wg = window(g, 1200, 800);
-            wg.dev();
+//            wg.dev();
 
+            new DeductiveMeshTest(n, 5,5);
 
             n.startFPS(4f);
 
-            new DeductiveMeshTest(n, 5,5);
 
         }
 
@@ -113,6 +114,7 @@ class ConceptGraph2DTest {
 
             NAR n = NARS.tmp();
             n.log();
+
 
             NQuadsRDF.input(n, new File("/home/me/d/valueflows.nquad"));
 

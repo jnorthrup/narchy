@@ -275,13 +275,15 @@ public class ConjClustering extends TaskAction {
 
     @Override
     public final float pri(Derivation d) {
+        //prefilter
+        Task t = d._task;
+        if (t.isEternal())
+            return 0;
+
         return 1;
         //return pri(d._task);
-//        Task t = d._task;
+
 //
-//        //prefilter
-//        if (t.isEternal())
-//            return 0;
 //
 //        return 0.1f * (pri(t) + in.pri());
     }
