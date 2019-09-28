@@ -55,7 +55,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
     public volatile float value = 0;
 
     /** an effective priority value */
-    public volatile float pri = 0;
+    public volatile float pri = 0.5f;
 
     protected Why(short id) {
         this(id, null);

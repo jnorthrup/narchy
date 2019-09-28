@@ -12,13 +12,11 @@ public final class RuleWhy extends Why {
 
 	public final PremiseRuleBuilder rule;
 	public final String ruleString;
-	public final Term term;
 
 	public RuleWhy(PremiseRuleBuilder rule, short id) {
 		super(id, rule.id);
 		this.rule = rule;
 		this.ruleString = rule.source;
-		this.term = rule.id;
 	}
 
 	@Override
@@ -27,7 +25,7 @@ public final class RuleWhy extends Why {
 	}
 
 	@Override public Term term() {
-		return term;
+		return name;
 	}
 
 }

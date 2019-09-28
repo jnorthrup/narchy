@@ -2,7 +2,6 @@ package nars.derive.action;
 
 import jcog.pri.Prioritized;
 import nars.NAL;
-import nars.attention.PriNode;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleWhy;
 import nars.term.control.AbstractPred;
@@ -10,14 +9,14 @@ import nars.term.control.AbstractPred;
 /** rankable branch in the derivation fork */
 public abstract class PremiseAction extends AbstractPred<Derivation> implements Prioritized {
 
-	public final PriNode pri;
+//	public final PriNode pri;
 
 	public final RuleWhy why;
 
 	public PremiseAction(RuleWhy cause) {
-		super(cause.term);
+		super(cause.name);
 		this.why = cause;
-		this.pri = new PriNode.Source(this, 0.5f);
+//		this.pri = new PriNode.Source(this, 0.5f);
 	}
 
 	@Override
@@ -31,7 +30,8 @@ public abstract class PremiseAction extends AbstractPred<Derivation> implements 
 	}
 
 	public final float pri() {
-		return pri.pri();
+		return why.pri;
+		//return pri.pri();
 	}
 
 	public final float pri(Derivation d) {

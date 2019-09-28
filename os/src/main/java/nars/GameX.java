@@ -758,6 +758,7 @@ abstract public class GameX extends Game {
                     if (f.length != ww)
                         f = new float[ww];
                     int i = 0;
+                    float basePri = 1f/ww;
                     for (Why w : whys) {
                         float r = w.valueRaw();
                         float v;
@@ -766,15 +767,14 @@ abstract public class GameX extends Game {
                         else
                             v = f[i];
 
-                        w.setPri(valueToPri(v));
+                        w.setPri(valueToPri(basePri,v));
                         i++;
                     }
 
                 }
 
-                float valueToPri(float v) {
-                    return v;
-                    //return v * v * v;
+                float valueToPri(float basePri, float v) {
+                    return basePri + v;
                 }
             };
 
