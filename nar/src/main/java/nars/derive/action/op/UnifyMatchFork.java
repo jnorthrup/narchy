@@ -9,8 +9,6 @@ import nars.term.buffer.EvalTermBuffer;
 
 import java.util.function.Predicate;
 
-import static nars.derive.util.DerivationFailure.Success;
-
 public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivation> {
 
     protected Taskify taskify;
@@ -35,7 +33,8 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
             y = d.transformDerived.apply(taskify.termify.pattern(d));
         }
 
-        if (Success == DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, d)) {
+        DerivationFailure failureReason;
+        if (null == (failureReason = DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, d))) {
 
             Task t;
 
@@ -48,6 +47,8 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
                     d.remember(t);
                 }
             }
+        } else {
+            failureReason.record(d.nar);
         }
 
         return true; //tried.size() < forkLimit;

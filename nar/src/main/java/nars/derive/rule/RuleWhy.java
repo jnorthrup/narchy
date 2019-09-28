@@ -21,7 +21,8 @@ public final class RuleWhy extends Why {
 
 	@Override
 	public String toString() {
-		return term().toString();
+		return ruleString;
+		//return term().toString();
 	}
 
 	@Override public Term term() {

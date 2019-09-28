@@ -18,15 +18,14 @@ public class CompoundDecompose extends NativePremiseAction {
 	public CompoundDecompose(boolean taskOrBelief) {
 		super();
 
-		single();
+		if (taskOrBelief)
+			single();  //only structural
+		else
+			hasBelief(true);
+
 		this.taskOrBelief = taskOrBelief;
 		match(taskOrBelief ? TheTask : TheBelief, new TermMatcher.SubsMin((short)1));
 
-		if (!taskOrBelief)
-			hasBelief(true);
-		else {
-//			hasBelief(false); //only structural
-		}
 	}
 
 	@Override

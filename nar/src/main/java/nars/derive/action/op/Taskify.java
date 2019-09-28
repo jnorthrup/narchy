@@ -31,7 +31,6 @@ import java.util.Arrays;
 
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
 import static nars.Op.*;
-import static nars.derive.util.DerivationFailure.Success;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
@@ -129,7 +128,7 @@ public class Taskify extends ProxyTerm {
                 //as a last resort, try forming a question from the remains
                 byte qPunc = d.punc == BELIEF ? QUESTION : QUEST;
                 d.punc = qPunc;
-                if (DerivationFailure.failure(y, d) == Success) {
+                if (DerivationFailure.failure(y, d) == null) {
                     d.punc = qPunc;
                     d.truth.clear(); //may be unnecessary
                 } else {
@@ -139,7 +138,7 @@ public class Taskify extends ProxyTerm {
 
             } //else: ok
         } else {
-            if (DerivationFailure.failure(y, d) != Success) {
+            if (DerivationFailure.failure(y, d) != null) {
                 d.nar.emotion.deriveFailTemporal.increment();
                 return null;
             }

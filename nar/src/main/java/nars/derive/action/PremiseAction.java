@@ -36,10 +36,10 @@ public abstract class PremiseAction extends AbstractPred<Derivation> implements 
 
 	public final float pri(Derivation d) {
 		float v = priElseZero();
-		return v >= Float.MIN_NORMAL ? v * priHeuristic(d) : 0;
+		return v >= Float.MIN_NORMAL ? v * Math.min(1, priHeuristic(d)) : 0;
 	}
 
-	/** can implement derivation-dependent gating functions in subclasses here */
+	/** can implement derivation-dependent gating functions in subclasses here. should return a value <= 1 */
 	protected float priHeuristic(Derivation d) {
 		return 1;
 	}
