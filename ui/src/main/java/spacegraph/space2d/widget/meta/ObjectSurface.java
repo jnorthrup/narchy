@@ -350,10 +350,11 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
         @Override
         public boolean canRender(ReSurface r) {
-            on((a.getOpaque())); //load
+            on(a.getOpaque()); //load
             return super.canRender(r);
         }
     }
+
     public final class BindingFloatSlider extends FloatPort {
 
         //private static final float EPSILON = 0.001f;
@@ -368,9 +369,10 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
             super();
 
             this.get = get;
-            slider = new FloatSlider(get.asFloat(), min, max).on(set::accept);
+            slider = new FloatSlider(get.asFloat(), min, max).text(label+"=").on(set::accept);
 
-            set(LabeledPane.the(label, slider));
+            //set(LabeledPane.the(label, slider));
+            set(slider);
 
             on(set::accept);
         }

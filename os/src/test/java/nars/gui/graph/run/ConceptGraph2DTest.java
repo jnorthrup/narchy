@@ -51,7 +51,7 @@ class ConceptGraph2DTest {
 //                    //.tmp(4);
 //                    .threadSafe(7);
             NAR n = new NARS.DefaultNAR(0, true).get();
-            new Deriver(Derivers.nal(n, 1, 6));
+            new Deriver(Derivers.nal(n, 1, 8));
             n.what().onTask(t -> {
                n.proofPrint(t);
 //                try {
@@ -61,7 +61,7 @@ class ConceptGraph2DTest {
 //                }
             });
 
-            n.time.dur(2);
+            n.time.dur(25);
             n.termVolMax.set(9);
             n.freqResolution.set(0.01f);
 

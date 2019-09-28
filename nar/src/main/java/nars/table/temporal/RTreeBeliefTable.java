@@ -357,12 +357,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		}
 	}
 
-	@Override
-	public void clear() {
-		writeConditional(
-			() -> !toString().isEmpty(),
-			tree::clear);
-	}
 
 	@Override
 	public void whileEach(Predicate<? super Task> each) {

@@ -45,7 +45,9 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     	this.id = id;
         this.game = g;
 
-        this.pri = new PriNode(id);
+        this.pri = new PriNode(id) {
+
+		};
 
     }
 
