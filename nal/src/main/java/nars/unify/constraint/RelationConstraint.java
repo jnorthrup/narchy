@@ -59,7 +59,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
 
 
     /** override to implement subsumption elimination */
-    public boolean remainInAndWith(RelationConstraint<U> c) {
+    public boolean remainAmong(RelationConstraint<U> c) {
         return true;
     }
 
@@ -86,7 +86,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        public boolean remainInAndWith(RelationConstraint<U> c) {
+        public boolean remainAmong(RelationConstraint<U> c) {
             if (c.equals(r))
                 throw new WTF(this + " present in a rule with its opposite " + c);
             return true;
@@ -140,7 +140,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         }
 
         @Override
-        public boolean remainInAndWith(RelationConstraint c) {
+        public boolean remainAmong(RelationConstraint c) {
             return
                 //subsumed by more specific types of inequality:
                 !(c instanceof NotEqualRootConstraint) &&

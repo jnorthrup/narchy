@@ -23,104 +23,131 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 
-/** must be stateless */
+/**
+ * must be stateless
+ */
 public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
-    private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>();
-
-    public static final UnifyConstraint[] None = new UnifyConstraint[0];
-
-    public static UnifyConstraint intern(UnifyConstraint x) {
-        UnifyConstraint y = constra.putIfAbsent(x.term(), x);
-        return y != null ? y : x;
-    }
+	public static final UnifyConstraint[] None = new UnifyConstraint[0];
+	private static final Map<Term, UnifyConstraint> constra = new ConcurrentHashMap<>();
+	public final Variable x;
 
 //    public static boolean valid(Term x, @Nullable Versioned<MatchConstraint> c, Unify u) {
 //        return c == null || !c.anySatisfyWith((cc,X) -> cc.invalid(X, u), x);
 //    }
 
 
+	UnifyConstraint(Variable x, String func, @Nullable Term... args) {
+		this(x, Atomic.atom(func), args);
+	}
 
-    @Override
-    public final boolean test(U p) {
-        p.constrain(this);
-        return true;
-    }
+	UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
+		super(args != null && args.length > 0 ?
+			$.impl(x, $.p(func, $.pOrOnly(args))) : $.impl(x, func));
+		this.x = x;
+	}
 
-    /**
-     * cost of testing this, for sorting. higher value will be tested later than lower
-     */
-    @Override
-    abstract public float cost();
+	public static UnifyConstraint intern(UnifyConstraint x) {
+		UnifyConstraint y = constra.putIfAbsent(x.term(), x);
+		return y != null ? y : x;
+	}
 
+	/**
+	 * returns a stream of constraints bundled by any multiple respective targets, and sorted by cost increasing
+	 */
+	public static <U extends Unify> UnifyConstraint<U>[] the(Stream<UnifyConstraint<U>> c) {
+		return c
+			.collect(Collectors.groupingBy(x -> x.x, Collectors.toCollection(FasterList::new))).values().stream()
+			.map(CompoundConstraint::the)
+			.sorted(PREDICATE.sortByCostIncreasing)
+			.map(UnifyConstraint::intern)
+			.toArray(x -> x == 0 ? UnifyConstraint.None : new UnifyConstraint[x]);
+	}
 
-    public final Variable x;
+	@Override
+	public final boolean test(U p) {
+		p.constrain(this);
+		return true;
+	}
 
+	/**
+	 * cost of testing this, for sorting. higher value will be tested later than lower
+	 */
+	@Override
+	abstract public float cost();
 
-    UnifyConstraint(Variable x, String func, @Nullable Term... args) {
-        this(x, Atomic.atom(func), args);
-    }
+	/**
+	 * @param targetVariable current value of the target variable (null if none is setAt)
+	 * @param potentialValue potential value to assign to the target variable
+	 * @param f              match context
+	 * @return true if match is INVALID, false if VALID (reversed)
+	 */
+	abstract public boolean invalid(Term x, U f);
 
-    UnifyConstraint(Variable x, Term func, @Nullable Term... args) {
-        super(args!=null && args.length > 0 ?
-            $.impl( x, $.p(func, $.pOrOnly(args))) : $.impl( x, func));
-        this.x = x;
-    }
+	public boolean remainAmong(UnifyConstraint[] constraintsCopy) {
+		UnifyConstraint x = this;
 
+		boolean xRel = x instanceof RelationConstraint;
 
+		for (UnifyConstraint y : constraintsCopy) {
+			if (y != null && x != y) {
+				if (x.x.equals(y.x)) { //same target
+					boolean yRel = y instanceof RelationConstraint;
+					if (xRel && yRel) {
+						//binary constraint
+						RelationConstraint X = (RelationConstraint) x;
+						RelationConstraint Y = (RelationConstraint) y;
+						if (X.y.equals(Y.y)) {
+							if (!X.remainAmong(Y)) {
+								return false;
+							}
+						}
 
-    /**
-     * @param targetVariable current value of the target variable (null if none is setAt)
-     * @param potentialValue potential value to assign to the target variable
-     * @param f              match context
-     * @return true if match is INVALID, false if VALID (reversed)
-     */
-    abstract public boolean invalid(Term x, U f);
+					} else if (!xRel && !yRel) {
+						//uni constraint
+						if (!x.remainAmong(y))
+							return false;
+					}
 
-    /**
-     * returns a stream of constraints bundled by any multiple respective targets, and sorted by cost increasing
-     */
-    public static <U extends Unify> UnifyConstraint<U>[] the(Stream<UnifyConstraint<U>> c) {
-        return c
-            .collect(Collectors.groupingBy(x -> x.x, Collectors.toCollection(FasterList::new))).values().stream()
-            .map(CompoundConstraint::the)
-            .sorted(PREDICATE.sortByCostIncreasing)
-            .map(UnifyConstraint::intern)
-            .toArray(x -> x == 0 ? UnifyConstraint.None : new UnifyConstraint[x]);
-    }
+				}
+			}
+		}
+		return true;
+	}
 
-    public boolean remainAmong(UnifyConstraint[] constraintsCopy) {
-        UnifyConstraint x = this;
-        if (x instanceof RelationConstraint) {
-            for (UnifyConstraint y : constraintsCopy) {
-                if (x!=y && y instanceof RelationConstraint) {
-                        RelationConstraint X = (RelationConstraint) x;
-                        RelationConstraint Y = (RelationConstraint) y;
-                        if (X.x.equals(Y.x) && X.y.equals(Y.y)) {
-                            if (!X.remainInAndWith(Y)) {
-                                return false;
-                            }
-                        }
-                    }
-            }
-        }
-        return true;
-    }
+	protected boolean remainAmong(UnifyConstraint y) {
+		return true;
+	}
 
-    /** TODO group multiple internal relationconstraints for the same target so only one xy(target) lookup invoked to use with all */
-    public static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
+	/**
+	 * TODO group multiple internal relationconstraints for the same target so only one xy(target) lookup invoked to use with all
+	 */
+	public static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
 
-        private final UnifyConstraint<U>[] subConstraint;
-        private final float cost;
+		static final Atom AND = Atomic.atom("&&");
+		private final UnifyConstraint<U>[] subConstraint;
+		private final float cost;
 
-        public static <U extends Unify> UnifyConstraint<U> the(List<UnifyConstraint<U>> cc) {
+		private CompoundConstraint(UnifyConstraint[] c) {
+			super(c[0].x, AND, Op.SETe.the(Util.map(
+				//extract the unique UnifyIf parameter
+				cc -> $.pOrOnly(
+					cc.sub(1)
+					//cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)
+				), new Term[c.length], c)
+			));
+			this.subConstraint = c;
+			this.cost = Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, subConstraint);
+		}
 
-            int ccn = cc.size();
+		public static <U extends Unify> UnifyConstraint<U> the(List<UnifyConstraint<U>> cc) {
 
-            if (ccn == 0)
-                throw new UnsupportedOperationException();
-            else if (ccn == 1)
-                return cc.get(0);
+			int ccn = cc.size();
+
+			if (ccn == 0)
+				throw new UnsupportedOperationException();
+			else if (ccn == 1)
+				return cc.get(0);
 
 //            nextX: for (int i = 0, ccSize = ccn; i < ccSize; i++) {
 //                UnifyConstraint x = cc.get(i);
@@ -147,48 +174,34 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 //                    return cc.get(0);
 //            }
 
-            UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
-            Arrays.sort(d, PREDICATE.sortByCostIncreasing);
+			UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
+			Arrays.sort(d, PREDICATE.sortByCostIncreasing);
 
-            if (NAL.test.DEBUG_EXTRA) {
-                final Term target = d[0].x;
-                for (int i = 1; i < d.length; i++)
-                    assert (d[i].x.equals(target));
-            }
+			if (NAL.test.DEBUG_EXTRA) {
+				final Term target = d[0].x;
+				for (int i = 1; i < d.length; i++)
+					assert (d[i].x.equals(target));
+			}
 
-            return new CompoundConstraint<>(d);
-        }
+			return new CompoundConstraint<>(d);
+		}
 
-        static final Atom AND = Atomic.atom("&&");
+		@Override
+		public float cost() {
+			return cost;
+		}
 
-        private CompoundConstraint(UnifyConstraint[] c) {
-            super(c[0].x, AND, Op.SETe.the(Util.map(
-                //extract the unique UnifyIf parameter
-                cc -> $.pOrOnly(
-                    cc.sub(1)
-                    //cc.sub(0).subterms().subRangeArray(1, Integer.MAX_VALUE)
-                    ), new Term[c.length], c)
-            ));
-            this.subConstraint = c;
-            this.cost = Util.sum((FloatFunction<AbstractPred<U>>) PREDICATE::cost, subConstraint);
-        }
+		@Override
+		public boolean invalid(Term x, U f) {
+			for (UnifyConstraint<U> c : subConstraint)
+				if (c.invalid(x, f))
+					return true;
 
-        @Override
-        public float cost() {
-            return cost;
-        }
-
-        @Override
-        public boolean invalid(Term x, U f) {
-            for (UnifyConstraint<U> c : subConstraint)
-                if (c.invalid(x, f))
-                    return true;
-
-            return false;
-        }
+			return false;
+		}
 
 
-    }
+	}
 }
 //    public static MatchConstraint[] combineConstraints(MatchConstraint[] cc) {
 //        RoaringBitmap constraints = new RoaringBitmap();

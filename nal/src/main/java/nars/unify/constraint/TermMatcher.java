@@ -22,7 +22,8 @@ import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatcher {
 
-    public static void matchTerm(Term x, int depth, Function<?, Term> accessor, MutableSet pre) {
+    /** basic term constraints */
+    public static void constrain(Term x, int depth, Function<?, Term> accessor, MutableSet pre) {
 
         {
             //structure constraint
@@ -38,7 +39,7 @@ abstract public class TermMatcher {
             //volume constraint
             int v = x.volume();
             if (v > 1)
-                pre.add(new TermMatch(new VolMin(v), accessor, depth));
+                pre.add(new TermMatch(new VolMin(v, depth), accessor, depth));
         }
     }
 
@@ -179,11 +180,13 @@ abstract public class TermMatcher {
     public final static class VolMin extends TermMatcher {
         private final int volMin;
         private final Atomic param;
+        private final float cost;
 
-        public VolMin(int volMin) {
-            this.param = $.the(volMin); //volMin(volMin);
-            this.volMin = volMin;
+        public VolMin(int volMin, int depth) {
             assert(volMin > 1);
+            this.param = $.the(volMin);
+            this.volMin = volMin;
+            this.cost = (0.03f + (0.01f * depth));
         }
 
         @Override
@@ -193,11 +196,7 @@ abstract public class TermMatcher {
 
         @Override
         public float cost() {
-
-            //all is more specific so should be prioritized ahead
-            //more # of bits decreases the cost
-            return 0.01f;
-
+            return cost;
         }
 
         @Override

@@ -1,7 +1,6 @@
 package nars.derive.rule;
 
 import nars.control.Why;
-import nars.term.Term;
 
 /**
  * just a cause, not an input channel.
@@ -25,8 +24,5 @@ public final class RuleWhy extends Why {
 		//return term().toString();
 	}
 
-	@Override public Term term() {
-		return name;
-	}
 
 }

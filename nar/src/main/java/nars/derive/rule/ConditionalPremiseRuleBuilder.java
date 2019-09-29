@@ -429,7 +429,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 			case "hasVar": {
 				match(x, new TermMatcher.Has(Op.Variable, true), !negated);
 				if (!negated)
-					match(x, new TermMatcher.VolMin(2), !negated);
+					match(x, new TermMatcher.VolMin(2, 0), !negated);
 				if (negated)
 					negationApplied = true;
 				break;
@@ -504,7 +504,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 
 
-		TermMatcher.matchTerm(t, depth, rr, pre);
+		TermMatcher.constrain(t, depth, rr, pre);
 
 		int n = t.subs();
 		if (!o.commutative || (n == 1 && o!=CONJ)) {
