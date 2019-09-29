@@ -157,14 +157,15 @@ public class Atom extends AbstractAtomic implements The {
         return false;
     }
 
-    static final AtomChar[] chars = new AtomChar[256];
-    static {
-        for (char i = 0; i < 256; i++) {
-            chars[i] = new AtomChar(i);
-        }
-    }
+
 
     public static final class AtomChar extends Atom {
+        static final AtomChar[] chars = new AtomChar[256];
+        static {
+            for (char i = 0; i < 256; i++) {
+                chars[i] = new AtomChar(i);
+            }
+        }
 
         private final short intrin;
 

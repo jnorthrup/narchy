@@ -682,7 +682,7 @@ public enum $ { ;
     }
 
     public static int intValue(Term intTerm) throws NumberFormatException {
-        if (intTerm instanceof Int && intTerm instanceof Int)
+        if (intTerm instanceof Int)
             return ((Int) intTerm).i;
 
         throw new NumberFormatException();

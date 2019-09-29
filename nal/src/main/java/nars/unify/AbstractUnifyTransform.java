@@ -5,8 +5,6 @@ import nars.term.Variable;
 import nars.term.atom.Atomic;
 import nars.term.util.transform.AbstractTermTransform;
 
-import java.util.function.Function;
-
 public abstract class AbstractUnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {
 
 	@Override
@@ -24,15 +22,4 @@ public abstract class AbstractUnifyTransform extends AbstractTermTransform.NegOb
 		return x;
 	}
 
-	public static class LambdaUnifyTransform extends AbstractUnifyTransform {
-		private final Function<Variable, Term> resolve;
-
-		public LambdaUnifyTransform(Function<Variable, Term> resolve) {
-			this.resolve = resolve;
-		}
-
-		@Override public Term applyVariable(Variable v) {
-			return resolve.apply(v);
-		}
-	}
 }

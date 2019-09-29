@@ -85,76 +85,85 @@ public interface Stamp {
         int abLength = aa + bb;
         if (abLength <= capacity) {
             //TODO simple 2-ary case
-
-            if (!Stamp.overlapsAny(a,b)) {
-                //simple case: direct sequential merge with no contention
-                long[] ab = new long[abLength];
-                int ia = 0, ib = 0;
-                for (int i = 0; i < abLength; i++) {
-                    long an = ia < aa ? a[ia] : Long.MAX_VALUE;
-                    long bn = ib < bb ? b[ib] : Long.MAX_VALUE;
-                    long abn;
-                    if (an < bn) {
-                        abn = an; ia++;
-                    } else {
-                        abn = bn; ib++;
-                    }
-                    ab[i] = abn;
-                }
-                return ab;
-            } else {
-                //duplicates, with no contention
-                if (aa > bb) {
-                    //swap so that 'a' is smaller
-                    long[] _a = a;
-                    a = b;
-                    b = _a;
-                }
-
-                final int preTestThresh = 16;
-                if (aa * bb < preTestThresh) {
-                    //optimistic pre-test for if a (the shorter of the two) is contained entirely in b
-                    boolean aInB = true;
-                    for (long A : a) {
-                        if (!ArrayUtil.contains(b, A)) {
-                            aInB = false;
-                            break;
-                        }
-                    }
-                    if (aInB)
-                        return b;
-                }
-
-                MetalLongSet ab = new MetalLongSet(aa + bb);
-
-                ab.addAll(a);
-                if (!ab.addAll(b))
-                    return a; //b is contained entirely within a
-
-                return ab.toSortedArray();
-            }
+            return !Stamp.overlapsAny(a, b) ?
+                mergeSimple(a, b, aa, bb, abLength) :
+                mergeDuplicates(a, b, aa, bb);
         } else {
-            LongArrayList A = Stamp.toList(a);
-            if (aa > 1)
-                ArrayUtil.shuffle(A.elements(), rng);
-            LongArrayList B = Stamp.toList(b);
-            if (bb > 1)
-                ArrayUtil.shuffle(B.elements(), rng);
-
-            MetalLongSet AB = new MetalLongSet(abLength);
-            do {
-                LongArrayList x = (A!=B && rng.nextFloat() <= aToB) ? A : B;
-                int xs = x.size();
-                AB.add(x.removeLong(--xs));
-                if (xs == 0) {
-                    if (x == A && x == B)
-                        break; //both empty
-                    else if (x == A) A = B;
-                    else B = A;
-                }
-            } while (AB.size() < capacity);
-            return AB.toSortedArray();
+            return mergeShuffle(a, b, rng, aToB, capacity, aa, bb, abLength);
         }
+    }
+
+    private static long[] mergeShuffle(long[] a, long[] b, Random rng, float aToB, int capacity, int aa, int bb, int abLength) {
+        LongArrayList A = Stamp.toList(a);
+        if (aa > 1)
+            ArrayUtil.shuffle(A.elements(), rng);
+        LongArrayList B = Stamp.toList(b);
+        if (bb > 1)
+            ArrayUtil.shuffle(B.elements(), rng);
+
+        MetalLongSet AB = new MetalLongSet(abLength);
+        do {
+            LongArrayList x = (A!=B && rng.nextFloat() <= aToB) ? A : B;
+            int xs = x.size();
+            AB.add(x.removeLong(--xs));
+            if (xs == 0) {
+                if (x == A && x == B)
+                    break; //both empty
+                else if (x == A) A = B;
+                else B = A;
+            }
+        } while (AB.size() < capacity);
+        return AB.toSortedArray();
+    }
+
+    private static long[] mergeDuplicates(long[] a, long[] b, int aa, int bb) {
+        //duplicates, with no contention
+        if (aa > bb) {
+            //swap so that 'a' is smaller
+            long[] _a = a;
+            a = b;
+            b = _a;
+        }
+
+        final int preTestThresh = 16;
+        if (aa * bb < preTestThresh) {
+            //optimistic pre-test for if a (the shorter of the two) is contained entirely in b
+            boolean aInB = true;
+            for (long A : a) {
+                if (!ArrayUtil.contains(b, A)) {
+                    aInB = false;
+                    break;
+                }
+            }
+            if (aInB)
+                return b;
+        }
+
+        MetalLongSet ab = new MetalLongSet(aa + bb);
+
+        ab.addAll(a);
+        if (!ab.addAll(b))
+            return a; //b is contained entirely within a
+
+        return ab.toSortedArray();
+    }
+
+    private static long[] mergeSimple(long[] a, long[] b, int aa, int bb, int abLength) {
+        //simple case: direct sequential merge with no contention
+        long[] ab = new long[abLength];
+        int ia = 0, ib = 0;
+        for (int i = 0; i < abLength; i++) {
+            long an = ia < aa ? a[ia] : Long.MAX_VALUE;
+            long bn = ib < bb ? b[ib] : Long.MAX_VALUE;
+            long abn;
+            if (an < bn) {
+                abn = an; ia++;
+            } else {
+                abn = bn; ib++;
+            }
+            ab[i] = abn;
+        }
+        return ab;
     }
 
     static LongArrayList toList(long[] a) {

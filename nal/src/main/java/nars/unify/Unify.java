@@ -13,6 +13,7 @@ import nars.subterm.TermList;
 import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import nars.unify.unification.DeterministicUnification;
@@ -48,7 +49,7 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 
 
 */
-public abstract class Unify extends Versioning<Term> {
+public abstract class Unify extends Versioning<Term> implements AbstractTermTransform {
 
     /**
      * accumulates the next segment of the termutation stack
@@ -126,16 +127,14 @@ public abstract class Unify extends Versioning<Term> {
         return (U) this;
     }
 
-    /** default unify substitution */
-    private final MyUnifyTransform transform = new MyUnifyTransform();
+//    /** default unify substitution */
+//    private final MyUnifyTransform transform = new MyUnifyTransform();
+//
+//    public MyUnifyTransform transform() {
+//        return transform;
+//    }
 
-    public MyUnifyTransform transform() {
-        return transform;
-    }
 
-    public final Term apply(Term x) {
-        return transform().apply(x);
-    }
 
 
 
@@ -518,18 +517,32 @@ public abstract class Unify extends Versioning<Term> {
             y = x;
 
         if (recurse) {
-            MyUnifyTransform tt = transform();
             if (y instanceof Compound /* && y.hasAny(varBits)*/) {
                 if (y.hasAny(varBits))
-                    y = tt.applyPosCompound((Compound)y); //recurse (full transform)
+                    y = applyCompound((Compound)y); //recurse (full transform)
 //            } else if (!(y instanceof Variable) && !(y instanceof Img) /* etc */) {
 //                yy = transform().apply(y); //recurse (full transform)
 //                y = yy;
             } else if (!(y instanceof Variable))
-                y = tt.applyAtomicConstant((Atomic)y);
+                y = applyAtomicConstant((Atomic)y);
         }
 
         return x!=y ? (neg ? y.neg() : y) : _x;
+    }
+
+    @Override
+    public final Term applyAtomic(Atomic x) {
+        return x instanceof Variable ? applyVariable((Variable) x) : applyAtomicConstant(x);
+    }
+
+    /** to be overridden */
+    public Term applyAtomicConstant(Atomic x) {
+        return x;
+    }
+
+    /** to be overridden */
+    public Term applyVariable(Variable x) {
+        return resolveVar(x);
     }
 
     public final Subterms resolveSubs(Subterms x) {
@@ -625,14 +638,7 @@ public abstract class Unify extends Versioning<Term> {
         }
     }
 
-    protected class MyUnifyTransform extends AbstractUnifyTransform {
 
-        @Override public final Term applyVariable(Variable v) {
-            return Unify.this.resolveVar(v);
-            //return Unify.this.resolveTermRecurse(v);
-        }
-
-    }
 
 }
 

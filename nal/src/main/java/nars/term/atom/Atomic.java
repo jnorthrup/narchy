@@ -179,7 +179,7 @@ public interface Atomic extends Term {
                 return Int.pos[9];
         }
 
-        return Atom.chars[c];
+        return Atom.AtomChar.chars[c];
     }
 
     /*@NotNull*/

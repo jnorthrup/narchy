@@ -27,6 +27,7 @@ import nars.term.atom.*;
 import nars.term.control.PREDICATE;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
+import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.InstantFunctor;
 import nars.time.When;
 import nars.truth.MutableTruth;
@@ -183,7 +184,7 @@ public class Derivation extends PreDerivation {
     public transient Task _task, _belief;
     public transient Term _beliefTerm;
 
-    public DerivationTransform transformDerived;
+
 
 
     public Predicate<nars.Task> tasklinkTaskFilter =
@@ -570,7 +571,6 @@ public class Derivation extends PreDerivation {
 
         this.premisePreUnify.random(this.random = n.random());
         this.derivationFunctors = DerivationFunctors.get(Derivation.this);
-        this.transformDerived = new DerivationTransform();
     }
 
     /**
@@ -857,39 +857,44 @@ public class Derivation extends PreDerivation {
     /**
      * should be created whenever a different NAR owns this Derivation instance, if ever
      */
-    public final class DerivationTransform extends MyUnifyTransform {
+	public final AbstractTermTransform transformDerived = new AbstractTermTransform() {
 
-        @Override
-        public Term applyAtomicConstant(Atomic a) {
-            if (a instanceof Atom) {
+		@Override
+		public Term applyAtomic(Atomic a) {
+        	if (a instanceof Variable)
+				return Derivation.this.resolveVar((Variable)a);
+        	else {
+        		//atomic constant
+				if (a instanceof Atom) {
 
-                if (a == TaskTerm)
-                    return taskTerm;
-                else if (a == BeliefTerm)
-                    return beliefTerm;
+					if (a == TaskTerm)
+						return taskTerm;
+					else if (a == BeliefTerm)
+						return beliefTerm;
 
-                Term b = derivationFunctors.get(a);
+					Term b = derivationFunctors.get(a);
 
-                if (b!=null) {
-                    if (NAL.DEBUG) {
-                        if (b == TaskTerm)
-                            throw new WTF("should have been detected earlier"); //return taskTerm;
-                        else if (b == BeliefTerm)
-                            throw new WTF("should have been detected earlier"); //return beliefTerm;
-                    }
-                    return b;
-                }
-            }
+					if (b!=null) {
+						if (NAL.DEBUG) {
+							if (b == TaskTerm)
+								throw new WTF("should have been detected earlier"); //return taskTerm;
+							else if (b == BeliefTerm)
+								throw new WTF("should have been detected earlier"); //return beliefTerm;
+						}
+						return b;
+					}
+				}
 
-            return a;
-        }
+				return a;
+			}
+		}
 
         @Override
         public final boolean evalInline() {
             return true;
         }
 
-    }
+    };
 
 
 }

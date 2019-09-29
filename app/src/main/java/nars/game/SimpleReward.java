@@ -88,11 +88,6 @@ public class SimpleReward extends ScalarReward {
     }
 
     @Override
-    public Term term() {
-        return id;
-    }
-
-    @Override
     protected final float reward(Game a) {
         return rewardFunc.asFloat();
     }
