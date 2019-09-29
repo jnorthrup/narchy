@@ -53,8 +53,8 @@ public class DefaultDerivePri implements DerivePri {
             factor = questionGain.floatValue();
         }
 
-        factor *= factorEviAbsolute(t,d);
-                  //factorMaintainAverageEvidence(t,d);
+        factor *= //factorEviAbsolute(t,d);
+                  factorMaintainAverageEvidence(t,d);
 
         float y = postAmp(t, d.parentPri(), factor);
         return Util.clamp(y, ScalarValue.EPSILON, 1);
@@ -113,6 +113,17 @@ public class DefaultDerivePri implements DerivePri {
     }
 
     float factorEviAbsolute(Task t, Derivation d) {
+        double rangeRatio = rangeRatio(t, d);
+
+        double y;
+        if (t.isBeliefOrGoal())
+            y = t.truth().confDouble() * rangeRatio; //conf integrated
+        else
+            y = rangeRatio * rangeRatio;
+        return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
+    }
+
+    private double rangeRatio(Task t, Derivation d) {
         //eternal=1 dur
         long taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
         long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
@@ -127,32 +138,26 @@ public class DefaultDerivePri implements DerivePri {
             taskBeliefRange = TIMELESS;
         }
 
-        double rangeRatio = t.rangeIfNotEternalElse(taskBeliefRange) / ((double)taskBeliefRange);
-
-        double y;
-        if (t.isBeliefOrGoal())
-            y = t.truth().confDouble() * rangeRatio; //conf integrated
-        else
-            y = rangeRatio * rangeRatio;
-        return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
+        return Util.unitize( t.rangeIfNotEternalElse(taskBeliefRange) / ((double)taskBeliefRange) );
     }
 
 
-    float factorMaintainAverageEvidence(Task t, Derivation d) {
+    double factorMaintainAverageEvidence(Task t, Derivation d) {
+        double rangeRatio = rangeRatio(t, d);
 
         if (t.isQuestionOrQuest())
-            return 1;
+            return rangeRatio;
 
         double eParent = d.evi();
         double eDerived = t.evi();
         if (eParent <= eDerived)
 //            throw new WTF("spontaneous belief inflation"); //not actually
-            return 1;
+            return rangeRatio;
         else {
 //            double cDerived = w2cSafeDouble(eDerived);
 //            double cParent = w2cSafeDouble(eParent);
 //            float f = (float) (1 - ((cParent - cDerived) / cParent));
-            float f = (float) (1 - ((eParent - eDerived) / eParent));
+            double f = (float) (1 - ((eParent - eDerived) / eParent)) * rangeRatio;
 
             Util.assertUnitized(f);
             return Util.lerp(eviImportance.floatValue(), 1f, f);
