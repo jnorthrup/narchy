@@ -624,11 +624,11 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */
 	private UnifyConstraint<Derivation>[] constraints(MutableSet<UnifyConstraint<Derivation>> constraints) {
-		UnifyConstraint[] constraintsCopy = constraints.toArray(UnifyConstraint.None);
-		return UnifyConstraint.the(constraints.stream().filter(c -> {
-			if (!c.remainAmong(constraintsCopy)) {
-				int cc = ArrayUtil.indexOfInstance(constraintsCopy, c);
-				constraintsCopy[cc] = null;
+		UnifyConstraint[] preCopy = constraints.toArray(UnifyConstraint.None);
+		Stream<UnifyConstraint<Derivation>> all = constraints.stream().filter(c -> {
+			if (!c.remainAmong(preCopy)) {
+				int cc = ArrayUtil.indexOfInstance(preCopy, c);
+				preCopy[cc] = null;
 				return false;
 			}
 			return true;
@@ -653,9 +653,24 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 			}
 
 			return Stream.of(c);
-		}).distinct());
+		}).distinct();
 
-		//return theInterned(uu); //AFTER .. constraints can be added to in conclusion()
+		UnifyConstraint[] alls = all.toArray(UnifyConstraint[]::new);
+		all = Stream.of(alls);
+
+		if (alls.length > 1) {
+			UnifyConstraint[] allsCopy = alls.clone();
+			all = all.filter(c -> {
+				if (!c.remainAmong(allsCopy)) {
+					int cc = ArrayUtil.indexOfInstance(allsCopy, c);
+					allsCopy[cc] = null;
+					return false;
+				}
+				return true;
+			});
+		}
+		return UnifyConstraint.the(all);
+
 	}
 
 	public void isUnneg(Term x, Op o, boolean negated) {

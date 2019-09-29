@@ -109,6 +109,7 @@ public class Derivation extends PreDerivation {
 
     transient Deriver.DeriverExecutor exe = null;
 
+
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
 			boolean tNeg = t.isNegative();
@@ -183,6 +184,7 @@ public class Derivation extends PreDerivation {
     public transient Term _beliefTerm;
 
     public DerivationTransform transformDerived;
+    private MyUnifyTransform transformIntermediate;
 
     public Predicate<nars.Task> tasklinkTaskFilter =
         (Task t) ->
@@ -568,8 +570,8 @@ public class Derivation extends PreDerivation {
 
         this.premisePreUnify.random(this.random = n.random());
         this.derivationFunctors = DerivationFunctors.get(Derivation.this);
-        this.transformDerived = new DerivationTransform();
-
+        this.transformDerived = new DerivationTransform(true);
+        this.transformIntermediate = new DerivationTransform(false);
     }
 
     /**
@@ -786,8 +788,8 @@ public class Derivation extends PreDerivation {
 //    }
 
     @Override
-    public final DerivationTransform transform() {
-        return this.transformDerived;
+    public final MyUnifyTransform transform() {
+        return this.transformIntermediate;
     }
 
     /**
@@ -861,6 +863,11 @@ public class Derivation extends PreDerivation {
      * should be created whenever a different NAR owns this Derivation instance, if ever
      */
     public final class DerivationTransform extends MyUnifyTransform {
+        final boolean eval;
+
+        public DerivationTransform(boolean eval) {
+            this.eval = eval;
+        }
 
         @Override
         public Term applyAtomicConstant(Atomic a) {
@@ -889,7 +896,7 @@ public class Derivation extends PreDerivation {
 
         @Override
         public final boolean evalInline() {
-            return true;
+            return eval;
         }
 
     }
