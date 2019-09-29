@@ -468,7 +468,7 @@ abstract public class GameX extends Game {
         n.questionPriDefault.pri(0.25f);
         n.questPriDefault.pri(0.25f);
 
-        n.beliefConfDefault.set(0.75f);
+        n.beliefConfDefault.set(0.9f);
         n.goalConfDefault.set(0.9f);
 
 

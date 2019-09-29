@@ -8,7 +8,6 @@ import nars.$;
 import nars.NAR;
 import nars.control.NARPart;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.time.RecurringTask;
 import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.impl.tuple.Tuples;
@@ -107,7 +106,7 @@ abstract public class DurLoop extends NARPart {
 
 
 
-    private static final Atomic DUR = Atomic.the("dur");
+//    private static final Atomic DUR = Atomic.the("dur");
 
 //    public static String name(Object r) {
 //        String n;
@@ -157,16 +156,16 @@ abstract public class DurLoop extends NARPart {
             if (!busy.compareAndSet(false, true))
                 return;
 
-            long atStart = nar.time();
+            final long atStart = nar.time();
             try {
 
                 long lastStarted = this.lastStarted;
                 if (lastStarted == Long.MIN_VALUE)
                     lastStarted = atStart;
 
-                this.lastStarted = atStart;
-
                 long delta = atStart - lastStarted;
+
+                this.lastStarted = atStart;
 
                 DurLoop.this.run(nar, delta);
 
@@ -175,7 +174,7 @@ abstract public class DurLoop extends NARPart {
 
                 @Deprecated NAR nnar = DurLoop.this.nar; //prevent NPE in durCycles()
                 if (nnar!=null && DurLoop.this.isOn()) {
-                    this.nextStart = scheduleNext(durCycles(), atStart);
+                    this.nextStart = scheduleNext(durCycles());
 
                     //System.out.println(lastStarted + " -> "  + atStart + " -> " + nar.time() + " -> " + nextStart);
 
@@ -186,11 +185,11 @@ abstract public class DurLoop extends NARPart {
             }
 
         }
-        long scheduleNext(long durCycles, long started) {
+        long scheduleNext(long durCycles) {
 
             long now = nar.time();
 
-            final long idealNext = started + durCycles;
+            final long idealNext = lastStarted + durCycles;
             long lag = now - idealNext;
             if (lag > 0) {
                 /** LAG - compute a correctional shift period, so that it attempts to maintain a steady rhythm and re-synch even if a frame is lagged*/

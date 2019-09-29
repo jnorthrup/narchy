@@ -224,23 +224,22 @@
 //         (Y ==> X), ((&&,--X,A..+) ==> Z)  |- ((&&,Y,A..+) ==> Z), (Belief:DeductionN)
 
     //Negate Both Sides (Equivalence emulation):  (x <=> y) |- (--x <=> --y)
-    (X==>Y), (Y==>X) |- (--X ==> --Y), (Belief:Intersection, Time:Compose)
-    (X==>Y), (Y==>X) |- (--Y ==> --X), (Belief:Intersection, Time:Compose)
-      (--X==>Y), (Y==>X) |- (X ==> --Y), (Belief:IntersectionPN, Time:Compose)
-      (--X==>Y), (Y==>X) |- (--Y ==> X), (Belief:IntersectionPN, Time:Compose)
+    (X==>Y), (Y==>X), --isVar(X), --isVar(Y) |- (--X ==> --Y), (Belief:Intersection, Time:Compose)
+    (X==>Y), (Y==>X), --isVar(X), --isVar(Y) |- (--Y ==> --X), (Belief:Intersection, Time:Compose)
+      (--X==>Y), (Y==>X), --isVar(X), --isVar(Y) |- (X ==> --Y), (Belief:IntersectionPN, Time:Compose)
+      (--X==>Y), (Y==>X), --isVar(X), --isVar(Y) |- (--Y ==> X), (Belief:IntersectionPN, Time:Compose)
 
     //Primary Inverting Sub-Condition (Equivalence emulation)
-//    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:IntersectionPN, Time:Compose)
-//    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:IntersectionNP, Time:Compose)
-//       (Z ==> (&&,X,A..+)), (--Z ==> (&&,--X,A..+)) |- ((Z ==> X) && (--Z ==> --X)), (Belief:IntersectionSym, Time:Compose)
+    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z), --isVar(X), --isVar(Z)    |- ((X ==> Z) && (--X ==> --Z)), (Belief:IntersectionPN, Time:Compose)
+    ((&&,X,A..+) ==> Z), ((&&,--X,A..+) ==> Z), --isVar(X), --isVar(Z)    |- ((X ==> --Z) && (--X ==> Z)), (Belief:IntersectionNP, Time:Compose)
+       (Z ==> (&&,X,A..+)), (--Z ==> (&&,--X,A..+)), --isVar(X), --isVar(Z) |- ((Z ==> X) && (--Z ==> --X)), (Belief:IntersectionSym, Time:Compose)
 
 
-    //conditional induction
-    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,  Z,A..+) ==> X), (Belief:InductionPP, Time:Compose)
-    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,--Z,A..+) ==> X), (Belief:InductionPN, Time:Compose)
-
-    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Compose)
-      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Compose)
+//    //conditional induction
+//    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,  Z,A..+) ==> X), (Belief:InductionPP, Time:Compose)
+//    ((&&,Y,A..+) ==> X), (Y ==> Z) |- ((&&,--Z,A..+) ==> X), (Belief:InductionPN, Time:Compose)
+//    ((&&,X,A..+) ==> Z), ((&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Compose)
+//      (--(&&,X,A..+) ==> Z), (--(&&,Y,A..+) ==> Z) |- (Y ==> X), (Belief:InductionPB, Time:Compose)
 
 
         //TODO disj
@@ -252,7 +251,7 @@
 
     //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
 
-    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR, Time:BeliefEvent)
+    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR, Time:Compose)
         //TODO disj
 
 
@@ -289,13 +288,13 @@
 
 //    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
 //
-    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
-    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
-    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP)
-    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN)
+    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
+    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
+    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
+    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
 
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB, Time:Compose)
-      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neq(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB, Time:Compose)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neqPN(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB, Time:Compose)
+      (&&,X,--Y,A..*), (&&,Y,--X,A..*),neqPN(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB, Time:Compose)
 
 
 
@@ -341,15 +340,11 @@
 
 
     //Conjunction Anti-Contradiction: ((X&&A)==>C) and ((--X&&A)==>C)  |-  (A==>C), since X or --X doesnt make a difference
-    //((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==> C), (Belief:InductionPB)
-        //(--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- ((--,(&&,A..+)) ==> C), (Belief:InductionPB)
-    //(C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB)
+    ((&&,X,A..+) ==> C), (D ==> C), eventOfNeg(D,X)  |- ((&&,A..+) ==> C), (Belief:InductionPB, Time:Compose)
+        (--(&&,X,A..+) ==> C), (--D ==> C), eventOfNeg(D,X)  |- ((--,(&&,A..+)) ==> C), (Belief:InductionPB, Time:Compose)
+    (C ==> (&&,X,A..+)), (C ==> D), eventOfNeg(D,X)  |- (C ==> (&&,A..+)), (Belief:AbductionPB, Time:Compose)
 
 //precondition/post-condition combiner inference rule (variable_unification6):
-
-
-
-
 //        <patham9>
 //      this rule says:
 //        if two different precondition conjunctions, with a common element lead to the same conclusion,
@@ -430,17 +425,5 @@
 //    S, (&&,(--,S),A_1..n) |- (&&,A_1..n), (Truth:DeductionNegativeNegativeNegative)
 //    S, (||,(--,S),A_1..n) |- (||,A_1..n), (Truth:DeductionPositivePositivePositive)
 
-////strong unification
-//    (Y ==> X), Z, --is(Z,"==>")     |- unisubst(X,Y,Z), (Belief:Deduction)
-//    (Y ==> X), Z, --is(Z,"==>")     |- --unisubst(X,Y,Z), (Belief:DeductionNP)
-//    (--Y ==> X), Z, --is(Z,"==>")   |- unisubst(X,Y,Z), (Belief:DeductionPN)
-//    (--Y ==> X), Z, --is(Z,"==>")   |- --unisubst(X,Y,Z), (Belief:DeductionNN)
-//      (Y ==> X), Z, --is(Z,"==>")     |- unisubst(Y,X,Z), (Belief:Abduction)
-//      (Y ==> X), Z, --is(Z,"==>")     |- unisubst(Y,X,Z), (Belief:AbductionNN)
-//        (Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(Y,X,Z), (Punctuation:Question)
-//        (Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(X,Y,Z), (Punctuation:Question)
-//        (--Y ==> X), Z, --is(Z,"==>"), task("?") |- unisubst(X,Y,Z), (Punctuation:Question)
-//
 
-//    (X ==> Y), Z, notImpl(Z)     |- unisubst(X,Y,Z), (Belief:AbductionPB)
 

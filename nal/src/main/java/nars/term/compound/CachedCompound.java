@@ -135,6 +135,8 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
 //                throw new WTF();
 
 //            {
+//            if (op==CONJ && dt==DTERNAL && Conj.isSeq(sub(0).unneg()) && sub(0).containsRecursively(sub(1).neg()))
+//                Util.nop();
 //                if (op==CONJ && volume() != anon().volume())
 //                    throw new WTF("anon differ: "+toString()+'\n'+anon());
 

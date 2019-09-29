@@ -180,6 +180,7 @@ abstract public class Exec extends NARPart implements Executor {
                 else {
                     x.scheduled = true;
                     if (!scheduled.offer(x)) {
+                        x.scheduled = false;
                         throw new RuntimeException("scheduled priority queue overflow");
                     }
                 }

@@ -195,6 +195,8 @@ public enum ConjSeq { ;
                 //int center = events.centerByVolume(start, end);
                 left = sequenceBalancedTree(B, events, start, center + 1);
                 if (left == Null) return Null;
+                if (left == False)
+                    return False;
                 right = sequenceBalancedTree(B, events, center + 1, end);
                 long firstWhen = events.when(start);
                 dt = Tense.occToDT((events.when(center + 1) - firstWhen - left.eventRange()));
@@ -220,11 +222,13 @@ public enum ConjSeq { ;
             case 2: {
                 //optimized 2-ary case
                 Task a = events[0];
-                Task b = events[1];
-                if (a.op() != CONJ && b.op() != CONJ) {
-                    long as = a.start(), bs = b.start();
-                    assert(bs!=ETERNAL && as!=ETERNAL);
-                    return B.conjAppend(sequenceTerm(a), Tense.occToDT(Tense.dither(bs - as, ditherDT)), sequenceTerm(b));
+                if (a.op() != CONJ) {
+                    Task b = events[1];
+                    if (b.op() != CONJ) {
+                        long as = a.start(), bs = b.start();
+                        assert (bs != ETERNAL && as != ETERNAL);
+                        return B.conjAppend(sequenceTerm(a), Tense.occToDT(Tense.dither(bs - as, ditherDT)), sequenceTerm(b));
+                    }
                 }
                 break;
             }
@@ -244,9 +248,9 @@ public enum ConjSeq { ;
 
 
     private static Term sequenceLeafPair(int dt, Term left, Term right, TermBuilder B) {
-        if (dt == 0 || dt == DTERNAL) {
-            return B.conj(DTERNAL, left, right);
-        }
+//        if (dt == 0 || dt == DTERNAL) {
+//            return B.conj(DTERNAL, left, right);
+//        }
 //        assert (dt != XTERNAL);
 
         if (left == Null) return Null;
@@ -264,24 +268,8 @@ public enum ConjSeq { ;
         if (!left.op().eventable || !right.op().eventable)
             return Null;
 
-//        if ((left.op() == CONJ && right.op() == CONJ) && !left.equals(right)) {
-//            if (!Conj.isSeq(left) && !Conj.isSeq(right)) {
-//                if (eventsCommon(left, right) && !(Conj.eventOf(left,right) || Conj.eventOf(right,left)) ) {
-//                    //attempt reconsolidation if possible because factorization can be necessary
-//                    ConjTree c = new ConjTree();
-//                    c.addConjEvent(0, left);
-//                    c.addConjEvent(dt, right);
-//                    try {
-//                        return c.term(B);
-//                    } catch (StackOverflowError ee) {
-//                        throw new TermException("conj seq stack overflow", CONJ, dt, left, right);
-//                    }
-//                }
-//            }
-//        }
+
         int lr = left.compareTo(right);
-
-
         if (lr > 0) {
             dt = -dt;
             Term t = right;
@@ -291,19 +279,37 @@ public enum ConjSeq { ;
             //equal
             //sequence of repeating terms
             right = left; //share identity
-            if (dt < 0)
-                dt = -dt; //use positive dt only
-        }
+            if (dt < 0) {
+                dt = -dt;
 
-//        if (left.hasAny(CONJ) && right.hasAny(CONJ)) {
-//            ConjBuilder c = //new ConjList();
-//                new ConjTree();
-//            if (!c.addConjEvent(0, left))
-//                return Null;
-//            if (!c.addConjEvent(dt, right))
-//                return Null;
-//            if (c.eventOccurrences()!=2)
-//                return c.term(HeapTermBuilder.the);
+            }
+        }
+//        //HACK
+//        if ((left.unneg().op() == CONJ || right.unneg().op() == CONJ) && !left.equals(right)) {
+//               /* if (eventsCommon(left.unneg(), right.unneg())) */{
+//
+////                    try {
+//                        //attempt reconsolidation if possible because refactorization can be necessary
+//                        ConjList c =
+//                            new ConjList();
+//
+//                        c.addConjEvent(0, left);
+//                        c.addConjEvent(dt + left.eventRange(), right);
+//
+//                        ConjTree t = new ConjTree();
+//                        c.factor(t);
+//                        if (!t.isEmpty()) {
+//                            //something factored. i knew it
+//                            //add again.. this sux
+//                            t.clear();
+//                            if (t.addConjEvent(0, left))
+//                                t.addConjEvent(dt + left.eventRange(), right);
+//                            return t.term(B);
+//                        }
+////                    } catch (StackOverflowError ee) {
+////                        throw new TermException("conj seq stack overflow", CONJ, dt, left, right);
+////                    }
+//                }
 //        }
 
         return B.newCompound(CONJ, dt, left, right);

@@ -25,7 +25,6 @@ import nars.game.sensor.VectorSensor;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.time.Tense;
 import nars.time.When;
 import nars.truth.Truth;
 import nars.util.Timed;
@@ -501,7 +500,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             int dither = nar.dtDither();
 
             long now =
-                Tense.dither(nar.time(), dither);
+                nar.time();
+                //Tense.dither(nar.time(), dither);
 
             long prev = this.now;
             if (prev == ETERNAL) {

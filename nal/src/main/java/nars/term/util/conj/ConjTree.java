@@ -76,6 +76,12 @@ public class ConjTree implements ConjBuilder {
         } else if (pos.contains(p))
             return true;
 
+//        if (seq!=null) {
+//            for (ConjTree ts : seq.values())
+//                if (ts.neg.contains(p))
+//                    return false;
+//        }
+
         if (!neg.isEmpty()) {
             p = reducePN(p, neg, false); 
             if (p instanceof Neg)
@@ -119,6 +125,12 @@ public class ConjTree implements ConjBuilder {
 
         if (neg.contains(nu))
             return true;
+
+//        if (seq!=null) {
+//            for (ConjTree ts : seq.values())
+//                if (ts.pos.contains(nu))
+//                    return false;
+//        }
 
         if (!pos.isEmpty()) {
             nu = reducePN(nu, pos, true); 
@@ -300,7 +312,7 @@ public class ConjTree implements ConjBuilder {
             return False; //contradiction
 
 
-        boolean xConj = x.op() == CONJ;
+        boolean xConj = x instanceof Compound && x.opID() == CONJ.id;
         if (xConj && nP_or_pN) {
             for (Term yy : y)
                 if (Conj.eventOf(x, yy, -1))
@@ -477,7 +489,7 @@ public class ConjTree implements ConjBuilder {
         }
     }
 
-    private boolean isEmpty() {
+    public boolean isEmpty() {
         return size() == 0;
     }
 
@@ -644,6 +656,7 @@ public class ConjTree implements ConjBuilder {
                 if (hasConj) {
                     ready:
                     for (Term x : q) {
+                        x = x.unneg();
                         if (x instanceof Compound && x.op() == CONJ) {
                             int xv = x.volume();
                             for (Term y : q)
@@ -783,7 +796,7 @@ public class ConjTree implements ConjBuilder {
 
             if (!events.isEmpty()) {
 
-                events.factor(this, B);
+                events.factor(this);
                 if (terminal != null)
                     return terminal;
 

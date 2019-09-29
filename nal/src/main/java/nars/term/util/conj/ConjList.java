@@ -372,7 +372,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     }
 
 
-    void factor(ConjTree T, TermBuilder B) {
+    void factor(ConjTree T) {
 
         int n = size();
         if (n < 2)

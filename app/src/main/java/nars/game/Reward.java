@@ -136,9 +136,14 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		if (n > 0) {
 			float pri = this.pri.pri();
 				// *1f/Util.sqrt(n); //not too large or it will compete with the signal itself
-			for (Task t : reinforcement)
-				t.pri(pri);
-			game.what().acceptAll(reinforcement);
+
+//			for (Task t : reinforcement)
+//				t.pri(pri);
+//			game.what().acceptAll(reinforcement);
+
+			Task t = reinforcement.get(nar().random());
+			t.pri(pri);
+			game.what().accept(t);
 		}
 
 		//            DynamicTaskLink l = new DynamicTaskLink(lt) {
