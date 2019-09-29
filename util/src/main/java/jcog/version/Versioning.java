@@ -122,8 +122,8 @@ public class Versioning<X> {
     }
 
     public final boolean add(/*@NotNull*/ Versioned<X> newItem) {
-        if (newItem == null)
-            throw new NullPointerException();
+        //if (newItem == null)
+        //    throw new NullPointerException();
 
         Versioned<X>[] ii = this.items;
         if (ii.length > this.size) {

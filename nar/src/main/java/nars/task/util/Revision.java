@@ -150,7 +150,7 @@ public enum Revision {;
                         p.stampSample(STAMP_CAPACITY, nal.random())
                 )
         );
-        return pair(y, p);
+        return y != null ? pair(y, p) : null;
     }
 
     /** budget a revision result */

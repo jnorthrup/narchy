@@ -81,7 +81,8 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
      * returns a stream of constraints bundled by any multiple respective targets, and sorted by cost increasing
      */
     public static <U extends Unify> UnifyConstraint<U>[] the(Stream<UnifyConstraint<U>> c) {
-        return c.collect(Collectors.groupingBy(x -> x.x, Collectors.toCollection(FasterList::new))).values().stream()
+        return c
+            .collect(Collectors.groupingBy(x -> x.x, Collectors.toCollection(FasterList::new))).values().stream()
             .map(CompoundConstraint::the)
             .sorted(PREDICATE.sortByCostIncreasing)
             .map(UnifyConstraint::intern)
@@ -103,7 +104,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
             else if (ccn == 1)
                 return cc.get(0);
 
-            nextX: for (int i = 0, ccSize = cc.size(); i < ccSize; i++) {
+            nextX: for (int i = 0, ccSize = ccn; i < ccSize; i++) {
                 UnifyConstraint x = cc.get(i);
                 for (UnifyConstraint y : cc) {
                     if (x != y) {

@@ -145,7 +145,6 @@ public interface Variable extends Atomic, UnifyFirst {
                 unifyVar(u, x, y)
                 :
                 x.unify(y, u);
-                //unifyConstSafe(u, x, y);
     }
 
     @Override

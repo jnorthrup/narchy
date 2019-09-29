@@ -27,6 +27,7 @@ public class STMLinker extends TaskAction {
 
 	public STMLinker(int capacity) {
 		super();
+		single();
 		taskPunc(true,true,false,false);//all but questions and commands
 
 		this.capacity = capacity;

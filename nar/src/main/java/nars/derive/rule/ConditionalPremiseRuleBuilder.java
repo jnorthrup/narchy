@@ -649,7 +649,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 			}
 
 			return Stream.of(c);
-		}));
+		}).distinct());
 
 		//return theInterned(uu); //AFTER .. constraints can be added to in conclusion()
 	}
