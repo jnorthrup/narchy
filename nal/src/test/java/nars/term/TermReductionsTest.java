@@ -666,7 +666,7 @@ public class TermReductionsTest extends NarseseTest {
         assertEq(
 
                 "((inside(john,playground)==>inside(bob,kitchen))&&inside(bob,office))",
-                "(inside(bob,office)&|(inside(john,playground)==>inside(bob,kitchen)))");
+                "(inside(bob,office)&&(inside(john,playground)==>inside(bob,kitchen)))");
     }
 
     @Test

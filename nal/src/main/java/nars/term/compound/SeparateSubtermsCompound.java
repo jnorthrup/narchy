@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import jcog.data.list.FasterList;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
@@ -178,8 +179,13 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
-    public void addAllTo(Collection<Term> set) {
-        subterms().addAllTo(set);
+    public void addAllTo(Collection target) {
+        subterms().addAllTo(target);
+    }
+
+    @Override
+    public void addAllTo(FasterList target) {
+        subterms().addAllTo(target);
     }
 
     @Override

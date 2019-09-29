@@ -139,12 +139,17 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
             return y.equals(x);
         }
 
-    //    @Override
-    //    public boolean remainInAndWith(RelationConstraint c) {
-    //        if (c instanceof NotEqualRootConstraint || c instanceof SubOfConstraint)
-    //            return false;
-    //        return true;
-    //    }
+        @Override
+        public boolean remainInAndWith(RelationConstraint c) {
+            return
+                //subsumed by more specific types of inequality:
+                !(c instanceof NotEqualRootConstraint) &&
+                !(c instanceof SubOfConstraint) &&
+                !(c instanceof NotEqualAndNotRecursiveSubtermOf) &&
+                !(c instanceof EqualNegConstraint) &&
+                !(c instanceof NotEqualPosNegConstraint);
+            //TODO Volumecompare
+        }
 
         //    static final PREDICATE<PreDerivation> TaskOrBeliefHasNeg = new AbstractPred<>($$("TaskOrBeliefHasNeg")) {
     //
@@ -356,7 +361,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
      */
     public static final class NotEqualAndNotRecursiveSubtermOf extends RelationConstraint {
 
-        public static final Atom neqRCom = Atomic.atom("neqRCom");
+        private static final Atom neqRCom = Atomic.atom("neqRCom");
 
 
         public NotEqualAndNotRecursiveSubtermOf(Variable x, Variable y) {

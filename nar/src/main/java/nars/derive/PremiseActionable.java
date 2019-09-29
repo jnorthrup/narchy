@@ -8,16 +8,13 @@ import nars.NAL;
 import nars.Op;
 import nars.derive.action.PatternPremiseAction;
 import nars.derive.action.PremiseAction;
-import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
 import nars.term.control.AND;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 import nars.truth.MutableTruth;
 import nars.truth.PreciseTruth;
-import nars.truth.func.TruthFunction;
 
 import java.util.function.Predicate;
 
@@ -29,7 +26,6 @@ public class PremiseActionable  implements Predicate<Derivation> {
     public transient float pri;
     private transient byte punc;
 
-    private transient TruthFunction truthFunction;
     private transient boolean single;
     public transient PremiseAction action;
 
@@ -106,10 +102,9 @@ public class PremiseActionable  implements Predicate<Derivation> {
             tgt.add(new PremiseActionableInit(this));
 
             PREDICATE<Derivation> aa = ((PatternPremiseAction.TruthifyDeriveAction) action).action;
-            if(aa instanceof AND) {
-                for (Term a : aa.subterms())
-                    tgt.add((PREDICATE<Derivation>)a);
-            } else
+            if (aa instanceof AND)
+                aa.subterms().addAllTo(tgt);
+            else
                 tgt.add(aa);
 
             //TODO compiling FORKs?
@@ -126,17 +121,16 @@ public class PremiseActionable  implements Predicate<Derivation> {
         private final boolean single;
 
         public PremiseActionableInit(PremiseActionable p) {
-            this(p.punc, p.single, p.truthFunction, p.truth.clone());
+            this(p.punc, p.single, p.truth.clone());
         }
 
-        public PremiseActionableInit(byte punc, boolean single, TruthFunction _truthFunction, PreciseTruth _truth) {
+        public PremiseActionableInit(byte punc, boolean single, PreciseTruth t) {
             super($.funcFast(PremiseActionable.PREMISE_ACTION,
-                _truthFunction != null ? $.quote(_truthFunction) : Bool.True,
-                Op.puncAtom(punc),
-                $.the(single)));
+                $.the(single),
+                t!=null ? $.p($.quote(t.freq()), $.quote(t.conf()), Op.puncAtom(punc)) : Op.puncAtom(punc) ));
             this.punc = punc;
             this.single = single;
-            this._truth = _truth;
+            this._truth = t;
         }
 
         @Override

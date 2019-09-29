@@ -568,8 +568,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return true;
     }
 
-    default void addAllTo(Collection<Term> target) {
+    default void addAllTo(Collection target) {
         forEach(target::add);
+    }
+    default void addAllTo(FasterList target) {
+        target.ensureCapacity(subs());
+        forEach(target::addFast);
     }
 
     default /* final */ boolean impossibleSubStructure(int structure) {

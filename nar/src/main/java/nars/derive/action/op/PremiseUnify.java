@@ -23,7 +23,7 @@ abstract public class PremiseUnify extends AbstractPred<Derivation> {
     public final Taskify taskify;
 
     public PremiseUnify(Term taskPat, Term beliefPat, Taskify taskify) {
-        super($.func(UNIFY, $.p(taskPat, beliefPat)));
+        super($.func(UNIFY, $.p(taskPat, beliefPat), taskify.ref));
         this.taskPat = taskPat;
         this.beliefPat = beliefPat;
         this.order = fwd(taskPat, beliefPat);

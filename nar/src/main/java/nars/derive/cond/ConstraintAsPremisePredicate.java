@@ -98,7 +98,8 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
                 if (pp != this && pp instanceof RelationConstraintAsPremisePredicate) {
                     UnifyConstraint cc = ((RelationConstraintAsPremisePredicate) pp).constraint;
                     if (cc instanceof RelationConstraint) {
-                        if (!constraint.remainInAndWith((RelationConstraint) cc)) {
+                        RelationConstraint y = (RelationConstraint) cc;
+                        if (constraint.x.equals(y.x) && constraint.y.equals(y.y) && !constraint.remainInAndWith(y)) {
                             iterator.remove();
                             mod = true;
                         }

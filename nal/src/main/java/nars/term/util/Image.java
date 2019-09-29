@@ -201,17 +201,19 @@ public enum Image {
 
         assert(template.op()==INH && x.op()==INH);
 
-        if (!x.hasAny(Op.Temporal))
-            return template; //template should equal the expected result
+//        if (!x.hasAny(Op.Temporal))
+//            return template; //template should equal the expected result
 
         Subterms tt = template.subterms();
         Term subj = tt.sub(0), pred = tt.sub(1);
         if (subj.contains(Op.ImgInt)) {
-            Term y = x.sub(1).sub(normal.sub(1).subIndexFirst(z -> z.equals(pred)));
-            return Image.imageInt(x, y);
+            //Term y = x.sub(1).sub(normal.sub(1).subIndexFirst(z -> z.equals(pred)));
+            //return Image.imageInt(x, y);
+            return Image.imageInt(x, pred);
         } else if (pred.contains(Op.ImgExt)) {
-            Term y = x.sub(0).sub(normal.sub(0).subIndexFirst(z -> z.equals(subj)));
-            return Image.imageExt(x, y);
+            //Term y = x.sub(0).sub(normal.sub(0).subIndexFirst(z -> z.equals(subj)));
+            //return Image.imageExt(x, y);
+            return Image.imageExt(x, subj);
         } else
             throw new TermTransformException(x, template, "could not infer Image transform from template");
     }

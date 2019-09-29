@@ -1,6 +1,7 @@
 package nars.unify.constraint;
 
 import jcog.Util;
+import jcog.data.list.FasterList;
 import nars.$;
 import nars.NAL;
 import nars.Op;
@@ -80,7 +81,7 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
      * returns a stream of constraints bundled by any multiple respective targets, and sorted by cost increasing
      */
     public static <U extends Unify> UnifyConstraint<U>[] the(Stream<UnifyConstraint<U>> c) {
-        return c.collect(Collectors.groupingBy(x -> x.x, Collectors.toList())).values().stream()
+        return c.collect(Collectors.groupingBy(x -> x.x, Collectors.toCollection(FasterList::new))).values().stream()
             .map(CompoundConstraint::the)
             .sorted(PREDICATE.sortByCostIncreasing)
             .map(UnifyConstraint::intern)
@@ -101,6 +102,31 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
                 throw new UnsupportedOperationException();
             else if (ccn == 1)
                 return cc.get(0);
+
+            nextX: for (int i = 0, ccSize = cc.size(); i < ccSize; i++) {
+                UnifyConstraint x = cc.get(i);
+                for (UnifyConstraint y : cc) {
+                    if (x != y) {
+                        if (x instanceof RelationConstraint && y instanceof RelationConstraint) {
+                            RelationConstraint X = (RelationConstraint) x;
+                            RelationConstraint Y = (RelationConstraint) y;
+                            if (X.x.equals(Y.x) && X.y.equals(Y.y)) {
+                                if (!X.remainInAndWith(Y)) {
+                                    cc.set(i, null);
+                                    continue nextX;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            if (((FasterList)cc).removeNulls()) {
+                ccn = cc.size();
+                if (ccn == 0)
+                    throw new UnsupportedOperationException();
+                else if (ccn == 1)
+                    return cc.get(0);
+            }
 
             UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
             Arrays.sort(d, PREDICATE.sortByCostIncreasing);

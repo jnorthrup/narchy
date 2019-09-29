@@ -15,7 +15,6 @@ import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
-import nars.derive.rule.PremiseRule;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremisePreUnify;
 import nars.eval.Evaluation;
@@ -679,7 +678,7 @@ public class Derivation extends PreDerivation {
         Random rng = random;
         MutableRoulette roulette = new MutableRoulette(valid, i -> post[i].pri, wi -> 0, rng);
         FasterList<PREDICATE<Derivation>> program = new FasterList<>(512, PREDICATE.EmptyPredicateArray);
-        FasterList<PremiseRule> rules = new FasterList();
+//        FasterList<PremiseRule> rules = new FasterList();
 
         do {
 

@@ -306,7 +306,7 @@ public class Statement {
 //            }
 
 
-        if (recursionTest(op, dt, subject, predicate))
+        if (recursive(op, dt, subject, predicate))
             return Null;
 
         if (op == SIM) {
@@ -336,13 +336,33 @@ public class Statement {
         return t.negIf(negate);
     }
 
-    public static boolean recursionTest(Op op, int dt, Term subject, Term predicate) {
+    private static boolean recursive(Op op, int dt, Term subject, Term predicate) {
 
         if ((op != IMPL)
                 //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
                 || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
         ) {
-            ///if (subject.op().statement) //breakdown further?
+            //more fine grained inh/sim recursion test
+//            final int InhOrSim = INH.bit | SIM.bit;
+//            if (op.isAny(InhOrSim)) {
+//                if (subject instanceof Compound && subject.isAny(InhOrSim)) {
+//                    if (predicate instanceof Compound && predicate.op()==CONJ) {
+//                        if (((Compound) predicate).containsPosOrNeg(subject.sub(0)) || ((Compound) predicate).containsPosOrNeg(subject.sub(1)))
+//                            return true;
+//                    }
+//                    if (predicate.equals(subject.sub(0)) || predicate.equals(subject.sub(1)))
+//                        return true;
+//                }
+//                if (predicate instanceof Compound && predicate.isAny(InhOrSim)) {
+//                    if (subject instanceof Compound && subject.op()==CONJ) {
+//                        if (((Compound) subject).containsPosOrNeg(predicate.sub(0)) || ((Compound) subject).containsPosOrNeg(predicate.sub(1)))
+//                            return true;
+//                    }
+//                    if (subject.equals(predicate.sub(0)) || subject.equals(predicate.sub(1)))
+//                        return true;
+//
+//                }
+//            }
 
             if ((Terms.eqRCom(subject, predicate)))
                 return true;
