@@ -3,12 +3,12 @@ package nars.term.atom;
 import com.google.common.collect.DiscreteDomain;
 import com.google.common.collect.Range;
 import jcog.data.byt.util.IntCoding;
-import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.term.Term;
 import nars.term.anon.Intrin;
 
+import static nars.NAL.term.ANON_INT_MAX;
 import static nars.Op.INT;
 
 /**
@@ -16,11 +16,11 @@ import static nars.Op.INT;
  */
 public final class Int implements Intlike, The {
 
-	static final Int[] pos = new Int[NAL.term.ANON_INT_MAX];
-	private static final Int[] neg = new Int[NAL.term.ANON_INT_MAX];
+	static final Int[] pos = new Int[ANON_INT_MAX];
+	private static final Int[] neg = new Int[ANON_INT_MAX];
 
 	static {
-		for (int i = 0; i < NAL.term.ANON_INT_MAX; i++) {
+		for (int i = 0; i < ANON_INT_MAX; i++) {
 			pos[i] = new Int(i);
 			neg[i] = new Int(-i);
 		}
@@ -51,10 +51,10 @@ public final class Int implements Intlike, The {
 
     @Override
     public final short intrin() {
-	    if (i <= 255) {
+	    if (i <= ANON_INT_MAX) {
 	        if (i >= 0) {
 	            return (short) ((Intrin.INT_POSs<<8)|i);
-            } else if ( i >= -255) {
+            } else if ( i >= -ANON_INT_MAX) {
                 return (short) ((Intrin.INT_NEGs<<8)|(-i));
             }
         }
@@ -62,10 +62,10 @@ public final class Int implements Intlike, The {
     }
 
     public static Int the(int i) {
-		if (i >= 0 && i < NAL.term.ANON_INT_MAX) {
+		if (i >= 0 && i < ANON_INT_MAX) {
 			return pos[i];
 		} else {
-			if (i < 0 && i > -NAL.term.ANON_INT_MAX) {
+			if (i < 0 && i > -ANON_INT_MAX) {
 				return neg[-i];
 			} else {
 				return new Int(i);

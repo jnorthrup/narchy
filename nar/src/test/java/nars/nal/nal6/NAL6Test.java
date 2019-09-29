@@ -1169,7 +1169,7 @@ public class NAL6Test extends NALTest {
                 .confMin(0.4f)
                 .believe("(&&, x, --y, a)")
                 .believe("(&&, --x, y, b)")
-                .mustBelieve(cycles, "(a && b)", 0f, 0.45f)
+                .mustBelieve(cycles, "(a && b)", 0f, 0.81f)
         ;
     }
 

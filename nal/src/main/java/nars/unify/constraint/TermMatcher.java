@@ -8,31 +8,45 @@ import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.control.TermMatch;
 import nars.term.util.conj.Conj;
 import nars.term.var.VarPattern;
+import org.eclipse.collections.api.set.MutableSet;
 
 import javax.annotation.Nullable;
+
+import java.util.function.Function;
 
 import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
 
 abstract public class TermMatcher {
 
-    public static TermMatcher matchTerm(Term x, int depth) {
-        Op o = x.op();
-        assert (o != VAR_PATTERN);
+    public static void matchTerm(Term x, int depth, Function<?, Term> accessor, MutableSet pre) {
 
-        int xs = x.subStructure() & (~VAR_PATTERN.bit);
+        {
+            //structure constraint
 
-        int v = x.volume();
-        return (xs != 0 || v > 1) ? new IsHas(o, xs, v, depth) : new Is(o);
+            Op o = x.op(); assert (o != VAR_PATTERN);
+            int xs = x.subStructure() & (~VAR_PATTERN.bit);
+            TermMatcher s = xs != 0 ? new IsHas(o, xs, depth) : new Is(o);
+
+            pre.add(new TermMatch(s, accessor, depth));
+        }
+
+        {
+            //volume constraint
+            int v = x.volume();
+            if (v > 1)
+                pre.add(new TermMatch(new VolMin(v), accessor, depth));
+        }
     }
 
-    private static final Atom VOL_MIN = Atomic.atom("volMin");
+//    private static final Atom VOL_MIN = Atomic.atom("volMin");
 
-    static Term volMin(int volMin) {
-        return $.func(VOL_MIN, $.the(volMin));
-    }
+//    static Term volMin(int volMin) {
+//        return $.func(VOL_MIN, $.the(volMin));
+//    }
 
     /**
      * test the exact target, if found
@@ -162,6 +176,37 @@ abstract public class TermMatcher {
 //        }
     }
 
+    public final static class VolMin extends TermMatcher {
+        private final int volMin;
+        private final Atomic param;
+
+        public VolMin(int volMin) {
+            this.param = $.the(volMin); //volMin(volMin);
+            this.volMin = volMin;
+            assert(volMin > 1);
+        }
+
+        @Override
+        public Term param() {
+            return param;
+        }
+
+        @Override
+        public float cost() {
+
+            //all is more specific so should be prioritized ahead
+            //more # of bits decreases the cost
+            return 0.01f;
+
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term instanceof Compound && term.volume() >= volMin;
+        }
+
+    }
+
     /**
      * has the target in its structure, meaning it either IS or HAS
      * one of the true bits of the provide vector ("has any")
@@ -171,19 +216,17 @@ abstract public class TermMatcher {
         private static final Atom ALL = (Atom) Atomic.the("all");
         final int struct;
         private final boolean anyOrAll;
-        private final int volMin;
         private final Term param;
         private final float cost;
 
         public Has(Op op, boolean anyOrAll) {
-            this(op.bit, anyOrAll, 0);
+            this(op.bit, anyOrAll);
         }
 
-        public Has(int struct, boolean anyOrAll, int volMin) {
+        public Has(int struct, boolean anyOrAll) {
             this.struct = struct;
             this.anyOrAll = anyOrAll;
-            this.volMin = volMin;
-            this.param = $.p(Op.strucTerm(struct), anyOrAll ? ANY : ALL, volMin(volMin));
+            this.param = $.func(anyOrAll ? ANY : ALL, Op.strucTerm(struct));
             this.cost = Math.max(
                     (anyOrAll ? 0.21f : 0.19f) - 0.001f * Integer.bitCount(struct),
                     0.1f);
@@ -205,7 +248,7 @@ abstract public class TermMatcher {
 
         @Override
         public boolean test(Term term) {
-            return (anyOrAll ? term.hasAny(struct) : term.hasAll(struct)) && (volMin <= 1 || term.volume() >= volMin);
+            return (anyOrAll ? term.hasAny(struct) : term.hasAll(struct));
         }
 
 //        @Override
@@ -228,13 +271,12 @@ abstract public class TermMatcher {
 
         final int struct;
         final int structSubs;
-        private final int volMin;
         private final byte is;
 
         private final Term param;
         private final float cost;
 
-        private IsHas(Op is, int structSubs, int volMin, int depth) {
+        private IsHas(Op is, int structSubs, int depth) {
             assert(!is.atomic && depth > 0 || is!=NEG): "taskTerm or beliefTerm will never be --";
 
             this.is = is.id;
@@ -243,24 +285,19 @@ abstract public class TermMatcher {
 
             assert(Integer.bitCount(struct) >= Integer.bitCount(structSubs));
 
-            this.volMin = volMin;
-            this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + ((volMin-1)+Integer.bitCount(struct))));
+            this.cost = (0.07f + (0.01f * depth)) * (1f / (1 + (Integer.bitCount(struct))));
 
             Atom isParam = Op.the(this.is).strAtom;
-            if (structSubs != 0 && volMin > 1) {
-                this.param = $.p(isParam, Op.strucTerm(structSubs), volMin(volMin));
-            } else if (structSubs != 0) {
+            if (structSubs != 0) {
                 this.param = $.p(isParam, Op.strucTerm(structSubs));
             } else {
-                assert(volMin>1);
-                this.param = $.p(isParam, volMin(volMin));
+                this.param = isParam;
             }
         }
         @Override
         public boolean test(Term term) {
             return term instanceof Compound &&
                     term.opID() == is &&
-                    term.volume() >= volMin &&
                     (structSubs==0 || Op.hasAll(term.subStructure(), structSubs));
         }
 //

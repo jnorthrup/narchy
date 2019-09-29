@@ -427,7 +427,9 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 			}
 
 			case "hasVar": {
-				match(x, new TermMatcher.Has(Op.Variable, true, 2), !negated);
+				match(x, new TermMatcher.Has(Op.Variable, true), !negated);
+				if (!negated)
+					match(x, new TermMatcher.VolMin(2), !negated);
 				if (negated)
 					negationApplied = true;
 				break;
@@ -500,7 +502,9 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 		Function<PreDerivation, Term> rr = depth == 0 ? r : r.path(pp);
 
-		pre.add(new TermMatch<>(TermMatcher.matchTerm(t, depth), rr, depth));
+
+
+		TermMatcher.matchTerm(t, depth, rr, pre);
 
 		int n = t.subs();
 		if (!o.commutative || (n == 1 && o!=CONJ)) {
@@ -753,7 +757,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 	public void hasAny(Term x, Op o, boolean trueOrFalse) {
 		if (o == INT)
-			throw new RuntimeException("Premise Key memoizing erases Integers"); //HACK TODO
+			throw new TODO("Premise Key memoizing erases Integers"); //HACK TODO
 
 		match(x, new TermMatcher.Has(o, true), trueOrFalse);
 	}

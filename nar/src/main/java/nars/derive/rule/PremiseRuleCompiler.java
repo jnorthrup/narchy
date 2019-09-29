@@ -54,10 +54,12 @@ public enum PremiseRuleCompiler {
             FasterList<PREDICATE<Derivation>> pre = new FasterList<>(condition.length + 1);
             pre.addAll(condition);
 
+            PremiseAction conc = r.action.apply(nar);
+
             pre.add(new Forkable(/* branch ID */  i));
 
             PremiseAction added = paths.put(pre,
-                roots[i] = functionTransform.apply(r.action.apply(nar))
+                roots[i] = functionTransform.apply(conc)
             );
             assert (added == null);
 

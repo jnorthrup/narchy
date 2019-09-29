@@ -90,11 +90,11 @@ public class Deriver extends How {
 				.add(TaskResolve.the)
 
 				.add(new CompoundDecompose(true))
-				//.add(new CompoundDecompose(false))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
 				.add(new ImageUnfold())
 				//TODO functor evaluator
 				.compile()
+//			.print()
 			,
 			timing);
 	}

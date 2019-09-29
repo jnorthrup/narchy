@@ -286,8 +286,7 @@
 //    (--(&&,X,A..+) ==> Z), C, eventOf(C,X), eventOf(C,Z) |- --(&&,A..+), (Belief:Abduction, Time:Compose)
 
 
-//    (&&,X,--Y,A..+), (&&,Y,--X,B..+),neq(A..+,B..+)  |- (&&,--((&&,A..+) && (&&,B..+))), (Belief:Intersection)
-//
+
     (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
     (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
     (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
@@ -296,6 +295,8 @@
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neqPN(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB, Time:Compose)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neqPN(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB, Time:Compose)
 
+    //mutex disocciation
+    (&&,X,--Y,A..+), (&&,Y,--X,B..+)  |- --((&&,A..+) && (&&,B..+)), (Belief:Intersection, Time:Compose)
 
 
 //// multi-conditional syllogism ////////////////////////////////////////////////////////////////////////////////////

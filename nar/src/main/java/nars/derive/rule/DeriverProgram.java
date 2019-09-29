@@ -86,7 +86,7 @@ public class DeriverProgram {
 
             Forkable b = (Forkable)x;
 
-            out.println(b + " {");
+            out.println(b.getClass().getSimpleName().toLowerCase() + " {");
             for (short c : b.can) {
                 print(branch[c], out, indent+2);
             }
@@ -97,7 +97,7 @@ public class DeriverProgram {
             PremiseAction a = (PremiseAction)x;
 
             out.println(a.why.id + " ==> {");
-            Object aa = a;
+            Object aa;
             if (a instanceof PatternPremiseAction.TruthifyDeriveAction)
                 aa = ((PatternPremiseAction.TruthifyDeriveAction)a).action;
             else
@@ -108,7 +108,7 @@ public class DeriverProgram {
             Texts.indent(indent);out.println("}");
 
         } else if (x instanceof PremiseUnify) {
-            out.println(((PremiseUnify)x).term() + " ==> {");
+            out.println(((PremiseUnify)x).taskPat + ", " + ((PremiseUnify)x).beliefPat + " ==> {");
             print(((PremiseUnify)x).taskify, out, indent + 2);
             Texts.indent(indent);
             out.println("}");

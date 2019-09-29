@@ -18,13 +18,13 @@ import nars.term.util.builder.TermConstructor;
 import nars.term.util.transform.UnifyTest;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Random;
 
 import static nars.$.$;
 import static nars.$.$$;
-import static nars.Op.CONJ;
-import static nars.Op.PROD;
+import static nars.Op.*;
 import static nars.term.util.TermTest.assertEq;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -118,12 +118,12 @@ public class IntrinTest {
     @Test void Integers() {
         assertEquals((Intrin.INT_POSs<<8) | 0, Intrin.id(Int.the(0)));
         assertEquals((Intrin.INT_POSs<<8) | 1, Intrin.id(Int.the(1)));
-        assertEquals((Intrin.INT_POSs<<8) | 254, Intrin.id(Int.the(254)));
-        assertEquals((Intrin.INT_POSs<<8) | 255, Intrin.id(Int.the(255)));
-        assertEquals(0, Intrin.id(Int.the(256)));
+        assertEquals((Intrin.INT_POSs<<8) | 126, Intrin.id(Int.the(126)));
+        assertEquals((Intrin.INT_POSs<<8) | 127, Intrin.id(Int.the(127)));
+        assertEquals(0, Intrin.id(Int.the(128)));
         assertEquals((Intrin.INT_NEGs<<8) | 1, Intrin.id(Int.the(-1)));
-        assertEquals((Intrin.INT_NEGs<<8) | 254, Intrin.id(Int.the(-254)));
-        assertEquals((Intrin.INT_NEGs<<8) | 255, Intrin.id(Int.the(-255)));
+        assertEquals((Intrin.INT_NEGs<<8) | 126, Intrin.id(Int.the(-126)));
+        assertEquals((Intrin.INT_NEGs<<8) | 127, Intrin.id(Int.the(-127)));
 
         assertAnon("(_1-->1)", "(abc-->1)");
         assertAnon("(_1-->0)", "(abc-->0)");
@@ -375,4 +375,16 @@ public class IntrinTest {
         //assertEq(t, T);
         assertEquals(T.volume(), T.anon().volume(), ()->"difference:\n" + T + "\n" + T.anon());
     }
+
+    @Test void testPosInts_gt127() {
+        RoaringBitmap b = new RoaringBitmap();
+        b.add(134); b.add(135); b.add(136);
+        assertEq("x({{134,135,136}})", $.func("x", SETe.the($.sete(b)))); //beyond 127 intern limit
+    }
+    @Test void testNegInts_lt_minus127() {
+        RoaringBitmap b = new RoaringBitmap();
+        b.add(-134); b.add(-135); b.add(-136);
+        assertEq("x({{-136,-135,-134}})", $.func("x", SETe.the($.sete(b)))); //beyond 127 intern limit
+    }
+
 }
