@@ -624,11 +624,15 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */
 	private UnifyConstraint<Derivation>[] constraints(MutableSet<UnifyConstraint<Derivation>> constraints) {
-		return UnifyConstraint.the(constraints.stream().<UnifyConstraint<Derivation>>flatMap(c -> {
-//            PREDICATE<Derivation> post = cc.postFilter();
-//            if (post!=null) {
-//            }
-
+		UnifyConstraint[] constraintsCopy = constraints.toArray(UnifyConstraint.None);
+		return UnifyConstraint.the(constraints.stream().filter(c -> {
+			if (!c.remainAmong(constraintsCopy)) {
+				int cc = ArrayUtil.indexOfInstance(constraintsCopy, c);
+				constraintsCopy[cc] = null;
+				return false;
+			}
+			return true;
+		}).flatMap(c -> {
 			PREDICATE<PreDerivation> cc = preFilter(c, taskPattern, beliefPattern);
 			if (cc != null) {
 				pre.add(cc);

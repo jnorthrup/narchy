@@ -89,6 +89,24 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
             .toArray(x -> x == 0 ? UnifyConstraint.None : new UnifyConstraint[x]);
     }
 
+    public boolean remainAmong(UnifyConstraint[] constraintsCopy) {
+        UnifyConstraint x = this;
+        if (x instanceof RelationConstraint) {
+            for (UnifyConstraint y : constraintsCopy) {
+                if (x!=y && y instanceof RelationConstraint) {
+                        RelationConstraint X = (RelationConstraint) x;
+                        RelationConstraint Y = (RelationConstraint) y;
+                        if (X.x.equals(Y.x) && X.y.equals(Y.y)) {
+                            if (!X.remainInAndWith(Y)) {
+                                return false;
+                            }
+                        }
+                    }
+            }
+        }
+        return true;
+    }
+
     /** TODO group multiple internal relationconstraints for the same target so only one xy(target) lookup invoked to use with all */
     public static final class CompoundConstraint<U extends Unify> extends UnifyConstraint<U> {
 
@@ -104,30 +122,30 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
             else if (ccn == 1)
                 return cc.get(0);
 
-            nextX: for (int i = 0, ccSize = ccn; i < ccSize; i++) {
-                UnifyConstraint x = cc.get(i);
-                for (UnifyConstraint y : cc) {
-                    if (x != y) {
-                        if (x instanceof RelationConstraint && y instanceof RelationConstraint) {
-                            RelationConstraint X = (RelationConstraint) x;
-                            RelationConstraint Y = (RelationConstraint) y;
-                            if (X.x.equals(Y.x) && X.y.equals(Y.y)) {
-                                if (!X.remainInAndWith(Y)) {
-                                    cc.set(i, null);
-                                    continue nextX;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-            if (((FasterList)cc).removeNulls()) {
-                ccn = cc.size();
-                if (ccn == 0)
-                    throw new UnsupportedOperationException();
-                else if (ccn == 1)
-                    return cc.get(0);
-            }
+//            nextX: for (int i = 0, ccSize = ccn; i < ccSize; i++) {
+//                UnifyConstraint x = cc.get(i);
+//                for (UnifyConstraint y : cc) {
+//                    if (x != y) {
+//                        if (x instanceof RelationConstraint && y instanceof RelationConstraint) {
+//                            RelationConstraint X = (RelationConstraint) x;
+//                            RelationConstraint Y = (RelationConstraint) y;
+//                            if (X.x.equals(Y.x) && X.y.equals(Y.y)) {
+//                                if (!X.remainInAndWith(Y)) {
+//                                    cc.set(i, null);
+//                                    continue nextX;
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//            }
+//            if (((FasterList)cc).removeNulls()) {
+//                ccn = cc.size();
+//                if (ccn == 0)
+//                    throw new UnsupportedOperationException();
+//                else if (ccn == 1)
+//                    return cc.get(0);
+//            }
 
             UnifyConstraint[] d = cc.toArray(new UnifyConstraint[ccn]);
             Arrays.sort(d, PREDICATE.sortByCostIncreasing);

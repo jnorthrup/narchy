@@ -2834,7 +2834,7 @@ public enum ArrayUtil {
      * quick search for items by identity
      * returns first matching index, though others could exist
      */
-    public static int indexOfIdentity(Object[] xx, Object y) {
+    public static int indexOfInstance(Object[] xx, Object y) {
         for (int i = 0; i < xx.length; i++) {
             if (y == xx[i])
                 return i;
@@ -7754,7 +7754,7 @@ public enum ArrayUtil {
     }
 
     public static boolean containsIdentity(Object[] xx, Object x) {
-        return indexOfIdentity(xx,x)!=-1;
+        return indexOfInstance(xx,x)!=-1;
     }
 
     /**

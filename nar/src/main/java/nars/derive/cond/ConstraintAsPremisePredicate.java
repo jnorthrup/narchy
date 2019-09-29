@@ -5,14 +5,11 @@ import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.control.PREDICATE;
 import nars.unify.constraint.ConstraintAsPredicate;
 import nars.unify.constraint.RelationConstraint;
 import nars.unify.constraint.UnaryConstraint;
 import nars.unify.constraint.UnifyConstraint;
 
-import java.util.Iterator;
-import java.util.List;
 import java.util.function.BiFunction;
 
 abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C extends UnifyConstraint<U>> extends ConstraintAsPredicate<U,C> {
@@ -89,26 +86,27 @@ abstract public class ConstraintAsPremisePredicate<U extends PreDerivation, C ex
             super(id, m, extractX, extractY, cost);
         }
 
-        @Override
-        public boolean reduceIn(List<PREDICATE<PreDerivation>> p) {
-            boolean mod = false;
-
-            for (Iterator<PREDICATE<PreDerivation>> iterator = p.iterator(); iterator.hasNext(); ) {
-                PREDICATE pp = iterator.next();
-                if (pp != this && pp instanceof RelationConstraintAsPremisePredicate) {
-                    UnifyConstraint cc = ((RelationConstraintAsPremisePredicate) pp).constraint;
-                    if (cc instanceof RelationConstraint) {
-                        RelationConstraint y = (RelationConstraint) cc;
-                        if (constraint.x.equals(y.x) && constraint.y.equals(y.y) && !constraint.remainInAndWith(y)) {
-                            iterator.remove();
-                            mod = true;
-                        }
-                    }
-                }
-            }
-
-            return mod;
-        }
+        //constraint subsumption should have been handled already:
+//        @Override
+//        public boolean reduceIn(List<PREDICATE<PreDerivation>> p) {
+//            boolean mod = false;
+//
+//            for (Iterator<PREDICATE<PreDerivation>> iterator = p.iterator(); iterator.hasNext(); ) {
+//                PREDICATE pp = iterator.next();
+//                if (pp != this && pp instanceof RelationConstraintAsPremisePredicate) {
+//                    UnifyConstraint cc = ((RelationConstraintAsPremisePredicate) pp).constraint;
+//                    if (cc instanceof RelationConstraint) {
+//                        RelationConstraint y = (RelationConstraint) cc;
+//                        if (constraint.x.equals(y.x) && constraint.y.equals(y.y) && !constraint.remainInAndWith(y)) {
+//                            iterator.remove();
+//                            mod = true;
+//                        }
+//                    }
+//                }
+//            }
+//
+//            return mod;
+//        }
 
         @Override
         public boolean test(PreDerivation preDerivation) {

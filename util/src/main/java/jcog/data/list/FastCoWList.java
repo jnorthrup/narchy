@@ -265,7 +265,7 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         return ArrayUtil.indexOf(array(), object)!=-1;
     }
     public boolean containsInstance(Object object) {
-        return ArrayUtil.indexOfIdentity(array(), object)!=-1;
+        return ArrayUtil.indexOfInstance(array(), object)!=-1;
     }
 
     //@Override
