@@ -628,17 +628,10 @@ public abstract class Unify extends Versioning<Term> {
     protected class MyUnifyTransform extends AbstractUnifyTransform {
 
         @Override public final Term applyVariable(Variable v) {
-            //return Unify.this.resolveVar(v);
-            return Unify.this.resolveTermRecurse(v);
+            return Unify.this.resolveVar(v);
+            //return Unify.this.resolveTermRecurse(v);
         }
 
-//        @Override
-//        public final Term applyPosCompound(Compound x) {
-//            if (evalInline() || (size != 0 && x.hasAny(varBits)))
-//                return super.applyPosCompound(x);
-//            else
-//                return x;
-//        }
     }
 
 }
