@@ -326,8 +326,8 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                             if (t == null)
                                 return false;
                             else {
-                                if (t!=Termutator.CUT)
-                                    u.termutes.add(t);
+                                if (t!=Termutator.ELIDE)
+                                    u.termute(t);
                                 return true;
                             }
                         }
@@ -340,8 +340,8 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                         if (t == null)
                             return false;
                         else {
-                            if (t!=Termutator.CUT)
-                                u.termutes.add(t);
+                            if (t!=Termutator.ELIDE)
+                                u.termute(t);
                             return true;
                         }
                     }

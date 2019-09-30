@@ -8,6 +8,7 @@ import nars.Builtin;
 import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
+import nars.derive.PremiseActionable;
 import nars.derive.action.op.*;
 import nars.derive.cond.SingleOrDoublePremise;
 import nars.derive.premise.PremiseRuleNormalization;
@@ -24,14 +25,13 @@ import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.control.AND;
-import nars.term.control.PREDICATE;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunction;
 import nars.truth.func.TruthModel;
+import nars.unify.constraint.UnifyConstraint;
 import org.eclipse.collections.api.block.function.primitive.ByteToByteFunction;
 import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;
@@ -53,7 +53,7 @@ import static nars.time.Tense.DTERNAL;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
+public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
     private final TruthModel truthModel;
 
@@ -72,7 +72,7 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
 
 
 
-    public PatternPremiseAction(TruthModel truthModel) {
+    public PremisePatternAction(TruthModel truthModel) {
         this.truthModel = truthModel;
     }
 
@@ -85,12 +85,12 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
         }
     }
 
-    public static PatternPremiseAction parse(String ruleSrc) throws Narsese.NarseseException {
+    public static PremisePatternAction parse(String ruleSrc) throws Narsese.NarseseException {
         return parse(ruleSrc, NALTruth.the);
     }
 
-    public static PatternPremiseAction parse(String ruleSrc, TruthModel truthModel) throws Narsese.NarseseException {
-        PatternPremiseAction r = new PatternPremiseAction(truthModel);
+    public static PremisePatternAction parse(String ruleSrc, TruthModel truthModel) throws Narsese.NarseseException {
+        PremisePatternAction r = new PremisePatternAction(truthModel);
         r._parse(ruleSrc);
         return r;
     }
@@ -126,7 +126,7 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
 
         time = null;
 
-        Term[] modifiers = postcon != null && postcon.length > 1 ? postcon[1].arrayShared() : Op.EmptyTermArray;
+        Term[] modifiers = postcon.length > 1 ? postcon[1].arrayShared() : Op.EmptyTermArray;
 
         for (Term m : modifiers) {
             if (m.op() != Op.INH)
@@ -314,7 +314,7 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
     }
 
     public static Stream<PremiseRule> parse(Stream<String> rules) {
-        return rules.map(PatternPremiseAction::parseSafe).map(PremiseRuleBuilder::get).distinct();
+        return rules.map(PremisePatternAction::parseSafe).map(PremiseRuleBuilder::get).distinct();
     }
 
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
@@ -473,10 +473,6 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
 //    }
 
 
-    private PremiseAction action(PREDICATE<Derivation>[] y, RuleWhy cause) {
-        return new TruthifyDeriveAction(cause, truthify, AND.the(y));
-    }
-
     protected void commit() {
 
         super.commit();
@@ -613,18 +609,9 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
 
 
     @Override protected PremiseAction action(RuleWhy cause) {
-        Taskify taskify = new Taskify(termify, cause);
 
-        int numConstraints = CONSTRAINTS.length;
-        PREDICATE<Derivation>[] y = new PREDICATE[1 + numConstraints];
 
-        System.arraycopy(CONSTRAINTS, 0, y, 0, numConstraints);
-
-        y[numConstraints] = new DirectPremiseUnify(taskPattern, beliefPattern, taskify)
-                //new CachingPremisify //<- not ready yet
-                ;
-
-        return action(y, cause);
+        return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, termify, cause);
     }
 
 
@@ -684,13 +671,13 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
             if (f != Null) {
                 Subterms a = Functor.args(c);
                 if (f.equals(UniSubst.unisubst)) {
-                    Unifiable.constrainUnifiable(a, PatternPremiseAction.this);
+                    Unifiable.constrainUnifiable(a, PremisePatternAction.this);
                 } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
-                    Unifiable.constraintEvent(a, PatternPremiseAction.this, true);
+                    Unifiable.constraintEvent(a, PremisePatternAction.this, true);
                 } else if (f.equals(Derivation.SUBSTITUTE)) {
-                    Unifiable.constrainSubstitute(a, PatternPremiseAction.this);
+                    Unifiable.constrainSubstitute(a, PremisePatternAction.this);
                 } else if (f.equals(Derivation.CONJ_WITHOUT)) {
-                    Unifiable.constraintEvent(a, PatternPremiseAction.this, false);
+                    Unifiable.constraintEvent(a, PremisePatternAction.this, false);
                 }
 
                 Term cc = a.sub(0);
@@ -705,17 +692,26 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
         }
     };
 
-    public class TruthifyDeriveAction extends PremiseAction {
+    public final class TruthifyDeriveAction extends PremiseAction {
 
-        /** 2nd stage filter and evaluator/ranker */
         public final Truthify truth;
+        public final UnifyConstraint<Derivation>[] constraints;
+        public final DirectPremiseUnify unify;
 
-        public final PREDICATE<Derivation> action;
-
-        public TruthifyDeriveAction(RuleWhy cause, Truthify pre, PREDICATE<Derivation> post) {
+        public TruthifyDeriveAction(UnifyConstraint<Derivation>[] constraints, Truthify truth, Term taskPattern, Termify termify, RuleWhy cause) {
             super(cause);
-            this.action = post;
-            this.truth = pre;
+            this.truth = truth;
+            this.constraints = constraints;
+
+//            int numConstraints = CONSTRAINTS.length;
+//            PREDICATE<Derivation>[] y = new PREDICATE[1 + numConstraints];
+//
+//            System.arraycopy(CONSTRAINTS, 0, y, 0, numConstraints);
+
+            unify = new DirectPremiseUnify(taskPattern, beliefPattern, new Taskify(termify, cause));
+            //new CachingPremisify //<- not ready yet
+
+
         }
 
         /**
@@ -751,9 +747,30 @@ public class PatternPremiseAction extends ConditionalPremiseRuleBuilder {
 
         @Override
         public final void run(Derivation d) {
-            action.test(d);
+            int c = constraints.length;
+            if (c > 0) {
+                if (c == d.size()) {
+                    //constraints are same as previous derivation, so elide
+                    //Util.nop();
+                } else {
+                    for (UnifyConstraint cc : constraints)
+                        d.constrain(cc);
+                    assert(d.size()==c);
+                    d._patternActionConstraints = c;
+                }
+            } else {
+                assert(d.size()==0);
+                d._patternActionConstraints = 0;
+            }
+
+            //TODO savepoint
+
+            unify.test(d);
         }
 
+        public void pre(PremiseActionable a, Derivation d) {
+            d.ready(this, a.truth, a.punc, a.single);
+        }
     }
 }
 

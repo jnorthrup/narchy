@@ -269,7 +269,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
 
 
     @Override
-    public void clear() {
+    public final void clear() {
 
         if (list.clearIfChanged())
             clearSet();
@@ -306,7 +306,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return x;
     }
 
-	private final class ArrayHashSetIterator implements ListIterator<X> {
+    public void replace(int i, X y) {
+        set.remove(list.get(i));
+        list.setFast(i, y);
+        set.add(y);
+    }
+
+    private final class ArrayHashSetIterator implements ListIterator<X> {
 
         private final ListIterator<X> arrayListIterator;
         private X lastElementProvided;

@@ -23,7 +23,9 @@ public interface Termutator {
         return -1; /* unknown */
     }
 
-    /** @return null to terminate the entire chain; this for no change; or a reduced version (or NullTermutator for NOP) */
+    /** @return null to terminate the entire chain (CUT);
+     * this instance for no change
+     * or a reduced version (or NullTermutator for NOP) */
     @Nullable
     default Termutator preprocess(Unify u) {
         return this;
@@ -38,11 +40,9 @@ public interface Termutator {
 
     }
 
-    Termutator[] TerminateTermutator = new Termutator[0];
+    Termutator[] CUT = new Termutator[0];
 
-
-    /** null termutator - interrupts unification */
-    Termutator CUT = new AbstractTermutator(Atomic.atom("CUT")) {
+    Termutator ELIDE = new AbstractTermutator(Atomic.atom("ELIDE")) {
         @Override public void mutate(Termutator[] chain, int current, Unify u) {
             u.tryMutate(chain, current);
         }
@@ -51,7 +51,7 @@ public interface Termutator {
     /** constant result for return from preprocess() call
      * */
     static Termutator result(boolean success) {
-        return success ? Termutator.CUT : null;
+        return success ? Termutator.ELIDE : null;
     }
 
 }

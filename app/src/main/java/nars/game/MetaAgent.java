@@ -121,7 +121,9 @@ abstract public class MetaAgent extends Game {
 
         for (MetaGoal mg : MetaGoal.values()) {
             actionUnipolar($.inh(SELF, $.the(mg.name())), (x)-> {
-                nar.emotion.want(mg, Util.lerpLong(x, -1, +1));
+                nar.emotion.want(mg, Util.lerp(x,
+                    0,//-1,
+                    +1));
             });
         }
 

@@ -303,7 +303,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			}
 
 			if (e > 0) {
-				Util.nop();
 				if (e > 1)
 					throw new WTF();
 			}

@@ -1,20 +1,10 @@
 package nars.derive;
 
-import jcog.Texts;
-import jcog.data.list.FasterList;
 import jcog.decide.MutableRoulette;
-import nars.$;
 import nars.NAL;
-import nars.Op;
-import nars.derive.action.PatternPremiseAction;
 import nars.derive.action.PremiseAction;
-import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
-import nars.term.control.AND;
-import nars.term.control.AbstractPred;
-import nars.term.control.PREDICATE;
+import nars.derive.action.PremisePatternAction;
 import nars.truth.MutableTruth;
-import nars.truth.PreciseTruth;
 
 import java.util.function.Predicate;
 
@@ -24,9 +14,9 @@ public class PremiseActionable  implements Predicate<Derivation> {
     public final MutableTruth truth = new MutableTruth();
 
     public transient float pri;
-    private transient byte punc;
+    public transient byte punc;
 
-    private transient boolean single;
+    public transient boolean single;
     public transient PremiseAction action;
 
 
@@ -83,60 +73,20 @@ public class PremiseActionable  implements Predicate<Derivation> {
     }
 
     @Override public final boolean test(Derivation d) {
-        d.apply(truth, punc, single);
 
-        if (NAL.TRACE) {
-            System.out.println("$" + Texts.n4(action.pri(d)) + " " + action + "\t" + d);
-        }
-        action.run(d);
+        PremiseAction a = this.action;
+
+        if (NAL.TRACE)
+            a.trace(d);
+
+        if (a instanceof PremisePatternAction.TruthifyDeriveAction)
+            ((PremisePatternAction.TruthifyDeriveAction) a).pre(this, d);
+
+        a.run(d);
 
         return d.use(NAL.derive.TTL_COST_BRANCH);
     }
 
-    static final Atom PREMISE_ACTION = Atomic.atom(PremiseActionableInit.class.getSimpleName());
-
-    public final void compile(FasterList<PREDICATE<Derivation>> tgt) {
 
 
-        if (action instanceof PatternPremiseAction.TruthifyDeriveAction) {
-            tgt.add(new PremiseActionableInit(this));
-
-            PREDICATE<Derivation> aa = ((PatternPremiseAction.TruthifyDeriveAction) action).action;
-            if (aa instanceof AND)
-                aa.subterms().addAllTo(tgt);
-            else
-                tgt.add(aa);
-
-            //TODO compiling FORKs?
-
-        } else {
-            tgt.add(action);
-        }
-
-    }
-
-    private static final class PremiseActionableInit extends AbstractPred<Derivation> {
-        private final PreciseTruth _truth;
-        private final byte punc;
-        private final boolean single;
-
-        public PremiseActionableInit(PremiseActionable p) {
-            this(p.punc, p.single, p.truth.clone());
-        }
-
-        public PremiseActionableInit(byte punc, boolean single, PreciseTruth t) {
-            super($.funcFast(PremiseActionable.PREMISE_ACTION,
-                $.the(single),
-                t!=null ? $.p($.quote(t.freq()), $.quote(t.conf()), Op.puncAtom(punc)) : Op.puncAtom(punc) ));
-            this.punc = punc;
-            this.single = single;
-            this._truth = t;
-        }
-
-        @Override
-        public boolean test(Derivation d) {
-            d.apply(_truth, punc, single);
-            return true;
-        }
-    }
 }

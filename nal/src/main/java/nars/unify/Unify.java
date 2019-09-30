@@ -244,7 +244,7 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
         FasterList<Term> xyPairs = new FasterList(size * 2 /* estimate */);
 
         Termutator[] termutes = commitTermutes(true);
-        if (termutes == Termutator.TerminateTermutator)
+        if (termutes == Termutator.CUT)
             throw new TODO("this means fail");
 
         BiConsumer<Term, Term> eachXY = xyPairs::addAll;
@@ -285,18 +285,20 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
     private boolean couldMatch() {
         //just needs to detect if 'TerminateTermutator' is returned.  otherwise null or some other result is considered valid for proceeding
         Termutator[] t = commitTermutes(false);
-        return t!=Termutator.TerminateTermutator;
+        return t!=Termutator.CUT;
     }
 
     protected boolean matches() {
         Termutator[] t = commitTermutes(true);
-        if (t == null)
-            match();
-        else if (t == Termutator.TerminateTermutator)
+        if (t == Termutator.CUT)
             return false;
-        else
-            matches(t);
-        return true;
+        else {
+            if (t == null)
+                match();
+            else
+                matches(t);
+            return true;
+        }
     }
 
     public void matches(Termutator[] t) {
@@ -312,33 +314,29 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
                 Termutator x = tl.get(i);
                 @Nullable Termutator y = x.preprocess(this);
                 if (y == null) {
-                    termutes.clear();
-                    return Termutator.TerminateTermutator;
-                } else if (y == Termutator.CUT) {
+                    //CUT
+                    return Termutator.CUT;
+                } else if (y == Termutator.ELIDE) {
                     tl.remove(i);
                     i--;
                     ts--;
-                } else if (x!=y)
-                    tl.setFast(i, y);
-            }
-            if (ts==0)
-                return null;
-
-
-            if (finish) {
-                Termutator[] tt = tl.toArrayRecycled(Termutator[]::new);
-                termutes.clear();
-
-                if (NAL.SHUFFLE_TERMUTES && tt.length > 1) {
-                    Util.shuffle(tt, random);
+                } else if (!x.equals(y)) {
+                    termutes.replace(i, y);
                 }
+            }
+            if (ts > 0 && finish) {
+
+                Termutator[] tt = tl.toArray(Termutator.CUT /* 0 len array */);
+
+                if (NAL.SHUFFLE_TERMUTES && tt.length > 1)
+                    Util.shuffle(tt, random);
 
                 return tt;
-            } else
-                return null;
-        } else {
-            return null;
+
+            }
         }
+
+        return null;
     }
 
     @Override
@@ -350,8 +348,6 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
     public Unify clear(@Nullable Consumer<Versioned<Term>> each) {
 
         revert(0, each);
-
-        termutes.clear();
 
         return this;
     }
@@ -560,6 +556,34 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
             return y instanceof TermList ? (TermList) y : y.toList();
         else
             return null;
+    }
+
+    private final Versioned PopTermute = new Versioned() {
+
+        @Override
+        public Object get() {
+            return null;
+        }
+
+        @Override
+        public void pop() {
+            termutes.poll();
+        }
+
+        @Override
+        public boolean set(Object nextValue, Versioning context) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
+        public boolean replace(Object y, Versioning context) {
+            throw new UnsupportedOperationException();
+        }
+    };
+
+    public void termute(Termutator t) {
+        if (termutes.add(t))
+            this.xy.context.add(PopTermute);
     }
 
 

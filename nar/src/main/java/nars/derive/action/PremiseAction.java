@@ -1,5 +1,6 @@
 package nars.derive.action;
 
+import jcog.Texts;
 import nars.NAL;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleWhy;
@@ -48,5 +49,9 @@ public abstract class PremiseAction extends AbstractPred<Derivation>  {
 	public final boolean test(Derivation d) {
 		run(d);
 		return d.use(NAL.derive.TTL_COST_BRANCH);
+	}
+
+	public void trace(Derivation d) {
+		System.out.println("$" + Texts.n4(pri(d)) + " " + this + "\t" + d);
 	}
 }

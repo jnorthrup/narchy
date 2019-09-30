@@ -47,7 +47,7 @@ import static spacegraph.SpaceGraph.window;
 public class TrackXY_NAR extends GameX {
 
 	static boolean
-		sourceNumerics = false,
+		sourceNumerics = true,
 		targetNumerics = false,
 		targetCam = !targetNumerics,
 		gui = true;
@@ -218,7 +218,7 @@ public class TrackXY_NAR extends GameX {
 
 
 		n.freqResolution.set(0.01f);
-		//n.confMin.evi(NAL.truth.EVI_MIN);
+		n.confMin.evi(0);
 //        n.confResolution.set(0.05f);
 
 

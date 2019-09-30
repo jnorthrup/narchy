@@ -128,7 +128,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
                 if (a == null && b == null) {
                     //match remainder to xEllipsis and succeed
-                    return xEllipsis.unify(Fragment.fragment(yy), u) ? CUT : null;
+                    return xEllipsis.unify(Fragment.fragment(yy), u) ? ELIDE : null;
                 } else if (a == null) {
                     return Choose1.choose1(xEllipsis, b, yy, u);
                 } else if (b == null) {

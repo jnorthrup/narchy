@@ -8,7 +8,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
-import nars.derive.action.PatternPremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.derive.cond.CommutativeConstantPreFilter;
 import nars.derive.cond.ConstraintAsPremisePredicate;
 import nars.derive.cond.SingleOrDoublePremise;
@@ -452,7 +452,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 
 			case "task":
-				if (this instanceof PatternPremiseAction) {
+				if (this instanceof PremisePatternAction) {
 					//HACK ignore; handled in subclass
 				} else
 					throw new UnsupportedOperationException();

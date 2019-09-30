@@ -6,8 +6,8 @@ import nars.Op;
 import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.PreDeriver;
-import nars.derive.action.PatternPremiseAction;
 import nars.derive.action.PremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.derive.action.op.PremiseUnify;
 import nars.derive.util.Forkable;
 import nars.term.control.AND;
@@ -16,6 +16,7 @@ import nars.term.control.PREDICATE;
 import nars.term.control.SWITCH;
 
 import java.io.PrintStream;
+import java.util.Arrays;
 import java.util.stream.Stream;
 
 /**
@@ -90,8 +91,8 @@ public class DeriverProgram {
 
             out.println(a.why.id + " ==> {");
             Object aa;
-            if (a instanceof PatternPremiseAction.TruthifyDeriveAction)
-                aa = ((PatternPremiseAction.TruthifyDeriveAction)a).action;
+            if (a instanceof PremisePatternAction.TruthifyDeriveAction)
+                aa = Arrays.toString(((PremisePatternAction.TruthifyDeriveAction)a).constraints) + " " + ((PremisePatternAction.TruthifyDeriveAction)a).unify;
             else
                 aa = a.toString();
 

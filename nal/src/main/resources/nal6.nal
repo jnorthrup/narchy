@@ -166,7 +166,11 @@
 
 
 
-     (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
+     //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
+     (M ==> P), (M ==> S)  |- (M ==> (P && S)), (Belief:IntersectionPP, Time:Compose)
+     (M ==> P), (M ==> S)  |- (M ==> (P && --S)), (Belief:IntersectionPN, Time:Compose)
+     (M ==> P), (M ==> S)  |- (M ==> (--P && S)), (Belief:IntersectionNP, Time:Compose)
+     (M ==> P), (M ==> S)  |- (M ==> (--P && --S)), (Belief:IntersectionNN, Time:Compose)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)

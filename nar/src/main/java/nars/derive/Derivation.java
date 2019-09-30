@@ -3,14 +3,13 @@ package nars.derive;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.ShortBuffer;
-import jcog.data.list.FasterList;
-import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.derive.action.PremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
 import nars.derive.premise.AbstractPremise;
@@ -24,7 +23,6 @@ import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.*;
-import nars.term.control.PREDICATE;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
 import nars.term.util.transform.AbstractTermTransform;
@@ -109,6 +107,9 @@ public class Derivation extends PreDerivation {
     public When<What> when;
 
     transient Deriver.DeriverExecutor exe = null;
+
+    private PremisePatternAction.TruthifyDeriveAction _patternAction;
+    public int _patternActionConstraints = -1;
 
 
     private Term polarize(Term arg, MutableTruth t) {
@@ -606,6 +607,8 @@ public class Derivation extends PreDerivation {
     /** returns appropriate Emotion counter representing the result state  */
     FastCounter derive(Premise P, int deriveTTL) {
 
+        _patternAction = null;
+
         Premise p;
         Emotion e = nar.emotion;
 
@@ -664,81 +667,40 @@ public class Derivation extends PreDerivation {
         }
     }
 
-    private void runCompiled(int valid, int lastValid, Derivation derivation) {
-        if (valid == 1) {
-            PremiseActionable.runDirect(valid, lastValid, derivation);
-            return;
-        }
-
-        int instructionChunk = Math.min(4, ttl); //HACK
-
-        int ic = 0;
-//        float[] pri = new float[valid];
-//        for (int i = 0; i < valid; i++)
-//            pri[i] = post[i].pri;
-        Random rng = random;
-        MutableRoulette roulette = new MutableRoulette(valid, i -> post[i].pri, wi -> 0, rng);
-        FasterList<PREDICATE<Derivation>> program = new FasterList<>(512, PREDICATE.EmptyPredicateArray);
-//        FasterList<PremiseRule> rules = new FasterList();
-
-        do {
-
-            program.clear/*Fast*/();
-
-            int nextChunkEnd = Math.min(ic + instructionChunk, valid), k;
-            for (k = 0; ic < nextChunkEnd; k++, ic++) {
-                int next = roulette.next();
-                if (next == -1)
-                    break; //?
-                PremiseActionable a = post[next];
-
-                a.compile(program);
-//                if (!(a.action instanceof NativePremiseAction)) {
 //
+//    private void ensureClear() {
 //
-//                    if (!PremiseRuleCompiler.factorFork(rules, x -> AND.the(rules)).test(this))
-//                        break;
+//        if (size!=0)
+//            throw new WTF();
+//        if (!termutes.isEmpty())
+//            throw new WTF();
 //
-//                } else {
-//                    program.add((PREDICATE)a);
-//                }
-            }
-
-//            {
-//                //A. direct interpet
-                PREDICATE[] _program = program.array();
-                for (int i = 0, programSize = program.size(); i < programSize; i++) {
-                    if (!_program[i].test(this))
-                        break;
-                }
-//            }
-
-
-
-
-
-        } while (ic < valid);
-
-    }
-
-    private void ensureClear() {
-
-        if (size!=0)
-            throw new WTF();
-        if (!termutes.isEmpty())
-            throw new WTF();
-
-    }
-
-    public void apply(Truth truth, byte punc, boolean single) {
+//    }
+    /** reset procedure */
+    @Deprecated public void ready(PremisePatternAction.TruthifyDeriveAction next, Truth truth, byte punc, boolean single) {
         //ensureClear();
-        this.clear();
+
+        int revertTo;
+        PremisePatternAction.TruthifyDeriveAction prev = this._patternAction;
+        if (prev!=null) {
+            //TODO
+            if (Arrays.equals(prev.constraints, next.constraints)) {
+                revertTo = prev.constraints.length;
+            } else {
+                revertTo = 0;
+            }
+        } else {
+            revertTo = 0;
+            _patternActionConstraints = 0;
+        }
+        this._patternAction = next;
+
+        this.revert(revertTo);
 
         this.retransform.clear();
         this.truth.set(truth);
         this.punc = punc;
         this.single = single;
-        //this.truthFunction = truthFunction;
     }
 
     public boolean hasBeliefTruth() {

@@ -219,7 +219,7 @@ public class EllipsisTest {
 
         @Override
         public void testFurther(Set<Term> selectedFixed, @NotNull Unify f, @NotNull Set<Term> varArgTerms) {
-            assertEquals(2, f.xy.size());
+            assertEquals(2, f.xy.keySet().size());
             Term fixedTermValue = f.resolveVar(fixedTerm);
             assertNotNull(fixedTermValue, f.toString());
             assertTrue(fixedTermValue instanceof Atomic);

@@ -79,7 +79,7 @@ public class TrackXY  {
 
     /** linear distance from current to target */
     public float dist() {
-        return (float) Math.sqrt(Util.sqr(tx - cx) + Util.sqr(ty - cy));
+        return (float) Math.sqrt(Util.sqr(Math.max(0.5f,Math.abs(tx - cx))-0.5f) + Util.sqr(Math.max(0.5f,Math.abs(ty - cy))-0.5f));
     }
 
     public void control(float dcx, float dcy) {

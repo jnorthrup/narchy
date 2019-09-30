@@ -73,7 +73,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
             }
 
             if (preUnified)
-                return Termutator.CUT; //done
+                return Termutator.ELIDE; //done
 
             return new CommutivePermutations(x, y);
         } else

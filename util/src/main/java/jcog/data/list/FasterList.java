@@ -1085,10 +1085,9 @@ public class FasterList<X> extends FastList<X> {
         return true;
     }
 
-    public void stats(PrintStream out) {
 
 
-    }
+
 
     /**
      * modified from MutableIterator

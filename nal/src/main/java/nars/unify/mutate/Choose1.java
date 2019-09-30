@@ -52,7 +52,7 @@ public class Choose1 extends Termutator.AbstractTermutator {
         switch (ys) {
             case 1:
                 assert (ellipsis.minArity == 0);
-                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? CUT : null;
+                return x.unify(yFree.first(), u) && ellipsis.unify(Fragment.empty, u) ? ELIDE : null;
             case 2:
                 //check if both elements actually could match x0.  if only one can, then no need to termute.
                 //TODO generalize to n-terms
@@ -64,9 +64,9 @@ public class Choose1 extends Termutator.AbstractTermutator {
                 if (!a && !b) {
                     return null; //impossible
                 } else if (a && !b) {
-                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? CUT : null;
+                    return x.unify(aa, u) && ellipsis.unify(bb, u) ? ELIDE : null;
                 } else if (/*b &&*/ !a) {
-                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? CUT : null;
+                    return x.unify(bb, u) && ellipsis.unify(aa, u) ? ELIDE : null;
                 } //else: continue below
                 break;
 //                            default:

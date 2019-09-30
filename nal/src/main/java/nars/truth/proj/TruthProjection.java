@@ -65,7 +65,7 @@ abstract public class TruthProjection extends TaskList {
 	 */
 	public Term term = null;
 
-	static final boolean eternalizeComponents = false;
+	public boolean eternalizeComponents = false;
 
 	/**
 	 * used in final calculation of to start/end time intervals
@@ -442,7 +442,7 @@ abstract public class TruthProjection extends TaskList {
 					assert(false); //shouldnt
 			} else {
 				//keep union
-				Util.nop();
+
 			}
 		}
 
@@ -722,6 +722,11 @@ abstract public class TruthProjection extends TaskList {
 			update();
 		}
 
+		return this;
+	}
+
+	public TruthProjection eternalizeComponents(boolean b) {
+		this.eternalizeComponents = b;
 		return this;
 	}
 

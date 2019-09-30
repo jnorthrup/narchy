@@ -5,7 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;
 import nars.NAR;
-import nars.derive.action.PatternPremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.derive.action.PremiseAction;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class PremiseRuleSet {
     public final ArrayHashSet<PremiseRule> rules;
 
     public PremiseRuleSet(NAR nar, String... rules) {
-        this(nar, PatternPremiseAction.parse(rules));
+        this(nar, PremisePatternAction.parse(rules));
     }
 
     public PremiseRuleSet(NAR nar, Stream<PremiseRule> r) {
@@ -57,7 +57,7 @@ public class PremiseRuleSet {
             e.printStackTrace();
             bb = ArrayUtil.EMPTY_BYTE_ARRAY;
         }
-        return PatternPremiseAction.parse(load(bb)).collect(Collectors.toList());
+        return PremisePatternAction.parse(load(bb)).collect(Collectors.toList());
 
     }, 64, false);
 
@@ -104,7 +104,7 @@ public class PremiseRuleSet {
 
 
     public final PremiseRuleSet add(String... metalNALRules) {
-        return add(PatternPremiseAction.parse(metalNALRules));
+        return add(PremisePatternAction.parse(metalNALRules));
     }
 
     public final PremiseRuleSet add(PremiseRuleBuilder r) {

@@ -935,7 +935,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //                    return x0.unify(yy.getFirstFast(), u);
             return xx.getFirstFast().unify(yy.getFirstFast(), u);
         } else {
-            u.termutes.add(new CommutivePermutations(x.equals(xx) ? x : xx, y.equals(yy) ? y : yy));
+            u.termute(new CommutivePermutations(x.equals(xx) ? x : xx, y.equals(yy) ? y : yy));
             return true;
         }
 

@@ -237,13 +237,6 @@ public class Occurrify extends TimeGraph {
     @Override
     public void clear() {
         super.clear();
-        clearSolutions();
-    }
-
-    /**
-     * doesnt clear the graph
-     */
-    public void clearSolutions() {
         solutions.clear();
     }
 

@@ -48,10 +48,10 @@
     X, C, has(C,"--"), --conjParallel(C)        |-  conjBefore(C, --X),  (Belief:DeductionNP,   Time:TaskEvent)
       C, X, has(C,"--"), --conjParallel(C)      |-  conjBefore(C, --X),  (Belief:DeductionPN, Time:BeliefEvent)
 
-    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DesirePP, Time:TaskEvent)
-    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DesirePN, Time:TaskEvent)
-    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DesireNP, Time:TaskEvent)
-    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DesireNN, Time:TaskEvent)
+    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:TaskEvent)
+    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DeductionPN, Time:TaskEvent)
+    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
+    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
 
     X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskEvent)
     X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskEvent)

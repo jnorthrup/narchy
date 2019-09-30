@@ -3,7 +3,7 @@ package nars.derive;
 import nars.$;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.action.PatternPremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.derive.premise.PatternTermBuilder;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleBuilder;
@@ -78,7 +78,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = PatternPremiseAction.parse("A, A |- (A,A), (Belief:Intersection)");
+            PremiseRuleBuilder x = PremisePatternAction.parse("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
 
 
@@ -89,7 +89,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = PatternPremiseAction.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -98,7 +98,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = PatternPremiseAction.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
+            PremiseRuleBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -115,7 +115,7 @@ class PremiseRuleTest {
 //        }
 
 
-        PremiseRuleBuilder x = PatternPremiseAction.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
+        PremiseRuleBuilder x = PremisePatternAction.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
 
 
         assertEquals(vv, x.id.volume());
@@ -134,7 +134,7 @@ class PremiseRuleTest {
 
     @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
-                ()-> PatternPremiseAction.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
+                ()-> PremisePatternAction.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
     }
 
     @Test
@@ -162,7 +162,7 @@ class PremiseRuleTest {
     }
 
     @Deprecated private static void assertConcPattern(String r, String s) throws Narsese.NarseseException {
-        PatternPremiseAction p = PatternPremiseAction.parse(r);
+        PremisePatternAction p = PremisePatternAction.parse(r);
         p.get();
         assertEq(s, p.termify.pattern);
     }
@@ -326,7 +326,7 @@ TODO - share unification state for different truth/conclusions
 
     @Test
     void printTermRecursive() throws Narsese.NarseseException {
-        Compound y = (Compound) PatternPremiseAction.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
+        Compound y = (Compound) PremisePatternAction.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
         Terms.printRecursive(System.out, y);
     }
 
