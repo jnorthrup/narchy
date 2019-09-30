@@ -177,7 +177,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         }
 
         //quick chest for absorb or conflict
-        int n = size();
+        int n = size;
         if (n > 0) {
             long[] W = this.when;
             Term[] X = this.items;
@@ -284,7 +284,7 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         if (B instanceof InterningTermBuilder) {
             long w0 = when[0];
             boolean allParallel = true;
-            for (int i = 1, whenLength = when.length; i < whenLength; i++) {
+            for (int i = 1; i < n; i++) {
                 if (when[i] != w0) {
                     allParallel = false;
                     break; //difference

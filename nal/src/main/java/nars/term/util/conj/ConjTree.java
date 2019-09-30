@@ -189,13 +189,13 @@ public class ConjTree implements ConjBuilder {
         //assert (nx.op() != NEG);
 
 
-        boolean xConj = nx.op() == CONJ;
+        boolean xConj = nx.opID() == CONJ.id;
 
         FasterList<Term> toAdd = null;
         Term nxn = null;
         for (Iterator<Term> nyi = neg.iterator(); nyi.hasNext(); ) {
             final Term ny = nyi.next();
-            boolean yConj = ny.op() == CONJ;
+            boolean yConj = ny.opID() == CONJ.id;
             //int nys = ny.structure();
             //disj
             //                //Robbins Algebra / Huntington Reduction
@@ -228,7 +228,11 @@ public class ConjTree implements ConjBuilder {
             //                }
             //
             if (yConj) {
-
+                if (Conj.eventOf(ny, nx)) {
+                    //short-circuit
+                    nyi.remove();
+                    continue;
+                }
                 if (nxn == null) nxn = nx.neg();
 
                 if (Conj.eventOf(ny, nxn)) {
@@ -243,10 +247,6 @@ public class ConjTree implements ConjBuilder {
                         return z;
                     } else
                         toAdd.add(z);
-                    continue;
-                } else if (Conj.eventOf(ny, nx)) {
-                    //short-circuit
-                    nyi.remove();
                     continue;
                 }
             }

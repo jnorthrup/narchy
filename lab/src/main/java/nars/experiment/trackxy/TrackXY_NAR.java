@@ -24,6 +24,8 @@ import nars.sensor.Bitmap2DSensor;
 import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
+import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
+import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.graph.GraphEdit2D;
@@ -57,7 +59,7 @@ public class TrackXY_NAR extends GameX {
 //    static float fps = 16;
 //    static int durMS = Math.round(1000/(fps));
 
-	static int dur = 4;
+	static int dur = 16;
 
 	static float camResolution = 0.1f;
 	static int experimentTime = 3000000;
@@ -70,7 +72,7 @@ public class TrackXY_NAR extends GameX {
 		super($$("trackXY"),
 			//FrameTrigger.cycles(W*H*2),
 			GameTime.durs(1),
-			//FrameTrigger.fps(fps),
+			//GameTime.fps(1),
 			nar
 		);
 
@@ -307,18 +309,18 @@ public class TrackXY_NAR extends GameX {
 //
 //        }
 		n.start(a);
-		((TaskLinkWhat) a.what()).links.linksMax.set(128);
+		((TaskLinkWhat) a.what()).links.linksMax.set(256);
 
 
 		n.synch();
 
 		Exe.runLater(() -> {
-			g.add(NARui.game(a)).posRel(0.5f, 0.5f, 0.4f, 0.3f);
+			window(NARui.game(a), 800, 600);
 			g.add(NARui.top(n)).posRel(0.5f, 0.5f, 0.2f, 0.1f);
-			g.add(NARui.attentionUI(n)).sizeRel(0.25f, 0.25f);
+			g.add(NARui.attentionUI(n)).sizeRel(0.1f, 0.1f);
 
 			if (a.cam != null) {
-				g.add(Splitting.column(new VectorSensorChart(a.cam, a) {
+				Splitting<?, ?> vv = Splitting.column(new VectorSensorChart(a.cam, a) {
 					@Override
 					protected void paint(GL2 gl, ReSurface reSurface) {
 						super.paint(gl, reSurface);
@@ -326,7 +328,9 @@ public class TrackXY_NAR extends GameX {
 						gl.glColor4f(1, 0, 0, 0.9f);
 						Draw.rect(at.move(x(), y(), 0.01f), gl);
 					}
-				}.withControls(), 0.1f, new ObjectSurface(a.track))).posRel(0.5f, 0.5f, 0.3f, 0.3f);
+				}.withControls(), 0.1f, new ObjectSurface(a.track));
+				window(vv, 640,480);
+				//g.add(vv).posRel(1f, 1f, 0.1f, 0.1f);
 
 				//});
 			}
@@ -528,27 +532,30 @@ public class TrackXY_NAR extends GameX {
 
 	private void actionPushButton() {
 
-
-		actionPushButton($.inh(id, "right"), (b) -> {
-			if (b)
-				track.cx = Util.clamp(track.cx + track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-		});
-		actionPushButton($.inh(id, "left"), (b) -> {
-			if (b)
-				track.cx = Util.clamp(track.cx - track.controlSpeed.floatValue(), 0, track.grid.width() - 1);
-		});
+		actionPushButton($.inh(id, "right"), movement(+1, 0));
+		actionPushButton($.inh(id, "left"), movement(-1, 0));
 
 		if (track.grid.height() > 1) {
-			actionPushButton($.inh(id, "up"), (b) -> {
-				if (b)
-					track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-			});
-			actionPushButton($.inh(id, "down"), (b) -> {
-				if (b)
-					track.cy = Util.clamp(track.cy - track.controlSpeed.floatValue(), 0, track.grid.height() - 1);
-			});
+			actionPushButton($.inh(id, "up"), movement(0, +1));
+			actionPushButton($.inh(id, "down"), movement(0, -1));
 		}
+	}
 
+	@NotNull
+	private BooleanPredicate movement(float dx, float dy) {
+		return (b) -> {
+			if (b) {
+				float speed = track.controlSpeed.floatValue();
+				float nextCX = Util.clamp(track.cx + dx * speed, 0, track.grid.width() - 1);
+				float nextCY = Util.clamp(track.cy + dy * speed, 0, track.grid.height() - 1);
+				if (track.cx != nextCX || track.cy!=nextCY) {
+					track.cx = nextCX;
+					track.cy = nextCY;
+					return true;
+				}
+			}
+			return false;
+		};
 	}
 
 	private void actionPushButtonMutex() {

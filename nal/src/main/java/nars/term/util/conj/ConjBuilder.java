@@ -111,7 +111,7 @@ public interface ConjBuilder {
 
         if (x instanceof Compound) {
 
-            if (x.op() == CONJ)
+            if (x.opID() == CONJ.id)
                 return addConjEvent(at, x);
 
         }

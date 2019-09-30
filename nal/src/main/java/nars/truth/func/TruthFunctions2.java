@@ -315,7 +315,7 @@ public enum TruthFunctions2 {
         }
         //mode 2:
         {
-            //f = Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
+//            f = Util.lerp(alignment, 0.5f, 1);  //vanish toward maybe
         }
 
         return tt(f, c);

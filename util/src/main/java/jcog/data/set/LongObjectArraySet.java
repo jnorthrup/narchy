@@ -225,11 +225,12 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         int s = addAndGetSize(t);
 
         //match long[] to the Object[] capacity
-        if (this.when.length < s) {
-            this.when = Arrays.copyOf(this.when, items.length);
+        long[] ww = this.when;
+        if (ww.length < s) {
+            this.when = ww = Arrays.copyOf(ww, items.length);
         }
 
-        this.when[s - 1] = w;
+        ww[s - 1] = w;
     }
 
     @Override

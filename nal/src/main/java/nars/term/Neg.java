@@ -112,7 +112,10 @@ import static nars.term.atom.Bool.Null;
         public Op op() {
             return NEG;
         }
-
+        @Override
+        public int opID() {
+            return NEG.id;
+        }
         @Override
         public Term concept() {
             return Neg.super.concept();
@@ -152,6 +155,11 @@ import static nars.term.atom.Bool.Null;
         @Override
         public Op op() {
             return NEG;
+        }
+
+        @Override
+        public int opID() {
+            return NEG.id;
         }
 
         @Override
@@ -218,7 +226,10 @@ import static nars.term.atom.Bool.Null;
         public Op op() {
             return NEG;
         }
-
+        @Override
+        public int opID() {
+            return NEG.id;
+        }
         @Override
         public Term concept() {
             return Neg.super.concept();

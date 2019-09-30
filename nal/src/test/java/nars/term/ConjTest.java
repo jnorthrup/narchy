@@ -2320,4 +2320,10 @@ class ConjTest {
         Random rng = new XoRoShiRo128PlusRandom(1);
         assertEquals(unifies, $$(x).unify($$(y), new SubUnify(rng)));
     }
+    @Test void wtftwf() {
+        ConjList c = new ConjList();
+        c.add(ETERNAL, $$("(--,((--x &&+220 x) &&+60 x))"));
+        c.add(ETERNAL, $$("--x"));
+        assertEq("(--,x)", c.term());
+    }
 }
