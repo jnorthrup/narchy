@@ -1,13 +1,12 @@
 package nars.derive.action;
 
-import jcog.pri.Prioritized;
 import nars.NAL;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleWhy;
 import nars.term.control.AbstractPred;
 
 /** rankable branch in the derivation fork */
-public abstract class PremiseAction extends AbstractPred<Derivation> implements Prioritized {
+public abstract class PremiseAction extends AbstractPred<Derivation>  {
 
 //	public final PriNode pri;
 
@@ -29,14 +28,13 @@ public abstract class PremiseAction extends AbstractPred<Derivation> implements 
 		return why.hashCode();
 	}
 
-	public final float pri() {
-		return why.pri;
-		//return pri.pri();
-	}
+//	public final float pri() {
+//		return why.pri;
+//	}
 
 	public final float pri(Derivation d) {
-		float v = priElseZero();
-		return v >= Float.MIN_NORMAL ? v * Math.min(1, priHeuristic(d)) : 0;
+		float v = why.pri; //priElseZero();
+		return v >= Float.MIN_NORMAL ? v * priHeuristic(d) : 0;
 	}
 
 	/** can implement derivation-dependent gating functions in subclasses here. should return a value <= 1 */

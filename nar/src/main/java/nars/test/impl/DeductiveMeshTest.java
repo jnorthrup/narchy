@@ -10,8 +10,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.HashSet;
 import java.util.Set;
 
-import static nars.time.Tense.ETERNAL;
-
 /**
  * TODO abstract edge() for different relation types:
  * similarity
@@ -73,9 +71,10 @@ public class DeductiveMeshTest {
     }
 
     public void ask(TestNAR n, Term term) {
-        n.nar.question(term, ETERNAL, (q, a) -> {
-            //System.out.println(a.proof())
-        });
+        n.nar.question(term);
+//        n.nar.question(term, ETERNAL, (q, a) -> {
+//            //System.out.println(a.proof())
+//        });
     }
 
     @Nullable

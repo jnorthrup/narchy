@@ -8,14 +8,15 @@ import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.pid.MiniPID;
 import jcog.learn.ql.HaiQae;
-import jcog.math.FloatAveragedWindow;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.util.ArrayUtil;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.control.*;
+import nars.control.MetaGoal;
+import nars.control.NARPart;
+import nars.control.Why;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
@@ -54,14 +55,15 @@ import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
+import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -213,6 +215,7 @@ abstract public class GameX extends Game {
 
         n.runLater(()-> {
             window(NARui.top(n), 1024, 800);
+            window(new Gridding(n.parts(Game.class).map(g->NARui.game(g)).collect(toList())), 1024, 768);
         });
 
 
@@ -744,8 +747,8 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 3;
-        float momentum = 0.5f;
-        float explorationRate = 0.1f;
+        float momentum = 0.75f;
+        float explorationRate = 0.15f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
@@ -753,29 +756,34 @@ abstract public class GameX extends Game {
                 float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
                 @Override
-                public void accept(FasterList<Why> whys) {
-                    int ww = whys.size();
+                public void accept(FasterList<Why> w) {
+                    int ww = w.size();
                     if (f.length != ww)
                         f = new float[ww];
-                    int i = 0;
-                    float basePri = 1f/ww;
-                    for (Why w : whys) {
-                        float r = w.valueRaw();
+
+                    float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
+                    for (int i = 0, whysSize = w.size(); i < whysSize; i++) {
+                        float r = w.get(i).valueRaw();
+
+                        if (r!=r) r = 0;
                         float v;
-                        if (r == r)
+                        //if (r == r)
                             f[i] = v = lerp(momentum, r, f[i]);
-                        else
-                            v = f[i];
-
-                        w.setPri(valueToPri(basePri,v));
-                        i++;
+//                        else
+//                            v = f[i];
+                        min = Math.min(v, min); max = Math.max(v, max);
                     }
+                    if (Util.equals(min, max)) {
+                        Arrays.fill(f, explorationRate);
+                    } else {
+                        float basePri = explorationRate * (max - min);
 
+                        for (int i = 0, whysSize = w.size(); i < whysSize; i++) {
+                            w.get(i).setPri(basePri + Util.normalize(f[i], min, max));
+                        }
+                    }
                 }
 
-                float valueToPri(float basePri, float v) {
-                    return basePri + v;
-                }
             };
 
 
@@ -783,32 +791,32 @@ abstract public class GameX extends Game {
             public void accept(NAR nn) {
                 MetaGoal.value(nn, reval);
 
-                PartBag<How> H = nn.how;
-
-                int numHow = H.size();
-                if (numHow == 1) {
-                    H.get(0).pri(1);
-                } else {
-
-                    H.forEach(h -> {
-
-
-                        FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
-                        if (g == null)
-                            h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
-                                FloatAveragedWindow.Mode.Exponential
-                                //FloatAveragedWindow.Mode.Mean
-                            );
-
-                        float v = h.valueRateNormalized;
-                        if (v != v) v = 0;
-
-                        float vSmooth = g.valueOf(v);
-                        float ee = explorationRate;
-                        float vE = lerp(vSmooth, ee / 2, 1 - ee / 2);
-                        h.pri(vE);
-                    });
-                }
+//                PartBag<How> H = nn.how;
+//
+//                int numHow = H.size();
+//                if (numHow == 1) {
+//                    H.get(0).pri(1);
+//                } else {
+//
+//                    H.forEach(h -> {
+//
+//
+//                        FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
+//                        if (g == null)
+//                            h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
+//                                FloatAveragedWindow.Mode.Exponential
+//                                //FloatAveragedWindow.Mode.Mean
+//                            );
+//
+//                        float v = h.valueRateNormalized;
+//                        if (v != v) v = 0;
+//
+//                        float vSmooth = g.valueOf(v);
+//                        float ee = explorationRate;
+//                        float vE = lerp(vSmooth, ee / 2, 1 - ee / 2);
+//                        h.pri(vE);
+//                    });
+//                }
                 //nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
                 //System.out.println();
             }

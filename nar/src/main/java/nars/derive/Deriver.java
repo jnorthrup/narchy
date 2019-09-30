@@ -65,7 +65,7 @@ public class Deriver extends How {
 
 	final ThreadLocal<DeriverExecutor> exe = ThreadLocal.withInitial(_exe);
 
-	public DeriverProgram rules;
+	public DeriverProgram program;
 
 
 	/**
@@ -80,12 +80,12 @@ public class Deriver extends How {
 	float PREMISE_SHIFT_OTHER = 0.9f;
 	float PREMISE_SHIFT_RANDOM = 0.5f;
 
-	public Deriver(PremiseRuleSet rules) {
-		this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming());
+	public Deriver(PremiseRuleSet program) {
+		this(program, new NonEternalTaskOccurenceOrPresentDeriverTiming());
 	}
 
-	public Deriver(PremiseRuleSet rules, TimeFocus timing) {
-		this(rules
+	public Deriver(PremiseRuleSet program, TimeFocus timing) {
+		this(program
 				//HACK adds standard derivation behaviors
 				.add(TaskResolve.the)
 
@@ -99,10 +99,10 @@ public class Deriver extends How {
 			timing);
 	}
 
-	public Deriver(DeriverProgram rules, TimeFocus timing) {
+	public Deriver(DeriverProgram program, TimeFocus timing) {
 		super();
-		NAR nar = rules.nar;
-		this.rules = rules;
+		NAR nar = program.nar;
+		this.program = program;
 		this.timing = timing;
 
 		nar.start(this);
@@ -134,7 +134,7 @@ public class Deriver extends How {
 	@Override
 	public float value() {
 		//TODO cache this between cycles
-		double v = Util.sumDouble(Why::pri, rules.causes());
+		double v = Util.sumDouble(Why::pri, program.why);
 		//System.out.println(this + " " + v);
 		return (float) v;
 	}

@@ -288,18 +288,21 @@ public enum TruthFunctions2 {
 //        float impFp = 2 * (impF - 0.5f);
 //        float preAlign = yFp * impFp;
 //        float preAlign = 1-Math.abs(yF - impF);
-        float dyf = Math.abs(yF - 0.5f);
-        float dimpl = Math.abs(impF - 0.5f);
+        float dyf = (yF - 0.5f)*2;
+        float dimpl = (impF - 0.5f)*2;
         //normalize to the maximum dynamic range
 //        float range = Math.max(dyf, dimpl);
 //
 //        dimpl = dimpl / range;
 //        dyf = dyf / range;
 
-        float alignment = //dyf*dimpl * 4;
-                dyf * dimpl * 2 + 0.5f;
-        if(opposite)
-            alignment = 1 - alignment;
+        float alignment = dyf * dimpl;
+
+        //hard:
+        if (alignment < Float.MIN_NORMAL) //negative
+            return null;
+        //soft:
+        //alignment = alignment/2 + 0.5f; //crossover
 
         float f;
         //mode 1:

@@ -222,14 +222,37 @@ public class NAL8Test extends NALTest {
     @Test
     void testBelievedImplOfDesire() {
 
-        TestNAR t = test;
-        t
-                .goal("x")
-                .believe("(x==>y)")
-                .mustGoal(cycles, "y", 1f, 0.81f);
+        test
+            .goal("x")
+            .believe("(x==>y)")
+            .mustGoal(cycles, "y", 1f, 0.81f);
+    }
+    @Test
+    void testBelievedImplOfDesireAt() {
+
+        test
+            .input("y! |")
+            .believe("(x ==>+1 y)")
+            .mustGoal(cycles, "x", 1f, 0.81f, 0);
     }
 
+    @Disabled @Test void antigoal() {
+        //B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskImmediate)
+//        test
+//            .input("--y!")
+//            .believe("(x ==> y)")
+//            .mustGoal(cycles, "x", 0f, 0.81f);
+//        test
+//            .input("y!")
+//            .believe("(x ==> --y)")
+//            .mustGoal(cycles, "x", 0f, 0.81f);
+//        test
+//            .input("y! %0.50%")
+//            .believe("(x ==> --y)")
+//            .mustGoal(cycles, "x", 0.5f, 0.81f)
+//            .mustGoal(cycles, "x", 0f, 0.81f);
 
+    }
 //    @Test
 //    void testGoalConjunctionDecomposeNeg() {
 //        test

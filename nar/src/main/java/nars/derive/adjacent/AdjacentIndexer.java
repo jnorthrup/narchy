@@ -20,7 +20,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 
 	protected boolean cache(Term target) {
 		//return target instanceof Atom;
-		return target.volume() <= 3;
+		return target.volume() <= 5;
 	}
 
 	@Override

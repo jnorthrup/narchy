@@ -624,7 +624,7 @@ public class Derivation extends PreDerivation {
                 reset(p.task(), p.belief(), p.beliefTerm());
             //} catch
 
-            can = deriver.rules.pre.apply(this);
+            can = deriver.program.pre.apply(this);
             if (can.length == 0)
                 return e.premiseUnderivable1;
         }
@@ -635,7 +635,7 @@ public class Derivation extends PreDerivation {
 
             this.preReady();
 
-            PremiseAction[] branch = this.deriver.rules.branch;
+            PremiseAction[] branch = this.deriver.program.branch;
 
             PremiseActionable[] self = this.post;
             for (int i = 0; i < can.length; i++) {
@@ -826,7 +826,7 @@ public class Derivation extends PreDerivation {
     public ShortBuffer preDerive() {
         canCollector.clear();
 
-        deriver.rules.what.test(this);
+        deriver.program.what.test(this);
 //        try {
 //            deriverMH.invoke(this);
 //        } catch (Throwable throwable) {

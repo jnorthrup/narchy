@@ -47,7 +47,7 @@ class RuleInductionTest {
 
         Deriver d = new Deriver(r);
 
-        d.rules.print();
+        d.program.print();
 
 
         n.time.dur(dur);

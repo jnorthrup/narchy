@@ -51,14 +51,6 @@ public class DeriverProgram {
         this.pre = pre;
     }
 
-    /**
-     * the conclusions that in which this deriver can result
-     */
-    public Why[] causes() {
-        return why;
-    }
-
-
 
     public DeriverProgram print() {
         return print(System.out);

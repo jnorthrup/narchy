@@ -110,11 +110,15 @@ public class NARui {
 
     public static Surface top(NAR n) {
         return new Bordering(
-                    AttentionUI.
-
-                        objectGraphs(n)
-                        //graphGraph(n)
-                    ).east(new TabMenu(menu(n)/* , new WallMenuView() */ ))
+                    new Splitting(
+                        attentionUI(n),
+                        0.5f, false,
+                        new TabMenu(menu(n)/* , new WallMenuView() */ )
+                    ).resizeable()
+//                    AttentionUI.
+//                        objectGraphs(n)
+//                        //graphGraph(n)
+                    )
                     .north(ExeCharts.runPanel(n))
                     //.south(new OmniBox(new NarseseJShellModel(n))) //+50mb heap
                     ;
@@ -131,7 +135,7 @@ public class NARui {
     public static HashMap<String, Supplier<Surface>> menu(NAR n) {
         Map<String, Supplier<Surface>> m = Map.of(
                 //"shl", () -> new ConsoleTerminal(new TextUI(n).session(10f)),
-                "nar", () -> new ObjectSurface(n, 1),
+                "nar", () -> new ObjectSurface(n, 2),
                 "on", () -> new ObjectSurface(n.whens().entrySet(), 2),
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),

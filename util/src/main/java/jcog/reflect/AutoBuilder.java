@@ -32,7 +32,7 @@ public class AutoBuilder<X, Y> {
     public final Map<Predicate, Function<X, Y>> onCondition;
 
     int maxClassBuilders/* per object*/ = 1;
-    boolean recurseOnlyUnmatched = true;
+    boolean recurseOnlyUnmatched = false;
 
     final AutoBuilding<X, Y> building;
     private final int maxDepth;

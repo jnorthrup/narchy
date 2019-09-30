@@ -54,6 +54,11 @@
       <version>2.0.9</version>
       <scope>compile</scope>
     </dependency>
+    <dependency>
+      <groupId>io.jenetics</groupId>
+      <artifactId>jenetics.prog</artifactId>
+      <version>5.0.1</version>
+    </dependency>
 
     <dependency>
       <groupId>org.boofcv</groupId>
