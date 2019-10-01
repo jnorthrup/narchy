@@ -21,6 +21,8 @@ import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
+import java.util.function.Supplier;
+
 import static nars.Op.BELIEF;
 import static nars.time.Tense.ETERNAL;
 
@@ -39,15 +41,13 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     final PriNode pri;
 
 	@Skill({"Curiosity", "Central_pattern_generator","Phantom_limb"})
-    protected final FasterList<Task> reinforcement = new FasterList<>();
+    protected final FasterList<Supplier<Task>> reinforcement = new FasterList<>();
 
     protected Reward(Term id, Game g) {
     	this.id = id;
         this.game = g;
 
-        this.pri = new PriNode(id) {
-
-		};
+        this.pri = new PriNode(id);
 
     }
 
@@ -87,11 +87,22 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
         }
     }
 
+	public void reinforceTemporal(Termed x, byte punc, Truth truth, long[] stamp) {
+		Term goal = x.term();
 
+		if (goal instanceof Neg) {
+			throw new UnsupportedOperationException();
+		}
 
-    public Task reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
+		synchronized (reinforcement) {
+			reinforcement.add(() ->
+				NALTask.the(goal, punc, truth, nar().time(), game.nowWhat.start, game.nowWhat.end, stamp)
+			);
+		}
+	}
+
+    public void reinforceEternal(Termed x, byte punc, Truth truth, long[] stamp) {
         Term goal = x.term();
-
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
 		if (goal instanceof Neg) {
@@ -101,8 +112,10 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		}
         Task t = NALTask.the(goal, punc, truth, nar().time(), ETERNAL, ETERNAL, stamp);
 
-        reinforcement.add(t);
-        return t;
+		synchronized(reinforcement) {
+			reinforcement.add(()->t);
+		}
+        //return t;
 //        @Nullable EternalTable eteTable = ((BeliefTables) ((TaskConcept) g).goals()).tableFirst(EternalTable.class);
 //        eteTable.insert(t); //insert directly
         //game.what().accept(t);
@@ -141,9 +154,14 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //				t.pri(pri);
 //			game.what().acceptAll(reinforcement);
 
-			Task t = reinforcement.get(nar().random());
-			t.pri(pri);
-			game.what().accept(t);
+			Supplier<Task> t = reinforcement.get(nar().random());
+			if (t!=null) {
+				Task tt = t.get();
+				if (tt!=null) {
+					tt.pri(pri);
+					game.what().accept(tt);
+				}
+			}
 		}
 
 		//            DynamicTaskLink l = new DynamicTaskLink(lt) {

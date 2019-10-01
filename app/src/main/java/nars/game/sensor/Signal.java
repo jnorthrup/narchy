@@ -111,6 +111,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
 
     /** combined phases */
     public final void input(Truth next, float pri, short[] cause, When<What> g) {
+//        assert(pri > ScalarValue.EPSILON); //HACK
         input(next, cause, g);
         commit(pri, g);
     }

@@ -9,8 +9,9 @@
   //(I <-> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) <-> M)), (Belief:StructuralDeductionDD)
 
 //Self Factor
-(X --> Y), (X --> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) --> conjWithout(Y,X))), (Belief:StructuralReduction)
-  (X <-> Y), (X <-> Y), eventCommon(X,Y)  |-  polarizeTask((conjWithout(X,Y) <-> conjWithout(Y,X))), (Belief:StructuralReduction)
+(X --> Y), (X --> Y), eventCommon(X,Y)  |-  (conjWithout(X,Y) --> conjWithout(Y,X)), (Belief:StructuralDeduction)
+  (X <-> Y), (X <-> Y), eventCommon(X,Y)  |-  (conjWithout(X,Y) <-> conjWithout(Y,X)), (Belief:StructuralDeduction)
+//TODO StructuralDeductionN ?
 
 
 //NAL3 single premise question/quest decompose
@@ -36,6 +37,7 @@
   (M --> X), (M --> C),  eventOf(C,X)     |-    --(M-->conjWithout(C,   X)), (Belief:DeductionPN, Time:Task)
 (M --> C), (M --> X),  eventOfNeg(C,X)    |-   --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Time:Task)
  (M --> X), (M --> C),  eventOfNeg(C,X)   |-  --(M-->conjWithout(C, --X)), (Belief:DeductionNN, Time:Task)
+
 
 
 

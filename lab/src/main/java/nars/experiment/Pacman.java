@@ -11,15 +11,17 @@ import nars.game.GameTime;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.SwingBitmap2D;
 
+import static nars.$.$$;
+
 
 public class Pacman extends GameX {
 
     private final PacmanGame g;
 
     public Pacman(NAR nar) {
-        super("Pac",
+        super($$("Pac"),
                 //GameTime.durs(0.5f),
-                GameTime.fps(20f)
+                GameTime.fps(20f),nar
 		);
 
         this.g = new PacmanGame();

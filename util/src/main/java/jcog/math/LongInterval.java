@@ -245,6 +245,10 @@ public interface LongInterval {
 	}
 
 
+	default long meanTimeTo(long s, long e) {
+		long ds = meanTimeTo(s);
+		return s==e ? ds : (ds + meanTimeTo(e))/2;
+	}
 
 	default long meanTimeTo(long x) {
 		if (x == ETERNAL)

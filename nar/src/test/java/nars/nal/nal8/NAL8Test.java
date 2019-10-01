@@ -80,6 +80,20 @@ public class NAL8Test extends NALTest {
 
     }
 
+    @Test
+    void simpleConjBeliefAndGoalPP() {
+        test
+            .input("x! |")
+            .input("(x && y).")
+            .mustGoal(cycles, "y", 1.0f, 0.81f, 0);
+    }
+    @Test
+    void simpleConjBeliefAndGoalNP() {
+        test
+            .input("--x! |")
+            .input("(--x && y).")
+            .mustGoal(cycles, "y", 1.0f, 0.81f, 0);
+    }
 
     @Test
     void firstGoalConjunctionEvent() {

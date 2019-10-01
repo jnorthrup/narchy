@@ -9,7 +9,6 @@ import nars.*;
 import nars.attention.What;
 import nars.control.CauseMerge;
 import nars.derive.action.PremiseAction;
-import nars.derive.action.PremisePatternAction;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
 import nars.derive.premise.AbstractPremise;
@@ -107,10 +106,6 @@ public class Derivation extends PreDerivation {
     public When<What> when;
 
     transient Deriver.DeriverExecutor exe = null;
-
-    private PremisePatternAction.TruthifyDeriveAction _patternAction;
-    public int _patternActionConstraints = -1;
-
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
@@ -607,8 +602,6 @@ public class Derivation extends PreDerivation {
     /** returns appropriate Emotion counter representing the result state  */
     FastCounter derive(Premise P, int deriveTTL) {
 
-        _patternAction = null;
-
         Premise p;
         Emotion e = nar.emotion;
 
@@ -677,25 +670,10 @@ public class Derivation extends PreDerivation {
 //
 //    }
     /** reset procedure */
-    @Deprecated public void ready(PremisePatternAction.TruthifyDeriveAction next, Truth truth, byte punc, boolean single) {
+    @Deprecated public void ready(Truth truth, byte punc, boolean single) {
         //ensureClear();
 
-        int revertTo;
-        PremisePatternAction.TruthifyDeriveAction prev = this._patternAction;
-        if (prev!=null) {
-            //TODO
-            if (Arrays.equals(prev.constraints, next.constraints)) {
-                revertTo = prev.constraints.length;
-            } else {
-                revertTo = 0;
-            }
-        } else {
-            revertTo = 0;
-            _patternActionConstraints = 0;
-        }
-        this._patternAction = next;
-
-        this.revert(revertTo);
+        this.clear();
 
         this.retransform.clear();
         this.truth.set(truth);

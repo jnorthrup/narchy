@@ -35,9 +35,13 @@ public class Gradius extends GameX {
     int lastScore;
 
     public static void main(String[] args) {
-        GameX.runRT(nn -> {
-            Gradius g = new Gradius(nn);
-            nn.start(g);
+        GameX.runRT(nar -> {
+            Gradius g = new Gradius(nar);
+            nar.start(g);
+//            g.what().onTask(t -> {
+//                if (t instanceof DerivedTask && t.isGoal())
+//                    nar.proofPrint(t);
+//            });
             return g;
         }, 40f);
     }
@@ -116,6 +120,7 @@ public class Gradius extends GameX {
 //                            cams.stream().map(c -> new VectorSensorView(c, this).withControls()).collect(toList())),
 //                    400, 900);
         }
+
 
 
         float width = g.getWidth();

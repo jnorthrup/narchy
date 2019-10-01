@@ -5,7 +5,6 @@ import jcog.Skill;
 import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -28,14 +27,12 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
-import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.Map;
 import java.util.Random;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.IntPredicate;
@@ -755,7 +752,7 @@ abstract public class TruthProjection extends TaskList {
 
 		//TODO special 2-ary case
 
-		Map<Term, IEntry> roots = null;
+//		Map<Term, IEntry> roots = null;
 		Term root0 = term0.root();
 		@Nullable double[] evi = this.evi;
 		boolean allEqual = true;
@@ -763,52 +760,55 @@ abstract public class TruthProjection extends TaskList {
 			Term termI = items[i].term();
 			if (!termI.equals(term0))
 				allEqual = false;
-			else {
-				Term rootI = termI.root();
-				if (roots == null) {
-					if (!root0.equals(rootI)) {
-						roots = new UnifiedMap<>(n - i + 1);
-						IEntry ie = new IEntry(root0);
-						roots.put(root0, ie);
-						for (int j = 0; j < i; j++)
-							ie.add(j, evi[j]); //add existing evidence until the first that change (i)
-					}
-				}
-				if (roots != null) {
-					roots.computeIfAbsent(rootI, IEntry::new).add(i, evi[i]);
-				}
-			}
+			else if (!termI.root().equals(root0))
+				return false; //differing root
+//			else {
+//				Term rootI = termI.root();
+//				if (roots == null) {
+//					if (!root0.equals(rootI)) {
+//						roots = new UnifiedMap<>(n - i + 1);
+//						IEntry ie = new IEntry(root0);
+//						roots.put(root0, ie);
+//						for (int j = 0; j < i; j++)
+//							ie.add(j, evi[j]); //add existing evidence until the first that change (i)
+//					}
+//				}
+//				if (roots != null) {
+//					roots.computeIfAbsent(rootI, IEntry::new).add(i, evi[i]);
+//				}
+//			}
 
 		}
 		if (allEqual)
 			return true; //no intermpolation necessary
-		if (roots != null) {
-			//different roots, so choose one and remove the others
-
-
-			if (minComponents > 1) {
-				//eliminate roots for which less than minComponents are present
-				roots.values().removeIf(ii -> {
-					if (ii.id.getCardinality() < minComponents) {
-						intermpolateRemove(ii);
-						return true;
-					}
-					return false;
-				});
-			}
-			int es = roots.size();
-			if (es < minComponents)
-				return false;
-
-			FasterList<Map.Entry<Term, IEntry>> e = new FasterList<>(roots.entrySet());
-			e.sortThisByDouble(x -> -x.getValue().eviSum);
-			//		IEntry best = e.get(0).getValue();
-			for (int i = 1; i < es; i++) {
-				intermpolateRemove(e.get(i).getValue());
-			}
-		}
-
-		removeNulls();
+//		if (roots != null) {
+//			//different roots, so choose one and remove the others
+//
+//			//SHOULD NOT HAPPEN
+//
+//			if (minComponents > 1) {
+//				//eliminate roots for which less than minComponents are present
+//				roots.values().removeIf(ii -> {
+//					if (ii.id.getCardinality() < minComponents) {
+//						intermpolateRemove(ii);
+//						return true;
+//					}
+//					return false;
+//				});
+//			}
+//			int es = roots.size();
+//			if (es < minComponents)
+//				return false;
+//
+//			FasterList<Map.Entry<Term, IEntry>> e = new FasterList<>(roots.entrySet());
+//			e.sortThisByDouble(x -> -x.getValue().eviSum);
+//			//		IEntry best = e.get(0).getValue();
+//			for (int i = 1; i < es; i++) {
+//				intermpolateRemove(e.get(i).getValue());
+//			}
+//		}
+//
+//		removeNulls();
 
 		Compound a = (Compound) items[0].term();
 
@@ -823,29 +823,53 @@ abstract public class TruthProjection extends TaskList {
 					double eb = evi[B];
 					double eab = ea + eb;
 					Term ab = Intermpolate.intermpolate(a, b, (float) (ea / eab), nar);
-					if (ab instanceof Bool) {
+					double diffA, diffB;
+					if (ab instanceof Bool ||
+						(diffA = dtDiff(ab, a)) >= 1 - Float.MIN_NORMAL ||
+						(diffB = dtDiff(ab, b)) >= 1 - Float.MIN_NORMAL) {
+
 						nullify(B); //unexpected error
 						if (--remain < minComponents) {
 							//clearFast();
 							return false;
 						}
 					} else {
-						//TODO apply dtDiff error in proportion to the 2+n components
-						double diffA = dtDiff(ab, a);
-						if (diffA > 0) {
-							double discA = 1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
-							evi[0] *= discA;
-							//for (int x = 0; x < B; x++)
-								//evi[x] *= discA;
-						}
-						double diffB = dtDiff(ab, b);
+
 						if (diffB > 0) {
-							double discB = 1 / (1 + diffB * (eb / eab));
+							double discB = 1-diffB; //1 / (1 + diffB * (eb / eab));
 							evi[B] *= discB;
 						}
 
+
+						if (diffA > 0) {
+							double discA = 1 - diffA; //1 / ((1 + diffA * (ea / eab)) * B); //estimate: shared between all
+
+							if (remain-1 >= minComponents) {
+								//determine whether to keep B if B can be removed
+								double eviLoss = 0;
+								for (int x = 0; x < B; x++) {
+									eviLoss += evi[x] * (1 - discA);
+								}
+								if (eviLoss > evi[B]) {
+									nullify(B); //intermpolating with B is too costly
+									remain--;
+									assert(remain >= minComponents);
+//									if (--remain < minComponents) {
+//										//clearFast();
+//										return false;
+//									}
+								}
+							}
+
+							ea = 0;
+							for (int x = 0; x < B; x++) {
+								ea += (evi[x] *= discA);
+							}
+						}
+
+
 						a = (Compound) ab;
-						ea += eb;
+						ea += evi[B];
 					}
 				}
 			}

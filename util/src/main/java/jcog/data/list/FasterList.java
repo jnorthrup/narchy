@@ -14,7 +14,6 @@ import org.eclipse.collections.api.list.MutableList;
 import org.eclipse.collections.impl.list.mutable.FastList;
 import org.jetbrains.annotations.Nullable;
 
-import java.io.PrintStream;
 import java.util.*;
 import java.util.function.*;
 
@@ -1041,7 +1040,7 @@ public class FasterList<X> extends FastList<X> {
             if (items!=null) { //if deleted
                 s = Math.min(s, items.length);
                 for (int i = 0; i < s; i++) {
-                    if (predicate.test(items[i]))
+                    if (predicate.accept(items[i]))
                         return true;
                 }
             }

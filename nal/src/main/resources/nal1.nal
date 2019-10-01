@@ -52,8 +52,8 @@
        (P --> S), (M --> P), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
         (P --> S), (M --> S), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
-        (P --> M), (S --> M), task("!"), neqRCom(M,P)   |- (S --> M), (Punctuation:Quest, Time:Compose)
-        (M --> P), (M --> S), task("!"), neqRCom(M,P)   |- (M --> S), (Punctuation:Quest, Time:Compose)
+        (P --> M), (S --> M), task("!"), neqRCom(M,P), neq(P,S)   |- (S --> M), (Punctuation:Quest, Time:Compose)
+        (M --> P), (M --> S), task("!"), neqRCom(M,P), neq(P,S)   |- (M --> S), (Punctuation:Quest, Time:Compose)
 
 
 //INDUCTION ---------------------------
@@ -70,8 +70,8 @@
        (P --> S), (P --> M), neqRCom(M,S)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
         (P --> S), (S --> M), neqRCom(M,P)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
 
-        (M --> P), (M --> S), task("!"), neqRCom(S,M)  |- (M --> S), (Punctuation:Quest, Time:Compose)
-        (P --> M), (S --> M), task("!"), neqRCom(S,M)  |- (S --> M), (Punctuation:Quest, Time:Compose)
+        (M --> P), (M --> S), task("!"), neqRCom(S,M), neq(P,S)  |- (M --> S), (Punctuation:Quest, Time:Compose)
+        (P --> M), (S --> M), task("!"), neqRCom(S,M), neq(P,S)  |- (S --> M), (Punctuation:Quest, Time:Compose)
 
 
 

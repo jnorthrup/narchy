@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Test;
 import java.util.Set;
 import java.util.TreeSet;
 
+import static jcog.Util.assertUnitized;
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.*;
@@ -140,6 +141,11 @@ class IntermpolationTest {
     void testIntermpolationNegConjInSeq() throws Narsese.NarseseException {
         Compound a = $.$("(--(x &&+1 y) &&+1 c)");
         Compound b = $.$("(--(x &&+2 y) &&+1 c)");
+        Compound c = $.$("(--(x &&+3 y) &&+1 c)");
+
+        float ab = Intermpolate.dtDiff(a, b);
+        float ac = Intermpolate.dtDiff(a, c);
+        assertTrue(ab < ac, () -> "fail: " + ab + " < " + ac);
         permuteChoose(a, b,
                 "[((--,(x &&+1 y)) &&+1 c), ((--,(x &&+2 y)) &&+1 c)]"
         );
@@ -310,9 +316,15 @@ class IntermpolationTest {
     @Test
     void testIntermpolationConjSeq2() throws Narsese.NarseseException {
         Compound h = $.$("(a &&+1 b)");
-        Compound i = $.$("(a &| b)");
+        Compound i = $.$("(a && b)");
         permuteChoose(h, i, "[(a&&b), (a &&+1 b)]");
 
+    }
+    @Test void intermpolationConjSeq3() throws Narsese.NarseseException {
+        assertUnitized(Intermpolate.dtDiff(
+            $.$("((--,((--,(tetris-->left)) &&+170 (--,(tetris-->left))))&&(--,isRow(tetris,(3,TRUE))))"),
+            $.$("((--,((--,(tetris-->left)) &&+160 (--,(tetris-->left))))&&(--,isRow(tetris,(3,TRUE))))")
+        ));
     }
 
     @Test

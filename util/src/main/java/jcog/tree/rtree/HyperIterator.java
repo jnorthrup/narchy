@@ -29,11 +29,8 @@ public class HyperIterator<X>  {
     /**
      * at each level, the plan is slowly popped from the end growing to the beginning (sorted in reverse)
      */
-    private final RankedN plan;
+    protected final RankedN plan;
     private final Consumer planAdd;
-
-
-
 
     public void dfs(RNode<X> root, Predicate whle) {
         plan.add(root);
@@ -47,42 +44,8 @@ public class HyperIterator<X>  {
         } else {
 
             plan.add(root);
-            boolean findingLeaves;
-            restart: do {
-                findingLeaves = false;
-                Object[] items = plan.items;
-                for (int i = 0, itemsLength = plan.size(); i < itemsLength; ) {
-                    Object x = items[i];
-                    if (x instanceof RBranch) {
-                        plan.remove(i);
-                        RBranch xb = (RBranch) x;
-                        Object[] data = xb.data;
-                        boolean added = false;
-                        for (int j = 0, dataLength = xb.size; j < dataLength; j++) {
-                            Object y = data[j];
-                            added |= plan.add(y);
-                            if (added && y instanceof RBranch)
-                                findingLeaves = true;
-                        }
-                        if (added)
-                            continue restart;
-                        else {
-                            itemsLength--;
-                        }
-                    } else
-                        i++;
-                }
 
-                //TODO find why findingLeaves isnt sufficient break condition
-
-//                boolean remain = Util.or(x -> x instanceof RBranch,  0, plan.size(), plan.items);
-//                if (remain != findingLeaves)
-//                    throw new WTF();
-
-
-            } while (findingLeaves || Util.or(x -> x instanceof RBranch, 0, plan.size(), plan.items)); //HACK
-            //} while (findingLeaves);
-
+            scan();
 
             int leaves = plan.size();
             if (leaves == 1)
@@ -90,6 +53,44 @@ public class HyperIterator<X>  {
             else
                 bfsRoundRobin(whle, random);
         }
+    }
+
+    protected void scan() {
+        boolean findingLeaves;
+        restart: do {
+            findingLeaves = false;
+            Object[] items = plan.items;
+            for (int i = 0, itemsLength = plan.size(); i < itemsLength; ) {
+                Object x = items[i];
+                if (x instanceof RBranch) {
+                    plan.remove(i);
+                    RBranch xb = (RBranch) x;
+                    Object[] data = xb.data;
+                    boolean added = false;
+                    for (int j = 0, dataLength = xb.size; j < dataLength; j++) {
+                        Object y = data[j];
+                        added |= plan.add(y);
+                        if (added && y instanceof RBranch)
+                            findingLeaves = true;
+                    }
+                    if (added)
+                        continue restart;
+                    else {
+                        itemsLength--;
+                    }
+                } else
+                    i++;
+            }
+
+            //TODO find why findingLeaves isnt sufficient break condition
+
+//                boolean remain = Util.or(x -> x instanceof RBranch,  0, plan.size(), plan.items);
+//                if (remain != findingLeaves)
+//                    throw new WTF();
+
+
+        } while (findingLeaves || Util.or(x -> x instanceof RBranch, 0, plan.size(), plan.items)); //HACK
+        //} while (findingLeaves);
     }
 
     private void bfsRoundRobin(Predicate whle, Random random) {

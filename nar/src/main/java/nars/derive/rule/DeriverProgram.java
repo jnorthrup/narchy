@@ -8,7 +8,6 @@ import nars.derive.Derivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.PremiseAction;
 import nars.derive.action.PremisePatternAction;
-import nars.derive.action.op.PremiseUnify;
 import nars.derive.util.Forkable;
 import nars.term.control.AND;
 import nars.term.control.FORK;
@@ -91,20 +90,21 @@ public class DeriverProgram {
 
             out.println(a.why.id + " ==> {");
             Object aa;
-            if (a instanceof PremisePatternAction.TruthifyDeriveAction)
-                aa = Arrays.toString(((PremisePatternAction.TruthifyDeriveAction)a).constraints) + " " + ((PremisePatternAction.TruthifyDeriveAction)a).unify;
-            else
+            if (a instanceof PremisePatternAction.TruthifyDeriveAction) {
+                aa = Arrays.toString(((PremisePatternAction.TruthifyDeriveAction) a).constraints) + " ...";// + ((PremisePatternAction.TruthifyDeriveAction) a).unify;
+                //TODO
+//                out.println(((DirectPremiseUnify)x).taskPat + ", " + ((DirectPremiseUnify)x).beliefPat + " ==> {");
+//                print(((DirectPremiseUnify)x).taskify, out, indent + 2);
+//                Texts.indent(indent);
+//                out.println("}");
+
+            }else
                 aa = a.toString();
 
             print(aa, out, indent + 2);
 
             Texts.indent(indent);out.println("}");
 
-        } else if (x instanceof PremiseUnify) {
-            out.println(((PremiseUnify)x).taskPat + ", " + ((PremiseUnify)x).beliefPat + " ==> {");
-            print(((PremiseUnify)x).taskify, out, indent + 2);
-            Texts.indent(indent);
-            out.println("}");
         } else if (x instanceof AND) {
             out.println("and {");
             AND ac = (AND) x;

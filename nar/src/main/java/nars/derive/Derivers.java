@@ -35,7 +35,7 @@ public enum Derivers { ;
                 case 3:
                     f.addAll(file("nal3.nal"));
                     f.addAll(file("nal3.decompose.nal"));
-                    f.addAll(file("nal3.guess.nal"));
+                    //f.addAll(file("nal3.guess.nal"));
                     //f.add("nal3.decompose.extra.nal");
                     //f.add("nal3.induction.nal");
                     break;

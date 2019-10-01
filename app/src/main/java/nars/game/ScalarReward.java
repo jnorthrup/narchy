@@ -78,7 +78,8 @@ abstract public class ScalarReward extends Reward {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
         Term rTarget = goal.isPositive() ? Rpos : Rneg;
 
-        reinforce(concept.term(), GOAL, goal, newStamp());
+        //reinforceTemporal(concept.term(), GOAL, goal, newStamp());
+        reinforceEternal(concept.term(), GOAL, goal, newStamp());
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
 //        reinforce(CONJ.the(Rpos.neg(), $.varDep(1)), GOAL, RimplAPos);
 
@@ -87,10 +88,15 @@ abstract public class ScalarReward extends Reward {
         g.actions().forEach(a -> {
             Term A = a.term();
             //setCyclic to prevent decompose
-            reinforce(CONJ.the(rTarget, A), GOAL, RimplAPos, stamp).setCyclic(true);
-            reinforce(CONJ.the(rTarget, A.neg()), GOAL, RimplAPos, stamp).setCyclic(true);
-            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stamp).setCyclic(true);
-            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stamp).setCyclic(true);
+//            reinforce(CONJ.the(rTarget, A), GOAL, RimplAPos);
+//            reinforce(CONJ.the(rTarget, A.neg()), GOAL, RimplAPos);
+//            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos);
+//            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos);
+
+            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos);
+            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos);
+            reinforce(IMPL.the(A, Rpos), BELIEF, RimplANeg);
+            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg);
 
 //                reinforce(CONJ.the(rTarget, A), BELIEF, RimplRandomP);
 //                reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplRandomN);
@@ -98,8 +104,8 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
 
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
+//            reinforceEternal(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
+//            reinforceEternal(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg);
@@ -115,13 +121,10 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
 
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, rImplStampP);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, rImplStampP);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
 
-//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos);
-//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos);
-//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplANeg);
-//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg);
+//
 
             //reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos);
             //reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos);
@@ -146,7 +149,7 @@ abstract public class ScalarReward extends Reward {
     }
 
     public void reinforce(Termed x, byte punc, Truth truth) {
-        reinforce(x, punc, truth, newStamp());
+        reinforceEternal(x, punc, truth, newStamp());
     }
 
     @Override
@@ -156,10 +159,11 @@ abstract public class ScalarReward extends Reward {
         float cMax = nar.confDefault(GOAL);
         goal.conf(cMax);
 
-        float strength = 1f;
+        float strength = 1;
         float cMin =
             Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
-            //cMax / 3;
+            //nar.confMin.floatValue() * strength;
+//            cMax / 2;
 
         RimplRandomP.conf(cMin); RimplRandomN.conf(cMin);
         RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());

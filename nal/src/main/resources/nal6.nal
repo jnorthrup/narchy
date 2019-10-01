@@ -152,7 +152,7 @@
 
 
 //    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
-//       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
+       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPB, Time:Compose)
 //    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB, Time:Compose)
 //       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB, Time:Compose)
 

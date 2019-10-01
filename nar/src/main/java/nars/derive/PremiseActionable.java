@@ -80,7 +80,7 @@ public class PremiseActionable  implements Predicate<Derivation> {
             a.trace(d);
 
         if (a instanceof PremisePatternAction.TruthifyDeriveAction)
-            ((PremisePatternAction.TruthifyDeriveAction) a).pre(this, d);
+            d.ready(truth, punc, single);
 
         a.run(d);
 

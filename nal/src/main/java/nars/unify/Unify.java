@@ -463,6 +463,11 @@ public abstract class Unify extends Versioning<Term> implements AbstractTermTran
     }
 
 
+    public final void constrain(UnifyConstraint[] m) {
+        for (UnifyConstraint mm : m )
+            constrain(mm);
+    }
+
     public final void constrain(UnifyConstraint m) {
         ConstrainedVersionedTerm target = (ConstrainedVersionedTerm) xy.getOrCreateIfAbsent(m.x);
         target.constraint = m;

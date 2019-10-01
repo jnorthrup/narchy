@@ -33,10 +33,10 @@
     //sub-sequence following belief or goal
     //(&/,B,A_1..n), B, task("!") |- (&/,A_1..n), (Truth:Deduction, Desire:Strong, SequenceIntervals:FromPremises)
     C, X                                                   |-  conjAfter(C,   X),  (Belief:DeductionPP,     Time:BeliefEvent)
-    X, C                                                   |-  conjAfter(C,   X),  (Belief:DeductionPP,     Time:TaskEvent)
+      X, C                                                   |-  conjAfter(C,   X),  (Belief:DeductionPP,     Time:TaskEvent)
 
     C, X, has(C,"--")                                      |-  conjAfter(C, --X),  (Belief:DeductionPN,     Time:BeliefEvent)
-    X, C, has(C,"--")                                      |-  conjAfter(C, --X),  (Belief:DeductionNP,     Time:TaskEvent)
+      X, C, has(C,"--")                                      |-  conjAfter(C, --X),  (Belief:DeductionNP,     Time:TaskEvent)
 
     D, X, --isVar(X), has(D,"--")                   |-  --conjAfter(D, --X),  (Belief:DeductionNN, Time:BeliefEvent)
 
@@ -53,11 +53,14 @@
     C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
     C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
 
-    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskEvent)
-    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskEvent)
-    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskEvent)
-    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
+    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskImmediate)
+    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskImmediate)
+    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionNP,     Time:TaskImmediate)
+    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskImmediate)
+//    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskImmediate)
+//    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskImmediate)
 
+    //goal anticipation
     X, C, --eventOfNeg(C,X), --conjParallel(C)           |-  conjAfter(C,   X),         (  Goal:DeductionWeakPP, Time:TaskEvent)
     X, C, has(C,"--"), --eventOf(C,X), --conjParallel(C) |-  conjAfter(C, --X),         (  Goal:DeductionWeakNP, Time:TaskEvent)
 

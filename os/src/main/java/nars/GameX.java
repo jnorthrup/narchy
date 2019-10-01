@@ -26,6 +26,7 @@ import nars.exe.impl.WorkerExec;
 import nars.game.Game;
 import nars.game.GameTime;
 import nars.game.MetaAgent;
+import nars.game.Reward;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
@@ -36,7 +37,6 @@ import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinker;
 import nars.sensor.Bitmap2DSensor;
 import nars.sensor.PixelBag;
-import nars.task.DerivedTask;
 import nars.task.util.PriBuffer;
 import nars.task.util.signal.SignalTask;
 import nars.term.Term;
@@ -93,15 +93,7 @@ abstract public class GameX extends Game {
 
     @Deprecated
     public GameX(String id) {
-        this(id, GameTime.durs(1));
-    }
-
-    public GameX(String id, GameTime gameTime) {
-        super(id, gameTime);
-    }
-
-    public GameX(Term id, GameTime gameTime) {
-        super(id, gameTime);
+        this($$(id), GameTime.durs(1), null);
     }
 
     public GameX(Term id, GameTime gameTime, NAR n) {
@@ -609,13 +601,7 @@ abstract public class GameX extends Game {
 //
 //        }
 
-        if (NAL.DEBUG) {
-            n.onTask((t) -> {
-                if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
-                    n.proofPrint(t);
-                }
-            });
-        }
+
 
 
 
@@ -826,6 +812,24 @@ abstract public class GameX extends Game {
     @Override
     protected void starting(NAR nar) {
         super.starting(nar);
+        //if (NAL.DEBUG) {
+//        what().onTask((t) -> {
+//            //if (t instanceof DerivedTask && t.isEternal() && t.isBeliefOrGoal()) {
+//            if (t.isGoal()) {
+//                Term tt = t.term();
+//                for (Reward r : rewards) {
+//                    Term rt = r.term();
+//                    if (tt.equals(rt) || tt.containsRecursively(rt)) {
+//                        nar.proofPrint(t);
+//                        System.out.println();
+//                    }
+//                }
+//            }
+////            if (t.isGoal())
+////                nar.proofPrint(t);
+////            //}
+//        });
+        //}
 
 //        ((TaskLinkWhat) what()).links.pri(new Predicate<TaskLink>() {
 //

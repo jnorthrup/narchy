@@ -112,19 +112,19 @@ public class ByteTopic<X> {
 
         @Override
         public void start(Consumer<X> o) {
-            synchronized (this) {
+            //synchronized (this) {
                 active.set(c, true);
                 super.start(o);
-            }
+            //}
         }
 
         @Override
         public void stop(Consumer<X> o) {
-            synchronized (this) {
+            //synchronized (this) {
                 super.stop(o);
                 if (isEmpty())
                     active.set(c, false);
-            }
+            //}
         }
     }
 }

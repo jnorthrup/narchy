@@ -62,18 +62,10 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     }
 
     public TopFilter<X> rank(FloatRank<X> rank) {
-        this.rank = rank;
+        this.rank =rank;
         return this;
     }
 
-    @Deprecated public final TopFilter<X> rank(FloatRank<X> rank, int capacity) {
-        this.rank = rank;
-        //if (capacity > 0)
-            setCapacity(capacity);
-            return rank(rank);
-//        else
-//            this.capacity = 0; //HACK
-    }
 
     public void setCapacity(int capacity) {
 
@@ -82,8 +74,9 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
 //            throw new ArrayIndexOutOfBoundsException("capacity must be > 0");
 
         this.capacity = capacity;
-        if (this.items.length != capacity)
+        if (this.items.length > capacity)
             this.items = Arrays.copyOf(items, capacity);
+        size = Math.min(capacity, size);
     }
 
     @Override
@@ -142,7 +135,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         min = _minValueIfFull();
     }
 
-    public X pop() {
+    @Override @Nullable public X pop() {
         X x = removeFirst();
         if (x!=null)
             commit();
@@ -251,7 +244,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
             default:
                 IntToFloatFunction select = i -> anyRank.floatValueOf(items[i]);
                 return get(
-                    this instanceof RankedN ?
+                    this instanceof TopFilter ?
                         Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
                         Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
                 );

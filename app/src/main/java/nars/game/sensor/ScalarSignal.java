@@ -2,6 +2,7 @@ package nars.game.sensor;
 
 import jcog.math.FloatSupplier;
 import nars.NAR;
+import nars.attention.PriNode;
 import nars.game.Game;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -13,27 +14,21 @@ public class ScalarSignal extends UniSignal {
     public final FloatSupplier source;
 
     public ScalarSignal(Term term, FloatSupplier signal, NAR n) {
-        this(term, null, signal, n);
+        this(term, signal, null, null, n);
     }
 
-    public ScalarSignal(Term term, short[] cause, FloatSupplier signal, NAR n) {
-        this(term, cause, signal,
-                beliefTable(term, n, true, true),
-                beliefTable(term, n, false, false),
-                n);
+    public ScalarSignal(Term term, FloatSupplier signal, short[] cause, PriNode p, NAR n) {
+        this(term, signal,
+            beliefTable(term, n, true, true),
+            beliefTable(term, n, false, false), cause,
+            p, n);
     }
 
-    protected ScalarSignal(Term term, BeliefTable beliefTable, BeliefTable goalTable,  NAR n) {
-        this(term,  null, null, beliefTable, goalTable, n);
-    }
 
-    protected ScalarSignal(Term term, @Nullable short[] cause, @Nullable FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
-        super(term, cause, beliefTable, goalTable, n);
-
+    protected ScalarSignal(Term term, @Nullable FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, @Nullable short[] cause, PriNode p, NAR n) {
+        super(term, cause, beliefTable, goalTable, p, n);
 
         this.source = signal;
-
-
     }
 
 

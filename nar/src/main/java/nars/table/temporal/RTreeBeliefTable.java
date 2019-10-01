@@ -143,16 +143,20 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	}
 
 	private static void merge(Task merged, TruthProjection merging, Remember r, Space<TaskRegion> treeRW) {
-		for (int i = 0, ababSize = merging.size(); i < ababSize; i++) {
+		int ababSize = merging.size();
+		if (ababSize < 2)
+			throw new WTF();
+		for (int i = 0; i < ababSize; i++) {
 			if (merging.valid(i)) {
 				Task rr = merging.get(i);
-				if (treeRW.remove(rr))
-					r.forget(rr);
+				if (!treeRW.remove(rr))
+					throw new WTF();
+				r.forget(rr);
 			}
 		}
 		if (treeRW.add(merged)) {
 			r.remember(merged);
-		} //else: possibly already contained the merger?
+		}//else: possibly already contained the merger?
 	}
 
 	private static void evict(Task weakest, Remember r, Space<TaskRegion> treeRW) {
@@ -184,8 +188,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			if (n == 0)
 				return;
 
-			int ac = a.tasks.capacity();
-			if (n <= Math.min(ac, a.ttl)) {
+			int ac = a.ttl;
+			if (n <= ac) {
 				t.forEach(((Predicate) a)::test);
 			} else {
 
@@ -196,14 +200,28 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //					//(float) ((1 + ((e - s) / 2.0 + a.dur)) / confMax);
 //					//(a.dur / confMax);
 //					(Math.max(1, a.dur) / confMax);
-				float dur = (float) (tRoot.bounds().range(0) / (1+n));
+				//float dur = (float) (tRoot.bounds().range(0) / (1+n));
 
-				HyperIterator.HyperIteratorRanker<?, TaskRegion> rank =
-					new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e, dur));
+				HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion> timeRank =
+					new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e));
 
-				int cursorCapacity = Math.min(n, ac /* tries?  .. / tasks per leaf? */);
+				int cursorCapacity = Math.min(n,
+					//ac
+					Math.max(1, (int)Math.ceil(ac / Math.max(1,(RTreeBeliefTable.MAX_TASKS_PER_LEAF/2f))))
+				);
 
-				HyperIterator h = new HyperIterator(new Object[cursorCapacity], rank);
+				HyperIterator<TaskRegion> h = new HyperIterator<>(new Object[cursorCapacity], timeRank);
+//				{
+//					@Override
+//					protected void scan() {
+//						super.scan();
+//						//second stage filter
+//						if (plan.size() > cursorCapacity) {
+//							plan.rank((x, min)-> ((TaskRegion)((RNode<TaskRegion>)x).bounds()).confMin());
+//							plan.setCapacity(cursorCapacity);
+//						}
+//					}
+//				};
 				//h.dfs(t.root(), whle);
 				h.bfs(tRoot, a, a.random());
 			}
@@ -253,8 +271,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 		Task mergeReplaced = (Task) insertion.mergeReplaced;
 		if (mergeReplaced != null) {
-			if (mergeReplaced != input)
+			if (mergeReplaced != input) {
 				onReject(input);
+				r.forget(input);
+			}
 			r.merge(mergeReplaced);
 		} else if (!input.isDeleted()) {
 			onRemember(input);
@@ -291,7 +311,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	}
 
 	private boolean ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
-//        boolean beliefOrGoal = r.input.isBelief();
 		int e = 0, cap;
 		while (treeRW.size() > (cap = capacity())) {
 

@@ -9,7 +9,9 @@ import nars.table.BeliefTables;
 import nars.table.dynamic.SensorBeliefTables;
 import nars.table.eternal.EternalDefaultTable;
 import nars.table.temporal.RTreeBeliefTable;
+import nars.task.TemporalTask;
 import nars.task.util.Answer;
+import nars.task.util.Revision;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
@@ -54,6 +56,17 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         /** make sure to add curiosity table first in the list, as a filter */
         BeliefTables GOALS = ((BeliefTables) goals());
         GOALS.add(mutableGoals);
+
+//        final MutableTruth cPos = new MutableTruth(1f, n.confMin.floatValue()); //TODO update
+//        final MutableTruth cMaybe = new MutableTruth(0.5f, n.confMin.floatValue()); //TODO update
+//        final MutableTruth cNeg = new MutableTruth(0f, n.confMin.floatValue()); //TODO update
+//        long now = n.time();
+//        long[] stamp = {n.time.nextStamp()};
+//        GOALS.add(new ShuffledTaskTable(
+//           new EternalTask(term, GOAL, cPos, now, stamp).pri(0.1f), //pri.pri()),
+//           new EternalTask(term, GOAL, cMaybe, now, stamp).pri(0.1f), //pri.pri()),
+//           new EternalTask(term, GOAL, cNeg, now, stamp).pri(0.1f) //pri.pri())
+//        ));
         //GOALS.add(curiosityTable = new CuriosityBeliefTable(term));
     }
 
@@ -145,15 +158,18 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     private Truth actionTruth(int limit, When<What> w, int shift) {
 
         TruthProjection gt = truth(false, limit, w, shift);
-        if (gt!=null) {
-            Truth nextActionDex = truth(gt, w, shift);
-            actionDex = nextActionDex;
-            actionCoh = nextActionDex != null ? gt.coherency() : 0;
-
+        Truth nextActionDex = gt!=null ? truth(gt, w, shift) : null;
+        Truth c = null; //w.x.random().nextFloat() < 0.01f ? curiosity(w.x) : null;
+        if (nextActionDex!=null) {
+            actionDex = c!=null ? Revision.revise(c, nextActionDex) : nextActionDex;
         } else {
-            actionDex = null;
-            actionCoh = 0;
+            actionDex = c;
         }
+
+        if (c!=null && Truth.stronger(c, nextActionDex)==c)
+            w.x.accept(new TemporalTask(term, GOAL, c, w.x.nar.time(), w.start, w.end, new long[] { w.x.nar.time.nextStamp() }).pri(pri.pri()));
+
+        actionCoh = gt != null ? gt.coherency() : 0;
 
 
 //        Truth actionCuri = curiosity.curiosity(this);
@@ -208,6 +224,9 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         return actionTruth;
     }
 
+//    private Truth curiosity(What g) {
+//        return $.t(g.random().nextFloat(), g.nar.confMin.floatValue());
+//    }
 
 
 //    protected void feedback(@Nullable Truth f, short[] cause, Game g) {

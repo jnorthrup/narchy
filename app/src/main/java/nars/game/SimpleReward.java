@@ -3,7 +3,6 @@ package nars.game;
 import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.Task;
-import nars.attention.AttnBranch;
 import nars.control.op.Remember;
 import nars.game.sensor.ScalarSignal;
 import nars.table.BeliefTables;
@@ -100,12 +99,7 @@ public class SimpleReward extends ScalarReward {
 
         cause = new short[] {  in.id };
 
-        concept = new ScalarSignal(id, cause, () -> reward, /*linker, */g.nar) {
-            @Override
-            protected AttnBranch newAttn(Term term) {
-                return new AttnBranch(term, this.components());
-            }
-        };
+        concept = new ScalarSignal(id, () -> reward, cause, pri, g.nar);
 //        if (!concept.pri.equals(attn))
 //            nar().control.input(concept.pri, attn);
     }

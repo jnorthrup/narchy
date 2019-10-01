@@ -25,8 +25,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
-import static jcog.Util.PHI_min_1f;
-
 /**
  * essentially a wrapper for a TaskLink bag for use as a self-contained attention set
  */
@@ -45,7 +43,9 @@ public class TaskLinks implements Sampler<TaskLink> {
      * (post-)Amp: tasklink conductance, propagation rate
      */
     public final FloatRange grow = new FloatRange(
-        1 - PHI_min_1f,
+        0.5f,
+        //1,
+        //1 - PHI_min_1f,
         0, 1f /* 2f */);
 
 //    /**

@@ -17,7 +17,6 @@
     <module>logic</module>
     <module>nal</module>
     <module>nar</module>
-    <module>gp</module>
     <module>lab</module>
     <module>app</module>
     <module>os</module>

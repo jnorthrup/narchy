@@ -1,5 +1,6 @@
 package jcog.sort;
 
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Arrays;
@@ -39,6 +40,20 @@ public class RankedN<X> extends TopN<X> {
     public RankedN(X[] buffer, FloatRank<X> ranking) {
         this(buffer);
         rank(ranking);
+    }
+
+    public TopFilter<X> rank(FloatRank<X> rank) {
+        if (rank!=this.rank) {
+            this.rank = rank;
+            int s = this.size;
+            if (s > 0) {
+                for (int i = 0; i < s; i++) {
+                    value[i] = rank.rank(items[i]);
+                }
+                ArrayUtil.quickSort(0, s-1, this::valueComparator, this::swap);
+            }
+        }
+        return this;
     }
 
     @Override
@@ -110,6 +125,15 @@ public class RankedN<X> extends TopN<X> {
             //Arrays.fill(ranked, Float.NEGATIVE_INFINITY);
         }
         min = NEGATIVE_INFINITY;
+    }
+
+    private void swap(int a, int b) {
+        ArrayUtil.swap(value, a, b, 1);
+        ArrayUtil.swap(items, a, b, 1);
+    }
+
+    private int valueComparator(int a, int b) {
+        return Float.compare(value[b], value[a]);
     }
 
 

@@ -8,7 +8,6 @@ import nars.Builtin;
 import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.PremiseActionable;
 import nars.derive.action.op.*;
 import nars.derive.cond.SingleOrDoublePremise;
 import nars.derive.premise.PremiseRuleNormalization;
@@ -611,7 +610,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     @Override protected PremiseAction action(RuleWhy cause) {
 
 
-        return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, termify, cause);
+        return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, beliefPattern, termify, cause);
     }
 
 
@@ -692,25 +691,28 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         }
     };
 
-    public final class TruthifyDeriveAction extends PremiseAction {
+    public final static class TruthifyDeriveAction extends PremiseAction {
 
         public final Truthify truth;
         public final UnifyConstraint<Derivation>[] constraints;
-        public final DirectPremiseUnify unify;
 
-        public TruthifyDeriveAction(UnifyConstraint<Derivation>[] constraints, Truthify truth, Term taskPattern, Termify termify, RuleWhy cause) {
+        public final Term taskPat;
+        public final Term beliefPat;
+        public final Taskify taskify;
+        /** +1 task first, -1 belief first, 0 unimportant (can decide dynamically from premise) */
+        final int order;
+        private final boolean patternsEqual;
+
+        public TruthifyDeriveAction(UnifyConstraint<Derivation>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, RuleWhy cause) {
             super(cause);
             this.truth = truth;
             this.constraints = constraints;
 
-//            int numConstraints = CONSTRAINTS.length;
-//            PREDICATE<Derivation>[] y = new PREDICATE[1 + numConstraints];
-//
-//            System.arraycopy(CONSTRAINTS, 0, y, 0, numConstraints);
-
-            unify = new DirectPremiseUnify(taskPattern, beliefPattern, new Taskify(termify, cause));
-            //new CachingPremisify //<- not ready yet
-
+            this.taskPat = taskPattern;
+            this.beliefPat = beliefPattern;
+            this.order = fwd(taskPattern, beliefPattern);
+            this.taskify = new Taskify(termify, cause);
+            this.patternsEqual = taskPat.equals(beliefPat);
 
         }
 
@@ -747,29 +749,96 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
         @Override
         public final void run(Derivation d) {
-            int c = constraints.length;
-            if (c > 0) {
-                if (c == d.size()) {
-                    //constraints are same as previous derivation, so elide
-                    //Util.nop();
-                } else {
-                    for (UnifyConstraint cc : constraints)
-                        d.constrain(cc);
-                    assert(d.size()==c);
-                    d._patternActionConstraints = c;
-                }
-            } else {
-                assert(d.size()==0);
-                d._patternActionConstraints = 0;
+
+            d.constrain(constraints);
+
+
+            boolean single = patternsEqual;
+            //assert(!(single && !d.taskTerm.equals(d.beliefTerm))); //should be eliminated by prefilters
+//        if (single && !d.taskTerm.equals(d.beliefTerm))
+//            return false;
+
+            boolean fwd = single || fwd(d);
+
+            if (unify(d, fwd, single) && !single) {
+                if (d.live())
+                    unify(d, !fwd, true);
             }
-
-            //TODO savepoint
-
-            unify.test(d);
         }
 
-        public void pre(PremiseActionable a, Derivation d) {
-            d.ready(this, a.truth, a.punc, a.single);
+        /** task,belief or belief,task ordering heuristic
+         *  +1 = task first, -1 = belief first, 0 = doesnt matter
+         **/
+        protected static int fwd(Term T, Term B) {
+
+            if (T.equals(B))
+                return 0;
+
+            //if one is a variable, match the other since it will be more specific and fail faster
+            if (T instanceof Variable && B instanceof Variable) return 0;
+            if (B instanceof Variable) return +1;
+            if (T instanceof Variable) return -1;
+
+            //match ellipsis-containing term last
+            boolean te = Terms.hasEllipsisRecurse(T), be = Terms.hasEllipsisRecurse(B);
+            if (te || be) {
+                if (te && !be) return +1;
+                else if (!te && be) return -1;
+            }
+
+
+            //first if one is contained recursively by the other
+            boolean Tb = T.containsRecursively(B);
+            boolean Bt = B.containsRecursively(T);
+            if (Tb && !Bt) return -1; //belief first as it is a part of Task
+            if (Bt && !Tb) return +1; //task first as it is a part of Belief
+
+            // first which is more specific in its constant structure
+            int taskBits = Integer.bitCount(T.structure() & ~Op.Variable);
+            int belfBits = Integer.bitCount(B.structure() & ~Op.Variable);
+            if (belfBits > taskBits) return  -1;
+            if (taskBits > belfBits) return +1;
+
+            //first which has fewer variables
+            if (T.varPattern() > B.varPattern()) return -1;
+            if (B.varPattern() > T.varPattern()) return +1;
+
+            //first which is smaller
+            if (T.volume() > B.volume()) return -1;
+            if (B.volume() > T.volume()) return +1;
+
+            return 0;
+        }
+
+
+        protected final boolean unify(Derivation d, boolean dir, boolean finish) {
+
+            if (finish) {
+                d.termifier.set(taskify);
+            }
+
+            return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
+        }
+
+        /** true: task first, false: belief first */
+        protected boolean fwd(Derivation d) {
+            switch (order) {
+                case +1: return true;
+                case -1: return false;
+                default:
+                    /* decide dynamically according to heuristic function of the premise values */
+
+                    return true;
+
+//                int taskVol = d.taskTerm.volume();
+//                int beliefVol = d.beliefTerm.volume();
+//                if (taskVol > beliefVol)
+//                    return false;
+//                if (taskVol < beliefVol)
+//                    return true;
+
+                //return d.random.nextBoolean();
+            }
         }
     }
 }

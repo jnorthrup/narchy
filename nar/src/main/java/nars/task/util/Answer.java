@@ -88,7 +88,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
 
     private static float beliefStrength(TaskRegion t, long qStart, long qEnd) {
-        return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.maxTimeTo(qStart, qEnd)));
+        return (float)(c2wSafe((double) t.confMean()) * t.range() / (1.0 + t.minTimeTo(qStart, qEnd)));
     }
 
 //    /** @param confPerTime rate at which confidence compensates for temporal distance (proportional to dur) */
@@ -98,11 +98,13 @@ public final class Answer implements Timed, Predicate<Task> {
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart,qEnd))+ x.confMax() * confPerTime) ;
 //    }
-    public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd, float dur) {
+    public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd) {
         //TODO special impl for confPerTime==0
 //        return qStart == qEnd ?
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
-            return (x,min) -> (float)(x.confMax() / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
+            //return (x,min) -> (float)(x.confMax() / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
+        //return (x,min) -> (float)((1+x.confMin()) / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
+        return (x,min) -> -x.minTimeTo(qStart,qEnd);
     }
 
     /**
@@ -372,7 +374,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public final Answer time(long start, long end) {
-        return time(start, end, true);
+        return time(start, end, false);
     }
 
     public final Answer time(long start, long end, boolean dither) {

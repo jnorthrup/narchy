@@ -11,8 +11,7 @@ import nars.term.Term;
 import nars.term.util.conj.ConjList;
 import nars.time.Tense;
 
-import java.util.Arrays;
-
+import static jcog.Util.assertUnitized;
 import static nars.Op.CONJ;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -95,22 +94,43 @@ public enum Intermpolate {;
         ConjList bb = ConjList.events(b);
         int n = aa.size();
         if (n !=bb.size())
-            return Float.POSITIVE_INFINITY;
+            return 1;//Float.POSITIVE_INFINITY;
 
         long aar = aa.eventRange(), bbr = bb.eventRange(); //save these before changing sort
 
         aa.sortThisByValue(); bb.sortThisByValue();
 
-        if (!Arrays.equals(aa.array(), 0, n, bb.array(), 0, n))
-            return Float.POSITIVE_INFINITY;
+//        for (int i = 0; i < n; i++) {
+//            Term aai = aa.get(i);
+//            if (aai instanceof Neg) {
+//                Term bbi = bb.get(i);
+//                if (bbi instanceof Neg) {
+//                    aa.set(i, aai.unneg());
+//                    bb.set(i, bbi.unneg());
+//                }
+//            }
+//        }
+//        if (!Arrays.equals(aa.array(), 0, n, bb.array(), 0, n))
+//            return 1;//Float.POSITIVE_INFINITY;
 
         //same events, sum timing differences
-        long dtErr = 0;
+        long dtDiff = 0;
         long[] aaw = aa.when, bbw = bb.when;
-        for (int i = 0; i < n; i++)
-            dtErr += Math.abs(aaw[i] - bbw[i]);
+        float subDiff = 0;
+        for (int i = 0; i < n; i++) {
+            dtDiff += Math.abs(aaw[i] - bbw[i]); //TODO fail early if dtErr becomes excessive that dtDiff=1
+            subDiff += dtDiff(aa.get(i), bb.get(i), depth+1);
+        }
 
-        return dtDiff(dtErr, Math.min(aar, bbr));
+        float dtErr;
+        long r = Math.max(aar, bbr);
+        if (r == 0) {
+            if (dtDiff > 0) return 1; //can this happen?
+            dtErr = 0;
+        } else {
+            dtErr = (((float) dtDiff) / r) / n;
+        }
+        return Util.or(dtErr, subDiff/n);
     }
 
     private static Term intermpolateSeq(Compound a, Compound b, float aProp, NAL nar) {
@@ -135,9 +155,9 @@ public enum Intermpolate {;
         ae.sortThisByValue();
         be.sortThisByValue();
 
-        //TODO could be conjunction in believe() etc which differs
-        if (!Arrays.equals(ae.array(), 0, s, be.array(), 0, s))
-            return Null; //wtf?
+//        //TODO could be conjunction in believe() etc which differs
+//        if (!Arrays.equals(ae.array(), 0, s, be.array(), 0, s))
+//            return Null; //wtf?
 
         int dtDither = nar.dtDither();
         boolean changed = false;
@@ -226,13 +246,17 @@ public enum Intermpolate {;
      * heuristic representing the difference between the dt components
      * of two temporal terms.
      * 0 means they are identical or otherwise match.
-     * > 0 means there is some difference.
+     * 1 means entirely different
+     * between 0 and 1 means some difference
      * <p>
-     * this adds a 0.5 difference for && vs &| and +1 for each dt
      * XTERNAL matches anything
      */
     public static float dtDiff(Term a, Term b) {
-        return dtDiff(a, b, 0);
+        float d = dtDiff(a, b, 0);
+        if (NAL.DEBUG)
+            assertUnitized(d);
+        d = Util.unitize(d);
+        return d;
     }
 
     private static float dtDiff(Term a, Term b, int depth) {
@@ -245,31 +269,29 @@ public enum Intermpolate {;
         }
 
         if (!(a instanceof Compound) || !(b instanceof Compound))
-            return Float.POSITIVE_INFINITY;
+            return 1;
 
         if (!a.equalsRoot(b))
-            return Float.POSITIVE_INFINITY;
+            return 1;
 
+        if (a.opID() == CONJ.id)
+            return dtDiffSeq((Compound)a, (Compound)b, depth);
 
-        Subterms as = a.subterms();
-        Subterms bs = b.subterms();
-        float dSubterms;
+        Subterms as = a.subterms(), bs = b.subterms();
+        float dDT = dtDiff(a.dt(), b.dt());
         if (as.equals(bs)) {
-            dSubterms = 0;
+            return dDT;
         } else {
-            Op aop = a.op();
-            if (aop ==CONJ) {
-                return dtDiffSeq((Compound)a, (Compound)b, depth);
-            } else {
-                dSubterms = dtDiff(as, bs, depth);
-                if (!Float.isFinite(dSubterms))
-                    return Float.POSITIVE_INFINITY;
-            }
+            float dSubterms = dtDiff(as, bs, depth);
+            if (!Float.isFinite(dSubterms))
+                return 1;
+
+            //return dDT + dSubterms;
+            return Util.or(dDT, dSubterms);
         }
 
-        float dDT = dtDiff(a.dt(), b.dt());
 
-        return dDT + dSubterms;
+
     }
 
     public static float dtDiff(long adt, long bdt) {
@@ -296,18 +318,18 @@ public enum Intermpolate {;
 
         int len = aa.subs();
         if (len != bb.subs())
-            return Float.POSITIVE_INFINITY;
+            return 1; //Float.POSITIVE_INFINITY;
 
         float dSubterms = 0;
         for (int i = 0; i < len; i++) {
             float di = dtDiff(aa.sub(i), bb.sub(i), depth + 1);
-            if (!Float.isFinite(di)) {
-                return Float.POSITIVE_INFINITY;
-            }
+//            if (!Float.isFinite(di)) {
+//                return 1; //Float.POSITIVE_INFINITY;
+//            }
             dSubterms += di;
         }
 
-        return dSubterms;
+        return dSubterms/len;
     }
 
 
