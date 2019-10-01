@@ -53,10 +53,10 @@
     C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
     C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
 
-    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskImmediate)
-    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskImmediate)
-    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionNP,     Time:TaskImmediate)
-    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskImmediate)
+    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskEvent)
+    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionNP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskEvent)
 //    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskImmediate)
 //    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskImmediate)
 

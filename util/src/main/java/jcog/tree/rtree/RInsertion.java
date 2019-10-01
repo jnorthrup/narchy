@@ -54,7 +54,7 @@ public class RInsertion<X> {
         return merged;
     }
 
-    void setAdded() {
+    protected void inserted() {
         added = true;
     }
 

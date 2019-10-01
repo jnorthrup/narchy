@@ -18,6 +18,9 @@ package jcog.tree.rtree;
 
         leaf.transfer(l1Node, l2Node, x, model);
 
+        model.commit(l1Node);
+        model.commit(l2Node);
+
         return model.newBranch(l1Node, l2Node);
     }
 }

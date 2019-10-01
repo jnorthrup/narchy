@@ -55,7 +55,9 @@ public class Spatialization<X> {
     }
 
     public RLeaf<X> transfer(X[] sortedMbr, int from, int to) {
-        return new RLeaf<>(this, sortedMbr, from, to);
+        RLeaf x = new RLeaf<>(this, sortedMbr, from, to);
+        commit(x);
+        return x;
     }
 
     public double epsilon() {
@@ -105,6 +107,10 @@ public class Spatialization<X> {
         return new RInsertion<>(t, addOrMerge, this);
     }
 
+    /** callback when leaf needs updated after insertion or split */
+    public void commit(RLeaf<X> l) {
+
+    }
 
 
 //    public HyperRegion mbr(Node<X>[] data) {

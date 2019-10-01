@@ -151,8 +151,11 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
     }
 
     RNode<X> insert(RInsertion<X> r) {
-        r.setAdded();
-        return insert(r.x, r.bounds, r.model);
+        Spatialization<X> model = r.model;
+        RNode<X> result = insert(r.x, r.bounds, model);
+        r.inserted();
+        model.commit(this);
+        return result;
     }
 
     RNode<X> insert(X x, Spatialization<X> model) {

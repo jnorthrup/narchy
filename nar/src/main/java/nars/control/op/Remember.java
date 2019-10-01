@@ -125,7 +125,7 @@ public class Remember {
             return false;
         else {
             ((TaskConcept)cc).remember(this);
-            return !input.isDeleted();
+            return true;
         }
     }
 

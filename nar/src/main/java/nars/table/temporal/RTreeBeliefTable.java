@@ -499,6 +499,17 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 				RTreeBeliefTable.MAX_TASKS_PER_LEAF);
 		}
 
+//		@Override
+//		public void commit(RLeaf<TaskRegion> l) {
+//			//sort tasks by descending confidence
+//			short s = l.size;
+//			if (s > 1 && ((TaskRegion)l.bounds).confMinI() < ((TaskRegion)l.bounds).confMaxI()) {
+//				ArrayUtil.quickSort(0, s,
+//					(a,b)-> Float.compare(l.data[b].confMean(), l.data[a].confMean()),
+//					(a,b)-> ArrayUtil.swap(l.data, a, b, 1));
+//			}
+//		}
+
 		@Override
 		public TaskInsertion insertion(TaskRegion t, boolean addOrMerge) {
 			return new TaskInsertion(t, addOrMerge);
@@ -564,6 +575,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		TaskInsertion(TaskRegion t, boolean addOrMerge) {
 			super(t, addOrMerge, RTreeBeliefModel.the);
 		}
+
 
 		@Nullable
 		@Override

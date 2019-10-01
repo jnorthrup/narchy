@@ -173,6 +173,7 @@
      (M ==> P), (M ==> S)  |- (M ==> (--P && --S)), (Belief:IntersectionNN, Time:Compose)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
 
+
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
 

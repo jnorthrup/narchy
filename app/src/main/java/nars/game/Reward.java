@@ -101,7 +101,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		}
 	}
 
-    public void reinforceEternal(Termed x, byte punc, Truth truth, long[] stamp) {
+    public void reinforce(Termed x, byte punc, Truth truth, long[] stamp) {
         Term goal = x.term();
 
         //Term at = term().equals(goal) ? $.func(Inperience.want, goal) : $.func(Inperience.want, this.term(), goal);
@@ -154,8 +154,9 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //				t.pri(pri);
 //			game.what().acceptAll(reinforcement);
 
-			//Supplier<Task> t = reinforcement.get(nar().random());
-			for (Supplier<Task> t : reinforcement) {
+			Supplier<Task> t = reinforcement.get(nar().random());
+			//for (Supplier<Task> t : reinforcement)
+			{
 				if (t != null) {
 					Task tt = t.get();
 					if (tt != null) {

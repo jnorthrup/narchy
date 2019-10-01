@@ -373,7 +373,7 @@ public class FZero extends GameX {
     /** TODO correct ackerman/tank drive vehicle dynamics */
     private void addTankContinuous() {
 
-        float res = 0.02f;
+
         float powerScale = 0.1f;
         float rotSpeed = 1.0f;
         final float[] left = new float[1];
@@ -383,24 +383,26 @@ public class FZero extends GameX {
         final Atom TANK = Atomic.atom("tank");
 
 
-        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (x) -> {
-            if (x!=x) x = 0f;
+        GoalActionConcept l = actionUnipolar($.inh(id, $.p(TANK,NEG)), (_x) -> {
+            float x = _x;
+            if (x!=x || x < 0.5f) return 0;  x -= 0.5f; x*=2;
             float power = x * powerScale;
             left[0] = power;
             fz.playerAngle += power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             //if (x <= 0.5f) return 0;
-            return x;
+            return _x;
         });
 
-        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK,POS)), (x) -> {
-            if (x!=x) x = 0f;
+        GoalActionConcept r = actionUnipolar($.inh(id, $.p(TANK,POS)), (_x) -> {
+            float x = _x;
+            if (x!=x || x < 0.5f) return 0;  x -= 0.5f; x*=2;
             float power = x * powerScale;
             right[0] = power;
             fz.playerAngle += -power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             //if (x <= 0.5f) return 0;
-            return x;
+            return _x;
         });
 
 //        PreciseTruth bias = $.t(0, 0.001f);
