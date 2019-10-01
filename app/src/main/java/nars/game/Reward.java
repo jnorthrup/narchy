@@ -154,12 +154,14 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //				t.pri(pri);
 //			game.what().acceptAll(reinforcement);
 
-			Supplier<Task> t = reinforcement.get(nar().random());
-			if (t!=null) {
-				Task tt = t.get();
-				if (tt!=null) {
-					tt.pri(pri);
-					game.what().accept(tt);
+			//Supplier<Task> t = reinforcement.get(nar().random());
+			for (Supplier<Task> t : reinforcement) {
+				if (t != null) {
+					Task tt = t.get();
+					if (tt != null) {
+						tt.pri(pri);
+						game.what().accept(tt);
+					}
 				}
 			}
 		}
