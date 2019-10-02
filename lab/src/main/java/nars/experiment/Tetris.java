@@ -184,11 +184,11 @@ public class Tetris extends GameX {
     final Term LEFT =
             //$.the("left");
             //$.inh("left", id);
-            $.inh(id, "left");
+            $.inh(id, NEG);
     final Term RIGHT =
             //$.the("right");
             //$.inh("right", id);
-            $.inh(id,"right");
+            $.inh(id, POS);
     final Term ROT =
             //$.the("rotate");
             //$.inh("rotate", id);

@@ -167,7 +167,7 @@ public class NARio extends GameX {
 //        window(NARui.beliefCharts(this.nar, Stream.of(vx, vy).flatMap(x->x.sensors.stream()).collect(toList())), 400, 300);
 
 
-		Reward right = reward("right", 0.75f, () -> {
+		Reward right = reward("right", 1f, () -> {
 
 			float reward;
 			float curX = theMario != null && theMario.deathTime <= 0 ? theMario.x : Float.NaN;
@@ -187,16 +187,15 @@ public class NARio extends GameX {
 		});
 		//right.setDefault($.t(0, 0.75f));
 
-		Reward getCoins = rewardNormalized("money", 0.9f, -1, +1, () -> {
+		Reward getCoins = rewardNormalized("money", 1f, 0, +1, () -> {
 			int coins = Mario.coins;
 			int deltaCoin = coins - lastCoins;
 			if (deltaCoin <= 0)
-				//return -1;
-				return Float.NaN;
+				return 0;
 
 			float reward = deltaCoin * EarnCoin.floatValue();
 			lastCoins = coins;
-			return Math.max(0, reward);
+			return reward;
 		});
 		//getCoins.setDefault($.t(0, 0.75f));
 
@@ -289,7 +288,7 @@ public class NARio extends GameX {
 
 	private void initButton() {
 
-		for (GoalActionConcept c : actionPushButtonMutex(
+		actionPushButtonMutex(
 			$.inh(id, $$("L")),
 			$.inh(id, $$("R")),
 			(boolean n) -> {
@@ -301,10 +300,7 @@ public class NARio extends GameX {
 				Scene s = game.scene;
 				boolean was = s != null && s.key(Mario.KEY_RIGHT, n);
 				return n;
-			})) {
-//                (boolean n) -> { game.scene.key(Mario.KEY_RIGHT, n); return n; })) {
-			//c.actionDur(1);
-		}
+			});
 
 		GoalActionConcept j = actionPushButton($.inh(id, $$("jump")),
 			n -> {

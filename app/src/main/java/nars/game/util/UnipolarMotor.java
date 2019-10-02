@@ -19,7 +19,9 @@ public class UnipolarMotor implements ActionSignal.MotorFunction {
         this.ifGoalMissing = ifGoalMissing;
         this.update = update;
         this.truther = truther;
-        this.lastF = Float.NaN;
+        this.lastF =
+            0.5f;
+            //Float.NaN;
     }
 
     @Override

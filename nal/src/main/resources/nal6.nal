@@ -204,10 +204,10 @@
 
 
 //    //Conj/Impl Chain Deduction
-//    (X ==> Y), (C ==> Z), eventOf(C,Y), --isVar(Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
-//    (X ==> Y), (C ==> Z), eventOfNeg(C,Y), --isVar(Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
-//    (X ==> Y), (--C ==> Z), eventOf(C,Y), --isVar(Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
-//    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y), --isVar(Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOf(C,Y), --isVar(Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+    (X ==> Y), (C ==> Z), eventOfNeg(C,Y), --isVar(Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+    (X ==> Y), (--C ==> Z), eventOf(C,Y), --isVar(Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y), --isVar(Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
 
 //    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Compose)
 //      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Compose)
@@ -292,10 +292,10 @@
 
 
 
-    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
-    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
-    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
-    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
+//    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
+//    (  (&&,X,--Y,A..*)==>Z), (  (&&,Y,--X,A..*)==>Z)     |- (  (&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
+//    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==>   Z), (Belief:IntersectionPP, Time:Compose)
+//    (--(&&,X,--Y,A..*)==>Z), (--(&&,Y,--X,A..*)==>Z)     |- (--(&&,--(X && Y),A..*) ==> --Z), (Belief:IntersectionNN, Time:Compose)
 
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neqPN(X,Y)               |-  (  X ==> --Y), (Belief:AbductionPB, Time:Compose)
       (&&,X,--Y,A..*), (&&,Y,--X,A..*),neqPN(X,Y)               |-  (--Y ==>   X), (Belief:InductionPB, Time:Compose)

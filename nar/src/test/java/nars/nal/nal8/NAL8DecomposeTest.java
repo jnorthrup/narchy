@@ -15,7 +15,7 @@ import static nars.Op.GOAL;
 /**
  * tests goals involving &,|,~,-, etc..
  */
-abstract public class DecomposeTest extends NALTest {
+abstract public class NAL8DecomposeTest extends NALTest {
 
     public static final int cycles = 800;
 
@@ -33,7 +33,7 @@ abstract public class DecomposeTest extends NALTest {
         test.nar.time.dur(3);
     }
 
-    static class ConjBelief extends DecomposeTest {
+    static class ConjBelief extends NAL8DecomposeTest {
 
         @Test
         void testConjBeliefNeg() {
@@ -81,7 +81,7 @@ abstract public class DecomposeTest extends NALTest {
         }
     }
 
-    static class DisjBelief extends DecomposeTest {
+    static class DisjBelief extends NAL8DecomposeTest {
 
         @Test
         void testDisjBeliefPos() {
@@ -127,7 +127,7 @@ abstract public class DecomposeTest extends NALTest {
                     .mustBelieve(cycles, "b", 0.81f, 0.59f);
         }
     }
-    static class DisjGoal extends DecomposeTest {
+    static class DisjGoal extends NAL8DecomposeTest {
         @Test
         void testDisjConditionalDecompose() {
             test
@@ -181,7 +181,7 @@ abstract public class DecomposeTest extends NALTest {
         }
 
     }
-    static class ConjGoal extends DecomposeTest {
+    static class ConjGoal extends NAL8DecomposeTest {
         @Test
         void testConjPos1() {
             test
@@ -234,7 +234,7 @@ abstract public class DecomposeTest extends NALTest {
 
 
 
-    public static class DoublePremiseDecompose extends DecomposeTest {
+    public static class DoublePremiseDecompose extends NAL8DecomposeTest {
 
         @Test
         void decompose_Conj_BeliefPosPos() {

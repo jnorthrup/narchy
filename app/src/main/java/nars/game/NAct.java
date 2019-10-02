@@ -352,18 +352,11 @@ import static nars.Op.BELIEF;
 
         NAR n = nar();
         GoalActionConcept LA = action(tl, (b, g) -> {
-            float q = Q.q(b,g) - r.asFloat();
 
-
-            boolean x = q >= thresh.asFloat(); //(ll - lr[1] > compareThresh);
+            float q = Q.q(b,g);
+            boolean x = q > thresh.asFloat() && q >= r.floatValue();
             boolean y = L.accept(x);
-            l.set(
-                    //ll;
-                    //x ? q : 0;
-                    (x && y) ? q : 0
-                    //(x && y) ? ll : 0;
-                    //y ? ll : 0;
-            );
+            l.set(y ? q * (g!=null ? g.conf() : 0) : 0);
 
 
             float feedback =
@@ -374,16 +367,10 @@ import static nars.Op.BELIEF;
 
         });
         GoalActionConcept RA = action(tr, (b, g) -> {
-            float q = Q.q(b,g) - l.asFloat();
-
-            boolean x = q >= thresh.asFloat();
+            float q = Q.q(b,g);
+            boolean x = q > thresh.asFloat() && q >= l.floatValue();
             boolean y = R.accept(x);
-            r.set( //rr;
-                    //x ? q : 0;
-                    (x && y) ? q : 0
-                    //(x && y) ? rr : 0;
-                    //y ? rr : 0;
-            );
+            r.set(y ? q * (g!=null ? g.conf() : 0) : 0);
 
             float feedback =
                     y ? 1 : 0;
@@ -503,7 +490,7 @@ import static nars.Op.BELIEF;
     }
 
     default GoalActionConcept actionUnipolar(Term s, FloatToFloatFunction update) {
-        return actionUnipolar(s, true, (x) -> Float.NaN, update);
+        return actionUnipolar(s, true, (x) -> x, update);
     }
 
     default GoalActionConcept[] actionStep(Term down, Term up, IntProcedure each) {

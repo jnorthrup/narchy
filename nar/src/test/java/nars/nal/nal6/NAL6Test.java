@@ -56,14 +56,13 @@ public class NAL6Test extends NALTest {
 
     @Test
     void variable_unification3() {
-        TestNAR tester = test;
 
 
-        tester.believe("<<$x --> swan> ==> ($x --> bird)>", 1.00f, 0.80f);
-        tester.believe("<<$y --> swan> ==> <$y --> swimmer>>", 0.80f, 0.9f);
-        tester.mustBelieve(cycles, "<<$1 --> swan> ==> (&&,($1 --> bird),($1 --> swimmer))>", 0.80f, 0.72f);
-        tester.mustBelieve(cycles, "<($1 --> swimmer) ==> ($1 --> bird)>", 1f, 0.37f);
-        tester.mustBelieve(cycles, "<($1 --> bird) ==> ($1 --> swimmer)>", 0.80f, 0.42f);
+        test.believe("<<$x --> swan> ==> ($x --> bird)>", 1.00f, 0.80f);
+        test.believe("<<$y --> swan> ==> <$y --> swimmer>>", 0.80f, 0.9f);
+        test.mustBelieve(cycles, "<<$1 --> swan> ==> (&&,($1 --> bird),($1 --> swimmer))>", 0.80f, 0.72f);
+        test.mustBelieve(cycles, "<($1 --> swimmer) ==> ($1 --> bird)>", 1f, 0.37f);
+        test.mustBelieve(cycles, "<($1 --> bird) ==> ($1 --> swimmer)>", 0.80f, 0.42f);
 
 
     }
@@ -72,15 +71,14 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_unification4() {
 
-        TestNAR tester = test;
-        tester.termVolMax(13);
+        test.termVolMax(13);
 
-        tester.believe("<<bird --> $x> ==> <robin --> $x>>");
-        tester.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
-        tester.mustBelieve(cycles, "(((bird --> $1) && (swimmer --> $1)) ==> (robin --> $1))", 0.7f /*1f? */, 0.81f);
+        test.believe("<<bird --> $x> ==> <robin --> $x>>");
+        test.believe("<<swimmer --> $y> ==> <robin --> $y>>", 0.70f, 0.90f);
+        test.mustBelieve(cycles, "(((bird --> $1) && (swimmer --> $1)) ==> (robin --> $1))", 0.7f /*1f? */, 0.81f);
 
-        tester.mustBelieve(cycles, "<(bird --> $1) ==> (swimmer --> $1)>", 1f, 0.36f /*0.73F*/);
-        tester.mustBelieve(cycles, "<(swimmer --> $1) ==> (bird --> $1)>", 0.7f, 0.45f);
+        test.mustBelieve(cycles, "<(bird --> $1) ==> (swimmer --> $1)>", 1f, 0.36f /*0.73F*/);
+        test.mustBelieve(cycles, "<(swimmer --> $1) ==> (bird --> $1)>", 0.7f, 0.45f);
 
 
     }
@@ -89,11 +87,10 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_unification5() {
 
-        TestNAR tester = test;
-        tester.nar.termVolMax.set(14);
-        tester.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> ($x --> bird)>");
-        tester.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
-        tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> ($1 --> bird))",
+        test.nar.termVolMax.set(14);
+        test.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> ($x --> bird)>");
+        test.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
+        test.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> ($1 --> bird))",
                 1.00f,
                 0.81f
         );
@@ -104,11 +101,10 @@ public class NAL6Test extends NALTest {
     void variable_unification5_neg() {
 
 
-        TestNAR tester = test;
-        tester.termVolMax(16);
-        tester.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> --($x --> nonBird)>");
-        tester.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
-        tester.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> --($1 --> nonBird))",
+        test.termVolMax(16);
+        test.believe("<(&&,($x --> flyer),($x --> [chirping])) ==> --($x --> nonBird)>");
+        test.believe("<($y --> [withWings]) ==> ($y --> flyer)>");
+        test.mustBelieve(cycles, "((($1 --> [chirping]) && ($1 --> [withWings])) ==> --($1 --> nonBird))",
                 1.00f,
                 0.81f
         );
@@ -119,8 +115,7 @@ public class NAL6Test extends NALTest {
     void variable_unification6() {
 
 
-        TestNAR tester = test;
-        tester.termVolMax(17)
+        test.termVolMax(17)
             .believe("((&&,($x --> flyer),($x --> [chirping]), food($x, worms)) ==> ($x --> bird))")
             .believe("((&&,($y --> [chirping]),($y --> [withWings])) ==> ($y --> bird))")
             .mustBelieve(cycles, "((($1 --> flyer) && food($1,worms)) ==> ($1 --> [withWings]))", 1.00f,
@@ -167,20 +162,19 @@ public class NAL6Test extends NALTest {
     @Test
     void variable_unification7() {
 
-        TestNAR tester = test;
-        tester.believe("((&&,($x --> flyer),(($x,worms) --> food)) ==> ($x --> bird))");
-        tester.believe("(($y --> flyer) ==> ($y --> [withWings]))");
-        tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
+        test.confMin(0.4f);
+        test.believe("((&&,($x --> flyer),(($x,worms) --> food)) ==> ($x --> bird))");
+        test.believe("(($y --> flyer) ==> ($y --> [withWings]))");
+        test.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
 
     }
 
     @Test
     void variable_unification7_neg() {
 
-        TestNAR tester = test;
-        tester.believe("((&&,($x --> flyer),(($x,worms) --> food)) ==> ($x --> bird))");
-        tester.believe("(($y --> flyer) ==> ($y --> [withWings]))");
-        tester.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
+        test.believe("((&&,($x --> flyer),(($x,worms) --> food)) ==> ($x --> bird))");
+        test.believe("(($y --> flyer) ==> ($y --> [withWings]))");
+        test.mustBelieve(cycles, "<(&&,($1 --> [withWings]),<($1,worms) --> food>) ==> ($1 --> bird)>", 1.00f, 0.45f);
 
     }
 

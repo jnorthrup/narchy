@@ -420,17 +420,19 @@ public class PoleCart extends GameX {
 			//$.funcImg("mx", id, $.the(-1))
 			$.inh(id, "L"), (a) -> {
 				if (!manualOverride) {
-					actionLeft = power(a); //Util.clampBi((float) (action + a));
+					actionLeft = a > 0.5f ? power((a - 0.5f) * 2) : 0;
 					//action = Util.clampBi((float) (action + a * a));
 				}
+				return a > 0.5f ? a : 0;
 			});
 		GoalActionConcept R = actionUnipolar(
 			//$.funcImg("mx", id, $.the(+1))
 			$.inh(id, "R"), (a) -> {
 				if (!manualOverride) {
-					actionRight = power(a);//Util.clampBi((float) (action - a));
+					actionRight = a > 0.5f ? power((a - 0.5f) * 2) : 0;
 					//action = Util.clampBi((float) (action - a * a));
 				}
+				return a > 0.5f ? a : 0;
 			});
 
 		//curiosity.enable.set(false);

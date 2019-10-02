@@ -304,6 +304,22 @@ public class NAL8SequenceTest extends NALTest {
         n.run(1400);
     }
 
+    @Test void taskEventConjBeforeCorrectTime() {
+        /*
+        $0.0 (trackXY-->left)! 172456⋈172471 %.10;.01% {172470: m;2~ú;2À7}
+            $.13 ((--,(trackXY-->left))&&(--,(trackXY-->near)))! %1.0;.01% {172464: m}
+            $.02 ((--,(trackXY-->left)) &&+64 ((--,(trackXY-->left))&&(--,(trackXY-->near)))). 172392⋈172407 %.90;.81% {172470: 2~ú;2À7}
+        */
+        test
+            .input("x!")//eternal
+            .input("(y &&+10 x). |") //temporal
+            .mustGoal(cycles, "y", 1, 0.81f, -10);
+    }
+    @Test void taskEventConjBeforeCorrectTime2() {
 
-
+        test
+            .input("(--x&&z)!")//eternal
+            .input("(y &&+10 (--x&&z)). |") //temporal
+            .mustGoal(cycles, "y", 1, 0.81f, -10);
+    }
 }

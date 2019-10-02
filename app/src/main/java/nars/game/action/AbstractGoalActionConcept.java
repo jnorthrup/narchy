@@ -67,7 +67,6 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 //           new EternalTask(term, GOAL, cMaybe, now, stamp).pri(0.1f), //pri.pri()),
 //           new EternalTask(term, GOAL, cNeg, now, stamp).pri(0.1f) //pri.pri())
 //        ));
-        //GOALS.add(curiosityTable = new CuriosityBeliefTable(term));
     }
 
     public void goalDefault(Truth t, NAR n) {

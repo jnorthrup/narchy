@@ -49,6 +49,9 @@ public class AbstractPremise implements Premise {
 		this.why = why;
 	}
 
+	public AbstractPremise(Termed task, Termed belief, short[] why, RuleWhy rule) {
+		this(task,belief,CauseMerge.Append.merge(why, rule.idArray, NAL.causeCapacity.intValue()));
+	}
 	public AbstractPremise(Termed task, Termed belief, short[] why, Premise parent) {
 		this(task,belief,CauseMerge.Append.merge(why, parent.why(), NAL.causeCapacity.intValue()));
 	}
