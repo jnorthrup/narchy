@@ -61,7 +61,7 @@ public class AdjacentLinks extends TaskAction {
 			//extra links: dont seem necessary
 			//links.grow(link, link.from(), reverse, task.punc());
 
-			d.add(new AbstractPremise(task, tgt));
+			d.add(new AbstractPremise(task, tgt, why, d));
 		}
 
 	}

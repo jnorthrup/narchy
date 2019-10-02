@@ -26,7 +26,6 @@ import nars.exe.impl.WorkerExec;
 import nars.game.Game;
 import nars.game.GameTime;
 import nars.game.MetaAgent;
-import nars.game.Reward;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
@@ -469,7 +468,7 @@ abstract public class GameX extends Game {
 
         n.emotion.want(MetaGoal.Perceive, 0 /*-0.005f*/);
         n.emotion.want(MetaGoal.Believe, 0.01f);
-        n.emotion.want(MetaGoal.Desire, 0.03f);
+        n.emotion.want(MetaGoal.Desire, 0.05f);
 
 
 //
@@ -733,8 +732,8 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 3;
-        float momentum = 0.5f;
-        float explorationRate = 0.25f;
+        float momentum = 0.9f;
+        float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {

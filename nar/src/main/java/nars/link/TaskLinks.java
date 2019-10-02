@@ -152,20 +152,6 @@ public class TaskLinks implements Sampler<TaskLink> {
     }
 
 
-
-
-
-    /** returns the total priority released
-     *  sustain=1: copy
-     *  sustain=0: move
-     *
-     * @return*/
-    private void transfer(Term s, Term u, TaskLink parent, float fraction, float sustain, byte punc) {
-        TaskLink l = AtomicTaskLink.link(s, u);
-        l.transfer(parent, fraction, sustain, punc);
-        link(l);
-    }
-
     public final TaskLink link(TaskLink x) {
         return links.put(x);
     }

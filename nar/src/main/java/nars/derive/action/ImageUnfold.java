@@ -1,8 +1,11 @@
 package nars.derive.action;
 
+import nars.NAL;
 import nars.Task;
+import nars.control.CauseMerge;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleWhy;
+import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
 import nars.link.DynamicTermDecomposer;
 import nars.term.Compound;
@@ -35,7 +38,11 @@ public class ImageUnfold extends NativePremiseAction {
 				Term y = t0p ? Image.imageExt(t, forward) : Image.imageInt(t, forward);
 				if (y instanceof Compound && y.op().conceptualizable) {
 					Task tt = d._task;
-					d.what.link(AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(tt.punc(), tt.pri()));
+
+					AbstractTaskLink link = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(tt.punc(), tt.pri());
+					link.why = CauseMerge.Append.merge(tt.why(), why.idArray, NAL.causeCapacity.intValue());
+
+					d.what.link(link);
 				}
 			}
 		}

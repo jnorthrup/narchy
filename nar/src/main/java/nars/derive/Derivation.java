@@ -106,6 +106,7 @@ public class Derivation extends PreDerivation {
     public When<What> when;
 
     transient Deriver.DeriverExecutor exe = null;
+    public transient Premise _premise;
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
@@ -605,12 +606,15 @@ public class Derivation extends PreDerivation {
         Premise p;
         Emotion e = nar.emotion;
 
+
         if (P instanceof AbstractPremise) {
             try (var __ = e.derive_B_PremiseMatch.time()) {
                 p = ((AbstractPremise) P).match(Deriver.PremiseUnifyVars, this, nar.premiseUnifyTTL.intValue());
             }
         } else
             p = P;
+
+        this._premise = p;
 
         short[] can;
 
@@ -749,13 +753,20 @@ public class Derivation extends PreDerivation {
     public short[] parentCause() {
         if (parentCause == null) {
 
+            short[] premiseCause = _premise.why();
 
             int causeCap = NAL.causeCapacity.intValue();
             this.parentCause =
                     CauseMerge.limit(
-                            _belief != null ?
+                        CauseMerge.Append.merge(
+                            (_belief != null ?
                                     CauseMerge.Append.merge(causeCap - 1 /* for channel to be appended */, _task, _belief) :
-                                    _task.why(), causeCap - 1);
+                                    _task.why()),
+                        premiseCause,
+                        causeCap - 1
+                    ), causeCap - 1
+            );
+
 //        if (parentCause.length >= causeCap)
 //            throw new WTF();
         }

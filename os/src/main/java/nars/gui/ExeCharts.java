@@ -165,6 +165,7 @@ public class ExeCharts {
 
     static Surface valuePanel(NAR n) {
         return new Splitting(
+                //metaGoalPlot(n),
                 metaGoalPlot2(n),
                 0.9f, false,
                 metaGoalControls(n)

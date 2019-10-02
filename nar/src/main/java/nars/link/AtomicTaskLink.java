@@ -17,15 +17,6 @@ public class AtomicTaskLink extends AbstractTaskLink {
 
     public static AtomicTaskLink link(Term source, Term target) {
 
-//        if ((target instanceof Variable || target instanceof Int) && !source.containsRecursively(target))
-//            throw new WTF();
-
-//        if (NAL.TASKLINK_NORMALIZE_IMAGES) {
-//            source = Image.imageNormalize(source);
-//            if (target instanceof Compound)
-//                target = Image.imageNormalize(target);
-//        }
-
         source = source.concept();
         target = target == null ? source /* loop */ :
             NAL.TASKLINK_TARGET_CONCEPT && target instanceof Compound && target.op().conceptualizable ?
@@ -33,8 +24,6 @@ public class AtomicTaskLink extends AbstractTaskLink {
                     :
                     target
         ;
-
-
 
         return new AtomicTaskLink(source, target);
     }
@@ -104,9 +93,9 @@ public class AtomicTaskLink extends AbstractTaskLink {
         super(source, target);
     }
 
-    protected AtomicTaskLink(Term self) {
-        super(self, self);
-    }
+//    protected AtomicTaskLink(Term self) {
+//        super(self, self);
+//    }
 
     @Override
     public float take(float pct) {

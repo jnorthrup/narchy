@@ -13,6 +13,13 @@ import org.jetbrains.annotations.Nullable;
  */
 public interface Termutator {
 
+    Termutator[] CUT = new Termutator[0];
+
+    Termutator ELIDE = new AbstractTermutator(Atomic.atom("ELIDE")) {
+        @Override public void mutate(Termutator[] chain, int current, Unify u) {
+            u.tryMutate(chain, current);
+        }
+    };
 
     /**
      * match all termutations recursing to the next after each successful one
@@ -40,13 +47,6 @@ public interface Termutator {
 
     }
 
-    Termutator[] CUT = new Termutator[0];
-
-    Termutator ELIDE = new AbstractTermutator(Atomic.atom("ELIDE")) {
-        @Override public void mutate(Termutator[] chain, int current, Unify u) {
-            u.tryMutate(chain, current);
-        }
-    };
 
     /** constant result for return from preprocess() call
      * */

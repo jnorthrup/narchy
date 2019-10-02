@@ -28,7 +28,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class QuestionTest {
 
-    private final int withinCycles = 212;
+    private final int withinCycles = 412;
 
     @Test
     void whQuestionUnifyQueryVar() throws Narsese.NarseseException {

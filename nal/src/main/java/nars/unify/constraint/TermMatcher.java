@@ -14,7 +14,6 @@ import nars.term.var.VarPattern;
 import org.eclipse.collections.api.set.MutableSet;
 
 import javax.annotation.Nullable;
-
 import java.util.function.Function;
 
 import static nars.Op.NEG;

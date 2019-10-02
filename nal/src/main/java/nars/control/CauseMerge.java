@@ -90,7 +90,7 @@ public enum CauseMerge {
     };
 
 
-    public static short[] limit(short[] cause, int cap) {
+    @Deprecated public static short[] limit(short[] cause, int cap) {
         return cause.length <= cap ? cause : ArrayUtil.subarray(cause, 0, cap);
     }
 

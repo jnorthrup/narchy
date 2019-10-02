@@ -8,12 +8,12 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.attention.What;
 import nars.bag.BagClustering;
-import nars.control.channel.CauseChannel;
+import nars.control.CauseMerge;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
 import nars.derive.rule.RuleWhy;
+import nars.task.NALTask;
 import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.truth.Stamp;
@@ -38,7 +38,7 @@ public class ConjClustering extends TaskAction {
 
     public final BagClustering<Task> data;
     private final BagClustering.Dimensionalize<Task> model;
-    private final CauseChannel<Task> in;
+
     private final byte puncIn, puncOut;
 
     public final FloatRange termVolumeMaxPct = new FloatRange(1f, 0, 1f);
@@ -86,8 +86,6 @@ public class ConjClustering extends TaskAction {
 
         taskPunc(puncIn);
         //TODO other filters
-
-        this.in = nar.newChannel(this);
 
         this.puncIn = puncIn;
         this.puncOut = puncOut;
@@ -215,7 +213,7 @@ public class ConjClustering extends TaskAction {
         do {
 
             centroids.removeIf((Predicate<TaskList>)(i ->
-                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, d.what) == 0 || i.size() <= 1));
+                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, why, d) == 0 || i.size() <= 1));
 
         } while (!centroids.isEmpty() && --iterations > 0);
 
@@ -323,7 +321,7 @@ public class ConjClustering extends TaskAction {
 
         }
 
-        private int conjoinCentroid(int limit, FasterList<Task> in, What w) {
+        private int conjoinCentroid(int limit, FasterList<Task> in, RuleWhy why, Derivation d) {
 
             int s = in.size();
             if (s < 2)
@@ -439,7 +437,8 @@ public class ConjClustering extends TaskAction {
                                             data.remove(aa);
                                     }
 
-                                    ConjClustering.this.in.accept(y, w);
+                                    ((NALTask)y).causeMerge(why.idArray, CauseMerge.Append);
+                                    d.remember(y);
 
                                     if (++count >= tasksGeneratedPerCentroidIterationMax)
                                         break main;

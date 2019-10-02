@@ -1,6 +1,5 @@
 package nars.gui.graph.run;
 
-import nars.NAL;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;

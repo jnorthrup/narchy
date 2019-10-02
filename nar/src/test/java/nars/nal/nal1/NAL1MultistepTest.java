@@ -4,7 +4,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
 import nars.test.impl.DeductiveChainTest;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.test.impl.DeductiveChainTest.*;
@@ -56,14 +55,8 @@ public class NAL1MultistepTest extends NALTest {
     }
 
     @Test
-    void multistepImpl4() {
-        new DeductiveChainTest(test, 4, 3500, impl);
-    }
-
-    @Disabled
-    @Test
-    void multistepImpl5() {
-        new DeductiveChainTest(test, 5, 3500, impl);
+    void multistepImpl3() {
+        new DeductiveChainTest(test, 3, 500, impl);
     }
 
 }

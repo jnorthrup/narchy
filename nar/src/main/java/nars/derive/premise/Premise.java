@@ -22,4 +22,6 @@ public interface Premise {
 	@Nullable Task task();
 
 	@Nullable Task belief();
+
+	short[] why();
 }

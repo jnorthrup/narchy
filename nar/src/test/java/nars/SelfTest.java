@@ -52,13 +52,13 @@ public class SelfTest {
         SelfTest s = new SelfTest();
         s.unitTestsByPackage("nars.nal.nal1");
         s.unitTestsByPackage("nars.nal.nal2");
-//        s.unitTestsByPackage("nars.nal.nal3");
-//        s.unitTestsByPackage("nars.nal.nal4");
+        s.unitTestsByPackage("nars.nal.nal3");
+        s.unitTestsByPackage("nars.nal.nal4");
 //        s.unitTestsByPackage("nars.nal.nal5");
 //        s.unitTestsByPackage("nars.nal.nal6");
 //        s.unitTestsByPackage("nars.nal.nal7");
 //        s.unitTestsByPackage("nars.nal.nal8");
-        s.run(2);
+        s.run(16);
     }
 
 

@@ -23,7 +23,6 @@ import nars.derive.action.CompoundDecompose;
 import nars.derive.action.ImageUnfold;
 import nars.derive.action.TaskResolve;
 import nars.derive.adjacent.AdjacentIndexer;
-import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleSet;
@@ -86,7 +85,7 @@ public class Deriver extends How {
 
 	public Deriver(PremiseRuleSet program, TimeFocus timing) {
 		this(program
-				//HACK adds standard derivation behaviors
+				//standard derivation behaviors
 				.add(TaskResolve.the)
 
 				.add(new CompoundDecompose(true))
@@ -154,14 +153,14 @@ public class Deriver extends How {
 		protected final Premise premise() {
 			TaskLink x = d.deriver.hypothesize(d);
 
-			//Pre-resolve
-			if (x!=null) {
-				Task y = TaskResolve.the.get(x, d);
-				if (y != null) // && !x.equals(y))
-					return new AbstractPremise(y, x.to());
-			}
+//			//Pre-resolve
+//			if (x!=null) {
+//				Task y = TaskResolve.the.get(x, d);
+//				if (y != null) // && !x.equals(y))
+//					return new AbstractPremise(y, x.to());
+//			}
 
-			return null;
+			return x;
 		}
 
 		/**

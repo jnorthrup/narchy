@@ -7,9 +7,11 @@ import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
+import nars.control.CauseMerge;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
 import nars.derive.rule.RuleWhy;
+import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -35,7 +37,7 @@ public class STMLinker extends TaskAction {
 		this.stm = new MetalConcurrentQueue<>(capacity);
 	}
 
-	private static boolean link(Task next, @Nullable Task prev, float factor, Derivation d) {
+	private static boolean link(Task next, @Nullable Task prev, float factor, RuleWhy why, Derivation d) {
 		if (prev == null)
 			return true;
 
@@ -53,8 +55,16 @@ public class STMLinker extends TaskAction {
 			if (pri >= ScalarValue.EPSILON) {
 				TaskLinkWhat w = (TaskLinkWhat) d.what;
 				if (!att.equals(btt)) {
-					link(att, btt, next.punc(), pri, w);
-					link(btt, att, prev.punc(), pri, w);
+
+					int causeCap = NAL.causeCapacity.intValue();
+					short[] WHY =
+						CauseMerge.Append.merge(
+							CauseMerge.Append.merge(prev.why(), next.why(), causeCap -1),
+							why.idArray,
+							causeCap);
+
+					link(att, btt, next.punc(), pri, WHY, w);
+					link(btt, att, prev.punc(), pri, WHY, w);
 				}
 			}
 		}
@@ -74,8 +84,10 @@ public class STMLinker extends TaskAction {
 			//Util.or(next.priElseZero(), prev.priElseZero());
 	}
 
-	static void link(Term a, Term b, byte punc, float pri, TaskLinkWhat w) {
-		w.links.link(AtomicTaskLink.link(a, b).priSet(punc, pri));
+	static void link(Term a, Term b, byte punc, float pri, short[] why, TaskLinkWhat w) {
+		AbstractTaskLink l = AtomicTaskLink.link(a, b).priSet(punc, pri);
+		l.why = why;
+		w.links.link(l);
 	}
 
 	public boolean keep(Task x) {
@@ -107,7 +119,7 @@ public class STMLinker extends TaskAction {
 		boolean novel;
 		if (capacity == 1) {
 			//optimized 1-ary case
-			novel = link(x, stm.peek(), factor, d);
+			novel = link(x, stm.peek(), factor, why, d);
 		} else {
 			//TODO test
 			//int i = 0;
@@ -116,7 +128,7 @@ public class STMLinker extends TaskAction {
 			for (int i = 0; i < capacity; i++) {
 				Task z = stm.peek(h, i);
 				//for (Task z : stm) {
-				novel &= link(x, z, factor, d);
+				novel &= link(x, z, factor, why, d);
 				//if (++i == capacity) break;
 				//}
 			}

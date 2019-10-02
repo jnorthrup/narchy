@@ -280,7 +280,7 @@ public class NAL3DecomposeBeliefTest extends NAL3Test {
     }
 
     @Test
-    void questPropagation() {
+    @Disabled void questPropagation() {
 
         test.nar.termVolMax.set(8);
         test

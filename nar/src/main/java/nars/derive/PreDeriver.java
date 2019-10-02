@@ -51,7 +51,7 @@ import static jcog.memoize.Memoizers.DEFAULT_HIJACK_REPROBES;
         protected boolean intern(PreDerivation d) {
             return
                 !(((Derivation)d)._task instanceof TaskLink) &&
-                (d.taskTerm.volume() + d.beliefTerm.volume() <= 2 * InterningTermBuilder.volMaxDefault);
+                (d.taskTerm.volume() + d.beliefTerm.volume() <= 3 * InterningTermBuilder.volMaxDefault);
         }
 
     }

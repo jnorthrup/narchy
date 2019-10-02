@@ -5,8 +5,8 @@ import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;
 import nars.NAR;
-import nars.derive.action.PremisePatternAction;
 import nars.derive.action.PremiseAction;
+import nars.derive.action.PremisePatternAction;
 
 import java.io.IOException;
 import java.io.InputStream;

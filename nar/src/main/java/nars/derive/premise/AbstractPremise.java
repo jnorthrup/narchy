@@ -5,10 +5,13 @@
 package nars.derive.premise;
 
 import jcog.Util;
+import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.control.CauseMerge;
 import nars.derive.Derivation;
+import nars.derive.rule.RuleWhy;
 import nars.table.BeliefTable;
 import nars.term.*;
 import nars.term.atom.Bool;
@@ -26,23 +29,46 @@ public class AbstractPremise implements Premise {
 
 	public final Termed task, belief;
 
+	/** does not include the task or belief's. these transfer separately */
+	public short[] why = ArrayUtil.EMPTY_SHORT_ARRAY;
 
 	/** structural */
-	public AbstractPremise(Task t) {
-		this(t, t.term());
+	public AbstractPremise(Task t, RuleWhy why) {
+		this(t, t.term(), why);
 	}
 
-	public AbstractPremise(Termed task, Termed belief) {
+	public AbstractPremise(Termed task, Termed belief, RuleWhy why) {
+		this(task, belief, why.idArray);
+	}
+
+	public AbstractPremise(Termed task, Termed belief, short[] why) {
 		assert(valid(task) && task.term().op().taskable);
 		assert(valid(belief));
 		this.task = task;
 		this.belief = belief;
+		this.why = why;
+	}
+
+	public AbstractPremise(Termed task, Termed belief, short[] why, Premise parent) {
+		this(task,belief,CauseMerge.Append.merge(why, parent.why(), NAL.causeCapacity.intValue()));
+	}
+	public AbstractPremise(Termed task, Termed belief, short[] why, Derivation d) {
+		this(task, belief, why, d._premise);
+	}
+
+	public AbstractPremise(Termed task, Termed belief, RuleWhy why, Derivation d) {
+		this(task, belief, why.idArray, d._premise);
 	}
 
 	private static boolean valid(Termed x) {
 		return !(x instanceof Neg) && !(x instanceof Bool) && !(x instanceof Img);
 	}
 
+
+	@Override
+	public final short[] why() {
+		return why;
+	}
 
 	@Override
 	public final Term taskTerm() {
@@ -170,8 +196,8 @@ public class AbstractPremise implements Premise {
 				nextBeliefTerm = found[0];
 		}
 
-		return belief != null ? new AbstractPremise(task, belief) :
-			!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm) :
+		return belief != null ? new AbstractPremise(task, belief, why()) :
+			!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why()) :
 				this;
 
 	}
