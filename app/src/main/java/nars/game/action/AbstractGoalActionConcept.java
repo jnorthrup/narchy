@@ -142,7 +142,10 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
             this.actionTruth = actionTruth(limitGoal, w, perceptShift),
             g);
 
-        input(nextFeedback, pri(), cause, w);
+        input(nextFeedback!=null ? nextFeedback.dither(
+            Math.max(resolution().floatValue(), w.x.nar.freqResolution.floatValue()),
+            w.x.nar.confResolution.floatValue()
+        ) : null, pri(), cause, w);
     }
 
     /** returns feedback truth value */

@@ -2,6 +2,7 @@ package nars.gui;
 
 import com.jogamp.opengl.GL2;
 import jcog.Util;
+import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.math.FloatRange;
@@ -12,12 +13,14 @@ import nars.NAR;
 import nars.attention.AntistaticBag;
 import nars.control.How;
 import nars.control.MetaGoal;
+import nars.control.Why;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.exe.impl.ThreadedExec;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
+import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
@@ -35,15 +38,52 @@ import spacegraph.space2d.widget.text.BitmapLabel;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.Draw;
 
+import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
 import static spacegraph.space2d.container.grid.Gridding.grid;
-import static spacegraph.space2d.container.grid.Gridding.row;
 
 public class ExeCharts {
+    private static Surface metaGoalPlot2(NAR nar) {
 
-    private static Surface metaGoalPlot(NAR nar) {
+        int s = nar.control.why.size();
+
+        List<WhySurface> controls = new FasterList(s);
+        for (Why w : nar.control.why) {
+			controls.add(new WhySurface(w));
+        }
+
+        Gridding g = new Gridding(controls);
+//        BitmapMatrixView bmp = new BitmapMatrixView(i ->
+//            //Util.tanhFast(
+//            gain.floatValue() * nar.control.why.get(i).pri()
+//            //)
+//            , s, Draw::colorBipolar);
+
+        return DurSurface.get(g, nar, ()->{
+			controls.forEach(WhySurface::update);
+        });
+    }
+
+    static class WhySurface extends Widget {
+    	final Why w;
+    	public WhySurface(Why w) {
+    		this.w = w;
+    		//Draw.colorHash(w.)
+			set(new Bordering(new VectorLabel(w.toString())).south(new FloatSlider(0, -2, +2).on(x->{
+                float p = (float) Math.pow(x, 10);
+                w.setPri(p);
+            })));
+		}
+		public void update() {
+            color.x = Util.unitize(w.pri());
+            float v = w.valueRaw();
+            color.y = v!=v ? 0 : Util.unitize(v);
+		}
+	}
+
+	private static Surface metaGoalPlot(NAR nar) {
 
         int s = nar.control.why.size();
 
@@ -124,8 +164,9 @@ public class ExeCharts {
     }
 
     static Surface valuePanel(NAR n) {
-        return row(
-                metaGoalPlot(n),
+        return new Splitting(
+                metaGoalPlot2(n),
+                0.9f, false,
                 metaGoalControls(n)
         );
     }
@@ -281,6 +322,7 @@ public class ExeCharts {
         );
         return DurSurface.get(p, n, control::update);
     }
+
 
 
 }

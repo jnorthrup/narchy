@@ -13,6 +13,7 @@ import nars.bag.BagClustering;
 import nars.control.channel.CauseChannel;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
+import nars.derive.rule.RuleWhy;
 import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.truth.Stamp;
@@ -26,7 +27,6 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
@@ -177,7 +177,7 @@ public class ConjClustering extends TaskAction {
 
 
     @Override
-    protected void accept(Task x, Derivation d) {
+    protected void accept(RuleWhy why, Task x, Derivation d) {
 
         //accept(y);
         if (filter(x))

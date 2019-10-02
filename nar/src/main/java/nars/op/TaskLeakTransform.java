@@ -15,7 +15,7 @@ abstract public class TaskLeakTransform extends TaskTransformAction {
 
 
     protected TaskLeakTransform(NAR nar, byte... puncs) {
-        super(nar);
+        super();
         single(); //all but command
         taskPunc(puncs);
     }

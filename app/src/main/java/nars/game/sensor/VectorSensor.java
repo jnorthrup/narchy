@@ -66,7 +66,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
     public void update(Game g) {
 
 
-        float res = this.res.floatValue();
+        float res = Math.max(g.nar.freqResolution.floatValue(), this.res.floatValue());
 
         FloatToObjectFunction<Truth> truther = Signal.truther(res, g.confDefaultBelief, g);
 

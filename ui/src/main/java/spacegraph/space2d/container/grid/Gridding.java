@@ -50,7 +50,7 @@ public class Gridding extends MutableListContainer {
         this.margin = margin;
     }
 
-    public Gridding(List<Surface> children) {
+    public Gridding(List<? extends Surface> children) {
         this(PHI, children);
     }
 
@@ -59,7 +59,7 @@ public class Gridding extends MutableListContainer {
         set(children);
     }
 
-    protected Gridding(float aspect, List<Surface> children) {
+    protected Gridding(float aspect, List<? extends Surface> children) {
         this(aspect);
         set(children);
     }

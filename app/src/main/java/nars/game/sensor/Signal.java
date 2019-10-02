@@ -82,7 +82,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
         return currentValue;
     }
 
-    public static FloatToObjectFunction<Truth> truther(float freqRes, float conf, Game g) {
+    @Deprecated public static FloatToObjectFunction<Truth> truther(float freqRes, float conf, Game g) {
         float c = g.ditherConf(conf);
         return (float nextValue) ->
             nextValue==nextValue ?
@@ -97,7 +97,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
     }
     protected Truth truth(float nextValue, Game g) {
         return nextValue == nextValue ?
-            Signal.truthDithered(nextValue, resolution().floatValue(), g) :
+            Signal.truthDithered(nextValue, Math.max(g.nar.freqResolution.floatValue(), resolution().floatValue()), g) :
             null;
     }
 

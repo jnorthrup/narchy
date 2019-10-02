@@ -5,6 +5,7 @@ import nars.Task;
 import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
+import nars.derive.rule.RuleWhy;
 import nars.link.TaskLink;
 import nars.table.TaskTable;
 import nars.term.Term;
@@ -29,7 +30,7 @@ public class TaskResolve extends NativePremiseAction {
 	}
 
 	@Override
-	protected void run(Derivation d) {
+	protected void run(RuleWhy why, Derivation d) {
 		Task x = d._task;
 
 		Task y = get((TaskLink)x, d);

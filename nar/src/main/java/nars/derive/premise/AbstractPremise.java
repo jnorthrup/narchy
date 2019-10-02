@@ -33,7 +33,7 @@ public class AbstractPremise implements Premise {
 	}
 
 	public AbstractPremise(Termed task, Termed belief) {
-		assert(valid(task));
+		assert(valid(task) && task.term().op().taskable);
 		assert(valid(belief));
 		this.task = task;
 		this.belief = belief;

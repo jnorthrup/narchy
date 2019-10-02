@@ -46,7 +46,7 @@ public class Inperience extends TaskTransformAction {
 
 
     public Inperience(NAR n) {
-        super(n);
+        super();
         single(); //all but command
     }
 

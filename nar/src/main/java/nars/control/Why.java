@@ -39,6 +39,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
      * internally assigned id
      */
     public final short id;
+    public final short[] idArray; //HACK
     public final Term name;
     /**
      * the value measured contributed by its effect on each MetaGoal.
@@ -55,7 +56,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
     public volatile float value = 0;
 
     /** an effective priority value */
-    public volatile float pri = 0.5f;
+    public volatile float pri = 1f;
 
     protected Why(short id) {
         this(id, null);
@@ -63,6 +64,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
 
     public Why(short id, @Nullable Object name) {
         this.id = id;
+        this.idArray = new short[] { id };
         this.name = $.identity(name != null ? name : this);
         credit = new Traffic[MetaGoal.values().length];
         for (int i = 0; i < credit.length; i++) {

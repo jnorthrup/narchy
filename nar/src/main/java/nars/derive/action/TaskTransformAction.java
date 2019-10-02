@@ -1,9 +1,9 @@
 package nars.derive.action;
 
-import nars.NAR;
 import nars.Task;
-import nars.control.Why;
+import nars.control.CauseMerge;
 import nars.derive.Derivation;
+import nars.derive.rule.RuleWhy;
 import nars.task.NALTask;
 import org.jetbrains.annotations.Nullable;
 
@@ -11,32 +11,27 @@ import static nars.Op.*;
 
 public abstract class TaskTransformAction extends TaskAction {
 
-	private final short[] cause;
-	private final Why why;
 
-	public TaskTransformAction(NAR n) {
-		this(n, BELIEF, GOAL, QUESTION, QUEST);
+	public TaskTransformAction() {
+		this(BELIEF, GOAL, QUESTION, QUEST);
 	}
 
-	public TaskTransformAction(NAR n, byte... puncs) {
-		this.why = n.newCause(this);
-		this.cause = new short[] { why.id };
+	public TaskTransformAction(byte... puncs) {
 		single();
 		taskPunc(puncs);
 	}
 
 	@Override public final float pri(Derivation d) {
-		return why.pri(); //TODO
+		return 1;
 	}
 
 	@Override
-	protected final void accept(Task x, Derivation d) {
+	protected final void accept(RuleWhy why, Task x, Derivation d) {
 		Task y = transform(x, d);
-		if (y == null)
-			return;
-
-		((NALTask)y).cause(cause);
-		d.remember(y);
+		if (y != null) {
+			((NALTask) y).causeMerge(why.idArray, CauseMerge.Append);
+			d.remember(y);
+		}
 	}
 
 	@Nullable

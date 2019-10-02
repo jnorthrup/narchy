@@ -9,6 +9,7 @@ import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
+import nars.derive.rule.RuleWhy;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -86,7 +87,7 @@ public class STMLinker extends TaskAction {
 	}
 
 	@Override
-	protected void accept(Task x, Derivation d) {
+	protected void accept(RuleWhy why, Task x, Derivation d) {
 		if (!filter(x))
 			return;
 

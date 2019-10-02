@@ -2,6 +2,7 @@ package nars.derive.rule;
 
 import it.unimi.dsi.fastutil.bytes.ByteArrayList;
 import jcog.TODO;
+import jcog.Util;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.Narsese;
@@ -84,16 +85,13 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	public final void single(Term taskPattern) {
-		single(taskPattern, null);
+		single(taskPattern, taskPattern);
 	}
 
 	/** single premise */
-	public final void single(Term taskPattern, @Nullable Term beliefPattern) {
+	public final void single(Term taskPattern, Term beliefPattern) {
 		taskPattern(taskPattern);
-		if (beliefPattern!=null)
-			beliefPattern(beliefPattern);
-		else
-			this.beliefPattern = this.taskPattern;
+		beliefPattern(beliefPattern);
 
 		taskPunc(true,true,true,true,false);
 		hasBelief(false);
@@ -118,7 +116,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 	public void beliefPattern(Term x) {
 
-		this.beliefPattern = patternify(x);
+		this.beliefPattern = Util.maybeEqual(taskPattern, patternify(x));
 
 		if (beliefPattern instanceof Neg)
 			throw new TermException("belief pattern can never be NEG", beliefPattern);

@@ -203,11 +203,11 @@
               //  (Y --> P), (Z ==> (&&,--(X-->P),A..+)),neq(X,Y) |- unisubst((Z ==> (&&,--(X-->P),A..+)), X,Y,novel), (Belief:DeductionN)
 
 
-    //Conj/Impl Chain Deduction
-    (X ==> Y), (C ==> Z), eventOf(C,Y), --isVar(Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
-    (X ==> Y), (C ==> Z), eventOfNeg(C,Y), --isVar(Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
-    (X ==> Y), (--C ==> Z), eventOf(C,Y), --isVar(Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
-    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y), --isVar(Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+//    //Conj/Impl Chain Deduction
+//    (X ==> Y), (C ==> Z), eventOf(C,Y), --isVar(Y)      |-   polarizeBelief(((X &&   conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+//    (X ==> Y), (C ==> Z), eventOfNeg(C,Y), --isVar(Y)   |-   polarizeBelief(((X &&   conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
+//    (X ==> Y), (--C ==> Z), eventOf(C,Y), --isVar(Y)    |-   polarizeBelief(((X && --conjWithout(C,  Y)) ==> Z)), (Belief:DeductionPD, Time:Compose)
+//    (X ==> Y), (--C ==> Z), eventOfNeg(C,Y), --isVar(Y) |-   polarizeBelief(((X && --conjWithout(C, --Y)) ==> Z)), (Belief:DeductionND, Time:Compose)
 
 //    (X ==> Y), (C ==> Z), eventOf(C,Y)      |-   ((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPP, Time:Compose)
 //      (X ==> Y), (C ==> Z), eventOf(C,Y)    |- --((X && conjWithout(C,  Y)) ==> Z), (Belief:DeductionPN, Time:Compose)
@@ -256,7 +256,7 @@
 
     //(Y ==> X), (Z ==> X), eqNeg(Y,Z), --is(X,"#")                       |- (#1 ==> X), (Belief:IntersectionPB, Time:Compose)
 
-    (C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR, Time:Compose)
+    //(C ==> X), (E ==> Y), eventOf(C,E)      |-    unisubst(--conjWithout(C,E),X,Y), (Belief:AbductionXOR, Time:Compose)
         //TODO disj
 
 
@@ -280,11 +280,11 @@
 
 
 
-//Union reduction
-    (&&,X,A..+), (&&,--X,A..+)                 |-   (&&,A..+), (Belief:UnionPP, Time:Compose)
-      (&&,X,A..+), (&&,--X,A..+)               |- --(&&,A..+), (Belief:UnionNN, Time:Compose)
-    (&&,--X,A..+), (&&,X,A..+)                 |-   (&&,A..+), (Belief:UnionPP, Time:Compose)
-      (&&,--X,A..+), (&&,X,A..+)               |- --(&&,A..+), (Belief:UnionNN, Time:Compose)
+////Union reduction
+//    (&&,X,A..+), (&&,--X,A..+)                 |-   (&&,A..+), (Belief:UnionPP, Time:Compose)
+//      (&&,X,A..+), (&&,--X,A..+)               |- --(&&,A..+), (Belief:UnionNN, Time:Compose)
+//    (&&,--X,A..+), (&&,X,A..+)                 |-   (&&,A..+), (Belief:UnionPP, Time:Compose)
+//      (&&,--X,A..+), (&&,X,A..+)               |- --(&&,A..+), (Belief:UnionNN, Time:Compose)
 
 // Mutex induction
     (&&,X,--Y,A..*), (&&,Y,--X,A..*), neq(X,Y)           |- (&&,--(X && Y),A..*), (Belief:IntersectionPB, Time:Compose)

@@ -8,6 +8,7 @@ import nars.attention.TaskLinkWhat;
 import nars.derive.Derivation;
 import nars.derive.adjacent.AdjacentConcepts;
 import nars.derive.premise.AbstractPremise;
+import nars.derive.rule.RuleWhy;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.unify.constraint.TermMatcher;
@@ -37,7 +38,7 @@ public class AdjacentLinks extends TaskAction {
 	}
 
 	@Override
-	protected void accept(Task y, Derivation d) {
+	protected void accept(RuleWhy why, Task y, Derivation d) {
 
 
 		Term to = d._beliefTerm;

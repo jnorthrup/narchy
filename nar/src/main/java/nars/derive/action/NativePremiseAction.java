@@ -10,7 +10,7 @@ import nars.term.control.PREDICATE;
 /** stateless by default */
 abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder  {
 
-	protected abstract void run(Derivation d);
+	protected abstract void run(RuleWhy why, Derivation d);
 
 	abstract public float pri(Derivation d);
 
@@ -49,7 +49,7 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 		@Override
 		public final void run(Derivation d) {
-			NativePremiseAction.this.run(d);
+			NativePremiseAction.this.run(why, d);
 		}
 	}
 }

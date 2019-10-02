@@ -90,8 +90,8 @@ abstract public class ScalarReward extends Reward {
             //setCyclic to prevent decompose
             reinforce(CONJ.the(rTarget, A), BELIEF, RimplAPos, stamp);
             reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplAPos, stamp);
-//              reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplANeg, stamp);
-//              reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplANeg, stamp);
+            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stamp);
+            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stamp);
 
 //            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos, stamp);
