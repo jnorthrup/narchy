@@ -356,7 +356,7 @@ import static nars.Op.BELIEF;
             float q = Q.q(b,g);
             boolean x = q > thresh.asFloat() && q >= r.floatValue();
             boolean y = L.accept(x);
-            l.set(y ? q * (g!=null ? g.conf() : 0) : 0);
+            l.set(y ? q : 0);
 
 
             float feedback =
@@ -370,7 +370,7 @@ import static nars.Op.BELIEF;
             float q = Q.q(b,g);
             boolean x = q > thresh.asFloat() && q >= l.floatValue();
             boolean y = R.accept(x);
-            r.set(y ? q * (g!=null ? g.conf() : 0) : 0);
+            r.set(y ? q : 0);
 
             float feedback =
                     y ? 1 : 0;

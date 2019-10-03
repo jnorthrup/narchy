@@ -155,12 +155,7 @@ public class Conceptualization {
             } else if (!xo.temporal) {
                 //not temporal itself but contains a temporal inside
                 //if none of these temporal terms are temporally specific, return as-is
-                if (x.ANDrecurse(z -> {
-                    if (z instanceof Compound) {
-                        return !z.op().temporal || z.dt()==DTERNAL;
-                    } else
-                        return true;
-                }))
+                if (x.ANDrecurse(z -> !(z instanceof Compound) || !z.op().temporal || z.dt()==DTERNAL))
                     return x;
             }
 
