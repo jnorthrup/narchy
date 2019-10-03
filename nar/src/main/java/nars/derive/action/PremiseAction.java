@@ -3,7 +3,7 @@ package nars.derive.action;
 import jcog.Texts;
 import nars.NAL;
 import nars.derive.Derivation;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.term.control.AbstractPred;
 
 /** rankable branch in the derivation fork */
@@ -11,9 +11,9 @@ public abstract class PremiseAction extends AbstractPred<Derivation>  {
 
 //	public final PriNode pri;
 
-	public final RuleWhy why;
+	public final RuleCause why;
 
-	public PremiseAction(RuleWhy cause) {
+	public PremiseAction(RuleCause cause) {
 		super(cause.name);
 		this.why = cause;
 //		this.pri = new PriNode.Source(this, 0.5f);

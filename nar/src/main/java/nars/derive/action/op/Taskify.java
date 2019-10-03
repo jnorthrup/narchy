@@ -7,7 +7,7 @@ import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.derive.Derivation;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.derive.util.DerivationFailure;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
@@ -41,10 +41,10 @@ public class Taskify extends ProxyTerm {
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
      */
-    public final RuleWhy channel;
+    public final RuleCause channel;
     final Termify termify;
 
-    public Taskify(Termify termify, RuleWhy channel) {
+    public Taskify(Termify termify, RuleCause channel) {
         super($.pFast(termify, $.the(channel.id)));
         this.termify = termify;
         this.channel = channel;

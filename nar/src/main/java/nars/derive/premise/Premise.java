@@ -1,6 +1,7 @@
 package nars.derive.premise;
 
 import nars.Task;
+import nars.control.Caused;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +15,8 @@ import org.jetbrains.annotations.Nullable;
  * note: Comparable as implemented here is not 100% consistent with Task.equals and Term.equals.  it is
  * sloppily consistent for its purpose in collating Premises in optimal sorts during hypothesizing
  */
-public interface Premise {
+public interface Premise extends Caused {
+
 	Term taskTerm();
 
 	Term beliefTerm();
@@ -23,5 +25,4 @@ public interface Premise {
 
 	@Nullable Task belief();
 
-	short[] why();
 }

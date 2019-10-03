@@ -33,7 +33,7 @@ class MetaGoalTest {
         n.run(cycles);
 
 
-        n.control.why.forEach(w -> {
+        n.control.cause.forEach(w -> {
             System.out.println(w.id + " " + w);
         });
         tasks.forEach((c,t)->{
@@ -86,7 +86,7 @@ class MetaGoalTest {
             System.out.println(k + '\t' + v);
         });
 
-        n.control.why.forEach(c -> {
+        n.control.cause.forEach(c -> {
             c.commit();
 //            double perceive = c.credit[MetaGoal.PerceiveCmplx.ordinal()].total();
 //            double believe = c.credit[MetaGoal.Believe.ordinal()].total();

@@ -16,7 +16,7 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
-import nars.control.Why;
+import nars.control.Cause;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
@@ -736,12 +736,12 @@ abstract public class GameX extends Game {
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
-            final Consumer<FasterList<Why>> reval = new Consumer<FasterList<Why>>() {
+            final Consumer<FasterList<Cause>> reval = new Consumer<FasterList<Cause>>() {
 
                 float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
                 @Override
-                public void accept(FasterList<Why> w) {
+                public void accept(FasterList<Cause> w) {
                     int ww = w.size();
                     if (f.length != ww)
                         f = new float[ww];

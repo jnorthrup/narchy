@@ -6,7 +6,7 @@ import nars.attention.TaskLinkWhat;
 import nars.control.CauseMerge;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.link.AtomicTaskLink;
 import nars.link.DynamicTermDecomposer;
 import nars.link.TaskLinks;
@@ -35,7 +35,7 @@ public class CompoundDecompose extends NativePremiseAction {
 	}
 
 	@Override
-	protected void run(RuleWhy why, Derivation d) {
+	protected void run(RuleCause why, Derivation d) {
 		Task srcTask = taskOrBelief ? d._task : d._belief;
 
 		Compound src = (Compound) srcTask.term();

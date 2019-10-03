@@ -80,10 +80,6 @@ public interface TaskRegion extends HyperRegion, Tasked, LongInterval {
 //        return (float) TruthFunctions.expectation(freqMean(), confMin());
 //    }
 
-    default short[] why() {
-        return ArrayUtil.EMPTY_SHORT_ARRAY;
-    }
-
     @Override
     default double cost(final int dim) {
         switch (dim) {

@@ -9,7 +9,7 @@ import jcog.data.atomic.AtomicFloat;
  *
  *  the AtomicFloat which this subclasses holds the accumulating value
  *  that safely supports multiple concurrent accumulators */
-public class Traffic extends /*DoubleAdder*/ AtomicFloat {
+public class Credit extends /*DoubleAdder*/ AtomicFloat {
 
     /** value at last commit */
     public volatile float current;

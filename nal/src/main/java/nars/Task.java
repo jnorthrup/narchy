@@ -8,6 +8,7 @@ import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
 import nars.control.CauseMerge;
+import nars.control.Caused;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
 import nars.task.proxy.SpecialNegatedTask;
@@ -43,7 +44,7 @@ import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
  */
-public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable {
+public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPrioritizable, Caused {
 
     Task[] EmptyArray = new Task[0];
     Atom BeliefAtom = $.quote(String.valueOf((char)BELIEF));
@@ -611,10 +612,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
 
-    /**
-     * Causal trace
-     */
-    short[] why();
+
 
     Truth truth();
 

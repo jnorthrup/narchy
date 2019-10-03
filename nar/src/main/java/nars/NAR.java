@@ -3,10 +3,7 @@ package nars;
 
 import com.google.common.collect.Streams;
 import com.google.common.primitives.Longs;
-import jcog.Log;
-import jcog.Texts;
-import jcog.Util;
-import jcog.WTF;
+import jcog.*;
 import jcog.data.byt.DynBytes;
 import jcog.event.ByteTopic;
 import jcog.event.ListTopic;
@@ -199,7 +196,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 			for (int i = tc.length - 1; i >= 0; i--) {
 				short s = tc[i];
 				if (seen == null || seen.add(s)) {
-					Why c = control.why.get(s);
+					Cause c = control.cause.get(s);
                     try {
                         out.append(c.toString());
                         out.append('\n');
@@ -1431,13 +1428,17 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //        return control.amp(task);
 //    }
 
-    public float value(short[] effect) {
+    public float value(Term why) {
+        throw new TODO();
+    }
+
+    @Deprecated public float value(short[] effect) {
         return control.value(effect);
     }
 
 
 
-    public Why newCause(Object name) {
+    public Cause newCause(Object name) {
         return control.newCause(name);
     }
 
@@ -1448,7 +1449,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return control.newChannel(id);
     }
 
-    public <C extends Why> C newCause(ShortToObjectFunction<C> idToChannel) {
+    public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
         return control.newCause(idToChannel);
     }
 

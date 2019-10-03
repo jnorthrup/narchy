@@ -1,14 +1,11 @@
 package nars.task.util;
 
 import jcog.TODO;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.set.MetalLongSet;
 import jcog.math.LongInterval;
 import jcog.pri.Prioritized;
-import nars.NAL;
 import nars.Task;
-import nars.control.CauseMerge;
 import nars.term.Term;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -74,12 +71,12 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         return maxValue(LongInterval::end);
     }
 
-    @Override
-    @Nullable
-    public short[] why() {
-        return CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(),
-                Util.map(0, size(), short[][]::new, x -> get(x).why()));
-    }
+//    @Override
+//    @Nullable
+//    public short[] why() {
+//        return CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(),
+//                Util.map(0, size(), short[][]::new, x -> get(x).why()));
+//    }
 
     @Override
     public float freqMin() {

@@ -6,7 +6,7 @@ import nars.Narsese;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.rule.PremiseRuleSet;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import org.junit.jupiter.api.Test;
 
 class NativePremiseActionTest {
@@ -24,7 +24,7 @@ class NativePremiseActionTest {
 					}
 
 					@Override
-					protected void run(RuleWhy why, Derivation d) {
+					protected void run(RuleCause why, Derivation d) {
 						System.out.println("match: " + d);
 					}
 

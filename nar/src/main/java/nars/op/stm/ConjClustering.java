@@ -12,7 +12,7 @@ import nars.bag.BagClustering;
 import nars.control.CauseMerge;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.task.NALTask;
 import nars.task.util.TaskList;
 import nars.term.Term;
@@ -175,7 +175,7 @@ public class ConjClustering extends TaskAction {
 
 
     @Override
-    protected void accept(RuleWhy why, Task x, Derivation d) {
+    protected void accept(RuleCause why, Task x, Derivation d) {
 
         //accept(y);
         if (filter(x))
@@ -321,7 +321,7 @@ public class ConjClustering extends TaskAction {
 
         }
 
-        private int conjoinCentroid(int limit, FasterList<Task> in, RuleWhy why, Derivation d) {
+        private int conjoinCentroid(int limit, FasterList<Task> in, RuleCause why, Derivation d) {
 
             int s = in.size();
             if (s < 2)

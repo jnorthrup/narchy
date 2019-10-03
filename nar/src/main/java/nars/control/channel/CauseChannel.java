@@ -2,7 +2,7 @@ package nars.control.channel;
 
 import jcog.pri.Prioritizable;
 import jcog.util.ConsumerX;
-import nars.control.Why;
+import nars.control.Cause;
 
 import java.util.Collection;
 import java.util.List;
@@ -12,21 +12,21 @@ import java.util.List;
  */
 abstract public class CauseChannel<X extends Prioritizable>  {
 
-    private final Why why;
+    private final Cause cause;
     public final short id;
 
-    protected CauseChannel(Why why) {
-        this.why = why;
-        this.id = why.id;
+    protected CauseChannel(Cause cause) {
+        this.cause = cause;
+        this.id = cause.id;
     }
 
     @Override
     public String toString() {
-        return why.name + "<-" + super.toString();
+        return cause.name + "<-" + super.toString();
     }
 
     public float pri() {
-        return why.pri();
+        return cause.pri();
     }
 
     public final void accept(X x, ConsumerX<? super X> target) {

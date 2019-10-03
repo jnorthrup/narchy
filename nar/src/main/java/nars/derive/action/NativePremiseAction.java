@@ -4,13 +4,13 @@ import nars.$;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.derive.rule.ConditionalPremiseRuleBuilder;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.term.control.PREDICATE;
 
 /** stateless by default */
 abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder  {
 
-	protected abstract void run(RuleWhy why, Derivation d);
+	protected abstract void run(RuleCause why, Derivation d);
 
 	abstract public float pri(Derivation d);
 
@@ -26,14 +26,14 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 
 	@Override
-	protected final PremiseAction action(RuleWhy cause) {
+	protected final PremiseAction action(RuleCause cause) {
 		return new MyDeriveAction(cause);
 	}
 
 
 	private final class MyDeriveAction extends PremiseAction {
 
-		MyDeriveAction(RuleWhy cause) {
+		MyDeriveAction(RuleCause cause) {
 			super(cause);
 		}
 

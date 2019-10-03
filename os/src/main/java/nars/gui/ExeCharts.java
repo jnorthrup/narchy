@@ -13,7 +13,7 @@ import nars.NAR;
 import nars.attention.AntistaticBag;
 import nars.control.How;
 import nars.control.MetaGoal;
-import nars.control.Why;
+import nars.control.Cause;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.exe.impl.ThreadedExec;
@@ -47,10 +47,10 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class ExeCharts {
     private static Surface metaGoalPlot2(NAR nar) {
 
-        int s = nar.control.why.size();
+        int s = nar.control.cause.size();
 
         List<WhySurface> controls = new FasterList(s);
-        for (Why w : nar.control.why) {
+        for (Cause w : nar.control.cause) {
 			controls.add(new WhySurface(w));
         }
 
@@ -67,8 +67,8 @@ public class ExeCharts {
     }
 
     static class WhySurface extends Widget {
-    	final Why w;
-    	public WhySurface(Why w) {
+    	final Cause w;
+    	public WhySurface(Cause w) {
     		this.w = w;
     		//Draw.colorHash(w.)
 			set(new Bordering(new VectorLabel(w.toString())).south(new FloatSlider(0, -2, +2).on(x->{
@@ -85,13 +85,13 @@ public class ExeCharts {
 
 	private static Surface metaGoalPlot(NAR nar) {
 
-        int s = nar.control.why.size();
+        int s = nar.control.cause.size();
 
         FloatRange gain = new FloatRange(1f, 0f, 100f);
 
         BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 //Util.tanhFast(
-                    gain.floatValue() * nar.control.why.get(i).pri()
+                    gain.floatValue() * nar.control.cause.get(i).pri()
                 //)
                 , s, Draw::colorBipolar);
 

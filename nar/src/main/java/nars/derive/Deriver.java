@@ -17,7 +17,7 @@ import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.How;
-import nars.control.Why;
+import nars.control.Cause;
 import nars.derive.action.AdjacentLinks;
 import nars.derive.action.CompoundDecompose;
 import nars.derive.action.ImageUnfold;
@@ -133,7 +133,7 @@ public class Deriver extends How {
 	@Override
 	public float value() {
 		//TODO cache this between cycles
-		double v = Util.sumDouble(Why::pri, program.why);
+		double v = Util.sumDouble(Cause::pri, program.cause);
 		//System.out.println(this + " " + v);
 		return (float) v;
 	}

@@ -470,12 +470,18 @@ public enum $ { ;
         return theAtomic(new byte[]{c});
     }
 
+    public static Term[] the(short... i) {
+        int l = i.length;
+        Term[] x = new Term[l];
+        for (int j = 0; j < l; j++)
+            x[j] = the(i[j]);
+        return x;
+    }
     public static Term[] the(int... i) {
         int l = i.length;
         Term[] x = new Term[l];
-        for (int j = 0; j < l; j++) {
+        for (int j = 0; j < l; j++)
             x[j] = the(i[j]);
-        }
         return x;
     }
 

@@ -17,7 +17,7 @@ import nars.derive.premise.PremiseRuleNormalization;
 import nars.derive.rule.ConditionalPremiseRuleBuilder;
 import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleBuilder;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.derive.util.PuncMap;
 import nars.derive.util.Unifiable;
 import nars.op.UniSubst;
@@ -610,7 +610,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     }
 
 
-    @Override protected PremiseAction action(RuleWhy cause) {
+    @Override protected PremiseAction action(RuleCause cause) {
 
 
         return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, beliefPattern, termify, cause);
@@ -706,7 +706,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         final int order;
         private final boolean patternsEqual;
 
-        public TruthifyDeriveAction(UnifyConstraint<Derivation>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, RuleWhy cause) {
+        public TruthifyDeriveAction(UnifyConstraint<Derivation>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, RuleCause cause) {
             super(cause);
             this.truth = truth;
             this.constraints = constraints;

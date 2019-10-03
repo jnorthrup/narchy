@@ -21,7 +21,7 @@ public abstract class PremiseRuleBuilder {
 	protected abstract PREDICATE<PreDerivation>[] conditions();
 
 	/** called for each instance of a rule.  avoid recomputing invariants here that could otherwise be computed in conditions() */
-	protected abstract PremiseAction action(RuleWhy cause);
+	protected abstract PremiseAction action(RuleCause cause);
 
 	@Override
 	public String toString() {
@@ -33,7 +33,7 @@ public abstract class PremiseRuleBuilder {
 		final PREDICATE[] PRE = conditions();
 
 		return new PremiseRule(this.id, PRE, (nar) -> {
-			RuleWhy cause = nar.newCause(s -> new RuleWhy(this, s));
+			RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
 			return action(cause);
 		});
 	}

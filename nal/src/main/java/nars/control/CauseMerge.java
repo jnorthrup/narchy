@@ -3,26 +3,25 @@ package nars.control;
 import jcog.Util;
 import jcog.data.ShortBuffer;
 import jcog.util.ArrayUtil;
-import nars.task.util.TaskRegion;
+import nars.Task;
 import org.eclipse.collections.api.set.primitive.ShortSet;
 import org.eclipse.collections.impl.factory.primitive.ShortSets;
-import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 
 /** cause merge strategies */
-public enum CauseMerge {
+@Deprecated public enum CauseMerge {
 
     /** appends causes, producing a rolling window */
     Append {
         @Override
         protected short[] apply(short[] existing, short[] incoming, int capacity) {
-            return mergeSampled(capacity, false, existing, incoming);
+            return Why.sample(capacity, false, existing, incoming);
         }
 
         @Override
         protected short[] apply(int capacity, short[]... c) {
-            return mergeSampled(capacity, false, c);
+            return Why.sample(capacity, false, c);
         }
 
     },
@@ -64,7 +63,7 @@ public enum CauseMerge {
             if (aa + incoming.length < capacity) {
                 return ArrayUtil.addAll(incoming, append.toArray());
             } else {
-                return mergeSampled(capacity, false, existing, append.toArray());
+                return Why.sample(capacity, false, existing, append.toArray());
             }
 
 //            int n = ee.size();
@@ -85,7 +84,7 @@ public enum CauseMerge {
 
         /** TODO customized implementation for merging duplicates */
         @Override protected short[] apply(int capacity, short[]... c) {
-            return mergeSampled(capacity, false, c);
+            return Why.sample(capacity, false, c);
         }
     };
 
@@ -138,7 +137,7 @@ public enum CauseMerge {
         return limit(y, capacity);
     }
 
-    public final short[] merge(int causeCapacity, TaskRegion... x) {
+    @Deprecated public final short[] merge(int causeCapacity, Task... x) {
         short[] a = x[0].why();
         short[] y;
         switch (x.length) {
@@ -152,74 +151,12 @@ public enum CauseMerge {
                 break;
             default:
                 y = merge(causeCapacity,
-                        Util.map(TaskRegion::why, short[][]::new,
+                        Util.map(Task::why, short[][]::new,
                                 ArrayUtil.removeNulls(x)));
                 break;
         }
         return limit(y, causeCapacity);
     }
 
-
-    /** this isnt good because the maps can grow beyond the capacity
-     public static short[] mergeFlat(int maxLen, short[][] s) {
-     int ss = s.length;
-     ShortHashSet x = new ShortHashSet(ss * maxLen);
-     for (short[] a : s) {
-     x.addAll(a);
-     }
-     return x.toSortedArray();
-     }*/
-
-    static short[] mergeSampled(int maxLen, boolean deduplicate, short[]... s) {
-        int ss = s.length;
-        int totalItems = 0;
-        short[] lastNonEmpty = null;
-        int nonEmpties = 0;
-        for (short[] t : s) {
-            int tl = t.length;
-            totalItems += tl;
-            if (tl > 0) {
-                lastNonEmpty = t;
-                nonEmpties++;
-            }
-        }
-        if (nonEmpties == 1)
-            return lastNonEmpty;
-        if (totalItems == 0)
-            return ArrayUtil.EMPTY_SHORT_ARRAY;
-
-
-        ShortBuffer ll = new ShortBuffer(Math.min(maxLen, totalItems));
-        RoaringBitmap r = deduplicate ? new RoaringBitmap() : null;
-        int ls = 0;
-        int n = 0;
-        int done;
-        main:
-        do {
-            done = 0;
-            for (short[] c : s) {
-                int cl = c.length;
-                if (n < cl) {
-                    short next = c[cl - 1 - n];
-                    if (deduplicate)
-                        if (!r.checkedAdd(next))
-                            continue;
-
-                    ll.add/*adder.accept*/(next);
-                    if (++ls >= maxLen)
-                        break main;
-
-                } else {
-                    done++;
-                }
-            }
-            n++;
-        } while (done < ss);
-
-        //assert (ls > 0);
-        short[] lll = ll.toArray();
-        //assert (lll.length == ls);
-        return lll;
-    }
 
 }

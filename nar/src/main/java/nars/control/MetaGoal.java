@@ -4,6 +4,7 @@ import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
 import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
@@ -61,14 +62,19 @@ public enum MetaGoal {
     ;
 
 
+    public void learn(Term why, float strength, FasterList<Cause> whies) {
+        Cause[] cc = whies.array();
+        int ordinal = ordinal();
+        Why.eval(why, strength, (w,p)-> learn(cc[w].credit, ordinal, p));
+    }
 
     /**
      * learn that the given effects have a given value
      * note: requires that the FasterList's internal array is correct Cause[] type for direct un-casting access
      */
-    public void learn(float strength, FasterList<Why> whies, short... cause) {
+    @Deprecated public void learn(float strength, FasterList<Cause> whies, short... why) {
 
-        int n = cause.length;
+        int n = why.length;
         if (n == 0)
             return;
 
@@ -82,36 +88,36 @@ public enum MetaGoal {
 
 
         int ordinal = ordinal();
-        Why[] cc = whies.array();
-        for (short c : cause) {
-            Why why = cc[c];
-            if (why!=null) //HACK
-                learn(why.credit, ordinal, s);
+        Cause[] cc = whies.array();
+        for (short c : why) {
+            Cause ccc = cc[c];
+//            if (why!=null) //HACK
+                learn(ccc.credit, ordinal, s);
         }
     }
 
 
     /** default linear adder */
-    @Deprecated static public void value(NAR n, @Nullable Consumer<FasterList<Why>> value) {
+    @Deprecated static public void value(NAR n, @Nullable Consumer<FasterList<Cause>> value) {
 
-        FasterList<Why> why = n.control.why;
-        int cc = why.size();
+        FasterList<Cause> cause = n.control.cause;
+        int cc = cause.size();
         if (cc == 0)
             return;
 
-        Why[] ccc = why.array();
+        Cause[] ccc = cause.array();
 
         float[] want = n.emotion.want;
 
         for (int i = 0; i < cc; i++) {
 
-            Why ci = ccc[i];
+            Cause ci = ccc[i];
 
             ci.commit();
 
             double v = 0;
             boolean valued = false;
-            Traffic[] cg = ci.credit;
+            Credit[] cg = ci.credit;
             for (int j = 0; j < want.length; j++) {
                 float c = cg[j].current;
                 if (Math.abs(c) > Float.MIN_NORMAL) {
@@ -124,7 +130,7 @@ public enum MetaGoal {
         }
 
         if (value!=null)
-            value.accept(why);
+            value.accept(cause);
 
 //        @Nullable Consumer<Why[]> g = this.governor;
 //        if (g!=null)
@@ -143,17 +149,18 @@ public enum MetaGoal {
     /**
      * contributes the value to a particular goal in a cause's goal vector
      */
-    protected static void learn(Traffic[] goalValue, int ordinal, float v) {
+    protected static void learn(Credit[] goalValue, int ordinal, float v) {
         goalValue[ordinal].add(v);
     }
 
 
     public static final Logger logger = LoggerFactory.getLogger(MetaGoal.class);
 
+
     /**
      * estimate the priority factor determined by the current value of priority-affecting causes
      */
-    public static float privaluate(FasterList<Why> values, short[] effect) {
+    @Deprecated public static float privaluate(FasterList<Cause> values, short[] effect) {
 
         int effects = effect.length;
         if (effects == 0) return 0;
@@ -161,88 +168,22 @@ public enum MetaGoal {
         float value = 0;
         Object[] vv = values.array();
         for (short c : effect)
-            value += ((Why) vv[c]).pri();
+            value += ((Cause) vv[c]).pri();
 
 
         return value / effects;
     }
 
 
-//    public static AgentBuilder newController(NAgent a) {
-//        NAR n = a.nar;
-//
-//        Emotion ne = n.emotion;
-//        Arrays.fill(ne.want, 0);
-//
-//        AgentBuilder b = new AgentBuilder(
-//
-//                HaiQae::new,
-//
-//                () -> a.enabled.get() ? (0.1f + a.dexterity()) * Util.tanhFast(a.reward) /* - lag */ : 0f)
-//
-//                .in(a::dexterity)
-//                .in(a.happy)
-//
-//
-//
-//
-//                .in(new FloatNormalized(
-//
-//                        new FloatFirstOrderDifference(n::time, () -> n.emotion.deriveTask.getValue().longValue())
-//                ).relax(0.1f))
-//                .in(new FloatNormalized(
-//
-//                                new FloatFirstOrderDifference(n::time, () -> n.emotion.premiseFire.getValue().longValue())
-//                        ).relax(0.1f)
-//                ).in(new FloatNormalized(
-//                                n.emotion.busyVol::getSum
-//                        ).relax(0.1f)
-//                );
-//
-//
-//        for (MetaGoal g : values()) {
-//            final int gg = g.ordinal();
-//            float min = -2;
-//            float max = +2;
-//            b.in(new FloatPolarNormalized(() -> ne.want[gg], max));
-//
-//            float step = 0.5f;
-//
-//            b.out(2, (w) -> {
-//                float str = 0.05f + step * Math.abs(ne.want[gg] / 4f);
-//                switch (w) {
-//                    case 0:
-//                        ne.want[gg] = Math.min(max, ne.want[gg] + str);
-//                        break;
-//                    case 1:
-//                        ne.want[gg] = Math.max(min, ne.want[gg] - str);
-//                        break;
-//                }
-//            });
-//        }
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//
-//        return b;
-//    }
 
-    public static class Report extends ObjectDoubleHashMap<ObjectBytePair<Why>> {
+    public static class Report extends ObjectDoubleHashMap<ObjectBytePair<Cause>> {
 
-        public TreeBasedTable<Why, MetaGoal, Double> table() {
-            TreeBasedTable<Why, MetaGoal, Double> tt = TreeBasedTable.create();
+        public TreeBasedTable<Cause, MetaGoal, Double> table() {
+            TreeBasedTable<Cause, MetaGoal, Double> tt = TreeBasedTable.create();
             MetaGoal[] mv = MetaGoal.values();
             synchronized (this) {
                 forEachKeyValue((k, v) -> {
-                    Why c = k.getOne();
+                    Cause c = k.getOne();
                     MetaGoal m = mv[k.getTwo()];
                     tt.put(c, m, v);
                 });
@@ -257,13 +198,13 @@ public enum MetaGoal {
             return this;
         }
 
-        public Report add(Iterable<Why> cc) {
+        public Report add(Iterable<Cause> cc) {
 
             cc.forEach(c -> {
 
                 int i = 0;
                 MetaGoal[] values = MetaGoal.values();
-                for (Traffic t : c.credit) {
+                for (Credit t : c.credit) {
 
                     MetaGoal m = values[i];
                     double tt = //t.total();

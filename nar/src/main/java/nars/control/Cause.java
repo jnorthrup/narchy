@@ -15,6 +15,7 @@ import java.util.stream.IntStream;
 import static java.util.stream.Collectors.toList;
 
 /**
+ * 'cause (because)
  * represents a registered causal influence for analyzing its
  * positive and negative influence in system activity via
  * 'causal traces' attached to Tasks.
@@ -33,13 +34,13 @@ import static java.util.stream.Collectors.toList;
  */
 @Paper
 @Skill("Credit_assignment")
-public class Why extends WhenInternal implements Comparable<Why> {
+public class Cause extends WhenInternal implements Comparable<Cause> {
 
     /**
      * internally assigned id
      */
     public final short id;
-    public final short[] idArray; //HACK
+    @Deprecated public final short[] idArray; //HACK
     public final Term name;
     /**
      * the value measured contributed by its effect on each MetaGoal.
@@ -48,7 +49,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
      * <p>
      * TODO allow redefinition at runtime
      */
-    public Traffic[] credit;
+    public Credit[] credit;
     /**
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values
@@ -58,17 +59,17 @@ public class Why extends WhenInternal implements Comparable<Why> {
     /** an effective priority value */
     public volatile float pri = 1f;
 
-    protected Why(short id) {
+    protected Cause(short id) {
         this(id, null);
     }
 
-    public Why(short id, @Nullable Object name) {
+    public Cause(short id, @Nullable Object name) {
         this.id = id;
         this.idArray = new short[] { id };
         this.name = $.identity(name != null ? name : this);
-        credit = new Traffic[MetaGoal.values().length];
+        credit = new Credit[MetaGoal.values().length];
         for (int i = 0; i < credit.length; i++) {
-            credit[i] = new Traffic();
+            credit[i] = new Credit();
         }
     }
 
@@ -125,11 +126,11 @@ public class Why extends WhenInternal implements Comparable<Why> {
 
     @Override
     public boolean equals(Object obj) {
-        return this == obj || id == ((Why) obj).id;
+        return this == obj || id == ((Cause) obj).id;
     }
 
     @Override
-    public int compareTo(Why o) {
+    public int compareTo(Cause o) {
         return Short.compare(id, o.id);
     }
 
@@ -142,7 +143,7 @@ public class Why extends WhenInternal implements Comparable<Why> {
 //    }
 
     public void commit() {
-        for (Traffic aGoal : credit)
+        for (Credit aGoal : credit)
             aGoal.commit();
     }
 

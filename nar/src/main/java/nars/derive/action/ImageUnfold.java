@@ -4,7 +4,7 @@ import nars.NAL;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.derive.Derivation;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
 import nars.link.DynamicTermDecomposer;
@@ -26,7 +26,7 @@ public class ImageUnfold extends NativePremiseAction {
 	}
 
 	/** TODO move more of these tests to trie predicates */
-	@Override protected void run(RuleWhy why, Derivation d) {
+	@Override protected void run(RuleCause why, Derivation d) {
 
 		Term t = d._taskTerm;
 

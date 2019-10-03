@@ -11,7 +11,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.CauseMerge;
 import nars.derive.Derivation;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.table.BeliefTable;
 import nars.term.*;
 import nars.term.atom.Bool;
@@ -33,11 +33,11 @@ public class AbstractPremise implements Premise {
 	public short[] why = ArrayUtil.EMPTY_SHORT_ARRAY;
 
 	/** structural */
-	public AbstractPremise(Task t, RuleWhy why) {
+	public AbstractPremise(Task t, RuleCause why) {
 		this(t, t.term(), why);
 	}
 
-	public AbstractPremise(Termed task, Termed belief, RuleWhy why) {
+	public AbstractPremise(Termed task, Termed belief, RuleCause why) {
 		this(task, belief, why.idArray);
 	}
 
@@ -49,7 +49,7 @@ public class AbstractPremise implements Premise {
 		this.why = why;
 	}
 
-	public AbstractPremise(Termed task, Termed belief, short[] why, RuleWhy rule) {
+	public AbstractPremise(Termed task, Termed belief, short[] why, RuleCause rule) {
 		this(task,belief,CauseMerge.Append.merge(why, rule.idArray, NAL.causeCapacity.intValue()));
 	}
 	public AbstractPremise(Termed task, Termed belief, short[] why, Premise parent) {
@@ -59,7 +59,7 @@ public class AbstractPremise implements Premise {
 		this(task, belief, why, d._premise);
 	}
 
-	public AbstractPremise(Termed task, Termed belief, RuleWhy why, Derivation d) {
+	public AbstractPremise(Termed task, Termed belief, RuleCause why, Derivation d) {
 		this(task, belief, why.idArray, d._premise);
 	}
 

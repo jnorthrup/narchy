@@ -3,7 +3,7 @@ package nars.derive.rule;
 import jcog.Texts;
 import nars.NAR;
 import nars.Op;
-import nars.control.Why;
+import nars.control.Cause;
 import nars.derive.Derivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.PremiseAction;
@@ -30,7 +30,7 @@ public class DeriverProgram {
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
-    /*@Stable*/ public final Why[] why;
+    /*@Stable*/ public final Cause[] cause;
 
     public final PremiseAction[] branch;
 
@@ -46,7 +46,7 @@ public class DeriverProgram {
 
         this.branch = actions; assert (actions.length > 0);
 
-        this.why = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Why[]::new);
+        this.cause = Stream.of(actions).flatMap(b -> Stream.of(b.why)).toArray(Cause[]::new);
 
         this.pre = pre;
     }

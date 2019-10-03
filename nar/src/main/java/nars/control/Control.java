@@ -51,7 +51,7 @@ import java.util.Arrays;
      * raw cause id (short int) -> cause table
      *
      */
-    public final FasterList<Why> why = new FasterList<>(0, new Why[512]);
+    public final FasterList<Cause> cause = new FasterList<>(0, new Cause[512]);
 
 
     /** hierarchical priority distribution DAG (TODO ensure acyclic) */
@@ -83,7 +83,7 @@ import java.util.Arrays;
 
     public MetaGoal.Report stats(PrintStream out) {
         MetaGoal.Report r = new MetaGoal.Report();
-        r.add(why);
+        r.add(cause);
         r.print(out);
         return r;
     }
@@ -115,7 +115,7 @@ import java.util.Arrays;
     }
 
     public float value(short[] effect) {
-        return MetaGoal.privaluate(why, effect);
+        return MetaGoal.privaluate(cause, effect);
     }
 
     public Node<nars.attention.PriNode, Object> add(PriNode p) {
@@ -131,8 +131,8 @@ import java.util.Arrays;
     }
 
 
-    public Why newCause(Object name) {
-        return newCause((id) -> new Why(id, name));
+    public Cause newCause(Object name) {
+        return newCause((id) -> new Cause(id, name));
     }
 
     /**
@@ -142,11 +142,11 @@ import java.util.Arrays;
         return new TaskChannel(newCause(id));
     }
 
-    public <C extends Why> C newCause(ShortToObjectFunction<C> idToChannel) {
-        synchronized (why) {
-            short next = (short) (why.size());
+    public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
+        synchronized (cause) {
+            short next = (short) (cause.size());
             C c = idToChannel.valueOf(next);
-            why.add(c);
+            cause.add(c);
             return c;
         }
     }
@@ -251,9 +251,9 @@ import java.util.Arrays;
         private final short ci;
         final short[] uniqueCause;
 
-        TaskChannel(Why why) {
-            super(why);
-            this.ci = why.id;
+        TaskChannel(Cause cause) {
+            super(cause);
+            this.ci = cause.id;
             uniqueCause = new short[]{ci};
         }
 

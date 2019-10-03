@@ -10,7 +10,7 @@ import nars.attention.TaskLinkWhat;
 import nars.control.CauseMerge;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
-import nars.derive.rule.RuleWhy;
+import nars.derive.rule.RuleCause;
 import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
@@ -37,7 +37,7 @@ public class STMLinker extends TaskAction {
 		this.stm = new MetalConcurrentQueue<>(capacity);
 	}
 
-	private static boolean link(Task next, @Nullable Task prev, float factor, RuleWhy why, Derivation d) {
+	private static boolean link(Task next, @Nullable Task prev, float factor, RuleCause why, Derivation d) {
 		if (prev == null)
 			return true;
 
@@ -99,7 +99,7 @@ public class STMLinker extends TaskAction {
 	}
 
 	@Override
-	protected void accept(RuleWhy why, Task x, Derivation d) {
+	protected void accept(RuleCause why, Task x, Derivation d) {
 		if (!filter(x))
 			return;
 
