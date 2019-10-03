@@ -80,10 +80,10 @@ public enum Why { ;
 	}
 
 	public static Term why(Term whyA, Term whyB, int capacity) {
-		if (whyA.equals(whyB))
+		int wa = whyA.volume();
+		if (whyA.equals(whyB) && wa <= capacity)
 			return whyA; //same
 
-		int wa = whyA.volume();
 		int wb = whyB.volume();
 		if (wa + wb + 1 > capacity) {
 			//must reduce or sample

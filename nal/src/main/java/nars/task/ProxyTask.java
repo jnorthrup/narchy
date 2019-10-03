@@ -1,6 +1,5 @@
 package nars.task;
 
-import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import nars.NAL;
@@ -98,7 +97,6 @@ public class ProxyTask extends UnitPri implements Task {
     }
 
     public void causeMerge(short[] why, CauseMerge cMerge) {
-        Util.nop();
         //TODO
     }
 
