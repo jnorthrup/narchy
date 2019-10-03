@@ -25,13 +25,13 @@ abstract class ActualNALTask extends NALTask {
         this.stamp = stamp;
 
         if (start!= LongInterval.ETERNAL && end-start > NAL.belief.TASK_RANGE_LIMIT)
-            throw new TaskException(term, "excessive range: " + (end-start));
+            throw new TaskException("excessive range: " + (end-start), term);
 
         if (!term.op().taskable)
-            throw new TaskException(term, "invalid task term: " + term);
+            throw new TaskException("invalid task term: " + term, term);
 
         if (truth == null ^ (!((punc == BELIEF) || (punc == GOAL))))
-            throw new TaskException(term, "null truth");
+            throw new TaskException("null truth", term);
 
         if ((start == LongInterval.ETERNAL && end != LongInterval.ETERNAL) ||
                 (start > end) ||
@@ -45,7 +45,7 @@ abstract class ActualNALTask extends NALTask {
 
         if (NAL.test.DEBUG_EXTRA) {
             if (!Stamp.validStamp(stamp))
-                throw new TaskException(term, "invalid stamp: " + Arrays.toString(stamp));
+                throw new TaskException("invalid stamp: " + Arrays.toString(stamp), term);
 
             Task.validTaskTerm(term, punc, false);
         }

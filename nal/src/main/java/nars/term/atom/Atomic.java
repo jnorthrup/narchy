@@ -8,7 +8,6 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.buffer.TermBuffer;
-import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
 import org.eclipse.collections.api.list.primitive.ByteList;
@@ -49,10 +48,6 @@ public interface Atomic extends Term {
         return false;
     }
 
-    @Override
-    default @Nullable Term temporalize(Retemporalize r) {
-        return this;
-    }
 
     @Override
     default boolean equalsRoot(Term x) {

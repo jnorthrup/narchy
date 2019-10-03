@@ -168,18 +168,17 @@ public abstract class TermBuilder implements TermConstructor {
     }
 
     public Term root(Compound x) {
-        return !x.hasAny(Op.Temporal) ?
-                x
-                :
-                x.temporalize(
-                    NAL.conceptualization
-                );
+        return !x.hasAny(Op.Temporal) ? x : _root(x);
+    }
+
+    protected Term _root(Compound x) {
+        return NAL.conceptualization.apply(x);
     }
 
     public static Term concept(Compound x) {
         Term term = x.unneg().root().normalize();
 
-        if (term instanceof Neg || !x.op().conceptualizable)
+        if (term instanceof Neg || !term.op().conceptualizable)
             throw new TermException("not conceptualizable", x);
 
         return term;

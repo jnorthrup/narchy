@@ -23,7 +23,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         super(id, cacheSizePerOp, volInternedMax, deep);
 
 
-        root = newOpCache("root", j -> super.root((Compound) j.term), cacheSizePerOp);
+        root = newOpCache("root", j -> super._root((Compound) j.term), cacheSizePerOp);
 
         normalize = newOpCache("normalize", j -> super.normalize((Compound) j.term, (byte) 0), cacheSizePerOp);
 
@@ -55,7 +55,7 @@ public class MemoizingTermBuilder extends InterningTermBuilder {
         if (internable(x)) {
             return root.apply(new InternedCompoundTransform(x));
         } else {
-            return super.root(x);
+            return super._root(x);
         }
     }
 

@@ -1501,11 +1501,11 @@ class ConjTest {
     @Test
     void testRetemporalization1b() throws Narsese.NarseseException {
 
-        assertEq(
+		assertEq(
                 "a(x,true)",
-                $.$(
-                        "a(x,(--,((--,(x &&+1 x)) &&+- x)))"
-                ).temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL).toString()
+                Retemporalize.retemporalizeXTERNALToDTERNAL.apply($.$(
+					"a(x,(--,((--,(x &&+1 x)) &&+- x)))"
+				)).toString()
         );
     }
 
@@ -1677,7 +1677,7 @@ class ConjTest {
         String st = "((--,(happy)) && (--,((--,(o))&&(happy))))";
         Compound t = $(st);
         assertEquals("(--,(happy))", t.toString());
-        Term xe = t.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+		Term xe = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(t);
         assertEquals("(--,(happy))", xe.toString());
 
 
@@ -1714,10 +1714,10 @@ class ConjTest {
         Compound u = $(su);
         assertEquals("(((o) ||+- (--,(happy))) &&+- (--,(happy)))", u.toString());
 
-        Term ye = u.temporalize(Retemporalize.retemporalizeXTERNALToDTERNAL);
+		Term ye = Retemporalize.retemporalizeXTERNALToDTERNAL.apply(u);
         assertEquals("(--,(happy))", ye.toString());
 
-        Term yz = u.temporalize(Retemporalize.retemporalizeXTERNALToZero);
+		Term yz = Retemporalize.retemporalizeXTERNALToZero.apply(u);
         assertEquals("(--,(happy))", yz.toString());
 
     }
@@ -1917,7 +1917,7 @@ class ConjTest {
     @Test
     void testAtemporalization2() throws Narsese.NarseseException {
 
-        assertEquals("((--,y) &&+- y)", $.<Compound>$("(y &&+3 (--,y))").temporalize(Retemporalize.retemporalizeAllToXTERNAL).toString());
+		assertEquals("((--,y) &&+- y)", Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(y &&+3 (--,y))")).toString());
     }
 
     @Test

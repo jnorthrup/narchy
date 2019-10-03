@@ -9,6 +9,7 @@ import nars.concept.util.DefaultConceptBuilder;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
@@ -42,7 +43,7 @@ class ConceptualizationTest {
     @Test
     void testFlattenAndDeduplicateAndUnnegateConj_Conceptualization() {
         Term t = $$("((||+- ,((--,(right-->fz)) &&+- (--,(right-->fz))),(fz-->race)) &&+- (fz-->race))");
-        assertEq("( &&+- ,(--,(fz-->race)),(--,(right-->fz)),(fz-->race))", t.temporalize(Conceptualization.FlattenAndDeduplicateAndUnnegateConj));
+        assertEq("( &&+- ,(--,(fz-->race)),(--,(right-->fz)),(fz-->race))", Conceptualization.FlattenAndDeduplicateAndUnnegateConj.apply(t));
     }
 
     @Test
@@ -60,7 +61,7 @@ class ConceptualizationTest {
 
         assertEquals("(x ==>+- y)", xImplY.toString());
 
-        assertEquals(3, xImplY.beliefs().taskCount());
+        assertEquals(2, xImplY.beliefs().taskCount());
 
         int indexSize = n.memory.size();
         n.memory.print(System.out);
@@ -69,7 +70,7 @@ class ConceptualizationTest {
         n.run();
 
 
-        assertEquals(4, xImplY.beliefs().taskCount());
+        assertEquals(3, xImplY.beliefs().taskCount());
 
         n.memory.print(System.out);
         assertEquals(indexSize, n.memory.size());
@@ -123,51 +124,12 @@ class ConceptualizationTest {
         assertEq("((--,(2,(g,y))) &&+- (--,(2,(g,y))))",
                 $$("(((--,(2,(g,y))) &&+260 (--,(2,(g,y)))) &&+710 (--,(2,(g,y))))").root());
     }
-    @Test void ConceptualizeNAL3() {
-        //direct inh subterm
-        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").root());
-        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").concept());
-
-        assertEq(//TODO "(x-->(a||b))",
-                "(--,(x-->((--,a) &&+- (--,b))))",
-                $$("(x-->(a||b))").root());
-        assertEq(//TODO "(x-->(a||b))",
-                "(x-->((--,a) &&+- (--,b)))",
-                $$("(x-->(a||b))").concept());
 
 
-        assertEq("(x-->( &&+- ,a,b,c))", $$("(x-->(&&,a,b,c))").root());
 
-        //direct sim subterm
-        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").root());
-        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").concept());
-        assertEq("((a &&+- b)<->(c &&+- d))", $$("((c&&d)<->(a&&b))").root());
-    }
-
-
-    @Test void nonTemporalConjInInhSimSubtermsOnly() {
-
-        assertEq("(a-->(x &&+- y))", $$("(a-->(x && y))").concept());
-        assertEq("((x &&+- y)-->a)", $$("((x && y)-->a)").concept());
-        assertEq("((x &&+- y)<->a)", $$("((x && y)<->a)").concept());
-        assertEq("(a-->( &&+- ,x,y,z))", $$("(a-->(&&,x,y,z))").concept());
-
-        assertEq("(a-->((--,x) &&+- (--,y)))", $$("(a-->(x || y))").concept());
-    }
 
     @Test void Conceptualize_Not_NAL3_seq() {
         assertEq("(x-->(a &&+- a))", $$("(x-->(a &&+1 a))").root());
-    }
-
-    @Test void Conceptualize_Not_NAL3() {
-
-        //indirect inh subterm (thru product)
-        assertEq("x((a &&+- b))", $$("x((a&&b))").root());
-        assertEq("x((a ||+- b))", $$("x((a||b))").root());
-        assertEq(//"x(( &&+- ,(--,b),(--,c),a))",
-                "x(((b ||+- c) &&+- a))",
-                $$("x((a&&(b||c)))").root());
-
     }
 
     @Test
@@ -381,7 +343,7 @@ class ConceptualizationTest {
         }
     }
 
-    @Test
+    @Disabled @Test
     void testConjParallelConceptual() {
 
 
@@ -443,6 +405,49 @@ class ConceptualizationTest {
 
         }
 
+    }
+
+    @Test void testInhConj() {
+        Term a = $$("(x-->(y&&z))");
+        Term ac = a.concept();
+        assertEq("(x-->(y&&z))", ac);
+        assertEq("(x-->(y &&+- z))", $$("(x-->(y &&+1 z))").concept());
+        assertEq("((tetris-->((--,score)&&rotate))-->(plan,z,/))", $$("((tetris-->((--,score)&&rotate))-->(plan,z,/))").concept());
+    }
+    /** TODO make consistent with new conceptualization */
+    @Disabled @Test void ConceptualizeNAL3() {
+        //direct inh subterm
+        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").root());
+        assertEq("(x-->(a &&+- b))", $$("(x-->(a&&b))").concept());
+
+        assertEq(//TODO "(x-->(a||b))",
+            "(--,(x-->((--,a) &&+- (--,b))))",
+            $$("(x-->(a||b))").root());
+        assertEq(//TODO "(x-->(a||b))",
+            "(x-->((--,a) &&+- (--,b)))",
+            $$("(x-->(a||b))").concept());
+
+
+        assertEq("(x-->( &&+- ,a,b,c))", $$("(x-->(&&,a,b,c))").root());
+
+        //direct sim subterm
+        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").root());
+        assertEq("((a &&+- b)<->x)", $$("(x<->(a&&b))").concept());
+        assertEq("((a &&+- b)<->(c &&+- d))", $$("((c&&d)<->(a&&b))").root());
+
+        //indirect inh subterm (thru product)
+        assertEq("x((a &&+- b))", $$("x((a&&b))").root());
+        assertEq("x((a ||+- b))", $$("x((a||b))").root());
+        assertEq(//"x(( &&+- ,(--,b),(--,c),a))",
+            "x(((b ||+- c) &&+- a))",
+            $$("x((a&&(b||c)))").root());
+
+        assertEq("(a-->(x &&+- y))", $$("(a-->(x && y))").concept());
+        assertEq("((x &&+- y)-->a)", $$("((x && y)-->a)").concept());
+        assertEq("((x &&+- y)<->a)", $$("((x && y)<->a)").concept());
+        assertEq("(a-->( &&+- ,x,y,z))", $$("(a-->(&&,x,y,z))").concept());
+
+        assertEq("(a-->((--,x) &&+- (--,y)))", $$("(a-->(x || y))").concept());
     }
 
 }

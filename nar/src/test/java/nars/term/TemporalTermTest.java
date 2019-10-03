@@ -70,9 +70,9 @@ class TemporalTermTest {
     @Test
     void testAtemporalization3a() throws Narsese.NarseseException {
 
-        assertEquals(
+		assertEquals(
                 "(--,((x &&+- $1) ==>+- ((--,y) &&+- $1)))",
-                $.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))").temporalize(Retemporalize.retemporalizeAllToXTERNAL).toString());
+                Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))")).toString());
         assertEquals(
                 "(--,((x &&+- $1) ==>+- ((--,y) &&+- $1)))",
                 $.<Compound>$("(--,(($1&&x) ==>+1 ((--,y) &&+2 $1)))").root().toString());
@@ -82,7 +82,7 @@ class TemporalTermTest {
     void testAtemporalization3b() throws Narsese.NarseseException {
 
         Compound x = $("((--,(($1&&x) ==>+1 ((--,y) &&+2 $1))) &&+3 (--,y))");
-        Term y = x.temporalize(Retemporalize.retemporalizeAllToXTERNAL);
+		Term y = Retemporalize.retemporalizeAllToXTERNAL.apply(x);
         assertEquals("((--,((x &&+- $1) ==>+- ((--,y) &&+- $1))) &&+- (--,y))", y.toString());
 
     }
@@ -262,15 +262,15 @@ class TemporalTermTest {
     void testEqualsAnonymous3() throws Narsese.NarseseException {
 
 
-        assertEquals($.<Compound>$("(x && (y ==> z))").temporalize(Retemporalize.retemporalizeAllToXTERNAL),
-                $.<Compound>$("(x &&+1 (y ==>+1 z))").temporalize(Retemporalize.retemporalizeAllToXTERNAL));
+		assertEquals(Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(x && (y ==> z))")),
+			Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(x &&+1 (y ==>+1 z))")));
 
 
         assertEquals("((x &&+1 z) ==>+1 w)",
                 $("(x &&+1 (z ==>+1 w))").toString());
 
-        assertEquals($.<Compound>$("((x &&+- z) ==>+- w)").temporalize(Retemporalize.retemporalizeAllToXTERNAL),
-                $.<Compound>$("(x &&+1 (z ==>+1 w))").temporalize(Retemporalize.retemporalizeAllToXTERNAL));
+		assertEquals(Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("((x &&+- z) ==>+- w)")),
+			Retemporalize.retemporalizeAllToXTERNAL.apply($.<Compound>$("(x &&+1 (z ==>+1 w))")));
     }
 
 

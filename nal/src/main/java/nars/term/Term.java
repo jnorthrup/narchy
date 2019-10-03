@@ -35,7 +35,6 @@ import nars.term.buffer.TermBuffer;
 import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
-import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.time.Tense;
 import nars.unify.Unify;
@@ -593,10 +592,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default Term negIf(boolean negate) {
         return negate ? neg() : this;
     }
-
-    @Nullable
-    @Deprecated
-    Term temporalize(Retemporalize r);
 
     default Term anon() {
         return Anom.the(1);

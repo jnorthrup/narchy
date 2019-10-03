@@ -26,7 +26,7 @@ public class SpecialTermTask extends ProxyTask {
 
     public static Task the(Task x, Term t, boolean copyCyclic) {
         if (!t.unneg().op().taskable)
-            throw new TaskException(t, "new content not taskable");
+            throw new TaskException("new content not taskable", t);
 
         if (x.term().equals(t)) return x;
 
@@ -41,7 +41,7 @@ public class SpecialTermTask extends ProxyTask {
             y = new SpecialPuncTermAndTruthTask(t, x.punc(), x.truth().neg(), x);
         } else {
             if (t instanceof Neg)
-                throw new TaskException(t, "SpecialTermTask does not support NEG target");
+                throw new TaskException("SpecialTermTask does not support NEG target", t);
             y = new SpecialTermTask(t, x);
         }
 

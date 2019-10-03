@@ -140,7 +140,7 @@ public final class Answer implements Timed, Predicate<Task> {
 
     public Answer term(@Nullable Term template) {
         if (template!=null && !template.op().taskable)
-            throw new TaskException(template, "not Answerable");
+            throw new TaskException("not Answerable", template);
 
         this.term = template;
         return this;

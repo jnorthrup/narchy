@@ -139,7 +139,7 @@ public class Conceptualization {
 //            }
 
 
-            if (x.op() == CONJ) {
+            if (x.opID() == CONJ.id) {
                 Term y = transformConj(x);
                 if (y!=null)
                     x = (Compound) y;
@@ -152,6 +152,16 @@ public class Conceptualization {
 //                        xo = x.op();
 //                    }
 //                }
+            } else if (!xo.temporal) {
+                //not temporal itself but contains a temporal inside
+                //if none of these temporal terms are temporally specific, return as-is
+                if (x.ANDrecurse(z -> {
+                    if (z instanceof Compound) {
+                        return !z.op().temporal || z.dt()==DTERNAL;
+                    } else
+                        return true;
+                }))
+                    return x;
             }
 
             return x.transform(this, xo, xo.temporal ? XTERNAL : DTERNAL);

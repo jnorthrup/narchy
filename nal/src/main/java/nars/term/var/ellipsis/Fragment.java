@@ -126,10 +126,6 @@ public final class Fragment extends LightCompound {
         throw new UnsupportedOperationException();
     }
 
-    @Override
-    public @Nullable Term temporalize(Retemporalize r) {
-        throw new UnsupportedOperationException();
-    }
 
     public boolean linearMatch(Subterms y, int from, /*@NotNull*/ Unify subst) {
         int s = subs();

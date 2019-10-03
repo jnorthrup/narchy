@@ -287,7 +287,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (safe)
             return false;
         else
-            throw new TaskException(t, reason);
+            throw new TaskException(reason, t);
     }
 
     @Nullable
@@ -353,9 +353,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
-                throw new TaskException(t, "null truth but required for belief or goal");
+                throw new TaskException("null truth but required for belief or goal", t);
             if (tr.evi() < NAL.truth.EVI_MIN)
-                throw new TaskException(t, "insufficient evidence");
+                throw new TaskException("insufficient evidence", t);
         }
 
         ObjectBooleanPair<Term> x = tryTaskTerm(t, punc, safe);

@@ -60,9 +60,9 @@ public abstract class AbstractTaskLink implements TaskLink {
 
         Op so = source.op();
         if (!so.taskable)
-            throw new TaskException(source, "source term not taskable");
+            throw new TaskException("source term not taskable", source);
         if (!so.conceptualizable)
-            throw new TaskException(source, "source term not conceptualizable");
+            throw new TaskException("source term not conceptualizable", source);
 //        if (NAL.DEBUG) {
 //            if (!source.isNormalized())
 //                throw new TaskException(source, "source term not normalized and can not name a task");

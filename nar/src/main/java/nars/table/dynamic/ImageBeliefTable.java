@@ -1,5 +1,6 @@
 package nars.table.dynamic;
 
+import jcog.Util;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -34,6 +35,8 @@ public class ImageBeliefTable extends DynamicTaskTable {
         if (image.isNormalized())
             imageNormalized = imageNormalized.normalize();
         assert (!image.equals(imageNormalized) && imageNormalized.op() == INH);
+        if (imageNormalized.hasXternal())
+            Util.nop(); //throw new TermException("contains XTERNAL", imageNormalized);
         this.normal = imageNormalized;
     }
 

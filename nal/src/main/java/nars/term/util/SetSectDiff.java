@@ -37,7 +37,7 @@ public class SetSectDiff {
 
         boolean productSplice = s.subs() > 2 && s.sub(2).equals(Op.PROD.strAtom);
 
-        if (productSplice && a.unneg().op()==PROD && b.unneg().op()==PROD && a.unneg().subs()==b.unneg().subs() /* && rng? */) {
+        if (productSplice && a.unneg().subs()==b.unneg().subs() && a.unneg().op()==PROD && b.unneg().op()==PROD /* && rng? */) {
             return SetSectDiff.intersectProd(op, union, a, b);
         } else {
             return SetSectDiff.intersect(op, union, a, b);

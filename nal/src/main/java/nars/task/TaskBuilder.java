@@ -79,7 +79,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 				if (punctuation == Op.BELIEF || punctuation == Op.GOAL)
 					truth = truth.neg();
 			} else {
-				throw new TaskException(this, "Top-level negation");
+				throw new TaskException("Top-level negation", this);
 			}
 		}
 
@@ -97,20 +97,20 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 	public Task apply(NAL n) throws TaskException {
 
 		if (isDeleted())
-			throw new TaskException(this, "Deleted");
+			throw new TaskException("Deleted", this);
 
 		Term t = term;
 
 		byte punc = punc();
 		if (punc == 0)
-			throw new TaskException(this, "Unspecified punctuation");
+			throw new TaskException("Unspecified punctuation", this);
 
 		Term cntt = t.normalize();//.the();
 		if (cntt == null)
-			throw new TaskException(t, "Failed normalization");
+			throw new TaskException("Failed normalization", t);
 
 		if (!Task.validTaskTerm(cntt, punc, !isInput() && !NAL.DEBUG))
-			throw new TaskException(cntt, "Invalid content");
+			throw new TaskException("Invalid content", cntt);
 
 		if (cntt != t) {
 			this.term = cntt;
@@ -212,7 +212,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 	private final void setTruth(@Nullable Truth t) {
 
 		if (t == null && isBeliefOrGoal())
-			throw new TaskException(this, "null truth for belief or goal");
+			throw new TaskException("null truth for belief or goal", this);
 
 		if (!Objects.equals(truth, t)) {
 			truth = t;

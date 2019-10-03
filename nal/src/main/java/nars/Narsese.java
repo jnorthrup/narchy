@@ -198,7 +198,7 @@ public final class Narsese {
         }, false);
 
         if (y == null) {
-            throw new TaskException(content, "input: " + Arrays.toString(x));
+            throw new TaskException("input: " + Arrays.toString(x), content);
         }
 
         return y;

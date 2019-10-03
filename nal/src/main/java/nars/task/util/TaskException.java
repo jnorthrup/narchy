@@ -11,7 +11,7 @@ public final class TaskException extends SoftException {
     private final Termlike task;
 
 
-    public TaskException(Termlike t, String message) {
+    public TaskException(String message, Termlike t) {
         super(message);
         this.task = t;
 //        if (t instanceof Task)

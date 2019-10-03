@@ -41,7 +41,6 @@ import nars.term.util.conj.ConjSeq;
 import nars.term.util.conj.ConjUnify;
 import nars.term.util.transform.AbstractTermTransform;
 import nars.term.util.transform.MapSubst;
-import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.ellipsis.Ellipsislike;
 import nars.term.var.ellipsis.Fragment;
@@ -682,14 +681,6 @@ public interface Compound extends Term, IPair, Subterms {
     default Term dt(int nextDT, TermBuilder b) {
         return b.dt(this, nextDT);
     }
-
-
-    @Override
-    @Nullable
-    @Deprecated default Term temporalize(Retemporalize r) {
-        return r.applyCompound(this);
-    }
-
 
     @Override
     default boolean equalsRoot(Term x) {

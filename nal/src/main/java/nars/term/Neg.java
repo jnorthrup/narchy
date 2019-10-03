@@ -69,12 +69,6 @@ import static nars.term.atom.Bool.Null;
     }
 
     @Override
-    default Term concept() {
-        return sub().concept();
-    }
-
-
-    @Override
     @Nullable default Term normalize(byte varOffset) {
         Term x = sub();
         Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
@@ -116,10 +110,6 @@ import static nars.term.atom.Bool.Null;
         public int opID() {
             return NEG.id;
         }
-        @Override
-        public Term concept() {
-            return Neg.super.concept();
-        }
 
         @Override
         public Term root() {
@@ -160,11 +150,6 @@ import static nars.term.atom.Bool.Null;
         @Override
         public int opID() {
             return NEG.id;
-        }
-
-        @Override
-        public Term concept() {
-            return this;
         }
 
         @Override
@@ -229,10 +214,6 @@ import static nars.term.atom.Bool.Null;
         @Override
         public int opID() {
             return NEG.id;
-        }
-        @Override
-        public Term concept() {
-            return Neg.super.concept();
         }
 
         @Override

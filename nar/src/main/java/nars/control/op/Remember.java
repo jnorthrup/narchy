@@ -58,7 +58,7 @@ public class Remember {
             int termVol = x.term().volume();
             int maxVol = n.termVolMax.intValue();
             if (termVol > maxVol)
-                throw new TaskException(x, "target exceeds volume maximum: " + termVol + " > " + maxVol);
+                throw new TaskException("target exceeds volume maximum: " + termVol + " > " + maxVol, x);
         }
 
 
