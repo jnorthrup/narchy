@@ -10,7 +10,7 @@ import org.eclipse.collections.api.block.procedure.primitive.ShortFloatProcedure
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.roaringbitmap.RoaringBitmap;
 
-import static nars.Op.CONJ;
+import static nars.Op.SETe;
 
 public enum Why { ;
 
@@ -25,7 +25,7 @@ public enum Why { ;
 		if (why.length > capacity) {
 			why = sample(capacity, true, why);
 		}
-		return CONJ.the($.the(why));
+		return SETe.the($.the(why));
 	}
 
 	public static Term why(Term whyA, short whyB, int capacity) {
@@ -43,20 +43,36 @@ public enum Why { ;
 				return why(whyB, capacity); //can not save any existing
 
 			ShortHashSet s = new ShortHashSet(wv);
-			whyA.recurseTermsOrdered(x -> true, (e) -> {
-				if (e instanceof Int)
-					s.add(s(e));
-				return true;
-			}, null);
-			if (s.size() > maxExistingSize-1) {
-				//too many, must sample
-				whyA = why(sample(capacity, true, s.toArray()), capacity);
-			} else {
-				//store linearized
-				whyA = why(s.toArray(), capacity);
-			}
+			toSet(whyA, s);
+			whyA = why(s, maxExistingSize-1);
 		}
-		return CONJ.the(whyA, why(whyB, capacity));
+		return SETe.the(whyA, why(whyB, capacity));
+	}
+
+	public static Term why(ShortHashSet s, int capacity) {
+		if (s.size() > capacity) {
+			//too many, must sample
+			return why(sample(capacity, true, s.toArray()), capacity);
+		} else {
+			//store linearized
+			return why(s.toArray(), capacity);
+		}
+	}
+
+	public static Term why(Term whyA, Term whyB, int capacity) {
+		if (whyA.equals(whyB))
+			return whyA; //same
+
+		int wa = whyA.volume();
+		int wb = whyB.volume();
+		if (wa + wb + 1 > capacity) {
+			//must reduce or sample
+			ShortHashSet s = new ShortHashSet(wa+wb);
+			toSet(whyA, s);
+			toSet(whyB, s);
+			return why(s, capacity);
+		} else
+			return SETe.the(whyA, whyB);
 	}
 
 	public static void eval(Term why, float pri, ShortFloatProcedure each) {
@@ -64,13 +80,21 @@ public enum Why { ;
 			each.value(s(why), pri);
 		} else {
 			//split
-			assert(why.opID()==CONJ.id);
+			assert(why.opID()==SETe.id);
 			Subterms s = why.subterms();
 			int n = s.subs();
 			float priEach = pri/n;
 			for (int i = 0; i < n; i++)
 				eval(s.sub(i), priEach, each);
 		}
+	}
+
+	private static void toSet(Term whyA, ShortHashSet s) {
+		whyA.recurseTermsOrdered(x -> true, (e) -> {
+			if (e instanceof Int)
+				s.add(s(e));
+			return true;
+		}, null);
 	}
 
 	private static short s(Term why) {

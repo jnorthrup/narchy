@@ -61,12 +61,6 @@ public class TermReductionsTest extends NarseseTest {
         assertEq("(&&,P,Q,R)", "(&&,R,(&&,P,Q))");
     }
 
-    @Test
-    void testInterCONJxtReduction4() {
-
-        assertEquals("{P,Q,R,S}", SETe.the(SETe.the(p, q), SETe.the(r, s)).toString());
-        assertEq("{P,Q,R,S}", "{{P,Q},{R,S}}");
-    }
 
 //    @Test
 //    void testInterCONJxtReduction5() {
@@ -93,13 +87,7 @@ public class TermReductionsTest extends NarseseTest {
         assertEq("(||,P,Q,R)", "(||,R,(||,P,Q))");
     }
 
-    @Test
-    void testInterCONJntReduction4() {
 
-        assertEquals("[P,Q,R,S]", SETi.the(SETi.the(p, q), SETi.the(r, s)).toString());
-        assertEq("[P,Q,R,S]", "[[P,Q],[R,S]]");
-
-    }
 
     @Test
     void testCyclicalNAL1_and_NAL2() {

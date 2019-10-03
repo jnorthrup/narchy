@@ -14,8 +14,10 @@ import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
+import static nars.term.Terms.commute;
 import static nars.term.atom.Bool.Null;
 import static nars.term.atom.Bool.True;
+import static nars.time.Tense.DTERNAL;
 
 /**
  * NAL2/NAL3 setAt, intersection and difference functions
@@ -46,7 +48,9 @@ public class SetSectDiff {
 
     public static Term intersectSet(TermBuilder b, Op o, Term... t) {
         //assert(o == SETe || o == SETi);
-        return intersect(b, o, false, t);
+        //return intersect(b, o, false, t);
+
+        return b.newCompound(o, DTERNAL, commute(t));
     }
 
     public static Term intersect(Op o, boolean union, Term... t) {
