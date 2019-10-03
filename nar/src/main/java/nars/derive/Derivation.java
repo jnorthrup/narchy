@@ -607,7 +607,7 @@ public class Derivation extends PreDerivation {
         Emotion e = nar.emotion;
 
 
-        if (P instanceof AbstractPremise) {
+        if (P instanceof AbstractPremise && !P.task().term().equals(P.beliefTerm())) {
             try (var __ = e.derive_B_PremiseMatch.time()) {
                 p = ((AbstractPremise) P).match(Deriver.PremiseUnifyVars, this, nar.premiseUnifyTTL.intValue());
             }

@@ -254,9 +254,9 @@ public class PoleCart extends GameX {
 
 //        angX.resolution(0.02f);
 //        angY.resolution(0.02f);
-		this.angX = senseNumberBi($.p(id, $.the("ang"), $.the("x")),
+		this.angX = senseNumberTri($.p(id, $.the("ang"), $.the("x")),
 			() -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-		this.angY = senseNumberBi($.p(id, $.the("ang"), $.the("y")),
+		this.angY = senseNumberTri($.p(id, $.the("ang"), $.the("y")),
 			() -> (float) (0.5f + 0.5f * (Math.cos(angle))));
 
 

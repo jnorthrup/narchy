@@ -10,7 +10,7 @@ public class SpecialPuncTermAndTruthTask extends SpecialTermTask {
     private final Truth truth;
     private final byte punc;
 
-    public SpecialPuncTermAndTruthTask(Term term, byte punc, Truth truth, Task task) {
+    SpecialPuncTermAndTruthTask(Term term, byte punc, Truth truth, Task task) {
         super(term, task);
         this.truth = truth;
         this.punc = punc;

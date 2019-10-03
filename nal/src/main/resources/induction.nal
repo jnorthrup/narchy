@@ -6,11 +6,11 @@
 //##################################
 
 //belief form:
-//B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
-B, A, --is(A,"==>") |-          (A ==> B), (Belief:InductionPP, Time:BeliefRelative)
-B, A, --is(A,"==>") |-          (--A ==> B), (Belief:InductionPN, Time:BeliefRelative)
-B, A, --is(A,"==>") |-          (A ==> --B), (Belief:InductionNP, Time:BeliefRelative)
-B, A, --is(A,"==>") |-          (--A ==> --B), (Belief:InductionNN, Time:BeliefRelative)
+B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          (A ==> B), (Belief:InductionPP, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          (--A ==> B), (Belief:InductionPN, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          (A ==> --B), (Belief:InductionNP, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          (--A ==> --B), (Belief:InductionNN, Time:BeliefRelative)
 B, A, --is(A,"==>") |- polarizeTask(varIntro((polarizeBelief(A) ==> B))), (Belief:InductionDD, Time:BeliefRelative)
 
 //question form:
@@ -37,12 +37,15 @@ B, A, --is(B,"==>") |- polarizeBelief(varIntro((polarizeTask(B) ==> A))), (Belie
 
 //##################################
 //belief form:
-//B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (B && A), (Belief:IntersectionPP, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (B && --A), (Belief:IntersectionPN, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (--B && A), (Belief:IntersectionNP, Time:Sequence)
-B, A, --is(A,"==>"), --is(B,"==>")  |-          (--B && --A), (Belief:IntersectionNN, Time:Sequence)
-  //B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) || polarizeBelief(A)), (Belief:UnionDD, Time:Sequence)
+B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBelief(A)), (Belief:IntersectionDD, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>")  |-          (B && A), (Belief:IntersectionPP, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>")  |-          (B && --A), (Belief:IntersectionPN, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>")  |-          (--B && A), (Belief:IntersectionNP, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>")  |-          (--B && --A), (Belief:IntersectionNN, Time:Sequence)
+
+//B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) || polarizeBelief(A)), (Belief:UnionDD, Time:Sequence)
+  B, A, --is(A,"==>"), --is(B,"==>")  |-          (B || A), (Belief:Union, Time:Sequence)
+
 B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
 //  B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) || polarizeBelief(A))), (Belief:UnionDD, Time:Sequence)
 

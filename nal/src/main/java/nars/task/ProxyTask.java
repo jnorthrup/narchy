@@ -64,12 +64,6 @@ public class ProxyTask extends UnitPri implements Task {
         this.cyclic = c;
     }
 
-    /** fluent wrapper */
-    public final ProxyTask cyclicIf(boolean c) {
-        if (c)
-            setCyclic(true);
-        return this;
-    }
 
     /** produce a concrete, non-proxy clone */
     public Task clone() {

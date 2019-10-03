@@ -83,25 +83,27 @@ abstract public class ScalarReward extends Reward {
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
 //        reinforce(CONJ.the(Rpos.neg(), $.varDep(1)), GOAL, RimplAPos);
 
-        long[] stamp = newStamp(); //shared
+//        long[] stamp = newStamp(); //shared
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            //setCyclic to prevent decompose
-            reinforce(CONJ.the(rTarget, A), BELIEF, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stamp);
-            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stamp);
+            long[] stampP = newStamp(), stampN = newStamp();
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stampP);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stampN);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stampP);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stampN);
+
+            //TODO setCyclic to prevent decompose
+            reinforce(CONJ.the(rTarget, A), BELIEF, RimplAPos, stampP);
+            reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplAPos, stampP);
+            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stampP);
+            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stampP);
 
 //            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(A, Rpos), BELIEF, RimplANeg, stamp);
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg, stamp);
 
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stamp);
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stamp);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stamp);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
 
 
 //                reinforce(CONJ.the(rTarget, A), BELIEF, RimplRandomP);
@@ -110,8 +112,8 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplRandomP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplRandomN);
 
-//            reinforceEternal(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
-//            reinforceEternal(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
+//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
+//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
 
 
 
@@ -121,8 +123,6 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stamp);
 
 
-//            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe);
-//            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAMaybe, stamp);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAMaybe, stamp);
@@ -136,8 +136,6 @@ abstract public class ScalarReward extends Reward {
 //            reinforce(IMPL.the(A, Rpos), BELIEF, RimplANeg, stamp);
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplANeg, stamp);
 
-//            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos);
-//            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos);
 
 //            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAMaybe);
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAMaybe);
