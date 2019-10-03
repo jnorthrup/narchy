@@ -10,6 +10,9 @@ import org.eclipse.collections.api.block.procedure.primitive.ShortFloatProcedure
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.roaringbitmap.RoaringBitmap;
 
+import java.util.Arrays;
+import java.util.concurrent.ThreadLocalRandom;
+
 import static nars.Op.SETe;
 
 public enum Why { ;
@@ -22,8 +25,15 @@ public enum Why { ;
 		assert(why.length > 0);
 		if (why.length == 1)
 			return why(why[0]);
-		if (why.length > capacity) {
-			why = sample(capacity, true, why);
+
+		int excess = why.length - (capacity-1);
+		if (excess > 0) {
+			//TODO if (excess == 1) simple case
+
+			//why = sample(capacity-1, true, why);
+			why = why.clone();
+			ArrayUtil.shuffle(why, ThreadLocalRandom.current());
+			why = Arrays.copyOf(why, capacity-1);
 		}
 		return SETe.the($.the(why));
 	}
@@ -33,30 +43,40 @@ public enum Why { ;
 		return why(whyA, new short[] { whyB }, capacity);
 	}
 
-	public static Term why(Term whyA, short[] whyB, int capacity) {
+	public static Term why(Term whyA, short[] _whyB, int capacity) {
 		int wv = whyA.volume();
-		if (wv + whyB.length + 1 > capacity) {
+
+		Term whyB = why(_whyB, capacity);
+		if (whyA.equals(whyB))
+			return whyA;
+
+		if (wv + _whyB.length + 1 > capacity) {
 
 			//must reduce or sample
-			int maxExistingSize = capacity - whyB.length - 1;
+			int maxExistingSize = capacity - _whyB.length - 1;
 			if (maxExistingSize <= 0)
-				return why(whyB, capacity); //can not save any existing
+				return whyB; //can not save any existing
 
 			ShortHashSet s = new ShortHashSet(wv);
 			toSet(whyA, s);
 			whyA = why(s, maxExistingSize-1);
+			if (whyA.equals(whyB))
+				return whyA;
 		}
-		return SETe.the(whyA, why(whyB, capacity));
+
+		return SETe.the(whyA, whyB);
 	}
 
 	public static Term why(ShortHashSet s, int capacity) {
-		if (s.size() > capacity) {
-			//too many, must sample
-			return why(sample(capacity, true, s.toArray()), capacity);
-		} else {
-			//store linearized
-			return why(s.toArray(), capacity);
-		}
+		short[] ss = s.toArray();
+		return why(ss, capacity);
+//		if (s.size() > capacity-1) {
+//			//too many, must sample
+//			return why(sample(capacity-1, true, s), capacity);
+//		} else {
+//			//store linearized
+//			return why(ss, capacity-1);
+//		}
 	}
 
 	public static Term why(Term whyA, Term whyB, int capacity) {

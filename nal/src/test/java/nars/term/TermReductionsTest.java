@@ -14,6 +14,7 @@ import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$;
+import static nars.$.$$;
 import static nars.Op.*;
 import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
@@ -52,7 +53,7 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testInterCONJxtReduction3() {
 
-        assertEq("(&&,P,Q,R,S,T,U)", "(&&,(&&,P,Q),(&&,R,S), (&&,T,U))");
+        assertEq("(&&,P,Q,R,S,T,U)", "(&&,(&&,P,Q),(&&,R,S),(&&,T,U))");
     }
 
     @Test
@@ -61,11 +62,10 @@ public class TermReductionsTest extends NarseseTest {
         assertEq("(&&,P,Q,R)", "(&&,R,(&&,P,Q))");
     }
 
-
-//    @Test
-//    void testInterCONJxtReduction5() {
-//        assertEquals(Bool.Null /* emptyset */, CONJ.the(SETi.the(p, q), SETi.the(r, s)));
-//    }
+    @Test void embeddedSetDontFlatten() {
+        Term a = $$("1"), b = $$("2"), c = $$("3");
+        assertEq("{{1,2},3}", SETe.the(SETe.the(new Term[] {a, b}), c));
+    }
 
     @Test
     void testInterCONJntReduction1() {

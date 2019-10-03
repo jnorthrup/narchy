@@ -93,7 +93,7 @@ public abstract class NALTask extends UnitPri implements Task {
         return this;
     }
 
-    public void causeMerge(short[] c, CauseMerge merge) {
+    @Deprecated public void causeMerge(short[] c, CauseMerge merge) {
 
         int causeCap = NAL.causeCapacity.intValue();
 

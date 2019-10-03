@@ -11,6 +11,7 @@ import nars.control.CauseMerge;
 import nars.control.Caused;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
+import nars.task.ProxyTask;
 import nars.task.proxy.SpecialNegatedTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -161,7 +162,9 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (e instanceof NALTask) {
             NALTask ee = (NALTask) e;
             ee.causeMerge(i.why(), cMerge);
-        }
+        } else if (e instanceof ProxyTask) {
+			((ProxyTask)e).causeMerge(i.why(), cMerge);
+		}
     }
 
     /**

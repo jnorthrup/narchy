@@ -1,9 +1,11 @@
 package nars.task;
 
+import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import nars.NAL;
 import nars.Task;
+import nars.control.CauseMerge;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -21,9 +23,12 @@ public class ProxyTask extends UnitPri implements Task {
     /*volatile*/ long creation;
     private volatile boolean cyclic = false;
 
+    @Deprecated private short[] why;
+
     public ProxyTask(Task task) {
 
         this.task = task;
+        this.why = task.why();
 //        if (task instanceof TaskProxy) {
 //            //System.out.println(task.getClass() + " may be unwrapped for " + getClass());
 //            throw new WTF(task.getClass() + " may be unwrapped for use as base of " + getClass());
@@ -92,10 +97,14 @@ public class ProxyTask extends UnitPri implements Task {
             (this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp()));
     }
 
+    public void causeMerge(short[] why, CauseMerge cMerge) {
+        Util.nop();
+        //TODO
+    }
 
     @Override
     public short[] why() {
-        return task.why();
+        return why;
     }
 
     @Override
@@ -139,4 +148,6 @@ public class ProxyTask extends UnitPri implements Task {
     @Nullable public NALTask the() {
         return Task.clone(this);
     }
+
+
 }
