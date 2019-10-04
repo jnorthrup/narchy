@@ -6,10 +6,8 @@ import jcog.pri.Prioritizable;
 import jcog.sort.SortedArray;
 import jcog.util.LambdaStampedLock;
 import nars.$;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.control.CauseMerge;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
 import nars.task.NALTask;
@@ -383,15 +381,14 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
         if (oldBelief != null) {
 
 
-            Task finalOldBelief = oldBelief;
+            Task theOldBelief = oldBelief;
             float finalAProp = aProp;
-            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) -> NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), finalOldBelief.stamp(), finalAProp, nar.random()))
-            );
+            revised = Task.tryTask(newTerm, input.punc(), conclusion, (term, revisionTruth) ->
+                NALTask.the(term, input.punc(), revisionTruth, nar.time(), ETERNAL, ETERNAL, Stamp.merge(input.stamp(), theOldBelief.stamp(), finalAProp, nar.random())));
             if (revised != null) {
                 //TODO maybe based on relative evidence
-                revised.pri(Prioritizable.fund(Math.max(finalOldBelief.priElseZero(), input.priElseZero()), false, finalOldBelief, input));
-                revised.cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), input, finalOldBelief));
-
+                revised.pri(Prioritizable.fund(Math.max(theOldBelief.priElseZero(), input.priElseZero()), false, theOldBelief, input));
+                revised.why(theOldBelief.why());
             }
         } else {
             revised = null;

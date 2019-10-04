@@ -94,8 +94,8 @@ public class SensorBeliefTables extends BeliefTables {
 
 
     /** pre-commit */
-    public boolean input(Truth value, When<What> when, short[] cause) {
-        SeriesTask next = series.add(value, when, cause);
+    public boolean input(Truth value, When<What> when, Term why) {
+        SeriesTask next = series.add(value, when, why);
         SeriesTask prev = this.current;
         boolean novel = next!=null && next!=prev;
         this.prev = prev;

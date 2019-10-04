@@ -57,14 +57,6 @@ abstract class ActualNALTask extends NALTask {
         return stamp;
     }
 
-    @Override
-    public short[] why() {
-        return cause;
-    }
 
-    @Override public NALTask cause(short[] cause) {
-        this.cause = cause;
-        return this;
-    }
 
 }

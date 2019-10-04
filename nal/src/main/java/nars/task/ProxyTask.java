@@ -1,10 +1,8 @@
 package nars.task;
 
 import jcog.pri.ScalarValue;
-import jcog.pri.UnitPri;
 import nars.NAL;
 import nars.Task;
-import nars.control.CauseMerge;
 import nars.term.Term;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
@@ -13,7 +11,7 @@ import org.jetbrains.annotations.Nullable;
   * equality than the origin task. hashcode here is calculated lazily.
  * the only mutable components are the hashcode and the cyclic status which is optionally inherited from the source.
  * */
-public class ProxyTask extends UnitPri implements Task {
+public class ProxyTask extends AbstractTask {
 
     public final Task task;
 
@@ -22,7 +20,7 @@ public class ProxyTask extends UnitPri implements Task {
     /*volatile*/ long creation;
     private volatile boolean cyclic = false;
 
-    @Deprecated private short[] why;
+
 
     public ProxyTask(Task task) {
 
@@ -94,15 +92,6 @@ public class ProxyTask extends UnitPri implements Task {
         int h = this.hash;
         return h != 0 ? h :
             (this.hash = Task.hash(term(), truth(), punc(), start(), end(), stamp()));
-    }
-
-    public void causeMerge(short[] why, CauseMerge cMerge) {
-        //TODO
-    }
-
-    @Override
-    public short[] why() {
-        return why;
     }
 
     @Override

@@ -22,7 +22,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
 
 
     public final CauseChannel<Task> in;
-    protected final short[] cause;
+    protected final Term why;
 
     /** used and shared by all components */
     public final AttnBranch pri;
@@ -46,7 +46,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
 
         this.pri = new AttnBranch(this.id, this);
         this.in = n.newChannel(id != null ? id : this);
-        this.cause = new short[] { in.id };
+        this.why = in.why.why;
     }
 
     /**
@@ -76,7 +76,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
         int active = 0;
         for (ComponentSignal s : this) {
             //if (quality >= 1 || rng.nextFloat() < quality )
-            if (s.input(truther.valueOf(s.value(g)), cause, w))
+            if (s.input(truther.valueOf(s.value(g)), why, w))
                 active++;
         }
         if (active > 0) {

@@ -56,7 +56,6 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.eclipse.collections.api.tuple.Twin;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
-import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.fusesource.jansi.Ansi;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -190,21 +189,17 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             throw new RuntimeException(e);
         }
 
-		short[] tc = t.why();
-		if (tc.length > 0) {
-			ShortHashSet seen = tc.length > 1 ? new ShortHashSet(tc.length) : null;
-			for (int i = tc.length - 1; i >= 0; i--) {
-				short s = tc[i];
-				if (seen == null || seen.add(s)) {
-					Cause c = control.cause.get(s);
-                    try {
-                        out.append(c.toString());
-                        out.append('\n');
-                    } catch (IOException e) {
-                        throw new RuntimeException(e);
-                    }
-				}
-			}
+		Term tc = t.why();
+		if (tc!=null) {
+		    Why.forEachUnique(t.why(), s-> {
+                Cause c = control.cause.get(s);
+                try {
+                    out.append(c.toString());
+                    out.append('\n');
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            });
 		}
 	}
 

@@ -144,7 +144,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         input(nextFeedback!=null ? nextFeedback.dither(
             Math.max(resolution().floatValue(), w.x.nar.freqResolution.floatValue()),
             w.x.nar.confResolution.floatValue()
-        ) : null, pri(), cause, w);
+        ) : null, pri(), why, w);
     }
 
     /** returns feedback truth value */

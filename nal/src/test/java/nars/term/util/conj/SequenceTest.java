@@ -3,6 +3,7 @@ package nars.term.util.conj;
 import nars.Op;
 import nars.term.Term;
 import nars.term.compound.Sequence;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
@@ -10,6 +11,7 @@ import static nars.Op.CONJ;
 import static nars.term.atom.Bool.False;
 import static org.junit.jupiter.api.Assertions.*;
 
+@Disabled
 class SequenceTest {
 
     public static final Term A = $$("a");

@@ -79,8 +79,6 @@ public class SimpleReward extends ScalarReward {
         });
     }
 
-
-
     @Override
     public FloatRange resolution() {
         return concept.resolution();
@@ -97,9 +95,9 @@ public class SimpleReward extends ScalarReward {
 
         in = g.nar.newChannel(id);
 
-        cause = new short[] {  in.id };
+        why = in.why.why;
 
-        concept = new ScalarSignal(id, () -> reward, cause, pri, g.nar);
+        concept = new ScalarSignal(id, () -> reward, why, pri, g.nar);
 //        if (!concept.pri.equals(attn))
 //            nar().control.input(concept.pri, attn);
     }

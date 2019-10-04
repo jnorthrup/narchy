@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
-import jcog.util.ArrayUtil;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.Op;
 import nars.Task;
@@ -33,7 +32,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     static final FloatFloatToFloatFunction plus = PriMerge.plus::mergeUnitize;
     static final FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
 
-    public short[] why = ArrayUtil.EMPTY_SHORT_ARRAY;
+    public Term why = null;
 
     /**
      * cached; NaN means invalidated
@@ -70,7 +69,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     @Override
-    public final short[] why() {
+    public final Term why() {
         return why;
     }
 

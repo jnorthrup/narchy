@@ -3,7 +3,7 @@ package nars.derive.action;
 import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.rule.RuleCause;
@@ -53,7 +53,7 @@ public class CompoundDecompose extends NativePremiseAction {
 				l.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 
 				int causeCap = NAL.causeCapacity.intValue();
-				l.why = CauseMerge.Append.merge(srcTask.why(), why.idArray, causeCap);
+				l.why = Why.why(d._premise.why(), why.why, causeCap);
 
 				links.link(l);
 			}

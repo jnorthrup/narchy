@@ -7,7 +7,9 @@ import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.atom.Int;
 import org.eclipse.collections.api.block.procedure.primitive.ShortFloatProcedure;
+import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
+import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
@@ -22,7 +24,8 @@ public enum Why { ;
 	}
 
 	public static Term why(short[] why, int capacity) {
-		assert(why.length > 0);
+		if (why.length == 0)
+			return null; //TODO prevent from having to reach here
 		if (why.length == 1)
 			return why(why[0]);
 
@@ -44,6 +47,9 @@ public enum Why { ;
 	}
 
 	public static Term why(Term whyA, short[] _whyB, int capacity) {
+		if (whyA == null)
+			return why(_whyB, capacity);
+
 		int wv = whyA.volume();
 
 		Term whyB = why(_whyB, capacity);
@@ -68,8 +74,9 @@ public enum Why { ;
 	}
 
 	public static Term why(ShortHashSet s, int capacity) {
-		short[] ss = s.toArray();
-		return why(ss, capacity);
+		if (s.isEmpty())
+			return null; //TODO prevent from having to reach
+		return why(s.toArray(), capacity);
 //		if (s.size() > capacity-1) {
 //			//too many, must sample
 //			return why(sample(capacity-1, true, s), capacity);
@@ -79,7 +86,28 @@ public enum Why { ;
 //		}
 	}
 
-	public static Term why(Term whyA, Term whyB, int capacity) {
+	public static <C extends Caused> Term why(@Nullable C[] c, int capacity) {
+		switch (c.length) {
+			case 0: throw new UnsupportedOperationException();
+			case 1: return c[0].why(); //TODO check capacity
+			case 2: return why(c[0].why(), c[1].why(), capacity);
+			default: {
+				ShortHashSet s = new ShortHashSet(c.length * capacity);
+				for (C cc : c) {
+					if (cc!=null)
+						toSet(cc.why(), s);
+				}
+				return why(s, capacity);
+			}
+		}
+	}
+
+	public static Term why(@Nullable Term whyA, @Nullable Term whyB, int capacity) {
+		if (whyA == null)
+			return whyB; //TODO check cap
+		if (whyB == null)
+			return whyA; //TODO check cap
+
 		int wa = whyA.volume();
 		if (whyA.equals(whyB) && wa <= capacity)
 			return whyA; //same
@@ -95,7 +123,10 @@ public enum Why { ;
 			return SETe.the(whyA, whyB);
 	}
 
-	public static void eval(Term why, float pri, ShortFloatProcedure each) {
+	public static void eval(@Nullable Term why, float pri, ShortFloatProcedure each) {
+		if (why == null)
+			return;
+
 		if (why instanceof Int) {
 			each.value(s(why), pri);
 		} else {
@@ -109,7 +140,26 @@ public enum Why { ;
 		}
 	}
 
+	public static void forEachUnique(Term why, ShortProcedure s) {
+		if (why instanceof Int) {
+			//optimized case
+			s.value(s(why));
+		} else {
+			//TODO optimized case of simple set with no recursive inner-sets
+			ShortHashSet seen = Why.toSet(why);
+			seen.forEach(s);
+		}
+	}
+
+	public static ShortHashSet toSet(Term why) {
+		ShortHashSet s = new ShortHashSet(why.volume() /* estimate */);
+		toSet(why, s);
+		return s;
+	}
+
 	private static void toSet(Term whyA, ShortHashSet s) {
+		if (whyA==null)
+			return;
 		whyA.recurseTermsOrdered(x -> true, (e) -> {
 			if (e instanceof Int)
 				s.add(s(e));

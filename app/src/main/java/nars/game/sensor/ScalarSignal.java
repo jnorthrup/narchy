@@ -17,16 +17,16 @@ public class ScalarSignal extends UniSignal {
         this(term, signal, null, null, n);
     }
 
-    public ScalarSignal(Term term, FloatSupplier signal, short[] cause, PriNode p, NAR n) {
+    public ScalarSignal(Term term, FloatSupplier signal, Term why, PriNode p, NAR n) {
         this(term, signal,
             beliefTable(term, n, true, true),
-            beliefTable(term, n, false, false), cause,
+            beliefTable(term, n, false, false), why,
             p, n);
     }
 
 
-    protected ScalarSignal(Term term, @Nullable FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, @Nullable short[] cause, PriNode p, NAR n) {
-        super(term, cause, beliefTable, goalTable, p, n);
+    protected ScalarSignal(Term term, @Nullable FloatSupplier signal, BeliefTable beliefTable, BeliefTable goalTable, @Nullable Term why, PriNode p, NAR n) {
+        super(term, why, beliefTable, goalTable, p, n);
 
         this.source = signal;
     }
@@ -34,7 +34,7 @@ public class ScalarSignal extends UniSignal {
 
     @Override
     public void update(Game g) {
-        input(next(g), this.pri(), cause(), g.nowWhat);
+        input(next(g), this.pri(), why(), g.nowWhat);
     }
 
     public final Truth next(Game g) {

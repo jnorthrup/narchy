@@ -102,17 +102,17 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
     }
 
     /** pre-commit phase */
-    public final boolean input(@Nullable Truth next, short[] cause, When<What> w) {
+    public final boolean input(@Nullable Truth next, Term why, When<What> w) {
         //Truth prevValue = currentValue;
         Truth nextValue = (currentValue = next);
 
-        return this.inputting = ((SensorBeliefTables) beliefs()).input(nextValue, w, cause);
+        return this.inputting = ((SensorBeliefTables) beliefs()).input(nextValue, w, why);
     }
 
     /** combined phases */
-    public final void input(Truth next, float pri, short[] cause, When<What> g) {
+    public final void input(Truth next, float pri, Term why, When<What> g) {
 //        assert(pri > ScalarValue.EPSILON); //HACK
-        input(next, cause, g);
+        input(next, why, g);
         commit(pri, g);
     }
 

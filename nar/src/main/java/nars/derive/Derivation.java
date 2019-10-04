@@ -7,7 +7,7 @@ import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.attention.What;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.derive.action.PremiseAction;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
@@ -188,7 +188,7 @@ public class Derivation extends PreDerivation {
         (Task t) ->
             !t.isDeleted() && (t.isQuestionOrQuest() || t.evi() >= eviMin);
 
-	private transient short[] parentCause;
+	private transient Term parentCause;
 
     /** evi avg */
     private double eviDouble, eviSingle;
@@ -750,21 +750,17 @@ public class Derivation extends PreDerivation {
         return single ? evidenceSingle() : evidenceDouble();
     }
 
-    public short[] parentCause() {
+    public Term parentCause() {
         if (parentCause == null) {
-
-            short[] premiseCause = _premise.why();
 
             int causeCap = NAL.causeCapacity.intValue();
             this.parentCause =
-                    CauseMerge.limit(
-                        CauseMerge.Append.merge(
+                    Why.why(
                             (_belief != null ?
-                                    CauseMerge.Append.merge(causeCap - 1 /* for channel to be appended */, _task, _belief) :
+                                Why.why(_task.why(), _belief.why(), causeCap) :
                                     _task.why()),
-                        premiseCause,
-                        causeCap - 1
-                    ), causeCap - 1
+                            _premise.why(),
+                        causeCap
             );
 
 //        if (parentCause.length >= causeCap)

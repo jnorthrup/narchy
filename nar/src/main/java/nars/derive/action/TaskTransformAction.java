@@ -1,10 +1,11 @@
 package nars.derive.action;
 
+import nars.NAL;
 import nars.Task;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
-import nars.task.NALTask;
+import nars.task.AbstractTask;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.*;
@@ -28,10 +29,12 @@ public abstract class TaskTransformAction extends TaskAction {
 	@Override
 	protected final void accept(RuleCause why, Task x, Derivation d) {
 		Task y = transform(x, d);
-		if (y != null) {
-			((NALTask) y).causeMerge(why.idArray, CauseMerge.Append);
-			d.remember(y);
-		}
+		if (y != null)
+			d.remember(
+				((AbstractTask) y).why(
+					Why.why(d._premise.why(), why.why, NAL.causeCapacity.intValue())
+				)
+			);
 	}
 
 	@Nullable

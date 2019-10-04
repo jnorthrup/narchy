@@ -26,7 +26,7 @@ class MetaGoalTest {
         Multimap<ShortHashSet, Task> tasks = MultimapBuilder.hashKeys().linkedHashSetValues().build();
         NAR n = NARS.tmp(1);
         n.what().onTask(t -> {
-            tasks.put(new ShortHashSet(t.why()), t);
+            tasks.put(new ShortHashSet(t.why().volume()), t);
         });
         n.input("(x-->y).");
         n.input("(y-->z).");
@@ -46,7 +46,7 @@ class MetaGoalTest {
         assertTrue(tt.stream().filter(isDerived).count() >= 1);
 
         assertTrue(tt.stream().allMatch(x -> {
-            int ww = new ShortHashSet(x.why()).size();
+            int ww = new ShortHashSet(x.why().volume()).size();
             if (x.stamp().length == 1) {
                 //input
                 System.out.print("IN ");

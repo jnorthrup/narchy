@@ -13,7 +13,8 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 
 import static nars.$.$$;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 
 public class CameraSensorTest {
@@ -34,14 +35,15 @@ public class CameraSensorTest {
         //check for cause applied
         final int[] causesDetected = {0};
         Term aPixel = $$("x(0,0)");
-        short[] cause = new short[] { c.in.id };
+        Term why = c.in.why.why;
 
         tmp = new MyGame(n);
         tmp.what().onTask(t -> {
            if (t.term().equals(aPixel)) {
-               if (t.why().length <= 1) //ignore revisions
-                 assertArrayEquals(cause, t.why());
-               causesDetected[0]++;
+//               if (t.why() == null || t.why() instanceof Int) //ignore revisions
+//                    assertEquals(why, t.why());
+               if (t.stamp().length <= 1)
+                    causesDetected[0]++;
            }
         });
 

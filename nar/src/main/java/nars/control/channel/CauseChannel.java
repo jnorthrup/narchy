@@ -12,21 +12,21 @@ import java.util.List;
  */
 abstract public class CauseChannel<X extends Prioritizable>  {
 
-    private final Cause cause;
+    public final Cause why;
     public final short id;
 
-    protected CauseChannel(Cause cause) {
-        this.cause = cause;
-        this.id = cause.id;
+    protected CauseChannel(Cause why) {
+        this.why = why;
+        this.id = why.id;
     }
 
     @Override
     public String toString() {
-        return cause.name + "<-" + super.toString();
+        return why.name + "<-" + super.toString();
     }
 
     public float pri() {
-        return cause.pri();
+        return why.pri();
     }
 
     public final void accept(X x, ConsumerX<? super X> target) {

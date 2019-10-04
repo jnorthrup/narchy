@@ -181,7 +181,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
 	/** @param dur can be either a perceptual duration which changes, or a 'physical duration' determined by
 	 *             the interface itself (ex: clock rate) */
-	public SeriesTask add(@Nullable Truth next, When<What> when, short[] cause) {
+	public SeriesTask add(@Nullable Truth next, When<What> when, Term why) {
 
 		long nextStart = when.start, nextEnd = when.end;
 
@@ -195,7 +195,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 				return null;
 			else {
 				SeriesTask s = newTask(this.term, this.punc(), nextStart, nextEnd, next, when.x.nar);
-				s.cause(cause);
+				s.why(why);
 				this.add(s);
 				return s;
 			}

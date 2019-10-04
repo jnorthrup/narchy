@@ -5,11 +5,10 @@
 package nars.derive.premise;
 
 import jcog.Util;
-import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.table.BeliefTable;
@@ -30,7 +29,7 @@ public class AbstractPremise implements Premise {
 	public final Termed task, belief;
 
 	/** does not include the task or belief's. these transfer separately */
-	public short[] why = ArrayUtil.EMPTY_SHORT_ARRAY;
+	public Term why = null;
 
 	/** structural */
 	public AbstractPremise(Task t, RuleCause why) {
@@ -38,10 +37,10 @@ public class AbstractPremise implements Premise {
 	}
 
 	public AbstractPremise(Termed task, Termed belief, RuleCause why) {
-		this(task, belief, why.idArray);
+		this(task, belief, why.why);
 	}
 
-	public AbstractPremise(Termed task, Termed belief, short[] why) {
+	public AbstractPremise(Termed task, Termed belief, Term why) {
 		assert(valid(task) && task.term().op().taskable);
 		assert(valid(belief));
 		this.task = task;
@@ -49,18 +48,18 @@ public class AbstractPremise implements Premise {
 		this.why = why;
 	}
 
-	public AbstractPremise(Termed task, Termed belief, short[] why, RuleCause rule) {
-		this(task,belief,CauseMerge.Append.merge(why, rule.idArray, NAL.causeCapacity.intValue()));
+	public AbstractPremise(Termed task, Termed belief, Term why, RuleCause rule) {
+		this(task,belief, Why.why(why, rule.why, NAL.causeCapacity.intValue()));
 	}
-	public AbstractPremise(Termed task, Termed belief, short[] why, Premise parent) {
-		this(task,belief,CauseMerge.Append.merge(why, parent.why(), NAL.causeCapacity.intValue()));
+	public AbstractPremise(Termed task, Termed belief, Term why, Premise parent) {
+		this(task,belief,Why.why(why, parent.why(), NAL.causeCapacity.intValue()));
 	}
-	public AbstractPremise(Termed task, Termed belief, short[] why, Derivation d) {
+	public AbstractPremise(Termed task, Termed belief, Term why, Derivation d) {
 		this(task, belief, why, d._premise);
 	}
 
 	public AbstractPremise(Termed task, Termed belief, RuleCause why, Derivation d) {
-		this(task, belief, why.idArray, d._premise);
+		this(task, belief, why.why, d._premise);
 	}
 
 	private static boolean valid(Termed x) {
@@ -69,7 +68,7 @@ public class AbstractPremise implements Premise {
 
 
 	@Override
-	public final short[] why() {
+	public final Term why() {
 		return why;
 	}
 

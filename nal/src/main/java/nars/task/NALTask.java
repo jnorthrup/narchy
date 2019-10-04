@@ -1,10 +1,9 @@
 package nars.task;
 
 import jcog.WTF;
-import jcog.pri.UnitPri;
 import nars.NAL;
 import nars.Task;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
@@ -14,7 +13,8 @@ import org.jetbrains.annotations.Nullable;
  * generic immutable Task implementation,
  * with mutable cause[] and initially empty meta table
  */
-public abstract class NALTask extends UnitPri implements Task {
+public abstract class NALTask extends AbstractTask {
+
 
 
     @Deprecated
@@ -86,26 +86,7 @@ public abstract class NALTask extends UnitPri implements Task {
         this.cyclic = c;
     }
 
-    /**
-     * because... set the cause[]
-     */
-    public NALTask cause(short[] ignored) {
-        return this;
-    }
 
-    @Deprecated public void causeMerge(short[] c, CauseMerge merge) {
-
-        int causeCap = NAL.causeCapacity.intValue();
-
-        //synchronized (this) {
-            //HACK
-            short[] prevCause = why();
-            short[] nextCause = merge.merge(prevCause, c, causeCap);
-            if (prevCause == this.why())
-                this.cause(nextCause);
-        //}
-
-    }
 
     @Nullable
     @Override

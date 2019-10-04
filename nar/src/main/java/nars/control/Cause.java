@@ -6,6 +6,7 @@ import jcog.Util;
 import jcog.pri.ScalarValue;
 import nars.$;
 import nars.term.Term;
+import nars.term.atom.Int;
 import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
 
@@ -40,7 +41,7 @@ public class Cause extends WhenInternal implements Comparable<Cause> {
      * internally assigned id
      */
     public final short id;
-    @Deprecated public final short[] idArray; //HACK
+    public final Term why;
     public final Term name;
     /**
      * the value measured contributed by its effect on each MetaGoal.
@@ -65,7 +66,7 @@ public class Cause extends WhenInternal implements Comparable<Cause> {
 
     public Cause(short id, @Nullable Object name) {
         this.id = id;
-        this.idArray = new short[] { id };
+        this.why = Int.the(id);
         this.name = $.identity(name != null ? name : this);
         credit = new Credit[MetaGoal.values().length];
         for (int i = 0; i < credit.length; i++) {

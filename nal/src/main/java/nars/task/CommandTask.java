@@ -14,10 +14,6 @@ public interface CommandTask extends Task {
 		return true;
 	}
 
-	@Override
-	default short[] why() {
-		return ArrayUtil.EMPTY_SHORT_ARRAY;
-	}
 
 	@Override
 	default boolean isCyclic() {

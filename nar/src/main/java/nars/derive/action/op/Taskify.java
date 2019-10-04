@@ -1,11 +1,11 @@
 package nars.derive.action.op;
 
 import jcog.Util;
-import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.derive.util.DerivationFailure;
@@ -292,7 +292,7 @@ public class Taskify extends ProxyTerm {
         }
 
         //these must be applied before possible merge on input to derivedTask bag
-        t.cause(ArrayUtil.add(d.parentCause(), channel.id));
+        t.why(Why.why(d.parentCause(), channel.why, NAL.causeCapacity.intValue()));
 
         if (d.single) //|| (NAL.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);

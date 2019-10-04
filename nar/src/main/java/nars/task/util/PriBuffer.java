@@ -14,7 +14,6 @@ import jcog.util.ConsumerX;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.control.CauseMerge;
 
 import java.util.Iterator;
 import java.util.Map;
@@ -259,7 +258,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 				 */
 				@Override
 				protected float merge(Task existing, Task incoming, float incomingPri) {
-					return Task.merge(existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
+					return Task.merge(existing, incoming, merge, PriReturn.Delta, true);
 				}
 
 			},
@@ -269,7 +268,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 					 */
 					@Override
 					public float merge(Prioritizable existing, Task incoming, float pri, PriMerge merge) {
-						return Task.merge((Task) existing, incoming, merge, CauseMerge.Append, PriReturn.Delta, true);
+						return Task.merge((Task) existing, incoming, merge, PriReturn.Delta, true);
 					}
 				}
 			);

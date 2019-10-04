@@ -12,23 +12,23 @@ import org.jetbrains.annotations.Nullable;
 public abstract class UniSignal extends Signal {
 	private final FloatRange res;
 
-	protected final short[] cause;
+	protected final Term why;
 	public final PriNode pri;
 
-	public UniSignal(Term term, @Nullable short[] cause, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
-		this(term, cause, beliefTable, goalTable, null, n);
+	public UniSignal(Term term, @Nullable Term why, BeliefTable beliefTable, BeliefTable goalTable, NAR n) {
+		this(term, why, beliefTable, goalTable, null, n);
 	}
-	public UniSignal(Term term, @Nullable short[] cause, BeliefTable beliefTable, BeliefTable goalTable, PriNode pri, NAR n) {
+	public UniSignal(Term term, @Nullable Term why, BeliefTable beliefTable, BeliefTable goalTable, PriNode pri, NAR n) {
 		super(term, beliefTable, goalTable, n);
 
-		this.cause = cause == null ? new short[]{n.newCause(term).id} : cause;
+		this.why = why == null ? n.newCause(term).why : why;
 
 		this.res = FloatRange.unit(n.freqResolution);
 
 		this.pri = pri!=null ? pri : new AttnBranch(term, components());
 	}
 
-	public float pri() {
+	public final float pri() {
 		return pri.pri();
 	}
 
@@ -37,12 +37,12 @@ public abstract class UniSignal extends Signal {
 		return res;
 	}
 
-	public <S extends UniSignal> S resolution(float v) {
+	public final <S extends UniSignal> S resolution(float v) {
 		res.set(v);
 		return (S)this;
 	}
 
-	public short[] cause() {
-		return cause;
+	public final Term why() {
+		return why;
 	}
 }

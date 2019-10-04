@@ -15,7 +15,7 @@ import nars.attention.PriAmp;
 import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
 import nars.control.op.Remember;
-import nars.task.NALTask;
+import nars.task.AbstractTask;
 import nars.term.Term;
 import nars.time.part.DurLoop;
 import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunction;
@@ -106,13 +106,13 @@ import java.util.Arrays;
      * 0     -> amp=1
      * +Infinity -> amp=2
      */
-    public float amp(short[] effect) {
-        return 1f + Util.tanhFast(value(effect));
-    }
-
-    public final float amp(Task task) {
-        return amp(task.why());
-    }
+//    public float amp(Term effect) {
+//        return 1f + Util.tanhFast(value(effect));
+//    }
+//
+//    public final float amp(Task task) {
+//        return amp(task.why());
+//    }
 
     public float value(short[] effect) {
         return MetaGoal.privaluate(cause, effect);
@@ -249,42 +249,20 @@ import java.util.Arrays;
     static final class TaskChannel extends CauseChannel<Task> {
 
         private final short ci;
-        final short[] uniqueCause;
+        final Term uniqueCause;
 
         TaskChannel(Cause cause) {
             super(cause);
             this.ci = cause.id;
-            uniqueCause = new short[]{ci};
+            this.uniqueCause = cause.why;
         }
 
         @Override protected void preAccept(Task x) {
-            if (x instanceof NALTask) {
-                NALTask t = (NALTask) x;
-                short[] currentCause = t.why();
-                int tcl = currentCause.length;
-                switch (tcl) {
-                    case 0:
-                        //shared one-element cause
-                        t.cause(uniqueCause); //assert (uniqueCause[0] == ci);
-                        break;
-                    case 1:
-                        if (currentCause == uniqueCause) {
-                            /* same instance */
-                        } else if (currentCause[0] == ci) {
-                            //replace with shared instance
-                            t.cause(uniqueCause);
-                        } else {
-                            t.cause(append(currentCause, tcl));
-                        }
-                        break;
-                    default:
-                        t.cause(append(currentCause, tcl));
-                        break;
-                }
+            if (x instanceof AbstractTask) {
+                ((AbstractTask) x).why(uniqueCause);
             } else if (x instanceof Remember) {
                 preAccept(((Remember) x).input); //HACK
             }
-
         }
 
         private short[] append(short[] currentCause, int tcl) {

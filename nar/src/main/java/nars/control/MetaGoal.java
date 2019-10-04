@@ -68,33 +68,33 @@ public enum MetaGoal {
         Why.eval(why, strength, (w,p)-> learn(cc[w].credit, ordinal, p));
     }
 
-    /**
-     * learn that the given effects have a given value
-     * note: requires that the FasterList's internal array is correct Cause[] type for direct un-casting access
-     */
-    @Deprecated public void learn(float strength, FasterList<Cause> whies, short... why) {
-
-        int n = why.length;
-        if (n == 0)
-            return;
-
-        float s =
-            strength / n;
-        //strength;
-        if (Math.abs(s) < Float.MIN_NORMAL)
-            return;
-
-
-
-
-        int ordinal = ordinal();
-        Cause[] cc = whies.array();
-        for (short c : why) {
-            Cause ccc = cc[c];
-//            if (why!=null) //HACK
-                learn(ccc.credit, ordinal, s);
-        }
-    }
+//    /**
+//     * learn that the given effects have a given value
+//     * note: requires that the FasterList's internal array is correct Cause[] type for direct un-casting access
+//     */
+//    @Deprecated public void learn(float strength, FasterList<Cause> whies, short... why) {
+//
+//        int n = why.length;
+//        if (n == 0)
+//            return;
+//
+//        float s =
+//            strength / n;
+//        //strength;
+//        if (Math.abs(s) < Float.MIN_NORMAL)
+//            return;
+//
+//
+//
+//
+//        int ordinal = ordinal();
+//        Cause[] cc = whies.array();
+//        for (short c : why) {
+//            Cause ccc = cc[c];
+////            if (why!=null) //HACK
+//                learn(ccc.credit, ordinal, s);
+//        }
+//    }
 
 
     /** default linear adder */

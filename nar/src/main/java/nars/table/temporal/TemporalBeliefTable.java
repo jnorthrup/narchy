@@ -7,9 +7,9 @@ import jcog.pri.Prioritized;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.table.BeliefTable;
-import nars.task.NALTask;
+import nars.task.AbstractTask;
 import nars.truth.proj.TruthProjection;
 
 import java.util.function.Predicate;
@@ -46,7 +46,7 @@ public interface TemporalBeliefTable extends BeliefTable {
         //sources.removeNulls();
         Task[] tr = sources.arrayCommit(); assert(ArrayUtil.indexOfInstance(tr, null)==-1);
 
-        ((NALTask)xy).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), tr));
+        ((AbstractTask)xy).why(Why.why(tr, NAL.causeCapacity.intValue()));
 
         float priSum = Util.sum(Prioritized::priElseZero, tr);
         float priMean = priSum/tr.length; //mean

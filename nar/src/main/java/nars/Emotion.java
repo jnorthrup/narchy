@@ -183,9 +183,7 @@ public class Emotion implements Meter, Consumer<NAR> {
         int vol = t.volume();
         float pri = t.priElseZero();
 
-        short[] cause = t.why();
-        //MetaGoal.PerceiveCmplx.learn(cause, ((float) vol) / NAL.term.COMPOUND_VOLUME_MAX, nar.control.why);
-        MetaGoal.Perceive.learn(pri, nar.control.cause, cause);
+        MetaGoal.Perceive.learn(t.why(), pri, nar.control.cause);
 
         busy(pri, vol);
 

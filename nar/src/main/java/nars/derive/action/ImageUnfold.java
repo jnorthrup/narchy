@@ -2,7 +2,7 @@ package nars.derive.action;
 
 import nars.NAL;
 import nars.Task;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.link.AbstractTaskLink;
@@ -40,7 +40,7 @@ public class ImageUnfold extends NativePremiseAction {
 					Task tt = d._task;
 
 					AbstractTaskLink link = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(tt.punc(), tt.pri());
-					link.why = CauseMerge.Append.merge(tt.why(), why.idArray, NAL.causeCapacity.intValue());
+					link.why = Why.why(d._premise.why(), why.why, NAL.causeCapacity.intValue());
 
 					d.what.link(link);
 				}

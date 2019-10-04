@@ -36,7 +36,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 	protected CauseChannel<Task> in;
 
-    protected short[] cause;
+    protected Term why;
 
     final PriNode pri;
 

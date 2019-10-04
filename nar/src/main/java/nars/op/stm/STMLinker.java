@@ -7,7 +7,7 @@ import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
-import nars.control.CauseMerge;
+import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
 import nars.derive.rule.RuleCause;
@@ -57,11 +57,13 @@ public class STMLinker extends TaskAction {
 				if (!att.equals(btt)) {
 
 					int causeCap = NAL.causeCapacity.intValue();
-					short[] WHY =
-						CauseMerge.Append.merge(
-							CauseMerge.Append.merge(prev.why(), next.why(), causeCap -1),
-							why.idArray,
-							causeCap);
+					Term WHY =
+						Why.why(
+							Why.why(
+								Why.why(prev.why(), next.why(), causeCap),
+									d._premise.why(), causeCap),
+							why.why,
+						causeCap);
 
 					link(att, btt, next.punc(), pri, WHY, w);
 					link(btt, att, prev.punc(), pri, WHY, w);
@@ -84,7 +86,7 @@ public class STMLinker extends TaskAction {
 			//Util.or(next.priElseZero(), prev.priElseZero());
 	}
 
-	static void link(Term a, Term b, byte punc, float pri, short[] why, TaskLinkWhat w) {
+	static void link(Term a, Term b, byte punc, float pri, Term why, TaskLinkWhat w) {
 		AbstractTaskLink l = AtomicTaskLink.link(a, b).priSet(punc, pri);
 		l.why = why;
 		w.links.link(l);

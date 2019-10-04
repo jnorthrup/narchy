@@ -7,11 +7,11 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.tree.rtree.HyperRegion;
-import nars.control.CauseMerge;
 import nars.control.Caused;
+import nars.control.Why;
+import nars.task.AbstractTask;
 import nars.task.DerivedTask;
 import nars.task.NALTask;
-import nars.task.ProxyTask;
 import nars.task.proxy.SpecialNegatedTask;
 import nars.task.proxy.SpecialTruthAndOccurrenceTask;
 import nars.task.util.TaskException;
@@ -132,17 +132,17 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         merge(pp, tt, PriMerge.max);
     }
     static void merge(Task pp, Task tt, PriMerge merge) {
-        merge(pp, tt, merge, CauseMerge.Append, PriReturn.Void, true);
+        merge(pp, tt, merge, PriReturn.Void, true);
     }
 
-    static float merge(final Task e, final Task i, PriMerge merge, CauseMerge cMerge, PriReturn returning, boolean updateCreationTime) {
+    static float merge(final Task e, final Task i, PriMerge merge, PriReturn returning, boolean updateCreationTime) {
 
         if (e == i)
             return 0;
 
         float y = merge.merge(e, i.pri(), returning);
 
-        mergeCause(e, i, cMerge);
+        mergeWhy(e, i);
 
         if (e != null) {
             if (updateCreationTime) {
@@ -158,13 +158,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return y;
     }
 
-    static void mergeCause(Task e, Task i, CauseMerge cMerge) {
-        if (e instanceof NALTask) {
-            NALTask ee = (NALTask) e;
-            ee.causeMerge(i.why(), cMerge);
-        } else if (e instanceof ProxyTask) {
-			((ProxyTask)e).causeMerge(i.why(), cMerge);
-		}
+    static void mergeWhy(Task e, Task i) {
+        if (e instanceof AbstractTask)
+            ((AbstractTask) e).why(i.why());
+        //else TODO
     }
 
     /**
@@ -340,7 +337,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         y.pri(xp);
 
         if (y instanceof NALTask)
-            ((NALTask) y).cause(x.why()/*.clone()*/);
+            ((NALTask) y).why(x.why()/*.clone()*/);
 
 //        if (x.target().equals(y.target()) && x.isCyclic())
 //            y.setCyclic(true);
@@ -605,8 +602,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static void merge(Task y, Task[] x, float yp) {
         y.pri(yp);
 
-        if (y instanceof NALTask)
-            ((NALTask)y).cause(CauseMerge.AppendUnique.merge(NAL.causeCapacity.intValue(), x));
+
+        if (y instanceof AbstractTask) {
+            ((AbstractTask)y).why(Why.why(x, NAL.causeCapacity.intValue()));
+        }
 
         if (Util.and(Task::isCyclic, x))
             y.setCyclic(true);

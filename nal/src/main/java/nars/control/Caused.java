@@ -1,7 +1,11 @@
 package nars.control;
 
+import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
+
 /** explains why it exists */
 public interface Caused {
-	//Term why();
-	@Deprecated short[] why();
+
+	@Nullable Term why();
+
 }

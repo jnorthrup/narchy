@@ -25,6 +25,12 @@ public class AbstractCommandTask implements CommandTask {
     }
 
     @Override
+    public Term why() {
+        //throw new UnsupportedOperationException(); //?
+        return null;
+    }
+
+    @Override
     public int hashCode() {
         return hash;
     }
