@@ -47,10 +47,10 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
 public class ExeCharts {
     private static Surface metaGoalPlot2(NAR nar) {
 
-        int s = nar.control.cause.size();
+        int s = nar.control.why.size();
 
         List<WhySurface> controls = new FasterList(s);
-        for (Cause w : nar.control.cause) {
+        for (Cause w : nar.control.why) {
 			controls.add(new WhySurface(w));
         }
 
@@ -85,13 +85,13 @@ public class ExeCharts {
 
 	private static Surface metaGoalPlot(NAR nar) {
 
-        int s = nar.control.cause.size();
+        int s = nar.control.why.size();
 
         FloatRange gain = new FloatRange(1f, 0f, 100f);
 
         BitmapMatrixView bmp = new BitmapMatrixView(i ->
                 //Util.tanhFast(
-                    gain.floatValue() * nar.control.cause.get(i).pri()
+                    gain.floatValue() * nar.control.why.get(i).pri()
                 //)
                 , s, Draw::colorBipolar);
 

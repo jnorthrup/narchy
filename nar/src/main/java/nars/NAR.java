@@ -192,7 +192,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 		Term tc = t.why();
 		if (tc!=null) {
 		    Why.forEachUnique(t.why(), s-> {
-                Cause c = control.cause.get(s);
+                Cause c = control.why.get(s);
                 try {
                     out.append(c.toString());
                     out.append('\n');

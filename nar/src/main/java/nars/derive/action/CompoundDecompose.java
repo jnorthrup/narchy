@@ -7,10 +7,7 @@ import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.rule.RuleCause;
-import nars.link.AtomicTaskLink;
-import nars.link.DynamicTermDecomposer;
-import nars.link.TaskLinks;
-import nars.link.TermDecomposer;
+import nars.link.*;
 import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
@@ -49,11 +46,12 @@ public class CompoundDecompose extends NativePremiseAction {
 
 				TaskLinks links = ((TaskLinkWhat) d.what).links;
 
-				AtomicTaskLink l = AtomicTaskLink.link(src, tgt);
-				l.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
+				AbstractTaskLink l = AtomicTaskLink.link(src, tgt)
+					.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 
-				int causeCap = NAL.causeCapacity.intValue();
-				l.why = Why.why(d._premise.why(), why.why, causeCap);
+				//TODO lazy calculate
+				//TODO include task?
+				l.why = Why.why(d.why(), why.why, NAL.causeCapacity.intValue());
 
 				links.link(l);
 			}

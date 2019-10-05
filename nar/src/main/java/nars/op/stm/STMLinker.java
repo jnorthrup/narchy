@@ -61,7 +61,7 @@ public class STMLinker extends TaskAction {
 						Why.why(
 							Why.why(
 								Why.why(prev.why(), next.why(), causeCap),
-									d._premise.why(), causeCap),
+									d.premise.why(), causeCap),
 							why.why,
 						causeCap);
 

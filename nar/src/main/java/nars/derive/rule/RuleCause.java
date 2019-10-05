@@ -1,6 +1,10 @@
 package nars.derive.rule;
 
+import nars.NAL;
 import nars.control.Cause;
+import nars.control.Caused;
+import nars.control.Why;
+import nars.term.Term;
 
 /**
  * just a cause, not an input channel.
@@ -25,4 +29,10 @@ public final class RuleCause extends Cause {
 	}
 
 
+	public final Term why(Caused d) {
+		return Why.why(why, d.why(), NAL.causeCapacity.intValue());
+	}
+	public final Term why(Caused... c) {
+		return Why.why(why, Why.why(c, NAL.causeCapacity.intValue()), NAL.causeCapacity.intValue());
+	}
 }

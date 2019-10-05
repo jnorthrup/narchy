@@ -51,7 +51,7 @@ import java.util.Arrays;
      * raw cause id (short int) -> cause table
      *
      */
-    public final FasterList<Cause> cause = new FasterList<>(0, new Cause[512]);
+    public final FasterList<Cause> why = new FasterList<>(0, new Cause[512]);
 
 
     /** hierarchical priority distribution DAG (TODO ensure acyclic) */
@@ -83,7 +83,7 @@ import java.util.Arrays;
 
     public MetaGoal.Report stats(PrintStream out) {
         MetaGoal.Report r = new MetaGoal.Report();
-        r.add(cause);
+        r.add(why);
         r.print(out);
         return r;
     }
@@ -115,7 +115,7 @@ import java.util.Arrays;
 //    }
 
     public float value(short[] effect) {
-        return MetaGoal.privaluate(cause, effect);
+        return MetaGoal.privaluate(why, effect);
     }
 
     public Node<nars.attention.PriNode, Object> add(PriNode p) {
@@ -143,10 +143,10 @@ import java.util.Arrays;
     }
 
     public <C extends Cause> C newCause(ShortToObjectFunction<C> idToChannel) {
-        synchronized (cause) {
-            short next = (short) (cause.size());
+        synchronized (why) {
+            short next = (short) (why.size());
             C c = idToChannel.valueOf(next);
-            cause.add(c);
+            why.add(c);
             return c;
         }
     }

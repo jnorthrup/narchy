@@ -181,7 +181,7 @@ public class Inperience extends TaskTransformAction {
 //        return true;
 //    }
 
-    @Nullable private Term validReification(Term r, int volMax) {
+    @Nullable static private Term validReification(Term r, int volMax) {
         if (r.op().taskable && r.volume() <= volMax) {
              r = r.normalize();
              if (Task.validTaskTerm(r, BELIEF, true))

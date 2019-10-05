@@ -292,7 +292,7 @@ public class Taskify extends ProxyTerm {
         }
 
         //these must be applied before possible merge on input to derivedTask bag
-        t.why(Why.why(d.parentCause(), channel.why, NAL.causeCapacity.intValue()));
+        t.why(Why.why(d.why(), channel.why, NAL.causeCapacity.intValue()));
 
         if (d.single) //|| (NAL.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);

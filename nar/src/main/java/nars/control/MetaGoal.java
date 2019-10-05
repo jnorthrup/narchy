@@ -4,6 +4,7 @@ import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
 import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.Task;
 import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
@@ -62,10 +63,15 @@ public enum MetaGoal {
     ;
 
 
+    public void learn(Task t, float strength, NAR n) {
+        Term why = t.why();
+        if (why != null)
+            learn(why, strength, n.control.why);
+    }
+
     public void learn(Term why, float strength, FasterList<Cause> whies) {
         Cause[] cc = whies.array();
-        int ordinal = ordinal();
-        Why.eval(why, strength, (w,p)-> learn(cc[w].credit, ordinal, p));
+        Why.eval(why, strength, (w,p)-> learn(cc[w].credit, ordinal(), p));
     }
 
 //    /**
@@ -100,7 +106,7 @@ public enum MetaGoal {
     /** default linear adder */
     @Deprecated static public void value(NAR n, @Nullable Consumer<FasterList<Cause>> value) {
 
-        FasterList<Cause> cause = n.control.cause;
+        FasterList<Cause> cause = n.control.why;
         int cc = cause.size();
         if (cc == 0)
             return;

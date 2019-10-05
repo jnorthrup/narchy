@@ -32,7 +32,7 @@ public abstract class TaskTransformAction extends TaskAction {
 		if (y != null)
 			d.remember(
 				((AbstractTask) y).why(
-					Why.why(d._premise.why(), why.why, NAL.causeCapacity.intValue())
+					Why.why(d.premise.why(), why.why, NAL.causeCapacity.intValue())
 				)
 			);
 	}

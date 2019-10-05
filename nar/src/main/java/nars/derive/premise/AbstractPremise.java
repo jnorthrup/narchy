@@ -31,15 +31,6 @@ public class AbstractPremise implements Premise {
 	/** does not include the task or belief's. these transfer separately */
 	public Term why = null;
 
-	/** structural */
-	public AbstractPremise(Task t, RuleCause why) {
-		this(t, t.term(), why);
-	}
-
-	public AbstractPremise(Termed task, Termed belief, RuleCause why) {
-		this(task, belief, why.why);
-	}
-
 	public AbstractPremise(Termed task, Termed belief, Term why) {
 		assert(valid(task) && task.term().op().taskable);
 		assert(valid(belief));
@@ -48,29 +39,25 @@ public class AbstractPremise implements Premise {
 		this.why = why;
 	}
 
-	public AbstractPremise(Termed task, Termed belief, Term why, RuleCause rule) {
-		this(task,belief, Why.why(why, rule.why, NAL.causeCapacity.intValue()));
-	}
-	public AbstractPremise(Termed task, Termed belief, Term why, Premise parent) {
-		this(task,belief,Why.why(why, parent.why(), NAL.causeCapacity.intValue()));
-	}
-	public AbstractPremise(Termed task, Termed belief, Term why, Derivation d) {
-		this(task, belief, why, d._premise);
-	}
-
 	public AbstractPremise(Termed task, Termed belief, RuleCause why, Derivation d) {
-		this(task, belief, why.why, d._premise);
+		this(task, belief, why.why(d));
 	}
 
 	private static boolean valid(Termed x) {
 		return !(x instanceof Neg) && !(x instanceof Bool) && !(x instanceof Img);
 	}
 
-
 	@Override
 	public final Term why() {
+		if (this.why == null && task instanceof Task) {
+			this.why = belief instanceof Task ?
+				Why.why(Why.why(((Task)task).why(), ((Task)belief).why(), NAL.causeCapacity.intValue()), why, NAL.causeCapacity.intValue())
+				:
+				Why.why(((Task)task).why(), why, NAL.causeCapacity.intValue());
+		}
 		return why;
 	}
+
 
 	@Override
 	public final Term taskTerm() {
@@ -198,10 +185,14 @@ public class AbstractPremise implements Premise {
 				nextBeliefTerm = found[0];
 		}
 
-		return belief != null ? new AbstractPremise(task, belief, why()) :
-			!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why()) :
+		return belief != null ? new AbstractPremise(task, belief, why(d)) :
+			!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why(d)) :
 				this;
 
+	}
+
+	private Term why(Derivation d) {
+		return Why.why(d.why(), this.why(), NAL.causeCapacity.intValue());
 	}
 
 

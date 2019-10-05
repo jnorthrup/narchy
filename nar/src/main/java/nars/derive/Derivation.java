@@ -7,7 +7,7 @@ import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.attention.What;
-import nars.control.Why;
+import nars.control.Caused;
 import nars.derive.action.PremiseAction;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
@@ -52,7 +52,7 @@ import static nars.time.Tense.TIMELESS;
 /**
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
  */
-public class Derivation extends PreDerivation {
+public class Derivation extends PreDerivation implements Caused {
 
     public static final Atom Task = Atomic.atom("task");
     public static final Atom Belief = Atomic.atom("belief");
@@ -106,7 +106,9 @@ public class Derivation extends PreDerivation {
     public When<What> when;
 
     transient Deriver.DeriverExecutor exe = null;
-    public transient Premise _premise;
+
+    /** current running premise, set at beginning of derivation in derive() */
+    public transient Premise premise;
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
@@ -188,7 +190,7 @@ public class Derivation extends PreDerivation {
         (Task t) ->
             !t.isDeleted() && (t.isQuestionOrQuest() || t.evi() >= eviMin);
 
-	private transient Term parentCause;
+
 
     /** evi avg */
     private double eviDouble, eviSingle;
@@ -278,11 +280,10 @@ public class Derivation extends PreDerivation {
      * <p>
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
-    public void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
+    private void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
         //TODO maybe can be re-used:
         this.stampDouble = stampSingle = null;
-        this.parentCause = null;
 
         this._task = resetTask(nextTask, this._task);
         this._beliefTerm = nextBeliefTerm;
@@ -466,6 +467,7 @@ public class Derivation extends PreDerivation {
             this.reset(n);
         }
 
+        this.premise = null;
         this.deriver = d;
         this.what = w;
         //this.deriverMH = deriver.rules.what.compile();
@@ -546,7 +548,6 @@ public class Derivation extends PreDerivation {
 
         _task = _belief = null;
         taskPunc = 0;
-        parentCause = null;
         taskTerm = beliefTerm = null;
 
         truth.clear();
@@ -603,9 +604,9 @@ public class Derivation extends PreDerivation {
     /** returns appropriate Emotion counter representing the result state  */
     FastCounter derive(Premise P, int deriveTTL) {
 
-        Premise p;
         Emotion e = nar.emotion;
 
+        Premise p;
 
         if (P instanceof AbstractPremise && !P.task().term().equals(P.beliefTerm())) {
             try (var __ = e.derive_B_PremiseMatch.time()) {
@@ -614,7 +615,7 @@ public class Derivation extends PreDerivation {
         } else
             p = P;
 
-        this._premise = p;
+        this.premise = p;
 
         short[] can;
 
@@ -750,25 +751,6 @@ public class Derivation extends PreDerivation {
         return single ? evidenceSingle() : evidenceDouble();
     }
 
-    public Term parentCause() {
-        if (parentCause == null) {
-
-            int causeCap = NAL.causeCapacity.intValue();
-            this.parentCause =
-                    Why.why(
-                            (_belief != null ?
-                                Why.why(_task.why(), _belief.why(), causeCap) :
-                                    _task.why()),
-                            _premise.why(),
-                        causeCap
-            );
-
-//        if (parentCause.length >= causeCap)
-//            throw new WTF();
-        }
-        return parentCause;
-    }
-
     @Override
     public ShortBuffer preDerive() {
         canCollector.clear();
@@ -792,8 +774,13 @@ public class Derivation extends PreDerivation {
         return p == BELIEF || p == GOAL;
     }
 
+	@Override
+	@Nullable public final Term why() {
+		return premise.why();
+	}
 
-    abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
+
+	abstract static class AbstractInstantFunctor1 extends AbstractInlineFunctor1 implements InstantFunctor<Evaluation> {
 
         AbstractInstantFunctor1(String atom) {
             super(atom);

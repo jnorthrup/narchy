@@ -37,12 +37,15 @@ public class ImageUnfold extends NativePremiseAction {
 			if (forward != null) {
 				Term y = t0p ? Image.imageExt(t, forward) : Image.imageInt(t, forward);
 				if (y instanceof Compound && y.op().conceptualizable) {
-					Task tt = d._task;
+					Task task = d._task;
 
-					AbstractTaskLink link = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(tt.punc(), tt.pri());
-					link.why = Why.why(d._premise.why(), why.why, NAL.causeCapacity.intValue());
+					AbstractTaskLink l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(), task.pri());
 
-					d.what.link(link);
+					//TODO lazy calculate
+					//TODO include task?
+					l.why = Why.why(d.why(), why.why, NAL.causeCapacity.intValue());
+
+					d.what.link(l);
 				}
 			}
 		}

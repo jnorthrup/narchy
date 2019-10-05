@@ -73,7 +73,7 @@ import static spacegraph.SpaceGraph.window;
  */
 abstract public class GameX extends Game {
 
-    static final boolean initMeta = false;
+    static final boolean initMeta = true;
     static final boolean initMetaRL = true;
     static final boolean metaAllowPause = false;
 
@@ -732,7 +732,7 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 3;
-        float momentum = 0.9f;
+        float momentum = 0.5f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 

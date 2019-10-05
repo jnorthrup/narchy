@@ -146,7 +146,7 @@ public class Remember {
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t.why(), t.priElseZero(), n.control.cause);
+                    .learn(t, t.priElseZero(), n);
 
 //            if (t.isGoal()) {
 //                MetaGoal.Action.learn(
