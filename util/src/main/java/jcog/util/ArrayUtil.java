@@ -1699,12 +1699,12 @@ public enum ArrayUtil {
         array[offset2] = aux;
     }
 
-    public static void swapShort(short[] array, int offset1, int offset2) {
-        if (offset1==offset2)
-            return;
-        final short aux = array[offset1];
-        array[offset1] = array[offset2];
-        array[offset2] = aux;
+    static void swapShort(short[] array, int offset1, int offset2) {
+        if (offset1 != offset2) {
+            final short aux = array[offset1];
+            array[offset1] = array[offset2];
+            array[offset2] = aux;
+        }
     }
 
     /**

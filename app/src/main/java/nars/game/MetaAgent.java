@@ -133,24 +133,16 @@ abstract public class MetaAgent extends Game {
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
             actionUnipolar($.inh(SELF, exact), (value) -> {
-                    if (value < 0.5f) {
-                        value = 0.01f;
-                    } else if (value < 0.75f) {
-                        value = 0.05f;
-                    } else {
-                        value = 0.1f;
-                    }
+                if (value >= 0.75f) {
+                    value = 0.01f;
+                } else if (value >= 0.5f) {
+                    value = 0.05f;
+                } else if (value >= 0.25f) {
+                    value = 0.1f;
+                } else {
+                    value = 0.2f;
+                }
                 nar.freqResolution.set(value);
-//                switch (Util.clamp((int) Math.floor(value * 4),0,3)) {
-////                    case 0: value = 0.5f; break; //binary emulation
-////                    case 1: value = 0.25f; break;
-//                    case 0: value = 0.1f; break;
-//                    case 1: value = 0.05f; break;
-//                    case 2: value = 0.01f; break;
-//                    default:
-//                        throw new UnsupportedOperationException();
-//                }
-
             });
 
 
