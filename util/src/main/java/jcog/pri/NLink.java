@@ -8,7 +8,7 @@ import static jcog.Texts.n4;
  */
 public class NLink<X> extends AtomicPri implements PriReference<X> {
 
-    protected final X id;
+    public final X id;
 
     public NLink(X x, float v) {
         super(v);

@@ -3,7 +3,6 @@ package nars.task;
 import jcog.WTF;
 import nars.NAL;
 import nars.Task;
-import nars.control.Why;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
@@ -32,15 +31,15 @@ public abstract class NALTask extends AbstractTask {
 
     private volatile boolean cyclic;
 
-    public static NALTask the(Term c, byte punct, Truth tr, When<? extends NAL> when) {
+    public static AbstractTask the(Term c, byte punct, Truth tr, When<? extends NAL> when) {
         return the(c, punct, tr, when.x.time.now(), when.start, when.end, new long[]{when.x.time.nextStamp()});
     }
 
-    public static NALTask the(Term c, byte punct, Truth tr, When<? extends NAL> when, long[] evidence) {
+    public static AbstractTask the(Term c, byte punct, Truth tr, When<? extends NAL> when, long[] evidence) {
         return the(c, punct, tr, when.x.time.now(), when.start, when.end, evidence);
     }
 
-    public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
+    public static AbstractTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
         if (start == ETERNAL) {
             return new EternalTask(c, punct, tr, creation, evidence);
         } else {

@@ -132,7 +132,7 @@ public class ProxyTask extends AbstractTask {
     }
 
     /** produce a concrete non-proxy clone of this */
-    @Nullable public NALTask the() {
+    @Nullable public AbstractTask the() {
         return Task.clone(this);
     }
 

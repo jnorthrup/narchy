@@ -12,7 +12,7 @@ import nars.bag.BagClustering;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
 import nars.derive.rule.RuleCause;
-import nars.task.NALTask;
+import nars.task.AbstractTask;
 import nars.task.util.TaskList;
 import nars.term.Term;
 import nars.truth.Stamp;
@@ -436,7 +436,7 @@ public class ConjClustering extends TaskAction {
                                             data.remove(aa);
                                     }
 
-                                    d.remember( ((NALTask)y).why(why.why) );
+                                    d.remember( ((AbstractTask)y).why(why.why) );
 
                                     if (++count >= tasksGeneratedPerCentroidIterationMax)
                                         break main;

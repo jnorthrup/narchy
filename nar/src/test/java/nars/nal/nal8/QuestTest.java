@@ -10,8 +10,7 @@ import org.junit.jupiter.api.Test;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static nars.$.$;
-import static nars.Op.QUEST;
-import static nars.time.Tense.ETERNAL;
+import static nars.Op.GOAL;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 /**
@@ -67,12 +66,12 @@ class QuestTest {
     }
 
     private void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
-        nar.question($("a:?b@"), ETERNAL, QUEST, (q, a) -> {
-            
-            
-            if (a.toString().contains("(b-->a)!"))
+        nar.onTask(a -> {
+            if (a.punc()==GOAL && a.toString().contains("(b-->a)!"))
                 valid.set(true);
         });
+
+        nar.quest($("a:?b@"));
     }
 
     private void goal(NAR nar) throws Narsese.NarseseException {

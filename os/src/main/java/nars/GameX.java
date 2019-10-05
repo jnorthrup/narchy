@@ -462,8 +462,8 @@ abstract public class GameX extends Game {
         n.questionPriDefault.pri(0.25f);
         n.questPriDefault.pri(0.25f);
 
-        n.beliefConfDefault.set(0.9f);
-        n.goalConfDefault.set(0.9f);
+        n.beliefConfDefault.set(0.5f);
+        n.goalConfDefault.set(0.5f);
 
 
         n.emotion.want(MetaGoal.Perceive, 0 /*-0.005f*/);
@@ -741,14 +741,16 @@ abstract public class GameX extends Game {
                 float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
                 @Override
-                public void accept(FasterList<Cause> w) {
-                    int ww = w.size();
+                public void accept(FasterList<Cause> cc) {
+
+                    Cause[] c = cc.array();
+                    int ww = Math.min(c.length, cc.size());
                     if (f.length != ww)
                         f = new float[ww];
 
                     float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-                    for (int i = 0, whysSize = w.size(); i < whysSize; i++) {
-                        float r = w.get(i).valueRaw();
+                    for (int i = 0; i < ww; i++) {
+                        float r = c[i].valueRaw();
 
                         //if (r!=r) r = 0;
                         float v;
@@ -760,14 +762,14 @@ abstract public class GameX extends Game {
 
                         min = Math.min(v, min); max = Math.max(v, max);
                     }
+
                     if (Util.equals(min, max)) {
-                        Arrays.fill(f, explorationRate);
+                        for (int i = 0; i < ww; i++)
+                            c[i].setPri(explorationRate); //flat
                     } else {
                         float basePri = explorationRate * (max - min);
-
-                        for (int i = 0, whysSize = w.size(); i < whysSize; i++) {
-                            w.get(i).setPri(basePri + Util.normalize(f[i], min, max));
-                        }
+                        for (int i = 0; i < ww; i++)
+                            c[i].setPri(basePri + Util.normalize(f[i], min, max));
                     }
                 }
 

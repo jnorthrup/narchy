@@ -1,6 +1,7 @@
 package nars.truth;
 
 import nars.$;
+import nars.task.AbstractTask;
 import nars.task.NALTask;
 import nars.term.Term;
 import nars.truth.proj.LinearTruthProjection;
@@ -21,7 +22,7 @@ class TruthProjectionTest {
     @Test
     public void testEqualEvidenceInSubInterval_of_Task() {
         //TODO repeat test for TruthletTask to test trapezoidal integration
-        NALTask T = t(1f, 0.5f, 0, 4);
+        AbstractTask T = t(1f, 0.5f, 0, 4);
         for (int s = 0; s <=4; s++)
             for (int e = s; e<=4; e++ )
                 assertEquals(T.truth(), T.truth(s, e, 0));
@@ -40,7 +41,7 @@ class TruthProjectionTest {
         int W = 10;
         for (int i = W-1; i >=1; i--)  {
             LinearTruthProjection t = new LinearTruthProjection(0, W);
-            NALTask T = t(1f, 0.5f, 0, i);
+            AbstractTask T = t(1f, 0.5f, 0, i);
             t.add(T);
             Truth tt = t.truth();
             System.out.println(T + "\t" +
@@ -80,7 +81,7 @@ class TruthProjectionTest {
 //    }
 
 
-    static private NALTask t(float freq, float conf, long start, long end) {
+    static private AbstractTask t(float freq, float conf, long start, long end) {
         long[] stamp = new long[] { serial.getAndIncrement() };
         return NALTask.the(x, BELIEF, $.t(freq, conf), (long) 0, start, end, stamp);
     }

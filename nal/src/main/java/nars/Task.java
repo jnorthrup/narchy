@@ -298,26 +298,26 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
     @Nullable
-    static NALTask clone(Task x, byte newPunc) {
+    static AbstractTask clone(Task x, byte newPunc) {
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
     @Nullable
-    static NALTask clone(Task x) {
+    static AbstractTask clone(Task x) {
         return clone(x, x.punc());
     }
 
     @Nullable
-    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+    static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
         return clone(x, newContent, newTruth, newPunc, x.start(), x.end());
     }
 
     @Nullable
-    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
+    static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
         return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, x.stamp()));
     }
     @Nullable
-    static NALTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
+    static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
         return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, stamp));
     }
 
@@ -336,8 +336,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         float xp = x.priElseZero();
         y.pri(xp);
 
-        if (y instanceof NALTask)
-            ((NALTask) y).why(x.why()/*.clone()*/);
+        if (y instanceof AbstractTask)
+            ((AbstractTask) y).why(x.why()/*.clone()*/);
 
 //        if (x.target().equals(y.target()) && x.isCyclic())
 //            y.setCyclic(true);

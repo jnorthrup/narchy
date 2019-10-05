@@ -10,6 +10,7 @@ import nars.NAR;
 import nars.Task;
 import nars.control.op.Remember;
 import nars.table.BeliefTable;
+import nars.task.AbstractTask;
 import nars.task.NALTask;
 import nars.task.util.Answer;
 import nars.task.util.Revision;
@@ -377,7 +378,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
             }
         }
 
-        NALTask revised;
+        AbstractTask revised;
         if (oldBelief != null) {
 
 

@@ -6,8 +6,6 @@ import nars.Narsese;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
-import static nars.time.Tense.ETERNAL;
-
 /**
  * Created by me on 4/17/17.
  */
@@ -46,10 +44,7 @@ class TestProloglike {
         );
 
         n.questionPriDefault.pri(0.99f);
-        n.question("fun(?x)", ETERNAL, (q, a) -> {
-            
-            System.out.println(a.proof());
-        });
+        n.question("fun(?x)");
         n.run(1000);
 
 

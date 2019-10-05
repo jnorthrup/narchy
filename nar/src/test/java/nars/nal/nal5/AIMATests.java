@@ -11,7 +11,6 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import static nars.$.$$;
-import static nars.time.Tense.ETERNAL;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -92,9 +91,10 @@ class AIMATests {
                 "Criminal:?x"
                 //"Criminal(?x)"
 
-        ), ETERNAL, (q, a) -> {
-            System.out.println(a);
-        });
+        ));
+//        , ETERNAL, (q, a) -> {
+//            System.out.println(a);
+//        });
 
         //n.run(1);
         //n.concept("((&&,Weapon(#y),Sells($x,#y,#z),Hostile(#z)) ==> Criminal($x))").print();

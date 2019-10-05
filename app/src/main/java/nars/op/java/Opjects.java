@@ -17,6 +17,7 @@ import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.channel.CauseChannel;
 import nars.subterm.Subterms;
+import nars.task.AbstractTask;
 import nars.task.NALTask;
 import nars.term.Functor;
 import nars.term.ProxyTerm;
@@ -284,7 +285,7 @@ public class Opjects extends DefaultTermizer {
             Class<?> methodReturnType = method.getReturnType();
             boolean isVoid = methodReturnType == void.class;
 
-            NALTask value;
+            AbstractTask value;
 
             if (!isVoid) {
                 Term t = opTerm(instance, method, args, nextValue);
@@ -295,7 +296,7 @@ public class Opjects extends DefaultTermizer {
 
             boolean evokedOrInvoked = evoking.get().getOpaque();
 
-            NALTask feedback;
+            AbstractTask feedback;
             if (isVoid || evokedOrInvoked) {
                 feedback = feedback(opTerm(instance, method, args, isVoid ? null : $.varDep(1)), start, end, nar);
             } else {
@@ -312,9 +313,9 @@ public class Opjects extends DefaultTermizer {
 
         }
 
-        public NALTask feedback(Term nt, long start, long end, NAR nar) {
+        public AbstractTask feedback(Term nt, long start, long end, NAR nar) {
 
-            NALTask feedback =
+            AbstractTask feedback =
 //                new TruthletTask(nt, BELIEF,
 //                    Truthlet.step(
 //                            uninvokeFreq, start,
@@ -331,14 +332,14 @@ public class Opjects extends DefaultTermizer {
         }
 
 
-        public NALTask value(Term nextTerm, float freq, long start, long end, NAR nar) {
+        public AbstractTask value(Term nextTerm, float freq, long start, long end, NAR nar) {
             Term nt = nextTerm;
             if (nt.op() == NEG) {
                 nt = nt.unneg();
                 freq = 1 - freq;
             }
 
-            NALTask value =
+            AbstractTask value =
 //                new TruthletTask(nt, BELIEF,
 //                    Truthlet.step(
 //                            doubtFreq, start,

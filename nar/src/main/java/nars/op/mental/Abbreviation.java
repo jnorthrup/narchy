@@ -18,6 +18,7 @@ import nars.derive.Derivation;
 import nars.io.IO;
 import nars.link.TaskLink;
 import nars.subterm.Subterms;
+import nars.task.AbstractTask;
 import nars.task.NALTask;
 import nars.term.Compound;
 import nars.term.Term;
@@ -336,7 +337,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
                     $.t(1f, abbreviationConfidence.floatValue()),
                     (te, tr) -> {
 
-                        NALTask ta = NALTask.the(te, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, nar.evidence());
+                        AbstractTask ta = NALTask.the(te, BELIEF, tr, nar.time(), ETERNAL, ETERNAL, nar.evidence());
                         ta.pri(nar.priDefault(BELIEF));
 
                         return ta;

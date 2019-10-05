@@ -59,13 +59,15 @@ class QuestionTest {
 
         NAR nar = NARS.tmp(1);
 
+        nar.onTask(a -> {
+            if (a.punc() == BELIEF && a.term().equals(expectedSolutionTerm))
+                ok.incrementAndGet();
+        });
+
         nar
 
                 .believe(belief, 1.0f, 0.9f)
-                .question(question, ETERNAL, (q, a) -> {
-                    if (a.punc() == BELIEF && a.term().equals(expectedSolutionTerm))
-                        ok.incrementAndGet();
-                });
+                .question(question);
 
 
         nar.run(cycles);
