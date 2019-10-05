@@ -732,7 +732,7 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 3;
-        float momentum = 0.5f;
+        float momentum = 0.8f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
@@ -750,12 +750,14 @@ abstract public class GameX extends Game {
                     for (int i = 0, whysSize = w.size(); i < whysSize; i++) {
                         float r = w.get(i).valueRaw();
 
-                        if (r!=r) r = 0;
+                        //if (r!=r) r = 0;
                         float v;
-                        //if (r == r)
+                        if (r == r)
                             f[i] = v = lerp(momentum, r, f[i]);
-//                        else
-//                            v = f[i];
+                        else {
+                            v = f[i]; //unchanged, hold existing value
+                        }
+
                         min = Math.min(v, min); max = Math.max(v, max);
                     }
                     if (Util.equals(min, max)) {
