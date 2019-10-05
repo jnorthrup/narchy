@@ -14,9 +14,9 @@ import jcog.signal.wave2d.ScaledBitmap2D;
 import jcog.util.ArrayUtil;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
+import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
-import nars.control.Cause;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
@@ -54,7 +54,6 @@ import spacegraph.video.OrthoSurfaceGraph;
 
 import java.awt.*;
 import java.awt.image.BufferedImage;
-import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;

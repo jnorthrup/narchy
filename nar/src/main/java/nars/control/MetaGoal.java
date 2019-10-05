@@ -69,7 +69,7 @@ public enum MetaGoal {
             learn(why, strength, n.control.why);
     }
 
-    public void learn(Term why, float strength, FasterList<Cause> whies) {
+    void learn(Term why, float strength, FasterList<Cause> whies) {
         Cause[] cc = whies.array();
         Why.eval(why, strength, (w,p)-> learn(cc[w].credit, ordinal(), p));
     }

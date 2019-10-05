@@ -145,8 +145,9 @@ public class Remember {
 
         byte punc = t.punc();
         if (punc == BELIEF || punc == GOAL) {
+            float value = NAL.valueBeliefOrGoal(t);
             (punc == BELIEF ? MetaGoal.Believe : MetaGoal.Desire)
-                    .learn(t, t.priElseZero(), n);
+                    .learn(t, value, n);
 
 //            if (t.isGoal()) {
 //                MetaGoal.Action.learn(

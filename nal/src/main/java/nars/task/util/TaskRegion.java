@@ -3,7 +3,6 @@ package nars.task.util;
 import jcog.Util;
 import jcog.math.LongInterval;
 import jcog.tree.rtree.HyperRegion;
-import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Task;
 import nars.task.Tasked;

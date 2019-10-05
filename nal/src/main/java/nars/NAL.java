@@ -252,9 +252,14 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     public static final float TaskEvalPriDecomposeRate = 0.5f;
 
+    public static float valueBeliefOrGoal(Task t) {
+        return
+            //t.priElseZero();
+            (float) t.eviMean();
+    }
 
 
-    /**
+	/**
      * SignalTask's
      */
     public enum signal {

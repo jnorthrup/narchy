@@ -7,7 +7,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.compound.CachedCompound;
 import nars.term.compound.LightCompound;
-import nars.term.util.transform.Retemporalize;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
