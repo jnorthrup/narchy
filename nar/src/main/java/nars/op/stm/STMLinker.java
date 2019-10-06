@@ -7,6 +7,7 @@ import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
+import nars.control.Caused;
 import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
@@ -41,7 +42,7 @@ public class STMLinker extends TaskAction {
 		if (prev == null)
 			return true;
 
-		Term att = next.term().concept(), btt = prev.term().concept();
+		final Term att = next.term().concept(), btt = prev.term().concept();
 		if (att.equals(btt))
 			return false;
 
@@ -54,20 +55,16 @@ public class STMLinker extends TaskAction {
 
 			if (pri >= ScalarValue.EPSILON) {
 				TaskLinkWhat w = (TaskLinkWhat) d.what;
-				if (!att.equals(btt)) {
 
-					int causeCap = NAL.causeCapacity.intValue();
-					Term WHY =
-						Why.why(
-							Why.why(
-								Why.why(prev.why(), next.why(), causeCap),
-									d.premise.why(), causeCap),
-							why.why,
-						causeCap);
+				int causeCap = NAL.causeCapacity.intValue();
+				Term WHY =
+					Why.why(
+						why.why,
+						Why.why(new Caused[] { prev, next, d }, causeCap - 1),
+					Integer.MAX_VALUE /* allow over */);
 
-					link(att, btt, next.punc(), pri, WHY, w);
-					link(btt, att, prev.punc(), pri, WHY, w);
-				}
+				link(att, btt, next.punc(), pri, WHY, w);
+				link(btt, att, prev.punc(), pri, WHY, w);
 			}
 		}
 		return true;

@@ -1,5 +1,6 @@
 package nars.table;
 
+import it.unimi.dsi.fastutil.ints.IntArrayList;
 import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.Task;
@@ -46,42 +47,61 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
         if (size == 0) return;
         else if (size == 1) { items[0].match(a); }
         else {
-            switch (matchMode) {
-                case ORDERED:
-                    allSatisfy(t -> {
-                        t.match(a);
-                        return a.ttl > 0;
-                    });
-                    break;
-
-                case SHUFFLE_FIRST_COME_FIRST_SERVE:
-                    ANDshuffled(a.random(), t -> {
-                        t.match(a);
-                        return a.ttl > 0;
-                    });
-                    break;
-
-                case SHUFFLE_ROUND_ROBIN:
-                    //fair round robin
-                    int ttlStart = a.ttl;
-                    assert (ttlStart > 0);
-                    int ttlFair = Math.max(1,
-                        ttlStart / size
-                        //ttlStart
-                    );
-                    int[] ttlUsed = new int[1];
-                    ANDshuffled(a.random(), t -> {
-                        a.ttl = ttlFair; //restore for next
-                        t.match(a);
-                        ttlUsed[0] += ttlFair - a.ttl;
-                        return true;
-                    });
-                    a.ttl = Math.max(0, ttlStart - ttlUsed[0]);
-                    break;
-
-                default:
-                    throw new UnsupportedOperationException();
+            IntArrayList nonEmpty = new IntArrayList(size);
+            for (int i = 0; i < size; i++) {
+                if (!items[i].isEmpty())
+                    nonEmpty.add(i);
             }
+            int N = nonEmpty.size();
+            if (N ==1) {
+                items[nonEmpty.get(0)].match(a);
+            } else {
+                switch (matchMode) {
+                    case ORDERED: {
+                        for (int i = 0; i < N; i++) {
+                            items[nonEmpty.get(i)].match(a);
+                            if (a.ttl <= 0)
+                                break;
+                        }
+                        break;
+                    }
+
+                    case SHUFFLE_FIRST_COME_FIRST_SERVE: {
+                        int[] ne = nonEmpty.toIntArray();
+                        ArrayUtil.shuffle(ne, a.random());
+                        for (int i = 0; i < N; i++) {
+                            items[ne[i]].match(a);
+                            if (a.ttl <= 0)
+                                break;
+                        }
+                        break;
+                    }
+
+                    case SHUFFLE_ROUND_ROBIN: {
+                        //fair round robin
+                        int ttlStart = a.ttl;
+                        assert (ttlStart > 0);
+                        int ttlFair = Math.max(1,
+                            (int)Math.ceil(((float)ttlStart) / N)
+                            //ttlStart
+                        );
+                        int ttlUsed = 0;
+                        int[] ne = nonEmpty.toIntArray();
+                        ArrayUtil.shuffle(ne, a.random());
+                        for (int i = 0; i < N; i++) {
+                            a.ttl = ttlFair;
+                            items[ne[i]].match(a);
+                            ttlUsed += ttlFair - a.ttl;
+                            if (ttlUsed >= ttlStart)
+                                break;
+                        }
+                        break;
+                    }
+                    default:
+                        throw new UnsupportedOperationException();
+                }
+            }
+
         }
 
     }

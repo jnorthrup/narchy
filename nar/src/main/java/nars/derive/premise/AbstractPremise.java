@@ -36,7 +36,14 @@ public class AbstractPremise implements Premise {
 		assert(valid(belief));
 		this.task = task;
 		this.belief = belief;
-		this.why = why;
+		if (task instanceof Task) {
+			this.why = belief instanceof Task ?
+				Why.why(Why.why(((Task)task).why(), ((Task)belief).why(), NAL.causeCapacity.intValue()), why, NAL.causeCapacity.intValue())
+				:
+				Why.why(((Task)task).why(), why, NAL.causeCapacity.intValue());
+		} else {
+			this.why = why;
+		}
 	}
 
 	public AbstractPremise(Termed task, Termed belief, RuleCause why, Derivation d) {
@@ -49,12 +56,6 @@ public class AbstractPremise implements Premise {
 
 	@Override
 	public final Term why() {
-		if (this.why == null && task instanceof Task) {
-			this.why = belief instanceof Task ?
-				Why.why(Why.why(((Task)task).why(), ((Task)belief).why(), NAL.causeCapacity.intValue()), why, NAL.causeCapacity.intValue())
-				:
-				Why.why(((Task)task).why(), why, NAL.causeCapacity.intValue());
-		}
 		return why;
 	}
 

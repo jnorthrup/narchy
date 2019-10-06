@@ -29,7 +29,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     };
 
     public FloatRank<X> rank;
-    float min= NEGATIVE_INFINITY;
+    float min = NEGATIVE_INFINITY;
     private int capacity;
 
     public TopN(X[] target) {
@@ -100,21 +100,16 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         }
     }
 
-    @Override
-    public final int add(X element, float negRank, FloatFunction<X> cmp) {
-
-        return size == capacity() && -negRank <= min
-                ? -1
-                :
-                super.add(element, negRank, cmp);
-    }
 
 
     public final boolean add(/*@NotNull*/ X e) {
-        int r = add(e, this);
-        if (r >= 0) {
-            commit();
-            return true;
+        float negRank = floatValueOf(e);
+        if (-negRank > min) {
+            int r = addRanked(e, negRank, this);
+            if (r >= 0) {
+                commit();
+                return true;
+            }
         }
         return false;
     }
@@ -132,7 +127,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     }
 
     private void commit() {
-        min = _minValueIfFull();
+        min = size == capacity ? minValue() : NEGATIVE_INFINITY;
     }
 
     @Override @Nullable public X pop() {
@@ -164,18 +159,14 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     }
 
 
-    public float maxValue() {
-        X f = first();
-        return f != null ? rank.rank(f) : Float.NaN;
+    float maxValue() {
+        return size > 0 ? valueAt(0, rank) : Float.NaN;
     }
 
-    public float minValue() {
-        X f = last();
-        return f != null ? rank.rank(f) : Float.NaN;
-    }
-
-    private float _minValueIfFull() {
-        return size == capacity ? minValue() : NEGATIVE_INFINITY;
+    final float minValue() {
+        int s = size;
+        return s <= 0 ? Float.NaN :
+            valueAt(s - 1, rank);
     }
 
     public final X top() {

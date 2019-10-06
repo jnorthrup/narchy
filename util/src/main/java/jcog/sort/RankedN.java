@@ -74,8 +74,8 @@ public class RankedN<X> extends TopN<X> {
     }
 
     @Override
-    protected int compare(int item, float value, FloatFunction<X> cmp) {
-        return Float.compare(this.value[item], value);
+    public float valueAt(int item, FloatFunction<X> cmp) {
+        return value[item];
     }
 
     private void insertValue(int i, float elementRank) {
@@ -96,8 +96,9 @@ public class RankedN<X> extends TopN<X> {
             X[] list = this.items;
             X previous = list[index];
             if (totalOffset > 0) {
-                System.arraycopy(list, index + 1, list, index, totalOffset);
+                float[] value = this.value;
                 System.arraycopy(value, index + 1, value, index, totalOffset);
+                System.arraycopy(list, index + 1, list, index, totalOffset);
             }
             list[SIZE.decrementAndGet(this)] = null;
             min = NEGATIVE_INFINITY;
@@ -133,7 +134,8 @@ public class RankedN<X> extends TopN<X> {
     }
 
     private int valueComparator(int a, int b) {
-        return Float.compare(value[b], value[a]);
+        float[] v = this.value;
+        return Float.compare(v[b], v[a]);
     }
 
 

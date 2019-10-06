@@ -8,7 +8,6 @@ import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
 import jcog.data.list.table.Table;
 import jcog.pri.Prioritizable;
-import jcog.pri.Prioritized;
 import jcog.pri.ScalarValue;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.Sampler;
@@ -68,15 +67,6 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         setCapacity(cap);
         merge(merge);
     }
-
-    /**
-     * gets the scalar float value used in a comparison of BLink's
-     * essentially the same as b.priIfFiniteElseNeg1 except it also includes a null test. otherwise they are interchangeable
-     */
-    private static float pCmp(@Nullable Object b) {
-        return b == null ? -2.0f : ((Prioritized) b).priElseNeg1();
-    }
-
 
     private static float rngFloat(@Nullable Random rng) {
         return rng!=null ? rng.nextFloat() : ThreadLocalRandom.current().nextFloat();
@@ -770,7 +760,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     }
 
     private void tryInsert(X key, Y incoming, float p) {
-        int i = table.items.add(incoming, -p, table);
+        int i = table.items.addSafe(incoming, -p, table);
         Y exists = table.map.put(key, incoming);
         assert(i >= 0 && exists == null);
     }
@@ -1084,7 +1074,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         @Override
         public final float floatValueOf(Y y) {
-            return -pCmp(y);
+            return -y.priElseNeg1();
         }
 
 

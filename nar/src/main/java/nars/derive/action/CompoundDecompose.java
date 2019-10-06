@@ -50,7 +50,6 @@ public class CompoundDecompose extends NativePremiseAction {
 					.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 
 				//TODO lazy calculate
-				//TODO include task?
 				l.why = Why.why(d.why(), why.why, NAL.causeCapacity.intValue());
 
 				links.link(l);

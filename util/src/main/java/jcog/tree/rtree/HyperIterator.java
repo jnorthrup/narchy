@@ -3,6 +3,7 @@ package jcog.tree.rtree;
 import jcog.Util;
 import jcog.sort.FloatRank;
 import jcog.sort.RankedN;
+import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
 import java.util.Random;
@@ -40,7 +41,7 @@ public class HyperIterator<X>  {
     /** gets a set of LeafNode's before round-robin visiting their contents as an iterator */
     public void bfs(RNode<X> root, Predicate whle, Random random) {
         if (root instanceof RLeaf) {
-            leaf((RLeaf) root, whle);
+            leaf((RLeaf) root, whle, random);
         } else {
 
             plan.add(root);
@@ -49,7 +50,7 @@ public class HyperIterator<X>  {
 
             int leaves = plan.size();
             if (leaves == 1)
-                leaf((RLeaf<X>) plan.first(), whle);
+                leaf((RLeaf<X>) plan.first(), whle, random);
             else
                 bfsRoundRobin(whle, random);
         }
@@ -95,36 +96,40 @@ public class HyperIterator<X>  {
 
     private void bfsRoundRobin(Predicate whle, Random random) {
         int leaves = plan.size(); //assert(leaves > 0);
-        int[] prog = new int[leaves];
+        int[] remain = new int[leaves];
         int n = 0;
         Object[] pp = plan.items;
-        for (int i = 0; i < leaves; i++) {
-            short is = ((RLeaf) pp[i]).size;
-            prog[i] = is;
-            n+= is;
-        }
+        for (int i = 0; i < leaves; i++)
+            n+= (remain[i] = ((RLeaf) pp[i]).size);
         int c = 0;
         int k = 0;
-        final int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order
+        int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order
+        //TODO shuffle inner visit order differently for each leaf for even more fairness
         do {
-            int pk = prog[k];
+            int pk = remain[k];
             if (pk > 0) {
                 RLeaf<X> lk = (RLeaf<X>) pp[k];
-                X[] dd = lk.data;
-                if (!whle.test( dd[ (--prog[k] + (o+k)) % lk.size ] ))
+                if (!whle.test( lk.data[ (--remain[k] + o ) % lk.size ] ))
                     break;
             }
-            k++;
-            if (k == leaves) k = 0;
-        } while (c++ < n);
+            if (++k == leaves) { k = 0; o++; }
+        } while (++c < n);
     }
 
-    private static <X> void leaf(RLeaf<X> rl, Predicate whle) {
+    private static <X> void leaf(RLeaf<X> rl, Predicate whle, Random random) {
         short ls = rl.size;
         X[] rld = rl.data;
-        for (int i = 0; i < ls; i++) {
-            if (!whle.test(rld[i]))
-                break;
+        if (ls <= 1) {
+            whle.test(rld[0]);
+        } else {
+            short[] order = new short[ls];
+            for (short i = 0; i < ls; i++)
+                order[i] = i;
+            ArrayUtil.shuffle(order, random);
+            for (short i = 0; i < ls; i++) {
+                if (!whle.test(rld[order[i]]))
+                    break;
+            }
         }
     }
 

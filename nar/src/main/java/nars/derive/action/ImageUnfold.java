@@ -43,7 +43,6 @@ public class ImageUnfold extends NativePremiseAction {
 					AbstractTaskLink l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(), task.pri());
 
 					//TODO lazy calculate
-					//TODO include task?
 					l.why = Why.why(d.why(), why.why, NAL.causeCapacity.intValue());
 
 					d.what.link(l);

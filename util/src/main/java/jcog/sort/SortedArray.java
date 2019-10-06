@@ -400,8 +400,11 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
     public final int add(final X element, FloatFunction<X> cmp) {
-        float elementRank = cmp.floatValueOf(element);
-        int i = (elementRank == elementRank) ? add(element, elementRank, cmp) : -1;
+        return addRanked(element, cmp.floatValueOf(element), cmp);
+    }
+
+    public int addRanked(X element, float elementRank, FloatFunction<X> cmp) {
+        int i = (elementRank == elementRank) ? addSafe(element, elementRank, cmp) : -1;
         if (i < 0)
             rejectOnEntry(element);
         return i;
@@ -411,8 +414,9 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     }
 
-    public int add(X element, float elementRank, FloatFunction<X> cmp) {
-        assert (elementRank == elementRank);
+    /** assumes elementRank is finite */
+    public final int addSafe(X element, float elementRank, FloatFunction<X> cmp) {
+        //assert (elementRank == elementRank);
 
         final int index = indexOf(element, elementRank, cmp, false, true);
 
@@ -566,7 +570,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     public boolean isSorted(FloatFunction<X> f) {
         X[] ii = this.items;
         for (int i = 1; i < size; i++) {
-            if (f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i]))
+            if (f.floatValueOf(ii[i - 1]) >= f.floatValueOf(ii[i])) //TODO use valueAt(
                 return false;
         }
         return true;
@@ -591,7 +595,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
             final int mid = left + (right - left) / 2;
 
-            switch (compare(items[mid], elementRank, cmp)) {
+            switch (Float.compare(valueAt(mid, cmp), elementRank)) {
                 case 0:
                     if (forInsertionOrFind)
                         return mid + 1; /* after existing element */
@@ -616,7 +620,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                     return i;
 
             } else {
-                if (0 < compare(i, elementRank, cmp))
+                if (0 < Float.compare(valueAt(i, cmp), elementRank))
                     return i;
             }
         }
@@ -631,13 +635,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     }
 
-    protected int compare(int item, float score, FloatFunction<X> cmp) {
-        //return Float.compare(cmp.floatValueOf(items[item]), score);
-        return compare(items[item], score, cmp);
-    }
-
-    protected int compare(X item, float score, FloatFunction<X> cmp) {
-        return Float.compare(cmp.floatValueOf(item), score);
+    public float valueAt(int item, FloatFunction<X> cmp) {
+        return cmp.floatValueOf(items[item]);
     }
 
     /**
@@ -783,7 +782,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
         if (delta > 0) {
             if (posBefore > 0) {
-                if (-cmp.floatValueOf(items[posBefore - 1]) > priAfter - ScalarValue.EPSILON / 2)
+                if (-valueAt(posBefore - 1, cmp) > priAfter - ScalarValue.EPSILON / 2)
                     return; //order doesnt change
             } else {
                 //already highest
@@ -791,7 +790,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             }
         } else if (delta < 0) {
             if (posBefore < size() - 1) {
-                if (-cmp.floatValueOf(items[posBefore + 1]) < priAfter + ScalarValue.EPSILON / 2)
+                if (-valueAt(posBefore+1, cmp) < priAfter + ScalarValue.EPSILON / 2)
                     return; //order doesnt change
             } else {
                 //already lowest
@@ -802,7 +801,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (!removeFast(existing, posBefore))
             throw new ConcurrentModificationException(); //item order changed
 
-        int inserted = add(existing, -priAfter, cmp);
+        int inserted = addSafe(existing, -priAfter, cmp);
         assert (inserted != -1);
 
     }

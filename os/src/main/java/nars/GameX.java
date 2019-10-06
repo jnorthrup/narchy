@@ -73,7 +73,7 @@ import static spacegraph.SpaceGraph.window;
 abstract public class GameX extends Game {
 
     static final boolean initMeta = true;
-    static final boolean initMetaRL = false;
+    static final boolean initMetaRL = true;
     static final boolean metaAllowPause = false;
 
     /**
@@ -286,8 +286,7 @@ abstract public class GameX extends Game {
 
                 .what(
                         (w) -> new TaskLinkWhat(w,
-                            256,
-                            //512,
+                            512,
                                 //1024,
                                 new PriBuffer.DirectTaskBuffer()
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
@@ -732,7 +731,7 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         int gHist = 3;
-        float momentum = 0.8f;
+        float momentum = 0.95f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
