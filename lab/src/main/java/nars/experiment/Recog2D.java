@@ -9,6 +9,7 @@ import nars.NAR;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.game.Game;
+import nars.game.GameTime;
 import nars.game.Reward;
 import nars.gui.BeliefTableChart;
 import nars.gui.sensor.VectorSensorChart;
@@ -35,6 +36,7 @@ import java.util.stream.IntStream;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Util.compose;
+import static nars.$.$$;
 import static nars.Op.GOAL;
 
 /**
@@ -59,13 +61,13 @@ public class Recog2D extends GameX {
 
 
     int image;
-    final int maxImages = 6;
+    final int maxImages = 4;
 
     int imagePeriod = 64;
-    static final int FPS = 32;
+    static final int FPS = 16;
 
     public Recog2D(NAR n) {
-        super("x");
+        super($$("x"), GameTime.fps(FPS), n);
 
 
         w = 12; h = 14;
@@ -118,7 +120,6 @@ public class Recog2D extends GameX {
                 System.out.println(t.proof());
             }
         }, GOAL);
-        SpaceGraph.window(conceptTraining(outs, nar), 800, 600);
 
 
     }
@@ -155,7 +156,7 @@ public class Recog2D extends GameX {
                             conf = t.conf();
                             freq = t.freq();
                         } else {
-                            conf = nar.confMin.floatValue();
+//                            conf = nar.confMin.floatValue();
                             float defaultFreq =
                                     0.5f;
 
@@ -249,11 +250,12 @@ public class Recog2D extends GameX {
         GameX.runRT((n) -> {
 
             Recog2D a = new Recog2D(n);
-
+            n.start(a);
+            SpaceGraph.window(a.conceptTraining(a.outs, n), 800, 600);
 
             return a;
 
-        }, FPS);
+        }, FPS*2);
     }
 
 //    public static class Training {

@@ -54,44 +54,51 @@ public class Pacman extends GameX {
         }
 //        SpaceGraph.window(gg, 300, 300);
 
-//        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), ()->{
-//            g.keys[1] = true;
-//            g.keys[0] = false;
-//        }, ()->{
-//            g.keys[0] = true;
-//            g.keys[1] = false;
+        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), ()->{
+            g.keys[1] = true;
+            g.keys[0] = false;
+        }, ()->{
+            g.keys[0] = true;
+            g.keys[1] = false;
+        });
+        actionPushButtonMutex($.inh(id,"up"), $.inh(id,"down"), ()->{
+            g.keys[2] = true;
+            g.keys[3] = false;
+        }, ()->{
+            g.keys[3] = true;
+            g.keys[2] = false;
+        });
+//        actionTriState($.p(id,$.p($.the("x"), $.varQuery(1))), (dh) -> {
+//            switch (dh) {
+//                case +1:
+//                    g.keys[1] = true;
+//                    g.keys[0] = false;
+//                    break;
+//                case -1:
+//                    g.keys[0] = true;
+//                    g.keys[1] = false;
+//                    break;
+//                case 0:
+//                    g.keys[0] = g.keys[1] = false;
+//                    break;
+//            }
 //        });
-        actionTriState($.p(id,$.p($.the("x"), $.varQuery(1))), (dh) -> {
-            switch (dh) {
-                case +1:
-                    g.keys[1] = true;
-                    g.keys[0] = false;
-                    break;
-                case -1:
-                    g.keys[0] = true;
-                    g.keys[1] = false;
-                    break;
-                case 0:
-                    g.keys[0] = g.keys[1] = false;
-                    break;
-            }
-        });
-
-        actionTriState($.p(id,$.p($.the("y"), $.varQuery(1))), (dh) -> {
-            switch (dh) {
-                case +1:
-                    g.keys[2] = true;
-                    g.keys[3] = false;
-                    break;
-                case -1:
-                    g.keys[3] = true;
-                    g.keys[2] = false;
-                    break;
-                case 0:
-                    g.keys[2] = g.keys[3] = false;
-                    break;
-            }
-        });
+//
+//        actionTriState($.p(id,$.p($.the("y"), $.varQuery(1))), (dh) -> {
+//            switch (dh) {
+//                case +1:
+//                    g.keys[2] = true;
+//                    g.keys[3] = false;
+//                    break;
+//                case -1:
+//                    g.keys[3] = true;
+//                    g.keys[2] = false;
+//                    break;
+//                case 0:
+//                    g.keys[2] = g.keys[3] = false;
+//                    break;
+//            }
+//        });
 
 
         //TODO multiple reward signals: eat, alive, dist->ghost (cheat)
@@ -122,6 +129,7 @@ public class Pacman extends GameX {
         GameX.runRT((n) -> {
 
             Pacman a = new Pacman(n);
+            n.start(a);
             return a;
 
         }, 20);

@@ -27,6 +27,8 @@ public class ImageUnfold extends NativePremiseAction {
 
 	/** TODO move more of these tests to trie predicates */
 	@Override protected void run(RuleCause why, Derivation d) {
+		Task task = d._task;
+		//if (task.isCyclic()) return; //TODO can this be trie predicate
 
 		Term t = d._taskTerm;
 
@@ -37,7 +39,6 @@ public class ImageUnfold extends NativePremiseAction {
 			if (forward != null) {
 				Term y = t0p ? Image.imageExt(t, forward) : Image.imageInt(t, forward);
 				if (y instanceof Compound && y.op().conceptualizable) {
-					Task task = d._task;
 
 					AbstractTaskLink l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(), task.pri());
 

@@ -62,6 +62,7 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -73,7 +74,7 @@ import static spacegraph.SpaceGraph.window;
 abstract public class GameX extends Game {
 
     static final boolean initMeta = true;
-    static final boolean initMetaRL = true;
+    static final boolean initMetaRL = false;
     static final boolean metaAllowPause = false;
 
     /**

@@ -11,6 +11,7 @@ import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
 import jcog.util.FloatConsumer;
 import nars.$;
+import nars.Emotion;
 import nars.NAR;
 import nars.attention.PriAmp;
 import nars.attention.PriNode;
@@ -36,32 +37,36 @@ import static nars.$.$$;
  */
 abstract public class MetaAgent extends Game {
 
-    //private static final Logger logger = Log.logger(MetaAgent.class);
+	//private static final Logger logger = Log.logger(MetaAgent.class);
 
-    static final Atomic CURIOSITY =
+	static final Atomic CURIOSITY =
 
-            /** curiosity rate */
-            Atomic.the("curi"),
+		/** curiosity rate */
+		Atomic.the("curi"),
 
-            /** tasklink forget factor */
-            forget = Atomic.the("forget"),
-            grow = Atomic.the("grow"),
+	/**
+	 * tasklink forget factor
+	 */
+	forget = Atomic.the("forget"),
+		grow = Atomic.the("grow"),
 
 
-            /** internal truth frequency precision */
-            exact = Atomic.the("exact"),
+	/**
+	 * internal truth frequency precision
+	 */
+	exact = Atomic.the("exact"),
 
-            belief = Atomic.the("belief"),
-            goal = Atomic.the("goal"),
+	belief = Atomic.the("belief"),
+		goal = Atomic.the("goal"),
 
-            conf = Atomic.the("conf"),
-            pri = Atomic.the("pri"),
+	conf = Atomic.the("conf"),
+		pri = Atomic.the("pri"),
 
-            play = Atomic.the("play"),
-            input = Atomic.the("input"),
-            duration = Atomic.the("dur"),
-            happy = Atomic.the("happy"),
-            dex = Atomic.the("dex");
+	play = Atomic.the("play"),
+		input = Atomic.the("input"),
+		duration = Atomic.the("dur"),
+		happy = Atomic.the("happy"),
+		dex = Atomic.the("dex");
 
 
 //    public final GoalActionConcept forgetAction;
@@ -71,7 +76,6 @@ abstract public class MetaAgent extends Game {
 //    static int curiStartupDurs = 5000;
 //    static float curiMax = 0.2f;
 //    static float curiMinOld = 0.01f, curiMinYoung = 0.04f;
-
 
 
 //    public MetaAgent(NAR n) {
@@ -85,269 +89,31 @@ abstract public class MetaAgent extends Game {
 //    }
 
 
-    protected MetaAgent(Term id, float fps, NAR nar) {
-        super(id, GameTime.fps(fps));
-        this.nar = nar;
-    }
+	protected MetaAgent(Term id, float fps, NAR nar) {
+		super(id, GameTime.fps(fps));
+		this.nar = nar;
+	}
 
-    public MetaAgent addRLBoost() {
+	public MetaAgent addRLBoost() {
 //        meta.what().pri(0.05f);
-        RLBooster metaBoost = new RLBooster(this, (i, o) ->
-                //new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
-                new DQN3(i, o, Map.of(
-                )),
-                4, 5, true);
+		RLBooster metaBoost = new RLBooster(this, (i, o) ->
+			//new HaiQae(i, 12, o).alpha(0.01f).gamma(0.9f).lambda(0.9f),
+			new DQN3(i, o, Map.of(
+			)),
+			4, 5, true);
 //        window(grid(NARui.rlbooster(metaBoost), 800, 800);
-        return this;
-    }
+		return this;
+	}
 
-    /** core metavisor */
-    public static class SelfMetaAgent extends MetaAgent {
+	void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
+		if (s instanceof PriAmp)
+			actionCtlPriNode((PriAmp) s);
+		s.node(g).nodes(false, true).forEach((Node<PriNode, Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
+	}
 
-        public SelfMetaAgent(NAR nar, float fps) {
-            super($.inh(nar.self(), $$("meta")),  fps, nar);
-            NAR n = nar;
-
-            Term SELF = n.self();
-
-
-
-            sense($.inh(SELF, $$("busy")),
-                new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, n.emotion.busyVol::asFloat), 0, 1));
-            sense($.inh(SELF, $$("deriveTask")),
-                new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.deriveTask::floatValue)), 0, 1));
-            sense($.inh(SELF, $$("lag")),
-                new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(n.emotion.durLoopLag::floatValue)), 0, 1));
-
-        for (MetaGoal mg : MetaGoal.values()) {
-            actionUnipolar($.inh(SELF, $.the(mg.name())), (x)-> {
-                nar.emotion.want(mg, Util.lerp(x,
-                    0,//-1,
-                    +1));
-            });
-        }
-
-//        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());
-//        float dynamic = 10; //ratio max to min pri
-//        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
-//        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
-
-            actionUnipolar($.inh(SELF, exact), (value) -> {
-                if (value >= 0.75f) {
-                    value = 0.01f;
-                } else if (value >= 0.5f) {
-                    value = 0.05f;
-                } else if (value >= 0.25f) {
-                    value = 0.1f;
-                } else {
-                    value = 0.2f;
-                }
-                nar.freqResolution.set(value);
-            });
-
-
-            actionCtl($.inh(SELF, $.p(belief,pri)), nar.beliefPriDefault.pri);
-            //actionCtl($.inh(SELF, $.p(belief,conf)), nar.beliefConfDefault);
-            actionCtl($.inh(SELF, $.p(goal,pri)), nar.goalPriDefault.pri);
-            //actionCtl($.inh(SELF, $.p(goal,conf)), nar.goalConfDefault);
-
-//                .subRange(
-//                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
-//                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
-
-            rewardNormalized(happy, 1, 0, ScalarValue.EPSILON, ()->{
-                float dur = dur();
-                return (float)nar.parts(Game.class)
-                    .filter(g -> g!=SelfMetaAgent.this)
-                    .mapToDouble(g -> g.happiness(dur))
-                    .average()
-                    .orElseGet(()->0);
-            });
-
-//        ThreadCPUTimeTracker.getCPUTime()
-//        reward("lazy", 1, ()->{
-//            return 1-nar.loop.throttle.floatValue();
-//        });
-        }
-    }
-
-    public static class GameMetaAgent extends MetaAgent {
-
-        /** in case it forgets to unpause */
-        private final long autoResumePeriod = 256;
-        private final boolean allowPause;
-
-        public GameMetaAgent(Game g, float fps, boolean allowPause) {
-            super($.inh(g.what().id, $$("meta")), fps, g.nar);
-
-            this.allowPause = allowPause;
-
-            What w = g.what();
-
-            Term gid = w.id; //$.p(w.nar.self(), w.id);
-            //this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
-
-
-            actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
-            actionCtlPriNode(g.actionPri); //non-recursive for now
-
-
-            actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
-            actionCtl($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
-            //actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
-
-            //actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
-
-
-
-
-
-
-//        float priMin = 0.1f, priMax = 1;
-//        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
-
-//            float curiMin = 0.005f, curiMax = 0.05f;
-//            actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
-
-            float initialDur = w.dur();
-            FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {
-                @Override
-                public float get() {
-                    super.set(((TaskLinkWhat) w).dur);
-                    return super.get();
-                }
-
-                @Override
-                public void set(float value) {
-                    super.set(value);
-                    value = super.get();
-                    float nextDur = Math.max(1, value);
-                    //logger.info("{} dur={}" , w.id, nextDur);
-                    ((TaskLinkWhat) w).dur.set(nextDur);
-                    //assert(nar.dur()==nextDur);
-                }
-            };
-            actionCtl($.inh(gid, duration), durRange);
-
-            if (w.in instanceof PriBuffer.BagTaskBuffer)
-                actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
-
-
-
-            Reward h = rewardNormalized($.inh(gid, happy),  1, 0, ScalarValue.EPSILON, () -> {
-                //new FloatFirstOrderDifference(nar::time, (() -> {
-                return g.isOn() ? (//(float)((0.01f + g.dexterity()) *
-                    g.happiness(dur() /* supervisory dur of the meta-agent */)) : Float.NaN;
-            });
-
-
-            Reward d = rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
-                () -> {
-////            float p = a.proficiency();
-////            float hp = Util.or(h, p);
-//            //System.out.println(h + " " + p + " -> " + hp);
-////            return hp;
-                    return g.isOn() ? (float) g.dexterity() : Float.NaN;
-                });
-
-            for (GameLoop s : g.sensors) {
-                if (s instanceof VectorSensor) {
-                    actionCtl($.inh(gid, $.p(((VectorSensor) s).id, pri)), ((VectorSensor)s).pri.amp);
-                }
-//                if (!(s instanceof Signal)) { //HACK only if compound sensor
-//                    Term target = s.target();
-//
-//                    //HACK
-//                    if (s instanceof DigitizedScalar)
-//                        target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
-//
-//                    //HACK TODO divide by # of contained concepts, reported by Sensor interface
-//                    float maxPri;
-//                    if (s instanceof Bitmap2DSensor) {
-//                        maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
-//                    } else {
-//                        maxPri = 1;
-//                    }
-//
-//                    m.actionUnipolar($.func("aware", target), (p) -> {
-//                        FloatRange pp = s.pri();
-//                        pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
-//                    });
-//
-//                }
-            }
-
-            //TODO other Emotion sensors
-
-//        Term agentPriTerm =
-//                $.inh(a.id, PRI);
-//                //$.inh(a.id, id /* self */);
-//        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
-//
-//
-
-
-            if (allowPause) {
-                float playThresh = 0.25f;
-                Term play =
-                    $.inh(gid, MetaAgent.play);
-
-                GoalActionConcept enableAction = actionPushButton(play, new BooleanProcedure() {
-
-                    private volatile int autoResumeID = 0;
-                    private volatile ScheduledTask autoResume;
-                    volatile private Runnable resume = null;
-
-                    @Override
-                    public void value(boolean e) {
-
-                        //enableAction = n.actionToggle($.func(enable, n.id), (e)->{
-                        //TODO integrate and threshold, pause for limited time
-                        synchronized (this) {
-                            if (e) {
-                                tryResume();
-                            } else {
-                                tryPause();
-                            }
-                        }
-
-                    }
-
-                    void tryPause() {
-
-                        if (resume == null) {
-
-                            resume = g.pause();
-                            NAR n = nar();
-
-                            int a = autoResumeID;
-                            autoResume = n.runAt(Math.round(n.time() + autoResumePeriod * n.dur()), () -> {
-                                if (autoResumeID == a)
-                                    tryResume();
-                                //else this one has been cancelled
-                            });
-
-                        }
-                    }
-
-                    void tryResume() {
-
-                        if (resume != null) {
-                            autoResumeID++;
-                            resume.run();
-                            autoResume = null;
-                            resume = null;
-                        }
-
-                    }
-                }, () -> playThresh);
-            }
-
-
-//        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
-
-        }
-    }
+	void actionCtlPriNode(PriAmp a) {
+		actionCtl(a.id, a.amp);
+	}
 //    @Override
 //    protected void sense() {
 //        ((TaskLinkWhat)what()).dur.set(durPhysical()*2 /* nyquist */);
@@ -369,35 +135,109 @@ abstract public class MetaAgent extends Game {
 //        return Util.lerp(c, min, curiMax);
 //    }
 
-    void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
-        if (s instanceof PriAmp)
-            actionCtlPriNode((PriAmp)s);
-        s.node(g).nodes(false, true).forEach((Node<PriNode,Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
-    }
+	protected void actionCtl(Term t, FloatRange r) {
+		actionCtl(t, r.min, r.max, r::set);
+	}
 
-    void actionCtlPriNode(PriAmp a) {
-        actionCtl(a.id, a.amp);
-    }
+	protected void actionCtl(Term t, UnitPri r) {
+		actionCtl(t, 9, 1, r::pri);
+	}
 
-    protected void actionCtl(Term t, FloatRange r) {
-        actionCtl(t, r.min, r.max, r::set);
-    }
+	protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
+		//FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
+		//FloatToFloatFunction f = (z)->z;
+		actionUnipolar(t, true, (v) -> v, (x) -> {
+			//float y = f.valueOf(x);
+			if (x == x)
+				r.accept(Util.lerp(x, min, max));
+			return x;
+		});
+		//.resolution(0.1f);
+	}
 
-    protected void actionCtl(Term t, UnitPri r) {
-        actionCtl(t, 9, 1, r::pri);
-    }
+	private float dur(int initialDur, float d) {
+		return Math.max(1, ((d + 0.5f) * 2 * initialDur));
+	}
 
-    protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
-        //FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
-        //FloatToFloatFunction f = (z)->z;
-        actionUnipolar(t, true, (v)->v, (x)->{
-            //float y = f.valueOf(x);
-            if (x==x)
-                r.accept(Util.lerp(x, min, max));
-            return x;
-        });
-        //.resolution(0.1f);
-    }
+	/**
+	 * core metavisor
+	 */
+	public static class SelfMetaAgent extends MetaAgent {
+
+		public SelfMetaAgent(NAR nar, float fps) {
+			super($.inh(nar.self(), $$("meta")), fps, nar);
+			NAR n = nar;
+
+			Term SELF = n.self();
+
+
+			Emotion e = n.emotion;
+
+			sense($.inh(SELF, $$("busy")),
+				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, e.busyVol::asFloat), 0, 1));
+			sense($.inh(SELF, $$("deriveTask")),
+				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.deriveTask::floatValue)), 0, 1));
+			sense($.inh(SELF, $$("lag")),
+				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.durLoopLag::floatValue)), 0, 1));
+
+			for (MetaGoal mg : MetaGoal.values()) {
+                GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
+                    nar.emotion.want(mg, Util.lerp(x,
+                        0,//-1,
+                        +1));
+                });
+                a.resolution(0.1f);
+			}
+
+//        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());
+//        float dynamic = 10; //ratio max to min pri
+//        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
+//        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
+
+			actionUnipolar($.inh(SELF, exact), (x) -> {
+			    float y;
+				if (x >= 0.75f) {
+					x = 0.01f;
+					y = (1f+0.75f)/2;
+				} else if (x >= 0.5f) {
+					x = 0.05f;
+					y = (0.75f+0.5f)/2;
+				} else if (x >= 0.25f) {
+					x = 0.1f;
+					y = (0.5f+0.25f)/2;
+				} else {
+					x = 0.2f;
+					y = 0.25f/2;
+				}
+				nar.freqResolution.set(x);
+				return y;
+			});
+
+
+			actionCtl($.inh(SELF, $.p(belief, pri)), nar.beliefPriDefault.pri);
+			//actionCtl($.inh(SELF, $.p(belief,conf)), nar.beliefConfDefault);
+			actionCtl($.inh(SELF, $.p(goal, pri)), nar.goalPriDefault.pri);
+			//actionCtl($.inh(SELF, $.p(goal,conf)), nar.goalConfDefault);
+
+//                .subRange(
+//                Math.max(nar.goalPriDefault.amp() /* current value */ * priFactorMin, ScalarValue.EPSILON),
+//                nar.goalPriDefault.amp() /* current value */ * priFactorMax)::setProportionally);
+
+			rewardNormalized(happy, 1, 0, ScalarValue.EPSILON, () -> {
+				float dur = dur();
+				return (float) nar.parts(Game.class)
+					.filter(g -> g != SelfMetaAgent.this)
+					.mapToDouble(g -> g.happiness(dur))
+					.average()
+					.orElseGet(() -> 0);
+			});
+
+//        ThreadCPUTimeTracker.getCPUTime()
+//        reward("lazy", 1, ()->{
+//            return 1-nar.loop.throttle.floatValue();
+//        });
+		}
+	}
 
 //    public GoalActionConcept[] dial(Game a, Atomic label, FloatRange var, int steps) {
 //        GoalActionConcept[] priAction = actionDial(
@@ -408,9 +248,180 @@ abstract public class MetaAgent extends Game {
 //        return priAction;
 //    }
 
-    private float dur(int initialDur, float d) {
-        return Math.max(1, ((d + 0.5f) * 2 * initialDur));
-    }
+	public static class GameMetaAgent extends MetaAgent {
+
+		/**
+		 * in case it forgets to unpause
+		 */
+		private final long autoResumePeriod = 256;
+		private final boolean allowPause;
+
+		public GameMetaAgent(Game g, float fps, boolean allowPause) {
+			super($.inh(g.what().id, $$("meta")), fps, g.nar);
+
+			this.allowPause = allowPause;
+
+			What w = g.what();
+
+			Term gid = w.id; //$.p(w.nar.self(), w.id);
+			//this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
+
+
+			actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
+			actionCtlPriNode(g.actionPri); //non-recursive for now
+
+
+			actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
+			actionCtl($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
+			//actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
+
+			//actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
+
+
+//        float priMin = 0.1f, priMax = 1;
+//        actionCtl($.inh(gid, PRI), w.priAsFloatRange());
+
+//            float curiMin = 0.005f, curiMax = 0.05f;
+//            actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
+
+			float initialDur = w.dur();
+			FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {
+				@Override
+				public float get() {
+					super.set(((TaskLinkWhat) w).dur);
+					return super.get();
+				}
+
+				@Override
+				public void set(float value) {
+					super.set(value);
+					value = super.get();
+					float nextDur = Math.max(1, value);
+					//logger.info("{} dur={}" , w.id, nextDur);
+					((TaskLinkWhat) w).dur.set(nextDur);
+					//assert(nar.dur()==nextDur);
+				}
+			};
+			actionCtl($.inh(gid, duration), durRange);
+
+			if (w.in instanceof PriBuffer.BagTaskBuffer)
+				actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
+
+
+			Reward h = rewardNormalized($.inh(gid, happy), 1, 0, ScalarValue.EPSILON, () -> {
+				//new FloatFirstOrderDifference(nar::time, (() -> {
+				return g.isOn() ? (//(float)((0.01f + g.dexterity()) *
+					g.happiness(dur() /* supervisory dur of the meta-agent */)) : Float.NaN;
+			});
+
+
+			Reward d = rewardNormalized($.inh(gid, dex), 1, 0, ScalarValue.EPSILON,
+				() -> {
+////            float p = a.proficiency();
+////            float hp = Util.or(h, p);
+//            //System.out.println(h + " " + p + " -> " + hp);
+////            return hp;
+					return g.isOn() ? (float) g.dexterity() : Float.NaN;
+				});
+
+			for (GameLoop s : g.sensors) {
+				if (s instanceof VectorSensor) {
+					actionCtl($.inh(gid, $.p(((VectorSensor) s).id, pri)), ((VectorSensor) s).pri.amp);
+				}
+//                if (!(s instanceof Signal)) { //HACK only if compound sensor
+//                    Term target = s.target();
+//
+//                    //HACK
+//                    if (s instanceof DigitizedScalar)
+//                        target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
+//
+//                    //HACK TODO divide by # of contained concepts, reported by Sensor interface
+//                    float maxPri;
+//                    if (s instanceof Bitmap2DSensor) {
+//                        maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
+//                    } else {
+//                        maxPri = 1;
+//                    }
+//
+//                    m.actionUnipolar($.func("aware", target), (p) -> {
+//                        FloatRange pp = s.pri();
+//                        pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
+//                    });
+//
+//                }
+			}
+
+			//TODO other Emotion sensors
+
+//        Term agentPriTerm =
+//                $.inh(a.id, PRI);
+//                //$.inh(a.id, id /* self */);
+//        GoalActionConcept agentPri = actionUnipolar(agentPriTerm, (FloatConsumer)a.attn.factor::set);
+//
+//
+
+
+			if (allowPause) {
+				float playThresh = 0.25f;
+				Term play =
+					$.inh(gid, MetaAgent.play);
+
+				GoalActionConcept enableAction = actionPushButton(play, new BooleanProcedure() {
+
+					private volatile int autoResumeID = 0;
+					private volatile ScheduledTask autoResume;
+					volatile private Runnable resume = null;
+
+					@Override
+					public void value(boolean e) {
+
+						//enableAction = n.actionToggle($.func(enable, n.id), (e)->{
+						//TODO integrate and threshold, pause for limited time
+						synchronized (this) {
+							if (e) {
+								tryResume();
+							} else {
+								tryPause();
+							}
+						}
+
+					}
+
+					void tryPause() {
+
+						if (resume == null) {
+
+							resume = g.pause();
+							NAR n = nar();
+
+							int a = autoResumeID;
+							autoResume = n.runAt(Math.round(n.time() + autoResumePeriod * n.dur()), () -> {
+								if (autoResumeID == a)
+									tryResume();
+								//else this one has been cancelled
+							});
+
+						}
+					}
+
+					void tryResume() {
+
+						if (resume != null) {
+							autoResumeID++;
+							resume.run();
+							autoResume = null;
+							resume = null;
+						}
+
+					}
+				}, () -> playThresh);
+			}
+
+
+//        Reward enableReward = reward("enable", () -> enabled.getOpaque() ? +1 : 0f);
+
+		}
+	}
 
 //    /** creates a base agent that can be used to interface with external controller
 //     *  it will be consistent as long as the NAR architecture remains the same.
