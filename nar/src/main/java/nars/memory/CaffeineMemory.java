@@ -66,7 +66,8 @@ public class CaffeineMemory extends Memory implements CacheLoader<Term, Concept>
 
 
     /** caffeine may measure accesses for eviction */
-    @Override protected final boolean elideConceptGets() {
+    @Override
+	public final boolean elideConceptGets() {
         return false;
     }
 

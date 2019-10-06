@@ -1,8 +1,7 @@
 package nars.memory;
 
+import nars.concept.Concept;
 import nars.term.Term;
-import nars.term.Termed;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -16,8 +15,8 @@ public class NullMemory extends MapMemory {
         super(new ConcurrentHashMap(1024));
     }
 
-    @Override public @Nullable Termed get(Term x, boolean createIfMissing) {
-        Termed exist = super.get(x, false);
+    @Override public Concept get(Term x, boolean createIfMissing) {
+        Concept exist = super.get(x, false);
         if (exist!=null)
             return exist;
         else if (createIfMissing)

@@ -1,9 +1,11 @@
 package spacegraph.space2d.hud;
 
+import com.jogamp.opengl.GL2;
 import jcog.Util;
 import jcog.event.Off;
 import jcog.math.v2;
 import jcog.math.v3;
+import jcog.pri.ScalarValue;
 import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
@@ -149,38 +151,41 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     @Override
     public final void renderContent(ReSurface render) {
 
-        render.on((gl) -> {
 
-            float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
-            float H = h();
-            float W = w();
-            float s = zoom * Math.min(W, H);
+        GL2 gl = render.gl;
 
-            v2 ss = scale.set(s, s);
+        float zoom = (float) (sin(Math.PI / 2 - focusAngle / 2) / (cam.z * sin(focusAngle / 2)));
+        float H = h();
+        float W = w();
+        float s = zoom * Math.min(W, H);
 
-            if (parent instanceof Surface) {
-                Surface ps = (Surface) this.parent;
-                ss.scaled(W /ps.w(), H /ps.h());
-            }
+        boolean scaleChanged;
+        float scaleChangeTolerance = ScalarValue.EPSILONcoarse;
+        if (parent instanceof Surface) {
+            Surface ps = (Surface) this.parent;
+            scaleChanged = scale.setIfChanged(s * W /ps.w(), s * H /ps.h(), scaleChangeTolerance);
+        } else {
+            scaleChanged = scale.setIfChanged(s, s, scaleChangeTolerance);
+        }
+
+        if (scaleChanged) {
+            //TODO invalidate pixel-visibility LOD
+            //necessary?
+        }
 
 
-            render.push(cam, ss);
+        render.push(cam, scale);
 
-            gl.glPushMatrix();
+        gl.glPushMatrix();
 
-            gl.glScalef(s, s, 1);
-            gl.glTranslatef((W / 2) / s - cam.x, (H / 2) / s - cam.y, 0);
+        gl.glScalef(s, s, 1);
+        gl.glTranslatef((W / 2) / s - cam.x, (H / 2) / s - cam.y, 0);
 
+        super.renderContent(render);
 
-        });
+        gl.glPopMatrix();
 
-        the().renderIfVisible(render);
-
-        render.on((gl)->{
-            gl.glPopMatrix();
-
-            render.pop();
-        });
+        render.pop();
     }
 
     @Override

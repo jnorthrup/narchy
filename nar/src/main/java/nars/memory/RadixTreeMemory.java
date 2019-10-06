@@ -83,7 +83,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 
 	@Override
-	public @Nullable Concept get(Term t, boolean createIfMissing) {
+	public Concept get(Term t, boolean createIfMissing) {
 		AbstractBytes k = key(t);
 
 		ConceptRadixTree c = this.concepts;

@@ -38,6 +38,7 @@ import nars.task.util.TaskException;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.util.TermException;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
 import nars.time.Time;
@@ -1055,7 +1056,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     @Nullable
-    public final Concept concept(/**/Termed x, boolean createIfMissing) {
+    public final Concept concept(/**/Termed _x, boolean createIfMissing) {
 //        if (Param.DEBUG) {
 //            int v = x.target().volume();
 //            int max = termVolumeMax.intValue();
@@ -1065,7 +1066,28 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 //            }
 //        }
 
-        return memory.concept(x, createIfMissing);
+        if (_x instanceof Concept && memory.elideConceptGets()) {
+            Concept cx = (Concept) _x;
+            if (!(cx.isDeleted())) return cx;
+        }
+
+        Term xt = _x.term();
+        if (!xt.op().conceptualizable)
+            throw new TermException("not conceptualizable", xt);
+
+
+//        if (NAL.DEBUG) { if (!xt.the()) throw new TermException("not immutable", xt); }
+
+//        if (xt instanceof Compound && !xt.isNormalized()) { //pre-test
+//            Term xtn = xt.normalize();
+//            if (xt.op()!=xtn.op()) //if (!xt.equals(xtn))
+//                throw new TermException("concept term not normalized", xt);
+//            xt = xtn;
+//        }
+
+        Term x = xt.concept();
+
+        return memory.get(x, createIfMissing);
     }
 
     public final Stream<Concept> concepts() {

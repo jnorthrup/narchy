@@ -11,6 +11,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 
 import java.io.PrintStream;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -72,9 +73,11 @@ abstract public class ContainerSurface extends Surface {
     protected final void render(ReSurface r) {
         if (canRender(r)) {
             render(r, MUSTLAYOUT.compareAndSet(this, 1, 0));
-            show();
+            showing(true);
+            //show();
         } else {
-            hide();
+            //hide();
+            showing(false);
         }
     }
 
@@ -83,7 +86,7 @@ abstract public class ContainerSurface extends Surface {
         //
 
         if (layout) {
-            forEach(c -> c.start(this));
+            forEachOrphan(c -> c.start(this));
             doLayout(r.dtS());
         }
 
@@ -104,8 +107,7 @@ abstract public class ContainerSurface extends Surface {
     }
 
     @Deprecated protected void renderContent(ReSurface r) {
-        //TODO forEachWith
-        forEach(c -> c.renderIfVisible(r));
+        forEachWith(Surface::renderIfVisible, r);
     }
 
     /** post-visibility render guard */
@@ -139,9 +141,10 @@ abstract public class ContainerSurface extends Surface {
 
     @Override
     protected void starting() {
-        forEach(s -> s.start(this));
+        forEachOrphan(s -> s.start(this));
         layout();
     }
+
 
     @Override
     protected void stopping() {
@@ -151,16 +154,27 @@ abstract public class ContainerSurface extends Surface {
     /** TODO forEachWith */
     abstract public void forEach(Consumer<Surface> o);
 
-    public void forEachRecursively(Consumer<Surface> o) {
+    public <X> void forEachWith(BiConsumer<Surface,X> o, X x) {
+        forEach(c -> o.accept(c, x));
+    }
 
-        o.accept(this);
+    public final void forEachOrphan(Consumer<Surface> S) {
+        forEachWith((c,s) -> {
+            if (c.parent == null)
+                s.accept(c);
+        }, S);
+    }
 
-        forEach(z -> {
+    public void forEachRecursively(Consumer<Surface> O) {
+
+        O.accept(this);
+
+        forEachWith((z,o) -> {
             if (z instanceof ContainerSurface)
                 ((ContainerSurface) z).forEachRecursively(o);
             else
                 o.accept(z);
-        });
+        }, O);
 
     }
 

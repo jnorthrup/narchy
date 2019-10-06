@@ -13,12 +13,23 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
      * hershey vector font renderer
      */
     LabelRenderer Hershey = (label, gl2) -> Draw.bounds(label.bounds, gl2, (gl) -> {
+
         label.fgColor.apply(gl);
         gl.glLineWidth(label.textThickness);
 
         HersheyFont.hersheyText(gl, label.text, label.textScaleX, label.textScaleY, 0, label.textY, 0, Draw.TextAlignment.Left);
     });
 
+
+    /** draws a filled box only, useful for LOD cases */
+    LabelRenderer LineBox = (label, gl) -> {
+
+        label.fgColor.apply(gl);
+        gl.glLineWidth(1);
+        float y = label.bounds.y + label.bounds.h / 2;
+        Draw.line(label.bounds.x, y, label.bounds.x + label.bounds.w, y, gl);
+
+    };
 
 //    /** TODO not ready */
 //    LabelRenderer AWTBitmap = new LabelRenderer() {

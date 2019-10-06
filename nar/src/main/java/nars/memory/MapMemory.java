@@ -2,7 +2,6 @@ package nars.memory;
 
 import nars.concept.Concept;
 import nars.term.Term;
-import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Map;
@@ -32,9 +31,8 @@ public class MapMemory extends Memory {
         return map.values().stream();
     }
 
-    @Nullable
     @Override
-    public Termed get(Term x, boolean createIfMissing) {
+    public Concept get(Term x, boolean createIfMissing) {
         if (createIfMissing) {
             return map.compute(x, nar.conceptBuilder);
         } else {

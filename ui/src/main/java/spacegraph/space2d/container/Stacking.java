@@ -13,7 +13,7 @@ public class Stacking extends MutableListContainer {
 
     @Override
     public void doLayout(float dtS) {
-        forEach(c -> c.pos(bounds));
+        forEachWith(Surface::pos, bounds);
     }
 
 }

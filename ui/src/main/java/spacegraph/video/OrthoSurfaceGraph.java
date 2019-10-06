@@ -98,8 +98,11 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
 
     @Override
     protected final void setVisible(boolean visible) {
-        if (!visible)
-            layers.showing(false);
+//        if (!visible)
+//            layers.hide(); //showing(false);
+//        else
+//            layers.show();
+        layers.visible(visible);
     }
 
     /**
@@ -164,6 +167,10 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
             layers.add(cursor);
     }
 
+    @Override
+    protected void destroy() {
+        layers.hide();
+    }
 
     @Override
     protected void renderOrthos(float dtS) {

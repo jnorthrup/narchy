@@ -3,7 +3,6 @@ package nars.memory;
 import nars.concept.Concept;
 import nars.concept.PermanentConcept;
 import nars.term.Term;
-import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.stream.Stream;
@@ -16,7 +15,7 @@ public class ProxyMemory extends Memory {
     }
 
     @Override
-    public @Nullable Termed get(Term key, boolean createIfMissing) {
+    public Concept get(Term key, boolean createIfMissing) {
         return ref.get(key, createIfMissing);
     }
 

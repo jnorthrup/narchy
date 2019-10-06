@@ -32,10 +32,7 @@ import net.bytebuddy.dynamic.loading.ClassLoadingStrategy;
 import net.bytebuddy.dynamic.scaffold.TypeValidation;
 import net.bytebuddy.implementation.InvocationHandlerAdapter;
 import net.bytebuddy.implementation.MethodDelegation;
-import net.bytebuddy.implementation.bind.annotation.AllArguments;
-import net.bytebuddy.implementation.bind.annotation.RuntimeType;
-import net.bytebuddy.implementation.bind.annotation.SuperMethod;
-import net.bytebuddy.implementation.bind.annotation.This;
+import net.bytebuddy.implementation.bind.annotation.*;
 import net.bytebuddy.matcher.ElementMatchers;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
@@ -44,11 +41,11 @@ import org.slf4j.LoggerFactory;
 
 import java.lang.invoke.MethodHandle;
 import java.lang.invoke.MethodHandles;
-import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.Set;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.BiConsumer;
 import java.util.function.Function;
@@ -591,6 +588,8 @@ public class Opjects extends DefaultTermizer {
 
     /**
      * wraps a provided instance in an intercepting proxy class
+     * not as efficient as the Opject.a(...) method since a custom proxy class will
+     * be created, and method invocation is slower, needing to use java reflection.
      */
     public <T> T the(Term id, T instance, Object... args) {
 
@@ -601,6 +600,7 @@ public class Opjects extends DefaultTermizer {
                     .with(TypeValidation.DISABLED)
                     .subclass(instance.getClass())
                     .method(ElementMatchers.isPublic().and(ElementMatchers.not(ElementMatchers.isDeclaredBy(Object.class))))
+
                     .intercept(InvocationHandlerAdapter.of((objWrapper, method, margs) ->
                             invoke(objWrapper, instance, method, margs)))
                     .make()
@@ -693,13 +693,20 @@ public class Opjects extends DefaultTermizer {
 
 
     @RuntimeType
-    public final Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @This Object obj) {
-        try {
-            return tryInvoked(obj, method, args, method.invoke(obj, args));
-        } catch (InvocationTargetException | IllegalAccessException e) {
-            logger.error("{} args={}", obj, args);
-            return null;
-        }
+    public final Object intercept(@AllArguments Object[] args, @SuperMethod Method method, @SuperCall Callable supercall, @This Object obj) {
+//        try {
+            try {
+                Object returned = supercall.call();
+                return tryInvoked(obj, method, args, returned);
+            } catch (Exception e) {
+                //e.printStackTrace();
+                throw new RuntimeException(e);
+            }
+//
+//        } catch (InvocationTargetException | IllegalAccessException e) {
+//            logger.error("{} args={}", obj, args);
+//            return null;
+//        }
     }
 
 

@@ -15,6 +15,7 @@ import nars.game.SimpleReward;
 import nars.game.sensor.AbstractSensor;
 import nars.game.util.RLBooster;
 import nars.gui.NARui;
+import nars.gui.sensor.VectorSensorChart;
 import nars.sensor.Bitmap2DSensor;
 import nars.term.Term;
 import nars.term.atom.Atomic;
@@ -125,16 +126,13 @@ public class ArkaNAR extends GameX {
 
     public static void main(String[] args) {
 
-
         runRT((NAR n) -> {
 
-            //n.timeResolution.setAt(25); //50fps resolution
+            ArkaNAR a = new ArkaNAR(n, cam, numeric);
+            n.start(a);
+            window( new VectorSensorChart(a.cc, a).withControls(), 800, 800);
 
-
-            return new ArkaNAR(n, cam, numeric);
-
-        }, 40);
-
+        }, 30);
 
     }
 

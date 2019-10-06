@@ -8,6 +8,8 @@ package jcog.data.map;
 
 //import sun.misc.Unsafe;
 
+import jcog.data.atomic.MetalAtomicReferenceArray;
+
 import java.io.Serializable;
 import java.lang.ref.Reference;
 import java.lang.ref.ReferenceQueue;
@@ -16,7 +18,6 @@ import java.lang.ref.WeakReference;
 import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.atomic.AtomicReferenceArray;
 import java.util.concurrent.locks.ReentrantLock;
 
 import static com.github.benmanes.caffeine.base.UnsafeAccess.UNSAFE;
@@ -542,7 +543,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * The segments, each of which acts as a hash table
      */
-    transient volatile AtomicReferenceArray<Segment> segments;
+    transient volatile MetalAtomicReferenceArray<Segment> segments;
 
     /**
      * The factory for this map
@@ -605,7 +606,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 capacity = MAX_SEGMENT_CAPACITY;
             this.initialSegmentCapacity = capacity;
         }
-        this.segments = new AtomicReferenceArray<>(NSEGMENTS);
+        this.segments = new MetalAtomicReferenceArray<>(NSEGMENTS);
     }
 
     /**
@@ -701,7 +702,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the segment, or null if not yet initialized
      */
     final Segment traversalSegment(int hash) {
-        return segments.get((hash >>> SEGMENT_SHIFT) & SEGMENT_MASK);
+        return segments.getFast((hash >>> SEGMENT_SHIFT) & SEGMENT_MASK);
     }
 
     /**
@@ -712,10 +713,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the segment
      */
     final Segment addSegment(int hash) {
-        AtomicReferenceArray<Segment> segs = segments;
+        MetalAtomicReferenceArray<Segment> segs = segments;
         int index = (hash >>> SEGMENT_SHIFT) & SEGMENT_MASK;
         Segment seg;
-        while ((seg = segs.get(index)) == null) {
+        while ((seg = segs.getFast(index)) == null) {
             Segment s2;
             if (segs.compareAndSet(index, null, s2 = new Segment())) {
             //if (segs.weakCompareAndset(index, null, s2 = new Segment())) {
@@ -1065,10 +1066,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final boolean isEmpty() {
-        AtomicReferenceArray<Segment> segs = this.segments;
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
-            Segment seg = segs.get(i);
+            Segment seg = segs.getFast(i);
             if (seg != null && !seg.isEmpty())
                 return false;
         }
@@ -1085,10 +1086,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     @Override
     public final int size() {
         long sum = 0;
-        AtomicReferenceArray<Segment> segs = this.segments;
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
-            Segment seg = segs.get(i);
+            Segment seg = segs.getFast(i);
             if (seg != null)
                 sum += seg.count.getOpaque();
         }
@@ -1111,10 +1112,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public final boolean containsValue(Object value) {
         if (value == null)
             throw new NullPointerException();
-        AtomicReferenceArray<Segment> segs = this.segments;
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
-            Segment seg = segs.get(i);
+            Segment seg = segs.getFast(i);
             Node[] tab;
             if (seg != null && (tab = seg.table()) != null) {
                 for (Node aTab : tab) {
@@ -1137,10 +1138,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final void clear() {
-        AtomicReferenceArray<Segment> segs = this.segments;
+        MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
         for (int i = 0; i < ss; ++i) {
-            Segment seg = segs.get(i);
+            Segment seg = segs.getFast(i);
             if (seg != null)
                 seg.clear();
         }
@@ -1327,7 +1328,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
                 } else if (nextTableIndex >= 0) {
                     nextNode = currentTable[nextTableIndex--];
                 } else if (nextSegmentIndex >= 0) {
-                    Segment seg = segments.get(nextSegmentIndex--);
+                    Segment seg = segments.getFast(nextSegmentIndex--);
                     Node[] t;
                     if (seg != null &&
                             (t = seg.table()) != null) {

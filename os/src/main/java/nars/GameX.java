@@ -62,7 +62,6 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -80,7 +79,7 @@ abstract public class GameX extends Game {
     /**
      * determines memory strength
      */
-    static float DURATIONs = 1;
+    static float durationsPerFrame = 1f;
 
 //    static {
 //        try {
@@ -116,7 +115,7 @@ abstract public class GameX extends Game {
     public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
 //        FasterList l = new FasterList();
 
-        NAR n = baseNAR(narFPS / DURATIONs, threads);
+        NAR n = baseNAR(narFPS * durationsPerFrame, threads);
 
         init.accept(n);
 
@@ -278,7 +277,6 @@ abstract public class GameX extends Game {
         RealTime clock =
                 new RealTime.MS();
 
-
         clock.durFPS(durFPS);
 
         int threads = _threads <= 0 ? Util.concurrencyExcept(1) : _threads;
@@ -287,7 +285,9 @@ abstract public class GameX extends Game {
         return new NARS()
 
                 .what(
-                        (w) -> new TaskLinkWhat(w, 512,
+                        (w) -> new TaskLinkWhat(w,
+                            256,
+                            //512,
                                 //1024,
                                 new PriBuffer.DirectTaskBuffer()
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)

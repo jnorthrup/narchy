@@ -1,10 +1,11 @@
 package spacegraph.space2d.container.collection;
 
+import jcog.data.atomic.MetalAtomicReferenceArray;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
-import java.util.concurrent.atomic.AtomicReferenceArray;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 
@@ -12,11 +13,11 @@ import java.util.function.Predicate;
 abstract public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
 
     /** TODO varhandle */
-    protected final AtomicReferenceArray<S> children;
+    protected final MetalAtomicReferenceArray<S> children;
     public final int length;
 
     public MutableArrayContainer(int size) {
-        this.children = new AtomicReferenceArray(size);
+        this.children = new MetalAtomicReferenceArray(size);
         this.length = size;
     }
     public MutableArrayContainer(S... items) {
@@ -28,8 +29,8 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
         }
     }
 
-    public S get(int s) {
-        return children.getOpaque(s);
+    public final S get(int s) {
+        return children.getFast(s);
     }
 
     public final S remove(int index) {
@@ -41,9 +42,8 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
 
     /** put semantics */
     public final S setAt(int index, S s) {
-        if (s != setAt(index, s, true)) {
+        if (s != setAt(index, s, true))
             layout();
-        }
         return s;
     }
 
@@ -95,7 +95,7 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
         int count = 0;
         int l = this.length;
         for (int i = 0; i < l; i++) {
-            if (children.getOpaque(i)!=null)
+            if (children.getFast(i)!=null)
                 count++;
         }
         return count;
@@ -104,9 +104,16 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public void forEach(Consumer<Surface> o) {
         for (int i = 0; i < length; i++) {
-            S ii = children.getOpaque(i);
-            if (ii !=null)
-                o.accept(ii);
+            S ii = children.getFast(i);
+            if (ii !=null) o.accept(ii);
+        }
+    }
+
+    @Override
+    public <X> void forEachWith(BiConsumer<Surface, X> o, X x) {
+        for (int i = 0; i < length; i++) {
+            S ii = children.getFast(i);
+            if (ii !=null) o.accept(ii, x);
         }
     }
 

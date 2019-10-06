@@ -29,8 +29,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     public final Term to;
     public final int hash;
 
-    static final FloatFloatToFloatFunction plus = PriMerge.plus::mergeUnitize;
-    static final FloatFloatToFloatFunction mult = PriMerge.and::mergeUnitize;
+//    static final FloatFloatToFloatFunction plus = PriMerge.plus::mergeUnitize;
+    static final FloatFloatToFloatFunction mult = PriMerge.and::merge;//mergeUnitize;
 
     public Term why = null;
 
@@ -243,13 +243,12 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
         assertFinite(pri);
-        float y = apply(ith, pri, merge::mergeUnitize, returning);
+        float y = apply(ith, pri,
+            merge::merge, //merge::mergeUnitize,
+            returning);
 
-        if (returning == PriReturn.Delta && y == 0) {
-            //no need to invalidate
-        } else {
+        if (returning != PriReturn.Delta || y != 0)
             invalidate();
-        }
 
         return y;
     }

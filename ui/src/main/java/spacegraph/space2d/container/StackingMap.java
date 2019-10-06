@@ -55,7 +55,7 @@ public class StackingMap<X> extends AbstractMutableContainer {
 
 	@Override
 	public void doLayout(float dtS) {
-		forEach(c -> c.pos(bounds));
+		forEachWith(Surface::pos, bounds);
 	}
 
 	@Override

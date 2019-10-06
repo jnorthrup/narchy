@@ -9,6 +9,7 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.ContainerSurface;
 
 import java.util.Collection;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.IntFunction;
 import java.util.function.Predicate;
@@ -189,6 +190,11 @@ abstract public class MutableListContainer extends AbstractMutableContainer<Surf
     @Override
     public void forEach(Consumer<Surface> o) {
         children.forEachNonNull(o);
+    }
+
+    @Override
+    public <X> void forEachWith(BiConsumer<Surface, X> o, X x) {
+        children.forEachWith(o, x);
     }
 
     @Override

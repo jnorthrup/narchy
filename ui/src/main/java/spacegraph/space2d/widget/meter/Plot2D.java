@@ -3,6 +3,7 @@ package spacegraph.space2d.widget.meter;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import jcog.Texts;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
@@ -31,7 +32,7 @@ public class Plot2D extends Widget {
     private String title;
     private Off on;
     private volatile boolean invalid = false;
-    private transient float minValue, maxValue;
+    private transient float minMinValue, maxMaxValue;
 
 
     public Plot2D(int history, PlotVis vis) {
@@ -68,76 +69,86 @@ public class Plot2D extends Widget {
         float range = maxValue - minValue;
         float laneHeight = 1f / seriesSize;
 
-        for (int i = 0; i < seriesSize; i++) {
-            Series s = series.get(i);
-
-
-            //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
-//            float base = ypos(s.minValue(), lanes, i, seriesSize,
-//                    maxValue-minValue, minValue);
-            float yy = NaN;
-            float baseY = i * laneHeight;
-
-            if (range > Float.MIN_NORMAL) {
-
-                int histSize = s.size(), histCap = s.capacity();
-
-                float dx = (W / histCap);
-                float x = (histCap - histSize) * dx;
-
-
-                float[] color = s.color();
-                float r = color[0], g = color[1], b = color[2];
-
-                if (!filled) {
-                    gl.glLineWidth(3);
-                    gl.glBegin(GL.GL_LINE_STRIP);
-                }
-
-                for (int j = 0; j < histSize; j++) {
-
-                    float v = s.get(j);
-                    if (v == v) {
-
-                        //gl.glColor3fv(color, 0);
-                        float a = ((v - minValue) / range) * 0.5f + 0.5f;
-                        gl.glColor4f(r, g, b, a);
-
-                        yy = yLane(ypos(v, minValue, range), i, laneHeight);
-
-                        if (filled) {
-                            //TODO fill to an edge (barchart), or the center (waveform)
-                            gl.glRectf(x - dx, baseY, x, yy);
-                        } else {
-                            gl.glVertex2f(x, yy);
-                        }
-                    }
-                    x += dx;
-                }
-                if (filled) {
-
-                } else {
-                    gl.glEnd();
-                }
-            }
-
-            if (yy != yy)
-                yy = baseY + laneHeight / 2;
-
-
-            gl.glColor3f(1, 1, 1);
-
-            gl.glLineWidth(2);
-
-
-            HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, W, filled ? 0 : yy, 0, Draw.TextAlignment.Right);
-
-
-        }
+        for (int i = 0; i < seriesSize; i++)
+            lineplot(gl, minValue, filled, W, textScale, range, laneHeight, i, series.get(i));
     }
 
-    private static float yLane(float unitY, int i, float laneHeight) {
-        return unitY * laneHeight + (laneHeight * i);
+    private static void lineplot(GL2 gl, float minValue, boolean filled, float w, float textScale, float range, float laneHeight, int i, Series s) {
+        //float mid = ypos((s.minValue() + s.maxValue()) / 2f, lanes, sn, seriesSize, maxValue-minValue, minValue);
+//            float base = ypos(s.minValue(), lanes, i, seriesSize,
+//                    maxValue-minValue, minValue);
+        float Y = NaN;
+        float baseY = i * laneHeight;
+
+        if (range > Float.MIN_NORMAL) {
+
+            int histSize = s.size(), histCap = s.capacity();
+
+            float dx = (w / histCap);
+            float x = (histCap - histSize) * dx;
+
+
+            float[] color = s.color();
+            float r = color[0], g = color[1], b = color[2], a = 0;
+
+            if (!filled) {
+                gl.glLineWidth(3);
+                gl.glBegin(GL.GL_LINE_STRIP);
+            }
+
+            float laneOffset = laneHeight * i;
+
+            for (int j = 0; j < histSize; j++) {
+
+                float y = s.get(j);
+                if (y == y) {
+
+                    Y = ypos(y, minValue, range) * laneHeight + laneOffset;
+
+                    float nextA = Util.lerpSafe(((y - minValue) / range), 0.5f, 0.95f);
+                    if (!Util.equals(a, nextA, 1f/256f)) {
+                        gl.glColor4f(r, g, b, a = nextA);
+                    }
+
+                    if (filled) {
+                        //TODO fill to an edge (barchart), or the center (waveform)
+                        gl.glRectf(x - dx, baseY, x, Y);
+                    } else {
+                        gl.glVertex2f(x, Y);
+                    }
+                }
+                x += dx;
+            }
+
+            if (filled) {
+
+            } else {
+                gl.glEnd();
+            }
+
+
+            //draw mean line
+            float mean = s.meanValue();
+            if (mean == mean) {
+                gl.glColor4f(color[0], color[1], color[2], 0.5f);
+                float yMean = ypos(mean, minValue, range) * laneHeight + laneOffset;
+                float t = 0.1f;
+                Draw.rect(0, yMean - laneHeight * t/2, w, laneHeight * t/2, gl);
+            }
+
+        }
+
+        if (Y != Y)
+            Y = baseY + laneHeight / 2;
+
+
+        gl.glColor3f(1, 1, 1);
+
+        gl.glLineWidth(2);
+
+        HersheyFont.hersheyText(gl, s.name(), 0.04f * textScale, w, filled ? 0 : Y, 0, Draw.TextAlignment.Right);
+
+
     }
 
     private static float ypos(float v, boolean lanes, int sn, int seriesSize, float range, float minValue) {
@@ -305,7 +316,7 @@ public class Plot2D extends Widget {
         gl.glColor4fv(backgroundColor, 0);
         Draw.rect(gl, 0, 0, 1, 1);
 
-        vis.draw(series, minValue, maxValue, gl);
+        vis.draw(series, minMinValue, maxMaxValue, gl);
 
         if (title != null) {
 
@@ -332,16 +343,20 @@ public class Plot2D extends Widget {
             final float[] maxValue = {Float.NEGATIVE_INFINITY};
             series.forEach((Series s) -> {
                 s.update();
-                float min = s.minValue(), max = s.maxValue();
-                if (min == min && max == max) {
-                    minValue[0] = Math.min(minValue[0], min);
-                    maxValue[0] = Math.max(maxValue[0], max);
+
+                float min = s.minValue();
+                if (min == min) {
+                    float max = s.maxValue();
+                    if (max == max) {
+                        minValue[0] = Math.min(minValue[0], min);
+                        maxValue[0] = Math.max(maxValue[0], max);
+                    }
                 }
             });
 
             if (Float.isFinite(minValue[0]) && Float.isFinite(maxValue[0])) {
-                this.minValue = minValue[0];
-                this.maxValue = maxValue[0];
+                this.minMinValue = minValue[0];
+                this.maxMaxValue = maxValue[0];
                 vis.update();
             }
 //            } else
@@ -360,6 +375,8 @@ public class Plot2D extends Widget {
 
         float minValue();
 
+        float meanValue();
+
         float[] color();
 
         int capacity();
@@ -369,6 +386,8 @@ public class Plot2D extends Widget {
         float get(int i);
 
         void clear();
+
+
 
         //void forEach(IntFloatConsumer value);
     }
@@ -703,8 +722,7 @@ public class Plot2D extends Widget {
         protected int capacity;
         private final float[] color = {1, 1, 1, 0.75f};
         private String name;
-        protected transient float maxValue;
-        protected transient float minValue;
+        protected transient float minValue, maxValue, meanValue;
 
         @Override
         public abstract float get(int i);
@@ -725,13 +743,22 @@ public class Plot2D extends Widget {
         @Override
         public abstract int size();
 
+        private final AutoRange autoRange = new AutoRange();
+
         public Series autorange() {
-            AbstractSeries.this.minValue = Float.POSITIVE_INFINITY;
-            AbstractSeries.this.maxValue = Float.NEGATIVE_INFINITY;
-            forEach(v -> {
-                if (v < minValue()) AbstractSeries.this.minValue = v;
-                if (v > maxValue()) AbstractSeries.this.maxValue = v;
-            });
+
+            forEach(autoRange.restart());
+
+            int n = autoRange.count[0];
+            if (n == 0) {
+                this.minValue = this.maxValue = this.meanValue = Float.NaN;
+                return this;
+            }
+
+            AbstractSeries.this.minValue = autoRange.minMax[0];
+            AbstractSeries.this.maxValue = autoRange.minMax[1];
+
+            AbstractSeries.this.meanValue = (float) (autoRange.mean[0] / n);
             return AbstractSeries.this;
         }
 
@@ -744,7 +771,6 @@ public class Plot2D extends Widget {
         }
 
         abstract void limit();
-
 
         @Override
         public String name() {
@@ -767,8 +793,38 @@ public class Plot2D extends Widget {
         }
 
         @Override
+        public float meanValue() {
+            return meanValue;
+        }
+
+        @Override
         public float[] color() {
             return color;
+        }
+
+        private static class AutoRange implements FloatProcedure {
+            /** min, max, mean */
+            final float[] minMax = new float[2];
+            final double[] mean = {0};
+            final int[] count = {0}; //counts non-NaN values
+
+            AutoRange restart() {
+                minMax[0] = Float.POSITIVE_INFINITY; minMax[1] = Float.NEGATIVE_INFINITY;
+                mean[0] = 0; count[0] = 0;
+                return this;
+            }
+
+            @Override
+            public void value(float v) {
+                if (v == v) {
+                    if (v < minMax[0]) minMax[0] = v;
+                    if (v > minMax[1]) minMax[1] = v;
+                    mean[0] += v;
+                    count[0]++;
+                }
+            }
+
+
         }
     }
 }

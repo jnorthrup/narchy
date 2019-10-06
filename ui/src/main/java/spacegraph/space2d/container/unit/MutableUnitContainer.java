@@ -1,5 +1,6 @@
 package spacegraph.space2d.container.unit;
 
+import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 
 import java.util.concurrent.atomic.AtomicReference;
@@ -16,6 +17,12 @@ public class MutableUnitContainer<S extends Surface> extends AbstractUnitContain
     public MutableUnitContainer(S the) {
         super();
         set(the);
+    }
+
+    @Override protected void renderContent(ReSurface r) {
+        Surface t = the.getOpaque();
+        if (t!=null)
+            t.renderIfVisible(r);
     }
 
     public final MutableUnitContainer<S> set(S next) {

@@ -27,8 +27,8 @@ public enum Exe { ;
      */
     private static final HashedWheelTimer timer = new HashedWheelTimer(
 
-            new QueueWheelModel(256,
-                TimeUnit.MILLISECONDS.toNanos(1), ()->
+            new QueueWheelModel(128,
+                TimeUnit.MILLISECONDS.toNanos(10), ()->
                         new MpscArrayQueue<>(32)
             ),
 

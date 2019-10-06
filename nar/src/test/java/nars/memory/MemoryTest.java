@@ -97,7 +97,8 @@ class MemoryTest {
     }
 
     private static void testCommonPrefix(boolean direction) {
-        MapMemory i = (MapMemory) (NARS.shell().memory);
+        NAR n = NARS.shell();
+        MapMemory i = (MapMemory) (n.memory);
         Atomic sui = Atomic.the("substituteIfUnifies");
         Atomic su = Atomic.the("substitute");
 
@@ -114,9 +115,9 @@ class MemoryTest {
         i.print(System.out);
 
 
-        assertEquals(sui, i.concept(sui, false).term());
-        assertEquals(su, i.concept(su, false).term());
-        assertNotEquals(sui, i.concept(su, false).term());
+        assertEquals(sui, n.concept(sui, false).term());
+        assertEquals(su, n.concept(su, false).term());
+        assertNotEquals(sui, n.concept(su, false).term());
 
     }
 

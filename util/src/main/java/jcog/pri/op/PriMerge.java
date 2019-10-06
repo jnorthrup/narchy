@@ -1,6 +1,5 @@
 package jcog.pri.op;
 
-import jcog.TODO;
 import jcog.Util;
 import jcog.pri.Prioritizable;
 import jcog.pri.Prioritized;
@@ -106,9 +105,9 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
         return true;
     }
 
-    protected boolean commutative() {
-        throw new TODO();
-    }
+//    protected boolean commutative() {
+//        throw new TODO();
+//    }
 
     /** merges for non-NaN 0..1.0 range */
     public final float mergeUnitize(float existing, float incoming) {

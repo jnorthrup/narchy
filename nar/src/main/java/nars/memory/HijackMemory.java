@@ -108,7 +108,7 @@ public class HijackMemory extends Memory {
      * measures accesses for eviction, so do not elide
      */
     @Override
-    protected final boolean elideConceptGets() {
+	public final boolean elideConceptGets() {
         return ElideGets;
     }
 
@@ -117,7 +117,7 @@ public class HijackMemory extends Memory {
     }
 
     @Override
-    public @Nullable Concept get(Term key, boolean createIfMissing) {
+    public Concept get(Term key, boolean createIfMissing) {
         PLink<Concept> x = table.get(key);
         if (x != null) {
             boost(x, getBoost);

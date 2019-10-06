@@ -36,6 +36,11 @@ public class ReSurface extends SurfaceCamera {
 
     public transient GL2 gl;
 
+//    @Deprecated private boolean scaleChanged;
+
+    /** cached pixel to surface scale factor */
+    transient private float psw, psh;
+
 
     @Deprecated public final void on(Consumer<GL2> renderable) {
         on((gl, rr)->renderable.accept(this.gl));
@@ -84,6 +89,8 @@ public class ReSurface extends SurfaceCamera {
         this.w = x2-x1;
         this.h = y2-y1;
 
+        this.psw = pw * scaleX / w; this.psh = ph * scaleY / h;
+
         return this;
     }
 
@@ -104,18 +111,17 @@ public class ReSurface extends SurfaceCamera {
         return v;
     }
     public final boolean visibleByPixels(RectFloat r) {
-        boolean v = visP(r, minVisibilityPixelPct) > 0;
-        return v;
+        return visP(r, minVisibilityPixelPct) > 0;
     }
 
     public final float visP(RectFloat bounds, float minPixelsToBeVisible) {
         //return (bounds.w * scaleX >= minPixelsToBeVisible) && (bounds.h * scaleY >= minPixelsToBeVisible);
 
 //        System.out.println(scaleX + " " + w + " " + pw);
-        float p = (bounds.w / w) * pw * scaleX;
+        float p = bounds.w * psw;
         if (p < minPixelsToBeVisible)
             return 0;
-        float q = (bounds.h / h) * ph * scaleY;
+        float q = bounds.h * psh;
         if (q < minPixelsToBeVisible)
             return 0;
 
@@ -138,7 +144,9 @@ public class ReSurface extends SurfaceCamera {
     public void push(Zoomed.Camera cam, v2 scale) {
         SurfaceCamera prev = clone();
         stack.add(prev);
-        set(cam, scale.scaleClone(prev.scaleX, prev.scaleY));
+        set(cam, prev.scaleX!=1 || prev.scaleY!=1 ?
+            scale.scaleClone(prev.scaleX, prev.scaleY) :
+            scale);
     }
 
     public void pop() {

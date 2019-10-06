@@ -172,6 +172,11 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
         }
     }
 
+    public final <Y> void forEachWith(BiConsumer<? super X, ? super Y> c, Y y) {
+        for (X x : array())
+            c.accept(x, y);
+    }
+
     public final <Y> void forEachWith(Procedure2<? super X, ? super Y> c, Y y) {
         for (X x : array())
             c.accept(x, y);

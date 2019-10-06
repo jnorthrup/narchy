@@ -1,5 +1,6 @@
 package spacegraph.video;
 
+import com.jogamp.newt.event.WindowEvent;
 import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL2;
 import com.jogamp.opengl.GLAutoDrawable;
@@ -289,6 +290,14 @@ abstract public class JoglDisplay extends SpaceGraph {
 
         }
 
+        @Override
+        public void windowDestroyNotify(WindowEvent windowEvent) {
+            super.windowDestroyNotify(windowEvent);
+            destroy();
+        }
+    }
+
+    protected void destroy() {
 
     }
 

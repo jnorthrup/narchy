@@ -1921,32 +1921,28 @@ public enum Util {
     }
 
     public static void sleepNS(long remainingNanos) {
-        sleepNS(remainingNanos, 1 * 1000 );
+        sleepNS(remainingNanos, 50 * 1000 /* 50uSec, default linux kernel resolution result */ );
     }
 
-    public static void sleepNS(long remainingNanos, long thresholdNS) {
+    /** https://hazelcast.com/blog/locksupport-parknanos-under-the-hood-and-the-curious-case-of-parking/
+     *      expect ~50uSec resolution on linux
+     * */
+    public static void sleepNS(long nanos, long thresholdNS) {
         //try {
+        if (nanos >= thresholdNS) {
 
-        long end = System.nanoTime() + remainingNanos;
-        while (remainingNanos > thresholdNS) {
-//                if (remainingNanos < 10 * 1000) {
-//                    Thread.onSpinWait();
-//                } else if (remainingNanos < 2 * 1000 * 1000 /* 2ms */) {
-            LockSupport.parkNanos(remainingNanos);
-//                } else {
-//
-//                    try {
-//                        // TimeUnit.sleep() treats negative timeouts just like zero.
-//                        NANOSECONDS.sleep(remainingNanos);
-//                    } catch (InterruptedException e) {
-//                        //interrupted = true;
-//                        //throw new RuntimeException(e);
-//                        break;
-//                    }
-//                }
+            long end = System.nanoTime() + nanos;
+            do {
 
-            remainingNanos = end - System.nanoTime();
+                LockSupport.parkNanos(nanos);
+
+            } while ((nanos = end - System.nanoTime()) >= thresholdNS);
         }
+
+        if (nanos > 0) {
+            Thread.onSpinWait();
+        }
+
 //        } finally {
 //            if (interrupted) {
 //                Thread.currentThread().interrupt();
