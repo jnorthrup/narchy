@@ -1,5 +1,6 @@
 package nars.derive.util;
 
+import nars.NAL;
 import nars.derive.Deriver;
 import nars.term.Term;
 import nars.unify.UnifySubst;
@@ -13,6 +14,7 @@ public class PremisePreUnify extends UnifySubst {
 
     public PremisePreUnify() {
         super(Deriver.PremiseUnifyVars, null);
+        commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
     }
 
 

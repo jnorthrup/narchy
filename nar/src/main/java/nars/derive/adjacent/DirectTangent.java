@@ -20,19 +20,15 @@ public class DirectTangent implements AdjacentConcepts {
 	@Override
 	public Term adjacent(Term from, Term to, byte punc, TaskLinks links, Derivation d) {
 
-		int fromHash = from.hashCodeShort();
-		int toHash = to.hashCodeShort();
+		int fromHash = from.hashCodeShort(), toHash = to.hashCodeShort();
 
 		final Term[] T = {null};
 		links.sampleUnique(d.random, y -> {
-			AbstractTaskLink Y = (AbstractTaskLink) y;
-			Term z = Y.matchReverse(from, fromHash, to, toHash);
-			if (z!=null) {
-				//if (!term.equals(f)) //extra test to be sure
-				T[0] = z;
-				return false; //done
-			}
-			return true;
+			Term z = ((AbstractTaskLink) y).matchReverse(from, fromHash, to, toHash);
+			if (z == null) return true;
+
+			T[0] = z;
+			return false; //done
 		});
 		return T[0];
 	}

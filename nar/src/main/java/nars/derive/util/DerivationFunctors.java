@@ -12,6 +12,7 @@ import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.functor.AbstractInlineFunctor2;
@@ -29,6 +30,11 @@ import static nars.term.util.conj.ConjMatch.CONJ_WITHOUT_UNIFY;
 
 public enum DerivationFunctors {
 	;
+
+	public static final Atom Task = Atomic.atom("task");
+	public static final Atom Belief = Atomic.atom("belief");
+	public static final Atom TaskTerm = Atomic.atom("taskTerm");
+	public static final Atom BeliefTerm = Atomic.atom("beliefTerm");
 
 	public static ImmutableMap<Atomic, Term> get(Derivation d) {
 
@@ -123,8 +129,8 @@ public enum DerivationFunctors {
 		for (Term x : derivationFunctors) //override any statik's
 			add(m, x);
 
-		m.put(Derivation.TaskTerm, Derivation.TaskTerm); //to be dynamically resolved
-		m.put(Derivation.BeliefTerm, Derivation.BeliefTerm); //to be dynamically resolved
+		m.put(TaskTerm, TaskTerm); //to be dynamically resolved
+		m.put(BeliefTerm, BeliefTerm); //to be dynamically resolved
 
 //        MetalBloomFilter<Atomic> pre = new MetalBloomFilter<>(fastAtomHash, m.size()*2, 2);
 //        for (Atomic x : m.keySet()) {

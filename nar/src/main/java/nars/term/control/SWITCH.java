@@ -9,8 +9,8 @@ import org.jetbrains.annotations.Nullable;
 import java.util.EnumMap;
 import java.util.function.Function;
 
-import static nars.derive.Derivation.Belief;
-import static nars.derive.Derivation.Task;
+import static nars.derive.util.DerivationFunctors.Belief;
+import static nars.derive.util.DerivationFunctors.Task;
 
 /**
  * TODO generify key/value

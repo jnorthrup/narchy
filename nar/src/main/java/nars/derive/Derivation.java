@@ -30,6 +30,7 @@ import nars.time.When;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
+import nars.unify.Unify;
 import org.eclipse.collections.api.map.ImmutableMap;
 import org.eclipse.collections.impl.map.mutable.MapAdapter;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
@@ -41,7 +42,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.Predicate;
+import java.util.function.BiFunction;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -51,30 +52,25 @@ import static nars.time.Tense.TIMELESS;
 
 /**
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
+ * instantiated threadlocal, and recycled mutably
  */
 public class Derivation extends PreDerivation implements Caused {
 
-    public static final Atom Task = Atomic.atom("task");
-    public static final Atom Belief = Atomic.atom("belief");
-    public static final Atom TaskTerm = Atomic.atom("taskTerm");
-    public static final Atom BeliefTerm = Atomic.atom("beliefTerm");
-    protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
-    private final static int ANON_INITIAL_CAPACITY = 16;
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
-    public static final Atom SUBSTITUTE = Atomic.atom("substitute");
-    public static final Atom CONJ_WITHOUT = Atomic.atom("conjWithout");
+    protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
+
+    public static final Atom Substitute = Atomic.atom("substitute");
+    public static final Atom ConjWithout = Atomic.atom("conjWithout");
 
     public final PremisePreUnify premisePreUnify = new PremisePreUnify();
 
-//    public final Bag<PostDerivation,PostDerivation> post = new PriArrayBag<>(PriMerge.max, 32);
 
-    public final UnifyMatchFork termifier =
-            new UnifyMatchFork();
-            //new UnifyMatchFork.DeferredUnifyMatchFork();
+    public final UnifyMatchFork termifier = new UnifyMatchFork();
 
+    private final static int ANON_INITIAL_CAPACITY = 16;
     public final AnonWithVarShift anon;
-    public final UniSubst uniSubstFunctor = new UniSubst(this);
 
+    public final UniSubst uniSubstFunctor = new UniSubst(this);
 
 
     /**
@@ -97,7 +93,7 @@ public class Derivation extends PreDerivation implements Caused {
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            if (single) return arg.negIf(random.nextBoolean());
+            if (single) return arg.negIf(unify.random.nextBoolean());
             else return polarize(arg, Derivation.this.beliefTruth_at_Belief);
         }
     };
@@ -109,6 +105,7 @@ public class Derivation extends PreDerivation implements Caused {
 
     /** current running premise, set at beginning of derivation in derive() */
     public transient Premise premise;
+    public transient Random random;
 
     private Term polarize(Term arg, MutableTruth t) {
         if (t.is()) {
@@ -116,7 +113,7 @@ public class Derivation extends PreDerivation implements Caused {
             if (tNeg != (arg instanceof Neg))
                 arg = arg.neg(); //invert to expected polarity
         } else
-            arg = arg.negIf(random.nextBoolean());
+            arg = arg.negIf(unify.random.nextBoolean());
         return arg;
     }
 
@@ -127,13 +124,13 @@ public class Derivation extends PreDerivation implements Caused {
     public final Functor polarizeRandom = new AbstractInlineFunctor1("polarizeRandom") {
         @Override
         protected Term apply1(Term arg) {
-            return arg.negIf(random.nextBoolean());
+            return arg.negIf(unify.random.nextBoolean());
         }
     };
     /**
      * populates retransform map
      */
-    public final Replace substituteFunctor = new Replace(Derivation.SUBSTITUTE) {
+    public final Replace substituteFunctor = new Replace(Derivation.Substitute) {
 
         @Override
         public @Nullable Term apply(Evaluation e, Subterms xx) {
@@ -146,8 +143,7 @@ public class Derivation extends PreDerivation implements Caused {
             return y;
         }
     };
-//    private final TermBuffer termBuilder = new TermBuffer();
-//    private final TermBuffer directTermBuilder = new DirectTermBuffer();
+
 
 
     /**
@@ -186,9 +182,6 @@ public class Derivation extends PreDerivation implements Caused {
 
 
 
-    public Predicate<nars.Task> tasklinkTaskFilter =
-        (Task t) ->
-            !t.isDeleted() && (t.isQuestionOrQuest() || t.evi() >= eviMin);
 
 
 
@@ -208,21 +201,40 @@ public class Derivation extends PreDerivation implements Caused {
     private transient float priSingle, priDouble;
     public Term _taskTerm;
     private ImmutableMap<Atomic, Term> derivationFunctors;
-//    private MethodHandle deriverMH;
 
-    {
-        premisePreUnify.commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
+
+    public final Random random() {
+        return random;
     }
+
+    public final boolean use(int x) {
+        return unify.use(x);
+    }
+
+    /** main premise unification instance */
+    public final class PremiseUnify extends Unify {
+        public PremiseUnify(@Nullable Op type, Random random, int stackMax) {
+            super(type, random, stackMax);
+        }
+
+        protected boolean match() {
+            return termifier.test(Derivation.this);
+        }
+
+        /** resolve subterms */
+        public final Term extract(BiFunction<Term, Term, Term> x) {
+            return x.apply(taskTerm, beliefTerm);
+        }
+    }
+
+    public final PremiseUnify unify;
 
     /**
      * if using this, must setAt: nar, index, random, DerivationBudgeting
      */
     private Derivation() {
-        super(
-                null
-                //VAR_PATTERN
-                , null, NAL.unify.UNIFICATION_STACK_CAPACITY
-        );
+        super();
+        unify = new PremiseUnify(null, null, NAL.unify.UNIFICATION_STACK_CAPACITY);
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY,
             Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_QUERY.bit
@@ -326,7 +338,7 @@ public class Derivation extends PreDerivation implements Caused {
 
         //TODO not whether to shift, but which variable (0..n) to shift against
 
-        this.beliefTerm = beliefTerm(anon, _taskTerm, nextBeliefTerm, random);
+        this.beliefTerm = beliefTerm(anon, _taskTerm, nextBeliefTerm, unify.random);
 
         assertAnon(nextBeliefTerm, beliefTerm, nextBelief);
 
@@ -443,13 +455,7 @@ public class Derivation extends PreDerivation implements Caused {
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
 
-        setTTL(ttl);
-    }
-
-
-    @Override
-    public final boolean match() {
-        return termifier.test(this);
+        unify.setTTL(ttl);
     }
 
     /** queue a premise for execution */
@@ -477,7 +483,7 @@ public class Derivation extends PreDerivation implements Caused {
         ditherDT =
                 n.dtDither(); //FINE
                 //w.dur(); //COARSE
-        this.dtTolerance = uniSubstFunctor.u.dtTolerance = premisePreUnify.dtTolerance =
+        unify.dtTolerance = uniSubstFunctor.u.dtTolerance = premisePreUnify.dtTolerance =
                 //n.dtDither(); //FINE
                 //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
@@ -524,7 +530,7 @@ public class Derivation extends PreDerivation implements Caused {
             double tbe = te + be;
             double tb = tbe < ScalarValue.EPSILON ? 0.5f : te / tbe;
 
-            long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, random);
+            long[] e = Stamp.merge(_task.stamp(), _belief.stamp(), (float) tb, unify.random);
             if (stampDouble == null || !Arrays.equals(e, stampDouble))
                 this.stampDouble = e;
             return e;
@@ -536,7 +542,7 @@ public class Derivation extends PreDerivation implements Caused {
     @Override
     public String toString() {
         return _task + " " + (_belief != null ? _belief : beliefTerm)
-                + ' ' + super.toString();
+                + ' ' + unify.toString();
     }
 
     /**
@@ -555,7 +561,7 @@ public class Derivation extends PreDerivation implements Caused {
         beliefTruth_at_Task.clear();
         beliefTruth_at_Belief.clear();
 
-        ttl = 0;
+        unify.ttl = 0;
         taskUniqueAnonTermCount = 0;
         temporal = false;
 //        taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
@@ -567,7 +573,7 @@ public class Derivation extends PreDerivation implements Caused {
         //taskStamp.clear();
         //canCollector.clear();
 
-        this.premisePreUnify.random(this.random = n.random());
+        this.premisePreUnify.random(unify.random = random = n.random());
         this.derivationFunctors = DerivationFunctors.get(Derivation.this);
     }
 
@@ -597,7 +603,7 @@ public class Derivation extends PreDerivation implements Caused {
         what.accept(t);
         nar.emotion.deriveTask.increment();
 
-        use(NAL.derive.TTL_COST_DERIVE_TASK);
+        unify.use(NAL.derive.TTL_COST_DERIVE_TASK);
 
     }
 
@@ -678,7 +684,7 @@ public class Derivation extends PreDerivation implements Caused {
     @Deprecated public void ready(Truth truth, byte punc, boolean single) {
         //ensureClear();
 
-        this.clear();
+        unify.clear();
 
         this.retransform.clear();
         this.truth.set(truth);
@@ -796,23 +802,23 @@ public class Derivation extends PreDerivation implements Caused {
 		@Override
 		public Term applyAtomic(Atomic a) {
         	if (a instanceof Variable)
-				return Derivation.this.resolveVar((Variable)a);
+				return unify.resolveVar((Variable)a);
         	else {
         		//atomic constant
 				if (a instanceof Atom) {
 
-					if (a == TaskTerm)
+					if (a == DerivationFunctors.TaskTerm)
 						return taskTerm;
-					else if (a == BeliefTerm)
+					else if (a == DerivationFunctors.BeliefTerm)
 						return beliefTerm;
 
 					Term b = derivationFunctors.get(a);
 
 					if (b!=null) {
 						if (NAL.DEBUG) {
-							if (b == TaskTerm)
+							if (b == DerivationFunctors.TaskTerm)
 								throw new WTF("should have been detected earlier"); //return taskTerm;
-							else if (b == BeliefTerm)
+							else if (b == DerivationFunctors.BeliefTerm)
 								throw new WTF("should have been detected earlier"); //return beliefTerm;
 						}
 						return b;

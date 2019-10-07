@@ -226,7 +226,7 @@ public class Occurrify extends TimeGraph {
 
     @Override
     protected Random random() {
-        return d.random;
+        return d.random();
     }
 
     @Override

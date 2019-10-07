@@ -22,10 +22,6 @@ public class TaskResolve extends NativePremiseAction {
 	public static final TaskResolve the = new TaskResolve();
 
 	private TaskResolve() {
-
-	}
-
-	{
 		taskPunc(false,false,false,false,true); //commands only
 	}
 
@@ -38,8 +34,12 @@ public class TaskResolve extends NativePremiseAction {
 			d.add(new AbstractPremise(y, y.term(), why.why(d)));
 	}
 
+	@Nullable private final Predicate<nars.Task> tasklinkTaskFilter =
+		//t -> !t.isDeleted();
+		null;
+
 	@Nullable public Task get(TaskLink t, Derivation d) {
-		return get(t, d.when, d.tasklinkTaskFilter);
+		return get(t, d.when, tasklinkTaskFilter);
 	}
 
 	@Nullable Task get(TaskLink t, When<What> when, @Nullable Predicate<Task> filter) {

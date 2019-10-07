@@ -766,7 +766,9 @@ abstract public class GameX extends Game {
                         for (int i = 0; i < ww; i++)
                             c[i].setPri(explorationRate); //flat
                     } else {
-                        float explorationRateEach = explorationRate / ww;
+                        float explorationRateEach =
+                            //explorationRate;
+                            explorationRate / ww; // <- stricter
                         float basePri = explorationRateEach * (max - min);
                         for (int i = 0; i < ww; i++)
                             c[i].setPri(basePri + Util.normalize(f[i], min, max));

@@ -18,6 +18,7 @@ import nars.derive.rule.ConditionalPremiseRuleBuilder;
 import nars.derive.rule.PremiseRule;
 import nars.derive.rule.PremiseRuleBuilder;
 import nars.derive.rule.RuleCause;
+import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PuncMap;
 import nars.derive.util.Unifiable;
 import nars.op.UniSubst;
@@ -443,13 +444,13 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         Term y0 = y;
         if (beliefPattern.volume() <= taskPattern.volume()) {
             //subst task first
-            yT = taskPastable ? y0.replace(taskPattern, Derivation.TaskTerm) : y0;
-            yB = beliefPastable ? yT.replace(beliefPattern, Derivation.BeliefTerm) : yT;
+            yT = taskPastable ? y0.replace(taskPattern, DerivationFunctors.TaskTerm) : y0;
+            yB = beliefPastable ? yT.replace(beliefPattern, DerivationFunctors.BeliefTerm) : yT;
             y = yB;
         } else {
             //subst belief first
-            yB = beliefPastable ? y0.replace(beliefPattern, Derivation.BeliefTerm) : y0;
-            yT = taskPastable ? yB.replace(taskPattern, Derivation.TaskTerm) : yB;
+            yB = beliefPastable ? y0.replace(beliefPattern, DerivationFunctors.BeliefTerm) : y0;
+            yT = taskPastable ? yB.replace(taskPattern, DerivationFunctors.TaskTerm) : yB;
             y = yT;
         }
 
@@ -676,9 +677,9 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
                     Unifiable.constrainUnifiable(a, PremisePatternAction.this);
                 } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
                     Unifiable.constraintEvent(a, PremisePatternAction.this, true);
-                } else if (f.equals(Derivation.SUBSTITUTE)) {
+                } else if (f.equals(Derivation.Substitute)) {
                     Unifiable.constrainSubstitute(a, PremisePatternAction.this);
-                } else if (f.equals(Derivation.CONJ_WITHOUT)) {
+                } else if (f.equals(Derivation.ConjWithout)) {
                     Unifiable.constraintEvent(a, PremisePatternAction.this, false);
                 }
 
@@ -697,7 +698,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     public final static class TruthifyDeriveAction extends PremiseAction {
 
         public final Truthify truth;
-        public final UnifyConstraint<Derivation>[] constraints;
+        public final UnifyConstraint<Derivation.PremiseUnify>[] constraints;
 
         public final Term taskPat;
         public final Term beliefPat;
@@ -706,7 +707,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         final int order;
         private final boolean patternsEqual;
 
-        public TruthifyDeriveAction(UnifyConstraint<Derivation>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, RuleCause cause) {
+        public TruthifyDeriveAction(UnifyConstraint<Derivation.PremiseUnify>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, RuleCause cause) {
             super(cause);
             this.truth = truth;
             this.constraints = constraints;
@@ -753,7 +754,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         @Override
         public final void run(Derivation d) {
 
-            d.constrain(constraints);
+            d.unify.constrain(constraints);
 
 
             boolean single = patternsEqual;
@@ -764,7 +765,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
             boolean fwd = single || fwd(d);
 
             if (unify(d, fwd, single) && !single) {
-                if (d.live())
+                if (d.unify.live())
                     unify(d, !fwd, true);
             }
         }
@@ -816,11 +817,10 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
         protected final boolean unify(Derivation d, boolean dir, boolean finish) {
 
-            if (finish) {
+            if (finish)
                 d.termifier.set(taskify);
-            }
 
-            return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
+            return d.unify.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
         }
 
         /** true: task first, false: belief first */

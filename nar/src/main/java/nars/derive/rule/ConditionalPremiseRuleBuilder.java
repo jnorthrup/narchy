@@ -52,13 +52,13 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	public Term taskPattern = TheTask, beliefPattern = TheBelief;
 
 
-	protected transient UnifyConstraint<Derivation>[] CONSTRAINTS;
+	protected transient UnifyConstraint<Derivation.PremiseUnify>[] CONSTRAINTS;
 
 	/**
 	 * conditions which can be tested before unification
 	 */
 
-	public final MutableSet<UnifyConstraint<Derivation>> constraints = new UnifiedSet<>();
+	public final MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints = new UnifiedSet<>();
 
 
 	@Deprecated transient protected boolean forceDouble = false;
@@ -625,9 +625,9 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */
-	private UnifyConstraint<Derivation>[] constraints(MutableSet<UnifyConstraint<Derivation>> constraints) {
+	private UnifyConstraint<Derivation.PremiseUnify>[] constraints(MutableSet<UnifyConstraint<Derivation.PremiseUnify>> constraints) {
 		UnifyConstraint[] preCopy = constraints.toArray(UnifyConstraint.None);
-		Stream<UnifyConstraint<Derivation>> all = constraints.stream().filter(c -> {
+		Stream<UnifyConstraint<Derivation.PremiseUnify>> all = constraints.stream().filter(c -> {
 			if (!c.remainAmong(preCopy)) {
 				int cc = ArrayUtil.indexOfInstance(preCopy, c);
 				preCopy[cc] = null;
@@ -641,7 +641,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 				return Stream.empty();
 			}
 			if (c instanceof RelationConstraint) {
-				RelationConstraint<Derivation> m = ((RelationConstraint<Derivation>) c).mirror();
+				RelationConstraint<Derivation.PremiseUnify> m = ((RelationConstraint<Derivation.PremiseUnify>) c).mirror();
 				if (m != null) {
 					//isnt possible:
 //                    PREDICATE<Unify> mm = preFilter(m, taskPattern, beliefPattern);

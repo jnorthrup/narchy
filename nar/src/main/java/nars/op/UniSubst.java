@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.Util;
 import nars.$;
 import nars.NAL;
 import nars.Op;
@@ -150,16 +149,19 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
     }
 
     private Term unify(Term c, Term x, Term y, int var, boolean strict) {
-        Term output;//attempt unify
-        int subTTL = Util.clamp(parent.ttl, 0, NAL.derive.TTL_UNISUBST_MAX);
-        if (subTTL == 0)
-            return Null;
+
+        //int subTTL = Util.clamp(parent.unify.ttl, 0, NAL.derive.TTL_UNISUBST_MAX);
+//        if (subTTL == 0)
+//            return Null;
+
+        int subTTL = NAL.derive.TTL_UNISUBST;
 
         u.setTTL(subTTL);
 
-        output = u.unifySubst(x, y, c, var, strict);
+        Term output = u.unifySubst(x, y, c, var, strict);
 
-        parent.use( subTTL - u.ttl);
+        //int used = subTTL - u.ttl;
+        //parent.use(used);
 
         return output;
     }

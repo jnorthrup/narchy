@@ -6,7 +6,6 @@ import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.NAL;
 import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
@@ -15,11 +14,15 @@ import nars.term.Term;
 public class AtomicTaskLink extends AbstractTaskLink {
 
 
+    /**
+     * tasklink endpoints are usualy the concept() form of a term
+     * (which could differ from the input if temporal or not normalized)
+     * */
     public static AtomicTaskLink link(Term source, Term target) {
 
         source = source.concept();
-        target = target == null ? source /* loop */ :
-            NAL.TASKLINK_TARGET_CONCEPT && target instanceof Compound && target.op().conceptualizable ?
+        target = target == null ? source :
+            target instanceof Compound && target.op().conceptualizable ?
                     target.concept()
                     :
                     target

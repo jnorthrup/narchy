@@ -2,11 +2,10 @@ package nars.unify.constraint;
 
 import nars.term.Term;
 import nars.term.control.AbstractPred;
-import nars.unify.Unify;
 
 import java.util.function.BiFunction;
 
-public abstract class ConstraintAsPredicate<U extends Unify, C extends UnifyConstraint<U>> extends AbstractPred<U> {
+public abstract class ConstraintAsPredicate<U, C extends UnifyConstraint> extends AbstractPred<U> {
 
     protected final C constraint;
 

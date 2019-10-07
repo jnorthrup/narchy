@@ -79,7 +79,7 @@ public enum Unifiable { ;
         }
     }
 
-    static class EventUnifiability extends RelationConstraint<Derivation> {
+    static class EventUnifiability extends RelationConstraint<Derivation.PremiseUnify> {
         private static final Atom U = Atomic.atom(EventUnifiability.class.getSimpleName());
         private final boolean forward, xNeg;
 
@@ -99,7 +99,7 @@ public enum Unifiable { ;
         }
 
         @Override
-        public boolean invalid(Term a, Term b, Derivation d) {
+        public boolean invalid(Term a, Term b, Derivation.PremiseUnify d) {
             Term conj, _x;
             if (forward) {
                 conj = a; _x = b;
@@ -157,7 +157,7 @@ public enum Unifiable { ;
         }
     }
 
-    public static final class Unifiability extends RelationConstraint<Derivation> {
+    public static final class Unifiability extends RelationConstraint<Derivation.PremiseUnify> {
         final boolean isStrict; final int varBits;
 
         private static final Atom U = Atomic.atom(Unifiability.class.getSimpleName());
@@ -173,7 +173,7 @@ public enum Unifiable { ;
         }
 
         @Override
-        public boolean invalid(Term x, Term y, Derivation context) {
+        public boolean invalid(Term x, Term y, Derivation.PremiseUnify context) {
             return !Terms.possiblyUnifiable( x, y, isStrict, varBits);
         }
 

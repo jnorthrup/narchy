@@ -20,7 +20,10 @@ public class AdjacentIndexer implements AdjacentConcepts {
 
 	protected boolean cache(Term target) {
 		//return target instanceof Atom;
-		return target.volume() <= 5;
+		return target.volume() <=
+			//5
+			//3;
+			1;
 	}
 
 	@Override
@@ -60,7 +63,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 			if (match == null || match.isEmpty())
 				return null;
 
-			return match.sample(x -> !from.equals(x.from()), punc, d.random);
+			return match.sample(x -> !from.equals(x), punc, d.random);
 		} else {
 
 			return DirectTangent.the.adjacent(from, to, punc, links, d);

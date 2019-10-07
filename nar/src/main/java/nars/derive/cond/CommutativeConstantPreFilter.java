@@ -14,8 +14,8 @@ import nars.term.var.ellipsis.Ellipsislike;
 
 import java.util.Collection;
 
-import static nars.derive.Derivation.Belief;
-import static nars.derive.Derivation.Task;
+import static nars.derive.util.DerivationFunctors.Belief;
+import static nars.derive.util.DerivationFunctors.Task;
 
 public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
 

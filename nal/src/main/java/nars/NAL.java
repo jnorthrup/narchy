@@ -210,11 +210,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /** override to allow all goal evidence overlap */
     public static final boolean OVERLAP_ALLOW_GOAL = false;
 
-    /** if true then tasklink targets are named by the concept and not a raw term
-     * (which could be temporal or not normalized)
-     * should probably always be true
-     * */
-    public static final boolean TASKLINK_TARGET_CONCEPT = true;
 
     /** various post-processing of contained variables prior to use in Task content */
     public static final boolean TASK_COMPOUND_POST_NORMALIZE = true;
@@ -733,13 +728,13 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
         public static final boolean TIMEGRAPH_DITHER_EVENTS_INTERNALLY= configIs("TIMEGRAPH_DITHER_EVENTS_INTERNALLY");
 
 
-        public static final int TTL_UNISUBST_MAX = 3;
+        public static final int TTL_UNISUBST = 4;
 
-        public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST_MAX;
+        public static final int TTL_CONJ_BEFORE_AFTER = NAL.derive.TTL_UNISUBST;
 
 
         @Range(min = 1, max = 32)
-        public static final int TIMEGRAPH_ITERATIONS = 2;
+        public static final int TIMEGRAPH_ITERATIONS = 1;
 
 
         @Range(min = 0, max = 64)

@@ -1,11 +1,11 @@
 package nars.concept.snapshot;
 
 import jcog.decide.Roulette;
+import jcog.pri.HashedPLink;
+import jcog.pri.PLink;
 import jcog.pri.ScalarValue;
-import jcog.pri.bag.impl.PriArrayBag;
+import jcog.pri.bag.impl.PLinkArrayBag;
 import jcog.pri.op.PriMerge;
-import jcog.pri.op.PriReturn;
-import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
@@ -18,13 +18,7 @@ import java.util.function.Predicate;
  */
 public final class TaskLinkSnapshot {
 
-	public final PriArrayBag<TaskLink> links = new PriArrayBag<>(PriMerge.replace, 0) {
-		@Override
-		protected float merge(TaskLink existing, TaskLink incoming, float incomingPri) {
-			return existing.merge(incoming, merge(), PriReturn.Delta);
-		}
-	};
-
+	public final PLinkArrayBag<Term> links = new PLinkArrayBag<>(PriMerge.replace, 0);
 
 	public TaskLinkSnapshot() {
 	}
@@ -47,39 +41,38 @@ public final class TaskLinkSnapshot {
 
 		int xh = x.hashCodeShort();
 		for (TaskLink t : items) {
-			if (!t.isSelf()) {
-				Term y = t.other(x, xh, reverse);
-				if (y != null)
-					links.put(((AtomicTaskLink) t).clone());
-			}
+			Term y = t.other(x, xh, reverse);
+			if (y != null)
+				links.put(new HashedPLink<>(y, t.pri()));
 		}
 	}
 
 
 	@Nullable
-	public Term sample(Predicate<TaskLink> filter, byte punc, Random rng) {
+	public Term sample(Predicate<Term> filter, byte punc, Random rng) {
 		@Nullable Object[] ll = links.items();
 		int lls = Math.min(links.size(), ll.length);
 		if (lls == 0)
 			return null;
 		else {
-			TaskLink l;
+			PLink<Term> l;
 
 			int li = Roulette.selectRouletteCached(lls, (int i) -> {
 
-				TaskLink x = (TaskLink) ll[i];
-				return x != null && filter.test(x) ?
+				PLink<Term> x = (PLink) ll[i];
+				return x != null && filter.test(x.id) ?
 					Math.max(ScalarValue.EPSILON,
-					x.priPunc(punc)
+					//x.priPunc(punc)
+					x.pri()
 					)
 					:
 					Float.NaN;
 
 			}, rng::nextFloat);
 
-			l = li >= 0 ? (TaskLink) ll[li] : null;
+			l = li >= 0 ? (PLink<Term>) ll[li] : null;
 
-			return l != null ? l.from() : null;
+			return l != null ? l.id : null;
 		}
 
 	}

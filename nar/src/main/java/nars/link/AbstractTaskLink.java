@@ -86,11 +86,10 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override
     public @Nullable final Term other(Term x, int xHashShort, boolean reverse) {
-        //return x.equals(reverse ? to() : from()) ? (reverse ? from() : to()) : null;
-        boolean hashMatch = xHashShort == (reverse ? toHash() : fromHash());
-//        if ((other(x,reverse) !=null ) != hashMatch)
-//            throw new WTF();
-        return hashMatch ? other(x, reverse) : null;
+        if (isSelf() || xHashShort != (reverse ? toHash() : fromHash()) || !x.equals(reverse ? to : from))
+            return null;
+
+        return reverse ? from : to;
     }
 
 

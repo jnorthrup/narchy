@@ -10,8 +10,6 @@ import nars.term.atom.Atomic;
 import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.function.BiFunction;
-
 /** tests a relation between two terms which may be involved (and prevened) from unifying */
 abstract public class RelationConstraint<U extends Unify> extends UnifyConstraint<U> {
 
@@ -63,17 +61,7 @@ abstract public class RelationConstraint<U extends Unify> extends UnifyConstrain
         return true;
     }
 
-    public boolean invalid(Term t, Term b, BiFunction<Term, Term, Term> extractX, BiFunction<Term, Term, Term> extractY, U u) {
 
-        Term x = extractX.apply(t, b);
-        if (x != null) {
-            Term y = extractY.apply(t, b);
-            if (y!=null)
-                return !invalid(x, y, u);
-        }
-        return true; //<- does this happen?
-
-    }
 
 	public static final class NegRelationConstraint<U extends Unify> extends RelationConstraint<U> {
 

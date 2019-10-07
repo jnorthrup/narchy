@@ -1,8 +1,8 @@
 package nars.derive.rule;
 
-import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.derive.action.PremiseAction;
+import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremiseTermAccessor;
 import nars.term.Term;
 import nars.term.control.PREDICATE;
@@ -39,13 +39,13 @@ public abstract class PremiseRuleBuilder {
 	}
 
 
-	protected final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, Derivation.TaskTerm) {
+	protected final static PremiseTermAccessor TaskTerm = new PremiseTermAccessor(0, DerivationFunctors.TaskTerm) {
 		@Override
 		public Term apply(PreDerivation d) {
 			return d.taskTerm;
 		}
 	};
-	protected final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, Derivation.BeliefTerm) {
+	protected final static PremiseTermAccessor BeliefTerm = new PremiseTermAccessor(1, DerivationFunctors.BeliefTerm) {
 
 		@Override
 		public Term apply(PreDerivation d) {

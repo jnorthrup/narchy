@@ -266,7 +266,7 @@ public class Deriver extends How {
 			if (/*novel.putIfAbsent(p,p)==null && */ queue.add(p)) {
                 int qs = queue.size();
                 if (qs >= capacity)
-                    d.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
+                    d.unify.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
 
 
 //                else if (qs == 0)

@@ -2,20 +2,15 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
-import nars.Op;
 import nars.term.Term;
 import nars.truth.MutableTruth;
-import nars.unify.Unify;
-import org.jetbrains.annotations.Nullable;
-
-import java.util.Random;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
  * used for first stage winnowing to determine the (memoizable) set of possible forkable outcomes */
-public abstract class PreDerivation extends Unify {
+public abstract class PreDerivation {
 
 
-    public Term taskTerm;
+	public Term taskTerm;
     public Term beliefTerm;
     public byte taskPunc;
 
@@ -37,15 +32,14 @@ public abstract class PreDerivation extends Unify {
 	final PremiseActionable[] post;
 
 
-    protected PreDerivation(@Nullable Op type, Random random, int stackMax) {
-        super(type, random, stackMax);
+    protected PreDerivation() {
+
         post = Util.map(MAX_FANOUT, PremiseActionable[]::new, i->new PremiseActionable());
     }
 
     public abstract boolean hasBeliefTruth();
 
     public abstract ShortBuffer preDerive();
-
 
 
 
