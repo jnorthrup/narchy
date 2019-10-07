@@ -13,7 +13,6 @@ import jcog.memoize.Memoize;
 import jcog.util.ArrayUtil;
 import nars.*;
 import nars.attention.What;
-import nars.concept.Concept;
 import nars.concept.Operator;
 import nars.control.channel.CauseChannel;
 import nars.subterm.Subterms;
@@ -248,9 +247,9 @@ public class Opjects extends DefaultTermizer {
     /**
      * registers an alias/binding shortcut target rewrite macro
      */
-    public Concept alias(String op, Term instance, String method) {
-        return nar.add(Functor.f(op, s ->
-                $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s))
+    public void alias(String op, Term instance, String method) {
+        nar.add(Functor.f(op, s ->
+            $.func(method, instance, s.subs() == 1 ? s.sub(0) : PROD.the(s))
         ));
     }
 
@@ -641,7 +640,7 @@ public class Opjects extends DefaultTermizer {
         String n = m.getName();
         return opCache.computeIfAbsent(n, (mn) -> {
             MethodExec methodExec = new MethodExec(mn);
-            Operator op = nar.addOp(Atomic.atom(mn), methodExec);
+            Operator op = nar.setOp(Atomic.atom(mn), methodExec);
             methodExec.operator = op;
             return methodExec;
         });

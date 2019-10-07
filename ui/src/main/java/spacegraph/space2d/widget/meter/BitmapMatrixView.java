@@ -237,6 +237,9 @@ public class BitmapMatrixView extends TexSurface {
 
             return tex.set(buf);
 
+        } catch (NullPointerException e) {
+            //HACK, try again
+            return false;
         } finally {
             busy.set(false);
         }

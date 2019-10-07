@@ -43,7 +43,7 @@ public class NodeConcept implements Concept {
     @Override public QuestionTable quests() { return QuestionTable.Empty; }
 
     @Override
-    public Term term() {
+    public final Term term() {
         return term;
     }
 
@@ -93,7 +93,11 @@ public class NodeConcept implements Concept {
         return (X) meta.get(key);
     }
 
-
+    public static class PermanentNodeConcept extends NodeConcept implements PermanentConcept {
+        public PermanentNodeConcept(Term term) {
+            super(term);
+        }
+    }
 
 
 }

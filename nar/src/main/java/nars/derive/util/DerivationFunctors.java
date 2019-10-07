@@ -62,14 +62,16 @@ public enum DerivationFunctors {
 			SetFunc.intersect,
 			Equal.equal, Cmp.cmp,
 
-			(Functor) nar.concept("unneg"),
-			(Functor) nar.concept("negateEvents"),
-			//(Functor) nar.concept("eventOf"),
-			(Functor) nar.concept("chooseAnySubEvent"),
-			(Functor) nar.concept("chooseUnifiableSubEvent"),
+			(Functor) nar.concept("unneg").term(),
+			(Functor) nar.concept("negateEvents").term(),
+			//(Functor) nar.concept("eventOf").term(),
+			(Functor) nar.concept("chooseAnySubEvent").term(),
+			(Functor) nar.concept("chooseUnifiableSubEvent").term(),
 
-			(Functor) nar.concept("conjWithout"), (Functor) nar.concept("conjWithoutPN"),
-			(Functor) nar.concept("without"), (Functor) nar.concept("withoutPN"),
+			(Functor) (nar.concept("conjWithout").term()),
+			(Functor) (nar.concept("conjWithoutPN").term()),
+			(Functor) (nar.concept("without").term()),
+			(Functor) (nar.concept("withoutPN").term()),
 			//(Functor) nar.concept("withoutPNRepolarized"),
 //                (Functor) nar.concept("unsect"),(Functor) nar.concept("unsectPN"),(Functor) nar.concept("unsectPNRepolarized"),
 

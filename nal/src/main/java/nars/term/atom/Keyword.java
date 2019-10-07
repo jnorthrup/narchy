@@ -6,7 +6,7 @@ import nars.The;
 import nars.term.Term;
 
 /** special atoms which are universally singleton */
-public abstract class Keyword implements Atomic, The {
+public abstract class Keyword extends Atomic implements The {
 	protected final String label;
 	protected final byte[] bytes;
 	protected final int hash;

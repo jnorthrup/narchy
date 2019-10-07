@@ -106,7 +106,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
             )
         );
 
-        Term[] precon = id.sub(0).arrayShared();
+        Term[] precon = ((Compound)id.sub(0)).arrayShared();
 
         taskPattern(precon[0]);
         beliefPattern(precon[1]);
@@ -119,7 +119,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
 
 
-        Term[] postcon = id.sub(1).arrayShared();
+        Term[] postcon = ((Compound)id.sub(1)).arrayShared();
         concTerm = postcon[0];
 
 
@@ -129,7 +129,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
         time = null;
 
-        Term[] modifiers = postcon.length > 1 ? postcon[1].arrayShared() : Op.EmptyTermArray;
+        Term[] modifiers = postcon.length > 1 ? ((Compound)postcon[1]).arrayShared() : Op.EmptyTermArray;
 
         for (Term m : modifiers) {
             if (m.op() != Op.INH)

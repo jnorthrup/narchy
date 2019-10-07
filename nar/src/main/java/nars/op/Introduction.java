@@ -1,23 +1,27 @@
 package nars.op;
 
 import jcog.math.FloatRange;
-import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.derive.Derivation;
+import nars.derive.action.TaskTransformAction;
 import nars.task.TemporalTask;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
 
-public abstract class Introduction extends TaskLeakTransform {
+public abstract class Introduction extends TaskTransformAction {
 
     public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
 
-    protected Introduction(NAR nar) {
-        super(nar);
+    protected Introduction() {
+        super();
     }
 
+
+    protected boolean filter(Term t) {
+        return true;
+    }
 
     /** returns the new, transformed target or null if the task should not be cloned */
     @Nullable

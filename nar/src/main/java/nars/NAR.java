@@ -17,6 +17,7 @@ import jcog.thing.Part;
 import nars.Narsese.NarseseException;
 import nars.attention.What;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.concept.PermanentConcept;
 import nars.concept.util.ConceptBuilder;
@@ -229,6 +230,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     public final Functor axioms(Atom term) {
         Termed x = concept(term);
+        if (x instanceof NodeConcept.PermanentNodeConcept)
+            x = x.term();
         return x instanceof Functor ? (Functor) x : null;
     }
 
@@ -670,6 +673,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final boolean add(NARPart p) {
         return add(p.id, p);
     }
+    public final void add(Functor f) {
+        memory.set(f);
+    }
+    public final void add(Operator o) {
+        memory.set(o);
+    }
 
     public final NARPart add(Class<? extends NARPart> p) {
         return add(null, p);
@@ -720,14 +729,14 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      * simplified wrapper for use cases where only the arguments of an operation task, and not the task itself matter
      */
     public final void addOpN(String atom, BiConsumer<Subterms, NAR> exe) {
-        addOp(Atomic.atom(atom), (task, nar) -> {
+        setOp(Atomic.atom(atom), (task, nar) -> {
             exe.accept(task.term().sub(0).subterms(), nar);
             return null;
         });
     }
 
     public final Operator addOp1(String atom, BiConsumer<Term, NAR> exe) {
-        return addOp(Atomic.atom(atom), (task, nar) -> {
+        return setOp(Atomic.atom(atom), (task, nar) -> {
 
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 1)
@@ -737,7 +746,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final void addOp2(String atom, TriConsumer<Term, Term, NAR> exe) {
-        addOp(Atomic.atom(atom), (task, nar) -> {
+        setOp(Atomic.atom(atom), (task, nar) -> {
 
             Subterms ss = task.term().sub(0).subterms();
             if (ss.subs() == 2)
@@ -749,7 +758,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * registers an operator
      */
-    public final Operator addOp(Atom name, BiFunction<Task, NAR, Task> exe) {
+    public final Operator setOp(Atom name, BiFunction<Task, NAR, Task> exe) {
         Operator op = Operator.simple(name, exe);
         memory.set(op);
         return op;

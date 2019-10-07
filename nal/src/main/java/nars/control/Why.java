@@ -12,6 +12,9 @@ import org.eclipse.collections.api.block.procedure.primitive.ShortFloatProcedure
 import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
+import org.roaringbitmap.IntConsumer;
+import org.roaringbitmap.PeekableIntIterator;
+import org.roaringbitmap.RoaringBitmap;
 
 import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
@@ -64,8 +67,8 @@ public enum Why { ;
 			if (maxExistingSize <= 0)
 				return whyB; //can not save any existing
 
-			ShortHashSet s = new ShortHashSet(wv);
-			toSet(whyA, s);
+			RoaringBitmap s = new RoaringBitmap();
+			toSet(whyA, s::add);
 			whyA = why(s, maxExistingSize-1);
 			if (whyA.equals(whyB))
 				return whyA;
@@ -74,7 +77,20 @@ public enum Why { ;
 		return SETe.the(whyA, whyB);
 	}
 
-	public static Term why(ShortHashSet s, int capacity) {
+	@Nullable public static Term why(RoaringBitmap s, int capacity) {
+		int ss = s.getCardinality();
+		if (ss == 0)
+			return null;
+		short[] i = new short[ss];
+		int in = 0;
+		PeekableIntIterator ii = s.getIntIterator();
+		while (ii.hasNext())
+			i[in++] = (short) ii.next();
+
+		return why(i, capacity);
+	}
+
+	@Nullable public static Term why(ShortHashSet s, int capacity) {
 		if (s.isEmpty())
 			return null; //TODO prevent from having to reach
 		return why(s.toArray(), capacity);
@@ -120,10 +136,12 @@ public enum Why { ;
 						return SETe.the(ct);
 				} else {
 					//flatten and sample
-					ShortHashSet s = new ShortHashSet(ct.length * capacity);
-					for (Term cc : ct) {
-						toSet(cc, s);
-					}
+					//ShortHashSet s = new ShortHashSet(ct.length * capacity);
+					RoaringBitmap s = new RoaringBitmap();
+					IntConsumer addToS = s::add;
+					for (Term cc : ct)
+						toSet(cc, addToS);
+
 					return why(s, capacity);
 				}
 			}
@@ -147,9 +165,10 @@ public enum Why { ;
 		int wb = whyB.volume();
 		if (wa + wb + 1 > capacity) {
 			//must reduce or sample
-			ShortHashSet s = new ShortHashSet(wa+wb);
-			toSet(whyA, s);
-			toSet(whyB, s);
+			RoaringBitmap s = new RoaringBitmap();
+			IntConsumer addToS = s::add;
+			toSet(whyA, addToS);
+			toSet(whyB, addToS);
 			return why(s, capacity);
 		} else
 			return SETe.the(whyA, whyB);
@@ -180,18 +199,18 @@ public enum Why { ;
 			s.value(s(why));
 		} else {
 			//TODO optimized case of simple set with no recursive inner-sets
-			ShortHashSet seen = Why.toSet(why);
+			ShortHashSet seen = Why.toSet(why); //TODO RoaringBitmap
 			seen.forEach(s);
 		}
 	}
 
-	public static ShortHashSet toSet(Term why) {
+	@Deprecated public static ShortHashSet toSet(Term why) {
 		ShortHashSet s = new ShortHashSet(why.volume() /* estimate */);
 		toSet(why, s);
 		return s;
 	}
 
-	private static void toSet(Term whyA, ShortHashSet s) {
+	@Deprecated private static void toSet(Term whyA, ShortHashSet s) {
 		if (whyA==null)
 			return;
 		whyA.recurseTermsOrdered(x -> true, (e) -> {
@@ -199,6 +218,28 @@ public enum Why { ;
 				s.add(s(e));
 			return true;
 		}, null);
+	}
+	private static void toSet(Term w, IntConsumer s) {
+		if (w==null)
+			return;
+		if (w instanceof Int) {
+			s.accept(s(w));
+		} else {
+			if ((w.subStructure() & SETe.bit) == 0) {
+				//no inner sets (flat), just iterate the subterms
+				Subterms ww = w.subterms();
+				int wn = ww.subs();
+				for (int i = 0; i < wn; i++) {
+					s.accept(s(ww.sub(i)));
+				}
+			} else {
+				w.recurseTermsOrdered(x -> true, (e) -> {
+					if (e instanceof Int)
+						s.accept(s(e));
+					return true;
+				}, null);
+			}
+		}
 	}
 
 	private static short s(Term why) {

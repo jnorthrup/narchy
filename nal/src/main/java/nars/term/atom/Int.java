@@ -14,7 +14,7 @@ import static nars.Op.INT;
 /**
  * 32-bit signed integer
  */
-public final class Int implements Intlike, The {
+public final class Int extends Atomic implements The {
 
 	static final Int[] pos = new Int[ANON_INT_MAX];
 	private static final Int[] neg = new Int[ANON_INT_MAX];
@@ -84,7 +84,6 @@ public final class Int implements Intlike, The {
 		return bytesCached;
 	}
 
-	@Override
 	public Range range() {
 		return Range.singleton(i).canonical(DiscreteDomain.integers());
 	}

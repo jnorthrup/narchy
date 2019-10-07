@@ -19,10 +19,11 @@ public class TaskLinkTest {
         AtomicTaskLink t = AtomicTaskLink.link($$("x"));
         assertEquals(0, t.pri(), 0.001f);
 
-        t.mergeComponentDelta(BELIEF, 0.9f, PriMerge.replace);
+        t.priSet(BELIEF, 0.9f);
         assertEquals((1*0.9f)/4f, t.pri(), 0.001f);
 
-        t.mergeComponentDelta(GOAL, 0.9f, PriMerge.replace);
+        float gd = t.mergeComponentDelta(GOAL, 0.9f, PriMerge.replace);
+        assertEquals(0.9f/4f, gd, 0.001f);
         assertEquals((2*0.9f)/4f, t.pri(), 0.001f);
         t.mergeComponentDelta(GOAL, 0f, PriMerge.replace);
 

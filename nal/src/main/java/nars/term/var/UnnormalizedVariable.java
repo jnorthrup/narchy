@@ -12,16 +12,16 @@ import nars.term.atom.AbstractAtomic;
  */
 public class UnnormalizedVariable extends AbstractAtomic implements Variable, The {
 
-    private final Op type;
+    private final int op;
 
-    public UnnormalizedVariable(Op type, byte[] label) {
-        super(IO.SPECIAL_BYTE, label);
-        this.type = type;
-    }
+//    public UnnormalizedVariable(Op type, byte[] label) {
+//        super(IO.SPECIAL_BYTE, label);
+//        this.type = type.id;
+//    }
 
-    public UnnormalizedVariable(Op type, String label) {
+    public UnnormalizedVariable(Op op, String label) {
         super(IO.SPECIAL_BYTE, label);
-        this.type = type;
+        this.op = op.id;
     }
 
     @Override
@@ -30,29 +30,42 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable, Th
     }
 
     @Override
-    public final Op op() {
-        return type;
+    @Deprecated public final Op op() {
+        return Op.ops[op];
     }
 
+    @Override
+    public int opID() {
+        return op;
+    }
 
     @Override
     public final int varIndep() {
-        return type == Op.VAR_INDEP ? 1 : 0;
+        return op == Op.VAR_INDEP.id ? 1 : 0;
     }
 
     @Override
     public final int varDep() {
-        return type == Op.VAR_DEP ? 1 : 0;
+        return op == Op.VAR_DEP.id ? 1 : 0;
     }
 
     @Override
     public final int varQuery() {
-        return type == Op.VAR_QUERY ? 1 : 0;
+        return op == Op.VAR_QUERY.id ? 1 : 0;
     }
 
     @Override
     public final int varPattern() {
-        return type == Op.VAR_PATTERN ? 1 : 0;
+        return op == Op.VAR_PATTERN.id ? 1 : 0;
+    }
+
+    @Override public final int complexity() {
+        return 0;
+    }
+
+    @Override
+    public float voluplexity() {
+        return 0.5f;
     }
 
     @Override
@@ -63,7 +76,7 @@ public class UnnormalizedVariable extends AbstractAtomic implements Variable, Th
     /** produce a normalized version of this identified by the serial integer
      * @param serial*/
     @Override public Variable normalizedVariable(byte serial) {
-        return $.v(type, serial);
+        return $.v(op(), serial);
     }
 
 

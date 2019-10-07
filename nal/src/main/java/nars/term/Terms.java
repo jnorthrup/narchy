@@ -84,8 +84,9 @@ public enum Terms {
 
 	private static Term[] commuteN(Term[] x) {
 		return ifDifferent(x,
-			new MetalTreeSet<>(x).toArray(Op.EmptyTermArray)
-			//new TermList(x.clone()).sortAndDedup()
+			new TermList(x.clone()).sortAndDedup()
+			//new MetalTreeSet<>(x).toArray(Op.EmptyTermArray)
+			//new SortedList<>(x, new Term[x.length]).toArrayRecycled(Term[]::new) //slow
 		);
 	}
 
@@ -531,7 +532,7 @@ public enum Terms {
 			return Null;
 
 
-		MetalTreeSet<Term> ab = a.collect(b.subs() > 3 ? b.toSet()::contains : b::contains, new MetalTreeSet());
+		SortedSet<nars.term.Term> ab = a.collect(b.subs() > 3 ? b.toSet()::contains : b::contains, new MetalTreeSet());
 		int ssi = ab == null ? 0 : ab.size();
 		switch (ssi) {
 			case 0:

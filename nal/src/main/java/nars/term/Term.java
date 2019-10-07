@@ -642,7 +642,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         MetalTreeSet<Term> s = new MetalTreeSet();
         eventsAND((when, what) -> {
             if (what != Term.this)
-                s.addFast(what);
+                s.add(what);
             return true;
         }, 0, true, true);
         return s;

@@ -269,26 +269,26 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * <p>
          * TODO make this a per-sensor implementation decision
          */
-        public static final float SIGNAL_STRETCH_LIMIT_DURS = 8;
+        public static final float SIGNAL_STRETCH_LIMIT_DURS = 64;
         /**
          * maximum time between signal updates to stretch an equivalently-truthed data point across.
          * stretches perception across some amount of lag
          */
         public static final float SIGNAL_LATCH_LIMIT_DURS =
-                2f;
+                //2f;
                 //1.5f;
-                //1f;
+                1f;
 
         /**
          *  max tasked matched by series table, in case the answer limit is higher.
          *  this reduces the number of redundant non-exact matches freeing evidential capacity for non-signal tasks from other tables of the concept */
         public static final float SERIES_MATCH_ADDITIONAL_RATE_PER_DUR =
-                //1;
-                1f/Math.max(1, SIGNAL_STRETCH_LIMIT_DURS/2);
+                1;
+                //1f/Math.max(1, SIGNAL_STRETCH_LIMIT_DURS/2);
 
         public static final int SERIES_MATCH_MIN = 1;
 
-        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.25f;
+        public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.5f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;
         public static final float CLEAN_MARGIN_DURS =
             0;
@@ -319,7 +319,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
     @Deprecated public final IntRange premiseUnifyTTL = new IntRange(4, 1, 32);
-    @Deprecated public final IntRange deriveBranchTTL = new IntRange(3 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
+    @Deprecated public final IntRange deriveBranchTTL = new IntRange(2 * NAL.derive.TTL_MIN, NAL.derive.TTL_MIN, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it

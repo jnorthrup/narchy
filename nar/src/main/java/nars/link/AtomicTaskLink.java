@@ -1,12 +1,9 @@
 package nars.link;
 
-import jcog.pri.ScalarValue;
-import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.signal.tensor.AtomicFixedPoint4x16bitVector;
 import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
-import nars.Task;
 import nars.term.Compound;
 import nars.term.Term;
 
@@ -35,17 +32,14 @@ public class AtomicTaskLink extends AbstractTaskLink {
         return link(source, null);
     }
 
-
-
     @Override
     public AtomicTaskLink clone() {
         AtomicTaskLink clone = new AtomicTaskLink(from, to, hash);
         ((AtomicFixedPoint4x16bitVector)clone.punc).data(((AtomicFixedPoint4x16bitVector)this.punc).data());
+        clone.why = why;
         clone.invalidate();
         return clone;
     }
-
-
 
     @Override protected float priSum() {
         return punc.sumValues();
@@ -59,17 +53,6 @@ public class AtomicTaskLink extends AbstractTaskLink {
     @Override
     public float priIndex(byte index) {
         return punc.getAt(index);
-    }
-
-    @Override
-    public void transfer(TaskLink from, float factor, float sustain, byte punc) {
-
-        byte i = Task.i(punc);
-
-        float xfer = (1-sustain) * merge(i, factor * from.priIndex(i), PriMerge.plus, PriReturn.Delta);
-        if (xfer >= ScalarValue.EPSILON)
-            ((AtomicTaskLink)from).merge(i, -xfer, PriMerge.plus, PriReturn.Delta);
-
     }
 
     @Override
@@ -97,27 +80,11 @@ public class AtomicTaskLink extends AbstractTaskLink {
         super(source, target);
     }
 
-//    protected AtomicTaskLink(Term self) {
-//        super(self, self);
-//    }
-
-//    @Override
-//    public float take(float pct) {
-//        float taken = 0;
-//        for (byte i = 0; i < 4; i++) {
-//            taken += punc.merge(i, pct, mult, PriReturn.Delta);
-//        }
-//        invalidate();
-//        return -taken;
-//    }
-
-    private final WritableTensor punc =
-            new AtomicFixedPoint4x16bitVector();
+    private final WritableTensor punc = new AtomicFixedPoint4x16bitVector(); //OR: new AtomicFloatArray(4);
 
     @Override
-    public Term term() {
+    public final Term term() {
         return from;
     }
 
-    //new AtomicFloatArray(4);
 }

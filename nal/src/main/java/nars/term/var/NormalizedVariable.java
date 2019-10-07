@@ -52,6 +52,14 @@ public abstract class NormalizedVariable extends IntrinAtomic implements Variabl
         }
     }
 
+    @Override public final int complexity() {
+        return 0;
+    }
+    @Override
+    public float voluplexity() {
+        return 0.5f;
+    }
+
     private static int opToVarIndex(/*@NotNull*/ Op o) {
         return opToVarIndex(o.id);
     }

@@ -359,7 +359,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted() {
-        MetalTreeSet<Term> u = new MetalTreeSet();
+        SortedSet<nars.term.Term> u = new MetalTreeSet();
         addAllTo(u);
         return u;
     }
@@ -410,6 +410,35 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
     }
 
+    /**
+     * an array of the subterms, which an implementation may allow
+     * direct access to its internal array which if modified will
+     * lead to disaster. by default, it will call 'toArray' which
+     * guarantees a clone. override with caution
+     */
+    default Term[] arrayShared() {
+        return arrayClone();
+    }
+
+    /**
+     * an array of the subterms
+     * this is meant to be a clone always
+     */
+    default Term[] arrayClone() {
+        int s = subs();
+        return s == 0 ? Op.EmptyTermArray : arrayClone(new Term[s], 0, s);
+    }
+
+    default Term[] arrayClone(Term[] target) {
+        return arrayClone(target, 0, subs());
+    }
+
+    default Term[] arrayClone(Term[] target, int from, int to) {
+        for (int i = from, j = 0; i < to; i++, j++)
+            target[j] = this.sub(i);
+
+        return target;
+    }
 
     default /*@NotNull*/ TermList toList() {
         return new TermList(this);
@@ -1347,7 +1376,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             } else {
 
 
-                if (y == null && xi!=yi) {
+                if (y == null) {
                     if (differentlyTransformed(xi, yi) /* special */)
                         y = new DisposableTermList(s, i);
 //                    else Util.nop(); ///why
@@ -1365,7 +1394,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * determines if the two non-identical terms are actually equivalent or if y must be part of the output for some reason (special term, etc)
      * TODO refine */
     private static boolean differentlyTransformed(Term xi, Term yi) {
-        return !xi.equals(yi) || (xi.unneg().getClass()!=yi.unneg().getClass());// || !yi.the();
+        return !xi.equals(yi) || xi.unneg().getClass()!=yi.unneg().getClass();// || !yi.the();
 //        if (!xi.equals(yi)) return true;
 //        Term xxi, yyi;
 //        if (xi instanceof Neg) {

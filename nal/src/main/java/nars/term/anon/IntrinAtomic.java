@@ -6,7 +6,7 @@ import nars.term.Neg;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
-abstract public class IntrinAtomic implements Atomic, The {
+abstract public class IntrinAtomic extends Atomic implements The {
     /** meant to be a perfect hash among all normalized variables */
     public final short i;
 

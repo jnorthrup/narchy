@@ -12,12 +12,13 @@ import java.util.Arrays;
  * according to the comparator, will be in the list in the order that they were
  * added to this list. Add only objects that the comparator can compare.</p>
  */
-public class SortedList<E extends Comparable> extends FasterList<E> {
+public class SortedList<E extends Comparable> extends FasterList<E> /* implements SortedSet<E> */ {
 
     /**
      * indicates if the resulting ordering is different from the input order
      */
     public boolean orderChangedOrDeduplicated = false;
+
 
     public SortedList(int capacity) {
         super(capacity);
@@ -27,12 +28,18 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
     /**
      * uses array directly
      */
-    public SortedList(E[] toSort, E[] scratch) {
-        super(0, scratch);
-		this.addAll(Arrays.asList(toSort));
+    public SortedList(E[] toSort) {
+        super(0, toSort.clone());
+        Arrays.fill(items, null);
+        for (E e : toSort)
+            add(e);
     }
 
-
+    public SortedList(E[] toSort, E[] scratch) {
+        super(0, scratch);
+        for (E e : toSort)
+            add(e);
+    }
 
     /**
      * <p>
@@ -44,7 +51,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
      * @param x the object to be added
      */
     @Override
-    public final boolean add(E x) {
+    public final boolean add(final E x) {
 
 
         int s = size;
@@ -53,13 +60,12 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
             while (low <= high) {
                 int mid = (low + high) / 2;
-                E midVal = get(mid);
 
-                int cmp = midVal.compareTo(x);
+                int cmp = x.compareTo(get(mid));
 
-                if (cmp < 0) {
+                if (cmp > 0) {
                     low = mid + 1;
-                } else if (cmp > 0) {
+                } else if (cmp < 0) {
                     high = mid - 1;
                 } else {
                     orderChangedOrDeduplicated = true;
@@ -69,13 +75,13 @@ public class SortedList<E extends Comparable> extends FasterList<E> {
 
             if (low != s) {
                 orderChangedOrDeduplicated = true;
-                super.add(low, x);
+                add(low, x);
                 return true;
             }
 
         }
 
-        super.addFast(x);
+        addFast(x);
         return true;
     }
 

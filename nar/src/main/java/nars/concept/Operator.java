@@ -7,8 +7,8 @@ import nars.Op;
 import nars.Task;
 import nars.task.NALTask;
 import nars.term.Term;
+import nars.term.atom.AbstractAtomic;
 import nars.term.atom.Atom;
-import nars.term.atom.Atomic;
 
 import java.util.function.BiFunction;
 
@@ -27,14 +27,14 @@ import static nars.Op.ATOM;
  * <patham9_> 4. the system wont try to execute and pursue things in the current moment which are "sheduled" to be in the future.
  * <patham9_> 5. the system wont pursue a goal it already pursued for the same reason (due to revision, it is related to 1)
  */
-public final class Operator extends NodeConcept implements PermanentConcept, Atomic {
+public final class Operator extends AbstractAtomic {
 
     private static final String LOG_FUNCTOR = String.valueOf(Character.valueOf((char) 8594));
 
     public final BiFunction<Task, NAR, Task> model;
 
     private Operator(Atom atom, BiFunction<Task, NAR, Task> model) {
-        super(atom);
+        super(atom.bytes());
         this.model = model;
     }
 
@@ -45,17 +45,6 @@ public final class Operator extends NodeConcept implements PermanentConcept, Ato
 
     public static Operator simple(Atom name, BiFunction<Task, NAR, Task> exe) {
          return new Operator(name, new SimpleOperatorModel(exe));
-    }
-
-
-    @Override
-    public final Term term() {
-        return this;
-    }
-
-    @Override
-    public byte[] bytes() {
-        return ((Atomic) term).bytes();
     }
 
     public static Task error(Task x, Throwable error, long when) {

@@ -4,6 +4,7 @@ import nars.$;
 import nars.io.IO;
 import nars.term.Term;
 import nars.term.Variable;
+import nars.term.atom.Atomic;
 import nars.unify.UnifyAny;
 import org.junit.jupiter.api.Test;
 
@@ -77,7 +78,7 @@ class CommonVariableTest {
     }
 
     private static void assertSerialize(Variable x) {
-        byte[] bb = x.bytes();
+        byte[] bb = ((Atomic)x).bytes();
         Term y = IO.bytesToTerm(bb);
         assertEq(
                 x,

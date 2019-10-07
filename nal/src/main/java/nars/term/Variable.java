@@ -3,7 +3,6 @@ package nars.term;
 import jcog.Paper;
 import jcog.Skill;
 import nars.Op;
-import nars.term.atom.Atomic;
 import nars.term.var.CommonVariable;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.unify.Unify;
@@ -18,7 +17,7 @@ import static nars.term.atom.Bool.Null;
  * <p>
  * implemented by both raw variable terms and variable concepts
  **/
-public interface Variable extends Atomic, UnifyFirst {
+public interface Variable extends /* Atomic - but all implementations are subclasses of Atomic through other impl */ Term, UnifyFirst {
 
 //    private static boolean neggable(Term t) {
 //        return !(t instanceof Ellipsislike) && (t.op() != FRAG);
@@ -148,7 +147,7 @@ public interface Variable extends Atomic, UnifyFirst {
     }
 
     @Override
-    default Variable normalize(byte offset) {
+    default Term normalize(byte offset) {
         return this;
     }
 

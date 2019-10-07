@@ -6,6 +6,7 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
 import nars.concept.Operator;
 import nars.eval.Evaluation;
 import nars.table.dynamic.SeriesBeliefTable;
@@ -39,9 +40,12 @@ public enum Perceive {
         byte punc = x.punc();
         boolean cmd = punc == COMMAND;
 
-        if (cmd || punc == GOAL && !x.isEternal())
-            if (execOperator(x, w))
-                return;
+        if (cmd || punc == GOAL && !x.isEternal()) {
+            if (execOperator(x, w)) {
+
+            }
+        }
+
 
         Remember perceived = !cmd ? Remember.the(x, n) : null;
 
@@ -160,7 +164,10 @@ public enum Perceive {
             return false;
 
         NAR n = w.nar;
-        Concept oo = n.concept(maybeOperator);
+        Concept ooo = n.concept(maybeOperator);
+        if (!(ooo instanceof NodeConcept.PermanentNodeConcept))
+            return false;
+        Term oo = ooo.term();
         if (!(oo instanceof Operator))
             return false;
 

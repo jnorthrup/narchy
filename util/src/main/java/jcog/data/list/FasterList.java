@@ -562,9 +562,10 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public void add(int index, X element) {
-        if (index > -1 && index < this.size) {
+        int sizeBefore = this.size;
+        if (index > -1 && index < sizeBefore) {
             this.addAtIndex(index, element);
-        } else if (index == this.size) {
+        } else if (index == sizeBefore) {
             this.add(element);
         } else {
             throw new ArrayIndexOutOfBoundsException(index);

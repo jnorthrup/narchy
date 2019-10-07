@@ -9,6 +9,7 @@ import nars.Op;
 import nars.subterm.IntrinSubterms;
 import nars.subterm.SortedSubterms;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Intrin;
@@ -230,7 +231,8 @@ public class InterningTermBuilder extends HeapTermBuilder {
         }
 
         if (internable(xo/*, x.dt()*/) && xi.volume() <= volInternedMax && xi.the()) {
-            Term yi = terms[xo].apply(new Intermed.InternedCompoundByComponentsSubs(xi));
+            Term yi = terms[xo].apply(
+                new Intermed.InternedCompoundByComponentsSubs((Compound)xi));
             if(negate) {
                 if (yi == xi)
                     return _x; //use original

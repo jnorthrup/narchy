@@ -24,6 +24,12 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 class PremiseRuleTest {
 
+    @Test void simpleNAL1Rule() throws Narsese.NarseseException {
+        assertConcPattern(
+            "(M --> P), (S --> M), neqRCom(S,P)  |- (S --> P), (Belief:Deduction, Time:Compose)",
+            "(%3-->%2)");
+    }
+
     @Test
     void testPatternCompoundWithXTERNAL() throws Narsese.NarseseException {
         Compound p = (Compound) PatternTermBuilder.patternify($.$("((x) ==>+- (y))")).term();
@@ -153,6 +159,8 @@ class PremiseRuleTest {
     }
 
     @Test void NoXternalInSect() throws Narsese.NarseseException {
+
+
         assertConcPattern("(X,Y), Z |- (Z-->(X&&Y)), (Belief:Intersection)", "(%3-->(%1&&%2))");
         assertConcPattern("(X,Y), Z |- (Z-->(X||Y)), (Belief:Intersection)", "(--,(%3-->((--,%1)&&(--,%2))))");
 

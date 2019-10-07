@@ -241,7 +241,7 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
     protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
-        assertFinite(pri);
+        //assertFinite(pri);
         float y = apply(ith, pri,
             merge::mergeUnitize, //necessary
             returning);
@@ -249,7 +249,7 @@ public abstract class AbstractTaskLink implements TaskLink {
         if (returning != PriReturn.Delta || y != 0)
             invalidate();
 
-        return y;
+        return y/4f;
     }
 
 

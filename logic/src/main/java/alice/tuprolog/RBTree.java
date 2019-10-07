@@ -28,7 +28,9 @@ SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 Retrieved from: http:
 */
 
-enum Color {RED, BLACK}
+enum Color { ;
+    static final boolean RED = true, BLACK = false;
+}
 
 /**
  * Implements a Red Black Tree's node.
@@ -46,9 +48,9 @@ final class Node<K extends Comparable<? super K>, V> {
     public Node<K, V> left;
     public Node<K, V> right;
     public Node<K, V> parent;
-    public Color color;
+    public boolean color;
 
-    public Node(K key, V value, Color nodeColor, Node<K, V> left, Node<K, V> right) {
+    public Node(K key, V value, boolean nodeColor, Node<K, V> left, Node<K, V> right) {
         this.key = key;
         this.value = value;
         this.color = nodeColor;
@@ -67,13 +69,12 @@ final class Node<K extends Comparable<? super K>, V> {
 
     public Node<K, V> sibling() {
         Node<K, V> p = this.parent;
-        assert p != null;
+        //assert p != null;
         return this == p.left ? p.right : p.left;
     }
 
     public Node<K, V> uncle() {
-        assert parent != null;
-        assert parent.parent != null;
+        //assert parent != null && parent.parent != null;
         return parent.sibling();
     }
 
@@ -98,7 +99,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
         root = null;
     }
 
-    private static Color nodeColor(Node<?, ?> n) {
+    private static boolean nodeColor(Node<?, ?> n) {
         return n == null ? Color.BLACK : n.color;
     }
 
@@ -153,16 +154,15 @@ public class RBTree<K extends Comparable<? super K>, V> {
 //        return pathBlackCount;
 //    }
 
-    private Node<K, V> lookupNode(K key) {
+    private Node<K, V> node(K key) {
         Node<K, V> n = root;
         while (n != null) {
-            int compResult = key.compareTo(n.key);
-            if (compResult == 0) {
+            int c = key.compareTo(n.key);
+            if (c == 0) {
                 return n;
-            } else if (compResult < 0) {
+            } else if (c < 0) {
                 n = n.left;
             } else {
-
                 n = n.right;
             }
         }
@@ -170,7 +170,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     protected V lookup(K key) {
-        Node<K, V> n = lookupNode(key);
+        Node<K, V> n = node(key);
         return n == null ? null : n.value;
     }
 
@@ -273,15 +273,16 @@ public class RBTree<K extends Comparable<? super K>, V> {
         }
     }
 
-    void insertCase4(Node<K, V> n) {
-        if (n == n.parent.right && n.parent == n.grandparent().left) {
-            rotateLeft(n.parent);
-            n = n.left;
-        } else if (n == n.parent.left && n.parent == n.grandparent().right) {
-            rotateRight(n.parent);
-            n = n.right;
+    void insertCase4(final Node<K, V> n) {
+        Node<K, V> p = n.parent;
+        Node<K, V> gp = n.grandparent();
+        if (n == p.right && p == gp.left) {
+            rotateLeft(p);
+            insertCase5(n.left);
+        } else if (n == p.left && p == gp.right) {
+            rotateRight(p);
+            insertCase5(n.right);
         }
-        insertCase5(n);
     }
 
     void insertCase5(Node<K, V> n) {
@@ -290,14 +291,14 @@ public class RBTree<K extends Comparable<? super K>, V> {
         if (n == n.parent.left && n.parent == n.grandparent().left) {
             rotateRight(n.grandparent());
         } else {
-            assert n == n.parent.right && n.parent == n.grandparent().right;
+            //assert n == n.parent.right && n.parent == n.grandparent().right;
             rotateLeft(n.grandparent());
         }
     }
 
     public void remove(K key, ClauseInfo c) {
 
-        Node<K, V> n = lookupNode(key);
+        Node<K, V> n = node(key);
         if (n == null)
             return;
 
@@ -342,8 +343,7 @@ public class RBTree<K extends Comparable<? super K>, V> {
     }
 
     private void deleteCase1(Node<K, V> n) {
-        if (n.parent == null) {
-        } else
+        if (n.parent != null)
             deleteCase2(n);
     }
 

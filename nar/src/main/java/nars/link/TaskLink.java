@@ -171,16 +171,6 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
 //
 
 
-    /** the termlink which is finally resolved by the tasklink.  defaults to to()
-     *  but can be overridden for dynamic / virtual termlinks.
-     */
-    default Term target(Task task, Derivation d) {
-        return to();
-    }
-
-    void transfer(TaskLink from, float fraction, float sustain, byte punc);
-
-
     @Override default CommandTask task() { return this; }
 
     @Override default @Nullable Task belief() { return null; }

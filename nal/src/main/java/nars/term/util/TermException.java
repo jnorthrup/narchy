@@ -1,6 +1,7 @@
 package nars.term.util;
 
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.util.SoftException;
@@ -32,7 +33,7 @@ public final class TermException extends SoftException {
     }
 
     public TermException(String reason, Op op, int dt, Termlike args) {
-        this(reason, op, dt, args!=null ? args.arrayShared() : Op.EmptyTermArray);
+        this(reason, op, dt, args instanceof Subterms ? ((Subterms)args).arrayShared() : Op.EmptyTermArray);
     }
 
     public TermException(String reason, Op op, int dt, Term... args) {

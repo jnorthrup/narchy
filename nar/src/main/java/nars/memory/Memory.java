@@ -2,7 +2,10 @@ package nars.memory;
 
 import nars.NAR;
 import nars.concept.Concept;
+import nars.concept.NodeConcept;
+import nars.concept.Operator;
 import nars.concept.PermanentConcept;
+import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
@@ -40,6 +43,12 @@ public abstract class Memory {
 
     public final void set(Concept t) {
         set(t.term(), t);
+    }
+    public final void set(Functor t) {
+        set(t, new NodeConcept.PermanentNodeConcept(t));
+    }
+    public final void set(Operator t) {
+        set(t, new NodeConcept.PermanentNodeConcept(t));
     }
 
     abstract public void clear();

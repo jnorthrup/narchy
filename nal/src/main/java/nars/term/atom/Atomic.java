@@ -25,122 +25,114 @@ import static nars.term.atom.Bool.Null;
 /**
  * Base class for Atomic types.
  */
-public interface Atomic extends Term {
+public abstract class Atomic implements Term {
 
     @Override
-    default boolean containsRecursively(Term t) {
+    public final boolean containsRecursively(Term t) {
         return false;
     }
 
     @Override
-    default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
+    public final boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
         return false;
     }
     
     @Override
-    default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
+    public final boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return false;
     }
 
     @Override
-    default boolean hasXternal() {
+    public final boolean hasXternal() {
         return false;
     }
 
 
     @Override
-    default boolean equalsRoot(Term x) {
-        return x instanceof Atomic && equals(x);
+    public boolean equalsRoot(Term x) {
+        return this==x || (x instanceof Atomic && equals(x));
     }
 
-    @Override
-    default Term[] arrayShared() {
-        return Op.EmptyTermArray;
-    }
 
     @Override
-    default Term[] arrayClone() {
-        return Op.EmptyTermArray;
-    }
-
-    @Override
-    default int vars() {
+    public int vars() {
         return 0;
     }
 
     @Override
-    default int varDep() {
+    public int varDep() {
         return 0;
     }
 
     @Override
-    default int varIndep() {
+    public int varIndep() {
         return 0;
     }
 
     @Override
-    default int varQuery() {
+    public int varQuery() {
         return 0;
     }
 
     @Override
-    default int varPattern() {
+    public int varPattern() {
         return 0;
     }
 
     @Override
-    default boolean equalsNeg(Term t) {
+    public boolean equalsNeg(Term t) {
         return t instanceof Neg && equals(t.unneg());
     }
 
     @Override
-    default /* final */ Subterms subterms() { return EmptySubterms; }
+    public /* final */ Subterms subterms() { return EmptySubterms; }
 
     @Override
-    default Term normalize(byte offset) {
+    public Term normalize(byte offset) {
         return this;
     }
 
     @Override
-    default boolean hasAny(int structuralVector) {
+    public boolean hasAny(int structuralVector) {
         return isAny(structuralVector);
     }
     @Override
-    default boolean hasAll(int structuralVector) {
+    public boolean hasAll(int structuralVector) {
         return opBit() == structuralVector;
     }
 
     @Override
-    default Term concept() {
+    public Term concept() {
         //return Op.terms.concept(this);
         return this;
     }
 
     @Override
-    default Term root() { return this; }
+    public Term root() { return this; }
 
 
     @Override
-    default Term replace(Term from, Term to) {
+    public Term replace(Term from, Term to) {
         return equals(from) ? to : this; 
     }
 
 
     @Override
-    default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
+    public int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {
         return reduce.intValueOf(v, this);
     }
 
     @Override
-    default int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
+    public int intifyRecurse(IntObjectToIntFunction<Term> reduce, int v) {
         return intifyShallow(reduce, v);
     }
 
-    static Atom atom(String id) {
+    public static Atom atom(String id) {
         return (Atom)the(id);
     }
 
-    @Nullable static Atomic the(char c) {
+    @Nullable
+    public static Atomic the(char c) {
         switch (c) {
             case Op.VarAutoSym:
                 return Op.VarAuto;
@@ -177,7 +169,7 @@ public interface Atomic extends Term {
     }
 
     /*@NotNull*/
-    static Atomic the(String id) {
+    public static Atomic the(String id) {
         int l = id.length();
         if (l <= 0)
             throw new RuntimeException("attempted construction of zero-length Atomic id");
@@ -216,43 +208,45 @@ public interface Atomic extends Term {
     }
 
     @Override
-    String toString();
+    public abstract String toString();
 
     /** byte[] representation */
-    byte[] bytes();
+    public abstract byte[] bytes();
 
 
-    default boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {
+    public boolean recurseTerms(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, @Nullable Compound superterm) {
         return whileTrue.test(this);
     }
 
     @Override
-    default boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
+    public boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm) {
         return whileTrue.test(this, superterm);
     }
 
     @Override
-    default boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
+    public boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent) {
         return whileTrue.test(this);
     }
 
     @Override
-    default boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
+    public boolean recurseTermsOrdered(Predicate<Term> whileTrue) {
         return whileTrue.test(this);
     }
 
     /** convenience, do not override */
-    @Override default void recurseTerms(BiConsumer<Term, Compound> each) {
+    @Override
+    public void recurseTerms(BiConsumer<Term, Compound> each) {
         each.accept(this, null);
     }
 
-    @Override default /* final */ void recurseTerms(Consumer<Term> each) {
+    @Override
+    public /* final */ void recurseTerms(Consumer<Term> each) {
         each.accept(this);
     }
 
 
     @Override
-    default void appendTo(Appendable w) throws IOException {
+    public void appendTo(Appendable w) throws IOException {
         w.append(toString());
     }
 
@@ -260,11 +254,11 @@ public interface Atomic extends Term {
      * number of subterms; for atoms this must be zero
      */
     @Override
-    default int subs() {
+    public int subs() {
         return 0;
     }
     @Override
-    default int count(Op matchingOp) {
+    public int count(Op matchingOp) {
         return 0;
     }
 
@@ -272,15 +266,15 @@ public interface Atomic extends Term {
      * atoms contain no subterms so impossible for anything to fit "inside" it
      */
     @Override
-    default boolean impossibleSubVolume(int otherTermVolume) {
+    public boolean impossibleSubVolume(int otherTermVolume) {
         return true;
     }
 
     @Override
-    default boolean impossibleSubStructure(int structure) { return true; }
+    public boolean impossibleSubStructure(int structure) { return true; }
 
     @Override
-    default boolean impossibleSubTerm(Termlike target) {
+    public boolean impossibleSubTerm(Termlike target) {
         return true;
     }
 
@@ -290,67 +284,67 @@ public interface Atomic extends Term {
 //    }
 
     @Override
-    default boolean contains(Term t) {
+    public boolean contains(Term t) {
         return false;
     }
 
     @Override
-    default boolean containsAny(Subterms ofThese) { return false; }
+    public boolean containsAny(Subterms ofThese) { return false; }
     @Override
-    default boolean containsAll(Subterms ofThese) { return false; }
+    public boolean containsAll(Subterms ofThese) { return false; }
 
     @Override
-    default boolean containsInstance(Term t) { return false; }
+    public boolean containsInstance(Term t) { return false; }
 
     @Override
-    default boolean isCommutative() {
+    public boolean isCommutative() {
         return false;
     }
 
     @Override
-    default int complexity() { return 1; }
+    public int complexity() { return 1; }
 
     @Override
-    default int volume() {
+    public int volume() {
         return 1;
     }
 
     @Override
-    default float voluplexity() {
+    public float voluplexity() {
         return 1;
     }
 
     @Override
-    default /* final */ Term sub(int i, Term ifOutOfBounds) {
+    public /* final */ Term sub(int i, Term ifOutOfBounds) {
         return ifOutOfBounds;
     }
 
     @Override
-    default /* final */ Term sub(int i) {
+    public /* final */ Term sub(int i) {
         throw new ArrayIndexOutOfBoundsException();
     }
 
     @Override
     @Nullable
-    default Term subPath(int start, int end, byte... path) {
+    public Term subPath(int start, int end, byte... path) {
         if (start==0 && start==end) return this;
         else return null;
     }
 
     @Override
     @Nullable
-    default Term subPath(ByteList path, int start, int end) {
+    public Term subPath(ByteList path, int start, int end) {
         if (start==0 && start==end) return this;
         else return null;
     }
 
     @Override
-    default /* final */ int structure() {
+    public /* final */ int structure() {
         return opBit();
     }
 
     @Override
-    default /* final */ int structureSurface() {
+    public /* final */ int structureSurface() {
         return opBit();
     }
 
@@ -358,7 +352,7 @@ public interface Atomic extends Term {
      * determines if the string is invalid as an unquoted target according to the characters present
      * assumes len > 0
      */
-    private static boolean quoteable(CharSequence t, int len) {
+    public static boolean quoteable(CharSequence t, int len) {
 
         char t0 = t.charAt(0);
         
@@ -377,9 +371,9 @@ public interface Atomic extends Term {
     }
 
 
-    default int height() { return 1; }
+    public int height() { return 1; }
 
-    default Term transform(TermTransform t) {
+    public Term transform(TermTransform t) {
         return t.applyAtomic(this); //force unbuffered transform
     }
 //    default Term transform(TermTransform t, TermBuffer b, int volMax) {
@@ -387,7 +381,7 @@ public interface Atomic extends Term {
 //    }
 
     /** returns non-zero, positive value if this term has an INTrinsic representation */
-	default short intrin() {
+	public short intrin() {
         return 0;
     }
 

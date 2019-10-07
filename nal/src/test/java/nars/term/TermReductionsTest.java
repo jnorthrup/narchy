@@ -160,7 +160,8 @@ public class TermReductionsTest extends NarseseTest {
 
         assertArrayEquals(
                 new Term[]{r, s},
-                SetSectDiff.differenceSet(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q)).arrayClone()
+                ((Compound)SetSectDiff.differenceSet(Op.SETe, SETe.the(r, p, q, s), SETe.the(p, q)))
+                    .arrayClone()
         );
     }
 

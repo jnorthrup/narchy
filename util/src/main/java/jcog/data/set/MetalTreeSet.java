@@ -2,6 +2,7 @@ package jcog.data.set;
 
 import com.google.common.base.Joiner;
 import com.google.common.collect.Iterators;
+import jcog.TODO;
 import jcog.Util;
 import jcog.data.iterator.ArrayIterator;
 import jcog.data.list.FasterList;
@@ -22,7 +23,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	}
 
-	public MetalTreeSet(T... initialValues) {
+	public MetalTreeSet(T[] initialValues) {
 		for (T t : initialValues)
 			addFast(t);
 	}
@@ -45,11 +46,12 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 				n.left = add(n.left, y);
 			} else if (c < 0) {
 				n.right = add(n.right, y);
-			} //else: equal
+			}
+
 			return n;
 		} else {
 			this.size++;
-			return new TreeNode<T>(y);
+			return new TreeNode<>(y);
 		}
 	}
 
@@ -180,7 +182,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 				return ArrayIterator.iterator(root.x, ((root.left!=null ? root.left : root.right).x));
 			//TODO optimized 3 cases
 			default:
-				return new TreeSetIterator();
+				return new TreeSetIterator<>(root, size);
 		}
 	}
 
@@ -225,13 +227,13 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	}
 
-	private final class TreeSetIterator extends FasterList<TreeNode<T>> implements Iterator<T> {
+	private final static class TreeSetIterator<T> extends FasterList<TreeNode<T>> implements Iterator<T> {
 
 		private TreeNode<T> next;
 
-		private TreeSetIterator() {
-			super(MetalTreeSet.this.size / 2 /* TODO better size estimate, log2(n) or something */);
-			TreeNode<T> n = MetalTreeSet.this.root;
+		private TreeSetIterator(TreeNode<T> root, int size) {
+			super(size / 2 /* TODO better size estimate, log2(n) or something */);
+			TreeNode<T> n = root;
 			do {
 				this.add(n);
 			} while ((n = n.left) != null);
@@ -267,7 +269,8 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 //			if (this.next == null)
 //				throw new IllegalStateException("You have attempted to remove a value from an empty set!");
 
-			MetalTreeSet.this.remove(next.x);
+			//MetalTreeSet.this.remove(next.x);
+			throw new TODO();
 		}
 	}
 }

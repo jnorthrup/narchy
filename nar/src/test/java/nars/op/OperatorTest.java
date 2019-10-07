@@ -66,7 +66,7 @@ class OperatorTest {
         NAR n = NARS.tmp();
         final int[] count = {0};
 
-        n.addOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
+        n.setOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
             System.err.println("INVOKE " + x);
             count[0]++;
             n.believe(x);
@@ -86,7 +86,7 @@ class OperatorTest {
     void testChoose() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
         n.time.dur(10);
-        n.addOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
+        n.setOp(Atomic.atom("x"), new AtomicOperations((x, nar) -> {
             Subterms args = Functor.args(x);
             if (args.subs() > 0) {
                 Term r;
@@ -114,7 +114,7 @@ class OperatorTest {
     @Test
     void testGoal2() throws Narsese.NarseseException {
         NAR n = NARS.tmp();
-        n.addOp(Atomic.atom("x"), new AtomicOperations((t, nar) -> {
+        n.setOp(Atomic.atom("x"), new AtomicOperations((t, nar) -> {
             Term x = t.term();
             Subterms args = Functor.args(t);
             Term y = $.func("args", args);

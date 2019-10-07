@@ -604,7 +604,9 @@ public enum Op {
     }
 
     public final Term the(TermBuilder b, int dt, Subterms s) {
-        return the(b, dt, s instanceof DisposableTermList ? ((TermList) s).arrayKeep() : s.arrayShared());
+        return the(b, dt, s instanceof DisposableTermList ?
+            ((TermList) s).arrayKeep() :
+            s.arrayShared());
     }
 
     public final Term the(/*@NotNull*/ Term... u) {

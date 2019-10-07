@@ -169,6 +169,8 @@ public class TermList extends FasterList<Term> implements Subterms {
 
         int s = size;
         if (s > 1) {
+            //TODO pre-sort by volume since this is the first condition for comparison.  if there are N unique volumes then it will be sorted without needing compareTo
+
             Arrays.sort(ii, 0, s);
 
             Term prev = ii[0];

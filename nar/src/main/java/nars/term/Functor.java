@@ -6,10 +6,9 @@ import nars.$;
 import nars.NAR;
 import nars.Op;
 import nars.concept.Concept;
-import nars.concept.NodeConcept;
-import nars.concept.PermanentConcept;
 import nars.eval.Evaluation;
 import nars.subterm.Subterms;
+import nars.term.atom.AbstractAtomic;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
@@ -32,30 +31,20 @@ import static nars.term.Terms.atomOrNull;
  * a result Term from the TermContainer arguments of
  * a function target, for example: f(x) or f(x, y).
  */
-abstract public class Functor extends NodeConcept implements PermanentConcept, BiFunction<Evaluation, Subterms, Term>, Atomic {
+abstract public class Functor extends AbstractAtomic implements BiFunction<Evaluation, Subterms, Term>, Term {
 
     protected Functor(String atom) {
         this(fName(atom));
     }
 
     protected Functor(Atom atom) {
-        super(atom);
+        super(atom.bytes());
     }
 
 
     @Override
     public final Op op() {
         return ATOM;
-    }
-
-    @Override
-    public final byte[] bytes() {
-        return ((Atomic) term).bytes();
-    }
-
-    @Override
-    public final Term term() {
-        return this;
     }
 
     @Deprecated public static Subterms args(Term x) {

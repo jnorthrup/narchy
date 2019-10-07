@@ -395,8 +395,8 @@ public interface Compound extends Term, IPair, Subterms {
     default Term replace(Term from, Term to) {
         if (this.equals(from))
             return to;
-        else if (from.equals(to) || impossibleSubTerm(from))
-            //else if (from.equals(to) || !containsRecursively(from) /* impossibleSubTerm(from)*/)
+        //else if (from.equals(to) || impossibleSubTerm(from))
+        else if (from.equals(to) || !containsRecursively(from) /* impossibleSubTerm(from)*/)
             return this;
         else
             return transform(MapSubst.replace(from, to)); //HACK immedaitely begin transforming since preliminary impossibility test performed

@@ -3,6 +3,7 @@ package nars.op.data;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.functor.AbstractInlineFunctor1;
 import org.jetbrains.annotations.NotNull;
@@ -49,7 +50,7 @@ public abstract class flat extends AbstractInlineFunctor1 {
     public @Nullable Term apply1(Term x) {
 
         List<Term> l = $.newArrayList(x.volume());
-        collect(x.arrayClone(), l);
+        collect(((Compound)x).arrayClone(), l);
         return result(l);
 
     }

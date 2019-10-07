@@ -4,6 +4,7 @@ import jcog.memoize.byt.ByteKeyExternal;
 import nars.Op;
 import nars.io.TermIO;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 
 /** interned terms and subterms implementations */
@@ -56,16 +57,16 @@ public enum Intermed  { ;
 
     public static final class InternedCompoundByComponentsSubs extends InternedCompoundByComponents {
 
-        private final Term x;
+        private final Compound x;
 
-        public InternedCompoundByComponentsSubs(Term x) {
+        public InternedCompoundByComponentsSubs(Compound x) {
             super(x.op(), x.dt());
             this.x = x;
             TermIO.the.writeSubterms(x.subterms(), key);
             commit();
         }
-        @Override
-        public Term[] subs() {
+
+        @Override public Term[] subs() {
             return x.arrayShared();
         }
     }

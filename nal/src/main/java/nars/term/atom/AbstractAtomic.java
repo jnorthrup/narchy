@@ -11,7 +11,7 @@ import static java.lang.System.arraycopy;
 /**
  * an Atomic impl which relies on the value provided by toString()
  */
-public abstract class AbstractAtomic implements Atomic {
+public abstract class AbstractAtomic extends Atomic {
 
 
     /*@Stable*/
@@ -23,7 +23,7 @@ public abstract class AbstractAtomic implements Atomic {
         this.hash = Util.hash(raw);
     }
 
-    AbstractAtomic(Op op, String s) {
+    protected AbstractAtomic(Op op, String s) {
         this(op.id, s);
     }
 
@@ -78,7 +78,7 @@ public abstract class AbstractAtomic implements Atomic {
             
             w.append((char) bytes[3]);
         } else {
-            Atomic.super.appendTo(w);
+            super.appendTo(w);
         }
     }
 

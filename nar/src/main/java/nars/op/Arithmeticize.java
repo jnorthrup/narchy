@@ -62,10 +62,10 @@ public class Arithmeticize {
     private final static Variable A = $.varDep("A_"), B = $.varDep("B_");
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
-            MathFunc.add.term, MathFunc.add,
-            MathFunc.mul.term, MathFunc.mul,
-            Equal.equal.term, Equal.equal,
-            Cmp.cmp.term, Cmp.cmp
+            MathFunc.add, MathFunc.add,
+            MathFunc.mul, MathFunc.mul,
+            Equal.equal, Equal.equal,
+            Cmp.cmp, Cmp.cmp
     )::get;
 
     public static class ArithmeticIntroduction extends EventIntroduction {

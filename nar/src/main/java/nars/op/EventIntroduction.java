@@ -20,7 +20,7 @@ import static nars.time.Tense.XTERNAL;
 public abstract class EventIntroduction extends Introduction {
 
     EventIntroduction(NAR nar) {
-        super(nar);
+        super();
     }
 
     @Override

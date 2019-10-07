@@ -6,7 +6,6 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.functor.CommutiveBinaryBidiFunctor;
@@ -73,7 +72,7 @@ public enum MathFunc {
                 return x;
 
             if (!(xi && yi) && x.equals(y))
-                return the((Atomic) mul.term, x, Int.TWO);
+                return the(mul, x, Int.TWO);
 
             return null;
         }
@@ -218,7 +217,7 @@ public enum MathFunc {
                 }
 
 
-                return changed ? $.func((Atomic) term, x, y) : null;
+                return changed ? $.func(this, x, y) : null;
 
             }
         }
