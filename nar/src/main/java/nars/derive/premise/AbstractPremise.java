@@ -37,18 +37,18 @@ public class AbstractPremise implements Premise {
 		this.task = task;
 		this.belief = belief;
 
-		if (task instanceof Task) {
-			Term taskWhy = ((Task) task).why();
-
-			this.why = Why.why(why,
-					belief instanceof Task ? Why.why(taskWhy, ((Task)belief).why()) //double
-						:
-					taskWhy //single
-				);
-
-		} else {
+//		if (task instanceof Task) {
+//			Term taskWhy = ((Task) task).why();
+//
+//			this.why = Why.why(why,
+//					belief instanceof Task ? Why.why(taskWhy, ((Task)belief).why()) //double
+//						:
+//					taskWhy //single
+//				);
+//
+//		} else {
 			this.why = why;
-		}
+//		}
 	}
 
 	public AbstractPremise(Termed task, Termed belief, RuleCause why, Derivation d) {

@@ -2,6 +2,7 @@ package nars.op;
 
 import jcog.math.FloatRange;
 import nars.Task;
+import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.action.TaskTransformAction;
@@ -12,7 +13,7 @@ import org.jetbrains.annotations.Nullable;
 
 public abstract class Introduction extends TaskTransformAction {
 
-    public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
+    //public final FloatRange priFactor = new FloatRange(0.5f, 0, 1);
 
     protected Introduction() {
         super();
@@ -64,7 +65,7 @@ public abstract class Introduction extends TaskTransformAction {
 
         if (yy != null) {
             yy.pri(0); //HACK
-            Task.fund(yy, xt, priFactor.floatValue(), true);
+            Task.fund(yy, xt, ((TaskLinkWhat)w).links.grow.floatValue() /* priFactor.floatValue() */, true);
         }
         return yy;
     }
