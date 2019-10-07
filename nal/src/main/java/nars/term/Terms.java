@@ -2,6 +2,7 @@ package nars.term;
 
 import jcog.bloom.StableBloomFilter;
 import jcog.data.bit.MetalBitSet;
+import jcog.data.set.MetalTreeSet;
 import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.Task;
@@ -54,9 +55,8 @@ public enum Terms {
 				return commute2(x);
 			case 3:
 				return commute3(x);
-			default: {
+			default:
 				return commuteN(x);
-			}
 		}
 
 
@@ -73,21 +73,21 @@ public enum Terms {
 				return x;
 			case 2:
 				return sort2(x);
+			//TODO optimized sort3
 			default:
 				return ifDifferent(x, new TermList(x.clone()).sort());
 		}
 	}
 
 	private static Term[] commuteN(Term[] x) {
-		Term[] y = new TermList(x.clone()).sortAndDedup();
-		return ifDifferent(x, y);
+		return ifDifferent(x,
+			new MetalTreeSet<>(x).toArray(Op.EmptyTermArray)
+			//new TermList(x.clone()).sortAndDedup()
+		);
 	}
 
 	private static Term[] ifDifferent(Term[] a, Term[] b) {
-		if (ArrayUtil.equalsIdentity(a, b))
-			return a; //unchanged
-		else
-			return b;
+		return ArrayUtil.equalsIdentity(a, b) ? a : b;
 	}
 
 	private static Term[] commute3(Term[] t) {
@@ -528,7 +528,7 @@ public enum Terms {
 			return Null;
 
 
-		TreeSet<Term> ab = a.collect(b.subs() > 3 ? b.toSet()::contains : b::contains, new TreeSet());
+		MetalTreeSet<Term> ab = a.collect(b.subs() > 3 ? b.toSet()::contains : b::contains, new MetalTreeSet());
 		int ssi = ab == null ? 0 : ab.size();
 		switch (ssi) {
 			case 0:

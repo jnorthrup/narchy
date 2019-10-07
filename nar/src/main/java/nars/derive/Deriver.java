@@ -8,9 +8,7 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
-import jcog.signal.meter.FastCounter;
 import jcog.util.ArrayUtil;
-import nars.Emotion;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -167,20 +165,7 @@ public class Deriver extends How {
 		 * run a premise
 		 */
 		protected void run(Premise p, int ttl) {
-
-			FastCounter result = d.derive(p, ttl);
-
-			Emotion e = d.nar.emotion;
-			if (result == e.premiseUnderivable1) {
-				//System.err.println("underivable1:\t" + p);
-			} else {
-	//				System.err.println("  derivable:\t" + p);
-			}
-
-			//ttlUsed = Math.max(0, deriveTTL - d.ttl);
-
-			//e.premiseTTL_used.recordValue(ttlUsed); //TODO handle negative amounts, if this occurrs.  limitation of HDR histogram
-			result.increment();
+			d.run(p, ttl).increment();
 		}
 
 		public abstract void next();
@@ -216,6 +201,8 @@ public class Deriver extends How {
 		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
         int ttl;
 
+        private static final FloatFunction sorter = x->DeriverExecutor.pri((Premise)x);
+
 		@Override
 		protected void start() {
 			queue.clear();
@@ -228,8 +215,9 @@ public class Deriver extends How {
 			//queue.clear();
 			int branchTTL = d.nar.deriveBranchTTL.intValue();
 
-			for (int h = 0; h < hypotheses; h++)
+			for (int h = 0; h < hypotheses; h++) {
 				hypothesize(branchTTL);
+			}
 
 			int s = queue.size();
             if (s == 0)
@@ -238,7 +226,7 @@ public class Deriver extends How {
             if (s > 1) {
 				//queue.list.sortThisByFloat(DeriverExecutor::pri); //ascending order because it poll's from the end
 				Object[] qq = queue.list.array();
-				ArrayUtil.sort(qq, 0, s, (FloatFunction) x -> DeriverExecutor.pri((Premise) x));
+				ArrayUtil.sort(qq, 0, s, sorter);
 				//assert(DeriverExecutor.pri(queue.list.get(0)) <= DeriverExecutor.pri(queue.list.get(s-1)));
 			}
 
@@ -258,6 +246,7 @@ public class Deriver extends How {
 			Premise p = premise();
 			if (p!=null) {
 				run(p, branchTTL);
+				//queue.add(p);
 			}
 		}
 
@@ -294,7 +283,7 @@ public class Deriver extends How {
 			bag.clear();
 			bag.capacity(bufferCap);
 
-			each = (p) -> run(p.get(), d.nar.deriveBranchTTL.intValue());
+			each = p -> run(p.get(), d.nar.deriveBranchTTL.intValue());
 		}
 
 		@Override

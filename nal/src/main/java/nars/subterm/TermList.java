@@ -152,9 +152,9 @@ public class TermList extends FasterList<Term> implements Subterms {
 
     public Term[] sort() {
         int s = size;
-        if (s > 1) {
+        if (s > 1)
             Arrays.sort(this.items, 0, s);
-        }
+
         return arrayKeep();
     }
 

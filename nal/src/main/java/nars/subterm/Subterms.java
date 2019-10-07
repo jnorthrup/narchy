@@ -8,6 +8,7 @@ import jcog.data.bit.MetalBitSet;
 import jcog.data.byt.DynBytes;
 import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
+import jcog.data.set.MetalTreeSet;
 import jcog.decide.Roulette;
 import jcog.util.ArrayUtil;
 import nars.NAL;
@@ -358,13 +359,13 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted() {
-        TreeSet<Term> u = new TreeSet();
-        forEach(u::add);
+        MetalTreeSet<Term> u = new MetalTreeSet();
+        addAllTo(u);
         return u;
     }
 
     default /*@NotNull*/ SortedSet<Term> toSetSorted(Function<Term,Term> map) {
-        TreeSet<Term> u = new TreeSet();
+        MetalTreeSet<Term> u = new MetalTreeSet();
         forEach(z -> u.add(map.apply(z)));
         return u;
     }

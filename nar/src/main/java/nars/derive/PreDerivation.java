@@ -29,12 +29,12 @@ public abstract class PreDerivation {
 	/**
 	 * post-derivation lookahead buffer
 	 */
-	final PremiseActionable[] post;
+	final PremiseRunnable[] post;
 
 
     protected PreDerivation() {
 
-        post = Util.map(MAX_FANOUT, PremiseActionable[]::new, i->new PremiseActionable());
+        post = Util.map(MAX_FANOUT, PremiseRunnable[]::new, i->new PremiseRunnable());
     }
 
     public abstract boolean hasBeliefTruth();

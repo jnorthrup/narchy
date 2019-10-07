@@ -9,9 +9,7 @@ import nars.task.util.Answer;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
-import java.util.Random;
 import java.util.function.Consumer;
-import java.util.function.Predicate;
 import java.util.stream.Stream;
 
 
@@ -45,143 +43,147 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     public void match(Answer a) {
         int size = this.size;
         if (size == 0) return;
-        else if (size == 1) { items[0].match(a); }
         else {
-            IntArrayList nonEmpty = new IntArrayList(size);
-            for (int i = 0; i < size; i++) {
-                if (!items[i].isEmpty())
-                    nonEmpty.add(i);
-            }
-            int N = nonEmpty.size();
-            if (N ==1) {
-                items[nonEmpty.get(0)].match(a);
-            } else {
-                switch (matchMode) {
-                    case ORDERED: {
-                        for (int i = 0; i < N; i++) {
-                            items[nonEmpty.get(i)].match(a);
-                            if (a.ttl <= 0)
-                                break;
-                        }
-                        break;
-                    }
-
-                    case SHUFFLE_FIRST_COME_FIRST_SERVE: {
-                        int[] ne = nonEmpty.toIntArray();
-                        ArrayUtil.shuffle(ne, a.random());
-                        for (int i = 0; i < N; i++) {
-                            items[ne[i]].match(a);
-                            if (a.ttl <= 0)
-                                break;
-                        }
-                        break;
-                    }
-
-                    case SHUFFLE_ROUND_ROBIN: {
-                        //fair round robin
-                        int ttlStart = a.ttl;
-                        assert (ttlStart > 0);
-                        int ttlFair = Math.max(1,
-                            (int)Math.ceil(((float)ttlStart) / N)
-                            //ttlStart
-                        );
-                        int ttlUsed = 0;
-                        int[] ne = nonEmpty.toIntArray();
-                        ArrayUtil.shuffle(ne, a.random());
-                        for (int i = 0; i < N; i++) {
-                            a.ttl = ttlFair;
-                            items[ne[i]].match(a);
-                            ttlUsed += ttlFair - a.ttl;
-                            if (ttlUsed >= ttlStart)
-                                break;
-                        }
-                        break;
-                    }
-                    default:
-                        throw new UnsupportedOperationException();
+            BeliefTable[] items = this.items;
+            if (size == 1) { items[0].match(a); }
+            else {
+                IntArrayList nonEmpty = new IntArrayList(size);
+                for (int i = 0; i < size; i++) {
+                    if (!items[i].isEmpty())
+                        nonEmpty.add(i);
                 }
-            }
+                int N = nonEmpty.size();
+                if (N ==1) {
+                    items[nonEmpty.get(0)].match(a);
+                } else {
+                    switch (matchMode) {
+                        case ORDERED: {
+                            for (int i = 0; i < N; i++) {
+                                items[nonEmpty.get(i)].match(a);
+                                if (a.ttl <= 0)
+                                    break;
+                            }
+                            break;
+                        }
 
+                        case SHUFFLE_FIRST_COME_FIRST_SERVE: {
+                            int[] ne = nonEmpty.toIntArray();
+                            ArrayUtil.shuffle(ne, a.random());
+                            for (int i = 0; i < N; i++) {
+                                items[ne[i]].match(a);
+                                if (a.ttl <= 0)
+                                    break;
+                            }
+                            break;
+                        }
+
+                        case SHUFFLE_ROUND_ROBIN: {
+                            //fair round robin
+                            int ttlStart = a.ttl;
+                            assert (ttlStart > 0);
+                            int ttlFair = Math.max(1,
+                                (int)Math.ceil(((float)ttlStart) / N)
+                                //ttlStart
+                            );
+                            int ttlUsed = 0;
+                            int[] ne = nonEmpty.toIntArray();
+                            ArrayUtil.shuffle(ne, a.random());
+                            for (int i = 0; i < N; i++) {
+                                a.ttl = ttlFair;
+                                items[ne[i]].match(a);
+                                ttlUsed += ttlFair - a.ttl;
+                                if (ttlUsed >= ttlStart)
+                                    break;
+                            }
+                            break;
+                        }
+                        default:
+                            throw new UnsupportedOperationException();
+                    }
+                }
+
+            }
         }
 
     }
 
 
-    /** visit subtables in shuffled order, while predicate returns true */
-    public boolean ANDshuffled(Random rng, Predicate<BeliefTable> e)  {
-        BeliefTable[] items = this.items;
-        if (items == null)
-            return true; //?wtf
-
-        int n = Math.min(size, items.length);
-        switch (n) {
-            case 0:
-                return true;
-            case 1:
-                return e.test(items[0]);
-            case 2: {
-                int i = rng.nextInt(2);
-                return e.test(items[i])  && e.test(items[1 - i]);
-            }
-            case 3: {
-                int i = rng.nextInt(6);
-                int x, y, z;
-                switch (i) {
-                    case 0:
-                        x = 0;
-                        y = 1;
-                        z = 2;
-                        break;
-                    case 1:
-                        x = 0;
-                        y = 2;
-                        z = 1;
-                        break;
-                    case 2:
-                        x = 1;
-                        y = 0;
-                        z = 2;
-                        break;
-                    case 3:
-                        x = 1;
-                        y = 2;
-                        z = 0;
-                        break;
-                    case 4:
-                        x = 2;
-                        y = 0;
-                        z = 1;
-                        break;
-                    case 5:
-                        x = 2;
-                        y = 1;
-                        z = 0;
-                        break;
-                    default:
-                        throw new UnsupportedOperationException();
-                }
-                return e.test(items[x]) && e.test(items[y]) && e.test(items[z]);
-            }
-            default:
-                byte[] order = new byte[n];
-                for (byte i = 0; i < n; i++)
-                    order[i] = i;
-                ArrayUtil.shuffle(order, rng);
-                for (int i = 0; i < n; i++) {
-                    if (!e.test(items[order[i]]))
-                        return false;
-                }
-                return true;
-        }
-
-    }
+//    /** visit subtables in shuffled order, while predicate returns true */
+//    public boolean ANDshuffled(Random rng, Predicate<BeliefTable> e)  {
+//        BeliefTable[] items = this.items;
+//        if (items == null)
+//            return true; //?wtf
+//
+//        int n = Math.min(size, items.length);
+//        switch (n) {
+//            case 0:
+//                return true;
+//            case 1:
+//                return e.test(items[0]);
+//            case 2: {
+//                int i = rng.nextInt(2);
+//                return e.test(items[i])  && e.test(items[1 - i]);
+//            }
+//            case 3: {
+//                int i = rng.nextInt(6);
+//                int x, y, z;
+//                switch (i) {
+//                    case 0:
+//                        x = 0;
+//                        y = 1;
+//                        z = 2;
+//                        break;
+//                    case 1:
+//                        x = 0;
+//                        y = 2;
+//                        z = 1;
+//                        break;
+//                    case 2:
+//                        x = 1;
+//                        y = 0;
+//                        z = 2;
+//                        break;
+//                    case 3:
+//                        x = 1;
+//                        y = 2;
+//                        z = 0;
+//                        break;
+//                    case 4:
+//                        x = 2;
+//                        y = 0;
+//                        z = 1;
+//                        break;
+//                    case 5:
+//                        x = 2;
+//                        y = 1;
+//                        z = 0;
+//                        break;
+//                    default:
+//                        throw new UnsupportedOperationException();
+//                }
+//                return e.test(items[x]) && e.test(items[y]) && e.test(items[z]);
+//            }
+//            default:
+//                byte[] order = new byte[n];
+//                for (byte i = 0; i < n; i++)
+//                    order[i] = i;
+//                ArrayUtil.shuffle(order, rng);
+//                for (int i = 0; i < n; i++) {
+//                    if (!e.test(items[order[i]]))
+//                        return false;
+//                }
+//                return true;
+//        }
+//
+//    }
 
     /** stops after the first table accepts it */
     @Override public void remember(Remember r) {
-        anySatisfy(t -> {
-            t.remember(r);
-            return r.complete();
-        });
+        for (int i = 0, thisSize = this.size; i < thisSize; i++) {
+            items[i].remember(r);
+            if (r.complete())
+                break;
+        }
 
 //        if (Param.ETERNALIZE_FORGOTTEN_TEMPORALS) {
 //            if (eternal != EternalTable.EMPTY && !r.forgotten.isEmpty() &&
@@ -245,7 +247,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     @Override
     public void forEachTask(Consumer<? super Task> action) {
-        forEach(t -> t.forEachTask(action));
+        forEachWith(TaskTable::forEachTask, action);
     }
 
 //    @Override

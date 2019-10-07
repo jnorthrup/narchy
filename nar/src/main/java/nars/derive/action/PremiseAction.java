@@ -1,7 +1,6 @@
 package nars.derive.action;
 
 import jcog.Texts;
-import nars.NAL;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.term.control.AbstractPred;
@@ -46,9 +45,10 @@ public abstract class PremiseAction extends AbstractPred<Derivation>  {
 	public abstract void run(Derivation d);
 
 	@Override
-	public final boolean test(Derivation d) {
-		run(d);
-		return d.use(NAL.derive.TTL_COST_BRANCH);
+	@Deprecated public final boolean test(Derivation d) {
+		throw new UnsupportedOperationException();
+//		run(d);
+//		return d.use(NAL.derive.TTL_COST_BRANCH);
 	}
 
 	public void trace(Derivation d) {

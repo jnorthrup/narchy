@@ -14,7 +14,6 @@ import nars.term.Compound;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.util.TermException;
-import nars.term.util.TermTransformException;
 import nars.term.util.transform.VariableTransform;
 import nars.term.var.VarIndep;
 import nars.time.Tense;
@@ -29,7 +28,6 @@ import java.util.Arrays;
 
 import static nars.NAL.derive.DERIVE_FILTER_SIMILAR_TO_PARENTS;
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
 public class Taskify extends ProxyTerm {
@@ -62,19 +60,20 @@ public class Taskify extends ProxyTerm {
 
         if (y instanceof Compound) {
 
-            Term yc = y.concept();
-            if (yc == Null) {
-                if (NAL.DEBUG)
-                    throw new TermTransformException(y, yc, "unconceptualizable");
-                else
-                    return Null;
-            }
+//            Term yc = y.concept();
+//            if (yc == Null) {
+//                if (NAL.DEBUG)
+//                    throw new TermTransformException(y, yc, "unconceptualizable");
+//                else
+//                    return Null;
+//            }
 
             //if ((d.concPunc==QUESTION || d.concPunc==QUEST)  && !VarIndep.validIndep(y, true)) {
             if (!VarIndep.validIndep(y, true)) {
                 //convert orphaned indep vars to query/dep variables
+                byte punc = d.punc;
                 Term z = y.transform(
-                        (d.punc == QUESTION || d.punc == QUEST) ?
+                        (punc == QUESTION || punc == QUEST) ?
                                 VariableTransform.indepToQueryVar
                                 :
                                 VariableTransform.indepToDepVar

@@ -3,12 +3,14 @@ package nars.derive;
 import jcog.Util;
 import jcog.WTF;
 import jcog.data.ShortBuffer;
+import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
 import jcog.signal.meter.FastCounter;
 import nars.*;
 import nars.attention.What;
 import nars.control.Caused;
 import nars.derive.action.PremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.UnifyMatchFork;
 import nars.derive.premise.AbstractPremise;
@@ -43,6 +45,7 @@ import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
 import java.util.function.BiFunction;
+import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
@@ -54,7 +57,7 @@ import static nars.time.Tense.TIMELESS;
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
  * instantiated threadlocal, and recycled mutably
  */
-public class Derivation extends PreDerivation implements Caused {
+public class Derivation extends PreDerivation implements Caused, Predicate<PremiseRunnable> {
 
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
@@ -209,6 +212,22 @@ public class Derivation extends PreDerivation implements Caused {
 
     public final boolean use(int x) {
         return unify.use(x);
+    }
+
+    @Override
+    public boolean test(PremiseRunnable r) {
+
+        PremiseAction a = r.action;
+
+        if (NAL.TRACE)
+            a.trace(this);
+
+        if (a instanceof PremisePatternAction.TruthifyDeriveAction)
+            reset(r.truth, r.punc, r.single);
+
+        a.run(this);
+
+        return use(NAL.derive.TTL_COST_BRANCH);
     }
 
     /** main premise unification instance */
@@ -608,7 +627,7 @@ public class Derivation extends PreDerivation implements Caused {
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    FastCounter derive(Premise P, int deriveTTL) {
+    FastCounter run(Premise P, int deriveTTL) {
 
         Emotion e = nar.emotion;
 
@@ -644,7 +663,7 @@ public class Derivation extends PreDerivation implements Caused {
 
             PremiseAction[] branch = this.deriver.program.branch;
 
-            PremiseActionable[] self = this.post;
+            PremiseRunnable[] self = this.post;
             for (int i = 0; i < can.length; i++) {
                 if ((self[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
@@ -665,8 +684,24 @@ public class Derivation extends PreDerivation implements Caused {
 
         try (var __ = e.derive_E_Run.time()) {
             this.ready(deriveTTL); //first come first serve, maybe not ideal
-            PremiseActionable.runDirect(valid, lastValid, this);
-            //runCompiled(valid, lastValid, this);
+
+
+            PremiseRunnable[] post = this.post;
+            if (valid == 1) {//optimized 1-option case
+                //while (post[lastValid].run()) { }
+                test(post[lastValid]);
+            } else {//
+
+
+                float[] pri = new float[valid];
+                for (int i = 0; i < valid; i++)
+                    pri[i] = post[i].pri;
+                MutableRoulette.run(pri, random, wi -> 0, i -> test(post[i]));
+
+                //alternate roulette:
+                //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
+            }
+
             return e.premiseRun;
         }
     }
@@ -680,8 +715,7 @@ public class Derivation extends PreDerivation implements Caused {
 //            throw new WTF();
 //
 //    }
-    /** reset procedure */
-    @Deprecated public void ready(Truth truth, byte punc, boolean single) {
+    @Deprecated void reset(Truth truth, byte punc, boolean single) {
         //ensureClear();
 
         unify.clear();
@@ -697,7 +731,7 @@ public class Derivation extends PreDerivation implements Caused {
     }
 
 
-    private static final Comparator<? super PremiseActionable> sortByPri = (a, b)->{
+    private static final Comparator<? super PremiseRunnable> sortByPri = (a, b)->{
         if (a==b) return 0;
         int i = Float.compare(a.pri, b.pri);
         return i != 0 ? -i : Integer.compare(System.identityHashCode(a), System.identityHashCode(b));

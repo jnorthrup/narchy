@@ -23,6 +23,7 @@ package nars.term;
 
 import jcog.TODO;
 import jcog.Util;
+import jcog.data.set.MetalTreeSet;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
@@ -48,7 +49,6 @@ import java.io.PrintStream;
 import java.util.List;
 import java.util.Map;
 import java.util.SortedSet;
-import java.util.TreeSet;
 import java.util.function.*;
 
 import static nars.Op.CONJ;
@@ -640,10 +640,10 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     default SortedSet<Term> eventSet() {
         assert (op() == CONJ);
-        TreeSet<Term> s = new TreeSet();
+        MetalTreeSet<Term> s = new MetalTreeSet();
         eventsAND((when, what) -> {
             if (what != Term.this)
-                s.add(what);
+                s.addFast(what);
             return true;
         }, 0, true, true);
         return s;

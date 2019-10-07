@@ -2,33 +2,21 @@ package nars.term.util.conj;
 
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
-import jcog.data.list.FasterList;
 import jcog.util.ArrayUtil;
 import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Bool;
 import nars.term.compound.Sequence;
 import nars.term.util.builder.TermBuilder;
-import org.eclipse.collections.api.list.MutableList;
-import org.eclipse.collections.api.set.MutableSet;
-import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectByteHashMap;
-import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Comparator;
-import java.util.List;
 import java.util.Set;
-import java.util.TreeSet;
 import java.util.function.Predicate;
-import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
-import static nars.Op.INH;
 import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
@@ -128,112 +116,112 @@ public enum ConjPar {
         return null;
     }
 
-    @Nullable public static Term inhBundle(Term[] xx, TermBuilder B) {
-        //NAL3 bundle
-        MetalBitSet ii = MetalBitSet.bits(xx.length);
-        for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
-            Term t = xx[i];
-            Op to = t.op();
-            if (t.unneg().op() == INH) {
-                ii.set(i);
-            }
-        }
-        int inhCount = ii.cardinality();
-        if (inhCount <= 1)
-            return null;
-
-        //simple case
-        if (inhCount == xx.length && inhCount == 2) {
-            Term aa = xx[0];
-            Term bb = xx[1];
-            Term a = aa.unneg();
-            Term b = bb.unneg();
-            Term pred = a.sub(1);
-            if (pred.equals(b.sub(1))) {
-                //common pred: union
-                Term i = INH.the(B, Op.DISJ(B, a.sub(0).negIf(aa instanceof Neg), b.sub(0).negIf(bb instanceof Neg)), pred);
-                //TODO test for invalid
-                return i;
-            }
-            Term subj = a.sub(0);
-            if (subj.equals(b.sub(0))) {
-                //common subj: intersection
-                return INH.the(B, subj, CONJ.the(B, a.sub(1).negIf(aa instanceof Neg), b.sub(1).negIf(bb instanceof Neg)));
-            }
-        }
-
-        Term other = inhCount < xx.length ? CONJ.the(B, IntStream.range(0, xx.length).filter(r -> !ii.get(r)).mapToObj(r -> xx[r]).toArray(Term[]::new)) : null;
-        if (other == False || other == Null)
-            return other;
-        List<Term> all = new FasterList(4);
-        if (other!=null)
-            all.add(other);
-
-        //counts are stored as follows: subj are stored as normal, pred are stored as negated
-        ObjectIntHashMap<Term> counts = new ObjectIntHashMap(inhCount);
-        for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
-            if (ii.get(i)) {
-                Subterms sp = xx[i].unneg().subterms();
-                counts.addToValue(sp.sub(0), +1);
-                counts.addToValue(sp.sub(1).neg(), +1);
-            }
-        }
-        MutableList<ObjectIntPair<Term>> sp = counts.keyValuesView().select(t -> t.getTwo() > 1).toList();
-        if (sp.isEmpty())
-            return null;
-
-        FasterList<Term> xxx = new FasterList();
-        for (int i = 0; i < xx.length; i++) {
-            if (ii.get(i))
-                xxx.add(xx[i]);
-        }
-
-        if (sp.size()>1)
-            sp.sortThis(Comparator.comparingInt((ObjectIntPair<Term> i) -> -i.getTwo()).thenComparing(ObjectIntPair::getOne));
-
-
-        MutableSet<Term> components = null;
-        for (ObjectIntPair<Term> j : sp) {
-            int xxxn = xxx.size();
-            if (xxxn < 2)
-                break; //done
-            if (components!=null)
-                components.clear();
-            Term jj = j.getOne();
-            int subjOrPred = !(jj instanceof Neg) ? 0 :1;
-            jj = jj.unneg();
-            for (Term xxxi : xxx) {
-                Subterms xxi = xxxi.unneg().subterms();
-                if (xxi.sub(subjOrPred).equals(jj)) {
-                    Term c = xxxi;
-                    if (components!=null) {
-                        if (components.contains(c.neg()))
-                            return False; //contradiction detected
-                    } else {
-                        components = new UnifiedSet();
-                    }
-                    components.add(c);
-                }
-            }
-            if (components==null || components.size() <= 1)
-                continue;
-
-            components.forEach(xxx::removeInstance);
-            TreeSet<Term> c2 = new TreeSet();
-            components.forEach(z -> c2.add(z.unneg().sub(1 - subjOrPred).negIf(z instanceof Neg)));
-
-
-            Term cc = subjOrPred == 0 ?
-                INH.the(B, jj, CONJ.the(B, c2)) :
-                INH.the(B, Op.DISJ(B, c2.toArray(Op.EmptyTermArray)), jj);
-            if (cc == False || cc == Null)
-                return cc;
-            if (cc!=True)
-                all.add(cc);
-        }
-        all.addAll(xxx);
-        return CONJ.the(all);
-    }
+//    @Nullable public static Term inhBundle(Term[] xx, TermBuilder B) {
+//        //NAL3 bundle
+//        MetalBitSet ii = MetalBitSet.bits(xx.length);
+//        for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
+//            Term t = xx[i];
+//            Op to = t.op();
+//            if (t.unneg().op() == INH) {
+//                ii.set(i);
+//            }
+//        }
+//        int inhCount = ii.cardinality();
+//        if (inhCount <= 1)
+//            return null;
+//
+//        //simple case
+//        if (inhCount == xx.length && inhCount == 2) {
+//            Term aa = xx[0];
+//            Term bb = xx[1];
+//            Term a = aa.unneg();
+//            Term b = bb.unneg();
+//            Term pred = a.sub(1);
+//            if (pred.equals(b.sub(1))) {
+//                //common pred: union
+//                Term i = INH.the(B, Op.DISJ(B, a.sub(0).negIf(aa instanceof Neg), b.sub(0).negIf(bb instanceof Neg)), pred);
+//                //TODO test for invalid
+//                return i;
+//            }
+//            Term subj = a.sub(0);
+//            if (subj.equals(b.sub(0))) {
+//                //common subj: intersection
+//                return INH.the(B, subj, CONJ.the(B, a.sub(1).negIf(aa instanceof Neg), b.sub(1).negIf(bb instanceof Neg)));
+//            }
+//        }
+//
+//        Term other = inhCount < xx.length ? CONJ.the(B, IntStream.range(0, xx.length).filter(r -> !ii.get(r)).mapToObj(r -> xx[r]).toArray(Term[]::new)) : null;
+//        if (other == False || other == Null)
+//            return other;
+//        List<Term> all = new FasterList(4);
+//        if (other!=null)
+//            all.add(other);
+//
+//        //counts are stored as follows: subj are stored as normal, pred are stored as negated
+//        ObjectIntHashMap<Term> counts = new ObjectIntHashMap(inhCount);
+//        for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
+//            if (ii.get(i)) {
+//                Subterms sp = xx[i].unneg().subterms();
+//                counts.addToValue(sp.sub(0), +1);
+//                counts.addToValue(sp.sub(1).neg(), +1);
+//            }
+//        }
+//        MutableList<ObjectIntPair<Term>> sp = counts.keyValuesView().select(t -> t.getTwo() > 1).toList();
+//        if (sp.isEmpty())
+//            return null;
+//
+//        FasterList<Term> xxx = new FasterList();
+//        for (int i = 0; i < xx.length; i++) {
+//            if (ii.get(i))
+//                xxx.add(xx[i]);
+//        }
+//
+//        if (sp.size()>1)
+//            sp.sortThis(Comparator.comparingInt((ObjectIntPair<Term> i) -> -i.getTwo()).thenComparing(ObjectIntPair::getOne));
+//
+//
+//        MutableSet<Term> components = null;
+//        for (ObjectIntPair<Term> j : sp) {
+//            int xxxn = xxx.size();
+//            if (xxxn < 2)
+//                break; //done
+//            if (components!=null)
+//                components.clear();
+//            Term jj = j.getOne();
+//            int subjOrPred = !(jj instanceof Neg) ? 0 :1;
+//            jj = jj.unneg();
+//            for (Term xxxi : xxx) {
+//                Subterms xxi = xxxi.unneg().subterms();
+//                if (xxi.sub(subjOrPred).equals(jj)) {
+//                    Term c = xxxi;
+//                    if (components!=null) {
+//                        if (components.contains(c.neg()))
+//                            return False; //contradiction detected
+//                    } else {
+//                        components = new UnifiedSet();
+//                    }
+//                    components.add(c);
+//                }
+//            }
+//            if (components==null || components.size() <= 1)
+//                continue;
+//
+//            components.forEach(xxx::removeInstance);
+//            MetalTreeSet<Term> c2 = new MetalTreeSet();
+//            components.forEach(z -> c2.add(z.unneg().sub(1 - subjOrPred).negIf(z instanceof Neg)));
+//
+//
+//            Term cc = subjOrPred == 0 ?
+//                INH.the(B, jj, CONJ.the(B, c2)) :
+//                INH.the(B, Op.DISJ(B, c2.toArray(Op.EmptyTermArray)), jj);
+//            if (cc == False || cc == Null)
+//                return cc;
+//            if (cc!=True)
+//                all.add(cc);
+//        }
+//        all.addAll(xxx);
+//        return CONJ.the(all);
+//    }
 
     @Nullable
     public static Term disjunctiveFactor(Term[] xx, int dt, TermBuilder B) {
