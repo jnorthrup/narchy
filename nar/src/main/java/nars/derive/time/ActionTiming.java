@@ -14,10 +14,10 @@ import static java.lang.Math.round;
 public class ActionTiming implements TimeFocus {
 
     /** TODO mutable histogram model for temporal focus duration  */
-    public final FloatRange focusDurs = new FloatRange(2, 0, 32);
+    public final FloatRange focusDurs = new FloatRange(1, 0, 32);
 
     /** TODO mutable histogram model for temporal focus position  */
-    public final FloatRange horizonDurs = new FloatRange(8, 0, 32);
+    public final FloatRange horizonDurs = new FloatRange(2, 0, 32);
 
     /** focus center, 0=present, -1 = full past, +1 full future */
     public final FloatRange balance = new FloatRange(0f, -1, +1);
@@ -38,21 +38,22 @@ public class ActionTiming implements TimeFocus {
     @Override
     public long[] premise(What what, Task task, Term beliefTerm) {
 
-        float dur = what.dur() * focusDurs.floatValue();
+        float dur = what.dur();
 
         long now = what.time();
         //long tStart = task.start();
 
         float range = horizonDurs.floatValue() * dur;
+        float focusDur = dur * focusDurs.floatValue();
 
         double target = now + balance.floatValue() * range/2;
         Random rng = what.random();
 
         //gaussian
-        double then = round(target + rng.nextGaussian() * range);
+        //double then = (target + range * rng.nextGaussian());
         //uniform
-        //long then = Math.round(now + (-.5f + rng.nextFloat()) * 2 * horizonDurs.floatValue() * dur); //uniform
+        double then = (target + range * (-.5f + rng.nextFloat())); //uniform
 
-        return new long[] { round(then - dur / 2), round(then + dur / 2)};
+        return new long[] { round(then - focusDur / 2), round(then + focusDur / 2)};
     }
 }

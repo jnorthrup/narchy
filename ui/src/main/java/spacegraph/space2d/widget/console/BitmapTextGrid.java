@@ -163,31 +163,30 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         if (this.cols == 0 || this.rows == 0)
             return;
 
-        if (invalidBmp.compareAndSet(true, false)) {
+        if (invalidBmp.weakCompareAndSetAcquire(true, false)) {
             //synchronized (this) {
                 allocate();
                 renderText();
             //}
-            invalidTex.set(true);
+            invalidTex.setRelease(true);
         }
         //super.renderContent(r);
     }
 
     @Override
     protected final void paintIt(GL2 gl, ReSurface r) {
-        if (invalidTex.compareAndSet(true, false)) {
-            try {
+        if (invalidTex.weakCompareAndSetAcquire(true, false)) {
+//            try {
 
                 if (tex.gl != null) {
-                    if (!tex.set(backbuffer, gl)) {
-                        invalidTex.set(true); //try again later
-                    }
+                    if (!tex.set(backbuffer, gl))
+                        invalidTex.setRelease(true); //try again later
                 } else
-                    invalidTex.set(true); //try again
+                    invalidTex.setRelease(true); //try again
 
-            } catch (Throwable t) {
-                t.printStackTrace(); //HACK
-            }
+//            } catch (Throwable t) {
+//                t.printStackTrace(); //HACK
+//            }
         }
         tex.paint(gl, textBounds(), alpha);
     }

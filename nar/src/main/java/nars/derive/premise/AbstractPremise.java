@@ -36,11 +36,16 @@ public class AbstractPremise implements Premise {
 		assert(valid(belief));
 		this.task = task;
 		this.belief = belief;
+
 		if (task instanceof Task) {
-			this.why = belief instanceof Task ?
-				Why.why(Why.why(((Task)task).why(), ((Task)belief).why(), NAL.causeCapacity.intValue()), why, NAL.causeCapacity.intValue())
-				:
-				Why.why(((Task)task).why(), why, NAL.causeCapacity.intValue());
+			Term taskWhy = ((Task) task).why();
+
+			this.why = Why.why(why,
+					belief instanceof Task ? Why.why(taskWhy, ((Task)belief).why()) //double
+						:
+					taskWhy //single
+				);
+
 		} else {
 			this.why = why;
 		}
@@ -193,7 +198,7 @@ public class AbstractPremise implements Premise {
 	}
 
 	private Term why(Derivation d) {
-		return Why.why(d.why(), this.why(), NAL.causeCapacity.intValue());
+		return Why.why(d.why(), this.why, NAL.causeCapacity.intValue());
 	}
 
 

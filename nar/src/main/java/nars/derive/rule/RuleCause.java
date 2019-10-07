@@ -30,7 +30,7 @@ public final class RuleCause extends Cause {
 
 
 	public final Term why(Caused d) {
-		return Why.why(why, d.why(), NAL.causeCapacity.intValue());
+		return Why.why(why, d.why());
 	}
 	public final Term why(Caused... c) {
 		return Why.why(why, Why.why(c, NAL.causeCapacity.intValue()-1), Integer.MAX_VALUE);

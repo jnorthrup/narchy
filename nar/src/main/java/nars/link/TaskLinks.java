@@ -11,7 +11,6 @@ import jcog.pri.op.PriForget;
 import jcog.pri.op.PriMerge;
 import nars.NAL;
 import nars.NAR;
-import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.term.Term;
@@ -154,11 +153,6 @@ public class TaskLinks implements Sampler<TaskLink> {
 
     public final TaskLink link(TaskLink x) {
         return links.put(x);
-    }
-
-    public TaskLink link(Task task, float pri) {
-        AbstractTaskLink x = AtomicTaskLink.link(task.term()).priSet(task.punc(), pri);
-        return link(x);
     }
 
     public Stream<Term> terms() {

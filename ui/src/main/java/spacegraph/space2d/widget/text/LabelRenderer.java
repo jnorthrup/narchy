@@ -1,6 +1,7 @@
 package spacegraph.space2d.widget.text;
 
 import com.jogamp.opengl.GL2;
+import jcog.tree.rtree.rect.RectFloat;
 import spacegraph.video.Draw;
 import spacegraph.video.font.HersheyFont;
 
@@ -25,9 +26,17 @@ public interface LabelRenderer extends BiConsumer<VectorLabel, GL2> {
     LabelRenderer LineBox = (label, gl) -> {
 
         label.fgColor.apply(gl);
-        gl.glLineWidth(1);
-        float y = label.bounds.y + label.bounds.h / 2;
-        Draw.line(label.bounds.x, y, label.bounds.x + label.bounds.w, y, gl);
+        //gl.glLineWidth(0.5f);
+        RectFloat b = label.bounds;
+        float x = b.x;
+        float y = b.y;
+        float W = b.w;
+        float H = b.h;
+        float w = W * label.textScaleX * label.text.length();
+        float h = H * label.textScaleY;
+        float wm = (W - w) / 2;
+        float hm = (H - h) / 2;
+        Draw.rect(x + wm, y + hm, w, h, gl);
 
     };
 

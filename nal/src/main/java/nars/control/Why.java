@@ -2,6 +2,7 @@ package nars.control;
 
 import jcog.util.ArrayUtil;
 import nars.$;
+import nars.NAL;
 import nars.subterm.Subterms;
 import nars.term.Term;
 import nars.term.Terms;
@@ -127,6 +128,10 @@ public enum Why { ;
 				}
 			}
 		}
+	}
+
+	@Deprecated public static Term why(@Nullable Term whyA, @Nullable Term whyB) {
+		return why(whyA, whyB, NAL.causeCapacity.intValue());
 	}
 
 	public static Term why(@Nullable Term whyA, @Nullable Term whyB, int capacity) {

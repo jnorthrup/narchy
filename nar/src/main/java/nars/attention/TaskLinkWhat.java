@@ -4,6 +4,8 @@ import jcog.TODO;
 import nars.NAR;
 import nars.Task;
 import nars.concept.Concept;
+import nars.link.AbstractTaskLink;
+import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.link.TaskLinks;
 import nars.task.util.PriBuffer;
@@ -61,8 +63,10 @@ public class TaskLinkWhat extends What {
 
 
     @Override
-    public TaskLink link(Task t, float p) {
-        return links.link(t, p);
+    public final TaskLink link(Task t, float p) {
+        AbstractTaskLink x = AtomicTaskLink.link(t.term()).priSet(t.punc(), p);
+        x.why = t.why();
+        return links.link(x);
     }
 
     @Override

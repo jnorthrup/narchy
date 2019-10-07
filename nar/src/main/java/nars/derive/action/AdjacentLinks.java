@@ -43,17 +43,17 @@ public class AdjacentLinks extends TaskAction {
 
 		Term to = d._beliefTerm;
 
-		if (!to.op().conceptualizable)
-			return; //HACK the matcher isnt 100% in case of INT beliefTerm, since premiseKey erases it
+		if (!to.op().conceptualizable)  return; //HACK the matcher isnt 100% in case of INT beliefTerm, since premiseKey erases it
 
 		Task task = d._task;
-		Term from = task.term();
-		Term tgt = adj.adjacent(from.concept(), to.concept(), task.punc(), ((TaskLinkWhat)d.what).links, d);
+		Term from = task.term().concept();
+		to = to.concept();
+		Term tgt = adj.adjacent(from, to, task.punc(), ((TaskLinkWhat)d.what).links, d);
 
 		if (tgt != null) {
-			assert(!(tgt instanceof Neg));
-			assert (tgt.op().conceptualizable);
 			if (NAL.DEBUG) {
+				assert(!(tgt instanceof Neg));
+				assert (tgt.op().conceptualizable);
 				if (tgt.equals(from)) throw new WTF();
 				if (tgt.equals(to)) throw new WTF();
 			}

@@ -8,9 +8,10 @@ import spacegraph.space2d.ReSurface;
  */
 public class VectorLabel extends AbstractLabel {
 
-    static final int MIN_PIXELS_TO_BE_VISIBLE = 3;
-    static final float MIN_THICK = 0.5F, THICKNESSES_PER_PIXEL = 1f/100f, MAX_THICK = 5F;
+    static final float MIN_PIXELS_TO_BE_VISIBLE = 2f;
+    static final float MIN_THICK = 0.5F, THICKNESSES_PER_PIXEL = 1f/30f, MAX_THICK = 16F;
 
+    //TODO MutableRect textBounds and only update on doLayout
     protected float textScaleX = 1f, textScaleY = 1f;
     protected transient float textThickness;
 
@@ -61,15 +62,16 @@ public class VectorLabel extends AbstractLabel {
     @Override
     protected void renderContent(ReSurface r) {
         float p = r.visP(bounds.scale(textScaleX, textScaleY), MIN_PIXELS_TO_BE_VISIBLE);
-        LabelRenderer lr;
+
+        LabelRenderer l;
         if (p <= 0)
-            lr = LabelRenderer.LineBox;
+            l = LabelRenderer.LineBox;
         else {
-            textThickness = Util.min(MAX_THICK, MIN_THICK + p * THICKNESSES_PER_PIXEL);
-            lr = renderer;
+            textThickness = Math.round(Util.min(MAX_THICK, MIN_THICK + p * THICKNESSES_PER_PIXEL));
+            l = renderer;
         }
 
-        lr.accept(this, r.gl);
+        l.accept(this, r.gl);
         //super.renderContent(r);
     }
 

@@ -31,7 +31,7 @@ public class TaskResolve extends NativePremiseAction {
 
 		Task y = get(x, d);
 		if (y != null) // && !x.equals(y))
-			d.add(new AbstractPremise(y, y.term(), why.why(d)));
+			d.add(new AbstractPremise(y, y.term(), why, d));
 	}
 
 	@Nullable private final Predicate<nars.Task> tasklinkTaskFilter =

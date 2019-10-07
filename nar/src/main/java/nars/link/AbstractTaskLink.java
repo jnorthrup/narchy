@@ -8,6 +8,7 @@ import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.Op;
 import nars.Task;
+import nars.control.Why;
 import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Bool;
@@ -213,7 +214,6 @@ public abstract class AbstractTaskLink implements TaskLink {
     @Override
     public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {
 
-
         if (incoming instanceof AtomicTaskLink) {
             switch (returning) {
                 case Overflow:
@@ -228,6 +228,8 @@ public abstract class AbstractTaskLink implements TaskLink {
                     return Float.NaN;
             }
         }
+
+        why = Why.why(why, incoming.why()); //TODO priority proportional Why merge
 
         throw new TODO();
     }

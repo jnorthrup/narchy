@@ -89,7 +89,7 @@ public class ReSurface extends SurfaceCamera {
         this.w = x2-x1;
         this.h = y2-y1;
 
-        this.psw = pw * scaleX / w; this.psh = ph * scaleY / h;
+        this.psw = pw / w; this.psh = ph / h;
 
         return this;
     }

@@ -60,8 +60,8 @@ public class STMLinker extends TaskAction {
 				Term WHY =
 					Why.why(
 						why.why,
-						Why.why(new Caused[] { prev, next, d }, causeCap - 1),
-					Integer.MAX_VALUE /* allow over */);
+						Why.why(new Caused[] { prev, next, d },
+			causeCap - 1), Integer.MAX_VALUE /* allow over */);
 
 				link(att, btt, next.punc(), pri, WHY, w);
 				link(btt, att, prev.punc(), pri, WHY, w);
