@@ -17,7 +17,6 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.SetSectDiff;
 import nars.term.util.TermException;
-import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.MemoizingTermBuilder;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
@@ -284,7 +283,6 @@ public enum Op {
      * False wrapped in a subterm as the only element
      * determines what compound terms can shield subterms from recursion restrictions
      */
-    public static final Subterms FalseSubterm = HeapTermBuilder.the.subterms(Bool.False);
     public static final Predicate<Term> statementLoopyContainer = x -> !x.isAny(
         Op.PROD.bit
         //Op.PROD.bit | Op.SETe.bit | Op.SETi.bit

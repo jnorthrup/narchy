@@ -24,7 +24,7 @@ public class OneTermUnification extends DeterministicUnification {
     }
 
     @Override
-    public Term xy(Term t) {
+    public Term xy(Variable t) {
         return tx.equals(t) ? ty : null;
     }
 

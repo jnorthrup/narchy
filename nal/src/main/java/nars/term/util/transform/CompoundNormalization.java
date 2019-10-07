@@ -1,12 +1,10 @@
 package nars.term.util.transform;
 
-import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.Image;
 
 import static nars.Op.INH;
-import static nars.time.Tense.XTERNAL;
 
 /** procedure for Compound target Normalization */
 public final class CompoundNormalization extends VariableNormalization {
@@ -32,14 +30,14 @@ public final class CompoundNormalization extends VariableNormalization {
     public Term applyPosCompound(Compound x) {
         /* if x is not the root target (ie. a subterm) */
         boolean hasImg = imgPossible && x.hasAll(Image.ImageBits);
-        if (hasImg && x!=root && x.op()==INH) {
+        if (hasImg && x!=root && x.opID()==INH.id) {
             Compound y = (Compound) Image._imgNormalize(x);
             if (x!=y) {
                 x = y;
                 hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
             }
         }
-        return hasImg || x.hasVars() ? x.transform(this, (Op)null, XTERNAL) : x;
+        return hasImg || x.hasVars() ? x.transform(this) : x;
     }
 
 

@@ -10,7 +10,7 @@ import java.util.Map;
 
 public class MapUnification extends DeterministicUnification {
 
-    final Map<Term, Term> xy;
+    final Map<Variable, Term> xy;
 
     //TODO
     //int matchStructure = Integer.MAX_VALUE;
@@ -40,20 +40,20 @@ public class MapUnification extends DeterministicUnification {
         return true;
     }
 
-    public void put(Term x, Term y) {
+    public void put(Variable x, Term y) {
         xy.put(x, y);
 //            if (x.op() != VAR_PATTERN)
 //                matchStructure |= (x.structure() & ~Op.Variable);
     }
 
-    public void putIfAbsent(Term x, Term y) {
+    public void putIfAbsent(Variable x, Term y) {
         xy.putIfAbsent(x, y);
 //            if (x.op() != VAR_PATTERN)
 //                matchStructure |= (x.structure() & ~Op.Variable);
     }
 
     @Override
-    public final Term xy(Term x) {
+    public final Term xy(Variable x) {
         return xy.get(x);
     }
 
@@ -65,7 +65,7 @@ public class MapUnification extends DeterministicUnification {
 
     public MapUnification putIfAbsent(FasterList<Term> xyPairs) {
         for (int i = 0, n = xyPairs.size(); i < n; ) {
-            putIfAbsent(xyPairs.get(i++), xyPairs.get(i++));
+            putIfAbsent((Variable)xyPairs.get(i++), xyPairs.get(i++));
         }
         ((UnifiedMap)xy).trimToSize();
         return this;

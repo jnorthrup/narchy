@@ -36,12 +36,11 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
             int mi = base.indexOf(xi)+1;
 
-            if (mi <= 0) {
-                String msg = xi + "not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass();
-                //throw new TermException(msg);
-                throw new WTF(msg);
-            }
-
+            if (mi <= 0)
+                throw new WTF
+                    //TermException
+                    (
+                    xi + " not found in " + base + ", base.class=" + base.getClass() + " target.xi.class=" + xi.getClass());
 
             m[i] = (byte) (neg ? -mi : mi);
         }
@@ -63,19 +62,28 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
             return x;
 
         if (x instanceof ReversedSubterms) {
+            //un-reverse
             return ((ReversedSubterms)x).ref;
         }
 
         if (x instanceof RemappedSubterms.ArrayRemappedSubterms) {
             ArrayRemappedSubterms<?> mx = ((ArrayRemappedSubterms) x);
             //TODO test if the array is already perfectly reversed without cloning then just undo
-            byte[] r = mx.map.clone();
-            ArrayUtil.reverse(r);
-            if (Arrays.equals(mx.map, r))
-                return x; //palindrome or repeats
+            byte[] q = mx.map, r;
 
+            //palindrome or repeats?
+            if ((q.length==2 && q[0]==q[1]) || (q.length==3 && q[0]==q[2]) || (q.length==4 && q[0] == q[3] && q[1]==q[2]) /* ... */) {
+                //obvious palindrome/repeats
+                return x;
+            } else {
+                r = q.clone();
+                ArrayUtil.reverse(r);
+                if (Arrays.equals(q,r))
+                    return x;
+            }
             return new ArrayRemappedSubterms(mx.ref, r);
-        } //else {
+        }
+        //else {
 //            byte[] m = new byte[n];
 //            for (byte k = 0, i = (byte) (m.length - 1); i >= 0; i--, k++)
 //                m[k] = (byte) (i + 1);

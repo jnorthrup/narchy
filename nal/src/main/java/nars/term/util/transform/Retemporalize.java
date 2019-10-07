@@ -9,7 +9,7 @@ import static nars.time.Tense.DTERNAL;
 import static nars.time.Tense.XTERNAL;
 
 
-public abstract class Retemporalize extends AbstractTermTransform.NegObliviousTermTransform {
+public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousTermTransform {
 
 
     public static final Retemporalize retemporalizeAllToXTERNAL = new RetemporalizeAll(XTERNAL);

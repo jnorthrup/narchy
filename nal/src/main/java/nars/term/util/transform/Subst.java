@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.term.atom.Bool.Null;
 
 
-public interface Subst extends AbstractTermTransform {
+public interface Subst extends RecursiveTermTransform {
 
     /**
      * the assigned value for x
@@ -24,7 +24,7 @@ public interface Subst extends AbstractTermTransform {
     @Override
     @Nullable
     default Term applyCompound(Compound x) {
-        Term y = AbstractTermTransform.super.applyCompound(x);
+        Term y = RecursiveTermTransform.super.applyCompound(x);
         if (y == Null)
             return Null;
         Term z = xy(y);

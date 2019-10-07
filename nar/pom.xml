@@ -26,12 +26,7 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>org.pitest</groupId>
-            <artifactId>pitest-entry</artifactId>
-            <version>1.4.10</version>
-            <scope>test</scope>
-        </dependency>
+
         <dependency>
             <groupId>org.openjdk.jmh</groupId>
             <artifactId>jmh-generator-annprocess</artifactId>

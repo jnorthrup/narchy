@@ -13,7 +13,7 @@ import nars.subterm.TermList;
 import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.unify.constraint.UnifyConstraint;
 import nars.unify.mutate.Termutator;
 import nars.unify.unification.DeterministicUnification;
@@ -49,7 +49,7 @@ So it can be useful for a more easy to understand rewrite of this class TODO
 
 
 */
-public abstract class Unify extends Versioning<Term> implements AbstractTermTransform {
+public abstract class Unify extends Versioning<Term> implements RecursiveTermTransform {
 
     /**
      * accumulates the next segment of the termutation stack

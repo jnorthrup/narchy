@@ -1317,7 +1317,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
         int s = subs();
 
-        boolean conjFalse = false;
 
         for (int i = 0; i < s; i++) {
 
@@ -1325,35 +1324,21 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             Term yi = f.apply(xi);
 
-
-
-            if (yi instanceof Bool) {
-                if (yi == Bool.Null)
-                    return null;
-
-                //these fail-fast cases must be consistent with the target construction process.
-                if (superOp == CONJ) {
-                    if (yi == Bool.False)
-                        conjFalse = true;
-                    //keep True in case of temporal it will need to act as a placeholder
-                    //continue in case Null is encountered further
-
-                }
-            }
+            //if (yi instanceof Bool) {
+            if (yi == Bool.Null)
+                return null; //short-circuit
+            //}
 
             if (yi instanceof Fragment) {
 
-                Subterms ee = yi.subterms();
-                if (ee==Op.EmptyProduct || ee.subs()==0) {
-                    if (s == 1)
-                        return EmptySubterms; //the empty ellipsis is the only subterm
-                }
-
+                Subterms yy = yi.subterms();
                 if (s == 1) {
-                    //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
-                    return ee.transformSubs(f, superOp);
+                    return (yy.subs()==0) ?
+                        EmptySubterms //the empty ellipsis is the only subterm
+                        :
+                        yy.transformSubs(f, superOp); //it is only this ellipsis match so inline it by transforming directly and returning it (tail-call)
                 } else {
-                    y = transformSubInline(ee, f, y, s, i);
+                    y = transformSubInline(yy, f, y, s, i);
                     if (y == null)
                         return null;
                 }
@@ -1361,11 +1346,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
             } else {
 
+
                 if (y == null && xi!=yi) {
                     if (differentlyTransformed(xi, yi) /* special */)
                         y = new DisposableTermList(s, i);
-//                    else
-//                        Util.nop(); ///why
+//                    else Util.nop(); ///why
                 }
 
                 if (y != null)
@@ -1373,22 +1358,32 @@ public interface Subterms extends Termlike, Iterable<Term> {
             }
         }
 
-        if (conjFalse)
-            return Op.FalseSubterm;
-
-        return y != null ? y.commit(this, superOp) : this;
+        return y != null ? y.commit(this) : this;
     }
 
     /**
      * determines if the two non-identical terms are actually equivalent or if y must be part of the output for some reason (special term, etc)
      * TODO refine */
     private static boolean differentlyTransformed(Term xi, Term yi) {
-        return !xi.equals(yi) || (xi.unneg().getClass()!=yi.unneg().getClass()) || !yi.the();
+        return !xi.equals(yi) || (xi.unneg().getClass()!=yi.unneg().getClass());// || !yi.the();
+//        if (!xi.equals(yi)) return true;
+//        Term xxi, yyi;
+//        if (xi instanceof Neg) {
+//            xxi = xi.unneg(); yyi = yi.unneg();
+//        } else {
+//            xxi = xi; yyi = yi;
+//        }
+//        return xxi.getClass() != yyi.getClass()
+//            ||
+//            !yi.the();
+
+//            || !xi.the()
+//            || !yi.the()
+//        );
     }
 
     @Nullable static TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
         int xes = e.subs();
-
 
         if (out == null)
             out = new DisposableTermList(subsTotal - 1 + xes /*estimate */, i);

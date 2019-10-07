@@ -5,7 +5,7 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.atom.Interval;
 import nars.term.util.map.ByteAnonMap;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.var.UnnormalizedVariable;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +14,7 @@ import org.jetbrains.annotations.Nullable;
  * //return new DirectTermTransform() {
  * //return new TermTransform.NegObliviousTermTransform() {
  */
-public class Anon extends AbstractTermTransform.NegObliviousTermTransform {
+public class Anon extends RecursiveTermTransform.NegObliviousTermTransform {
 
     public final ByteAnonMap map;
 

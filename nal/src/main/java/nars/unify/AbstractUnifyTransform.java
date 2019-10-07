@@ -3,9 +3,9 @@ package nars.unify;
 import nars.term.Term;
 import nars.term.Variable;
 import nars.term.atom.Atomic;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 
-public abstract class AbstractUnifyTransform extends AbstractTermTransform.NegObliviousTermTransform {
+public abstract class AbstractUnifyTransform extends RecursiveTermTransform.NegObliviousTermTransform {
 
 	@Override
 	public final Term applyAtomic(Atomic x) {

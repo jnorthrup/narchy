@@ -2,6 +2,7 @@ package nars.unify;
 
 import jcog.Util;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.unify.unification.DeterministicUnification;
 
 import java.util.function.Function;
@@ -47,7 +48,7 @@ public interface Unification extends Function<Term,Iterable<Term>> {
         }
 
         @Override
-        public Term xy(Term x) {
+        public Term xy(Variable x) {
             return null;
         }
     };

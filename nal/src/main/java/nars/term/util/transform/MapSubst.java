@@ -166,7 +166,7 @@ public enum MapSubst { ;
 //        return this;
     }
 
-    final static class SubstCompound implements AbstractTermTransform {
+    final static class SubstCompound implements RecursiveTermTransform {
 
         private final Compound from;
         private final Term to;
@@ -188,12 +188,12 @@ public enum MapSubst { ;
         public @Nullable Term applyCompound(Compound c) {
             if (c.equals(from))
                 return to;
-            return c.impossibleSubTerm(fromStructure, fromVolume) ? c : AbstractTermTransform.super.applyCompound(c);
+            return c.impossibleSubTerm(fromStructure, fromVolume) ? c : RecursiveTermTransform.super.applyCompound(c);
         }
 
     }
 
-    final static class SubstAtomic implements AbstractTermTransform  {
+    final static class SubstAtomic implements RecursiveTermTransform {
 
         private final Atomic from;
         private final Term to;
@@ -215,7 +215,10 @@ public enum MapSubst { ;
 
         @Override
         public @Nullable Term applyCompound(Compound x) {
-            return x.impossibleSubStructure(fromStructure) ? x : AbstractTermTransform.super.applyCompound(x);
+            return
+                x.impossibleSubStructure(fromStructure) ?
+                //!x.containsRecursively(from) ?
+                    x : x.transform(this);
         }
 
     }

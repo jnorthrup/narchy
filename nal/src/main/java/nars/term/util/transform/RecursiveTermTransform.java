@@ -8,12 +8,11 @@ import nars.term.Term;
 
 import static nars.Op.PROD;
 import static nars.time.Tense.DTERNAL;
-import static nars.time.Tense.XTERNAL;
 
 /**
  * I = input target type, T = transformable subterm type
  */
-public interface AbstractTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
+public interface RecursiveTermTransform extends TermTransform, nars.term.util.builder.TermConstructor {
 
     static Term evalInhSubs(Subterms inhSubs) {
         Term p = inhSubs.sub(1); /* pred */
@@ -28,25 +27,27 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
         return null;
     }
 
-    /**
-     * transform pathway for compounds
-     */
+//    /**
+//     * transform pathway for compounds
+//     */
     default Term applyCompound(Compound c) {
-//        try {
-            return c.transform(this, (Op) null, XTERNAL);
-//        } catch (StackOverflowError e) {
-//            //TEMPORARY
-////            e.printStackTrace();
-//            System.err.println("stack overflow in AbstractTermTransform: " + this.getClass() + " " + c);
-//            throw new WTF();
-//        }
+        return c.transform(this);
     }
+////        try {
+//            return c.transform(this, (Op) null, XTERNAL);
+////        } catch (StackOverflowError e) {
+////            //TEMPORARY
+//////            e.printStackTrace();
+////            System.err.println("stack overflow in AbstractTermTransform: " + this.getClass() + " " + c);
+////            throw new WTF();
+////        }
+//    }
 
     static int realign(int ydt, Subterms xx, Subterms yy) {
         if (ydt == DTERNAL)
             ydt = 0; //HACK
 
-        //apply any shifts caused by internal range changes
+        //apply any shifts caused by internal range changes (ex: True removal)
         if (!yy.equals(xx) && xx.subs() == 2 && yy.subs() == 2) {
 
             int subjRangeBefore = xx.subEventRange(0);
@@ -84,26 +85,25 @@ public interface AbstractTermTransform extends TermTransform, nars.term.util.bui
     /**
      * operates transparently through negation subterms
      */
-    class NegObliviousTermTransform implements AbstractTermTransform {
+    class NegObliviousTermTransform implements RecursiveTermTransform {
 
         @Override
-        public final Term applyCompound(Compound c) {
+        public final Term applyCompound(Compound x) {
 
-            if (c instanceof Neg) {
-                Term xx = c.unneg();
-                Term yy = apply(xx);
-                return (yy == xx) ? c : yy.neg();
-
+            if (x instanceof Neg) {
+                Term xu = x.unneg();
+                Term yu = apply(xu);
+                return (yu == xu) ? x : yu.neg();
             } else {
-                return applyPosCompound(c);
+                return applyPosCompound(x);
             }
 
         }
 
-
-        public Term applyPosCompound(Compound x) {
-            return AbstractTermTransform.super.applyCompound(x);
+        public Term applyPosCompound(Compound c) {
+            return RecursiveTermTransform.super.applyCompound(c);
         }
+
 
     }
 

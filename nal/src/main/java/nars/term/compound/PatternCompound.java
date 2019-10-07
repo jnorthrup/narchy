@@ -1,7 +1,5 @@
 package nars.term.compound;
 
-import jcog.TODO;
-import jcog.WTF;
 import nars.$;
 import nars.Op;
 import nars.subterm.Subterms;
@@ -10,7 +8,6 @@ import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.conj.Conj;
 import nars.term.var.ellipsis.Ellipsis;
-import nars.term.var.ellipsis.Ellipsislike;
 import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.UnifyFirst;
@@ -25,13 +22,12 @@ import java.util.SortedSet;
 import java.util.function.Function;
 
 import static nars.Op.CONJ;
-import static nars.Op.FRAG;
 import static nars.time.Tense.XTERNAL;
 
 /**
  * seems used only if op==CONJ
  */
-abstract public class PatternCompound extends CachedCompound.TemporalCachedCompound {
+@Deprecated abstract public class PatternCompound extends CachedCompound.TemporalCachedCompound {
 
     PatternCompound(/*@NotNull*/ Op op, int dt, Subterms subterms) {
         super(op, dt, subterms);
@@ -45,7 +41,8 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
         if ((op.commutative)) {
             return new PatternCompoundEllipsisCommutive(op, dt, e, v);
         } else {
-            return PatternCompoundEllipsisLinear.the(op, dt, e, v);
+            //return PatternCompoundEllipsisLinear.the(op, dt, e, v);
+            throw new UnsupportedOperationException();
         }
 
     }
@@ -73,94 +70,94 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
     }
 
 
-    public static final class PatternCompoundEllipsisLinear extends PatternCompoundWithEllipsis {
-
-        public static PatternCompoundEllipsisLinear the(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
-//            if (op.statement) {
-//                //HACK
-//                Term x = subterms.sub(0);
-//                Term y = subterms.sub(1);
-//                if (x instanceof Ellipsislike) {
-//                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
-//                    x = CONJ.the(x);
+//    public static final class PatternCompoundEllipsisLinear extends PatternCompoundWithEllipsis {
+//
+//        public static PatternCompoundEllipsisLinear the(Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+////            if (op.statement) {
+////                //HACK
+////                Term x = subterms.sub(0);
+////                Term y = subterms.sub(1);
+////                if (x instanceof Ellipsislike) {
+////                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+////                    x = CONJ.the(x);
+////                }
+////                if (y instanceof Ellipsislike) {
+////                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
+////                    y = CONJ.the(y);
+////                }
+////                subterms = new BiSubterm(x, y); //avoid interning
+////            }
+//            return new PatternCompoundEllipsisLinear(op, dt, ellipsis, subterms);
+//        }
+//
+//        private PatternCompoundEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
+//            super(op, dt, ellipsis, subterms);
+//            if (op.statement && subterms.OR(x -> x instanceof Ellipsislike))
+//                throw new WTF("raw ellipsis subj/pred makes no sense here");
+//        }
+//
+//        /**
+//         * non-commutive compound match
+//         * X will contain at least one ellipsis
+//         * <p>
+//         * match subterms in sequence
+//         * <p>
+//         * WARNING this implementation only works if there is one ellipse in the subterms
+//         * this is not tested for either
+//         */
+//        @Override
+//        public boolean unifySubterms(Compound y, Unify u) {
+//            Subterms Y = y.subterms();
+//            int xi = 0, yi = 0;
+//            int xsize = subs();
+//            int ysize = Y.subs();
+//
+//
+//            while (xi < xsize) {
+//                Term x = sub(xi++);
+//
+//                if (x instanceof Ellipsis) {
+//                    int available = ysize - yi;
+//
+//                    Term xResolved = u.resolveTerm(x);
+//                    if (xResolved == x) {
+//
+//
+//                        if (xi == xsize) {
+//                            //the ellipsis is at the right edge so capture the remainder
+//                            return
+//                                    ellipsis.validSize(available) &&
+//                                    ellipsis.unify(Fragment.fragment(Y, yi, yi + available), u);
+//
+//
+//                        } else {
+//                            //TODO ellipsis is in the center or beginning
+//                            throw new TODO();
+//                        }
+//                    } else {
+//                        if (xResolved instanceof Fragment) {
+//                            Fragment xe = (Fragment) xResolved;
+//                            if (!xe.linearMatch(Y, yi, u))
+//                                return false;
+//                            yi += xe.subs();
+//                        } else {
+//                            if (!sub(yi).unify(xResolved, u))
+//                                yi++;
+//                        }
+//                    }
+//
+//
+//                } else {
+//                    if (ysize <= yi || !x.unify(Y.sub(yi++), u))
+//                        return false;
 //                }
-//                if (y instanceof Ellipsislike) {
-//                    //raw ellipsis, the conjunction got removed somewhere. HACK re-add it
-//                    y = CONJ.the(y);
-//                }
-//                subterms = new BiSubterm(x, y); //avoid interning
 //            }
-            return new PatternCompoundEllipsisLinear(op, dt, ellipsis, subterms);
-        }
-
-        private PatternCompoundEllipsisLinear(/*@NotNull*/ Op op, int dt, Ellipsis ellipsis, Subterms subterms) {
-            super(op, dt, ellipsis, subterms);
-            if (op.statement && subterms.OR(x -> x instanceof Ellipsislike))
-                throw new WTF("raw ellipsis subj/pred makes no sense here");
-        }
-
-        /**
-         * non-commutive compound match
-         * X will contain at least one ellipsis
-         * <p>
-         * match subterms in sequence
-         * <p>
-         * WARNING this implementation only works if there is one ellipse in the subterms
-         * this is not tested for either
-         */
-        @Override
-        public boolean unifySubterms(Compound y, Unify u) {
-            Subterms Y = y.subterms();
-            int xi = 0, yi = 0;
-            int xsize = subs();
-            int ysize = Y.subs();
-
-
-            while (xi < xsize) {
-                Term x = sub(xi++);
-
-                if (x instanceof Ellipsis) {
-                    int available = ysize - yi;
-
-                    Term xResolved = u.resolveTerm(x);
-                    if (xResolved == x) {
-
-
-                        if (xi == xsize) {
-                            //the ellipsis is at the right edge so capture the remainder
-                            return
-                                    ellipsis.validSize(available) &&
-                                    ellipsis.unify(Fragment.fragment(Y, yi, yi + available), u);
-
-
-                        } else {
-                            //TODO ellipsis is in the center or beginning
-                            throw new TODO();
-                        }
-                    } else {
-                        if (xResolved.op()==FRAG) {
-                            Fragment xe = (Fragment) xResolved;
-                            if (!xe.linearMatch(Y, yi, u))
-                                return false;
-                            yi += xe.subs();
-                        } else {
-                            if (!sub(yi).unify(xResolved, u))
-                                yi++;
-                        }
-                    }
-
-
-                } else {
-                    if (ysize <= yi || !x.unify(Y.sub(yi++), u))
-                        return false;
-                }
-            }
-
-            return true;
-        }
-
-
-    }
+//
+//            return true;
+//        }
+//
+//
+//    }
 
 
     public static final class PatternCompoundEllipsisCommutive extends PatternCompoundWithEllipsis {
@@ -231,7 +228,7 @@ abstract public class PatternCompound extends CachedCompound.TemporalCachedCompo
                         continue; //unassigned ellipsis
 
                     ellipsis = null;
-                    if (xxk.op()==FRAG) {
+                    if (xxk instanceof Fragment) {
                         for (Term ex : xxk.subterms()) {
                             if (!include(ex, xMatch, yFree, u))
                                 return false;

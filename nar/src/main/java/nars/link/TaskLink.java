@@ -101,10 +101,9 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
 
     float merge(TaskLink incoming, PriMerge merge, PriReturn returning);
 
-    float take(byte punc, float howMuch);
-
-    /** multiplies all components by factor of pct, returns the sum delta released */
-    float take(float pct);
+//    float take(byte punc, float howMuch);
+//    /** multiplies all components by factor of pct, returns the sum delta released */
+//    float take(float pct);
 
     default boolean isSelf() {
         return from().equals(to());

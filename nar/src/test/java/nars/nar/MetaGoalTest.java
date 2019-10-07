@@ -7,6 +7,7 @@ import nars.NARS;
 import nars.Narsese;
 import nars.Task;
 import nars.control.MetaGoal;
+import nars.term.Term;
 import nars.test.impl.DeductiveMeshTest;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.junit.jupiter.api.Disabled;
@@ -26,7 +27,9 @@ class MetaGoalTest {
         Multimap<ShortHashSet, Task> tasks = MultimapBuilder.hashKeys().linkedHashSetValues().build();
         NAR n = NARS.tmp(1);
         n.what().onTask(t -> {
-            tasks.put(new ShortHashSet(t.why().volume()), t);
+            Term why = t.why();
+            if (why!=null)
+                tasks.put(new ShortHashSet(why.volume()), t);
         });
         n.input("(x-->y).");
         n.input("(y-->z).");

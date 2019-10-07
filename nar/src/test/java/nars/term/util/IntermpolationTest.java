@@ -258,7 +258,7 @@ class IntermpolationTest {
     void testIntermpolationOrderPartialMismatchReverse() throws Narsese.NarseseException {
         Compound a = $.$("(a &&+1 (b &&+1 c))");
         Compound b = $.$("(b &&+1 (a &&+1 c))");
-        permuteChoose(a, b, "[((a&&b) &&+1 c)]");
+        permuteChoose(a, b, "[((b &&+1 a) &&+1 c), ((a &&+1 b) &&+1 c)]");
     }
 
     @Test

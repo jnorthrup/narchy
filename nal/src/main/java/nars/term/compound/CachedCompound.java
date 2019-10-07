@@ -1,12 +1,10 @@
 package nars.term.compound;
 
-import jcog.Util;
 import nars.Op;
 import nars.The;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Int;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
 
 import static jcog.Util.hashCombine;

@@ -242,6 +242,16 @@
             <version>0.8.16</version>
             <scope>compile</scope>
         </dependency>
+<!--        <dependency>-->
+<!--            <groupId>org.pitest</groupId>-->
+<!--            <artifactId>pitest-entry</artifactId>-->
+<!--            <version>1.4.11-SNAPSHOT</version>-->
+<!--        </dependency>-->
+<!--        <dependency>-->
+<!--            <groupId>org.pitest</groupId>-->
+<!--            <artifactId>pitest-junit5-plugin</artifactId>-->
+<!--            <version>0.9</version>-->
+<!--        </dependency>-->
     </dependencies>
     <!--    <build>-->
     <!--        <plugins>-->

@@ -22,7 +22,7 @@ import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
-import org.pitest.classinfo.ClassName;
+//import org.pitest.classinfo.ClassName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
@@ -227,7 +227,9 @@ public class SelfTest {
             if (src instanceof MethodSource) {
                 String pk, cl, me;
                 MethodSource m = (MethodSource)src;
-                cl = ClassName.fromString(m.getClassName()).getNameWithoutPackage().toString();
+                cl = //ClassName.fromString(m.getClassName()).getNameWithoutPackage().toString();
+                        m.getClassName();
+
                 assert(!cl.isEmpty());
                 pk = Reflection.getPackageName(m.getClassName());
                 assert(!pk.isEmpty());

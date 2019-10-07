@@ -9,7 +9,7 @@
   <name>narchy</name>
 
   <prerequisites>
-    <maven>3.6.1</maven>
+    <maven>3.6.2</maven>
   </prerequisites>
   <modules>
     <module>util</module>

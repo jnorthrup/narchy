@@ -88,7 +88,7 @@ public class IntrinTest {
 
     @Test
     void testThatAnonDoesntEatEllipsis() throws Narsese.NarseseException {
-        assertEquals("(_1,%1..*)", UnifyTest.pattern("(abc, %X..*)").anon().toString());
+        assertEquals("{_1,%1..*}", UnifyTest.pattern("{abc, %X..*}").anon().toString());
     }
 
     @Test

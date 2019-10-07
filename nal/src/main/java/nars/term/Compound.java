@@ -24,14 +24,11 @@ import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.sexpression.IPair;
 import jcog.data.sexpression.Pair;
-import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.io.TermAppender;
 import nars.subterm.Subterms;
 import nars.term.anon.Anon;
-import nars.term.atom.Bool;
-import nars.term.buffer.TermBuffer;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.compound.UnitCompound;
 import nars.term.util.TermTransformException;
@@ -39,7 +36,7 @@ import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.conj.ConjUnify;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
 import nars.term.var.ellipsis.Ellipsislike;
@@ -56,8 +53,7 @@ import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
-import static nars.term.atom.Bool.True;
+import static nars.term.atom.Bool.*;
 import static nars.time.Tense.*;
 
 /**
@@ -400,9 +396,10 @@ public interface Compound extends Term, IPair, Subterms {
         if (this.equals(from))
             return to;
         else if (from.equals(to) || impossibleSubTerm(from))
+            //else if (from.equals(to) || !containsRecursively(from) /* impossibleSubTerm(from)*/)
             return this;
         else
-            return MapSubst.replace(from, to).applyCompound(this);
+            return transform(MapSubst.replace(from, to)); //HACK immedaitely begin transforming since preliminary impossibility test performed
 
 //
 //        Subterms oldSubs = subterms();
@@ -699,26 +696,29 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    default Term transform(TermTransform t) {
-        return transform(t, null, NAL.term.COMPOUND_VOLUME_MAX);
-    }
-
-    default Term transform(TermTransform t, @Nullable TermBuffer b, int volMax) {
-//        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
-//            return TermTransform.transform(this, t, b, volMax);
-//        else
+    @Override default Term transform(TermTransform t) {
+        if (t instanceof RecursiveTermTransform)
+            return transform((RecursiveTermTransform)t, null, XTERNAL);
+        else
             return t.applyCompound(this);
-
-//        Term x = TermTransform.transform((Compound)this, t, b, volMax);
-//        Term y = t.apply(this);
-//        if (!x.equals(y)) {
-//            if (!x.hasAny(Op.CONJ.bit | Op.Set | Op.SIM.bit))
-//                Util.nop();
-//        }
-//        return x;
     }
 
-    default Term transform(AbstractTermTransform f, Op newOp, int ydt) {
+//    default Term transform(TermTransform t, @Nullable TermBuffer b, int volMax) {
+////        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
+////            return TermTransform.transform(this, t, b, volMax);
+////        else
+//            return t.applyCompound(this);
+//
+////        Term x = TermTransform.transform((Compound)this, t, b, volMax);
+////        Term y = t.apply(this);
+////        if (!x.equals(y)) {
+////            if (!x.hasAny(Op.CONJ.bit | Op.Set | Op.SIM.bit))
+////                Util.nop();
+////        }
+////        return x;
+//    }
+
+    default Term transform(RecursiveTermTransform f, Op newOp, int ydt) {
 
         Compound x = this;
         Op xOp = x.op();
@@ -731,9 +731,25 @@ public interface Compound extends Term, IPair, Subterms {
         if (yy == null)
             return Null;
 
-        //try eval first (even if untransformed)
-        if (yOp == INH && f.evalInline() && yy.subs()==2) {
-            Term v = AbstractTermTransform.evalInhSubs(yy);
+
+
+        //inline reductions
+        if (yOp == CONJ && xx!=yy) {
+            int yys = yy.subs();
+            if (yys == 0)
+                return True;
+            if (yy.containsInstance(False))
+                return False; //short-circuit
+            if (yys == 2) {
+                if (yy.sub(0) == True)
+                    return yy.sub(1);
+                if (yy.sub(1) == True)
+                    return yy.sub(0);
+
+            }
+        } else if (yOp == INH && f.evalInline() && yy.subs()==2) {
+            //try eval first (even if untransformed)
+            Term v = RecursiveTermTransform.evalInhSubs(yy);
             if (v != null)
                 return v;
         }
@@ -778,31 +794,12 @@ public interface Compound extends Term, IPair, Subterms {
             return x; //no change
 
 
-
-
         if (yOp.temporal) {
-
-            //inline reductions
-            if (yOp == CONJ) {
-                if (yy == Op.FalseSubterm)
-                    return Bool.False;
-                int yys = yy.subs();
-                if (yys == 0)
-                    return True;
-                if (yys == 2) {
-                    if (yy.sub(0)== True) return yy.sub(1);
-                    if (yy.sub(1)== True) return yy.sub(0);
-                }
-            }
-
             if (ydt != XTERNAL)
-                ydt = AbstractTermTransform.realign(ydt, xx, yy);
+                ydt = RecursiveTermTransform.realign(ydt, xx, yy);
 
-            if (ydt == 0) ydt = DTERNAL; //HACK
-
-            if (xdt == ydt && xx == yy && yOp == xOp) {
-                return x; //remains totally unchanged
-            }
+            if (ydt == 0)
+                ydt = DTERNAL; //HACK
         }
 
         return f.compound(yOp, ydt, yy);

@@ -389,34 +389,38 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
         int v = t.vars();
         //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
-        if (v > 0 && t.hasAll(NEG.bit)) {
+        if (v > 0 && t.hasAny(NEG.bit)) {
             t = postNormalizeVar(t, VAR_DEP_1_NEG, VAR_DEP_1);
             t = postNormalizeVar(t, VAR_INDEP_1_NEG, VAR_INDEP_1);
         }
         return t;
     }
 
-    static Term postNormalizeVar(Term t, Term vn, Term vp) {
+    static Term postNormalizeVar(Term x, Term vn, Term vp) {
 
         Term y;
-        int v = (vp instanceof VarIndep) ? t.varIndep() : t.varDep();
+        int v = (vp instanceof VarIndep) ? x.varIndep() : x.varDep();
+        if (v == 0)
+            return x;
+        int negs;
         if (v == 1) {
             //simple case: only one instance
-            y = t.replace(vn, vp);
+            y = x.replace(vn, vp);
+            negs = 1;
         } else {
-            int negs = t.intifyRecurse((i, z) -> z instanceof Neg && z.unneg() == vp ? 1 + i : i, 0);
+            negs = x.intifyRecurse((i, z) -> z instanceof Neg && z.unneg() == vp ? 1 + i : i, 0);
             if (negs == v) {
-                y = t.replace(vn, vp);
+                y = x.replace(vn, vp);
             } else {
                 //TODO if # negs > # pos, swap them
-                return t;
+                return x;
             }
         }
-        if ((!(y instanceof Bool)) && (y.opID() == t.opID()))
-            return y;
         //else: ? why might this happen
-
-        return t;
+        if ((y.opID() == x.opID()) && y.volume() == x.volume() - negs) //validate
+            return y;
+        else
+            return x;
     }
 
     /**

@@ -11,7 +11,7 @@ import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.compound.LightCompound;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.InlineFunctor;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.TermTransform;
@@ -36,7 +36,7 @@ public class EvalTermBuffer extends TermBuffer {
         }
     }
 
-    private static final TermTransform DeferredEvaluator = new AbstractTermTransform.NegObliviousTermTransform() {
+    private static final TermTransform DeferredEvaluator = new RecursiveTermTransform.NegObliviousTermTransform() {
         @Override
 		public Term applyPosCompound(Compound x) {
             if (x instanceof DeferredEval) {

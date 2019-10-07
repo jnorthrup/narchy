@@ -4,7 +4,7 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.compound.PatternCompound;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.Retemporalize;
 import nars.term.var.ellipsis.Ellipsis;
 import nars.term.var.ellipsis.Ellipsislike;
@@ -47,7 +47,7 @@ public enum PatternTermBuilder /* implements TermBuilder ? */ { ;
     private static final Patternify Patternify = new Patternify(true);
     private static final Patternify PatternifyNoXternalize = new Patternify(false);
 
-    private static final class Patternify extends AbstractTermTransform.NegObliviousTermTransform {
+    private static final class Patternify extends RecursiveTermTransform.NegObliviousTermTransform {
 
         final boolean xternalize;
 

@@ -26,7 +26,7 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.atom.*;
 import nars.term.functor.AbstractInlineFunctor1;
 import nars.term.util.TermTransformException;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.InstantFunctor;
 import nars.time.When;
 import nars.truth.MutableTruth;
@@ -831,7 +831,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /**
      * should be created whenever a different NAR owns this Derivation instance, if ever
      */
-	public final AbstractTermTransform transformDerived = new AbstractTermTransform() {
+	public final RecursiveTermTransform transformDerived = new RecursiveTermTransform() {
 
 		@Override
 		public Term applyAtomic(Atomic a) {

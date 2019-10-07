@@ -32,7 +32,6 @@ import nars.term.anon.IntrinAtomic;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.buffer.TermBuffer;
 import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
@@ -157,7 +156,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     boolean containsAny(Subterms ofThese);
 
     Term transform(TermTransform t);
-    Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
+//    Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
 
 	default int hashCodeShort() {
 	    int h = hashCode();

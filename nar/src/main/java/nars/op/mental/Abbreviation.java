@@ -25,7 +25,7 @@ import nars.term.Term;
 import nars.term.Terms;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -170,7 +170,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
     }
 
 
-    final static class ABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {
+    final static class ABBREVIATE extends RecursiveTermTransform.NegObliviousTermTransform {
 
         ABBREVIATE() {
         }
@@ -183,7 +183,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
 
     }
-    final static class UNABBREVIATE extends AbstractTermTransform.NegObliviousTermTransform {
+    final static class UNABBREVIATE extends RecursiveTermTransform.NegObliviousTermTransform {
 
         final Function<Term /* Atomic */,Concept> resolver;
 

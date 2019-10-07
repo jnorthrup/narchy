@@ -25,7 +25,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         this((NAR) null);
     }
 
-    protected NARPart(NAR nar) {
+    @Deprecated protected NARPart(NAR nar) {
         this((Term) null);
 
         if (nar != null)

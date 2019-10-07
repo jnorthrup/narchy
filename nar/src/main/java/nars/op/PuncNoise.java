@@ -68,7 +68,7 @@ public class PuncNoise extends DurLoop {
                 continue;
             if (noBeliefOrGoal && (i == 0 || i == 2))
                 continue;
-            ((AtomicTaskLink) t).priMerge(p(i), amt, PriMerge.plus);
+            ((AtomicTaskLink) t).mergeComponent(p(i), amt, PriMerge.plus);
         }
 
     }

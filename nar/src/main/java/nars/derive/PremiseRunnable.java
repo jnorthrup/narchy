@@ -3,8 +3,6 @@ package nars.derive;
 import nars.derive.action.PremiseAction;
 import nars.truth.MutableTruth;
 
-import java.util.function.Predicate;
-
 /** recycled slot describing potential deriver action.
  *  local to Derivation
  * */

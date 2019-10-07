@@ -2,7 +2,6 @@ package nars.link;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.pri.ScalarValue;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
@@ -30,8 +29,8 @@ public abstract class AbstractTaskLink implements TaskLink {
     public final Term to;
     public final int hash;
 
-//    static final FloatFloatToFloatFunction plus = PriMerge.plus::mergeUnitize;
-    static final FloatFloatToFloatFunction mult = PriMerge.and::merge;//mergeUnitize;
+    static final FloatFloatToFloatFunction plus = PriMerge.plus::merge;
+    static final FloatFloatToFloatFunction mult = PriMerge.and::merge;
 
     public Term why = null;
 
@@ -151,12 +150,12 @@ public abstract class AbstractTaskLink implements TaskLink {
     }
 
 
-    @Override
-    public float take(byte punc, float howMuch) {
-        return Math.max(ScalarValue.EPSILON,
-                -priMergeGetDelta(punc, -howMuch, PriMerge.plus)
-        );
-    }
+//    @Override
+//    public float take(byte punc, float howMuch) {
+//        return Math.max(ScalarValue.EPSILON,
+//                -priMergeGetDelta(punc, -howMuch, PriMerge.plus)
+//        );
+//    }
 
     @Override
     public void delete(byte punc) {
@@ -174,16 +173,15 @@ public abstract class AbstractTaskLink implements TaskLink {
         return false;
     }
 
-    public final TaskLink priMerge(byte punc, float pri, PriMerge merge) {
-        priMergeGetValue(punc, pri, merge);
-        return this;
+    public final void mergeComponent(byte punc, float pri, PriMerge merge) {
+        mergeComponent(punc, pri, merge, Void);
     }
 
-    protected float priMergeGetValue(byte punc, float pri, PriMerge merge) {
+    protected final float mergeComponentPost(byte punc, float pri, PriMerge merge) {
         return mergeComponent(punc, pri, merge, Post);
     }
 
-    public final float priMergeGetDelta(byte punc, float pri, PriMerge merge) {
+    public final float mergeComponentDelta(byte punc, float pri, PriMerge merge) {
         return mergeComponent(punc, pri, merge, Delta);
     }
 
@@ -199,14 +197,13 @@ public abstract class AbstractTaskLink implements TaskLink {
 
     @Override abstract public String toString();
 
-    public final AbstractTaskLink priSet(byte punc, float puncPri) {
-        if (puncPri==puncPri)
-            priMerge(punc, puncPri, PriMerge.replace);
+
+    public AbstractTaskLink priSet(byte punc, float puncPri) {
+        mergeComponent(punc, puncPri, PriMerge.replace, PriReturn.Void);
         return this;
     }
     public final AbstractTaskLink priMax(byte punc, float puncPri) {
-        if (puncPri==puncPri)
-            priMerge(punc, puncPri, PriMerge.max);
+        mergeComponent(punc, puncPri, PriMerge.max);
         return this;
     }
 
@@ -214,7 +211,9 @@ public abstract class AbstractTaskLink implements TaskLink {
     @Override
     public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {
 
-        if (incoming instanceof AtomicTaskLink) {
+        why = Why.why(why, incoming.why()); //TODO priority proportional Why merge
+
+        //if (incoming instanceof AtomicTaskLink) {
             switch (returning) {
                 case Overflow:
                 case Delta:
@@ -227,25 +226,24 @@ public abstract class AbstractTaskLink implements TaskLink {
                         merge(i, incoming.priIndex(i), merge, Void);
                     return Float.NaN;
             }
-        }
+        //}
 
-        why = Why.why(why, incoming.why()); //TODO priority proportional Why merge
 
         throw new TODO();
     }
 
-    protected void mergeComponent(byte punc, float pri, PriMerge merge) {
-        mergeComponent(punc, pri, merge, PriReturn.Void);
-    }
+//    protected void mergeComponent(byte punc, float pri, PriMerge merge) {
+//        mergeComponent(punc, pri, merge, PriReturn.Void);
+//    }
 
-    private float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
+    protected final float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
         return merge(Task.i(punc), pri, merge, returning);
     }
 
     protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
         assertFinite(pri);
         float y = apply(ith, pri,
-            merge::merge, //merge::mergeUnitize,
+            merge::mergeUnitize, //necessary
             returning);
 
         if (returning != PriReturn.Delta || y != 0)

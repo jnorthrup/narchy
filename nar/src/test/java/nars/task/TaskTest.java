@@ -96,8 +96,9 @@ public class TaskTest {
 
         //multiple:
         assertEq("((#1,#1)==>x)", Task.postNormalize($$("((--#1,--#1) ==> x)")));
-
-
+    }
+    @Test
+    void testTaskPostNormalize_Indep() {
         assertEq("(($1,x)==>a($1))", Task.postNormalize($$("((--$1,x) ==> a(--$1))")));
     }
 

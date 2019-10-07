@@ -19,19 +19,19 @@ public class TaskLinkTest {
         AtomicTaskLink t = AtomicTaskLink.link($$("x"));
         assertEquals(0, t.pri(), 0.001f);
 
-        t.priMergeGetDelta(BELIEF, 0.9f, PriMerge.replace);
+        t.mergeComponentDelta(BELIEF, 0.9f, PriMerge.replace);
         assertEquals((1*0.9f)/4f, t.pri(), 0.001f);
 
-        t.priMergeGetDelta(GOAL, 0.9f, PriMerge.replace);
+        t.mergeComponentDelta(GOAL, 0.9f, PriMerge.replace);
         assertEquals((2*0.9f)/4f, t.pri(), 0.001f);
-        t.priMergeGetDelta(GOAL, 0f, PriMerge.replace);
+        t.mergeComponentDelta(GOAL, 0f, PriMerge.replace);
 
-        t.priMergeGetDelta(BELIEF, 0.1f, PriMerge.plus);
+        t.mergeComponentDelta(BELIEF, 0.1f, PriMerge.plus);
         assertEquals(0.25f, t.pri(), 0.01f);
         assertEquals(1, t.priPunc(BELIEF), 0.01f);
 
         //no change:
-        t.priMergeGetDelta(BELIEF, 0.1f, PriMerge.plus);
+        t.mergeComponentDelta(BELIEF, 0.1f, PriMerge.plus);
         assertEquals(0.25f, t.pri(), 0.01f);
         assertEquals(1, t.priPunc(BELIEF), 0.01f);
 
@@ -40,8 +40,8 @@ public class TaskLinkTest {
 
     @Test void TaskLinkComponentRange() {
         AtomicTaskLink t = AtomicTaskLink.link($$("x"));
-        t.priMergeGetDelta(BELIEF, 0.9f, PriMerge.plus);
-        t.priMergeGetDelta(GOAL, 0.9f, PriMerge.plus);
+        t.mergeComponentDelta(BELIEF, 0.9f, PriMerge.plus);
+        t.mergeComponentDelta(GOAL, 0.9f, PriMerge.plus);
         assertEquals(0.5f, t.pri(), 0.1f);
         assertEquals("$.45:0.9,0,0.9,0 x", t.toString());
         t.priMult(0.9f);

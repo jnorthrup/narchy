@@ -85,12 +85,7 @@ public class TermList extends FasterList<Term> implements Subterms {
     @Override
     public boolean equals(Object obj) {
         if (this == obj) return true;
-        
-        if ((obj instanceof TermList)) {
-            return nonNullEquals(((TermList)obj));
-        } else {
-            return ((Subterms)obj).equalTerms(this);
-        }
+        return (obj instanceof TermList) ? nonNullEquals(((TermList) obj)) : ((Subterms) obj).equalTerms(this);
     }
 
 //
@@ -108,11 +103,14 @@ public class TermList extends FasterList<Term> implements Subterms {
         return x.length == s ? x : Arrays.copyOf(x, s);
     }
 
+//    @Override
+//    public final boolean containsInstance(Term term) {
+//        return super.containsInstance(term);
+//    }
 
     /** finalization step on constructing a Subterm */
-    @Nullable public Subterms commit(Subterms src, Op superOp) {
+    @Nullable public Subterms commit(Subterms src) {
         int ys = size;
-
 
 
 //        if (volume() > NAL.term.COMPOUND_VOLUME_MAX) {

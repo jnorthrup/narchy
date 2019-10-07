@@ -141,8 +141,8 @@ class PremiseRuleTest {
     void testAutoXternalInConj() throws Narsese.NarseseException {
         assertConcPattern("X,Y |- (X && Y), (Belief:Analogy)", "(%1 &&+- %2)");
         assertConcPattern("X,Y |- (X,(X && Y)), (Belief:Analogy)", "(%1,(%1 &&+- %2))");
-        assertConcPattern("(X,%A..+),Y |- (&&,X,%A..+), (Belief:Analogy)", "(%1 &&+- %2..+)");
-        assertConcPattern("(%A..+),Y |- (&&,%A..+), (Belief:Analogy)", "( &&+- ,%1..+)");
+        assertConcPattern("{X,%A..+},Y |- (&&,X,%A..+), (Belief:Analogy)", "(%1 &&+- %2..+)");
+        assertConcPattern("{%A..+},Y |- (&&,%A..+), (Belief:Analogy)", "( &&+- ,%1..+)");
     }
 
     @Test
@@ -256,7 +256,7 @@ class PremiseRuleTest {
     void testOpIsPreFilterSubPath() {
         DeriverProgram d = new PremiseRuleSet(NARS.shell(),
             "(Z,X),Y,is(X,\"*\") |- (X,Y), (Belief:Intersection)").compile();
-        assertTrue(d.what.toString().contains("IsHas"), () -> d.what.toString());
+        assertTrue(d.what.toString().contains("Is("), () -> d.what.toString());
     }
 
     @Test

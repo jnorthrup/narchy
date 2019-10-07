@@ -12,13 +12,12 @@ import nars.term.var.UnnormalizedVariable;
 import static nars.Op.*;
 
 
-public abstract class VariableTransform extends AbstractTermTransform.NegObliviousTermTransform {
-
-
+public abstract class VariableTransform extends RecursiveTermTransform.NegObliviousTermTransform {
 
     @Override
-    public Term applyPosCompound(Compound x) {
-        return preFilter(x) ? super.applyPosCompound(x) : x;
+    public final Term apply(Term x) {
+        return (x instanceof Compound && preFilter((Compound)x)) || (x instanceof Variable) ?
+            super.apply(x) : x;
     }
 
     public boolean preFilter(Compound x) {

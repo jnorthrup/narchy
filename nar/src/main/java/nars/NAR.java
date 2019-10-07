@@ -1377,7 +1377,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
     public final Task belief(Term c) {
-        return belief(c, time());
+        return belief(c, ETERNAL);
     }
 
     @Nullable
@@ -1392,9 +1392,9 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
         Term tt = t.term();
         boolean negate = tt instanceof Neg;
-        if (negate) {
+        if (negate)
             t = tt = tt.unneg();
-        }
+
 
         BeliefTable table = (BeliefTable) tableDynamic(!negate ? t : tt, punc);
         if (table == null)

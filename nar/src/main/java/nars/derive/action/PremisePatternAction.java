@@ -30,7 +30,7 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjMatch;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.truth.func.NALTruth;
 import nars.truth.func.TruthFunction;
 import nars.truth.func.TruthModel;
@@ -625,7 +625,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     private static final Map<Term, Truthify> truthifies = new ConcurrentHashMap<>();
 
 
-    static class UppercaseAtomsToPatternVariables extends AbstractTermTransform.NegObliviousTermTransform {
+    static class UppercaseAtomsToPatternVariables extends RecursiveTermTransform.NegObliviousTermTransform {
 
         static final ImmutableSet<Atomic> reservedMetaInfoCategories = Sets.immutable.of(
                 Atomic.the("Belief"),
@@ -666,7 +666,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     /**
      * conclusion post-processing
      */
-    private final AbstractTermTransform.NegObliviousTermTransform ConcTransform = new AbstractTermTransform.NegObliviousTermTransform() {
+    private final RecursiveTermTransform.NegObliviousTermTransform ConcTransform = new RecursiveTermTransform.NegObliviousTermTransform() {
         @Override
         public Term applyPosCompound(Compound c) {
 

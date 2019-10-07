@@ -1,5 +1,6 @@
 package nars.unify;
 
+import nars.term.Term;
 import org.junit.jupiter.api.Test;
 
 import java.util.TreeSet;
@@ -41,7 +42,8 @@ class UnificationTest {
 
     static void assertSubst(String expecteds, Unification u, String x) {
         TreeSet ts = new TreeSet();
-        u.apply($$(x)).forEach(ts::add);
+        Term X = $$(x);
+        u.apply(X).forEach(ts::add);
         assertEquals(expecteds, ts.toString());
     }
 

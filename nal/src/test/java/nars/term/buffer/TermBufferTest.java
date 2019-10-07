@@ -4,7 +4,7 @@ import jcog.data.byt.DynBytes;
 import nars.Op;
 import nars.term.Term;
 import nars.term.atom.Atomic;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.TermTransform;
 import org.junit.jupiter.api.Test;
 
@@ -60,10 +60,10 @@ class TermBufferTest {
                 .appendCompound(Op.IMPL, 1, A, B).term().toString());
     }
 
-    static final TermTransform nullTransform = new AbstractTermTransform() {
+    static final TermTransform nullTransform = new RecursiveTermTransform() {
 
     };
-    static final TermTransform atomToCompoundTransform = new AbstractTermTransform() {
+    static final TermTransform atomToCompoundTransform = new RecursiveTermTransform() {
 
         final Term cmp = $$("(x,y)");
 

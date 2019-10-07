@@ -24,7 +24,7 @@ import java.util.Random;
 import java.util.concurrent.Executor;
 import java.util.function.Supplier;
 
-import static fucknutreport.config.NodeConfig.configIs;
+import static jcog.Config.configIs;
 import static nars.Op.*;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 

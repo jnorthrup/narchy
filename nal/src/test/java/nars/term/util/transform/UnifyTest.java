@@ -13,6 +13,7 @@ import nars.term.Term;
 import nars.term.anon.Anon;
 import nars.unify.Unify;
 import nars.unify.UnifyAny;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import java.util.Set;
@@ -632,6 +633,7 @@ public class UnifyTest {
                 "{a, b, c, d}", false);
     }
 
+    @Disabled
     @Test
     void ellipsisLinearOneOrMoreAll() {
         test(Op.VAR_PATTERN,
@@ -639,6 +641,7 @@ public class UnifyTest {
                 "(a)", true);
     }
 
+    @Disabled
     @Test
     void ellipsisLinearOneOrMoreSuffix() {
         test(Op.VAR_PATTERN,
@@ -646,6 +649,7 @@ public class UnifyTest {
                 "(a, b, c, d)", true);
     }
 
+    @Disabled
     @Test
     void ellipsisLinearOneOrMoreSuffixNoneButRequired() {
         test(Op.VAR_PATTERN,
@@ -653,6 +657,7 @@ public class UnifyTest {
                 "(a)", false);
     }
 
+    @Disabled
     @Test
     void ellipsisLinearOneOrMorePrefix() {
         test(Op.VAR_PATTERN,
@@ -660,6 +665,7 @@ public class UnifyTest {
                 "(a, b, c, d)", false);
     }
 
+    @Disabled
     @Test
     void ellipsisLinearOneOrMoreInfix() {
         test(Op.VAR_PATTERN,
@@ -667,6 +673,7 @@ public class UnifyTest {
                 "(a, b, c, d)", false);
     }
 
+    @Disabled
     @Test
     void ellipsisLinearZeroOrMore() {
         test(Op.VAR_PATTERN,
@@ -675,6 +682,7 @@ public class UnifyTest {
     }
 
 
+    @Disabled
     @Test
     void ellipsisLinearRepeat1() {
         test(Op.VAR_PATTERN,
@@ -682,7 +690,7 @@ public class UnifyTest {
                 "((a, b, c, d), b, c, d)", true);
     }
 
-    @Test
+    @Disabled @Test
     void ellipsisLinearRepeat2() {
         test(Op.VAR_PATTERN,
                 "((a, %X..+), (z, %X..+))",
@@ -747,7 +755,7 @@ public class UnifyTest {
                 "{{a, b, c, d}, {z, b, c, d}}", true);
     }
 
-    @Test
+    @Disabled @Test
     void ellipsisLinearInner() {
 
 

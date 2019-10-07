@@ -46,6 +46,7 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
 
+
     @Override protected float priSum() {
         return punc.sumValues();
     }
@@ -100,15 +101,15 @@ public class AtomicTaskLink extends AbstractTaskLink {
 //        super(self, self);
 //    }
 
-    @Override
-    public float take(float pct) {
-        float taken = 0;
-        for (byte i = 0; i < 4; i++) {
-            taken += punc.merge(i, pct, mult, PriReturn.Delta);
-        }
-        invalidate();
-        return -taken;
-    }
+//    @Override
+//    public float take(float pct) {
+//        float taken = 0;
+//        for (byte i = 0; i < 4; i++) {
+//            taken += punc.merge(i, pct, mult, PriReturn.Delta);
+//        }
+//        invalidate();
+//        return -taken;
+//    }
 
     private final WritableTensor punc =
             new AtomicFixedPoint4x16bitVector();

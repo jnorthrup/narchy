@@ -12,7 +12,7 @@ import nars.term.atom.Interval;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.ConjList;
-import nars.term.util.transform.AbstractTermTransform;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -123,7 +123,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
     }
 
     /** transform each sub component-wise so that a remapping can be determined before constructing new ConjSeq*/
-     @Override public Term transform(AbstractTermTransform f, Op newOp, int ydt) {
+     @Override public Term transform(RecursiveTermTransform f, Op newOp, int ydt) {
 
         if (newOp!=null && (newOp!=CONJ || ydt!=dt()))
             throw new UnsupportedOperationException();

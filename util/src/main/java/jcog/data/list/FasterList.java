@@ -688,7 +688,7 @@ public class FasterList<X> extends FastList<X> {
     }
 
     public boolean containsInstance(X x) {
-        for (int i = 0, thisSize = this.size(); i < thisSize; i++) {
+        for (int i = 0, thisSize = this.size; i < thisSize; i++) {
             if (this.items[i] == x)
                 return true;
         }

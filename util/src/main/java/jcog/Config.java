@@ -1,8 +1,6 @@
-package fucknutreport.config;
+package jcog;
 
 import com.google.common.io.Resources;
-import jcog.Log;
-import jcog.Texts;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -14,8 +12,8 @@ import java.util.Objects;
 //import kotlin.jvm.internal.Intrinsics;
 
 
-public enum NodeConfig { ;
-   private static final Logger logger = Log.logger(NodeConfig.class);
+public enum Config { ;
+   private static final Logger logger = Log.logger(Config.class);
 
    private static final boolean insecure;
 
