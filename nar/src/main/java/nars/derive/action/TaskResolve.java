@@ -31,11 +31,11 @@ public class TaskResolve extends NativePremiseAction {
 
 	@Override
 	protected void run(RuleCause why, Derivation d) {
-		Task x = d._task;
+		TaskLink x = (TaskLink)d._task;
 
-		Task y = get((TaskLink)x, d);
+		Task y = get(x, d);
 		if (y != null) // && !x.equals(y))
-			d.add(new AbstractPremise(y, y.term(), why.why(d, x)));
+			d.add(new AbstractPremise(y, y.term(), why.why(d)));
 	}
 
 	@Nullable public Task get(TaskLink t, Derivation d) {

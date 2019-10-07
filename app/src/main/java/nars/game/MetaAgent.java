@@ -9,6 +9,7 @@ import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import jcog.pri.UnitPri;
+import jcog.thing.Part;
 import jcog.util.FloatConsumer;
 import nars.$;
 import nars.Emotion;
@@ -227,6 +228,7 @@ abstract public class MetaAgent extends Game {
 				float dur = dur();
 				return (float) nar.parts(Game.class)
 					.filter(g -> g != SelfMetaAgent.this)
+					.filter(Part::isOn)
 					.mapToDouble(g -> g.happiness(dur))
 					.average()
 					.orElseGet(() -> 0);

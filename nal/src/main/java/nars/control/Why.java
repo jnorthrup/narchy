@@ -4,6 +4,7 @@ import jcog.util.ArrayUtil;
 import nars.$;
 import nars.subterm.Subterms;
 import nars.term.Term;
+import nars.term.Terms;
 import nars.term.atom.Int;
 import nars.term.util.TermException;
 import org.eclipse.collections.api.block.procedure.primitive.ShortFloatProcedure;
@@ -91,12 +92,39 @@ public enum Why { ;
 			case 1: return c[0].why(); //TODO check capacity
 			case 2: return why(c[0].why(), c[1].why(), capacity);
 			default: {
-				ShortHashSet s = new ShortHashSet(c.length * capacity);
-				for (C cc : c) {
-					if (cc!=null)
-						toSet(cc.why(), s);
+				Term[] ct = new Term[c.length];
+				int vt = 0;
+				boolean nulls = false;
+				for (int i = 0, cLength = c.length; i < cLength; i++) {
+					C ci = c[i];
+					if (ci!=null) {
+						Term cti = ct[i] = ci.why();
+						if (cti!=null)
+							vt += cti.volume();
+						else
+							nulls = true;
+					} else
+						nulls = true;
 				}
-				return why(s, capacity);
+				if (vt == 0)
+					return null;
+				if (nulls)
+					ct = ArrayUtil.removeNulls(ct);
+
+				if (vt < capacity - 1) {
+					ct = Terms.commute(ct);
+					if (ct.length == 1)
+						return ct[0];
+					else
+						return SETe.the(ct);
+				} else {
+					//flatten and sample
+					ShortHashSet s = new ShortHashSet(ct.length * capacity);
+					for (Term cc : ct) {
+						toSet(cc, s);
+					}
+					return why(s, capacity);
+				}
 			}
 		}
 	}

@@ -5,7 +5,6 @@ import nars.$;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.derive.util.DerivationFailure;
@@ -41,13 +40,13 @@ public class Taskify extends ProxyTerm {
      * destination of any derived tasks; also may be used to communicate backpressure
      * from the recipient.
      */
-    public final RuleCause channel;
+    public final RuleCause rule;
     final Termify termify;
 
-    public Taskify(Termify termify, RuleCause channel) {
-        super($.pFast(termify, $.the(channel.id)));
+    public Taskify(Termify termify, RuleCause rule) {
+        super($.pFast(termify, $.the(rule.id)));
         this.termify = termify;
-        this.channel = channel;
+        this.rule = rule;
     }
 
 
@@ -292,7 +291,7 @@ public class Taskify extends ProxyTerm {
         }
 
         //these must be applied before possible merge on input to derivedTask bag
-        t.why(Why.why(d.why(), channel.why, NAL.causeCapacity.intValue()));
+        t.why(rule.why(d));
 
         if (d.single) //|| (NAL.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);
@@ -326,7 +325,7 @@ public class Taskify extends ProxyTerm {
                         )) {
 
                             if (NAL.DEBUG_SIMILAR_DERIVATIONS)
-                                logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, channel.ruleString);
+                                logger.warn("similar derivation to parent:\n\t{} {}\n\t{}", derived, parent, rule.ruleString);
 
                             return true;
                         }

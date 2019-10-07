@@ -1,9 +1,7 @@
 package nars.derive.action;
 
-import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
-import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.rule.RuleCause;
@@ -50,7 +48,7 @@ public class CompoundDecompose extends NativePremiseAction {
 					.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());
 
 				//TODO lazy calculate
-				l.why = Why.why(d.why(), why.why, NAL.causeCapacity.intValue());
+				l.why = why.why(d);
 
 				links.link(l);
 			}

@@ -1,5 +1,6 @@
 package nars.table.dynamic;
 
+import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.What;
@@ -9,8 +10,8 @@ import nars.control.op.Remember;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.util.Image;
+import nars.term.util.TermException;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -82,8 +83,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
      */
     @Override
     public Task sample(When<What> when, @Nullable Term template, @Nullable Predicate<Task> filter) {
-        Task t = super.sample(when, template, filter);
-        return transformFromTemplate(t);
+        return transformFromTemplate(super.sample(when, template, filter));
     }
 
 //    @Override
@@ -94,12 +94,19 @@ public class ImageBeliefTable extends DynamicTaskTable {
 //        return a;
 //    }
 
-    @Nullable private Task transformFromTemplate(Task t) {
-        return t != null ? SpecialTermTask.the(t, transformTermFromTemplate(t), false) : null;
+    @Nullable private Task transformFromTemplate(@Nullable Task x) {
+        if (x == null) return null;
+        try {
+            Term y = transformTermFromTemplate(x.term());
+            return SpecialTermTask.the(x, y, false);
+        } catch (TermException t) {
+            if (NAL.DEBUG) throw new RuntimeException(t);
+            else return null;
+        }
     }
 
-    private Term transformTermFromTemplate(Termed t) {
-        return Image.transformFromTemplate(t.term(), this.term, this.normal);
+    private Term transformTermFromTemplate(Term t) {
+        return Image.transformFromTemplate(t, this.term, this.normal);
     }
 
     @Override

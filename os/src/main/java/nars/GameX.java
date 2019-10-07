@@ -73,8 +73,8 @@ import static spacegraph.SpaceGraph.window;
 abstract public class GameX extends Game {
 
     static final boolean initMeta = true;
-    static final boolean initMetaRL = true;
-    static final boolean metaAllowPause = false;
+    static final boolean initMetaRL = false;
+    static final boolean metaAllowPause = false; //TODO
 
     /**
      * determines memory strength
@@ -139,8 +139,9 @@ abstract public class GameX extends Game {
         if (initMeta) {
             Exe.runLater(() -> {
 
-                float _fps = 24;
-                MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, _fps);
+                float metaFPS = narFPS / 2; //half rate
+
+                MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, metaFPS);
                 if (initMetaRL)
                     self.addRLBoost();
                 n.start(self);
@@ -148,7 +149,7 @@ abstract public class GameX extends Game {
 
                 Exe.runLater(() -> {
                     n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
-                        float fps = _fps;
+                        float fps = metaFPS; //TODO specific to each game
                         MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, metaAllowPause);
                         n.start(gm);
                         //gm.pri(0.1f);
@@ -730,8 +731,7 @@ abstract public class GameX extends Game {
      * TODO extract to class
      */
     private static void addGovernor(NAR n) {
-        int gHist = 3;
-        float momentum = 0.95f;
+        float momentum = 0.5f;
         float explorationRate = 0.1f;
         n.onDur(new Consumer<NAR>() {
 
@@ -766,7 +766,8 @@ abstract public class GameX extends Game {
                         for (int i = 0; i < ww; i++)
                             c[i].setPri(explorationRate); //flat
                     } else {
-                        float basePri = explorationRate * (max - min);
+                        float explorationRateEach = explorationRate / ww;
+                        float basePri = explorationRateEach * (max - min);
                         for (int i = 0; i < ww; i++)
                             c[i].setPri(basePri + Util.normalize(f[i], min, max));
                     }

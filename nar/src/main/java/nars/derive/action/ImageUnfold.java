@@ -1,8 +1,6 @@
 package nars.derive.action;
 
-import nars.NAL;
 import nars.Task;
-import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.link.AbstractTaskLink;
@@ -43,7 +41,7 @@ public class ImageUnfold extends NativePremiseAction {
 					AbstractTaskLink l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(), task.pri());
 
 					//TODO lazy calculate
-					l.why = Why.why(d.why(), why.why, NAL.causeCapacity.intValue());
+					l.why = why.why(d);
 
 					d.what.link(l);
 				}

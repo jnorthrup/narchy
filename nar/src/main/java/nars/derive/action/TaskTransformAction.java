@@ -1,8 +1,6 @@
 package nars.derive.action;
 
-import nars.NAL;
 import nars.Task;
-import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.task.AbstractTask;
@@ -30,11 +28,7 @@ public abstract class TaskTransformAction extends TaskAction {
 	protected final void accept(RuleCause why, Task x, Derivation d) {
 		Task y = transform(x, d);
 		if (y != null)
-			d.remember(
-				((AbstractTask) y).why(
-					Why.why(d.why(), why.why, NAL.causeCapacity.intValue())
-				)
-			);
+			d.remember(((AbstractTask) y).why(why.why(d)));
 	}
 
 	@Nullable

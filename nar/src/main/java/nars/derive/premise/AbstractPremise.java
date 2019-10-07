@@ -29,7 +29,7 @@ public class AbstractPremise implements Premise {
 	public final Termed task, belief;
 
 	/** does not include the task or belief's. these transfer separately */
-	public Term why = null;
+	public Term why;
 
 	public AbstractPremise(Termed task, Termed belief, Term why) {
 		assert(valid(task) && task.term().op().taskable);

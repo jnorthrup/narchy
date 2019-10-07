@@ -35,7 +35,7 @@ import static java.util.stream.Collectors.toList;
  */
 @Paper
 @Skill("Credit_assignment")
-public class Cause extends WhenInternal implements Comparable<Cause> {
+public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
 
     /**
      * internally assigned id
@@ -158,6 +158,10 @@ public class Cause extends WhenInternal implements Comparable<Cause> {
     }
 
 
+    @Override
+    public final @Nullable Term why() {
+        return why;
+    }
 }
 
 

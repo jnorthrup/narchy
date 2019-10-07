@@ -519,11 +519,12 @@ public class Occurrify extends TimeGraph {
             private void filter(Derivation d, long[] x) {
                 if (x!=null && x[0]!=ETERNAL && x[0]!=TIMELESS) {
                     long taskStart = d.taskStart;
-                    if (taskStart != ETERNAL && taskStart > x[0]){
+                    if (taskStart == ETERNAL) taskStart = d.time;
+                    //if (taskStart != ETERNAL) { // && taskStart > x[0]){
                         long r = x[1] - x[0];
                         x[0] = taskStart;
                         x[1] = taskStart + r;
-                    }
+                    //}
                 }
             }
 

@@ -33,6 +33,6 @@ public final class RuleCause extends Cause {
 		return Why.why(why, d.why(), NAL.causeCapacity.intValue());
 	}
 	public final Term why(Caused... c) {
-		return Why.why(why, Why.why(c, NAL.causeCapacity.intValue()), NAL.causeCapacity.intValue());
+		return Why.why(why, Why.why(c, NAL.causeCapacity.intValue()-1), Integer.MAX_VALUE);
 	}
 }

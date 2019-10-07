@@ -22,10 +22,7 @@ public class CachedUnitCompound extends SemiCachedUnitCompound {
 
         this.op = op.id;
         this.cstruct = sub.structure() | op.bit;
-
-        int v = sub.volume() + 1;
-        assert(v < Short.MAX_VALUE);
-        this.volume = (short) v;
+        this.volume = (short) (sub.volume() + 1); assert(volume < Short.MAX_VALUE);
     }
 
     @Override
