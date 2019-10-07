@@ -23,7 +23,6 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.function.Function;
 
-import static nars.NAL.term.TERM_BUFFER_MIN_INTERN_VOL;
 import static nars.Op.*;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -206,13 +205,13 @@ public class TermBuffer {
 
 
     public Term term() {
-        return get(NAL.term.COMPOUND_VOLUME_MAX);
+        return term(NAL.term.COMPOUND_VOLUME_MAX);
     }
 
     /**
      * run the construction process
      */
-    public Term get(int volMax) {
+    public Term term(int volMax) {
         this.volRemain = volMax;
         return nextTerm(code.arrayDirect(), new int[]{0, code.len});
     }
@@ -487,11 +486,11 @@ public class TermBuffer {
             this.compoundEnd(o);
         }
 
-        if (this.change()==c && x.volume() >= TERM_BUFFER_MIN_INTERN_VOL) {
-            //unchanged constant; rewind and pack the exact Term as an interned symbol
-            this.rewind(p, u);
-            this.appendInterned(x);
-        }
+//        if (this.change()==c && x.volume() >= TERM_BUFFER_MIN_INTERN_VOL) {
+//            //unchanged constant; rewind and pack the exact Term as an interned symbol
+//            this.rewind(p, u);
+//            this.appendInterned(x);
+//        }
         return true;
     }
 

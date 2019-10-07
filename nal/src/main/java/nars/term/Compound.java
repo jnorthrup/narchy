@@ -36,11 +36,8 @@ import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.conj.ConjUnify;
-import nars.term.util.transform.RecursiveTermTransform;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
-import nars.term.var.ellipsis.Ellipsislike;
-import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.UnifyAny;
 import nars.unify.UnifyFirst;
@@ -52,8 +49,7 @@ import java.io.IOException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
 
-import static nars.Op.*;
-import static nars.term.atom.Bool.*;
+import static nars.Op.CONJ;
 import static nars.time.Tense.*;
 
 /**
@@ -175,9 +171,7 @@ public interface Compound extends Term, IPair, Subterms {
             int xOp = x.opID();
             return !subterms().recurseTerms(s->s.hasAny(1<<xOp)/*t->t.volume()>=xv*/, s->{
                 if (s instanceof Compound && s.opID()==xOp) {
-                    if (preFilter.test(s) && x.unify(s, u)) {
-                        return false;
-                    }
+                    return !preFilter.test(s) || !x.unify(s, u);
                 }
                 return true;
             }, this);
@@ -494,9 +488,7 @@ public interface Compound extends Term, IPair, Subterms {
     @Override
     default boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
         return !eventsAND((when,what)->{
-            if (each.accept(when,what))
-                return false;
-            return true;
+            return !each.accept(when, what);
         }, offset, decomposeConjDTernal, decomposeXternal);
     }
 
@@ -696,114 +688,39 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override default Term transform(TermTransform t) {
-        if (t instanceof RecursiveTermTransform)
-            return transform((RecursiveTermTransform)t, null, XTERNAL);
-        else
+    @Override default /* final */ Term transform(TermTransform t) {
+//        if (t instanceof RecursiveTermTransform) {
+//            return transform((RecursiveTermTransform) t, null, XTERNAL);
+//            //return transformBuffered(t, null, 256); //<- not ready yet
+//        } else
             return t.applyCompound(this);
     }
 
-//    default Term transform(TermTransform t, @Nullable TermBuffer b, int volMax) {
-////        if (this instanceof Compound && volume() > NAL.TERM_BUFFER_VOL_MIN) //HACK
-////            return TermTransform.transform(this, t, b, volMax);
-////        else
-//            return t.applyCompound(this);
+
+//    /** global default transform procedure: can decide semi-optimal transform implementation
+//     *  TODO not ready yet
+//     * */
+//    default Term transformBuffered(TermTransform transform, @Nullable TermBuffer l, int volMax) {
+////        try {
+//            if (l == null)
+//                l = new TermBuffer();
+//            else
+//                l.clear();
 //
-////        Term x = TermTransform.transform((Compound)this, t, b, volMax);
-////        Term y = t.apply(this);
-////        if (!x.equals(y)) {
-////            if (!x.hasAny(Op.CONJ.bit | Op.Set | Op.SIM.bit))
-////                Util.nop();
+//            return l.appendCompound(this, transform, volMax) ? l.term() : Null;
+//
+////        } catch (TermException t) {
+////            if (NAL.DEBUG)
+////                throw t;
+////            //continue below
+////        } catch (RuntimeException e) {
+////            throw new TermException(e.toString(), this);
+////            //return Null;
 ////        }
-////        return x;
+////
+////        return transform.apply(this);
 //    }
 
-    default Term transform(RecursiveTermTransform f, Op newOp, int ydt) {
-
-        Compound x = this;
-        Op xOp = x.op();
-        Op yOp = newOp == null ? xOp : newOp;
-
-
-        Subterms xx = x.subterms();
-
-        Subterms yy = xx.transformSubs(f, yOp);
-        if (yy == null)
-            return Null;
-
-
-
-        //inline reductions
-        if (yOp == CONJ && xx!=yy) {
-            int yys = yy.subs();
-            if (yys == 0)
-                return True;
-            if (yy.containsInstance(False))
-                return False; //short-circuit
-            if (yys == 2) {
-                if (yy.sub(0) == True)
-                    return yy.sub(1);
-                if (yy.sub(1) == True)
-                    return yy.sub(0);
-
-            }
-        } else if (yOp == INH && f.evalInline() && yy.subs()==2) {
-            //try eval first (even if untransformed)
-            Term v = RecursiveTermTransform.evalInhSubs(yy);
-            if (v != null)
-                return v;
-        }
-
-        int xdt = x.dt();
-        if (newOp == null)
-            ydt = xdt;
-
-        if (yOp.commutative) {
-            int ys = yy.subs();
-            if (ys == 1) {
-                if (yOp == CONJ) {
-                    Term y0 = yy.sub(0);
-                    if (!(y0 instanceof Ellipsislike) && !(y0 instanceof Fragment))
-                        return y0;
-                }
-            }
-            if (xdt == ydt && ydt != XTERNAL && dtSpecial(ydt)) {
-                int xs = x.subs();
-                if (ys == xs){
-                    //pre-sort because it may be identical
-                    Subterms ySorted = yy.commuted();
-                    int yss = ySorted.subs();
-                    if (yss == xs) {
-
-                        if (xx.equalTermsIdentical(ySorted))
-                            return x;
-
-                    } else {
-                        if (yss == 1 && yOp == SIM) {
-                            //similarity collapse to identity
-                            return True;
-                        }
-                    }
-                    yy = ySorted; //use the pre-sorted version since
-                    ys = yss;
-                }
-            }
-        }
-
-        if (yy == xx && xOp == yOp && xdt == ydt)
-            return x; //no change
-
-
-        if (yOp.temporal) {
-            if (ydt != XTERNAL)
-                ydt = RecursiveTermTransform.realign(ydt, xx, yy);
-
-            if (ydt == 0)
-                ydt = DTERNAL; //HACK
-        }
-
-        return f.compound(yOp, ydt, yy);
-    }
 
 
     default Term eventFirst() {

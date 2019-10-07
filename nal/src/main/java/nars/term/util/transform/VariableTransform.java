@@ -15,9 +15,13 @@ import static nars.Op.*;
 public abstract class VariableTransform extends RecursiveTermTransform.NegObliviousTermTransform {
 
     @Override
-    public final Term apply(Term x) {
-        return (x instanceof Compound && preFilter((Compound)x)) || (x instanceof Variable) ?
-            super.apply(x) : x;
+    public Term applyPosCompound(Compound c) {
+        return preFilter(c) ? super.applyPosCompound(c) : c;
+    }
+
+    @Override
+    public Term applyAtomic(Atomic a) {
+        return a instanceof Variable ? super.applyAtomic(a) : a;
     }
 
     public boolean preFilter(Compound x) {

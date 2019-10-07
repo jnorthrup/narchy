@@ -22,8 +22,8 @@ public final class CompoundNormalization extends VariableNormalization {
     }
 
 
-    public boolean preFilter(Compound x) {
-        return x.hasVars() || (imgPossible && x.hasAll(Image.ImageBits));
+    @Override public boolean preFilter(Compound x) {
+        return super.preFilter(x) || (imgPossible && x.hasAll(Image.ImageBits));
     }
 
     @Override
@@ -37,7 +37,7 @@ public final class CompoundNormalization extends VariableNormalization {
                 hasImg = x.hasAll(Image.ImageBits); //check if image bits remain
             }
         }
-        return hasImg || x.hasVars() ? x.transform(this) : x;
+        return hasImg || x.hasVars() ? super.applyPosCompound(x) : x;
     }
 
 

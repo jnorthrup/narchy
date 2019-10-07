@@ -159,7 +159,7 @@ public class Conceptualization {
                     return x;
             }
 
-            return x.transform(this, xo, xo.temporal ? XTERNAL : DTERNAL);
+            return applyCompound(x, xo, xo.temporal ? XTERNAL : DTERNAL);
         }
 
         @Override

@@ -11,8 +11,6 @@ import nars.term.Term;
 import nars.term.atom.Interval;
 import nars.term.util.TermException;
 import nars.term.util.builder.TermBuilder;
-import nars.term.util.conj.ConjList;
-import nars.term.util.transform.RecursiveTermTransform;
 import nars.time.Tense;
 import nars.unify.Unify;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -22,8 +20,6 @@ import java.util.function.Function;
 import java.util.function.IntPredicate;
 
 import static nars.Op.CONJ;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.*;
 
 /** conjunction sequence implementation with internal Interval instance and Event accessor for it */
@@ -122,40 +118,40 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
         return true;
     }
 
-    /** transform each sub component-wise so that a remapping can be determined before constructing new ConjSeq*/
-     @Override public Term transform(RecursiveTermTransform f, Op newOp, int ydt) {
-
-        if (newOp!=null && (newOp!=CONJ || ydt!=dt()))
-            throw new UnsupportedOperationException();
-
-        Subterms s = subterms();
-        int ss = s.subs();
-        int ee = ss - 1;
-        Term[] r = new Term[ee];
-        boolean modified = false;
-        //TODO modifiedTemporally; //to elide complete resequencing, detect when an inner term becomes a sequence or changes in some way that would change sequence's temporality
-        for (int i = 0; i < ee; i++) {
-            Term x = s.sub(i);
-            Term y = f.apply(x);
-            if (x!=y)
-                modified = true;
-            if (y == Null)
-                return Null;
-            if (y == False)
-                return False;
-            r[i] = y;
-        }
-        if (!modified)
-            return this;
-
-
-        ConjList l = new ConjList(ee);
-        int t = times.size();
-        for (byte i = 0; i < t; i++)
-            l.add((long)this.times.value(i), this.times.key(i, r));
-
-        return l.term();
-    }
+//    /** transform each sub component-wise so that a remapping can be determined before constructing new ConjSeq*/
+//     @Override public Term transform(RecursiveTermTransform f, Op newOp, int ydt) {
+//
+//        if (newOp!=null && (newOp!=CONJ || ydt!=dt()))
+//            throw new UnsupportedOperationException();
+//
+//        Subterms s = subterms();
+//        int ss = s.subs();
+//        int ee = ss - 1;
+//        Term[] r = new Term[ee];
+//        boolean modified = false;
+//        //TODO modifiedTemporally; //to elide complete resequencing, detect when an inner term becomes a sequence or changes in some way that would change sequence's temporality
+//        for (int i = 0; i < ee; i++) {
+//            Term x = s.sub(i);
+//            Term y = f.apply(x);
+//            if (x!=y)
+//                modified = true;
+//            if (y == Null)
+//                return Null;
+//            if (y == False)
+//                return False;
+//            r[i] = y;
+//        }
+//        if (!modified)
+//            return this;
+//
+//
+//        ConjList l = new ConjList(ee);
+//        int t = times.size();
+//        for (byte i = 0; i < t; i++)
+//            l.add((long)this.times.value(i), this.times.key(i, r));
+//
+//        return l.term();
+//    }
 
     @Override
     public int eventRange() {

@@ -7,7 +7,6 @@ import jcog.pri.UnitPrioritizable;
 import jcog.pri.op.PriMerge;
 import jcog.pri.op.PriReturn;
 import nars.Task;
-import nars.derive.Derivation;
 import nars.derive.premise.Premise;
 import nars.task.CommandTask;
 import nars.term.Term;

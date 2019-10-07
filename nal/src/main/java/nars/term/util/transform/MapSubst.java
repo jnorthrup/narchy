@@ -216,9 +216,9 @@ public enum MapSubst { ;
         @Override
         public @Nullable Term applyCompound(Compound x) {
             return
-                x.impossibleSubStructure(fromStructure) ?
-                //!x.containsRecursively(from) ?
-                    x : x.transform(this);
+                //x.impossibleSubStructure(fromStructure) ?
+                !x.containsRecursively(from) ?
+                    x : RecursiveTermTransform.super.applyCompound(x);
         }
 
     }

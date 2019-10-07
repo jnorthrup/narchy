@@ -373,9 +373,10 @@ public abstract class Atomic implements Term {
 
     public int height() { return 1; }
 
-    public Term transform(TermTransform t) {
+    public /* final */ Term transform(TermTransform t) {
         return t.applyAtomic(this); //force unbuffered transform
     }
+
 //    default Term transform(TermTransform t, TermBuffer b, int volMax) {
 //        return t.apply(this); //force unbuffered transform
 //    }

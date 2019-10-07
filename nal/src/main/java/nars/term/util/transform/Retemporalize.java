@@ -29,17 +29,17 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 
 
     protected Term transformTemporal(Compound x, int dtNext) {
-        int xdt = x.dt();
+//        int xdt = x.dt();
 //        if (xdt == dtNext && !requiresTransform(x.subterms()))
 //            return x;
 //        else {
             Op xo = x.op();
             int n = xo.temporal ? dtNext : DTERNAL;
-            if (n == xdt)
-                return super.applyPosCompound(x); //fast fail if dt doesnt change
-            else {
-                return x.transform(this, xo, n);
-            }
+//            if (n == xdt)
+//                return super.applyPosCompound(x); //fast fail if dt doesnt change
+//            else {
+                return applyCompound(x, xo, n);
+//            }
 //        }
     }
 

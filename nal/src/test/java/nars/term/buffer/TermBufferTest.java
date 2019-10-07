@@ -18,9 +18,9 @@ class TermBufferTest {
 
     private static class MyTermBuffer extends TermBuffer {
         @Override
-        public Term get(int volMax) {
+        public Term term(int volMax) {
 
-            Term t = super.get(volMax);
+            Term t = super.term(volMax);
             /* if (Param.DEBUG) */ {
                 int volExpected = volMax - volRemain;
                 int volActual = t.volume();

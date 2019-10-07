@@ -12,7 +12,7 @@ public class PremiseRuleNormalization extends VariableNormalization {
 	public Term applyPosCompound(Compound x) {
         /** HACK process completely to resolve built-in functors,
          * to override VariableNormalization's override */
-        return x.transform(this, x.op(), x.dt());
+        return applyCompound(x, x.op(), x.dt());
     }
 
     @Override

@@ -1,6 +1,5 @@
 package nars.op;
 
-import jcog.math.FloatRange;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;

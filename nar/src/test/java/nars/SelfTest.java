@@ -22,7 +22,6 @@ import org.junit.platform.launcher.TestPlan;
 import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
-//import org.pitest.classinfo.ClassName;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import tech.tablesaw.api.*;
@@ -40,6 +39,8 @@ import java.util.zip.GZIPOutputStream;
 import static org.junit.platform.engine.discovery.DiscoverySelectors.selectPackage;
 import static tech.tablesaw.aggregate.AggregateFunctions.countFalse;
 import static tech.tablesaw.aggregate.AggregateFunctions.mean;
+
+//import org.pitest.classinfo.ClassName;
 
 /** periodically, or event-triggered: runs unit tests and broadcasts results */
 public class SelfTest {
