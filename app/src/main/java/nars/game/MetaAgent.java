@@ -55,7 +55,8 @@ abstract public class MetaAgent extends Game {
 	/**
 	 * internal truth frequency precision
 	 */
-	exact = Atomic.the("exact"),
+	precise = Atomic.the("precise"), //frequency resolution
+	careful = Atomic.the("careful"), //conf resolution
 
 	belief = Atomic.the("belief"),
 		goal = Atomic.the("goal"),
@@ -198,7 +199,7 @@ abstract public class MetaAgent extends Game {
 //        actionCtl($.inh(SELF, beliefPri), n.beliefPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 //        actionCtl($.inh(SELF, goalPri), n.goalPriDefault.amp.subRange(maxPri/dynamic, maxPri));
 
-			actionUnipolar($.inh(SELF, exact), (x) -> {
+			actionUnipolar($.inh(SELF, precise), (x) -> {
 			    float y;
 				if (x >= 0.75f) {
 					x = 0.01f;
@@ -216,7 +217,24 @@ abstract public class MetaAgent extends Game {
 				nar.freqResolution.set(x);
 				return y;
 			});
-
+			actionUnipolar($.inh(SELF, careful), (x) -> {
+				float y;
+				if (x >= 0.75f) {
+					x = 0.01f;
+					y = (1f+0.75f)/2;
+				} else if (x >= 0.5f) {
+					x = 0.02f;
+					y = (0.75f+0.5f)/2;
+				} else if (x >= 0.25f) {
+					x = 0.4f;
+					y = (0.5f+0.25f)/2;
+				} else {
+					x = 0.10f;
+					y = 0.25f/2;
+				}
+				nar.confResolution.set(x);
+				return y;
+			});
 			//top-level priority controls of other NAR components
 			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> priAction(g.what().pri));
 
