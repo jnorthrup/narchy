@@ -129,8 +129,7 @@ public class RankedN<X> extends TopN<X> {
     }
 
     private void swap(int a, int b) {
-        ArrayUtil.swap(value, a, b, 1);
-        ArrayUtil.swap(items, a, b, 1);
+        ArrayUtil.swapObjFloat(items, value, a, b);
     }
 
     private int valueComparator(int a, int b) {

@@ -1691,12 +1691,35 @@ public enum ArrayUtil {
         array[offset2] = aux;
     }
 
-    public static void swapObj(Object[] array, int offset1, int offset2) {
-        if (offset1==offset2)
+    public static void swapObj(Object[] o, int a, int b) {
+        if (a==b)
             return;
-        final Object aux = array[offset1];
-        array[offset1] = array[offset2];
-        array[offset2] = aux;
+        final Object aux = o[a];
+        o[a] = o[b];
+        o[b] = aux;
+    }
+
+    public static void swapObjFloat(Object[] o, float[] f, int a, int b) {
+        if (a==b)  return;
+
+        Object ox = o[a];
+        o[a] = o[b];
+        o[b] = ox;
+
+        float fx = f[a];
+        f[a] = f[b];
+        f[b] = fx;
+    }
+    public static void swapObjInt(Object[] o, int[] f, int a, int b) {
+        if (a==b)  return;
+
+        Object ox = o[a];
+        o[a] = o[b];
+        o[b] = ox;
+
+        int fx = f[a];
+        f[a] = f[b];
+        f[b] = fx;
     }
 
     static void swapShort(short[] array, int offset1, int offset2) {

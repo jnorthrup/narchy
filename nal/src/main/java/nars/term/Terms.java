@@ -21,10 +21,7 @@ import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Collection;
-import java.util.Random;
-import java.util.Set;
-import java.util.SortedSet;
+import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
@@ -84,10 +81,66 @@ public enum Terms {
 
 	private static Term[] commuteN(Term[] x) {
 		return ifDifferent(x,
-			new TermList(x.clone()).sortAndDedup()
+			commuteTerms(x, false)
+			//new TermList(x.clone()).sortAndDedup()
 			//new MetalTreeSet<>(x).toArray(Op.EmptyTermArray)
 			//new SortedList<>(x, new Term[x.length]).toArrayRecycled(Term[]::new) //slow
 		);
+	}
+
+	/** n-array commute function optimized to avoid unnecessary comparisons by grouping by volume first */
+	static Term[] commuteTerms(Term[] x, boolean modifyInputArray) {
+		int[] volumes = new int[x.length];
+		int volMin = Integer.MAX_VALUE, volMax = Integer.MIN_VALUE;
+		boolean allDecreasing = true;
+		for (int i = 0, xLength = x.length; i < xLength; i++) {
+
+			int v = x[i].volume();
+
+			volumes[i] = v;
+
+			volMin = Math.min(volMin, v); volMax = Math.max(volMax, v);
+
+			if (allDecreasing && i > 1 && volumes[i-1] <= v)
+				allDecreasing = false;
+		}
+		if (allDecreasing) {
+			//already in sorted order guaranteed by the volume being strictly decreasing
+			return x;
+		}
+
+		Term[] y = modifyInputArray ? x : x.clone();
+
+		if (volMax <= volMin) {
+			//flat
+			Arrays.sort(y);
+		} else {
+			//sort within the spans where the terms have equal volumes (divide & conquer)
+
+			int n = y.length;
+			ArrayUtil.quickSort(0, n, (a, b) -> Integer.compare(volumes[b], volumes[a]), (a, b) -> {
+				ArrayUtil.swapObjInt(y, volumes, a, b);
+			});
+
+			int s = 0; //span start
+			int vs = volumes[0];
+			for (int i = 1; i <= n; i++) {
+				int vi = i < n ? volumes[i] : -1;
+				if (vi != vs) {
+					if (i - s > 1) {
+						//sort span
+						//TODO optimized 2-array compare swap
+						Arrays.sort(y, s, i);
+					}
+					//next span
+					s = i;
+					vs = vi;
+				}
+			}
+
+		}
+
+		return y;
 	}
 
 	private static Term[] ifDifferent(Term[] a, Term[] b) {
