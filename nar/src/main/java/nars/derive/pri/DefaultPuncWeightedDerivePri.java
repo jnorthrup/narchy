@@ -25,9 +25,9 @@ public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     @Override
     public void premise(Derivation d) {
-        if (lastUpdate == ETERNAL || d.time() - lastUpdate > updateDurs * d.dur()) {
-            cache(d.nar());
-            lastUpdate = d.time();
+        if (lastUpdate == ETERNAL || d.time - lastUpdate > updateDurs * d.dur) {
+            cache(d.nar);
+            lastUpdate = d.time;
         }
     }
 

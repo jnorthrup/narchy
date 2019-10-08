@@ -1,6 +1,5 @@
 package nars.op;
 
-import nars.NAR;
 import nars.Op;
 import nars.attention.What;
 import nars.term.Compound;
@@ -19,7 +18,7 @@ import static nars.time.Tense.XTERNAL;
 /** introduction applied to subevents and subconditions */
 public abstract class EventIntroduction extends Introduction {
 
-    EventIntroduction(NAR nar) {
+    EventIntroduction() {
         super();
     }
 

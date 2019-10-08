@@ -138,7 +138,7 @@ class ArithmeticTest {
         NAR n = NARS.tmp();
 //        n.log();
 
-        new Arithmeticize.ArithmeticIntroduction( n);
+        new Arithmeticize.ArithmeticIntroduction();
 
         final int cycles = 500;
 

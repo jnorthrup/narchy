@@ -19,6 +19,8 @@ import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
+import nars.derive.action.AdjacentLinks;
+import nars.derive.adjacent.FirstOrderIndexer;
 import nars.derive.time.ActionTiming;
 import nars.derive.time.MixedTimeFocus;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
@@ -62,6 +64,7 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -541,11 +544,12 @@ abstract public class GameX extends Game {
         Deriver bd6_act = new Deriver(
             Derivers.nal(n, 1,8,"motivation.nal")
                 .add(new STMLinker(1))
-                .add(new Arithmeticize.ArithmeticIntroduction(n))
-                .add(new Factorize.FactorIntroduction(n))
-                .add(new Inperience(n))
+                .add(new Arithmeticize.ArithmeticIntroduction())
+                .add(new Factorize.FactorIntroduction())
+                .add(new Inperience())
                 .add(new ConjClustering(n, BELIEF,  BELIEF, 8, 64, t->true))
-                //.add(new ConjClustering(n, GOAL, GOAL, 4, 32, t->true))
+                .add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
+                //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
             ,
             new MixedTimeFocus(
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(),

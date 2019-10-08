@@ -45,7 +45,7 @@ public class Inperience extends TaskTransformAction {
     public final FloatRange priFactor = new FloatRange(0.1f, 0, 2f);
 
 
-    public Inperience(NAR n) {
+    public Inperience() {
         super();
         single(); //all but command
     }

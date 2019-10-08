@@ -77,15 +77,14 @@ public class Deriver extends How {
 	float PREMISE_SHIFT_OTHER = 0.9f;
 	float PREMISE_SHIFT_RANDOM = 0.5f;
 
-	public Deriver(PremiseRuleSet program) {
-		this(program, new NonEternalTaskOccurenceOrPresentDeriverTiming());
+	public Deriver(PremiseRuleSet rules) {
+		this(rules, new NonEternalTaskOccurenceOrPresentDeriverTiming());
 	}
 
-	public Deriver(PremiseRuleSet program, TimeFocus timing) {
-		this(program
+	public Deriver(PremiseRuleSet rules, TimeFocus timing) {
+		this(rules
 				//standard derivation behaviors
 				.add(TaskResolve.the)
-
 				.add(new CompoundDecompose(true))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
 				.add(new ImageUnfold())

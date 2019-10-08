@@ -1,17 +1,18 @@
 package nars.derive.adjacent;
 
 import jcog.data.list.FasterList;
+import nars.NAR;
+import nars.attention.TaskLinkWhat;
 import nars.concept.Concept;
 import nars.concept.snapshot.Snapshot;
 import nars.derive.Derivation;
+import nars.link.TaskLinkBag;
 import nars.link.TaskLinks;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Objects;
-import java.util.stream.Collectors;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import static nars.Op.ATOM;
 
@@ -20,15 +21,15 @@ import static nars.Op.ATOM;
  */
 public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
-	final String id;
+	final static AtomicInteger serial = new AtomicInteger();
+	final String id = getClass().getSimpleName() + serial.getAndIncrement();
 
-	protected AbstractAdjacentIndexer() {
-		 id = getClass().getSimpleName();
-	}
+	private static final FasterList<Term> EmptyFasterList = new FasterList(0);
+
 
 	public int ttl(Derivation d) {
 		//return -1; //permanent
-		return Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS);
+		return Math.round(d.dur * ATOM_TANGENT_REFRESH_DURS);
 	}
 
 	@Override
@@ -36,27 +37,34 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 
 		if (to.hasAny(ATOM)) {
 
-			List<Term> tangent = Snapshot.get(to, d.nar, id, d.time(), ttl(d), (Concept targetConcept, List<Term> t) -> {
+			NAR nar = d.nar;
+
+
+
+			List<Term> tangent = Snapshot.get(to, nar, id, d.time, ttl(d), (Concept targetConcept, List<Term> t) -> {
 				//TOO SLOW, impl indexes
-				FasterList<Term> l = d.nar.concepts().map(c -> {
+
+				TaskLinkBag bag = ((TaskLinkWhat) (d.what)).links.links;
+				final int[] ttl = {bag.size() / 8}; //TODO parameter
+
+				FasterList<Term> l = new FasterList<>(ttl[0]);
+				bag.sampleUnique(d.random, (c -> {
 					Term ct = c.term();
-					return (!ct.equals(to) && test(ct, to)) ? ct : null;
-				}).filter(Objects::nonNull).collect(Collectors.toCollection(FasterList::new));
+					if (!ct.equals(to) && test(ct, to))
+						l.add(ct);
+					return --ttl[0] > 0;
+				}));
 
 				if (l.isEmpty())
-					return Collections.EMPTY_LIST;
+					return EmptyFasterList;
 				else {
 					l.trimToSize();
 					return l;
 				}
 			});
 
-			if (tangent != null) {
-				int ts = tangent.size();
-				if (ts > 0) {
-					return tangent.get(ts > 1 ? d.random.nextInt(ts) : 0); //System.out.println(target + "\t" + tangent);
-				}
-			}
+			if (tangent != null)
+				return ((FasterList<Term>)tangent).get(d.random); //System.out.println(target + "\t" + tangent);
 
 		}
 		return null;

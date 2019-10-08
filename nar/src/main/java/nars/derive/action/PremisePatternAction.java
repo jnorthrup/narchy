@@ -739,7 +739,6 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
             if (puncFactor < Float.MIN_NORMAL)
                 return 0f; //entirely disabled by deriver
 
-
             if (!truth.test(d))
                 return 0;
 

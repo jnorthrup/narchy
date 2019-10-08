@@ -4,7 +4,6 @@ import jcog.Paper;
 import jcog.Util;
 import jcog.memoize.Memoizers;
 import nars.$;
-import nars.NAR;
 import nars.Op;
 import nars.attention.What;
 import nars.subterm.Subterms;
@@ -216,8 +215,8 @@ public class Factorize {
 
     public static class FactorIntroduction extends EventIntroduction {
 
-        public FactorIntroduction( NAR nar) {
-            super(nar);
+        public FactorIntroduction() {
+            super();
             isNot(TheTask, IMPL);
         }
 

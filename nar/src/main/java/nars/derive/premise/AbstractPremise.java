@@ -204,7 +204,7 @@ public class AbstractPremise implements Premise {
 
 	private @Nullable Task match(Derivation d, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept) {
 
-		NAR n = d.nar();
+		NAR n = d.nar;
 
 		final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
 
@@ -234,7 +234,7 @@ public class AbstractPremise implements Premise {
 
 	private Task task(BeliefTable bb, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
 		float dur =
-			d.dur();
+			d.dur;
 			//0;
 
 		return bb.matching(when[0], when[1], beliefTerm, beliefFilter, dur, d.nar)

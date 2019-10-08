@@ -25,9 +25,9 @@ public class Snapshot<X> {
 	protected volatile Object value;
 
 
-	/** conceptualize()'s the given term in the given NAR */
+	/** concept()'s the given term in the given NAR */
 	@Nullable public static <X> X get(Term src, NAR nar, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
-		Concept c = nar.conceptualize(src);
+		Concept c = nar.concept(src);
 		return c != null ? get(c, id, now, ttl, updater) : null;
 	}
 

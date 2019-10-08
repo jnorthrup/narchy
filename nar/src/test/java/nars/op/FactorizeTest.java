@@ -1,6 +1,5 @@
 package nars.op;
 
-import nars.NARS;
 import nars.term.Term;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -12,7 +11,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class FactorizeTest {
 
-    public static final Factorize.FactorIntroduction f = new Factorize.FactorIntroduction(NARS.shell()); {
+    public static final Factorize.FactorIntroduction f = new Factorize.FactorIntroduction(); {
         f.volMax = Integer.MAX_VALUE; //HACK
     }
 

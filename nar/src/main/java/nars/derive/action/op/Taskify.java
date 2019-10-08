@@ -183,7 +183,7 @@ public class Taskify extends ProxyTerm {
         if (x1 == null)
             throw new NullPointerException("could not un-anonymize " + z + " with " + d.anon);
 
-        NAR nar = d.nar();
+        NAR nar = d.nar;
 
         @Nullable ObjectBooleanPair<Term> xn = Task.tryTaskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
         if (xn == null) {
@@ -279,7 +279,7 @@ public class Taskify extends ProxyTerm {
                 //return
                 NAL.DEBUG ?
                         new DebugDerivedTask(x, punc, tru, S, E, d) :
-                        new DerivedTask(x, punc, tru, d.time(), S, E, d.evidence());
+                        new DerivedTask(x, punc, tru, d.time, S, E, d.evidence());
 
         float priority = d.what.derivePri.pri(t, d);
         if (priority != priority) {

@@ -12,7 +12,7 @@ public class DebugDerivedTask extends DerivedTask {
     @Nullable private final Task parentBelief;
 
     public DebugDerivedTask(Term tc, byte punct, @Nullable Truth truth, long start, long end, Derivation d) {
-        super(tc, punct, truth, d.time(), start, end, d.evidence());
+        super(tc, punct, truth, d.time, start, end, d.evidence());
         this.parentTask = d._task;
         this.parentBelief = !d.single ? d._belief : null;
     }

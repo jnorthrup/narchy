@@ -176,7 +176,11 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     @Deprecated public final MutableTruth truth = new MutableTruth();
     @Deprecated public transient byte punc;
 
+    /**
+     * current NAR time, set at beginning of derivation
+     */
     public transient long time = TIMELESS;
+
     public transient float dur = Float.NaN;
 
     public transient Task _task, _belief;
@@ -390,7 +394,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
 
     @Nullable private Truth beliefAtTask(Task nextBelief) {
-        @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur(), true); //integration-calculated
+        @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur, true); //integration-calculated
         return t!=null && t.evi() >= eviMin ? t : null;
         //return t;
     }
@@ -771,21 +775,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 //        return concSingle ? taskEvi : (taskEvi + beliefEvi);
 //    }
 
-
-    /**
-     * current NAR time, set at beginning of derivation
-     */
-    public final long time() {
-        return time;
-    }
-
-    public final float dur() {
-        return dur;
-    }
-
-    public final NAR nar() {
-        return nar;
-    }
 
     public long[] evidence() {
         return single ? evidenceSingle() : evidenceDouble();

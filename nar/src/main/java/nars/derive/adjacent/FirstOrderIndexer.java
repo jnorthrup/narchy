@@ -1,5 +1,6 @@
 package nars.derive.adjacent;
 
+import nars.NAL;
 import nars.Op;
 import nars.term.Compound;
 import nars.term.Term;
@@ -10,12 +11,13 @@ import java.util.function.Predicate;
 import static nars.Op.CONJ;
 
 public class FirstOrderIndexer extends AbstractAdjacentIndexer {
+
 	@Override
 	public boolean test(Term concept, Term target) {
 		if (concept instanceof Compound) {
 
-
-			UnifyAny u = new UnifyAny();
+			UnifyAny u = new UnifyAny(); //TODO reuse from Derivation
+			u.ttl = NAL.derive.TTL_UNISUBST;
 
 			Op op = target.op();
 			int targetOp = op.id;
@@ -23,22 +25,22 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 				return true;
 
 			Predicate<Term> subunification = x -> {
-					Term xx = x.unneg();
-					return xx.opID()==targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
-				};
+				Term xx = x.unneg();
+				return xx.opID()==targetOp && xx.hasAny(Op.AtomicConstant) && u.unifies(xx, target);
+			};
 
 			if (subUnifies(subunification, concept))
 				return true;
 
-			if (op.statement) {
-				for (int i = 0; i < 2; i++) {
-					Term ss = concept.sub(0).unneg();
-					if (ss.op() == CONJ) {
-						if (subUnifies(subunification, ss))
-							return true;
-					}
-				}
-			}
+//			if (op.statement) {
+//				for (int i = 0; i < 2; i++) {
+//					Term ss = concept.sub(i).unneg();
+//					if (ss.op() == CONJ) {
+//						if (subUnifies(subunification, ss))
+//							return true;
+//					}
+//				}
+//			}
 
 		}
 		return false;
@@ -46,7 +48,7 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 
 	protected boolean subUnifies(Predicate<Term> u, Term concept) {
 
-		if (concept.op() == CONJ) {
+		if (concept.opID() == CONJ.id) {
 			if (concept.eventsOR((when,what)-> u.test(what), 0, true, true))
 				return true;
 		} else {

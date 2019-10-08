@@ -132,9 +132,9 @@ public class ConjClustering extends TaskAction {
 
         this.data = new BagClustering<>(model, centroids, capacity);
 
-
         this.nar = nar;
         _update(nar.time());
+
 
 
     }
@@ -175,6 +175,8 @@ public class ConjClustering extends TaskAction {
 
     @Override
     protected void accept(RuleCause why, Task x, Derivation d) {
+
+        NAR nar = d.nar;
 
         //accept(y);
         if (filter(x))
@@ -222,22 +224,17 @@ public class ConjClustering extends TaskAction {
     public void tryLearn(Derivation d) {
         if (busy.compareAndSet(false, true)) {
             try {
-                this.nar = d.nar;
-                learn(d.time);
+                //called by only one thread at a time:
+                NAR nar = d.nar;
+                if (d.time - lastLearn >= minDurationsPerLearning* nar.dur()) {
+                    _update(d.time);
+
+                    data.learn(forgetRate(), learningIterations);
+                    lastLearn = d.time;
+                }
             } finally {
                 busy.set(false);
             }
-        }
-    }
-
-    /** called from one thread at a time */
-    public void learn(long now) {
-
-        if (now - lastLearn >= minDurationsPerLearning* nar.dur()) {
-            _update(now);
-
-            data.learn(forgetRate(), learningIterations);
-            lastLearn = now;
         }
     }
 
@@ -330,7 +327,7 @@ public class ConjClustering extends TaskAction {
             this.tasksGeneratedPerCentroidIterationMax = limit;
 
             int count = 0;
-            float confMinThresh = confMin + nar.confResolution.floatValue()/2f;
+            float confMinThresh = confMin + d.nar.confResolution.floatValue()/2f;
 
             boolean active = true, reset = true;
 
@@ -411,7 +408,7 @@ public class ConjClustering extends TaskAction {
 
                         conf = nextConf;
 
-                        float tf = tx.freq();
+                        //float tf = tx.freq();
 
                         trying.add(t);
                         i.remove();

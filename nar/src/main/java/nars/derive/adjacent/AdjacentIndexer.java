@@ -53,7 +53,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 //			return null;
 
 		if (cache(to)) {
-			TaskLinkSnapshot match = Snapshot.get(to, d.nar, links.links.id(false, true), d.time(), Math.round(d.dur() * ATOM_TANGENT_REFRESH_DURS), (Concept T, TaskLinkSnapshot s) -> {
+			TaskLinkSnapshot match = Snapshot.get(to, d.nar, links.links.id(false, true), d.time, Math.round(d.dur * ATOM_TANGENT_REFRESH_DURS), (Concept T, TaskLinkSnapshot s) -> {
 				if (s == null)
 					s = new TaskLinkSnapshot();
 				s.commit(T.term(), links.links, ((Table<?, TaskLink>) links.links).capacity(), true);

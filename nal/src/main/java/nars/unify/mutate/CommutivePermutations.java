@@ -85,7 +85,7 @@ public final class CommutivePermutations extends Termutator.AbstractTermutator {
 
 
         ///Subterms x = this.x, y = this.y;
-        Subterms x = u.resolveListIfChanged(this.x, true), y = u.resolveListIfChanged(this.y, true);
+        Subterms x = u.resolveListIfChanged(this.x, false), y = u.resolveListIfChanged(this.y, false);
         if (x == null) x = this.x; if (y == null) y = this.y;
 
 //        Subterms xx = u.resolve(this.x);

@@ -75,8 +75,8 @@ public class Arithmeticize {
 
         static final int VOLUME_MARGIN = 6;
 
-        public ArithmeticIntroduction(NAR n) {
-            super(n);
+        public ArithmeticIntroduction() {
+            super();
             //hasAny(TheTask, Op.INT);
             //TODO vol >= 3
 
