@@ -13,7 +13,6 @@ import nars.gui.DurSurface;
 import nars.gui.NARui;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.sensor.VectorSensorChart;
-import org.jetbrains.annotations.NotNull;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.StackingMap;
 import spacegraph.space2d.container.graph.EdgeVis;
@@ -116,20 +115,21 @@ public class AttentionUI {
 
 		//n.partStream().forEach(g::add);
 
-		return DurSurface.get(g, n, () -> {
-
-			//Stream s =
-			//Stream.concat(Stream.of(n.control.graph.nodeIDs()), n.partStream());
-			//n.partStream();
-
-//			s = s.peek(x -> {
-//				System.out.println(x.getClass()  + "\t" + x);
-//			});
-
-
-			//aaa.set(s::iterator);
-
-		}).every(16);
+		return g;
+//		return DurSurface.get(g, n, () -> {
+//
+//			//Stream s =
+//			//Stream.concat(Stream.of(n.control.graph.nodeIDs()), n.partStream());
+//			//n.partStream();
+//
+////			s = s.peek(x -> {
+////				System.out.println(x.getClass()  + "\t" + x);
+////			});
+//
+//
+//			//aaa.set(s::iterator);
+//
+//		}).every(32);
 	}
 
 	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {
@@ -138,12 +138,12 @@ public class AttentionUI {
 				Object x = xx.id;
 				if (x instanceof Prioritized) {
 					Prioritized node = (Prioritized) x;
-					float s = node.pri();
+					float s = node.priElseZero();
 					xx.pri = s;
 
-					float d = 0.5f * node.pri();
+//					float d = 0.5f * node.pri();
 //                            float r = Math.min(1, s/d);
-					xx.color(Math.min(d, 1), Math.min(s, 1), 0);
+					xx.color(Math.min(s, 1), Math.min(s, 1), 0);
 				} else {
 					//..infer priority of unprioitized items, ex: by graph metrics in relation to prioritized
 				}
@@ -187,12 +187,11 @@ public class AttentionUI {
 		}
 
 		private Graph2D<Object> graph(Graph2D<Object> g) {
-			g.build(x ->
-				{
+			g.build(x -> {
 					Object xid = x.id;
 					String label = xid.toString();
 
-					boolean lazy = false;
+					boolean lazy = true;
 					x.set(lazy ? Surplier.button(label, () -> icon(xid, label)) : icon(xid,label));
 
 
@@ -227,11 +226,11 @@ public class AttentionUI {
 			return g;
 		}
 
-		@NotNull
+		
 		private Scale icon(Object xid, String label) {
 			return new Scale(
 				LabeledPane.the(label,
-					new ObjectSurface(xid, 2,
+					new ObjectSurface(xid, 1,
 						builders, ObjectSurface.builtin)
 				), INNER_CONTENT_SCALE);
 		}

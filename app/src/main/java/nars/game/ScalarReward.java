@@ -4,6 +4,7 @@ import com.google.common.collect.Iterators;
 import nars.NAL;
 import nars.NAR;
 import nars.concept.Concept;
+import nars.game.sensor.ScalarSignal;
 import nars.game.sensor.Signal;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -19,7 +20,7 @@ import static nars.Op.*;
 /** base class for reward which represents current belief truth as the reward value  */
 abstract public class ScalarReward extends Reward {
 
-    public Signal concept;
+    public ScalarSignal concept;
 
 
     /** target freq */

@@ -73,7 +73,7 @@ public class BitmapLabel extends AbstractLabel {
             }
         }
         textBounds = b;
-        view.invalidate();
+        //view.invalidate();
     }
 
     @Override

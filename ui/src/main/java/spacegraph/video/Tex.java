@@ -31,7 +31,7 @@ public class Tex {
 
     private final AtomicBoolean updated = new AtomicBoolean(false);
     public com.jogamp.opengl.util.texture.Texture texture;
-    public GL2 gl;
+    @Deprecated public GL2 gl;
     /**
      * weird rotation correction.. dunno why yet
      */
@@ -92,8 +92,9 @@ public class Tex {
     private void ready(GL2 gl) {
         if (this.gl == null)
             this.gl = gl;
-        else
-            assert(this.gl == gl);
+        else {
+            //assert (this.gl == gl);
+        }
     }
 
     public boolean set(BufferedImage i, GL2 gl) {

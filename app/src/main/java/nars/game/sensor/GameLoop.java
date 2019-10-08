@@ -1,7 +1,6 @@
 package nars.game.sensor;
 
 import jcog.data.list.FasterList;
-import jcog.math.FloatRange;
 import nars.game.Game;
 import nars.term.Termed;
 
@@ -19,14 +18,15 @@ public interface GameLoop extends Termed {
 
     void update(Game a);
 
-    /** numeric resolution of scalar signals */
-    @Deprecated FloatRange resolution();
+//    /** numeric resolution of scalar signals */
+//    @Deprecated FloatRange resolution();
 
-    /** the components of the sensor, of which there may be one or more concepts */
-    Iterable<Termed> components();
+    /** the components of the sensor, of which there may be one or more concepts
+     * @return*/
+    Iterable<? extends Termed> components();
 
     default Termed get(Random random) {
-        Iterable<Termed> cc = components();
+        Iterable<? extends Termed> cc = components();
         if (cc instanceof List) {
             List<Termed> ll = (List) cc;
             if (ll.size() == 1)

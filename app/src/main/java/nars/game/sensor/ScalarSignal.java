@@ -41,4 +41,11 @@ public class ScalarSignal extends UniSignal {
         return truth(source.asFloat(), g);
     }
 
+    protected Truth truth(float nextValue, Game g) {
+        return nextValue == nextValue ?
+            Signal.truthDithered(nextValue, Math.max(g.nar.freqResolution.floatValue(),
+                resolution().floatValue()), g) :
+            null;
+    }
+
 }

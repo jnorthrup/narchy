@@ -8,7 +8,6 @@ import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
-import jcog.pri.UnitPri;
 import jcog.thing.Part;
 import jcog.util.FloatConsumer;
 import nars.$;
@@ -20,6 +19,7 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.MetaGoal;
 import nars.game.action.GoalActionConcept;
+import nars.game.sensor.AbstractSensor;
 import nars.game.sensor.GameLoop;
 import nars.game.sensor.VectorSensor;
 import nars.game.util.RLBooster;
@@ -108,13 +108,20 @@ abstract public class MetaAgent extends Game {
 
 	void actionCtlPriNodeRecursive(PriNode s, MapNodeGraph<PriNode, Object> g) {
 		if (s instanceof PriAmp)
-			actionCtlPriNode((PriAmp) s);
+			priAction((PriAmp) s);
 		s.node(g).nodes(false, true).forEach((Node<PriNode, Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
 	}
 
-	void actionCtlPriNode(PriAmp a) {
-		actionCtl(a.id, a.amp);
+	void priAction(PriAmp a) {
+		floatAction($.inh(a.id,pri), a.amp);
 	}
+	void priAction(PriNode.Source a) {
+		priAction($.inh(a.id,pri), a);
+	}
+	void priAction(Term id, PriNode.Source a) {
+		floatAction(id, a.amp);
+	}
+
 //    @Override
 //    protected void sense() {
 //        ((TaskLinkWhat)what()).dur.set(durPhysical()*2 /* nyquist */);
@@ -136,15 +143,11 @@ abstract public class MetaAgent extends Game {
 //        return Util.lerp(c, min, curiMax);
 //    }
 
-	protected void actionCtl(Term t, FloatRange r) {
-		actionCtl(t, r.min, r.max, r::set);
+	protected void floatAction(Term t, FloatRange r) {
+		floatAction(t, r.min, r.max, r::set);
 	}
 
-	protected void actionCtl(Term t, UnitPri r) {
-		actionCtl(t, 9, 1, r::pri);
-	}
-
-	protected void actionCtl(Term t, float min, float max, FloatConsumer r) {
+	protected void floatAction(Term t, float min, float max, FloatConsumer r) {
 		//FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
 		//FloatToFloatFunction f = (z)->z;
 		actionUnipolar(t, true, (v) -> v, (x) -> {
@@ -156,9 +159,9 @@ abstract public class MetaAgent extends Game {
 		//.resolution(0.1f);
 	}
 
-	private float dur(int initialDur, float d) {
-		return Math.max(1, ((d + 0.5f) * 2 * initialDur));
-	}
+//	private float dur(int initialDur, float d) {
+//		return Math.max(1, ((d + 0.5f) * 2 * initialDur));
+//	}
 
 	/**
 	 * core metavisor
@@ -214,10 +217,14 @@ abstract public class MetaAgent extends Game {
 				return y;
 			});
 
+			//top-level priority controls of other NAR components
+			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> {
+				priAction(g.what().pri);
+			});
 
-			actionCtl($.inh(SELF, $.p(belief, pri)), nar.beliefPriDefault.pri);
+			priAction($.inh(SELF, $.p(belief, pri)), nar.beliefPriDefault);
 			//actionCtl($.inh(SELF, $.p(belief,conf)), nar.beliefConfDefault);
-			actionCtl($.inh(SELF, $.p(goal, pri)), nar.goalPriDefault.pri);
+			priAction($.inh(SELF, $.p(goal, pri)), nar.goalPriDefault);
 			//actionCtl($.inh(SELF, $.p(goal,conf)), nar.goalConfDefault);
 
 //                .subRange(
@@ -269,12 +276,12 @@ abstract public class MetaAgent extends Game {
 			//this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));
 
 
-			actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
-			actionCtlPriNode(g.actionPri); //non-recursive for now
+			//actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
+			priAction(g.actionPri); //non-recursive for now
 
 
-			actionCtl($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
-			actionCtl($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
+			floatAction($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);
+			floatAction($.inh(gid, grow), ((TaskLinkWhat) w).links.grow);
 			//actionCtl($.inh(gid, remember), ((TaskLinkWhat) w).links.sustain);
 
 			//actionCtl($.inh(gid, amplify), ((TaskLinkWhat) w).links.amp);
@@ -304,10 +311,10 @@ abstract public class MetaAgent extends Game {
 					//assert(nar.dur()==nextDur);
 				}
 			};
-			actionCtl($.inh(gid, duration), durRange);
+			floatAction($.inh(gid, duration), durRange);
 
 			if (w.in instanceof PriBuffer.BagTaskBuffer)
-				actionCtl($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
+				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
 
 
 			Reward h = rewardNormalized($.inh(gid, happy), 1, 0, ScalarValue.EPSILON, () -> {
@@ -328,30 +335,11 @@ abstract public class MetaAgent extends Game {
 
 			for (GameLoop s : g.sensors) {
 				if (s instanceof VectorSensor) {
-					actionCtl($.inh(gid, $.p(((VectorSensor) s).id, pri)), ((VectorSensor) s).pri.amp);
+					Term t = $.inh(((AbstractSensor) s).id, pri);
+					floatAction(t, ((VectorSensor) s).pri.amp);
 				}
-//                if (!(s instanceof Signal)) { //HACK only if compound sensor
-//                    Term target = s.target();
-//
-//                    //HACK
-//                    if (s instanceof DigitizedScalar)
-//                        target = $.quote(target.toString()); //throw new RuntimeException("overly complex sensor target");
-//
-//                    //HACK TODO divide by # of contained concepts, reported by Sensor interface
-//                    float maxPri;
-//                    if (s instanceof Bitmap2DSensor) {
-//                        maxPri = 8f / (float) (Math.sqrt(((Bitmap2DSensor) s).concepts.area));
-//                    } else {
-//                        maxPri = 1;
-//                    }
-//
-//                    m.actionUnipolar($.func("aware", target), (p) -> {
-//                        FloatRange pp = s.pri();
-//                        pp.setAt(lerp(p, 0f, maxPri * nar.priDefault(BELIEF)));
-//                    });
-//
-//                }
 			}
+
 
 			//TODO other Emotion sensors
 

@@ -79,7 +79,6 @@ public class SimpleReward extends ScalarReward {
         });
     }
 
-    @Override
     public FloatRange resolution() {
         return concept.resolution();
     }

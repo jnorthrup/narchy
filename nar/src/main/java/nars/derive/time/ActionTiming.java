@@ -19,12 +19,9 @@ public class ActionTiming implements TimeFocus {
     /** TODO mutable histogram model for temporal focus position  */
     public final FloatRange horizonDurs = new FloatRange(4, 0, 32);
 
-    /** tense focus (past <> future balance), 0=present, -1 = full past, +1 full future */
-    public final FloatRange balance = new FloatRange(0f, -1, +1);
+//    /** tense focus (past <> future balance), 0=present, -1 = full past, +1 full future */
+//    public final FloatRange balance = new FloatRange(0f, -1, +1);
 
-    public ActionTiming() {
-
-    }
 
 //    float past = 1;
 //    float future = 1;
@@ -40,20 +37,20 @@ public class ActionTiming implements TimeFocus {
 
         float dur = what.dur();
 
-        long now = what.time();
-        //long tStart = task.start();
 
+        float focusRadius = dur * focusDurs.floatValue() / 2;
         float range = horizonDurs.floatValue() * dur;
-        float focusDur = dur * focusDurs.floatValue();
 
-        double target = now + balance.floatValue() * range/2;
+        long now = what.time();
+
         Random rng = what.random();
 
         //gaussian
         //double then = (target + range * rng.nextGaussian());
         //uniform
-        double then = (target + range * (-.5f + rng.nextFloat())); //uniform
+        double then = (now + range * (-.5f + rng.nextFloat())); //uniform
 
-        return new long[] { round(then - focusDur / 2), round(then + focusDur / 2)};
+        return new long[] { round(then - focusRadius), round(then + focusRadius)};
     }
+
 }

@@ -20,7 +20,8 @@ public class PriNode implements Prioritized {
 
     protected Merge input = Merge.Plus;
 
-    public final UnitPri pri = new UnitPri(0);
+    /** internal priority storage variable */
+    protected final UnitPri pri = new UnitPri(0);
 
     public PriNode(Object id) {
         this.id = $.identity(id);
@@ -125,11 +126,11 @@ public class PriNode implements Prioritized {
     /** variably adjustable priority source */
     public static final class Source extends PriNode {
 
-        public final FloatRange in;
+        public final FloatRange amp;
 
         public Source(Object id, float p) {
             super(id);
-            in = new FloatRange(p, 0, 1);
+            amp = new FloatRange(p, 0, 1);
             _pri(p);
         }
 
@@ -140,11 +141,11 @@ public class PriNode implements Prioritized {
         @Override
         public void update(MapNodeGraph<PriNode, Object> graph) {
             //assert(_node.edgeCount(true,false)==0);
-            _pri(in.get());
+            _pri(amp.get());
         }
 
         public void pri(float p) {
-            in.set(p);
+            amp.set(p);
         }
     }
 

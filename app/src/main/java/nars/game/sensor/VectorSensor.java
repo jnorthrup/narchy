@@ -1,12 +1,11 @@
 package nars.game.sensor;
 
-import com.google.common.collect.Iterables;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
 import nars.attention.AttnBranch;
+import nars.attention.PriAmp;
 import nars.attention.What;
-import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
 import nars.term.Term;
@@ -22,31 +21,20 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
 
 
     public final CauseChannel<Task> in;
-    protected final Term why;
+
 
     /** used and shared by all components */
-    public final AttnBranch pri;
-
-
-    @Override
-    public Iterable<Termed> components() {
-        return Iterables.transform(this, Concept::term);
-    }
-
-//    protected VectorSensor(@Nullable FloatSupplier input, @Nullable Term id, NAR nar) {
-//        this(input, id, (prev, next) -> next==next ? $.t(Util.unitize(next), nar.confDefault(BELIEF)) : null, nar);
-//    }
-
+    public final PriAmp pri;
 
     protected VectorSensor(NAR n) {
         this(null, n);
     }
+
     protected VectorSensor(Term rootID, NAR n) {
         super(rootID, n);
 
         this.pri = new AttnBranch(this.id, this);
         this.in = n.newChannel(id != null ? id : this);
-        this.why = in.why.why;
     }
 
     /**
@@ -74,6 +62,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
 
         //pre-commit
         int active = 0;
+        Term why = in.why.why;
         for (ComponentSignal s : this) {
             //if (quality >= 1 || rng.nextFloat() < quality )
             if (s.input(truther.valueOf(s.value(g)), why, w))
@@ -100,11 +89,15 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
             this.f = f;
         }
 
-
-
         @Override
         protected float value(Game g) {
             return f.asFloat();
         }
+    }
+
+
+    @Override
+    public final Iterable<? extends Termed> components() {
+        return this;
     }
 }

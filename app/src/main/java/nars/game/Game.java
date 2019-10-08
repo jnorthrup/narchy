@@ -125,7 +125,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         add(time.clock(this));
     }
 
-    @Deprecated @Override public final What what() {
+    @Override public final What what() {
         return what;
     }
 

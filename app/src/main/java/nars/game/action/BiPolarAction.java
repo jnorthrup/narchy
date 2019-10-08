@@ -25,7 +25,9 @@ import static nars.Op.BELIEF;
 import static nars.Op.PROD;
 
 /** sensor that integrates and manages a pair of oppositely polarized AsyncActionConcept to produce a net result.
- * implements Sensor but actually manages Actions internally. */
+ * implements Sensor but actually manages Actions internally.
+ * TODO fix, combine with Push Button Mutex
+ * */
 public class BiPolarAction extends AbstractSensor {
 
     private final Polarization model;
@@ -185,7 +187,7 @@ public class BiPolarAction extends AbstractSensor {
 
 
     @Override
-    public Iterable<Termed> components() {
+    public Iterable<? extends Termed> components() {
         return List.of(pos, neg);
     }
 

@@ -28,8 +28,6 @@ abstract public class AbstractSensor extends NARPart implements GameLoop {
         return (S) this;
     }
 
-
-    @Override
     public final FloatRange resolution() {
         return res;
     }

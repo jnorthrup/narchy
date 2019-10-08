@@ -1,6 +1,5 @@
 package nars.video;
 
-import com.google.common.collect.Iterables;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.func.IntIntToFloatFunction;
@@ -9,14 +8,11 @@ import jcog.math.FloatRange;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.util.ArrayUtil;
 import nars.$;
-import nars.NAR;
-import nars.concept.Concept;
 import nars.game.Game;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.VectorSensor;
 import nars.gui.sensor.VectorSensorChart;
 import nars.term.Term;
-import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -114,10 +110,6 @@ public class AutoclassifiedBitmap extends VectorSensor {
         float[] get(int subX, int subY);
     }
 
-    @Override
-    public Iterable<Termed> components() {
-        return Iterables.transform(signals, Concept::term);
-    }
 
     /*
     (subX, subY) -> {
@@ -157,8 +149,6 @@ public class AutoclassifiedBitmap extends VectorSensor {
      */
     public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, Game game) {
         super( game.nar());
-
-        NAR nar = game.nar();
 
         ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, game.random());
 

@@ -1,24 +1,22 @@
 package nars.op;
 
-import com.google.common.collect.Iterables;
 import jcog.learn.Autoencoder;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
-import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
-import nars.control.channel.CauseChannel;
 import nars.game.Game;
-import nars.game.sensor.AbstractSensor;
+import nars.game.sensor.ComponentSignal;
+import nars.game.sensor.VectorSensor;
 import nars.table.BeliefTable;
 import nars.task.util.signal.SignalTask;
 import nars.term.Neg;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.truth.Truth;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
@@ -29,32 +27,30 @@ import static nars.Op.*;
  * TODO make DurService
  * TODO extend VectorSensor
  */
-public class AutoConceptualizer extends AbstractSensor {
+public class AutoConceptualizer extends VectorSensor {
 
     public final Autoencoder ae;
 
-    private final List<? extends Concept> concepts;
+    private final List<ComponentSignal> concepts;
 
     private final boolean beliefOrGoal;
     private final float[] x;
-    private final CauseChannel<Task> in;
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 
-    public AutoConceptualizer(List<? extends Concept> concepts, boolean beliefOrGoal, int features, NAR n) {
+    public AutoConceptualizer(List<ComponentSignal> concepts, boolean beliefOrGoal, int features, NAR n) {
         super(n);
         this.concepts = concepts;
         this.beliefOrGoal = beliefOrGoal;
         this.ae = new Autoencoder(concepts.size(), features, n.random());
         this.x = new float[concepts.size()];
-        this.in = n.newChannel(this);
     }
-
 
     @Override
-    public Iterable<Termed> components() {
-        return Iterables.transform(concepts, Termed::term);
+    public int size() {
+        return concepts.size();
     }
+
 
     @Override
     public void update(Game g) {
@@ -143,5 +139,8 @@ public class AutoConceptualizer extends AbstractSensor {
         return CONJ.the(0, x);
     }
 
-
+    @Override
+    public Iterator<ComponentSignal> iterator() {
+        return concepts.iterator();
+    }
 }

@@ -5,12 +5,13 @@ import jcog.data.iterator.Array2DIterable;
 import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.NAL;
-import nars.concept.Concept;
+import nars.NAR;
 import nars.game.Game;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.table.eternal.EternalDefaultTable;
 import nars.term.Term;
+import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
@@ -94,11 +95,11 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     /**
      * crude ASCII text representation of the current pixel state
      */
-    public void print(PrintStream out) {
+    public void print(long when, PrintStream out, NAR nar) {
         for (int j = 0; j < height; j++) {
             for (int i = 0; i < width; i++) {
-                float b = matrix[j][i].value;
-                out.print(b >= 0.5f ? '*' : ' ');
+                Truth b = matrix[j][i].beliefs().truth(when, nar);
+                out.print(b!=null ? (b.freq() >= 0.5f ? '+' : '-') : ' ' );
             }
             out.println();
         }
@@ -123,7 +124,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
         return getSafe(x, y);
     }
 
-    public final List<? extends Concept> order() {
+    public final List<? extends ComponentSignal> order() {
         return iter.order;
     }
 

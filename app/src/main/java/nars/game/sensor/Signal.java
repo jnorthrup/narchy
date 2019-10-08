@@ -69,7 +69,7 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
 
 
     @Override
-    public final Iterable<Termed> components() {
+    public final Iterable<? extends Termed> components() {
         return List.of(this);
     }
 
@@ -94,11 +94,6 @@ abstract public class Signal extends TaskConcept implements GameLoop, PermanentC
             g.ditherFreq(nextValue, freqRes),
             g.ditherConf(g.confDefaultBelief)
         );
-    }
-    protected Truth truth(float nextValue, Game g) {
-        return nextValue == nextValue ?
-            Signal.truthDithered(nextValue, Math.max(g.nar.freqResolution.floatValue(), resolution().floatValue()), g) :
-            null;
     }
 
     /** pre-commit phase */

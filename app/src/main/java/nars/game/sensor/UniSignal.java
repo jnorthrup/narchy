@@ -32,7 +32,6 @@ public abstract class UniSignal extends Signal {
 		return pri.pri();
 	}
 
-	@Override
 	public final FloatRange resolution() {
 		return res;
 	}

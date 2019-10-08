@@ -1,18 +1,15 @@
 package nars.sensor;
 
-import com.google.common.collect.Iterables;
 import jcog.func.IntIntToObjectFunction;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
 import nars.NAR;
-import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.game.Game;
 import nars.game.sensor.ComponentSignal;
 import nars.game.sensor.Signal;
 import nars.game.sensor.VectorSensor;
 import nars.term.Term;
-import nars.term.Termed;
 import nars.term.atom.Int;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
@@ -86,14 +83,8 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return width * height;
     }
 
-    @Override
-    public Iterable<Termed> components() {
-        return Iterables.transform(concepts, Concept::term);
-    }
-
     final FloatFloatToObjectFunction<Truth> SET;
     final FloatFloatToObjectFunction<Truth> DIFF;
-
 
     public static IntIntToObjectFunction<nars.term.Term> XY(Term root) {
         return (x, y) -> $.inh($.p(x, y), root);

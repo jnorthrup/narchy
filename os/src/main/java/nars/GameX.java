@@ -140,26 +140,23 @@ abstract public class GameX extends Game {
 
 
         if (initMeta) {
-            Exe.runLater(() -> {
 
-                float metaFPS = narFPS / 2; //half rate
+            float metaFPS = narFPS / 2; //half rate
 
-                MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, metaFPS);
-                if (initMetaRL)
-                    self.addRLBoost();
-                n.start(self);
-                //self.pri(0.3f);
-
-                Exe.runLater(() -> {
-                    n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
-                        float fps = metaFPS; //TODO specific to each game
-                        MetaAgent gm = new MetaAgent.GameMetaAgent(g, fps, metaAllowPause);
-                        n.start(gm);
-                        //gm.pri(0.1f);
-
-                    });
-                });
+            n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
+                float fps = metaFPS; //TODO specific to each game
+                MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaFPS, metaAllowPause);
+                n.start(gm);
+                //gm.pri(0.1f);
             });
+
+
+            MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, metaFPS);
+            if (initMetaRL)
+                self.addRLBoost();
+            n.start(self);
+            //self.pri(0.3f);
+
         }
 
         Loop loop = n.startFPS(narFPS);
@@ -208,6 +205,7 @@ abstract public class GameX extends Game {
 
 
         n.runLater(()-> {
+            n.synch();
             window(NARui.top(n), 1024, 800);
             window(new Gridding(n.parts(Game.class).map(g->NARui.game(g)).collect(toList())), 1024, 768);
         });

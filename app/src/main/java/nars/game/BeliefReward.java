@@ -15,9 +15,4 @@ public class BeliefReward extends ScalarReward {
         return rewardFreq(true, a.dur());
     }
 
-
-    @Override
-    public FloatRange resolution() {
-        throw new TODO();
-    }
 }

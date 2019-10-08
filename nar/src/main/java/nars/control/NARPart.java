@@ -20,7 +20,6 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
 
     public final Term id;
 
-
     protected NARPart() {
         this((NAR) null);
     }
