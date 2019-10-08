@@ -21,7 +21,7 @@ class BagClusteringTest {
         b.bag.commit(null); assertEquals(8, b.size());
 
         b.learn(1f, 1);
-        b.forEachCentroid((x) -> {});
+        //b.forEachCentroid(FasterList::new, (x) -> {});
 
         assertEquals(8, b.size());
 

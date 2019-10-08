@@ -9,12 +9,10 @@ import jcog.pri.bag.impl.PriReferenceArrayBag;
 import jcog.pri.bag.impl.SimpleBufferedBag;
 import jcog.pri.op.PriMerge;
 import org.eclipse.collections.api.block.function.primitive.IntToObjectFunction;
-import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Collections;
-import java.util.List;
+import java.util.Arrays;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -102,39 +100,40 @@ public class BagClustering<X> {
         return bag.size();
     }
 
-    public void forEachCentroid(Consumer<FasterList<X>> each) {
-        forEachCentroid(FasterList::new, each);
-    }
+    /** TODO re-use a centroid buffer array of lists stored in thredlocal Centroid conjoiner */
+    public <L extends FasterList<X>> L[] forEachCentroid(IntToObjectFunction<L> listBuilder,  L[] centroidList) {
 
-    public <L extends List<X>> void forEachCentroid(IntToObjectFunction<L> listBuilder, Consumer<L> each) {
-        iterateCentroids(listBuilder).forEach(each);
-    }
-
-    private <L extends List<X>> Iterable<L> iterateCentroids(IntToObjectFunction<L> listBuilder) {
 
         int s = bag.size();
         if (s == 0)
-            return Collections.EMPTY_LIST;
-        else {
+            return centroidList;
 
-            int cc = net.centroidCount();
-            IntObjectHashMap<L> x = new IntObjectHashMap<>(cc);
-            int meanItemsPerCentroid = (int)Math.ceil(((float)s)/cc);
+        int cc = net.centroidCount();
+        int sizeBefore = centroidList.length;
 
-            bag.forEach((xx) -> {
-                int c = xx.centroid;
-                if (c >= 0) {
-                    X xxx = xx.get();
-                    if (xxx!=null)
-                        x.getIfAbsentPut(c, ()->listBuilder.apply(meanItemsPerCentroid)).add(xxx);
-                }
-            });
-            if (x.isEmpty())
-                return Collections.EMPTY_LIST;
+        if (sizeBefore != cc) {
+            centroidList = Arrays.copyOf(centroidList, cc);
 
-            return x.values();
+            int meanItemsPerCentroid = (int) Math.ceil(((float) s) / cc);
+            for (int i = sizeBefore; i < cc; i++)
+                centroidList[i] = listBuilder.valueOf(meanItemsPerCentroid); //allocate
         }
+
+        L[] ll = centroidList;
+        for (L l : ll) {
+            l.clear();
+        }
+
+
+        bag.forEach((x) -> {
+            int c = x.centroid;
+            if (c >= 0)
+                ll[c % cc].add(x.id); //round robin populate the buffer
+        });
+
+        return ll;
     }
+
     public void learn(float forgetRate, int learningIterations) {
 
             @Nullable Consumer<VLink<X>> f = bag.forget(forgetRate);

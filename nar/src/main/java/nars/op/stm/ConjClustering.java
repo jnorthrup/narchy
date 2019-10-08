@@ -189,34 +189,59 @@ public class ConjClustering extends TaskAction {
         CentroidConjoiner conjoiner = this.conjoiners.get();
 
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
-        FasterList<TaskList> centroids = conjoiner.centroids;
-        centroids.clear();
-        data.forEachCentroid(TaskList::new, tt ->{
+
+        int cc = 0;
+        conjoiner.centroids = data.forEachCentroid(TaskList::new, conjoiner.centroids);
+        TaskList[] centroids = conjoiner.centroids;
+
+        for (int i = 0, centroidsLength = centroids.length; i < centroidsLength; i++) {
+            TaskList tt = centroids[i];
             int tts = tt.size();
             if (tts > 1) {
+                cc++;
                 if (tts > 2) {
                     ArrayUtil.sort(tt.array(), 0, tts, Task::priComparable);
                     //tt.sortThis(centroidContentsSort); //java.lang.IllegalArgumentException: Comparison method violates its general contract!
                 }
-
-                centroids.add(tt);
             }
-        });
+        }
 
-        int cc = centroids.size();
         if (cc == 0)
             return;
-        if (cc > 1)
-            centroids.shuffleThis(nar.random());
+
+        //TODO sort sub-buffer if some entries are empty they can be avoided during iteration
+
+        int N = centroids.length;
+
+        //random starting index
+        int next = d.random.nextInt(N);
+
 
         //round robin
         int iterations = ITERATIONS;
+        int empty = 0;
         do {
 
-            centroids.removeIf((Predicate<TaskList>)(i ->
-                conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, why, d) == 0 || i.size() <= 1));
+            TaskList i = centroids[next];
 
-        } while (!centroids.isEmpty() && --iterations > 0);
+            if (++next == N) next = 0;
+
+            if (i.size()<=1) {
+                empty++;
+                continue;
+            }
+
+            if (conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, why, d) == 0) {
+                if (i.size() > 2)
+                    i.shuffleThis(d.random);
+                else {
+                    i.clear(); //doomed
+                    empty++;
+                }
+            }
+
+
+        } while (empty < N && --iterations > 0);
 
         //in.acceptAll(conjoiner.out, w);
     }
@@ -307,7 +332,9 @@ public class ConjClustering extends TaskAction {
         final IntToObjectFunction<Task> tryer = trying::get;
         final FasterList<Task> tried = new FasterList();
 
-        public FasterList<TaskList> centroids = new FasterList();
+        /** centroid buffer */
+        transient public TaskList[] centroids = new TaskList[0];
+
 
         private transient int tasksGeneratedPerCentroidIterationMax;
 
