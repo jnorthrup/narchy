@@ -121,16 +121,15 @@ public enum Terms {
 		if (volMax <= volMin) {
 			//flat
 			Arrays.sort(y);
+			//TODO maybe use ArrayUtil.quickSort and nullify as soon as a .compare returns 0.  avoids the subsequent .equals tests
 			nulls = nullDups(y, 0, y.length);
 		} else {
 			//sort within the spans where the terms have equal volumes (divide & conquer)
 
 			int n = y.length;
-			ArrayUtil.quickSort(0, n, (a, b) -> {
-				return Integer.compare(volumes[b], volumes[a]);
-			}, (a, b) -> {
-				ArrayUtil.swapObjInt(y, volumes, a, b);
-			});
+			ArrayUtil.quickSort(0, n,
+				(a, b) -> Integer.compare(volumes[b], volumes[a]),
+				(a, b) -> ArrayUtil.swapObjInt(y, volumes, a, b));
 
 			int s = 0; //span start
 			int vs = volumes[0];
