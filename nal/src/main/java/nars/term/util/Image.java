@@ -36,17 +36,17 @@ public enum Image {
     public static Term image(boolean intOrExt, Term t, Term x) {
 
 
-        if (t.op() == INH) {
+        if (t instanceof Compound && t.opID() == INH.id) {
 
             int prodSub = intOrExt ? 1 : 0;
 
             Term prod = t.sub(prodSub);
 
-            if (prod.op() == PROD) {
+            if (prod instanceof Compound && prod.opID() == PROD.id) {
 
                 Subterms ss = prod.subterms();
                 int n = ss.subs();
-                if (n >= NAL.term.imageTransformSubMin && (ss.structureSurface() & IMG.bit) == 0) {
+                if (n >= NAL.term.imageTransformSubMin /*&& (ss.structureSurface() & IMG.bit) == 0*/) {
                     Img target = intOrExt ? ImgInt : ImgExt;
 
                     int index = ss.indexOf(x);
@@ -65,7 +65,7 @@ public enum Image {
                         }
 
                         Term q = PROD.the(qq);
-                        return intOrExt ? INH.the(q, x) : INH.the(x, q);
+                        return INH.the(intOrExt ? new Term[] { q, x } : new Term[] { x, q });
                     }
                 }
             }
@@ -82,16 +82,13 @@ public enum Image {
         boolean neg = _x instanceof Neg;
         Term x = neg ? _x.unneg() : _x;
 
-        if (!(x instanceof Compound) || !x.hasAll(ImageBits))
-            return _x;
-
-        if (x.op() == INH) {
+        if (x instanceof Compound && x.hasAll(ImageBits) && x.opID() == INH.id) {
             Term y = _imgNormalize((Compound) x);
-            if (x!=y)
+            if (x != y)
                 return y.negIf(neg);
         }
 
-        return _x; //unchanged
+        return _x;
     }
 
 
@@ -102,8 +99,7 @@ public enum Image {
 
     /** tests the term and its subterms recursively for an occurrence of a normalizeable image */
     public static boolean imageNormalizable(Subterms x) {
-        return x.hasAll(Image.ImageBits)
-                 && x.OR(Image::imageSubtermNormalizable);
+        return x.hasAll(Image.ImageBits) && x.OR(Image::imageSubtermNormalizable);
     }
 
     private static boolean imageSubtermNormalizable(Term x) {
@@ -190,31 +186,4 @@ public enum Image {
     }
 
 
-
-    /** infers the corresponding image transformation of a term suggested by a template
-     * @param x will be the image normalized form
-     * @return the image transformed to match the template which represents a transformed image
-     * */
-    public static Term transformFromTemplate(Term x, Term template, Term normal) {
-        if (x.equals(normal))
-            return template;
-
-        assert(template.op()==INH && x.op()==INH);
-
-//        if (!x.hasAny(Op.Temporal))
-//            return template; //template should equal the expected result
-
-        Subterms tt = template.subterms();
-        Term subj = tt.sub(0), pred = tt.sub(1);
-        if (subj.contains(Op.ImgInt)) {
-            //Term y = x.sub(1).sub(normal.sub(1).subIndexFirst(z -> z.equals(pred)));
-            //return Image.imageInt(x, y);
-            return Image.imageInt(x, pred);
-        } else if (pred.contains(Op.ImgExt)) {
-            //Term y = x.sub(0).sub(normal.sub(0).subIndexFirst(z -> z.equals(subj)));
-            //return Image.imageExt(x, y);
-            return Image.imageExt(x, subj);
-        } else
-            throw new TermTransformException(x, template, "could not infer Image transform from template");
-    }
 }

@@ -13,8 +13,8 @@ public class NAL1MultistepTest extends NALTest {
     @Override protected NAR nar() {
         NAR n = NARS.tmp(6);
         n.termVolMax.set(6);
-        n.freqResolution.set(0.2f);
-        n.confResolution.set(0.1f);
+        n.freqResolution.set(0.25f);
+        n.confResolution.set(0.02f);
         return n;
     }
 
@@ -41,11 +41,11 @@ public class NAL1MultistepTest extends NALTest {
 
     @Test
     void multistepInh4() {
-        new DeductiveChainTest(test, 4, 1500, inh);
+        new DeductiveChainTest(test, 4, 2000, inh);
     }
 
     @Test public void multistepSim4() {
-        new DeductiveChainTest(test, 4, 1500, sim);
+        new DeductiveChainTest(test, 4, 2000, sim);
     }
 
     @Test

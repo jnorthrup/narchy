@@ -203,6 +203,13 @@ class ImageTest {
         assertEquals($$(y), xx);
     }
 
+    @Test void testImageExtNeg() {
+        assertEq(    "(TRUE-->((isRow,tetris,/),14,/))",
+            Image.imageExt($$("((14,TRUE)-->(isRow,tetris,/))"),$$("TRUE")));
+        assertEq("(--,(TRUE-->((isRow,tetris,/),14,/)))",
+            Image.imageExt($$("((14,(--,TRUE))-->(isRow,tetris,/))"),$$("--TRUE")));
+    }
+
     @Test void ConjNegatedNormalizeWTF() {
         assertEq("((--,(delta-->vel)) &&+280 (--,vel(fz,y)))", "((--,(delta-->vel)) &&+280 (--,(y-->(vel,fz,/))))");
     }

@@ -26,9 +26,9 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLink;
-import nars.link.TaskLinks;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 
+import java.util.Queue;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -38,9 +38,6 @@ import java.util.function.Supplier;
  * specified by a set of premise rules.
  * <p>
  * runtime intensity is metered and throttled by causal feedback
- * <p>
- * this is essentially a Function<Premise, Stream<DerivedTask>> but
- * the current level of code complexity makes this non-obvious
  */
 public class Deriver extends How {
     int innerLoops = 1;
@@ -56,7 +53,8 @@ public class Deriver extends How {
 
 
 	final Supplier<DeriverExecutor> _exe =
-		() ->//new BagDeriverExecutor();
+		() ->
+			//new BagDeriverExecutor();
 			new QueueDeriverExecutor();
 
 	final ThreadLocal<DeriverExecutor> exe = ThreadLocal.withInitial(_exe);
@@ -106,17 +104,15 @@ public class Deriver extends How {
 	@Override
 	public final void next(What w, final BooleanSupplier kontinue) {
 
-		TaskLinks links = ((TaskLinkWhat) w).links;
-		if (links.isEmpty())
-			return;
+		if (((TaskLinkWhat) w).links.isEmpty()) return;
 
-		Derivation d = Derivation.derivation.get().next(this, w);
-
+		Deriver.DeriverExecutor e = exe.get();
+		Derivation d = Derivation.derivation.get().start(this, w, e);
 
 		do {
 
             for (int i = 0; i < innerLoops; i++)
-                d.exe.next();
+                e.next();
 
 		} while (kontinue.getAsBoolean());
 
@@ -138,9 +134,9 @@ public class Deriver extends How {
 
 		protected Derivation d;
 
-		public final void init(Derivation d) {
+		public final void start(Derivation d) {
 			this.d = d;
-			start();
+			starting();
 		}
 
 		/**
@@ -168,7 +164,7 @@ public class Deriver extends How {
 
 		public abstract void next();
 
-		protected abstract void start();
+		protected abstract void starting();
 
 		public abstract void add(Premise p);
 
@@ -200,10 +196,10 @@ public class Deriver extends How {
         private static final FloatFunction sorter = x->DeriverExecutor.pri((Premise)x);
 
 		//final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
-		final PrioritySet<Premise> queue = new PrioritySet<>(sorter);
+		final Queue<Premise> queue = new PrioritySet<>(sorter);
 
 		@Override
-		protected void start() {
+		protected void starting() {
 			queue.clear();
 		}
 
@@ -277,7 +273,7 @@ public class Deriver extends How {
 
 
 		@Override
-		protected void start() {
+		protected void starting() {
 			bag.clear();
 			bag.capacity(bufferCap);
 

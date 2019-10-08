@@ -218,13 +218,13 @@ abstract public class MetaAgent extends Game {
 			});
 
 			//top-level priority controls of other NAR components
-			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> {
-				priAction(g.what().pri);
-			});
+			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> priAction(g.what().pri));
 
-			priAction($.inh(SELF, $.p(belief, pri)), nar.beliefPriDefault);
+			//shouldnt be necessary, manipulate the downstream PriNodes instead and leave these constant
+//			priAction($.inh(SELF, $.p(belief, pri)), nar.beliefPriDefault);
+//			priAction($.inh(SELF, $.p(goal, pri)), nar.goalPriDefault);
+
 			//actionCtl($.inh(SELF, $.p(belief,conf)), nar.beliefConfDefault);
-			priAction($.inh(SELF, $.p(goal, pri)), nar.goalPriDefault);
 			//actionCtl($.inh(SELF, $.p(goal,conf)), nar.goalConfDefault);
 
 //                .subRange(

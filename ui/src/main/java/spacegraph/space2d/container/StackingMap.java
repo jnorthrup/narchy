@@ -9,13 +9,13 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
-public class StackingMap<X> extends AbstractMutableContainer {
+public class StackingMap<X,Y extends Surface> extends AbstractMutableContainer<Y> {
 
-	private final ConcurrentFastIteratingHashMap<Object, Surface> map;
+	private final ConcurrentFastIteratingHashMap<X, Y> map;
 
-	public StackingMap() {
+	public StackingMap(Y[] emptyArray) {
 		super();
-		this.map = new ConcurrentFastIteratingHashMap<>(Surface.EmptySurfaceArray);
+		this.map = new ConcurrentFastIteratingHashMap<X, Y>(emptyArray);
 	}
 
 	@Override
@@ -23,9 +23,9 @@ public class StackingMap<X> extends AbstractMutableContainer {
 		throw new UnsupportedOperationException();
 	}
 
-	public Surface computeIfAbsent(Object x, Function<? super Object, ? extends Surface> s) {
+	public Y computeIfAbsent(X x, Function<X, Y> s) {
 		return map.compute(x, (xx, xp) -> {
-			Surface xn = s.apply(xx);
+			Y xn = s.apply(xx);
 			if (xp != null) {
 				if (xp == xn) return xn;
 				else {
@@ -36,10 +36,10 @@ public class StackingMap<X> extends AbstractMutableContainer {
 		});
 	}
 
-	private Surface start(@Nullable Surface s) { if (s!=null) s.start(this); return s;}
-	private Surface stop(@Nullable Surface s) { if (s!=null) s.stop(); return s; }
+	private Y start(@Nullable Y s) { if (s!=null) s.start(this); return s;}
+	private Y stop(@Nullable Y s) { if (s!=null) s.stop(); return s; }
 
-	public Surface put(Object x, Surface s) {
+	public Surface put(X x, Y s) {
 		return stop(map.put(x, start(s)));
 	}
 

@@ -15,10 +15,7 @@ import org.junit.platform.engine.TestExecutionResult;
 import org.junit.platform.engine.TestSource;
 import org.junit.platform.engine.reporting.ReportEntry;
 import org.junit.platform.engine.support.descriptor.MethodSource;
-import org.junit.platform.launcher.Launcher;
-import org.junit.platform.launcher.TestExecutionListener;
-import org.junit.platform.launcher.TestIdentifier;
-import org.junit.platform.launcher.TestPlan;
+import org.junit.platform.launcher.*;
 import org.junit.platform.launcher.core.LauncherConfig;
 import org.junit.platform.launcher.core.LauncherDiscoveryRequestBuilder;
 import org.junit.platform.launcher.core.LauncherFactory;
@@ -31,6 +28,7 @@ import tech.tablesaw.columns.numbers.NumberColumnFormatter;
 import java.io.BufferedOutputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
@@ -52,9 +50,9 @@ public class SelfTest {
     public static void main(String[] args) {
         SelfTest s = new SelfTest();
         s.unitTestsByPackage("nars.nal.nal1");
-        s.unitTestsByPackage("nars.nal.nal2");
-        s.unitTestsByPackage("nars.nal.nal3");
-        s.unitTestsByPackage("nars.nal.nal4");
+//        s.unitTestsByPackage("nars.nal.nal2");
+//        s.unitTestsByPackage("nars.nal.nal3");
+//        s.unitTestsByPackage("nars.nal.nal4");
 //        s.unitTestsByPackage("nars.nal.nal5");
 //        s.unitTestsByPackage("nars.nal.nal6");
 //        s.unitTestsByPackage("nars.nal.nal7");
@@ -89,20 +87,20 @@ public class SelfTest {
 
     public Supplier<DataTable> unitTests(Consumer<LauncherDiscoveryRequestBuilder> selector) {
 
-
         LauncherDiscoveryRequestBuilder b = LauncherDiscoveryRequestBuilder.request();
         selector.accept(b);
+        LauncherDiscoveryRequest bb = b.build();
+
+        TestPlan tp = LauncherFactory.create(launcherConfig).discover(bb);
 
         return ()->{
 
 
-            MyTestExecutionListener exe = new MyTestExecutionListener();
             DataTable results = newTable();
-            exe.setTable(results);
 
             Launcher lf = LauncherFactory.create(launcherConfig);
-            lf.registerTestExecutionListeners(exe);
-            lf.execute(b.build());
+            lf.registerTestExecutionListeners(new MyTestExecutionListener(results));
+            lf.execute(tp);
 
             return results;
         };
@@ -164,21 +162,13 @@ public class SelfTest {
 
     private static class MyTestExecutionListener implements TestExecutionListener {
 
-        private DataTable out;
+        private final DataTable out;
         transient long startNS, endNS;
         private long startUnixTime;
 //        transient private TestMetrics m;
 
-        public MyTestExecutionListener() {
-        }
-
         public MyTestExecutionListener(DataTable results) {
-            this();
-            setTable(results);
-        }
-
-        public void setTable(DataTable out) {
-            this.out = out;
+            this.out = results;
         }
 
         public void testPlanExecutionStarted(TestPlan testPlan) {
@@ -262,32 +252,39 @@ public class SelfTest {
 
         Runtime.getRuntime().addShutdownHook(new Thread(()->{
             try {
-                report(all);
-                save(all, "/home/me/d/tests1.csv");
+                synchronized (all) {
+                    report(all);
+                    save(all, "/home/me/d/tests1.csv");
+                }
             } catch (IOException e) {
                 e.printStackTrace();
             }
         }));
 
 
-        ExecutorService exe = Executors.newFixedThreadPool(threads);
 
-        Supplier<DataTable>[] experiments = this.experiments.toArray(new Supplier[0]);
-        ArrayUtil.shuffle(experiments, ThreadLocalRandom.current());
-        for (Supplier<DataTable> experiment : experiments) {
-            for (int i = 0; i < repeats; i++) {
+
+        ExecutorService exe = Executors.newWorkStealingPool(threads);
+
+        for (int i = 0; i < repeats; i++) {
+
+            Supplier<DataTable>[] experiments = this.experiments.toArray(new Supplier[0]);
+            ArrayUtil.shuffle(experiments, ThreadLocalRandom.current());
+
+            for (Supplier<DataTable> experiment : experiments) {
                 exe.execute(() -> {
                     DataTable d = experiment.get();
 
+                    List<Column<?>> cols = d.columns();
+
                     //System.out.println(Thread.currentThread());
                     synchronized (all) {
-                        int cc = 0;
-                        for (Column c : d.columns()) {
-                            all.column(cc++).append(c);
+                        for (int c = 0, colsSize = cols.size(); c < colsSize; c++) {
+                            all.column(c).append((Column) cols.get(c));
                         }
                         //d.doWithRows((Consumer<Row>) all::addRow);
                     }
-                    d.clear();
+                    //d.clear();
                 });
             }
         }
@@ -321,10 +318,10 @@ public class SelfTest {
 
     private void report(DataTable all) {
 
-        String[] testID = all.columns(0, 1, 2).stream().map(x -> x.name()).toArray(String[]::new);
+        String[] testID = all.columns(0, 1, 2 ).stream().map(x -> x.name()).toArray(String[]::new);
 
         //https://jtablesaw.github.io/tablesaw/userguide/reducing
-        {
+        try {
 
             Table walltimes = all.summarize("wallTimeNS", mean/*, stdDev*/).by(testID)
                     .sortDescendingOn("Mean [wallTimeNS]")
@@ -333,7 +330,11 @@ public class SelfTest {
             ((NumberColumn)walltimes.column(3)).setPrintFormatter(new NSTimeFormatter());
 
             System.out.println(walltimes.printAll());
+
+        } catch (Throwable t) {
+            //TODO why might it happen
         }
+
 
         {
             Table ff = all.summarize("success", countFalse).by(testID);

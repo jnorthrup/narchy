@@ -19,7 +19,6 @@ import jcog.TODO;
 import jcog.WTF;
 import jcog.event.ListTopic;
 import jcog.event.Topic;
-import jcog.exe.Exe;
 import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
@@ -33,7 +32,6 @@ import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.Executor;
-import java.util.concurrent.ForkJoinPool;
 import java.util.function.Supplier;
 import java.util.stream.Stream;
 
@@ -99,7 +97,8 @@ public class Thing<T, P /* service key */  /* context */> {
         this.id = id;
 
         this.executor = executor != null ? executor :
-                (Exe.concurrent() ? ForkJoinPool.commonPool() : MoreExecutors.directExecutor());
+                MoreExecutors.directExecutor();
+                //(Exe.concurrent() ? ForkJoinPool.commonPool() : MoreExecutors.directExecutor());
 
         this.parts = new ConcurrentHashMap<>();
     }

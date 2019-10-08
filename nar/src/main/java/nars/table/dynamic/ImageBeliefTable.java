@@ -2,16 +2,19 @@ package nars.table.dynamic;
 
 import nars.NAL;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.control.op.Remember;
+import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
 import nars.term.util.Image;
 import nars.term.util.TermException;
+import nars.term.util.TermTransformException;
 import nars.time.When;
 import org.jetbrains.annotations.Nullable;
 
@@ -106,7 +109,26 @@ public class ImageBeliefTable extends DynamicTaskTable {
     }
 
     private Term transformTermFromTemplate(Term t) {
-        return Image.transformFromTemplate(t, this.term, this.normal);
+        if (t.equals(this.normal))
+            return this.term;
+
+        assert(this.term.op()==INH && t.op()==INH);
+
+//        if (!x.hasAny(Op.Temporal))
+//            return template; //template should equal the expected result
+
+        Subterms tt = this.term.subterms();
+        Term subj = tt.sub(0), pred = tt.sub(1);
+        if (subj.contains(Op.ImgInt)) {
+            //Term y = x.sub(1).sub(normal.sub(1).subIndexFirst(z -> z.equals(pred)));
+            //return Image.imageInt(x, y);
+            return Image.imageInt(t, pred);
+        } else if (pred.contains(Op.ImgExt)) {
+            //Term y = x.sub(0).sub(normal.sub(0).subIndexFirst(z -> z.equals(subj)));
+            //return Image.imageExt(x, y);
+            return Image.imageExt(t, subj);
+        } else
+            throw new TermTransformException(t, this.term, "could not infer Image transform from template");
     }
 
     @Override

@@ -234,6 +234,10 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         return use(NAL.derive.TTL_COST_BRANCH);
     }
 
+    private boolean test(int i) {
+        return test(this.post[i]);
+    }
+
     /** main premise unification instance */
     public final class PremiseUnify extends Unify {
         public PremiseUnify(@Nullable Op type, Random random, int stackMax) {
@@ -489,7 +493,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /**
      * update some cached values that will be used for one or more derivation iterations
      */
-    public Derivation next(Deriver d, What w) {
+    public Derivation start(Deriver d, What w, Deriver.DeriverExecutor exe) {
 
         NAR p = this.nar, n = w.nar;
         if (p != n) {
@@ -500,6 +504,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         this.deriver = d;
         this.what = w;
         //this.deriverMH = deriver.rules.what.compile();
+        this.dur = w.dur();
 
         what.derivePri.premise(this);
 
@@ -509,19 +514,16 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         unify.dtTolerance = uniSubstFunctor.u.dtTolerance = premisePreUnify.dtTolerance =
                 //n.dtDither(); //FINE
                 //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
-                Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
+                Math.round(dur * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
         this.confMin = n.confMin.conf();
         this.eviMin = n.confMin.evi();
         this.termVolMax = n.termVolMax.intValue();
         this.time = n.time();
-        this.dur = w.dur();
         this.when = deriver.timing.now(this);
 
-        Deriver.DeriverExecutor e = deriver.exe.get();
-        this.exe = e;
-        e.init(this);
+        (this.exe = exe).start(this);
 
         return this;
     }
@@ -650,16 +652,15 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         try (var __ = e.derive_C_Pre.time()) {
 
-            //try {
-                reset(p.task(), p.belief(), p.beliefTerm());
-            //} catch
+            reset(p.task(), p.belief(), p.beliefTerm());
 
             can = deriver.program.pre.apply(this);
             if (can.length == 0)
                 return e.premiseUnderivable1;
-        }
 
+        }
         int valid = 0, lastValid = -1;
+        PremiseRunnable[] post = this.post;
 
         try (var __ = e.derive_D_Truthify.time()) {
 
@@ -667,47 +668,47 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
             PremiseAction[] branch = this.deriver.program.branch;
 
-            PremiseRunnable[] self = this.post;
             for (int i = 0; i < can.length; i++) {
-                if ((self[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
+                if ((post[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }
             }
-            if (valid == 0)
+            if (valid == 0) {
                 return e.premiseUnderivable2;
-
-            if (valid > 1 && valid < can.length) {
-                //sort the valid to the first slots for fastest roulette iteration on the contiguous valid subset
-                //otherwise any order here is valid
-                Arrays.sort(self, 0, can.length, sortByPri);
             }
-
         }
-
 
         try (var __ = e.derive_E_Run.time()) {
             this.ready(deriveTTL); //first come first serve, maybe not ideal
 
-
-            PremiseRunnable[] post = this.post;
             if (valid == 1) {//optimized 1-option case
-                //while (post[lastValid].run()) { }
-                test(post[lastValid]);
-            } else {//
 
+                //while (post[lastValid].run()) { }
+
+                test(lastValid);
+
+            } else {
+
+                if (valid < can.length) {
+                    //sort the valid to the first slots for fastest roulette iteration on the contiguous valid subset
+                    //otherwise any order here is valid
+                    Arrays.sort(post, 0, can.length, sortByPri);
+                }
 
                 float[] pri = new float[valid];
                 for (int i = 0; i < valid; i++)
                     pri[i] = post[i].pri;
-                MutableRoulette.run(pri, random, wi -> 0, i -> test(post[i]));
+                MutableRoulette.run(pri, random, wi -> 0, this::test);
 
                 //alternate roulette:
                 //  int j; do { j = Roulette.selectRoulette(valid, i -> post[i].pri, d.random);   } while (post[j].run());
             }
 
-            return e.premiseRun;
+
         }
+
+        return e.premiseRun;
     }
 
 //

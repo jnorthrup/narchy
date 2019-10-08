@@ -14,7 +14,7 @@ import nars.gui.NARui;
 import nars.gui.concept.ConceptSurface;
 import nars.gui.sensor.VectorSensorChart;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.StackingMap;
+import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.graph.EdgeVis;
 import spacegraph.space2d.container.graph.Graph2D;
 import spacegraph.space2d.container.graph.GraphEdit2D;
@@ -29,7 +29,6 @@ import spacegraph.space2d.widget.text.LabeledPane;
 import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.util.MutableRectFloat;
 
-import javax.annotation.Nullable;
 import java.util.List;
 import java.util.Map;
 import java.util.function.BiFunction;
@@ -78,8 +77,11 @@ public class AttentionUI {
 
 	@Deprecated
 	public static Surface objectGraphs(NAR n) {
-		ObjectGraphs g = new ObjectGraphs(n,
-			Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())::iterator,
+		ObjectGraphs g = new ObjectGraphs(()->
+			//n.partStream()
+			Stream.concat(Streams.stream(n.control.graph.nodeIDs()), n.partStream())
+				.iterator()
+			,
 			Map.of(
 				NAR.class, (NAR nn, Object relation) -> new VectorLabel(nn.self().toString()),
 				VectorSensor.class, (VectorSensor v, Object relation) -> new VectorSensorChart(v, n),
@@ -113,23 +115,11 @@ public class AttentionUI {
 				}
 		});
 
-		//n.partStream().forEach(g::add);
 
-		return g;
-//		return DurSurface.get(g, n, () -> {
-//
-//			//Stream s =
-//			//Stream.concat(Stream.of(n.control.graph.nodeIDs()), n.partStream());
-//			//n.partStream();
-//
-////			s = s.peek(x -> {
-////				System.out.println(x.getClass()  + "\t" + x);
-////			});
-//
-//
-//			//aaa.set(s::iterator);
-//
-//		}).every(32);
+
+		return DurSurface.get(g, n, () -> {
+			g.update();
+		}).every(4);
 	}
 
 	public static Graph2D objectGraph(Graph2D.Graph2DRenderer<Object> renderer) {
@@ -140,10 +130,7 @@ public class AttentionUI {
 					Prioritized node = (Prioritized) x;
 					float s = node.priElseZero();
 					xx.pri = s;
-
-//					float d = 0.5f * node.pri();
-//                            float r = Math.min(1, s/d);
-					xx.color(Math.min(s, 1), Math.min(s, 1), 0);
+					//((Widget)xx.the()).color.set(Math.min(s, 1), Math.min(s, 1), 0, 1);
 				} else {
 					//..infer priority of unprioitized items, ex: by graph metrics in relation to prioritized
 				}
@@ -163,28 +150,39 @@ public class AttentionUI {
 
 	}
 
-	static class ObjectGraphs extends StackingMap {
+	static class ObjectGraphs extends Bordering {
 		public static final float INNER_CONTENT_SCALE = 0.9f;
 		private final Map<Class, BiFunction<?, Object, Surface>> builders;
 		private final Graph2D.Graph2DRenderer<Object> renderer;
 
-		ObjectGraphs(Object root, Iterable content, Map<Class, BiFunction<?, Object, Surface>> builders, Graph2D.Graph2DRenderer<Object> renderer) {
+		private final Iterable content;
+		private final Graph2D graph;
+
+		ObjectGraphs(Iterable/*<X>*/ content, Map<Class, BiFunction<?, Object, Surface>> builders, Graph2D.Graph2DRenderer<Object> renderer) {
+
 			this.builders = builders;
 			this.renderer = renderer;
-			layer(root, content);
+			this.content = content;
 
-
+			this.graph = graph(objectGraph(renderer));
+			set(graph.widget());
 		}
 
-		public void layer(Object key, @Nullable Iterable content) {
-
-			if (content != null)
-				computeIfAbsent(key, oo -> graph(objectGraph(renderer)).set(content).widget().pos(bounds));
-			else
-				remove(key);
-
-
+		public synchronized void update() {
+			graph.set(content);
 		}
+
+
+//
+//		public void layer(Object key) {
+//
+//			if (content != null)
+//				computeIfAbsent(key, oo -> graph(objectGraph(renderer)).widget().pos(bounds));
+//			else
+//				remove(key);
+//
+//
+//		}
 
 		private Graph2D<Object> graph(Graph2D<Object> g) {
 			g.build(x -> {
@@ -235,9 +233,6 @@ public class AttentionUI {
 				), INNER_CONTENT_SCALE);
 		}
 
-		public void layer(Object o) {
-			layer(o, List.of(o));
-		}
 
 	}
 

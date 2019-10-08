@@ -3,10 +3,7 @@ package nars.link;
 import jcog.Util;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
-import nars.term.Img;
-import nars.term.Term;
-import nars.term.Variable;
+import nars.term.*;
 import nars.term.atom.Atomic;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
@@ -35,6 +32,20 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
             return 1;
         }
     };
+
+    /** doesnt unnegate subterms */
+    public static final TermDecomposer OnePolarized = new WeightedDynamicTermDecomposer() {
+        @Override
+        protected int depth(Compound root, Random rng) {
+            return 1;
+        }
+
+        @Override
+        protected boolean unneg() {
+            return false;
+        }
+    };
+
 //    public static final TermDecomposer StatementDecomposer = new TermDecomposer() {
 //        @Override
 //        public @Nullable Term decompose(Compound t, Random rng) {
@@ -80,7 +91,11 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         if (u instanceof Img)
             return t; //HACK
 
-        return u.unneg();
+        return u instanceof Neg && unneg() ? u.unneg() : u;
+    }
+
+    protected boolean unneg() {
+        return true;
     }
 
     abstract protected int depth(Compound root, Random rng);

@@ -16,12 +16,15 @@ import static nars.Op.INT;
  */
 public final class Int extends Atomic implements The {
 
-	static final Int[] pos = new Int[ANON_INT_MAX];
-	private static final Int[] neg = new Int[ANON_INT_MAX];
+	static final int INT_CACHE_SIZE = ANON_INT_MAX * 8;
+	static final Int[] pos = new Int[INT_CACHE_SIZE];
+	private static final Int[] neg = new Int[INT_CACHE_SIZE];
 
 	static {
-		for (int i = 0; i < ANON_INT_MAX; i++) {
+		for (int i = 0; i < pos.length; i++) {
 			pos[i] = new Int(i);
+		}
+		for (int i = 1; i < neg.length; i++) {
 			neg[i] = new Int(-i);
 		}
 	}
@@ -62,10 +65,10 @@ public final class Int extends Atomic implements The {
     }
 
     public static Int the(int i) {
-		if (i >= 0 && i < ANON_INT_MAX) {
+		if (i >= 0 && i < pos.length) {
 			return pos[i];
 		} else {
-			if (i < 0 && i > -ANON_INT_MAX) {
+			if (i < 0 && i > -neg.length) {
 				return neg[-i];
 			} else {
 				return new Int(i);

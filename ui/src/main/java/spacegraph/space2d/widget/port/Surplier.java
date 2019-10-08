@@ -60,7 +60,7 @@ public class Surplier<T> extends ConstantPort<T> {
         });
     }
 
-    public static Surface button(String label, Supplier<Surface> s) {
+    public static Surplier button(String label, Supplier<Surface> s) {
         return new Surplier<>(label, Surface.class, s);
     }
 }

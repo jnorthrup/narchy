@@ -20,29 +20,28 @@ import static nars.Op.BELIEF;
 import static nars.term.Functor.f;
 import static nars.term.util.TermTest.assertEq;
 import static nars.time.Tense.ETERNAL;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 /**
  * Created by me on 5/24/16.
  */
 class QuestionTest {
 
-    private final int withinCycles = 412;
+    private final int cycles = 412;
 
     @Test
     void whQuestionUnifyQueryVar() throws Narsese.NarseseException {
-        testQuestionAnswer(withinCycles, "<bird --> swimmer>", "<?x --> swimmer>", "<bird --> swimmer>");
+        testQuestionAnswer(cycles, "<bird --> swimmer>", "<?x --> swimmer>", "<bird --> swimmer>");
     }
 
     @Test
     void yesNoQuestion() throws Narsese.NarseseException {
-        testQuestionAnswer(withinCycles, "<bird --> swimmer>", "<bird --> swimmer>", "<bird --> swimmer>");
+        testQuestionAnswer(cycles, "<bird --> swimmer>", "<bird --> swimmer>", "<bird --> swimmer>");
     }
 
     @Test
     void testTemporalExact() throws Narsese.NarseseException {
-        testQuestionAnswer(withinCycles,
+        testQuestionAnswer(cycles,
                 "((a &&+1 b) &&+1 c)",
                 "((a &&+1 b) &&+1 c)",
                 "((a &&+1 b) &&+1 c)");
@@ -229,21 +228,21 @@ class QuestionTest {
                 .confMin(0.75f)
                 .input("f(#x" + args + ").")
                 .input("(f($x"+ args + ") ==> g($x" + args + ")).")
-                .mustBelieve(128, "g(#1" + args + ")", 1f, 0.81f)
+                .mustBelieve(cycles, "g(#1" + args + ")", 1f, 0.81f)
                 .test();
     }
 
     @Test
     void testDepVarInIndepImpl3() {
-        assertTrue(!$$$("f(#2,#1)").isNormalized());
+        assertFalse($$$("f(#2,#1)").isNormalized());
         assertEq("f(#1,#2)", $$$("f(#2,#1)").normalize());
 
         new TestNAR(NARS.tmp(6))
-                .confMin(0.6f)
+                .confMin(0.75f)
                 .termVolMax(11)
                 .input("f(#x,#y).")
                 .input("(f($x,#y) ==> g($x,#y)).")
-                .mustBelieve(512, "g(#1,#2)", 1f, 0.81f)
+                .mustBelieve(cycles, "g(#1,#2)", 1f, 0.81f)
                 .test();
     }
 

@@ -29,7 +29,7 @@ public class PriNode implements Prioritized {
 
     @Override
     public String toString() {
-        return id + " pri=" + pri();
+        return id.toString();
     }
 
     @Override

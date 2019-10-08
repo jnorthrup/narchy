@@ -315,7 +315,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 //            , 0, 2f);
 
     /** max tolerance time (in durations) for unification of temporal terms */
-    public final FloatRange unifyTimeToleranceDurs = new FloatRange(0.5f, 0, 2 );
+    public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
     @Deprecated public final IntRange premiseUnifyTTL = new IntRange(4, 1, 32);
@@ -375,7 +375,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     protected final Supplier<Random> random;
 
     protected NAL(final Executor exe, Time time, Supplier<Random> rng) {
-        super(exe);
+        super();
         this.random = rng;
         (this.time = time).reset();
     }
@@ -673,7 +673,6 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          */
         public static final int ANON_INT_MAX = Byte.MAX_VALUE;
 
-        public static final boolean INH_IMAGE_RECURSION = false;
         public static final int TERM_BUFFER_MIN_REPLACE_AHEAD_SPAN = 2;
         public static final int TERM_BUFFER_MIN_INTERN_VOL = 2;
 
@@ -684,6 +683,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         /** minimum product subterms for image structural transformations */
         public static int imageTransformSubMin = 1;
+        public static final boolean INH_IMAGE_RECURSION = false;
 	}
 
     public enum test {

@@ -268,24 +268,14 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         this.now = nar.time();
         this.what = nar.fork(id, true);
 
-        PriNode pri = what.pri;
-
-        this.actionPri = nar.control.amp($.inh(id,ACTION), PriNode.Merge.And,
-            pri, nar.goalPriDefault);
-        this.sensorPri = nar.control.amp($.inh(id,SENSOR), PriNode.Merge.And,
-            pri, nar.beliefPriDefault);
-        this.rewardPri = nar.control.amp($.inh(id,REWARD), PriNode.Merge.And,
-            pri, nar.goalPriDefault
-        ); //, /*OR: nar.beliefPriDefault,*/ nar.goalPriDefault);
-
-
+        PriNode gamePri = what.pri;
+        actionPri = nar.control.amp($.inh(id,ACTION), PriNode.Merge.And, gamePri, nar.goalPriDefault);
+        sensorPri = nar.control.amp($.inh(id,SENSOR), PriNode.Merge.And, gamePri, nar.beliefPriDefault);
+        rewardPri = nar.control.amp($.inh(id,REWARD), PriNode.Merge.And, gamePri, nar.goalPriDefault);
 
         sensors.forEach(s -> init(sensorPri, s));
-
         actions.forEach(a -> init(actionPri, a));
-
         rewards.forEach(r -> init(rewardPri, r));
-
     }
 
 

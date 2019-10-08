@@ -116,28 +116,12 @@ abstract public class GameX extends Game {
 
 
     public static NAR runRT(Consumer<NAR> init, int threads, float narFPS) {
-//        FasterList l = new FasterList();
 
         NAR n = baseNAR(narFPS * durationsPerFrame, threads);
 
         init.accept(n);
 
-        //n.runLater(() -> {
-
-
-        //a.resume();
-        //System.gc();
-        //});
-
-
         initPlugins(n);
-
-
-        //initPlugins2(n, g);
-
-
-        n.synch();
-
 
         if (initMeta) {
 
@@ -149,7 +133,6 @@ abstract public class GameX extends Game {
                 n.start(gm);
                 //gm.pri(0.1f);
             });
-
 
             MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, metaFPS);
             if (initMetaRL)
