@@ -188,9 +188,6 @@ public class TermList extends FasterList<Term> implements Subterms {
                 removeNulls();
         }
 
-
-
-
         return arrayKeep();
     }
 }

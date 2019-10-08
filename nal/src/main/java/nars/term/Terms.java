@@ -82,13 +82,19 @@ public enum Terms {
 	private static Term[] commuteN(Term[] x) {
 		return ifDifferent(x,
 			commuteTerms(x, false)
-			//new TermList(x.clone()).sortAndDedup()
+			//commuteTermsTermList(x)
 			//new MetalTreeSet<>(x).toArray(Op.EmptyTermArray)
 			//new SortedList<>(x, new Term[x.length]).toArrayRecycled(Term[]::new) //slow
 		);
 	}
 
-	/** n-array commute function optimized to avoid unnecessary comparisons by grouping by volume first */
+	static Term[] commuteTermsTermList(Term[] x, boolean modifyInputArray) {
+		return new TermList(modifyInputArray ? x : x.clone()).sortAndDedup();
+	}
+
+	/** n-array commute function optimized to avoid unnecessary comparisons by grouping by term properties like volume first.
+	 * TODO use op if that is the 2nd comparison property
+	 * */
 	static Term[] commuteTerms(Term[] x, boolean modifyInputArray) {
 		int[] volumes = new int[x.length];
 		int volMin = Integer.MAX_VALUE, volMax = Integer.MIN_VALUE;
@@ -111,19 +117,24 @@ public enum Terms {
 
 		Term[] y = modifyInputArray ? x : x.clone();
 
+		int nulls;
 		if (volMax <= volMin) {
 			//flat
 			Arrays.sort(y);
+			nulls = nullDups(y, 0, y.length);
 		} else {
 			//sort within the spans where the terms have equal volumes (divide & conquer)
 
 			int n = y.length;
-			ArrayUtil.quickSort(0, n, (a, b) -> Integer.compare(volumes[b], volumes[a]), (a, b) -> {
+			ArrayUtil.quickSort(0, n, (a, b) -> {
+				return Integer.compare(volumes[b], volumes[a]);
+			}, (a, b) -> {
 				ArrayUtil.swapObjInt(y, volumes, a, b);
 			});
 
 			int s = 0; //span start
 			int vs = volumes[0];
+			nulls = 0;
 			for (int i = 1; i <= n; i++) {
 				int vi = i < n ? volumes[i] : -1;
 				if (vi != vs) {
@@ -131,6 +142,7 @@ public enum Terms {
 						//sort span
 						//TODO optimized 2-array compare swap
 						Arrays.sort(y, s, i);
+						nulls += nullDups(y, s, i);
 					}
 					//next span
 					s = i;
@@ -140,7 +152,26 @@ public enum Terms {
 
 		}
 
-		return y;
+
+		if (nulls == 0)
+			return y;
+		else
+			return ArrayUtil.removeNulls(y, nulls);
+	}
+
+	private static int nullDups(Term[] y, int start, int end) {
+		Term prev = y[start];
+		int nulls = 0;
+		for (int i = start+1; i < end; i++) {
+			Term next = y[i];
+			if (prev.equals(next)) {
+				y[i] = null;
+				nulls++;
+			} else {
+				prev = next;
+			}
+		}
+		return nulls;
 	}
 
 	private static Term[] ifDifferent(Term[] a, Term[] b) {

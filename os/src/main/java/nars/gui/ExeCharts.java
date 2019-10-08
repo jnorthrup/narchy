@@ -20,7 +20,6 @@ import nars.exe.impl.ThreadedExec;
 import nars.time.clock.RealTime;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
-import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
@@ -71,15 +70,18 @@ public class ExeCharts {
     	public WhySurface(Cause w) {
     		this.w = w;
     		//Draw.colorHash(w.)
-			set(new Bordering(new VectorLabel(w.toString())).south(new FloatSlider(0, -2, +2).on(x->{
-                float p = (float) Math.pow(x, 10);
-                w.setPri(p);
-            })));
+            VectorLabel l = new VectorLabel(w.toString());
+            set(l);
+            //set(new Bordering(l)
+//                .south(new FloatSlider(0, -2, +2).on(x->{
+//                float p = (float) Math.pow(x, 10);
+//                w.setPri(p);
+//            })));
 		}
 		public void update() {
-            color.x = Util.unitize(w.pri());
+            color.x = Util.unitizeSafe(w.pri());
             float v = w.valueRaw();
-            color.y = v!=v ? 0 : Util.unitize(v);
+            color.y = v!=v ? 0 : Util.unitizeSafe(v);
 		}
 	}
 

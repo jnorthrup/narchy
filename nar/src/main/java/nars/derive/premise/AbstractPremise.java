@@ -37,11 +37,12 @@ public class AbstractPremise implements Premise {
 		this.task = task;
 		this.belief = belief;
 
-//		if (task instanceof Task) {
+//		boolean includeTaskAndBeliefAsWhy = true;
+//		if (includeTaskAndBeliefAsWhy && task instanceof Task) {
 //			Term taskWhy = ((Task) task).why();
 //
 //			this.why = Why.why(why,
-//					belief instanceof Task ? Why.why(taskWhy, ((Task)belief).why()) //double
+//					belief instanceof Task ? Why.why(taskWhy, ((Task)belief).why(), Math.max(3, NAL.causeCapacity.intValue() - why.volume())) //double
 //						:
 //					taskWhy //single
 //				);
@@ -111,7 +112,7 @@ public class AbstractPremise implements Premise {
 		Task task = (Task)this.task;
 		Term nextBeliefTerm = (Term) this.belief;
 
-		if (!nextBeliefTerm.op().taskable || task.punc()==COMMAND)// || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
+		if (task.punc() == COMMAND || !nextBeliefTerm.op().taskable)// || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
 			return this; //structural
 
 		boolean beliefConceptUnifiesTaskConcept = false;
@@ -191,7 +192,7 @@ public class AbstractPremise implements Premise {
 				nextBeliefTerm = found[0];
 		}
 
-		return belief != null ? new AbstractPremise(task, belief, why(d)) :
+		return belief != null ? new AbstractPremise(task, belief, Why.why(why(d), belief.why()) ) :
 			!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why(d)) :
 				this;
 

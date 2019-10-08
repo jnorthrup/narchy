@@ -153,6 +153,9 @@ public enum Why { ;
 	}
 
 	public static Term why(@Nullable Term whyA, @Nullable Term whyB, int capacity) {
+		if (capacity <= 0)
+			return null;
+
 		if (whyA == null)
 			return whyB; //TODO check cap
 		if (whyB == null)
@@ -163,15 +166,16 @@ public enum Why { ;
 			return whyA; //same
 
 		int wb = whyB.volume();
-		if (wa + wb + 1 > capacity) {
+		if (wa + wb + 1 <= capacity) {
+			return SETe.the(whyA, whyB);
+		} else {
 			//must reduce or sample
 			RoaringBitmap s = new RoaringBitmap();
 			IntConsumer addToS = s::add;
 			toSet(whyA, addToS);
 			toSet(whyB, addToS);
 			return why(s, capacity);
-		} else
-			return SETe.the(whyA, whyB);
+		}
 	}
 
 	public static void eval(@Nullable Term why, float pri, ShortFloatProcedure each) {

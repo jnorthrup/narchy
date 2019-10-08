@@ -26,6 +26,7 @@ import org.eclipse.collections.api.block.function.primitive.IntToDoubleFunction;
 import org.eclipse.collections.api.block.function.primitive.IntToFloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
 import org.eclipse.collections.api.tuple.primitive.LongObjectPair;
+import org.jetbrains.annotations.NotNull;
 
 import java.lang.reflect.Array;
 import java.net.URL;
@@ -6703,27 +6704,29 @@ public enum ArrayUtil {
 
 
     public static <T> T[] removeNulls(final T[] array) {
+        if (array.length == 0)
+            return array;
         int nulls = 0;
         for (Object x : array)
             if (x == null) nulls++;
         if (nulls == 0)
             return array;
-        else {
-            int s = array.length - nulls;
-            if (s == 0)
-                return Arrays.copyOf(array, 0); //builder.apply(0);
+        else
+            return removeNulls(array, nulls);
+    }
 
-            else {
-
-                T[] a = Arrays.copyOf(array, s);
-                int j = 0;
-                for (T x : array) {
-                    if (x != null)
-                        a[j++] = x;
-                }
-                return a;
+    @NotNull
+    public static <T> T[] removeNulls(T[] array, int nulls) {
+        int s = array.length - nulls;
+        T[] a = Arrays.copyOf(array, s);
+        if (s > 0) {
+            int j = 0;
+            for (T x : array) {
+                if (x != null)
+                    a[j++] = x;
             }
         }
+        return a;
     }
 
     /**
