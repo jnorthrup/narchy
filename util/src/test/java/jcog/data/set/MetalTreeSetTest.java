@@ -1,7 +1,7 @@
 package jcog.data.set;
 
 import com.google.common.collect.Iterables;
-import jcog.sort.SortedList;
+import jcog.sort.InsertionSortedList;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
@@ -16,7 +16,7 @@ class MetalTreeSetTest {
 		assertSet(new MetalTreeSet());
 	}
 	@Test void testSortedList() {
-		assertSet(new SortedList(8));
+		assertSet(new InsertionSortedList(8));
 	}
 
 	private static void assertSet(Collection<Integer> s) {

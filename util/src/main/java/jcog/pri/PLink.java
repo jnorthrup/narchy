@@ -19,5 +19,4 @@ public class PLink<X> extends NLink<X> implements UnitPrioritizable {
         return '$' + super.toString();
     }
 
-
 }

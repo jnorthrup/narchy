@@ -1,5 +1,7 @@
 package jcog.pri;
 
+import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+
 import static jcog.Texts.n4;
 
 /**
@@ -42,5 +44,12 @@ public class NLink<X> extends AtomicPri implements PriReference<X> {
         return n4(pri()) + ' ' + id;
     }
 
+    public float priElse(FloatFunction<X> prioritization) {
+        float p = pri();
+        if (p!=p)
+            return priSetAndGet(prioritization.floatValueOf(id));
+        else
+            return p;
+    }
 
 }

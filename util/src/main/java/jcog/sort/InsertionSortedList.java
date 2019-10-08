@@ -12,7 +12,7 @@ import java.util.Arrays;
  * according to the comparator, will be in the list in the order that they were
  * added to this list. Add only objects that the comparator can compare.</p>
  */
-public class SortedList<E extends Comparable> extends FasterList<E> /* implements SortedSet<E> */ {
+public class InsertionSortedList<E extends Comparable> extends FasterList<E> /* implements SortedSet<E> */ {
 
     /**
      * indicates if the resulting ordering is different from the input order
@@ -20,7 +20,7 @@ public class SortedList<E extends Comparable> extends FasterList<E> /* implement
     public boolean orderChangedOrDeduplicated = false;
 
 
-    public SortedList(int capacity) {
+    public InsertionSortedList(int capacity) {
         super(capacity);
     }
 
@@ -28,14 +28,14 @@ public class SortedList<E extends Comparable> extends FasterList<E> /* implement
     /**
      * uses array directly
      */
-    public SortedList(E[] toSort) {
+    public InsertionSortedList(E[] toSort) {
         super(0, toSort.clone());
         Arrays.fill(items, null);
         for (E e : toSort)
             add(e);
     }
 
-    public SortedList(E[] toSort, E[] scratch) {
+    public InsertionSortedList(E[] toSort, E[] scratch) {
         super(0, scratch);
         for (E e : toSort)
             add(e);

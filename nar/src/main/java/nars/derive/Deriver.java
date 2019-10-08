@@ -1,14 +1,13 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.data.set.ArrayHashSet;
+import jcog.data.set.PrioritySet;
 import jcog.pri.HashedPLink;
 import jcog.pri.PLink;
 import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
-import jcog.util.ArrayUtil;
 import nars.NAR;
 import nars.Op;
 import nars.Task;
@@ -196,11 +195,12 @@ public class Deriver extends How {
         int premisesPerIter = 3;
         int capacity = 4;
 
-		final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
-		//final MRUMap<Premise,Premise> novel = new MRUMap(premiseTTL/2);
         int ttl;
 
         private static final FloatFunction sorter = x->DeriverExecutor.pri((Premise)x);
+
+		//final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
+		final PrioritySet<Premise> queue = new PrioritySet<>(sorter);
 
 		@Override
 		protected void start() {
@@ -214,20 +214,19 @@ public class Deriver extends How {
 			//queue.clear();
 			int branchTTL = d.nar.deriveBranchTTL.intValue();
 
-			for (int h = 0; h < hypotheses; h++) {
+			for (int h = 0; h < hypotheses; h++)
 				hypothesize(branchTTL);
-			}
 
 			int s = queue.size();
             if (s == 0)
                 return;
 
-            if (s > 1) {
-				//queue.list.sortThisByFloat(DeriverExecutor::pri); //ascending order because it poll's from the end
-				Object[] qq = queue.list.array();
-				ArrayUtil.sort(qq, 0, s, sorter);
-				//assert(DeriverExecutor.pri(queue.list.get(0)) <= DeriverExecutor.pri(queue.list.get(s-1)));
-			}
+//            if (s > 1) {
+//				//queue.list.sortThisByFloat(DeriverExecutor::pri); //ascending order because it poll's from the end
+//				Object[] qq = queue.list.array();
+//				ArrayUtil.sort(qq, 0, s, sorter);
+//				//assert(DeriverExecutor.pri(queue.list.get(0)) <= DeriverExecutor.pri(queue.list.get(s-1)));
+//			}
 
 			ttl = premisesPerIter;
 
@@ -319,6 +318,7 @@ public class Deriver extends How {
 
 		}
 	}
+
 }
 
 
