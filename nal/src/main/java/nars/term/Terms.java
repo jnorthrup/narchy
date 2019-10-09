@@ -27,6 +27,7 @@ import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
 
 import static nars.Op.CONJ;
+import static nars.Op.NEG;
 import static nars.term.atom.Bool.Null;
 
 /**
@@ -319,7 +320,7 @@ public enum Terms {
 
 
 	public static boolean allNegated(Subterms subterms) {
-		return subterms.hasAny(Op.NEG) && subterms.AND((Term t) -> t instanceof Neg);
+		return subterms.hasAny(NEG) && subterms.AND((Term t) -> t instanceof Neg);
 	}
 
 //	public static int countNegated(Subterms subterms) {
@@ -494,31 +495,31 @@ public enum Terms {
 
 	public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {
 
+		Op xo = x.op(), yo = y.op();
+		if (xo != yo) {
+			//op mismatch, only allow if either is variable
+			return (xo.bit & var) != 0 || (yo.bit & var) != 0;
+		} else if (xo == NEG)
+			return possiblyUnifiable(x.unneg(), y.unneg(), strict, var);
+
 		//if (x.equals(y))
 		if (x.equalsRoot(y))
 			return !strict;
 
-		Op xo = x.op(), yo = y.op();
-		if (xo != yo) {
-
-			int nonVarBits = ~var;
-			if (x instanceof Variable && (xo.bit & nonVarBits) == 0) return true; //variable, allow
-			if (y instanceof Variable && (yo.bit & nonVarBits) == 0) return true; //variable, allow
-
-			return false; //op mismatch
-		}
-
 		if (!(x instanceof Compound))
 			return false; //atomic non-var
 
-		int varOrTemporal = var | Op.Temporal;
-		int xxs = x.structure(), yys = y.structure();
+		Subterms xx = x.subterms(), yy = y.subterms(); //subtermsDirect not possible because possiblyUnifiable tests equality HACK
+
+		int varOrTemporal = var | CONJ.bit; //Op.Temporal;
+		int xxs = xx.structure(), yys = yy.structure();
 		if (((xxs & varOrTemporal) == 0) && ((yys & varOrTemporal) == 0)) //no variables or temporals
 			return false;
+		if (xxs!=yys && (xxs & var)==0 && (yys & var)==0)
+			return false; //differing structure and both constant
 
 		//TODO Conj Xternal allow
 
-		Subterms xx = ((Compound)x).subtermsDirect(), yy = ((Compound)y).subtermsDirect();
 		int n = xx.subs();
 		if ((n != yy.subs()) &&
 			(!Terms.hasEllipsis(x, xxs) && !Terms.hasEllipsis(y, yys)) &&
@@ -528,7 +529,7 @@ public enum Terms {
 			return false;
 		}
 
-		if (!Subterms.possiblyUnifiable(xx, yy, var))
+		if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, var))
 			return false;
 
 		if (!xo.commutative) {
@@ -538,8 +539,6 @@ public enum Terms {
 		}
 
 		return true;
-
-
 	}
 
 

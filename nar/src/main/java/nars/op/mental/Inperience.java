@@ -207,7 +207,7 @@ public class Inperience extends TaskTransformAction {
     private static final class InperienceTask extends SignalTask {
 
         InperienceTask(Term r, Truth tr, Task t, long s, long e) {
-            super(r, Op.BELIEF, tr, t, s, e);
+            super(r, Op.BELIEF, tr, t.creation(), s, e, t.stamp());
         }
 
         @Override
