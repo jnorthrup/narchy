@@ -112,7 +112,7 @@ public enum TermAppender {
                 setAppend(c, p);
                 return;
             case PROD:
-                productAppend(c.subtermsContainer(), p);
+                productAppend(c.subtermsDirect(), p);
                 return;
             case NEG:
                 negAppend(c, p);

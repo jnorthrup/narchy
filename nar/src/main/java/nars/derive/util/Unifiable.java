@@ -139,7 +139,7 @@ public enum Unifiable { ;
             if (!cv && !xv)
                 return !x.hasAny(CONJ) && !Conj.eventOf(conj, x);
 
-            if (x.op()==CONJ) {
+            if (x.opID()==CONJ.id) {
                 //TODO
                 return false; //undecided
             } else {

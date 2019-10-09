@@ -62,7 +62,7 @@ public enum Intermed  { ;
         public InternedCompoundByComponentsSubs(Compound x) {
             super(x.op(), x.dt());
             this.x = x;
-            TermIO.the.writeSubterms(x.subtermsContainer(), key);
+            TermIO.the.writeSubterms(x.subtermsDirect(), key);
             commit();
         }
 

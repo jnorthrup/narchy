@@ -96,7 +96,7 @@ public class Occurrify extends TimeGraph {
                 int dt = x.dt();
                 return (dt != DTERNAL && dt != XTERNAL);
             }
-            return x.subterms().OR(Occurrify::temporal);
+            return ((Compound)x).subtermsDirect().OR(Occurrify::temporal);
         }
         return false;
     }

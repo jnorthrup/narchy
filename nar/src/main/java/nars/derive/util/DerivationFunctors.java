@@ -98,7 +98,8 @@ public enum DerivationFunctors {
 
 			/** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
 			Functor.f1Inline("varIntro", x -> {
-				Term y = DepIndepVarIntroduction.the.apply(x, nar.random(), d.retransform);
+				if (!(x instanceof Compound)) return Null;
+				Term y = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), d.retransform);
 				return y == null ? Null : y;
 			}),
 

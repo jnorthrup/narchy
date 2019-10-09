@@ -59,7 +59,7 @@ abstract public class Functor extends AbstractAtomic implements BiFunction<Evalu
      */
     public static Subterms _args(Compound x) {
         //assert (x.opID() == INH.id && x.subIs(1, ATOM));
-        return ((Compound)x.sub(0)).subtermsContainer();
+        return ((Compound)x.sub(0)).subtermsDirect();
     }
 
     @Nullable public static Subterms args(Compound x, int requireArity) {

@@ -1,6 +1,7 @@
 package nars.util.var;
 
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
@@ -11,13 +12,13 @@ import java.util.Random;
 abstract class VarIntroduction {
 
     /** returns null if not applicable */
-    @Nullable Term apply(final Term x, Random rng, @Nullable Map<Term,Term> retransform) {
+    @Nullable Term apply(final Compound x, Random rng, @Nullable Map<Term,Term> retransform) {
 
-        if (x.complexity() < 2) 
+        if (x.complexity() < 2)
             return null;
 
 
-        Term[] uu = select(x.subterms());
+        Term[] uu = select(x.subtermsDirect());
         if (uu.length == 0)
             return null;
 

@@ -60,7 +60,7 @@ public interface SameSubtermsCompound extends Compound {
     }
 
     @Override
-    default Subterms subtermsContainer() {
+    default Subterms subtermsDirect() {
         return this;
     }
 }

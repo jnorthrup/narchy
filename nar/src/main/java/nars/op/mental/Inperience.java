@@ -1,7 +1,11 @@
 package nars.op.mental;
 
 import jcog.math.FloatRange;
-import nars.*;
+import nars.$;
+import nars.NAR;
+import nars.Op;
+import nars.Task;
+import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.action.TaskTransformAction;
 import nars.task.util.signal.SignalTask;
@@ -12,7 +16,6 @@ import nars.term.util.Image;
 import nars.term.util.transform.Retemporalize;
 import nars.term.util.transform.VariableTransform;
 import nars.time.When;
-import nars.time.event.WhenTimeIs;
 import nars.truth.Truth;
 import org.jetbrains.annotations.Nullable;
 
@@ -92,7 +95,6 @@ public class Inperience extends TaskTransformAction {
 
         int volMax = n.termVolMax.intValue();
 //        int volMaxPre = volMax-VOL_SAFETY_MARGIN;
-        float beliefConf = n.confDefault(BELIEF);
 //        Random rng = d.random;
 
         Term self = n.self();
@@ -117,7 +119,7 @@ public class Inperience extends TaskTransformAction {
                         //Util.nop();
                     } else {
 
-                        return reflect(volMax, beliefConf, self, x, WhenTimeIs.now(d.what));
+                        return reflect(volMax,  self, x, d);
                     }
 //                }
 //            }
@@ -128,7 +130,8 @@ public class Inperience extends TaskTransformAction {
         return null;
     }
 
-    @Nullable private Task reflect(int volMax, float beliefConf, Term self, Task t, When when) {
+    @Nullable private Task reflect(int volMax, Term self, Task t, Derivation d) {
+        When<What> when = d.when;
         long s, e;
         if (PROPAGATE_ETERNAL || !t.isEternal()) {
             s = t.start(); e = t.end();
@@ -139,15 +142,24 @@ public class Inperience extends TaskTransformAction {
         Task u = null;
         if (t.isBeliefOrGoal()) {
             Term r = reifyBeliefOrGoal(t, self);
-            if ((r = validReification(r, volMax)) != null)
+            if ((r = validReification(r, volMax)) != null) {
+                Truth tt = t.truth();
                 u = new InperienceTask(r, $.t(1,
-                    beliefConf * (t.isNegative() ?
-                        t.truth().expectationNeg() : t.truth().expectation())), t, s, e);
+                    Math.max(d.confMin,
+                        tt.conf() * tt.polarity()
+//                        (tt.isNegative() ?
+//                            tt.expectationNeg() : tt.expectation())
+                )), t, s, e);
+            }
 
         } else {
             Term r = reifyQuestion(t.term(), t.punc(), self);
-            if ((r = validReification(r, volMax)) != null)
-                u = new InperienceTask(r, $.t(1, Math.max(NAL.truth.TRUTH_EPSILON, beliefConf * t.priElseZero())), t, s, e);
+            if ((r = validReification(r, volMax)) != null) {
+                float beliefConfDefault = d.nar.confDefault(BELIEF);
+                u = new InperienceTask(r, $.t(1,
+                    Math.max(d.confMin, beliefConfDefault * t.priElseZero())
+                ), t, s, e);
+            }
         }
 
         if (u != null) {

@@ -1314,9 +1314,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	}
 
 	private boolean solveAll(Term x, Predicate<Event> each) {
-		if (x.subterms().hasXternal())
+		if (x instanceof Compound && ((Compound)x).subtermsDirect().hasXternal())
 			return solveDTAndOccRecursive(x, each); //inner XTERNAL
-		else if (x.dt() == XTERNAL)
+		else if (x instanceof Compound && x.dt() == XTERNAL)
 			return solveDtAndOccTop(x, each);  //top-level XTERNAL
 		else
 			return solveOcc(x, true, each); //occ only

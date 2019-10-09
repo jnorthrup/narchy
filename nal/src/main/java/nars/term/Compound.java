@@ -202,7 +202,7 @@ public interface Compound extends Term, IPair, Subterms {
     Subterms subterms();
 
     /** for direct access to subterms only; may return this instance if SameSubtermsCompound */
-    default Subterms subtermsContainer() {
+    default Subterms subtermsDirect() {
         return subterms();
     }
 

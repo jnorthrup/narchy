@@ -8,6 +8,7 @@ import nars.$;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
 import nars.term.Variable;
@@ -56,7 +57,7 @@ public class DepIndepVarIntroduction extends VarIntroduction {
     private static boolean validIndepVarSuperterm(Op o) { return o.statement; }
 
     @Nullable @Override
-    public Term apply(Term x, Random rng, @Nullable Map<Term, Term> retransform) {
+    public Term apply(Compound x, Random rng, @Nullable Map<Term, Term> retransform) {
         return x.hasAny(ConjOrStatementBits) ? super.apply(x, rng, retransform) : null;
     }
 

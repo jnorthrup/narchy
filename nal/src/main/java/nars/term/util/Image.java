@@ -44,7 +44,7 @@ public enum Image {
 
             if (prod instanceof Compound && prod.opID() == PROD.id) {
 
-                Subterms ss = prod.subterms();
+                Subterms ss = ((Compound)prod).subtermsDirect();
                 int n = ss.subs();
                 if (n >= NAL.term.imageTransformSubMin /*&& (ss.structureSurface() & IMG.bit) == 0*/) {
                     Img target = intOrExt ? ImgInt : ImgExt;

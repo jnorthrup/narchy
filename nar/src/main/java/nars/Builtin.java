@@ -330,7 +330,8 @@ public class Builtin {
 
         /** applies # dep and $ indep variable introduction if possible. returns the input term otherwise  */
         nar.add(Functor.f1Inline("varIntro", x -> {
-            Term result = DepIndepVarIntroduction.the.apply(x, nar.random(), null);
+            if (!(x instanceof Compound)) return Null;
+            Term result = DepIndepVarIntroduction.the.apply((Compound)x, nar.random(), null);
             return result != null ? result : Null;
         }));
 

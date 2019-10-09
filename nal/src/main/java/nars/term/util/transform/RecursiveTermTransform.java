@@ -23,7 +23,7 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
         if (p instanceof InlineFunctor) {
             Term s = inhSubs.sub(0);
             if (s.op() == PROD) {
-                Term v = ((InlineFunctor) p).applyInline(s.subterms());
+                Term v = ((InlineFunctor) p).applyInline(((Compound)s).subtermsDirect());
                 if (v != null)
                     return v;
             }
@@ -44,7 +44,7 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
         Op xOp = x.op();
         Op yOp = newOp == null ? xOp : newOp;
 
-        Subterms xx = x.subtermsContainer();
+        Subterms xx = x.subtermsDirect();
 
         Subterms yy = xx.transformSubs(f, yOp);
         if (yy == null)

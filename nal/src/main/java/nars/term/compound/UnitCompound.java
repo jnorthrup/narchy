@@ -24,8 +24,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
         return new Term[]{sub()};
     }
 
-
-
     @Override
     public final Term sub(int i) {
         if (i!=0)

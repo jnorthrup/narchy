@@ -518,7 +518,7 @@ public enum Terms {
 
 		//TODO Conj Xternal allow
 
-		Subterms xx = x.subterms(), yy = y.subterms();
+		Subterms xx = ((Compound)x).subtermsDirect(), yy = ((Compound)y).subtermsDirect();
 		int n = xx.subs();
 		if ((n != yy.subs()) &&
 			(!Terms.hasEllipsis(x, xxs) && !Terms.hasEllipsis(y, yys)) &&

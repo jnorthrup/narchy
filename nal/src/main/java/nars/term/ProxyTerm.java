@@ -47,8 +47,8 @@ public class ProxyTerm implements SameSubtermsCompound {
     }
 
     @Override
-    public Subterms subtermsContainer() {
-        return ((Compound)ref).subtermsContainer();
+    public Subterms subtermsDirect() {
+        return ((Compound)ref).subtermsDirect();
     }
 
     @Override

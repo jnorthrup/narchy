@@ -92,7 +92,7 @@ public abstract class TermBuilder implements TermConstructor {
         Term y = c.apply(x); //x.transform();
 
         if (varOffset == 0 && y instanceof Compound)
-            y.subterms().setNormalized();
+            ((Compound)y).subtermsDirect().setNormalized();
 
         return y;
     }

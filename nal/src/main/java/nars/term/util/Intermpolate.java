@@ -27,6 +27,15 @@ public enum Intermpolate {;
         if (a.equals(b))
             return a;
 
+        if (a instanceof Neg) {
+            if (!(b instanceof Neg)) return Null;
+            Term au = a.unneg();
+            if (!(au instanceof Compound)) return Null;
+            Term bu = b.unneg();
+            if (!(bu instanceof Compound)) return Null;
+            return intermpolate((Compound)au, (Compound)bu, aProp, curDepth, nar).neg();
+        }
+
         if (!a.equalsRoot(b))
             return Null;
 

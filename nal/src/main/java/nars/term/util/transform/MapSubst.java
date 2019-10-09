@@ -166,7 +166,7 @@ public enum MapSubst { ;
             return x;
 
         //TODO cache the discovered occurrence paths for faster replacement
-        if (!x.subtermsContainer().containsRecursively(from, false, null))
+        if (!x.subtermsDirect().containsRecursively(from, false, null))
             return x;
 
         return from instanceof Atomic ?

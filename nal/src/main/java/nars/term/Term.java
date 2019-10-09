@@ -70,7 +70,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (!(that instanceof Compound))
             return false;
 
-        Subterms superTerm = ((Compound)that).subtermsContainer();
+        Subterms superTerm = ((Compound)that).subtermsDirect();
 
         int ppp = p.size();
 
@@ -253,7 +253,7 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
             throw new RuntimeException("path overflow");
 
         final Compound src = (Compound) this;
-        Subterms css = src.subtermsContainer();
+        Subterms css = src.subtermsDirect();
 
         int n = css.subs();
 
@@ -534,8 +534,8 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
         } else {
             int c = Subterms.compare(
-                ((Compound)this).subtermsContainer(),
-                ((Compound)t).subtermsContainer()
+                ((Compound)this).subtermsDirect(),
+                ((Compound)t).subtermsDirect()
             );
             return c != 0 ? c : (op.temporal ? Integer.compare(dt(), t.dt()) : 0);
         }
