@@ -170,7 +170,10 @@ import java.util.Arrays;
 
         MapNodeGraph<PriNode, Object> g = graph;
         NodeGraph.MutableNode<PriNode,Object> thisNode = g.addNode(target);
-        target.parent(sources, g, thisNode);
+        synchronized (g) {
+            target.parent(sources, g, thisNode);
+        }
+        
         return target;
     }
 

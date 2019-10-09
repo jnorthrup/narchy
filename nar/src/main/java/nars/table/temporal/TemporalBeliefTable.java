@@ -75,7 +75,7 @@ public interface TemporalBeliefTable extends BeliefTable {
 
 
 	default void removeIf(Predicate<Task> remove, long finalStart, long finalEnd) {
-        FasterList<Task> deleteAfter = new FasterList<Task>(0);
+        FasterList<Task> deleteAfter = new FasterList<>(0);
 
         forEachTask(finalStart, finalEnd, t->{
             if (remove.test(t))

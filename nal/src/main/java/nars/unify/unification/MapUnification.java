@@ -34,7 +34,8 @@ public class MapUnification extends DeterministicUnification {
     @Override
     public boolean apply(Unify u) {
         xy.forEach((tx, ty) -> {
-            boolean applied = u.putXY((Variable/*HACK*/) tx, ty);
+            /*HACK*/
+            boolean applied = u.putXY(tx, ty);
             assert (applied);
         });
         return true;

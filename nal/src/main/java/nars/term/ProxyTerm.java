@@ -11,7 +11,6 @@ import org.eclipse.collections.api.list.primitive.ByteList;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
-import java.util.function.Predicate;
 
 
 public class ProxyTerm implements SameSubtermsCompound {
@@ -45,6 +44,11 @@ public class ProxyTerm implements SameSubtermsCompound {
     @Override
     public final Subterms subterms() {
         return ref.subterms();
+    }
+
+    @Override
+    public Subterms subtermsContainer() {
+        return ((Compound)ref).subtermsContainer();
     }
 
     @Override
@@ -158,12 +162,6 @@ public class ProxyTerm implements SameSubtermsCompound {
     @Override
     public int subs() {
         return ref.subs();
-    }
-
-
-    @Override
-    public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        return ref.containsRecursively(x, root, inSubtermsOf);
     }
 
     @Override

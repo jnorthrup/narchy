@@ -59,7 +59,7 @@ public class Deriver extends How {
 
 	final ThreadLocal<DeriverExecutor> exe = ThreadLocal.withInitial(_exe);
 
-	public DeriverProgram program;
+	public final DeriverProgram program;
 
 
 	/**

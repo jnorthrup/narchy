@@ -27,16 +27,7 @@ import static nars.term.atom.Bool.Null;
  */
 public abstract class Atomic implements Term {
 
-    @Override
-    public final boolean containsRecursively(Term t) {
-        return false;
-    }
 
-    @Override
-    public final boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return false;
-    }
-    
     @Override
     public final boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
         return false;
@@ -284,12 +275,6 @@ public abstract class Atomic implements Term {
     public boolean contains(Term t) {
         return false;
     }
-
-
-    @Override
-    public boolean containsAny(Subterms ofThese) { return false; }
-    @Override
-    public boolean containsAll(Subterms ofThese) { return false; }
 
     @Override
     public boolean containsInstance(Term t) { return false; }

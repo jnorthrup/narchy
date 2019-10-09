@@ -1,5 +1,6 @@
 package nars.term.compound;
 
+import nars.subterm.Subterms;
 import nars.subterm.util.TermMetadata;
 import nars.term.Compound;
 import nars.term.Term;
@@ -47,8 +48,8 @@ public interface SameSubtermsCompound extends Compound {
     @Override
     default boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> subTermOf) {
         //copied from Subterms.java
-        if (!impossibleSubTerm(x)) {
-            int s = subs();
+        int s = subs();
+        if (s == 1 || !impossibleSubTerm(x)) {
             for (int i = 0; i < s; i++) {
                 Term ii = sub(i);
                 if (ii == x || (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf))
@@ -58,5 +59,8 @@ public interface SameSubtermsCompound extends Compound {
         return false;
     }
 
-
+    @Override
+    default Subterms subtermsContainer() {
+        return this;
+    }
 }

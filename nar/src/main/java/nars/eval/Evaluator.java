@@ -12,7 +12,6 @@ import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.transform.HeapTermTransform;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.function.Function;
 import java.util.function.Predicate;
@@ -27,7 +26,7 @@ public class Evaluator extends HeapTermTransform {
 
     final Function<Atom, Functor> funcResolver;
 
-    private TermBuffer compoundBuilder =
+    private final TermBuffer compoundBuilder =
         new TermBuffer(HeapTermBuilder.the);
 
 
@@ -96,7 +95,7 @@ public class Evaluator extends HeapTermTransform {
     }
 
     private ArrayHashSet<Term> sortTopologically(ArrayHashSet<Term> a) {
-        Collections.sort(a.list, complexitySort);
+        a.list.sort(complexitySort);
         //HACK more work necessary
         return a;
     }

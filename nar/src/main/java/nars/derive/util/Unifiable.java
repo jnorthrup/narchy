@@ -135,8 +135,9 @@ public enum Unifiable { ;
 
             boolean cv = conj.hasVars();
             boolean xv = x.hasVars();
+            /* undecidable */
             if (!cv && !xv)
-                return x.hasAny(CONJ) ? false /* undecidable */ : !Conj.eventOf(conj, x);
+                return !x.hasAny(CONJ) && !Conj.eventOf(conj, x);
 
             if (x.op()==CONJ) {
                 //TODO

@@ -185,7 +185,9 @@ public class Statement {
 //                        //no validity test necessary
 //                    } else if (predicate instanceof Compound && !(subject instanceof Compound) && !predicate.containsRecursively(subject)) {
 //                        //no validity test necessary
-                } else if (Ellipsis.firstEllipsis(subject) != null || Ellipsis.firstEllipsis(predicate) != null) {
+                } else if (subject instanceof Compound && Ellipsis.firstEllipsis(((Compound)subject).subtermsContainer()) != null) {
+
+                } else if (predicate instanceof Compound && Ellipsis.firstEllipsis(((Compound)predicate).subtermsContainer()) != null) {
                     //do not reduce
                 } else {
 

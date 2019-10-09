@@ -50,7 +50,7 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
      * <p>
      * TODO allow redefinition at runtime
      */
-    public Credit[] credit;
+    public final Credit[] credit;
     /**
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values

@@ -32,7 +32,6 @@ import nars.term.anon.IntrinAtomic;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Int;
-import nars.term.compound.UnitCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.transform.MapSubst;
 import nars.term.util.transform.TermTransform;
@@ -68,7 +67,10 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         if (!descendIf.test(that))
             return true;
 
-        Subterms superTerm = that.subterms();
+        if (!(that instanceof Compound))
+            return false;
+
+        Subterms superTerm = ((Compound)that).subtermsContainer();
 
         int ppp = p.size();
 
@@ -152,8 +154,23 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     boolean recurseTermsOrdered(Predicate<Term> inSuperCompound, Predicate<Term> whileTrue, Compound parent);
 
-    boolean containsAll(Subterms ofThese);
-    boolean containsAny(Subterms ofThese);
+    /** TODO move to Subterms */
+    @Deprecated default /* final */boolean containsRecursively(Term t) {
+        return containsRecursively(t, null);
+    }
+
+    /** TODO move to Subterms */
+    @Deprecated default /* final */ boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf) {
+        return containsRecursively(t, false, inSubtermsOf);
+    }
+
+
+
+    /**
+     * if root is true, the root()'s of the terms will be compared
+     * TODO move to Subterms
+     */
+    @Deprecated boolean containsRecursively(Term t, boolean root, @Nullable Predicate<Term> inSubtermsOf);
 
     Term transform(TermTransform t);
 //    Term transform(TermTransform t, @Nullable TermBuffer b, int volMax);
@@ -229,14 +246,14 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
     @Nullable
     default Term replaceAt(ByteList path, int depth, Term replacement) {
-        final Term src = this;
         int ps = path.size();
         if (ps == depth)
             return replacement;
         if (ps < depth)
             throw new RuntimeException("path overflow");
 
-        Subterms css = src.subterms();
+        final Compound src = (Compound) this;
+        Subterms css = src.subtermsContainer();
 
         int n = css.subs();
 
@@ -517,8 +534,9 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
 
         } else {
             int c = Subterms.compare(
-                    this instanceof UnitCompound ? this : subterms(),
-                    t instanceof UnitCompound ? t : t.subterms());
+                ((Compound)this).subtermsContainer(),
+                ((Compound)t).subtermsContainer()
+            );
             return c != 0 ? c : (op.temporal ? Integer.compare(dt(), t.dt()) : 0);
         }
     }

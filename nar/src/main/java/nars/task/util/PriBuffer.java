@@ -195,22 +195,18 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		protected NAR nar;
 
 		@Override
-		public void start(ConsumerX<X> target, NAR nar) {
-			synchronized (this) {
-				this.nar = nar;
-				this.target = target;
-				this.onCycle = nar.onCycle(this::commit);
-			}
+		public synchronized void start(ConsumerX<X> target, NAR nar) {
+			this.nar = nar;
+			this.target = target;
+			this.onCycle = nar.onCycle(this::commit);
 		}
 
 		@Override
-		public final void stop() {
-			synchronized (this) {
-				this.onCycle.close();
-				this.onCycle = null;
-				this.target = null;
-				this.nar = null;
-			}
+		public final synchronized void stop() {
+			this.onCycle.close();
+			this.onCycle = null;
+			this.target = null;
+			this.nar = null;
 		}
 
 		abstract protected void commit();

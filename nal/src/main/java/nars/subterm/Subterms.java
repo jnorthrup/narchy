@@ -17,7 +17,6 @@ import nars.subterm.util.TermMetadata;
 import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Bool;
-import nars.term.util.transform.MapSubst;
 import nars.term.var.ellipsis.Fragment;
 import nars.unify.Unify;
 import nars.unify.mutate.CommutivePermutations;
@@ -264,8 +263,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     static int compare(/*@NotNull*/ Termlike a, /*@NotNull*/ Termlike b) {
-
-        if (a.equals(b)) return 0;
 
         int s;
         int diff;
@@ -564,8 +561,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return r[0];
     }
 
-
-    @Override
     default boolean containsRecursively(/*@NotNull*/ Term x, boolean root, Predicate<Term> subTermOf) {
 
         if (!impossibleSubTerm(x)) {
@@ -573,10 +568,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
             Term prev = null;
             for (int i = 0; i < s; i++) {
                 Term ii = sub(i);
-                if (ii == x ||
-                    (different(prev, ii) && (root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf)))
-                    return true;
-                prev = ii;
+                if (different(prev, ii)) {
+                    if (ii == x ||
+                        ((root ? ii.equalsRoot(x) : ii.equals(x)) || ii.containsRecursively(x, root, subTermOf)))
+                        return true;
+                    prev = ii;
+                }
             }
         }
         return false;
@@ -721,9 +718,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return containsRecursively(t, false, inSubtermsOf);
-    }
 
     @Override default boolean impossibleSubTerm(Termlike target) {
         return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
@@ -1374,10 +1368,6 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return toRemove.cardinality() == 0 ? null : removing(toRemove);
     }
 
-    default Subterms replaceSub(Term from, Term to, Op superOp) {
-        return !from.equals(to) && !impossibleSubTerm(from) ? transformSubs(MapSubst.replace(from, to), superOp) : this;
-    }
-
     default Subterms transformSub(int which, Function<Term,Term> f) {
         Term x = sub(which);
         Term y = f.apply(x);
@@ -1390,12 +1380,12 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return Op.terms.subterms(yy);
     }
 
-    /**
-     * dont override
-     */
-    default Subterms replaceSub(Term from, Term to) {
-        return replaceSub(from, to, ATOM);
-    }
+//    /**
+//     * dont override
+//     */
+//    default Subterms replaceSub(Term from, Term to) {
+//        return !from.equals(to) && !impossibleSubTerm(from) ? transformSubs(MapSubst.replace(from, to), ATOM) : this;
+//    }
 
 
     /**

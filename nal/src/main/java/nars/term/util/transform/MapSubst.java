@@ -149,14 +149,29 @@ public enum MapSubst { ;
 
     }
 
-    public static TermTransform replace(Term from, Term to) {
+    public static Term replace(Term from, Term to, Compound x) {
+        if (from.equals(to)) {
+            return x;
+            //            throw new TermTransformException(from, to, "pointless substitution");
+        }
 
-//        if (from.equals(to))
-//            throw new TermTransformException(from, to, "pointless substitution");
+        if (from.equals(x))
+            return to;
+
+        int fromVol = from.volume();
+        if (x.impossibleSubVolume(fromVol))
+            return x;
+        int fromStruct = from.structure();
+        if (x.impossibleSubStructure(fromStruct))
+            return x;
+
+        //TODO cache the discovered occurrence paths for faster replacement
+        if (!x.subtermsContainer().containsRecursively(from, false, null))
+            return x;
 
         return from instanceof Atomic ?
-                new SubstAtomic((Atomic) from, to) :
-                new SubstCompound((Compound) from, to);
+                new SubstAtomic((Atomic) from, to).applyCompoundDirect(x) :
+                new SubstCompound((Compound) from, to).applyCompoundDirect(x);
 
     }
 
@@ -188,7 +203,11 @@ public enum MapSubst { ;
         public @Nullable Term applyCompound(Compound c) {
             if (c.equals(from))
                 return to;
-            return c.impossibleSubTerm(fromStructure, fromVolume) ? c : RecursiveTermTransform.super.applyCompound(c);
+            return c.impossibleSubTerm(fromStructure, fromVolume) ? c : applyCompoundDirect(c);
+        }
+
+        public Term applyCompoundDirect(Compound c) {
+            return RecursiveTermTransform.super.applyCompound(c);
         }
 
     }
@@ -197,14 +216,12 @@ public enum MapSubst { ;
 
         private final Atomic from;
         private final Term to;
-        private final int fromStructure;
 
         /**
          * creates a substitution of one variable; more efficient than supplying a Map
          */
         SubstAtomic(Atomic from, Term to) {
             this.from = from;
-            this.fromStructure = from.structure();
             this.to = to;
         }
 
@@ -218,7 +235,11 @@ public enum MapSubst { ;
             return
                 //x.impossibleSubStructure(fromStructure) ?
                 !x.containsRecursively(from) ?
-                    x : RecursiveTermTransform.super.applyCompound(x);
+                    x : applyCompoundDirect(x);
+        }
+
+        public Term applyCompoundDirect(Compound x) {
+            return RecursiveTermTransform.super.applyCompound(x);
         }
 
     }

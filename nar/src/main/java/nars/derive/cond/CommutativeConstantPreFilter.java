@@ -47,8 +47,8 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
                     byte[] commPath = Terms.pathConstant(commutiveContainer, x);
                     if (commPath != null) {
 
-                        x.subterms().forEach(s -> {
-                            if (s instanceof Ellipsislike) return; //skip ellipsis terms
+                        for (Term s : ((Compound)x).subtermsContainer()) {
+                            if (s instanceof Ellipsislike) continue; //skip ellipsis terms
 
                             //s is constant:
                             Term contentHolder = commInTaskOrBelief ? beliefPattern : taskPattern;
@@ -57,7 +57,7 @@ public class CommutativeConstantPreFilter extends AbstractPred<PreDerivation> {
                                 pre.add(new CommutativeConstantPreFilter(
                                         commPath, contentPath, commInTaskOrBelief)
                                 );
-                        });
+                        }
                     }
                 }
                 return true;

@@ -64,8 +64,8 @@ public class Occurrify extends TimeGraph {
     }
 
     private final Derivation d;
-    int absolutePoints = 10;
-    int noXternalPoints = 10;
+    private static final int absolutePoints = 10;
+    private static final int noXternalPoints = 10;
     //    int novelPoints = 1;
 //    int sameAsPatternRootPoints = 1;
     private transient boolean decomposeEvents;

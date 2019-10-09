@@ -90,17 +90,11 @@ public abstract class UnitCompound implements SameSubtermsCompound {
         return s instanceof Compound ? ((Compound) s).ORrecurse(p) : p.test(s);
     }
 
-    /** elides creation of subterms intermediary instance */
-    @Override public final boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {
-        Term s = sub();
-        return (root ? s.equalsRoot(x) : s.equals(x)) || s.containsRecursively(x, root, inSubtermsOf);
-    }
-
     @Override
     public Term dt(int nextDT, TermBuilder builder) {
         if (nextDT == XTERNAL) {
             //only case it's allowed
-            assert(op()==CONJ);
+            assert(opID()==CONJ.id);
             return builder.newCompound(CONJ, XTERNAL, sub());
         }
         assert(nextDT == DTERNAL);

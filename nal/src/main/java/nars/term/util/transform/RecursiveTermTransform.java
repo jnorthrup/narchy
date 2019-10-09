@@ -44,7 +44,7 @@ public interface RecursiveTermTransform extends TermTransform, nars.term.util.bu
         Op xOp = x.op();
         Op yOp = newOp == null ? xOp : newOp;
 
-        Subterms xx = x.subterms();
+        Subterms xx = x.subtermsContainer();
 
         Subterms yy = xx.transformSubs(f, yOp);
         if (yy == null)

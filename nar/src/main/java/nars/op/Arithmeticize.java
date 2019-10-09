@@ -8,7 +8,6 @@ import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
 import nars.$;
 import nars.NAL;
-import nars.NAR;
 import nars.Op;
 import nars.attention.What;
 import nars.eval.Evaluation;

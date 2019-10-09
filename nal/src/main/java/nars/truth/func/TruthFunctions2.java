@@ -257,8 +257,7 @@ public enum TruthFunctions2 {
 //                *
 //                (preSoft ? X.freq() //soft polarity match (inverse bleed through)
 //                : Math.max(0, 2 * (X.freq()-0.5f))); //hard polarity match
-        ;
-        if (weak)
+		if (weak)
             cc = weak(cc);
         if (cc < minConf) return null;
 

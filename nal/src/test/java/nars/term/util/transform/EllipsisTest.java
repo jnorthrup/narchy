@@ -65,7 +65,7 @@ public class EllipsisTest {
             
             
 
-            @Nullable Variable ellipsisTerm = (Variable) firstEllipsis(x);
+            @Nullable Variable ellipsisTerm = (Variable) firstEllipsis(x.subterms());
             assertNotNull(ellipsisTerm);
 
 

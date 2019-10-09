@@ -112,15 +112,17 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     public void startIn(NAR nar, Part<NAR> container) {
         logger.info("start {} -> {} {}", container, term(), getClass().getName());
 
-        this.nar = nar;
+        synchronized (this) {
+            this.nar = nar;
 
-        _state(Thing.ServiceState.OffToOn);
+            _state(Thing.ServiceState.OffToOn);
 
 
-        starting(this.nar);
+            starting(this.nar);
 
-        startLocal(nar);
-        _state(Thing.ServiceState.On);
+            startLocal(nar);
+            _state(Thing.ServiceState.On);
+        }
     }
 
     public void stopIn(NAR nar, Part<NAR> container) {
@@ -209,14 +211,14 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         NAR n = this.nar;
         if (n != null) {
             if (n.stop(this)) {
-                logger.info("pause", this);
+                logger.info("pause {}", this);
                 return () -> {
                     NAR nn = this.nar;
                     if (nn == null) {
                         //deleted or unstarted
                     } else {
                         if (nn.add(this)) {
-                            logger.info("resume", this);
+                            logger.info("resume {}", this);
                         }
                     }
                 };

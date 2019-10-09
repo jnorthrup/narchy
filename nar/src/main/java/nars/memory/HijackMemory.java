@@ -50,7 +50,7 @@ public class HijackMemory extends Memory {
 
         getBoost = (float) (1f/Math.sqrt(capacity));
 
-        this.table = new PriHijackBag<Term,PLink<Concept>>(capacity, reprobes) {
+        this.table = new PriHijackBag<>(capacity, reprobes) {
 
             {
                 resize(capacity);

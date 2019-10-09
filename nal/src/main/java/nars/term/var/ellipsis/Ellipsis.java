@@ -2,8 +2,8 @@ package nars.term.var.ellipsis;
 
 import nars.$;
 import nars.Op;
+import nars.subterm.Subterms;
 import nars.term.Term;
-import nars.term.Termlike;
 import nars.term.Variable;
 import nars.term.var.NormalizedVariable;
 import nars.term.var.UnnormalizedVariable;
@@ -39,7 +39,7 @@ public abstract class Ellipsis extends UnnormalizedVariable implements Ellipsisl
      * this needs to use .target(x) instead of Term[] because of shuffle terms
      */
     @Nullable
-    public static Ellipsislike firstEllipsis(Termlike x) {
+    public static Ellipsislike firstEllipsis(Subterms x) {
         if (x.varPattern() == 0)
             return null;
 

@@ -115,7 +115,6 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         return hasNeg() ? 3 : 2;
     }
 
-    @Override
     public Subterms replaceSub(Term from, Term to, Op superOp) {
 
 

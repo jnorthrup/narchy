@@ -12,6 +12,7 @@ import nars.term.anon.AnonWithVarShift;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
+import nars.term.compound.LightCompound;
 import nars.term.util.builder.HeapTermBuilder;
 import nars.term.util.builder.InterningTermBuilder;
 import nars.term.util.builder.TermConstructor;
@@ -198,17 +199,17 @@ public class IntrinTest {
         assertEq(bv, av);
 
         assertFalse(av.contains(x[0].neg()));
-        assertFalse(av.containsRecursively(x[0].neg()));
+        assertFalse(av.containsRecursively(x[0].neg(), false, null));
 
         assertFalse(av.contains($$("x")));
-        assertFalse(av.containsRecursively($$("x")));
+        assertFalse(av.containsRecursively($$("x"), false, null));
         assertFalse(av.contains($$("x").neg()));
-        assertFalse(av.containsRecursively($$("x").neg()));
+        assertFalse(av.containsRecursively($$("x").neg(), false, null));
 
         Term twoNeg = x[2];
         assertTrue(av.contains(twoNeg));
-        assertTrue(av.containsRecursively(twoNeg));
-        assertTrue(av.containsRecursively(twoNeg.neg()), () -> av + " containsRecursively " + twoNeg.neg());
+        assertTrue(av.containsRecursively(twoNeg, false, null));
+        assertTrue(av.containsRecursively(twoNeg.neg(), false, null), () -> av + " containsRecursively " + twoNeg.neg());
 
 
     }
@@ -300,60 +301,62 @@ public class IntrinTest {
 
     @Test
     void testAnonVectorReplace() {
-        IntrinSubterms x = (IntrinSubterms)
+        IntrinSubterms xx = (IntrinSubterms)
             Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(1));
 
+        Term x = new LightCompound(PROD, xx);
+        
         {
-            Subterms yAnon = x.replaceSub($.varDep(1), Anom.the(3));
+            Subterms yAnon = x.replace($.varDep(1), Anom.the(3)).subterms();
             assertEquals("(_3,(--,_2),_1)", yAnon.toString());
-            assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
+            assertEquals(x.subterms().getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
 
-            Subterms yNotFound = x.replaceSub($.varDep(4), Anom.the(3));
-            assertSame(x, yNotFound);
+            Subterms yNotFound = x.replace($.varDep(4), Anom.the(3)).subterms();
+            assertSame(x.subterms(), yNotFound);
         }
 
         {
-            Subterms yAnon = x.replaceSub(Anom.the(2).neg(), Anom.the(3));
+            Subterms yAnon = x.replace(Anom.the(2).neg(), Anom.the(3)).subterms();
             assertEquals("(#1,_3,_1)", yAnon.toString());
-            assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
+            assertEquals(x.subterms().getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
 
-            Subterms yNotFound = x.replaceSub(Anom.the(1).neg(), Anom.the(3));
-            assertSame(x, yNotFound);
+            Subterms yNotFound = x.replace(Anom.the(1).neg(), Anom.the(3)).subterms();
+            assertSame(x.subterms(), yNotFound);
         }
 
 
         {
-            Subterms yAnon = x.replaceSub(Anom.the(2), Anom.the(3));
+            Subterms yAnon = x.replace(Anom.the(2), Anom.the(3)).subterms();
             assertEquals("(#1,(--,_3),_1)", yAnon.toString());
-            assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
+            assertEquals(x.subterms().getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
         }
         {
-            Subterms yAnon = x.replaceSub(Anom.the(2), Anom.the(3).neg());
+            Subterms yAnon = x.replace(Anom.the(2), Anom.the(3).neg()).subterms();
             assertEquals("(#1,_3,_1)", yAnon.toString());
-            assertEquals(x.getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
+            assertEquals(x.subterms().getClass(), yAnon.getClass(), "should remain AnonVector, not something else");
         }
 
         {
-            Subterms yNonAnon = x.replaceSub($.varDep(1), PROD.the($.the("X")));
+            Subterms yNonAnon = x.replace($.varDep(1), PROD.the($.the("X"))).subterms();
             assertEquals("((X),(--,_2),_1)", yNonAnon.toString());
-            assertNotEquals(x.getClass(), yNonAnon.getClass());
+            assertNotEquals(x.subterms().getClass(), yNonAnon.getClass());
 
-            Subterms yNotFound = x.replaceSub(PROD.the($.the("X")), PROD.the($.the("Y")));
-            assertSame(yNotFound, x);
+            Subterms yNotFound = x.replace(PROD.the($.the("X")), PROD.the($.the("Y"))).subterms();
+            assertSame(x.subterms(), yNotFound);
 
         }
 
         {
-            Subterms xx = Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2));
-            assertEquals("(#1,(--,_3),_3)", xx.replaceSub(Anom.the(2), Anom.the(3)).toString());
-            assertEquals("(#1,_3,_2)", xx.replaceSub(Anom.the(2).neg(), Anom.the(3)).toString());
+            Term xxx = new LightCompound(PROD, Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2)));
+            assertEquals("(#1,(--,_3),_3)", xxx.replace(Anom.the(2), Anom.the(3)).toString());
+            assertEquals("(#1,_3,_2)", xxx.replace(Anom.the(2).neg(), Anom.the(3)).toString());
         }
 
 
         {
-            Subterms xx = Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2));
-            assertEquals("(#1,(--,()),())", xx.replaceSub(Anom.the(2), Op.EmptyProduct).toString());
-            assertEquals("(#1,(),_2)", xx.replaceSub(Anom.the(2).neg(), Op.EmptyProduct).toString());
+            Term xxx = new LightCompound(PROD, Op.terms.subterms($.varDep(1), Anom.the(2).neg(), Anom.the(2)));
+            assertEquals("(#1,(--,()),())", xxx.replace(Anom.the(2), Op.EmptyProduct).toString());
+            assertEquals("(#1,(),_2)", xxx.replace(Anom.the(2).neg(), Op.EmptyProduct).toString());
         }
 
     }

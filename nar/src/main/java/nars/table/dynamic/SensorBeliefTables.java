@@ -177,7 +177,7 @@ public class SensorBeliefTables extends BeliefTables {
      * adjusted compression task value to exclude regions where the series belief table is defined.
      * allows regions outside of this more importance (ex: future)
      */
-    private final class MyRTreeBeliefTable extends RTreeBeliefTable {
+    private static final class MyRTreeBeliefTable extends RTreeBeliefTable {
 
 //        @Override protected FloatRank<Task> taskStrength(boolean beliefOrGoal, long now, float narDur, int tableDur) {
 //            FloatRank<Task> base = super.taskStrength(beliefOrGoal, now, narDur, tableDur);

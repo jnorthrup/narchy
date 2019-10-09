@@ -167,7 +167,7 @@ public class TermBuffer {
             case FRAG:
                 return appendInterned(x); //store atomically until construction
             default:
-                return compoundStart(o, x.dt()).appendSubterms(x.subterms()).compoundEnd(o);
+                return compoundStart(o, x.dt()).appendSubterms(x.subtermsContainer()).compoundEnd(o);
         }
     }
 

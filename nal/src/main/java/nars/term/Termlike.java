@@ -147,19 +147,9 @@ public interface Termlike {
 
     boolean hasXternal();
 
-    default /* final */boolean containsRecursively(Term t) {
-        return containsRecursively(t, null);
-    }
 
     boolean impossibleSubTerm(Termlike target);
-    boolean containsRecursively(Term t, @Nullable Predicate<Term> inSubtermsOf);
 
-
-
-    /**
-     * if root is true, the root()'s of the terms will be compared
-     */
-    boolean containsRecursively(Term t, boolean root, @Nullable Predicate<Term> inSubtermsOf);
 
 
 

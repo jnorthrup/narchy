@@ -100,14 +100,14 @@ public class PriNode implements Prioritized {
 
         assert(parent.length > 0);
 
-        synchronized (g) {
+
             thisNode.edges(true, false).forEach(g::edgeRemove);
 
             for (PriNode p : parent) {
                 assert(!this.equals(p));
                 g.addEdge(p, "pri", thisNode);
             }
-        }
+
     }
 
     public static PriNode.Source source(String name, float value) {

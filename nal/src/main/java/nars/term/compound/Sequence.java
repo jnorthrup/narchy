@@ -37,10 +37,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
     /** expects unique to be sorted in the final canonical unique ordering */
     public Sequence(Term[] unique, Interval times) {
         this(new ArrayTermVector(ArrayUtil.add(unique, times)) /* TODO use better facade/wrapper */ {
-            @Override
-            public Subterms replaceSub(Term from, Term to, Op superOp) {
-                throw new UnsupportedOperationException();
-            }
+
 
             @Override
             public @Nullable Subterms transformSubs(Function<Term, Term> f, Op superOp) {

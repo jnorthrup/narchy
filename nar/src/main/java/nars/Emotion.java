@@ -11,7 +11,6 @@ import nars.control.MetaGoal;
 import org.HdrHistogram.Histogram;
 import org.junit.platform.commons.util.ReflectionUtils;
 
-import java.io.PrintStream;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;

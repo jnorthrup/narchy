@@ -400,7 +400,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 
 
     /** can x be assigned to y (y <= x) */
-    public static final boolean canPut(Op x, Term y) {
+    public static boolean canPut(Op x, Term y) {
         int exc;
         switch (x) {
             case VAR_DEP:

@@ -471,8 +471,6 @@ public class ConjTree implements ConjBuilder {
                 return true;
             }
 
-            return false;
-
         } else {
             int aat = occToDT(at);
             ConjTree s = seq.get(aat);
@@ -485,8 +483,8 @@ public class ConjTree implements ConjBuilder {
                 }
                 return true;
             }
-            return false;
         }
+        return false;
     }
 
     public boolean isEmpty() {

@@ -860,7 +860,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public Off trace(Appendable out, Predicate<String> includeKey, @Nullable Predicate includeValue) {
 
-        return eventTask().on(new Consumer<Task>() {
+        return eventTask().on(new Consumer<>() {
 
             String previous = null;
 
@@ -877,6 +877,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                 }
                 previous = "task";
             }
+
             {
                 Topic.all(this, (k, v) -> {
 
@@ -1282,7 +1283,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
                     if (NAL.DEBUG)
                         throw new RuntimeException(e);
                     else
-                        logger.warn("{}", e);
+                        logger.warn("output binary: {}", e);
                 }
 
             });

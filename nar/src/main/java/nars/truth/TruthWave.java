@@ -157,7 +157,7 @@ public class TruthWave {
         double dt, tStart;
         if (points <= 1) {
             dt = 0;
-            tStart = (minT + maxT)/2;
+            tStart = (minT + maxT)/2.0;
         } else {
             dt = (maxT - minT) / ((double) (points - 1));
             tStart = minT;

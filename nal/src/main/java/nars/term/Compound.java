@@ -181,15 +181,6 @@ public interface Compound extends Term, IPair, Subterms {
     }
 
 
-    @Override
-    default boolean containsAny(Subterms ofThese) {
-        return Subterms.super.containsAny(ofThese);
-    }
-
-    @Override
-    default boolean containsAll(Subterms ofThese) {
-        return Subterms.super.containsAll(ofThese);
-    }
 
     @Override
     boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, @Nullable Compound superterm);
@@ -199,9 +190,7 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     default /* final */ boolean containsRecursively(Term x, boolean root, @Nullable Predicate<Term> inSubtermsOf) {
-        return (inSubtermsOf == null || inSubtermsOf.test(this)) &&
-               !impossibleSubTerm(x) &&
-               subtermsContainsRecursively(x, root, inSubtermsOf);
+        return (inSubtermsOf == null || inSubtermsOf.test(this)) && subtermsContainsRecursively(x, root, inSubtermsOf);
     }
 
     boolean subtermsContainsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf);
@@ -211,6 +200,11 @@ public interface Compound extends Term, IPair, Subterms {
      */
     @Override
     Subterms subterms();
+
+    /** for direct access to subterms only; may return this instance if SameSubtermsCompound */
+    default Subterms subtermsContainer() {
+        return subterms();
+    }
 
     @Override
     default boolean the() {
@@ -383,13 +377,8 @@ public interface Compound extends Term, IPair, Subterms {
      * replaces the 'from' target with 'to', recursively
      */
     default Term replace(Term from, Term to) {
-        if (this.equals(from))
-            return to;
-        //else if (from.equals(to) || impossibleSubTerm(from))
-        else if (from.equals(to) || !containsRecursively(from) /* impossibleSubTerm(from)*/)
-            return this;
-        else
-            return transform(MapSubst.replace(from, to)); //HACK immedaitely begin transforming since preliminary impossibility test performed
+
+        return MapSubst.replace(from, to, this);
 
 //
 //        Subterms oldSubs = subterms();
@@ -483,9 +472,7 @@ public interface Compound extends Term, IPair, Subterms {
 
     @Override
     default boolean eventsOR(LongObjectPredicate<Term> each, long offset, boolean decomposeConjDTernal, boolean decomposeXternal) {
-        return !eventsAND((when,what)->{
-            return !each.accept(when, what);
-        }, offset, decomposeConjDTernal, decomposeXternal);
+        return !eventsAND((when,what)-> !each.accept(when, what), offset, decomposeConjDTernal, decomposeXternal);
     }
 
     /**

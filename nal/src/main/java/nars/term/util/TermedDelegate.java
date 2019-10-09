@@ -29,11 +29,6 @@ public interface TermedDelegate extends Termlike, Termed {
     }
 
     @Override
-    default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
-        return term().containsRecursively(t, inSubtermsOf);
-    }
-
-    @Override
     default boolean impossibleSubTerm(Termlike target) {
         return term().impossibleSubTerm(target);
     }
@@ -65,10 +60,6 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().intifyRecurse(reduce, v);
     }
 
-    @Override
-    default boolean containsRecursively(Term t, boolean root, Predicate<Term> inSubtermsOf) {
-        return term().containsRecursively(t, root, inSubtermsOf);
-    }
 
     @Override
     default boolean impossibleSubStructure(int structure) {

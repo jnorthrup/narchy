@@ -39,7 +39,6 @@ import static nars.derive.premise.PatternTermBuilder.patternify;
 import static nars.subterm.util.SubtermCondition.*;
 import static nars.term.atom.Bool.Null;
 import static nars.term.control.AbstractTermMatchPred.cost;
-import static nars.term.control.PREDICATE.sortByCostIncreasing;
 import static nars.unify.constraint.RelationConstraint.*;
 
 /** base class providing all facilities for constructing a trie conditionally filtered rule,

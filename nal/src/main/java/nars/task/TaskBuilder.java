@@ -209,7 +209,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 		return truth;
 	}
 
-	private final void setTruth(@Nullable Truth t) {
+	private void setTruth(@Nullable Truth t) {
 
 		if (t == null && isBeliefOrGoal())
 			throw new TaskException("null truth for belief or goal", this);
