@@ -672,7 +672,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
             Term f = Functor.func(c);
             if (f != Null) {
-                Subterms a = Functor.args(c);
+                Subterms a = Functor._args(c);
                 if (f.equals(UniSubst.unisubst)) {
                     Unifiable.constrainUnifiable(a, PremisePatternAction.this);
                 } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {

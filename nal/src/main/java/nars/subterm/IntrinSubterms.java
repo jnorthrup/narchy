@@ -273,10 +273,6 @@ public class IntrinSubterms extends TermVector /*implements Subterms.SubtermsByt
         return indexOf(t.i);
     }
 
-    @Override
-    public int indexOf(Term t) {
-        return indexOf(t, -1);
-    }
 
     @Override
     public int indexOf(Term t, int after) {

@@ -112,12 +112,11 @@ public class Thing<T, P /* service key */  /* context */> {
      * restart an already added part
      */
     public final boolean restart(P key) {
-        tryStart(part(key));
-        return false;
+        return tryStart(the(key));
     }
 
 
-    public final Part<T> part(P key) {
+    public final Part<T> the(P key) {
         return parts.get(key);
     }
 
@@ -125,15 +124,16 @@ public class Thing<T, P /* service key */  /* context */> {
     /**
      * add and starts it
      */
-    public final boolean start(P key, Part<T> instance) {
-        return set(key, instance, true);
+    public final boolean add(P key, Part<T> instance) {
+        //return set(key, instance, true);
+        return add(key, instance, true);
     }
 
     /**
      * tries to add the new instance, replacing any existing one, but doesnt start
      */
-    public final boolean add(P key, Part<T> instance) {
-        return set(key, instance, false);
+    public final boolean add(P key, Part<T> instance, boolean autoStart) {
+        return set(key, instance, autoStart);
     }
 
     public final boolean remove(P p) {
@@ -168,24 +168,15 @@ public class Thing<T, P /* service key */  /* context */> {
     @Nullable
     public P term(Part<T> p) {
         //HACK TODO improve
-        Map.Entry<P, Part<T>> e = partEntrySet().stream().filter(z -> z.getValue() == p).findFirst().get();
-        //if (e!=null) {
-        return e.getKey();
-//        } else
-//            return null;
-    }
-
-
-//    public final boolean add(K key, Function<K, ? extends Part<C>> builder) {
-//        return add(key, builder.apply(key));
-//    }
-
-    public final Part<T> start(P key, Class<? extends Part<T>> instanceOf) {
-        return set(key, instanceOf, true);
+        return entrySet().stream().filter(z -> z.getValue() == p).findFirst().get().getKey();
     }
 
     public final Part<T> add(P key, Class<? extends Part<T>> instanceOf) {
-        return set(key, instanceOf, false);
+        return add(key, instanceOf, true);
+    }
+
+    public final Part<T> add(P key, Class<? extends Part<T>> instanceOf, boolean autoStart) {
+        return set(key, instanceOf, autoStart);
     }
 
     public final Part<T> set(P key, Class<? extends Part<T>> instanceOf, boolean start) {
@@ -206,7 +197,7 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
     /*@Override*/
-    public synchronized void delete() {
+    public void delete() {
         eventOnOff.clear();
 
         parts.keySet().forEach(this::remove);
@@ -217,7 +208,7 @@ public class Thing<T, P /* service key */  /* context */> {
         return parts.values().stream();
     }
 
-    public final Set<Map.Entry<P, Part<T>>> partEntrySet() {
+    public final Set<Map.Entry<P, Part<T>>> entrySet() {
         return parts.entrySet();
     }
 
@@ -302,7 +293,7 @@ public class Thing<T, P /* service key */  /* context */> {
     }
 
 
-    public final Set<P> partKeySet() {
+    public final Set<P> keySet() {
         return parts.keySet();
     }
 
@@ -321,9 +312,7 @@ public class Thing<T, P /* service key */  /* context */> {
             //something removed
             if (removed != null) {
                 tryStop(removed, start ? () -> tryStart(x) : null);
-
                 return true;
-
             } else {
                 return !start || tryStart(x);
             }

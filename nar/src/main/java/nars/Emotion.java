@@ -190,10 +190,6 @@ public class Emotion implements Meter, Consumer<NAR> {
         perceivedTaskEnd.increment();
     }
 
-    public void print(PrintStream out) {
-        //throw new TODO();
-    }
-
     public void commit(BiConsumer<String, Object> statConsumer) {
         for (Field f : EmotionFields) {
             String fn = f.getName();

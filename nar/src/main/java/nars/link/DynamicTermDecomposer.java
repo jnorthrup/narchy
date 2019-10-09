@@ -5,6 +5,7 @@ import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.*;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.conj.Conj;
 import nars.term.util.conj.ConjList;
@@ -76,22 +77,22 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
         return subterm(t, t instanceof SeparateSubtermsCompound ?  t.subterms() : t, rng);
     }
 
-    protected Term subterm(Compound t, Subterms tt, Random rng) {
+    protected Term subterm(Compound x, Subterms tt, Random rng) {
 
         int n = tt.subs();
 
-        Term u;
+        Term y;
         if (n == 0)
-            u = t;
+            y = x;
         else if (n == 1)
-            u = tt.sub(0);
+            y = tt.sub(0);
         else
-            u = subtermDecide(tt, t, rng);
+            y = subtermDecide(tt, x, rng);
 
-        if (u instanceof Img)
-            return t; //HACK
+        if (y instanceof Img || y instanceof Bool)
+            return x; //HACK
 
-        return u instanceof Neg && unneg() ? u.unneg() : u;
+        return y instanceof Neg && unneg() ? y.unneg() : y;
     }
 
     protected boolean unneg() {

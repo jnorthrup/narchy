@@ -306,7 +306,7 @@ public interface NSense {
         NAR nar = g.nar();
 
         //HACK until BipolarAction imjplemetns Action
-        nar.start(pn);
+        nar.add(pn);
         g.addAction(pn.pos);
         g.addAction(pn.neg);
         g.onFrame(aa->pn.update(g));

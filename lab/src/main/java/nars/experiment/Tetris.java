@@ -152,7 +152,7 @@ public class Tetris extends GameX {
         GameX.runRT(n -> {
 
             Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
-            n.start(t);
+            n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t), 500, 300);
 

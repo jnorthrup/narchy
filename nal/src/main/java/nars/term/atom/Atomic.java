@@ -257,10 +257,7 @@ public abstract class Atomic implements Term {
     public int subs() {
         return 0;
     }
-    @Override
-    public int count(Op matchingOp) {
-        return 0;
-    }
+
 
     /**
      * atoms contain no subterms so impossible for anything to fit "inside" it
@@ -287,6 +284,7 @@ public abstract class Atomic implements Term {
     public boolean contains(Term t) {
         return false;
     }
+
 
     @Override
     public boolean containsAny(Subterms ofThese) { return false; }

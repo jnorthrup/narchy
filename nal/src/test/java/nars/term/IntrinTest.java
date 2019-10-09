@@ -245,16 +245,16 @@ public class IntrinTest {
 
     @Test
     void testTermSubs() {
-        Term x = $$("(%1,%2)").normalize();
+        Compound x = (Compound) $$("(%1,%2)").normalize();
         assertEquals(IntrinSubterms.class, x.subterms().getClass());
-        for (Termlike t: new Termlike[]{x, x.subterms()}) {
+        for (Subterms t: new Subterms[]{x, x.subterms()}) {
             assertEquals(2, t.count(Op.VAR_PATTERN));
             assertEquals(0, t.count(Op.VAR_DEP));
         }
 
-        Term y = $$("(%1,%2,(--,$3))").normalize();
+        Compound y = (Compound) $$("(%1,%2,(--,$3))").normalize();
         assertEquals(IntrinSubterms.class, y.subterms().getClass());
-        for (Termlike t: new Termlike[]{y, y.subterms()}) {
+        for (Subterms t: new Subterms[]{y, y.subterms()}) {
             assertEquals(2, t.count(Op.VAR_PATTERN));
             assertEquals(2, t.count(Op.VAR_PATTERN));
             assertEquals(0, t.count(Op.VAR_INDEP));

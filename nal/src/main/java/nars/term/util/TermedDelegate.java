@@ -20,21 +20,13 @@ public interface TermedDelegate extends Termlike, Termed {
     @Override default int volume() {
         return term().volume();
     }
-    @Override default int complexity() { return term().complexity(); }
+    @Override default int complexity() {
+        return term().complexity();
+    }
 
     @Override default int structure() {
         return term().structure();
     }
-
-//    @Override
-//    default boolean hasAny(int structuralVector) {
-//        return term().hasAny(structuralVector);
-//    }
-//
-//    @Override
-//    default boolean hasAll(int structuralVector) {
-//        return term().hasAny(structuralVector);
-//    }
 
     @Override
     default boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
@@ -51,10 +43,6 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().structureSurface();
     }
 
-    @Override
-    default int count(Predicate<Term> match) {
-        return term().count(match);
-    }
 
     default Op op() {
         return term().op();
@@ -66,15 +54,6 @@ public interface TermedDelegate extends Termlike, Termed {
         return term().sub(i);
     }
 
-    @Override
-    default boolean subIs(int i, Op o) {
-        return term().subIs(i, o);
-    }
-
-    @Override
-    default boolean subIsOrOOB(int i, Op o) {
-        return term().subIsOrOOB(i, o);
-    }
 
     @Override
     default int intifyShallow(IntObjectToIntFunction<Term> reduce, int v) {

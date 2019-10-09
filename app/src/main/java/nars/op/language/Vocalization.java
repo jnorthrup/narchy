@@ -36,7 +36,7 @@ public class Vocalization extends NARPart {
         this.durationsPerWord = durationsPerWord;
         this.speak = speak;
         this.energy = 0;
-        nar.start(this);
+        nar.add(this);
     }
 
     @Override

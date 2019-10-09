@@ -177,11 +177,6 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     abstract public int dt();
 
     @Override
-    public final int indexOf(Term t) {
-        return !impossibleSubTerm(t) ? super.indexOf(t) : -1;
-    }
-
-    @Override
     public final int volume() {
         return _volume;
     }

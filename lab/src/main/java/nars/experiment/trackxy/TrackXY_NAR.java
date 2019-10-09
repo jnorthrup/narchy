@@ -308,7 +308,7 @@ public class TrackXY_NAR extends GameX {
 //            a.curiosity.enable.set(false);
 //
 //        }
-		n.start(a);
+		n.add(a);
 		((TaskLinkWhat) a.what()).links.linksMax.set(256);
 
 

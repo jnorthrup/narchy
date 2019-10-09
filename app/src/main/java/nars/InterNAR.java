@@ -116,7 +116,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 		add(send);
 		finallyRun(peer.receive.on(this::receive));
 
-		nar.start(this);
+		nar.add(this);
 
 	}
 

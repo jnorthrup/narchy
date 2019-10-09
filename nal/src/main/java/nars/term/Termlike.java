@@ -120,60 +120,6 @@ public interface Termlike {
     boolean recurseTerms(Predicate<Compound> aSuperCompoundMust, BiPredicate<Term, Compound> whileTrue, Compound parent);
 
 
-    /**
-     * counts subterms matching the predicate
-     */
-    default int count(Predicate<Term> match) {
-        //return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
-        int n = subs();
-        int c = 0;
-        for (int i = 0; i < n; i++)
-            if (match.test(sub(i))) c++;
-        return c;
-    }
-    default boolean countEquals(Predicate<Term> match, int n) {
-        int s = subs();
-        if (n > s) return false; //impossible
-        int c = 0;
-        for (int i = 0; i < s; i++) {
-            if (match.test(sub(i))) {
-                c++;
-                if (c > n)
-                    return false;
-            }
-        }
-        return c == n;
-    }
-
-    /**
-     * return the index of the first subterm matching the predicate, or -1 if none match
-     */
-    default int subIndexFirst(Predicate<Term> match) {
-        int s = subs();
-        for (int i = 0; i < s; i++) {
-            Term si = sub(i);
-            if (match.test(si))
-                return i;
-        }
-        return -1;
-    }
-
-    /**
-     * return the first subterm matching the predicate, or null if none match
-     */
-    @Nullable
-    default Term subFirst(Predicate<Term> match) {
-        int i = subIndexFirst(match);
-        return i != -1 ? sub(i) : null;
-    }
-
-    /**
-     * counts subterms matching the supplied op
-     */
-    default int count(Op matchingOp) {
-        int matchingOpID = matchingOp.id;
-        return count(x -> x.opID() == matchingOpID);
-    }
 
     /**
      * structure hash bitvector
@@ -192,10 +138,12 @@ public interface Termlike {
      * (first-level only, non-recursive)
      * if contained within; doesnt match this target (if it's a target);
      * false if target is atomic since it can contain nothing
+     * TODO move to Subterms
      */
-    boolean contains(Term t);
+    @Deprecated boolean contains(Term t);
 
-    boolean containsInstance(Term t);
+    /** TODO move to Subterms */
+    @Deprecated boolean containsInstance(Term t);
 
     boolean hasXternal();
 
@@ -300,21 +248,6 @@ public interface Termlike {
 
 
 
-    /**
-     * return whether a subterm op at an index is an operator.
-     */
-    default boolean subIs(int i, Op o) {
-        return sub(i).opID() == o.id;
-    }
-
-    /**
-     * return whether a subterm op at an index is an operator.
-     * if there is no subterm or the index is out of bounds, returns false.
-     */
-    default boolean subIsOrOOB(int i, Op o) {
-        Term x = sub(i, null);
-        return x != null && x.opID() == o.id;
-    }
 
 
     /**

@@ -48,7 +48,7 @@ abstract public class Functor extends AbstractAtomic implements BiFunction<Evalu
     }
 
     @Deprecated public static Subterms args(Term x) {
-        return args((Compound)x);
+        return _args((Compound)x);
     }
     @Deprecated public static Term[] argsArray(Term x) {
         return args(x).arrayShared();
@@ -57,13 +57,13 @@ abstract public class Functor extends AbstractAtomic implements BiFunction<Evalu
     /**
      * returns the arguments of an operation (task or target)
      */
-    public static Subterms args(Compound x) {
-        assert (x.op() == INH && x.subIs(1, ATOM));
+    public static Subterms _args(Compound x) {
+        //assert (x.opID() == INH.id && x.subIs(1, ATOM));
         return x.sub(0).subterms();
     }
 
     @Nullable public static Subterms args(Compound x, int requireArity) {
-        Subterms s = args(x);
+        Subterms s = _args(x);
         return s.subs()==requireArity ?  s : null;
     }
 

@@ -27,8 +27,8 @@ class ThingTest {
 
 
         StringBuilder sb = new StringBuilder();
-        s.add("x", new DummyPart(sb));
-        s.start("y", new DummyPart(sb));
+        s.add("x", new DummyPart(sb), false);
+        s.add("y", new DummyPart(sb));
         assertEquals(2, s.size());
         s.print(System.out);
         assertEquals(1, s.partStream().filter(Part::isOn).count());
@@ -85,8 +85,8 @@ class ThingTest {
 
 
 
-        s.start("x", DummyPart.class);
-        s.add("y", DummyPart.class);
+        s.add("x", DummyPart.class);
+        s.add("y", DummyPart.class, false);
 
         assertEquals(2, s.size());
         assertEquals(1, s.partStream().filter(Part::isOn).count());

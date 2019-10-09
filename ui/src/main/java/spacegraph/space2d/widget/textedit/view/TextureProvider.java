@@ -4,7 +4,6 @@ import com.google.common.cache.CacheBuilder;
 import com.google.common.cache.CacheLoader;
 import com.google.common.cache.LoadingCache;
 import com.jogamp.opengl.GL2;
-import com.jogamp.opengl.util.texture.Texture;
 import spacegraph.video.Tex;
 
 import java.awt.*;
@@ -53,8 +52,8 @@ public final class TextureProvider {
             Tex tt = new Tex();
             tt.commit(gl);
             tt.set(charTex);
-            tt.commit(gl); //HACK
-            Texture x = tt.texture;
+            //tt.commit(gl); //HACK
+            //Texture x = tt.texture;
             return tt;
     }
 

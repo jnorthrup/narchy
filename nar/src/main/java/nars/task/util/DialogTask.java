@@ -66,7 +66,7 @@ public class DialogTask extends NARPart {
 
         monitor = n.onTask(this::onTask, listenPuncs);
 
-        n.start(this);
+        n.add(this);
 
         add(deriver);
         finallyRun(monitor);

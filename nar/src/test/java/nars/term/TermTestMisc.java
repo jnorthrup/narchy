@@ -138,13 +138,13 @@ public class TermTestMisc {
     void testConjunctionTreeSet() throws Narsese.NarseseException {
 
 
-        String term1String = "<#1 --> (&,boy,(/,taller_than,{Tom},_))>";
+        String term1String = "<#1 --> (&,boy,(taller_than,{Tom},_))>";
         Term term1 = $.$(term1String).term();
-        String term1Alternate = "<#1 --> (&,(/,taller_than,{Tom},_),boy)>";
+        String term1Alternate = "<#1 --> (&,(taller_than,{Tom},_),boy)>";
         Term term1a = $.$(term1Alternate).term();
 
 
-        Term term2 = $.$("<#1 --> (|,boy,(/,taller_than,{Tom},_))>").term();
+        Term term2 = $.$("<#1 --> (|,boy,(taller_than,{Tom},_))>").term();
 
         assertEquals(term1a.toString(), term1.toString());
         assertTrue(term1.complexity() > 1);

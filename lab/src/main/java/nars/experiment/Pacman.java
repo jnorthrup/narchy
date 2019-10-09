@@ -129,7 +129,7 @@ public class Pacman extends GameX {
         GameX.runRT((n) -> {
 
             Pacman a = new Pacman(n);
-            n.start(a);
+            n.add(a);
             return a;
 
         }, 20);

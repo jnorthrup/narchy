@@ -51,15 +51,10 @@ public class FZero extends GameX {
 
     public static void main(String[] args) {
         GameX.runRT(n -> {
-//            n.onTask(tt->{
-//                if (tt.isGoal() && !tt.isInput()) {
-//                    System.out.println(tt.proof());
-//                }
-//            }, GOAL);
 
 
             FZero f = new FZero($.the("fz"), n);
-            n.start(f);
+            n.add(f);
             return f;
 
 

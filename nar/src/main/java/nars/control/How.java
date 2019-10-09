@@ -97,7 +97,7 @@ abstract public class How extends PriNARPart {
     protected How(Term id, NAR nar) {
         super(id);
         if (nar != null)
-            nar.start(this);
+            nar.add(this);
     }
 
 

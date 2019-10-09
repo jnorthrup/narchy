@@ -173,9 +173,6 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
         throw new TODO();
     }
 
-    @Override
-    boolean contains(Term t);
-
     /**
      * convenience, do not override (except in Atomic)
      */

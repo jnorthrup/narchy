@@ -65,7 +65,7 @@ import java.util.function.Consumer;
         this.source = src;
 
         if (n!=null)
-            n.start(this);
+            n.add(this);
     }
 
     /**

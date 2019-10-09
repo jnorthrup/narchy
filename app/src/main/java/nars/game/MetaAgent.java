@@ -38,6 +38,8 @@ import static nars.$.$$;
  */
 abstract public class MetaAgent extends Game {
 
+	private static final float PRI_ACTION_RESOLUTION = 0.05f;
+
 	//private static final Logger logger = Log.logger(MetaAgent.class);
 
 	static final Atomic CURIOSITY =
@@ -113,14 +115,14 @@ abstract public class MetaAgent extends Game {
 		s.node(g).nodes(false, true).forEach((Node<PriNode, Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
 	}
 
-	void priAction(PriAmp a) {
-		floatAction($.inh(a.id,pri), a.amp);
-	}
 	void priAction(PriNode.Source a) {
 		priAction($.inh(a.id,pri), a);
 	}
+	void priAction(PriAmp a) {
+		floatAction($.inh(a.id,pri), a.amp).resolution(PRI_ACTION_RESOLUTION);
+	}
 	void priAction(Term id, PriNode.Source a) {
-		floatAction(id, a.amp);
+		floatAction(id, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
 
 //    @Override
@@ -144,14 +146,14 @@ abstract public class MetaAgent extends Game {
 //        return Util.lerp(c, min, curiMax);
 //    }
 
-	protected void floatAction(Term t, FloatRange r) {
-		floatAction(t, r.min, r.max, r::set);
+	protected GoalActionConcept floatAction(Term t, FloatRange r) {
+		return floatAction(t, r.min, r.max, r::set);
 	}
 
-	protected void floatAction(Term t, float min, float max, FloatConsumer r) {
+	protected GoalActionConcept floatAction(Term t, float min, float max, FloatConsumer r) {
 		//FloatAveraged f = new FloatAveraged(/*0.75*/ 1);
 		//FloatToFloatFunction f = (z)->z;
-		actionUnipolar(t, true, (v) -> v, (x) -> {
+		return actionUnipolar(t, true, (v) -> v, (x) -> {
 			//float y = f.valueOf(x);
 			if (x == x)
 				r.accept(Util.lerp(x, min, max));
@@ -217,24 +219,25 @@ abstract public class MetaAgent extends Game {
 				nar.freqResolution.set(x);
 				return y;
 			});
-			actionUnipolar($.inh(SELF, careful), (x) -> {
-				float y;
-				if (x >= 0.75f) {
-					x = 0.01f;
-					y = (1f+0.75f)/2;
-				} else if (x >= 0.5f) {
-					x = 0.02f;
-					y = (0.75f+0.5f)/2;
-				} else if (x >= 0.25f) {
-					x = 0.4f;
-					y = (0.5f+0.25f)/2;
-				} else {
-					x = 0.10f;
-					y = 0.25f/2;
-				}
-				nar.confResolution.set(x);
-				return y;
-			});
+//			actionUnipolar($.inh(SELF, careful), (x) -> {
+//				float y;
+//				if (x >= 0.75f) {
+//					x = 0.01f;
+//					y = (1f+0.75f)/2;
+//				} else if (x >= 0.5f) {
+//					x = 0.02f;
+//					y = (0.75f+0.5f)/2;
+//				} else if (x >= 0.25f) {
+//					x = 0.4f;
+//					y = (0.5f+0.25f)/2;
+//				} else {
+//					x = 0.10f;
+//					y = 0.25f/2;
+//				}
+//				nar.confResolution.set(x);
+//				return y;
+//			});
+
 			//top-level priority controls of other NAR components
 			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> priAction(g.what().pri));
 
@@ -295,7 +298,9 @@ abstract public class MetaAgent extends Game {
 
 
 			//actionCtlPriNodeRecursive(g.sensorPri, g.nar.control.graph);
-			priAction(g.actionPri); //non-recursive for now
+			priAction(g.sensorPri);
+			priAction(g.rewardPri);
+			priAction(g.actionPri);
 
 
 			floatAction($.inh(gid, forget), ((TaskLinkWhat) w).links.decay);

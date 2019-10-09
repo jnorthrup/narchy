@@ -51,7 +51,7 @@ public class NARAudio extends WaveIn {
                 new ObjectSurface(hear), hearView), 400, 400);
 
 
-        nar.start(this);
+        nar.add(this);
 
     }
 

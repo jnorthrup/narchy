@@ -73,16 +73,17 @@ public class Tex {
      */
     @Nullable
     public Texture commit(GL2 gl) {
+
         ready(gl);
 
         if (data != null) {
             if (texture == null) {
                 texture = TextureIO.newTexture(gl, data);
             }
-        }
-        if (texture != null && data != null) {
-            if (updated.compareAndSet(true, false)) {
-                texture.updateImage(gl, data);
+            if (texture != null) {
+                if (updated.compareAndSet(true, false)) {
+                    texture.updateImage(gl, data);
+                }
             }
         }
 
@@ -90,11 +91,7 @@ public class Tex {
     }
 
     private void ready(GL2 gl) {
-        if (this.gl == null)
-            this.gl = gl;
-        else {
-            //assert (this.gl == gl);
-        }
+        this.gl = gl;
     }
 
     public boolean set(BufferedImage i, GL2 gl) {
@@ -108,16 +105,20 @@ public class Tex {
 
     public boolean set(BufferedImage i) {
 
-//        if (!ready())
-//            return false;
+        GL2 gl = this.gl;
+        if (gl!=null) {
+            DataBuffer x = i.getRaster().getDataBuffer();
 
-        DataBuffer x = i.getRaster().getDataBuffer();
+            Object y = x instanceof DataBufferInt ?
+                ((DataBufferInt) x).getData() :
+                ((DataBufferByte)x).getData();
 
-        Object y = x instanceof DataBufferInt ?
-            ((DataBufferInt) x).getData() :
-            ((DataBufferByte)x).getData();
-
-        _set(y, i.getWidth(), i.getHeight(), i.getColorModel());
+            TextureData data = this.data;
+            if (src != y || (data!=null && (data.getWidth()!=i.getWidth() || data.getHeight()!=i.getHeight()) )) {
+                _set(y, i.getWidth(), i.getHeight(), i.getColorModel(), gl);
+                this.src = y;
+            }
+        }
 
         updated.set(true);
         return true;
@@ -143,23 +144,19 @@ public class Tex {
 //
 //    }
 
-    private void _set(Object x, int width, int height, ColorModel color) {
+    private synchronized void _set(Object x, int width, int height, ColorModel color, GL2 gl) {
 
-        if (src == x)
-            return;
 
-        synchronized (this) {
 
-            GLProfile profile = this.gl.getGLProfile();
-            this.src = x;
 
-            Buffer buffer = x instanceof int[] ? IntBuffer.wrap((int[]) x) : ByteBuffer.wrap((byte[]) x);
-            if (this.data != null) {
+        Buffer buffer = x instanceof int[] ? IntBuffer.wrap((int[]) x) : ByteBuffer.wrap((byte[]) x);
+            /*if (this.data != null) {
                 data.setWidth(width);
                 data.setHeight(height);
                 data.setBuffer(buffer);
-            } else {
+            } else */{
 
+                GLProfile profile = gl.getGLProfile();
                 if (color.getNumColorComponents()==1) {
                     //grayscale
 
@@ -207,7 +204,6 @@ public class Tex {
                 }
             }
 
-        }
     }
 
     public TexSurface view() {
@@ -260,10 +256,11 @@ public class Tex {
 
     public void delete() {
         Texture tt = this.texture;
-        if (tt!=null) {
+        GL2 gl = this.gl;
+        if (gl != null && tt != null) {
             tt.destroy(gl);
-            this.texture = null;
         }
+        this.texture = null;
         this.gl = null;
         this.data = null;
         this.src = null;

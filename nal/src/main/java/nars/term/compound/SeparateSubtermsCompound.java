@@ -189,6 +189,11 @@ public abstract class SeparateSubtermsCompound implements Compound {
     }
 
     @Override
+    public int indexOf(Term t, int after) {
+        return subterms().indexOf(t, after);
+    }
+
+    @Override
     public final boolean contains(Term t) {
         return subterms().contains(t);
     }

@@ -47,7 +47,6 @@ import java.util.stream.Stream;
 
 import static java.lang.Character.isDigit;
 import static nars.Op.*;
-import static nars.term.atom.Bool.Null;
 import static nars.truth.func.TruthFunctions.c2wSafe;
 
 /***
@@ -157,13 +156,11 @@ public enum $ { ;
      * function ((a,b)==>c) aka: c(a,b)
      */
     public static Term func(Atomic opTerm, Term... arg) {
-        Term a = PROD.the(arg);
-        return a == Null ? Null : INH.the(a, opTerm);
+        return INH.the(PROD.the(arg), opTerm);
     }
 
     public static Term func(Atomic opTerm, Subterms arg) {
-        Term a = PROD.the(arg);
-        return a == Null ? Null : INH.the(a, opTerm);
+        return INH.the(PROD.the(arg), opTerm);
     }
 
     /**

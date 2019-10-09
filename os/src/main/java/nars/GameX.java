@@ -3,7 +3,6 @@ package nars;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
 import jcog.data.list.FasterList;
-import jcog.exe.Exe;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.pid.MiniPID;
@@ -19,8 +18,6 @@ import nars.control.MetaGoal;
 import nars.control.NARPart;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.derive.action.AdjacentLinks;
-import nars.derive.adjacent.FirstOrderIndexer;
 import nars.derive.time.ActionTiming;
 import nars.derive.time.MixedTimeFocus;
 import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
@@ -64,7 +61,6 @@ import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -130,15 +126,15 @@ abstract public class GameX extends Game {
             n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
                 float fps = metaFPS; //TODO specific to each game
                 MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaFPS, metaAllowPause);
-                n.start(gm);
+                n.add(gm);
                 //gm.pri(0.1f);
             });
 
             MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, metaFPS);
             if (initMetaRL)
                 self.addRLBoost();
-            n.start(self);
-            //self.pri(0.3f);
+            n.add(self);
+            self.pri(0.1f);
 
         }
 
@@ -430,24 +426,24 @@ abstract public class GameX extends Game {
 
         n.dtDither.set(
                 //1
-                10
-                //20
+                //10
+                20
                 //40
         );
 
-        n.termVolMax.set(42);
+        n.termVolMax.set(50);
 
         //n.confMin.set(1e-10);
 //        n.freqResolution.set(0.1f);
 //        n.confResolution.set(0.02f);
 
-        n.beliefPriDefault.pri(0.25f);
-        n.goalPriDefault.pri(0.25f);
-        n.questionPriDefault.pri(0.25f);
-        n.questPriDefault.pri(0.25f);
+        n.beliefPriDefault.pri(0.5f);
+        n.goalPriDefault.pri(0.5f);
+        n.questionPriDefault.pri(0.5f);
+        n.questPriDefault.pri(0.5f);
 
-        n.beliefConfDefault.set(0.5f);
-        n.goalConfDefault.set(0.5f);
+        n.beliefConfDefault.set(0.75f);
+        n.goalConfDefault.set(0.75f);
 
 
         n.emotion.want(MetaGoal.Perceive, 0 /*-0.005f*/);

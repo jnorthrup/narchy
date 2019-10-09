@@ -280,13 +280,13 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         }
         return u;
     }
-
-    /** called after unifying 'start' mode to test if unification can proceed to 'finish' mode */
-    private boolean couldMatch() {
-        //just needs to detect if 'TerminateTermutator' is returned.  otherwise null or some other result is considered valid for proceeding
-        Termutator[] t = commitTermutes(false);
-        return t!=Termutator.CUT;
-    }
+//
+//    /** called after unifying 'start' mode to test if unification can proceed to 'finish' mode */
+//    private boolean couldMatch() {
+//        //just needs to detect if 'TerminateTermutator' is returned.  otherwise null or some other result is considered valid for proceeding
+//        Termutator[] t = commitTermutes(false);
+//        return t!=Termutator.CUT;
+//    }
 
     protected boolean matches() {
         Termutator[] t = commitTermutes(true);
@@ -302,7 +302,6 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     }
 
     public void matches(Termutator[] t) {
-
         tryMutate(t, -1);
     }
 

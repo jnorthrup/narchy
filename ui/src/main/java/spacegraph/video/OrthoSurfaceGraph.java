@@ -158,7 +158,7 @@ public class OrthoSurfaceGraph extends JoglDisplay implements SurfaceGraph {
     }
 
     public void addFinger(Finger f) {
-        start(f,f);
+        add(f,f);
         fingers.add(f);
         layers.add(content.overlayZoomBounds(f));
 

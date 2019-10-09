@@ -37,7 +37,7 @@ public class Gradius extends GameX {
     public static void main(String[] args) {
         GameX.runRT(nar -> {
             Gradius g = new Gradius(nar);
-            nar.start(g);
+            nar.add(g);
 //            g.what().onTask(t -> {
 //                if (t instanceof DerivedTask && t.isGoal())
 //                    nar.proofPrint(t);

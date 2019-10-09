@@ -180,10 +180,6 @@ public interface Compound extends Term, IPair, Subterms {
         }
     }
 
-    @Override
-    default boolean contains(Term t) {
-        return Subterms.super.contains(t);
-    }
 
     @Override
     default boolean containsAny(Subterms ofThese) {

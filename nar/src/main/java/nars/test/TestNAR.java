@@ -102,13 +102,8 @@ public class TestNAR {
     }
 
     public void run(long finalCycle) {
-        //NDC.push(this.toString());
-//        try {
-            TestNARResult result = _run(finalCycle);
-            assertTrue(result.success);
-//        } finally {
-//            NDC.pop();
-//        }
+        TestNARResult result = _run(finalCycle);
+        assertTrue(result.success);
     }
 
     private TestNARResult _run(long finalCycle) {
@@ -123,7 +118,7 @@ public class TestNAR {
         String id = succeedsIfAll.toString();
 
         if (finalCycle <= 0) {
-            //auto-compute final cycle
+            //infer final cycle
             for (NARCondition oc : succeedsIfAll) {
                 long oce = oc.getFinalCycle();
                 if (oce >= 0 && oce > finalCycle) finalCycle = oce + 1;
@@ -181,7 +176,7 @@ public class TestNAR {
             for (NARCondition t : failsIfAny)
                 t.log("mustNot", t.isFalse(), logger);
 
-            nar.emotion.print(System.out);
+
             nar.stats(true, true, System.out);
             //nar.control.stats(System.out);
 

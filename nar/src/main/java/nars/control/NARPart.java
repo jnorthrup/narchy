@@ -28,7 +28,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
         this((Term) null);
 
         if (nar != null)
-            nar.start(this);
+            nar.add(this);
     }
 
     protected NARPart(@Nullable Term id) {
@@ -45,7 +45,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
      * resume
      */
     public final void on() {
-        nar.start(this);
+        nar.add(this);
     }
     public final void close() {
         delete();
@@ -215,7 +215,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
                     if (nn == null) {
                         //deleted or unstarted
                     } else {
-                        if (nn.start(this)) {
+                        if (nn.add(this)) {
                             logger.info("resume", this);
                         }
                     }

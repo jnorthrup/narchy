@@ -50,11 +50,11 @@ public enum Op {
     ATOM(".", Op.ANY_LEVEL, Args.Zero),
 
     NEG("--", 1, Args.One) {
-        public Term the(Term u) {
+        @Override public Term the(Term u) {
             return Op.terms.neg(u);
         }
 
-        public Term the(TermBuilder b, int dt, Term[] u) {
+        @Override public Term the(TermBuilder b, int dt, Term[] u) {
 
             if (u.length != 1)
                 throw new TermException("negation requires one subterm", NEG, dt, u);
@@ -111,7 +111,19 @@ public enum Op {
      * along with inheritance (INH), which comprise the functor,
      * can be used to compose the foundation of the system.
      */
-    PROD("*", 1, Args.GTEZero),
+    PROD("*", 1, Args.GTEZero) {
+
+        @Override
+        public Term the(TermBuilder b, int dt, Term[] u) {
+            if (u.length == 0) return Op.EmptyProduct;
+
+            if (u[0] instanceof Img)
+                throw new TermException("invalid image in index 0 of product", PROD, u);
+
+            return super.the(b, dt, u);
+        }
+
+    },
 
 
     /**
@@ -696,7 +708,7 @@ public enum Op {
         return the(b, DTERNAL, sub);
     }
 
-    public Term the(TermBuilder b, int dt, /*@NotNull*/ Collection<Term> sub) {
+    public final Term the(TermBuilder b, int dt, /*@NotNull*/ Collection<Term> sub) {
         return the(b, dt, sub.toArray(EmptyTermArray));
     }
 

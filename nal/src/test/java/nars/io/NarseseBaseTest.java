@@ -454,7 +454,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testCompleteTask() throws Narsese.NarseseException {
-        taskParses("$0.80 <<lock1 --> (/,open,$1,_)> ==> <$1 --> key>>. %1.00;0.90%");
+        taskParses("$0.80 <<lock1 --> (open,$1)> ==> <$1 --> key>>. %1.00;0.90%");
     }
 
     @Test

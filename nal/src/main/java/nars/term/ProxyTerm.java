@@ -160,10 +160,6 @@ public class ProxyTerm implements SameSubtermsCompound {
         return ref.subs();
     }
 
-    @Override
-    public boolean contains(Term t) {
-        return ref.contains(t);
-    }
 
     @Override
     public boolean containsRecursively(Term x, boolean root, Predicate<Term> inSubtermsOf) {

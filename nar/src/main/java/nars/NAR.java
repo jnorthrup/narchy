@@ -136,7 +136,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         Builtin.init(this);
 
         this.loop = this.exe.concurrent() ? new NARLoop.NARLoopAsync(this) : new NARLoop.NARLoopSync(this);
-        start(exe);
+        add(exe);
 
         synch();
 
@@ -323,7 +323,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             exe.clear(this);
             time.reset();
 
-            start(exe);
+            add(exe);
 
             if (running)
                 loop.setFPS(fps);
@@ -666,12 +666,12 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return ((NARPart) p).id;
     }
 
-    public final boolean start(NARPart p) {
-        return start(p.id, p);
+    public final boolean add(NARPart p) {
+        return add(p.id, p, true);
     }
 
-    public final boolean add(NARPart p) {
-        return add(p.id, p);
+    public final boolean add(NARPart p, boolean autoStart) {
+        return add(p.id, p, autoStart);
     }
     public final void add(Functor f) {
         memory.set(f);
@@ -680,23 +680,20 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         memory.set(o);
     }
 
-    public final NARPart add(Class<? extends NARPart> p) {
-        return add(null, p);
+    public final NARPart add(Class<? extends NARPart> p, boolean autoStart) {
+        return add(null, p, autoStart);
     }
 
-    public final NARPart start(Class<? extends NARPart> p) {
-        return start(null, p);
+    public final NARPart add(Class<? extends NARPart> p) {
+        return add(p, true);
     }
+
 
     public final NARPart add(@Nullable Term key, Class<? extends NARPart> p) {
-        return add(key, false, p);
+        return add(key, p, true);
     }
 
-    public final NARPart start(@Nullable Term key, Class<? extends NARPart> p) {
-        return add(key, true, p);
-    }
-
-    public final NARPart add(Term key, boolean start, Class<? extends NARPart> p) {
+    public final NARPart add(@Nullable Term key, Class<? extends NARPart> p, boolean autoStart) {
         NARPart pp = null;
         if (key != null)
             pp = (NARPart) parts.get(key);
@@ -718,8 +715,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             }
         }
 
-        if (start) {
-            boolean ok = start(key, pp);
+        if (autoStart) {
+            boolean ok = add(key, pp);
             assert (ok);
         }
         return pp;
@@ -1140,7 +1137,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     public final DurLoop onDur(Runnable on, boolean autostart) {
         DurLoop.DurRunnable r = new DurLoop.DurRunnable(on);
         if (autostart)
-            start(r);
+            add(r);
         return r;
     }
 
@@ -1164,7 +1161,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public final DurLoop onDur(Consumer<NAR> on) {
         DurNARConsumer r = new DurNARConsumer(on);
-        start(r);
+        add(r);
         return r;
     }
 
@@ -1561,7 +1558,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             w = what.put(this.whatBuilder.apply(id));
             w.nar = this;
         }
-        start(w);
+        add(w);
         return w;
     }
 
@@ -1618,7 +1615,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         What removed = what.put(next, null);
         if (removed!=null)
             stop(removed);
-        start(next);
+        add(next);
 //        active.set(next);
         return next;
     }

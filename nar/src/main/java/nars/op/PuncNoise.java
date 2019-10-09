@@ -25,7 +25,7 @@ public class PuncNoise extends DurLoop {
 
     public PuncNoise(NAR n) {
         super($.p(n.self(), $.identity(PuncNoise.class)));
-        n.start(this);
+        n.add(this);
     }
 
     @Override

@@ -145,7 +145,7 @@ public class PoleCart extends GameX {
 						window(NARui.rlbooster(bb), 500, 500);
 
 					}
-					n.start(p);
+					n.add(p);
 
 					return p;
 				},

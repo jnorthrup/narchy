@@ -49,7 +49,7 @@ class NARPartTest {
 
     @Test void Component() {
         NAR n = NARS.shell();
-        n.start(new NARPart(){
+        n.add(new NARPart(){
             {
                 add(new NARPart((Term)$$("dependent")) {
                     @Override

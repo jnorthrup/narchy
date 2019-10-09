@@ -230,7 +230,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             throw new TODO();
 
         if (s instanceof NARPart)
-            nar.start(((NARPart) s));
+            nar.add(((NARPart) s));
 
         if (s instanceof ActionSignal)
             nar.add((ActionSignal)s); //register action concepts

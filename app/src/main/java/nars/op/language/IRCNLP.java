@@ -11,6 +11,7 @@ import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
 import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
+import nars.term.Compound;
 import nars.term.Term;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;
@@ -246,7 +247,7 @@ public class IRCNLP extends IRC {
                     //if (taskTime >= now - dur) {
                     Term tt = t.term();
                         if (tt.op() == INH && HEAR.equals(tt.sub(1))) {
-                            if (tt.subIs(0, PROD) && tt.sub(0).sub(0).op().taskable) {
+                            if (((Compound)tt).subIs(0, PROD) && tt.sub(0).sub(0).op().taskable) {
                                 bot.speak(tt.sub(0).sub(0), taskTime, t.truth());
                             }
                         }

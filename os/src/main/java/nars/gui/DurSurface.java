@@ -39,7 +39,7 @@ abstract public class DurSurface<S extends Surface> extends UnitContainer<S> {
     @Override
     protected void starting() {
 
-        nar.start(dur);
+        nar.add(dur);
 
         super.starting();
     }

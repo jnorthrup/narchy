@@ -48,11 +48,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 
 
     @Override
-    public boolean contains(Term t) {
-        return sub().equals(t);
-    }
-
-    @Override
     public boolean containsNeg(Term x) {
         return sub().equalsNeg(x);
     }
@@ -151,11 +146,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
 //    }
 
     @Override
-    public boolean impossibleSubVolume(int otherTermVolume) {
-        return otherTermVolume > sub().volume() /* volume() -  size() */;
-    }
-
-    @Override
     public final int subStructure() {
         return sub().structure();
     }
@@ -164,7 +154,6 @@ public abstract class UnitCompound implements SameSubtermsCompound {
     public final int dt() {
         return DTERNAL;
     }
-
 
     @Override
     public int volume() {

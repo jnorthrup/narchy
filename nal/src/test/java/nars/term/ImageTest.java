@@ -1,7 +1,6 @@
 package nars.term;
 
 import nars.$;
-import nars.NAL;
 import nars.Narsese;
 import nars.subterm.util.TermMetadata;
 import nars.term.atom.Bool;
@@ -167,11 +166,11 @@ class ImageTest {
     }
 
     @Test void NonRepeatableImage() {
-        assertEquals(Null, Image.imageExt($$("a(b,/,c)"), $$("c")));
+        assertEq("(c-->(a,b,/,/))", Image.imageExt($$("a(b,/,c)"), $$("c"))); //TODO test
     }
     @Test void RepeatableImageInSubterm() {
-        assertEq("(b-->(a,/,(/,c)))", Image.imageExt($$("a(b,(/,c))"), $$("b")));
-        assertEq("((/,c)-->(a,b,/))", Image.imageExt($$("a(b,(/,c))"), $$("(/,c)")));
+        assertEq("(b-->(a,/,(c,/)))", Image.imageExt($$("a(b,(c,/))"), $$("b")));
+        assertEq("((c,/)-->(a,b,/))", Image.imageExt($$("a(b,(c,/))"), $$("(c,/)")));
     }
 
     @Disabled
@@ -213,6 +212,10 @@ class ImageTest {
     @Test void ConjNegatedNormalizeWTF() {
         assertEq("((--,(delta-->vel)) &&+280 (--,vel(fz,y)))", "((--,(delta-->vel)) &&+280 (--,(y-->(vel,fz,/))))");
     }
+    @Disabled @Test void bothImageTypesInProduct() {
+        assertEq("TODO", Image.imageNormalize($$("((b,\\,c,/)-->a)")));
+        assertEq("TODO", Image.imageNormalize($$("(a-->(b,\\,c,/))")));
+    }
     @Test void ConjNegatedNormalizeWTF2() {
         assertEq("(((--,v(fz,x)) &&+2 (--,v(fz,y))) &&+1 z)",
                 "(((--,(x-->(v,fz,/))) &&+2 (--,(y-->(v,fz,/)))) &&+1 z)");
@@ -229,16 +232,16 @@ class ImageTest {
         assertTrue(x.isNormalized());
     }
     @Test void ImageRecursionFilter() {
-        if (NAL.term.INH_IMAGE_RECURSION)
-            return;
+
 
         Term x0 = $$("(_ANIMAL-->((cat,ANIMAL),cat,/))");
         assertEq("((cat,_ANIMAL)-->(cat,ANIMAL))", imageNormalize(x0)); //to see what would happen
 
+        assertEq(Bool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
+
         Term x = $$("(ANIMAL-->((cat,ANIMAL),cat,/))");
         assertEquals(True, x);
 
-        assertEq(Bool.True, Image.normalize(new LighterCompound(INH, $$("ANIMAL"), $$("((cat,ANIMAL),cat,/)")), true, true));
 
     }
 }

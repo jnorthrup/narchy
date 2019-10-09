@@ -98,7 +98,7 @@ public class Deriver extends How {
 		this.program = program;
 		this.timing = timing;
 
-		nar.start(this);
+		nar.add(this);
 	}
 
 	@Override

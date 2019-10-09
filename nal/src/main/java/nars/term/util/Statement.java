@@ -4,10 +4,8 @@ import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
-import nars.term.Compound;
-import nars.term.Neg;
-import nars.term.Term;
-import nars.term.Terms;
+import nars.subterm.TermList;
+import nars.term.*;
 import nars.term.atom.Bool;
 import nars.term.util.builder.TermBuilder;
 import nars.term.util.conj.Conj;
@@ -36,6 +34,8 @@ public class Statement {
     public static Term statement(TermBuilder B, Op op, int dt, Term subject, Term predicate, int depth) {
         if (subject == Null || predicate == Null)
             return Null;
+        if (subject instanceof Img || predicate instanceof Img)
+            throw new TermException("statement can not have image subterm", new TermList(subject, predicate));
 
         if (op == IMPL) {
             if (subject == True)
@@ -319,11 +319,13 @@ public class Statement {
         }
 
 
-        if (!NAL.term.INH_IMAGE_RECURSION && op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
+
+        if (op == INH && (subject.hasAny(Op.IMG) || predicate.hasAny(Op.IMG))) {
             Term inhCollapsed = Image.recursionFilter(subject, predicate, B);
             if (inhCollapsed instanceof Bool)
                 return inhCollapsed;
         }
+
 
 
         if (op == IMPL) {

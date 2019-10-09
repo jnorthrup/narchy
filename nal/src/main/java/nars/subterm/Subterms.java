@@ -16,7 +16,6 @@ import nars.Op;
 import nars.subterm.util.TermMetadata;
 import nars.term.Variable;
 import nars.term.*;
-import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.transform.MapSubst;
 import nars.term.var.ellipsis.Fragment;
@@ -67,7 +66,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
 
 
     default boolean containsInstance(Term t) {
-        return ORwith((u, tt) -> tt == u, t);
+        //return ORwith((u, tt) -> tt == u, t);
+        int s = subs();
+        for (int i = 0; i < s; i++) {
+            if (sub(i) == t)
+                return true;
+        }
+        return false;
+        //return indexOfInstance(x) != -1;
     }
 
 
@@ -646,9 +652,58 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     /**
+     * return whether a subterm op at an index is an operator.
+     */
+    default boolean subIs(int i, Op o) {
+        return sub(i).opID() == o.id;
+    }
+
+    /**
+     * counts subterms matching the predicate
+     */
+    default int count(Predicate<Term> match) {
+        //return intifyShallow((c, sub) -> match.test(sub) ? c + 1 : c, 0);
+        int n = subs();
+        int c = 0;
+        for (int i = 0; i < n; i++)
+            if (match.test(sub(i))) c++;
+        return c;
+    }
+    default boolean countEquals(Predicate<Term> match, int n) {
+        int s = subs();
+        if (n > s) return false; //impossible
+        int c = 0;
+        for (int i = 0; i < s; i++) {
+            if (match.test(sub(i))) {
+                c++;
+                if (c > n)
+                    return false;
+            }
+        }
+        return c == n;
+    }
+
+
+
+    /**
+     * counts subterms matching the supplied op
+     */
+    default int count(Op matchingOp) {
+        int matchingOpID = matchingOp.id;
+        return count(x -> x.opID() == matchingOpID);
+    }
+    /**
+     * return whether a subterm op at an index is an operator.
+     * if there is no subterm or the index is out of bounds, returns false.
+     */
+    default boolean subIsOrOOB(int i, Op o) {
+        Term x = sub(i, null);
+        return x != null && x.opID() == o.id;
+    }
+    /**
      * first index of; follows normal indexOf() semantics; -1 if not found
      */
-    default int indexOf(/*@NotNull*/ Term t) {
+    default /* final */ int indexOf(/*@NotNull*/ Term t) {
         return indexOf(t, -1);
     }
 
@@ -656,6 +711,14 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return indexOf(t::equals, after);
     }
 
+    /**
+     * return the first subterm matching the predicate, or null if none match
+     */
+    @Nullable
+    default Term subFirst(Predicate<Term> match) {
+        int i = indexOf(match);
+        return i != -1 ? sub(i) : null;
+    }
 
 
     default /* final */boolean containsRecursively(Term t, Predicate<Term> inSubtermsOf) {
@@ -663,13 +726,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
     @Override default boolean impossibleSubTerm(Termlike target) {
-
-        if (target instanceof Atomic)
-            return impossibleSubStructure(((Atomic) target).opBit()) || impossibleSubVolume(1);
-        else {
-            if (this == target) return false;
-            return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
-        }
+        return impossibleSubVolume(target.volume()) || impossibleSubStructure(target.structure());
     }
 
     default boolean impossibleSubTerm(int structure, int volume) {
@@ -1117,9 +1174,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = after+1; i < s; i++) {
             Term next = sub(i);
-            if ((different(prev, next)) && p.test(next))
-                return i;
-            prev = next;
+            if (different(prev, next)) {
+                if (p.test(next))
+                    return i;
+                prev = next;
+            }
         }
         return -1;
     }
@@ -1135,9 +1194,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if ((different(prev, next))  && !p.test(next))
-                return false;
-            prev = next;
+            if (different(prev, next)) {
+                if (!p.test(next))
+                    return false;
+                prev = next;
+            }
         }
         return true;
     }
@@ -1153,9 +1214,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if ((different(prev, next))  && p.test(next))
-                return true;
-            prev = next;
+            if (different(prev, next)) {
+                if (p.test(next))
+                    return true;
+                prev = next;
+            }
         }
         return false;
     }
@@ -1185,9 +1248,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (different(prev,next)  && p.test(next, param))
-                return true;
-            prev = next;
+            if (different(prev,next)) {
+                if (p.test(next, param))
+                    return true;
+                prev = next;
+            }
         }
         return false;
     }
@@ -1197,9 +1262,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
         Term prev = null;
         for (int i = 0; i < s; i++) {
             Term next = sub(i);
-            if (different(prev, next) &&  !p.test(next, param))
-                return false;
-            prev = next;
+            if (different(prev, next)) {
+                if (!p.test(next, param))
+                    return false;
+                prev = next;
+            }
         }
         return true;
     }
@@ -1222,8 +1289,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (different(prev, next)) {
                 if (!p.test(next) || (next instanceof Compound && !((Compound)next).ANDrecurse(p)))
                     return false;
+                prev = next;
             }
-            prev = next;
         }
         return true;
     }
@@ -1237,8 +1304,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
             if (different(prev, next)) {
                 if (p.test(next) || (next instanceof Compound && ((Compound)next).ORrecurse(p)))
                     return true;
+                prev = next;
             }
-            prev = next;
         }
         return false;
     }

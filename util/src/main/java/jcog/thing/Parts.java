@@ -40,8 +40,8 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
         this.local.forEachWith((c, T) -> c.stopIn(T, this), t);
     }
 
-    public final <X extends SubPart<T>> void addAll(X... local) {
-        for (X d : local)
+    public final void addAll(SubPart<T>... local) {
+        for (SubPart d : local)
             add(d);
     }
 
@@ -52,8 +52,8 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
             whenDeleted.add(component);
     }
 
-    public final <X extends SubPart<T>> void removeAll(X... dd) {
-        for (X d : dd)
+    public final void removeAll(SubPart<T>... dd) {
+        for (SubPart d : dd)
             remove(d);
     }
 
@@ -68,11 +68,10 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
             throw new UnsupportedOperationException("duplicate local: " + local);
     }
 
-    public final boolean remove(SubPart<T> local) {
+    public final void remove(SubPart<T> local) {
         if (this.local.remove(local)) {
             local.stopIn(nar, this);
             //local.stop(nar);
-            return true;
         } else
             throw new UnsupportedOperationException("unknown local: " + local + " in " + this);          //return false;
     }

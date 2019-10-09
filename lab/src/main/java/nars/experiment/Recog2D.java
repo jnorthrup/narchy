@@ -250,7 +250,7 @@ public class Recog2D extends GameX {
         GameX.runRT((n) -> {
 
             Recog2D a = new Recog2D(n);
-            n.start(a);
+            n.add(a);
             SpaceGraph.window(a.conceptTraining(a.outs, n), 800, 600);
 
             return a;

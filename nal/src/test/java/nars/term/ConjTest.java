@@ -941,12 +941,6 @@ class ConjTest {
 
     }
 
-    @Test
-    void testConjunctionNormal() throws Narsese.NarseseException {
-        Term x = $("(&&, <#1 --> lock>, <#1 --> (/, open, #2, _)>, <#2 --> key>)");
-        assertEquals(3, x.subs());
-        assertEquals(CONJ, x.op());
-    }
 
     @Test
     void testCoNegatedJunction() {

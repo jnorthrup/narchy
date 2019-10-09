@@ -129,24 +129,20 @@ public class ArkaNAR extends GameX {
         runRT((NAR n) -> {
 
             ArkaNAR a = new ArkaNAR(n, cam, numeric);
-            n.start(a);
+            n.add(a);
             window( new VectorSensorChart(a.cc, a).withControls(), 800, 800);
 
-        }, 30);
+        },fps*2);
 
     }
 
-
-    public ArkaNAR(NAR nar) {
-        this(nar, cam, numeric);
-    }
 
     public ArkaNAR(NAR nar, boolean cam, boolean numeric) {
         this(Atomic.atom("noid"),nar, cam, numeric);
     }
 
-    public ArkaNAR(Term term, NAR n, boolean cam, boolean numeric) {
-        super(term, GameTime.fps(fps), n);
+    public ArkaNAR(Term id, NAR n, boolean cam, boolean numeric) {
+        super(id, GameTime.fps(fps), n);
 
 
         noid = new Arkanoid();
@@ -165,23 +161,23 @@ public class ArkaNAR extends GameX {
 
         if (cam) {
 
-            cc = senseCamera((x, y) -> $.inh(term, $.p(x, y)), new ScaledBitmap2D(
+            cc = senseCamera((x, y) -> $.inh(id, $.p(x, y)), new ScaledBitmap2D(
                     new SwingBitmap2D(noid)
                     , visW, visH
             )/*.blur()*/);
-            cc.resolution(0.2f);
+            cc.resolution(0.1f);
         }
 
 
         if (numeric) {
             float numRes = 0.2f;
-            AbstractSensor px = senseNumberBi($.inh($.the("px"), term), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
+            AbstractSensor px = senseNumberBi($.inh(id,"px"), (() -> noid.paddle.x / noid.getWidth())).resolution(resX);
             px.resolution(numRes);
-            AbstractSensor dx = senseNumberBi($.inh($.the("dx"), term), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
+            AbstractSensor dx = senseNumberBi($.inh(id, "dx"), (() -> 0.5f + 0.5f * (noid.ball.x - noid.paddle.x) / noid.getWidth())).resolution(resX);
             dx.resolution(numRes);
-            AbstractSensor cx = senseNumberBi($.inh($.p("b", "x"), term), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
+            AbstractSensor cx = senseNumberBi($.inh(id, $.p("b", "x")), (() -> (noid.ball.x / noid.getWidth()))).resolution(resX);
             cx.resolution(numRes);
-            AbstractSensor cy = senseNumberBi($.inh($.p("b", "y"), term), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
+            AbstractSensor cy = senseNumberBi($.inh(id ,$.p("b", "y")), (() -> 1f - (noid.ball.y / noid.getHeight()))).resolution(resY);
             cy.resolution(numRes);
 //            window(NARui.beliefCharts(dx.components(), nar), 500, 500);
 

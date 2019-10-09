@@ -156,7 +156,7 @@ public class Abbreviation/*<S extends Term>*/ extends How {
 
         volume = new MutableIntRange(volMin, volMax);
 
-        nar.start(this);
+        nar.add(this);
     }
 
     /** whether to attempt unabbreviation of a premise  */

@@ -156,7 +156,7 @@ public class AtomicOperations implements BiFunction<Task, NAR, Task> {
         if (d == null) {
             onCycle.updateAndGet((x)-> x == null ? n.onDur(this::update) : x);
         } else {
-            n.start(d);
+            n.add(d);
         }
     }
 

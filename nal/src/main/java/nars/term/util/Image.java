@@ -129,13 +129,15 @@ public enum Image {
         Term s = xx.sub(0), p = xx.sub(1);
 
         Subterms ss = null;
-        boolean isInt = s.op() == PROD && (ss = s.subterms()).contains(Op.ImgInt);// && !ss.contains(Op.ImgExt);
+        boolean isInt = s instanceof Compound && s.opID() == PROD.id &&
+            (ss = s.subterms()).containsInstance(Op.ImgInt) && !ss.containsInstance(Op.ImgExt);
 
         Subterms pp = null;
-        boolean isExt = p.op() == PROD && (pp = p.subterms()).contains(Op.ImgExt);// && !pp.contains(Op.ImgInt);
+        boolean isExt = p instanceof Compound && p.opID() == PROD.id &&
+            (pp = p.subterms()).containsInstance(Op.ImgExt) && !pp.containsInstance(Op.ImgInt);
 
         if (isInt == isExt)
-            return x;
+            return x; //both or neither
 
         if (transform || testOnly) {
 
@@ -147,7 +149,7 @@ public enum Image {
                     return null;
                 pred = PROD.the(B, Util.replaceDirect(ss.subRangeArray(1, ss.subs()), Op.ImgInt, p));
 
-            } else {
+            } else { //isExt
 
                 pred = pp.sub(0);
                 if (testOnly && pred.op()!=PROD)

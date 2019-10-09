@@ -103,6 +103,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
             Term y = transformTermFromTemplate(x.term());
             return SpecialTermTask.the(x, y, false);
         } catch (TermException t) {
+            //HACK
             if (NAL.DEBUG) throw new RuntimeException(t);
             else return null;
         }
@@ -138,7 +139,11 @@ public class ImageBeliefTable extends DynamicTaskTable {
         if (!(h instanceof TaskConcept))
             return; //TODO if this happens: may be a NodeConcept in certain cases involving $ vars.  investigate
 
+        Term termOriginal = a.term();  a.term(normal); //push
+
         (beliefOrGoal ? h.beliefs() : h.goals()).match(a);
+
+        a.term(termOriginal); //pop
     }
 
 
