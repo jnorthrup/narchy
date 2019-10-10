@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import ch.qos.logback.core.util.COWArrayList;
 import jcog.Config;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
@@ -19,6 +20,7 @@ import nars.term.atom.Atomic;
 import java.util.Arrays;
 import java.util.Random;
 import java.util.Vector;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import static spacegraph.SpaceGraph.window;
@@ -34,7 +36,7 @@ public class Tetris extends GameX {
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     private final boolean opjects = true;
-    private final boolean canFall = Config.configIs("TETRIS_CANFALL",false);
+    private final boolean canFall = Config.configIs("TETRIS_CANFALL", false);
 
 
     private final Bitmap2D grid;
@@ -68,8 +70,8 @@ public class Tetris extends GameX {
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
                 GameTime.fps(FPS),
-            //FrameTrigger.durs(1),
-            n
+                //FrameTrigger.durs(1),
+                n
         );
 
 
@@ -93,7 +95,6 @@ public class Tetris extends GameX {
                 grid, /*0,*/ n));
 
 
-
         rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
                 state::score
                 //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
@@ -104,11 +105,7 @@ public class Tetris extends GameX {
         rewardNormalized("density", 0, ScalarValue.EPSILON, () -> {
 
             int filled = 0;
-            for (float s : state.grid) {
-                if (s > 0) {
-                    filled++;
-                }
-            }
+            for (float s : state.grid) if (s > 0) filled++;
 
             int r = state.rowsFilled;
             return r > 0 ? ((float) filled) / (r * state.width) : 0;
@@ -119,7 +116,6 @@ public class Tetris extends GameX {
         //                    float c = n.confDefault(BELIEF);
         //                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
         //                })
-
 
 
         actionPushButtonLR();
@@ -158,7 +154,7 @@ public class Tetris extends GameX {
 
             window(new VectorSensorChart(t.gridVision, t), 500, 300);
 
-        },  FPS * 2);
+        }, FPS * 2);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)
@@ -174,7 +170,7 @@ public class Tetris extends GameX {
 
     private TetrisState actionsReflect(NAR nar) {
 
-        Opjects oo = new Opjects(nar.fork((Term)$.inh(id, "opjects")));
+        Opjects oo = new Opjects(nar.fork((Term) $.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
 //        oo.pri.setAt(ScalarValue.EPSILON);
 
@@ -198,14 +194,14 @@ public class Tetris extends GameX {
     final Term tFALL =
             //$.the("fall");
             //$.inh("fall", id);
-            $.inh(id,"fall");
+            $.inh(id, "fall");
 
     void actionPushButtonLR() {
 //        actionPushButton(LEFT, (b)->b && state.act(TetrisState.LEFT));
 //        actionPushButton(RIGHT, (b)->b && state.act(TetrisState.RIGHT));
         GoalActionConcept[] lr = actionPushButtonMutex(tLEFT, tRIGHT,
-                b -> b && state.act( TetrisState.actions.LEFT),
-                b -> b && state.act( TetrisState.actions.RIGHT)
+                b -> b && state.act(TetrisState.actions.LEFT),
+                b -> b && state.act(TetrisState.actions.RIGHT)
         );
 //        for (GoalActionConcept x : lr)
 //            x.goalDefault($.t(0, 0.001f), nar); //bias
@@ -243,11 +239,9 @@ public class Tetris extends GameX {
 
         int debounceDurs = 2;
         //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
-        actionPushButton(tROT, b -> b && state.act( TetrisState.actions.CW));
+        actionPushButton(tROT, b -> b && state.act(TetrisState.actions.CW));
 
-        if (canFall) {
-            actionPushButton(tFALL, debounce(b -> b && state.act( TetrisState.actions.FALL), debounceDurs * 2));
-        }
+        if (canFall) actionPushButton(tFALL, debounce(b -> b && state.act(TetrisState.actions.FALL), debounceDurs * 2));
 
     }
 
@@ -258,9 +252,9 @@ public class Tetris extends GameX {
         actionTriState($.inh(id, "X"), i -> {
             switch (i) {
                 case -1:
-                    return state.act( TetrisState.actions.LEFT);
+                    return state.act(TetrisState.actions.LEFT);
                 case +1:
-                    return state.act( TetrisState.actions.RIGHT);
+                    return state.act(TetrisState.actions.RIGHT);
                 default:
                 case 0:
                     return true;
@@ -268,17 +262,14 @@ public class Tetris extends GameX {
         });
 
 
-        actionPushButton(tROT, () -> state.act( TetrisState.actions.CW));
+        actionPushButton(tROT, () -> state.act(TetrisState.actions.CW));
 
 
     }
 
-
-
-
     public static class TetrisPiece {
         public static final int[] PAIR1 = {0, 0, 1, 1, 0};
-        public static final int[] PAIR2 =  {0, 1, 1, 0, 0};
+        public static final int[] PAIR2 = {0, 1, 1, 0, 0};
         public static final int[] CENTER = {0, 0, 1, 0, 0};
         public static final int[] MIDDLE = {0, 1, 1, 1, 0};
         public static final int[] LINE1 = {0, 1, 1, 1, 1};
@@ -288,244 +279,197 @@ public class Tetris extends GameX {
         int currentOrientation;
 
         public static TetrisPiece makeSquare() {
-            TetrisPiece newPiece = new TetrisPiece();
-
-
-
-            newPiece.setShape(0, new int[][]{ EMPTY_ROW
-            , PAIR1
-            , PAIR1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-            newPiece.setShape(1, new int[][]{ EMPTY_ROW
-            , PAIR1
-            , PAIR1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-            newPiece.setShape(2, new int[][]{ EMPTY_ROW
-            , PAIR1
-            , PAIR1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-            newPiece.setShape(3, new int[][]{ EMPTY_ROW
-            , PAIR1
-            , PAIR1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-
-            return newPiece;
+            return new TetrisPiece() {{
+                setShape(0, EMPTY_ROW
+                        , PAIR1
+                        , PAIR1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                        , PAIR1
+                        , PAIR1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+                setShape(2, EMPTY_ROW
+                        , PAIR1
+                        , PAIR1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                        , PAIR1
+                        , PAIR1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+            }};
         }
 
         public static TetrisPiece makeTri() {
-            TetrisPiece newPiece = new TetrisPiece();
 
-            {
+            return new TetrisPiece() {{
 
-
-                newPiece.setShape(0, new int[][]{ EMPTY_ROW
-                , CENTER
-                , MIDDLE
-                , EMPTY_ROW
-                , EMPTY_ROW});
-            }
-            {
+                setShape(0, EMPTY_ROW
+                        , CENTER
+                        , MIDDLE
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
 
 
-                newPiece.setShape(1, new int[][]{ EMPTY_ROW
-                , CENTER
-                , PAIR1
-                , CENTER
-                , EMPTY_ROW});
-            }
-
-            {
+                setShape(1, EMPTY_ROW
+                        , CENTER
+                        , PAIR1
+                        , CENTER
+                        , EMPTY_ROW);
 
 
-                newPiece.setShape(2, new int[][]{ EMPTY_ROW
-                , EMPTY_ROW
-                , MIDDLE
-                , CENTER
-                , EMPTY_ROW});
-            }
+                setShape(2, EMPTY_ROW
+                        , EMPTY_ROW
+                        , MIDDLE
+                        , CENTER
+                        , EMPTY_ROW);
 
-            newPiece.setShape(3, new int[][]{ EMPTY_ROW
-            , CENTER
-            , PAIR2
-            , CENTER
-            , EMPTY_ROW});
-
-            return newPiece;
+                setShape(3, EMPTY_ROW
+                        , CENTER
+                        , PAIR2
+                        , CENTER
+                        , EMPTY_ROW);
+            }};
         }
 
         public static TetrisPiece makeLine() {
-            TetrisPiece newPiece = new TetrisPiece();
-
-            newPiece.setShape(0, new int[][]{CENTER
-            , CENTER
-            , CENTER
-            , CENTER
-            , EMPTY_ROW});
-            newPiece.setShape(2, new int[][]{CENTER
-            , CENTER
-            , CENTER
-            , CENTER
-            , EMPTY_ROW});
-            newPiece.setShape(1, new int[][]{ EMPTY_ROW
-            , EMPTY_ROW
-            , LINE1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-            newPiece.setShape(3, new int[][]{ EMPTY_ROW
-            , EMPTY_ROW
-            , LINE1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-            return newPiece;
+            return new TetrisPiece() {{
+                setShape(0, CENTER
+                        , CENTER
+                        , CENTER
+                        , CENTER
+                        , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                        , EMPTY_ROW
+                        , LINE1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+                setShape(2, CENTER
+                        , CENTER
+                        , CENTER
+                        , CENTER
+                        , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                        , EMPTY_ROW
+                        , LINE1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+            }};
 
         }
 
         public static TetrisPiece makeSShape() {
-            TetrisPiece newPiece = new TetrisPiece();
+            return new TetrisPiece() {{
 
-            {
-
-                newPiece.setShape(0, new int[][]{ EMPTY_ROW
-                , LEFT1
-                , new int[]{0, 1, 1, 0, 0}
+                setShape(0, EMPTY_ROW
+                        , LEFT1
+                        , PAIR2
                         , CENTER
-                , EMPTY_ROW});
-                newPiece.setShape(2, new int[][]{ EMPTY_ROW
-                , LEFT1
-                , new int[]{0, 1, 1, 0, 0}
+                        , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                        , PAIR1
+                        , PAIR2
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+                setShape(2, EMPTY_ROW
+                        , LEFT1
+                        , PAIR2
                         , CENTER
-                , EMPTY_ROW});
-            }
-
-
-            newPiece.setShape(1, new int[][]{ EMPTY_ROW
-            , PAIR1
-            , new int[]{0, 1, 1, 0, 0}
-                    , EMPTY_ROW
-            , EMPTY_ROW});
-            newPiece.setShape(3, new int[][]{ EMPTY_ROW
-            , PAIR1
-            , new int[]{0, 1, 1, 0, 0}
-                    , EMPTY_ROW
-            , EMPTY_ROW});
-            return newPiece;
-
+                        , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                        , PAIR1
+                        , PAIR2
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+            }};
         }
 
         public static TetrisPiece makeZShape() {
-            TetrisPiece newPiece = new TetrisPiece();
+            TetrisPiece newPiece = new TetrisPiece() {{
 
-            {
-
-                newPiece.setShape(0, new int[][]{ EMPTY_ROW
-                , CENTER
-                , new int[]{0, 1, 1, 0, 0}
+                setShape(0, EMPTY_ROW
+                        , CENTER
+                        , PAIR2
                         , LEFT1
-                , EMPTY_ROW});
-                newPiece.setShape(2, new int[][]{ EMPTY_ROW
-                , CENTER
-                , new int[]{0, 1, 1, 0, 0}
+                        , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                        , PAIR2
+                        , PAIR1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+                setShape(2, EMPTY_ROW
+                        , CENTER
+                        , PAIR2
                         , LEFT1
-                , EMPTY_ROW});
-            }
-
-
-            newPiece.setShape(1, new int[][]{ EMPTY_ROW
-            , new int[]{0, 1, 1, 0, 0}
-                    , PAIR1
-            , EMPTY_ROW
-            , EMPTY_ROW});
-            newPiece.setShape(3, new int[][]{ EMPTY_ROW
-            , new int[]{0, 1, 1, 0, 0}
-                    , PAIR1
-            , EMPTY_ROW
-            , EMPTY_ROW});
+                        , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                        , PAIR2
+                        , PAIR1
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+            }};
             return newPiece;
 
         }
 
         public static TetrisPiece makeLShape() {
-            TetrisPiece newPiece = new TetrisPiece();
+            return new TetrisPiece() {{
 
-            {
-
-                newPiece.setShape(0, new int[][]{ EMPTY_ROW
-                , CENTER
-                , CENTER
-                , PAIR1
-                , EMPTY_ROW});
-            }
-            {
-
-                newPiece.setShape(1, new int[][]{ EMPTY_ROW
-                , EMPTY_ROW
-                , MIDDLE
-                , LEFT1
-                , EMPTY_ROW});
-            }
-
-            {
-
-                newPiece.setShape(2, new int[][]{ EMPTY_ROW
-                , new int[]{0, 1, 1, 0, 0}
+                setShape(0, EMPTY_ROW
                         , CENTER
-                , CENTER
-                , EMPTY_ROW});
-            }
+                        , CENTER
+                        , PAIR1
+                        , EMPTY_ROW);
 
-            newPiece.setShape(3, new int[][]{ EMPTY_ROW
-            , RIGHT1
-            , MIDDLE
-            , EMPTY_ROW
-            , EMPTY_ROW});
+                setShape(1, EMPTY_ROW
+                        , EMPTY_ROW
+                        , MIDDLE
+                        , LEFT1
+                        , EMPTY_ROW);
 
-            return newPiece;
+                setShape(2, EMPTY_ROW
+                        , PAIR2
+                        , CENTER
+                        , CENTER
+                        , EMPTY_ROW);
+
+                setShape(3, EMPTY_ROW
+                        , RIGHT1
+                        , MIDDLE
+                        , EMPTY_ROW
+                        , EMPTY_ROW);
+            }};
         }
 
         public static TetrisPiece makeJShape() {
-            TetrisPiece newPiece = new TetrisPiece();
-
-            {
-
-                newPiece.setShape(0, new int[][]{ EMPTY_ROW
-                , CENTER
-                , CENTER
-                , new int[]{0, 1, 1, 0, 0}
-                        , EMPTY_ROW});
-            }
-            {
-                newPiece.setShape(1, new int[][]{EMPTY_ROW,
+            return new TetrisPiece() {{
+                setShape(0, EMPTY_ROW, CENTER
+                        , CENTER
+                        , PAIR2
+                        , EMPTY_ROW);
+                setShape(1, EMPTY_ROW,
                         LEFT1,
                         MIDDLE,
                         EMPTY_ROW,
-                        EMPTY_ROW});
-            }
-
-            {
-
-                newPiece.setShape(2, new int[][]{EMPTY_ROW,
+                        EMPTY_ROW);
+                setShape(2, EMPTY_ROW,
                         PAIR1,
                         CENTER,
                         CENTER,
-                        EMPTY_ROW});
-            }
-
-            int[][]rows={ EMPTY_ROW
-            , EMPTY_ROW
-            , MIDDLE
-            , RIGHT1
-            , EMPTY_ROW};
-            newPiece.setShape(3, rows);
-
-            return newPiece;
+                        EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                        , EMPTY_ROW
+                        , MIDDLE
+                        , RIGHT1
+                        , EMPTY_ROW);
+            }};
         }
 
-        public void setShape(int Direction,int[]...rows) {
-            thePiece[Direction] =rows;
+        public void setShape(int Direction, int[]... rows) {
+            thePiece[Direction] = rows;
         }
 
         public int[][] getShape(int whichOrientation) {
@@ -536,26 +480,43 @@ public class Tetris extends GameX {
         public String toString() {
             StringBuilder shapeBuffer = new StringBuilder();
             for (int i = 0; i < thePiece[currentOrientation].length; i++) {
-                for (int j = 0; j < thePiece[currentOrientation][i].length; j++) {
+                for (int j = 0; j < thePiece[currentOrientation][i].length; j++)
                     shapeBuffer.append(' ').append(thePiece[currentOrientation][i][j]);
-                }
                 shapeBuffer.append('\n');
             }
             return shapeBuffer.toString();
-
         }
     }
 
     public static class TetrisState {
-     public    enum actions {
+        public enum actions {
 
-         /**Action value for a move left*/LEFT,
-         /**Action value for a move right*/RIGHT,
-         /**Action value for a clockwise rotation*/CW,
-         /**Action value for a counter clockwise rotation*/CCW,
-         /**The no-action Action*/NONE,
-         /** fall down */FALL,
+            /**
+             * Action value for a move left
+             */
+            LEFT,
+            /**
+             * Action value for a move right
+             */
+            RIGHT,
+            /**
+             * Action value for a clockwise rotation
+             */
+            CW,
+            /**
+             * Action value for a counter clockwise rotation
+             */
+            CCW,
+            /**
+             * The no-action Action
+             */
+            NONE,
+            /**
+             * fall down
+             */
+            FALL,
         }
+
         private final Random randomGenerator = new Random();
         public int width;
         public int height;
@@ -575,16 +536,31 @@ public class Tetris extends GameX {
         public float[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
-        Vector<TetrisPiece> possibleBlocks = new Vector<>();
+        CopyOnWriteArrayList<TetrisPiece> possibleBlocks = new CopyOnWriteArrayList<>();
         private int rowsFilled;
 
         public final AtomicBoolean easy = new AtomicBoolean(false);
 
+     /*   public enum PossibleBlocks{
+            Line(TetrisPiece.makeLine()),
+            Square(TetrisPiece.makeSquare()),
+            Tri(TetrisPiece.makeTri()),
+            SShape(TetrisPiece.makeSShape()),
+            ZShape(TetrisPiece.makeZShape()),
+            LShape(TetrisPiece.makeLShape()),
+            JShape(TetrisPiece.makeJShape()),
+            ;
+            private TetrisPiece shape;
+            PossibleBlocks(TetrisPiece shape) {
+                this.shape = shape;
+            }
+        }*/
 
         public TetrisState(int width, int height, int timePerFall) {
             this.width = width;
             this.height = height;
             this.timePerFall = timePerFall;
+
             possibleBlocks.add(TetrisPiece.makeLine());
             possibleBlocks.add(TetrisPiece.makeSquare());
             possibleBlocks.add(TetrisPiece.makeTri());
@@ -602,9 +578,7 @@ public class Tetris extends GameX {
             currentX = width / 2 - 1;
             currentY = 0;
             score = 0;
-            for (int i = 0; i < grid.length; i++) {
-                grid[i] = 0;
-            }
+            for (int i = 0; i < grid.length; i++) grid[i] = 0;
             currentRotation = 0;
             is_game_over = false;
 
@@ -646,8 +620,8 @@ public class Tetris extends GameX {
 
             if (color == -1)
                 color = currentBlockId + 1;
-            for (int y = 0; y < thisPiece[0].length; ++y) {
-                for (int x = 0; x < thisPiece.length; ++x) {
+            for (int y = 0; y < thisPiece[0].length; ++y)
+                for (int x = 0; x < thisPiece.length; ++x)
                     if (thisPiece[x][y] != 0) {
 
 
@@ -659,8 +633,6 @@ public class Tetris extends GameX {
                         }*/
                         f[linearIndex] = color;
                     }
-                }
-            }
 
         }
 
@@ -673,7 +645,7 @@ public class Tetris extends GameX {
         }
 
         /* This code applies the action, but doesn't do the default fall of 1 square */
-        public boolean act(actions  theAction, boolean enable) {
+        public boolean act(actions theAction, boolean enable) {
             synchronized (this) {
 
 
@@ -687,9 +659,7 @@ public class Tetris extends GameX {
                         break;
                     case CCW:
                         nextRotation = currentRotation - 1;
-                        if (nextRotation < 0) {
-                            nextRotation = 3;
-                        }
+                        if (nextRotation < 0) nextRotation = 3;
                         break;
                     case LEFT:
                         nextX = enable ? currentX - 1 : currentX;
@@ -707,9 +677,7 @@ public class Tetris extends GameX {
                         while (isInBounds && !isColliding) {
                             nextY++;
                             isInBounds = inBounds(nextX, nextY, nextRotation);
-                            if (isInBounds) {
-                                isColliding = colliding(nextX, nextY, nextRotation);
-                            }
+                            if (isInBounds) isColliding = colliding(nextX, nextY, nextRotation);
                         }
                         nextY--;
                         break;
@@ -730,13 +698,11 @@ public class Tetris extends GameX {
 
             synchronized (this) {
 
-                if (inBounds(nextX, nextY, nextRotation)) {
-                    if (!colliding(nextX, nextY, nextRotation)) {
-                        currentRotation = nextRotation;
-                        currentX = nextX;
-                        currentY = nextY;
-                        return true;
-                    }
+                if (inBounds(nextX, nextY, nextRotation)) if (!colliding(nextX, nextY, nextRotation)) {
+                    currentRotation = nextRotation;
+                    currentX = nextX;
+                    currentY = nextY;
+                    return true;
                 }
             }
 
@@ -773,28 +739,14 @@ public class Tetris extends GameX {
             int ll = thePiece.length;
             try {
 
-                for (int y = 0; y < thePiece[0].length; ++y) {
-                    for (int x = 0; x < ll; ++x) {
+                for (int y = 0; y < thePiece[0].length; ++y)
+                    for (int x = 0; x < ll; ++x)
                         if (thePiece[x][y] != 0) {
-
-
-                            if (checkY + y < 0 || checkX + x < 0) {
+                            if (checkY + y < 0 || checkX + x < 0 || checkY + y >= height || checkX + x >= width)
                                 return true;
-                            }
-
-
-                            if (checkY + y >= height || checkX + x >= width) {
-                                return true;
-                            }
-
-
                             int linearArrayIndex = i(checkX + x, checkY + y);
-                            if (grid[linearArrayIndex] != 0) {
-                                return true;
-                            }
+                            if (grid[linearArrayIndex] != 0) return true;
                         }
-                    }
-                }
                 return false;
 
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -813,22 +765,15 @@ public class Tetris extends GameX {
             int ll = thePiece.length;
             try {
 
-                for (int y = 0; y < thePiece[0].length; ++y) {
-                    for (int x = 0; x < ll; ++x) {
-                        if (thePiece[x][y] != 0) {
-
-
+                for (int y = 0; y < thePiece[0].length; ++y)
+                    for (int x = 0; x < ll; ++x)
+                        if (thePiece[x][y] != 0)
                             if (checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height) {
 
 
                                 int linearArrayIndex = i(checkX + x, checkY + y);
-                                if (grid[linearArrayIndex] != 0) {
-                                    return true;
-                                }
+                                if (grid[linearArrayIndex] != 0) return true;
                             }
-                        }
-                    }
-                }
                 return false;
 
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -856,17 +801,11 @@ public class Tetris extends GameX {
             try {
                 int[][] thePiece = possibleBlocks.get(currentBlockId).getShape(checkOrientation);
 
-                for (int y = 0; y < thePiece[0].length; ++y) {
-                    for (int x = 0; x < thePiece.length; ++x) {
-                        if (thePiece[x][y] != 0) {
-
-
-                            if (!(checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height)) {
+                for (int y = 0; y < thePiece[0].length; ++y)
+                    for (int x = 0; x < thePiece.length; ++x)
+                        if (thePiece[x][y] != 0)
+                            if (!(checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height))
                                 return false;
-                            }
-                        }
-                    }
-                }
 
                 return true;
             } catch (ArrayIndexOutOfBoundsException e) {
@@ -895,29 +834,19 @@ public class Tetris extends GameX {
             time++;
 
 
-            if (!inBounds(currentX, currentY, currentRotation)) {
+            if (!inBounds(currentX, currentY, currentRotation))
                 System.err.println("In GameState.Java the Current Position of the board is Out Of Bounds... Consistency Check Failed");
-            }
 
 
             boolean onSomething = false;
-            if (!nextInBounds()) {
-                onSomething = true;
-            }
-            if (!onSomething) {
-                if (nextColliding()) {
-                    onSomething = true;
-                }
-            }
+            if (!nextInBounds()) onSomething = true;
+            if (!onSomething) if (nextColliding()) onSomething = true;
 
             if (onSomething) {
                 running = false;
                 writeCurrentBlock(grid, -1);
-            } else {
-
-                if (time % timePerFall == 0)
-                    currentY += 1;
-            }
+            } else if (time % timePerFall == 0)
+                currentY += 1;
 
         }
 
@@ -938,19 +867,14 @@ public class Tetris extends GameX {
                 currentY++;
             }
             is_game_over = colliding(currentX, currentY, currentRotation) || hitOnWayIn;
-            if (is_game_over) {
-                running = false;
-            }
+            if (is_game_over) running = false;
 
             return currentBlockId;
         }
 
         protected int nextBlock() {
-            if (easy.get()) {
-                return 1; //square
-            } else {
-                return randomGenerator.nextInt(possibleBlocks.size());
-            }
+            if (easy.get()) return 1; //square
+            else return randomGenerator.nextInt(possibleBlocks.size());
 
         }
 
@@ -959,16 +883,13 @@ public class Tetris extends GameX {
             int rowsFilled = 0;
 
 
-            for (int y = height - 1; y >= 0; --y) {
+            for (int y = height - 1; y >= 0; --y)
                 if (isRow(y, true)) {
                     removeRow(y);
                     numRowsCleared += 1;
                     y += 1;
-                } else {
-                    if (!isRow(y, false))
-                        rowsFilled++;
-                }
-            }
+                } else if (!isRow(y, false))
+                    rowsFilled++;
 
             int prevRows = this.rowsFilled;
             this.rowsFilled = rowsFilled;
@@ -984,15 +905,8 @@ public class Tetris extends GameX {
 
             int diff = prevRows - rowsFilled;
 
-            if (diff >= height - 1) {
-
-                score = Float.NaN;
-
-            } else {
-
-
-                score = diff;
-            }
+            if (diff >= height - 1) score = Float.NaN;
+            else score = diff;
         }
 
         public float height() {
@@ -1009,9 +923,7 @@ public class Tetris extends GameX {
         public boolean isRow(int y, boolean filledOrClear) {
             for (int x = 0; x < width; ++x) {
                 float s = grid[i(x, y)];
-                if (filledOrClear ? s == 0 : s != 0) {
-                    return false;
-                }
+                if (filledOrClear ? s == 0 : s != 0) return false;
             }
             return true;
         }
@@ -1036,13 +948,12 @@ public class Tetris extends GameX {
             }
 
 
-            for (int ty = y; ty > 0; --ty) {
+            for (int ty = y; ty > 0; --ty)
                 for (int x = 0; x < width; ++x) {
                     int linearIndexTarget = i(x, ty);
                     int linearIndexSource = i(x, ty - 1);
                     grid[linearIndexTarget] = grid[linearIndexSource];
                 }
-            }
 
 
             for (int x = 0; x < width; ++x) {
@@ -1072,9 +983,7 @@ public class Tetris extends GameX {
         public void printState() {
             int index = 0;
             for (int i = 0; i < height - 1; i++) {
-                for (int j = 0; j < width; j++) {
-                    System.out.print(grid[i * width + j]);
-                }
+                for (int j = 0; j < width; j++) System.out.print(grid[i * width + j]);
                 System.out.print("\n");
             }
             System.out.println("-------------");
@@ -1084,19 +993,14 @@ public class Tetris extends GameX {
 
 
         protected void next() {
-            if (running) {
-                update();
-            } else {
-                spawnBlock();
-            }
+            if (running) update();
+            else spawnBlock();
 
             checkScore();
 
             toVector(false, seen);
 
-            if (gameOver()) {
-                die();
-            }
+            if (gameOver()) die();
 
 
         }
