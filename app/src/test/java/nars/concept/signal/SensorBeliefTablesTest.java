@@ -26,6 +26,7 @@ class SensorBeliefTablesTest {
         NAR n = NARS.shell();
 
         Game a = new Game("a");
+        n.add(a);
 
         AtomicFloat xx = new AtomicFloat(0);
 
@@ -35,8 +36,9 @@ class SensorBeliefTablesTest {
         SensorBeliefTables xb = (SensorBeliefTables) x.beliefs();
 
         step(n, xb);
-        step(n, xb);
         assertEquals(1, xb.taskCount());
+        step(n, xb);
+        assertEquals(1, xb.taskCount()); //same but stretch
 
         xx.set(0.5f);
         step(n, xb);
@@ -66,7 +68,9 @@ class SensorBeliefTablesTest {
         RingBufferTaskSeries rb = (RingBufferTaskSeries) (xb.series.series);
         int head = rb.q.head();
         assertEquals(0, rb.indexNear(head,0));
-        assertEquals(1, rb.indexNear(head,4));
+        assertEquals(0, rb.indexNear(head,1));
+        assertEquals(1, rb.indexNear(head,2));
+        assertEquals(2, rb.indexNear(head,4));
         assertEquals(2, rb.indexNear(head,5));
         assertEquals(2, rb.indexNear(head,6));
         assertEquals(2, rb.indexNear(head,1000));

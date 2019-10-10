@@ -498,7 +498,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
                 this.now = now;
                 prev = now-dither;
             }
-            if (now <= prev)
+            if (now < prev)
                 return; //too early
 
             time.next(this.now = now);

@@ -1,7 +1,6 @@
 package nars.table.dynamic;
 
 import jcog.Util;
-import jcog.math.LongInterval;
 import nars.NAL;
 import nars.Task;
 import nars.attention.What;
@@ -56,32 +55,33 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 	@Override
 	public final void match(Answer a) {
 		long seriesStart = series.start();
-		if (seriesStart != TIMELESS) {
-			long s = a.start, e;
+		if (seriesStart == TIMELESS)
+			return; //empty
 
-			double dur = a.dur;
+		long s = a.start, e;
 
-			if (s == ETERNAL || s == TIMELESS) {
-				//choose now as the default focus time
-				long now = a.time();
-				s = (long) Math.floor(now - dur / 2);
-				e = (long) Math.ceil(now + dur / 2);
-			} else {
-				e = a.end;
-			}
+		double dur = a.dur;
 
-			//use at most a specific fraction of the TTL
-			int aTTL = a.ttl; //save
-			long range = Math.max(1, LongInterval.intersectLength(seriesStart, series.end(), s, e));
-			int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
-				NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) * range)));
-			a.ttl = seriesTTL;
-
-			series.whileEach(s, e, false, a);
-
-			int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
-			a.ttl = aTTL - ttlUsed; //restore
+		if (s == ETERNAL || s == TIMELESS) {
+			//choose now as the default focus time
+			long now = a.time();
+			s = now - (long)Math.ceil(dur / 2);
+			e = now + (long)Math.ceil(dur / 2);
+		} else {
+			e = a.end;
 		}
+
+//			//use at most a specific fraction of the TTL
+//			int aTTL = a.ttl; //save
+////			long range = Math.max(1, LongInterval.intersectLength(seriesStart, series.end(), s, e));
+//			int seriesTTL = Math.min(aTTL, (int) (NAL.signal.SERIES_MATCH_MIN + Math.ceil(
+//				NAL.signal.SERIES_MATCH_ADDITIONAL_RATE_PER_DUR / Math.max(1, dur) /* * range */)));
+//			a.ttl = seriesTTL;
+//
+		series.whileEach(s, e, false, a);
+//
+//			int ttlUsed = seriesTTL - a.ttl; //assert(ttlUsed <= aTTL);
+//			a.ttl = aTTL - ttlUsed; //restore
 	}
 
 	@Override

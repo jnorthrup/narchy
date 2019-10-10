@@ -511,20 +511,11 @@ public enum Terms {
 
 		Subterms xx = x.subterms(), yy = y.subterms(); //subtermsDirect not possible because possiblyUnifiable tests equality HACK
 
-		int varOrTemporal = var | CONJ.bit; //Op.Temporal;
-		int xxs = xx.structure(), yys = yy.structure();
-		if (((xxs & varOrTemporal) == 0) && ((yys & varOrTemporal) == 0)) //no variables or temporals
-			return false;
-		if (xxs!=yys && (xxs & var)==0 && (yys & var)==0)
-			return false; //differing structure and both constant
-
-		//TODO Conj Xternal allow
-
 		int n = xx.subs();
-		if ((n != yy.subs()) &&
-			(!Terms.hasEllipsis(x, xxs) && !Terms.hasEllipsis(y, yys)) &&
-			((xo != CONJ) || (!Conj.isSeq(x) && !Conj.isSeq(y)))
-			//  && (xxs & Op.Temporal)==0 && (yys & Op.Temporal)==0)
+		if (n != yy.subs() &&
+////			(!Terms.hasEllipsis(x, xxs) && !Terms.hasEllipsis(y, yys)) &&
+			(xo != CONJ) || (Conj.isSeq(x) || Conj.isSeq(y))
+//			//  && (xxs & Op.Temporal)==0 && (yys & Op.Temporal)==0)
 		) {
 			return false;
 		}
@@ -532,8 +523,11 @@ public enum Terms {
 		if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, var))
 			return false;
 
+		//TODO Conj Xternal allow
+
+
 		if (!xo.commutative) {
-			for (int i = n - 1; i >= 0; i--)
+			for (int i = n - 1; i >= 0; i--) //reverse since smallest terms are last
 				if (!possiblyUnifiable(xx.sub(i), yy.sub(i), false, var))
 					return false;
 		}

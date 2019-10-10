@@ -3,6 +3,8 @@ package nars;
 import jcog.Util;
 import nars.attention.What;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.parallel.Execution;
+import org.junit.jupiter.api.parallel.ExecutionMode;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
@@ -18,6 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Created by me on 7/8/16.
  */
+@Execution(ExecutionMode.SAME_THREAD)
 public class InterNARTest {
 
     @ParameterizedTest
@@ -47,18 +50,13 @@ public class InterNARTest {
 
         final float NET_FPS = 20f;
         final float NAR_FPS = NET_FPS * 2;
-        final int INTERACT_TIME = 1500;
-
-        int volMax = 8;
 
         int preCycles = 1;
-        int postCycles = 64;
+        int duringCycles = 128;
+        int postCycles = 128;
 
         NAR a = NARS.realtime(NAR_FPS).withNAL(1, 1).get();
         NAR b = NARS.realtime(NAR_FPS).withNAL(1, 1).get();
-
-        a.termVolMax.set(volMax);
-        b.termVolMax.set(volMax);
 
         What aa = a.what();
         What bb = b.what();
@@ -98,10 +96,11 @@ public class InterNARTest {
 
         afterConnect.accept(a, b);
 
-
-
-        Util.sleepMS(INTERACT_TIME);
-
+        /* init */
+        for (int i = 0; i < duringCycles; i++) {
+            a.run(1);
+            b.run(1);
+        }
 
         System.out.println("disconnecting..");
 

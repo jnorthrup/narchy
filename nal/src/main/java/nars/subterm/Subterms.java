@@ -1024,17 +1024,26 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    static boolean possiblyUnifiable(Termlike xx, Termlike yy, int varBits) {
-        return xx.equals(yy) || possiblyUnifiableAssumingNotEqual(xx, yy, varBits);
+    static boolean possiblyUnifiable(Termlike xx, Termlike yy, int var) {
+        return xx.equals(yy) || possiblyUnifiableAssumingNotEqual(xx, yy, var);
     }
 
-    static boolean possiblyUnifiableAssumingNotEqual(Termlike xx, Termlike yy, int varBits) {
+    static boolean possiblyUnifiableAssumingNotEqual(Termlike xx, Termlike yy, int var) {
 
+        int varOrTemporal = var | CONJ.bit; //Op.Temporal;
         int XS = xx.structure(), YS = yy.structure();
-        int XSc = XS & (~varBits);
+        if (((XS & varOrTemporal) == 0) && ((YS & varOrTemporal) == 0)) //no variables or temporals
+            return false;
+        if (XS!=YS && (XS & var)==0 && (YS & var)==0)
+            return false; //differing structure and both constant
+
+
+
+//        int XS = xx.structure(), YS = yy.structure();
+        int XSc = XS & (~var);
         if (XSc == 0)
             return true; //X contains only vars
-        int YSc = YS & (~varBits);
+        int YSc = YS & (~var);
         if (YSc == 0)
             return true; //Y contains only vars
 

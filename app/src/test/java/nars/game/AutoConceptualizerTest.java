@@ -14,6 +14,9 @@ public class AutoConceptualizerTest extends CameraSensorTest {
     public void test1() {
         int W = 4, H = 4;
         NAR n = NARS.tmp();
+        tmp = new MyGame();
+        n.add(tmp);
+
         Bitmap2DSensor c = new Bitmap2DSensor<>((x, y) -> $.p(x,y), new Bitmap2D() {
             @Override
             public int width() {

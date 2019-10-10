@@ -33,7 +33,7 @@ public class NARio extends GameX {
 
 	static final float fps = 24;
 //    private final AbstractSensor cam;
-	static final int tileTypes = 3; //0..4
+	static final int tileTypes = 3; //0..2
 	//    public final FloatRange MoveRight = new FloatRange(0.75f, 0f, 1f);
 	public final FloatRange EarnCoin = new FloatRange(0.95f, 0f, 1f);
 	private final MarioComponent game;

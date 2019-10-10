@@ -123,7 +123,9 @@ abstract public class GameX extends Game {
 
             float metaFPS = narFPS / 2; //half rate
 
-            n.parts(Game.class).filter(g -> !(g instanceof MetaAgent)).forEach(g -> {
+            n.parts(Game.class).filter(
+                g -> !(g instanceof MetaAgent)
+            ).forEach(g -> {
                 float fps = metaFPS; //TODO specific to each game
                 MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaFPS, metaAllowPause);
                 n.add(gm);
@@ -431,7 +433,7 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.termVolMax.set(40);
+        n.termVolMax.set(50);
 
         //n.confMin.set(1e-10);
 //        n.freqResolution.set(0.1f);

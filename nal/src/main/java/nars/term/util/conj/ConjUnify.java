@@ -17,7 +17,7 @@ public class ConjUnify {
     /** conjunction unfiication when # subterms differ */
     public static boolean unifyConj(Term x, Term y, Subterms xx, Subterms yy, Unify u) {
 
-        if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits))
+        if (!Subterms.possiblyUnifiableAssumingNotEqual(xx, yy, u.varBits | (x.hasXternal() || y.hasXternal() ? CONJ.bit : 0)))
             return false;
 
         int xdt = x.dt(), ydt = y.dt();
