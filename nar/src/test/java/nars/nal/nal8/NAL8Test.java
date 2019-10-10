@@ -252,10 +252,12 @@ public class NAL8Test extends NALTest {
 
     @Disabled @Test void antigoal() {
         //B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskImmediate)
-//        test
-//            .input("--y!")
-//            .believe("(x ==> y)")
-//            .mustGoal(cycles, "x", 0f, 0.81f);
+        test
+            .input("--y!")
+            .believe("(x ==> y)")
+            .mustGoal(cycles, "x", 0f, 0.81f)
+            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, t->true)
+        ;
 //        test
 //            .input("y!")
 //            .believe("(x ==> --y)")

@@ -38,8 +38,8 @@ public class AutoConceptualizer extends VectorSensor {
     float learningRate = 0.05f;
     float noiseLevel = 0.0002f;
 
-    public AutoConceptualizer(List<ComponentSignal> concepts, boolean beliefOrGoal, int features, NAR n) {
-        super(n);
+    public AutoConceptualizer(Term id, List<ComponentSignal> concepts, boolean beliefOrGoal, int features, NAR n) {
+        super(id, n);
         this.concepts = concepts;
         this.beliefOrGoal = beliefOrGoal;
         this.ae = new Autoencoder(concepts.size(), features, n.random());

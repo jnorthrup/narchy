@@ -148,7 +148,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
      * metabits must consistently return an array of the same size, since now the size of this autoencoder is locked to its dimension
      */
     public AutoclassifiedBitmap(@Nullable Term root, IntIntToFloatFunction pixIn, int pw, int ph, int sw, int sh, MetaBits metabits, int features, Game game) {
-        super( game.nar());
+        super( root, game.nar());
 
         ae = new Autoencoder(sw * sh + metabits.get(0, 0).length, features, game.random());
 

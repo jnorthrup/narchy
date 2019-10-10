@@ -27,6 +27,7 @@ import nars.game.GameTime;
 import nars.game.MetaAgent;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
+import nars.memory.HijackMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
@@ -313,7 +314,7 @@ abstract public class GameX extends Game {
                 .index(
 
                         //new RadixTreeMemory(64*1024)
-//
+
                         ramGB >= 0.5 ?
                                 new CaffeineMemory(
                                         //8 * 1024
@@ -433,7 +434,7 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.termVolMax.set(50);
+        n.termVolMax.set(64);
 
         //n.confMin.set(1e-10);
 //        n.freqResolution.set(0.1f);

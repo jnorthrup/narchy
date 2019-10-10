@@ -33,7 +33,7 @@ public class FreqVectorSensor extends VectorSensor {
     private float intensity;
 
     public FreqVectorSensor(CircularFloatBuffer buf, IntFunction<Term> termizer, int fftSize, int components, NAR n) {
-        super(n);
+        super(termizer.apply(components) /*n+1*/, n);
 
         this.buf = buf;
 

@@ -12,12 +12,10 @@ import java.util.function.IntSupplier;
 public class SelectorSensor extends VectorSensor {
 
     final List<ComponentSignal> choices;
-    private final short[] cause;
 
     public SelectorSensor(IntSupplier value, int[] values, IntFunction<Term> termizer, NAR n) {
-        super(n);
+        super(termizer.apply(values.length) /* n+1*/, n);
         assert(values.length > 1);
-        this.cause = new short[] { n.newCause(id).id } ;
         choices = new FasterList<>(values.length);
         for (int e : values) {
             choices.add(newComponent(

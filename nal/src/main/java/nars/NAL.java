@@ -289,11 +289,11 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 //        //public static final int SERIES_MATCH_MIN = 1;
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT =
-            1f;
+            0.75f;
             //0.5f;
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR =
-            1f;
+            0.9f;
             //0.5f;
 
         public static final float CLEAN_MARGIN_DURS =

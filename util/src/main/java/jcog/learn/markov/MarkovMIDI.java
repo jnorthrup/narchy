@@ -1,9 +1,11 @@
 package jcog.learn.markov;
 
+import jcog.data.list.FasterList;
+
 import javax.sound.midi.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
@@ -15,23 +17,21 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
         mLengthChain = new MarkovChain<Long>(n);
     }
 
-    public void importMIDI(File file) throws InvalidMidiDataException, IOException {
-        Sequence s = MidiSystem.getSequence(file);
-        learnSequence(s, MidiSystem.getMidiFileFormat(file));
+//    public void importMIDI(File file) throws InvalidMidiDataException, IOException {
+//        Sequence s = MidiSystem.getSequence(file);
+//        learnSequence(s, MidiSystem.getMidiFileFormat(file));
+//    }
+
+    public void learnSequence(Sequence s) {
+        for (Track track : s.getTracks())
+            learnTrack(track);
     }
 
-    public void learnSequence(Sequence s, MidiFileFormat fmt) {
-        Track[] tracks = s.getTracks();
-        for (int i = 0; i < tracks.length; i++) {
-            learnTrack(tracks[i], fmt);
-        }
-
-    }
-
-    public void learnTrack(Track t, MidiFileFormat fmt) {
-        if (t.size() == 0) return;
-        ArrayList<MidiMessageWrapper> msgs = new ArrayList<MidiMessageWrapper>();
-        ArrayList<Long> times = new ArrayList<Long>();
+    public void learnTrack(Track t) {
+        int trackSize = t.size();
+        if (trackSize == 0) return;
+        List<MidiMessageWrapper> msgs = new FasterList<MidiMessageWrapper>();
+        List<Long> times = new FasterList<Long>();
 
         MidiEvent event = t.get(0);
         long lastTick = event.getTick();
@@ -40,27 +40,24 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
         times.add(lastTick);
 
         
-        int resolution = fmt.getResolution();
-        long beats = event.getTick() / resolution;
-        int adds = 0;
+//        int resolution = fmt.getResolution();
+//        long beats = event.getTick() / resolution;
+//        int adds = 0;
 
-        for (int i = 1; i < t.size(); i++) {
+        for (int i = 1; i < trackSize; i++) {
             event = t.get(i);
             msg = event.getMessage();
             wrap = new MidiMessageWrapper(msg);
-            times.add(event.getTick() - lastTick);
-            lastTick = event.getTick();
+            long eTick = event.getTick();
+            times.add(eTick - lastTick);
+            lastTick = eTick;
             msgs.add(wrap);
         }
 
-
-        if (msgs.size() > 0) {
-            adds++;
+        if (msgs.size() > 0)
             model.learn(msgs);
-        }
 
         mLengthChain.learn(times);
-
     }
 
     public void exportTrack(String filename, float divisionType, int resolution, int fileType)
@@ -97,6 +94,11 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
         }
 
         MidiSystem.write(s, fileType, file);
+    }
+
+    public void exportTrack(String s, File inputFile, int maxLen) throws InvalidMidiDataException, IOException {
+        MidiFileFormat fmt = MidiSystem.getMidiFileFormat(inputFile);
+        exportTrack(s, fmt.getDivisionType(), fmt.getResolution(), fmt.getType(), maxLen);
     }
 
     public static class MidiMessageWrapper implements Comparable<MidiMessageWrapper> {

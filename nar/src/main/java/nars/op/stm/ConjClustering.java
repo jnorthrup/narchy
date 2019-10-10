@@ -47,8 +47,11 @@ public class ConjClustering extends TaskAction {
 
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
+
+    int eventBatchMin = 3;
+
     int learningIterations = 1;
-    float minDurationsPerLearning = 0.5f;
+    float minDurationsPerLearning = 1f;
 
     /** HACK */
     @Deprecated private int volEstimateInflationFactor = 2;
@@ -190,7 +193,7 @@ public class ConjClustering extends TaskAction {
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
 
         int iterations = ITERATIONS;
-        conjoiner.centroids = data.forEachCentroid(TaskList::new, conjoiner.centroids, iterations, 3 /* TODO by volume, ie volMax */);
+        conjoiner.centroids = data.forEachCentroid(TaskList::new, conjoiner.centroids, iterations, tasksPerIterationPerCentroid * eventBatchMin /* TODO by volume, ie volMax */);
         TaskList[] centroids = conjoiner.centroids;
         int N = centroids.length;
 

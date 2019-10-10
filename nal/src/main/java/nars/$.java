@@ -223,6 +223,9 @@ public enum $ { ;
     public static Term p(String x, Term y) {
         return p($.the(x), y);
     }
+    public static Term p(Term x, String y) {
+        return p(x, $.the(y));
+    }
 
     public static Term p(String... t) {
         return t.length == 0 ? Op.EmptyProduct : $.p($.the(t));

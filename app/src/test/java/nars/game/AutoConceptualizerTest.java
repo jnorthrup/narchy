@@ -34,7 +34,7 @@ public class AutoConceptualizerTest extends CameraSensorTest {
             }
         }, n);
 
-        AutoConceptualizer ac = new AutoConceptualizer(
+        AutoConceptualizer ac = new AutoConceptualizer($.inh(c.id, "auto"),
                 c.concepts.order() /* HACK */, true, 2, n);
 
 

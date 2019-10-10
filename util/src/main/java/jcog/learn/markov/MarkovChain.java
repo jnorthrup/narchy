@@ -2,7 +2,7 @@ package jcog.learn.markov;
 
 import com.google.common.collect.Streams;
 import jcog.data.list.FasterList;
-import jcog.pri.WLink;
+import jcog.pri.NLink;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -72,14 +72,9 @@ public class MarkovChain<T> {
      * @param phrase to learn
      */
     public MarkovChain learn(Stream<T> phrase, float strength) {
-
-        
         final Chain[] current = {START};
 
-        
         final List<T>[] tuple = new List[]{new FasterList<T>()};
-
-        
         
         phrase.forEach((T t) -> {
             List<T> tu = tuple[0];
@@ -96,11 +91,8 @@ public class MarkovChain<T> {
         Chain c = current[0];
         List<T> t = tuple[0];
 
-        
-        if (!t.isEmpty()) {
+        if (!t.isEmpty())
             c = c.learn(getOrAdd(t), strength);
-        }
-
         
         c.learn(END, strength);
         return this;
@@ -166,7 +158,7 @@ public class MarkovChain<T> {
         /**
          * A list of edges to other nodes
          */
-        protected final Map<Chain<T>, WLink<Chain<T>>> edges = new LinkedHashMap();
+        protected final Map<Chain<T>, NLink<Chain<T>>> edges = new LinkedHashMap();
         private final int hash;
 
         /**
@@ -279,8 +271,7 @@ public class MarkovChain<T> {
          * @return the node that was learned
          */
         public Chain<T> learn(final Chain<T> n, float strength) {
-            
-            WLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new WLink<>(nn, 0));
+            NLink<Chain<T>> e = edges.computeIfAbsent(n, nn -> new NLink<>(nn, 0));
             e.priAdd(strength);
             return e.get();
         }
@@ -324,7 +315,7 @@ public class MarkovChain<T> {
 
 
 
-        static <T> WLink<T> selectRoulette(Random RNG, Collection<WLink<T>> edges) {
+        static <T> NLink<T> selectRoulette(Random RNG, Collection<NLink<T>> edges) {
             int s = edges.size();
             if (s == 0)
                 return null;
@@ -333,30 +324,22 @@ public class MarkovChain<T> {
 
             
             float totalScore = 0;
-            for (WLink e : edges)
+            for (NLink e : edges)
                 totalScore += e.pri();
 
-            
             float r = RNG.nextFloat() * totalScore;
 
-            
             int current = 0;
 
-            
-            for (WLink e : edges) {
-
-                
+            for (NLink e : edges) {
                 float dw = e.pri();
 
-                if (r >= current && r < current + dw) {
+                if (r >= current && r < current + dw)
                     return e;
-                }
 
-                
                 current += dw;
             }
 
-            
             return edges.iterator().next();
         }
 

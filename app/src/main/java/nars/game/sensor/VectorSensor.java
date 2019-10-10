@@ -26,10 +26,6 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
     /** used and shared by all components */
     public final PriAmp pri;
 
-    protected VectorSensor(NAR n) {
-        this(null, n);
-    }
-
     protected VectorSensor(Term rootID, NAR n) {
         super(rootID, n);
 
