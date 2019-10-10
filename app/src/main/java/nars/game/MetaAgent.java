@@ -317,24 +317,34 @@ abstract public class MetaAgent extends Game {
 //            actionCtl($.inh(gid, CURIOSITY), g.curiosity.rate.subRange(curiMin, curiMax));
 
 			float initialDur = w.dur();
-			FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {
-				@Override
-				public float get() {
-					super.set(((TaskLinkWhat) w).dur);
-					return super.get();
-				}
+//			FloatRange durRange = new FloatRange(initialDur, Math.max(nar.dtDither(), initialDur / 4), initialDur * 16) {
+//				@Override
+//				public float get() {
+//					super.set(((TaskLinkWhat) w).dur);
+//					return super.get();
+//				}
+//
+//				@Override
+//				public void set(float value) {
+//					super.set(value);
+//					value = super.get();
+//					float nextDur = Math.max(1, value);
+//					//logger.info("{} dur={}" , w.id, nextDur);
+//					((TaskLinkWhat) w).dur.set(nextDur);
+//					//assert(nar.dur()==nextDur);
+//				}
+//			};
 
-				@Override
-				public void set(float value) {
-					super.set(value);
-					value = super.get();
-					float nextDur = Math.max(1, value);
-					//logger.info("{} dur={}" , w.id, nextDur);
-					((TaskLinkWhat) w).dur.set(nextDur);
-					//assert(nar.dur()==nextDur);
-				}
-			};
-			floatAction($.inh(gid, duration), durRange);
+
+			actionUnipolar($.inh(gid, duration), (x) -> {
+				float ditherDT = nar.dtDither();
+				float nextDur =
+					//(float) Math.pow(initialDur, Util.sqr((x + 0.5f)*2));
+					//ditherDT + initialDur * (float) Math.pow(2, ((x - 0.5f)*2));
+					(float) (ditherDT + Util.lerp(Math.pow(x,4), 0, initialDur*16));
+				//System.out.println(x + " dur=" + nextDur);
+				((TaskLinkWhat) w).dur.set(Math.max(1,nextDur));
+			});
 
 			if (w.in instanceof PriBuffer.BagTaskBuffer)
 				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);

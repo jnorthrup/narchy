@@ -195,9 +195,9 @@ public class BagClustering<X> {
         }
     }
 
-    public final void put(X x, float pri) {
-        if (pri == pri)
-            bag.putAsync(new VLink<>(x, pri, model.dims));
+    public final boolean put(X x, float pri) {
+        VLink<X> v = new VLink<>(x, pri, model.dims);
+        return bag.put(v)==v;
     }
 
     public final void remove(X x) {

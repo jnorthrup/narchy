@@ -110,7 +110,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	 */
 	public DerivePri derivePri =
 		new DefaultDerivePri();
-	private float _durPhysical = 1;
+	private float durBase = 1;
 	private transient long deadline = Long.MIN_VALUE;
 
 
@@ -124,7 +124,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	protected void starting(NAR nar) {
 		how = nar.how; //new PartBag<>(NAL.HOWS_CAPACITY)
 		super.starting(nar);
-		_durPhysical = nar.dur();
+		durBase = nar.dur();
 		in.start(out, nar);
 	}
 
@@ -146,7 +146,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	 * internal physiological duration
 	 */
 	public float durPhysical() {
-		return _durPhysical;
+		return durBase;
 	}
 
 	@Override
@@ -220,22 +220,37 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	}
 
 	@Deprecated
-	public final void next(long _start, long useNS) {
+	public final void next(long startNS, long useNS) {
 
-        long stop = _start + useNS;
 
-		tryCommit();
-
-        int n = how.size();
-        if (n == 0)
-        	return;
-        if (n == 1) {
-        	//special case: no slicing
-			next(how.get(0), useNS, _start);
-			return;
+		if (tryCommit()) {
+			//update time
+			long delayedStart = nanoTime() - startNS;
+			useNS = Math.max(0, useNS - delayedStart);
 		}
 
-        long howNS = useNS / n; //TODO refine
+        int n = how.size();
+		switch (n) {
+			case 0:
+				break; //nothing to do
+			case 1:
+				next(how.get(0), startNS, useNS); //special case: no slicing necessary
+				break;
+			default:
+				long stopNS = startNS + useNS;
+				nextSlicing(useNS, stopNS, n);
+				break;
+		}
+
+		//System.out.println(this.id + " runs=" + runs + " total=" + Texts.timeStr(useNS) + " each=" + Texts.timeStr(howNS));
+
+		//long end = System.nanoTime();
+		//use(estTime, end - start);
+	}
+
+	/** slices if more than 1 how */
+	void nextSlicing(long useNS, long stop, int slices) {
+		long howNS = useNS / slices; //TODO refine
 
 
 		Random r = random();
@@ -247,21 +262,16 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 			@Nullable How h = how.sample(r);
 			long start = nanoTime();
 			if (h.isOn()) {
-				now = next(h, howNS, start);
+				now = next(h, start, howNS);
 			} else
 				now = start;
 
 		} while (now < stop);
-
-		//System.out.println(this.id + " runs=" + runs + " total=" + Texts.timeStr(useNS) + " each=" + Texts.timeStr(howNS));
-
-		//long end = System.nanoTime();
-		//use(estTime, end - start);
 	}
 
-	protected long next(@Nullable How h, long ns, long start) {
+	protected long next(@Nullable How h, long startNS, long useNS) {
 		long now;
-		deadline = start + ns;
+		deadline = startNS + useNS;
 		try {
 			h.next(this, this);
 //					runs++;
@@ -271,7 +281,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 		}
 
 		now = nanoTime();
-		h.use(ns, now - start);
+		h.use(useNS, now - startNS);
 		return now;
 	}
 
@@ -285,10 +295,9 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 		long nextUpdate = this.nextUpdate.getOpaque();
 		long now = time();
 		if (now > nextUpdate) {
-			long nextNextUpdate = now + (long) Math.ceil(_durPhysical * commitDurs.floatValue());
+			long nextNextUpdate = now + (long) Math.ceil(durBase * commitDurs.floatValue());
 			if (this.nextUpdate.compareAndSet(nextUpdate, nextNextUpdate)) {
-
-				_durPhysical = nar.dur();
+				durBase = nar.dur();
 				commit(nar);
 				return true;
 			}

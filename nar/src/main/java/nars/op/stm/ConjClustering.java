@@ -48,7 +48,7 @@ public class ConjClustering extends TaskAction {
     /** collect at most Neach results from each queue */
     int tasksPerIterationPerCentroid = 1;
     int learningIterations = 1;
-    int minDurationsPerLearning = 1;
+    float minDurationsPerLearning = 0.5f;
 
     /** HACK */
     @Deprecated private int volEstimateInflationFactor = 2;
@@ -149,7 +149,7 @@ public class ConjClustering extends TaskAction {
 
 
     protected float pri(Task t) {
-        return    (1 + 0.5f * t.pri())
+        return    (1 + 0.5f * t.priElseZero())
                 * (1 + 0.5f * t.conf())
                 * (1 + 0.5f * t.polarity())
                 * (1 + 0.5f * t.originality())
@@ -178,10 +178,9 @@ public class ConjClustering extends TaskAction {
 
         NAR nar = d.nar;
 
-        //accept(y);
-        if (filter(x))
-            data.put(x, pri(x));
-        else
+        if (!filter(x)) return;
+
+        if (!data.put(x, pri(x)))
             return;
 
         tryLearn(d);
@@ -226,18 +225,17 @@ public class ConjClustering extends TaskAction {
 
             if (++next == N) next = 0;
 
-            if (i.size()<=1) {
-                empty++;
-                continue;
-            }
-
-            if (conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, why, d) == 0) {
-                if (i.size() > 2)
-                    i.shuffleThis(d.random);
-                else {
-                    i.clear(); //doomed
-                    empty++;
+            if (i.size() > 1) {
+                if (conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, why, d) == 0) {
+                    if (i.size() > 2)
+                        i.shuffleThis(d.random);
+                    else {
+                        i.clear(); //doomed
+                        empty++;
+                    }
                 }
+            } else {
+                empty++;
             }
 
 
@@ -251,7 +249,8 @@ public class ConjClustering extends TaskAction {
             try {
                 //called by only one thread at a time:
                 NAR nar = d.nar;
-                if (d.time - lastLearn >= minDurationsPerLearning* nar.dur()) {
+                //TODO adjust update rate according to value
+                if (d.time - lastLearn >= minDurationsPerLearning * d.dur) {
                     _update(d.time);
 
                     data.learn(forgetRate(), learningIterations);

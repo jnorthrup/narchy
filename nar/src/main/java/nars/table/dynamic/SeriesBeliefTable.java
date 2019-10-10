@@ -54,17 +54,16 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 
 	@Override
 	public final void match(Answer a) {
-		long seriesStart = series.start();
-		if (seriesStart == TIMELESS)
-			return; //empty
+//		long seriesStart = series.start();
+//		if (seriesStart == TIMELESS)
+//			return; //empty
 
 		long s = a.start, e;
-
-		double dur = a.dur;
 
 		if (s == ETERNAL || s == TIMELESS) {
 			//choose now as the default focus time
 			long now = a.time();
+			float dur = a.dur;
 			s = now - (long)Math.ceil(dur / 2);
 			e = now + (long)Math.ceil(dur / 2);
 		} else {

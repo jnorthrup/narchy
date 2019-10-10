@@ -275,9 +275,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * stretches perception across some amount of lag
          */
         public static final float SIGNAL_LATCH_LIMIT_DURS =
-                //2f;
+                2f;
                 //1.5f;
-                1f;
+                //1f;
 
         /**
          *  max tasked matched by series table, in case the answer limit is higher.
@@ -286,7 +286,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
                 1;
                 //1f/Math.max(1, SIGNAL_STRETCH_LIMIT_DURS/2);
 
-        public static final int SERIES_MATCH_MIN = 1;
+        //public static final int SERIES_MATCH_MIN = 1;
 
         public static final float SENSOR_SURPRISE_MIN_DEFAULT = 0.5f;
         public static final float SENSOR_SURPRISE_MIN_DEFAULT_MOTOR = 0.5f;

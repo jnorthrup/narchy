@@ -520,13 +520,15 @@ abstract public class GameX extends Game {
 //        Deriver bd3_act = new Deriver(Derivers.nal(n, 1, 3));
 //        bd3_act.time(new ActionTiming());
 
+        ConjClustering cc;
+
         Deriver bd6_act = new Deriver(
             Derivers.nal(n, 1,8,"motivation.nal")
                 .add(new STMLinker(1))
                 .add(new Arithmeticize.ArithmeticIntroduction())
                 .add(new Factorize.FactorIntroduction())
                 .add(new Inperience())
-                .add(new ConjClustering(n, BELIEF,  BELIEF, 8, 64, t->true))
+                .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 16, 512, t->true))
                 //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
                 //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
             ,
@@ -537,6 +539,7 @@ abstract public class GameX extends Game {
             )
         );
 
+        window(NARui.clusterView(cc, n), 800, 600);
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
 

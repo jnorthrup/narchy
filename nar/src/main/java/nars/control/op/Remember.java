@@ -35,7 +35,8 @@ public class Remember {
     public boolean notify;
 
 
-    public final NAR nar;
+    @Deprecated public final NAR nar;
+    public transient What what = null;
 
     @Nullable public static Remember the(Task x, NAR n) {
         return the(x, true, true, true, n);
@@ -101,7 +102,7 @@ public class Remember {
     }
 
     public Task next(What w) {
-
+        this.what = w;
         if (store) {
             if (!store(true))
                 return null;
@@ -232,7 +233,10 @@ public class Remember {
             novel = true;
         } else {
             long dCycles = Math.max(0, nextCreation - prevCreation);
-            float dDurs = dCycles == 0 ? 0 : (dCycles / n.dur()); //maybe what.dur()
+            float dur =
+                //n.dur();
+                what.dur();
+            float dDurs = dCycles == 0 ? 0 : (dCycles / dur); //maybe what.dur()
             novel = dDurs >= NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
         }
 
