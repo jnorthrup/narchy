@@ -9,7 +9,6 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.game.GameTime;
-import nars.game.NAct;
 import nars.game.action.GoalActionConcept;
 import nars.gui.sensor.VectorSensorChart;
 import nars.op.java.Opjects;
@@ -18,11 +17,9 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
-import java.util.stream.IntStream;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -31,11 +28,13 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends GameX {
 
-    static final float FPS = 24f;
+    public static final int[] EMPTY_ROW = {0, 0, 0, 0, 0};
+    final static float FPS = 24f;
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    private final boolean canFall;
+    private final boolean opjects = true;
+    private final boolean canFall = Config.configIs("TETRIS_CANFALL", false);
 
 
     private final Bitmap2D grid;
@@ -49,15 +48,15 @@ public class Tetris extends GameX {
     private final Bitmap2DSensor<Bitmap2D> gridVision;
 
 
-    public Tetris(final NAR nar) {
+    public Tetris(NAR nar) {
         this(nar, Tetris.tetris_width, Tetris.tetris_height);
     }
 
-    public Tetris(final NAR nar, final int width, final int height) {
+    public Tetris(NAR nar, int width, int height) {
         this(nar, width, height, 1);
     }
 
-    public Tetris(final NAR n, final int width, final int height, final int timePerFall) {
+    public Tetris(NAR n, int width, int height, int timePerFall) {
         this(Atomic.the("tetris"), n, width, height, timePerFall);
     }
 
@@ -66,83 +65,112 @@ public class Tetris extends GameX {
      * @param height
      * @param timePerFall larger is slower gravity
      */
-    public Tetris(final Term id, final NAR n, final int width, final int height, final int timePerFall) {
+    public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                GameTime.fps(FPS),
-                //FrameTrigger.durs(1),
-                n
+            GameTime.fps(FPS),
+            //FrameTrigger.durs(1),
+            n
         );
 
 
-        final var opjects = true;
-        this.state = opjects ?
-                this.actionsReflect(n) :
-                new TetrisState(width, height, timePerFall);
+        state = opjects ?
+            actionsReflect(n) :
+            new TetrisState(width, height, timePerFall);
 
-        this.easy = this.state.easy;
+        easy = state.easy;
 
-        this.state.timePerFall = Math.round(this.timePerFall.floatValue());
+        state.timePerFall = Math.round(this.timePerFall.floatValue());
 
-        this.grid = new AbstractBitmap2D(this.state.width, this.state.height) {
+        grid = new AbstractBitmap2D(state.width, state.height) {
             @Override
-            public float brightness(final int x, final int y) {
-                return Tetris.this.state.seen[y * this.w + x] > 0 ? 1f : 0f;
+            public float brightness(int x, int y) {
+                return state.seen[y * w + x] > 0 ? 1f : 0f;
             }
         };
-        this.pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh(id, $.p(x, y)),
-                //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
-                this.grid, /*0,*/ n);
-        this.gridVision = this.addSensor(this.pixels);
+        gridVision = addSensor(pixels = new Bitmap2DSensor<>(
+            (x, y) -> $.inh(id, $.p(x, y)),
+            //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
+            grid, /*0,*/ n));
 
 
-        this.rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
-                this.state::score
-                //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
+        rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
+            state::score
+            //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
         );
-        this.rewardNormalized("density", 0, ScalarValue.EPSILON, () -> {
+//        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
+//                1 - ((float) state.rowsFilled) / state.height
+//        ));
+        rewardNormalized("density", 0, ScalarValue.EPSILON, () -> {
 
-            var filled = 0;
-            for (final var s : this.state.grid) if (s > 0) filled++;
+            int filled = 0;
+            for (float s : state.grid) if (s > 0) filled++;
 
-            final var r = this.state.rowsFilled;
-            return r > 0 ? ((float) filled) / (r * this.state.width) : 0;
+            int r = state.rowsFilled;
+            return r > 0 ? ((float) filled) / (r * state.width) : 0;
         });
 
 
-        this.actionPushButtonLR();
-        this.actionPushButtonRotateFall();
+        //                .mode((p,v)->{
+        //                    float c = n.confDefault(BELIEF);
+        //                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
+        //                })
 
-        this.state.reset();
 
-        this.onFrame(() -> {
-            this.state.timePerFall = Math.round(this.timePerFall.floatValue());
-            this.state.next();
+        actionPushButtonLR();
+        actionPushButtonRotateFall();
+        //actionPushButtonLR_proportional();
+        //actionsToggle();
+        //actionsTriState();
+
+        state.reset();
+
+        onFrame(() -> {
+            state.timePerFall = Math.round(this.timePerFall.floatValue());
+            state.next();
         });
 
-        this.canFall = Config.configIs("TETRIS_CANFALL", false);
+
+        //if a pixel is on, pixels above it should be off
+//        reward(new BeliefReward($$("(&&,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
+
+        //pixels on same row should be the same color TODO
+        //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));
+
+//        //pixels left or right from each other should both be on
+//        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),addAt(#x1,1,#x2))"), this));
+
     }
 
 
-    public static void main(final String[] args) {
+    public static void main(String[] args) {
 
 
         GameX.runRT(n -> {
 
-            final var t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
+            Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
             n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t), 500, 300);
 
         }, FPS * 2);
 
+//        int instances = 2;
+//        for (int i = 0; i < instances; i++)
+//            runRTNet((n)-> {
+//
+//                    new Arithmeticize.ArithmeticIntroduction(32, n);
+//
+//                        return new Tetris($.p(Atomic.the("t"), n.self()), n, tetris_width, tetris_height, 1);
+//                    },
+//                    2, FPS, FPS, 6);
 
     }
 
-    private TetrisState actionsReflect(final NAR nar) {
+    private TetrisState actionsReflect(NAR nar) {
 
-        final var oo = new Opjects(nar.fork((Term) $.inh(this.id, "opjects")));
+        Opjects oo = new Opjects(nar.fork((Term) $.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
+//        oo.pri.setAt(ScalarValue.EPSILON);
 
         Opjects.methodExclusions.add("toVector");
 
@@ -150,31 +178,68 @@ public class Tetris extends GameX {
     }
 
     final Term tLEFT =
-            $.inh(this.id, NAct.NEG);
+        //$.the("left");
+        //$.inh("left", id);
+        $.inh(id, NEG);
     final Term tRIGHT =
-            $.inh(this.id, NAct.POS);
+        //$.the("right");
+        //$.inh("right", id);
+        $.inh(id, POS);
     final Term tROT =
-            $.inh(this.id, "rotate");
+        //$.the("rotate");
+        //$.inh("rotate", id);
+        $.inh(id, "rotate");
     final Term tFALL =
-            $.inh(this.id, "fall");
+        //$.the("fall");
+        //$.inh("fall", id);
+        $.inh(id, "fall");
 
     void actionPushButtonLR() {
-        final var lr = this.actionPushButtonMutex(this.tLEFT, this.tRIGHT,
-                b -> b && this.state.act(TetrisState.actions.LEFT),
-                b -> b && this.state.act(TetrisState.actions.RIGHT)
+//        actionPushButton(LEFT, (b)->b && state.act(TetrisState.LEFT));
+//        actionPushButton(RIGHT, (b)->b && state.act(TetrisState.RIGHT));
+        GoalActionConcept[] lr = actionPushButtonMutex(tLEFT, tRIGHT,
+            b -> b && state.act(TetrisState.actions.LEFT),
+            b -> b && state.act(TetrisState.actions.RIGHT)
         );
+//        for (GoalActionConcept x : lr)
+//            x.goalDefault($.t(0, 0.001f), nar); //bias
     }
 
     void actionPushButtonLR_proportional() {
+        //TODO
+//        actionDial($.inh(id, $.p($.the("x"), $.varQuery(1))), true, new FloatToFloatFunction() {
+//
+//            float speed = 2f;
+//            float tx = state.currentX;
+//
+//            @Override
+//            public float valueOf(float v) {
+//                tx  = Util.clamp(tx + v * speed, -1f, state.width-1 + 0.5f);
+//
+//                if (Util.equals(state.currentX, tx, 0.5f))
+//                    return 0; //no motion
+//                else {
+//                    boolean moved;
+//                    if (state.currentX > tx)
+//                        moved = state.act(TetrisState.LEFT);
+//                    else if (state.currentX < tx)
+//                        moved = state.act(TetrisState.RIGHT);
+//                    else
+//                        moved = true;
+//
+//                    return moved ? v : 0;
+//                }
+//            }
+//        });
     }
 
     void actionPushButtonRotateFall() {
 
-        final var debounceDurs = 2;
+        int debounceDurs = 2;
         //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
-        this.actionPushButton(this.tROT, b -> b && this.state.act(TetrisState.actions.CW));
+        actionPushButton(tROT, b -> b && state.act(TetrisState.actions.CW));
 
-        if (this.canFall) this.actionPushButton(this.tFALL, this.debounce(b -> b && this.state.act(TetrisState.actions.FALL), debounceDurs * 2));
+        if (canFall) actionPushButton(tFALL, debounce(b -> b && state.act(TetrisState.actions.FALL), debounceDurs * 2));
 
     }
 
@@ -182,12 +247,12 @@ public class Tetris extends GameX {
     void actionsTriState() {
 
 
-        this.actionTriState($.inh(this.id, "X"), i -> {
+        actionTriState($.inh(id, "X"), i -> {
             switch (i) {
                 case -1:
-                    return this.state.act(TetrisState.actions.LEFT);
+                    return state.act(TetrisState.actions.LEFT);
                 case +1:
-                    return this.state.act(TetrisState.actions.RIGHT);
+                    return state.act(TetrisState.actions.RIGHT);
                 default:
                 case 0:
                     return true;
@@ -195,13 +260,12 @@ public class Tetris extends GameX {
         });
 
 
-        this.actionPushButton(this.tROT, () -> this.state.act(TetrisState.actions.CW));
+        actionPushButton(tROT, () -> state.act(TetrisState.actions.CW));
 
 
     }
 
     public static class TetrisPiece {
-        public static final int[] EMPTY_ROW = {0, 0, 0, 0, 0};
         public static final int[] PAIR1 = {0, 0, 1, 1, 0};
         public static final int[] PAIR2 = {0, 1, 1, 0, 0};
         public static final int[] CENTER = {0, 0, 1, 0, 0};
@@ -212,16 +276,210 @@ public class Tetris extends GameX {
         int[][][] thePiece = new int[4][5][5];
         int currentOrientation;
 
-        public void setShape(final int Direction, final int[]... rows) {
-            this.thePiece[Direction] = rows;
+        public static TetrisPiece makeSquare() {
+            return new TetrisPiece() {{
+                setShape(0, EMPTY_ROW
+                    , PAIR1
+                    , PAIR1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                    , PAIR1
+                    , PAIR1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+                setShape(2, EMPTY_ROW
+                    , PAIR1
+                    , PAIR1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                    , PAIR1
+                    , PAIR1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+            }};
+        }
+
+        public static TetrisPiece makeTri() {
+
+            return new TetrisPiece() {{
+
+                setShape(0, EMPTY_ROW
+                    , CENTER
+                    , MIDDLE
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+
+
+                setShape(1, EMPTY_ROW
+                    , CENTER
+                    , PAIR1
+                    , CENTER
+                    , EMPTY_ROW);
+
+
+                setShape(2, EMPTY_ROW
+                    , EMPTY_ROW
+                    , MIDDLE
+                    , CENTER
+                    , EMPTY_ROW);
+
+                setShape(3, EMPTY_ROW
+                    , CENTER
+                    , PAIR2
+                    , CENTER
+                    , EMPTY_ROW);
+            }};
+        }
+
+        public static TetrisPiece makeLine() {
+            return new TetrisPiece() {{
+                setShape(0, CENTER
+                    , CENTER
+                    , CENTER
+                    , CENTER
+                    , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                    , EMPTY_ROW
+                    , LINE1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+                setShape(2, CENTER
+                    , CENTER
+                    , CENTER
+                    , CENTER
+                    , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                    , EMPTY_ROW
+                    , LINE1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+            }};
+
+        }
+
+        public static TetrisPiece makeSShape() {
+            return new TetrisPiece() {{
+
+                setShape(0, EMPTY_ROW
+                    , LEFT1
+                    , PAIR2
+                    , CENTER
+                    , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                    , PAIR1
+                    , PAIR2
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+                setShape(2, EMPTY_ROW
+                    , LEFT1
+                    , PAIR2
+                    , CENTER
+                    , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                    , PAIR1
+                    , PAIR2
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+            }};
+        }
+
+        public static TetrisPiece makeZShape() {
+            TetrisPiece newPiece = new TetrisPiece() {{
+
+                setShape(0, EMPTY_ROW
+                    , CENTER
+                    , PAIR2
+                    , LEFT1
+                    , EMPTY_ROW);
+                setShape(1, EMPTY_ROW
+                    , PAIR2
+                    , PAIR1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+                setShape(2, EMPTY_ROW
+                    , CENTER
+                    , PAIR2
+                    , LEFT1
+                    , EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                    , PAIR2
+                    , PAIR1
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+            }};
+            return newPiece;
+
+        }
+
+        public static TetrisPiece makeLShape() {
+            return new TetrisPiece() {{
+
+                setShape(0, EMPTY_ROW
+                    , CENTER
+                    , CENTER
+                    , PAIR1
+                    , EMPTY_ROW);
+
+                setShape(1, EMPTY_ROW
+                    , EMPTY_ROW
+                    , MIDDLE
+                    , LEFT1
+                    , EMPTY_ROW);
+
+                setShape(2, EMPTY_ROW
+                    , PAIR2
+                    , CENTER
+                    , CENTER
+                    , EMPTY_ROW);
+
+                setShape(3, EMPTY_ROW
+                    , RIGHT1
+                    , MIDDLE
+                    , EMPTY_ROW
+                    , EMPTY_ROW);
+            }};
+        }
+
+        public static TetrisPiece makeJShape() {
+            return new TetrisPiece() {{
+                setShape(0, EMPTY_ROW, CENTER
+                    , CENTER
+                    , PAIR2
+                    , EMPTY_ROW);
+                setShape(1, EMPTY_ROW,
+                    LEFT1,
+                    MIDDLE,
+                    EMPTY_ROW,
+                    EMPTY_ROW);
+                setShape(2, EMPTY_ROW,
+                    PAIR1,
+                    CENTER,
+                    CENTER,
+                    EMPTY_ROW);
+                setShape(3, EMPTY_ROW
+                    , EMPTY_ROW
+                    , MIDDLE
+                    , RIGHT1
+                    , EMPTY_ROW);
+            }};
+        }
+
+        public void setShape(int Direction, int[]... rows) {
+            thePiece[Direction] = rows;
+        }
+
+        public int[][] getShape(int whichOrientation) {
+            return thePiece[whichOrientation];
         }
 
         @Override
         public String toString() {
-            final var shapeBuffer = new StringBuilder();
-            for (var i = 0; i < this.thePiece[this.currentOrientation].length; i++) {
-                for (var j = 0; j < this.thePiece[this.currentOrientation][i].length; j++)
-                    shapeBuffer.append(' ').append(this.thePiece[this.currentOrientation][i][j]);
+            StringBuilder shapeBuffer = new StringBuilder();
+            for (int i = 0; i < thePiece[currentOrientation].length; i++) {
+                for (int j = 0; j < thePiece[currentOrientation][i].length; j++)
+                    shapeBuffer.append(' ').append(thePiece[currentOrientation][i][j]);
                 shapeBuffer.append('\n');
             }
             return shapeBuffer.toString();
@@ -264,10 +522,10 @@ public class Tetris extends GameX {
         public boolean running = true;
         public int currentBlockId;/*which block we're using in the block table*/
 
-        public AtomicInteger currentRotation = new AtomicInteger();
-        public final AtomicInteger currentX = new AtomicInteger();/* where the falling block is currently*/
+        public int currentRotation;
+        public int currentX;/* where the falling block is currently*/
 
-        public final AtomicInteger currentY = new AtomicInteger();
+        public int currentY;
         public float score;/* what is the current_score*/
 
         public boolean is_game_over;/*have we reached the end state yet*/
@@ -276,210 +534,56 @@ public class Tetris extends GameX {
         public float[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
-        //        CopyOnWriteArrayList<TetrisPiece> possibleBlocks = new CopyOnWriteArrayList<>();
+        CopyOnWriteArrayList<TetrisPiece> possibleBlocks = new CopyOnWriteArrayList<>();
         private int rowsFilled;
 
         public final AtomicBoolean easy = new AtomicBoolean(false);
 
-        public enum PossibleBlocks {
-            Line(new TetrisPiece() {{
-                this.setShape(0, TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LINE1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(2, TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LINE1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            Square(new TetrisPiece() {{
-                this.setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            Tri(new TetrisPiece() {{
-
-                this.setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-
-
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-
-
-                this.setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            SShape(new TetrisPiece() {{
-
-                this.setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            ZShape(new TetrisPiece() {{
-
-                this.setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            LShape(new TetrisPiece() {{
-
-                this.setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW);
-
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.EMPTY_ROW);
-
-                this.setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.RIGHT1
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            JShape(new TetrisPiece() {{
-                this.setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                this.setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.RIGHT1
-                        , TetrisPiece.EMPTY_ROW);
-            }});
-
-            public TetrisPiece shape;
-
-            PossibleBlocks(final TetrisPiece shape) {
+     /*   public enum PossibleBlocks{
+            Line(TetrisPiece.makeLine()),
+            Square(TetrisPiece.makeSquare()),
+            Tri(TetrisPiece.makeTri()),
+            SShape(TetrisPiece.makeSShape()),
+            ZShape(TetrisPiece.makeZShape()),
+            LShape(TetrisPiece.makeLShape()),
+            JShape(TetrisPiece.makeJShape()),
+            ;
+            private TetrisPiece shape;
+            PossibleBlocks(TetrisPiece shape) {
                 this.shape = shape;
             }
-        }
+        }*/
 
-        List<PossibleBlocks> possibleBlocks = Arrays.asList(PossibleBlocks.values());
-
-        public TetrisState(final int width, final int height, final int timePerFall) {
+        public TetrisState(int width, int height, int timePerFall) {
             this.width = width;
             this.height = height;
             this.timePerFall = timePerFall;
 
-            this.grid = new float[this.height * this.width];
-            this.seen = new float[width * height];
-            this.reset();
+            possibleBlocks.add(TetrisPiece.makeLine());
+            possibleBlocks.add(TetrisPiece.makeSquare());
+            possibleBlocks.add(TetrisPiece.makeTri());
+            possibleBlocks.add(TetrisPiece.makeSShape());
+            possibleBlocks.add(TetrisPiece.makeZShape());
+            possibleBlocks.add(TetrisPiece.makeLShape());
+            possibleBlocks.add(TetrisPiece.makeJShape());
+
+            grid = new float[this.height * this.width];
+            seen = new float[width * height];
+            reset();
         }
 
         protected void reset() {
-            this.currentX.set(this.width / 2 - 1);
-            this.currentY.set(0);
-            this.score = 0;
-            for (var i = 0; i < this.grid.length; i++) this.grid[i] = 0;
-            this.currentRotation.set(0);
-            this.is_game_over = false;
+            currentX = width / 2 - 1;
+            currentY = 0;
+            score = 0;
+            for (int i = 0; i < grid.length; i++) grid[i] = 0;
+            currentRotation = 0;
+            is_game_over = false;
 
-            this.running = true;
-            this.restart();
+            running = true;
+            restart();
 
-            this.spawnBlock();
+            spawnBlock();
         }
 
         /**
@@ -489,13 +593,13 @@ public class Tetris extends GameX {
 
         }
 
-        private void toVector(final boolean monochrome, final float[] target) {
+        private void toVector(boolean monochrome, float[] target) {
 
 
             Arrays.fill(target, -1);
 
-            var x = 0;
-            for (final double i : this.grid) {
+            int x = 0;
+            for (double i : grid) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else
@@ -503,100 +607,104 @@ public class Tetris extends GameX {
                 x++;
             }
 
-            this.writeCurrentBlock(target, 0.5f);
+            writeCurrentBlock(target, 0.5f);
 
 
         }
 
 
-        private void writeCurrentBlock(final float[] f, final float color) {
-            var color1 = color;
-            final var thisPiece = PossibleBlocks.values()[this.currentBlockId].shape.thePiece[this.currentRotation.get()];
+        private void writeCurrentBlock(float[] f, float color) {
+            int[][] thisPiece = possibleBlocks.get(currentBlockId).getShape(currentRotation);
 
-            if (color1 == -1)
-                color1 = this.currentBlockId + 1;
-            for (var y = 0; y < thisPiece[0].length; ++y)
-                for (var x = 0; x < thisPiece.length; ++x)
+            if (color == -1)
+                color = currentBlockId + 1;
+            for (int y = 0; y < thisPiece[0].length; ++y)
+                for (int x = 0; x < thisPiece.length; ++x)
                     if (thisPiece[x][y] != 0) {
 
 
-                        final var linearIndex = this.i(this.currentX.get() + x, this.currentY.get() + y);
+                        int linearIndex = i(currentX + x, currentY + y);
                         /*if(linearIndex<0){
                             System.err.printf("Bogus linear index %d for %d + %d, %d + %d\n",linearIndex,currentX,x,currentY,y);
                             Thread.dumpStack();
                             System.exit(1);
                         }*/
-                        f[linearIndex] = color1;
+                        f[linearIndex] = color;
                     }
 
         }
 
         public boolean gameOver() {
-            return this.is_game_over;
+            return is_game_over;
         }
 
-        public boolean act(final TetrisState.actions theAction) {
-            return this.act(theAction, true);
+        public boolean act(TetrisState.actions theAction) {
+            return act(theAction, true);
         }
 
         /* This code applies the action, but doesn't do the default fall of 1 square */
-        public boolean act(final actions theAction, final boolean enable) {
-            /*synchronized (this)*/
-            final var nextRotation = this.currentRotation;
-            var nextX = this.currentX.get();
-            var nextY = this.currentY.get();
-
-            switch (theAction) {
-                case CW:
-                    nextRotation.set((this.currentRotation.get() + 1) % 4);
-                    break;
-                case CCW:
-                    nextRotation.set(this.currentRotation.get() - 1);
-                    if (nextRotation.get() < 0) nextRotation.set(3);
-                    break;
-                case LEFT:
-                    nextX = enable ? this.currentX.get() - 1 : this.currentX.get();
-                    break;
-                case RIGHT:
-                    nextX = enable ? this.currentX.get() + 1 : this.currentX.get();
-                    break;
-                case FALL:
-                    nextY = this.currentY.get();
-
-                    var isInBounds = true;
-                    var isColliding = false;
+        public boolean act(actions theAction, boolean enable) {
+            synchronized (this) {
 
 
-                    while (isInBounds && !isColliding) {
-                        nextY++;
-                        isInBounds = this.inBounds(nextX, nextY, nextRotation);
-                        if (isInBounds) isColliding = this.colliding(nextX, nextY, nextRotation);
-                    }
-                    nextY--;
-                    break;
-                default:
-                    throw new RuntimeException("unknown action");
+                int nextRotation = currentRotation;
+                int nextX = currentX;
+                int nextY = currentY;
+
+                switch (theAction) {
+                    case CW:
+                        nextRotation = (currentRotation + 1) % 4;
+                        break;
+                    case CCW:
+                        nextRotation = currentRotation - 1;
+                        if (nextRotation < 0) nextRotation = 3;
+                        break;
+                    case LEFT:
+                        nextX = enable ? currentX - 1 : currentX;
+                        break;
+                    case RIGHT:
+                        nextX = enable ? currentX + 1 : currentX;
+                        break;
+                    case FALL:
+                        nextY = currentY;
+
+                        boolean isInBounds = true;
+                        boolean isColliding = false;
+
+
+                        while (isInBounds && !isColliding) {
+                            nextY++;
+                            isInBounds = inBounds(nextX, nextY, nextRotation);
+                            if (isInBounds) isColliding = colliding(nextX, nextY, nextRotation);
+                        }
+                        nextY--;
+                        break;
+                    default:
+                        throw new RuntimeException("unknown action");
+                }
+
+
+                return act(nextRotation, nextX, nextY);
             }
-            return this.act(nextRotation, nextX, nextY);
         }
 
         protected boolean act() {
-            return this.act(this.currentRotation, this.currentX.get(), this.currentY.get());
+            return act(currentRotation, currentX, currentY);
         }
 
-        protected boolean act(final AtomicInteger nextRotation, final int nextX, final int nextY) {
-            var result = false;
+        protected boolean act(int nextRotation, int nextX, int nextY) {
 
-            /*synchronized (this)*/
+            synchronized (this) {
 
-            if (this.inBounds(nextX, nextY, nextRotation) && !this.colliding(nextX, nextY, nextRotation)) {
-                this.currentRotation.set(nextRotation.getAcquire());
-                this.currentX.set(nextX);
-                this.currentY.set(nextY);
-                result = true;
+                if (inBounds(nextX, nextY, nextRotation)) if (!colliding(nextX, nextY, nextRotation)) {
+                    currentRotation = nextRotation;
+                    currentX = nextX;
+                    currentY = nextY;
+                    return true;
+                }
             }
 
-            return result;
+            return false;
         }
 
         /**
@@ -608,11 +716,12 @@ public class Tetris extends GameX {
          * @param y
          * @return
          */
-        private final int i(final int x, final int y) {
-            return y * this.width + x;
+        private final int i(int x, int y) {
+            return y * width + x;
 
 
         }
+
 
         /**
          * Check if any filled part of the 5x5 block array is either out of bounds
@@ -623,51 +732,55 @@ public class Tetris extends GameX {
          * @param checkOrientation Orientation of the block to check
          * @return
          */
-        private boolean colliding(final int checkX, final int checkY, final AtomicInteger checkOrientation) {
-            final var thePiece = this.possibleBlocks.get(this.currentBlockId).shape.thePiece[checkOrientation.getAcquire()];
-            final var ll = thePiece.length;
+        private boolean colliding(int checkX, int checkY, int checkOrientation) {
+            int[][] thePiece = possibleBlocks.get(currentBlockId).getShape(checkOrientation);
+            int ll = thePiece.length;
             try {
 
-                for (var y = 0; y < thePiece[0].length; ++y)
-                    for (var x = 0; x < ll; ++x)
+                for (int y = 0; y < thePiece[0].length; ++y)
+                    for (int x = 0; x < ll; ++x)
                         if (thePiece[x][y] != 0) {
-                            if (checkY + y < 0 || checkX + x < 0 || checkY + y >= this.height || checkX + x >= this.width)
+                            if (checkY + y < 0 || checkX + x < 0 || checkY + y >= height || checkX + x >= width)
                                 return true;
-                            final var linearArrayIndex = this.i(checkX + x, checkY + y);
-                            if (this.grid[linearArrayIndex] != 0) return true;
+                            int linearArrayIndex = i(checkX + x, checkY + y);
+                            if (grid[linearArrayIndex] != 0) return true;
                         }
                 return false;
 
-            } catch (final ArrayIndexOutOfBoundsException e) {
+            } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println("Error: ArrayIndexOutOfBoundsException in GameState::colliding called with params: " + checkX + " , " + checkY + ", " + checkOrientation);
                 System.err.println("Error: The Exception was: " + e);
                 Thread.dumpStack();
                 System.err.println("Returning true from colliding to help save from error");
                 System.err.println("Setting is_game_over to true to hopefully help us to recover from this problem");
-                this.is_game_over = true;
+                is_game_over = true;
                 return true;
             }
         }
 
-        private boolean collidingCheckOnlySpotsInBounds(final int checkX, final int checkY, final AtomicInteger checkOrientation) {
-            final var thePiece = this.possibleBlocks.get(this.currentBlockId).shape.thePiece[checkOrientation.getAcquire()];
-            final var ll = thePiece.length;
+        private boolean collidingCheckOnlySpotsInBounds(int checkX, int checkY, int checkOrientation) {
+            int[][] thePiece = possibleBlocks.get(currentBlockId).getShape(checkOrientation);
+            int ll = thePiece.length;
             try {
 
-                return IntStream.range(0, thePiece[0].length).anyMatch(y -> IntStream.range(0, ll).anyMatch(x -> thePiece[x][y] != 0 &&
-                        checkX + x >= 0 &&
-                        checkX + x < this.width &&
-                        checkY + y >= 0 &&
-                        checkY + y < this.height &&
-                        this.grid[this.i(checkX + x, checkY + y)] != 0));
+                for (int y = 0; y < thePiece[0].length; ++y)
+                    for (int x = 0; x < ll; ++x)
+                        if (thePiece[x][y] != 0)
+                            if (checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height) {
 
-            } catch (final ArrayIndexOutOfBoundsException e) {
+
+                                int linearArrayIndex = i(checkX + x, checkY + y);
+                                if (grid[linearArrayIndex] != 0) return true;
+                            }
+                return false;
+
+            } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println("Error: ArrayIndexOutOfBoundsException in GameState::collidingCheckOnlySpotsInBounds called with params: " + checkX + " , " + checkY + ", " + checkOrientation);
                 System.err.println("Error: The Exception was: " + e);
                 Thread.dumpStack();
                 System.err.println("Returning true from colliding to help save from error");
                 System.err.println("Setting is_game_over to true to hopefully help us to recover from this problem");
-                this.is_game_over = true;
+                is_game_over = true;
                 return true;
             }
         }
@@ -682,104 +795,135 @@ public class Tetris extends GameX {
          * @param checkOrientation Orientation of the block to check
          * @return
          */
-        private boolean inBounds(final int checkX, final int checkY, final AtomicInteger checkOrientation) {
+        private boolean inBounds(int checkX, int checkY, int checkOrientation) {
             try {
-                final var thePiece = this.possibleBlocks.get(this.currentBlockId).shape.thePiece[checkOrientation.getAcquire()];
-                return IntStream.range(0, thePiece[0].length).noneMatch(y -> IntStream.range(0, thePiece.length).anyMatch(x -> thePiece[x][y] != 0 && !(checkX + x >= 0 && checkX + x < this.width && checkY + y >= 0 && checkY + y < this.height)));
-            } catch (final ArrayIndexOutOfBoundsException e) {
+                int[][] thePiece = possibleBlocks.get(currentBlockId).getShape(checkOrientation);
+
+                for (int y = 0; y < thePiece[0].length; ++y)
+                    for (int x = 0; x < thePiece.length; ++x)
+                        if (thePiece[x][y] != 0)
+                            if (!(checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height))
+                                return false;
+
+                return true;
+            } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println("Error: ArrayIndexOutOfBoundsException in GameState::inBounds called with params: " + checkX + " , " + checkY + ", " + checkOrientation);
                 System.err.println("Error: The Exception was: " + e);
                 Thread.dumpStack();
                 System.err.println("Returning false from inBounds to help save from error.  Not sure if that's wise.");
                 System.err.println("Setting is_game_over to true to hopefully help us to recover from this problem");
-                this.is_game_over = true;
+                is_game_over = true;
                 return false;
             }
 
         }
 
         public boolean nextInBounds() {
-            return this.inBounds(this.currentX.get(), this.currentY.get() + 1, this.currentRotation);
+            return inBounds(currentX, currentY + 1, currentRotation);
         }
 
         public boolean nextColliding() {
-            return this.colliding(this.currentX.get(), this.currentY.get() + 1, this.currentRotation);
+            return colliding(currentX, currentY + 1, currentRotation);
         }
 
         /*Ok, at this point, they've just taken their action.  We now need to make them fall 1 spot, and check if the game is over, etc */
         private void update() {
-            this.act();
-            this.time++;
-            if (!this.inBounds(this.currentX.get(), this.currentY.get(), this.currentRotation))
+            act();
+            time++;
+
+
+            if (!inBounds(currentX, currentY, currentRotation))
                 System.err.println("In GameState.Java the Current Position of the board is Out Of Bounds... Consistency Check Failed");
-            final var onSomething = !this.nextInBounds() || this.nextColliding();//onSomething = true;
+
+
+            boolean onSomething = false;
+            if (!nextInBounds()) onSomething = true;
+            if (!onSomething) if (nextColliding()) onSomething = true;
+
             if (onSomething) {
-                this.running = false;
-                this.writeCurrentBlock(this.grid, -1);
-            } else if (this.time % this.timePerFall == 0)
-                this.currentY.addAndGet(1);
+                running = false;
+                writeCurrentBlock(grid, -1);
+            } else if (time % timePerFall == 0)
+                currentY += 1;
+
         }
 
         public int spawnBlock() {
-            this.running = true;
-            this.currentBlockId = this.nextBlock();
-            this.currentRotation.set(0);
-            this.currentX.set(this.width / 2 - 2);
-            this.currentY.set(-4);
-            var hitOnWayIn = false;
-            while (!this.inBounds(this.currentX.get(), this.currentY.get(), this.currentRotation)) {
-                hitOnWayIn = this.collidingCheckOnlySpotsInBounds(this.currentX.get(), this.currentY.get(), this.currentRotation);
-                this.currentY.getAndIncrement();
-            }
-            this.is_game_over = this.colliding(this.currentX.get(), this.currentY.get(), this.currentRotation) || hitOnWayIn;
-            if (this.is_game_over) this.running = false;
+            running = true;
 
-            return this.currentBlockId;
+            currentBlockId = nextBlock();
+
+            currentRotation = 0;
+            currentX = width / 2 - 2;
+            currentY = -4;
+
+
+            boolean hitOnWayIn = false;
+            while (!inBounds(currentX, currentY, currentRotation)) {
+
+                hitOnWayIn = collidingCheckOnlySpotsInBounds(currentX, currentY, currentRotation);
+                currentY++;
+            }
+            is_game_over = colliding(currentX, currentY, currentRotation) || hitOnWayIn;
+            if (is_game_over) running = false;
+
+            return currentBlockId;
         }
 
         protected int nextBlock() {
-            return this.easy.get() ? 1 : this.randomGenerator.nextInt(this.possibleBlocks.size()); //square
+            if (easy.get()) return 1; //square
+            else return randomGenerator.nextInt(possibleBlocks.size());
 
         }
 
         public void checkScore() {
-            var numRowsCleared = 0;
-            var rowsFilled = 0;
+            int numRowsCleared = 0;
+            int rowsFilled = 0;
 
 
-            for (var y = this.height - 1; y >= 0; --y)
-                if (this.isRow(y, true)) {
-                    this.removeRow(y);
+            for (int y = height - 1; y >= 0; --y)
+                if (isRow(y, true)) {
+                    removeRow(y);
                     numRowsCleared += 1;
                     y += 1;
-                } else if (!this.isRow(y, false))
+                } else if (!isRow(y, false))
                     rowsFilled++;
 
-            final var prevRows = this.rowsFilled;
+            int prevRows = this.rowsFilled;
             this.rowsFilled = rowsFilled;
-            final var diff = prevRows - rowsFilled;
 
-            this.score = diff >= this.height - 1 ? Float.NaN : diff;
+
+            if (numRowsCleared > 0) {
+
+
+            } else {
+
+            }
+
+
+            int diff = prevRows - rowsFilled;
+
+            if (diff >= height - 1) score = Float.NaN;
+            else score = diff;
         }
 
         public float height() {
-            return (float) this.rowsFilled / this.height;
+            return (float) rowsFilled / height;
         }
 
         /**
          * Check if a row has been completed at height y.
          * Short circuits, returns false whenever we hit an unfilled spot.
+         *
+         * @param y
+         * @return
          */
-        public boolean isRow(final int y, final boolean filledOrClear) {
-            var result = true;
-            for (var x = 0; x < this.width; ++x) {
-                final var s = this.grid[this.i(x, y)];
-                if (filledOrClear ? s == 0 : s != 0) {
-                    result = false;
-                    break;
-                }
+        public boolean isRow(int y, boolean filledOrClear) {
+            for (int x = 0; x < width; ++x) {
+                float s = grid[i(x, y)];
+                if (filledOrClear ? s == 0 : s != 0) return false;
             }
-            return result;
+            return true;
         }
 
 
@@ -790,72 +934,253 @@ public class Tetris extends GameX {
          *
          * @param y
          */
-        void removeRow(final int y) {
-            if (this.isRow(y, true)) {
-                for (var x = 0; x < this.width; ++x) {
-                    final var linearIndex = this.i(x, y);
-                    this.grid[linearIndex] = 0;
-                }
-
-
-                for (var ty = y; ty > 0; --ty)
-                    for (var x = 0; x < this.width; ++x) {
-                        final var linearIndexTarget = this.i(x, ty);
-                        final var linearIndexSource = this.i(x, ty - 1);
-                        this.grid[linearIndexTarget] = this.grid[linearIndexSource];
-                    }
-
-
-                for (var x = 0; x < this.width; ++x) {
-                    final var linearIndex = this.i(x, 0);
-                    this.grid[linearIndex] = 0;
-                }
-            } else
+        void removeRow(int y) {
+            if (!isRow(y, true)) {
                 System.err.println("In GameState.java remove_row you have tried to remove a row which is not complete. Failed to remove row");
+                return;
+            }
+
+            for (int x = 0; x < width; ++x) {
+                int linearIndex = i(x, y);
+                grid[linearIndex] = 0;
+            }
+
+
+            for (int ty = y; ty > 0; --ty)
+                for (int x = 0; x < width; ++x) {
+                    int linearIndexTarget = i(x, ty);
+                    int linearIndexSource = i(x, ty - 1);
+                    grid[linearIndexTarget] = grid[linearIndexSource];
+                }
+
+
+            for (int x = 0; x < width; ++x) {
+                int linearIndex = i(x, 0);
+                grid[linearIndex] = 0;
+            }
 
         }
 
 
         public int getWidth() {
-            return this.width;
+            return width;
         }
 
         public int getHeight() {
-            return this.height;
+            return height;
         }
 
 
         public int getCurrentPiece() {
-            return this.currentBlockId;
+            return currentBlockId;
         }
 
         /**
          * Utility methd for debuggin
          */
         public void printState() {
-            final var index = 0;
-            for (var i = 0; i < this.height - 1; i++) {
-                for (var j = 0; j < this.width; j++) System.out.print(this.grid[i * this.width + j]);
+            int index = 0;
+            for (int i = 0; i < height - 1; i++) {
+                for (int j = 0; j < width; j++) System.out.print(grid[i * width + j]);
                 System.out.print("\n");
             }
             System.out.println("-------------");
+
+
         }
 
 
         protected void next() {
-            if (this.running) this.update();
-            else this.spawnBlock();
-            this.checkScore();
-            this.toVector(false, this.seen);
-            if (this.gameOver()) this.die();
+            if (running) update();
+            else spawnBlock();
+
+            checkScore();
+
+            toVector(false, seen);
+
+            if (gameOver()) die();
+
+
         }
 
         private float score() {
-            return this.score;
+            return score;
         }
 
         protected void die() {
-            this.reset();
+            reset();
         }
+
+
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            /*view.plot2 = new GridSurface(HORIZONTAL,
+
+
+                conceptLinePlot(nar, t.actions, (c) -> {
+                    try {
+                        return nar.concept(c).goals().truth(nar.time()).freq();
+                    } catch (NullPointerException npe) {
+                        return 0.5f;
+                    }
+                }, 256)
+            );*/
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

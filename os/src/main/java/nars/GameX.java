@@ -539,7 +539,7 @@ abstract public class GameX extends Game {
             )
         );
 
-        window(NARui.clusterView(cc, n), 800, 600);
+        //window(NARui.clusterView(cc, n), 800, 600);
 
         //BasicDeriver bd6_curi = new Deriver(Derivers.files(n, "curiosity.nal"));
 

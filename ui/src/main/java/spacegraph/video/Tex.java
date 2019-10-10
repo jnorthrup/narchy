@@ -76,9 +76,11 @@ public class Tex {
 
         ready(gl);
 
+        TextureData data = this.data;
         if (data != null) {
+            Texture texture = this.texture;
             if (texture == null) {
-                texture = TextureIO.newTexture(gl, data);
+                texture = this.texture = TextureIO.newTexture(gl, data);
             }
             if (texture != null) {
                 if (updated.compareAndSet(true, false)) {
