@@ -89,16 +89,23 @@ abstract public class ScalarReward extends Reward {
         g.actions().forEach(a -> {
             Term A = a.term();
             long[] stampP = newStamp(), stampN = newStamp();
+
+            //(goal || A), (goal || --A)
+            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplANeg, stampP);
+            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplANeg, stampP);
+
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stampN);
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplANeg, stampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplANeg, stampN);
 
             //TODO setCyclic to prevent decompose
-            reinforce(CONJ.the(rTarget, A), BELIEF, RimplAPos, stampP);
-            reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplAPos, stampP);
-            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stampP);
-            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stampP);
+//            reinforce(CONJ.the(rTarget, A), BELIEF, RimplAPos, stampP);
+//            reinforce(CONJ.the(rTarget, A.neg()), BELIEF, RimplAPos, stampP);
+            //reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplAPos, stampP);
+            //reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplAPos, stampP);
+//            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplANeg, stampP);
+//            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplANeg, stampP);
 
 //            reinforce(IMPL.the(A, Rpos), BELIEF, RimplAPos, stamp);
 //            reinforce(IMPL.the(A.neg(), Rpos), BELIEF, RimplAPos, stamp);

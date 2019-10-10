@@ -211,11 +211,10 @@ public class ConjClustering extends TaskAction {
         //TODO sort sub-buffer if some entries are empty they can be avoided during iteration
 
 
-        //random starting index
-        int next = d.random.nextInt(N);
+
 
         //round robin
-
+        int next = 0; //start with first centroid in the array (which has been sorted already)
         int empty = 0;
         do {
 

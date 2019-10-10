@@ -34,7 +34,7 @@ public class NLink<X> extends AtomicPri implements PriReference<X> {
     }
 
     @Override
-    public X get() {
+    public final X get() {
         return id;
     }
 

@@ -13,8 +13,13 @@ import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
 import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
+
+import static java.util.Arrays.sort;
 
 
 /**
@@ -22,6 +27,9 @@ import java.util.stream.Stream;
  * TODO abstract into general purpose "Cluster of Bags" class
  */
 public class BagClustering<X> {
+
+
+
     /**
      * how to interpret the bag items as vector space data
      */
@@ -123,17 +131,23 @@ public class BagClustering<X> {
         for (L l : ll)
             l.clear();
 
-        int centroids = 0;
-        for (VLink<X> x : bag) {
+        final int[] centroids = {0};
+//        for (VLink<X> x : bag) {
+//        }
+        bag.sampleUnique(ThreadLocalRandom.current(), x ->{
             int c = x.centroid;
             if (c >= 0) {
                 L llc = ll[c % cc];
                 llc.add(x.id); //round robin populate the buffer
                 if (llc.size() == minPerCentroid) {
-                    if (++centroids == maxCentroids)
-                        break;
+                    if (++centroids[0] == maxCentroids)
+                        return false;
                 }
             }
+            return true;
+        });
+        if (centroids[0]>0) {
+            sort(ll, ListSizeSorter);
         }
 
         return ll;
@@ -185,9 +199,8 @@ public class BagClustering<X> {
 
     private void learn(VLink<X> x) {
         double x0 = x.coord[0];
-        if (x0 != x0) {
+        if (x0 != x0)
             model.coord(x.get(), x.coord);
-        }
 
         Centroid y = net.put(x.coord);
         x.centroid = y.id;
@@ -214,7 +227,8 @@ public class BagClustering<X> {
      */
     public double distance(X x, X y) {
         //assert (!x.equals(y));
-        assert (x != y);
+        //assert (x != y);
+        if (x == y) return 0;
 
         @Nullable VLink<X> xx = bag.get(x);
         if (xx != null && xx.centroid >= 0) {
@@ -247,5 +261,7 @@ public class BagClustering<X> {
         }
         return Stream.empty();
     }
+
+    private static final Comparator<List> ListSizeSorter =(x, y)->Integer.compare(y.size(),x.size());
 
 }
