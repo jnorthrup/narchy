@@ -58,21 +58,21 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
 
         FloatToObjectFunction<Truth> truther = Signal.truther(res, g.confDefaultBelief, g);
 
-        When<What> w = g.nowWhat;
+        When<What> wLoop = g.nowLoop;
 
         //pre-commit
         int active = 0;
         Term why = in.why.why;
         for (ComponentSignal s : this) {
             //if (quality >= 1 || rng.nextFloat() < quality )
-            if (s.input(truther.valueOf(s.value(g)), why, w))
+            if (s.input(truther.valueOf(s.value(g)), why, wLoop))
                 active++;
         }
         if (active > 0) {
             //post-commit phase
             float aPri = pri.pri() / active;
             for (ComponentSignal s : this)
-                s.commit(aPri, w);
+                s.commit(aPri, wLoop);
         }
     }
 

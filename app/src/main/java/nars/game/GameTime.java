@@ -26,6 +26,10 @@ abstract public class GameTime {
         return (now - Math.max(1, next(now))); //HACK
     }
 
+    /** like clone, but creates a new Time instance that 'follows' another */
+    abstract public GameTime chain();
+
+
     /** measured in realtime
      * TODO async loop for extended sleep periods
      * */
@@ -48,13 +52,23 @@ abstract public class GameTime {
         }
 
         @Override
-        public final float dur() {
+        public GameTime chain() {
+            return new FPS(initialFPS /* HACK */) {
+                @Override
+                public float dur() {
+                    return FPS.this.dur;
+                }
+            };
+        }
+
+        @Override
+        public float dur() {
             return dur;
         }
 
         @Override
         public long next(long now) {
-            RealTime t = (RealTime) g.nar().time;
+            RealTime t = (RealTime) g.nar.time;
 
             double unitsPerSec = 1/t.secondsPerUnit();
             double secondsPerFrame = 1/loop.getFPS();
@@ -97,6 +111,16 @@ abstract public class GameTime {
             this.durPeriod = durPeriod;
         }
 
+        @Override
+        public GameTime chain() {
+            return new Durs(durPeriod) {
+                @Override
+                public float dur() {
+                    return Durs.this.dur;
+                }
+            };
+        }
+
         @Override protected DurLoop clock(Game a) {
             loop = new DurLoop.DurRunnable(a::next);
             loop.durs(durPeriod);
@@ -104,7 +128,7 @@ abstract public class GameTime {
         }
 
         @Override
-        public final float dur() {
+        public float dur() {
             return dur;
         }
 

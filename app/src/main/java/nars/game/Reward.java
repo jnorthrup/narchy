@@ -96,7 +96,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 		synchronized (reinforcement) {
 			reinforcement.add(() ->
-				NALTask.the(goal, punc, truth, nar().time(), game.nowWhat.start, game.nowWhat.end, stamp)
+				NALTask.the(goal, punc, truth, nar().time(), game.nowPercept.start, game.nowPercept.end, stamp)
 			);
 		}
 	}

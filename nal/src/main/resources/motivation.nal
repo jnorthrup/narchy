@@ -26,7 +26,7 @@
     //hypothesize goal cause (bridge from Goal to Belief) "where there is a will there is a way"
     G, G, task("!") |- (#X ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
       //generalized context-specific case
-      G, B, task("!"), neq(G,B) |- ((#X && polarizeBelief(B)) ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
+//      G, B, task("!"), neq(G,B) |- ((#X && polarizeBelief(B)) ==> G), (Punctuation:Belief, Belief:StructuralReduction, Time:Task)
 
     //hypothesize goal consequence (bridge from Goal to Belief)
 //    G, G, task("!") |- (polarizeTask(G) ==> #X), (Punctuation:Belief, Belief:StructuralDeductionDD, Time:Task)

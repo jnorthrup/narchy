@@ -46,7 +46,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     private final VectorSensor sensor;
     private final NAR nar;
-    private final FloatSupplier baseDur;
+    private final FloatSupplier dur;
     final FastCoWList<Layer> layers = new FastCoWList<>(Layer[]::new);
 
     private DurLoop on;
@@ -62,8 +62,6 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     /** durs around target time */
     public final FloatRange window = new FloatRange(1, 0, 4);
 
-    /** truth duration */
-    public final FloatRange perceptDur = new FloatRange(1, 0, 4);
 
 
 //    public final AtomicBoolean beliefs = new AtomicBoolean(true);
@@ -133,9 +131,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     transient private int answerDetail;
     transient private int answerTries;
 
-    public VectorSensorChart(Bitmap2DSensor sensor, Game a) {
-        this(sensor, a.what());
-    }
+
 
     public VectorSensorChart(VectorSensor v, NAR n) {
         this(v, n::dur, n);
@@ -153,13 +149,16 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     }
 
 
-    public VectorSensorChart(VectorSensor v, FloatSupplier baseDur, NAR n) {
-        this(v, (int)Math.ceil(idealStride(v)), (int)Math.ceil(v.size()/idealStride(v)), baseDur, n);
+    public VectorSensorChart(VectorSensor v, FloatSupplier dur, NAR n) {
+        this(v,
+            v instanceof Bitmap2DSensor ? ((Bitmap2DSensor)v).width : (int)Math.ceil(idealStride(v)),
+            v instanceof Bitmap2DSensor ? ((Bitmap2DSensor)v).height : (int)Math.ceil(v.size()/idealStride(v)),
+            dur, n);
     }
 
-    public VectorSensorChart(VectorSensor v, int w, int h, FloatSupplier baseDur, NAR n) {
+    public VectorSensorChart(VectorSensor v, int w, int h, FloatSupplier dur, NAR n) {
         super(w, h);
-        this.baseDur = baseDur;
+        this.dur = dur;
         this.sensor = v;
         this.nar = n;
 
@@ -249,9 +248,9 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         });
 
     }
-    public VectorSensorChart(VectorSensor sensor, Signal[][] matrix, int width, int height, FloatSupplier baseDur, NAR n) {
+    public VectorSensorChart(VectorSensor sensor, Signal[][] matrix, int width, int height, FloatSupplier dur, NAR n) {
         super(width, height);
-        this.baseDur = baseDur;
+        this.dur = dur;
         this.sensor = sensor;
         this.concept = matrix;
         this.nar = n;
@@ -266,8 +265,8 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         this(sensor, w::dur, w.nar);
     }
 
-    public VectorSensorChart(Bitmap2DSensor sensor, FloatSupplier baseDur, NAR n) {
-        this(sensor, sensor.concepts.matrix, sensor.width, sensor.height, baseDur, n);
+    public VectorSensorChart(Bitmap2DSensor sensor, FloatSupplier dur, NAR n) {
+        this(sensor, sensor.concepts.matrix, sensor.width, sensor.height, dur, n);
     }
 
     public void onConceptTouch(Consumer<TaskConcept > c) {
@@ -347,33 +346,32 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     private void accept(NAR n) {
 
-        if (showing()) {
+        if (!showing())
+            return;
 
-            float baseDur = this.baseDur.asFloat();
-            long now = Math.round(n.time() + (baseDur * timeShift.floatValue()));
+        float dur = this.dur.asFloat();
 
-            double windowRadius = this.window.floatValue() * baseDur / 2;
+        long now = n.time() + Math.round((dur * timeShift.floatValue()));
 
-            this.start = Math.round(now - windowRadius);
-            this.end = Math.round(now + windowRadius);
+        long windowRadius = Math.round(dur * this.window.floatValue() / 2);
 
-            answerDetail = truthPrecision.intValue();
-            this.answerTries = (int)Math.ceil(answerDetail * NAL.ANSWER_TRYING);
+        this.start = now - windowRadius;
+        this.end = now + windowRadius;
 
-            if (answer == null) {
-                this.answer = Answer
-                        .taskStrength(true, answerDetail, start, end, null, null, nar);
-            }
+        answerDetail = truthPrecision.intValue();
+        this.answerTries = (int)Math.ceil(answerDetail);
 
-
-
-            this.answer.time(start, end).dur(Math.round(baseDur * perceptDur.floatValue()));
-
-            for (Layer l : layers)
-                l.doUpdate(this);
-
-            update();
+        if (answer == null) {
+            this.answer = Answer
+                    .taskStrength(true, answerDetail, start, end, null, null, nar);
         }
+
+        this.answer.time(start, end).dur(dur /* * perceptDur.floatValue() */);
+
+        for (Layer l : layers)
+            l.doUpdate(this);
+
+        update();
 
     }
 

@@ -11,8 +11,8 @@
     //      taskevent = subjunctive ("would have"),
     //      taskimmediate = present
     //         producing differently tensed (occurrence) results depending on the timing involved
-     B, (X ==> A), --is(B,"==>"), --isVar(X)   |-   unisubst(X,A,B,"$"), (Goal:Post, Time:TaskEvent)
-       B, (X ==> A), --is(B,"==>"), --isVar(X) |-   unisubst(X,A,B,"$"), (Goal:Post, Time:TaskImmediate)
+     B, (X ==> A), --is(B,"==>"), --isVar(X)   |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:TaskEvent)
+       B, (X ==> A), --is(B,"==>"), --isVar(X) |-   unisubst(X,A,B,"$"), (Goal:PostPP, Time:TaskImmediate)
      B, (X ==> A), --is(B,"==>"), --isVar(X)   |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskEvent)
        B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskImmediate)
 

@@ -132,19 +132,19 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
         int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
         int limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;
 
-        When<What> w = g.nowWhat;
+        When<What> wLoop = g.nowLoop, wPercept = g.nowPercept;
 
-        int perceptShift = (int) ((w.end - w.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
+        int perceptShift = (int) ((wLoop.end - wLoop.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
         this.nextFeedback = updateAction(
-            this.beliefTruth = truth(truth(true, limitBelief, w, perceptShift), w, perceptShift),
-            this.actionTruth = actionTruth(limitGoal, w, perceptShift),
+            this.beliefTruth = truth(truth(true, limitBelief, wLoop, perceptShift), wPercept, perceptShift),
+            this.actionTruth = actionTruth(limitGoal, wPercept, perceptShift),
             g);
 
         input(nextFeedback!=null ? nextFeedback.dither(
-            Math.max(resolution().floatValue(), w.x.nar.freqResolution.floatValue()),
-            w.x.nar.confResolution.floatValue()
-        ) : null, pri(), why, w);
+            Math.max(resolution().floatValue(), wLoop.x.nar.freqResolution.floatValue()),
+            wLoop.x.nar.confResolution.floatValue()
+        ) : null, pri(), why, wLoop);
     }
 
     /** returns feedback truth value */

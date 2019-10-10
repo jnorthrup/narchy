@@ -55,7 +55,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     @Override
     public void update(Game g) {
 
-        When<What> w = g.nowWhat;
+        When<What> w = g.nowPercept;
 
         int d = decide(w.start, w.end);
 

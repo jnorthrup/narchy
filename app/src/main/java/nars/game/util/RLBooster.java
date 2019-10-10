@@ -200,7 +200,7 @@ public class RLBooster  {
 //        long end = now + dur/2;
 
 
-        When<What> w = g.nowWhat;
+        When<What> w = g.nowPercept;
         long start = w.start;
         long end = w.end;
         float[] ii = input(start, end);

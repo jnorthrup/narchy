@@ -127,12 +127,12 @@ abstract public class GameX extends Game {
                 g -> !(g instanceof MetaAgent)
             ).forEach(g -> {
                 float fps = metaFPS; //TODO specific to each game
-                MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaFPS, metaAllowPause);
+                MetaAgent gm = new MetaAgent.GameMetaAgent(g, metaAllowPause);
                 n.add(gm);
                 //gm.pri(0.1f);
             });
 
-            MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n, metaFPS);
+            MetaAgent.SelfMetaAgent self = new MetaAgent.SelfMetaAgent(n);
             if (initMetaRL)
                 self.addRLBoost();
             n.add(self);
@@ -630,7 +630,7 @@ abstract public class GameX extends Game {
 
                 Term f = $.funcImg(FRAME, g.id, x);
                 Task t = new SignalTask(f, BELIEF, $.t(1f, n.confDefault(BELIEF)),
-                    now, now, Math.round(now + g.durPhysical()),
+                    now, now, Math.round(now + g.durLoop()),
                     new long[]{n.time.nextStamp()});
                 t.pri(n.priDefault(BELIEF)*g.what().pri());
                 //System.out.println(t);

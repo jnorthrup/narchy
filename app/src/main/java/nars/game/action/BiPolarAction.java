@@ -104,7 +104,7 @@ public class BiPolarAction extends AbstractSensor {
             n = neg.actionTruth();
 
 
-        float x = model.update(p, n, g.nowWhat.start, g.nowWhat.end);
+        float x = model.update(p, n, g.nowPercept.start, g.nowPercept.end);
 
         //System.out.println(p + " vs " + n + " -> " + x);
 

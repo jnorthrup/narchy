@@ -82,7 +82,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public volatile long now = ETERNAL;
 
-    public When<What> nowWhat = null;
+    public When<What> nowPercept = null, nowLoop = null;
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -108,6 +108,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     //@Deprecated private final static InheritableThreadLocal<NAR> _nar = new InheritableThreadLocal<>();
 
+    /** TODO make final */
     @Deprecated public Game(Term id, GameTime time, NAR n) {
         this(id, time);
         this.nar = n;
@@ -237,8 +238,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     public Random random() {
-        NAR n = this.nar;
-        return n != null ? n.random() : ThreadLocalRandom.current();
+        What w = this.what;
+        return w != null ? w.random() : ThreadLocalRandom.current();
     }
 
     @Override
@@ -268,6 +269,8 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         this.now = nar.time();
         this.what = nar.fork(id, true);
 
+        init();
+
         PriNode gamePri = what.pri;
         actionPri = nar.control.amp($.inh(id,ACTION), PriNode.Merge.And, gamePri, nar.goalPriDefault);
         sensorPri = nar.control.amp($.inh(id,SENSOR), PriNode.Merge.And, gamePri, nar.beliefPriDefault);
@@ -278,32 +281,27 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         rewards.forEach(r -> init(rewardPri, r));
     }
 
+    /** subclasses can safely add sensors, actions, rewards by implementing this.  NAR and What will be initialized prior */
+    protected void init() {
+
+    }
+
 
     //@Override
     protected void stopping(NAR nar) {
 
-        nar.control.remove(actionPri); actionPri = null;
-        nar.control.remove(rewardPri); rewardPri = null;
-        nar.control.remove(sensorPri); sensorPri = null;
-
-        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.stop((NARPart)s));
+        sensors.stream().filter(x -> x instanceof NARPart).forEach(s -> nar.remove((NARPart)s));
         //actions.forEach(a -> nar.remove((PermanentConcept)a)); //TODO
+
+        nar.control.removeAll(actionPri, sensorPri, rewardPri);
+        actionPri = null;
+        rewardPri = null;
+        sensorPri = null;
 
         this.what.close();
         this.what = null;
 
         this.nar = null;
-
-    }
-
-    @Override
-    public boolean delete() {
-        if (super.delete()) {
-            nar.control.removeAll(actionPri, sensorPri, rewardPri);
-            return true;
-        }
-        return false;
-
     }
 
     public Reward reward(FloatSupplier rewardfunc) {
@@ -405,7 +403,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     /** physical/sensory duration */
-    public final float durPhysical() {
+    public final float durLoop() {
         return time.dur();
     }
 
@@ -416,7 +414,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         return (float) Truth.confSafe(c, _confRes);
     }
 
-    public void pri(float v) {
+    public final void pri(float v) {
         what.pri(v);
     }
 
@@ -494,10 +492,6 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
                 //Tense.dither(nar.time(), dither);
 
             long prev = this.now;
-            if (prev == ETERNAL) {
-                this.now = now;
-                prev = now-dither;
-            }
             if (now < prev)
                 return; //too early
 
@@ -505,13 +499,17 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 //            System.out.println(this + " "  + state().toString() + " " + (now - prev));
 
-            float dur = dur();
-            long lastEnd = nowWhat !=null ? nowWhat.end : Math.round(now-dur/2-1);
-            long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - dur/2));
-            long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + dur/2 - 1)));
-            this.nowWhat = new When<>(nextStart, nextEnd, dur, what);
+            float durLoop = durLoop();
+            long lastEnd = nowPercept !=null ? nowPercept.end : Math.round(now-durLoop/2-1);
+            long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - durLoop/2));
+            long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop/2 - 1)));
 
-            this.confDefaultBelief = nar().confDefault(BELIEF);
+            float durPercept = dur();
+
+            this.nowPercept = new When<>(nextStart, nextEnd, durPercept, what);
+            this.nowLoop = new When<>(nextStart, nextEnd, durLoop, what);
+
+            this.confDefaultBelief = nar.confDefault(BELIEF);
 
             cycle.next(this, iteration.getAndIncrement(), prev, now);
 

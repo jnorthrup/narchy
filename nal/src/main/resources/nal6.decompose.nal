@@ -62,8 +62,8 @@
       //X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionNP,     Time:TaskImmediate)
 //    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskEvent)
       //X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskImmediate)
-    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskImmediate)
-    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskImmediate)
+    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
 
     //goal anticipation
     X, C, --eventOfNeg(C,X), --conjParallel(C)           |-  conjAfter(C,   X),         (  Goal:DeductionWeakPP, Time:TaskEvent)

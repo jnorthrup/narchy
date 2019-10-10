@@ -93,8 +93,8 @@ abstract public class MetaAgent extends Game {
 //    }
 
 
-	protected MetaAgent(Term id, float fps, NAR nar) {
-		super(id, GameTime.fps(fps));
+	protected MetaAgent(Term id, GameTime t, NAR nar) {
+		super(id, t);
 		this.nar = nar;
 	}
 
@@ -171,8 +171,8 @@ abstract public class MetaAgent extends Game {
 	 */
 	public static class SelfMetaAgent extends MetaAgent {
 
-		public SelfMetaAgent(NAR nar, float fps) {
-			super($.inh(nar.self(), $$("meta")), fps, nar);
+		public SelfMetaAgent(NAR nar) {
+			super($.inh(nar.self(), $$("meta")), GameTime.durs(1), nar);
 			NAR n = nar;
 
 			Term SELF = n.self();
@@ -286,8 +286,8 @@ abstract public class MetaAgent extends Game {
 		private final long autoResumePeriod = 256;
 		private final boolean allowPause;
 
-		public GameMetaAgent(Game g, float fps, boolean allowPause) {
-			super($.inh(g.what().id, $$("meta")), fps, g.nar);
+		public GameMetaAgent(Game g, boolean allowPause) {
+			super($.inh(g.what().id, $$("meta")), g.time.chain(), g.nar);
 
 			this.allowPause = allowPause;
 
