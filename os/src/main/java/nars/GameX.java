@@ -528,7 +528,7 @@ abstract public class GameX extends Game {
                 .add(new Arithmeticize.ArithmeticIntroduction())
                 .add(new Factorize.FactorIntroduction())
                 .add(new Inperience())
-                .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 16, 512, t->true))
+                .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 4, 32, t->true))
                 //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
                 //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
             ,

@@ -189,46 +189,45 @@ public class ConjClustering extends TaskAction {
 
         //round-robin visit each centroid one task at a time.  dont finish a centroid completely and then test kontinue, it is unfair
 
-        int cc = 0;
-        conjoiner.centroids = data.forEachCentroid(TaskList::new, conjoiner.centroids);
+        int iterations = ITERATIONS;
+        conjoiner.centroids = data.forEachCentroid(TaskList::new, conjoiner.centroids, iterations, 3 /* TODO by volume, ie volMax */);
         TaskList[] centroids = conjoiner.centroids;
+        int N = centroids.length;
 
-        for (int i = 0, centroidsLength = centroids.length; i < centroidsLength; i++) {
+        //HACK this should be computed in forEachCentroid
+        int nonEmpty = 0;
+        for (int i = 0, centroidsLength = N; i < centroidsLength; i++) {
             TaskList tt = centroids[i];
             int tts = tt.size();
-            if (tts > 1) {
-                cc++;
-                if (tts > 2) {
-                    ArrayUtil.sort(tt.array(), 0, tts, Task::priComparable);
-                    //tt.sortThis(centroidContentsSort); //java.lang.IllegalArgumentException: Comparison method violates its general contract!
-                }
+            switch (tts) {
+                case 0: break;
+                case 1: tt.clear(); break;
+                default: nonEmpty++; break;
             }
         }
 
-        if (cc == 0)
-            return;
+        if (nonEmpty == 0) return;
 
         //TODO sort sub-buffer if some entries are empty they can be avoided during iteration
 
-        int N = centroids.length;
 
         //random starting index
         int next = d.random.nextInt(N);
 
-
         //round robin
-        int iterations = ITERATIONS;
+
         int empty = 0;
         do {
 
             TaskList i = centroids[next];
 
-            if (++next == N) next = 0;
+            int ii = i.size();
+            if (ii > 1) {
 
-            if (i.size() > 1) {
+
                 if (conjoiner.conjoinCentroid(tasksPerIterationPerCentroid, i, why, d) == 0) {
                     if (i.size() > 2)
-                        i.shuffleThis(d.random);
+                        i.shuffleThis(d.random); //try a new order
                     else {
                         i.clear(); //doomed
                         empty++;
@@ -238,6 +237,7 @@ public class ConjClustering extends TaskAction {
                 empty++;
             }
 
+            if (++next == N) next = 0;
 
         } while (empty < N && --iterations > 0);
 

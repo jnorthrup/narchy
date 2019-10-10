@@ -81,7 +81,8 @@ public class Taskify extends ProxyTerm {
                 y = z;
             }
 
-//            if (!d.single)
+            //if (!d.single)
+//            if (!d.overlapSingle)
 //                y = Image.imageNormalize(y);
         }
         return y;

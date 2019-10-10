@@ -101,7 +101,7 @@ public class BagClustering<X> {
     }
 
     /** TODO re-use a centroid buffer array of lists stored in thredlocal Centroid conjoiner */
-    public <L extends FasterList<X>> L[] forEachCentroid(IntToObjectFunction<L> listBuilder,  L[] centroidList) {
+    public <L extends FasterList<X>> L[] forEachCentroid(IntToObjectFunction<L> listBuilder,  L[] centroidList, int maxCentroids, int minPerCentroid) {
 
 
         int s = bag.size();
@@ -120,16 +120,21 @@ public class BagClustering<X> {
         }
 
         L[] ll = centroidList;
-        for (L l : ll) {
+        for (L l : ll)
             l.clear();
-        }
 
-
-        bag.forEach((x) -> {
+        int centroids = 0;
+        for (VLink<X> x : bag) {
             int c = x.centroid;
-            if (c >= 0)
-                ll[c % cc].add(x.id); //round robin populate the buffer
-        });
+            if (c >= 0) {
+                L llc = ll[c % cc];
+                llc.add(x.id); //round robin populate the buffer
+                if (llc.size() == minPerCentroid) {
+                    if (++centroids == maxCentroids)
+                        break;
+                }
+            }
+        }
 
         return ll;
     }

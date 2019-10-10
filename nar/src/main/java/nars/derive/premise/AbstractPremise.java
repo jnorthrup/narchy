@@ -110,10 +110,10 @@ public class AbstractPremise implements Premise {
 	public Premise match(int var, Derivation d, int matchTTL) {
 
 		Task task = (Task)this.task;
-		Term nextBeliefTerm = (Term) this.belief;
+		if (task.punc() == COMMAND) return this;
 
-		if (task.punc() == COMMAND || !nextBeliefTerm.op().taskable)// || /*beliefTerm.isNormalized() && */nextBeliefTerm.hasAny(VAR_QUERY))
-			return this; //structural
+		Term nextBeliefTerm = (Term) this.belief;
+		if (!nextBeliefTerm.op().taskable) return this; //structural
 
 		boolean beliefConceptUnifiesTaskConcept = false;
 
@@ -192,9 +192,11 @@ public class AbstractPremise implements Premise {
 				nextBeliefTerm = found[0];
 		}
 
-		return belief != null ? new AbstractPremise(task, belief, Why.why(why(d), belief.why()) ) :
-			!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why(d)) :
-				this;
+
+		return belief != null ?
+			new AbstractPremise(task, belief, Why.why(why(d), belief.why()) ) :
+			(!this.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, why(d)) :
+				this);
 
 	}
 
