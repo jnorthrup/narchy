@@ -1,5 +1,6 @@
 package nars.experiment;
 
+import jcog.Config;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
 import jcog.signal.wave2d.AbstractBitmap2D;
@@ -27,12 +28,13 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends GameX {
 
+    public static final int[] EMPTY_ROW = {0, 0, 0, 0, 0};
     final static float FPS = 24f;
 
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     private final boolean opjects = true;
-    private final boolean canFall = false;
+    private final boolean canFall = Config.configIs("TETRIS_CANFALL",false);
 
 
     private final Bitmap2D grid;
@@ -181,19 +183,19 @@ public class Tetris extends GameX {
         return oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
     }
 
-    final Term LEFT =
+    final Term tLEFT =
             //$.the("left");
             //$.inh("left", id);
             $.inh(id, NEG);
-    final Term RIGHT =
+    final Term tRIGHT =
             //$.the("right");
             //$.inh("right", id);
             $.inh(id, POS);
-    final Term ROT =
+    final Term tROT =
             //$.the("rotate");
             //$.inh("rotate", id);
             $.inh(id, "rotate");
-    final Term FALL =
+    final Term tFALL =
             //$.the("fall");
             //$.inh("fall", id);
             $.inh(id,"fall");
@@ -201,9 +203,9 @@ public class Tetris extends GameX {
     void actionPushButtonLR() {
 //        actionPushButton(LEFT, (b)->b && state.act(TetrisState.LEFT));
 //        actionPushButton(RIGHT, (b)->b && state.act(TetrisState.RIGHT));
-        GoalActionConcept[] lr = actionPushButtonMutex(LEFT, RIGHT,
-                b -> b && state.act(TetrisState.LEFT),
-                b -> b && state.act(TetrisState.RIGHT)
+        GoalActionConcept[] lr = actionPushButtonMutex(tLEFT, tRIGHT,
+                b -> b && state.act( TetrisState.actions.LEFT),
+                b -> b && state.act( TetrisState.actions.RIGHT)
         );
 //        for (GoalActionConcept x : lr)
 //            x.goalDefault($.t(0, 0.001f), nar); //bias
@@ -241,10 +243,10 @@ public class Tetris extends GameX {
 
         int debounceDurs = 2;
         //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
-        actionPushButton(ROT, b -> b && state.act(TetrisState.CW));
+        actionPushButton(tROT, b -> b && state.act( TetrisState.actions.CW));
 
         if (canFall) {
-            actionPushButton(FALL, debounce(b -> b && state.act(TetrisState.FALL), debounceDurs * 2));
+            actionPushButton(tFALL, debounce(b -> b && state.act( TetrisState.actions.FALL), debounceDurs * 2));
         }
 
     }
@@ -256,9 +258,9 @@ public class Tetris extends GameX {
         actionTriState($.inh(id, "X"), i -> {
             switch (i) {
                 case -1:
-                    return state.act(TetrisState.LEFT);
+                    return state.act( TetrisState.actions.LEFT);
                 case +1:
-                    return state.act(TetrisState.RIGHT);
+                    return state.act( TetrisState.actions.RIGHT);
                 default:
                 case 0:
                     return true;
@@ -266,7 +268,7 @@ public class Tetris extends GameX {
         });
 
 
-        actionPushButton(ROT, () -> state.act(TetrisState.CW));
+        actionPushButton(tROT, () -> state.act( TetrisState.actions.CW));
 
 
     }
@@ -275,7 +277,13 @@ public class Tetris extends GameX {
 
 
     public static class TetrisPiece {
-
+        public static final int[] PAIR1 = {0, 0, 1, 1, 0};
+        public static final int[] PAIR2 =  {0, 1, 1, 0, 0};
+        public static final int[] CENTER = {0, 0, 1, 0, 0};
+        public static final int[] MIDDLE = {0, 1, 1, 1, 0};
+        public static final int[] LINE1 = {0, 1, 1, 1, 1};
+        public static final int[] LEFT1 = {0, 1, 0, 0, 0};
+        public static final int[] RIGHT1 = {0, 0, 0, 1, 0};
         int[][][] thePiece = new int[4][5][5];
         int currentOrientation;
 
@@ -283,15 +291,27 @@ public class Tetris extends GameX {
             TetrisPiece newPiece = new TetrisPiece();
 
 
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 0, 1, 1, 0};
-            int[] row2 = {0, 0, 1, 1, 0};
-            int[] row3 = {0, 0, 0, 0, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(0, row0, row1, row2, row3, row4);
-            newPiece.setShape(1, row0, row1, row2, row3, row4);
-            newPiece.setShape(2, row0, row1, row2, row3, row4);
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+
+            newPiece.setShape(0, new int[][]{ EMPTY_ROW
+            , PAIR1
+            , PAIR1
+            , EMPTY_ROW
+            , EMPTY_ROW});
+            newPiece.setShape(1, new int[][]{ EMPTY_ROW
+            , PAIR1
+            , PAIR1
+            , EMPTY_ROW
+            , EMPTY_ROW});
+            newPiece.setShape(2, new int[][]{ EMPTY_ROW
+            , PAIR1
+            , PAIR1
+            , EMPTY_ROW
+            , EMPTY_ROW});
+            newPiece.setShape(3, new int[][]{ EMPTY_ROW
+            , PAIR1
+            , PAIR1
+            , EMPTY_ROW
+            , EMPTY_ROW});
 
             return newPiece;
         }
@@ -301,39 +321,38 @@ public class Tetris extends GameX {
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 1, 0, 0};
-                int[] row2 = {0, 1, 1, 1, 0};
-                int[] row3 = {0, 0, 0, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(0, row0, row1, row2, row3, row4);
+
+                newPiece.setShape(0, new int[][]{ EMPTY_ROW
+                , CENTER
+                , MIDDLE
+                , EMPTY_ROW
+                , EMPTY_ROW});
             }
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 1, 0, 0};
-                int[] row2 = {0, 0, 1, 1, 0};
-                int[] row3 = {0, 0, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(1, row0, row1, row2, row3, row4);
+
+                newPiece.setShape(1, new int[][]{ EMPTY_ROW
+                , CENTER
+                , PAIR1
+                , CENTER
+                , EMPTY_ROW});
             }
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 0, 0, 0};
-                int[] row2 = {0, 1, 1, 1, 0};
-                int[] row3 = {0, 0, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(2, row0, row1, row2, row3, row4);
+
+                newPiece.setShape(2, new int[][]{ EMPTY_ROW
+                , EMPTY_ROW
+                , MIDDLE
+                , CENTER
+                , EMPTY_ROW});
             }
 
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 0, 1, 0, 0};
-            int[] row2 = {0, 1, 1, 0, 0};
-            int[] row3 = {0, 0, 1, 0, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+            newPiece.setShape(3, new int[][]{ EMPTY_ROW
+            , CENTER
+            , PAIR2
+            , CENTER
+            , EMPTY_ROW});
 
             return newPiece;
         }
@@ -341,25 +360,26 @@ public class Tetris extends GameX {
         public static TetrisPiece makeLine() {
             TetrisPiece newPiece = new TetrisPiece();
 
-            {
-
-                int[] row0 = {0, 0, 1, 0, 0};
-                int[] row1 = {0, 0, 1, 0, 0};
-                int[] row2 = {0, 0, 1, 0, 0};
-                int[] row3 = {0, 0, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(0, row0, row1, row2, row3, row4);
-                newPiece.setShape(2, row0, row1, row2, row3, row4);
-            }
-
-
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 0, 0, 0, 0};
-            int[] row2 = {0, 1, 1, 1, 1};
-            int[] row3 = {0, 0, 0, 0, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(1, row0, row1, row2, row3, row4);
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+            newPiece.setShape(0, new int[][]{CENTER
+            , CENTER
+            , CENTER
+            , CENTER
+            , EMPTY_ROW});
+            newPiece.setShape(2, new int[][]{CENTER
+            , CENTER
+            , CENTER
+            , CENTER
+            , EMPTY_ROW});
+            newPiece.setShape(1, new int[][]{ EMPTY_ROW
+            , EMPTY_ROW
+            , LINE1
+            , EMPTY_ROW
+            , EMPTY_ROW});
+            newPiece.setShape(3, new int[][]{ EMPTY_ROW
+            , EMPTY_ROW
+            , LINE1
+            , EMPTY_ROW
+            , EMPTY_ROW});
             return newPiece;
 
         }
@@ -369,23 +389,29 @@ public class Tetris extends GameX {
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 1, 0, 0, 0};
-                int[] row2 = {0, 1, 1, 0, 0};
-                int[] row3 = {0, 0, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(0, row0, row1, row2, row3, row4);
-                newPiece.setShape(2, row0, row1, row2, row3, row4);
+                newPiece.setShape(0, new int[][]{ EMPTY_ROW
+                , LEFT1
+                , new int[]{0, 1, 1, 0, 0}
+                        , CENTER
+                , EMPTY_ROW});
+                newPiece.setShape(2, new int[][]{ EMPTY_ROW
+                , LEFT1
+                , new int[]{0, 1, 1, 0, 0}
+                        , CENTER
+                , EMPTY_ROW});
             }
 
 
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 0, 1, 1, 0};
-            int[] row2 = {0, 1, 1, 0, 0};
-            int[] row3 = {0, 0, 0, 0, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(1, row0, row1, row2, row3, row4);
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+            newPiece.setShape(1, new int[][]{ EMPTY_ROW
+            , PAIR1
+            , new int[]{0, 1, 1, 0, 0}
+                    , EMPTY_ROW
+            , EMPTY_ROW});
+            newPiece.setShape(3, new int[][]{ EMPTY_ROW
+            , PAIR1
+            , new int[]{0, 1, 1, 0, 0}
+                    , EMPTY_ROW
+            , EMPTY_ROW});
             return newPiece;
 
         }
@@ -395,23 +421,29 @@ public class Tetris extends GameX {
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 1, 0, 0};
-                int[] row2 = {0, 1, 1, 0, 0};
-                int[] row3 = {0, 1, 0, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(0, row0, row1, row2, row3, row4);
-                newPiece.setShape(2, row0, row1, row2, row3, row4);
+                newPiece.setShape(0, new int[][]{ EMPTY_ROW
+                , CENTER
+                , new int[]{0, 1, 1, 0, 0}
+                        , LEFT1
+                , EMPTY_ROW});
+                newPiece.setShape(2, new int[][]{ EMPTY_ROW
+                , CENTER
+                , new int[]{0, 1, 1, 0, 0}
+                        , LEFT1
+                , EMPTY_ROW});
             }
 
 
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 1, 1, 0, 0};
-            int[] row2 = {0, 0, 1, 1, 0};
-            int[] row3 = {0, 0, 0, 0, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(1, row0, row1, row2, row3, row4);
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+            newPiece.setShape(1, new int[][]{ EMPTY_ROW
+            , new int[]{0, 1, 1, 0, 0}
+                    , PAIR1
+            , EMPTY_ROW
+            , EMPTY_ROW});
+            newPiece.setShape(3, new int[][]{ EMPTY_ROW
+            , new int[]{0, 1, 1, 0, 0}
+                    , PAIR1
+            , EMPTY_ROW
+            , EMPTY_ROW});
             return newPiece;
 
         }
@@ -421,39 +453,35 @@ public class Tetris extends GameX {
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 1, 0, 0};
-                int[] row2 = {0, 0, 1, 0, 0};
-                int[] row3 = {0, 0, 1, 1, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(0, row0, row1, row2, row3, row4);
+                newPiece.setShape(0, new int[][]{ EMPTY_ROW
+                , CENTER
+                , CENTER
+                , PAIR1
+                , EMPTY_ROW});
             }
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 0, 0, 0};
-                int[] row2 = {0, 1, 1, 1, 0};
-                int[] row3 = {0, 1, 0, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(1, row0, row1, row2, row3, row4);
+                newPiece.setShape(1, new int[][]{ EMPTY_ROW
+                , EMPTY_ROW
+                , MIDDLE
+                , LEFT1
+                , EMPTY_ROW});
             }
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 1, 1, 0, 0};
-                int[] row2 = {0, 0, 1, 0, 0};
-                int[] row3 = {0, 0, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(2, row0, row1, row2, row3, row4);
+                newPiece.setShape(2, new int[][]{ EMPTY_ROW
+                , new int[]{0, 1, 1, 0, 0}
+                        , CENTER
+                , CENTER
+                , EMPTY_ROW});
             }
 
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 0, 0, 1, 0};
-            int[] row2 = {0, 1, 1, 1, 0};
-            int[] row3 = {0, 0, 0, 0, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+            newPiece.setShape(3, new int[][]{ EMPTY_ROW
+            , RIGHT1
+            , MIDDLE
+            , EMPTY_ROW
+            , EMPTY_ROW});
 
             return newPiece;
         }
@@ -463,49 +491,41 @@ public class Tetris extends GameX {
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 1, 0, 0};
-                int[] row2 = {0, 0, 1, 0, 0};
-                int[] row3 = {0, 1, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(0, row0, row1, row2, row3, row4);
+                newPiece.setShape(0, new int[][]{ EMPTY_ROW
+                , CENTER
+                , CENTER
+                , new int[]{0, 1, 1, 0, 0}
+                        , EMPTY_ROW});
             }
             {
-
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 1, 0, 0, 0};
-                int[] row2 = {0, 1, 1, 1, 0};
-                int[] row3 = {0, 0, 0, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(1, row0, row1, row2, row3, row4);
+                newPiece.setShape(1, new int[][]{EMPTY_ROW,
+                        LEFT1,
+                        MIDDLE,
+                        EMPTY_ROW,
+                        EMPTY_ROW});
             }
 
             {
 
-                int[] row0 = {0, 0, 0, 0, 0};
-                int[] row1 = {0, 0, 1, 1, 0};
-                int[] row2 = {0, 0, 1, 0, 0};
-                int[] row3 = {0, 0, 1, 0, 0};
-                int[] row4 = {0, 0, 0, 0, 0};
-                newPiece.setShape(2, row0, row1, row2, row3, row4);
+                newPiece.setShape(2, new int[][]{EMPTY_ROW,
+                        PAIR1,
+                        CENTER,
+                        CENTER,
+                        EMPTY_ROW});
             }
 
-            int[] row0 = {0, 0, 0, 0, 0};
-            int[] row1 = {0, 0, 0, 0, 0};
-            int[] row2 = {0, 1, 1, 1, 0};
-            int[] row3 = {0, 0, 0, 1, 0};
-            int[] row4 = {0, 0, 0, 0, 0};
-            newPiece.setShape(3, row0, row1, row2, row3, row4);
+            int[][]rows={ EMPTY_ROW
+            , EMPTY_ROW
+            , MIDDLE
+            , RIGHT1
+            , EMPTY_ROW};
+            newPiece.setShape(3, rows);
 
             return newPiece;
         }
 
-        public void setShape(int Direction, int[] row0, int[] row1, int[] row2, int[] row3, int[] row4) {
-            thePiece[Direction][0] = row0;
-            thePiece[Direction][1] = row1;
-            thePiece[Direction][2] = row2;
-            thePiece[Direction][3] = row3;
-            thePiece[Direction][4] = row4;
+        public void setShape(int Direction,int[]...rows) {
+            thePiece[Direction] =rows;
         }
 
         public int[][] getShape(int whichOrientation) {
@@ -527,13 +547,15 @@ public class Tetris extends GameX {
     }
 
     public static class TetrisState {
-        /*Action values*/
-        public static final int LEFT = 0; /*Action value for a move left*/
-        public static final int RIGHT = 1; /*Action value for a move right*/
-        public static final int CW = 2; /*Action value for a clockwise rotation*/
-        public static final int CCW = 3; /*Action value for a counter clockwise rotation*/
-        public static final int NONE = 4; /*The no-action Action*/
-        public static final int FALL = 5; /* fall down */
+     public    enum actions {
+
+         /**Action value for a move left*/LEFT,
+         /**Action value for a move right*/RIGHT,
+         /**Action value for a clockwise rotation*/CW,
+         /**Action value for a counter clockwise rotation*/CCW,
+         /**The no-action Action*/NONE,
+         /** fall down */FALL,
+        }
         private final Random randomGenerator = new Random();
         public int width;
         public int height;
@@ -646,12 +668,12 @@ public class Tetris extends GameX {
             return is_game_over;
         }
 
-        public boolean act(int theAction) {
+        public boolean act(TetrisState.actions theAction) {
             return act(theAction, true);
         }
 
         /* This code applies the action, but doesn't do the default fall of 1 square */
-        public boolean act(int theAction, boolean enable) {
+        public boolean act(actions  theAction, boolean enable) {
             synchronized (this) {
 
 
