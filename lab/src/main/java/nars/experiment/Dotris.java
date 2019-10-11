@@ -55,7 +55,7 @@ public class Dotris extends GameX {
             $.inh(id, "fall");
     private final Bitmap2D grid;
     private final TetrisState state;
-    private final boolean opjects = true;
+    private final boolean opjects = false;
     private final boolean canFall = Config.configIs("TETRIS_CANFALL", false);
     private final Bitmap2DSensor<Bitmap2D> gridVision;
 

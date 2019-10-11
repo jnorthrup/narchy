@@ -27,8 +27,8 @@ public enum Abbreviation { ;
 //    private static final AtomicInteger currentTermSerial = new AtomicInteger(0);
 
     //public static final byte ABBREVIATION_PREFIX = '=';
-    public static final byte ABBREVIATION_PREFIX = '=';
-    public static final byte[] ABBREVIATION_PREFIX_QUOTED = new byte[] { '"', ABBREVIATION_PREFIX };
+//    public static final byte ABBREVIATION_PREFIX = '=';
+//    public static final byte[] ABBREVIATION_PREFIX_QUOTED = new byte[] { '"', ABBREVIATION_PREFIX };
 
 
 

@@ -235,6 +235,16 @@ interface BZip2Constants {
             }
             globalCrc = (globalCrc << 8) ^ CRC.crc32Table[temp];
         }
+        void updateCRC(int inCh, int n) {
+            int globalCrc = this.globalCrc;
+            for (int i = 0; i < n; i++) {
+                int temp = (globalCrc >> 24) ^ inCh;
+                if (temp < 0)
+                    temp = 256 + temp;
+                globalCrc = (globalCrc << 8) ^ CRC.crc32Table[temp];
+            }
+            this.globalCrc = globalCrc;
+        }
 
         private int globalCrc;
     }

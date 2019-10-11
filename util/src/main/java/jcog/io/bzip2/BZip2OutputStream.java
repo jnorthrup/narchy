@@ -62,6 +62,7 @@ package jcog.io.bzip2;
 
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Arrays;
 
 /**
  * An output stream that compresses into the BZip2 format (without the file
@@ -342,8 +343,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int b = (256 + bv) % 256;
         if (currentChar != -1) {
             if (currentChar == b) {
-                runLength++;
-                if (runLength > 254) {
+                if (++runLength > 254) {
                     writeRun();
                     currentChar = -1;
                     runLength = 0;
@@ -361,41 +361,33 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
 
     private void writeRun() throws IOException {
         if (last < allowableBlockSize) {
+
             inUse[currentChar] = true;
-            for (int i = 0; i < runLength; i++) {
-                mCrc.updateCRC((char) currentChar);
-            }
+
+            char c = (char) this.currentChar;
+
+            mCrc.updateCRC(c, runLength);
+
             switch (runLength) {
                 case 1:
-                    last++;
-                    block[last + 1] = (char) currentChar;
+                    block[++last + 1] = c;
                     break;
                 case 2:
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) currentChar;
+                    block[++last + 1] = c;
+                    block[++last + 1] = c;
                     break;
                 case 3:
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) currentChar;
+                    block[++last + 1] = c;
+                    block[++last + 1] = c;
+                    block[++last + 1] = c;
                     break;
                 default:
                     inUse[runLength - 4] = true;
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) currentChar;
-                    last++;
-                    block[last + 1] = (char) (runLength - 4);
+                    block[++last + 1] = c;
+                    block[++last + 1] = c;
+                    block[++last + 1] = c;
+                    block[++last + 1] = c;
+                    block[++last + 1] = (char) (runLength - 4);
                     break;
             }
         } else {
@@ -456,9 +448,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         last = -1;
         
 
-        for (int i = 0; i < 256; i++) {
-            inUse[i] = false;
-        }
+        Arrays.fill(inUse, false);
 
         /* 20 is just a paranoia constant */
         allowableBlockSize = baseBlockSize * blockSize100k - 20;
