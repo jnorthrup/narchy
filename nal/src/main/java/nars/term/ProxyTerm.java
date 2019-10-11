@@ -164,10 +164,10 @@ public class ProxyTerm implements SameSubtermsCompound {
         return ref.subs();
     }
 
-//    @Override
-//    public final int compareTo(Term t) {
-//        return ref.compareTo(t);
-//    }
+    @Override
+    public final int compareTo(Term t) {
+        return ref.compareTo(t);
+    }
 
     @Override
     public int vars() {
