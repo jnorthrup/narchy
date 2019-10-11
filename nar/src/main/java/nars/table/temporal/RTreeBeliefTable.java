@@ -245,7 +245,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
         Task input;
         if (r.input instanceof ProxyTask) {
             //dont store TaskProxy's
-            r.input = input = ((ProxyTask) r.input).the();
+			ProxyTask p = (ProxyTask) r.input;
+			r.input = input = p.the();
             if (input == null)
                 throw new WTF();
         } else {
@@ -259,7 +260,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 //        } else if (r.input instanceof SpecialTermTask) {
 //            //ex: Image belief table proxy
 //            input = ((TaskProxy) r.input).the();
-//        } else {
+//        } else {Sub
 //            input = r.input;
 //        }
 

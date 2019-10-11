@@ -963,22 +963,22 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                 while (fullGtU(zptr[j - h] + d, v + d)) {
                     zptr[j] = zptr[j - h];
                     j = j - h;
-                    if (j <= (lo + h - 1)) {
+                    if (j <= (lo + h - 1))
                         break;
-                    }
+
                 }
                 zptr[j] = v;
                 i++;
 
-                if (workDone > workLimit && firstAttempt) {
+                if (workDone > workLimit && firstAttempt)
                     return;
-                }
             }
         }
     }
 
     private void vswap(int p1, int p2, int n) {
-        int temp = 0;
+        int temp;
+        int[] zptr = this.zptr;
         while (n > 0) {
             temp = zptr[p1];
             zptr[p1] = zptr[p2];
@@ -1142,7 +1142,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
         int[] copy = new int[256];
         boolean[] bigDone = new boolean[256];
         int c1, c2;
-        int numQSorted;
+        //int numQSorted;
 
         /*
           In the various block-sized structures, live data runs
@@ -1172,7 +1172,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
             workDone = workLimit = 0;
             simpleSort(0, last, 0);
         } else {
-            numQSorted = 0;
+            //numQSorted = 0;
             for (i = 0; i <= 255; i++) {
                 bigDone[i] = false;
             }
@@ -1265,7 +1265,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
                         int hi = (ftab[sb + 1] & CLEARMASK) - 1;
                         if (hi > lo) {
                             qSort3(lo, hi, 2);
-                            numQSorted += (hi - lo + 1);
+                            //numQSorted += (hi - lo + 1);
                             if (workDone > workLimit && firstAttempt) {
                                 return;
                             }

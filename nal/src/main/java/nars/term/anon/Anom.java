@@ -16,7 +16,7 @@ public final class Anom extends IntrinAtomic {
 
     private Anom(byte i) {
         super(i);
-        this.bytes = new byte[] {IO.opAndSubType(ATOM, (byte) 1), i };
+        this.bytes = new byte[] {IO.opAndEncoding(ATOM, (byte) 1), i };
     }
 
     @Override

@@ -216,9 +216,9 @@ abstract public class TruthProjection extends TaskList {
 
 
 
-		if (active > 1) {
+		if (active > 1 && items[0].term() instanceof Compound && items[0].hasAny(Op.Temporal)) {
 
-			if (items[0].term() instanceof Compound && !intermpolate(n))
+			if (!intermpolate(n))
 				return false;
 
 
@@ -746,8 +746,7 @@ abstract public class TruthProjection extends TaskList {
 	private boolean intermpolate(NAL nar) {
 		Task[] items = this.items;
 		Term term0 = items[0].term();
-		if (!term0.hasAny(Op.Temporal))
-			return true;
+
 
 		int n = size; //assumes nulls removed
 
@@ -759,10 +758,11 @@ abstract public class TruthProjection extends TaskList {
 		boolean allEqual = true;
 		for (int i = 1; i < n; i++) {
 			Term termI = items[i].term();
-			if (!termI.equals(term0))
+			if (!termI.equals(term0)) {
 				allEqual = false;
-			else if (!termI.root().equals(root0))
-				return false; //differing root
+				if (!termI.root().equals(root0))
+					return false; //differing root
+			}
 //			else {
 //				Term rootI = termI.root();
 //				if (roots == null) {

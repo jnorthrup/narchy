@@ -13,10 +13,7 @@ import nars.term.Compound;
 import nars.term.Neg;
 import nars.term.Term;
 import nars.term.anon.Anom;
-import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
-import nars.term.atom.Int;
-import nars.term.atom.Interval;
+import nars.term.atom.*;
 import nars.term.compound.SeparateSubtermsCompound;
 import nars.term.util.TermException;
 import nars.time.Tense;
@@ -29,7 +26,7 @@ import java.io.UnsupportedEncodingException;
 
 import static nars.Op.NEG;
 import static nars.io.IO.SPECIAL_BYTE;
-import static nars.io.IO.subType;
+import static nars.io.IO.encoding;
 import static nars.term.anon.Intrin._term;
 import static nars.term.atom.Bool.Null;
 import static nars.time.Tense.DTERNAL;
@@ -105,13 +102,15 @@ public interface TermIO {
                             throw new UnsupportedEncodingException();
                     }
                 case ATOM:
-                    switch (subType(opByte)) {
+                    switch (encoding(opByte)) {
                         case 0:
                             return Atomic.the(in.readUTF());
                         case 1:
                             return Anom.the(in.readByte());
+                        case 2:
+                            return AtomBytes.atomBytes(in);
                         default:
-                            throw new IOException("unknown ATOM subtype: " + subType(opByte));
+                            throw new IOException("unknown ATOM encoding: " + encoding(opByte));
                     }
                 case INT:
                     return Int.the(IntCoding.readZigZagInt(in));
@@ -173,7 +172,7 @@ public interface TermIO {
                 writeCompoundPrefix(o, o.temporal ? t.dt() : DTERNAL, out);
 
 
-                /*writeSubterms(s, out)*/
+
                 Subterms s = t instanceof SeparateSubtermsCompound ? t.subterms() : ((Subterms) t);
                 int ss = s.subs();
                 out.writeByte(ss);

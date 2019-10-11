@@ -280,7 +280,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             public boolean intrin(Atomic x) {
                 return
                     //erased types: intern these intrins for maximum premise key re-use
-                    !(x instanceof Int) && !(x instanceof Atom.AtomChar) &&
+                    !(x instanceof Int) && !(x instanceof AtomChar) &&
                     super.intrin(x);
             }
 

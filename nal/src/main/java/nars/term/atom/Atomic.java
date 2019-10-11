@@ -156,7 +156,7 @@ public abstract class Atomic implements Term {
                 return Int.pos[9];
         }
 
-        return Atom.AtomChar.chars[c];
+        return AtomChar.chars[c];
     }
 
     /*@NotNull*/

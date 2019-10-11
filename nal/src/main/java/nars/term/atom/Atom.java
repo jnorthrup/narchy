@@ -2,7 +2,6 @@ package nars.term.atom;
 
 import nars.Op;
 import nars.The;
-import nars.term.anon.Intrin;
 
 import static nars.Op.*;
 
@@ -157,28 +156,6 @@ public class Atom extends AbstractAtomic implements The {
         return false;
     }
 
-
-
-    public static final class AtomChar extends Atom {
-        static final AtomChar[] chars = new AtomChar[256];
-        static {
-            for (char i = 0; i < 256; i++) {
-                chars[i] = new AtomChar(i);
-            }
-        }
-
-        private final short intrin;
-
-        public AtomChar(char c) {
-            super(String.valueOf(c));
-            this.intrin = (short)((Intrin.CHARs << 8) | c);
-        }
-
-        @Override
-        public short intrin() {
-            return intrin;
-        }
-    }
 
 }
 

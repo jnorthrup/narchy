@@ -1,7 +1,6 @@
 package nars.term.atom;
 
 import jcog.Util;
-import nars.Op;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -15,7 +14,7 @@ public abstract class AbstractAtomic extends Atomic {
 
 
     /*@Stable*/
-    private final transient byte[] bytes;
+    protected final transient byte[] bytes;
     private final transient int hash;
 
     protected AbstractAtomic(byte[] raw) {
@@ -62,7 +61,6 @@ public abstract class AbstractAtomic extends Atomic {
     @Override public String toString() {
         return new String(bytes, 3, bytes.length-3);
     }
-
 
     @Override
     public void appendTo(Appendable w) throws IOException {

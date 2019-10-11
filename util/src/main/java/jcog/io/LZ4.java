@@ -35,13 +35,18 @@ import java.util.Arrays;
 public enum LZ4 { ;
 
 
-    static final int MEMORY_USAGE = 14;
-    static final int MIN_MATCH = 4; // minimum length of a match
-    static final int MAX_DISTANCE = 1 << 16; // maximum distance of a reference
-    static final int LAST_LITERALS = 5; // the last 5 bytes must be encoded as literals
-    static final int HASH_LOG_HC = 15; // log size of the dictionary for compressHC
+    static final int MEMORY_USAGE = 10;
+//    static final int MIN_MATCH = 4; // minimum length of a match
+//    static final int LAST_LITERALS = 5; // the last 5 bytes must be encoded as literals
+    static final int MIN_MATCH = 3; // minimum length of a match, seem must be >=3
+    static final int LAST_LITERALS = 1; // the last N bytes encoded as literals
+
+    static final int MAX_DISTANCE = 1 << 7; // maximum distance of a reference (stored as byte so < 256 or possibly 128)
+    static final int HASH_LOG_HC = 8; // log size of the dictionary for compressHC
     static final int HASH_TABLE_SIZE_HC = 1 << HASH_LOG_HC;
-    static final int OPTIMAL_ML = 0x0F + 4 - 1; // match length that doesn't require an additional byte
+    static final int OPTIMAL_ML = // match length that doesn't require an additional byte
+        MIN_MATCH;
+        //0x0F + 4 - 1;
 
 
     private static int hash(int i, int hashBits) {
@@ -106,7 +111,7 @@ public enum LZ4 { ;
             }
 
             // matchs
-            final int matchDec = (compressed.readByte() & 0xFF) | ((compressed.readByte() & 0xFF) << 8);
+            final int matchDec = (compressed.readByte() & 0xFF); // | ((compressed.readByte() & 0xFF) << 8);
             assert matchDec > 0;
 
             int matchLen = token & 0x0F;
@@ -163,16 +168,16 @@ public enum LZ4 { ;
 
     private static void encodeSequence(byte[] bytes, int anchor, int matchRef, int matchOff, int matchLen, ByteArrayDataOutput out) {
         final int literalLen = matchOff - anchor;
-        assert matchLen >= 4;
+//        assert matchLen >= MIN_MATCH;
         // encode token
-        final int token = (Math.min(literalLen, 0x0F) << 4) | Math.min(matchLen - 4, 0x0F);
+        final int token = (Math.min(literalLen, 0x0F) << 4) | Math.min(matchLen - MIN_MATCH, 0x0F);
         encodeLiterals(bytes, token, anchor, literalLen, out);
 
         // encode match dec
         final int matchDec = matchOff - matchRef;
         assert matchDec > 0 && matchDec < 1 << 16;
         out.writeByte((byte) matchDec);
-        out.writeByte((byte) (matchDec >>> 8));
+//        out.writeByte((byte) (matchDec >>> 8));
 
         // encode match len
         if (matchLen >= MIN_MATCH + 0x0F) {
@@ -180,7 +185,7 @@ public enum LZ4 { ;
         }
     }
 
-    static final class HashTable {
+    public static final class LZ4Table {
         private int hashLog;
         private PackedInts.Mutable hashTable;
 
@@ -202,7 +207,7 @@ public enum LZ4 { ;
      * at most 16KB of memory. <code>ht</code> shouldn't be shared across threads
      * but can safely be reused.
      */
-    public static void compress(byte[] bytes, int off, int len, ByteArrayDataOutput out, HashTable ht) {
+    public static void compress(byte[] bytes, int off, int len, ByteArrayDataOutput out, LZ4Table ht) {
 
         final int base = off;
         final int end = off + len;
@@ -271,7 +276,7 @@ public enum LZ4 { ;
         m2.ref = m1.ref;
     }
 
-    static final class HCHashTable {
+    public static final class LZ4HCTable {
         static final int MAX_ATTEMPTS = 256;
         static final int MASK = MAX_DISTANCE - 1;
         int nextToUpdate;
@@ -279,7 +284,7 @@ public enum LZ4 { ;
         private final int[] hashTable;
         private final short[] chainTable;
 
-        HCHashTable() {
+        public LZ4HCTable() {
             hashTable = new int[HASH_TABLE_SIZE_HC];
             chainTable = new short[MAX_DISTANCE];
         }
@@ -402,14 +407,14 @@ public enum LZ4 { ;
 
     /**
      * Compress <code>bytes[off:off+len]</code> into <code>out</code>. Compared to
-     * {@link LZ4#compress(byte[], int, int, ByteArrayDataOutput, HashTable)}, this method
+     * {@link LZ4#compress(byte[], int, int, ByteArrayDataOutput, LZ4Table)}, this method
      * is slower and uses more memory (~ 256KB per thread) but should provide
      * better compression ratios (especially on large inputs) because it chooses
      * the best match among up to 256 candidates and then performs trade-offs to
      * fix overlapping matches. <code>ht</code> shouldn't be shared across threads
      * but can safely be reused.
      */
-    public static void compressHC(byte[] src, int srcOff, int srcLen, ByteArrayDataOutput out, HCHashTable ht) {
+    public static void compressHC(byte[] src, int srcOff, int srcLen, ByteArrayDataOutput out, LZ4HCTable ht) {
 
         final int srcEnd = srcOff + srcLen;
         final int matchLimit = srcEnd - LAST_LITERALS;

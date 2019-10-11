@@ -1,7 +1,9 @@
 package nars.io;
 
 
+import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
+import com.google.common.io.ByteStreams;
 import jcog.data.byt.DynBytes;
 import jcog.data.byt.RecycledDynBytes;
 import jcog.io.BytesInput;
@@ -91,12 +93,15 @@ public class IO {
     }
 
 
-
-    public static byte opAndSubType(Op op, byte subtype) {
-        return (byte) (op.id | (subtype << 5));
+    public static byte opAndEncoding(byte op, byte encoding) {
+        return (byte) (op | (encoding << 5));
     }
 
-    static byte subType(byte opByte) {
+    public static byte opAndEncoding(Op op, byte encoding) {
+        return opAndEncoding(op.id, encoding);
+    }
+
+    static byte encoding(byte opByte) {
         return (byte) ((opByte & 0b11100000) >> 5);
     }
 
@@ -156,9 +161,22 @@ public class IO {
             return null;
         }*/
     }
+    public static Term bytesToTerm(byte[] b, int offset) {
+        try {
+            return TermIO.the.read(input(b, offset));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        } /*catch (Term.InvalidTermException ignored) {
+            return null;
+        }*/
+    }
 
     public static BytesInput input(byte[] b) {
         return new BytesInput(b);
+    }
+
+    public static ByteArrayDataInput input(byte[] b, int offset) {
+        return ByteStreams.newDataInput(b, offset);
     }
 
 

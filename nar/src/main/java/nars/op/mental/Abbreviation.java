@@ -1,8 +1,6 @@
 package nars.op.mental;
 
 
-import jcog.io.lz.QuickLZ;
-import nars.$;
 import nars.Op;
 import nars.Task;
 import nars.derive.Derivation;
@@ -11,15 +9,12 @@ import nars.io.IO;
 import nars.task.proxy.SpecialTermTask;
 import nars.term.Compound;
 import nars.term.Term;
-import nars.term.atom.Atom;
+import nars.term.atom.AtomBytes;
 import nars.term.atom.Atomic;
-import nars.term.atom.Bool;
+import nars.term.util.Image;
 import nars.term.util.transform.RecursiveTermTransform;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
-
-import java.util.Arrays;
-import java.util.Base64;
 
 /**
  * compound<->dynamic atom abbreviation.
@@ -37,15 +32,17 @@ public enum Abbreviation { ;
 
 
 
-    public static Atom abbreviateTerm(Compound x) {
-        byte[] xx = IO.termToBytes(x);
-        xx = QuickLZ.compress(xx, 1);
+    public static Atomic abbreviateTerm(Compound x) {
+
+        return AtomBytes.atomBytes((Compound)Image.imageNormalize(x));
+
+//        xx = QuickLZ.compress(xx, 1);
         //Deflater d = new Deflater(); d.read.deflate(xx);d.
 
-        return $.quote(Character.toString(ABBREVIATION_PREFIX) +
-                Base64.getEncoder().encodeToString(xx) //HACK use higher radix
-                //Base122.encode(xx)
-        );
+//        return $.quote(Character.toString(ABBREVIATION_PREFIX) +
+//                Base64.getEncoder().encodeToString(xx) //HACK use higher radix
+//                //Base122.encode(xx)
+//        );
 
 //        //HACK
 //        byte[] xxx = new byte[xx.length+1];
@@ -58,26 +55,29 @@ public enum Abbreviation { ;
     }
 
     @Nullable public static Term unabbreviateTerm(Term x) {
-        if (x instanceof Atom) {
-            Atom a = (Atom) x;
-            byte[] aa = a.bytes();
-            if (a.startsWith(ABBREVIATION_PREFIX_QUOTED)) {
-
-                byte[] b = Arrays.copyOfRange(aa, 4+1, aa.length-1); //HACK
-
-                byte[] c = //Base122.decode(b);
-                           Base64.getDecoder().decode(b);
-
-                byte[] d = QuickLZ.decompress(c);
-
-                Term y = IO.bytesToTerm(d);
-                return y instanceof Bool ?
-                    null :
-                    y;
-            }
+        if (x instanceof AtomBytes) {
+            return IO.bytesToTerm( ((AtomBytes)x).bytes(), 3 /* op and 2 length bytes */ );
         }
-
-        return null;
+        return x;
+//        if (x instanceof Atom) {
+//            Atom a = (Atom) x;
+//            byte[] aa = a.bytes();
+//            if (a.startsWith(ABBREVIATION_PREFIX_QUOTED)) {
+//
+//                byte[] b = Arrays.copyOfRange(aa, 4+1, aa.length-1); //HACK
+//
+//                byte[] c = //Base122.decode(b);
+//                           Base64.getDecoder().decode(b);
+//
+//                byte[] d = QuickLZ.decompress(c);
+//
+//                Term y = IO.bytesToTerm(d);
+//                return y instanceof Bool ?
+//                    null :
+//                    y;
+//            }
+//        }
+//        return null;
     }
 
     public abstract static class AbstractAbbreviate extends TaskTransformAction {

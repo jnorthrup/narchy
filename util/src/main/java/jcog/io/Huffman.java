@@ -948,32 +948,32 @@ public class Huffman {
         boolean twoPass;
     }
 
-    static class ByteAryLst {
-        byte[] ary;
-        int len = 0;
-        int capacity;
-
-        public ByteAryLst(int size) {
-            ary = new byte[size];
-            capacity = ary.length;
-        }
-
-        public void add(byte e) {
-            ary[len] = e;
-            if (++len == capacity) {
-                ary = Arrays.copyOf(ary, ary.length * 2);
-                capacity = ary.length;
-            }
-        }
-
-        public byte get(int idx) {
-            return ary[idx];
-        }
-
-        public byte[] toAry() {
-            return Arrays.copyOf(ary, len);
-        }
-    }
+//    static class ByteAryLst {
+//        byte[] ary;
+//        int len = 0;
+//        int capacity;
+//
+//        public ByteAryLst(int size) {
+//            ary = new byte[size];
+//            capacity = ary.length;
+//        }
+//
+//        public void add(byte e) {
+//            ary[len] = e;
+//            if (++len == capacity) {
+//                ary = Arrays.copyOf(ary, ary.length * 2);
+//                capacity = ary.length;
+//            }
+//        }
+//
+//        public byte get(int idx) {
+//            return ary[idx];
+//        }
+//
+//        public byte[] toAry() {
+//            return Arrays.copyOf(ary, len);
+//        }
+//    }
 
     //generate symbols and record their frequency in dataset
     class SFGenerator implements Runnable {
@@ -1092,8 +1092,7 @@ public class Huffman {
     }
 
     static class HuffmanNode extends HuffmanTree {
-        final HuffmanTree left;
-        final HuffmanTree right;
+        final HuffmanTree left, right;
 
         HuffmanNode(HuffmanTree lef, HuffmanTree rit, int nodeID) {
             super(lef.frequency + rit.frequency, nodeID);
