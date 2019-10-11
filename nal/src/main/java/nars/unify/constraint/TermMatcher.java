@@ -117,7 +117,7 @@ abstract public class TermMatcher {
 
         public final int struct;
 
-        Is(Op op) {
+        public Is(Op op) {
             this(op.bit);
         }
 
@@ -181,10 +181,13 @@ abstract public class TermMatcher {
         private final Atomic param;
         private final float cost;
 
+        public VolMin(int volMin) {
+            this(volMin, 0);
+        }
+
         public VolMin(int volMin, int depth) {
             assert(volMin > 1);
-            this.param = $.the(volMin);
-            this.volMin = volMin;
+            this.param = $.the(this.volMin = volMin);
             this.cost = (0.03f + (0.01f * depth));
         }
 
@@ -204,7 +207,33 @@ abstract public class TermMatcher {
         }
 
     }
+    public final static class VolMax extends TermMatcher {
+        private final int volMax;
+        private final Atomic param;
+        private final float cost;
 
+        public VolMax(int volMax) {
+            assert(volMax >= 1);
+            this.param = $.the(this.volMax = volMax);
+            this.cost = (0.04f);
+        }
+
+        @Override
+        public Term param() {
+            return param;
+        }
+
+        @Override
+        public float cost() {
+            return cost;
+        }
+
+        @Override
+        public boolean test(Term term) {
+            return term.volume() <= volMax;
+        }
+
+    }
     /**
      * has the target in its structure, meaning it either IS or HAS
      * one of the true bits of the provide vector ("has any")

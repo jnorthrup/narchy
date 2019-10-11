@@ -27,10 +27,10 @@ import nars.game.GameTime;
 import nars.game.MetaAgent;
 import nars.gui.NARui;
 import nars.memory.CaffeineMemory;
-import nars.memory.HijackMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
+import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinker;
@@ -532,6 +532,10 @@ abstract public class GameX extends Game {
                 .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 4, 32, t->true))
                 //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
                 //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
+
+                .add(new Abbreviation.AbbreviateRoot(4, 9))
+                .add(new Abbreviation.UnabbreviateRoot())
+
             ,
             new MixedTimeFocus(
                 new NonEternalTaskOccurenceOrPresentDeriverTiming(),

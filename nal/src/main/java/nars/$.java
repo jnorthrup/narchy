@@ -96,10 +96,13 @@ public enum $ { ;
         }
     }
 
+    public static Atom quote(String text) {
+        return text.isEmpty() ? emptyQuote : (Atom) Atomic.the(Texts.quote(text));
+    }
+
     public static Atom quote(Object text) {
         String s = text.toString();
-
-        return s.isEmpty() ? emptyQuote : (Atom) Atomic.the(Texts.quote(s));
+        return quote(s);
     }
 
     public static Term[] the(String... id) {

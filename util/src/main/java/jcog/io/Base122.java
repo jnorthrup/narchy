@@ -1,25 +1,46 @@
 package jcog.io;
 
+import jcog.data.bit.MetalBitSet;
+import org.eclipse.collections.api.map.primitive.ImmutableByteByteMap;
+import org.eclipse.collections.impl.map.mutable.primitive.ByteByteHashMap;
+
 import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 
 /** https://github.com/patrickfav/base122-java */
 public enum Base122 { ;
     private static final byte kShortened = 0b111; // Uses the illegal index to signify the last two-byte char encodes <= 7 bits.
-    private final static byte[] ILLEGAL_BYTES = new byte[]{
-            0 // null
+
+    private final static MetalBitSet illegal = MetalBitSet.bits(128);
+    private static ImmutableByteByteMap illegalFwd, illegalRev;
+
+    static {
+        ByteByteHashMap ILLEGAL_BYTES_fwd = new ByteByteHashMap(16), ILLEGAL_BYTES_rev = new ByteByteHashMap(16);
+        for (byte b : new byte[]{
+            0  //null
             , 10 // newline
             , 13 // carriage return
             , 34 // double quote
             , 38 // ampersand
             , 92 // backslash
-    };
+        }) {
+          illegal.set(b);
+            byte bi = (byte) ILLEGAL_BYTES_fwd.size();
+            ILLEGAL_BYTES_fwd.put(b, bi);
+            ILLEGAL_BYTES_rev.put(bi, b);
+        }
+        Base122.illegalFwd = ILLEGAL_BYTES_fwd.toImmutable();
+        Base122.illegalRev = ILLEGAL_BYTES_rev.toImmutable();
+    }
 
     public static String encode(byte[] data) {
         return new Encoder(data).encode();
     }
 
     public static byte[] decode(String encodedBase122) {
+        return new Decoder().decode(encodedBase122);
+    }
+    public static byte[] decode(byte[] encodedBase122) {
         return new Decoder().decode(encodedBase122);
     }
 
@@ -93,17 +114,12 @@ public enum Base122 { ;
             return new String(outputStream.toByteArray(), StandardCharsets.UTF_8);
         }
 
-        private int isIllegalCharacter(byte sevenBits) {
-            for (int i = 0; i < ILLEGAL_BYTES.length; i++) {
-                if (ILLEGAL_BYTES[i] == sevenBits) {
-                    return i;
-                }
-            }
-            return -1;
-        }
+
     }
 
-
+    private static int isIllegalCharacter(byte sevenBits) {
+        return illegal.get(sevenBits) ? illegalFwd.get(sevenBits) : -1;
+    }
 
     final static class Decoder {
         private final ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
@@ -125,7 +141,10 @@ public enum Base122 { ;
 
         byte[] decode(String base122Data) {
             byte[] utf8Bytes = base122Data.getBytes(StandardCharsets.UTF_8);
+            return decode(utf8Bytes);
+        }
 
+        byte[] decode(byte[] utf8Bytes) {
             for (int i = 0; i < utf8Bytes.length; i++) {
                 // Check if this is a two-byte character.
                 if (utf8Bytes[i] > 127) {
@@ -134,7 +153,7 @@ public enum Base122 { ;
                     int illegalIndex = (utf8Bytes[i] >>> 8) & 7; // 7 = 0b111.
                     // We have to first check if this is a shortened two-byte character, i.e. if it only
                     // encodes <= 7 bits.
-                    if (illegalIndex != kShortened) pushNext7(ILLEGAL_BYTES[illegalIndex]);
+                    if (illegalIndex != kShortened) pushNext7(illegalRev.get((byte)illegalIndex));
                     // Always push the rest.
                     pushNext7(utf8Bytes[i] & 127);
                 } else {

@@ -159,7 +159,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     /**
      * TODO make this NAR-specific
      */
-    public static final IntRange causeCapacity = new IntRange(32, 1, 64);
+    public static final IntRange causeCapacity = new IntRange(16, 1, 64);
 
 
 

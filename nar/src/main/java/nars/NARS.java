@@ -201,10 +201,10 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume,
-                1, 128,
-                8, 96,
-                16, 64,
-                32, 32
+                1, 96,
+                8, 72,
+                16, 48,
+                32, 24
         );
 
         /** shared question and quest capacity curve */
