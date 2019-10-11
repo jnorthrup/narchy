@@ -278,7 +278,7 @@ public class Tetris extends GameX {
         public float[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
-        public List<PossibleBlocks> possibleBlocks = Arrays.asList(PossibleBlocks.values()).subList(0, 1);
+        public List<PossibleBlocks> possibleBlocks = List.of(PossibleBlocks.values());//.subList(0, 1);
         //        CopyOnWriteArrayList<TetrisPiece> possibleBlocks = new CopyOnWriteArrayList<>();
         private int rowsFilled;
 

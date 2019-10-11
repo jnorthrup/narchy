@@ -32,7 +32,10 @@ public enum Abbreviation { ;
 
 
 
-    public static Atomic abbreviateTerm(Compound x) {
+    @Nullable public static Atomic abbreviateTerm(Compound x) {
+
+        if (x.hasAny(Op.VAR_INDEP))
+            return null; //refuse, can cause problems
 
         return AtomBytes.atomBytes((Compound)Image.imageNormalize(x));
 
@@ -97,7 +100,7 @@ public enum Abbreviation { ;
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
             Term yy = abbreviate((Compound)xx);
-            return yy!=null ? SpecialTermTask.the(x, yy, true) : null;
+            return yy!=null && yy.opID()==xx.opID() ? SpecialTermTask.the(x, yy, true) : null;
         }
 
         protected abstract Term abbreviate(Compound x);
@@ -111,7 +114,7 @@ public enum Abbreviation { ;
         }
 
         @Override
-        protected Term abbreviate(Compound x) {
+        @Nullable protected Term abbreviate(Compound x) {
             return abbreviateTerm(x);
         }
     }
@@ -122,9 +125,12 @@ public enum Abbreviation { ;
             public Term applyPosCompound(Compound x) {
                 int v = x.volume();
                 if (v >= volMin && v <= subVolMax) {
-                    return abbreviateTerm(x); //terminal
-                } else
-                    return super.applyPosCompound(x);
+                    Term y = abbreviateTerm(x); //terminal
+                    if (y !=null)
+                        return y;
+                }
+
+                return super.applyPosCompound(x);
             }
         };
 
@@ -184,7 +190,7 @@ public enum Abbreviation { ;
         @Override
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
-            Term yy = transform.apply(xx);
+            Term yy = transform.apply(xx).normalize();
             if (yy.op().taskable && !yy.equals(xx) && yy.volume() <= d.termVolMax) {
                 return SpecialTermTask.the(x, yy, true);
             } else

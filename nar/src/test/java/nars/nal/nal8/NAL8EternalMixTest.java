@@ -322,7 +322,7 @@ class NAL8EternalMixTest extends NALTest {
                 .input("hold. |")
                 .input("( hold &&+5 (at &&+5 open) )!")
                 .mustGoal(cycles, "(at &&+5 open)", 1.0f, 0.5f, 5)
-        //.mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL);
+                .mustNotOutput(cycles, "(at &&+5 open)", GOAL, (t)->t!=5 && t!=ETERNAL)
         ;
     }
 

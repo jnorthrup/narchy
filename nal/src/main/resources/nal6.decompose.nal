@@ -43,15 +43,29 @@
       X, D                                 |-  --conjAfter(D,   X),  (Belief:DeductionPN, Time:TaskEvent)
 
     //sub-sequence leading to event
+    // --conjParallel because if parallel, conjAfter's above produce the same result
     X, C, --conjParallel(C)                     |-  conjBefore(C,   X),  (Belief:DeductionPP,   Time:TaskEvent)
       C, X, --conjParallel(C)                   |-  conjBefore(C,   X),  (Belief:DeductionPP, Time:BeliefEvent)
     X, C, has(C,"--"), --conjParallel(C)        |-  conjBefore(C, --X),  (Belief:DeductionNP,   Time:TaskEvent)
       C, X, has(C,"--"), --conjParallel(C)      |-  conjBefore(C, --X),  (Belief:DeductionPN, Time:BeliefEvent)
 
-    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:TaskEvent)
-    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DeductionPN, Time:TaskEvent)
-    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
-    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
+    C, X                                                 |-  conjAfter(C,   X),  (  Goal:DeductionPP, Time:TaskEvent)
+      C, X                                                 |-  conjAfter(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)
+    C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DeductionPN, Time:TaskEvent)
+      C, X, has(C,"--")                                    |-  conjAfter(C, --X),  (  Goal:DeductionPN, Time:BeliefEvent)
+    C, X                                                 |-  --conjAfter(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
+      C, X                                                 |-  --conjAfter(C,   X),  (  Goal:DeductionNP, Time:BeliefEvent)
+    C, X, has(C,"--")                                    |-  --conjAfter(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
+      C, X, has(C,"--")                                    |-  --conjAfter(C, --X),  (  Goal:DeductionNN, Time:BeliefEvent)
+
+//    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)
+//    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DeductionPN, Time:BeliefEvent)
+//    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:BeliefEvent)
+//    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:BeliefEvent)
+//    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:TaskEvent)
+//    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DeductionPN, Time:TaskEvent)
+//    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
+//    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
 
     X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
       //X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskImmediate)

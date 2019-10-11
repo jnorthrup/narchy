@@ -40,7 +40,7 @@ class ConjClusteringTest {
     void testNeg() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
-        int ccap = 4;
+        int ccap = 3;
         ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, 4, ccap, Task::isInput);
         new Deriver(new PremiseRuleSet(n).add(c));
         n.log();
@@ -50,7 +50,7 @@ class ConjClusteringTest {
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(64);
 
-        BeliefTable b = n.concept($.$("(&&,--x0,--x1,--x2,--x3)")).beliefs();
+        BeliefTable b = n.concept($.$("(&&,--x0,--x1,--x23)")).beliefs();
         assertEquals(1, b.taskCount());
 
         assert123(b);

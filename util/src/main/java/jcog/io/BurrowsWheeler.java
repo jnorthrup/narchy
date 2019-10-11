@@ -2,12 +2,12 @@ package jcog.io;
 
 import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
+import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 
 import java.util.Arrays;
-import java.util.Deque;
-import java.util.LinkedList;
 
+/** modified from https://github.com/fujiawu/burrows-wheeler-compression/blob/master/BurrowsWheeler.java */
 public class BurrowsWheeler {
 
 
@@ -77,22 +77,19 @@ public class BurrowsWheeler {
 		return key;
 	}
 
-	/**
-	 * apply Burrows-Wheeler decoding, reading from standard input and writing to standard output
-	 */
 	public static byte[] decode(byte[] in, int key, byte[] out) {
 
 		// map list of positions for each characters 
 		int n = in.length;
-		ByteObjectHashMap<Deque<Integer>> positions = new ByteObjectHashMap<>(n);
+		ByteObjectHashMap<IntArrayList> positions = new ByteObjectHashMap<>(n);
 		for (int i = 0; i < n; i++ )
-			positions.getIfAbsentPut(in[i], LinkedList::new).add(i);
+			positions.getIfAbsentPut(in[i], IntArrayList::new).add(i);
 
 		Arrays.sort(in); // sort last word
 
 		int[] next = new int[n];
 		for (int i = 0; i < n; i++)
-			next[i] = positions.get(in[i]).removeFirst();
+			next[i] = positions.get(in[i]).removeAtIndex(0);
 
 		int cur = key;
 		for (int i = 0; i < n; i++) {
@@ -112,7 +109,7 @@ public class BurrowsWheeler {
 		byte[] ob = new byte[eb.length];
 		decode(eb, key, ob);
 		String o = new String(ob);
-		System.out.println(i + " " + o + "\t" + i.equals(o));
+		System.out.println(i + " " + new String(eb) + " " + o + "\t" + i.equals(o));
 	}
 
 }

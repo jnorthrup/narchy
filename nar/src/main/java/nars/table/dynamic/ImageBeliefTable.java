@@ -12,6 +12,7 @@ import nars.subterm.Subterms;
 import nars.task.proxy.SpecialTermTask;
 import nars.task.util.Answer;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.Image;
 import nars.term.util.TermException;
 import nars.term.util.TermTransformException;
@@ -100,7 +101,11 @@ public class ImageBeliefTable extends DynamicTaskTable {
     @Nullable private Task transformFromTemplate(@Nullable Task x) {
         if (x == null) return null;
         try {
-            Term y = transformTermFromTemplate(x.term());
+            Term xx = x.term();
+            Term y = transformTermFromTemplate(xx);
+            if (y instanceof Bool)
+                throw new TermException("invalid recursive image", xx);
+
             return SpecialTermTask.the(x, y, false);
         } catch (TermException t) {
             //HACK
@@ -113,7 +118,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         if (t.equals(this.normal))
             return this.term;
 
-        assert(this.term.op()==INH && t.op()==INH);
+        assert(/*this.term.op()==INH && */t.op()==INH);
 
 //        if (!x.hasAny(Op.Temporal))
 //            return template; //template should equal the expected result
