@@ -118,14 +118,13 @@ class DeriverTest {
     void testConclusionFold() {
 
         TestNAR t = test(
-                "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
+        "(A --> B), C, task(\"?\") |- (A --> C), (Punctuation:Question)",
                 "(A --> B), C, task(\"?\") |- (A ==> C), (Punctuation:Question)"
         );
 
-
         t.ask("(a-->b)")
                 .mustQuestion(256, "(a ==> b)")
-                .mustQuestion(256, "(a ==> a)")
+                .mustQuestion(256, "(a ==>+- a)")
         ;
 
     }

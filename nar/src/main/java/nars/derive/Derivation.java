@@ -44,7 +44,6 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Map;
 import java.util.Random;
-import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import static nars.Op.BELIEF;
@@ -248,10 +247,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             return termifier.test(Derivation.this);
         }
 
-        /** resolve subterms */
-        public final Term extract(BiFunction<Term, Term, Term> x) {
-            return x.apply(taskTerm, beliefTerm);
-        }
     }
 
     public final PremiseUnify unify;

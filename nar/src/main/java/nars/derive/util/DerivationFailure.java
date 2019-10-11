@@ -4,6 +4,7 @@ import nars.NAR;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.term.Term;
+import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
@@ -31,6 +32,8 @@ public enum DerivationFailure {
     @Nullable
     public static DerivationFailure failure(Term x, byte punc, int volMax) {
 
+        if (x instanceof Bool) return Taskable;
+
         x = x.unneg();
 
         if (!x.op().taskable)
@@ -57,8 +60,7 @@ public enum DerivationFailure {
     }
 
     public static DerivationFailure failure(Term x, byte punc, Derivation d) {
-        DerivationFailure f = failure(x, punc, d.termVolMax);
-        return f;
+        return failure(x, punc, d.termVolMax);
     }
 
     public static boolean failure(Term x, byte punc) {

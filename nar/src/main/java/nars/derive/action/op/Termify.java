@@ -1,7 +1,6 @@
 package nars.derive.action.op;
 
 import nars.$;
-import nars.derive.Derivation;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.atom.Atom;
@@ -44,8 +43,8 @@ public final class Termify extends ProxyTerm {
     }
 
 
-    public final Term pattern(Derivation d) {
-        return (d.temporal) ?
-                pattern : patternEternal;
+    public final Term pattern(boolean temporal) {
+        return temporal ? pattern : patternEternal;
     }
+    
 }

@@ -92,6 +92,8 @@ public class TermReductionsTest extends NarseseTest {
     @Test
     void testCyclicalNAL1_and_NAL2() {
 
+        assertEq("(x ==> (x-->y))", "(x ==> (x-->y))"); //OK
+
         TermTest.assertInvalidTerms("((#1~swan)-->#1)");
         TermTest.assertInvalidTerms(
                 "((swimmer~swan)-->swimmer)",

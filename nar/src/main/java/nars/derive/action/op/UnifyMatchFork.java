@@ -31,7 +31,7 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
         Term y;
 
         try (var __ = emotion.derive_E_Run2_Subst.time()) {
-            y = d.transformDerived.apply(taskify.termify.pattern(d));
+            y = d.transformDerived.apply(taskify.termify.pattern(d.temporal));
         }
 
         DerivationFailure failureReason;

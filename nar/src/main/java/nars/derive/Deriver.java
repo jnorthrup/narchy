@@ -188,8 +188,8 @@ public class Deriver extends How {
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
 		int hypotheses = 1;
-        int premisesPerIter = 3;
-        int capacity = 4;
+        int premisesPerIter = 5;
+        int capacity = 6;
 
         int ttl;
 
