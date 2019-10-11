@@ -18,7 +18,7 @@ public class WorkerExec extends ThreadedExec {
 	/**
 	 * min # of whats per cycle, in total across all threads
 	 */
-	double granularity = 4;
+	double granularity = 8;
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */
@@ -27,11 +27,7 @@ public class WorkerExec extends ThreadedExec {
 		//1f;
 		//1.5f;
 		//2f;
-	/**
-	 * process sub-timeslice divisor
-	 * TODO auto-calculate
-	 */
-	private long subCycleNS;
+
 
 
 	public WorkerExec(int threads) {
@@ -45,13 +41,6 @@ public class WorkerExec extends ThreadedExec {
 		Exe.setExecutor(this);
 	}
 
-	@Override
-	protected void update() {
-
-		super.update();
-
-		subCycleNS = (long) ((threadWorkTimePerCycle * concurrency()) / granularity);
-	}
 
 	@Override
 	protected Supplier<Worker> loop() {
@@ -92,7 +81,7 @@ public class WorkerExec extends ThreadedExec {
 				long worked = workEnd - workStart;
 
 				long playTime = threadWorkTimePerCycle - worked;
-				if (playTime > 0 && subCycleNS > 0)
+				if (playTime > 0)
 					play(workEnd, playTime);
 
 				sleep();

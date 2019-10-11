@@ -2,7 +2,6 @@ package spacegraph.space2d;
 
 import com.jogamp.opengl.GL2;
 import jcog.Paper;
-import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.math.FloatAveragedWindow;
 import jcog.math.v2;
@@ -15,7 +14,7 @@ import java.util.function.Consumer;
 /** surface rendering context */
 public class ReSurface extends SurfaceCamera {
 
-    static final float minVisibilityPixelPct =
+    public float minVisibilityPixelPct =
             //0.5f;
             1f;
 
@@ -39,7 +38,8 @@ public class ReSurface extends SurfaceCamera {
 //    @Deprecated private boolean scaleChanged;
 
     /** cached pixel to surface scale factor */
-    transient private float psw, psh;
+    public transient float psw;
+    public transient float psh;
 
 
     @Deprecated public final void on(Consumer<GL2> renderable) {
@@ -56,14 +56,14 @@ public class ReSurface extends SurfaceCamera {
     public ReSurface start(GL2 gl, float pw, float ph, float dtS, float fps) {
         assert(pw >= 1 && ph >= 1);
 
-        this.frameDTideal = (float) (1.0/ Util.max(1.0E-9,fps));
+        this.frameDTideal = (float) (1.0/ Math.max(1.0E-9, fps));
         this.gl = gl;
         this.pw = pw;
         this.ph = ph;
 
         this.frameDT = dtS;
         //this.frameDTms = Util.max(1, Math.round(1000 * frameDT));
-        this.load.next( Util.max(0, dtS - frameDTideal) / frameDTideal );
+        this.load.next( Math.max(0, dtS - frameDTideal) / frameDTideal );
 
         set(pw/2, ph/2, 1, 1);
 
@@ -125,7 +125,7 @@ public class ReSurface extends SurfaceCamera {
         if (q < minPixelsToBeVisible)
             return 0;
 
-        return Util.min(p, q);
+        return Math.min(p, q);
     }
 
 

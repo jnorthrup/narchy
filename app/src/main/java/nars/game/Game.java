@@ -408,7 +408,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     }
 
     public final float ditherFreq(float f, float res) {
-        return Truth.freqSafe(f, Util.max(res, _freqRes));
+		return Truth.freqSafe(f, Math.max(res, _freqRes));
     }
     public final float ditherConf(float c) {
         return (float) Truth.confSafe(c, _confRes);

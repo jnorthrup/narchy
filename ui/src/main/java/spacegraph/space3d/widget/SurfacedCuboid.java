@@ -97,9 +97,11 @@ public class SurfacedCuboid<X> extends SimpleSpatial<X> implements SurfaceGraph 
 
             gl.glDepthMask(false);
 
+
             rendering.start(gl, pixelScale, pixelScale, dtS , 10);
-            rendering.w = front.w();
-            rendering.h = front.h();
+            rendering.psw = rendering.psh = pixelScale;
+//            rendering.w = front.w();
+//            rendering.h = front.h();
             front.renderIfVisible(rendering);
 
             gl.glDepthMask(true);

@@ -1,6 +1,7 @@
 package nars.derive.action.op;
 
 import nars.Emotion;
+import nars.NAL;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.util.DerivationFailure;
@@ -43,6 +44,9 @@ public class UnifyMatchFork extends EvalTermBuffer implements Predicate<Derivati
             }
 
             if (t != null) {
+
+                d.unify.use(NAL.derive.TTL_COST_TASK_TASKIFY);
+
                 try (var __ = emotion.derive_F_Remember.time()) {
                     d.remember(t);
                 }

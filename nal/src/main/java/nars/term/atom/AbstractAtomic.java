@@ -23,13 +23,6 @@ public abstract class AbstractAtomic extends Atomic {
         this.hash = Util.hash(raw);
     }
 
-    protected AbstractAtomic(Op op, String s) {
-        this(op.id, s);
-    }
-
-    protected AbstractAtomic(Op op, byte[] s) {
-        this(op.id, s);
-    }
     protected AbstractAtomic(byte opID, String s) {
         this(opID, s.getBytes());
     }
