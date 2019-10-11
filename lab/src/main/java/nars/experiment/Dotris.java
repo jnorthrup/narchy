@@ -25,16 +25,18 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import static spacegraph.SpaceGraph.window;
 
 /**
- * Created by me on 7/28/16.
+ * short-term minimum challenge example to highlight unlearning
  */
-public class Tetris extends GameX {
+public class Dotris extends GameX {
 
     static final float FPS = 24f;
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
     public final AtomicBoolean easy;
     public final Bitmap2DSensor<Bitmap2D> pixels;
-    public final FloatRange timePerFall = new FloatRange(Float.parseFloat(Config.get2("TETRIS_FALL_TIME", "" + 1f, false)), Float.parseFloat(Config.get2("TETRIS_FALL_MIN", "" + 1f, false)), Float.parseFloat(Config.get2("TETRIS_FALL_MAX", "" + 8f, false)));
+    public final FloatRange timePerFall = new FloatRange(Float.parseFloat(Config.get2("TETRIS_FALL_TIME", "" + 1f, false)),
+            Float.parseFloat(Config.get2("TETRIS_FALL_MIN", "" + 1f, false)),
+            Float.parseFloat(Config.get2("TETRIS_FALL_MAX", "" + 8f, false)));
     final Term tLEFT =
             //$.the("left");
             //$.inh("left", id);
@@ -58,15 +60,15 @@ public class Tetris extends GameX {
     private final Bitmap2DSensor<Bitmap2D> gridVision;
 
 
-    public Tetris(NAR nar) {
+    public Dotris(NAR nar) {
         this(nar, tetris_width, tetris_height);
     }
 
-    public Tetris(NAR nar, int width, int height) {
+    public Dotris(NAR nar, int width, int height) {
         this(nar, width, height, 1);
     }
 
-    public Tetris(NAR n, int width, int height, int timePerFall) {
+    public Dotris(NAR n, int width, int height, int timePerFall) {
         this(Atomic.the("tetris"), n, width, height, timePerFall);
     }
     /**
@@ -74,9 +76,9 @@ public class Tetris extends GameX {
      * @param height
      * @param timePerFall larger is slower gravity
      */
-    public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
+    public Dotris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                GameTime.fps(Tetris.FPS),
+                GameTime.fps(Dotris.FPS),
                 //FrameTrigger.durs(1),
                 n
         );
@@ -155,12 +157,12 @@ public class Tetris extends GameX {
 
         GameX.runRT(n -> {
 
-            Tetris t = new Tetris(n, tetris_width, tetris_height);
+            Dotris t = new Dotris(n, tetris_width, tetris_height);
             n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
 
-        }, Tetris.FPS * 2);
+        }, Dotris.FPS * 2);
 
 //        int instances = 2;
 //        for (int i = 0; i < instances; i++)
@@ -182,7 +184,7 @@ public class Tetris extends GameX {
 
         Opjects.methodExclusions.add("toVector");
 
-        return oo.a("tetris", TetrisState.class, Tetris.tetris_width, Tetris.tetris_height, 2);
+        return oo.a("tetris", TetrisState.class, Dotris.tetris_width, Dotris.tetris_height, 2);
     }
 
     void actionPushButtonLR() {
@@ -753,172 +755,30 @@ public class Tetris extends GameX {
         }
 
         public enum PossibleBlocks {
-            Line(new TetrisPiece() {{
-                setShape(0, TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LINE1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(2, TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LINE1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            Square(new TetrisPiece() {{
-                setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            Tri(new TetrisPiece() {{
+            Dot(new  TetrisPiece() {{
 
-                setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
+                setShape(0, Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.CENTER
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW);
+                setShape(1, Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.CENTER
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW);
+                setShape(2, Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.CENTER
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW);
+                setShape(3, Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.CENTER
+                        , Tetris.TetrisPiece.EMPTY_ROW
+                        , Tetris.TetrisPiece.EMPTY_ROW);
 
-
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-
-
-                setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            SShape(new TetrisPiece() {{
-
-                setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            ZShape(new TetrisPiece() {{
-
-                setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            LShape(new TetrisPiece() {{
-
-                setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.EMPTY_ROW);
-
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.EMPTY_ROW);
-
-                setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.RIGHT1
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-            }}),
-            JShape(new TetrisPiece() {{
-                setShape(0, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.PAIR2
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(1, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.LEFT1
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(2, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.PAIR1
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.CENTER
-                        , TetrisPiece.EMPTY_ROW);
-                setShape(3, TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.EMPTY_ROW
-                        , TetrisPiece.MIDDLE
-                        , TetrisPiece.RIGHT1
-                        , TetrisPiece.EMPTY_ROW);
-            }});
+            }}) ;
 
             public TetrisPiece shape;
 
@@ -926,8 +786,6 @@ public class Tetris extends GameX {
                 this.shape = shape;
             }
         }
-
-
     }
 }
 

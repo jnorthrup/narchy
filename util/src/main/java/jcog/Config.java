@@ -36,7 +36,7 @@ public enum Config { ;
 
    /*@JvmStatic*/
    @Nullable
-   private static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
+   public static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
       //Intrinsics.checkParameterIsNotNull(configKey, "configKey");
       boolean var5 = false;
       String y = null;
