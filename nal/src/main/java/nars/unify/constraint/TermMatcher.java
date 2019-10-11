@@ -246,8 +246,9 @@ abstract public class TermMatcher {
         private final Term param;
         private final float cost;
 
-        public Has(Op op, boolean anyOrAll) {
-            this(op.bit, anyOrAll);
+
+        public Has(Op op) {
+            this(op.bit, true);
         }
 
         public Has(int struct, boolean anyOrAll) {

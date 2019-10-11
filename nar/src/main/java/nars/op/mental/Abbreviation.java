@@ -12,7 +12,9 @@ import nars.task.proxy.SpecialTermTask;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Atom;
+import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
+import nars.term.util.transform.RecursiveTermTransform;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
 
@@ -76,11 +78,12 @@ public enum Abbreviation { ;
         return null;
     }
 
-    public static class AbbreviateRoot extends TaskTransformAction {
+    public abstract static class AbstractAbbreviate extends TaskTransformAction {
         final int volMin;
 
-        public AbbreviateRoot(/*String prefix,*/ int volMin, int volMax) {
+        public AbstractAbbreviate(int volMin, int volMax) {
             this.volMin = volMin;
+
             single();
 
             match(TheTask, new TermMatcher.VolMin(volMin));
@@ -88,13 +91,54 @@ public enum Abbreviation { ;
             if (volMax < Integer.MAX_VALUE)
                 match(TheTask, new TermMatcher.VolMax(volMax));
         }
-
         @Override
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
-            Term yy = abbreviateTerm((Compound)xx);
-            return SpecialTermTask.the(x, yy, true);
+            Term yy = abbreviate((Compound)xx);
+            return yy!=null ? SpecialTermTask.the(x, yy, true) : null;
         }
+
+        protected abstract Term abbreviate(Compound x);
+
+    }
+
+    public static class AbbreviateRoot extends AbstractAbbreviate {
+
+        public AbbreviateRoot(/*String prefix,*/ int volMin, int volMax) {
+            super(volMin, volMax);
+        }
+
+        @Override
+        protected Term abbreviate(Compound x) {
+            return abbreviateTerm(x);
+        }
+    }
+    public static class AbbreviateRecursive extends AbstractAbbreviate  {
+
+        final RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
+            @Override
+            public Term applyPosCompound(Compound x) {
+                int v = x.volume();
+                if (v >= volMin && v <= subVolMax) {
+                    return abbreviateTerm(x); //terminal
+                } else
+                    return super.applyPosCompound(x);
+            }
+        };
+
+        private final int subVolMax;
+
+        public AbbreviateRecursive(/*String prefix,*/ int volMin, int volMax) {
+            super(volMin, Integer.MAX_VALUE);
+            this.subVolMax = volMax;
+        }
+
+        @Override
+        protected Term abbreviate(Compound x) {
+            Term y = transform.applyCompound(x);
+            return !y.equals(x) ? y : null;
+        }
+
     }
 
     /** unabbreviates abbreviated root terms (not recursively contained) */
@@ -117,7 +161,34 @@ public enum Abbreviation { ;
                 return null;
         }
     }
+    /** unabbreviates abbreviated root terms (not recursively contained) */
+    public static class UnabbreviateRecursive extends TaskTransformAction {
 
+        final RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
+            @Override
+            public Term applyAtomic(Atomic a) {
+                Term b = unabbreviateTerm(a);
+                return b==null ? a : b;
+            }
+        };
+
+        public UnabbreviateRecursive(/*String prefix,*/) {
+            single();
+            match(TheTask, new TermMatcher.Has(Op.ATOM));
+            //TODO match prefix and/or other features inside the ATOM
+            //TODO more specific conditions
+        }
+
+        @Override
+        protected @Nullable Task transform(Task x, Derivation d) {
+            Term xx = x.term();
+            Term yy = transform.apply(xx);
+            if (!yy.equals(xx) && yy.volume() <= d.termVolMax) {
+                return SpecialTermTask.the(x, yy, true);
+            } else
+                return null;
+        }
+    }
 //
 //    /**
 //     * whether to use a (strong, proxying) alias atom concept
@@ -423,4 +494,6 @@ public enum Abbreviation { ;
 ////    public float value() {
 ////        return in.pri();
 ////    }
+
+
 }

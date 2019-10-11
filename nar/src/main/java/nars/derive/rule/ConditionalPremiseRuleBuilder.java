@@ -756,7 +756,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		if (o == INT)
 			throw new TODO("Premise Key memoizing erases Integers"); //HACK TODO
 
-		match(x, new TermMatcher.Has(o, true), trueOrFalse);
+		match(x, new TermMatcher.Has(o), trueOrFalse);
 	}
 
 	@Override protected PREDICATE<PreDerivation>[] conditions() {
