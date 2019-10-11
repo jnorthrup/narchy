@@ -1,16 +1,15 @@
 package jcog.sort;
 
-import java.util.Comparator;
+import java.util.function.ToIntFunction;
 
 /**
- * https://github.com/jasondavies/smoothsort.js/blob/master/smoothsort.js
- * https://raw.githubusercontent.com/ClovisMonteiro/SmoothSort/master/src/ordenamento/Sort.java
+ * variation that uses IntFunction<X> instead of comparators, for faster cached comparisons
  */
-public enum SmoothSort {
+public enum IntifySmoothSort {
 	;
 
 
-	public static <X> void smoothSort(X[] m, int lo, int hi, Comparator<X> compare) {
+	public static <X> void smoothSort(X[] m, int lo, int hi, ToIntFunction<X> compare) {
 
         assert(hi < LP[32]): "Maximum length exceeded for smoothsort implementation";
 
@@ -60,18 +59,22 @@ public enum SmoothSort {
 		}
 	}
 
-	private static <X> void trinkle(X[] m, int p, int pshift, int head, boolean trusty, Comparator<X> compare) {
-		X val = m[head];
+	private static <X> void trinkle(X[] m, int p, int pshift, int head, boolean trusty, ToIntFunction<X> i) {
+		final X val = m[head];
+		int vval = i.applyAsInt(val);
 
 		while (p != 1) {
 			int stepson = head - LP[pshift];
             X mstepson = m[stepson];
-			if (compare.compare(mstepson, val) <= 0) break;
+
+			int vstepson = i.applyAsInt(mstepson);
+			if (vstepson >= vval)
+				break;
 
 			if (!trusty && pshift > 1) {
 				int rt = head - 1;
                 int lf = head - 1 - LP[pshift - 2];
-				if (compare.compare(m[rt], mstepson) >= 0 || compare.compare(m[lf], mstepson) >= 0)
+				if (i.applyAsInt(m[rt]) <= vstepson || i.applyAsInt(m[lf]) <= vstepson)
 					break;
 			}
 
@@ -86,22 +89,24 @@ public enum SmoothSort {
 
 		if (!trusty) {
 			m[head] = val;
-			sift(m, pshift, head, compare);
+			sift(m, pshift, head, i);
 		}
 	}
 
-	private static <X> void sift(X[] m, int pshift, int head, Comparator<X> compare) {
-		X val = m[head];
+	private static <X> void sift(X[] m, int pshift, int head, ToIntFunction<X> i) {
+		final X val = m[head];
+		int vval = i.applyAsInt(val);
 
 		while (pshift > 1) {
 			int rt = head - 1;
 			int lf = head - 1 - LP[pshift - 2];
-			X mlf = m[lf], mrt = m[rt];
 
-			if (compare.compare(val, mlf) >= 0 && compare.compare(val, mrt) >= 0)
+			X mlf = m[lf], mrt = m[rt];
+			int vlf = i.applyAsInt(mlf), vrt = i.applyAsInt(mrt);
+			if (vval <= vlf && vval <= vrt)
 			    break;
 
-			if (compare.compare(mlf, mrt) >= 0) {
+			if (vlf <= vrt) {
 				m[head] = mlf;
 				head = lf;
 				pshift--;

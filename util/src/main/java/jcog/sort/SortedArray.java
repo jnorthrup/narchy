@@ -287,14 +287,17 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (from >= to)
             return;
 
+
+        IntifySmoothSort.smoothSort(items, from, to, x);
+        //SmoothSort.smoothSort(items, from, to, (a,b)->Integer.compare(x.applyAsInt(b), x.applyAsInt(a)));
+
         //qsort(items, from, to, x);
 
 //        ArrayUtil.quickSort(from, to,
 //            (a,b)->Integer.compare(x.applyAsInt(items[a]), x.applyAsInt(items[b])),
 //            (a,b)->swap(items, a, b) );
 
-        assert(from==0);
-        SmoothSort.smoothSort(items, from, to, (a,b)->Integer.compare(x.applyAsInt(b), x.applyAsInt(a)));
+
     }
 
     public final X getSafe(int i) {
