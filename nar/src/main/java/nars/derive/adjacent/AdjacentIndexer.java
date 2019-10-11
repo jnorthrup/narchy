@@ -22,8 +22,8 @@ public class AdjacentIndexer implements AdjacentConcepts {
 		//return target instanceof Atom;
 		return target.volume() <=
 			//5
-			3;
-			//1;
+			//3;
+			1;
 	}
 
 	@Override

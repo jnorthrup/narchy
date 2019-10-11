@@ -271,7 +271,7 @@ abstract public class GameX extends Game {
                 .what(
                         (w) -> new TaskLinkWhat(w,
                             512,
-                                //1024,
+                            //    1024,
                                 new PriBuffer.DirectTaskBuffer()
                                 //new PriBuffer.BagTaskBuffer(512, 0.5f /* valve */)
                                 //new PriBuffer.MapTaskBuffer()
@@ -728,7 +728,7 @@ abstract public class GameX extends Game {
      */
     private static void addGovernor(NAR n) {
         float momentum = 0.75f;
-        float explorationRate = 0.1f;
+        float explorationRate = 0.05f;
         n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Cause>> reval = new Consumer<FasterList<Cause>>() {

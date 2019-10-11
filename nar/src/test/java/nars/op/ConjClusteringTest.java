@@ -50,7 +50,7 @@ class ConjClusteringTest {
             n.believe($.the("x" + i).neg(), Tense.Present);
         n.run(64);
 
-        BeliefTable b = n.concept($.$("(&&,--x0,--x1,--x23)")).beliefs();
+        BeliefTable b = n.concept($.$("(&&,--x0,--x1,--x2)")).beliefs();
         assertEquals(1, b.taskCount());
 
         assert123(b);

@@ -182,6 +182,9 @@ abstract public class MetaAgent extends Game {
 
 			sense($.inh(SELF, $$("busy")),
 				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, e.busyVol::asFloat), 0, 1));
+			sense($.inh(SELF, $$("premiseRun")),
+				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.premiseRun::floatValue)), 0, 1));
+
 			sense($.inh(SELF, $$("deriveTask")),
 				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.deriveTask::floatValue)), 0, 1));
 			sense($.inh(SELF, $$("lag")),
