@@ -12,9 +12,10 @@ import nars.control.Caused;
 import nars.derive.action.PremiseAction;
 import nars.derive.action.PremisePatternAction;
 import nars.derive.action.op.Occurrify;
-import nars.derive.action.op.UnifyMatchFork;
+import nars.derive.action.op.Taskify;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
+import nars.derive.util.DerivationFailure;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PremisePreUnify;
 import nars.eval.Evaluation;
@@ -67,7 +68,8 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     public final PremisePreUnify premisePreUnify = new PremisePreUnify();
 
 
-    public final UnifyMatchFork termifier = new UnifyMatchFork();
+    /** current taskify for use in unification match */
+    transient Taskify taskify = null;
 
     private final static int ANON_INITIAL_CAPACITY = 16;
     public final AnonWithVarShift anon;
@@ -237,6 +239,13 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         return test(this.post[i]);
     }
 
+    public boolean unify(Term x, Term y, @Nullable Taskify finish) {
+        if (finish!=null) {
+            taskify = finish;
+        }
+        return unify.unify(x, y, finish!=null);
+    }
+
     /** main premise unification instance */
     public final class PremiseUnify extends Unify {
         public PremiseUnify(@Nullable Op type, Random random, int stackMax) {
@@ -244,7 +253,38 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         }
 
         protected boolean match() {
-            return termifier.test(Derivation.this);
+
+            Emotion emotion = nar.emotion;
+
+            emotion.deriveUnified.increment();
+
+            Taskify x = Derivation.this.taskify;
+
+            Term y;
+
+            try (var __ = emotion.derive_E_Run2_Subst.time()) {
+                y = transformDerived.apply(x.termify.pattern(temporal));
+            }
+
+            DerivationFailure termifyFailure;
+            if (null == (termifyFailure = DerivationFailure.failure(y, (byte) 0 /* dont consider punc consequences until after temporalization */, Derivation.this))) {
+
+                Task t;
+
+                try (var __ = emotion.derive_E_Run3_Taskify.time()) {
+                    t = x.task(y, Derivation.this);
+                }
+
+                if (t != null) {
+                    try (var __ = emotion.derive_F_Remember.time()) {
+                        remember(t);
+                    }
+                } //else: taskify faliure is handled in taskify
+
+            } else
+                termifyFailure.record(nar);
+
+            return true; //tried.size() < forkLimit;
         }
 
     }

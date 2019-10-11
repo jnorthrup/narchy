@@ -2,7 +2,7 @@ package nars.derive.util;
 
 import jcog.util.ArrayUtil;
 import nars.$;
-import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.term.atom.Atomic;
 import nars.term.atom.Int;
 import nars.term.control.AbstractPred;
@@ -17,7 +17,7 @@ import static nars.Op.SETe;
  *
  * a probabalistic goto instruction
  */
-public final class Forkable extends AbstractPred<Derivation> {
+public final class Forkable extends AbstractPred<PreDerivation> {
 
     public final short[] can;
 
@@ -39,7 +39,7 @@ public final class Forkable extends AbstractPred<Derivation> {
     }
 
     @Override
-    public boolean test(/*Pre*/Derivation d) {
+    public boolean test(/*Pre*/PreDerivation d) {
         d.canCollector.addAll(can);
         return true;
     }

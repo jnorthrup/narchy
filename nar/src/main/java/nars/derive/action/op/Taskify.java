@@ -38,11 +38,14 @@ public class Taskify extends ProxyTerm {
      * from the recipient.
      */
     public final RuleCause rule;
-    final Termify termify;
+    public final Termify termify;
 
-    public Taskify(Termify termify, RuleCause rule) {
+    final Occurrify.OccurrenceSolver time;
+
+    public Taskify(Termify termify, Occurrify.OccurrenceSolver time, RuleCause rule) {
         super($.pFast(termify, $.the(rule.id)));
         this.termify = termify;
+        this.time = time;
         this.rule = rule;
     }
 
@@ -97,14 +100,13 @@ public class Taskify extends ProxyTerm {
         if (o == null)
             return null;
 
-
         long[] occ = o.getTwo();
         return task(o.getOne(), occ[0], occ[1], d);
     }
 
     @Nullable
     private Pair<Term, long[]> occurrify(Term x, Derivation d) {
-        Pair<Term, long[]> timing = termify.time.occurrence(x, d);
+        Pair<Term, long[]> timing = time.occurrence(x, d);
         if (timing == null) {
             if (NAL.test.DEBUG_OCCURRIFY)
                 throw new TermException("occurify failure:\n" + d + '\n' + d.occ, x);
@@ -336,9 +338,14 @@ public class Taskify extends ProxyTerm {
         return false;
     }
 
-    public final Task task(Term y, Derivation d) {
-        return d.temporal || y.hasXternal() /*Occurrify.temporal(y)*/ ?
-            taskTemporal(y, d) : task(y, ETERNAL, ETERNAL, d);
+    public final Task task(Term x, Derivation d) {
+        Task y = d.temporal || x.hasXternal() /*Occurrify.temporal(y)*/ ?
+            taskTemporal(x, d) : task(x, ETERNAL, ETERNAL, d);
+
+        if (y!=null)
+            d.unify.use(NAL.derive.TTL_COST_TASK_TASKIFY);
+
+        return y;
     }
 
     //    @Deprecated

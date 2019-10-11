@@ -341,13 +341,21 @@ public class Arithmeticize {
             this.b = bigger;
         }
 
+        static final Term cmpABNormalized = Equal._cmp($.varDep(1), $.varDep(2), -1);
+        static final Term cmpABUnnormalized = Equal._cmp(A, B, -1);
+
         @Override
         Term apply(Term x, @Nullable Anon anon) {
             //TODO anon
-            Term cmp = !x.hasAny(Aop) ?
-                Equal._cmp($.varDep(1), $.varDep(2), -1) : //optimistic prenormalization
-                Equal._cmp(A, B, -1);
-//            if (cmp == Null) return null;
+            Term cmp;
+            Variable A, B;
+            if (!x.hasAny(Aop)) {
+                A = $.varDep(1); B = $.varDep(2); //optimistic prenormalization
+                cmp = cmpABNormalized;
+            } else {
+                A = Arithmeticize.A; B = Arithmeticize.B;
+                cmp = cmpABUnnormalized;
+            }
 
             Term xx = x.transform(new MapSubst.MapSubstN(Map.of(Int.the(a), A, Int.the(b), B), INT.bit));
 

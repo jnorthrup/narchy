@@ -1,7 +1,7 @@
 package nars.derive.rule;
 
 import nars.NAR;
-import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.derive.action.PremiseAction;
 import nars.term.ProxyTerm;
 import nars.term.Term;
@@ -21,10 +21,10 @@ import java.util.function.Function;
  */
 public class PremiseRule extends ProxyTerm  {
 
-    final PREDICATE<Derivation>[] condition;
+    final PREDICATE<PreDerivation>[] condition;
     final Function<NAR, PremiseAction> action;
 
-    public PremiseRule(Term id, PREDICATE<Derivation>[] condition, Function<NAR, PremiseAction> action) {
+    public PremiseRule(Term id, PREDICATE<PreDerivation>[] condition, Function<NAR, PremiseAction> action) {
         super(id);
 
         this.condition = condition;

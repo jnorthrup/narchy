@@ -293,16 +293,15 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         if (t == Termutator.CUT)
             return false;
         else {
-            if (t == null)
-                match();
-            else
+            return (t == null) ?
+                match()
+                :
                 matches(t);
-            return true;
         }
     }
 
-    public void matches(Termutator[] t) {
-        tryMutate(t, -1);
+    public final boolean matches(Termutator[] t) {
+        return tryMutate(t, -1);
     }
 
     private Termutator[] commitTermutes(boolean finish) {

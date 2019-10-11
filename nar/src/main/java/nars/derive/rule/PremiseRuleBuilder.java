@@ -32,10 +32,9 @@ public abstract class PremiseRuleBuilder {
 
 		final PREDICATE[] PRE = conditions();
 
-		return new PremiseRule(this.id, PRE, (nar) -> {
-			RuleCause cause = nar.newCause(s -> new RuleCause(this, s));
-			return action(cause);
-		});
+		return new PremiseRule(this.id, PRE, n ->
+			action(n.newCause(s -> new RuleCause(this, s)))
+		);
 	}
 
 

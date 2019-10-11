@@ -89,10 +89,15 @@ public class TermReductionsTest extends NarseseTest {
 
 
 
+    @Test void testAllowEternalImplRecursive() {
+        assertEq("(x ==>+1 (x-->y))", "(x ==>+1 (x-->y))"); //OK, temporal
+
+        assertEq("(x==>(x-->y))", "(x ==> (x-->y))"); //OK, eternal/parallel
+    }
+
     @Test
     void testCyclicalNAL1_and_NAL2() {
 
-        assertEq("(x ==> (x-->y))", "(x ==> (x-->y))"); //OK
 
         TermTest.assertInvalidTerms("((#1~swan)-->#1)");
         TermTest.assertInvalidTerms(

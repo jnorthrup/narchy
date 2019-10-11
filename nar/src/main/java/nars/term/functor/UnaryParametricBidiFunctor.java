@@ -5,6 +5,7 @@ import nars.eval.Evaluation;
 import nars.subterm.Subterms;
 import nars.term.Functor;
 import nars.term.Term;
+import nars.term.Variable;
 import nars.term.atom.Atom;
 import nars.term.atom.Bool;
 import org.jetbrains.annotations.Nullable;
@@ -46,8 +47,8 @@ public abstract class UnaryParametricBidiFunctor extends Functor {
     }
 
     Term apply2(Evaluation e, Term x, Term param, Term y) {
-        boolean xVar = x.op().var;
-        if (y.op().var) {
+        boolean xVar = x instanceof Variable;
+        if (y instanceof Variable) {
 
             if (xVar) {
                 return null;

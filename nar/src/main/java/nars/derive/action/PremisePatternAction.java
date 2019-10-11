@@ -606,15 +606,13 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
         this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, time));
 
-        this.termify = new Termify(conclusion(concTerm), truthify, time);
+        this.termify = new Termify(conclusion(concTerm), truthify);
 
     }
 
 
     @Override protected PremiseAction action(RuleCause cause) {
-
-
-        return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, beliefPattern, termify, cause);
+        return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, beliefPattern, termify, time, cause);
     }
 
 
@@ -707,7 +705,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         final int order;
         private final boolean patternsEqual;
 
-        public TruthifyDeriveAction(UnifyConstraint<Derivation.PremiseUnify>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, RuleCause cause) {
+        public TruthifyDeriveAction(UnifyConstraint<Derivation.PremiseUnify>[] constraints, Truthify truth, Term taskPattern, Term beliefPattern, Termify termify, Occurrify.OccurrenceSolver time, RuleCause cause) {
             super(cause);
             this.truth = truth;
             this.constraints = constraints;
@@ -715,7 +713,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
             this.taskPat = taskPattern;
             this.beliefPat = beliefPattern;
             this.order = fwd(taskPattern, beliefPattern);
-            this.taskify = new Taskify(termify, cause);
+            this.taskify = new Taskify(termify, time, cause);
             this.patternsEqual = taskPat.equals(beliefPat);
 
         }
@@ -815,11 +813,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
 
 
         protected final boolean unify(Derivation d, boolean dir, boolean finish) {
-
-            if (finish)
-                d.termifier.set(taskify);
-
-            return d.unify.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish);
+            return d.unify(dir ? taskPat : beliefPat, dir ? d.taskTerm : d.beliefTerm, finish ? taskify : null);
         }
 
         /** true: task first, false: belief first */

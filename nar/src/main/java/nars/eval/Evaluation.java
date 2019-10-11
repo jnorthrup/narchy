@@ -5,8 +5,6 @@ import jcog.data.set.ArrayHashSet;
 import jcog.math.ShuffledPermutations;
 import jcog.util.ArrayUtil;
 import nars.NAR;
-import nars.Op;
-import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Functor;
 import nars.term.Term;
@@ -23,7 +21,6 @@ import java.util.function.Function;
 import java.util.function.Predicate;
 
 import static nars.Op.CONJ;
-import static nars.Op.IMPL;
 import static nars.term.atom.Bool.*;
 
 /**
@@ -184,33 +181,23 @@ public class Evaluation extends Termerator {
                         }
                     }
 
-
                     final int vStart = now();
 
-                    Functor aFunc = (Functor) a.sub(1);
-                    Subterms aArgs = a.sub(0).subterms();
-                    Term b = aFunc.apply(this, aArgs);
+					Term b = ((Functor) a.sub(1)).apply(this, a.sub(0).subterms());
 
                     boolean newSubsts = now() != vStart;
 
-                    if (b instanceof Bool && !newSubsts) {
-						if (b == Null) {
+                    if (b instanceof Bool) {
+						if (b == True) {
+							if (!newSubsts)
+								continue;
+						} else if (b == Null) {
 							y = Null;
 							break main;
-						}
-						Op yOp = y.op();
-						if (b == True && yOp !=CONJ && yOp !=IMPL) {
-//							if (x.equals(y)) {
-//								y = True;
-//								break main;
-//							}
-                            y = x.equals(y) ? True : a;
-                            break main;
-                        } else if (b == False && yOp ==CONJ) {
+						} else if (/*b == False &&*/ y.opID() == CONJ.id) {
                             y = x.equals(y) ? False : a.neg();
                             break main;
                         }
-
                     }
 
                     Term y0 = y;

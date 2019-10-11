@@ -24,12 +24,9 @@ public final class Termify extends ProxyTerm {
     /** fully eternalized conclusion template for completely non-temporal premises */
     private final Term patternEternal;
 
-    
-    final Occurrify.OccurrenceSolver time;
-
     private static final Atom TERMIFY = Atomic.atom(Termify.class.getSimpleName());
 
-    public Termify(Term pattern, Truthify truth, Occurrify.OccurrenceSolver time) {
+    public Termify(Term pattern, Truthify truth) {
         super($.func(TERMIFY, pattern, truth.ref));
 
         this.pattern = pattern;
@@ -38,10 +35,7 @@ public final class Termify extends ProxyTerm {
 
 //        if (!(pattern.equals(patternEternal) || pattern.root().equals(patternEternal.root())))
 //            throw new TermTransformException(pattern, patternEternal, "pattern eternalization mismatch");
-
-        this.time = time;
     }
-
 
     public final Term pattern(boolean temporal) {
         return temporal ? pattern : patternEternal;

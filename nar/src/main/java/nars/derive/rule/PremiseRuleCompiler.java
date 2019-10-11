@@ -5,6 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.tree.perfect.TrieNode;
 import nars.NAR;
 import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.PremiseAction;
 import nars.derive.util.Forkable;
@@ -45,13 +46,13 @@ public enum PremiseRuleCompiler {
         assert(n > 0);
 
         PremiseAction[] roots = new PremiseAction[n];
-        final TermPerfectTrie<PREDICATE<Derivation>, PremiseAction> paths = new TermPerfectTrie<>();
+        final TermPerfectTrie<PREDICATE<PreDerivation>, PremiseAction> paths = new TermPerfectTrie<>();
 
         for (PremiseRule r : rr) {
 
-            PREDICATE<Derivation>[] condition = r.condition;
+            PREDICATE<PreDerivation>[] condition = r.condition;
 
-            FasterList<PREDICATE<Derivation>> pre = new FasterList<>(condition.length + 1);
+            FasterList<PREDICATE<PreDerivation>> pre = new FasterList<>(condition.length + 1);
             pre.addAll(condition);
 
             PremiseAction conc = r.action.apply(nar);
@@ -74,23 +75,23 @@ public enum PremiseRuleCompiler {
 
 
 
-    static PREDICATE<Derivation> compile(TermPerfectTrie<PREDICATE<Derivation>, PremiseAction> trie) {
+    static PREDICATE<PreDerivation> compile(TermPerfectTrie<PREDICATE<PreDerivation>, PremiseAction> trie) {
         return FORK.fork(compile(trie.root), FORK::new);
     }
 
 
     @Nullable
-    static List<PREDICATE<Derivation>> compile(TrieNode<List<PREDICATE<Derivation>>, PremiseAction> node) {
+    static List<PREDICATE<PreDerivation>> compile(TrieNode<List<PREDICATE<PreDerivation>>, PremiseAction> node) {
 
 
-        UnifiedSet<PREDICATE<Derivation>> bb = new UnifiedSet();
+        UnifiedSet<PREDICATE<PreDerivation>> bb = new UnifiedSet();
 
 
         node.forEach(n -> {
 
-            List<PREDICATE<Derivation>> branches = compile(n);
+            List<PREDICATE<PreDerivation>> branches = compile(n);
 
-            PREDICATE<Derivation> branch = PREDICATE.andFlat(
+            PREDICATE<PreDerivation> branch = PREDICATE.andFlat(
                     n.seq().subList(n.start(), n.end()),
                     //n.seq().stream().skip(nStart).limit(nEnd - nStart).collect(Collectors.toList()),
                     branches != null ? factorFork(branches, FORK::new) : null
@@ -108,7 +109,7 @@ public enum PremiseRuleCompiler {
         }
     }
 
-    public static PREDICATE<Derivation> factorFork(Collection<PREDICATE<Derivation>> _x, Function<List<PREDICATE<Derivation>>, PREDICATE<Derivation>> builder) {
+    public static PREDICATE<PreDerivation> factorFork(Collection<PREDICATE<PreDerivation>> _x, Function<List<PREDICATE<PreDerivation>>, PREDICATE<PreDerivation>> builder) {
 
         int n = _x.size();
         if (n == 0)
@@ -117,9 +118,9 @@ public enum PremiseRuleCompiler {
         if (n == 1)
             return _x.iterator().next();
 
-        ArrayHashSet<PREDICATE<Derivation>> x = new ArrayHashSet<>();
+        ArrayHashSet<PREDICATE<PreDerivation>> x = new ArrayHashSet<>();
         x.addAll(_x);
-        FasterList<PREDICATE<Derivation>> X = x.list;
+        FasterList<PREDICATE<PreDerivation>> X = x.list;
 
         Map<PREDICATE, SubCond> conds = new HashMap(x.size());
         for (int b = 0, xSize = n; b < xSize; b++) {
@@ -140,9 +141,9 @@ public enum PremiseRuleCompiler {
             if (fx.size() < 2) {
 
             } else {
-                List<PREDICATE<Derivation>> bundle = null;
+                List<PREDICATE<PreDerivation>> bundle = null;
                 int i = 0;
-                Iterator<PREDICATE<Derivation>> xx = x.iterator();
+                Iterator<PREDICATE<PreDerivation>> xx = x.iterator();
                 while (xx.hasNext()) {
                     PREDICATE px = xx.next();
                     if (fx.branches.contains(i)) {

@@ -173,11 +173,13 @@ public class Statement {
 
             if (dt != XTERNAL) {
 
-                if (!(subject instanceof Compound) && !(predicate instanceof Compound)) {
+                boolean scomp = subject instanceof Compound;
+                boolean pcomp = predicate instanceof Compound;
+                if (!scomp && !pcomp) {
                     //no validity test necessary
                 } else if (subject.dt() == XTERNAL || predicate.dt() == XTERNAL) { // && !subject.OR(x->x instanceof Ellipsis) && !predicate.OR(x->x instanceof Ellipsis) ) {
                     //do not reduce
-                } else if (subject.unneg().op()!=CONJ && predicate.unneg().op()!=CONJ) {
+                } else if (subject.unneg().opID()!=CONJ.id && predicate.unneg().opID()!=CONJ.id) {
                     //both simple terms
                 } else if (!Term.commonStructure(subject.structure() & (~CONJ.bit), predicate.structure() & (~CONJ.bit))) {
                     //no validity test necessary
@@ -185,9 +187,9 @@ public class Statement {
 //                        //no validity test necessary
 //                    } else if (predicate instanceof Compound && !(subject instanceof Compound) && !predicate.containsRecursively(subject)) {
 //                        //no validity test necessary
-                } else if (subject instanceof Compound && Ellipsis.firstEllipsis(((Compound)subject).subtermsDirect()) != null) {
+                } else if (scomp && Ellipsis.firstEllipsis(((Compound)subject).subtermsDirect()) != null) {
 
-                } else if (predicate instanceof Compound && Ellipsis.firstEllipsis(((Compound)predicate).subtermsDirect()) != null) {
+                } else if (pcomp && Ellipsis.firstEllipsis(((Compound)predicate).subtermsDirect()) != null) {
                     //do not reduce
                 } else {
 
@@ -247,9 +249,9 @@ public class Statement {
                         if (subject.dt()==DTERNAL && predicate.dt() == DTERNAL) { //TODO test earlier
                             //INH,SIM
                             //TODO swap order for optimal comparison
-                            boolean sc = subject.op() == CONJ;
-                            boolean pc = predicate.op() == CONJ;
-                            if (sc && pc) {
+                            boolean sConj = subject instanceof Compound && subject.opID() == CONJ.id;
+                            boolean pConj = predicate instanceof Compound && predicate.opID() == CONJ.id;
+                            if (sConj && pConj) {
                                 Subterms ssub = subject.subterms();
                                 Subterms psub = predicate.subterms();
                                 Term[] common = ssub.subsIncluding(psub::contains);
@@ -265,12 +267,12 @@ public class Statement {
                                     predicate = CONJ.the(psub.subsIncluding(notCommon));
                                     return statement(B, op, dt, subject, predicate, depth-1);
                                 }
-                            } else if (sc) {
+                            } else if (sConj) {
                                 Subterms ssub = subject.subterms();
 //                                if (ssub.contains(predicate)) return True; //TODO negate
 //                                if (ssub.containsNeg(predicate)) return False; //TODO negate
                                 if (ssub.containsPosOrNeg(predicate)) return Null;
-                            } else if (pc) {
+                            } else if (pConj) {
                                 Subterms psub = predicate.subterms();
                                 //if (psub.contains(subject)) return True; //TODO negate
                                 //if (psub.containsNeg(subject)) return False; //TODO negate
@@ -342,9 +344,9 @@ public class Statement {
 
     private static boolean recursive(Op op, int dt, Term subject, Term predicate) {
 
-        if ((op != IMPL)
+        if (op != IMPL
                 //|| (dt == 0) /* allow parallel IMPL unless there is a sequence that could separate the events from overlap */
-                || (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate))
+                //|| (dt == 0 && !Conj.isSeq(subject) && !Conj.isSeq(predicate)
         ) {
             //more fine grained inh/sim recursion test
 //            final int InhOrSim = INH.bit | SIM.bit;

@@ -4,7 +4,7 @@ import jcog.Texts;
 import nars.NAR;
 import nars.Op;
 import nars.control.Cause;
-import nars.derive.Derivation;
+import nars.derive.PreDerivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.PremiseAction;
 import nars.derive.action.PremisePatternAction;
@@ -25,20 +25,20 @@ import java.util.stream.Stream;
  */
 public class DeriverProgram {
 
-    public final PREDICATE<Derivation> what;
+    public final PREDICATE<PreDerivation> what;
 
     /**
      * the causes that this is responsible for, ie. those that may be caused by this
      */
     /*@Stable*/ public final Cause[] cause;
 
-    public final PremiseAction[] branch;
+    /*@Stable*/ public final PremiseAction[] branch;
 
     public final PreDeriver pre;
     public final NAR nar;
 
 
-    DeriverProgram(PREDICATE<Derivation> what, PremiseAction[] actions, PreDeriver pre, NAR nar) {
+    DeriverProgram(PREDICATE<PreDerivation> what, PremiseAction[] actions, PreDeriver pre, NAR nar) {
 
         this.nar = nar;
 
