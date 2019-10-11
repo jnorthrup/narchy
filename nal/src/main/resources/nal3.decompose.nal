@@ -1,8 +1,8 @@
 //NAL3 single premise belief/goal decompose
 (M --> C), X, eventOfPN(C,X)    |-   (M --> conjWithoutPN(C,X)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-  (M --> D), X, eventOfPN(D,X)  |- --(M --> conjWithoutPN(D,X)), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+  //(M --> D), X, eventOfPN(D,X)  |- --(M --> conjWithoutPN(D,X)), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 (C --> M), X, eventOfPN(C,X)    |-   (conjWithoutPN(C,X) --> M), (Belief:StructuralDeduction, Goal:StructuralDeduction)
-  (D --> M), X, eventOfPN(D,X)  |- --(conjWithoutPN(D,X) --> M), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
+  //(D --> M), X, eventOfPN(D,X)  |- --(conjWithoutPN(D,X) --> M), (Belief:StructuralDeductionN, Goal:StructuralDeductionN)
 
 //(M --> I), X, eventOfPN(I,X)  |-   polarizeTask((M --> conjWithoutPN(I,X))), (Belief:StructuralDeduction,Goal:StructuralDeduction)
 //(I --> M), X, eventOfPN(I,X)  |-   polarizeTask((conjWithoutPN(I,X) --> M)), (Belief:StructuralDeduction,Goal:StructuralDeduction)
@@ -48,7 +48,9 @@
 //   (X --> M), (D --> M),  eventOfNeg(D,X)  |-   (conjWithout(D, --X)-->M), (Belief:DeductionNP, Time:Task)
 
 (C --> M), (X --> M),  eventOf(C,X)       |-   --(conjWithout(C,   X)-->M), (Belief:DeductionNP, Time:Task)
- (X --> M), (C --> M),  eventOf(C,X)       |-  --(conjWithout(C,   X)-->M), (Belief:DeductionPN, Time:Task)
+    (X --> M), (C --> M),  eventOf(C,X)       |-  --(conjWithout(C,   X)-->M), (Belief:DeductionPN, Time:Task)
 (C --> M), (X --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
- (X --> M), (C --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
+    (X --> M), (C --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
 
+(D --> M), (X --> M),  eventOfNeg(D,X)       |-   --(conjWithout(D, --X)-->M), (Goal:DeductionNN, Time:Task)
+(M --> D), (M --> X),  eventOfNeg(D,X)       |-   --(M-->conjWithout(D, --X)), (Goal:DeductionNN, Time:Task)

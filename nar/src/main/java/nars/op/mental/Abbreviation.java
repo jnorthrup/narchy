@@ -34,7 +34,7 @@ public enum Abbreviation { ;
 
     @Nullable public static Atomic abbreviateTerm(Compound x) {
 
-        if (x.hasAny(Op.VAR_INDEP))
+        if (x.hasVars())
             return null; //refuse, can cause problems
 
         return AtomBytes.atomBytes((Compound)Image.imageNormalize(x));

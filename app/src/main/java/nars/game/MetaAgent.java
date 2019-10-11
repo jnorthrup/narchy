@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.learn.ql.dqn3.DQN3;
-import jcog.math.FloatAveragedWindow;
 import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
 import jcog.pri.ScalarValue;
@@ -180,15 +179,10 @@ abstract public class MetaAgent extends Game {
 
 			Emotion e = n.emotion;
 
-			sense($.inh(SELF, $$("busy")),
-				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, e.busyVol::asFloat), 0, 1));
-			sense($.inh(SELF, $$("premiseRun")),
-				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.premiseRun::floatValue)), 0, 1));
-
-			sense($.inh(SELF, $$("deriveTask")),
-				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.deriveTask::floatValue)), 0, 1));
-			sense($.inh(SELF, $$("lag")),
-				new FloatNormalized(FloatAveragedWindow.get(8, 0.5f, difference(e.durLoopLag::floatValue)), 0, 1));
+			sense($.inh(SELF, $$("busy")), new FloatNormalized(e.busyVol::asFloat));
+			sense($.inh(SELF, $$("premiseRun")), new FloatNormalized(e.premiseRun::get));
+			sense($.inh(SELF, $$("deriveTask")), new FloatNormalized(e.deriveTask::get));
+			sense($.inh(SELF, $$("lag")), new FloatNormalized(e.durLoopLag::get));
 
 			for (MetaGoal mg : MetaGoal.values()) {
                 GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {

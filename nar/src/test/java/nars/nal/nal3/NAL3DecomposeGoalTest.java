@@ -4,87 +4,115 @@ import org.junit.jupiter.api.Test;
 
 import static nars.Op.GOAL;
 
-public class NAL3DecomposeGoalTest extends NAL3Test {
+public enum NAL3DecomposeGoalTest { ;
 
     public static final int cycles = 900;
 
-
-
-    @Test
-    void testUnionSinglePremiseDecomposeGoal1Pos() {
-        test
+    public static class NAL3DecomposeDoubleGoalTest extends NAL3Test {
+        @Test
+        void testUnionGoalDoubleDecomposeSubj() {
+            test
                 .termVolMax(7)
                 .confMin(0.75f)
                 .input("((a|b)-->g)!")
-                .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
-                .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+                .input("--(a-->g).")
+                .mustGoal(cycles, "(b-->g)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(a-->g)", GOAL)
+            ;
+        }
+        @Test
+        void testUnionGoalDoubleDecomposePred() {
+            test
+                .termVolMax(7)
+                .confMin(0.75f)
+                .input("(g-->(a|b))!")
+                .input("--(g-->a).")
+                .mustGoal(cycles, "(g-->b)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(g-->a)", GOAL)
+            ;
+        }
     }
+    public static class NAL3DecomposeSingleGoalTest extends NAL3Test {
 
-    @Test
-    void testIntersectionSinglePremiseDecomposeGoal1Pos() {
-        test
+
+//        @Test
+//        void testUnionSinglePremiseDecomposeGoal1Pos() {
+//            test
+//                .termVolMax(7)
+//                .confMin(0.75f)
+//                .input("((a|b)-->g)!")
+//                .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
+//                .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
+//        }
+
+        @Test
+        void testIntersectionSinglePremiseDecomposeGoal1Pos() {
+            test
                 .termVolMax(6)
                 .confMin(0.75f)
                 .input("((a&b)-->g)!")
                 .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f);
-    }
+        }
 
 
-    @Test
-    void testIntersectionPosIntersectionSubGoalSinglePremiseDecompose() {
-        test
+        @Test
+        void testIntersectionPosIntersectionSubGoalSinglePremiseDecompose() {
+            test
                 .input("((a&b)-->g)!")
                 .mustGoal(cycles, "(a-->g)", 1f, 0.81f)
                 .mustGoal(cycles, "(b-->g)", 1f, 0.81f)
-        ;
-    }
-    @Test
-    void testIntersectionPosIntersectionPredGoalSinglePremiseDecompose() {
-        test
+            ;
+        }
+
+        @Test
+        void testIntersectionPosIntersectionPredGoalSinglePremiseDecompose() {
+            test
                 .input("(g-->(a&b))!")
                 .mustGoal(cycles, "(g-->a)", 1f, 0.81f)
                 .mustGoal(cycles, "(g-->b)", 1f, 0.81f)
-        ;
-    }
+            ;
+        }
 
-    @Test
-    void testNegIntersectionBeliefSinglePremiseDecompose() {
-        test
+        @Test
+        void testNegIntersectionBeliefSinglePremiseDecompose() {
+            test
                 .input("--((a&b)-->g).")
                 .mustBelieve(cycles, "(a-->g)", 0f, 0.81f)
                 .mustBelieve(cycles, "(b-->g)", 0f, 0.81f)
-        ;
-    }
-    @Test
-    void testNegIntersectionGoalSinglePremiseDecompose() {
+            ;
+        }
 
-        test
+        @Test
+        void testNegIntersectionGoalSinglePremiseDecompose() {
+
+            test
                 .input("--((a&b)-->g)!")
                 .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
                 .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
-        ;
-    }
-    @Test
-    void testNegUnionBeliefSinglePremiseDecompose() {
-        test
-                .input("--((a|b)-->g).")
-                .mustBelieve(cycles, "(a-->g)", 0f, 0.81f)
-                .mustBelieve(cycles, "(b-->g)", 0f, 0.81f)
-        ;
-    }
+            ;
+        }
+
+//        @Test
+//        void testNegUnionBeliefSinglePremiseDecompose() {
+//            test
+//                .input("--((a|b)-->g).")
+//                .mustBelieve(cycles, "(a-->g)", 0f, 0.81f)
+//                .mustBelieve(cycles, "(b-->g)", 0f, 0.81f)
+//            ;
+//        }
 
 
-    @Test
-    void testNegUnionGoalSinglePremiseDecompose() {
-        test
-                .input("--((a||b)-->g)!")
-                .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
-                .mustNotOutput(cycles, "(a-->g)", GOAL, 0.1f, 1f, 0, 1)
-                .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
-                .mustNotOutput(cycles, "(b-->g)", GOAL, 0.1f, 1f, 0, 1)
-        ;
-    }
+//        @Test
+//        void testNegUnionGoalSinglePremiseDecompose() {
+//            test
+//                .input("--((a|b)-->g)!")
+//                .mustGoal(cycles, "(a-->g)", 0f, 0.81f)
+//                .mustNotOutput(cycles, "(a-->g)", GOAL, 0.1f, 1f, 0, 1)
+//                .mustGoal(cycles, "(b-->g)", 0f, 0.81f)
+//                .mustNotOutput(cycles, "(b-->g)", GOAL, 0.1f, 1f, 0, 1)
+//            ;
+//        }
 
 //        @Test
 //        void testIntersectionConditionalDecomposeGoalNeg() {
@@ -94,6 +122,6 @@ public class NAL3DecomposeGoalTest extends NAL3Test {
 //                    .mustGoal(cycles, "(b-->g)", 0f, 0.81f);
 //        }
 
-
+    }
 
 }

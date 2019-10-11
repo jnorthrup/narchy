@@ -23,6 +23,8 @@ import spacegraph.video.Tex;
 
     Tex tt = TextureProvider.the.getTexture(gl, String.valueOf(bufferChar.getChar()));
     Texture texture = tt.texture;
+    if (texture==null) return; //HACK
+
     texture.enable(gl);
     texture.bind(gl);
     gl.glTexParameteri(GL.GL_TEXTURE_2D, GL.GL_TEXTURE_MAG_FILTER, GL.GL_LINEAR);
