@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
+import java.util.function.Supplier;
 
 import static java.lang.Float.NEGATIVE_INFINITY;
 
@@ -215,6 +216,10 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     public final X getRoulette(Random rng) {
         return size > 0 ? getRoulette(rng::nextFloat) : null;
     }
+    @Nullable
+    public final X getRoulette(Supplier<Random> rng) {
+        return size > 0 ? getRoulette(()->rng.get().nextFloat()) : null;
+    }
 
     @Nullable
     public X getRoulette(FloatSupplier rng) {
@@ -225,7 +230,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     /**
      * roulette select
      */
-    @Nullable public X getRoulette(FloatSupplier rng, FloatFunction<X> anyRank) {
+    @Nullable public X getRoulette(FloatSupplier rng, FloatFunction<X> rank) {
         int n = size;
         switch (n) {
             case 0:
@@ -233,12 +238,12 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
             case 1:
                 return items[0];
             default:
-                IntToFloatFunction select = i -> anyRank.floatValueOf(items[i]);
-                return get(
+                IntToFloatFunction select = i -> rank.floatValueOf(items[i]);
+                return items[
                     this instanceof TopFilter ?
                         Roulette.selectRoulette(n, select, rng) : //RankedTopN acts as the cache
                         Roulette.selectRouletteCached(n, select, rng) //must be cached for consistency
-                );
+                ];
         }
 
     }

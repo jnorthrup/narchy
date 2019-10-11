@@ -49,6 +49,10 @@ public final class Equal extends InlineCommutiveBinaryBidiFunctor implements The
             b = x;
         }
 
+        return _cmp(a, b, c);
+    }
+
+    public static Term _cmp(Term a, Term b, int c) {
         return $.func(Cmp.cmp, a, b, Int.the(c));
     }
 

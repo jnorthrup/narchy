@@ -84,53 +84,55 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     }
 
 
+    static final int QSORT_SCAN_THRESH = 6;
 
-    private static void qsort(Object[] c, int left, int right, ToIntFunction pCmp) {
+    private static <X> void qsort(X[] c, int left, int right, ToIntFunction<X> pCmp) {
         int[] stack = null;
         int stack_pointer = -1;
-        final int SCAN_THRESH = 8;
-        while (right - left > SCAN_THRESH) {
+        while (right - left > QSORT_SCAN_THRESH) {
             int median = (left + right) / 2;
             int i = left + 1;
 
             swap(c, i, median);
 
-            int cl = pCmp.applyAsInt(c[left]), cr = pCmp.applyAsInt(c[right]);
-            int ci;
-            if (cl < cr) {
+            final X vci = c[i];
+            int pci = pCmp.applyAsInt(vci);
+            int pcl = pCmp.applyAsInt(c[left]);
+            int pcr = pCmp.applyAsInt(c[right]);
+
+            int pivot;
+            if (pcl < pcr) {
                 swap(c, right, left);
-                int x = cr;
-                cr = cl;
-                cl = x;
-                ci = i == left ? cr : (i == right ? cl : pCmp.applyAsInt(c[i]));
+                int x = pcr;
+                pcr = pcl;
+                pcl = x;
+                pivot = i == left ? pcr : (i == right ? pcl : pci);
             } else {
-                ci = i == left ? cl : (i == right ? cr : pCmp.applyAsInt(c[i]));
+                pivot = i == left ? pcl : (i == right ? pcr : pci);
             }
 
-            if (ci < cr) {
+            if (pivot < pcr) {
                 swap(c, right, i);
-                ci = cr;
+                pivot = pcr;
             }
-            if (cl < ci) {
+            if (pcl < pivot) {
                 swap(c, i, left);
             }
 
-            Object temp = c[i];
-            int tempV = pCmp.applyAsInt(temp);
 
             /** safety limit in case the order of the items changes while sorting; external factors could cause looping indefinitely */
             int j = right;
             int limit = Util.sqr(right-left);
             while (true) {
-                while (i < right && pCmp.applyAsInt(c[++i]) > tempV && --limit > 0) { }
-                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < tempV && --limit > 0) { }
+                while (i < right && pCmp.applyAsInt(c[++i]) > pci && --limit > 0) { }
+                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < pci && --limit > 0) { }
                 if (j <= i || limit <= 0)
                     break;
                 swap(c, j, i);
             }
 
             c[left + 1] = c[j];
-            c[j] = temp;
+            c[j] = vci;
 
             int a, b;
             if (right - i + 1 >= j - left) {
@@ -143,8 +145,8 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
                 left = i;
             }
 
-            if (stack_pointer==-1)
-                stack = new int[2+(int) Math.ceil(2*Math.log((1 + right - left))/Math.log(2))];
+            if (stack_pointer == -1)
+                stack = new int[Math.max(1,2+(int) Math.ceil(2*Math.log(1 + right - left)/Math.log(2)))]; //HACK
             stack[++stack_pointer] = a;
             stack[++stack_pointer] = b;
         }
@@ -152,19 +154,19 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         qsort_bubble(pCmp, c, left, right, stack, stack_pointer);
     }
 
-    private static void qsort_bubble(ToIntFunction pCmp, Object[] c, int left, int right, int[] stack, int stack_pointer) {
+    private static <X> void qsort_bubble(ToIntFunction<X> pCmp, X[] c, int left, int right, int[] stack, int stack_pointer) {
         while (true) {
 
             for (int j = left + 1; j <= right; j++) {
                 int i = j - 1;
-                Object pivot = c[j];
+                X cj = c[j];
                 if (i >= left) {
-                    int swapVal = pCmp.applyAsInt(pivot);
-                    while (i >= left && pCmp.applyAsInt(c[i]) < swapVal) {
+                    int pcj = pCmp.applyAsInt(cj);
+                    while (i >= left && pCmp.applyAsInt(c[i]) < pcj) {
                         swap(c, i + 1, i--);
                     }
                 }
-                c[i + 1] = pivot;
+                c[i + 1] = cj;
             }
 
             if (stack_pointer < 0)
@@ -282,9 +284,17 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             return;
         from = Math.max(0, from);
         to = Util.clamp(size-1, from, to);
-        if (from == to)
+        if (from >= to)
             return;
-        qsort(items, from, to, x);
+
+        //qsort(items, from, to, x);
+
+//        ArrayUtil.quickSort(from, to,
+//            (a,b)->Integer.compare(x.applyAsInt(items[a]), x.applyAsInt(items[b])),
+//            (a,b)->swap(items, a, b) );
+
+        assert(from==0);
+        SmoothSort.smoothSort(items, from, to, (a,b)->Integer.compare(x.applyAsInt(b), x.applyAsInt(a)));
     }
 
     public final X getSafe(int i) {

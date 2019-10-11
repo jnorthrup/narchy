@@ -696,7 +696,7 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	private int eviComparator(int a, int b) {
-		return Double.compare(evi[b], evi[a]);
+		return a==b ? 0 : Double.compare(evi[b], evi[a]);
 	}
 
 	@Override

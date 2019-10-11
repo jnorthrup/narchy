@@ -473,6 +473,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 			public void waitUntil(long deadline) throws InterruptedException {
 				Thread t = null;
 				while (deadline >= System.nanoTime()) {
+					Thread.onSpinWait();
 					if ((t == null ? (t = Thread.currentThread()) : t).isInterrupted())
 						throw new InterruptedException();
 				}

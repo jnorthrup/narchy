@@ -20,7 +20,7 @@ class ConjClusteringTest {
     void testSameTruthSameTime() throws Narsese.NarseseException {
 
         NAR n = NARS.shell();
-        int ccap = 4;
+        int ccap = 3;
         ConjClustering c = new ConjClustering(n, BELIEF, BELIEF, 4, ccap, Task::isInput);
         new Deriver(new PremiseRuleSet(n).add(c));
         n.run(1); //HACK
@@ -30,10 +30,10 @@ class ConjClusteringTest {
             n.believe($.the("x" + i), Tense.Present);
         n.run(64);
 
-        BeliefTable b = n.concept($.$("(&&,x0,x1,x2,x3)")).beliefs();
+        BeliefTable b = n.concept($.$("(&&,x0,x1,x2)")).beliefs();
         assertEquals(1, b.taskCount());
 
-        assert1234(n, b);
+        assert123(b);
     }
 
     @Test
@@ -53,14 +53,14 @@ class ConjClusteringTest {
         BeliefTable b = n.concept($.$("(&&,--x0,--x1,--x2,--x3)")).beliefs();
         assertEquals(1, b.taskCount());
 
-        assert1234(n, b);
+        assert123(b);
     }
 
-    private static void assert1234(NAR n, BeliefTable b) {
+    private static void assert123(BeliefTable b) {
         Task the = b.taskStream().findFirst().get();
         float p = the.pri();
         assertTrue(p==p);
-        assertEquals("[1, 2, 3, 4]", Arrays.toString(the.stamp()));
+        assertEquals("[1, 2, 3]", Arrays.toString(the.stamp()));
         //assertTrue(p < n.priDefault(BELIEF)); //pri less than its components
     }
 

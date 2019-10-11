@@ -218,6 +218,7 @@ public final class Answer implements Timed, Predicate<Task> {
     }
 
     public final Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
+        assert(!forceProject || topOrSample);
         return task(topOrSample, forceProject, ditherTruth, ditherTruth);
     }
 
@@ -238,7 +239,6 @@ public final class Answer implements Timed, Predicate<Task> {
         ditherTruth(ditherTruth); //enable/disable truth dithering
 
 
-        assert(!forceProject || topOrSample);
         Task t = topOrSample ? taskTop(forceProject) : taskSample();
         if (t == null)
             return null; //why?  intermpolate?

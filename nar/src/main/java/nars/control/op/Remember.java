@@ -235,7 +235,7 @@ public class Remember {
             long dCycles = Math.max(0, nextCreation - prevCreation);
             float dur =
                 //n.dur();
-                what.dur();
+                (what==null ? n : what).dur(); //HACK
             float dDurs = dCycles == 0 ? 0 : (dCycles / dur); //maybe what.dur()
             novel = dDurs >= NAL.belief.REMEMBER_REPEAT_THRESH_DURS;
         }

@@ -10,6 +10,7 @@ import org.apache.commons.math3.stat.descriptive.SynchronizedSummaryStatistics;
 import org.jctools.queues.MpscArrayQueue;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Tag;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.parallel.Execution;
 import org.junit.jupiter.api.parallel.ExecutionMode;
@@ -22,7 +23,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 import static org.junit.jupiter.api.Assertions.*;
 
 @Execution(ExecutionMode.SAME_THREAD)
-abstract class AbstractTimerTest {
+abstract class HashedWheelTimerTest {
 
     private final HashedWheelTimer timer;
 
@@ -381,4 +382,40 @@ abstract class AbstractTimerTest {
 
     }
 
+    @Execution(ExecutionMode.SAME_THREAD)
+    @Tag("slow") public static class TimerWithBusySpinAdmissionTest extends HashedWheelTimerTest {
+
+      @Override
+      protected HashedWheelTimer.WaitStrategy waitStrategy() {
+        return HashedWheelTimer.WaitStrategy.BusySpinWait;
+      }
+
+    }
+
+    @Execution(ExecutionMode.SAME_THREAD)
+    @Tag("slow") public static class TimerWithSleepWait extends HashedWheelTimerTest {
+      @Override
+      protected HashedWheelTimer.WaitStrategy waitStrategy() {
+        return HashedWheelTimer.WaitStrategy.SleepWait;
+      }
+    }
+
+    @Execution(ExecutionMode.SAME_THREAD)
+    @Tag("slow")
+    public static class TimerWithBusySpinConcurrentTest extends HashedWheelTimerTest {
+
+        @Override
+        protected HashedWheelTimer.WaitStrategy waitStrategy() {
+            return HashedWheelTimer.WaitStrategy.BusySpinWait;
+        }
+
+    }
+
+    @Execution(ExecutionMode.SAME_THREAD)
+    @Tag("slow") public static class TimerWithYieldWait extends HashedWheelTimerTest {
+        @Override
+        protected HashedWheelTimer.WaitStrategy waitStrategy() {
+            return HashedWheelTimer.WaitStrategy.YieldingWait;
+        }
+    }
 }

@@ -18,7 +18,7 @@ public class WorkerExec extends ThreadedExec {
 	/**
 	 * min # of whats per cycle, in total across all threads
 	 */
-	double granularity = 8;
+	double granularity = 4;
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */

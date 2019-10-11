@@ -2,7 +2,6 @@ package nars.op;
 
 import jcog.Paper;
 import jcog.Util;
-import jcog.data.list.FasterIntArrayList;
 import jcog.data.list.FasterList;
 import jcog.decide.Roulette;
 import jcog.memoize.Memoizers;
@@ -16,9 +15,9 @@ import nars.term.Functor;
 import nars.term.Term;
 import nars.term.Termlike;
 import nars.term.Variable;
-import nars.term.anon.Anom;
 import nars.term.anon.Anon;
 import nars.term.atom.Atom;
+import nars.term.atom.Bool;
 import nars.term.atom.Int;
 import nars.term.util.transform.MapSubst;
 import org.eclipse.collections.api.tuple.Pair;
@@ -26,6 +25,7 @@ import org.eclipse.collections.impl.map.mutable.primitive.IntObjectHashMap;
 import org.eclipse.collections.impl.set.mutable.primitive.IntHashSet;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
@@ -33,7 +33,6 @@ import java.util.function.Function;
 
 import static nars.Op.CONJ;
 import static nars.Op.INT;
-import static nars.term.atom.Bool.False;
 import static nars.term.atom.Bool.Null;
 import static org.eclipse.collections.impl.tuple.Tuples.pair;
 
@@ -55,10 +54,12 @@ public class Arithmeticize {
     private static final Function<IntArrayListCached, ArithmeticOp[]> cached;
 
     static {
-        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods", 16 * 1024, Arithmeticize::_mods);
+        cached = Memoizers.the.memoize(Arithmeticize.class.getSimpleName() + "_mods",
+            16 * 1024, Arithmeticize::_mods);
     }
 
     private final static Variable A = $.varDep("A_"), B = $.varDep("B_");
+    private static final Op Aop = A.op();
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
             MathFunc.add, MathFunc.add,
@@ -125,7 +126,7 @@ public class Arithmeticize {
     );
 
     public static Term apply(Term x, @Nullable Anon anon, int volMax, boolean preEval, Random random) {
-        if (anon == null && !x.hasAny(INT))
+        if (!x.hasAny(INT))
             return null;
 
         //pre-evaluate using the arith operators; ignore other operators (unless they are already present, ex: member)
@@ -150,14 +151,10 @@ public class Arithmeticize {
             }
         }
 
-        IntHashSet ints = new IntHashSet(0);
+        IntHashSet ints = new IntHashSet(4);
         x.recurseTerms(t -> t.hasAny(Op.INT), t -> {
-            if (anon != null && t instanceof Anom) {
-                t = anon.get(t);
-            }
-            if (t instanceof Int) {
+            if (t instanceof Int)
                 ints.add(((Int) t).i);
-            }
             return true;
         }, null);
 
@@ -170,35 +167,30 @@ public class Arithmeticize {
                     Roulette.selectRoulette(mm.length, c -> mm[c].score, random)
                 ].apply(x, anon);
 
-        if (y == null || y.volume() > volMax) return null;
+        if (y == null || y instanceof Bool || y.volume() > volMax) return null;
 
 //        Term y = IMPL.the(equality, eternal ? DTERNAL : 0, yy);
 //        if (y.op()!=IMPL) return null;
 
-        if (x.isNormalized()) {
-            y = y.normalize();
-        }
-        return y;
+        return x.isNormalized() ? y.normalize() : y;
     }
 
-    final static class IntArrayListCached extends FasterIntArrayList {
+    final static class IntArrayListCached  {
         private final int hash;
+        private final int[] val;
 
         IntArrayListCached(int[] ii) {
-            super(ii);
             int hash = ii[0];
             for (int i = 1; i < ii.length; i++)
                 hash = Util.hashCombine(hash, ii[i]);
             this.hash = hash;
-        }
-
-        public int[] toArray() {
-            return items;
+            this.val = ii;
         }
 
         @Override
         public boolean equals(Object otherList) {
-            return this==otherList || (hash==((IntArrayListCached)otherList).hash && super.equals(otherList));
+            return this==otherList ||
+                (hash==((IntArrayListCached)otherList).hash && Arrays.equals(val, ((IntArrayListCached)otherList).val));
         }
 
         @Override
@@ -216,9 +208,9 @@ public class Arithmeticize {
     private static ArithmeticOp[] _mods(IntArrayListCached iii) {
 
 
-        int[] ii = iii.toArray();
+        int[] ii = iii.val;
 
-        FasterList<ArithmeticOp> ops = new FasterList();
+        FasterList<ArithmeticOp> ops = new FasterList(2);
         IntObjectHashMap<FasterList<Pair<Term, Function<Term, Term>>>> eqMods = new IntObjectHashMap<>(ii.length);
 
         for (int bIth = 0; bIth < ii.length; bIth++) {
@@ -305,19 +297,22 @@ public class Arithmeticize {
         @Override
         public Term apply(Term x, @Nullable Anon anon) {
 
-            Term var = x.hasAny(A.op()) ? A : $.v(A.op(), (byte) 1); //safe to use normalized var?
 
             Term baseTerm = Int.the(base);
             if (anon != null)
                 baseTerm = anon.put(baseTerm);
 
+            Term var = x.hasAny(Aop) ?
+                A :
+                $.v(Aop, (byte) 1); //optimistic prenormalization
+
             Term yy = x.replace(baseTerm, var);
 
             for (Pair<Term, Function<Term, Term>> s : mods) {
                 Term s0 = s.getOne();
-                Term s1 = s.getTwo().apply(var);
                 if (anon != null)
                     s0 = anon.put(s0);
+                Term s1 = s.getTwo().apply(var);
                 yy = yy.replace(s0, s1);
                 if (yy == Null)
                     return Null; //HACK
@@ -339,22 +334,24 @@ public class Arithmeticize {
     private static class CompareOp extends ArithmeticOp {
         private final int a, b;
 
-        CompareOp(int a, int b) {
+        CompareOp(int smaller, int bigger) {
             super(1);
-            assert (a < b);
-            this.a = a;
-            this.b = b;
+            //assert (a < b);
+            this.a = smaller;
+            this.b = bigger;
         }
 
         @Override
         Term apply(Term x, @Nullable Anon anon) {
             //TODO anon
-            Term cmp = Equal.cmp(A, B, -1);
-            if (cmp == Null) return null;
+            Term cmp = !x.hasAny(Aop) ?
+                Equal._cmp($.varDep(1), $.varDep(2), -1) : //optimistic prenormalization
+                Equal._cmp(A, B, -1);
+//            if (cmp == Null) return null;
 
             Term xx = x.transform(new MapSubst.MapSubstN(Map.of(Int.the(a), A, Int.the(b), B), INT.bit));
 
-            return ((xx == Null) || (xx == False)) ? null : CONJ.the(xx, cmp);
+            return (xx instanceof Bool) ? null : CONJ.the(xx, cmp);
         }
     }
 
