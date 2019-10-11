@@ -124,7 +124,7 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
     /** TODO use the rng to generate one 64-bit or one 32-bit integer and use half of its bits for each random value needed */
     public float sample(/*FloatSupplier uniformRng*/ Random rng) {
         float rangeMax = this.hi;
-        float rangeMin = Util.min(rangeMax, this.lo); //incase updated while reading, maintains min <= max
+		float rangeMin = Math.min(rangeMax, this.lo); //incase updated while reading, maintains min <= max
         float rangeDelta = (rangeMax - rangeMin);
 
         float mass = 0;

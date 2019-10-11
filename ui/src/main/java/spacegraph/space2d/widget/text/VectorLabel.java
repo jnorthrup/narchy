@@ -1,6 +1,5 @@
 package spacegraph.space2d.widget.text;
 
-import jcog.Util;
 import spacegraph.space2d.ReSurface;
 
 /**
@@ -67,7 +66,7 @@ public class VectorLabel extends AbstractLabel {
         if (p <= 0)
             l = LabelRenderer.LineBox;
         else {
-            textThickness = Math.round(Util.min(MAX_THICK, MIN_THICK + p * THICKNESSES_PER_PIXEL));
+			textThickness = Math.round(Math.min(MAX_THICK, MIN_THICK + p * THICKNESSES_PER_PIXEL));
             l = renderer;
         }
 

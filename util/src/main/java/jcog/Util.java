@@ -1512,20 +1512,6 @@ public enum Util {
 		return y;
 	}
 
-	/**
-	 * should be slightly faster than Math.max() since it assumes the values are finite
-	 */
-	public static float max(float x, float y) {
-		return Math.max(x, y);
-	}
-
-	/**
-	 * should be slightly faster than Math.max() since it assumes the values are finite
-	 */
-	public static float min(float x, float y) {
-		return Math.min(x, y);
-	}
-
 	public static float max(float... x) {
 		float y = Float.NEGATIVE_INFINITY;
 		for (float f : x) {
@@ -1533,14 +1519,6 @@ public enum Util {
 				y = f;
 		}
 		return y;
-	}
-
-	public static double min(double x, double y) {
-		return Math.min(x, y);
-	}
-
-	public static double max(double x, double y) {
-		return Math.max(x, y);
 	}
 
 	public static double min(double... x) {

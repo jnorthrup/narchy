@@ -59,10 +59,7 @@ public interface TermIO {
      */
     DefaultTermIO the = new DefaultTermIO();
 
-
-
     class DefaultTermIO implements TermIO {
-
 
         /** lower 5 bits (bits 0..4) = base op */
         static final byte OP_MASK = (0b00011111);
@@ -71,8 +68,9 @@ public interface TermIO {
         static final byte TEMPORAL_BIT_1 = 1 << 6;
 
         //static { assert(TEMPORAL_BIT_0 == OP_MASK + 1); }
-        static { assert(Op.values().length < OP_MASK); }
-        static { for (Op o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
+        static {
+            assert(Op.values().length < OP_MASK);
+            for (Op o : Op.values()) assert !o.temporal || (o.id != OP_MASK); /* sanity test to avoid temporal Op id appearing as SPECIAL_BYTE if the higher bits were all 1's */
         }
 
         @Override
@@ -140,14 +138,12 @@ public interface TermIO {
                     for (int i = 0; i < siz; i++) {
                         Term read = (s[i] = read(in));
                         if (read == null)
-                            throw new TermException("invalid", Op.PROD /* consider the termvector as a product */, s);
+                            throw new TermException("read invalid", Op.PROD /* consider the termvector as a product */, s);
                     }
 
-                    Term[] v = s;
-
-                    Term y = o.the(dt, v);
+                    Term y = o.the(dt, s);
                     if (!(y instanceof Compound))
-                        throw new TermException("read invalid compound", o, dt, v);
+                        throw new TermException("read invalid compound", o, dt, s);
 
                     return y;
                 }

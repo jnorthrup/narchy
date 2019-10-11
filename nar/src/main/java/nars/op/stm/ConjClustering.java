@@ -1,6 +1,5 @@
 package nars.op.stm;
 
-import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.math.FloatRange;
@@ -111,7 +110,7 @@ public class ConjClustering extends TaskAction {
             @Override
             public double distanceSq(double[] a, double[] b) {
 
-                double range = 1 + Util.max(a[3], b[3]);
+				double range = 1 + Math.max(a[3], b[3]);
                 return (1 + Math.abs(a[0] - b[0])/range) //dMid  (div by range to normalize against scale)
                         *
                        (1 + Math.abs(a[3] - b[3])/ range) //dRange

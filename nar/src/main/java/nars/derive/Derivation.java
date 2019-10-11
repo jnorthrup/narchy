@@ -628,7 +628,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         what.accept(t);
         nar.emotion.deriveTask.increment();
 
-        unify.use(NAL.derive.TTL_COST_DERIVE_TASK);
+        unify.use(NAL.derive.TTL_COST_TASK_REMEMBER);
 
     }
 

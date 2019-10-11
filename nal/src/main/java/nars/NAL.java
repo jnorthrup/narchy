@@ -761,14 +761,18 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * cost of a complete task derivation
          */
         @Range(min = 0, max = 64)
-        public static final int TTL_COST_DERIVE_TASK = 4;
+        public static final int TTL_COST_TASK_TASKIFY = 3;
+
+        @Range(min = 0, max = 64)
+        public static final int TTL_COST_TASK_REMEMBER = 1;
+
         /**
          * estimate
          */
         @Deprecated
         public static final int TTL_MIN =
                 (2) +
-                    (NAL.derive.TTL_COST_BRANCH * 1) + NAL.derive.TTL_COST_DERIVE_TASK;
+                    (NAL.derive.TTL_COST_BRANCH * 1) + NAL.derive.TTL_COST_TASK_TASKIFY;
 
         /**
          * cost of a task derived, but too similar to one of its parents

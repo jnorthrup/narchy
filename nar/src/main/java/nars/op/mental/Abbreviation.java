@@ -71,7 +71,9 @@ public enum Abbreviation { ;
                 byte[] d = QuickLZ.decompress(c);
 
                 Term y = IO.bytesToTerm(d);
-                return y instanceof Bool ? null : y;
+                return y instanceof Bool ?
+                    null :
+                    y;
             }
         }
 
@@ -164,7 +166,7 @@ public enum Abbreviation { ;
     /** unabbreviates abbreviated root terms (not recursively contained) */
     public static class UnabbreviateRecursive extends TaskTransformAction {
 
-        final RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
+        final static RecursiveTermTransform.NegObliviousTermTransform transform =new RecursiveTermTransform.NegObliviousTermTransform() {
             @Override
             public Term applyAtomic(Atomic a) {
                 Term b = unabbreviateTerm(a);
@@ -183,7 +185,7 @@ public enum Abbreviation { ;
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
             Term yy = transform.apply(xx);
-            if (!yy.equals(xx) && yy.volume() <= d.termVolMax) {
+            if (yy.op().taskable && !yy.equals(xx) && yy.volume() <= d.termVolMax) {
                 return SpecialTermTask.the(x, yy, true);
             } else
                 return null;

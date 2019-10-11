@@ -147,7 +147,6 @@ public class IO {
     /**
      * WARNING
      */
-    @Nullable
     public static Term bytesToTerm(byte[] b) {
         try {
             return TermIO.the.read(input(b));
