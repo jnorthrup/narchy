@@ -6,6 +6,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
+import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.predicate.Predicate2;
 import org.eclipse.collections.api.block.predicate.primitive.LongObjectPredicate;
@@ -53,7 +54,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
 
         int size = this.size;
         if (size > 1)
-            ArrayUtil.quickSort(0, size, this::whenFirstCompare, this::swap);
+            QuickSort.quickSort(0, size, this::whenFirstCompare, this::swap);
         return this;
 //
 //        long[] when = this.when;
@@ -96,7 +97,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public LongObjectArraySet<X> sortThisByValue() {
         int size = this.size;
         if (size > 1)
-            ArrayUtil.quickSort(0, size, this::valueFirstCompare, this::swap);
+            QuickSort.quickSort(0, size, this::valueFirstCompare, this::swap);
         return this;
 
 //        long[] when = this.when;

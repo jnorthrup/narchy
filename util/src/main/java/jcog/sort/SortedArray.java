@@ -72,207 +72,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
 
     }
 
-    private static void swap(Object[] l, int a, int b) {
-        if (a != b) {
-            Object x = l[b];
-            l[b] = l[a];
-            l[a] = x;
-        }
-
-//        Object x = ITEM.getAcquire(l, b);
-//        ITEM.setAt(l, b, ITEM.getAndSetAcquire(l, a, x));
-    }
-
-
-    static final int QSORT_SCAN_THRESH = 6;
-
-    private static <X> void qsort(X[] c, int left, int right, ToIntFunction<X> pCmp) {
-        int[] stack = null;
-        int stack_pointer = -1;
-        while (right - left > QSORT_SCAN_THRESH) {
-            int median = (left + right) / 2;
-            int i = left + 1;
-
-            swap(c, i, median);
-
-            final X vci = c[i];
-            int pci = pCmp.applyAsInt(vci);
-            int pcl = pCmp.applyAsInt(c[left]);
-            int pcr = pCmp.applyAsInt(c[right]);
-
-            int pivot;
-            if (pcl < pcr) {
-                swap(c, right, left);
-                int x = pcr;
-                pcr = pcl;
-                pcl = x;
-                pivot = i == left ? pcr : (i == right ? pcl : pci);
-            } else {
-                pivot = i == left ? pcl : (i == right ? pcr : pci);
-            }
-
-            if (pivot < pcr) {
-                swap(c, right, i);
-                pivot = pcr;
-            }
-            if (pcl < pivot) {
-                swap(c, i, left);
-            }
-
-
-            /** safety limit in case the order of the items changes while sorting; external factors could cause looping indefinitely */
-            int j = right;
-            int limit = Util.sqr(right-left);
-            while (true) {
-                while (i < right && pCmp.applyAsInt(c[++i]) > pci && --limit > 0) { }
-                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < pci && --limit > 0) { }
-                if (j <= i || limit <= 0)
-                    break;
-                swap(c, j, i);
-            }
-
-            c[left + 1] = c[j];
-            c[j] = vci;
-
-            int a, b;
-            if (right - i + 1 >= j - left) {
-                a = i;
-                b = right;
-                right = j - 1;
-            } else {
-                a = left;
-                b = j - 1;
-                left = i;
-            }
-
-            if (stack_pointer == -1)
-                stack = new int[Math.max(1,2+(int) Math.ceil(2*Math.log(1 + right - left)/Math.log(2)))]; //HACK
-            stack[++stack_pointer] = a;
-            stack[++stack_pointer] = b;
-        }
-
-        qsort_bubble(pCmp, c, left, right, stack, stack_pointer);
-    }
-
-    private static <X> void qsort_bubble(ToIntFunction<X> pCmp, X[] c, int left, int right, int[] stack, int stack_pointer) {
-        while (true) {
-
-            for (int j = left + 1; j <= right; j++) {
-                int i = j - 1;
-                X cj = c[j];
-                if (i >= left) {
-                    int pcj = pCmp.applyAsInt(cj);
-                    while (i >= left && pCmp.applyAsInt(c[i]) < pcj) {
-                        swap(c, i + 1, i--);
-                    }
-                }
-                c[i + 1] = cj;
-            }
-
-            if (stack_pointer < 0)
-                break;
-
-            right = stack[stack_pointer--];
-            left = stack[stack_pointer--];
-
-        }
-    }
-
-
-//    /**
-//     * TODO find exact requirements
-//     */
-//    static int sortSize(int size) {
-//        if (size < 16)
-//            return 4;
-//        else if (size < 64)
-//            return 6;
-//        else if (size < 128)
-//            return 8;
-//        else if (size < 2048)
-//            return 16;
-//        else
-//            return 32;
-//    }
-
-//    /** untested, not finished */
-//    public static void qsortAtomic(int[] stack, Object[] c, int left, int right, FloatFunction pCmp) {
-//        int stack_pointer = -1;
-//        int cLenMin1 = c.length - 1;
-//        final int SCAN_THRESH = 7;
-//        while (true) {
-//            if (right - left <= SCAN_THRESH) {
-//                for (int j = left + 1; j <= right; j++) {
-//                    Object swap = ITEM.get(c, j);
-//                    int i = j - 1;
-//                    float swapV = pCmp.floatValueOf(swap);
-//                    while (i >= left && pCmp.floatValueOf(ITEM.get(c,i)) < swapV) {
-//                        swap(c, i + 1, i--);
-//                    }
-//                    ITEM.setAt(c, i+1, swap);
-//                }
-//                if (stack_pointer != -1) {
-//                    right = stack[stack_pointer--];
-//                    left = stack[stack_pointer--];
-//                } else {
-//                    break;
-//                }
-//            } else {
-//
-//                int median = (left + right) / 2;
-//                int i = left + 1;
-//
-//                swap(c, i, median);
-//
-//                float cl = pCmp.floatValueOf(ITEM.get(c,left));
-//                float cr = pCmp.floatValueOf(ITEM.get(c, right));
-//                if (cl < cr) {
-//                    swap(c, right, left);
-//                    float x = cr;
-//                    cr = cl;
-//                    cl = x;
-//                }
-//                float ci = pCmp.floatValueOf(ITEM.get(c,i));
-//                if (ci < cr) {
-//                    swap(c, right, i);
-//                    ci = cr;
-//                }
-//                if (cl < ci) {
-//                    swap(c, i, left);
-//                }
-//
-//                Object temp = ITEM.get(c,i);
-//                float tempV = pCmp.floatValueOf(temp);
-//                int j = right;
-//
-//                while (true) {
-//                    while (i < cLenMin1 && pCmp.floatValueOf(ITEM.get(c,++i)) > tempV) ;
-//                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(ITEM.get(c,--j)) < tempV) ;
-//                    if (j < i) {
-//                        break;
-//                    }
-//                    swap(c, j, i);
-//                }
-//
-//
-//                ITEM.setAt(c,left+1, ITEM.getAndSet(c,j,temp));
-//
-//                int a, b;
-//                if (right - i + 1 >= j - left) {
-//                    a = i;
-//                    b = right;
-//                    right = j - 1;
-//                } else {
-//                    a = left;
-//                    b = j - 1;
-//                    left = i;
-//                }
-//
-//                stack[++stack_pointer] = a;
-//                stack[++stack_pointer] = b;
-//            }
-//        }
-//    }
 
     private static <X> boolean eq(X element, X ii, boolean eqByIdentity) {
         return (element == ii) || (!eqByIdentity && element.equals(ii));
@@ -306,13 +105,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return s == 0 || i >= s ? null : ii[i];
     }
 
-//    public final X get(Random rng) {
-//        X[] ii = this.items;
-//        int s = Math.min(ii.length, size);
-//        if (s == 0)
-//            return null;
-//        return ii[rng.nextInt(s)];
-//    }
 
     public final X get(int i) {
         return items[i];//(X) ITEM.getOpaque(items, i);
@@ -527,51 +319,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return x;
     }
 
-//    /**
-//     * an adjustment: called when an item's sort order may have changed
-//     */
-//    public void partialSort(int index, FloatFunction<X> cmp) {
-//        X[] l = this.items;
-//        final float cur = cmp.floatValueOf(l[index]);
-//
-//        boolean reinsert = false;
-//
-//        if (index > 0) {
-//            float f = cmp.floatValueOf(l[index - 1]);
-//            if (f > cur)
-//                reinsert = true;
-//        }
-//
-//        int s = this.size;
-//        if (!reinsert) {
-//            if (index < s - 1) {
-//                float f = cmp.floatValueOf(l[index + 1]);
-//                if (f < cur)
-//                    reinsert = true;
-//            }
-//        }
-//
-//        if (reinsert) {
-//            int next = find(null, cur, cmp, true, true);
-//            if (next == index) {
-//                //in the correct pos
-//            } else if (next == index - 1) {
-//                if (index >= 1)
-//                    swap(l, index, index - 1);
-//            } else if (next == index + 1) {
-//
-//                if (index < size() - 1)
-//                    swap(l, index, index + 1);
-//
-//            } else {
-//
-//                insert(remove(index), next, s);
-//
-//            }
-//
-//
-//        }
-//    }
 
     public int capacity() {
         return items.length;
@@ -696,13 +443,6 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
             action.accept(items[i]);
     }
 
-//    public final void forEach(int n, Consumer<? super X> action) {
-//        whileEach(n, x -> {
-//            action.accept(x);
-//            return true;
-//        });
-//    }
-
     public final boolean whileEach(Predicate<? super X> action) {
         return whileEach(-1, action);
     }
@@ -825,3 +565,206 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         }
     }
 }
+
+
+//    private static void swap(Object[] l, int a, int b) {
+//        if (a != b) {
+//            Object x = l[b];
+//            l[b] = l[a];
+//            l[a] = x;
+//        }
+
+//        Object x = ITEM.getAcquire(l, b);
+//        ITEM.setAt(l, b, ITEM.getAndSetAcquire(l, a, x));
+//    }
+
+
+//    static final int QSORT_SCAN_THRESH = 6;
+//
+//    private static <X> void qsort(X[] c, int left, int right, ToIntFunction<X> pCmp) {
+//        int[] stack = null;
+//        int stack_pointer = -1;
+//        while (right - left > QSORT_SCAN_THRESH) {
+//            int median = (left + right) / 2;
+//            int i = left + 1;
+//
+//            swap(c, i, median);
+//
+//            final X vci = c[i];
+//            int pci = pCmp.applyAsInt(vci);
+//            int pcl = pCmp.applyAsInt(c[left]);
+//            int pcr = pCmp.applyAsInt(c[right]);
+//
+//            int pivot;
+//            if (pcl < pcr) {
+//                swap(c, right, left);
+//                int x = pcr;
+//                pcr = pcl;
+//                pcl = x;
+//                pivot = i == left ? pcr : (i == right ? pcl : pci);
+//            } else {
+//                pivot = i == left ? pcl : (i == right ? pcr : pci);
+//            }
+//
+//            if (pivot < pcr) {
+//                swap(c, right, i);
+//                pivot = pcr;
+//            }
+//            if (pcl < pivot) {
+//                swap(c, i, left);
+//            }
+//
+//
+//            /** safety limit in case the order of the items changes while sorting; external factors could cause looping indefinitely */
+//            int j = right;
+//            int limit = Util.sqr(right-left);
+//            while (true) {
+//                while (i < right && pCmp.applyAsInt(c[++i]) > pci && --limit > 0) { }
+//                while (j > left && /* <- that added */ pCmp.applyAsInt(c[--j]) < pci && --limit > 0) { }
+//                if (j <= i || limit <= 0)
+//                    break;
+//                swap(c, j, i);
+//            }
+//
+//            c[left + 1] = c[j];
+//            c[j] = vci;
+//
+//            int a, b;
+//            if (right - i + 1 >= j - left) {
+//                a = i;
+//                b = right;
+//                right = j - 1;
+//            } else {
+//                a = left;
+//                b = j - 1;
+//                left = i;
+//            }
+//
+//            if (stack_pointer == -1)
+//                stack = new int[Math.max(1,2+(int) Math.ceil(2*Math.log(1 + right - left)/Math.log(2)))]; //HACK
+//            stack[++stack_pointer] = a;
+//            stack[++stack_pointer] = b;
+//        }
+//
+//        qsort_bubble(pCmp, c, left, right, stack, stack_pointer);
+//    }
+//
+//    private static <X> void qsort_bubble(ToIntFunction<X> pCmp, X[] c, int left, int right, int[] stack, int stack_pointer) {
+//        while (true) {
+//
+//            for (int j = left + 1; j <= right; j++) {
+//                int i = j - 1;
+//                X cj = c[j];
+//                if (i >= left) {
+//                    int pcj = pCmp.applyAsInt(cj);
+//                    while (i >= left && pCmp.applyAsInt(c[i]) < pcj) {
+//                        swap(c, i + 1, i--);
+//                    }
+//                }
+//                c[i + 1] = cj;
+//            }
+//
+//            if (stack_pointer < 0)
+//                break;
+//
+//            right = stack[stack_pointer--];
+//            left = stack[stack_pointer--];
+//
+//        }
+//    }
+
+
+//    /**
+//     * TODO find exact requirements
+//     */
+//    static int sortSize(int size) {
+//        if (size < 16)
+//            return 4;
+//        else if (size < 64)
+//            return 6;
+//        else if (size < 128)
+//            return 8;
+//        else if (size < 2048)
+//            return 16;
+//        else
+//            return 32;
+//    }
+
+//    /** untested, not finished */
+//    public static void qsortAtomic(int[] stack, Object[] c, int left, int right, FloatFunction pCmp) {
+//        int stack_pointer = -1;
+//        int cLenMin1 = c.length - 1;
+//        final int SCAN_THRESH = 7;
+//        while (true) {
+//            if (right - left <= SCAN_THRESH) {
+//                for (int j = left + 1; j <= right; j++) {
+//                    Object swap = ITEM.get(c, j);
+//                    int i = j - 1;
+//                    float swapV = pCmp.floatValueOf(swap);
+//                    while (i >= left && pCmp.floatValueOf(ITEM.get(c,i)) < swapV) {
+//                        swap(c, i + 1, i--);
+//                    }
+//                    ITEM.setAt(c, i+1, swap);
+//                }
+//                if (stack_pointer != -1) {
+//                    right = stack[stack_pointer--];
+//                    left = stack[stack_pointer--];
+//                } else {
+//                    break;
+//                }
+//            } else {
+//
+//                int median = (left + right) / 2;
+//                int i = left + 1;
+//
+//                swap(c, i, median);
+//
+//                float cl = pCmp.floatValueOf(ITEM.get(c,left));
+//                float cr = pCmp.floatValueOf(ITEM.get(c, right));
+//                if (cl < cr) {
+//                    swap(c, right, left);
+//                    float x = cr;
+//                    cr = cl;
+//                    cl = x;
+//                }
+//                float ci = pCmp.floatValueOf(ITEM.get(c,i));
+//                if (ci < cr) {
+//                    swap(c, right, i);
+//                    ci = cr;
+//                }
+//                if (cl < ci) {
+//                    swap(c, i, left);
+//                }
+//
+//                Object temp = ITEM.get(c,i);
+//                float tempV = pCmp.floatValueOf(temp);
+//                int j = right;
+//
+//                while (true) {
+//                    while (i < cLenMin1 && pCmp.floatValueOf(ITEM.get(c,++i)) > tempV) ;
+//                    while (j > 0 && /* <- that added */ pCmp.floatValueOf(ITEM.get(c,--j)) < tempV) ;
+//                    if (j < i) {
+//                        break;
+//                    }
+//                    swap(c, j, i);
+//                }
+//
+//
+//                ITEM.setAt(c,left+1, ITEM.getAndSet(c,j,temp));
+//
+//                int a, b;
+//                if (right - i + 1 >= j - left) {
+//                    a = i;
+//                    b = right;
+//                    right = j - 1;
+//                } else {
+//                    a = left;
+//                    b = j - 1;
+//                    left = i;
+//                }
+//
+//                stack[++stack_pointer] = a;
+//                stack[++stack_pointer] = b;
+//            }
+//        }
+//    }

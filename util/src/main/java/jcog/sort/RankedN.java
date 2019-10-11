@@ -50,7 +50,7 @@ public class RankedN<X> extends TopN<X> {
                 for (int i = 0; i < s; i++) {
                     value[i] = rank.rank(items[i]);
                 }
-                ArrayUtil.quickSort(0, s-1, this::valueComparator, this::swap);
+                QuickSort.quickSort(0, s-1, this::valueComparator, this::swap);
             }
         }
         return this;

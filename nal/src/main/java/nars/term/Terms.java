@@ -3,6 +3,7 @@ package nars.term;
 import jcog.bloom.StableBloomFilter;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.set.MetalTreeSet;
+import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
 import nars.Op;
 import nars.Task;
@@ -128,9 +129,10 @@ public enum Terms {
 			//sort within the spans where the terms have equal volumes (divide & conquer)
 
 			int n = y.length;
-			ArrayUtil.quickSort(0, n,
+			QuickSort.quickSort(0, n,
 				(a, b) -> Integer.compare(volumes[b], volumes[a]),
 				(a, b) -> ArrayUtil.swapObjInt(y, volumes, a, b));
+
 
 			int s = 0; //span start
 			int vs = volumes[0];
@@ -152,11 +154,7 @@ public enum Terms {
 
 		}
 
-
-		if (nulls == 0)
-			return y;
-		else
-			return ArrayUtil.removeNulls(y, nulls);
+		return nulls == 0 ? y : ArrayUtil.removeNulls(y, nulls);
 	}
 
 	private static int nullDups(Term[] y, int start, int end) {
@@ -496,11 +494,15 @@ public enum Terms {
 	public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {
 
 		Op xo = x.op(), yo = y.op();
+		if (xo == NEG && yo == NEG) {
+			x = x.unneg(); y = y.unneg();
+			xo = x.op(); yo = y.op();
+		}
 		if (xo != yo) {
 			//op mismatch, only allow if either is variable
 			return (xo.bit & var) != 0 || (yo.bit & var) != 0;
-		} else if (xo == NEG)
-			return possiblyUnifiable(x.unneg(), y.unneg(), strict, var);
+		}
+
 
 		//if (x.equals(y))
 		if (x.equalsRoot(y))

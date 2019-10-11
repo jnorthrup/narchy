@@ -6,6 +6,7 @@ import jcog.TODO;
 import jcog.Util;
 import jcog.data.bit.MetalBitSet;
 import jcog.math.LongInterval;
+import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
@@ -277,7 +278,7 @@ abstract public class TruthProjection extends TaskList {
 		IntIntProcedure swapper = this::swap;
 		int s = size;
 
-		ArrayUtil.quickSort(0, s, this::eviComparator, swapper); //descending
+		QuickSort.quickSort(0, s, this::eviComparator, swapper); //descending
 
 
 		double[] evi = this.evi;

@@ -10,6 +10,7 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayUnenforcedSortedSet;
 import jcog.data.set.MetalTreeSet;
 import jcog.decide.Roulette;
+import jcog.sort.QuickSort;
 import jcog.util.ArrayUtil;
 import nars.NAL;
 import nars.Op;
@@ -262,7 +263,9 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return '(' + Joiner.on(',').join(subterms) + ')';
     }
 
-    static int compare(/*@NotNull*/ Termlike a, /*@NotNull*/ Termlike b) {
+    static int compare(/*@NotNull*/ Subterms a, /*@NotNull*/ Subterms b) {
+        if (a == b)
+            return 0;
 
         int s;
         int diff;
@@ -276,8 +279,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
             Term inequalVariableX = null, inequalVariableY = null;
 
             for (int i = 0; i < s; i++) {
-                Term x = a.sub(i);
-                Term y = b.sub(i);
+                Term x = a.sub(i), y = b.sub(i);
                 if (x instanceof Variable && y instanceof Variable) {
                     if (inequalVariableX == null && !x.equals(y)) {
 
@@ -286,9 +288,8 @@ public interface Subterms extends Termlike, Iterable<Term> {
                     }
                 } else {
                     int d = x.compareTo(y);
-                    if (d != 0) {
+                    if (d != 0)
                         return d;
-                    }
                 }
             }
 
@@ -846,7 +847,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
                 if (m.get(i))
                     c[k++] = i;
             }
-            ArrayUtil.sort(c,cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
+            QuickSort.sort(c, cc -> -(x.sub(cc).volume() + y.sub(cc).volume())); //sorts descending
             for (int cc : c) {
                 if (!x.sub(cc).unify(y.sub(cc), u))
                     return false;

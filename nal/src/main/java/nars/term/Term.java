@@ -508,31 +508,39 @@ public interface Term extends Termlike, Termed, Comparable<Term> {
     default int compareTo(Term t) {
         if (this == t) return 0;
 
-        int volume = t.volume();
-        int vc = Integer.compare(volume, this.volume());
-        if (vc != 0)
-            return vc;
+        boolean a = this instanceof Atomic, b = t instanceof Atomic;
+        if (a && !b) {
+            return +1;
+        } else if (b && !a) {
+            return -1;
+        } else if (!b && !b) {
+            int vc = Integer.compare(t.volume(), this.volume());
+            if (vc != 0)
+                return vc;
+        }
 
         Op op = this.op();
         int oc = Integer.compare(op.id, t.opID());
         if (oc != 0)
             return oc;
 
-        if (this instanceof Atomic /* volume == 1 */) {
+        if (a) {
 
-            if (this instanceof Int /*&& t instanceof Int*/) {
+            if (this instanceof Int /*&& t instanceof Int*/)
                 return Integer.compare(((Int) this).i, ((Int) t).i);
-            }
-            if (this instanceof IntrinAtomic && t instanceof IntrinAtomic) {
+
+            if (this instanceof IntrinAtomic && t instanceof IntrinAtomic)
                 return Integer.compare(hashCode(), t.hashCode()); //same op, same hashcode
-            }
+
 
             return Util.compare(
-                    ((Atomic) this).bytes(),
-                    ((Atomic) t).bytes()
+                ((Atomic) this).bytes(),
+                ((Atomic) t).bytes()
             );
 
         } else {
+            //COMPOUND
+
             int c = Subterms.compare(
                 ((Compound)this).subtermsDirect(),
                 ((Compound)t).subtermsDirect()

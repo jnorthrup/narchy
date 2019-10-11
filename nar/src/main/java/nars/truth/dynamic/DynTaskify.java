@@ -4,7 +4,7 @@ import jcog.Paper;
 import jcog.data.bit.MetalBitSet;
 import jcog.data.list.FasterList;
 import jcog.math.LongInterval;
-import jcog.util.ArrayUtil;
+import jcog.sort.QuickSort;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
@@ -153,7 +153,7 @@ public class DynTaskify extends TaskList {
 
             IntToFloatFunction smallestFirst = (int j) -> +cc[j].termVolume;
             //IntToFloatFunction biggestFirst = (int j) -> -(cc[j]).termVolume;
-            ArrayUtil.sort(order,
+            QuickSort.sort(order,
                     smallestFirst
                     //biggestFirst
             );

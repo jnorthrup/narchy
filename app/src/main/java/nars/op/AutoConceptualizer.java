@@ -1,7 +1,7 @@
 package nars.op;
 
 import jcog.learn.Autoencoder;
-import jcog.util.ArrayUtil;
+import jcog.sort.QuickSort;
 import nars.$;
 import nars.NAR;
 import nars.attention.What;
@@ -120,7 +120,7 @@ public class AutoConceptualizer extends VectorSensor {
 
 
         float finalMean = 0.5f; 
-        ArrayUtil.sort(order, (i) -> Math.abs(finalMean - a[i]));
+        QuickSort.sort(order, (i) -> Math.abs(finalMean - a[i]));
 
         Set<Term> x = new UnifiedSet(maxArity);
         int j = 0;

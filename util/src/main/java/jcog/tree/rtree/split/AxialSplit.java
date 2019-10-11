@@ -20,8 +20,8 @@ package jcog.tree.rtree.split;
  * #L%
  */
 
+import jcog.sort.QuickSort;
 import jcog.tree.rtree.*;
-import jcog.util.ArrayUtil;
 import org.eclipse.collections.api.block.function.primitive.IntToDoubleFunction;
 
 import java.util.Arrays;
@@ -76,7 +76,7 @@ public class AxialSplit<X> implements Split<X> {
 //        }
 
         if (size > 1) {
-            ArrayUtil.sort(obj, 0, size, (IntToDoubleFunction) i ->
+            QuickSort.sort(obj, 0, size, (IntToDoubleFunction) i ->
                 model.bounds(obj[i]).center(splitDimension)
             );
         }
