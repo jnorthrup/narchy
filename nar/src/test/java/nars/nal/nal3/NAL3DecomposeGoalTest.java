@@ -21,6 +21,17 @@ public enum NAL3DecomposeGoalTest { ;
             ;
         }
         @Test
+        void testUnionGoalDoubleDecomposeSubjNeg() {
+            test
+                .termVolMax(7)
+                .confMin(0.75f)
+                .input("((--a|b)-->g)!")
+                .input("(a-->g).")
+                .mustGoal(cycles, "(b-->g)", 1f, 0.81f)
+                .mustNotOutput(cycles, "(a-->g)", GOAL)
+            ;
+        }
+        @Test
         void testUnionGoalDoubleDecomposePred() {
             test
                 .termVolMax(7)

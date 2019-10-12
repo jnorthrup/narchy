@@ -52,5 +52,8 @@
 (C --> M), (X --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
     (X --> M), (C --> M),  eventOfNeg(C,X)    |-  --(conjWithout(C, --X)-->M), (Belief:DeductionNN, Time:Task)
 
+//(C --> M), (X --> M),  eventOf(C,X)       |-   ...
+(D --> M), (X --> M),  eventOf(D,X)       |-   --(conjWithout(D, X)-->M), (Goal:DeductionNP, Time:Task)
 (D --> M), (X --> M),  eventOfNeg(D,X)       |-   --(conjWithout(D, --X)-->M), (Goal:DeductionNN, Time:Task)
+(M --> D), (M --> X),  eventOf(D,X)       |-   --(M-->conjWithout(D, X)), (Goal:DeductionNP, Time:Task)
 (M --> D), (M --> X),  eventOfNeg(D,X)       |-   --(M-->conjWithout(D, --X)), (Goal:DeductionNN, Time:Task)
