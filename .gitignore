@@ -51,3 +51,6 @@ dependency-reduced-pom.xml
 
 *.hprof*
 .mvn
+mvnw
+mvnw.cmd
+.mvn

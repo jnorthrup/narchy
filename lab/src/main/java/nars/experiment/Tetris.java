@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static java.util.Arrays.asList;
+import static java.util.stream.Collectors.toList;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -29,10 +31,15 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends GameX {
 
+    public static final AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
+    public static final int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
+            , TetrisPiece.EMPTY_ROW
+            , TetrisPiece.CENTER
+            , TetrisPiece.EMPTY_ROW
+            , TetrisPiece.EMPTY_ROW};
     static final float FPS = 24f;
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    public final AtomicBoolean easy;
     public final Bitmap2DSensor<Bitmap2D> pixels;
     public final FloatRange timePerFall = new FloatRange(Float.parseFloat(Config.get2("TETRIS_FALL_TIME", "" + 1f, false)), Float.parseFloat(Config.get2("TETRIS_FALL_MIN", "" + 1f, false)), Float.parseFloat(Config.get2("TETRIS_FALL_MAX", "" + 8f, false)));
     final Term tLEFT =
@@ -59,7 +66,7 @@ public class Tetris extends GameX {
 
 
     public Tetris(NAR nar) {
-        this(nar, tetris_width, tetris_height);
+        this(nar, Tetris.tetris_width, Tetris.tetris_height);
     }
 
     public Tetris(NAR nar, int width, int height) {
@@ -69,6 +76,7 @@ public class Tetris extends GameX {
     public Tetris(NAR n, int width, int height, int timePerFall) {
         this(Atomic.the("tetris"), n, width, height, timePerFall);
     }
+
     /**
      * @param width
      * @param height
@@ -76,7 +84,7 @@ public class Tetris extends GameX {
      */
     public Tetris(Term id, NAR n, int width, int height, int timePerFall) {
         super(id,
-                GameTime.fps(Tetris.FPS),
+                GameTime.fps(FPS),
                 //FrameTrigger.durs(1),
                 n
         );
@@ -86,7 +94,7 @@ public class Tetris extends GameX {
                 actionsReflect(n) :
                 new TetrisState(width, height, timePerFall);
 
-        easy = state.easy;
+        easy.set(state.easy);
 
         state.timePerFall = Math.round(this.timePerFall.floatValue());
 
@@ -119,17 +127,8 @@ public class Tetris extends GameX {
         });
 
 
-        //                .mode((p,v)->{
-        //                    float c = n.confDefault(BELIEF);
-        //                    return $.t(v, p!=v || v > 0.5f ? c : c/2);
-        //                })
-
-
         actionPushButtonLR();
         actionPushButtonRotateFall();
-        //actionPushButtonLR_proportional();
-        //actionsToggle();
-        //actionsTriState();
 
         state.reset();
 
@@ -139,15 +138,6 @@ public class Tetris extends GameX {
         });
 
 
-        //if a pixel is on, pixels above it should be off
-//        reward(new BeliefReward($$("(&&,tetris(#x,#yBelow),--tetris(#x,#yAbove),cmp(#yBelow,#yAbove,1))"), this));
-
-        //pixels on same row should be the same color TODO
-        //reward(new BeliefReward($$("--xor(tetris(#x1,#y), tetris(#x2,#y))"), this));
-
-//        //pixels left or right from each other should both be on
-//        reward(new BeliefReward($$("(&|,tetris(#x1,#y),tetris(#x2,#y),addAt(#x1,1,#x2))"), this));
-
     }
 
     public static void main(String[] args) {
@@ -155,22 +145,13 @@ public class Tetris extends GameX {
 
         GameX.runRT(n -> {
 
-            Tetris t = new Tetris(n, tetris_width, tetris_height);
+            Tetris t = new Tetris(n, Tetris.tetris_width, Tetris.tetris_height);
             n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
 
-        }, Tetris.FPS * 2);
+        }, FPS * 2);
 
-//        int instances = 2;
-//        for (int i = 0; i < instances; i++)
-//            runRTNet((n)-> {
-//
-//                    new Arithmeticize.ArithmeticIntroduction(32, n);
-//
-//                        return new Tetris($.p(Atomic.the("t"), n.self()), n, tetris_width, tetris_height, 1);
-//                    },
-//                    2, FPS, FPS, 6);
 
     }
 
@@ -178,11 +159,9 @@ public class Tetris extends GameX {
 
         Opjects oo = new Opjects(nar.fork((Term) $.inh(id, "opjects")));
         oo.exeThresh.set(0.51f);
-//        oo.pri.setAt(ScalarValue.EPSILON);
-
         Opjects.methodExclusions.add("toVector");
 
-        return oo.a("tetris", TetrisState.class, Tetris.tetris_width, Tetris.tetris_height, 2);
+        return oo.a("tetris", TetrisState.class, tetris_width, tetris_height, 2);
     }
 
     void actionPushButtonLR() {
@@ -195,7 +174,7 @@ public class Tetris extends GameX {
 
     void actionPushButtonRotateFall() {
 
-        final int debounceDurs = 2;
+        int debounceDurs = 2;
         //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
         actionPushButton(tROT, b -> b && state.act(TetrisState.actions.CW));
 
@@ -258,7 +237,7 @@ public class Tetris extends GameX {
     }
 
     public static class TetrisState {
-        public final AtomicBoolean easy = new AtomicBoolean(false);
+        public final boolean easy = Tetris.easy.getAcquire();
         private final Random randomGenerator = new Random();
         public int width;
         public int height;
@@ -278,7 +257,13 @@ public class Tetris extends GameX {
         public float[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
-        public List<PossibleBlocks> possibleBlocks = List.of(PossibleBlocks.values());//.subList(0, 1);
+        List<TetrisPiece> possibleBlocks = Tetris.easy.get() ? asList(new TetrisPiece[]{new TetrisPiece() {{
+            setShape(0, Tetris.CENTER_5_X_5);
+            setShape(1, Tetris.CENTER_5_X_5);
+            setShape(2, Tetris.CENTER_5_X_5);
+            setShape(3, Tetris.CENTER_5_X_5);
+        }},
+        }) : List.of(PossibleBlocks.values()).stream().map(possibleBlocks1 -> possibleBlocks1.shape).collect(toList());//.subList(0, 1);
         //        CopyOnWriteArrayList<TetrisPiece> possibleBlocks = new CopyOnWriteArrayList<>();
         private int rowsFilled;
 
@@ -332,7 +317,7 @@ public class Tetris extends GameX {
         }
 
         private void writeCurrentBlock(float[] f, float color) {
-            int[][] thisPiece = possibleBlocks.get(currentBlockId).shape.thePiece[currentRotation];
+            int[][] thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
 
             if (color == -1)
                 color = currentBlockId + 1;
@@ -450,7 +435,7 @@ public class Tetris extends GameX {
          * @return
          */
         private boolean colliding(int checkX, int checkY, int checkOrientation) {
-            int[][] thePiece = possibleBlocks.get(currentBlockId).shape.thePiece[checkOrientation];
+            int[][] thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
             int ll = thePiece.length;
             try {
 
@@ -476,7 +461,7 @@ public class Tetris extends GameX {
         }
 
         private boolean collidingCheckOnlySpotsInBounds(int checkX, int checkY, int checkOrientation) {
-            int[][] thePiece = possibleBlocks.get(currentBlockId).shape.thePiece[(checkOrientation)];
+            int[][] thePiece = possibleBlocks.get(currentBlockId).thePiece[(checkOrientation)];
             int ll = thePiece.length;
             try {
 
@@ -514,7 +499,7 @@ public class Tetris extends GameX {
          */
         private boolean inBounds(int checkX, int checkY, int checkOrientation) {
             try {
-                int[][] thePiece = possibleBlocks.get(currentBlockId).shape.thePiece[(checkOrientation)];
+                int[][] thePiece = possibleBlocks.get(currentBlockId).thePiece[(checkOrientation)];
 
                 for (int y = 0; y < thePiece[0].length; ++y)
                     for (int x = 0; x < thePiece.length; ++x)
@@ -588,8 +573,8 @@ public class Tetris extends GameX {
         }
 
         protected int nextBlock() {
-            if (easy.get()) return 1; //square
-            else return randomGenerator.nextInt(possibleBlocks.size());
+/*            if (easy) return 1; //square
+            else */return randomGenerator.nextInt(possibleBlocks.size());
 
         }
 
@@ -693,7 +678,7 @@ public class Tetris extends GameX {
          * Utility methd for debuggin
          */
         public void printState() {
-            final int index = 0;
+            int index = 0;
             for (int i = 0; i < height - 1; i++) {
                 for (int j = 0; j < width; j++) System.out.print(grid[i * width + j]);
                 System.out.print("\n");
@@ -929,6 +914,7 @@ public class Tetris extends GameX {
 
 
     }
+
 }
 
 
