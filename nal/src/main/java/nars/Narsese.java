@@ -18,9 +18,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.io.NarseseParser;
 import nars.task.AbstractCommandTask;
-import nars.task.AbstractTask;
 import nars.task.NALTask;
-import nars.task.util.TaskException;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 import nars.term.obj.QuantityTerm;
@@ -185,11 +183,9 @@ public final class Narsese {
 
         long[] occ = occurrence(nar.time, x[4]);
 
-        AbstractTask y = Task.tryTask(content, punct, t, (C, tr) ->
-            NALTask.the(C, punct, tr, nar.time(), occ[0], occ[1], nar.evidence()), false);
+        Term C = Task.taskValid(content, punct, t, false);
 
-        if (y == null)
-            throw new TaskException("input: " + Arrays.toString(x), content);
+        Task y = NALTask.the(C, punct, t, nar.time(), occ[0], occ[1], nar.evidence());
 
         y.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
 

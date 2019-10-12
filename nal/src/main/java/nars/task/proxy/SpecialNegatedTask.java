@@ -19,11 +19,9 @@ public final class SpecialNegatedTask extends ProxyTask {
         return super.term().neg();
     }
 
-
     @Override
     public @Nullable Truth truth() {
         return super.truth().neg();
     }
-
 
 }

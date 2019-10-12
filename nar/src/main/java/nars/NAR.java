@@ -49,6 +49,7 @@ import nars.time.event.WhenInternal;
 import nars.time.event.WhenTimeIs;
 import nars.time.part.DurLoop;
 import nars.time.part.DurNARConsumer;
+import nars.truth.PreciseTruth;
 import nars.truth.Truth;
 import org.HdrHistogram.Histogram;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
@@ -577,11 +578,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
 
     public Task input(float pri, Term term, byte punc, long start, long end, float freq, double conf) throws TaskException {
 
-        Task z = Task.tryTask(term, punc,
-            //Truth.theDithered(freq, c2w(conf), this),
-            $.t(freq, conf),
-            (c, truth) -> NALTask.the(c, punc, truth, time(), start, end, evidence()), false);
+        PreciseTruth truth = $.t(freq, conf);
 
+        Term c = Task.taskValid(term, punc, truth, false);
+
+        Task z = NALTask.the(c, punc, truth, time(), start, end, evidence());
 
         z.pri(pri);
         input(z);

@@ -22,4 +22,9 @@ public class SpecialOccurrenceTask extends ProxyTask {
     public long end() {
         return end;
     }
+
+    @Override
+    protected boolean validated() {
+        return true;
+    }
 }

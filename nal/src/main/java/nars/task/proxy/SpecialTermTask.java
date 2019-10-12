@@ -25,6 +25,11 @@ public class SpecialTermTask extends ProxyTask {
     }
 
 
+    @Override
+    protected boolean validated() {
+        return true;
+    }
+
     public static Task the(Task x, Term t, boolean copyCyclic) {
 
         Term xt = x.term();

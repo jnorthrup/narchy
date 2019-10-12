@@ -21,8 +21,7 @@ public class ProxyTask extends AbstractTask {
     private volatile boolean cyclic = false;
 
 
-
-    public ProxyTask(Task task) {
+    protected ProxyTask(Task task) {
 
         this.task = task;
         this.why = task.why();
@@ -42,13 +41,12 @@ public class ProxyTask extends AbstractTask {
         } else
             pri(p);
 
-        if (inheritCyclic() && task.isCyclic())
+        if (task.isCyclic())
             setCyclic(true);
     }
 
-
-    protected boolean inheritCyclic() {
-        return true;
+    @Deprecated protected boolean validated() {
+        return false;
     }
 
     @Override
@@ -68,8 +66,12 @@ public class ProxyTask extends AbstractTask {
 
 
     /** produce a concrete, non-proxy clone */
-    public Task clone() {
-        return Task.clone(this);
+    public Task the() {
+        if (validated()) {
+            return NALTask.the(term(), punc(), truth(), creation(), start(), end(), stamp());
+        } else {
+            return Task.clone(this); //runs validation first
+        }
     }
 
     @Override
@@ -131,10 +133,6 @@ public class ProxyTask extends AbstractTask {
         return task.punc();
     }
 
-    /** produce a concrete non-proxy clone of this */
-    @Nullable public AbstractTask the() {
-        return Task.clone(this);
-    }
 
 
 }

@@ -5,6 +5,7 @@ import nars.NAR;
 import nars.Task;
 import nars.table.temporal.TemporalBeliefTable;
 import nars.task.TemporalTask;
+import nars.term.Term;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -136,21 +137,16 @@ public enum Revision {;
         if (!p.minComponents(minComponents).commit(false, nal))
             return null;
 
-        double eviMin =
-                NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
+        double eviMin = NAL.belief.REVISION_MIN_EVI_FILTER ? nal.confMin.evi() : NAL.truth.EVI_MIN;
 
         Truth truth = p.get(eviMin, ditherTruth, nal);
         if (truth == null)
             return null;
 
         byte punc = p.punc();
-        Task y = Task.tryTask(p.term, punc, truth, (c, tr) ->
-                new TemporalTask(c, punc, tr,
-                        nal.time(), p.start(), p.end(),
-                        p.stampSample(STAMP_CAPACITY, nal.random())
-                )
-        );
-        return y != null ? pair(y, p) : null;
+        Term c = Task.taskValid(p.term, punc, truth, false);
+        Task y = new TemporalTask(c, punc, truth, nal.time(), p.start(), p.end(), p.stampSample(STAMP_CAPACITY, nal.random()));
+        return pair(y, p);
     }
 
     /** budget a revision result */

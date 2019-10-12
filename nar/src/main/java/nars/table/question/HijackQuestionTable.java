@@ -106,9 +106,9 @@ public class HijackQuestionTable extends PriHijackBag<Task, Task> implements Que
 
                         //use larger of the 2 stamps (subsume's smaller)
                         //long[] stamp = sc == +1 ? xStamp : yStamp; //TODO determine if this is safe
-                        long[] stamp = xStamp;
 
-                        Task xy = Task.clone(x, x.term(), null, x.punc(), u.start, u.end, stamp);
+
+                        Task xy = Task.clone(x, x.term(), null, x.punc(), u.start, u.end, xStamp);
                         Task.merge(xy, new Task[] { x, y }, newPri);
                         remove(y); y.delete();
                         return xy;

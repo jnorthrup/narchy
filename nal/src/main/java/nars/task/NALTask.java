@@ -3,6 +3,7 @@ package nars.task;
 import jcog.WTF;
 import nars.NAL;
 import nars.Task;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.time.When;
 import nars.truth.Truth;
@@ -40,6 +41,14 @@ public abstract class NALTask extends AbstractTask {
     }
 
     public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
+
+        if (c instanceof Neg) {
+            if (tr != null)
+                tr = tr.neg();
+
+            c = c.unneg();
+        }
+
         if (start == ETERNAL) {
             return new EternalTask(c, punct, tr, creation, evidence);
         } else {

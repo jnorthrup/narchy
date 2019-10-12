@@ -312,30 +312,17 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     @Nullable
     static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
-        return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, x.stamp()));
+        return clone(x, newContent, newTruth, newPunc, start, end, x.stamp());
     }
     @Nullable
     static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
-        return clone(x, newContent, newTruth, newPunc, (c, t) -> NALTask.the(c, newPunc, t, x.creation(), start, end, stamp));
-    }
 
-    @Nullable
-    static <T extends Task> T clone(Task x, Term newContent, BiFunction<Term, Truth, T> taskBuilder) {
-        return clone(x, newContent, x.truth(), x.punc(), taskBuilder);
-    }
+        Term c = Task.taskValid(newContent, newPunc, newTruth, false);
+        AbstractTask y = NALTask.the(c, newPunc, newTruth, x.creation(), start, end, stamp);
 
-    @Nullable
-    static <T extends Task> T clone(Task x, Term newContent, Truth newTruth, byte newPunc, BiFunction<Term, Truth, T> taskBuilder) {
+        y.pri(x.pri());
 
-        T y = Task.tryTask(newContent, newPunc, newTruth, taskBuilder);
-        if (y == null)
-            return null;
-
-        float xp = x.priElseZero();
-        y.pri(xp);
-
-        if (y instanceof AbstractTask)
-            ((AbstractTask) y).why(x.why()/*.clone()*/);
+        y.why(x.why());
 
 //        if (x.target().equals(y.target()) && x.isCyclic())
 //            y.setCyclic(true);
@@ -352,15 +339,31 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
-                throw new TaskException("null truth but required for belief or goal", t);
+                throw new TaskException("non-null truth required for belief or goal", t);
             if (tr.evi() < NAL.truth.EVI_MIN)
                 throw new TaskException("insufficient evidence", t);
+        } else {
+            if (tr!=null)
+                throw new TaskException("null truth required for questions or quests", t);
         }
 
         Term x = taskTerm(t, punc, safe);
         return x != null ? withResult.apply(x.unneg(), tr != null ? tr.negIf(x instanceof Neg) : null) : null;
     }
 
+    @Nullable static Term taskValid(Term t, byte punc, Truth tr, boolean safe) {
+        if (punc == BELIEF || punc == GOAL) {
+            if (tr == null)
+                throw new TaskException("non-null truth required for belief or goal", t);
+            if (tr.evi() < NAL.truth.EVI_MIN)
+                throw new TaskException("insufficient evidence", t);
+        } else {
+            if (tr!=null)
+                throw new TaskException("null truth required for questions or quests", t);
+        }
+
+        return taskTerm(t, punc, safe);
+    }
     /** validates and prepares a term for use as a task's content */
     static Term taskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
 
