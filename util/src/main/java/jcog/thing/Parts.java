@@ -9,7 +9,7 @@ import org.slf4j.Logger;
 /** a part of a Thing, which also manages a collection of locally contained SubParts */
 public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
 
-    protected static final Logger logger = Log.logger(Parts.class);
+    public static final Logger logger = Log.logger(Parts.class);
 
     protected final ConcurrentFastIteratingHashSet<SubPart<T>> local =
         new ConcurrentFastIteratingHashSet<SubPart<T>>(SubPart.EmptyArray);

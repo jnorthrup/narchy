@@ -14,9 +14,9 @@ import nars.derive.action.op.Termify;
 import nars.derive.action.op.Truthify;
 import nars.derive.cond.SingleOrDoublePremise;
 import nars.derive.premise.PremiseRuleNormalization;
-import nars.derive.rule.ConditionalPremiseRuleBuilder;
+import nars.derive.rule.CondHow;
 import nars.derive.rule.PremiseRule;
-import nars.derive.rule.PremiseRuleBuilder;
+import nars.derive.rule.HowBuilder;
 import nars.derive.rule.RuleCause;
 import nars.derive.util.DerivationFunctors;
 import nars.derive.util.PuncMap;
@@ -56,7 +56,7 @@ import static nars.time.Tense.DTERNAL;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
+public class PremisePatternAction extends CondHow {
 
     private final TruthModel truthModel;
 
@@ -80,7 +80,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     }
 
 
-    public static PremiseRuleBuilder parseSafe(String ruleSrc)  {
+    public static HowBuilder parseSafe(String ruleSrc)  {
         try {
             return parse(ruleSrc);
         } catch (Narsese.NarseseException e) {
@@ -317,7 +317,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     }
 
     public static Stream<PremiseRule> parse(Stream<String> rules) {
-        return rules.map(PremisePatternAction::parseSafe).map(PremiseRuleBuilder::get).distinct();
+        return rules.map(PremisePatternAction::parseSafe).map(HowBuilder::get).distinct();
     }
 
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
@@ -611,7 +611,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
     }
 
 
-    @Override protected PremiseAction action(RuleCause cause) {
+    @Override protected How action(RuleCause cause) {
         return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, beliefPattern, termify, time, cause);
     }
 
@@ -693,7 +693,7 @@ public class PremisePatternAction extends ConditionalPremiseRuleBuilder {
         }
     };
 
-    public final static class TruthifyDeriveAction extends PremiseAction {
+    public final static class TruthifyDeriveAction extends How {
 
         public final Truthify truth;
         public final UnifyConstraint<Derivation.PremiseUnify>[] constraints;

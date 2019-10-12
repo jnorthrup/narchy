@@ -3,12 +3,12 @@ package nars.derive.action;
 import nars.$;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
-import nars.derive.rule.ConditionalPremiseRuleBuilder;
+import nars.derive.rule.CondHow;
 import nars.derive.rule.RuleCause;
 import nars.term.control.PREDICATE;
 
 /** stateless by default */
-abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder  {
+abstract public class NativeHow/*Builder*/ extends CondHow {
 
 	protected abstract void run(RuleCause why, Derivation d);
 
@@ -28,12 +28,12 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 
 	@Override
-	protected final PremiseAction action(RuleCause cause) {
+	protected final How action(RuleCause cause) {
 		return new MyDeriveAction(cause);
 	}
 
 
-	private final class MyDeriveAction extends PremiseAction {
+	private final class MyDeriveAction extends How {
 
 		MyDeriveAction(RuleCause cause) {
 			super(cause);
@@ -46,12 +46,12 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 		@Override
 		public final float priHeuristic(Derivation d) {
-			return NativePremiseAction.this.pri(d);
+			return NativeHow.this.pri(d);
 		}
 
 		@Override
 		public final void run(Derivation d) {
-			NativePremiseAction.this.run(why, d);
+			NativeHow.this.run(why, d);
 		}
 	}
 }

@@ -6,7 +6,7 @@ import nars.Op;
 import nars.control.Cause;
 import nars.derive.PreDerivation;
 import nars.derive.PreDeriver;
-import nars.derive.action.PremiseAction;
+import nars.derive.action.How;
 import nars.derive.action.PremisePatternAction;
 import nars.derive.util.Forkable;
 import nars.term.control.AND;
@@ -32,13 +32,13 @@ public class DeriverProgram {
      */
     /*@Stable*/ public final Cause[] cause;
 
-    /*@Stable*/ public final PremiseAction[] branch;
+    /*@Stable*/ public final How[] branch;
 
     public final PreDeriver pre;
     public final NAR nar;
 
 
-    DeriverProgram(PREDICATE<PreDerivation> what, PremiseAction[] actions, PreDeriver pre, NAR nar) {
+    DeriverProgram(PREDICATE<PreDerivation> what, How[] actions, PreDeriver pre, NAR nar) {
 
         this.nar = nar;
 
@@ -85,8 +85,8 @@ public class DeriverProgram {
             Texts.indent(indent);out.println("}");
 
 
-        } else if (x instanceof PremiseAction) {
-            PremiseAction a = (PremiseAction)x;
+        } else if (x instanceof How) {
+            How a = (How)x;
 
             out.println(a.why.id + " ==> {");
             Object aa;

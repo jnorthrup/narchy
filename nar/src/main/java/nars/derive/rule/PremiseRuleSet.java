@@ -5,7 +5,7 @@ import jcog.data.set.ArrayHashSet;
 import jcog.memoize.CaffeineMemoize;
 import jcog.util.ArrayUtil;
 import nars.NAR;
-import nars.derive.action.PremiseAction;
+import nars.derive.action.How;
 import nars.derive.action.PremisePatternAction;
 
 import java.io.IOException;
@@ -98,7 +98,7 @@ public class PremiseRuleSet {
         return compile(a -> a);
     }
 
-    public final DeriverProgram compile(Function<PremiseAction,PremiseAction> actionTransform) {
+    public final DeriverProgram compile(Function<How, How> actionTransform) {
         return PremiseRuleCompiler.the(rules, nar, actionTransform);
     }
 
@@ -107,7 +107,7 @@ public class PremiseRuleSet {
         return add(PremisePatternAction.parse(metalNALRules));
     }
 
-    public final PremiseRuleSet add(PremiseRuleBuilder r) {
+    public final PremiseRuleSet add(HowBuilder r) {
         return add(r.get());
     }
 

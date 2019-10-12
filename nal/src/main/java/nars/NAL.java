@@ -188,7 +188,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public static final boolean PRE_SORT_TASK_INPUT_BATCH = true;
 
     public static final int WHATS_CAPACITY = 128;
-    public static final int HOWS_CAPACITY = 128;
+
 
     /** divisor for dividing the table's range of held beliefs in determining a 'table duration' for comparison of relative task strength
      *  this determines the importance of time vs. evidence in determining task strength across time

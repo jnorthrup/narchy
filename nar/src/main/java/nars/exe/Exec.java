@@ -4,6 +4,7 @@ import jcog.Log;
 import jcog.data.iterator.ArrayIterator;
 import nars.NAR;
 import nars.control.NARPart;
+import nars.derive.Deriver;
 import nars.time.ScheduledTask;
 import org.jctools.queues.MpscArrayQueue;
 import org.slf4j.Logger;
@@ -39,7 +40,22 @@ abstract public class Exec extends NARPart implements Executor {
 
     protected Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
+
     }
+
+    protected Deriver deriver = null;
+
+    /** sets the deriver */
+    public void deriver(Deriver deriver) {
+
+        Deriver prev = this.deriver;
+        if (prev!=null) {
+            //prev.stop
+        }
+        this.deriver = deriver;
+
+    }
+
 
 
 //    private static void taskError(Prioritizable t, Prioritizable x, Throwable ee, NAR nar) {

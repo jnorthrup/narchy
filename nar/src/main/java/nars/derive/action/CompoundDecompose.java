@@ -12,7 +12,7 @@ import nars.term.Term;
 import nars.unify.constraint.TermMatcher;
 import org.jetbrains.annotations.Nullable;
 
-public class CompoundDecompose extends NativePremiseAction {
+public class CompoundDecompose extends NativeHow {
 
 	private final boolean taskOrBelief;
 

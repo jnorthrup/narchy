@@ -1,7 +1,7 @@
 package nars.derive.util;
 
 import nars.NAL;
-import nars.derive.Deriver;
+import nars.Op;
 import nars.term.Term;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
@@ -12,10 +12,19 @@ import org.jetbrains.annotations.Nullable;
  */
 public class PremiseBeliefMatcher extends UnifySubst {
 
+	/**
+	 * variable types unifiable in premise formation
+	 */
+	public static final int PremiseUnifyVars =
+		//Op.VAR_QUERY.bit
+		Op.VAR_QUERY.bit | Op.VAR_DEP.bit
+		//Op.Variable //all
+		;
+
 	transient private Term output;
 
 	public PremiseBeliefMatcher() {
-		super(Deriver.PremiseUnifyVars, null);
+		super(PremiseUnifyVars, null);
 		commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
 	}
 

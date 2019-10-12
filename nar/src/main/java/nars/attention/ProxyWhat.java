@@ -1,7 +1,6 @@
 package nars.attention;
 
 import nars.NAR;
-import nars.Task;
 import nars.concept.Concept;
 import nars.link.TaskLink;
 
@@ -20,7 +19,7 @@ public class ProxyWhat extends What {
     public final What what;
 
     public ProxyWhat(What what) {
-        super(what.id, what.in);
+        super(what.id, what.inBuffer);
         this.what = what;
     }
 
@@ -44,10 +43,7 @@ public class ProxyWhat extends What {
         what.link(t);
     }
 
-    @Override
-    public TaskLink link(Task t, float pri) {
-        return what.link(t, pri);
-    }
+
 
     @Override
     public Stream<Concept> concepts() {

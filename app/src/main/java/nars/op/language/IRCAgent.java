@@ -2,10 +2,7 @@ package nars.op.language;
 
 import nars.NAR;
 import nars.NARS;
-import nars.Task;
-import nars.attention.What;
 import nars.exe.impl.WorkerExec;
-import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.NotNull;
@@ -13,8 +10,6 @@ import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;
 import org.pircbotx.hooks.events.PrivateMessageEvent;
 import org.pircbotx.hooks.types.GenericMessageEvent;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -32,7 +27,7 @@ import java.io.IOException;
  * ((($x --> (/,hear,#c,_)) &&+1 ($y --> (/,hear,#c,_))) ==> bigram($x,$y)).
  */
 public class IRCAgent extends IRC {
-    private static final Logger logger = LoggerFactory.getLogger(IRCAgent.class);
+//    private static final Logger logger = LoggerFactory.getLogger(IRCAgent.class);
 
     
     private final NAR nar;
@@ -41,7 +36,7 @@ public class IRCAgent extends IRC {
     private final boolean hearTwenglish = false;
 
     final int wordDelayMS = 100; 
-    private final MyLeakOut out;
+//    private final MyLeakOut out;
 
     boolean trace;
 
@@ -51,7 +46,7 @@ public class IRCAgent extends IRC {
         this.nar = nar;
 
 
-        out = new MyLeakOut(nar, channels);
+//        out = new MyLeakOut(nar, channels);
 
 
 
@@ -251,14 +246,14 @@ public class IRCAgent extends IRC {
             }
         }).start();
 
-        n.addOpN("trace", (arg, nn) -> {
-            if (arg.subs() > 0) {
-                switch (arg.sub(0).toString()) {
-                    case "on": bot.setTrace(true); break;
-                    case "off": bot.setTrace(false);  bot.out.clear(); break;
-                }
-            }
-        });
+//        n.addOpN("trace", (arg, nn) -> {
+//            if (arg.subs() > 0) {
+//                switch (arg.sub(0).toString()) {
+//                    case "on": bot.setTrace(true); break;
+//                    case "off": bot.setTrace(false);  bot.out.clear(); break;
+//                }
+//            }
+//        });
 
 
         /*
@@ -343,46 +338,46 @@ public class IRCAgent extends IRC {
         return url.startsWith("https://gist.githubusercontent");
     }
 
-    private class MyLeakOut extends TaskLeak {
-        private final String[] channels;
-
-        public MyLeakOut(NAR nar, String... channels) {
-            super(8, nar);
-            this.channels = channels;
-        }
-
-
-        @Override
-        protected float leak(Task next, What what) {
-            boolean cmd = next.isCommand();
-            if (cmd || (trace && !next.isDeleted())) {
-                String s = (!cmd) ? next.toString() : next.term().toString();
-                Runnable r = IRCAgent.this.send(channels, s);
-                if (r!=null) {
-                    nar.runLater(r);
-//                    if (NAL.DEBUG && !next.isCommand())
-//                        logger.info("{}\n{}", next, next.proof());
-                } else {
-                    
-                }
-                return cmd ? 0 : 1; 
-            }
-            return 0;
-        }
-
-        @Override
-        public boolean filter(@NotNull Task next) {
-            if (trace || next.isCommand())
-                return super.filter(next);
-            return false;
-        }
-
-        @Override
-        public float value() {
-            return 1;
-        }
-    }
-
+//    private class MyLeakOut extends TaskLeak {
+//        private final String[] channels;
+//
+//        public MyLeakOut(NAR nar, String... channels) {
+//            super(8, nar);
+//            this.channels = channels;
+//        }
+//
+//
+//        @Override
+//        protected float leak(Task next, What what) {
+//            boolean cmd = next.isCommand();
+//            if (cmd || (trace && !next.isDeleted())) {
+//                String s = (!cmd) ? next.toString() : next.term().toString();
+//                Runnable r = IRCAgent.this.send(channels, s);
+//                if (r!=null) {
+//                    nar.runLater(r);
+////                    if (NAL.DEBUG && !next.isCommand())
+////                        logger.info("{}\n{}", next, next.proof());
+//                } else {
+//
+//                }
+//                return cmd ? 0 : 1;
+//            }
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean filter(@NotNull Task next) {
+//            if (trace || next.isCommand())
+//                return super.filter(next);
+//            return false;
+//        }
+//
+//        @Override
+//        public float value() {
+//            return 1;
+//        }
+//    }
+//
 
 
 

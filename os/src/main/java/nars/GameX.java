@@ -651,8 +651,8 @@ abstract public class GameX extends Game {
     }
     private static void addFuelInjection(NAR n) {
         n.parts(What.class).forEach(w -> {
-            if (w.in instanceof PriBuffer.BagTaskBuffer)  {
-                PriBuffer.BagTaskBuffer b = (PriBuffer.BagTaskBuffer) w.in;
+            if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)  {
+                PriBuffer.BagTaskBuffer b = (PriBuffer.BagTaskBuffer) w.inBuffer;
 
 
 

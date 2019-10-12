@@ -1,6 +1,6 @@
 package nars.derive;
 
-import nars.derive.action.PremiseAction;
+import nars.derive.action.How;
 import nars.derive.action.PremisePatternAction;
 import nars.truth.MutableTruth;
 
@@ -15,7 +15,7 @@ public class PremiseRunnable {
     public transient byte punc;
 
     public transient boolean single;
-    public transient PremiseAction action;
+    public transient How action;
 
 
     //    public static <X> PREDICATE<X> andSeq(FasterList<PREDICATE<X>> seq) {
@@ -33,7 +33,7 @@ public class PremiseRunnable {
 //    }
 
 
-    public float pri(PremiseAction a, Derivation d) {
+    public float pri(How a, Derivation d) {
         float p = a.pri(d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;

@@ -4,7 +4,7 @@ import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.action.PremisePatternAction;
-import nars.derive.rule.PremiseRuleBuilder;
+import nars.derive.rule.HowBuilder;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
 import nars.term.Neg;
@@ -24,7 +24,7 @@ public enum Unifiable { ;
     private static final Atomic UnifyPreFilter = Atomic.the("unifiable");
 
 
-    public static void constrainSubstitute(Subterms a, PremiseRuleBuilder p) {
+    public static void constrainSubstitute(Subterms a, HowBuilder p) {
         //TODO for strict case
     }
 

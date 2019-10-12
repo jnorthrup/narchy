@@ -10,27 +10,22 @@ import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.concept.Concept;
-import nars.control.How;
-import nars.control.PartBag;
 import nars.control.PriNARPart;
 import nars.control.op.Perceive;
 import nars.derive.pri.DefaultDerivePri;
 import nars.derive.pri.DerivePri;
+import nars.link.AbstractTaskLink;
+import nars.link.AtomicTaskLink;
 import nars.link.TaskLink;
 import nars.task.util.PriBuffer;
 import nars.term.Term;
 import nars.util.Timed;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.Externalizable;
-import java.io.PrintStream;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
-
-import static java.lang.System.nanoTime;
 
 /**
  * What?  an attention context described in terms of a prioritized distribution over a subset of Memory.
@@ -72,13 +67,13 @@ import static java.lang.System.nanoTime;
  * be conceptualized and self-executed.
  */
 @Paper
-abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed, BooleanSupplier {
+abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
 
 	/**
 	 * input bag
 	 */
-	public final PriBuffer<Task> in;
+
 	public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
 	/**
 	 * present-moment perception duration, in global clock cycles,
@@ -86,7 +81,15 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	 */
 	public final FloatRange dur = new FloatRange(1, 1, 1024);
 	public final FloatRange commitDurs = new FloatRange(1, 0.5f, 4);
-	final ConsumerX<Task> out = new ConsumerX<>() {
+
+	final AtomicLong nextUpdate = new AtomicLong(Long.MIN_VALUE);
+
+
+	private final Consumer<Task> input;
+
+	public final PriBuffer<Task> inBuffer;
+
+	private final ConsumerX<Task> perceive = new ConsumerX<>() {
 
 		@Override
 		public int concurrency() {
@@ -99,38 +102,37 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 			Perceive.perceive(x, What.this);
 		}
 	};
-	final AtomicLong nextUpdate = new AtomicLong(Long.MIN_VALUE);
-	//new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
-	//new DirectDerivePri();
-	private final Consumer<Task> _in;
-	public PartBag<How> how;
+
+
 	/**
 	 * advised deriver pri model
 	 * however, each deriver instance can also be configured individually and dynamically.
 	 */
 	public DerivePri derivePri =
 		new DefaultDerivePri();
+	//new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
+	//new DirectDerivePri();
+
 	private float durBase = 1;
 	private transient long deadline = Long.MIN_VALUE;
 
 
-	protected What(Term id, PriBuffer<Task> in) {
+	protected What(Term id, PriBuffer<Task> inBuffer) {
 		super(id);
-		this.in = in;
-		this._in = in instanceof PriBuffer.DirectTaskBuffer ? this.out : in;
+		this.inBuffer = inBuffer;
+		this.input = inBuffer instanceof PriBuffer.DirectTaskBuffer ? this.perceive : inBuffer;
 	}
 
 	@Override
 	protected void starting(NAR nar) {
-		how = nar.how; //new PartBag<>(NAL.HOWS_CAPACITY)
 		super.starting(nar);
 		durBase = nar.dur();
-		in.start(out, nar);
+		inBuffer.start(perceive, nar);
 	}
 
 	@Override
 	protected void stopping(NAR nar) {
-		in.stop();
+		inBuffer.stop();
 		super.stopping(nar);
 	}
 
@@ -193,105 +195,33 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
 	@Override
 	public final void accept(Task x) {
-		_in.accept(x);
+		input.accept(x);
 	}
-
-	public abstract void link(TaskLink t);
 
 	public final TaskLink link(Task task) {
 		return link(task, task.pri());
 	}
 
-	public abstract TaskLink link(Task t, float pri);
+	public final TaskLink link(Task t, float p) {
+		AbstractTaskLink x = AtomicTaskLink.link(t.term()).priSet(t.punc(), p);
+		x.why = t.why();
+		link(x);
+		return x;
+	}
+
+	public abstract void link(TaskLink t);
 
 	public final Off onTask(Consumer<Task> listener, byte... punctuations) {
 		return eventTask.on(listener, punctuations);
 	}
 
-	public void printPerf(PrintStream out) {
-		for (How h : how) {
-			h.printPerf(out);
-		}
-	}
-
-	public void nextSynch() {
-		tryCommit();
-		how.forEach(h -> h.next(this, () -> false));
-	}
-
-	@Deprecated
-	public final void next(long startNS, long useNS) {
 
 
-		if (tryCommit()) {
-			//update time
-			long delayedStart = nanoTime() - startNS;
-			useNS = Math.max(0, useNS - delayedStart);
-		}
-
-        int n = how.size();
-		switch (n) {
-			case 0:
-				break; //nothing to do
-			case 1:
-				next(how.get(0), startNS, useNS); //special case: no slicing necessary
-				break;
-			default:
-				long stopNS = startNS + useNS;
-				nextSlicing(useNS, stopNS, n);
-				break;
-		}
-
-		//System.out.println(this.id + " runs=" + runs + " total=" + Texts.timeStr(useNS) + " each=" + Texts.timeStr(howNS));
-
-		//long end = System.nanoTime();
-		//use(estTime, end - start);
-	}
-
-	/** slices if more than 1 how */
-	void nextSlicing(long useNS, long stop, int slices) {
-		long howNS = useNS / slices; //TODO refine
 
 
-		Random r = random();
-		long now;
-
-//		int runs = 0;
-
-		do {
-			@Nullable How h = how.sample(r);
-			long start = nanoTime();
-			if (h.isOn()) {
-				now = next(h, start, howNS);
-			} else
-				now = start;
-
-		} while (now < stop);
-	}
-
-	protected long next(@Nullable How h, long startNS, long useNS) {
-		long now;
-		deadline = startNS + useNS;
-		try {
-			h.next(this, this);
-//					runs++;
-		} catch (Throwable t) {
-			logger.error("{} {}", t, this);
-			//t.printStackTrace();
-		}
-
-		now = nanoTime();
-		h.use(useNS, now - startNS);
-		return now;
-	}
-
-	@Override
-	public final boolean getAsBoolean() {
-		return nanoTime() < deadline;
-	}
 
 
-	private boolean tryCommit() {
+	public boolean tryCommit() {
 		long nextUpdate = this.nextUpdate.getOpaque();
 		long now = time();
 		if (now > nextUpdate) {
@@ -304,4 +234,5 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 		}
 		return false;
 	}
+
 }

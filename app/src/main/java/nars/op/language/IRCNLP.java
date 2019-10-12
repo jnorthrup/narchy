@@ -4,18 +4,14 @@ package nars.op.language;
 import nars.$;
 import nars.NAR;
 import nars.NARS;
-import nars.Task;
-import nars.attention.What;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.exe.impl.UniExec;
-import nars.op.TaskLeak;
 import nars.op.language.util.IRC;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.time.clock.RealTime;
 import nars.truth.Truth;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import org.pircbotx.exception.IrcException;
 import org.pircbotx.hooks.events.MessageEvent;
@@ -55,7 +51,7 @@ public class IRCNLP extends IRC {
 
 
     private final String[] channels;
-    private final MyLeakOut outleak;
+//    private final MyLeakOut outleak;
     final Vocalization speech;
 
     boolean trace;
@@ -69,7 +65,7 @@ public class IRCNLP extends IRC {
         this.speech = new Vocalization(nar, 2f, this::send);
 
 
-        outleak = new MyLeakOut(nar, channels);
+//        outleak = new MyLeakOut(nar, channels);
 
 
         /*
@@ -86,47 +82,47 @@ public class IRCNLP extends IRC {
 
     }
 
-    /**
-     * identical with IRCAgent, TODO share them
-     */
-    private class MyLeakOut extends TaskLeak {
-        public final String[] channels;
-
-        public MyLeakOut(NAR nar, String... channels) {
-            super(8, nar);
-            this.channels = channels;
-        }
-
-        @Override
-        public float value() {
-            return 1;
-        }
-
-        @Override
-        protected float leak(Task next, What what) {
-            boolean cmd = next.isCommand();
-            if (cmd || (trace && !next.isDeleted())) {
-                String s = (!cmd) ? next.toString() : next.term().toString();
-                Runnable r = IRCNLP.this.send(channels, s);
-                if (r != null) {
-                    nar.runLater(r);
-//                    if (NAL.DEBUG && !next.isCommand())
-//                        logger.info("{}\n{}", next, next.proof());
-                } else {
-
-                }
-                return cmd ? 0 : 1;
-            }
-            return 0;
-        }
-
-        @Override
-        public boolean filter(@NotNull Task next) {
-            if (trace || next.isCommand())
-                return super.filter(next);
-            return false;
-        }
-    }
+//    /**
+//     * identical with IRCAgent, TODO share them
+//     */
+//    private class MyLeakOut extends TaskLeak {
+//        public final String[] channels;
+//
+//        public MyLeakOut(NAR nar, String... channels) {
+//            super(8, nar);
+//            this.channels = channels;
+//        }
+//
+//        @Override
+//        public float value() {
+//            return 1;
+//        }
+//
+//        @Override
+//        protected float leak(Task next, What what) {
+//            boolean cmd = next.isCommand();
+//            if (cmd || (trace && !next.isDeleted())) {
+//                String s = (!cmd) ? next.toString() : next.term().toString();
+//                Runnable r = IRCNLP.this.send(channels, s);
+//                if (r != null) {
+//                    nar.runLater(r);
+////                    if (NAL.DEBUG && !next.isCommand())
+////                        logger.info("{}\n{}", next, next.proof());
+//                } else {
+//
+//                }
+//                return cmd ? 0 : 1;
+//            }
+//            return 0;
+//        }
+//
+//        @Override
+//        public boolean filter(@NotNull Task next) {
+//            if (trace || next.isCommand())
+//                return super.filter(next);
+//            return false;
+//        }
+//    }
 
     public void setTrace(boolean trace) {
         this.trace = trace;

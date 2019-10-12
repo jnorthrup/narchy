@@ -6,10 +6,10 @@ import nars.Op;
 import nars.Task;
 import nars.control.Why;
 import nars.derive.Derivation;
-import nars.derive.Deriver;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
 import nars.derive.rule.RuleCause;
+import nars.derive.util.PremiseBeliefMatcher;
 import nars.table.BeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
@@ -19,7 +19,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.function.Predicate;
 
 /** matches a belief task for a premise's beliefTerm, converting a single-premise to a double-premise */
-public class MatchBelief extends NativePremiseAction {
+public class MatchBelief extends NativeHow {
 
 	public static final MatchBelief the = new MatchBelief();
 
@@ -32,7 +32,7 @@ public class MatchBelief extends NativePremiseAction {
 	@Override
 	protected void run(RuleCause why, Derivation d) {
 		try (var __ = d.nar.emotion.derive_B_PremiseMatch.time()) {
-			Premise y = match(d.premise, Deriver.PremiseUnifyVars, why, d);
+			Premise y = match(d.premise, PremiseBeliefMatcher.PremiseUnifyVars, why, d);
 			if (y != null)
 				d.add(y);
 		}

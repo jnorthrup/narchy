@@ -1,7 +1,6 @@
 package nars.control;
 
 import jcog.Skill;
-import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
@@ -10,7 +9,6 @@ import jcog.data.map.ConcurrentFastIteratingHashMap;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.attention.AntistaticBag;
 import nars.attention.PriAmp;
 import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
@@ -76,9 +74,7 @@ import java.util.Arrays;
 
     private void update() {
         nar.what.commit(null);
-        nar.how.commit(null);
         prioritize();
-        schedule();
     }
 
     public MetaGoal.Report stats(PrintStream out) {
@@ -178,75 +174,7 @@ import java.util.Arrays;
     }
 
 
-    private void schedule() {
 
-        AntistaticBag<How> how = nar.how;
-        int n = how.size();
-        if (n == 0)
-            return;
-
-        float[] valMin = {Float.POSITIVE_INFINITY}, valMax = {Float.NEGATIVE_INFINITY};
-
-        long now = nar.time();
-
-
-        final double[] valueRateSumPos = {0}, valueRateSumNeg = {0};
-        how.forEach(c -> {
-
-            boolean sleeping = c.inactive(now);
-            if (sleeping)
-                return;
-
-            float vr;
-            long tUsed = c.used();
-            if (tUsed <= 0) {
-                c.value = Float.NaN;
-                vr = 0;
-            } else {
-                double v = c.value();
-                //double v = Math.max(0, c.value = c.value());
-                //double cyclesUsed = ((double) tUsed) / cycleIdealNS;
-                //vr = (float) (v / (1 + cyclesUsed));
-
-                vr = (float) (v / ((1.0 + tUsed)/1.0E9));
-                assert (vr == vr);
-            }
-
-            c.valueRate = vr;
-            if (vr >= 0)
-                valueRateSumPos[0] += vr;
-            else
-                valueRateSumNeg[0] += vr;
-            if (vr > valMax[0]) valMax[0] = vr;
-            if (vr < valMin[0]) valMin[0] = vr;
-
-        });
-
-        float valRange = valMax[0] - valMin[0];
-        if (Float.isFinite(valRange) && Math.abs(valRange) > Float.MIN_NORMAL) {
-//            /**
-//             * proportion of time spent in forced curiosity
-//             * TODO move to its own control filter which ensures minimum fair priority among the causables
-//             */
-//            @Deprecated public final FloatRange explorationRate = new FloatRange(0.05f, 0, 1);
-//            float exploreMargin = explorationRate.floatValue() * valRange;
-
-            how.forEach(c -> {
-//                if (c.inactive()) {
-//                    c.pri(0);
-//                } else {
-                float vNorm = (float) Util.normalize(c.valueRate, valueRateSumNeg[0], +valueRateSumPos[0]);
-                c.valueRateNormalized = vNorm;
-//                }
-            });
-        } else {
-            //FLAT
-            float pFlat = 1f / n;
-            how.forEach(s -> s.valueRateNormalized = pFlat);
-        }
-
-
-    }
 
 
     static final class TaskChannel extends CauseChannel<Task> {

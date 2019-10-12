@@ -343,8 +343,8 @@ abstract public class MetaAgent extends Game {
 				((TaskLinkWhat) w).dur.set(Math.max(1,nextDur));
 			});
 
-			if (w.in instanceof PriBuffer.BagTaskBuffer)
-				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.in)).valve);
+			if (w.inBuffer instanceof PriBuffer.BagTaskBuffer)
+				floatAction($.inh(gid, input), ((PriBuffer.BagTaskBuffer) (w.inBuffer)).valve);
 
 
 			Reward h = rewardNormalized($.inh(gid, happy), 1, 0, ScalarValue.EPSILON, () -> {

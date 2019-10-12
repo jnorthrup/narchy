@@ -7,7 +7,7 @@ import nars.Narsese;
 import nars.derive.action.PremisePatternAction;
 import nars.derive.premise.PatternTermBuilder;
 import nars.derive.rule.DeriverProgram;
-import nars.derive.rule.PremiseRuleBuilder;
+import nars.derive.rule.HowBuilder;
 import nars.derive.rule.PremiseRuleSet;
 import nars.derive.time.ActionTiming;
 import nars.term.Compound;
@@ -86,7 +86,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = PremisePatternAction.parse("A, A |- (A,A), (Belief:Intersection)");
+            HowBuilder x = PremisePatternAction.parse("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
 
 
@@ -97,7 +97,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
+            HowBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -106,7 +106,7 @@ class PremiseRuleTest {
         {
 
 
-            PremiseRuleBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
+            HowBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -123,7 +123,7 @@ class PremiseRuleTest {
 //        }
 
 
-        PremiseRuleBuilder x = PremisePatternAction.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
+        HowBuilder x = PremisePatternAction.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
 
 
         assertEquals(vv, x.id.volume());

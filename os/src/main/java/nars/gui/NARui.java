@@ -140,7 +140,7 @@ public class NARui {
                 "exe", () -> ExeCharts.exePanel(n),
                 "val", () -> ExeCharts.valuePanel(n),
                 "mem", () -> MemEdit(n),
-                "how", () -> ExeCharts.howChart(n),
+//                "how", () -> ExeCharts.howChart(n),
                 //"can", () -> ExeCharts.causeProfiler(n),
                 //ExeCharts.focusPanel(n),
                 ///causePanel(n),
@@ -619,7 +619,7 @@ public class NARui {
         NAR n = w.nar;
         TaskLinks attn = ((TaskLinkWhat)w).links;
         m.center(new TabMenu(Map.of(
-                "Input", () -> taskBufferView(w.in, n),
+                "Input", () -> taskBufferView(w.inBuffer, n),
                 "Spectrum", ()->tasklinkSpectrogram(attn.links, 300, n),
                 "Histogram", ()->new BagView(attn.links, n),
                 "ConceptGraph", ()->BagregateConceptGraph2D.get(attn, n),

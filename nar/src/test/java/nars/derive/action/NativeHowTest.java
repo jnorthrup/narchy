@@ -9,7 +9,7 @@ import nars.derive.rule.PremiseRuleSet;
 import nars.derive.rule.RuleCause;
 import org.junit.jupiter.api.Test;
 
-class NativePremiseActionTest {
+class NativeHowTest {
 
 	@Test
 	void testNativeDeriveAction_combined_with_MetaNAL() throws Narsese.NarseseException {
@@ -17,7 +17,7 @@ class NativePremiseActionTest {
 		NAR n = NARS.shell();
 		PremiseRuleSet d = new PremiseRuleSet(n)
 			.add(
-				new NativePremiseAction() {
+				new NativeHow() {
 
 					{
 						taskPattern("(%A,%B,%C)");

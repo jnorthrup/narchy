@@ -15,7 +15,7 @@ import static nars.Op.INH;
 import static nars.Op.PROD;
 
 /** dynamic image transform */
-public class ImageUnfold extends NativePremiseAction {
+public class ImageUnfold extends NativeHow {
 
 	{
 		single();

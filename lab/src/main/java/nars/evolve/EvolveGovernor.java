@@ -36,7 +36,7 @@ import jcog.Util;
 import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;
-import nars.derive.action.PremiseAction;
+import nars.derive.action.How;
 import nars.test.impl.DeductiveMeshTest;
 
 import java.util.function.Function;
@@ -122,7 +122,7 @@ public class EvolveGovernor {
 
 				Double[] govParm = new Double[2];
 				n.onDur(() -> {
-					for (PremiseAction a : d.program.branch) {
+					for (How a : d.program.branch) {
 						govParm[0] = Math.abs((double) a.getClass().hashCode()) / Integer.MAX_VALUE;
 						govParm[1] = (double) a.why.value;
 //						govParm[2] = (double) a.why.pri;

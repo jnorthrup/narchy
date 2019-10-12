@@ -103,7 +103,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     private final Function<Term, What> whatBuilder;
 
     public final PartBag<What> what = new PartBag<>(NAL.WHATS_CAPACITY);
-    @Deprecated public final PartBag<How> how = new PartBag<>(NAL.HOWS_CAPACITY);
 
     public final Topic<NAR> eventClear = new ListTopic<>();
     public final Topic<NAR> eventCycle = new ListTopic<>();
@@ -213,12 +212,10 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      */
     private void indexPartChange(ObjectBooleanPair<Part<NAR>> change) {
         Part<NAR> p = change.getOne();
-        if (p instanceof What || p instanceof How) {
-            PartBag b = (p instanceof What) ? what : how;
-            //PartBag b = what;
+        if (p instanceof What) {
+            PartBag b = what;
             if (change.getTwo()) {
-                b.putAsync(p);
-                //TODO handle rejection, eviction etc
+                b.putAsync(p); //TODO handle rejection, eviction etc
             } else {
                 boolean removed = b.remove(((PriNARPart) p).id) != null;
                 assert (removed);
@@ -344,7 +341,6 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
             stop();
 
             what.clear();
-            how.clear();
 
             //clear();
             memory.clear();

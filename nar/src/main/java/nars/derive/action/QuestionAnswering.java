@@ -7,7 +7,7 @@ import nars.derive.rule.RuleCause;
 import nars.table.BeliefTable;
 import org.jetbrains.annotations.Nullable;
 
-public class QuestionAnswering extends NativePremiseAction {
+public class QuestionAnswering extends NativeHow {
 
 	public static final QuestionAnswering the = new QuestionAnswering();
 

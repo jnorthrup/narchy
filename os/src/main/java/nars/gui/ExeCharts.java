@@ -7,25 +7,19 @@ import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import jcog.math.IntRange;
-import jcog.math.MutableEnum;
 import jcog.tree.rtree.rect.RectFloat;
 import nars.NAR;
-import nars.attention.AntistaticBag;
 import nars.control.Cause;
-import nars.control.How;
 import nars.control.MetaGoal;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.exe.impl.ThreadedExec;
 import nars.time.clock.RealTime;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Splitting;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.Widget;
 import spacegraph.space2d.widget.button.CheckBox;
-import spacegraph.space2d.widget.button.EnumSwitch;
-import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.meta.LoopPanel;
 import spacegraph.space2d.widget.meter.BitmapMatrixView;
 import spacegraph.space2d.widget.meter.Plot2D;
@@ -183,76 +177,76 @@ public class ExeCharts {
         }
     }
 
-    enum CauseProfileMode implements FloatFunction<How> {
-        Pri() {
-            @Override
-            public float floatValueOf(How w) {
-                return w.pri();
-            }
-        },
-        Value() {
-            @Override
-            public float floatValueOf(How w) {
-                return w.value;
-            }
-        },
-        ValueRateNormalized() {
-            @Override
-            public float floatValueOf(How w) {
-                return w.valueRateNormalized;
-            }
-        },
-//        Time() {
+//    enum CauseProfileMode implements FloatFunction<How> {
+//        Pri() {
 //            @Override
-//            public float floatValueOf(TimedLink w) {
-//                return Math.max(0,w.time.get());
+//            public float floatValueOf(How w) {
+//                return w.pri();
 //            }
+//        },
+//        Value() {
+//            @Override
+//            public float floatValueOf(How w) {
+//                return w.value;
+//            }
+//        },
+//        ValueRateNormalized() {
+//            @Override
+//            public float floatValueOf(How w) {
+//                return w.valueRateNormalized;
+//            }
+//        },
+////        Time() {
+////            @Override
+////            public float floatValueOf(TimedLink w) {
+////                return Math.max(0,w.time.get());
+////            }
+////        }
+//        ;
+//        /* TODO
+//                                //c.accumTimeNS.get()/1_000_000.0 //ms
+//                                //(c.iterations.getMean() * c.iterTimeNS.getMean())/1_000_000.0 //ms
+//                                //c.valuePerSecondNormalized
+//                                //c.valueNext
+//                                //c.iterations.getN()
+//                                //c...
+//
+//                        //,0,1
+//         */
+//    }
+//
+//    static Surface causeProfiler(AntistaticBag<How> cc, NAR nar) {
+//
+//        int history = 128;
+//        Plot2D pp = new Plot2D(history,
+//                //Plot2D.BarLanes
+//                Plot2D.LineLanes
+//                //Plot2D.Line
+//        );
+//
+//        final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
+//
+//        for (How c : cc) {
+//            String label = c.toString();
+//            //pp[i] = new Plot2D(history, Plot2D.Line).addAt(label,
+//            pp.add(label, ()-> mode.get().floatValueOf(c));
 //        }
-        ;
-        /* TODO
-                                //c.accumTimeNS.get()/1_000_000.0 //ms
-                                //(c.iterations.getMean() * c.iterTimeNS.getMean())/1_000_000.0 //ms
-                                //c.valuePerSecondNormalized
-                                //c.valueNext
-                                //c.iterations.getN()
-                                //c...
-
-                        //,0,1
-         */
-    }
-
-    static Surface causeProfiler(AntistaticBag<How> cc, NAR nar) {
-
-        int history = 128;
-        Plot2D pp = new Plot2D(history,
-                //Plot2D.BarLanes
-                Plot2D.LineLanes
-                //Plot2D.Line
-        );
-
-        final MutableEnum<CauseProfileMode> mode = new MutableEnum<>(CauseProfileMode.Pri);
-
-        for (How c : cc) {
-            String label = c.toString();
-            //pp[i] = new Plot2D(history, Plot2D.Line).addAt(label,
-            pp.add(label, ()-> mode.get().floatValueOf(c));
-        }
-
-        Surface controls = new Gridding(
-                EnumSwitch.the(mode, "Mode"),
-//                new PushButton("Print", ()-> {
-//                    Appendable t = TextEdit.out();
-//                    nar.exe.print(t);
-//                    window(t, 400, 400);
-//                }),
-                new PushButton("Clear", ()->pp.series.forEach(Plot2D.Series::clear))
-        );
-        return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::commit);
-    }
-
-    public static Surface howChart(NAR n) {
-        return NARui.<How>focusPanel(n.how, h->h.pri(), h -> h.id.toString(), n);
-    }
+//
+//        Surface controls = new Gridding(
+//                EnumSwitch.the(mode, "Mode"),
+////                new PushButton("Print", ()-> {
+////                    Appendable t = TextEdit.out();
+////                    nar.exe.print(t);
+////                    window(t, 400, 400);
+////                }),
+//                new PushButton("Clear", ()->pp.series.forEach(Plot2D.Series::clear))
+//        );
+//        return DurSurface.get(Splitting.column(pp, 0.1f, controls), nar, pp::commit);
+//    }
+//
+//    public static Surface howChart(NAR n) {
+//        return NARui.<How>focusPanel(n.how, h->h.pri(), h -> h.id.toString(), n);
+//    }
 
     //    private static void causeSummary(NAR nar, int top) {
 //        TopN[] tops = Stream.of(MetaGoal.values()).map(v -> new TopN<>(new Cause[top], (c) ->

@@ -4,7 +4,7 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 
-public abstract class TaskAction extends NativePremiseAction {
+public abstract class TaskAction extends NativeHow {
 	@Deprecated public int volMax;
 
 	protected TaskAction() {

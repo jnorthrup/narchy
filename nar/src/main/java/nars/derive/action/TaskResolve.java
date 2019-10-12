@@ -18,7 +18,7 @@ import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
 /** resolves a tasklink to a single-premise */
-public class TaskResolve extends NativePremiseAction {
+public class TaskResolve extends NativeHow {
 
 	public static final TaskResolve the = new TaskResolve();
 

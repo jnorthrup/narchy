@@ -43,7 +43,7 @@ import static nars.unify.constraint.RelationConstraint.*;
 
 /** base class providing all facilities for constructing a trie conditionally filtered rule,
  * but oblivious to the action implementation */
-public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
+public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	/** for convenient usage */
 	protected static final VarPattern TheTask = $.varPattern(1), TheBelief = $.varPattern(2);
@@ -623,7 +623,7 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
-		return taskOrBelief ? PremiseRuleBuilder.TaskTerm : PremiseRuleBuilder.BeliefTerm;
+		return taskOrBelief ? HowBuilder.TaskTerm : HowBuilder.BeliefTerm;
 	}
 
 	public static Term pathTerm(@Nullable byte[] path) {

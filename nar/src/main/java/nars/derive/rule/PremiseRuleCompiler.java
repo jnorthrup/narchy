@@ -4,10 +4,9 @@ import jcog.data.list.FasterList;
 import jcog.data.set.ArrayHashSet;
 import jcog.tree.perfect.TrieNode;
 import nars.NAR;
-import nars.derive.Derivation;
 import nars.derive.PreDerivation;
 import nars.derive.PreDeriver;
-import nars.derive.action.PremiseAction;
+import nars.derive.action.How;
 import nars.derive.util.Forkable;
 import nars.subterm.Subterms;
 import nars.term.Term;
@@ -28,7 +27,7 @@ import java.util.function.Function;
 public enum PremiseRuleCompiler {
     ;
 
-    public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
+    public static DeriverProgram the(Collection<PremiseRule> rr, NAR nar, Function<How, How> functionTransform) {
         return compile(rr,
             new PreDeriver.CentralMemoizer()
             //PreDeriver.DIRECT_DERIVATION_RUNNER
@@ -38,15 +37,15 @@ public enum PremiseRuleCompiler {
         );
     }
 
-    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar, Function<PremiseAction,PremiseAction> functionTransform) {
+    public static DeriverProgram compile(Collection<PremiseRule> rr, PreDeriver preDeriver, NAR nar, Function<How, How> functionTransform) {
 
         /** indexed by local (deriver-specific) id */
         int n = rr.size();
         short i = 0;
         assert(n > 0);
 
-        PremiseAction[] roots = new PremiseAction[n];
-        final TermPerfectTrie<PREDICATE<PreDerivation>, PremiseAction> paths = new TermPerfectTrie<>();
+        How[] roots = new How[n];
+        final TermPerfectTrie<PREDICATE<PreDerivation>, How> paths = new TermPerfectTrie<>();
 
         for (PremiseRule r : rr) {
 
@@ -55,11 +54,11 @@ public enum PremiseRuleCompiler {
             FasterList<PREDICATE<PreDerivation>> pre = new FasterList<>(condition.length + 1);
             pre.addAll(condition);
 
-            PremiseAction conc = r.action.apply(nar);
+            How conc = r.action.apply(nar);
 
             pre.add(new Forkable(/* branch ID */  i));
 
-            PremiseAction added = paths.put(pre,
+            How added = paths.put(pre,
                 roots[i] = functionTransform.apply(conc)
             );
             assert (added == null);
@@ -75,13 +74,13 @@ public enum PremiseRuleCompiler {
 
 
 
-    static PREDICATE<PreDerivation> compile(TermPerfectTrie<PREDICATE<PreDerivation>, PremiseAction> trie) {
+    static PREDICATE<PreDerivation> compile(TermPerfectTrie<PREDICATE<PreDerivation>, How> trie) {
         return FORK.fork(compile(trie.root), FORK::new);
     }
 
 
     @Nullable
-    static List<PREDICATE<PreDerivation>> compile(TrieNode<List<PREDICATE<PreDerivation>>, PremiseAction> node) {
+    static List<PREDICATE<PreDerivation>> compile(TrieNode<List<PREDICATE<PreDerivation>>, How> node) {
 
 
         UnifiedSet<PREDICATE<PreDerivation>> bb = new UnifiedSet();

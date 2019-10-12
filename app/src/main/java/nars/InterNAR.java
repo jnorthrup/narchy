@@ -13,7 +13,7 @@ import nars.control.NARPart;
 import nars.control.channel.CauseChannel;
 import nars.io.IO;
 import nars.io.TaskIO;
-import nars.op.TaskLeak;
+import nars.task.util.PriBuffer;
 import nars.time.clock.RealTime;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
@@ -39,7 +39,8 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	private final int port;
 	private final boolean discover; //TODO AtomicBoolean for GUI control etc
 	private final CauseChannel<Task> recv;
-	private final TaskLeak send;
+	private final PriBuffer.BagTaskBuffer send;
+	private final float outRate = 1; //TODO
 	private float peerFPS = 1;
 
 	/**
@@ -88,32 +89,35 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 		this.discover = discover;
 
 
-		this.send = new TaskLeak(outCapacity, nar) {
-			@Override
-			public boolean filter(Task next) {
-				if (next.isCommand() || !peer.connected() || next.stamp().length == 0 /* don't share assumptions */)
-					return false;
+		this.send = new PriBuffer.BagTaskBuffer(outCapacity, outRate);
 
-				return !next.isBeliefOrGoal() || !(next.conf() < nar.confMin.floatValue());
 
-			}
-
-			@Override
-			public float value() {
-				return recv.pri();
-			}
-
-			@Override
-			protected float leak(Task next, What what) {
-				return InterNAR.this.send(next);
-			}
-		};
+//		this.send = new TaskLeak(outCapacity, nar) {
+//			@Override
+//			public boolean filter(Task next) {
+//				if (next.isCommand() || !peer.connected() || next.stamp().length == 0 /* don't share assumptions */)
+//					return false;
+//
+//				return !next.isBeliefOrGoal() || !(next.conf() < nar.confMin.floatValue());
+//
+//			}
+//
+//			@Override
+//			public float value() {
+//				return recv.pri();
+//			}
+//
+//			@Override
+//			protected float leak(Task next, What what) {
+//				return InterNAR.this.send(next);
+//			}
+//		};
+//		add(send);
 
 
 		this.recv = nar.newChannel(this);
 
 
-		add(send);
 		finallyRun(peer.receive.on(this::receive));
 
 		nar.add(this);
@@ -134,6 +138,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	@Override
 	protected void starting(NAR nar) {
 		peer.setFPS(peerFPS);
+		this.send.start(this::send, nar);
 	}
 
 
@@ -163,6 +168,7 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 
 	@Override
 	protected void stopping(NAR nar) {
+		this.send.stop();
 		peer.stop();
 	}
 

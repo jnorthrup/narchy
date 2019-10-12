@@ -5,8 +5,11 @@ import jcog.exe.Exe;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
+import nars.derive.Deriver;
+import nars.derive.DeriverExecutor;
 
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
@@ -37,7 +40,6 @@ public class WorkerExec extends ThreadedExec {
 	public WorkerExec(int threads, boolean affinity) {
 		super(threads, affinity);
 
-
 		Exe.setExecutor(this);
 	}
 
@@ -54,18 +56,39 @@ public class WorkerExec extends ThreadedExec {
 		}
 	}
 
+	@Override
+	public void deriver(Deriver d) {
+		synchronized (exe) {
+			super.deriver(d);
+			for (WorkPlayLoop w : workers)
+				w.deriver(d);
+		}
+	}
+
+	final CopyOnWriteArrayList<WorkPlayLoop> workers = new CopyOnWriteArrayList<>();
+
 	private final class WorkPlayLoop implements ThreadedExec.Worker {
 
 
-		static final double maxOverUtilization = 1.5;
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
 
+		private DeriverExecutor.QueueDeriverExecutor dExe;
 
 		WorkPlayLoop() {
-
 			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
+			deriver(deriver);
+			workers.add(this);
 		}
+
+		/** called if deriver is updated */
+		void deriver(Deriver d) {
+			if (d!=null)
+				dExe = new DeriverExecutor.QueueDeriverExecutor(d);
+			else
+				dExe = null;
+		}
+
 
 		@Override
 		public void run() {
@@ -116,6 +139,10 @@ public class WorkerExec extends ThreadedExec {
 
 		private void play(long playStart, long playTime) {
 
+			DeriverExecutor.QueueDeriverExecutor dExe = this.dExe;
+			if (dExe == null)
+				return; //no deriver
+
 			AntistaticBag<What> W = nar.what;
 
 			Object[] ww = W.items();
@@ -129,13 +156,14 @@ public class WorkerExec extends ThreadedExec {
 			/** global concurrency, indicates a factor to inflate the time that this thread can visit each what */
 			int concurrency = concurrency();
 
+			dExe.nextCycle();
 
 			int idle = 0;
 			long end = playStart + playTime;
 			float mass = W.mass();
 			while (true) {
 
-				What w = (What) ww[rng.nextInt(n)];
+				What w = (What) ww[n>1 ? rng.nextInt(n) : 0];
 				if (!w.isOn()) w = null;
 
 				long now = nanoTime();
@@ -152,7 +180,7 @@ public class WorkerExec extends ThreadedExec {
 
 						long useNS = Math.round(playTime * priNormalized * concurrency / whatGranularity);
 
-						w.next(now, Math.min(end-now, useNS));
+						dExe.next(w, now, Math.min(end-now, useNS));
 					}
 
 					idle = 0; //reset
@@ -186,6 +214,7 @@ public class WorkerExec extends ThreadedExec {
 //                        executeNow(x);
 //                    return true;
 //                });
+				workers.remove(this);
 			}
 		}
 	}

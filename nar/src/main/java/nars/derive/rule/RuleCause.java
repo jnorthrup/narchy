@@ -13,10 +13,10 @@ import nars.term.Term;
  */
 public final class RuleCause extends Cause {
 
-	public final PremiseRuleBuilder rule;
+	public final HowBuilder rule;
 	public final String ruleString;
 
-	public RuleCause(PremiseRuleBuilder rule, short id) {
+	public RuleCause(HowBuilder rule, short id) {
 		super(id, rule.id);
 		this.rule = rule;
 		this.ruleString = rule.source;
