@@ -42,6 +42,7 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.clock.RealTime;
+import nars.time.part.DurLoop;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
@@ -493,8 +494,8 @@ abstract public class GameX extends Game {
 //        };
 
 
-
-        addGovernor(n);
+        DurLoop gov = addGovernor(n);
+        gov.durs(2 /* nyquist */);
 
         Loop.of(()->{
             //n.how.forEach(w -> w.printPerf(System.out));
@@ -726,11 +727,12 @@ abstract public class GameX extends Game {
     /**
      * governor
      * TODO extract to class
+     * @return
      */
-    private static void addGovernor(NAR n) {
-        float momentum = 0.9f;
-        float explorationRate = 0.05f;
-        n.onDur(new Consumer<NAR>() {
+    private static DurLoop addGovernor(NAR n) {
+        float momentum = 0.5f;
+        float explorationRate = 0.1f;
+        return n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Cause>> reval = new Consumer<FasterList<Cause>>() {
 

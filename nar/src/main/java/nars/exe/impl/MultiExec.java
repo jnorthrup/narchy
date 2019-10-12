@@ -3,13 +3,20 @@ package nars.exe.impl;
 import jcog.Texts;
 import jcog.Util;
 import jcog.data.list.FasterList;
+import jcog.data.list.MetalConcurrentQueue;
+import jcog.data.set.LongObjectArraySet;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import nars.NAR;
+import nars.attention.AntistaticBag;
+import nars.attention.What;
+import nars.derive.DeriverExecutor;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.time.clock.RealTime;
+import org.jetbrains.annotations.Nullable;
 
+import java.io.PrintStream;
 import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
@@ -39,6 +46,13 @@ abstract public class MultiExec extends Exec {
     volatile long cycleIdealNS;
     volatile long lastDur /* TODO lastNow */ = System.nanoTime();
     private Off cycle;
+
+    /** TODO double buffer access to this so it may be updated while read */
+    protected final MetalConcurrentQueue<Schedule> schedule = new MetalConcurrentQueue<>(2);
+    {
+        for (int i = 0; i < 2; i++) schedule.add(new Schedule());
+    }
+
 
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
@@ -117,7 +131,69 @@ abstract public class MultiExec extends Exec {
         long last = this.lastDur;
         this.lastDur = now;
         updateTiming(now - last);
+
+        long subCycleNS = 2_000_000;
+        Schedule schedWrite = schedule.peek(1); //access next schedule
+        float workPct = workDemand();
+        schedWrite.update(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, workPct /* TODO adapt */, 1-nar.loop.throttle.floatValue());
+        //System.out.println(schedWrite.size() + " sched entries");
+        //schedWrite.print(System.out); System.out.println();
+        @Nullable Schedule popped = schedule.poll(); //schedWrite now live in 0th position for readers
+        schedule.offer(popped); //push to end of queue
     }
+
+    /** estimate proportion of duty cycle that needs applied to queued work tasks.
+     *  calculated by some adaptive method wrt profiled measurements */
+    abstract protected float workDemand();
+
+    /** special consumer implementing throttle instruction */
+    public static final Consumer SLEEP = (e) -> {};
+
+    /** special consumer implementing work instruction */
+    public static final Consumer WORK = (e) -> {};
+
+    static class Schedule extends LongObjectArraySet<Consumer<DeriverExecutor> /* switcher*/> {
+
+        public void update(AntistaticBag<What> w, double durNS, long subCycleNS, double workPct, double sleepPct) {
+            clear();
+
+            if (workPct + sleepPct > 1) {
+                //only work and sleep but calculate the correct proportion:
+                workPct = (workPct / (workPct+sleepPct)); //renormalize
+                sleepPct = 1-workPct;
+            }
+
+            double workNS = (durNS * workPct);
+            double sleepNS = (durNS * sleepPct);
+            int nw = (int)Math.max(1, workNS / subCycleNS);
+            for (int i = 0; i < nw; i++)
+                addDirect(subCycleNS, WORK);
+
+            int ns = (int) Math.floor(sleepNS / subCycleNS);
+            for (int i = 0; i < ns; i++)
+                addDirect(subCycleNS, SLEEP);
+
+            double playPct = Math.max(0, 1f - (workPct + sleepPct));
+            if (playPct>0) {
+                double playNS = durNS * playPct;
+                double mass = w.mass();
+                for (What ww : w) {
+                    double priNorm = ww.priElseZero() / mass;
+                    double wPlayNS = (priNorm * playNS);
+                    int np = (int) Math.max(1, wPlayNS / subCycleNS);
+                    Consumer<DeriverExecutor> wws = ww.switcher;
+                    for (int i = 0; i < np; i++)
+                        addDirect(subCycleNS, wws);
+                }
+            }
+        }
+
+        public void print(PrintStream out) {
+            forEachEvent((when,what)->out.println(Texts.timeStr(when) + "\t" + what));
+        }
+    }
+
+
 
     private void updateTiming(long durDeltaNS) {
 

@@ -37,7 +37,8 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public void set(X x, float value) {
-        INT.set(x, floatToIntBits(value));
+        //INT.set(x, floatToIntBits(value));
+        INT.set(x, value);
     }
 
 
@@ -125,7 +126,8 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public float setAndGet(X x, float value) {
-        INT.set(x, floatToIntBits(value));
+        //INT.set(x, floatToIntBits(value));
+        set(x, value);
         return value;
     }
 
@@ -145,10 +147,12 @@ public final class AtomicFloatFieldUpdater<X>  {
     }
 
     public float get(X x) {
-        return intBitsToFloat(INT.get(x));
+        //return intBitsToFloat(INT.get(x));
+        return INT.getFloat(x);
     }
     public float getOpaque(X x) {
-        return intBitsToFloat(INT.getOpaque(x));
+        return get(x); //getFloatOpaque not valilable
+        //return intBitsToFloat(INT.getOpaque(x));
     }
 
     public void zero(X v, FloatConsumer with) {

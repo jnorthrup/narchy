@@ -566,11 +566,18 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         confMin = n.confMin.conf();
         eviMin = n.confMin.evi();
         termVolMax = n.termVolMax.intValue();
+        what = null;
         return this;
     }
 
     /** switch to new context */
     public Derivation next(What w) {
+
+        if (this.what == w)
+            return this; //continue using until reset by next() or it changes
+
+        w.tryCommit();
+
         this.what = w;
 
         NAR n = nar;

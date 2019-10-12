@@ -12,6 +12,7 @@ import nars.Task;
 import nars.concept.Concept;
 import nars.control.PriNARPart;
 import nars.control.op.Perceive;
+import nars.derive.DeriverExecutor;
 import nars.derive.pri.DefaultDerivePri;
 import nars.derive.pri.DerivePri;
 import nars.link.AbstractTaskLink;
@@ -110,11 +111,14 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	 */
 	public DerivePri derivePri =
 		new DefaultDerivePri();
+
+	public final Consumer<DeriverExecutor> switcher = (e)-> e.next(this);
+
 	//new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
 	//new DirectDerivePri();
 
 	private float durBase = 1;
-	private transient long deadline = Long.MIN_VALUE;
+	//private transient long deadline = Long.MIN_VALUE;
 
 
 	protected What(Term id, PriBuffer<Task> inBuffer) {

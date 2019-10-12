@@ -125,6 +125,9 @@ public abstract class RealTime extends Time {
     public float durSeconds() {
         return (float) unitsToSeconds(dur);
     }
+    public long durNS() {
+        return Math.round(1.0E9 * durSeconds());
+    }
 
     public double secondsPerUnit() {
         return (float) unitsToSeconds(1);

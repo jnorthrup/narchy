@@ -171,7 +171,11 @@ abstract public class MetaAgent extends Game {
 	public static class SelfMetaAgent extends MetaAgent {
 
 		public SelfMetaAgent(NAR nar) {
-			super($.inh(nar.self(), $$("meta")), GameTime.durs(1), nar);
+			this(nar, 2 /* nyquist sampling rate - to ensure activity is accurately sampled in the feedback stats */);
+		}
+
+		public SelfMetaAgent(NAR nar, float durs) {
+			super($.inh(nar.self(), $$("meta")), GameTime.durs(durs), nar);
 			NAR n = nar;
 
 			Term SELF = n.self();
@@ -284,7 +288,7 @@ abstract public class MetaAgent extends Game {
 		private final boolean allowPause;
 
 		public GameMetaAgent(Game g, boolean allowPause) {
-			super($.inh(g.what().id, $$("meta")), g.time.chain(), g.nar);
+			super($.inh(g.what().id, $$("meta")), g.time.chain(2 /* nyquist */), g.nar);
 
 			this.allowPause = allowPause;
 

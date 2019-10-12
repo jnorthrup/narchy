@@ -96,7 +96,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
     }
 
     @Override
-    public float asFloat() {
+    public final float asFloat() {
         return floatValue();
     }
 
@@ -111,7 +111,7 @@ public class AtomicFloat extends NumberX implements FloatSupplier {
         set(value.floatValue());
     }
 
-    public float get() {
+    public final float get() {
         return floatValue();
     }
 

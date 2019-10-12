@@ -27,7 +27,7 @@ import static java.lang.System.nanoTime;
  */
 public abstract class DeriverExecutor implements BooleanSupplier {
 
-	final Deriver deriver;
+	public final Deriver deriver;
 	final Derivation d;
 	final NAR nar;
 
@@ -80,20 +80,20 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 	public abstract void add(Premise p);
 
 	public void nextSynch(What w) {
-		w.tryCommit();
 
 		next(w, () -> false);
 	}
 
 
+
 	public long next(What w, long startNS, long useNS) {
-		if (w.tryCommit()) {
-			//update time
-			long actualStart = nanoTime();
-			long delayedStart = actualStart - startNS;
-			useNS = Math.max(0, useNS - delayedStart);
-			startNS = actualStart;
-		}
+//		if (w.tryCommit()) {
+//			//update time
+//			long actualStart = nanoTime();
+//			long delayedStart = actualStart - startNS;
+//			useNS = Math.max(0, useNS - delayedStart);
+//			startNS = actualStart;
+//		}
 
 		long now;
 		deadline = startNS + useNS;
@@ -112,19 +112,29 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 
 	private final void next(What w, final BooleanSupplier kontinue) {
 
-		if (((TaskLinkWhat) w).links.isEmpty()) return;
+		next(w);
 
-		d.next(w);
+		if (((TaskLinkWhat) w).links.isEmpty())
+			return; //HACK
 
-		int innerLoops = 1;
+		next(kontinue);
+	}
+
+	public final void next(final BooleanSupplier kontinue) {
+
 		do {
 
-			for (int i = 0; i < innerLoops; i++)
-				next();
+			next();
 
 		} while (kontinue.getAsBoolean());
 
 	}
+
+	/** switches context */
+	public final void next(What w) {
+		d.next(w);
+	}
+
 
 	private transient long deadline = Long.MIN_VALUE;
 
@@ -146,7 +156,7 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		//new ArrayHashSet<>(capacity)
 
 
-		int iterationTTL = 6;
+		int iterationTTL = 8;
 
 
 
@@ -157,25 +167,25 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		@Override
 		public void next() {
 
-			queue.clear();
+			//queue.clear();
 
 			int mainTTL = iterationTTL;
-			int branchTTL = d.nar.deriveBranchTTL.intValue();
+			int branchTTL = nar.deriveBranchTTL.intValue();
+
+			Queue<Premise> q = this.queue;
 
 			//TODO scale ttl by the priority normalized relative to the other items in the queue
 			do {
 
 				//if (queue.size() < mainTTL - 1)
-				if (queue.isEmpty())
-					queue.offer(sample());
-
+				if (q.isEmpty())
+					q.offer(sample());
 
 				Premise r;
-				if ((r = queue.poll()) != null)
+				if ((r = q.poll()) != null)
 					run(r, branchTTL);
 
 				//if (queue.size() < capacity)
-
 
 			} while (--mainTTL > 0);
 

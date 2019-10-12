@@ -78,8 +78,10 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     }
 
     public final void set(T obj, int newValue) {
-
         U.putIntVolatile(obj, this.offset, newValue);
+    }
+    public final void set(T obj, float newValue) {
+        U.putFloatVolatile(obj, this.offset, newValue);
     }
 
     public final void lazySet(T obj, int newValue) {
@@ -89,11 +91,15 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     public final int get(T obj) {
         return U.getIntVolatile(obj, this.offset);
     }
+    public final float getFloat(T obj) {
+        return U.getFloatVolatile(obj, this.offset);
+    }
 
     public final int getOpaque(T obj) {
         return U.getIntVolatile(obj, this.offset);
         //return (int) INT.getOpaque(obj);
     }
+
 
     public final int getAndSet(T obj, int newValue) {
         return U.getAndSetInt(obj, this.offset, newValue);
@@ -123,6 +129,7 @@ public final class MetalAtomicIntegerFieldUpdater<T> extends AtomicIntegerFieldU
     public final int addAndGet(T obj, int delta) {
         return this.getAndAdd(obj, delta) + delta;
     }
+
 
 
 }

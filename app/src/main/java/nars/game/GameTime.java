@@ -27,7 +27,9 @@ abstract public class GameTime {
     }
 
     /** like clone, but creates a new Time instance that 'follows' another */
-    abstract public GameTime chain();
+    abstract public GameTime chain(float periodMultiplier);
+
+    public final GameTime chain() { return chain(1); }
 
 
     /** measured in realtime
@@ -52,12 +54,12 @@ abstract public class GameTime {
         }
 
         @Override
-        public GameTime chain() {
+        public GameTime chain(float periodMultiplier) {
             FPS parent = this;
-            return new FPS(initialFPS /* HACK */) {
+            return new FPS(initialFPS /* HACK */ / periodMultiplier) {
                 @Override
                 public float dur() {
-                    return parent.dur;
+                    return parent.dur * periodMultiplier;
                 }
             };
         }
@@ -113,12 +115,12 @@ abstract public class GameTime {
         }
 
         @Override
-        public GameTime chain() {
+        public GameTime chain(float periodMultiplier) {
             Durs parent = this;
-            return new Durs(durPeriod) {
+            return new Durs(durPeriod * periodMultiplier) {
                 @Override
                 public float dur() {
-                    return parent.dur;
+                    return parent.dur * periodMultiplier;
                 }
             };
         }

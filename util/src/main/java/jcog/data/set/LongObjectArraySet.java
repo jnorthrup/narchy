@@ -222,14 +222,14 @@ public class LongObjectArraySet<X> extends FasterList<X> {
         return true;
     }
 
-    protected final void addDirect(long w, X t) {
+    /** add without testing for existing */
+    public final void addDirect(long w, X t) {
         int s = addAndGetSize(t);
 
         //match long[] to the Object[] capacity
         long[] ww = this.when;
-        if (ww.length < s) {
+        if (ww.length < s)
             this.when = ww = Arrays.copyOf(ww, items.length);
-        }
 
         ww[s - 1] = w;
     }
