@@ -70,21 +70,20 @@ import java.util.stream.Stream;
 @Paper
 abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iterable<TaskLink>, Externalizable, ConsumerX<Task>, Timed {
 
-
 	/**
 	 * input bag
 	 */
-
 	public final ByteTopic<Task> eventTask = new ByteTopic<>(Op.Punctuation);
+
 	/**
 	 * present-moment perception duration, in global clock cycles,
 	 * specific to this What, and freely adjustable
 	 */
 	public final FloatRange dur = new FloatRange(1, 1, 1024);
+
 	public final FloatRange commitDurs = new FloatRange(1, 0.5f, 4);
 
 	final AtomicLong nextUpdate = new AtomicLong(Long.MIN_VALUE);
-
 
 	private final Consumer<Task> input;
 
@@ -112,7 +111,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 	public DerivePri derivePri =
 		new DefaultDerivePri();
 
-	public final Consumer<DeriverExecutor> switcher = (e)-> e.next(this);
+	public final Consumer<DeriverExecutor> switcher = e -> e.next(this);
 
 	//new DefaultPuncWeightedDerivePri(); //<- extreme without disabling either pre or post amp
 	//new DirectDerivePri();

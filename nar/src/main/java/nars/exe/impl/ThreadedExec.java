@@ -49,12 +49,12 @@ abstract public class ThreadedExec extends MultiExec {
 
     private void executeJammed(Object x) {
 
-        //experimental: help drain queue
-        Object helping = in.poll();
-        if (helping!=null) {
-            logger.error("{} queue jam help={}", this, helping);
-            executeNow(helping);
-        }
+//        //experimental: help drain queue
+//        Object helping = in.poll();
+//        if (helping!=null) {
+//            logger.error("{} queue jam help={}", this, helping);
+//            executeNow(helping);
+//        }
 
         if (!in.offer(x)) { //try again
             logger.error("{} queue blocked offer={}", this, x);

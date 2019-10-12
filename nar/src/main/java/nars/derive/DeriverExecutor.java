@@ -8,12 +8,9 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
-import nars.NAR;
 import nars.Task;
-import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.derive.premise.Premise;
-import nars.link.TaskLink;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Queue;
@@ -29,11 +26,10 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 
 	public final Deriver deriver;
 	final Derivation d;
-	final NAR nar;
+
 
 	protected DeriverExecutor(Deriver deriver) {
 		this.deriver = deriver;
-		this.nar = deriver.nar();
 		this.d = new Derivation(this);
 	}
 
@@ -42,10 +38,10 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		float tPri = t.priElseZero();
 		if (b != null)
 			return
-				Util.or(
+				//Util.or(
 					//Util.min(
 					//Util.mean(
-					//Util.sum(
+				Util.sum(
 					tPri, b.priElseZero()
 				);
 		else
@@ -56,7 +52,7 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 	 * gets next tasklink premise
 	 */
 	protected final Premise sample() {
-		TaskLink x = ((TaskLinkWhat) d.what).links.sample(d.random);
+		return d.what.sample(d.random);
 
 //			//Pre-resolve
 //			if (x!=null) {
@@ -64,8 +60,7 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 //				if (y != null) // && !x.equals(y))
 //					return new AbstractPremise(y, x.to());
 //			}
-
-		return x;
+//		return x;
 	}
 
 	/**
@@ -86,36 +81,36 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 
 
 
-	public long next(What w, long startNS, long useNS) {
-//		if (w.tryCommit()) {
-//			//update time
-//			long actualStart = nanoTime();
-//			long delayedStart = actualStart - startNS;
-//			useNS = Math.max(0, useNS - delayedStart);
-//			startNS = actualStart;
+//	public long next(What w, long startNS, long useNS) {
+////		if (w.tryCommit()) {
+////			//update time
+////			long actualStart = nanoTime();
+////			long delayedStart = actualStart - startNS;
+////			useNS = Math.max(0, useNS - delayedStart);
+////			startNS = actualStart;
+////		}
+//
+//		long now;
+//		deadline = startNS + useNS;
+//		try {
+//			next(w, this);
+//			//runs++;
+//		} catch (Throwable t) {
+//			Parts.logger.error("{} {}", t, this);
+//			//t.printStackTrace();
 //		}
+//
+//		now = nanoTime();
+//		//h.use(useNS, now - startNS);
+//		return now;
+//	}
 
-		long now;
-		deadline = startNS + useNS;
-		try {
-			next(w, this);
-			//runs++;
-		} catch (Throwable t) {
-			w.logger.error("{} {}", t, this);
-			//t.printStackTrace();
-		}
-
-		now = nanoTime();
-		//h.use(useNS, now - startNS);
-		return now;
-	}
-
-	private final void next(What w, final BooleanSupplier kontinue) {
+	public final void next(What w, final BooleanSupplier kontinue) {
 
 		next(w);
 
-		if (((TaskLinkWhat) w).links.isEmpty())
-			return; //HACK
+//		if (((TaskLinkWhat) w).links.isEmpty())
+//			return; //HACK
 
 		next(kontinue);
 	}
@@ -167,10 +162,10 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		@Override
 		public void next() {
 
-			//queue.clear();
+			queue.clear();
 
 			int mainTTL = iterationTTL;
-			int branchTTL = nar.deriveBranchTTL.intValue();
+			int branchTTL = d.nar.deriveBranchTTL.intValue();
 
 			Queue<Premise> q = this.queue;
 
@@ -178,14 +173,16 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 			do {
 
 				//if (queue.size() < mainTTL - 1)
-				if (q.isEmpty())
-					q.offer(sample());
+				//if (q.isEmpty())
+				if (q.size() < mainTTL/2) {
+					Premise s = sample();
+					if (s!=null)
+						q.offer(s);
+				}
 
 				Premise r;
 				if ((r = q.poll()) != null)
 					run(r, branchTTL);
-
-				//if (queue.size() < capacity)
 
 			} while (--mainTTL > 0);
 

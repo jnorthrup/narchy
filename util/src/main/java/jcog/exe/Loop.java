@@ -20,12 +20,15 @@ abstract public class Loop extends FixedRateTimedFuture {
     /**
      * busy lock
      */
-    private final AtomicBoolean busy = new AtomicBoolean(false);
+    private final AtomicBoolean
+        running = new AtomicBoolean(false),
+        scheduled = new AtomicBoolean(false); //prevents multiple pending schedulings while waiting for next run
 
 
     public static Loop of(Runnable iteration) {
         return new LambdaLoop(iteration);
     }
+
 
     /**
      * < 0: paused
@@ -78,7 +81,7 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     @Override
     protected final boolean isReady() {
-        return !busy.getAcquire();
+        return !running.get() && scheduled.compareAndSet(false,true);
     }
 
     public final Loop setFPS(float fps) {
@@ -87,10 +90,8 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public final void ready() {
-        busy.setRelease(false);
+        running.set(false);
     }
-
-
 
     static int fpsToMS(float fps) {
         return Math.max(1, Math.round(1000 / fps));
@@ -123,9 +124,9 @@ abstract public class Loop extends FixedRateTimedFuture {
     private void _start(int nextPeriodMS) {
         logger.debug("start {} {} fps", this, n2(1000f/nextPeriodMS));
 
-        synchronized (periodMS) {
+        //synchronized (periodMS) {
             starting();
-        }
+        //}
 
         HashedWheelTimer t = Exe.timer();
         init(NANOSECONDS.convert(nextPeriodMS, TimeUnit.MILLISECONDS), t.resolution, t.wheels);
@@ -137,9 +138,9 @@ abstract public class Loop extends FixedRateTimedFuture {
 
         cancel(false);
 
-        synchronized (periodMS) {
+        //synchronized (periodMS) {
             stopping();
-        }
+        //}
     }
 
 
@@ -172,8 +173,11 @@ abstract public class Loop extends FixedRateTimedFuture {
     @Override
     public final void run() {
 
-        if (!busy.compareAndSet(false, true))
+        scheduled.set(false);
+
+        if (!running.compareAndSet(false, true))
             return;
+
 
         try {
             beforeNext();

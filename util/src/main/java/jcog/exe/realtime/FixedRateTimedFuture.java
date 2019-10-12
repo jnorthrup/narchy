@@ -42,8 +42,8 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
             if (isReady())
                 super.execute(t);
 
-            reset(t.wheels, t.resolution);
 
+            reset(t.wheels, t.resolution);
             t.reschedule(this);
         }
     }
@@ -73,7 +73,8 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         return offset;
     }
 
-    /** TODO cache this */
+    /** TODO cache this
+     * */
     protected void reset(int wheels, long resolution) {
         //int steps = (int) Math.round(((double) periodNS) / resolution);
 
@@ -82,6 +83,8 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
         int rounds = Math.min(Integer.MAX_VALUE, (int)(periodNS / epoch));
         this.rounds = rounds;
         this.offset = Math.max(1, (int) (((periodNS - rounds * epoch) / resolution)));
+
+
     }
 
 

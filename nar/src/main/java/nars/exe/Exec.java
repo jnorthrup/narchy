@@ -78,13 +78,7 @@ abstract public class Exec extends NARPart implements Executor {
         }
     }
 
-    public void input(Consumer<NAR> r) {
-        if (concurrent()) {
-            ForkJoinPool.commonPool().execute(() -> r.accept(nar));
-        } else {
-            r.accept(nar);
-        }
-    }
+
 
     /**
      * true if this executioner executes procedures concurrently.
@@ -148,7 +142,7 @@ abstract public class Exec extends NARPart implements Executor {
 
     public void clear(NAR n) {
         synchronized (scheduled) {
-            synch(n);
+            schedule(this::executeNow);
             toSchedule.clear();
             scheduled.clear();
         }
@@ -220,15 +214,6 @@ abstract public class Exec extends NARPart implements Executor {
 
     }
 
-
-
-
-    /**
-     * flushes the pending work queued for the current time
-     */
-    public final void synch(NAR n) {
-        schedule(this::executeNow);
-    }
 
     public void throttle(float t) {
         nar.loop.throttle.set(t);

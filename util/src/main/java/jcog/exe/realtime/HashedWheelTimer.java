@@ -194,18 +194,17 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	}
 
 	protected <X> void reject(TimedFuture<X> r) {
-		logger.error("reject {}", r);
 		r.cancel(false);
+		logger.error("reject {}", r);
 	}
 
 	public final boolean reschedule(TimedFuture<?> r) {
-		int offset = r.offset(model.resolution);
-		int c = cursorActive();
-		if (!model.reschedule(idx(c + offset), r)) {
+		if (model.reschedule(idx(cursorActive() + r.offset(model.resolution)), r)) {
+			return true;
+		} else {
 			reject(r);
 			return false;
 		}
-		return true;
 	}
 
 	/**
@@ -225,7 +224,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 			return c;
 		else {
 			assertRunning();
-			return 0;
+			return cursor();
 		}
 	}
 

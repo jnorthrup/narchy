@@ -305,20 +305,14 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     Derivation(DeriverExecutor exe) {
         super();
 
-        this.nar = exe.nar;
+        this.exe = exe;
+        this.nar = exe.deriver.nar();
         this.derivationFunctors = DerivationFunctors.get(this);
-
-        _task = _belief = null;
-        taskTerm = beliefTerm = null;
-        _taskTerm = _beliefTerm = null;
-        premise = null;
 
         this.deriver = exe.deriver;
 
         this.random = nar.random();
         for (Unify u : _u) u.random = random;
-
-        this.exe = exe;
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY,
             Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_QUERY.bit
@@ -326,7 +320,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             //Op.VAR_QUERY.bit
             //0
         ) {
-
 
             @Override
             protected boolean intern(Atomic x) {
@@ -338,8 +331,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             public boolean intrin(Atomic x) {
                 return
                     //erased types: intern these intrins for maximum premise key re-use
-                    !(x instanceof Int) && !(x instanceof AtomChar) &&
-                    super.intrin(x);
+                    !(x instanceof Int) && !(x instanceof AtomChar) && super.intrin(x);
             }
 
 //            @Override
@@ -369,24 +361,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         if (cause != null)
             cause.delete();
         throw e;
-    }
-
-    /**
-     * setup for a new derivation.
-     * returns false if the premise is invalid to derive
-     * <p>
-     * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
-     */
-    private void preReady(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
-
-        //TODO maybe can be re-used:
-        this.stampDouble = stampSingle = null;
-
-        this._task = resetTask(nextTask, this._task);
-        this._beliefTerm = nextBeliefTerm;
-        this._belief = resetBelief(nextBelief, nextBeliefTerm);
-
-        budget(_task, _belief);
     }
 
     private Task resetBelief(Task nextBelief, final Term nextBeliefTerm) {
@@ -423,7 +397,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         //TODO not whether to shift, but which variable (0..n) to shift against
 
-        this.beliefTerm = beliefTerm(anon, _taskTerm, nextBeliefTerm, unify.random);
+        this.beliefTerm = beliefTerm(anon, _taskTerm, nextBeliefTerm);
 
         assertAnon(nextBeliefTerm, beliefTerm, nextBelief);
 
@@ -437,19 +411,19 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     float PREMISE_SHIFT_RANDOM = 0.5f;
 
     /** t = raw task term, b = raw belief term */
-    public Term beliefTerm(AnonWithVarShift anon, Term t, Term b, Random random) {
-
+    public Term beliefTerm(AnonWithVarShift anon, Term t, Term b) {
 
         boolean shift, shiftRandomOrCompletely;
         if (!b.hasAny(Op.Variable & t.structure())) {
             shift = shiftRandomOrCompletely = false; //unnecessary
         } else {
+            float r = random.nextFloat();
             if (b.equalsRoot(t)) {
-                shift = random.nextFloat() < PREMISE_SHIFT_EQUALS_ROOT; //structural identity
+                shift = r < PREMISE_SHIFT_EQUALS_ROOT; //structural identity
             } else if (b.containsRecursively(t) || t.containsRecursively(b)) {
-                shift = random.nextFloat() < PREMISE_SHIFT_CONTAINS_RECURSIVELY;
+                shift = r < PREMISE_SHIFT_CONTAINS_RECURSIVELY;
             } else {
-                shift = random.nextFloat() < PREMISE_SHIFT_OTHER;
+                shift = r < PREMISE_SHIFT_OTHER;
             }
             shiftRandomOrCompletely = shift && random.nextFloat() < PREMISE_SHIFT_RANDOM;
         }
@@ -541,7 +515,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
     }
 
-    public void ttl(int ttl) {
+    public final void ttl(int ttl) {
         unify.setTTL(ttl); //HACK TODO use global TTL register
     }
 
@@ -596,13 +570,13 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
 
         float uttd = n.unifyTimeToleranceDurs.floatValue();
-        for (Unify u : _u) {
+        for (Unify u : _u)
             u.dtTolerance =
                 //n.dtDither(); //FINE
                 //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 Math.round(dur * uttd); //COARSE
             //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
-        }
+
 
         w.derivePri.reset(this);
 
@@ -692,16 +666,12 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /** returns appropriate Emotion counter representing the result state  */
     FastCounter run(Premise p, final int deriveTTL) {
 
-        ttl(deriveTTL);
-
-        this.premise = p;
-
         short[] can;
 
         Emotion e = nar.emotion;
         try (var __ = e.derive_C_Pre.time()) {
 
-            preReady(p.task(), p.belief(), p.beliefTerm());
+            preReady(p, deriveTTL);
 
             can = deriver.program.pre.apply(this);
             if (can.length == 0)
@@ -761,6 +731,21 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         return e.premiseRun;
     }
 
+    private void preReady(Premise p, int deriveTTL) {
+
+        this.premise = p;
+
+        ttl(deriveTTL);
+
+        this.stampDouble = stampSingle = null; //TODO maybe can be re-used
+
+        this._task = resetTask(p.task(), this._task);
+
+        Term nextBeliefTerm = p.beliefTerm();
+        this._belief = resetBelief(p.belief(), this._beliefTerm = nextBeliefTerm);
+
+        budget(_task, _belief);
+    }
 
 
     //

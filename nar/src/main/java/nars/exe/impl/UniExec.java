@@ -6,6 +6,8 @@ import nars.derive.Deriver;
 import nars.derive.DeriverExecutor;
 import nars.exe.Exec;
 
+import java.util.function.BooleanSupplier;
+
 import static java.lang.System.nanoTime;
 
 /**
@@ -54,6 +56,12 @@ public class UniExec extends Exec {
         */
         long timesliceNS = timeSliceNS();
         boolean sync = timesliceNS == Long.MIN_VALUE;
+        BooleanSupplier kontinue;
+        if (sync) {
+            long deadline = nanoTime() + timeSliceNS();
+            kontinue = () -> nanoTime() < deadline;
+        } else
+            kontinue = null;
 
         exe.nextCycle();
 
@@ -61,8 +69,9 @@ public class UniExec extends Exec {
             if (w.isOn()) {
                 if (sync)
                     exe.nextSynch(w);
-                else
-                    exe.next(w, nanoTime(), timesliceNS); //w.next(nanoTime(), timesliceNS);
+                else {
+                    exe.next(w, kontinue); //w.next(nanoTime(), timesliceNS);
+                }
             }
         }
     }

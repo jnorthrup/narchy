@@ -1925,7 +1925,7 @@ public enum Util {
 
 	public static void sleepNS(long remainingNanos) {
 
-		sleepNS(remainingNanos, 25 * 1000 /* 50uSec is the default linux kernel resolution result */);
+		sleepNS(remainingNanos, 50 * 1000 /* 50uSec is the default linux kernel resolution result */);
 	}
 
 	/**

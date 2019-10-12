@@ -70,6 +70,7 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 	@Override
 	public boolean reschedule(int wheel, TimedFuture r) {
 
+		Queue<TimedFuture>[] q = this.q;
 		int remain = q.length - 1;
 		do {
 			if (q[wheel].offer(r))

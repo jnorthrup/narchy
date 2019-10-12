@@ -323,7 +323,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 //            , 0, 2f);
 
     /** max tolerance time difference (in durations) for unification of temporal terms */
-    public final FloatRange unifyTimeToleranceDurs = new FloatRange(1f, 0, 2 );
+    public final FloatRange unifyTimeToleranceDurs = new FloatRange(0.5f, 0, 2 );
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
 

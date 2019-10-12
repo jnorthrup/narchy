@@ -441,7 +441,9 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
             return !loop.isRunning();
         }
 
+
         private final class DisplayLoop extends InstrumentedLoop {
+
 
             @Override
             public String toString() {

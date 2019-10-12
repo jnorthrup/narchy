@@ -204,10 +204,6 @@ abstract public class NARWeb extends EvalSocket<NAR> {
                     exe.execute(async);
                 }
 
-                @Override
-                public void input(Consumer<NAR> r) {
-                    execute(() -> r.accept(this.nar));
-                }
             };
 
             NAR n = new NARS().withNAL(1, 8)

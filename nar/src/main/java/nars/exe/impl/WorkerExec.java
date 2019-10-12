@@ -4,8 +4,6 @@ import jcog.Util;
 import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
 import jcog.random.XoRoShiRo128PlusRandom;
-import nars.attention.AntistaticBag;
-import nars.attention.What;
 import nars.derive.Deriver;
 import nars.derive.DeriverExecutor;
 import org.jetbrains.annotations.Nullable;
@@ -59,7 +57,7 @@ public class WorkerExec extends ThreadedExec {
 
 	@Override
 	protected float workDemand() {
-		double cautionSensitivity = 0.5; //0..1
+		double cautionSensitivity = 0.75; //0..1
 
 		int QS = in.size();
 		float QSavg = queueSize.valueOf(QS);
@@ -214,16 +212,6 @@ public class WorkerExec extends ThreadedExec {
 
 		}
 
-
-		/** TODO improve and interleave naps with play */
-		void sleep() {
-			long i = WorkerExec.this.threadIdleTimePerCycle;
-			if (i > 0) {
-				Util.sleepNS(i);
-				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
-			}
-		}
-
 		@Override
 		public void close() {
 			if (alive.compareAndSet(true, false)) {
@@ -238,150 +226,150 @@ public class WorkerExec extends ThreadedExec {
 	}
 
 
-	private final class WorkPlayLoop0 implements ThreadedExec.Worker {
-
-
-		final Random rng;
-		private final AtomicBoolean alive = new AtomicBoolean(true);
-
-		private DeriverExecutor.QueueDeriverExecutor dExe;
-
-		WorkPlayLoop0() {
-			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
-		}
-
-
-		@Override
-		public void run() {
-
-			while (alive.getOpaque()) {
-
-				long workStart = nanoTime();
-
-				work();
-
-				long workEnd = nanoTime();
-
-				long worked = workEnd - workStart;
-
-				long playTime = threadWorkTimePerCycle - worked;
-				if (playTime > 0)
-					play(workEnd, playTime);
-
-				sleep();
-			}
-		}
-
-		protected void work() {
-
-			int batchSize = -1;
-			Object next;
-			while ((next = in.poll()) != null) {
-
-				executeNow(next);
-
-				if (batchSize == -1) {
-					//initialization once for subsequent attempts
-					int available; //estimate
-					if ((available = in.size()) <= 0)
-						break;
-
-					batchSize = //Util.lerp(throttle,
-						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Util.clamp((int) Math.ceil(workResponsibility/concurrency() * available), 1, available);
-
-				} else if (--batchSize == 0)
-					break; //enough
-
-			}
-
-
-		}
-
-		private void play(long playStart, long playTime) {
-
-			DeriverExecutor.QueueDeriverExecutor dExe = this.dExe;
-			if (dExe == null)
-				return; //no deriver
-			Deriver systemDeriver = WorkerExec.this.deriver;
-			if (dExe.deriver!= systemDeriver) {
-				//deriver has changed; create new executor
-				dExe = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
-			}
-
-			AntistaticBag<What> W = nar.what;
-
-			Object[] ww = W.items();
-			int n = W.size();
-			n = Math.min(ww.length, n); //safety
-			if (n == 0)
-				return;
-
-			/** granularity=1 means no additional timeslice 'redundancy', >1 means finer timeslices for improved fairness at expense of throughput and overhead */
-			float whatGranularity = 1;
-			/** global concurrency, indicates a factor to inflate the time that this thread can visit each what */
-			int concurrency = concurrency();
-
-			dExe.nextCycle();
-
-			int idle = 0;
-			long end = playStart + playTime;
-			float mass = W.mass();
-			while (true) {
-
-				What w = (What) ww[n>1 ? rng.nextInt(n) : 0];
-				if (!w.isOn()) w = null;
-
-				long now = nanoTime();
-				if (now >= end)
-					break;
-
-				if (w != null) {
-
-					float p = w.priElseZero();
-					if (p > Float.MIN_NORMAL) {
-						double priNormalized = n > 1 && mass > Float.MIN_NORMAL ?
-							Util.unitize(p / mass) :
-							1f / n;
-
-						long useNS = Math.round(playTime * priNormalized * concurrency / whatGranularity);
-
-						dExe.next(w, now, Math.min(end-now, useNS));
-					}
-
-					idle = 0; //reset
-
-				} else {
-					Util.pauseSpin(++idle);
-				}
-
-			}
-
-		}
-
-
-
-
-		/** TODO improve and interleave naps with play */
-		void sleep() {
-			long i = WorkerExec.this.threadIdleTimePerCycle;
-			if (i > 0) {
-				Util.sleepNS(i);
-				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
-			}
-		}
-
-		@Override
-		public void close() {
-			if (alive.compareAndSet(true, false)) {
-//                //execute remaining tasks in callee's thread
-//                schedule.removeIf(x -> {
-//                    if (x != null)
-//                        executeNow(x);
-//                    return true;
-//                });
-			}
-		}
-	}
+//	private final class WorkPlayLoop0 implements ThreadedExec.Worker {
+//
+//
+//		final Random rng;
+//		private final AtomicBoolean alive = new AtomicBoolean(true);
+//
+//		private DeriverExecutor.QueueDeriverExecutor dExe;
+//
+//		WorkPlayLoop0() {
+//			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
+//		}
+//
+//
+//		@Override
+//		public void run() {
+//
+//			while (alive.getOpaque()) {
+//
+//				long workStart = nanoTime();
+//
+//				work();
+//
+//				long workEnd = nanoTime();
+//
+//				long worked = workEnd - workStart;
+//
+//				long playTime = threadWorkTimePerCycle - worked;
+//				if (playTime > 0)
+//					play(workEnd, playTime);
+//
+//				sleep();
+//			}
+//		}
+//
+//		protected void work() {
+//
+//			int batchSize = -1;
+//			Object next;
+//			while ((next = in.poll()) != null) {
+//
+//				executeNow(next);
+//
+//				if (batchSize == -1) {
+//					//initialization once for subsequent attempts
+//					int available; //estimate
+//					if ((available = in.size()) <= 0)
+//						break;
+//
+//					batchSize = //Util.lerp(throttle,
+//						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
+//						Util.clamp((int) Math.ceil(workResponsibility/concurrency() * available), 1, available);
+//
+//				} else if (--batchSize == 0)
+//					break; //enough
+//
+//			}
+//
+//
+//		}
+//
+//		private void play(long playStart, long playTime) {
+//
+//			DeriverExecutor.QueueDeriverExecutor dExe = this.dExe;
+//			if (dExe == null)
+//				return; //no deriver
+//			Deriver systemDeriver = WorkerExec.this.deriver;
+//			if (dExe.deriver!= systemDeriver) {
+//				//deriver has changed; create new executor
+//				dExe = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
+//			}
+//
+//			AntistaticBag<What> W = nar.what;
+//
+//			Object[] ww = W.items();
+//			int n = W.size();
+//			n = Math.min(ww.length, n); //safety
+//			if (n == 0)
+//				return;
+//
+//			/** granularity=1 means no additional timeslice 'redundancy', >1 means finer timeslices for improved fairness at expense of throughput and overhead */
+//			float whatGranularity = 1;
+//			/** global concurrency, indicates a factor to inflate the time that this thread can visit each what */
+//			int concurrency = concurrency();
+//
+//			dExe.nextCycle();
+//
+//			int idle = 0;
+//			long end = playStart + playTime;
+//			float mass = W.mass();
+//			while (true) {
+//
+//				What w = (What) ww[n>1 ? rng.nextInt(n) : 0];
+//				if (!w.isOn()) w = null;
+//
+//				long now = nanoTime();
+//				if (now >= end)
+//					break;
+//
+//				if (w != null) {
+//
+//					float p = w.priElseZero();
+//					if (p > Float.MIN_NORMAL) {
+//						double priNormalized = n > 1 && mass > Float.MIN_NORMAL ?
+//							Util.unitize(p / mass) :
+//							1f / n;
+//
+//						long useNS = Math.round(playTime * priNormalized * concurrency / whatGranularity);
+//
+//						dExe.next(w, now, Math.min(end-now, useNS));
+//					}
+//
+//					idle = 0; //reset
+//
+//				} else {
+//					Util.pauseSpin(++idle);
+//				}
+//
+//			}
+//
+//		}
+//
+//
+//
+//
+//		/** TODO improve and interleave naps with play */
+//		void sleep() {
+//			long i = WorkerExec.this.threadIdleTimePerCycle;
+//			if (i > 0) {
+//				Util.sleepNS(i);
+//				//Util.sleepNSwhile(i, NapTimeNS, () -> queueSafe());
+//			}
+//		}
+//
+//		@Override
+//		public void close() {
+//			if (alive.compareAndSet(true, false)) {
+////                //execute remaining tasks in callee's thread
+////                schedule.removeIf(x -> {
+////                    if (x != null)
+////                        executeNow(x);
+////                    return true;
+////                });
+//			}
+//		}
+//	}
 
 }

@@ -32,7 +32,7 @@ abstract public class MultiExec extends Exec {
             0.5;
 
     //2; //<- untested
-    static private final float queueLatencyMeasurementProbability = 0.002f;
+    static private final float queueLatencyMeasurementProbability = 0.003f;
     /**
      * 0..1.0: determines acceptable reaction latency.
      * lower value allows queue to grow larger before it's processed,
@@ -42,7 +42,7 @@ abstract public class MultiExec extends Exec {
 //    protected NARPart updater;
 //    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(3, 0.5f);
     //1.5;
-    volatile long threadWorkTimePerCycle, threadIdleTimePerCycle;
+    volatile long threadWorkTimePerCycle;
     volatile long cycleIdealNS;
     volatile long lastDur /* TODO lastNow */ = System.nanoTime();
     private Off cycle;
@@ -57,10 +57,6 @@ abstract public class MultiExec extends Exec {
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
         super(concurrencyMax);
-
-        //updater = new DurLoop.DurRunnable(this::update);
-        //updater.durs(UPDATE_DURS);
-//        add(updater);
     }
 
     static boolean execute(FasterList b, int concurrency, Consumer each) {
@@ -111,10 +107,6 @@ abstract public class MultiExec extends Exec {
         schedule(this::executeNow);
     }
 
-    @Override
-    public final void input(Consumer<NAR> r) {
-        execute(r);
-    }
 
     /**
      * execute later
@@ -127,14 +119,14 @@ abstract public class MultiExec extends Exec {
     }
 
     protected void update() {
-        long now = System.nanoTime();
-        long last = this.lastDur;
-        this.lastDur = now;
-        updateTiming(now - last);
 
-        long subCycleNS = 2_000_000;
-        Schedule schedWrite = schedule.peek(1); //access next schedule
+        updateTiming();
+
+        long subCycleNS = 5_000_000;
+
         float workPct = workDemand();
+
+        Schedule schedWrite = schedule.peek(1); //access next schedule
         schedWrite.update(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, workPct /* TODO adapt */, 1-nar.loop.throttle.floatValue());
         //System.out.println(schedWrite.size() + " sched entries");
         //schedWrite.print(System.out); System.out.println();
@@ -195,14 +187,19 @@ abstract public class MultiExec extends Exec {
 
 
 
-    private void updateTiming(long durDeltaNS) {
+    private void updateTiming() {
+
+        long now = System.nanoTime();
+        //long last = this.lastDur;
+        this.lastDur = now;
+
+        //long durDeltaTime = now - last
 
         NARLoop loop = nar.loop;
         cycleIdealNS = loop.periodNS();
-        if (cycleIdealNS < 0) {
+        if (cycleIdealNS <= 0) {
             //paused
             threadWorkTimePerCycle = 0;
-            threadIdleTimePerCycle = NapTimeNS;
         } else {
             double throttle = loop.throttle.floatValue();
 
@@ -210,33 +207,32 @@ abstract public class MultiExec extends Exec {
             long workTargetNS = (long) (Util.lerp(throttle, 0, cycleIdealNS));
             //float durCycles = nar.dur();
             //long cycleActualNS = Math.round(((double)durDeltaNS)/(UPDATE_DURS * durCycles)); //(long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (durDeltaNS / 1.0E6)/(UPDATE_DURS * nar.dur())));
-            long lagMeanNS = durDeltaNS - cycleIdealNS; //cycleActualNS - Math.round(UPDATE_DURS * cycleIdealNS);
+//            long lagMeanNS = durDeltaNS - cycleIdealNS; //cycleActualNS - Math.round(UPDATE_DURS * cycleIdealNS);
 
 
-            long threadWorkTimePerCycle = workTargetNS;
-            long threadIdleTimePerCycle = Math.max(0, cycleIdealNS - workTargetNS);
+            //            long threadIdleTimePerCycle = Math.max(0, cycleIdealNS - workTargetNS);
 
-            if (lagMeanNS > 0) {
-                long lagNS = Math.round(lagMeanNS * lagAdjustmentFactor);
-                if (threadIdleTimePerCycle >= lagNS) {
-                    //use some idle time to compensate for lag overtime
-                    threadIdleTimePerCycle = Math.max(0,threadIdleTimePerCycle - lagNS);
-                }
-//                else {
-//                    long idleConsumed = threadIdleTimePerCycle;
-//                    //need all idle time
-//                    threadIdleTimePerCycle = 0;
-//                    //decrease work time for remainder
-//                    threadWorkTimePerCycle = Math.max(0, threadWorkTimePerCycle - (lagNS - idleConsumed));
-//                }
-            }
+//            if (lagMeanNS > 0) {
+//                long lagNS = Math.round(lagMeanNS * lagAdjustmentFactor);
+////                if (threadIdleTimePerCycle >= lagNS) {
+////                    //use some idle time to compensate for lag overtime
+////                    threadIdleTimePerCycle = Math.max(0,threadIdleTimePerCycle - lagNS);
+////                }
+////                else {
+////                    long idleConsumed = threadIdleTimePerCycle;
+////                    //need all idle time
+////                    threadIdleTimePerCycle = 0;
+////                    //decrease work time for remainder
+////                    threadWorkTimePerCycle = Math.max(0, threadWorkTimePerCycle - (lagNS - idleConsumed));
+////                }
+//            }
 
+            this.threadWorkTimePerCycle = workTargetNS;
 
             if (nar.random().nextFloat() < queueLatencyMeasurementProbability)
                 execute(new QueueLatencyMeasurement(nanoTime()));
 
-            this.threadWorkTimePerCycle = threadWorkTimePerCycle;
-            this.threadIdleTimePerCycle = threadIdleTimePerCycle;
+
 
 //            System.out.println(
 //                Texts.timeStr(threadWorkTimePerCycle) + " work, " +
