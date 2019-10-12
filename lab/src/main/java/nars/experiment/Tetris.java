@@ -61,7 +61,7 @@ public class Tetris extends GameX {
     private final Bitmap2D grid;
     private final TetrisState state;
     private final boolean opjects = true;
-    private final boolean canFall = Config.configIs("TETRIS_CANFALL", false);
+    private final boolean canFall = Config.configIs("TETRIS_CAN_FALL", false);
     private final Bitmap2DSensor<Bitmap2D> gridVision;
 
 
