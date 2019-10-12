@@ -540,20 +540,22 @@ import static nars.Op.BELIEF;
     
     default BooleanPredicate debounce(BooleanPredicate f, float durations) {
 
-        final long[] last = {Long.MIN_VALUE};
+        final long[] last = { Long.MIN_VALUE };
 
-        return (x)->{
+        return x->{
+            boolean y = false;
             if (x) {
                 What w = what();
                 long now = w.time();
-                if (now - last[0] >= durations * w.dur()) {
-                    if (f.accept(true)) {
-                        last[0] = now;
-                        return true;
-                    }
+                long prev = last[0];
+                float period = durations * w.durPhysical();
+                if (prev == Long.MIN_VALUE) prev = (long) (now - Math.ceil(period));
+                if (now - prev >= period) {
+                    last[0] = now;
+                    y = true;
                 }
             }
-            return f.accept(false);
+            return f.accept(y);
         };
     }
 

@@ -61,7 +61,7 @@ public class Tetris extends GameX {
     private final Bitmap2D grid;
     private final TetrisState state;
     private final boolean opjects = true;
-    private final boolean canFall = Config.configIs("TETRIS_CAN_FALL", false);
+    private final boolean canFall = Config.configIs("TETRIS_CAN_FALL", true);
     private final Bitmap2DSensor<Bitmap2D> gridVision;
 
 
@@ -178,7 +178,12 @@ public class Tetris extends GameX {
         //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
         actionPushButton(tROT, b -> b && state.act(TetrisState.actions.CW));
 
-        if (canFall) actionPushButton(tFALL, debounce(b -> b && state.act(TetrisState.actions.FALL), debounceDurs * 2));
+        if (canFall)
+            actionPushButton(tFALL,
+                debounce(
+                    b -> b && state.act(TetrisState.actions.FALL)
+                , debounceDurs * 2)
+            );
 
     }
 
