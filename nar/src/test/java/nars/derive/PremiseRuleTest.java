@@ -1,6 +1,7 @@
 package nars.derive;
 
 import nars.$;
+import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
 import nars.derive.action.PremisePatternAction;
@@ -8,6 +9,7 @@ import nars.derive.premise.PatternTermBuilder;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.PremiseRuleBuilder;
 import nars.derive.rule.PremiseRuleSet;
+import nars.derive.time.ActionTiming;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Terms;
@@ -193,6 +195,25 @@ class PremiseRuleTest {
             "X,Y |- (X&&Y), (Goal:Intersection)").compile();
 
         assertTrue(d.what.toString().contains("DoublePremise"));
+    }
+    @Test
+    void EventOfNegImpliesHasNeg() throws Narsese.NarseseException {
+
+        NAR n = NARS.shell();
+        PremiseRuleSet d = new PremiseRuleSet(n,
+            "X,Y,eventOfNeg(X,Y) |- Y, (Goal:Intersection)");
+        Deriver dd = new Deriver(d, new ActionTiming());
+
+//        n.input("(x && --c)!");
+//        n.input("c.");
+//        n.run(10);
+
+        String dw = dd.program.what.toString();
+        assertTrue(dw.contains("Is(taskTerm,\"&&\")"), ()->dw);
+        assertTrue(dw.contains("Has(taskTerm,any(\"--\"))"), ()->dw);
+
+
+
     }
 
     @Test

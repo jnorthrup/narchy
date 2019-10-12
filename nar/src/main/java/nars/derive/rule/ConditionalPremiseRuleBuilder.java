@@ -330,13 +330,12 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 				if (!negated) {
 					bigger(Xv, Yv);
 					is(Xv, CONJ);
-//                        if (yNeg &&
-//                                (YY.equals(taskPattern) ||
-//                                        (YY.equals(beliefPattern) ||
-//                                                (XX.containsRecursively(YY) && !XX.containsRecursively(YY.neg())
-//                                                )))) {
-//                            hasAny(XX, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
-//                        }
+					if (yNeg && (y.equals(taskPattern) ||
+									y.equals(beliefPattern)
+										//|| x.containsRecursively(y) && !x.containsRecursively(y.neg()) //<- TODO verify
+											)) {
+						hasAny(x, NEG); //taskPattern and beliefPattern themselves will always be unneg so it is safe to expect a negation
+					}
 					eventable(Yv);
 				}
 
@@ -588,8 +587,11 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 		}
 	}
 
-	public void match(Term x, TermMatcher m) {
+	public final void match(Term x, TermMatcher m) {
 		match(x, m, true);
+	}
+	public final void matchNot(Term x, TermMatcher m) {
+		match(x, m, false);
 	}
 
 	public void match(Term x, TermMatcher m, boolean trueOrFalse) {

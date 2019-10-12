@@ -43,11 +43,11 @@ B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBeli
 //B, A, --is(A,"==>"), --is(B,"==>")  |-          (--B && A), (Belief:IntersectionNP, Time:Sequence)
 //B, A, --is(A,"==>"), --is(B,"==>")  |-          (--B && --A), (Belief:IntersectionNN, Time:Sequence)
 
-//B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) || polarizeBelief(A)), (Belief:UnionDD, Time:Sequence)
-  B, A, --is(A,"==>"), --is(B,"==>")  |-          (B || A), (Belief:Union, Time:Sequence)
+B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) || polarizeBelief(A)), (Belief:UnionDD, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>")  |-          (B || A), (Belief:Union, Time:Sequence)
 
 B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
-//  B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) || polarizeBelief(A))), (Belief:UnionDD, Time:Sequence)
+//B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) || polarizeBelief(A))), (Belief:UnionDD, Time:Sequence)
 
 //question induction
 //B, A, --is(A,"==>"), --is(B,"==>"), neqRCom(B,A), hasBelief()  |-          (polarizeRandom(B) && polarizeBelief(A)), (Punctuation:AskAsk, Time:TaskEvent)

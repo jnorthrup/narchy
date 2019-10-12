@@ -515,7 +515,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     public void ready(int ttl) {
 
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
-        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || Occurrify.temporal(beliefTerm);
+        this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || (!beliefTerm.equals(taskTerm) && Occurrify.temporal(beliefTerm));
 
         unify.setTTL(ttl);
     }

@@ -452,14 +452,14 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
     public final boolean putXY(final Variable x, Term y) {
 
 
-        Term Y = y;
-        //Term Y = resolveTerm(y, false);
-        //Term Y = resolveTerm(y, true);
-        if (Y == Null)
-            return false;
-        else {
-            return xy.set(x, Y);
-        }
+//        Term Y = y;
+//        //Term Y = resolveTerm(y, false);
+//        //Term Y = resolveTerm(y, true);
+//        if (Y == Null)
+//            return false;
+//        else {
+            return xy.set(x, y);
+//        }
     }
 
 

@@ -322,4 +322,10 @@ public class NAL8SequenceTest extends NALTest {
             .input("(y &&+10 (--x&&z)). |") //temporal
             .mustGoal(cycles, "y", 1, 0.81f, -10);
     }
+    @Test void testGoalUnionDeduction() {
+        test
+            .input("(x||y)!")//eternal
+            .input("--x. |") //temporal
+            .mustGoal(cycles, "y", 1, 0.81f,  0);
+    }
 }

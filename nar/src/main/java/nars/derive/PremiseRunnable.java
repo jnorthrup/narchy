@@ -1,6 +1,7 @@
 package nars.derive;
 
 import nars.derive.action.PremiseAction;
+import nars.derive.action.PremisePatternAction;
 import nars.truth.MutableTruth;
 
 /** recycled slot describing potential deriver action.
@@ -36,9 +37,13 @@ public class PremiseRunnable {
         float p = a.pri(d);
         if (p > Float.MIN_NORMAL) {
             this.action = a;
-            this.truth.set( d.truth );
-            this.punc = d.punc;
-            this.single = d.single;
+            if (a instanceof PremisePatternAction.TruthifyDeriveAction) {
+                this.truth.set(d.truth);
+                this.punc = d.punc;
+                this.single = d.single;
+            } else {
+                this.truth.set(null); this.punc = 0; this.single = false;
+            }
             return this.pri = p;
         } else {
             this.action = null;

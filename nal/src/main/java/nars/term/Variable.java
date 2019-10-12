@@ -133,12 +133,8 @@ public interface Variable extends /* Atomic - but all implementations are subcla
                     return false; //x != --x
             }
         }
-        if (xn == yn) {
-            if (x!=this || y!=_y) {
-                if (x.equals(y))
-                    return true;
-            }
-        }
+        if (xn == yn && (x != this || y != _y) && x.equals(y))
+            return true;
 
         return x instanceof Variable || y instanceof Variable ?
                 unifyVar(u, x, y)

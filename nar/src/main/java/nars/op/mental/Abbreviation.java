@@ -91,11 +91,14 @@ public enum Abbreviation { ;
 
             single();
 
+            matchNot(TheTask, new TermMatcher.Has(Op.Variable, true));
+
             match(TheTask, new TermMatcher.VolMin(volMin));
 
             if (volMax < Integer.MAX_VALUE)
                 match(TheTask, new TermMatcher.VolMax(volMax));
         }
+
         @Override
         protected @Nullable Task transform(Task x, Derivation d) {
             Term xx = x.term();
