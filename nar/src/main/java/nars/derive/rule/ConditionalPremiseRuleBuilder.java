@@ -97,6 +97,11 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 
 	}
 
+	/** match a command, ex: tasklink */
+	public void commands() {
+		taskPunc(false,false,false,false,true);
+	}
+
 //	/** double premise */
 //	public final void doubl(Term taskPattern, Term beliefPattern) {
 //		taskPattern(taskPattern);
@@ -411,12 +416,12 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 					}
 					struct = Op.the($.unquote(y)).bit;
 				}
-				is(x, struct, negated);
+				isAny(x, struct, negated);
 				if (negated) negationApplied = true;
 				break;
 			}
 			case "isVar": {
-				is(x, Op.Variable, negated);
+				isAny(x, Op.Variable, negated);
 				if (negated)
 					negationApplied = true;
 				break;
@@ -726,22 +731,22 @@ public abstract class ConditionalPremiseRuleBuilder extends PremiseRuleBuilder {
 	}
 
 	public void is(Term x, Op o) {
-		is(x, o.bit);
+		isAny(x, o.bit);
 	}
 	public void isNot(Term x, Op o) {
-		isNot(x, o.bit);
+		isNotAny(x, o.bit);
 	}
 
-	public void is(Term x, int struct) {
-		is(x, struct, false);
+	public void isAny(Term x, int struct) {
+		isAny(x, struct, false);
 	}
-	public void isNot(Term x, int struct) {
-		is(x, struct, true);
+	public void isNotAny(Term x, int struct) {
+		isAny(x, struct, true);
 	}
 
 	//new CustomConcurrentHashMap<>(STRONG, EQUALS, WEAK, EQUALS, 1024);
 
-	public void is(Term x, int struct, boolean negated) {
+	public void isAny(Term x, int struct, boolean negated) {
 		match(x, new TermMatcher.Is(struct), !negated);
 		//constraints.add(new TermMatcher.Is(struct).constraint((Variable)x, !negated));
 	}

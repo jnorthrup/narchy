@@ -103,6 +103,10 @@ public enum Why { ;
 //		}
 	}
 
+	@Deprecated public static <C extends Caused> Term why(@Nullable C... c) {
+		return why(c, NAL.causeCapacity.intValue());
+	}
+
 	public static <C extends Caused> Term why(@Nullable C[] c, int capacity) {
 		switch (c.length) {
 			case 0: throw new UnsupportedOperationException();

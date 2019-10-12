@@ -4,7 +4,6 @@ import nars.Task;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.rule.RuleCause;
-import nars.derive.util.BeliefMatch;
 import nars.table.BeliefTable;
 import org.jetbrains.annotations.Nullable;
 
@@ -38,7 +37,7 @@ public class QuestionAnswering extends NativePremiseAction {
 
 		//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
-		Task answer = BeliefMatch.task(answerTable, question.term(),
+		Task answer = MatchBelief.task(answerTable, question.term(),
 			d.deriver.timing.premise(d.what, question), null, d);
 
 		if (answer == null)

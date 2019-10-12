@@ -13,11 +13,10 @@ import nars.derive.action.PremiseAction;
 import nars.derive.action.PremisePatternAction;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.Taskify;
-import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
 import nars.derive.util.DerivationFailure;
 import nars.derive.util.DerivationFunctors;
-import nars.derive.util.BeliefMatch;
+import nars.derive.util.PremiseBeliefMatcher;
 import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
@@ -62,7 +61,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
 
     /** premise formation (preprocessing) */
-    public final BeliefMatch beliefMatch = new BeliefMatch();
+    public final PremiseBeliefMatcher beliefMatch = new PremiseBeliefMatcher();
 
     /** main premise derivation unifier */
     public final PremiseUnify unify = new PremiseUnify(null, null, NAL.unify.UNIFICATION_STACK_CAPACITY);
@@ -521,12 +520,13 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
     }
 
-    public void ready(int ttl) {
+    public void ttl(int ttl) {
+        unify.setTTL(ttl); //HACK TODO use global TTL register
+    }
 
+    public void ready() {
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || (!beliefTerm.equals(taskTerm) && Occurrify.temporal(beliefTerm));
-
-        unify.setTTL(ttl);
     }
 
     /** queue a premise for execution */
@@ -691,11 +691,11 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    FastCounter run(Premise _p, final int deriveTTL) {
+    FastCounter run(Premise p, final int deriveTTL) {
 
-        beliefMatch.ttl = deriveTTL;
+        ttl(deriveTTL);
 
-        Premise p = this.premise = _p instanceof AbstractPremise ? beliefMatch.match((AbstractPremise) _p, this) : _p;
+        this.premise = p;
 
         short[] can;
 
@@ -731,7 +731,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         try (var __ = e.derive_E_Run.time()) {
 
-            this.ready(beliefMatch.ttl);  //use remainder
+            this.ready();  //use remainder
 
             if (valid == 1) {//optimized 1-option case
 

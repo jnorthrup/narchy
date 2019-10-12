@@ -1,73 +1,41 @@
-package nars.derive.util;
+package nars.derive.action;
 
 import nars.NAL;
 import nars.NAR;
+import nars.Op;
 import nars.Task;
 import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
+import nars.derive.rule.RuleCause;
 import nars.table.BeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
-import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
-import static nars.Op.COMMAND;
+/** matches a belief task for a premise's beliefTerm, converting a single-premise to a double-premise */
+public class MatchBelief extends NativePremiseAction {
 
-/**
- * used to determine a premise's "belief task" for the provided "belief term",
- * and other premise functionality at the start of a derivation
- */
-public class BeliefMatch extends UnifySubst {
+	public static final MatchBelief the = new MatchBelief();
 
-	transient private Term output;
-
-	public BeliefMatch() {
-		super(Deriver.PremiseUnifyVars, null);
-		commonVariables = NAL.premise.PREMISE_UNIFY_COMMON_VARIABLES;
-	}
-
-	@Nullable
-	public Term uniSubst(Term taskTerm, Term beliefTerm) {
-
-		this.output = null;
-
-		return unify(beliefTerm, beliefTerm, taskTerm) ? output : null;
+	private MatchBelief() {
+		hasBelief(false);
+		neq(TheTask, TheBelief);
+		isAny(TheBelief, Op.Conceptualizable); //Taskable, technically
 	}
 
 	@Override
-	protected boolean each(Term y) {
-		y = y.unneg();
-		if (y.op().conceptualizable) {
-			if (!y.equals(input)) {
-				output = y;
-				return false;  //done
-			}
+	protected void run(RuleCause why, Derivation d) {
+		try (var __ = d.nar.emotion.derive_B_PremiseMatch.time()) {
+			Premise y = match(d.premise, Deriver.PremiseUnifyVars, why, d);
+			if (y != null)
+				d.add(y);
 		}
-		return true; //continue
-	}
-
-
-	public Premise match(AbstractPremise x, Derivation d) {
-
-		Task pt = x.task();
-		if (pt.punc() != COMMAND) {
-			Term pb = x.beliefTerm();
-			if (!pt.term().equals(pb) && pb.op().taskable) {
-				try (var __ = d.nar.emotion.derive_B_PremiseMatch.time()) {
-					Premise y = match(x, Deriver.PremiseUnifyVars, d);
-					if (y != null)
-						return y;
-				}
-			}
-		}
-
-		return x;
 	}
 
 	/**
@@ -88,35 +56,44 @@ public class BeliefMatch extends UnifySubst {
 	 * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
 	 */
 	@Nullable
-	private Premise match(AbstractPremise p, int var, Derivation d) {
+	private Premise match(Premise p, int var, RuleCause why, Derivation d) {
 
-		Task task = (Task) p.task;
+		final Term beliefTerm = p.beliefTerm();
+		if (!beliefTerm.op().taskable)
+			return null; //HACK some non-taskable / non-conceptualizable beliefTerms op's are invisible to the predicate trie due to being masked in Anom's
 
-		Term nextBeliefTerm = (Term) p.belief;
-		if (!nextBeliefTerm.op().taskable)
-			return null; //structural
+		Task task = p.task();
 
-		boolean beliefUnifiesTask = false;
+		Term nextBeliefTerm = beliefTerm;
+
+//		boolean beliefUnifiesTask = false;
 
 		Term taskTerm = task.term();
 		if (taskTerm.equals(nextBeliefTerm)) {
-			beliefUnifiesTask = true;
+//			beliefUnifiesTask = true;
 		} else if (taskTerm.opID() == nextBeliefTerm.opID()) {
 
 			if (taskTerm.equalsRoot(nextBeliefTerm)) {
 				//difference involving XTERNAL etc
-				beliefUnifiesTask = true;
+//				beliefUnifiesTask = true;
 				if (nextBeliefTerm.hasXternal() && !taskTerm.hasXternal())
 					nextBeliefTerm = taskTerm;
 
 			} else if (nextBeliefTerm.hasAny(var) || taskTerm.hasAny(var)) {
 
+
+				int stolen = d.unify.ttlGetAndSet(0); //HACK steal TTL temporarily
+				d.beliefMatch.setTTL(stolen);
+
 				Term u = d.beliefMatch.uniSubst(taskTerm, nextBeliefTerm);
+
+				d.unify.ttlGetAndSet(d.beliefMatch.ttl); //HACK restore remaining TTL
+
 				if (u != null) {
 					nextBeliefTerm = u;
-					beliefUnifiesTask = true;
+//					beliefUnifiesTask = true;
 				} else {
-					beliefUnifiesTask = false;
+//					beliefUnifiesTask = false;
 				}
 
 			}
@@ -125,14 +102,16 @@ public class BeliefMatch extends UnifySubst {
 
 		Task belief = match(task, nextBeliefTerm, d);
 
-		if (belief != null)
-			nextBeliefTerm = belief.term();
+		if (belief != null) {
 
-		if (task != belief && task.stamp().length == 0) {
-			//only allow unstamped tasks to apply with stamped beliefs.
-			//otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
-			if (belief == null || belief.stamp().length == 0)
-				return null;
+			if (task != belief && task.stamp().length == 0) {
+				//only allow unstamped tasks to apply with stamped beliefs.
+				//otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
+				if (belief == null || belief.stamp().length == 0)
+					return null;
+			}
+
+			nextBeliefTerm = belief.term();
 		}
 
 		if (NAL.test.DEBUG_EXTRA) {
@@ -165,8 +144,8 @@ public class BeliefMatch extends UnifySubst {
 
 
 		return belief != null ?
-			new AbstractPremise(task, belief, Why.why(p.why(d), belief.why())) :
-			(!p.belief.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, p.why(d)) :
+			new AbstractPremise(task, belief, Why.why(why, p, belief)) :
+			(!beliefTerm.equals(nextBeliefTerm) ? new AbstractPremise(task, nextBeliefTerm, Why.why(why, p)) :
 				null);
 
 	}
@@ -182,6 +161,8 @@ public class BeliefMatch extends UnifySubst {
 
 	}
 
+
+
 	@Nullable public static Task task(BeliefTable t, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
 		return t
 			.matching(when[0], when[1], beliefTerm, beliefFilter, d.dur, d.nar)
@@ -189,7 +170,7 @@ public class BeliefMatch extends UnifySubst {
 	}
 
 
-	@Nullable private Task match(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
+	@Nullable private static Task match(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
 
 		boolean tBelief = task.isBelief();
 

@@ -17,12 +17,13 @@ import java.util.function.Predicate;
 import static nars.Op.BELIEF;
 import static nars.Op.GOAL;
 
+/** resolves a tasklink to a single-premise */
 public class TaskResolve extends NativePremiseAction {
 
 	public static final TaskResolve the = new TaskResolve();
 
 	private TaskResolve() {
-		taskPunc(false,false,false,false,true); //commands only
+		commands();
 	}
 
 	@Override

@@ -132,7 +132,7 @@ abstract public class TermMatcher {
 
         @Override
         public float cost() {
-            return 0.03f;
+            return 0.02f;
         }
 
         @Override

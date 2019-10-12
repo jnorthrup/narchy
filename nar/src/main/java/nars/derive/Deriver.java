@@ -80,6 +80,7 @@ public class Deriver extends How {
 		this(rules
 				//standard derivation behaviors
 				.add(TaskResolve.the)
+				.add(MatchBelief.the)
 				.add(QuestionAnswering.the)
 				.add(new CompoundDecompose(true))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
@@ -172,10 +173,10 @@ public class Deriver extends How {
 			float tPri = t.priElseZero();
             if (b != null)
                 return
-					//Util.or(
+					Util.or(
 					//Util.min(
 					//Util.mean(
-					Util.sum(
+					//Util.sum(
 						tPri, b.priElseZero()
 					);
             else
@@ -190,7 +191,7 @@ public class Deriver extends How {
 
 //		int hypotheses = 1;
 //		int capacity = 3;
-        int iterationTTL = 8;
+        int iterationTTL = 7;
 
 
 

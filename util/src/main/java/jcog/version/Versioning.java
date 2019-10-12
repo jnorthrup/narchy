@@ -146,6 +146,12 @@ public class Versioning<X> {
         this.ttl = ttl;
     }
 
+    public final int ttlGetAndSet(int ttl) {
+        int t = this.ttl;
+        this.ttl = ttl;
+        return t;
+    }
+
     /**
      * stack height counter
      */
