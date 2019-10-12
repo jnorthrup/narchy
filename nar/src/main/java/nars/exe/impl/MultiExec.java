@@ -7,6 +7,7 @@ import jcog.event.Off;
 import jcog.math.FloatRange;
 import nars.NAR;
 import nars.exe.Exec;
+import nars.exe.NARLoop;
 import nars.time.clock.RealTime;
 
 import java.util.function.Consumer;
@@ -19,12 +20,12 @@ abstract public class MultiExec extends Exec {
      * global sleep nap period
      */
     protected static final long NapTimeNS = 500 * 1000; //on the order of 0.5ms
+
     static final double lagAdjustmentFactor =
-            1.0;
-    private static final float UPDATE_DURS =
-            1;
+            0.5;
+
     //2; //<- untested
-    static private final float queueLatencyMeasurementProbability = 0.01f;
+    static private final float queueLatencyMeasurementProbability = 0.002f;
     /**
      * 0..1.0: determines acceptable reaction latency.
      * lower value allows queue to grow larger before it's processed,
@@ -120,13 +121,14 @@ abstract public class MultiExec extends Exec {
 
     private void updateTiming(long durDeltaNS) {
 
-        cycleIdealNS = nar.loop.periodNS();
+        NARLoop loop = nar.loop;
+        cycleIdealNS = loop.periodNS();
         if (cycleIdealNS < 0) {
             //paused
             threadWorkTimePerCycle = 0;
             threadIdleTimePerCycle = NapTimeNS;
         } else {
-            double throttle = nar.loop.throttle.floatValue();
+            double throttle = loop.throttle.floatValue();
 
             //TODO better idle calculation in each thread / worker
             long workTargetNS = (long) (Util.lerp(throttle, 0, cycleIdealNS));
@@ -182,10 +184,10 @@ abstract public class MultiExec extends Exec {
          */
         static void queueLatency(long start, long end, NAR n) {
             long latencyNS = end - start;
-            double cycles = latencyNS / ((double) (n.loop.periodNS() / n.exe.concurrency()));
-            if (cycles > 0.5) {
-                Exec.logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(cycles));
-            }
+            double frames = latencyNS / ((double) (n.loop.periodNS()));
+            //if (frames > 0.5) {
+                Exec.logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(frames));
+            //}
         }
 
         @Override

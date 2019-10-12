@@ -13,7 +13,6 @@ import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.util.TermException;
 import nars.term.util.transform.InlineFunctor;
-import nars.unify.Unify;
 import nars.unify.UnifyTransform;
 
 import static nars.Op.VAR_DEP;
@@ -178,13 +177,6 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
         public MyUnifyTransform() {
             super(null);
         }
-
-        @Override
-        public Unify clear() {
-            random = parent.random;
-            return super.clear();
-        }
-
 
         @Override
         protected boolean accept(Term result) {

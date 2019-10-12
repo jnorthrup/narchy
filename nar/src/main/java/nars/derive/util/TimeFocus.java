@@ -16,15 +16,7 @@ import nars.time.event.WhenTimeIs;
  * */
 public interface TimeFocus {
 
-	/**
-	 *  default temporal focus to be used throughout multiple successive derivations.
-	 *  constructs a time interval surrounding the present moment, with a diameter of
-	 *  1 duration.
-	 * */
-	default When<What> now(Derivation d) {
-		float dur = d.dur;
-		return WhenTimeIs.now(d.what, dur, d.time, dur/2, dur/2, d.ditherDT);
-	}
+
 
 	/** premise match focus */
 	long[] premise(What what, Task task, Term beliefTerm);

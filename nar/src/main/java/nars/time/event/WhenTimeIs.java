@@ -3,7 +3,6 @@ package nars.time.event;
 import nars.$;
 import nars.NAR;
 import nars.attention.What;
-import nars.derive.Derivation;
 import nars.term.Term;
 import nars.time.ScheduledTask;
 import nars.time.Tense;
@@ -77,11 +76,11 @@ abstract public class WhenTimeIs extends ScheduledTask {
     /** generates a default 'now' moment: current X clock time with dur/2 radius.
      *  the equal-length past and future periods comprising the extent of the present moment. */
     public static <T extends Timed> When<T> now(T t, float dur, int dither) {
-        return now(t, dur, t.time(), dur/2, dur/2, dither);
+        return now(t, t.time(), dur, dur/2, dur/2, dither);
     }
 
     /** dur doesnt necesarily need to have any relation to timeBefore, timeAfter */
-    public static <T extends Timed> When<T> now(T t, float dur, long now, float before, float after, int dither) {
+    public static <T extends Timed> When<T> now(T t, long now, float dur, float before, float after, int dither) {
         return now(t, dur,
             (long) Math.floor(now - before),
             (long) Math.ceil(now + after), dither);

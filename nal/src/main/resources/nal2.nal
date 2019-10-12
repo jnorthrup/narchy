@@ -9,8 +9,8 @@
     ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity, Goal:Identity)
 
 //single element set unwrap
-    ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralReduction, Goal:StructuralReduction)
-    (X --> [I]),  [I]  |- polarizeTask((X --> I)), (Belief:StructuralReduction, Goal:StructuralReduction)
+    ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralDeductionDD, Goal:StructuralDeductionDD)
+    (X --> [I]),  [I]  |- polarizeTask((X --> I)), (Belief:StructuralDeductionDD, Goal:StructuralDeductionDD)
 
 //Set Composition
 

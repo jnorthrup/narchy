@@ -60,10 +60,10 @@
 
     X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
     X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
-      //X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskImmediate)
-      //X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskImmediate)
-    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
-    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
+//      X, C, has(C,"--")                                    |-    --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
+//      X, C                                                 |-    --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskEvent)
+//    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
+//    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
 
 
 //    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)

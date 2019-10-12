@@ -436,7 +436,8 @@ abstract public class GameX extends Game {
 
         n.termVolMax.set(
             //64
-            32
+            48
+            //32
         );
 
         //n.confMin.set(1e-10);
@@ -532,12 +533,12 @@ abstract public class GameX extends Game {
                 .add(new Arithmeticize.ArithmeticIntroduction())
                 .add(new Factorize.FactorIntroduction())
                 .add(new Inperience())
-                .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 4, 32, t->true))
+                .add(cc = new ConjClustering(n, BELIEF,  BELIEF, 6, 32, t->true))
                 //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
                 //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
 
-                .add(new Abbreviation.AbbreviateRoot(4, 9))
-                //.add(new Abbreviation.AbbreviateRecursive(5, 9))
+                //.add(new Abbreviation.AbbreviateRoot(4, 9))
+                .add(new Abbreviation.AbbreviateRecursive(4, 8))
                 //.add(new Abbreviation.UnabbreviateRoot())
                 .add(new Abbreviation.UnabbreviateRecursive())
 

@@ -2,6 +2,7 @@ package nars.unify;
 
 import nars.NAL;
 import nars.term.Term;
+import nars.term.atom.Bool;
 
 import java.util.Random;
 
@@ -13,7 +14,7 @@ import java.util.Random;
 abstract public class UnifySubst extends Unify {
 
 
-    private Term input;
+    protected Term input;
 
     public UnifySubst(int varType, Random rng) {
         super(varType, rng, NAL.unify.UNIFICATION_STACK_CAPACITY);
@@ -37,8 +38,12 @@ abstract public class UnifySubst extends Unify {
      *  the 'input'  target is what transformation will be attempted upon.
      *  ot may be the same as X or Y, or something completely different.
      */
-    public final boolean transform(Term input, Term x, Term y, int ttl) {
-        setTTL(ttl);
+    public final boolean unify(Term input, Term x, Term y) {
+
+        clear();
+
+        assert(ttl > 0);
+        //setTTL(ttl);
 
         this.input = input;
 
@@ -49,7 +54,10 @@ abstract public class UnifySubst extends Unify {
     @Override
     public final boolean match() {
         Term aa = apply(input);
-        return aa.op().conceptualizable && each(aa);
+        if (aa instanceof Bool)
+            return true; //try again
+        else
+            return each(aa);
     }
 
 

@@ -17,7 +17,7 @@ import nars.derive.premise.AbstractPremise;
 import nars.derive.premise.Premise;
 import nars.derive.util.DerivationFailure;
 import nars.derive.util.DerivationFunctors;
-import nars.derive.util.PremisePreUnify;
+import nars.derive.util.BeliefMatch;
 import nars.eval.Evaluation;
 import nars.op.Replace;
 import nars.op.UniSubst;
@@ -30,6 +30,7 @@ import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.RecursiveTermTransform;
 import nars.time.When;
+import nars.time.event.WhenTimeIs;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -59,13 +60,23 @@ import static nars.time.Tense.TIMELESS;
  */
 public class Derivation extends PreDerivation implements Caused, Predicate<PremiseRunnable> {
 
+
+    /** premise formation (preprocessing) */
+    public final BeliefMatch beliefMatch = new BeliefMatch();
+
+    /** main premise derivation unifier */
+    public final PremiseUnify unify = new PremiseUnify(null, null, NAL.unify.UNIFICATION_STACK_CAPACITY);
+
+    /** post-processing, 2nd-layer uniSubst etc */
+    public final UniSubst uniSubstFunctor = new UniSubst(this);
+
     public static final ThreadLocal<Derivation> derivation = ThreadLocal.withInitial(Derivation::new);
     protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
 
     public static final Atom Substitute = Atomic.atom("substitute");
     public static final Atom ConjWithout = Atomic.atom("conjWithout");
 
-    public final PremisePreUnify premisePreUnify = new PremisePreUnify();
+
 
 
     /** current taskify for use in unification match */
@@ -74,7 +85,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     private final static int ANON_INITIAL_CAPACITY = 16;
     public final AnonWithVarShift anon;
 
-    public final UniSubst uniSubstFunctor = new UniSubst(this);
 
 
     /**
@@ -97,7 +107,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     public final Functor polarizeBelief = new AbstractInstantFunctor1("polarizeBelief") {
         @Override
         protected Term apply1(Term arg) {
-            if (single) return arg.negIf(unify.random.nextBoolean());
+            if (single) return arg.negIf(random.nextBoolean());
             else return polarize(arg, Derivation.this.beliefTruth_at_Belief);
         }
     };
@@ -117,7 +127,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             if (tNeg != (arg instanceof Neg))
                 arg = arg.neg(); //invert to expected polarity
         } else
-            arg = arg.negIf(unify.random.nextBoolean());
+            arg = arg.negIf(random.nextBoolean());
         return arg;
     }
 
@@ -289,14 +299,13 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
     }
 
-    public final PremiseUnify unify;
 
     /**
      * if using this, must setAt: nar, index, random, DerivationBudgeting
      */
     private Derivation() {
         super();
-        unify = new PremiseUnify(null, null, NAL.unify.UNIFICATION_STACK_CAPACITY);
+
 
         this.anon = new AnonWithVarShift(ANON_INITIAL_CAPACITY,
             Op.VAR_INDEP.bit | Op.VAR_DEP.bit | Op.VAR_QUERY.bit
@@ -354,7 +363,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
      * <p>
      * this is optimized for repeated use of the same task (with differing belief/beliefTerm)
      */
-    private void reset(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
+    private void preReady(Task nextTask, final Task nextBelief, Term nextBeliefTerm) {
 
         //TODO maybe can be re-used:
         this.stampDouble = stampSingle = null;
@@ -494,7 +503,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /**
      * called after protoderivation has returned some possible Try's
      */
-    void preReady() {
+    void truthifyReady() {
 
 
         this.overlapSingle = _task.isCyclic();
@@ -525,38 +534,58 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         exe.add(p);
     }
 
+    /** attached unifier instances */
+    final private Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
+
     /**
      * update some cached values that will be used for one or more derivation iterations
      */
     public Derivation start(Deriver d, What w, Deriver.DeriverExecutor exe) {
 
-        NAR p = this.nar, n = w.nar;
-        if (p != n) {
-            this.reset(n);
-        }
+        _task = _belief = null;
+        taskTerm = beliefTerm = null;
+        _taskTerm = _beliefTerm = null;
+        premise = null;
 
-        this.premise = null;
+
+        NAR p = this.nar, n = w.nar;
+        if (p != n)
+            this.reset(n);
+
+
         this.deriver = d;
         this.what = w;
-        //this.deriverMH = deriver.rules.what.compile();
-        this.dur = w.dur();
 
-        what.derivePri.premise(this);
+        /**
+         *  setup the default temporal focus to be used throughout multiple successive derivations.
+         *  constructs a time interval surrounding the present moment, with a diameter of
+         *  1 duration.
+         * */
+        this.when = WhenTimeIs.now(w,
+            (this.time = n.time()),
+            (this.dur = w.dur()),
+            dur/2, dur/2,
+            (ditherDT = n.dtDither()));
 
-        ditherDT =
-                n.dtDither(); //FINE
-                //w.dur(); //COARSE
-        unify.dtTolerance = uniSubstFunctor.u.dtTolerance = premisePreUnify.dtTolerance =
+        Random random = w.random();
+
+        this.random = random;
+
+        for (Unify u : _u) {
+            u.dtTolerance =
                 //n.dtDither(); //FINE
                 //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 Math.round(dur * n.unifyTimeToleranceDurs.floatValue()); //COARSE
                 //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
+            u.random = random;
+        }
+
         this.confMin = n.confMin.conf();
         this.eviMin = n.confMin.evi();
         this.termVolMax = n.termVolMax.intValue();
-        this.time = n.time();
-        this.when = deriver.timing.now(this);
+
+        w.derivePri.reset(this);
 
         (this.exe = exe).start(this);
 
@@ -612,18 +641,13 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     private void reset(NAR n) {
         this.nar = n;
 
-        _task = _belief = null;
-        taskPunc = 0;
-        taskTerm = beliefTerm = null;
 
         truth.clear();
         taskTruth.clear();
         beliefTruth_at_Task.clear();
         beliefTruth_at_Belief.clear();
 
-        unify.ttl = 0;
         taskUniqueAnonTermCount = 0;
-        temporal = false;
 //        taskBelief_TimeIntersection[0] = taskBelief_TimeIntersection[1] = TIMELESS;
 
         //clear();
@@ -633,7 +657,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         //taskStamp.clear();
         //canCollector.clear();
 
-        this.premisePreUnify.random(unify.random = random = n.random());
         this.derivationFunctors = DerivationFunctors.get(Derivation.this);
     }
 
@@ -668,26 +691,18 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     }
 
     /** returns appropriate Emotion counter representing the result state  */
-    FastCounter run(Premise P, int deriveTTL) {
+    FastCounter run(Premise _p, final int deriveTTL) {
 
-        Emotion e = nar.emotion;
+        beliefMatch.ttl = deriveTTL;
 
-        Premise p;
-
-        if (P instanceof AbstractPremise && !P.task().term().equals(P.beliefTerm())) {
-            try (var __ = e.derive_B_PremiseMatch.time()) {
-                p = ((AbstractPremise) P).match(Deriver.PremiseUnifyVars, this, nar.premiseUnifyTTL.intValue());
-            }
-        } else
-            p = P;
-
-        this.premise = p;
+        Premise p = this.premise = _p instanceof AbstractPremise ? beliefMatch.match((AbstractPremise) _p, this) : _p;
 
         short[] can;
 
+        Emotion e = nar.emotion;
         try (var __ = e.derive_C_Pre.time()) {
 
-            reset(p.task(), p.belief(), p.beliefTerm());
+            preReady(p.task(), p.belief(), p.beliefTerm());
 
             can = deriver.program.pre.apply(this);
             if (can.length == 0)
@@ -699,7 +714,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         try (var __ = e.derive_D_Truthify.time()) {
 
-            this.preReady();
+            this.truthifyReady();
 
             PremiseAction[] branch = this.deriver.program.branch;
 
@@ -715,7 +730,8 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         }
 
         try (var __ = e.derive_E_Run.time()) {
-            this.ready(deriveTTL); //first come first serve, maybe not ideal
+
+            this.ready(beliefMatch.ttl);  //use remainder
 
             if (valid == 1) {//optimized 1-option case
 
@@ -746,7 +762,9 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         return e.premiseRun;
     }
 
-//
+
+
+    //
 //    private void ensureClear() {
 //
 //        if (size!=0)

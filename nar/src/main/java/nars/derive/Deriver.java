@@ -27,6 +27,7 @@ import nars.derive.time.NonEternalTaskOccurenceOrPresentDeriverTiming;
 import nars.derive.util.TimeFocus;
 import nars.link.TaskLink;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
+import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Queue;
 import java.util.function.BooleanSupplier;
@@ -158,7 +159,7 @@ public class Deriver extends How {
 		/**
 		 * run a premise
 		 */
-		protected void run(Premise p, int ttl) {
+		protected final void run(Premise p, int ttl) {
 			d.run(p, ttl).increment();
 		}
 
@@ -185,18 +186,20 @@ public class Deriver extends How {
 
     }
 
+	private static final FloatFunction<Premise> sorter = DeriverExecutor::pri;
+
 	private static class QueueDeriverExecutor extends DeriverExecutor {
 
-		int hypotheses = 1;
-        int premisesPerIter = 5;
-        int capacity = 6;
+//		int hypotheses = 1;
+//		int capacity = 3;
+        int iterationTTL = 8;
 
-        int ttl;
 
-        private static final FloatFunction sorter = x->DeriverExecutor.pri((Premise)x);
 
-		//final ArrayHashSet<Premise> queue = new ArrayHashSet<>(capacity);
-		final Queue<Premise> queue = new PrioritySet<>(sorter);
+		final Queue<Premise> queue =
+			new PrioritySet<>(sorter, new UnifiedSet<>()); //prevents duplicates (and caches pri calculation)
+			//new CachedPriorityQueue<>(sorter); //caches pri calculation
+			//new ArrayHashSet<>(capacity)
 
 		@Override
 		protected void starting() {
@@ -206,37 +209,31 @@ public class Deriver extends How {
 		@Override
 		public void next() {
 
-            //novel.clear();
 			//queue.clear();
+
+			int mainTTL = iterationTTL;
 			int branchTTL = d.nar.deriveBranchTTL.intValue();
 
-			for (int h = 0; h < hypotheses; h++)
-				hypothesize(branchTTL);
+			//TODO scale ttl by the priority normalized relative to the other items in the queue
+			do {
 
-			int s = queue.size();
-            if (s == 0)
-                return;
+				//if (queue.size() < mainTTL - 1)
+				if (queue.isEmpty())
+					queue.offer(premise());
 
-//            if (s > 1) {
-//				//queue.list.sortThisByFloat(DeriverExecutor::pri); //ascending order because it poll's from the end
-//				Object[] qq = queue.list.array();
-//				ArrayUtil.sort(qq, 0, s, sorter);
-//				//assert(DeriverExecutor.pri(queue.list.get(0)) <= DeriverExecutor.pri(queue.list.get(s-1)));
-//			}
 
-			ttl = premisesPerIter;
+				Premise r;
+				if ((r = queue.poll()) != null)
+					run(r, branchTTL);
 
-			Premise r;
-			while ((r = queue.poll()) != null) {
-				//TODO scale ttl by the priority normalized relative to the other items in the queue
-				run(r, branchTTL);
-				if (--ttl <= 0)
-					break;
-			}
+				//if (queue.size() < capacity)
+
+
+			} while (--mainTTL > 0);
 
 		}
 
-		public void hypothesize(int branchTTL) {
+		void hypothesize(int branchTTL) {
 			Premise p = premise();
 			if (p!=null) {
 				run(p, branchTTL);
@@ -246,14 +243,11 @@ public class Deriver extends How {
 
 		@Override
 		public void add(Premise p) {
-			if (/*novel.putIfAbsent(p,p)==null && */ queue.add(p)) {
-                int qs = queue.size();
-                if (qs >= capacity)
-                    d.unify.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
 
-
-//                else if (qs == 0)
-//                    novel.clear();
+			if (/*novel.putIfAbsent(p,p)==null && */ queue.offer(p)) {
+//                int qs = queue.size();
+//                if (qs >= capacity)
+//                    d.unify.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
             }
 
 		}

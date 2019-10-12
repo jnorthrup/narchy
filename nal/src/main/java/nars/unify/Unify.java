@@ -122,9 +122,8 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         return live();
     }
 
-    public <U extends Unify> U random(Random random) {
+    public void random(Random random) {
         this.random = random;
-        return (U) this;
     }
 
 //    /** default unify substitution */
