@@ -31,7 +31,7 @@ public class TaskResolve extends NativePremiseAction {
 
 		Task y = get(x, d);
 		if (y != null) // && !x.equals(y))
-			d.add(new AbstractPremise(y, y.term(), why.why(d, x, y)));
+			d.add(new AbstractPremise(y, why.why(x)));
 	}
 
 	@Nullable private final Predicate<nars.Task> tasklinkTaskFilter =
@@ -48,8 +48,6 @@ public class TaskResolve extends NativePremiseAction {
 
 
 	@Nullable Task get(Term x, byte punc, When<What> w, @Nullable Predicate<Task> filter) {
-
-
 
 		if (punc == 0)
 			punc = TaskLink.randomPunc(x, w.x.random()); //flat-lined tasklink
@@ -92,8 +90,4 @@ public class TaskResolve extends NativePremiseAction {
 
 	}
 
-	@Override
-	public float pri(Derivation d) {
-		return 1;
-	}
 }

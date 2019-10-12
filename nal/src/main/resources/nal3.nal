@@ -6,10 +6,10 @@
 //  to intensional union.
 
 //question and quest tasks:
-(M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,  S)), (Punctuation:AskAll, Time:Task)
-(M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(P,  S)), (Punctuation:AskAll, Time:Task)
-(P --> M), (S --> M), neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,  S) --> M), (Punctuation:AskAll, Time:Task)
-(P --> M), (S --> M), neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,  S) --> M), (Punctuation:AskAll, Time:Task)
+(M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,  S)), (Punctuation:AskAsk, Time:Task)
+(M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(P,  S)), (Punctuation:AskAsk, Time:Task)
+(P --> M), (S --> M), neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,  S) --> M), (Punctuation:AskAsk, Time:Task)
+(P --> M), (S --> M), neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,  S) --> M), (Punctuation:AskAsk, Time:Task)
 
 
     (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Belief:IntersectionDD, Time:Compose)

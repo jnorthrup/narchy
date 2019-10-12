@@ -21,5 +21,8 @@ public interface TimeFocus {
 	/** premise match focus */
 	long[] premise(What what, Task task, Term beliefTerm);
 
+	default long[] premise(What what, Task task) {
+		return premise(what, task, task.term());
+	}
 
 }

@@ -53,10 +53,11 @@ abstract public class GameTime {
 
         @Override
         public GameTime chain() {
+            FPS parent = this;
             return new FPS(initialFPS /* HACK */) {
                 @Override
                 public float dur() {
-                    return FPS.this.dur;
+                    return parent.dur;
                 }
             };
         }
@@ -113,10 +114,11 @@ abstract public class GameTime {
 
         @Override
         public GameTime chain() {
+            Durs parent = this;
             return new Durs(durPeriod) {
                 @Override
                 public float dur() {
-                    return Durs.this.dur;
+                    return parent.dur;
                 }
             };
         }

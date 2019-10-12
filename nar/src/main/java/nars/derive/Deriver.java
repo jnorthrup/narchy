@@ -15,10 +15,7 @@ import nars.attention.TaskLinkWhat;
 import nars.attention.What;
 import nars.control.Cause;
 import nars.control.How;
-import nars.derive.action.AdjacentLinks;
-import nars.derive.action.CompoundDecompose;
-import nars.derive.action.ImageUnfold;
-import nars.derive.action.TaskResolve;
+import nars.derive.action.*;
 import nars.derive.adjacent.AdjacentIndexer;
 import nars.derive.premise.Premise;
 import nars.derive.rule.DeriverProgram;
@@ -83,6 +80,7 @@ public class Deriver extends How {
 		this(rules
 				//standard derivation behaviors
 				.add(TaskResolve.the)
+				.add(QuestionAnswering.the)
 				.add(new CompoundDecompose(true))
 				.add(new AdjacentLinks(new AdjacentIndexer()))
 				.add(new ImageUnfold())

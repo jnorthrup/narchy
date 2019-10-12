@@ -217,7 +217,7 @@ public final class Answer implements Timed, Predicate<Task> {
         return this;
     }
 
-    public final Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
+    @Nullable public final Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
         assert(!forceProject || topOrSample);
         return task(topOrSample, forceProject, ditherTruth, ditherTruth);
     }
@@ -230,7 +230,7 @@ public final class Answer implements Timed, Predicate<Task> {
      * <p>
      * clears the cache and tasks before returning
      */
-    private Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
+    @Nullable private Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
 
         int s = tasks.size();
         if (s == 0)

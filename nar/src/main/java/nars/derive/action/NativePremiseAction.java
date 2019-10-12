@@ -12,16 +12,18 @@ abstract public class NativePremiseAction extends ConditionalPremiseRuleBuilder 
 
 	protected abstract void run(RuleCause why, Derivation d);
 
-	abstract public float pri(Derivation d);
+	public float pri(Derivation d) {
+		return 1;
+	}
 
 	@Override
 	protected PREDICATE<PreDerivation>[] conditions() {
-		PREDICATE<PreDerivation>[] p = super.conditions();
+		PREDICATE<PreDerivation>[] c = super.conditions();
 
-		this.id = $.impl($.p(p), $.identity(this));
+		this.id = $.impl($.p(c), $.identity(this));
 		this.source = id.toString();
 
-		return p;
+		return c;
 	}
 
 

@@ -29,6 +29,10 @@ public class AbstractPremise implements Premise {
 	 */
 	public Term why;
 
+	public AbstractPremise(Task task, Term why) {
+		this(task, task.term(), Why.why(task.why(), why));
+	}
+
 	public AbstractPremise(Termed task, Termed belief, Term why) {
 		assert (valid(task) && task.term().op().taskable);
 		assert (valid(belief));

@@ -70,11 +70,6 @@ public class STMLinker extends TaskAction {
 		return true;
 	}
 
-	@Override
-	public float pri(Derivation d) {
-		return 1;
-	}
-
 	private static float pri(Task next, Task prev) {
 		return
 			Util.and(next.priElseZero(), prev.priElseZero());

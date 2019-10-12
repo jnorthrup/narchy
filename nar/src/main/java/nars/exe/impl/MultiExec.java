@@ -186,7 +186,7 @@ abstract public class MultiExec extends Exec {
             long latencyNS = end - start;
             double frames = latencyNS / ((double) (n.loop.periodNS()));
             //if (frames > 0.5) {
-                Exec.logger.info("queue latency {} ({} cycles)", Texts.timeStr(latencyNS), Texts.n4(frames));
+                Exec.logger.info("queue latency {} ({} frames)", Texts.timeStr(latencyNS), Texts.n4(frames));
             //}
         }
 

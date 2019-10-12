@@ -1,10 +1,8 @@
 package nars.derive.util;
 
-import jcog.Util;
 import nars.NAL;
 import nars.NAR;
 import nars.Task;
-import nars.attention.What;
 import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.Deriver;
@@ -14,14 +12,12 @@ import nars.table.BeliefTable;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.util.TermException;
-import nars.time.Tense;
 import nars.unify.UnifySubst;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Predicate;
 
 import static nars.Op.COMMAND;
-import static nars.time.Tense.ETERNAL;
 
 /**
  * used to determine a premise's "belief task" for the provided "belief term",
@@ -127,7 +123,7 @@ public class BeliefMatch extends UnifySubst {
 
 		}
 
-		Task belief = match(task, nextBeliefTerm, beliefUnifiesTask, d);
+		Task belief = match(task, nextBeliefTerm, d);
 
 		if (belief != null)
 			nextBeliefTerm = belief.term();
@@ -175,87 +171,39 @@ public class BeliefMatch extends UnifySubst {
 
 	}
 
-	private @Nullable Task match(Task task, Term beliefTerm, boolean beliefConceptUnifiesTaskConcept, Derivation d) {
+	@Nullable private Task match(Task task, Term beliefTerm, Derivation d) {
 
 		NAR n = d.nar;
 
 		final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
 
-		boolean quest = task.isQuest();
-
-		long[] when = timeFocus(task, beliefTerm, d);
-
-		if (beliefConceptUnifiesTaskConcept && task.isQuestionOrQuest()) {
-
-			BeliefTable answerTable = quest ? n.tableDynamic(beliefTerm, false) : beliefTable;
-			if (answerTable != null && !answerTable.isEmpty()) {
-				Task a = tryAnswer(task, beliefTerm, answerTable, when, d);
-				if (!quest)
-					return a; //premise belief
-			}
-		}
-
 		return beliefTable != null && !beliefTable.isEmpty() ?
-			tryMatch(task, beliefTerm, beliefTable, when, d) : null;
+			match(task, beliefTerm, beliefTable, timeFocus(task, beliefTerm, d), d) : null;
 
 	}
 
-	private Task task(BeliefTable bb, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
-		float dur =
-			d.dur;
-		//0;
-
-		return bb.matching(when[0], when[1], beliefTerm, beliefFilter, dur, d.nar)
+	@Nullable public static Task task(BeliefTable t, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
+		return t
+			.matching(when[0], when[1], beliefTerm, beliefFilter, d.dur, d.nar)
 			.task(true, false, false);
 	}
 
 
-	private Task tryMatch(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
+	@Nullable private Task match(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
 
-		Task t = task(bb, beliefTerm, when, task.isBelief() ? ((Predicate<Task>) task::equals).negate() : null, d);
+		boolean tBelief = task.isBelief();
 
-		return t != null && t.equals(task) ? null : t; //HACK the filter helps but is not 100%
+		Task t = task(bb, beliefTerm, when, tBelief ? ((Predicate<Task>) task::equals).negate() : null, d);
+
+		//HACK the filter helps but is not 100%
+		return t != null && (tBelief && t.equals(task)) ? null : t;
 	}
 
-	@Nullable
-	private Task tryAnswer(Task question, Term beliefTerm, BeliefTable answerTable, long[] when, Derivation d) {
+	private static long[] timeFocus(Task task, Term beliefTerm, Derivation d) {
+		return d.deriver.timing.premise(d.what, task, beliefTerm);
 
-
-		Task answer = task(answerTable, beliefTerm, when, null, d);
-		if (answer != null) {
-			//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
-			answer = question.onAnswered(answer);
-			if (answer != null)
-				answer(question, answer, d);
-		}
-
-		return answer;
-	}
-
-	private void answer(Task q, Task a, Derivation d) {
-//        if (x.conf() > d.confMin) {
-//            if (x.isGoal())
-//                d.what.accept(x);
-//            else
-		float qPri = q.priElseZero();
-		float aPri = a.priElseZero();
-		float pri =
-			//qPri * aPri;
-			Util.or(qPri, aPri);
-
-		What w = d.what;
-		w.link(a, pri);
-		w.emit(a);
-	}
-
-	private long[] timeFocus(Task task, Term beliefTerm, Derivation d) {
-
-		long[] l = d.deriver.timing.premise(d.what, task, beliefTerm);
-
-		if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
-			Tense.dither(l, d.ditherDT);
-
-		return l;
+//		if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
+//			Tense.dither(l, d.ditherDT);
 	}
 
 
