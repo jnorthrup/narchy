@@ -39,7 +39,7 @@ public abstract class NALTask extends AbstractTask {
         return the(c, punct, tr, when.x.time.now(), when.start, when.end, evidence);
     }
 
-    public static AbstractTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
+    public static NALTask the(Term c, byte punct, Truth tr, long creation, long start, long end, long[] evidence) {
         if (start == ETERNAL) {
             return new EternalTask(c, punct, tr, creation, evidence);
         } else {

@@ -36,22 +36,14 @@ public abstract class Introduction extends TaskTransformAction {
 
         What w = d.what;
 
-        Term y1 = apply(x, w);
+        Term y = apply(x, w);
 
-        if(y1 !=null && !x.equals(y1) && !(y1 instanceof Bool)) {
-            Term yu = y1.unneg();
-            if (/*yu.volume() <= volMax &&*/ yu.op().conceptualizable) {
-                if (!yu.equals(x)) {
-                    return taskify(t, x, y1, w);
-                }
-            }
-        }
-
-        return null;
+        return (y != null && !(y instanceof Bool) && y.unneg().op().conceptualizable && !x.equals(y)) ?
+            taskify(t, x, y, w) : null;
     }
 
     private Task taskify(Task xt, Term x, Term y1, What w) {
-        Task yy = Task.clone(xt, y1, xt.truth(), xt.punc(),
+        Task yy = Task.tryTask(y1, xt.punc(), xt.truth(),
                 (c, t) -> {
                     if (c.equals(x)) //HACK normalization might cause this to become true although it is seemingly checked before Task.clone()
                         return null;

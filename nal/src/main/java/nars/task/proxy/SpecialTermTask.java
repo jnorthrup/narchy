@@ -5,7 +5,6 @@ import nars.task.ProxyTask;
 import nars.task.util.TaskException;
 import nars.term.Neg;
 import nars.term.Term;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 /**
@@ -28,27 +27,22 @@ public class SpecialTermTask extends ProxyTask {
 
     public static Task the(Task x, Term t, boolean copyCyclic) {
 
-        if (x.term().equals(t)) return x;
+        Term xt = x.term();
+        if (xt.equals(t)) return x;
 
-        @Nullable ObjectBooleanPair<Term> tt = Task.tryTaskTerm(t, x.punc(), false);
-        Term t2 = tt.getOne();
+        @Nullable Term t2 = Task.taskTerm(t, x.punc(), false);
         if (t2!=t) {
-            if (x.term().equals(t2)) return x; //test for equality again
+            if (xt.equals(t2)) return x; //test for possible equality again
             t = t2;
         }
 
         if (!t.unneg().op().taskable)
             throw new TaskException("new content not taskable", t);
 
-        if (tt.getTwo())
-            t = t.neg();
-
-
         if (x.getClass() == SpecialTermTask.class /* but not subclasses! */) {
             SpecialTermTask et = (SpecialTermTask) x;
             x = et.task;
         }
-
 
         ProxyTask y;
         if (x.isBeliefOrGoal() && t instanceof Neg) {

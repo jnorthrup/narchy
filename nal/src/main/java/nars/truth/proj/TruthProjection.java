@@ -26,7 +26,6 @@ import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import org.eclipse.collections.api.block.procedure.primitive.IntIntProcedure;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.list.mutable.primitive.LongArrayList;
 import org.jetbrains.annotations.Nullable;
 import org.roaringbitmap.PeekableIntIterator;
@@ -89,51 +88,43 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	@Nullable
-	public static Task merge(Supplier<Task[]> tasks, Term content, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
-		boolean neg = content instanceof Neg;
-		if (neg)
-			content = content.unneg();
-
-		ObjectBooleanPair<Term> r = Task.tryTaskTerm(
-			content,
-			beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
-		if (r == null)
+	public static Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
+		Term y = Task.taskTerm(x, beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
+		if (y == null)
 			return null;
 
-		Truth yt = t.negIf(neg != r.getTwo());
+		Truth T;
+		boolean neg = y instanceof Neg;
+		if (neg) {
+			y = y.unneg();
+			T = t.neg();
+		} else
+			T = t;
 
 		Task[] tt = tasks.get();
 		if (tt.length == 1) {
 			Task only = tt[0];
 
 			//wrap the only task wtih Special proxy task
-			if (only.start() == start && only.end() == end && only.truth().equals(yt))
+			if (only.start() == start && only.end() == end && only.truth().equals(T))
 				return only;
 			else {
 				if (only instanceof SpecialTruthAndOccurrenceTask || !(only instanceof ProxyTask)) { //TODO other special proxy types
-					return SpecialTruthAndOccurrenceTask.the(only, yt, start, end);
+					return SpecialTruthAndOccurrenceTask.the(only, T, start, end);
 				} //else: continue below
 			}
 
 		}
 
-		if (yt instanceof MutableTruth)
-			yt = ((MutableTruth)yt).clone();
-
-		DynamicTruthTask y = new DynamicTruthTask(
-			r.getOne(), beliefOrGoal,
-			yt,
+		DynamicTruthTask z = new DynamicTruthTask(
+			y, beliefOrGoal,
+			(T instanceof MutableTruth) ? ((MutableTruth)T).clone() : T,
 			n, start, end,
 			stamp.get());
 
+		Task.fund(z, tt, true);
 
-//        y.pri(
-//              tasks.reapply(TaskList::pri, NAL.DerivationPri)
-//                        // * dyn.originality() //HACK
-//        );
-		Task.fund(y, tt, true);
-
-		return y;
+		return z;
 	}
 
 	private TruthProjection ditherDT(int ditherDT) {

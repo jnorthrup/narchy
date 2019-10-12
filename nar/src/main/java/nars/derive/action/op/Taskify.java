@@ -11,6 +11,7 @@ import nars.derive.util.DerivationFailure;
 import nars.task.DebugDerivedTask;
 import nars.task.DerivedTask;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.ProxyTerm;
 import nars.term.Term;
 import nars.term.util.TermException;
@@ -19,7 +20,6 @@ import nars.term.var.VarIndep;
 import nars.time.Tense;
 import nars.truth.Truth;
 import org.eclipse.collections.api.tuple.Pair;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -188,13 +188,12 @@ public class Taskify extends ProxyTerm {
 
         NAR nar = d.nar;
 
-        @Nullable ObjectBooleanPair<Term> xn = Task.tryTaskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
-        if (xn == null) {
+        Term x = Task.taskTerm(x1, punc, !NAL.test.DEBUG_EXTRA);
+        if (x == null) {
             nar.emotion.deriveFailTaskify.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_FAIL);
             return null;
         }
-        Term x = xn.getOne();
 
 //        if (punc == GOAL && d.taskPunc == GOAL) {
 //            //check for contradictory goal derivation
@@ -215,7 +214,8 @@ public class Taskify extends ProxyTerm {
 //            }
 //        }
 
-        boolean neg = xn.getTwo();
+        boolean neg = x instanceof Neg;
+
 
         Truth tru;
         if (punc == BELIEF || punc == GOAL) {
@@ -262,21 +262,20 @@ public class Taskify extends ProxyTerm {
             S = E = ETERNAL;
         }
 
+        if (neg)
+            x = x.unneg();
 
         /** compares taskTerm un-anon */
-        if (isSame(x, punc, tru, S, E, d._task.term(), d._task, nar)) {
+        if (isSame(x, punc, tru, S, E, d._taskTerm, d._task, nar)) {
             same(d, nar);
             return null;
         }
         /** compares beliefTerm un-anon */
-        if (d._belief != null && isSame(x, punc, tru, S, E, d._belief.term(), d._belief, nar)) {
+        if (d._belief != null && isSame(x, punc, tru, S, E, d._beliefTerm, d._belief, nar)) {
             same(d, nar);
             return null;
         }
 
-        //abbreviate TODO combine this with anon step by editing the substitution map
-//        if (x.volume() > d.termVolMax/2)
-//            x = Abbreviation.abbreviate(x, nar);
 
         DerivedTask t = //Task.tryTask(x, punc, tru, (C, tr) -> {
                 //return
@@ -290,6 +289,7 @@ public class Taskify extends ProxyTerm {
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
             return null;
         }
+        t.pri(priority);
 
         //these must be applied before possible merge on input to derivedTask bag
         t.why(rule.why(d));
@@ -297,10 +297,7 @@ public class Taskify extends ProxyTerm {
         if (d.single) //|| (NAL.OVERLAP_DOUBLE_SET_CYCLIC && d.overlapDouble))
             t.setCyclic(true);
 
-        t.pri(priority);
-
         return t;
-
     }
 
     private boolean same(Derivation d, NAR nar) {

@@ -9,7 +9,6 @@ import nars.eval.Evaluation;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.atom.Bool;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 import org.jetbrains.annotations.Nullable;
 
@@ -63,10 +62,9 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 		if (x.term().equals(y))
 			return null;
 
-		byte punc = x.punc();
 		return y instanceof Bool ?
-			perceiveBooleanAnswer(x, y, w, punc) :
-			rememberTransformed(x, y, punc);
+			perceiveBooleanAnswer(x, y, w) :
+			rememberTransformed(x, y);
 	}
 
 	@Override
@@ -106,8 +104,9 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 	}
 
 	@Nullable
-	private static Task perceiveBooleanAnswer(Task x, Term y, What w, byte punc) {
-		Task t;
+	private static Task perceiveBooleanAnswer(Task x, Term y, What w) {
+
+		byte punc = x.punc();
 		if (punc == QUESTION || punc == QUEST) {
 			//conver to an answering belief/goal now that the absolute truth has been determined
 			//TODO decide if this makes sense for QUEST
@@ -133,12 +132,8 @@ final class TaskEvaluation extends Evaluation implements Predicate<Term> {
 			return null;
 		}
 	}
-	@Nullable private static Task rememberTransformed(Task input, Term y, byte punc) {
-		@Nullable ObjectBooleanPair<Term> yy = Task.tryTaskTerm(y, punc, !input.isInput() );
-		if (yy == null)
-			return null;
-
-		Task u = Task.clone(input, yy.getOne().negIf(yy.getTwo()));
+	@Nullable private static Task rememberTransformed(Task input, Term y) {
+		Task u = Task.clone(input, y);
 		assert(u!=null);
 		return u; //recurse
 	}

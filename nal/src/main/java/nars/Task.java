@@ -30,7 +30,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.proj.TruthIntegration;
-import org.eclipse.collections.api.tuple.primitive.ObjectBooleanPair;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -40,7 +39,6 @@ import java.util.function.Function;
 
 import static java.lang.Math.min;
 import static nars.Op.*;
-import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
 
 /**
  * NAL Task to be processed, consists of a Sentence, stamp, time, and budget.
@@ -345,12 +343,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return y;
     }
 
-    @Nullable
+    @Deprecated @Nullable
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
         return tryTask(t, punc, tr, withResult, !NAL.test.DEBUG_EXTRA);
     }
 
-    @Nullable
+    @Deprecated @Nullable
     static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
@@ -359,19 +357,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
                 throw new TaskException("insufficient evidence", t);
         }
 
-        ObjectBooleanPair<Term> x = tryTaskTerm(t, punc, safe);
-        return x != null ? withResult.apply(x.getOne(), tr != null ? tr.negIf(x.getTwo()) : null) : null;
+        Term x = taskTerm(t, punc, safe);
+        return x != null ? withResult.apply(x.unneg(), tr != null ? tr.negIf(x instanceof Neg) : null) : null;
     }
 
-    /**
-     * attempts to prepare a target for use as a Task content.
-     *
-     * @return null if unsuccessful, otherwise the resulting compound target and a
-     * boolean indicating whether a truth negation occurred,
-     * necessitating an inversion of truth when constructing a Task with the input target
-     */
-    @Nullable
-    static ObjectBooleanPair<Term> tryTaskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
+    /** validates and prepares a term for use as a task's content */
+    static Term taskTerm(/*@NotNull*/Term t, byte punc, boolean safe) {
 
         boolean negated = (t instanceof Neg);
         if (negated)
@@ -382,7 +373,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         if (t instanceof Compound && NAL.TASK_COMPOUND_POST_NORMALIZE)
             t = Task.postNormalize(t);
 
-        return Task.validTaskTerm(t/*.the()*/, punc, safe) ? pair(t, negated) : null;
+        return Task.validTaskTerm(t/*.the()*/, punc, safe) ? Util.maybeEqual(t, t.negIf(negated)) : null;
     }
 
     static Term postNormalize(Term t) {

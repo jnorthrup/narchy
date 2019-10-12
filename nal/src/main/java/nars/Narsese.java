@@ -18,6 +18,7 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.io.NarseseParser;
 import nars.task.AbstractCommandTask;
+import nars.task.AbstractTask;
 import nars.task.NALTask;
 import nars.task.util.TaskException;
 import nars.term.Term;
@@ -165,41 +166,32 @@ public final class Narsese {
                         :
                         (byte) (((Character) x[2]).charValue());
 
-        if (punct == COMMAND) {
-
+        if (punct == COMMAND)
             return new AbstractCommandTask(content);
-        }
 
         Object _t = x[3];
         Truth t;
 
-        if (_t instanceof Truth) {
+        if (_t instanceof Truth)
             t = (Truth) _t;
-        } else if (_t instanceof Float) {
-
+        else if (_t instanceof Float)
             t = $.t((Float) _t, nar.confDefault(punct));
-        } else {
+        else
             t = null;
-        }
+
+        if (t == null && (punct == BELIEF || punct == GOAL))
+            t = $.t(1, nar.confDefault(punct)); //HACK
 
 
-        if (t == null && (punct == BELIEF || punct == GOAL)) {
-            t = $.t(1, nar.confDefault(punct));
-        }
+        long[] occ = occurrence(nar.time, x[4]);
 
-        Task y = Task.tryTask(content, punct, t, (C, tr) -> {
+        AbstractTask y = Task.tryTask(content, punct, t, (C, tr) ->
+            NALTask.the(C, punct, tr, nar.time(), occ[0], occ[1], nar.evidence()), false);
 
-
-            long[] occ = occurrence(nar.time, x[4]);
-
-            Task yy = NALTask.the(C, punct, tr, nar.time(), occ[0], occ[1], nar.evidence());
-            yy.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
-            return yy;
-        }, false);
-
-        if (y == null) {
+        if (y == null)
             throw new TaskException("input: " + Arrays.toString(x), content);
-        }
+
+        y.pri(x[0] == null ? nar.priDefault(punct) : (Float) x[0]);
 
         return y;
 
