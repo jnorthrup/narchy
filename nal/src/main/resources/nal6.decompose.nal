@@ -58,6 +58,14 @@
     C, X, has(C,"--")                                    |-  --conjAfter(C, --X),  (  Goal:DeductionRecursiveNN, Time:TaskEvent)
       C, X, has(C,"--")                                    |-  --conjAfter(C, --X),  (  Goal:DeductionRecursiveNN, Time:BeliefEvent)
 
+    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
+      //X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskImmediate)
+      //X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskImmediate)
+    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
+    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
+
+
 //    C, X                                                 |-  conjWithoutUnify(C,   X),  (  Goal:DeductionPP, Time:BeliefEvent)
 //    C, X, has(C,"--")                                    |-  conjWithoutUnify(C, --X),  (  Goal:DeductionPN, Time:BeliefEvent)
 //    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:BeliefEvent)
@@ -67,24 +75,19 @@
 //    C, X                                                 |-  --conjWithoutUnify(C,   X),  (  Goal:DeductionNP, Time:TaskEvent)
 //    C, X, has(C,"--")                                    |-  --conjWithoutUnify(C, --X),  (  Goal:DeductionNN, Time:TaskEvent)
 
-    X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
-      //X, C                                                 |-    conjBefore(C,   X),        (  Goal:DeductionPP,     Time:TaskImmediate)
-    X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
-      //X, C, has(C,"--")                                    |-    conjBefore(C, --X),        (  Goal:DeductionNP,     Time:TaskImmediate)
 
 
-    X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionRecursiveNP,     Time:TaskEvent)
-//    X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskEvent)
-      //X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionNP,     Time:TaskImmediate)
-    X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionRecursivePP,     Time:TaskEvent)
-//    X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
-      //X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskImmediate)
+
+//      X, C                                                 |-  --conjBefore(C,   X),        (  Goal:DeductionNP,     Time:TaskEvent)
+        //X, C                                                 |-  negateEvents(conjBefore(C,   X)),        (  Goal:DeductionNP,     Time:TaskImmediate)
+//      X, C, has(C,"--")                                    |-  --conjBefore(C, --X),        (  Goal:DeductionPP,     Time:TaskEvent)
+        //X, C, has(C,"--")                                    |-  negateEvents(conjBefore(C, --X)),        (  Goal:DeductionPP,     Time:TaskImmediate)
 
 
     //goal prediction/anticipation
-    X, C, --eventOfNeg(C,X), --conjParallel(C)           |-  conjAfter(C,   X),         (  Goal:DeductionWeakPP, Time:TaskEvent)
+//    X, C, --eventOfNeg(C,X), --conjParallel(C)           |-  conjAfter(C,   X),         (  Goal:DeductionWeakPP, Time:TaskEvent)
     //X, C, --eventOf(C,X), --conjParallel(C) |-  negateEvents(conjAfter(C, X)),         (  Goal:DeductionRecursiveWeakNP, Time:TaskEvent)
-    X, C, has(C,"--"), --eventOf(C,X), --conjParallel(C) |-  conjAfter(C, --X),         (  Goal:DeductionWeakNP, Time:TaskEvent)
+//    X, C, has(C,"--"), --eventOf(C,X), --conjParallel(C) |-  conjAfter(C, --X),         (  Goal:DeductionWeakNP, Time:TaskEvent)
     //X, C, has(C,"--"), --eventOfNeg(C,X), --conjParallel(C)           |-  negateEvents(conjAfter(C, --X)),         (  Goal:DeductionRecursiveWeakPP, Time:TaskEvent)
 
 //    X, D, --conjParallel(C)                     |-  --conjBefore(D,   X),  (Belief:DeductionPN, Goal:DeductionPN, Time:TaskEvent)
