@@ -731,7 +731,7 @@ abstract public class GameX extends Game {
      */
     private static DurLoop addGovernor(NAR n) {
         float momentum = 0.75f;
-        float explorationRate = 0.05f;
+        float explorationRate = 0.01f;
         return n.onDur(new Consumer<NAR>() {
 
             final Consumer<FasterList<Cause>> reval = new Consumer<FasterList<Cause>>() {

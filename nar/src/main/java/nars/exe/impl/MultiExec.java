@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.data.atomic.MetalAtomicReferenceArray;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
-import jcog.math.FloatRange;
 import nars.NAR;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
@@ -35,13 +34,13 @@ abstract public class MultiExec extends Exec {
     long subCycleNS = 1_000_000;
 
 
-    static private final float queueLatencyMeasurementProbability = 0.003f;
+    static private final float queueLatencyMeasurementProbability = 0.001f;
     /**
      * 0..1.0: determines acceptable reaction latency.
      * lower value allows queue to grow larger before it's processed,
      * higher value demands faster response at (a likely) throughput cost
      */
-    public final FloatRange alertness = new FloatRange(1f, 0, 1f);
+    //public final FloatRange alertness = new FloatRange(1f, 0, 1f);
 //    protected NARPart updater;
 //    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(3, 0.5f);
     //1.5;

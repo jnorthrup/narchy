@@ -158,9 +158,9 @@ abstract public class ThreadedExec extends MultiExec {
     }
 
 
-    boolean queueSafe(int size) {
-        return size > 0 && MetalConcurrentQueue.availablePct(size, inputQueueCapacityPerThread) >= alertness.floatValue();
-    }
+//    boolean queueSafe(int size) {
+//        return size > 0 && MetalConcurrentQueue.availablePct(size, inputQueueCapacityPerThread) >= alertness.floatValue();
+//    }
 
 
     public interface Worker extends Runnable, Off {

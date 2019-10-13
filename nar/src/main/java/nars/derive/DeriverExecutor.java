@@ -36,7 +36,8 @@ public abstract class DeriverExecutor  {
 		float tPri = t.priElseZero();
 		if (b != null)
 			return
-				Util.or(
+				Math.max(
+				//Util.or(
 					//Util.min(
 				//Util.mean(
 				//Util.sum(
@@ -163,8 +164,8 @@ public abstract class DeriverExecutor  {
 //			//TODO scale ttl by the priority normalized relative to the other items in the queue
 			do {
 
-				//if (queue.size() < mainTTL - 1) {
-				if (q.isEmpty()) {
+				if (q.size() < mainTTL - 1) {
+				//if (q.isEmpty()) {
 				//if (q.size() < mainTTL/2) {
 					Premise s = sample();
 					if (s!=null)

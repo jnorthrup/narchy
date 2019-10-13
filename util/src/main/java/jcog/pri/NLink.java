@@ -46,10 +46,7 @@ public class NLink<X> extends AtomicPri implements PriReference<X> {
 
     public float priElse(FloatFunction<X> prioritization) {
         float p = pri();
-        if (p!=p)
-            return priSetAndGet(prioritization.floatValueOf(id));
-        else
-            return p;
+        return p != p ? priSetAndGet(prioritization.floatValueOf(id)) : p;
     }
 
 }

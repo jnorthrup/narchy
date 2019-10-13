@@ -239,24 +239,26 @@ abstract public class MetaAgent extends Game {
 				nar.confResolution.set(x);
 				return y;
 			});
-			actionUnipolar($.inh(SELF, ignore), (x) -> {
-				float y;
-				if (x >= 0.75f) {
-					x = 0.01f;
-					y = (1f+0.75f)/2;
-				} else if (x >= 0.5f) {
-					x = 0.005f;
-					y = (0.75f+0.5f)/2;
-				} else if (x >= 0.25f) {
-					x = 0.001f;
-					y = (0.5f+0.25f)/2;
-				} else {
-					x = 0.0f;
-					y = 0.25f/2;
-				}
-				nar.confResolution.set(x);
-				return y;
-			});
+//			//potentially dangerous, may forget how to turn it off
+//			actionUnipolar($.inh(SELF, ignore), (x) -> {
+//				float y;
+//				if (x >= 0.75f) {
+//					x = 0.01f;
+//					y = (1f+0.75f)/2;
+//				} else if (x >= 0.5f) {
+//					x = 0.005f;
+//					y = (0.75f+0.5f)/2;
+//				} else if (x >= 0.25f) {
+//					x = 0.001f;
+//					y = (0.5f+0.25f)/2;
+//				} else {
+//					x = 0.0f;
+//					y = 0.25f/2;
+//				}
+//				nar.confResolution.set(x);
+//				return y;
+//			});
+
 			//top-level priority controls of other NAR components
 			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> priAction(g.what().pri));
 
