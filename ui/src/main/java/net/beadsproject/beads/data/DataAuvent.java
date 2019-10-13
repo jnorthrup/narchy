@@ -6,7 +6,6 @@ package net.beadsproject.beads.data;
 import net.beadsproject.beads.core.Auvent;
 import net.beadsproject.beads.core.UGen;
 
-import java.lang.reflect.Method;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
@@ -118,41 +117,41 @@ public class DataAuvent extends Auvent implements Map<String, Object> {
         }
     }
 
-    /**
-     * Uses the parameters stored by this DataBead, this method configures the
-     * given object by using reflection to discover appropriate setter methods.
-     * For example, if the object has a method <code>setX(float f)</code> then
-     * the key-value pair <String "x", float 0.5f> will be used to invoke this
-     * method. Errors are caught and printed (actually, not right now...).
-     * <p>
-     * Be aware that this may not work as expected with all objects. Use with
-     * care...
-     *
-     * @param o the Object to configure.
-     */
-    public void configureObject(Object o) {
-        if (o instanceof DataBeadReceiver) {
-            ((DataBeadReceiver) o).sendData(this);
-        } else {
-            for (Entry<String, Object> stringObjectEntry : properties.entrySet()) {
-                
-                String methodName = "setAt" + (stringObjectEntry.getKey()).substring(0, 1).toUpperCase()
-                        + (stringObjectEntry.getKey()).substring(1);
-                
-                Object theArg = stringObjectEntry.getValue();
-                try {
-                    
-                    
-                    Method m = o.getClass().getMethod(methodName,
-                            theArg.getClass());
-                    
-                    m.invoke(o, theArg);
-                } catch (Exception e) {
-                    
-                }
-            }
-        }
-    }
+//    /**
+//     * Uses the parameters stored by this DataBead, this method configures the
+//     * given object by using reflection to discover appropriate setter methods.
+//     * For example, if the object has a method <code>setX(float f)</code> then
+//     * the key-value pair <String "x", float 0.5f> will be used to invoke this
+//     * method. Errors are caught and printed (actually, not right now...).
+//     * <p>
+//     * Be aware that this may not work as expected with all objects. Use with
+//     * care...
+//     *
+//     * @param o the Object to configure.
+//     */
+//    public void configureObject(Object o) {
+//        if (o instanceof DataBeadReceiver) {
+//            ((DataBeadReceiver) o).sendData(this);
+//        } else {
+//            for (Entry<String, Object> stringObjectEntry : properties.entrySet()) {
+//
+//                String methodName = "setAt" + (stringObjectEntry.getKey()).substring(0, 1).toUpperCase()
+//                        + (stringObjectEntry.getKey()).substring(1);
+//
+//                Object theArg = stringObjectEntry.getValue();
+//                try {
+//
+//
+//                    Method m = o.getClass().getMethod(methodName,
+//                            theArg.getClass());
+//
+//                    m.invoke(o, theArg);
+//                } catch (Exception e) {
+//
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Gets a float representation of the specified property; returns the

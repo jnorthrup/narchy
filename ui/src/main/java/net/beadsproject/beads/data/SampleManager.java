@@ -94,7 +94,7 @@ class SampleManager {
      */
     public static List<Sample> group(String groupName, Sample[] sampleList) {
         ArrayList<Sample> group;
-        if (!groups.keySet().contains(groupName)) {
+        if (!groups.containsKey(groupName)) {
             group = new ArrayList<>();
             groups.put(groupName, group);
         } else {
@@ -174,7 +174,7 @@ class SampleManager {
      */
     private static List<Sample> group(String groupName, String[] fileNameList, int maxItems) {
         ArrayList<Sample> group;
-        if (!groups.keySet().contains(groupName)) {
+        if (!groups.containsKey(groupName)) {
             group = new ArrayList<>();
             groups.put(groupName, group);
         } else

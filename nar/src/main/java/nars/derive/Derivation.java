@@ -536,10 +536,9 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /** attached unifier instances */
     final private Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
 
-    /** next cycle, updates cached values for remainder of cycle. call before any next(w) */
+    /** next cycle/dur/etc, updates cached values for remainder of cycle. call before any next(w) */
     public Derivation next() {
         NAR n = nar;
-        what = null;
         time = n.time();
         ditherDT = n.dtDither();
         confMin = n.confMin.conf();
@@ -550,15 +549,15 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
     /** switch to new context */
     public Derivation next(What w) {
+        NAR n = nar;
 
-        if (this.what == w)
-            return this; //continue using until reset by next() or it changes
+//        if (this.what == w)
+//            return this; //continue using until reset by next() or it changes
 
         w.tryCommit();
 
         this.what = w;
 
-        NAR n = nar;
 
         /**
          *  setup the default temporal focus to be used throughout multiple successive derivations.
@@ -569,18 +568,20 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             this.time,
             (this.dur = w.dur()),
             dur/2, dur/2,
-            ditherDT);
+            //0, dur,
+            1 /*ditherDT*/);
 
 
 
         float uttd = n.unifyDTToleranceDurs.floatValue();
-        for (Unify u : _u)
-            u.dtTolerance =
-                //n.dtDither(); //FINE
-                //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
-                Math.round(dur * uttd); //COARSE
+        int dtTolerance =
+            //n.dtDither(); //FINE
+            //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
+            Math.round(dur * uttd); //COARSE
             //Math.max(n.dtDither(), Math.round(w.dur() * n.unifyTimeToleranceDurs.floatValue())); //COARSE
 
+        for (Unify u : _u)
+            u.dtTolerance = dtTolerance;
 
         w.derivePri.reset(this);
 

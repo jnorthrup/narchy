@@ -42,11 +42,7 @@ public class RangeLimiter extends UGen {
             for (int i = 0; i < bufferSize; i++) {
                 if ((y = bi[i]) > 1.0f) {
                     bo[i] = 1f;
-                } else if (y < -1f) {
-                    bo[i] = -1f;
-                } else {
-                    bo[i] = y;
-                }
+                } else bo[i] = Math.max(y, -1f);
             }
         }
     }

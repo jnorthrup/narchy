@@ -275,9 +275,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
          * stretches perception across some amount of lag
          */
         public static final float SIGNAL_LATCH_LIMIT_DURS =
-                2f;
+                //2f;
                 //1.5f;
-                //1f;
+                1f;
 
 //        /**
 //         *  max tasked matched by series table, in case the answer limit is higher.
@@ -327,7 +327,7 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
     @Deprecated public final FloatRange questionForgetRate = new FloatRange(1f, 0, 1);
 
-    @Deprecated public final IntRange deriveBranchTTL = new IntRange(32, 1, 64 * NAL.derive.TTL_MIN);
+    @Deprecated public final IntRange deriveBranchTTL = new IntRange(16, 1, 64 * NAL.derive.TTL_MIN);
     /**
      * how many cycles above which to dither dt and occurrence time
      * TODO move this to Time class and cache the cycle value rather than dynamically computing it

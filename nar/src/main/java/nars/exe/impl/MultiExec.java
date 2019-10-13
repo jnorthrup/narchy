@@ -9,7 +9,6 @@ import jcog.math.FloatRange;
 import nars.NAR;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
-import nars.derive.DeriverExecutor;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.time.clock.RealTime;
@@ -32,7 +31,8 @@ abstract public class MultiExec extends Exec {
 //    static final double lagAdjustmentFactor =
 //            0.5;
 
-    long subCycleNS = 2_000_000;
+    /** timeslice granularity */
+    long subCycleNS = 1_000_000;
 
 
     static private final float queueLatencyMeasurementProbability = 0.003f;
@@ -120,50 +120,47 @@ abstract public class MultiExec extends Exec {
 
 
 
-        float workPct = 0; //HACK Math.max(0.5f, workDemand());
+//        float workPct = 0; //HACK Math.max(0.5f, workDemand());
 
 
-        schedule.update(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, 5,
-            workPct /* TODO adapt */, 1-nar.loop.throttle.floatValue());
+        schedule(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, 3,
+            1-nar.loop.throttle.floatValue());
         //System.out.println(schedWrite.size() + " sched entries");
         //schedWrite.print(System.out); System.out.println();
     }
 
-    /** estimate proportion of duty cycle that needs applied to queued work tasks.
-     *  calculated by some adaptive method wrt profiled measurements */
-    abstract protected float workDemand();
+//    /** estimate proportion of duty cycle that needs applied to queued work tasks.
+//     *  calculated by some adaptive method wrt profiled measurements */
+//    abstract protected float workDemand();
 
-    /** special consumer implementing throttle instruction */
-    static final Consumer SLEEP = (e) -> {};
 
-    /** special consumer implementing work instruction */
-    static final Consumer WORK = (e) -> {};
+//    /** special consumer implementing work instruction */
+//    static final Consumer WORK = (e) -> {};
 
     /** hijackbag-like array to sample tasks from, tiled in proportional amounts like a discrete
      * roulette select on to a MetalAtomicReferenceArray*/
-    @Deprecated static class Schedule  {
+    @Deprecated static class Schedule<X>  {
 
-        long timeSliceNS = 100_000;
-        MetalAtomicReferenceArray<Consumer<DeriverExecutor> /* switcher*/> tasks = new MetalAtomicReferenceArray<>(0);
+
+        MetalAtomicReferenceArray<X /* switcher*/> tasks = new MetalAtomicReferenceArray<>(0);
         final AtomicInteger writer = new AtomicInteger(0);
         final AtomicBoolean writing = new AtomicBoolean(false);
 
         void resize(double durNS, double timeSliceNS, float supersampling) {
             resize( (int)Math.max(1, Math.ceil((durNS * supersampling) / timeSliceNS)) );
-            this.timeSliceNS = Math.round(timeSliceNS);
         }
 
         void resize(int capacity) {
-            MetalAtomicReferenceArray<Consumer<DeriverExecutor>> t = this.tasks;
+            MetalAtomicReferenceArray<X> t = this.tasks;
             if (t.length() != capacity) {
-                MetalAtomicReferenceArray<Consumer<DeriverExecutor>> newTasks = new MetalAtomicReferenceArray<>(capacity);
-                newTasks.fill(WORK); //TODO copy the original array, cyclically tiled into next
+                MetalAtomicReferenceArray<X> newTasks = new MetalAtomicReferenceArray<>(capacity);
+                newTasks.fill(null); //TODO copy the original array, cyclically tiled into next
                 this.tasks = newTasks;
             }
         }
 
-        private void add(int k, Consumer c) {
-            MetalAtomicReferenceArray<Consumer<DeriverExecutor>> t = this.tasks;
+        private void add(int k, X c) {
+            MetalAtomicReferenceArray<X> t = this.tasks;
             int n = writer.get();
             int len = t.length();
             for (int i = 0; i < k; i++) {
@@ -174,8 +171,8 @@ abstract public class MultiExec extends Exec {
             writer.set(n);
         }
 
-        public Consumer get(Random r) {
-            MetalAtomicReferenceArray<Consumer<DeriverExecutor>> t = this.tasks;
+        public X get(Random r) {
+            MetalAtomicReferenceArray<X> t = this.tasks;
             return t.getFast(r.nextInt(t.length()));
         }
 
@@ -183,53 +180,55 @@ abstract public class MultiExec extends Exec {
             resize(1);
         }
 
-        public void update(AntistaticBag<What> w, double durNS, double timeSliceNS, float supersampling, double workPct, double sleepPct) {
-            if (!writing.compareAndSet(false, true))
-                return;
-
-            try {
-
-                resize(durNS, timeSliceNS, supersampling); //durNS *= supersampling;
-
-                if (workPct + sleepPct > 1) {
-                    //only work and sleep but calculate the correct proportion:
-                    workPct = (workPct / (workPct + sleepPct)); //renormalize
-                    sleepPct = 1 - workPct;
-                }
-
-                double workNS = (durNS * workPct);
-                double sleepNS = (durNS * sleepPct);
-                int nw = (int) Math.max(1, workNS * supersampling / timeSliceNS);
-                add(nw, WORK);
-
-                int ns = (int) Math.floor(sleepNS * supersampling / timeSliceNS);
-                add(ns, SLEEP);
-
-                double playPct = Math.max(0, 1f - (workPct + sleepPct));
-                if (playPct > 0) {
-                    double playNS = durNS * playPct;
-                    double mass = w.mass();
-                    for (What ww : w) {
-                        double priNorm = ww.priElseZero() / mass;
-
-                        double wPlayNS = (priNorm * playNS);
-                        int np = (int) Math.max(1, wPlayNS * supersampling / timeSliceNS);
-                        Consumer<DeriverExecutor> wws = ww.switcher;
-                        add(np, wws);
-                        //System.out.println(ww + " " + priNorm + " " + np);
-                    }
-                }
-            } finally {
-                writing.set(false);
-            }
-        }
 
         public void print(PrintStream out) {
             //forEachEvent((when,what)->out.println(Texts.timeStr(when) + "\t" + what));
         }
     }
 
-    final Schedule schedule = new Schedule();
+    final Schedule<What> schedule = new Schedule<>();
+    public void schedule(AntistaticBag<What> w, double durNS, double timeSliceNS, float supersampling, double sleepPct) {
+        if (!schedule.writing.compareAndSet(false, true))
+            return;
+
+        try {
+
+            schedule.resize(durNS, timeSliceNS, supersampling); //durNS *= supersampling;
+
+//                if (workPct + sleepPct > 1) {
+//                    //only work and sleep but calculate the correct proportion:
+//                    workPct = (workPct / (workPct + sleepPct)); //renormalize
+//                    sleepPct = 1 - workPct;
+//                }
+
+//                double workNS = (durNS * workPct);
+
+//                int nw = (int) Math.max(1, workNS * supersampling / timeSliceNS);
+//                add(nw, WORK);
+
+            if (sleepPct > 0) {
+                double sleepNS = (durNS * sleepPct);
+                schedule.add(
+                    (int) Math.floor(sleepNS * supersampling / timeSliceNS),
+                    null);
+            }
+
+            double playPct = Math.max(0, 1f - sleepPct);
+            if (playPct > 0) {
+                double playNS = durNS * playPct;
+                double mass = w.mass();
+                for (What ww : w) {
+                    double priNorm = ww.priElseZero() / mass;
+                    double wPlayNS = (priNorm * playNS);
+                    schedule.add((int) Math.max(1, wPlayNS * supersampling / timeSliceNS),
+                        ww);
+                    //System.out.println(ww + " " + priNorm + " " + np);
+                }
+            }
+        } finally {
+            schedule.writing.set(false);
+        }
+    }
 
     private void updateTiming() {
 

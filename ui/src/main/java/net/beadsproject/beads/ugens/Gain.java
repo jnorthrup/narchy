@@ -7,6 +7,7 @@ import net.beadsproject.beads.core.AudioContext;
 import net.beadsproject.beads.core.UGen;
 import net.beadsproject.beads.data.DataAuvent;
 import net.beadsproject.beads.data.DataBeadReceiver;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Gain modifies the gain of a multi-channel audio signal. The gain value can be
@@ -129,6 +130,15 @@ public class Gain extends UGen implements DataBeadReceiver {
      */
     public UGen getGainUGen() {
         return gainUGen;
+    }
+
+    @Nullable
+    public Envelope envelope() {
+        UGen g = this.gainUGen;
+        if (g instanceof Envelope)
+            return ((Envelope) g);
+        else
+            return null;
     }
 
     /*

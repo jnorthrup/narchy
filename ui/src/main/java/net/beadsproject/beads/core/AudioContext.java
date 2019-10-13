@@ -5,6 +5,7 @@
  */
 package net.beadsproject.beads.core;
 
+import jcog.data.list.FastCoWList;
 import jcog.data.list.FasterList;
 import net.beadsproject.beads.core.io.UGenOutput;
 import net.beadsproject.beads.data.Sample;
@@ -83,16 +84,16 @@ public class AudioContext {
     private int bufStoreIndex;
     private float[] zeroBuf;
 
-    /**
-     * Used for testing for dropped frames.
-     */
-    @SuppressWarnings("unused")
-    private long nanoLeap;
+//    /**
+//     * Used for testing for dropped frames.
+//     */
+//    @SuppressWarnings("unused")
+//    private long nanoLeap;
 
     @SuppressWarnings("unused")
 
 
-    private Queue newQueue() {
+    private static Queue newQueue() {
         return new MpmcArrayQueue<>(64);
     }
 
@@ -101,12 +102,12 @@ public class AudioContext {
      */
     private final Queue<Auvent> beforeFrameQueue = newQueue();
     private final Queue<Auvent> afterFrameQueue = newQueue();
-    private final Queue<Auvent> beforeEveryFrameList = newQueue();
-    private final Queue<Auvent> afterEveryFrameList = newQueue();
+    private final FastCoWList<Auvent> beforeEveryFrameList = new FastCoWList(Auvent.class);
+    private final FastCoWList<Auvent> afterEveryFrameList = new FastCoWList(Auvent.class);
 
 
     public AudioContext() {
-        this(Audio.the());
+        this(Audio.the(), defaultAudioFormat(2, 2));
     }
 
     /**
@@ -116,12 +117,13 @@ public class AudioContext {
      * The libraries are decoupled like this so that the core beads library doesn't depend on JavaSound, which is not supported in various contexts, such as Android. At the moment there are in fact some
      * JavaSound dependencies still to be removed before this process is complete. Pro-users should familiarise themselves with the different IO options, particularly Jack.
      */
-    public AudioContext(Audio audio) {
+    public AudioContext(Audio audio, IOAudioFormat audioFormat) {
+        //super(null, audioFormat.outputs);
 
         maxReserveBufs = 32;
         setBufferSize(audio.bufferSizeInFrames());
 
-        IOAudioFormat audioFormat = defaultAudioFormat(2, 2);
+
         this.audioFormat = audioFormat;
         out = new Gain(this, audioFormat.outputs);
 
@@ -178,7 +180,8 @@ public class AudioContext {
     /**
      * callback from AudioIO.
      */
-    void update() {
+
+    public void update() {
 //        try {
             bufStoreIndex = 0;
             Arrays.fill(zeroBuf, 0f);
@@ -216,6 +219,8 @@ public class AudioContext {
             return buf;
         }
     }
+
+
 
     /**
      * Gets a zero initialised buffer from the buffer reserve. This buffer will
@@ -463,15 +468,19 @@ public class AudioContext {
      * Starts the AudioContext running in realtime. Only happens if not already
      * running. Resets time.
      */
+
     public void start() {
+
+
         if (stopped) {
 
-            nanoLeap = Math.round(1000000000.0 * (bufferSizeInFrames / audioFormat.sampleRate));
+//            nanoLeap = Math.round(1000000000.0 * (bufferSizeInFrames / audioFormat.sampleRate));
 
             reset();
             stopped = false;
 
             audioIO.start();
+
         }
     }
 
@@ -485,6 +494,7 @@ public class AudioContext {
     /**
      * Stops the AudioContext if running either in realtime or non-realtime.
      */
+
     public void stop() {
         stopped = true;
         audioIO.stop();
@@ -525,7 +535,7 @@ public class AudioContext {
      * @return This AudioContext.
      */
     public AudioContext invokeAfterEveryFrame(Auvent target) {
-        afterEveryFrameList.offer(target);
+        afterEveryFrameList.add(target);
         return this;
     }
 
@@ -559,7 +569,7 @@ public class AudioContext {
      * @return This AudioContext.
      */
     public AudioContext invokeBeforeEveryFrame(Auvent target) {
-        beforeEveryFrameList.offer(target);
+        beforeEveryFrameList.add(target);
         return this;
     }
 

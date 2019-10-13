@@ -2,15 +2,14 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.exe.Exe;
-import jcog.math.FloatAveragedWindow;
 import jcog.random.XoRoShiRo128PlusRandom;
+import nars.attention.What;
 import nars.derive.Deriver;
 import nars.derive.DeriverExecutor;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import static java.lang.System.nanoTime;
@@ -18,16 +17,14 @@ import static java.lang.System.nanoTime;
 public class WorkerExec extends ThreadedExec {
 
 
-
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */
 	float workResponsibility =
 		Util.PHIf * 2;
-		//1f;
-		//1.5f;
-		//2f;
-
+	//1f;
+	//1.5f;
+	//2f;
 
 
 	public WorkerExec(int threads) {
@@ -53,21 +50,21 @@ public class WorkerExec extends ThreadedExec {
 		}
 	}
 
-	final private FloatAveragedWindow queueSize = new FloatAveragedWindow(3,0.75f, 0).mode(FloatAveragedWindow.Mode.Mean);
+//	final private FloatAveragedWindow queueSize = new FloatAveragedWindow(3,0.75f, 0).mode(FloatAveragedWindow.Mode.Mean);
 
-	@Override
-	protected float workDemand() {
-		double cautionSensitivity = 0.75; //0..1
-
-		int QS = in.size();
-		float QSavg = queueSize.valueOf(QS);
-
-		float demand = (float) Math.pow(QSavg / in.capacity(), 1 - cautionSensitivity);
-
-		//System.out.println(QS + "\t" + QSavg + " => " + demand);
-
-		return demand;
-	}
+//	@Override
+//	protected float workDemand() {
+//		double cautionSensitivity = 0.75; //0..1
+//
+//		int QS = in.size();
+//		float QSavg = queueSize.valueOf(QS);
+//
+//		float demand = (float) Math.pow(QSavg / in.capacity(), 1 - cautionSensitivity);
+//
+//		//System.out.println(QS + "\t" + QSavg + " => " + demand);
+//
+//		return demand;
+//	}
 
 
 	private final class WorkPlayLoop implements ThreadedExec.Worker {
@@ -75,29 +72,28 @@ public class WorkerExec extends ThreadedExec {
 
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
-
-		private transient DeriverExecutor.QueueDeriverExecutor dExe;
-
 		float updateDurs = 1;
+		private transient DeriverExecutor.QueueDeriverExecutor dExe;
+		private transient long nextUpdate;
 
 		WorkPlayLoop() {
 			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
 			nextUpdate = nar.time();
 		}
 
-		private transient long nextUpdate;
-
-		/** updated each system dur */
+		/**
+		 * updated each system dur
+		 */
 		private void update() {
 			long now = nar.time();
 			if (now < nextUpdate) return;
 
-			if ((dExe = deriver()) == null) {
-				//no deriver
-			} else
-				dExe.nextCycle();
+			nextUpdate = now +
+					1; //per-cycle
+					//Math.round(updateDurs * nar.dur()); //per-dur
 
-			nextUpdate = now + Math.round(updateDurs * nar.dur());
+			if ((dExe = deriver()) != null)
+				dExe.nextCycle();
 		}
 
 		@Override
@@ -107,62 +103,36 @@ public class WorkerExec extends ThreadedExec {
 
 				try {
 
-					update();
-
 					work(); //HACK
 
-					Schedule s = schedule;
-					Object W = s.get(rng);
-					if (W == WORK) {
-						work();
+					update();
+
+					What W = schedule.get(rng);
+
+					long t = subCycleNS;
+					if (W == null) {
+						Util.sleepNS(t);
 					} else {
-						long t = s.timeSliceNS;
-						if (W == SLEEP) {
-							Util.sleepNS(t);
-						} else {
-							DeriverExecutor dExe = this.dExe;
-							if (dExe == null) continue;
+						DeriverExecutor dExe = this.dExe;
+						if (dExe == null) continue;
 
-							long deadline = nanoTime() + t;
+						dExe.next(W);
 
-							((Consumer<DeriverExecutor>) W).accept(dExe); //d.next()
+						long deadline = nanoTime() + t;
 
-							//dExe.next(this);
-//							int cycles = 0;
-							do {
+						//int cycles = 0;
+						do {
 
-								dExe.next();
-//								cycles++;
+							dExe.next();
+						//		cycles++;
 
-							} while (nanoTime() < deadline);
-							//System.out.println(dExe.d.what + " " + cycles + " cyc");
-						}
+						} while (nanoTime() < deadline);
+						//System.out.println(dExe.d.what + " " + cycles + " cyc");
 					}
 
 				} catch (Throwable t) {
 					t.printStackTrace();
 				}
-
-
-
-//				What w = (What) ww[wwN>1 ? rng.nextInt(wwN) : 0];
-//				if (w!=null && w.isOn()) {
-//					float p = w.priElseZero();
-//					if (p > Float.MIN_NORMAL) {
-//
-//						float mass = nar.what.mass();
-//
-//						double priNormalized = wwN > 1 && mass > Float.MIN_NORMAL ?
-//							Util.unitize(p / mass) :
-//							1f / wwN;
-//
-//						long useNS = Math.round(threadWorkTimePerCycle * priNormalized / whatGranularity);
-//
-//						long now = nanoTime();
-//
-//						deriver.next(w, now, useNS);
-//					}
-//				}
 
 			}
 		}
@@ -196,7 +166,7 @@ public class WorkerExec extends ThreadedExec {
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Util.clamp((int) Math.ceil(workResponsibility/concurrency() * available), 1, available);
+						Util.clamp((int) Math.ceil(workResponsibility / concurrency() * available), 1, available);
 
 				} else if (--batchSize == 0)
 					break; //enough

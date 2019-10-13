@@ -22,6 +22,10 @@ public class drum_machine_01 {
     public static void main(String[] args) {
         drum_machine_01 synth = new drum_machine_01();
         synth.setup();
+        while (true) {
+            synth.keyDown(148);
+            Util.sleepMS(300);
+        }
     }
 
     
@@ -86,7 +90,6 @@ public class drum_machine_01 {
 
 
         ac.start();
-        Util.sleepMS(100000L);
     }
 
     public void keyDown(int midiPitch) {

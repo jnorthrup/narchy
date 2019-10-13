@@ -223,15 +223,15 @@ public class Compressor extends UGen implements DataBeadReceiver {
     private Compressor setSideChain(UGen sideChain) {
         pf = (new BiquadFilter(context, 1, BiquadFilter.BUTTERWORTH_LP))
                 .setFrequency(31);
-        if (sideChain == null) {
+        //if (sideChain == null) {
             powerUGen = new RMS(context, channels, rmsMemorySize);
             powerUGen.in(myInputs);
             pf.in(powerUGen);
-        } else {
-            powerUGen = new RMS(context, sideChain.getOuts(), rmsMemorySize);
-            powerUGen.in(sideChain);
-            pf.in(powerUGen);
-        }
+//        } else {
+//            powerUGen = new RMS(context, sideChain.getOuts(), rmsMemorySize);
+//            powerUGen.in(sideChain);
+//            pf.in(powerUGen);
+//        }
         return this;
     }
 

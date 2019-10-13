@@ -57,7 +57,7 @@ public class Maximum extends UGen {
         float[] bo = bufOut[0];
 
         for (int i = 0; i < bufferSize; i++) {
-            bo[i] = bi1[i] > bi2[i] ? bi1[i] : bi2[i];
+            bo[i] = Math.max(bi1[i], bi2[i]);
         }
 
     }

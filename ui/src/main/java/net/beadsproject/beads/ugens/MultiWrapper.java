@@ -62,7 +62,6 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
         ugens = new UGen[channels];
 
         for (int i = 0; i < channels; i++) {
-            
             ugens[i] = buildUGens(i);
         }
         setupUGens();
@@ -126,9 +125,6 @@ public class MultiWrapper extends UGenChain implements DataBeadReceiver {
      * @return The new channel UGen.
      */
     private UGen buildUGens(int channelIndex) {
-        
-        
-        
         return new UGen(context, 1, 0) {
             @Override
             public void gen() {

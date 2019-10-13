@@ -128,7 +128,7 @@ public class GranularSamplePlayer extends SamplePlayer {
         setGrainSize(new Static(context, 100.0f));
         setRandomness(new Static(context, 0.0f));
         setRandomPan(new Static(context, 0.0f));
-        setWindow(new CosineWindow().getDefault());
+        setWindow(new CosineWindow().the());
         msPerSample = context.samplesToMs(1f);
         loopInsideGrains = false;
     }

@@ -205,11 +205,7 @@ public class AllpassFilter extends IIRFilter implements DataBeadReceiver {
     public AllpassFilter setDelay(int del) {
         if (del > maxDelay) {
             delay = maxDelay;
-        } else if (del < 1) {
-            delay = 1;
-        } else {
-            delay = del;
-        }
+        } else delay = Math.max(del, 1);
         if (isDelayStatic) {
             delayUGen.setValue(delay);
         } else {

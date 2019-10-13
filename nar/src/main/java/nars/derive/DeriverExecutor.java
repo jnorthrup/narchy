@@ -73,10 +73,10 @@ public abstract class DeriverExecutor  {
 	public abstract void add(Premise p);
 
 	public void nextSynch(What w) {
-		next(w, onlyOneIteration);
+		next(w);
+		next();
 	}
 
-	static final BooleanSupplier onlyOneIteration = () -> false;
 
 //	public long next(What w, long startNS, long useNS) {
 ////		if (w.tryCommit()) {
@@ -139,9 +139,7 @@ public abstract class DeriverExecutor  {
 		//new ArrayHashSet<>(capacity)
 
 
-		int iterationTTL = 9;
-
-
+		int iterationTTL = 7;
 
 		public QueueDeriverExecutor(Deriver deriver) {
 			super(deriver);
@@ -158,11 +156,11 @@ public abstract class DeriverExecutor  {
 
 			int mainTTL = iterationTTL;
 			int branchTTL = d.nar.deriveBranchTTL.intValue();
-
+//
 			Queue<Premise> q = this.queue;
-			//q.clear();
-
-			//TODO scale ttl by the priority normalized relative to the other items in the queue
+//			//q.clear();
+//
+//			//TODO scale ttl by the priority normalized relative to the other items in the queue
 			do {
 
 				//if (queue.size() < mainTTL - 1) {

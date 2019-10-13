@@ -27,11 +27,11 @@ public abstract class WaveFactory {
      */
     private static final int DEFAULT_BUFFER_SIZE = 8192;
     
-    public static final Tensor SINE = new SineWave().getDefault();
-    public static final Tensor SAW = new SawWave().getDefault();
-    public static final Tensor SQUARE = new SquareWave().getDefault();
-    public static final Tensor TRIANGLE = new TriangleWave().getDefault();
-    public static final Tensor NOISE = new NoiseWave().getDefault();
+    public static final Tensor SINE = new SineWave().the();
+    public static final Tensor SAW = new SawWave().the();
+    public static final Tensor SQUARE = new SquareWave().the();
+    public static final Tensor TRIANGLE = new TriangleWave().the();
+    public static final Tensor NOISE = new NoiseWave().the();
 
     /**
      * Subclasses should override this method to generate a {@link Buffer} of the specified size.
@@ -42,7 +42,7 @@ public abstract class WaveFactory {
     protected abstract ArrayTensor get(int bufferSize);
 
     /**
-     * Subclasses should override this method to generate a name. A default name should always be available for the case where {@link #getDefault()} is called.
+     * Subclasses should override this method to generate a name. A default name should always be available for the case where {@link #the()} is called.
      *
      * @return the name of the buffer.
      */
@@ -53,9 +53,8 @@ public abstract class WaveFactory {
      *
      * @return the default Buffer.
      */
-    public final ArrayTensor getDefault() {
-        String name = getName();
-        return staticBufs.computeIfAbsent(name, (n)->get(DEFAULT_BUFFER_SIZE));
+    public final ArrayTensor the() {
+        return staticBufs.computeIfAbsent(getName(), (n)->get(DEFAULT_BUFFER_SIZE));
     }
 
 }

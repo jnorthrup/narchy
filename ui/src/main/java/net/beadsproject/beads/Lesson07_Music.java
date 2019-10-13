@@ -12,9 +12,7 @@ class Lesson07_Music {
     public static class Music1 {
         public static void main(String[] args) {
 
-            final AudioContext ac;
-
-            ac = new AudioContext();
+            final AudioContext ac = new AudioContext();
             /*
              * In this example a Clock is used to trigger events. We do this by
              * adding a listener to the Clock (which is of type Bead).
@@ -25,7 +23,7 @@ class Lesson07_Music {
              * This example is more sophisticated than the previous ones. It uses
              * nested code.
              */
-            Clock clock = ac.clock(700f, new Auvent() {
+            Clock clock = ac.clock(800f, new Auvent() {
 
                         int pitch;
 

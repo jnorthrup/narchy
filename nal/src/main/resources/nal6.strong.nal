@@ -44,11 +44,11 @@
         //induction antigoal not valid since it will assume only one precondition polarity applies yet it may be the case that both pos and neg precondition apply
 
        //questions
-          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")   |- unisubst(  (A ==> C),A,B,novel), (Punctuation:Question, Time:TaskEvent)
-            B, (--A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((--A ==> C),A,B,novel), (Punctuation:Question, Time:TaskEvent)
-          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")   |- unisubst(  (A ==> C),C,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")   |- unisubst(  (A ==> C),A,B,novel), (Punctuation:Question, Time:Task)
+            B, (--A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((--A ==> C),A,B,novel), (Punctuation:Question, Time:Task)
+          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")   |- unisubst(  (A ==> C),C,B,novel), (Punctuation:Question, Time:Task)
         //questions
-          B,     (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B,     (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,novel), (Punctuation:Question, Time:Task)
           B,     (C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(C,A,B,novel), (Punctuation:Question, Time:TaskEvent)
-          B,     (C ==> A), task("?@"), --is(C,"#"), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B,     (C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)
             B, (--C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)

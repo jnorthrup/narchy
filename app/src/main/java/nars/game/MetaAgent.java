@@ -58,6 +58,7 @@ abstract public class MetaAgent extends Game {
 	 */
 	precise = Atomic.the("precise"), //frequency resolution
 	careful = Atomic.the("careful"), //conf resolution
+	ignore = Atomic.the("ignore"), //min conf
 
 	belief = Atomic.the("belief"),
 		goal = Atomic.the("goal"),
@@ -220,25 +221,42 @@ abstract public class MetaAgent extends Game {
 				nar.freqResolution.set(x);
 				return y;
 			});
-//			actionUnipolar($.inh(SELF, careful), (x) -> {
-//				float y;
-//				if (x >= 0.75f) {
-//					x = 0.01f;
-//					y = (1f+0.75f)/2;
-//				} else if (x >= 0.5f) {
-//					x = 0.02f;
-//					y = (0.75f+0.5f)/2;
-//				} else if (x >= 0.25f) {
-//					x = 0.4f;
-//					y = (0.5f+0.25f)/2;
-//				} else {
-//					x = 0.10f;
-//					y = 0.25f/2;
-//				}
-//				nar.confResolution.set(x);
-//				return y;
-//			});
-
+			actionUnipolar($.inh(SELF, careful), (x) -> {
+				float y;
+				if (x >= 0.75f) {
+					x = 0.01f;
+					y = (1f+0.75f)/2;
+				} else if (x >= 0.5f) {
+					x = 0.02f;
+					y = (0.75f+0.5f)/2;
+				} else if (x >= 0.25f) {
+					x = 0.03f;
+					y = (0.5f+0.25f)/2;
+				} else {
+					x = 0.04f;
+					y = 0.25f/2;
+				}
+				nar.confResolution.set(x);
+				return y;
+			});
+			actionUnipolar($.inh(SELF, ignore), (x) -> {
+				float y;
+				if (x >= 0.75f) {
+					x = 0.01f;
+					y = (1f+0.75f)/2;
+				} else if (x >= 0.5f) {
+					x = 0.005f;
+					y = (0.75f+0.5f)/2;
+				} else if (x >= 0.25f) {
+					x = 0.001f;
+					y = (0.5f+0.25f)/2;
+				} else {
+					x = 0.0f;
+					y = 0.25f/2;
+				}
+				nar.confResolution.set(x);
+				return y;
+			});
 			//top-level priority controls of other NAR components
 			nar.parts(Game.class).filter(g -> g!=this).forEach(g -> priAction(g.what().pri));
 

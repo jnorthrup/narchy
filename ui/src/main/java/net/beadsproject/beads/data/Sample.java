@@ -273,18 +273,16 @@ public class Sample {
                 y0 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
-                    y1 = current[i]; 
                 } else {
                     getFrame(realCurrentSample++, current);
-                    y1 = current[i];
                 }
+                y1 = current[i];
                 if (realCurrentSample >= nFrames) {
                     getFrame((int) nFrames - 1, current);
-                    y2 = current[i]; 
                 } else {
                     getFrame(realCurrentSample++, current);
-                    y2 = current[i];
                 }
+                y2 = current[i];
                 mu2 = fractionOffset * fractionOffset;
                 a0 = y2 - y1 - ym1 + y0;
                 a1 = ym1 - y0 - a0;
