@@ -10,7 +10,7 @@ import nars.*;
 import nars.attention.What;
 import nars.control.Caused;
 import nars.derive.action.How;
-import nars.derive.action.PremisePatternAction;
+import nars.derive.action.PatternHow;
 import nars.derive.action.op.Occurrify;
 import nars.derive.action.op.Taskify;
 import nars.derive.premise.Premise;
@@ -233,7 +233,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         How a = r.action;
 
-        if (a instanceof PremisePatternAction.TruthifyDeriveAction)
+        if (a instanceof PatternHow.TruthifyDeriveAction)
             reset(r.truth, r.punc, r.single);
 
         if (NAL.TRACE)

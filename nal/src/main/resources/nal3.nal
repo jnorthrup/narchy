@@ -12,10 +12,10 @@
 (P --> M), (S --> M), neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,  S) --> M), (Punctuation:AskAsk, Time:Task)
 
 
-    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Belief:IntersectionDD, Time:Compose)
-    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,S) --> M), (Belief:UnionDD, Time:Compose)
-//    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:IntersectionDD, Time:Compose)
-//    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:UnionDD, Time:Compose)
+    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Belief:Intersection, Time:Compose)
+    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,S) --> M), (Belief:Union, Time:Compose)
+    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:IntersectionDD, Time:Compose)
+    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(polarizeTask(P),polarizeBelief(S)) --> M), (Belief:UnionDD, Time:Compose)
 
 //    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (unionSect(P,S) --> M), (Belief:Union, Time:Compose)
 //    (P --> M), (S --> M),  neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Belief:IntersectionPP, Time:Compose)
@@ -32,10 +32,10 @@
         //(P --> M), (S --> M), task("?@"),  --isVar(M),neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,S) --> M), (Time:Compose)
         //(P --> M), (S --> M), task("?@"),  --isVar(M),neq(S,P), notSetsOrDifferentSets(S,P) |- (interSect(P,polarizeRandom(S)) --> M), (Time:Compose)
 
-    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,S)), (Belief:IntersectionDD, Time:Compose)
-    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(P,S)), (Belief:UnionDD, Time:Compose)
-//    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
-//    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
+    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,S)), (Belief:Intersection, Time:Compose)
+    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(P,S)), (Belief:Union, Time:Compose)
+    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(polarizeTask(P),polarizeBelief(S))), (Belief:IntersectionDD, Time:Compose)
+    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(polarizeTask(P),polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
     //(M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(--polarizeTask(P),--polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
     //(M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> unionSect(P,S)), (Belief:Union, Time:Compose)
 //    (M --> P), (M --> S), neq(S,P), notSetsOrDifferentSets(S,P) |- (M --> interSect(P,S)), (Belief:IntersectionPP, Time:Compose)

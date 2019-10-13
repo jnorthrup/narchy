@@ -9,7 +9,7 @@ import nars.Narsese;
 import nars.Op;
 import nars.derive.Derivation;
 import nars.derive.PreDerivation;
-import nars.derive.action.PremisePatternAction;
+import nars.derive.action.PatternHow;
 import nars.derive.cond.CommutativeConstantPreFilter;
 import nars.derive.cond.ConstraintAsPremisePredicate;
 import nars.derive.cond.SingleOrDoublePremise;
@@ -453,7 +453,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 
 			case "task":
-				if (this instanceof PremisePatternAction) {
+				if (this instanceof PatternHow) {
 					//HACK ignore; handled in subclass
 				} else
 					throw new UnsupportedOperationException();

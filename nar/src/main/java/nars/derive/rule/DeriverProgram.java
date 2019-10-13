@@ -7,7 +7,7 @@ import nars.control.Cause;
 import nars.derive.PreDerivation;
 import nars.derive.PreDeriver;
 import nars.derive.action.How;
-import nars.derive.action.PremisePatternAction;
+import nars.derive.action.PatternHow;
 import nars.derive.util.Forkable;
 import nars.term.control.AND;
 import nars.term.control.FORK;
@@ -90,8 +90,8 @@ public class DeriverProgram {
 
             out.println(a.why.id + " ==> {");
             Object aa;
-            if (a instanceof PremisePatternAction.TruthifyDeriveAction) {
-                aa = Arrays.toString(((PremisePatternAction.TruthifyDeriveAction) a).constraints) + " ...";// + ((PremisePatternAction.TruthifyDeriveAction) a).unify;
+            if (a instanceof PatternHow.TruthifyDeriveAction) {
+                aa = Arrays.toString(((PatternHow.TruthifyDeriveAction) a).constraints) + " ...";// + ((PremisePatternAction.TruthifyDeriveAction) a).unify;
                 //TODO
 //                out.println(((DirectPremiseUnify)x).taskPat + ", " + ((DirectPremiseUnify)x).beliefPat + " ==> {");
 //                print(((DirectPremiseUnify)x).taskify, out, indent + 2);

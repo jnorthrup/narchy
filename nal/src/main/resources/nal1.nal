@@ -20,8 +20,8 @@
        (P --> S), (M --> S), neqRCom(P,M)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
         (P --> S), (P --> M), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
 
-       (M --> P), (S --> M), task("!"), neqRCom(S,P)   |- (S --> M), (Punctuation:Quest, Time:Compose)
-       (P --> M), (M --> S), task("!"), neqRCom(S,P)   |- (M --> S), (Punctuation:Quest, Time:Compose)
+       (M --> P), (S --> M), task("!")   |- (S --> M), (Punctuation:Quest, Time:Task)
+       (P --> M), (M --> S), task("!")   |- (M --> S), (Punctuation:Quest, Time:Task)
 
 //EXEMPLIFICATION
     (P --> M), (M --> S), neqRCom(S,P), has(S,"."), has(P,".")   |- (S --> P), (Belief:Exemplification, Time:Compose)
@@ -35,8 +35,8 @@
        (P --> S), (M --> P), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
         (P --> S), (S --> M), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
-        (P --> M), (M --> S), task("!"), neqRCom(S,P)   |- (M --> S), (Punctuation:Quest, Time:Compose)
-        (M --> P), (S --> M), task("!"), neqRCom(S,P)   |- (S --> M), (Punctuation:Quest, Time:Compose)
+        (P --> M), (M --> S), task("!")   |- (M --> S), (Punctuation:Quest, Time:Task)
+        (M --> P), (S --> M), task("!")   |- (S --> M), (Punctuation:Quest, Time:Task)
 
 
 //ABDUCTION ---------------------------
@@ -52,9 +52,8 @@
        (P --> S), (M --> P), neqRCom(S,M)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
         (P --> S), (M --> S), neqRCom(P,M)  |- (M --> P), (Punctuation:AskAsk, Time:Task)
 
-        (P --> M), (S --> M), task("!"), neqRCom(M,P), neq(P,S)   |- (S --> M), (Punctuation:Quest, Time:Compose)
-        (M --> P), (M --> S), task("!"), neqRCom(M,P), neq(P,S)   |- (M --> S), (Punctuation:Quest, Time:Compose)
-
+        (P --> M), (S --> M), task("!"), neq(P,S)   |- (S --> M), (Punctuation:Quest, Time:Task)
+        (M --> P), (M --> S), task("!"), neq(P,S)   |- (M --> S), (Punctuation:Quest, Time:Task)
 
 //INDUCTION ---------------------------
 
@@ -70,8 +69,15 @@
        (P --> S), (P --> M), neqRCom(M,S)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
         (P --> S), (S --> M), neqRCom(M,P)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
 
-        (M --> P), (M --> S), task("!"), neqRCom(S,M), neq(P,S)  |- (M --> S), (Punctuation:Quest, Time:Compose)
-        (P --> M), (S --> M), task("!"), neqRCom(S,M), neq(P,S)  |- (S --> M), (Punctuation:Quest, Time:Compose)
+        (M --> P), (M --> S), task("!"), neq(P,S)  |- (M --> S), (Punctuation:Quest, Time:Task)
+        (P --> M), (S --> M), task("!"), neq(P,S)  |- (S --> M), (Punctuation:Quest, Time:Task)
 
 
+//abduction/induction similarity goal questions
+        (P --> M), (S --> M), task("!"), neqRCom(S,P)   |- (S <-> P), (Punctuation:Quest, Time:Task)
+        (M --> P), (M --> S), task("!"), neqRCom(S,P)   |- (S <-> P), (Punctuation:Quest, Time:Task)
+
+//similarity -> inheritance question propagation
+        (S <-> P), (S --> M), neqRCom(M,P)   |- (P --> M), (Punctuation:AskAsk, Time:Task)
+        (S <-> P), (M --> S), neqRCom(M,P)   |- (M --> P), (Punctuation:AskAsk, Time:Task)
 

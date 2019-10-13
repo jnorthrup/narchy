@@ -4,7 +4,7 @@ import nars.$;
 import nars.NAR;
 import nars.NARS;
 import nars.Narsese;
-import nars.derive.action.PremisePatternAction;
+import nars.derive.action.PatternHow;
 import nars.derive.premise.PatternTermBuilder;
 import nars.derive.rule.DeriverProgram;
 import nars.derive.rule.HowBuilder;
@@ -86,7 +86,7 @@ class PremiseRuleTest {
         {
 
 
-            HowBuilder x = PremisePatternAction.parse("A, A |- (A,A), (Belief:Intersection)");
+            HowBuilder x = PatternHow.parse("A, A |- (A,A), (Belief:Intersection)");
             assertNotNull(x);
 
 
@@ -97,7 +97,7 @@ class PremiseRuleTest {
         {
 
 
-            HowBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
+            HowBuilder x = PatternHow.parse("<A --> B>, <B --> A> |- <A <-> B>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -106,7 +106,7 @@ class PremiseRuleTest {
         {
 
 
-            HowBuilder x = PremisePatternAction.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
+            HowBuilder x = PatternHow.parse("<A --> B>, <B --> A> |- <A <-> nonvar>, (Belief:Intersection, Goal:Intersection)");
 
             assertEquals(vv, x.id.volume());
 
@@ -123,7 +123,7 @@ class PremiseRuleTest {
 //        }
 
 
-        HowBuilder x = PremisePatternAction.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
+        HowBuilder x = PatternHow.parse("(S --> M), (P --> M) |- (P <-> S), (Belief:Comparison,Goal:Desire)");
 
 
         assertEquals(vv, x.id.volume());
@@ -142,7 +142,7 @@ class PremiseRuleTest {
 
     @Test void MissingPatternVar() {
         assertThrows(Throwable.class,
-                ()-> PremisePatternAction.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
+                ()-> PatternHow.parse("X,Y |- (X,Z), (Belief:Analogy)").get());
     }
 
     @Test
@@ -172,7 +172,7 @@ class PremiseRuleTest {
     }
 
     @Deprecated private static void assertConcPattern(String r, String s) throws Narsese.NarseseException {
-        PremisePatternAction p = PremisePatternAction.parse(r);
+        PatternHow p = PatternHow.parse(r);
         p.get();
         assertEq(s, p.termify.pattern);
     }
@@ -355,7 +355,7 @@ TODO - share unification state for different truth/conclusions
 
     @Test
     void printTermRecursive() throws Narsese.NarseseException {
-        Compound y = (Compound) PremisePatternAction.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
+        Compound y = (Compound) PatternHow.parse("(S --> P), S |- (P --> S), (Belief:Conversion)").id;
         Terms.printRecursive(System.out, y);
     }
 

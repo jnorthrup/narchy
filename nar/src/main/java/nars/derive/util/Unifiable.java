@@ -3,7 +3,7 @@ package nars.derive.util;
 import nars.$;
 import nars.Op;
 import nars.derive.Derivation;
-import nars.derive.action.PremisePatternAction;
+import nars.derive.action.PatternHow;
 import nars.derive.rule.HowBuilder;
 import nars.op.UniSubst;
 import nars.subterm.Subterms;
@@ -28,7 +28,7 @@ public enum Unifiable { ;
         //TODO for strict case
     }
 
-    public static void constrainUnifiable(Subterms a, PremisePatternAction p) {
+    public static void constrainUnifiable(Subterms a, PatternHow p) {
 
         Term x = /*unwrapPolarize...*/(a.sub(1));
         if (x instanceof Variable) {
@@ -53,7 +53,7 @@ public enum Unifiable { ;
         }
     }
 
-    public static void constraintEvent(Subterms a, PremisePatternAction p, boolean unifiable) {
+    public static void constraintEvent(Subterms a, PatternHow p, boolean unifiable) {
         Term conj = a.sub(0);
         if (conj instanceof Variable) {
             Term x = a.sub(1);

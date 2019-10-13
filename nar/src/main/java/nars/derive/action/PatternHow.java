@@ -28,6 +28,7 @@ import nars.term.Variable;
 import nars.term.*;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
+import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import nars.term.util.conj.ConjMatch;
 import nars.term.util.transform.RecursiveTermTransform;
@@ -56,7 +57,7 @@ import static nars.time.Tense.DTERNAL;
  * A rule which matches a Premise and produces a Task
  * contains: preconditions, predicates, postconditions, post-evaluations and metainfo
  */
-public class PremisePatternAction extends CondHow {
+public class PatternHow extends CondHow {
 
     private final TruthModel truthModel;
 
@@ -75,7 +76,7 @@ public class PremisePatternAction extends CondHow {
 
 
 
-    public PremisePatternAction(TruthModel truthModel) {
+    public PatternHow(TruthModel truthModel) {
         this.truthModel = truthModel;
     }
 
@@ -88,12 +89,12 @@ public class PremisePatternAction extends CondHow {
         }
     }
 
-    public static PremisePatternAction parse(String ruleSrc) throws Narsese.NarseseException {
+    public static PatternHow parse(String ruleSrc) throws Narsese.NarseseException {
         return parse(ruleSrc, NALTruth.the);
     }
 
-    public static PremisePatternAction parse(String ruleSrc, TruthModel truthModel) throws Narsese.NarseseException {
-        PremisePatternAction r = new PremisePatternAction(truthModel);
+    public static PatternHow parse(String ruleSrc, TruthModel truthModel) throws Narsese.NarseseException {
+        PatternHow r = new PatternHow(truthModel);
         r._parse(ruleSrc);
         return r;
     }
@@ -317,7 +318,7 @@ public class PremisePatternAction extends CondHow {
     }
 
     public static Stream<PremiseRule> parse(Stream<String> rules) {
-        return rules.map(PremisePatternAction::parseSafe).map(HowBuilder::get).distinct();
+        return rules.map(PatternHow::parseSafe).map(HowBuilder::get).distinct();
     }
 
     private static Subterms parseRuleComponents(String src) throws Narsese.NarseseException {
@@ -606,13 +607,24 @@ public class PremisePatternAction extends CondHow {
 
         this.truthify = intern(Truthify.the(tp, beliefTruthOp, goalTruthOp, time));
 
+        if (concTerm instanceof Bool)
+            throw new TermException("conclusion pattern is bool", concTerm);
+
         this.termify = new Termify(conclusion(concTerm), truthify);
 
     }
 
 
     @Override protected How action(RuleCause cause) {
+        if (canMatchTask(taskPattern))
+            throw new TermException("pattern to match premise task content is not taskable", taskPattern);
+        if (canMatchTask(beliefPattern))
+            throw new TermException("pattern to match premise belief content is not taskable", beliefPattern);
         return new TruthifyDeriveAction(CONSTRAINTS, truthify, taskPattern, beliefPattern, termify, time, cause);
+    }
+
+    private static boolean canMatchTask(Term pattern) {
+        return !(pattern instanceof Variable) && !pattern.op().taskable;
     }
 
 
@@ -672,13 +684,13 @@ public class PremisePatternAction extends CondHow {
             if (f != Null) {
                 Subterms a = Functor._args(c);
                 if (f.equals(UniSubst.unisubst)) {
-                    Unifiable.constrainUnifiable(a, PremisePatternAction.this);
+                    Unifiable.constrainUnifiable(a, PatternHow.this);
                 } else if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER)) {
-                    Unifiable.constraintEvent(a, PremisePatternAction.this, true);
+                    Unifiable.constraintEvent(a, PatternHow.this, true);
                 } else if (f.equals(Derivation.Substitute)) {
-                    Unifiable.constrainSubstitute(a, PremisePatternAction.this);
+                    Unifiable.constrainSubstitute(a, PatternHow.this);
                 } else if (f.equals(Derivation.ConjWithout)) {
-                    Unifiable.constraintEvent(a, PremisePatternAction.this, false);
+                    Unifiable.constraintEvent(a, PatternHow.this, false);
                 }
 
                 Term cc = a.sub(0);

@@ -83,6 +83,7 @@
 //quest to 'how' impl question
 //    B, X, task("@"), --is(B,"==>") |- (polarizeBelief(X) ==> B), (Punctuation:Question, Time:TaskRelative)
      //B, X, task("@"), --is(B,"==>"), hasBelief() |- (polarizeRandom(B) ==> X), (Punctuation:Question)
+     B, C, task("@"), is(C,"&&"), --is(B,"==>") |- (C ==> B), (Punctuation:Question, Time:Task)
 
 //contrasting conjunction to implication
 //TODO test
@@ -105,8 +106,8 @@
 
 
     //anti-specific deduction: "conjunction contraposition"
-//    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-//    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
   //  G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP)
