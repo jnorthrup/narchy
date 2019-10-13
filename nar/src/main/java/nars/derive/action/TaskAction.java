@@ -12,9 +12,9 @@ public abstract class TaskAction extends NativeHow {
 
 	@Override
 	protected final void run(RuleCause why, Derivation d) {
-		this.volMax = d.nar.termVolMax.intValue();
-		accept(why, d._task, d);
+		this.volMax = d.termVolMax; //HACK
+		accept(d._task, why, d);
 	}
 
-	protected abstract void accept(RuleCause why, Task y, Derivation d);
+	protected abstract void accept(Task x, RuleCause why, Derivation d);
 }

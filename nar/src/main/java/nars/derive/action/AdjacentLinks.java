@@ -38,7 +38,7 @@ public class AdjacentLinks extends TaskAction {
 	}
 
 	@Override
-	protected void accept(RuleCause why, Task y, Derivation d) {
+	protected void accept(Task x, RuleCause why, Derivation d) {
 
 
 		Term to = d._beliefTerm;

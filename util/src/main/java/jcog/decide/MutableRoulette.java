@@ -62,9 +62,14 @@ public class MutableRoulette {
 
     private MutableRoulette(float[] w, FloatToFloatFunction weightUpdate, Random rng) {
         this.rng = rng;
-
         this.weightUpdate = weightUpdate;
         reset(w);
+    }
+
+    /** constructs and runs entirely in constructor */
+    public MutableRoulette(float[] weights, FloatToFloatFunction weightUpdate, Random rng, IntPredicate choose) {
+        this(weights, weightUpdate, rng);
+        while (next(choose)) { }
     }
 
     public void reset(float[] w) {
@@ -82,9 +87,11 @@ public class MutableRoulette {
 
     public MutableRoulette reweigh(int n, IntToFloatFunction initializer) {
         assert(n>0);
+
         if (w.length!=n)
             realloc(n);
 
+        float[] w = this.w;
         for (int i = 0; i < n; i++)
             w[i] = initializer.valueOf(i);
 
@@ -96,6 +103,7 @@ public class MutableRoulette {
         float s = 0;
 
         final int nn = n;
+        float[] w = this.w;
         for (int i = 0; i < nn; i++) {
             float wi = w[i];
             if (wi < 0 || !Float.isFinite(wi))
@@ -115,6 +123,9 @@ public class MutableRoulette {
             n = w.length;
         }
 
+        this.remaining = n;
+        this.weightSum = s;
+
         int l = w.length;
         if (l > 1 && n > 1) {
 //            this.direction = rng.nextBoolean();
@@ -128,8 +139,6 @@ public class MutableRoulette {
             this.i = 0;
         }
 
-        this.remaining = n;
-        this.weightSum = s;
 
         return this;
     }
@@ -149,9 +158,7 @@ public class MutableRoulette {
     }
 
     public static void runN(float[] weights, Random rng, FloatToFloatFunction weightUpdate, IntPredicate choose) {
-        MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng);
-        while (r.next(choose)) {
-        }
+        MutableRoulette r = new MutableRoulette(weights, weightUpdate, rng, choose);
     }
 
     public static void run1(float weight, FloatToFloatFunction weightUpdate, IntPredicate choose) {

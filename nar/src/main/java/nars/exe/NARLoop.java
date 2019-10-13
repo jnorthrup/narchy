@@ -22,7 +22,6 @@ abstract public class NARLoop extends InstrumentedLoop {
         nar = n;
     }
 
-
     public final static class NARLoopSync extends NARLoop {
 
         public NARLoopSync(NAR n) { super(n); }

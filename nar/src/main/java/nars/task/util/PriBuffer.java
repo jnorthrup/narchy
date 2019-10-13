@@ -198,7 +198,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 		public synchronized void start(ConsumerX<X> target, NAR nar) {
 			this.nar = nar;
 			this.target = target;
-			this.onCycle = nar.onCycle(this::commit);
+			this.onCycle = nar.onDur(this::commit);
 		}
 
 		@Override

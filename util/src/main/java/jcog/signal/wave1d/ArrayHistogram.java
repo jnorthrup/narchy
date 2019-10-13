@@ -86,17 +86,19 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
             float v = value - width/2f;
             float dv = width / (superSampling-1);
             for (int i = 0; i < superSampling; v += (++i) * dv)  {
-                int bin = Util.bin((v - lo) / rangeDelta, bins);
-                buffer[bin] += dw;
+                buffer[bin(v)] += dw;
             }
+        }
+
+        public final int bin(float v) {
+            return Util.bin((v - lo) / rangeDelta, bins);
         }
 
         public void add(float value, float weight) {
             mass += weight;
 
             //TODO anti-alias by populating >1 bins with fractions of the weight
-            int bin = Util.bin((value - lo) / rangeDelta, bins);
-            buffer[bin] += weight;
+            buffer[bin(value)] += weight;
 
             //data.addAt(weight, bin); //TODO unbuffered mode
         }
@@ -140,13 +142,8 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         if (flat)
             return rangeMin + u * (0.5f+rangeDelta); //flat, choose uniform random
 
-        WritableTensor data = this.data;
-        int bins = data.volume();
-
         //boolean direction = (Integer.bitCount(Float.floatToRawIntBits(u) ) & 1) != 0; //one RNG call
         //boolean direction = rng.nextBoolean();
-
-        int b;
 
         float B = Float.MAX_VALUE;
         boolean direction;
@@ -159,7 +156,9 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         }
         float m = u * mass;
 
-        for (b = 0; b < bins;) {
+        WritableTensor data = this.data;
+        int bins = data.volume();
+        for (int b = 0; b < bins;) {
             float db = data.getAt(direction ? b : (bins - 1 - b));
             if (db > m) {
                 B = b + m / db; //current bin plus fraction traversed
@@ -171,10 +170,8 @@ public class ArrayHistogram  /*AtomicDoubleArrayTensor*/  /* ArrayTensor */{
         }
 
         float p = Math.min(bins, B) / bins;
-        if (!direction)
-            p = 1 - p;
 
-        return p * rangeDelta + rangeMin;
+        return (direction ? p : 1-p) * rangeDelta + rangeMin;
     }
 
     public final int bins() {

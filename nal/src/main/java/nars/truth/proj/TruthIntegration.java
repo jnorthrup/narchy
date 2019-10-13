@@ -98,7 +98,10 @@ public class TruthIntegration {
 	public static double eviFast(Task t, long now) {
 		long s = t.start();  //assert(s!=ETERNAL);
 		long e = t.end();
-		return (1+e-s) * t.evi() / (1 + Util.mean((double)Math.abs(now - s), Math.abs(now - e)));
+		double dist = (now >= s && now <= e) ? 0 : Util.mean((double) Math.abs(now - s), Math.abs(now - e));
+		long range = 1 + e - s;
+		return range * t.evi() / (1 + dist);
+
 		//return (1+e-s) * t.evi() / (1 + Math.max(Math.abs(now - s), Math.abs(now - e))); //penalize long tasks even if they surround now evenly
 		///return t.range() * t.evi() / (1 + t.maxTimeTo(now));
 		//return NAL.evi(t.range() * t.evi(), t.meanTimeTo(now), 1.0f);

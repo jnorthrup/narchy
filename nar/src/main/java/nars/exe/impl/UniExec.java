@@ -17,11 +17,6 @@ public class UniExec extends Exec {
 
     private DeriverExecutor exe;
 
-    @Override public void deriver(Deriver d) {
-        super.deriver(d);
-        this.exe = new DeriverExecutor.QueueDeriverExecutor(deriver);
-    }
-
     public UniExec() {
         this(1);
     }
@@ -29,6 +24,12 @@ public class UniExec extends Exec {
     protected UniExec(int concurrencyMax) {
         super(concurrencyMax);
     }
+
+    @Override public void deriver(Deriver d) {
+        super.deriver(d);
+        this.exe = new DeriverExecutor.QueueDeriverExecutor(d);
+    }
+
 
     @Override
     public final int concurrency() {
@@ -39,8 +40,6 @@ public class UniExec extends Exec {
     public final boolean concurrent() {
         return false;
     }
-
-
 
     protected void next() {
 
@@ -58,10 +57,11 @@ public class UniExec extends Exec {
         boolean sync = timesliceNS == Long.MIN_VALUE;
         BooleanSupplier kontinue;
         if (sync) {
+            kontinue = null;
+        } else {
             long deadline = nanoTime() + timeSliceNS();
             kontinue = () -> nanoTime() < deadline;
-        } else
-            kontinue = null;
+        }
 
         exe.nextCycle();
 
@@ -69,9 +69,8 @@ public class UniExec extends Exec {
             if (w.isOn()) {
                 if (sync)
                     exe.nextSynch(w);
-                else {
+                else
                     exe.next(w, kontinue); //w.next(nanoTime(), timesliceNS);
-                }
             }
         }
     }

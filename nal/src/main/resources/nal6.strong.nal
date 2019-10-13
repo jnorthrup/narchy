@@ -29,6 +29,7 @@
        (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)                   |-   unisubst(C,X,B,"$"),  (Belief:DeductionRecursivePN,                   Time:BeliefEvent)
            B, (--X ==> C), --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionRecursiveNN,  Time:TaskEvent)
            (--X ==> C), B, --is(X,"--"),--is(B,"==>"), --isVar(C)               |- --unisubst(C,X,B,"$"),  (Belief:DeductionRecursiveNN,                   Time:BeliefEvent)
+
         B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakPP, Time:TaskEvent)
         B, (--X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakNP, Time:TaskEvent)
             B, (  X ==> C), --is(B,"==>"), --isVar(C), --is(X,"--")   |-  --unisubst(C,X,B,"$"),  (Goal:DeductionRecursiveWeakPN, Time:TaskEvent)
@@ -43,8 +44,11 @@
         //induction antigoal not valid since it will assume only one precondition polarity applies yet it may be the case that both pos and neg precondition apply
 
        //questions
-          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          B, (--A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")         |- unisubst((--A ==> C),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
+          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")   |- unisubst(  (A ==> C),A,B,novel), (Punctuation:Question, Time:TaskEvent)
+            B, (--A ==> C), task("?@"), --is(A,"--"), --is(B,"==>") |- unisubst((--A ==> C),A,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B, (  A ==> C), task("?@"), --is(A,"--"), --is(B,"==>")   |- unisubst(  (A ==> C),C,B,novel), (Punctuation:Question, Time:TaskEvent)
         //questions
-          B, (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,"$",novel), (Punctuation:Question, Time:TaskEvent)
-          //B, (C ==> A), task("?@"), --is(A,"#"),--is(C,"#"), --is(B,"==>") |- unisubst(C,A,B,"$"), (Time:TaskEvent)
+          B,     (C ==> A), task("?@"), --is(B,"==>") |- unisubst((C ==> A),A,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B,     (C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(C,A,B,novel), (Punctuation:Question, Time:TaskEvent)
+          B,     (C ==> A), task("?@"), --is(C,"#"), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)
+            B, (--C ==> A), task("?@"), --is(C,{"--","#"}), --is(B,"==>") |- unisubst(A,C,B,novel), (Punctuation:Question, Time:TaskEvent)

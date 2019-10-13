@@ -17,12 +17,10 @@ import java.util.Queue;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
 
-import static java.lang.System.nanoTime;
-
 /**
  * instance of an execution model associating a Deriver with a Derivation
  */
-public abstract class DeriverExecutor implements BooleanSupplier {
+public abstract class DeriverExecutor  {
 
 	public final Deriver deriver;
 	public final Derivation d;
@@ -38,10 +36,10 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		float tPri = t.priElseZero();
 		if (b != null)
 			return
-				//Util.or(
+				Util.or(
 					//Util.min(
-					//Util.mean(
-				Util.sum(
+				//Util.mean(
+				//Util.sum(
 					tPri, b.priElseZero()
 				);
 		else
@@ -75,11 +73,10 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 	public abstract void add(Premise p);
 
 	public void nextSynch(What w) {
-
-		next(w, () -> false);
+		next(w, onlyOneIteration);
 	}
 
-
+	static final BooleanSupplier onlyOneIteration = () -> false;
 
 //	public long next(What w, long startNS, long useNS) {
 ////		if (w.tryCommit()) {
@@ -130,18 +127,9 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		d.next(w);
 	}
 
-
-	private transient long deadline = Long.MIN_VALUE;
-
-	@Override
-	public final boolean getAsBoolean() {
-		return nanoTime() < deadline;
-	}
-
-	public final void nextCycle() {
+	public void nextCycle() {
 		d.next();
 	}
-
 
 	public static class QueueDeriverExecutor extends DeriverExecutor {
 
@@ -151,12 +139,18 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		//new ArrayHashSet<>(capacity)
 
 
-		int iterationTTL = 8;
+		int iterationTTL = 9;
 
 
 
 		public QueueDeriverExecutor(Deriver deriver) {
 			super(deriver);
+		}
+
+		@Override
+		public void nextCycle() {
+			super.nextCycle();
+			queue.clear();
 		}
 
 		@Override
@@ -172,8 +166,8 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 			do {
 
 				//if (queue.size() < mainTTL - 1) {
-				//if (q.isEmpty()) {
-				if (q.size() < mainTTL/2) {
+				if (q.isEmpty()) {
+				//if (q.size() < mainTTL/2) {
 					Premise s = sample();
 					if (s!=null)
 						q.offer(s);

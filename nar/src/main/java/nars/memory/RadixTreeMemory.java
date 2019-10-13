@@ -52,7 +52,7 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 	public void start(NAR nar) {
 		super.start(nar);
 
-		nar.onCycle(this);
+		nar.onDur(this);
 	}
 
 

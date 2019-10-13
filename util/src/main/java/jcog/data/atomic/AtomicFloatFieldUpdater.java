@@ -47,13 +47,11 @@ public final class AtomicFloatFieldUpdater<X>  {
 
         //INT.updateAndGet(x, v -> floatToIntBits(intBitsToFloat(v) + addAt));
 
-        int prev;
-        int next;
+        int prev, next;
         do {
             prev = INT.get(x);
             next = floatToIntBits( intBitsToFloat(prev) + add);
         } while(prev!=next && !INT.compareAndSet(x, prev, next));
-
 
 
         //adapted from AtomicDouble:

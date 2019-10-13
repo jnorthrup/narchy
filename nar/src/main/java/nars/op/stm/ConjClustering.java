@@ -176,7 +176,7 @@ public class ConjClustering extends TaskAction {
 
 
     @Override
-    protected void accept(RuleCause why, Task x, Derivation d) {
+    protected void accept(Task x, RuleCause why, Derivation d) {
 
         NAR nar = d.nar;
 

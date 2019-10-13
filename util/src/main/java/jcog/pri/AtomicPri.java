@@ -6,7 +6,6 @@ import jcog.util.FloatFloatToFloatFunction;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
 
 import static java.lang.Float.floatToIntBits;
-import static java.lang.Float.intBitsToFloat;
 import static jcog.data.atomic.AtomicFloatFieldUpdater.iNaN;
 import static jcog.data.atomic.AtomicFloatFieldUpdater.iZero;
 
@@ -28,7 +27,10 @@ public abstract class AtomicPri implements ScalarValue {
 
 
     /** initialized to zero */
-    public final int pri = iZero;
+    public volatile int pri = iZero;
+    static final FloatToFloatFunction vNonZero = AtomicPri::_vNonZero;
+    static final FloatToFloatFunction vUnit = AtomicPri::_vUnit;
+
 
     /** initialized to zero */
     public AtomicPri() {
@@ -36,14 +38,15 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     public AtomicPri(float p) {
-        if (p == p) {
-            if (p == 0f)
-                return; //HACK default is already zero
-            pri(p);
-        } else {
-            //start deleted
-            PRI.INT.lazySet(this, iNaN); //HACK
-        }
+        pri(p);
+//        if (p == p) {
+//            if (p == 0f)
+//                return; //HACK default is already zero
+//            pri(p);
+//        } else {
+//            //start deleted
+//            PRI.INT.lazySet(this, iNaN); //HACK
+//        }
     }
 
     public AtomicPri(Prioritized x) {
@@ -106,7 +109,7 @@ public abstract class AtomicPri implements ScalarValue {
 
     @Override
     public float pri() {
-        return intBitsToFloat( _pri() );
+        return PRI.INT.getFloat(this);
     }
     public final int priComparable() {
         return _pri();
@@ -123,13 +126,13 @@ public abstract class AtomicPri implements ScalarValue {
 
     @Override public float priSetAndGet(float p) {
         float v = post().valueOf(p);
-        PRI.INT.set(this, floatToIntBits(v));
+        PRI.INT.set(this, v);
         return v;
     }
 
     /** set */
     @Override public final <P extends ScalarValue> P pri(float p) {
-        PRI.INT.set(this, floatToIntBits(post().valueOf(p)));
+        PRI.INT.set(this, post().valueOf(p));
         return (P) this;
     }
 
@@ -176,7 +179,7 @@ public abstract class AtomicPri implements ScalarValue {
     }
 
     private FloatToFloatFunction post() {
-        return unit() ? AtomicPri::_vUnit : AtomicPri::_vNonZero;
+        return unit() ? vUnit : vNonZero;
     }
 
     /** override and return true if the implementation clamps values to 0..+1 (unit) */

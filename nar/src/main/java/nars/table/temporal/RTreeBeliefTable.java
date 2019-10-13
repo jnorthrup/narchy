@@ -468,7 +468,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	}
 
 
-	static final class FurthestWeakest implements FloatFunction<Task> {
+	static final class FurthestWeakest implements FloatRank<Task> {
 
 		final long now;
 		final double dur;
@@ -479,7 +479,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		}
 
 		@Override
-		public float floatValueOf(Task t) {
+		public float rank(Task t, float min) {
 			//return -Answer.beliefStrength(t, now, dur);
 			return -(float) TruthIntegration.eviFast(t, now);
 		}

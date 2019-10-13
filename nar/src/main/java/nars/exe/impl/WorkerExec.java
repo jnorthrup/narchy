@@ -128,11 +128,11 @@ public class WorkerExec extends ThreadedExec {
 							((Consumer<DeriverExecutor>) W).accept(dExe); //d.next()
 
 							//dExe.next(this);
-							int cycles = 0;
+//							int cycles = 0;
 							do {
 
 								dExe.next();
-								cycles++;
+//								cycles++;
 
 							} while (nanoTime() < deadline);
 							//System.out.println(dExe.d.what + " " + cycles + " cyc");

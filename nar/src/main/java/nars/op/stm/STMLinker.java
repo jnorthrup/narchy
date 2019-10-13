@@ -93,7 +93,7 @@ public class STMLinker extends TaskAction {
 	}
 
 	@Override
-	protected void accept(RuleCause why, Task x, Derivation d) {
+	protected void accept(Task x, RuleCause why, Derivation d) {
 		if (!filter(x))
 			return;
 

@@ -358,14 +358,15 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
     @Override
     public void sampleUnique(Random rng, Predicate<? super Y> kontinue) {
         int s = size();
-        if (s == 0)
-            return;
+        if (s == 0) return;
 
         Object[] ll = items();
+        s = Math.min(s, ll.length);
+        if (s == 0) return;
 
         //starting point, sampled from bag histogram
         int p = sampleNext(rng,s);
-        if (p >= ll.length) p = ll.length-1;
+        if (p >= s) p = s-1;
 
         //scan up then down
         for (int j = 0; j < s; j++) {
@@ -433,14 +434,10 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
     public int sampleNext(@Nullable Random rng, int size) {
         return (rng == null || size <= 1) ? 0 :
-            sampleHistogram(rng);
+            hist.sampleInt(rng);
             //sampleNextLinearNormalized(rng,size);
             //sampleNextBiLinearNormalized(rng,size);
             //sampleNextLinear(rng, size);
-    }
-
-    private int sampleHistogram(Random rng) {
-        return hist.sampleInt(rng);
     }
 
     /**

@@ -107,8 +107,8 @@ public class Emotion implements Meter, Consumer<NAR> {
      */
     public final float[] want = new float[MetaGoal.values().length];
     public final FloatAveragedWindow
-            busyVol = new FloatAveragedWindow(history, 0.5f, 0f),
-            busyVolPriWeighted = new FloatAveragedWindow(history, 0.5f, 0);
+            busyVol = new FloatAveragedWindow(history, 0.75f, 0f),
+            busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
     private final NAR nar;
 
     /**

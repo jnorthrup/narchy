@@ -24,15 +24,17 @@ import static java.lang.System.nanoTime;
 
 abstract public class MultiExec extends Exec {
 
-    /**
-     * global sleep nap period
-     */
-    protected static final long NapTimeNS = 500 * 1000; //on the order of 0.5ms
+//    /**
+//     * global sleep nap period
+//     */
+//    protected static final long NapTimeNS = 500 * 1000; //on the order of 0.5ms
+//
+//    static final double lagAdjustmentFactor =
+//            0.5;
 
-    static final double lagAdjustmentFactor =
-            0.5;
+    long subCycleNS = 2_000_000;
 
-    //2; //<- untested
+
     static private final float queueLatencyMeasurementProbability = 0.003f;
     /**
      * 0..1.0: determines acceptable reaction latency.
@@ -46,7 +48,7 @@ abstract public class MultiExec extends Exec {
     volatile long threadWorkTimePerCycle;
     volatile long cycleIdealNS;
     volatile long lastDur /* TODO lastNow */ = System.nanoTime();
-    private Off cycle;
+    private Off onDur;
 
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
@@ -86,12 +88,12 @@ abstract public class MultiExec extends Exec {
 
         super.starting(n);
 
-        cycle = n.onCycle(this::update);
+        onDur = n.onDur(this::update);
     }
 
     @Override
     protected void stopping(NAR nar) {
-        cycle.close(); cycle = null;
+        onDur.close(); onDur = null;
 
         super.stopping(nar);
     }
@@ -116,7 +118,7 @@ abstract public class MultiExec extends Exec {
 
         updateTiming();
 
-        long subCycleNS = 5_000_000;
+
 
         float workPct = 0; //HACK Math.max(0.5f, workDemand());
 

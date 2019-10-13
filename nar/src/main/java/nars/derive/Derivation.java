@@ -233,11 +233,11 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         How a = r.action;
 
-        if (NAL.TRACE)
-            a.trace(this);
-
         if (a instanceof PremisePatternAction.TruthifyDeriveAction)
             reset(r.truth, r.punc, r.single);
+
+        if (NAL.TRACE)
+            a.trace(this);
 
         a.run(this);
 
@@ -249,9 +249,9 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     }
 
     public boolean unify(Term x, Term y, @Nullable Taskify finish) {
-        if (finish!=null) {
+        if (finish!=null)
             taskify = finish;
-        }
+
         return unify.unify(x, y, finish!=null);
     }
 
@@ -286,7 +286,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
                 if (t != null) {
                     try (var __ = emotion.derive_F_Remember.time()) {
-                        remember(t);
+                        return remember(t);
                     }
                 } //else: taskify faliure is handled in taskify
 
@@ -491,6 +491,8 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         this.priSingle = priSingle;
         this.priDouble = priDouble;
+        this.eviSingle = task.isBeliefOrGoal() ? task.evi() : 0;
+        this.eviDouble = this.eviSingle + (belief!=null ? belief.evi() : 0);
         return true;
     }
 
@@ -499,16 +501,14 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
      */
     void truthifyReady() {
 
+        Task task = _task;
+        this.overlapSingle = task.isCyclic();
 
-        this.overlapSingle = _task.isCyclic();
-
-
-        this.eviSingle = _task.isBeliefOrGoal() ? _task.evi() : 0;
-        if (_belief != null) {
+        Task belief = _belief;
+        if (belief != null) {
             this.overlapDouble =
-                Stamp.overlapAny(this._task, _belief);
+                Stamp.overlapAny(task, belief);
                 //Stamp.overlap(this._task, _belief);
-            this.eviDouble = this.eviSingle + _belief.evi();
         } else {
             this.overlapDouble = false; //N/A
         }
@@ -519,7 +519,11 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         unify.setTTL(ttl); //HACK TODO use global TTL register
     }
 
-    public void ready() {
+    public void ready(int deriveTTL) {
+        this.stampDouble = stampSingle = null; //TODO maybe can be re-used
+        ttl(deriveTTL);
+        budget(_task, _belief);
+
         boolean eternalCompletely = (taskStart == ETERNAL) && (_belief == null || beliefStart == ETERNAL);
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || (!beliefTerm.equals(taskTerm) && Occurrify.temporal(beliefTerm));
     }
@@ -535,12 +539,12 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /** next cycle, updates cached values for remainder of cycle. call before any next(w) */
     public Derivation next() {
         NAR n = nar;
+        what = null;
         time = n.time();
         ditherDT = n.dtDither();
         confMin = n.confMin.conf();
         eviMin = n.confMin.evi();
         termVolMax = n.termVolMax.intValue();
-        what = null;
         return this;
     }
 
@@ -569,7 +573,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
 
 
-        float uttd = n.unifyTimeToleranceDurs.floatValue();
+        float uttd = n.unifyDTToleranceDurs.floatValue();
         for (Unify u : _u)
             u.dtTolerance =
                 //n.dtDither(); //FINE
@@ -654,13 +658,12 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
             return y;
     }
 
-    public final void remember(Task t) {
+    public final boolean remember(Task t) {
 
         what.accept(t);
         nar.emotion.deriveTask.increment();
 
-        unify.use(NAL.derive.TTL_COST_TASK_REMEMBER);
-
+        return unify.use(NAL.derive.TTL_COST_TASK_REMEMBER);
     }
 
     /** returns appropriate Emotion counter representing the result state  */
@@ -670,37 +673,33 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         Emotion e = nar.emotion;
         try (var __ = e.derive_C_Pre.time()) {
-
-            preReady(p, deriveTTL);
-
-            can = deriver.program.pre.apply(this);
-            if (can.length == 0)
-                return e.premiseUnderivable1;
-
+            can = preReady(p);
         }
+
+        if (can.length == 0)
+            return e.premiseUnderivable1;
+
         int valid = 0, lastValid = -1;
         PremiseRunnable[] post = this.post;
 
         try (var __ = e.derive_D_Truthify.time()) {
-
             this.truthifyReady();
 
             How[] branch = this.deriver.program.branch;
-
             for (int i = 0; i < can.length; i++) {
                 if ((post[i].pri(branch[can[i]], this)) > Float.MIN_NORMAL) {
                     lastValid = i;
                     valid++;
                 }
             }
-            if (valid == 0) {
-                return e.premiseUnderivable2;
-            }
         }
+
+        if (valid == 0)
+            return e.premiseUnderivable2;
 
         try (var __ = e.derive_E_Run.time()) {
 
-            this.ready();  //use remainder
+            this.ready(deriveTTL);  //use remainder
 
             if (valid == 1) {//optimized 1-option case
 
@@ -731,20 +730,17 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         return e.premiseRun;
     }
 
-    private void preReady(Premise p, int deriveTTL) {
+    private short[] preReady(Premise p) {
 
         this.premise = p;
-
-        ttl(deriveTTL);
-
-        this.stampDouble = stampSingle = null; //TODO maybe can be re-used
 
         this._task = resetTask(p.task(), this._task);
 
         Term nextBeliefTerm = p.beliefTerm();
         this._belief = resetBelief(p.belief(), this._beliefTerm = nextBeliefTerm);
 
-        budget(_task, _belief);
+
+        return deriver.program.pre.apply(this);
     }
 
 

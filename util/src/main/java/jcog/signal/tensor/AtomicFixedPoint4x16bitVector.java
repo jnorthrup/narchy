@@ -23,7 +23,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     private static final int[] QUAD_16_SHAPE = new int[] { 4 };
     public static final float SHORT_TO_FLOAT_SCALE = Short.MAX_VALUE*2 + 1;
     private static final MetalAtomicLongFieldUpdater<AtomicFixedPoint4x16bitVector> X =
-        new MetalAtomicLongFieldUpdater(AtomicFixedPoint4x16bitVector.class, "x");
+        new MetalAtomicLongFieldUpdater<>(AtomicFixedPoint4x16bitVector.class, "x");
     private volatile long x;
 
     /**
@@ -92,14 +92,13 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
             int yi = toShort(y);
             if (xi == yi) {
-                //no change
-                y = x;
+                y = x; //no change
                 break;
             }
 
             _y = (_x & mask) | (((long)yi) << shift);
 
-        } while(!X.compareAndSet(this, _x, _y));
+        } while (!X.compareAndSet(this, _x, _y));
 
         return returning.apply(arg, x, y);
     }
@@ -116,7 +115,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
     }
 
     @Override
-    public float getAt(int linearCell) {
+    public final float getAt(int linearCell) {
         return toFloat(X.get(this), linearCell);
     }
 

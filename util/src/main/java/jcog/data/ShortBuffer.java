@@ -21,7 +21,7 @@ public final class ShortBuffer {
         int size = this.size;
         if (size == 0)
             return ArrayUtil.EMPTY_SHORT_ARRAY;
-        else if (!clone && this.size == items.length)
+        else if (!clone && size == items.length)
             return items;
         else
             return Arrays.copyOf(items, size);
@@ -36,9 +36,11 @@ public final class ShortBuffer {
     }
 
     public void addAll(short[] can) {
-        int s = size;
-        for (short x : can)
-            items[s++] = x;
-        size = s;
+        //int s = size;
+        //short[] items = this.items;
+        System.arraycopy(can, 0, items, size, can.length);
+//        for (short x : can)
+//            items[s++] = x;
+        size += can.length;
     }
 }
