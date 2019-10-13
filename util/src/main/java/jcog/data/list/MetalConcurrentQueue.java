@@ -134,11 +134,11 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
         int cap = capacity();
         while (true) {
-            final int tail = this.tail.getAcquire();
+            final int tail = this.tail.get();
             // never offer onto the slot that is currently being polled off
 
             // will this sequence exceed the capacity
-            int h = head.getAcquire();
+            int h = head.get();
             if (cap > tail - h) {
                 // does the sequence still have the expected
                 // value
@@ -188,9 +188,9 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
         int spin = 0;
         int cap = capacity();
         do {
-            final int head = this.head.getAcquire();
+            final int head = this.head.get();
             // is there data for us to poll
-            int tail = this.tail.getAcquire();
+            int tail = this.tail.get();
             int s = tail - head;
             if (s <= 0)
                 return null; //empty
@@ -332,22 +332,20 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
     }
 
     private boolean canTake(int tail, int n) {
-        return this.nextTail.weakCompareAndSetAcquire(tail, tail + n);
-        //return this.nextTail.compareAndSet(tail, tail + n);
+        return this.nextTail.compareAndSet(tail, tail + n);
     }
 
     private boolean canPut(int head, int n) {
-        return this.nextHead.weakCompareAndSetAcquire(head, head + n);
-        //return this.nextHead.compareAndSet(head, head + n);
+        return this.nextHead.compareAndSet(head, head + n);
     }
 
     private void take(int tail, int n) {
-        this.tail.setRelease(tail + n);
+        this.tail.set(tail + n);
     }
 
     private void put(int head, int n) {
         //TODO attempt to set head=tail=0 if size is now zero. this returns the queue to a canonical starting position and might somehow improve cpu caching
-        this.head.setRelease(head + n);
+        this.head.set(head + n);
     }
 
     public int clear(Consumer<X> each) {
@@ -368,10 +366,10 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
         int spin = 0;
         int k = 0;
         main: while (true) {
-            int head = this.head.getAcquire(); // prepare to qualify?
+            int head = this.head.get(); // prepare to qualify?
             // is there data for us to poll
             // we must take a difference in values here to guard against integer overflow
-            int tail = this.tail.getAcquire();
+            int tail = this.tail.get();
             int s = tail - head;
             if (s <= 0)
                 return k; //empty

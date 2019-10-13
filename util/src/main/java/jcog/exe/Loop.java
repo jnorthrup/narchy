@@ -178,7 +178,6 @@ abstract public class Loop extends FixedRateTimedFuture {
         if (!running.compareAndSet(false, true))
             return;
 
-
         try {
             beforeNext();
             if (!next()) {

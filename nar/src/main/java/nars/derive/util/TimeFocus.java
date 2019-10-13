@@ -2,10 +2,7 @@ package nars.derive.util;
 
 import nars.Task;
 import nars.attention.What;
-import nars.derive.Derivation;
 import nars.term.Term;
-import nars.time.When;
-import nars.time.event.WhenTimeIs;
 
 /** the deriver uses TimeFocus implementations to determine TWO specific time intervals,
  * the second depending indirectly on the first:

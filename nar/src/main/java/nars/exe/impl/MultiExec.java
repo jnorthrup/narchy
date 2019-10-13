@@ -2,9 +2,8 @@ package nars.exe.impl;
 
 import jcog.Texts;
 import jcog.Util;
+import jcog.data.atomic.MetalAtomicReferenceArray;
 import jcog.data.list.FasterList;
-import jcog.data.list.MetalConcurrentQueue;
-import jcog.data.set.LongObjectArraySet;
 import jcog.event.Off;
 import jcog.math.FloatRange;
 import nars.NAR;
@@ -14,9 +13,11 @@ import nars.derive.DeriverExecutor;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.time.clock.RealTime;
-import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
@@ -46,13 +47,6 @@ abstract public class MultiExec extends Exec {
     volatile long cycleIdealNS;
     volatile long lastDur /* TODO lastNow */ = System.nanoTime();
     private Off cycle;
-
-    /** TODO double buffer access to this so it may be updated while read */
-    protected final MetalConcurrentQueue<Schedule> schedule = new MetalConcurrentQueue<>(2);
-    {
-        for (int i = 0; i < 2; i++) schedule.add(new Schedule());
-    }
-
 
 
     MultiExec(int concurrencyMax  /* TODO adjustable dynamically */) {
@@ -124,14 +118,13 @@ abstract public class MultiExec extends Exec {
 
         long subCycleNS = 5_000_000;
 
-        float workPct = workDemand();
+        float workPct = 0; //HACK Math.max(0.5f, workDemand());
 
-        Schedule schedWrite = schedule.peek(1); //access next schedule
-        schedWrite.update(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, workPct /* TODO adapt */, 1-nar.loop.throttle.floatValue());
+
+        schedule.update(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, 5,
+            workPct /* TODO adapt */, 1-nar.loop.throttle.floatValue());
         //System.out.println(schedWrite.size() + " sched entries");
         //schedWrite.print(System.out); System.out.println();
-        @Nullable Schedule popped = schedule.poll(); //schedWrite now live in 0th position for readers
-        schedule.offer(popped); //push to end of queue
     }
 
     /** estimate proportion of duty cycle that needs applied to queued work tasks.
@@ -139,53 +132,102 @@ abstract public class MultiExec extends Exec {
     abstract protected float workDemand();
 
     /** special consumer implementing throttle instruction */
-    public static final Consumer SLEEP = (e) -> {};
+    static final Consumer SLEEP = (e) -> {};
 
     /** special consumer implementing work instruction */
-    public static final Consumer WORK = (e) -> {};
+    static final Consumer WORK = (e) -> {};
 
-    static class Schedule extends LongObjectArraySet<Consumer<DeriverExecutor> /* switcher*/> {
+    /** hijackbag-like array to sample tasks from, tiled in proportional amounts like a discrete
+     * roulette select on to a MetalAtomicReferenceArray*/
+    @Deprecated static class Schedule  {
 
-        public void update(AntistaticBag<What> w, double durNS, long subCycleNS, double workPct, double sleepPct) {
-            clear();
+        long timeSliceNS = 100_000;
+        MetalAtomicReferenceArray<Consumer<DeriverExecutor> /* switcher*/> tasks = new MetalAtomicReferenceArray<>(0);
+        final AtomicInteger writer = new AtomicInteger(0);
+        final AtomicBoolean writing = new AtomicBoolean(false);
 
-            if (workPct + sleepPct > 1) {
-                //only work and sleep but calculate the correct proportion:
-                workPct = (workPct / (workPct+sleepPct)); //renormalize
-                sleepPct = 1-workPct;
+        void resize(double durNS, double timeSliceNS, float supersampling) {
+            resize( (int)Math.max(1, Math.ceil((durNS * supersampling) / timeSliceNS)) );
+            this.timeSliceNS = Math.round(timeSliceNS);
+        }
+
+        void resize(int capacity) {
+            MetalAtomicReferenceArray<Consumer<DeriverExecutor>> t = this.tasks;
+            if (t.length() != capacity) {
+                MetalAtomicReferenceArray<Consumer<DeriverExecutor>> newTasks = new MetalAtomicReferenceArray<>(capacity);
+                newTasks.fill(WORK); //TODO copy the original array, cyclically tiled into next
+                this.tasks = newTasks;
             }
+        }
 
-            double workNS = (durNS * workPct);
-            double sleepNS = (durNS * sleepPct);
-            int nw = (int)Math.max(1, workNS / subCycleNS);
-            for (int i = 0; i < nw; i++)
-                addDirect(subCycleNS, WORK);
+        private void add(int k, Consumer c) {
+            MetalAtomicReferenceArray<Consumer<DeriverExecutor>> t = this.tasks;
+            int n = writer.get();
+            int len = t.length();
+            for (int i = 0; i < k; i++) {
+                if (n == len)
+                    n = 0;
+                t.setFast(n++, c);
+            }
+            writer.set(n);
+        }
 
-            int ns = (int) Math.floor(sleepNS / subCycleNS);
-            for (int i = 0; i < ns; i++)
-                addDirect(subCycleNS, SLEEP);
+        public Consumer get(Random r) {
+            MetalAtomicReferenceArray<Consumer<DeriverExecutor>> t = this.tasks;
+            return t.getFast(r.nextInt(t.length()));
+        }
 
-            double playPct = Math.max(0, 1f - (workPct + sleepPct));
-            if (playPct>0) {
-                double playNS = durNS * playPct;
-                double mass = w.mass();
-                for (What ww : w) {
-                    double priNorm = ww.priElseZero() / mass;
-                    double wPlayNS = (priNorm * playNS);
-                    int np = (int) Math.max(1, wPlayNS / subCycleNS);
-                    Consumer<DeriverExecutor> wws = ww.switcher;
-                    for (int i = 0; i < np; i++)
-                        addDirect(subCycleNS, wws);
+        public Schedule() {
+            resize(1);
+        }
+
+        public void update(AntistaticBag<What> w, double durNS, double timeSliceNS, float supersampling, double workPct, double sleepPct) {
+            if (!writing.compareAndSet(false, true))
+                return;
+
+            try {
+
+                resize(durNS, timeSliceNS, supersampling); //durNS *= supersampling;
+
+                if (workPct + sleepPct > 1) {
+                    //only work and sleep but calculate the correct proportion:
+                    workPct = (workPct / (workPct + sleepPct)); //renormalize
+                    sleepPct = 1 - workPct;
                 }
+
+                double workNS = (durNS * workPct);
+                double sleepNS = (durNS * sleepPct);
+                int nw = (int) Math.max(1, workNS * supersampling / timeSliceNS);
+                add(nw, WORK);
+
+                int ns = (int) Math.floor(sleepNS * supersampling / timeSliceNS);
+                add(ns, SLEEP);
+
+                double playPct = Math.max(0, 1f - (workPct + sleepPct));
+                if (playPct > 0) {
+                    double playNS = durNS * playPct;
+                    double mass = w.mass();
+                    for (What ww : w) {
+                        double priNorm = ww.priElseZero() / mass;
+
+                        double wPlayNS = (priNorm * playNS);
+                        int np = (int) Math.max(1, wPlayNS * supersampling / timeSliceNS);
+                        Consumer<DeriverExecutor> wws = ww.switcher;
+                        add(np, wws);
+                        //System.out.println(ww + " " + priNorm + " " + np);
+                    }
+                }
+            } finally {
+                writing.set(false);
             }
         }
 
         public void print(PrintStream out) {
-            forEachEvent((when,what)->out.println(Texts.timeStr(when) + "\t" + what));
+            //forEachEvent((when,what)->out.println(Texts.timeStr(when) + "\t" + what));
         }
     }
 
-
+    final Schedule schedule = new Schedule();
 
     private void updateTiming() {
 

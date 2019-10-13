@@ -146,12 +146,16 @@ public class MetalAtomicReferenceArray<E>  {
 	 * @param newValue the new value
 	 */
 	public final void set(int i, E newValue) {
-		unsafe.putObjectVolatile(array, checkedByteOffset(i), newValue);
+		setRaw(checkedByteOffset(i), newValue);
 	}
 
 	/** use with caution */
 	public final void setFast(int i, E newValue) {
-		unsafe.putObjectVolatile(array, byteOffset(i), newValue);
+		setRaw(byteOffset(i), newValue);
+	}
+
+	private final void setRaw(long i, E newValue) {
+		unsafe.putObjectVolatile(array, i, newValue);
 	}
 
 	/**
@@ -175,10 +179,13 @@ public class MetalAtomicReferenceArray<E>  {
 	 */
 	@SuppressWarnings("unchecked")
 	public final E getAndSet(int i, E newValue) {
-		return (E)unsafe.getAndSetObject(array, checkedByteOffset(i), newValue);
+		return getAndSetRaw(checkedByteOffset(i), newValue);
 	}
 	public final E getAndSetFast(int i, E newValue) {
-		return (E)unsafe.getAndSetObject(array, byteOffset(i), newValue);
+		return getAndSetRaw(byteOffset(i), newValue);
+	}
+	public final E getAndSetRaw(long i, E newValue) {
+		return (E)unsafe.getAndSetObject(array, i, newValue);
 	}
 
 
@@ -197,9 +204,8 @@ public class MetalAtomicReferenceArray<E>  {
 		return compareAndSetRaw(checkedByteOffset(i), expect, update);
 	}
 
-	public boolean compareAndSetRelease(int i, E expect, E update) {
-		//HACK
-		return unsafe.compareAndSwapObject(array, byteOffset(i), expect, update);
+	public boolean compareAndSetFast(int i, E expect, E update) {
+		return compareAndSetRaw(byteOffset(i), expect, update);
 	}
 
 	private boolean compareAndSetRaw(long offset, E expect, E update) {
@@ -287,7 +293,7 @@ public class MetalAtomicReferenceArray<E>  {
 		do {
 			prev = getRaw(offset);
 			next = accumulatorFunction.apply(prev, x);
-		} while (!compareAndSetRaw(offset, prev, next));
+		} while (prev!=next && !compareAndSetRaw(offset, prev, next));
 		return prev;
 	}
 
@@ -313,7 +319,7 @@ public class MetalAtomicReferenceArray<E>  {
 		do {
 			prev = getRaw(offset);
 			next = accumulatorFunction.apply(prev, x);
-		} while (!compareAndSetRaw(offset, prev, next));
+		} while (prev!=next && !compareAndSetRaw(offset, prev, next));
 		return next;
 	}
 
@@ -336,6 +342,12 @@ public class MetalAtomicReferenceArray<E>  {
 		}
 	}
 
+	public void fill(E e) {
+		//TODO optimized scan through
+		int n = length();
+		for (int i = 0; i < n; i++)
+			setFast(i, e);
+	}
 
 
 //	/**

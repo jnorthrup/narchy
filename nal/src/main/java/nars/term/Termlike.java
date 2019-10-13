@@ -4,7 +4,6 @@ import jcog.TODO;
 import nars.Op;
 import nars.term.atom.Bool;
 import org.eclipse.collections.api.block.function.primitive.IntObjectToIntFunction;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;

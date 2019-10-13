@@ -56,11 +56,11 @@ abstract public class ThreadedExec extends MultiExec {
 //            executeNow(helping);
 //        }
 
-        if (!in.offer(x)) { //try again
+        //if (!in.offer(x)) { //try again
             logger.error("{} queue blocked offer={}", this, x);
             //TODO print queue contents, but only from one thread and not more than every N seconds
             executeNow(x); //else: execute (may deadlock)
-        }
+        //}
     }
 
 
@@ -86,7 +86,7 @@ abstract public class ThreadedExec extends MultiExec {
                     synchronized (exe) {
                         demand = idealThreads - _concurrency();
                         if (demand > 0) {
-                            exe.execute(loop(), demand, false);
+                            exe.execute(loop(), demand, affinity);
                             _concurrency();
                         }
                     }

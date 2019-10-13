@@ -38,7 +38,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         Term imageNormalized = Image.imageNormalize(image);
         if (image.isNormalized())
             imageNormalized = imageNormalized.normalize();
-        assert (!image.equals(imageNormalized) && imageNormalized.op() == INH);
+        assert (imageNormalized.op() == INH && !image.equals(imageNormalized));
 //        if (imageNormalized.hasXternal())
 //            Util.nop(); //throw new TermException("contains XTERNAL", imageNormalized);
         this.normal = imageNormalized;
@@ -52,7 +52,7 @@ public class ImageBeliefTable extends DynamicTaskTable {
         Task imaged = r.input;
         Term normal = Image.imageNormalize(imaged.term());
 
-        Task normalized = null;
+        Task normalized;
 
         if (r.store) {
             //r.link = r.notify = false; //proxy store

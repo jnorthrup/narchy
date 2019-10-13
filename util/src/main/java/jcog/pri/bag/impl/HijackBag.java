@@ -273,7 +273,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                     for (int i = start, j = reprobes; j > 0; j--) {
                         V v = map.getFast(i);
                         if (v != null && keyEquals(k, kHash, v)) {
-                            if (map.compareAndSetRelease(i, v, null)) {
+                            if (map.compareAndSetFast(i, v, null)) {
                                 toReturn = toRemove = v;
                                 break;
                             }
@@ -293,7 +293,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
                         for (int i = start, j = reprobes; j > 0; j--) {
 
-                            V v = map.get(i);
+                            V v = map.getFast(i);
                             if (v == null) {
                                 if (victimPri > NEGATIVE_INFINITY) {
                                     victimIndex = i;
@@ -312,7 +312,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
 
                                 assert (next != null);
                                 if (next != v) {
-                                    if (!map.compareAndSetRelease(i, v, next)) {
+                                    if (!map.compareAndSetFast(i, v, next)) {
 //                                        throw new WTF("merge mismatch: " + v);
 //                                        //the previous value likely got hijacked by another thread
 //                                        //restart?
@@ -346,7 +346,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
                             //assert(victimWeakest!=-1);
 
                             if ((victimIndex >= 0 && victimValue == null) || (victimValue != null && replace(incomingPri, victimValue, victimPri))) {
-                                if (map.compareAndSetRelease(victimIndex, victimValue, incoming)) {
+                                if (map.compareAndSetFast(victimIndex, victimValue, incoming)) {
                                     toRemove = victimValue;
                                     toReturn = toAdd = incoming;
                                     break; //done
@@ -762,7 +762,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     public Stream<V> stream() {
         final MetalAtomicReferenceArray<V> map = this.map;
         return IntStream.range(0, map.length())
-                .mapToObj(map::get).filter(Objects::nonNull);
+                .mapToObj(map::getFast).filter(Objects::nonNull);
     }
 
     /**

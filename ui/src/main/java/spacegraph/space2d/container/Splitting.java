@@ -270,7 +270,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
                 Y b = Splitting.this.R();
                 if (b != null) {
                     if (children.compareAndSet(0, a, b)) {
-                        children.set(1, a);
+                        children.setFast(1, a);
                     }
                 }
             }

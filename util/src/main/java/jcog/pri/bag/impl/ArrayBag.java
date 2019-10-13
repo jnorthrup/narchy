@@ -1034,7 +1034,7 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return x != null ? priElse(x, 0) : 0;
     }
 
-    public final Iterator<Y> iterator() {
+    public Iterator<Y> iterator() {
         return table.iterator();
         //return stream().iterator(); //has null and deletion filtering
     }

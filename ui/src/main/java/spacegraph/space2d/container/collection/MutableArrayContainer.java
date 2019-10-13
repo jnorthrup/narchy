@@ -120,7 +120,7 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public boolean whileEach(Predicate<Surface> o) {
         for (int i = 0; i < length; i++) {
-            S ii = children.get(i);
+            S ii = children.getFast(i);
             if (ii !=null)
                 if (!o.test(ii))
                     return false;
@@ -131,7 +131,7 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
         for (int i = length - 1; i >= 0; i--) {
-            S ii = children.get(i);
+            S ii = children.getFast(i);
             if (ii !=null)
                 if (!o.test(ii))
                     return false;

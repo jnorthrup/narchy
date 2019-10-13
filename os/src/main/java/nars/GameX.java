@@ -436,8 +436,8 @@ abstract public class GameX extends Game {
         );
 
         n.termVolMax.set(
-            //64
-            48
+            64
+            //48
             //32
         );
 

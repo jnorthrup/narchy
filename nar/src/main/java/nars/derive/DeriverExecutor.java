@@ -25,7 +25,7 @@ import static java.lang.System.nanoTime;
 public abstract class DeriverExecutor implements BooleanSupplier {
 
 	public final Deriver deriver;
-	final Derivation d;
+	public final Derivation d;
 
 
 	protected DeriverExecutor(Deriver deriver) {
@@ -162,18 +162,17 @@ public abstract class DeriverExecutor implements BooleanSupplier {
 		@Override
 		public void next() {
 
-			queue.clear();
-
 			int mainTTL = iterationTTL;
 			int branchTTL = d.nar.deriveBranchTTL.intValue();
 
 			Queue<Premise> q = this.queue;
+			//q.clear();
 
 			//TODO scale ttl by the priority normalized relative to the other items in the queue
 			do {
 
-				//if (queue.size() < mainTTL - 1)
-				//if (q.isEmpty())
+				//if (queue.size() < mainTTL - 1) {
+				//if (q.isEmpty()) {
 				if (q.size() < mainTTL/2) {
 					Premise s = sample();
 					if (s!=null)

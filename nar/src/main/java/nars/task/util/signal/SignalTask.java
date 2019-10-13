@@ -1,7 +1,6 @@
 package nars.task.util.signal;
 
 
-import nars.Task;
 import nars.task.TemporalTask;
 import nars.task.UnevaluatedTask;
 import nars.term.Term;

@@ -87,11 +87,6 @@ public class WorkerExec extends ThreadedExec {
 
 		private transient long nextUpdate;
 
-		Schedule s = null; //empty
-		Object[] sc = null;
-		long[] sw = null;
-		int ss;
-
 		/** updated each system dur */
 		private void update() {
 			long now = nar.time();
@@ -101,11 +96,6 @@ public class WorkerExec extends ThreadedExec {
 				//no deriver
 			} else
 				dExe.nextCycle();
-
-			s = schedule.peek();
-			sc = s.array();
- 			ss = s.size();
- 			sw = s.when;
 
 			nextUpdate = now + Math.round(updateDurs * nar.dur());
 		}
@@ -119,13 +109,14 @@ public class WorkerExec extends ThreadedExec {
 
 					update();
 
-					int ss = this.ss;
-					int wi = ss > 0 ? rng.nextInt(ss) : -1;
-					Object W;
-					if (wi < 0 || (W = sc[wi]) == null || W == WORK) {
+					work(); //HACK
+
+					Schedule s = schedule;
+					Object W = s.get(rng);
+					if (W == WORK) {
 						work();
 					} else {
-						long t = sw[wi];
+						long t = s.timeSliceNS;
 						if (W == SLEEP) {
 							Util.sleepNS(t);
 						} else {
@@ -137,11 +128,14 @@ public class WorkerExec extends ThreadedExec {
 							((Consumer<DeriverExecutor>) W).accept(dExe); //d.next()
 
 							//dExe.next(this);
+							int cycles = 0;
 							do {
 
 								dExe.next();
+								cycles++;
 
 							} while (nanoTime() < deadline);
+							//System.out.println(dExe.d.what + " " + cycles + " cyc");
 						}
 					}
 
