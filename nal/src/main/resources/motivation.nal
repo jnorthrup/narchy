@@ -106,8 +106,8 @@
 
 
     //anti-specific deduction: "conjunction contraposition"
-    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
-    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
+//    G, C, eventOfNeg(C,G), --isVar(G)    |-   (  G && negateEvents(conjWithout(C,--G))), (Goal:DeductionWeakPP, Time:TaskEvent)
+//    G, C, eventOf(C,G), --isVar(G)       |-   (--G && negateEvents(conjWithout(C,  G))), (Goal:DeductionWeakNP, Time:TaskEvent)
 
     //anti-desire for sub-sequence leading to anti-goal. truth function may be Desire or Deduction (option: __Weak, __WeakN)
   //  G, C, is(C,"&&"), has(C,"--")       |-              --conjBefore(C, --G),  (Goal:DesireWeakPP)

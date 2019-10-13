@@ -1,21 +1,40 @@
-//Higher-Order Logic Bridge  <a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
+//Higher-Order Logic Bridge
+
+//inheritance transistor
+    //causation generalization
+    X, (X-->Y), task("."), --isVar(Y)   |- ((?1-->Y) ==> X), (Punctuation:Question, Time:Task)
+      X, (X-->Y), task("."), --isVar(Y) |- (--(?1-->Y) ==> X), (Punctuation:Question, Time:Task)
+    X, (Y-->X), task("."), --isVar(Y)   |- ((Y-->?1) ==> X), (Punctuation:Question, Time:Task)
+      X, (Y-->X), task("."), --isVar(Y) |- (--(Y-->?1) ==> X), (Punctuation:Question, Time:Task)
+
+    X, (Y==>X), neqRCom(X,Y), --isVar(Y)   |- (X<->Y), (Punctuation:AskAll, Time:Task)
+    X, (  X==>Y), neqRCom(X,Y), --isVar(Y)   |- (X<->Y), (Punctuation:AskAll, Time:Task)
+    X, (--X==>Y), neqRCom(X,Y), --isVar(Y)   |- (X<->Y), (Punctuation:AskAll, Time:Task)
+
 
 //impl/sim
-  (X ==> Z), (Y ==> Z), neq(X,Y) |- (polarizeTask((X==>Z)) <-> polarizeBelief((Y==>Z))), (Belief:ComparisonSymmetricDD, Time:Compose)
+  //(X ==> Z), (Y ==> Z), neq(X,Y) |- (polarizeTask((X==>Z)) <-> polarizeBelief((Y==>Z))), (Belief:ComparisonSymmetricDD, Time:Compose)
   //(Z ==> X), (Z ==> Y), neq(X,Y) |- (polarizeTask((Z==>X)) <-> polarizeBelief((Z==>Y))), (Belief:ComparisonSymmetricDepolarized, Time:Compose)
 
-//  (X ==> Z), (Y ==> Z), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
+//<a ==> c> <b ==> c>. |- <a <-> b>. %F_cmp%
+  (X ==> Z), (Y ==> Z), --isVar(Z), --isVar(X), --isVar(Y), neqRCom(X,Y) |- (X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
 //  (Z ==> X), (Z ==> Y),   neqRCom(X,Y) |-   (X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
 //     (Z ==> X), (W ==> Y), eqNeg(Z,W), neqRCom(X,Y) |-  --(X <-> Y), (Belief:ComparisonSymmetric, Time:Compose)
   //(Z ==> X), (--Z ==> Y), neqRCom(X,Y) |- --(polarize(X,task) <-> polarize(Y,belief)), (Belief:ComparisonSymmetricDepolarized, Time:Intersect)
 
 //sim/impl = impl/sim in reverse
-  (X <-> Y), Y, task(all)             |- (polarizeRandom(X) ==> Y), (Punctuation:Question, Time:Task)
+//  (X <-> Y), Y, task(all)             |- (polarizeRandom(X) ==> Y), (Punctuation:Question, Time:Task)
 //  ((A,X) <-> (B,X)), (A,X), task(all) |- (A ==> X), (Punctuation:Question, Time:Task)
 //  ((X,A) <-> (X,B)), (X,A), task(all) |- (X ==> A), (Punctuation:Question, Time:Task)
 
 
+//distinction question - an attempt to elucidate the difference between similar/dissimilar concepts
+//    (X <-> Y), X, --isVar(X), --isVar(Y) |- (X <-> (  Y && ?1)), (Punctuation:AskAsk)
+//    (X <-> Y), X, --isVar(X), --isVar(Y) |- (X <-> (--Y && ?1)), (Punctuation:AskAsk)
+//     (X <-> Y), X |- (X <-> (polarizeRandom(Y) && ?1)), (Punctuation:Ask)
 
-////distinction - an attempt to elucidate the difference between similar/dissimilar concepts
-  (X <-> Y), X |- (X <-> (polarizeRandom(Y) && ?1)), (Punctuation:Ask)
-
+//  (A ==> B), (A --> C)  |- polarizeTask((C ==> B)), (Belief:DeductionDP, Time:Task)
+//  (A ==> B), (C --> A)  |- polarizeTask((C ==> B)), (Belief:DeductionDP, Time:Task)
+//
+//  (B ==> A), (A --> C)  |- polarizeTask((B ==> C)), (Belief:DeductionDP, Time:Task)
+//  (B ==> A), (C --> A)  |- polarizeTask((B ==> C)), (Belief:DeductionDP, Time:Task)

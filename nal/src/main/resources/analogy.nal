@@ -1,3 +1,6 @@
+//   see:
+//      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
+//      https://cogsci.indiana.edu/
 
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 
@@ -37,34 +40,19 @@
       ((A-->B) <-> (A-->C)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
       ((B-->A) <-> (C-->A)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
 
-//   see:
-//      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
-//      https://cogsci.indiana.edu/
+
 // the similarity beliefs here act as a sort of transistor switch in determining Desire result truth
 
-X, (X <-> Y), --isVar(Y)                      |-   Y, (Punctuation:AskAll, Time:Task)
-//  X, (X <-> Y), --isVar(Y)                      |-   Y, (Belief:DesirePP, Goal:DesirePP, Time:Task)
-//  X, (X <-> Y), --isVar(Y)                      |- --Y, (Belief:DesirePN, Goal:DesirePN, Time:Task)
-    //X, (X <-> Y), task("?@"), --isVar(Y)            |- Y
-  //X, (X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakNN, Goal:DesireWeakNN, Time:Task)
- //  X, (--X <-> Y), --isVar(Y)                      |- Y, (Belief:DesireWeakN, Goal:DesireWeakN, Time:TaskEvent)
-    //X, (--X <-> Y), task("?@"), --isVar(Y)            |- Y
+Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$"), (Punctuation:AskAsk, Time:Task)
+Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$"), (Belief:DesireWeakPP, Time:Task)
+//Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- --unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakPN, Time:Task)
 
+    //X, (X <-> Y), --isVar(Y)                      |-   Y, (Punctuation:AskAll, Time:Task)
+    //  X, (X <-> Y), --isVar(Y)                    |-   Y, (Belief:DesirePP, Goal:DesirePP, Time:Task)
 
-Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$", novel), (Punctuation:AskAll, Time:Task)
-// Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakPP, Time:Task)
- //Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- --unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakPN, Time:Task)
-
- Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, polarizeBelief(Y), novel), (Punctuation:AskAll, Time:Task)
-   //Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X,   Y, "$", novel), (Belief:DesireWeakPP, Time:Task)
+ Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, polarizeBelief(Y), novel), (Punctuation:AskAsk, Time:Task)
+//   Z, (X <-> Y), in(Z,X), neq(Z,Y) |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeakPP, Time:Task)
    //Z, (X <-> Y), in(Z,X), neq(Z,Y)   |- substitute(Z, X, --Y, "$", novel), (Belief:DesireWeakPN, Time:Task)
-
-    //   Z, (--X <-> Y), in(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)   |- substitute(Z, X, Y, "$", novel), (Belief:DesireWeak, Goal:DesireWeak, Time:TaskEvent)
-    //   Z, (--X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |- unisubst(Y, X, Z, "$", novel), (Belief:DesireWeakN, Time:TaskEvent)
-          //Z, (X <-> Y), task("."), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Question)
-            //  Z, (X <-> Y), task("!"), neq(Z,X), neq(Z,Y)    |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
-          //Z, (--X <-> Y), task("."), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Question)
-        //    Z, (--X <-> Y), task("!"), neq(Z,X), neq(Z,Y)  |- unisubst(Y, X, Z, novel), (Punctuation:Quest)
 
 //chain:
 //  (&&,  (X<->Y),A..+), (X<->Y)         |- substitute((&&,A..+),X,Y,novel), (Belief:StructuralReduction, Goal:StructuralReduction, Time:TaskEvent)

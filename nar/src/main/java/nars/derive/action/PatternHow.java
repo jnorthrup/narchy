@@ -745,7 +745,7 @@ public class PatternHow extends CondHow {
             if (punc == 0)
                 return 0;
 
-            float puncFactor = d.preAmp(d.taskPunc, punc);
+            float puncFactor = d.preAmp(d.punc /*taskPunc*/, punc);
             if (puncFactor < Float.MIN_NORMAL)
                 return 0f; //entirely disabled by deriver
 
