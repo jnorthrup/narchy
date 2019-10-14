@@ -179,11 +179,11 @@ public class LivePredictor {
         @Override
         public void learn(double[] x, double[] y) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
-                 mlp = new MLPMap(rng, x.length,
+                 mlp = new MLPMap(x.length,
                          new MLPMap.Layer( (x.length + y.length), TanhActivation.the),
                          new MLPMap.Layer( 2 * (x.length + y.length), SigmoidActivation.the),
                          new MLPMap.Layer( y.length, null)
-                 );
+                 ).randomize(rng);
             }
             mlp.put(Util.toFloat(x), Util.toFloat(y), learningRate);
         }

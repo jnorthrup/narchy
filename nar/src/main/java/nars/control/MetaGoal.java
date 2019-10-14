@@ -7,6 +7,7 @@ import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
+import nars.time.part.DurLoop;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -14,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 import static jcog.Texts.n4;
 
@@ -60,6 +61,10 @@ public enum MetaGoal {
 
     ;
 
+
+    public static DurLoop addGovernor(NAR n, BiConsumer<NAR,FasterList<Cause>> valuePrioritizer) {
+        return n.onDur(nn -> value(nn, valuePrioritizer));
+    }
 
     public void learn(Task t, float strength, NAR n) {
         Term why = t.why();
@@ -107,8 +112,11 @@ public enum MetaGoal {
 //    }
 
 
-    /** default linear adder */
-    @Deprecated static public void value(NAR n, @Nullable Consumer<FasterList<Cause>> value) {
+    /** default linear adder
+     * @param valuePrioritizer responsible for reading the 'value' computed here and assigning an effective
+     *                         priority to it
+     **/
+    static public void value(NAR n, @Nullable BiConsumer<NAR, FasterList<Cause>> valuePrioritizer) {
 
         FasterList<Cause> cause = n.control.why;
         int cc = cause.size();
@@ -136,14 +144,14 @@ public enum MetaGoal {
                 //}
             }
 
-            ci.setValue(
+            ci.value(
                 //valued ? (float)v : Float.NaN
                 (float)v
             );
         }
 
-        if (value!=null)
-            value.accept(cause);
+        if (valuePrioritizer!=null)
+            valuePrioritizer.accept(n, cause);
 
 //        @Nullable Consumer<Why[]> g = this.governor;
 //        if (g!=null)

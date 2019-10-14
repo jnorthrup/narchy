@@ -22,7 +22,6 @@ import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.proj.TruthIntegration;
 import nars.truth.proj.TruthProjection;
-import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
@@ -149,8 +148,10 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 		for (int i = 0; i < ababSize; i++) {
 			if (merging.valid(i)) {
 				Task rr = merging.get(i);
-				if (!treeRW.remove(rr))
-					throw new WTF();
+				if (!treeRW.remove(rr)) {
+					if (NAL.DEBUG)
+						throw new WTF(); //not sure what this means
+				}
 				r.forget(rr);
 			}
 		}

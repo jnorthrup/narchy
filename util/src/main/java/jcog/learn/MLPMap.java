@@ -43,9 +43,9 @@ public class MLPMap {
 
         public final float[] out;
         public final float[] in;
-        final float[] inError;
+        final float[] delta;
         public final float[] W;
-        final float[] dweights;
+        final float[] dW;
         @Nullable
         final IDifferentiableFunction activation;
 
@@ -58,9 +58,9 @@ public class MLPMap {
         public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {
             out = new float[outputSize];
             in = new float[inputSize + 1];
-            inError = new float[in.length];
+            delta = new float[in.length];
             W = new float[(1 + inputSize) * outputSize];
-            dweights = new float[W.length];
+            dW = new float[W.length];
             this.activation = activation;
         }
 
@@ -94,40 +94,40 @@ public class MLPMap {
             return out;
         }
 
-        public float[] train(float[] inError, float learningRate) {
+        public float[] train(float[] incomingError, float learningRate) {
 
 
-            Arrays.fill(this.inError, 0);
+            Arrays.fill(this.delta, 0);
             int inLength = in.length;
 
             int offs = 0;
             for (int o = 0; o < out.length; o++) {
-                float gradient = inError[o];
+                float gradient = incomingError[o];
                 if (activation!=null)
                     gradient *= activation.derivative(out[o]);
 
                 float outputDelta = gradient * learningRate;
 
                 for (int i = 0; i < inLength; i++) {
-                    int ij = offs + i;
+                    int ij = offs++;
 
-                    this.inError[i] += W[ij] * gradient;
+                    this.delta[i] += W[ij] * gradient;
 
                     float dw = in[i] * outputDelta;
 
                     //TODO check this
 
-                    float delta = (dw) + (dweights[ij] * momentum);
+                    float delta = (dw) + (dW[ij] * momentum);
                     W[ij] += delta;
-                    dweights[ij] = delta;
+                    dW[ij] = delta;
 //                    weights[idx] += dw * dweights[idx];
 //                    dweights[idx] += dw;
 
 
                 }
-                offs += inLength;
+
             }
-            return this.inError;
+            return this.delta;
         }
     }
 
@@ -142,7 +142,7 @@ public class MLPMap {
         randomize(r);
     }
 
-    public MLPMap(Random r, int inputs, Layer... layer) {
+    public MLPMap(int inputs, Layer... layer) {
         assert(layer.length > 0);
         layers = new MLPLayer[layer.length];
         for (int i = 0; i < layer.length; i++) {
@@ -150,13 +150,16 @@ public class MLPMap {
             int outSize = layer[i].size;
             layers[i] = new MLPLayer(inSize, outSize, layer[i].activation);
         }
+    }
+    public MLPMap(Random r, int inputs, Layer... layer) {
+        this(inputs, layer);
         randomize(r);
     }
 
-    public void randomize(Random r) {
-        for (MLPLayer m : layers) {
+    public MLPMap randomize(Random r) {
+        for (MLPLayer m : layers)
             m.randomizeWeights(r);
-        }
+        return this;
     }
 
     public float[] get(float[] input) {
@@ -170,14 +173,17 @@ public class MLPMap {
     /** returns an error vector */
     public float[] put(float[] input, float[] targetOutput, float learningRate) {
         float[] calcOut = get(input);
-        float[] error = new float[calcOut.length];
-        for (int i = 0; i < error.length; i++) {
-            error[i] = targetOutput[i] - calcOut[i]; 
-        }
-        for (int i = layers.length - 1; i >= 0; i--) {
+        float[] errorOut = new float[calcOut.length];
+
+        for (int i = 0; i < errorOut.length; i++)
+            errorOut[i] = targetOutput[i] - calcOut[i];
+
+        //backprop
+        float[] error = errorOut;
+        for (int i = layers.length - 1; i >= 0; i--)
             error = layers[i].train(error, learningRate);
-        }
-        return error;
+
+        return errorOut;
     }
 
     public static void main(String[] args) {
@@ -186,13 +192,16 @@ public class MLPMap {
 
         float[][] res = {new float[]{0}, new float[]{1}, new float[]{1}, new float[]{0}};
 
-        MLPMap mlp = new MLPMap(new XoRoShiRo128PlusRandom(1),2,
+        Random r = //new Random();
+            new XoRoShiRo128PlusRandom(1);
+
+        MLPMap mlp = new MLPMap(2,
                 new Layer(2,SigmoidActivation.the),
                 new Layer(1,null)
-        );
+        ).randomize(r);
                 //, new int[]{2, 1}, new Random(), true);
 
-        Random r = new Random();
+
         int en = 500;
         for (int e = 0; e < en; e++) {
 

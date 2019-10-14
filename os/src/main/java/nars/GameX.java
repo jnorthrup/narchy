@@ -2,7 +2,6 @@ package nars;
 
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.Util;
-import jcog.data.list.FasterList;
 import jcog.exe.Loop;
 import jcog.func.IntIntToObjectFunction;
 import jcog.learn.pid.MiniPID;
@@ -10,12 +9,11 @@ import jcog.learn.ql.HaiQae;
 import jcog.signal.wave2d.Bitmap2D;
 import jcog.signal.wave2d.MonoBufImgBitmap2D;
 import jcog.signal.wave2d.ScaledBitmap2D;
-import jcog.util.ArrayUtil;
 import nars.attention.TaskLinkWhat;
 import nars.attention.What;
-import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.control.NARPart;
+import nars.control.Should;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
 import nars.derive.time.ActionTiming;
@@ -60,9 +58,6 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
-import static jcog.Texts.n4;
-import static jcog.Util.lerp;
-import static jcog.Util.lerpSafe;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
@@ -496,7 +491,7 @@ abstract public class GameX extends Game {
 //        };
 
 
-        DurLoop gov = addGovernor(n);
+        DurLoop gov = MetaGoal.addGovernor(n, Should.predictMLP);
         gov.durs(2 /* nyquist */);
 
         Loop.of(()->{
@@ -724,137 +719,6 @@ abstract public class GameX extends Game {
             }
         });
 
-    }
-
-    /**
-     * governor
-     * TODO extract to class
-     * @return
-     */
-    private static DurLoop addGovernor(NAR n) {
-        float momentum = 0.9f;
-        float explorationRate = 0.05f;
-        return n.onDur(new Consumer<NAR>() {
-
-            final Consumer<FasterList<Cause>> normalize1 = new Consumer<FasterList<Cause>>() {
-
-                float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
-
-                @Override
-                public void accept(FasterList<Cause> cc) {
-
-                    Cause[] c = cc.array();
-                    int ww = Math.min(c.length, cc.size());
-                    if (f.length != ww)
-                        f = new float[ww];
-
-                    float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-                    for (int i = 0; i < ww; i++) {
-                        float r = c[i].value;
-
-                        float v;
-                        if (r == r)
-                            f[i] = v = lerpSafe(momentum, r, f[i]);
-                        else
-                            v = f[i]; //unchanged, hold existing value
-
-                        min = Math.min(v, min); max = Math.max(v, max);
-                    }
-
-//                    System.out.println(min + "\t" + max);
-
-                    if (Util.equals(min, max)) {
-                        for (int i = 0; i < ww; i++)
-                            c[i].setPri(explorationRate); //flat
-                    } else {
-                        float range = 1 - explorationRate;
-                        for (int i = 0; i < ww; i++)
-                            c[i].setPri(explorationRate + range * Util.normalizeSafe(f[i], min, max) );
-                    }
-                }
-
-            };
-            final Consumer<FasterList<Cause>> normalize2 = new Consumer<FasterList<Cause>>() {
-
-                float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
-                float[] fNorm = ArrayUtil.EMPTY_FLOAT_ARRAY;
-
-                @Override
-                public void accept(FasterList<Cause> cc) {
-
-                    Cause[] c = cc.array();
-                    int ww = Math.min(c.length, cc.size());
-                    if (f.length != ww) {
-                        f = new float[ww];
-                        fNorm = new float[ww];
-                    }
-
-
-                    float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
-                    for (int i = 0; i < ww; i++) {
-                        float v = c[i].value;
-                        v = Math.max(0, v); //clip at 0
-                        f[i] = v; min = Math.min(v, min); max = Math.max(v, max);
-                    }
-
-                    if (Util.equals(min, max)) {
-//                        float flat = 1f/ww;
-//                        for (int i = 0; i < ww; i++)
-//                            c[i].setPri(flat);
-                    } else {
-                        for (int i = 0; i < ww; i++) {
-                            float v = f[i];
-                            float vNorm = Util.normalizeSafe(v, min, max);
-                            fNorm[i] = lerpSafe(momentum, vNorm, fNorm[i]);
-                        }
-                    }
-                    //System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
-
-                    float range = 1 - explorationRate;
-                    for (int i = 0; i < ww; i++)
-                        c[i].setPri(explorationRate + range * fNorm[i] );
-
-                }
-
-            };
-
-            @Override
-            public void accept(NAR nn) {
-                MetaGoal.value(nn,
-                    //normalize1
-                    normalize2
-                );
-
-//                PartBag<How> H = nn.how;
-//
-//                int numHow = H.size();
-//                if (numHow == 1) {
-//                    H.get(0).pri(1);
-//                } else {
-//
-//                    H.forEach(h -> {
-//
-//
-//                        FloatAveragedWindow g = (FloatAveragedWindow) h.governor;
-//                        if (g == null)
-//                            h.governor = g = new FloatAveragedWindow(gHist, 1 - momentum, 0).mode(
-//                                FloatAveragedWindow.Mode.Exponential
-//                                //FloatAveragedWindow.Mode.Mean
-//                            );
-//
-//                        float v = h.valueRateNormalized;
-//                        if (v != v) v = 0;
-//
-//                        float vSmooth = g.valueOf(v);
-//                        float ee = explorationRate;
-//                        float vE = lerp(vSmooth, ee / 2, 1 - ee / 2);
-//                        h.pri(vE);
-//                    });
-//                }
-                //nn.how.forEach(h -> System.out.println(n4(h.pri()) + " " + n4(h.valueRateNormalized) + "\t" + h));
-                //System.out.println();
-            }
-        });
     }
 
     @Override

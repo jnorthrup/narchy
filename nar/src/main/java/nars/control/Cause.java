@@ -3,6 +3,7 @@ package nars.control;
 import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
+import jcog.pri.Prioritizable;
 import jcog.pri.ScalarValue;
 import jcog.signal.tensor.AtomicFloatVector;
 import nars.$;
@@ -31,7 +32,7 @@ import org.jetbrains.annotations.Nullable;
  */
 @Paper
 @Skill("Credit_assignment")
-public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
+public class Cause extends WhenInternal implements Comparable<Cause>, Caused, Prioritizable {
 
     /**
      * internally assigned id
@@ -82,17 +83,19 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
 
 
     /** set NaN if no value actually accumulated during the last cycle */
-    public void setValue(float value) {
+    public void value(float value) {
         this.value = value;
     }
 
     /**
      * value may be in any range (not normalized); 0 is neutral
      */
-    public void setPri(float p) {
+    public Cause pri(float p) {
         //assert(Float.isFinite(nextValue));
         this.pri = p;
+        return this;
     }
+
     /**
      * 0..+1
      */

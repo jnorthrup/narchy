@@ -130,7 +130,7 @@ public class EvolveGovernor {
 						float p = pp.floatValue(); //<-
 						if (!Float.isFinite(p)) p = 0;
 						p = Util.clamp(p, 0.1f, 1f);
-						a.why.setPri(p);
+						a.why.pri(p);
 					}
 				});
 				try {

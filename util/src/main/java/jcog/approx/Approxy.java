@@ -99,10 +99,11 @@ import java.util.function.Function;
         }
 
         protected void train() {
-            MLPMap m = new MLPMap(new XoRoShiRo128PlusRandom(), 3,
+            MLPMap m = new MLPMap(3,
                     new MLPMap.Layer(2, SigmoidActivation.the),
                     new MLPMap.Layer(1, null)
-            );
+            ).randomize(new XoRoShiRo128PlusRandom());
+
             experience.forEach(xy -> {
                 //TODO m.put(xEncoded,yEncoded..)
             });
