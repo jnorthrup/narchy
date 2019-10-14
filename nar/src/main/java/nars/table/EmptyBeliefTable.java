@@ -10,6 +10,12 @@ import java.util.stream.Stream;
 
 public class EmptyBeliefTable implements BeliefTable {
 
+    public static final BeliefTable Empty = new EmptyBeliefTable();
+
+    protected EmptyBeliefTable() {
+
+    }
+
     @Override
     public Stream<? extends Task> taskStream() {
         return Stream.empty();

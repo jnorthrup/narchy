@@ -94,7 +94,7 @@ public class BiPolarAction extends AbstractSensor {
     /** the pos and neg .update() method should have been called just prior to this since this is
      * invoked by the frame listeners at the end of the NAgent cycle
      */
-    @Override public void update(Game g) {
+    @Override public void accept(Game g) {
 
 
         Truth p, n;

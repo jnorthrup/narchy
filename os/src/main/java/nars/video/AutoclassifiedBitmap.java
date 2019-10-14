@@ -195,9 +195,9 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
 
     @Override
-    public final void update(Game g) {
+    public final void accept(Game g) {
         this.updateAutoclassifier();
-        super.update(g);
+        super.accept(g);
     }
 
     @Override

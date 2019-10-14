@@ -17,7 +17,6 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Random;
 
 import static java.lang.Math.max;
 import static nars.Op.BELIEF;
@@ -166,9 +165,9 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
     }
 
 	@Override
-    public void update(Game g) {
+    public void accept(Game g) {
         src.updateBitmap();
-        super.update(g);
+        super.accept(g);
         //link(g);
     }
 
@@ -197,10 +196,6 @@ public class Bitmap2DSensor<P extends Bitmap2D> extends VectorSensor {
         return concepts.iterator();
     }
 
-    @Override
-    public Signal get(Random rng) {
-        return concepts.get(rng);
-    }
 
 //    private class PixelSelectorTaskLink extends DynamicTaskLink {
 //        PixelSelectorTaskLink() {

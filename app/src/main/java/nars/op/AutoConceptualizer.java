@@ -53,7 +53,7 @@ public class AutoConceptualizer extends VectorSensor {
 
 
     @Override
-    public void update(Game g) {
+    public void accept(Game g) {
 
         NAR n = g.nar;
         long now = n.time();

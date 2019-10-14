@@ -5,6 +5,7 @@ import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.table.BeliefTable;
 import nars.table.BeliefTables;
+import nars.table.EmptyBeliefTable;
 import nars.table.dynamic.ImageBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.table.question.HijackQuestionTable;
@@ -57,7 +58,7 @@ public class DefaultConceptBuilder extends ConceptBuilder {
             return b;
         } else {
             assert(overlay.length == 0);
-            return BeliefTable.Empty;
+            return EmptyBeliefTable.Empty;
         }
     }
 

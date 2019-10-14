@@ -3,7 +3,9 @@ package nars.control;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.MLPMap;
+import jcog.learn.ntm.control.SigmoidActivation;
 import jcog.learn.ntm.control.TanhActivation;
+import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
 import nars.NAR;
 
@@ -17,7 +19,7 @@ import static jcog.Util.lerpSafe;
  *  analogous to OS governor policy that decides priorities for the various cause's
  */
 public enum Should { ;
-	@Deprecated static float momentum = 0.95f;
+	@Deprecated static float momentum = 0.5f;
 	@Deprecated static float explorationRate = 0.05f;
 
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
@@ -33,8 +35,8 @@ public enum Should { ;
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-					new MLPMap.Layer( 4, TanhActivation.the /* SigmoidActivation */),
-					new MLPMap.Layer( 1, null)
+					new MLPMap.Layer( Math.max(2, dims/2), TanhActivation.the  /*SigmoidActivation.the*/ ),
+					new MLPMap.Layer( 1, SigmoidActivation.the)
 				);
 			}
 		}
@@ -63,6 +65,7 @@ public enum Should { ;
 			}
 
 			float[] want = n.emotion.want.clone();
+			Util.normalize(want);
 
 
 			//2. learn
@@ -75,23 +78,28 @@ public enum Should { ;
 				max = Math.max(v, max);
 			}
 
-			if (Util.equals(min, max)) {
+			float range = max - min;
+			if (range < ScalarValue.EPSILON) {
 //                        float flat = 1f/ww;
 //                        for (int i = 0; i < ww; i++)
 //                            c[i].setPri(flat);
 			} else {
 
-				float learningRate = 0.05f;
+				float learningRate = (float) (0.1f
+									//* Math.min(1,Math.log(1+range/10f))
+				);
 
 				double errTotal = 0;
 				for (int i = 0; i < ww; i++) {
 
-					float fNor = Util.normalizeSafe(f[i], min, max);
-					fNorm[i] = Util.lerp(momentum, fNorm[i], fNor);
+					fNorm[i] = Util.normalizeSafe(f[i], min, max);
 
 					float specificLearningRate =
-						learningRate;
-						//learningRate * fNorm[i];
+						//learningRate;
+						learningRate * Math.max(0.05f,
+							//Math.abs(0.5f-fNorm[i])*2f
+							Math.abs(f[i]) / Math.max(Math.abs(min), Math.abs(max)) //extremeness
+						);
 
 					Predictor P = this.predictor[i];
 
@@ -104,7 +112,8 @@ public enum Should { ;
 				}
 
 				double errAvg = errTotal / ww;
-				System.out.println(this + ":\t" + errAvg + " avg err");
+				if (n.random().nextFloat() < 0.1f)
+					System.out.println(this + ":\t" + errAvg + " avg err");
 			}
 			//System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
 

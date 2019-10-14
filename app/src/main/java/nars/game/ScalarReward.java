@@ -71,16 +71,16 @@ abstract public class ScalarReward extends Reward {
 
 
     @Override
-    public final void update(Game g) {
+    public final void accept(Game g) {
         if (reinforcement.isEmpty()) {
             reinforceInit(g);
         }
 
-        super.update(g);
+        super.accept(g);
 
         this.reward = reward(g);
 
-        concept.update(g);
+        concept.accept(g);
     }
 
     @Override
@@ -95,8 +95,8 @@ abstract public class ScalarReward extends Reward {
      * */
     protected void reinforceInit(Game g) {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
-        Term rTarget = goal.isPositive() ? Rpos : Rneg;
-        Term rTargetNeg = rTarget.neg();
+        Term rTargetP = goal.isPositive() ? Rpos : Rneg;
+        Term rTargetN = rTargetP.neg();
         //reinforceTemporal(concept.term(), GOAL, goal, newStamp());
         reinforce(concept.term(), GOAL, goal, newStamp());
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
@@ -109,9 +109,10 @@ abstract public class ScalarReward extends Reward {
             long[] stampP = newStamp();
             //long[] stampN = newStamp();
 
+
             //(goal || A), (goal || --A)
-            reinforce(CONJ.the(rTargetNeg, A.neg()), GOAL, RimplANeg, stampP);
-            reinforce(CONJ.the(rTargetNeg, A), GOAL, RimplANeg, stampP);
+            reinforce(CONJ.the(rTargetN, A.neg()), GOAL, RimplANeg, stampP);
+            reinforce(CONJ.the(rTargetN, A), GOAL, RimplANeg, stampP);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stampN);
@@ -187,11 +188,12 @@ abstract public class ScalarReward extends Reward {
         float cMax = nar.confDefault(GOAL);
         goal.conf(cMax);
 
-        float strength = 1;
-        float cMin =
-            Math.min(NAL.truth.CONF_MAX, Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength);
-            //nar.confMin.floatValue() * strength;
-            //cMax / 2;
+        float strength = 4;
+        float cMin = Math.min(NAL.truth.CONF_MAX,
+            Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength
+            //nar.confMin.floatValue() * strength
+            //cMax / 2
+        );
 
 //        RimplRandomP.conf(cMin); RimplRandomN.conf(cMin);
 //        RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());

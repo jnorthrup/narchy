@@ -64,7 +64,7 @@ public class FreqVectorSensor extends VectorSensor {
     }
 
     @Override
-    public void update(Game g) {
+    public void accept(Game g) {
 
         //TODO only if buffer changed
         inBuf = buf.peekLast(inBuf, sampleWindow);
@@ -87,7 +87,7 @@ public class FreqVectorSensor extends VectorSensor {
         }
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 
-        super.update(g);
+        super.accept(g);
     }
 
     @Override

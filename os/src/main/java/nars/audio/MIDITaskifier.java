@@ -107,7 +107,7 @@ public class MIDITaskifier {
 
 //                int dur = n.dur();
                 //c.update(n.time()-dur, n.time(), null);
-                c.update(null);
+                c.accept(null);
             });
 
 

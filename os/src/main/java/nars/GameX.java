@@ -491,8 +491,7 @@ abstract public class GameX extends Game {
 //        };
 
 
-        DurLoop gov = MetaGoal.addGovernor(n, Should.predictMLP);
-        gov.durs(2 /* nyquist */);
+        n.exe.governor = Should.predictMLP;
 
         Loop.of(()->{
             //n.how.forEach(w -> w.printPerf(System.out));

@@ -8,6 +8,8 @@ import jcog.event.Off;
 import nars.NAR;
 import nars.attention.AntistaticBag;
 import nars.attention.What;
+import nars.control.Cause;
+import nars.control.MetaGoal;
 import nars.exe.Exec;
 import nars.exe.NARLoop;
 import nars.time.clock.RealTime;
@@ -16,6 +18,7 @@ import java.io.PrintStream;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
@@ -117,10 +120,11 @@ abstract public class MultiExec extends Exec {
 
         updateTiming();
 
-
-
 //        float workPct = 0; //HACK Math.max(0.5f, workDemand());
 
+        BiConsumer<NAR, FasterList<Cause>> g = this.governor;
+        if (g!=null)
+            MetaGoal.value(nar, g);
 
         schedule(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, 3,
             1-nar.loop.throttle.floatValue());

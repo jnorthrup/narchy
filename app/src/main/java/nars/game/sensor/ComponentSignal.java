@@ -12,7 +12,7 @@ public abstract class ComponentSignal extends Signal {
 
 
 	@Override
-	public void update(Game a) {
+	public void accept(Game a) {
 		throw new UnsupportedOperationException();
 	}
 

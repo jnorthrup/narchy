@@ -47,7 +47,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
 //    }
 
     @Override
-    public void update(Game g) {
+    public void accept(Game g) {
 
 
         float res = Math.max(g.nar.freqResolution.floatValue(), this.res.floatValue());

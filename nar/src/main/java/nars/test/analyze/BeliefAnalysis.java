@@ -6,6 +6,7 @@ import nars.Narsese;
 import nars.concept.Concept;
 import nars.concept.TaskConcept;
 import nars.table.BeliefTable;
+import nars.table.EmptyBeliefTable;
 import nars.term.Term;
 import nars.term.util.TermedDelegate;
 import nars.time.Tense;
@@ -66,14 +67,14 @@ public class BeliefAnalysis implements TermedDelegate {
 	public BeliefTable beliefs() {
 		Concept c = concept();
 		if (c == null)
-			return BeliefTable.Empty;
+			return EmptyBeliefTable.Empty;
 		return c.beliefs();
 	}
 	@Nullable
 	public BeliefTable goals() {
 		Concept c = concept();
 		if (c == null)
-			return BeliefTable.Empty;
+			return EmptyBeliefTable.Empty;
 		return c.goals();
 	}
 

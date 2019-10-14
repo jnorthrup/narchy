@@ -164,22 +164,23 @@ public class DefaultDerivePri implements DerivePri {
 
     @Override public float prePri(Derivation d) {
 
-        return 1;
-//        if (d.isBeliefOrGoal()) {
-//            //TODO include time range as factor since it's average evi
-//            double te = d.truth.evi();
-//            double de = d.evi();
-//            double maintained =
-//                    te / (te + de) //as weight
-//                    //TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
-//            ;
-//            return (float) (1 + (Math.min(1, maintained)));
-//            //return (float) (1 + Math.min(1, maintained));
-//            //return (float) (1 + sqrt(w2cSafe(te)));
-//        } else {
-//            //question
-//            return 1;
-//        }
+        //return 1;
+
+        if (d.isBeliefOrGoal()) {
+            //TODO include time range as factor since it's average evi
+            double te = d.truth.evi();
+            double de = d.evi();
+            double maintained =
+                    te / (te + de) //as weight
+                    //TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
+            ;
+            return (float) (1 + (Math.min(1, maintained)));
+            //return (float) (1 + Math.min(1, maintained));
+            //return (float) (1 + sqrt(w2cSafe(te)));
+        } else {
+            //question
+            return 1;
+        }
     }
 }
 /*

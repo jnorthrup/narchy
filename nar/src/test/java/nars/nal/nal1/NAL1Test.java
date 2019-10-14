@@ -3,6 +3,7 @@ package nars.nal.nal1;
 import nars.NAR;
 import nars.NARS;
 import nars.test.NALTest;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 public class NAL1Test extends NALTest {
@@ -155,6 +156,7 @@ public class NAL1Test extends NALTest {
             .believe("((a-->b) <-> (a-->c))")
             .mustBelieve(cycles, "(b<->c)", 1.0f, 0.45f);
     }
+    @Disabled
     @Test
     void comparisonStructuralNeg() {
         test

@@ -4,6 +4,7 @@ import jcog.data.map.CompactArrayMap;
 import nars.NAR;
 import nars.Task;
 import nars.table.BeliefTable;
+import nars.table.EmptyBeliefTable;
 import nars.table.question.QuestionTable;
 import nars.term.Term;
 import nars.term.Termed;
@@ -34,9 +35,9 @@ public class NodeConcept implements Concept {
     }
 
 
-    @Override public BeliefTable beliefs() { return BeliefTable.Empty; }
+    @Override public BeliefTable beliefs() { return EmptyBeliefTable.Empty; }
 
-    @Override public BeliefTable goals() { return BeliefTable.Empty; }
+    @Override public BeliefTable goals() { return EmptyBeliefTable.Empty; }
 
     @Override public QuestionTable questions() { return QuestionTable.Empty; }
 

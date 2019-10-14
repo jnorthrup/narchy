@@ -94,7 +94,7 @@ public class CameraSensorTest {
         //tmp.prev(n.time() - 2);
         tmp.now(n.time() - 1 );
         tmp.next(); //update
-        c.update(tmp);
+        c.accept(tmp);
     }
 
     static final float tolerance = 0.47f;

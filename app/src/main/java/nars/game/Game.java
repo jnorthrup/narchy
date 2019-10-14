@@ -557,7 +557,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
             if (!((Part)s).isOn())
                 return; //the part is disabled
         }
-        s.update(this);
+        s.accept(this);
     }
 
 //    @Deprecated protected void reinforce(long prev, long now, long next) {

@@ -311,7 +311,7 @@ public interface NSense {
         nar.add(pn);
         g.addAction(pn.pos);
         g.addAction(pn.neg);
-        g.onFrame(aa->pn.update(g));
+        g.onFrame(aa->pn.accept(g));
 
         nar.control.input(pn.pri, g.actionPri);
 

@@ -9,6 +9,7 @@ import nars.concept.NodeConcept;
 import nars.concept.TaskConcept;
 import nars.subterm.Subterms;
 import nars.table.BeliefTable;
+import nars.table.EmptyBeliefTable;
 import nars.table.dynamic.ImageBeliefTable;
 import nars.table.eternal.EternalTable;
 import nars.table.question.QuestionTable;
@@ -250,7 +251,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
             B = this.newTable(t, true, dmt.valueOf(t, true));
             G = !t.hasAny(IMPL) ?
                     newTable(t, false, dmt.valueOf(t, false)) :
-                    BeliefTable.Empty;
+                    EmptyBeliefTable.Empty;
         } else {
 //                //3. handle dynamic conceptualizers (experimental)
 //                Term conceptor = Functor.func(t);
@@ -266,7 +267,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 
             //4. default task concept
             B = this.newTable(t, true);
-            G = !t.hasAny(IMPL) ? this.newTable(t, false) : BeliefTable.Empty;
+            G = !t.hasAny(IMPL) ? this.newTable(t, false) : EmptyBeliefTable.Empty;
         }
 
 

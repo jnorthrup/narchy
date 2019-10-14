@@ -1063,6 +1063,20 @@ public enum Util {
 		double[] minmax = minmax(x);
 		return normalize(x, minmax[0], minmax[1]);
 	}
+	public static double[] normalizeCartesian(double[] x) {
+		double magSq = 0;
+		for (int i = 0; i < x.length; i++) {
+			double xi = x[i];
+			magSq += xi * xi;
+		}
+		if (magSq < Math.sqrt(Double.MIN_NORMAL))
+			return x; //~zero vector, leave unchanged
+		double mag = Math.sqrt(magSq);
+		for (int i = 0; i < x.length; i++) {
+			x[i] /= mag;
+		}
+		return x;
+	}
 
 	public static float[] normalizeMargin(float lowerPct, float upperPct, float[] x) {
 		float[] minmax = minmax(x);

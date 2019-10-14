@@ -53,7 +53,7 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
     }
 
     @Override
-    public void update(Game g) {
+    public void accept(Game g) {
 
         When<What> w = g.nowPercept;
 
@@ -64,6 +64,6 @@ public class SwitchAction extends DigitizedScalar implements FloatSupplier {
         else
             value.set(Float.NaN);
 
-        super.update(g);
+        super.accept(g);
     }
 }

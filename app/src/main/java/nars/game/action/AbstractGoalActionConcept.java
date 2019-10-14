@@ -127,7 +127,7 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
 
     @Override
-    public void update( Game g) {
+    public void accept(Game g) {
 
         int limitBelief = NAL.ANSWER_BELIEF_MATCH_CAPACITY;
         int limitGoal = NAL.ANSWER_ACTION_ANSWER_CAPACITY;

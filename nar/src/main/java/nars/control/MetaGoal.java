@@ -7,7 +7,6 @@ import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
-import nars.time.part.DurLoop;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
 import org.jetbrains.annotations.Nullable;
@@ -62,9 +61,7 @@ public enum MetaGoal {
     ;
 
 
-    public static DurLoop addGovernor(NAR n, BiConsumer<NAR,FasterList<Cause>> valuePrioritizer) {
-        return n.onDur(nn -> value(nn, valuePrioritizer));
-    }
+
 
     public void learn(Task t, float strength, NAR n) {
         Term why = t.why();
@@ -123,16 +120,16 @@ public enum MetaGoal {
         if (cc == 0)
             return;
 
-        if (Util.equals(Util.sumAbs(n.emotion.want),0))
+        float[] wants = n.emotion.want;
+        if (Util.equals(Util.sumAbs(wants),0))
             return; //flat metagoal early exit
 
-        Cause[] ccc = cause.array();
-
-
-        double[] want = Util.toDouble(n.emotion.want);
+        double[] want = Util.toDouble(wants);
+        Util.normalizeCartesian(want);
 
         float[] credit = new float[want.length];
 
+        Cause[] ccc = cause.array();
         for (int i = 0; i < cc; i++) {
 
             Cause ci = ccc[i];

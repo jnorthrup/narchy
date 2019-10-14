@@ -119,19 +119,20 @@ public class Tetris extends GameX {
 //        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
 //                1 - ((float) state.rowsFilled) / state.height
 //        ));
+		reward("density", 1, () -> {
+
+			int filled = 0;
+			for (float s : state.grid) if (s > 0) filled++;
+
+			int r = state.rowsFilled;
+			return r > 0 ? ((float) filled) / (r * state.width) : 0;
+		}).conf(0.4f);
 
         actionUnipolar($.inh(id, "speed"), (s)->{
-            int fastest = 1, slowest = 16;
+            int fastest = 2, slowest = 12;
             this.timePerFall.set( Math.round(Util.lerp(s, slowest, fastest)));
         });
-        reward("density", 1, () -> {
 
-            int filled = 0;
-            for (float s : state.grid) if (s > 0) filled++;
-
-            int r = state.rowsFilled;
-            return r > 0 ? ((float) filled) / (r * state.width) : 0;
-        }).conf(0.25f);
 
         FloatSupplier low = () -> {
             return 1 - ((float) state.rowsFilled) / state.height;
@@ -191,15 +192,16 @@ public class Tetris extends GameX {
 
     void actionPushButtonRotateFall() {
 
-        int debounceDurs = 2;
-        //actionPushButton(ROT, debounce(b -> b && state.act(TetrisState.CW), debounceDurs));
-        actionPushButton(tROT, b -> b && state.act(TetrisState.actions.CW));
+        int debounceDurs = 4;
+        actionPushButton(tROT, debounce(b ->
+            b && state.act(TetrisState.actions.CW)
+        , debounceDurs));
 
         if (canFall)
             actionPushButton(tFALL,
-                debounce(
-                    b -> b && state.act(TetrisState.actions.FALL)
-                , debounceDurs * 2)
+                debounce(b ->
+                    b && state.act(TetrisState.actions.FALL)
+                , debounceDurs)
             );
 
     }

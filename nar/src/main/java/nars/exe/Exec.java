@@ -2,7 +2,9 @@ package nars.exe;
 
 import jcog.Log;
 import jcog.data.iterator.ArrayIterator;
+import jcog.data.list.FasterList;
 import nars.NAR;
+import nars.control.Cause;
 import nars.control.NARPart;
 import nars.derive.Deriver;
 import nars.time.ScheduledTask;
@@ -14,6 +16,7 @@ import java.util.PriorityQueue;
 import java.util.concurrent.Executor;
 import java.util.concurrent.ForkJoinPool;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
@@ -37,8 +40,9 @@ abstract public class Exec extends NARPart implements Executor {
      * maximum possible concurrency; should remain constant
      */
     public final int concurrencyMax;
+    public BiConsumer<NAR, FasterList<Cause>> governor = null;
 
-    protected Exec(int concurrencyMax) {
+	protected Exec(int concurrencyMax) {
         this.concurrencyMax = concurrencyMax; //TODO this will be a value like Runtime.getRuntime().availableProcessors() when concurrency can be adjusted dynamically
 
     }

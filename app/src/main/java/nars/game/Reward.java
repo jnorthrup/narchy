@@ -1,6 +1,5 @@
 package nars.game;
 
-import com.google.common.collect.Iterables;
 import jcog.Skill;
 import jcog.Util;
 import jcog.data.list.FasterList;
@@ -52,7 +51,8 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     @Override
     public Iterable<? extends Termed> components() {
-        return Iterables.transform(this, x-> x); //HACK
+        //return Iterables.transform(this, x-> x); //HACK
+		return this;
     }
 
 
@@ -136,7 +136,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
     }
 
 	@Override
-	public void update(Game a) {
+	public void accept(Game a) {
 		reinforce();
 	}
 
@@ -144,8 +144,10 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 	protected void reinforce() {
 		int n = reinforcement.size();
 		if (n > 0) {
-			float pri = this.pri.pri();
-				// *1f/Util.sqrt(n); //not too large or it will compete with the signal itself
+			float pri = this.pri.pri()
+				/ n
+				// *1f/Util.sqrt(n) //not too large or it will compete with the signal itself
+			;
 
 //			for (Task t : reinforcement)
 //				t.pri(pri);
