@@ -221,25 +221,25 @@ abstract public class MetaAgent extends Game {
 				nar.freqResolution.set(x);
 				return y;
 			});
-//			actionUnipolar($.inh(SELF, careful), (x) -> {
-//				float y;
-//				if (x >= 0.75f) {
-//					x = 0.01f;
-//					y = (1f+0.75f)/2;
-//				} else if (x >= 0.5f) {
-//					x = 0.02f;
-//					y = (0.75f+0.5f)/2;
-//				} else if (x >= 0.25f) {
-//					x = 0.03f;
-//					y = (0.5f+0.25f)/2;
-//				} else {
-//					x = 0.04f;
-//					y = 0.25f/2;
-//				}
-//				nar.confResolution.set(x);
-//				return y;
-//			});
-//			//potentially dangerous, may forget how to turn it off
+			actionUnipolar($.inh(SELF, careful), (x) -> {
+				float y;
+				if (x >= 0.75f) {
+					x = 0.01f;
+					y = (1f+0.75f)/2;
+				} else if (x >= 0.5f) {
+					x = 0.02f;
+					y = (0.75f+0.5f)/2;
+				} else if (x >= 0.25f) {
+					x = 0.03f;
+					y = (0.5f+0.25f)/2;
+				} else {
+					x = 0.04f;
+					y = 0.25f/2;
+				}
+				nar.confResolution.set(x);
+				return y;
+			});
+//			//potentially dangerous, may become unable to convince itself to un-ignore things
 //			actionUnipolar($.inh(SELF, ignore), (x) -> {
 //				float y;
 //				if (x >= 0.75f) {

@@ -1068,6 +1068,22 @@ public enum Util {
 		double[] minmax = minmax(x);
 		return normalize(x, minmax[0], minmax[1]);
 	}
+	public static float[] normalizeCartesian(float[] x) {
+		double magSq = 0;
+		for (int i = 0; i < x.length; i++) {
+			float xi = x[i];
+			magSq += xi * xi;
+		}
+
+		if (magSq < Math.sqrt(Float.MIN_NORMAL))
+			return x; //~zero vector, leave unchanged
+
+		float mag = (float) Math.sqrt(magSq);
+		for (int i = 0; i < x.length; i++)
+			x[i] /= mag;
+
+		return x;
+	}
 	public static double[] normalizeCartesian(double[] x) {
 		double magSq = 0;
 		for (int i = 0; i < x.length; i++) {
@@ -1092,6 +1108,9 @@ public enum Util {
 	public static float[] normalize(float[] x, float min, float max) {
 		return normalize(x, 0, x.length, min, max);
 	}
+	public static float[] normalizeSafe(float[] x, float min, float max) {
+		return normalizeSafe(x, 0, x.length, min, max);
+	}
 
 	public static double[] normalize(double[] x, double min, double max) {
 		return normalize(x, 0, x.length, min, max);
@@ -1104,6 +1123,11 @@ public enum Util {
 	public static float[] normalize(float[] x, int s, int e, float min, float max) {
 		for (int i = s; i < e; i++)
 			x[i] = normalize(x[i], min, max);
+		return x;
+	}
+	public static float[] normalizeSafe(float[] x, int s, int e, float min, float max) {
+		for (int i = s; i < e; i++)
+			x[i] = normalizeSafe(x[i], min, max);
 		return x;
 	}
 
@@ -1127,10 +1151,7 @@ public enum Util {
 	}
 
 	public static float normalizeSafe(float x, float min, float max) {
-		if (max - min <= Float.MIN_NORMAL)
-			return 0.5f;
-		else
-			return (x - min) / (max - min);
+		return ((max - min) <= Float.MIN_NORMAL) ? 0.5f : ((x - min) / (max - min));
 	}
 
 	public static float normalize(float x, float min, float max) {
@@ -1198,9 +1219,10 @@ public enum Util {
 	}
 
 	public static String className(Object p) {
-		String s = p.getClass().getSimpleName();
+		Class<?> pClass = p.getClass();
+		String s = pClass.getSimpleName();
 		if (s.isEmpty())
-			return p.getClass().toString().replace("class ", "");
+			return pClass.toString().replace("class ", "");
 		return s;
 	}
 

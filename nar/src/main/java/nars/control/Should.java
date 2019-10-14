@@ -36,11 +36,14 @@ public enum Should { ;
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-//					new MLPMap.Layer(
-//						dims
-//						//Math.max(2, dims/2)
-//						, /*TanhActivation.the*/  SigmoidActivation.the ),
-					new MLPMap.Layer( 1, SigmoidActivation.the)
+					new MLPMap.Layer(
+						dims
+						//Math.max(2, dims/2)
+						, /*TanhActivation.the*/  SigmoidActivation.the ),
+					new MLPMap.Layer( 1,
+						//SigmoidActivation.the
+						null
+					)
 				);
 			}
 		}
@@ -69,14 +72,14 @@ public enum Should { ;
 			}
 
 			float[] want = n.emotion.want.clone();
-			Util.normalize(want);
+			Util.normalizeCartesian(want);
 
 
 			//2. learn
 			float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
 			for (int i = 0; i < ww; i++) {
 				float v = c[i].value;
-				v = Math.max(0, v); //clip at 0
+				//v = Math.max(0, v); //clip at 0
 				f[i] = v;
 				min = Math.min(v, min);
 				max = Math.max(v, max);
@@ -87,9 +90,11 @@ public enum Should { ;
 //                        float flat = 1f/ww;
 //                        for (int i = 0; i < ww; i++)
 //                            c[i].pri(flat);
-			} else {
+			}
 
-				float learningRate = 0.25f;
+			{
+
+				float learningRate = 0.04f;
 
 				double errTotal = 0;
 				for (int i = 0; i < ww; i++) {
@@ -97,11 +102,11 @@ public enum Should { ;
 					fNorm[i] = Util.normalizeSafe(f[i], min, max);
 
 					float specificLearningRate =
-						//learningRate;
-						learningRate * Math.max(0.1f,
-							//Math.abs(0.5f-fNorm[i])*2f
-							Math.abs(f[i]) / Math.max(Math.abs(min), Math.abs(max)) //extremeness
-						);
+						learningRate;
+//						learningRate * Math.max(0.1f,
+//							//Math.abs(0.5f-fNorm[i])*2f
+//							Math.abs(f[i]) / Math.max(Math.abs(min), Math.abs(max)) //extremeness
+//						);
 
 					Predictor P = this.predictor[i];
 

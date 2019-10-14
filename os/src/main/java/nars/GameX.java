@@ -432,6 +432,7 @@ abstract public class GameX extends Game {
                 //40
         );
 
+        n.causeCapacity.set(32);
         n.termVolMax.set(
             //64
             //48

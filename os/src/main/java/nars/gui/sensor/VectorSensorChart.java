@@ -231,8 +231,8 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
                 if (normalize.booleanValue()) {
                     //balance bipolar normalize around 0.5
-                    float min = Util.min(value);
-                    float max = Util.max(value);
+                    float[] minmax = Util.minmax(value);
+                    float min = minmax[0], max = minmax[1];
                     if (max-min > Float.MIN_NORMAL) {
                         float max5 = max - 0.5f;
                         float min5 = 0.5f - min;
@@ -241,7 +241,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
                         } else if (min5 > max5) {
                             max = 0.5f + min5;
                         }
-                        Util.normalize(value, min, max);
+                        Util.normalizeSafe(value, min, max);
                     }
                 }
             }

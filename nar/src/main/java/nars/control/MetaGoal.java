@@ -125,7 +125,7 @@ public enum MetaGoal {
             return; //flat metagoal early exit
 
         double[] want = Util.toDouble(wants);
-        Util.normalizeCartesian(want);
+        Util.normalizeCartesian(want); //TODO this may differ from the array computed in Should if the want is modified in the meantime by another thread, so it should be shared
 
         float[] credit = new float[want.length];
 
