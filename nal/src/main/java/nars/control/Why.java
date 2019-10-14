@@ -4,7 +4,9 @@ import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAL;
 import nars.subterm.Subterms;
+import nars.term.LazyTerm;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Int;
 import nars.term.util.TermException;
@@ -103,9 +105,23 @@ public enum Why { ;
 //		}
 	}
 
+	@Nullable public static <C extends Caused> Termed whyLazy(@Nullable C... c) {
+		return whyLazy(c, NAL.causeCapacity.intValue());
+	}
+
+	@Nullable public static <C extends Caused> Termed whyLazy(@Nullable C[] c, int capacity) {
+		switch (c.length) {
+			case 0: return null;
+			case 1: return c[0].why();
+			case 2: if (c[0]==c[1] || c[1] == null) return c[0].why();  if (c[0] == null) return c[1].why(); break;
+		}
+		return new LazyTerm(()-> why(c, capacity)); //TODO custom LazyTerm impl
+	}
+
 	@Deprecated public static <C extends Caused> Term why(@Nullable C... c) {
 		return why(c, NAL.causeCapacity.intValue());
 	}
+
 
 	public static <C extends Caused> Term why(@Nullable C[] c, int capacity) {
 		switch (c.length) {
@@ -249,26 +265,14 @@ public enum Why { ;
 			return true;
 		}, null);
 	}
-	private static void toSet(Term w, IntConsumer s) {
-		if (w==null)
-			return;
+	private static void toSet(Term w, IntConsumer each) {
 		if (w instanceof Int) {
-			s.accept(s(w));
+			each.accept(s(w));
 		} else {
-			if ((w.subStructure() & SETe.bit) == 0) {
-				//no inner sets (flat), just iterate the subterms
-				Subterms ww = w.subterms();
-				int wn = ww.subs();
-				for (int i = 0; i < wn; i++) {
-					s.accept(s(ww.sub(i)));
-				}
-			} else {
-				w.recurseTermsOrdered(x -> true, (e) -> {
-					if (e instanceof Int)
-						s.accept(s(e));
-					return true;
-				}, null);
-			}
+			Subterms ww = w.subterms();
+			int wn = ww.subs();
+			for (int i = 0; i < wn; i++)
+				toSet(ww.sub(i), each);
 		}
 	}
 

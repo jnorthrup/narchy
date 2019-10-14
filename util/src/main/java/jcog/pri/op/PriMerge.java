@@ -93,7 +93,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
         float pBefore = _pBefore[0];
 
-        return mode.apply(incoming, pBefore, pAfter);
+        return mode!=null ? mode.apply(incoming, pBefore, pAfter) : Float.NaN;
     }
 
     protected boolean ignoreDeletedIncoming() {

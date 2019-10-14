@@ -140,6 +140,26 @@ abstract public class NAL8DecomposeTest extends NALTest {
         }
 
         @Test
+        void testDisjConditionalDecompose_opposite_neg() {
+            test
+                .termVolMax(6)
+                .input("(||,a,b).")
+                .input("--a!")
+                .mustGoal(cycles, "b", 1f, 0.81f)
+                .mustNotOutput(cycles, "b", GOAL, 0f, 0.5f, 0f, 1f)
+            ;
+        }
+        @Disabled @Test
+        void testDisjConditionalDecompose_opposite_pos() {
+            test
+                .termVolMax(6)
+                .input("(||,a,b).")
+                .input("a!")
+                .mustGoal(cycles, "b", 0f, 0.81f)
+                .mustNotOutput(cycles, "b", GOAL, 0.5f, 1f, 0f, 1f)
+            ;
+        }
+        @Test
         void testDisjOpposite() {
 
             //produces output from structural deduction

@@ -32,7 +32,7 @@ public class TaskResolve extends NativeHow {
 
 		Task y = get(x, d);
 		if (y != null) // && !x.equals(y))
-			d.add(new AbstractPremise(y, why.why(x)));
+			d.add(new AbstractPremise(y, why.why(x, y)));
 	}
 
 	@Nullable private final Predicate<nars.Task> tasklinkTaskFilter =

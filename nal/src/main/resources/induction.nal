@@ -48,8 +48,8 @@ B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) && polarizeBeli
 B, A, --is(A,"==>"), --is(B,"==>")  |-          (polarizeTask(B) || polarizeBelief(A)), (Belief:UnionDD, Time:Sequence)
 //B, A, --is(A,"==>"), --is(B,"==>")  |-          (B || A), (Belief:Union, Time:Sequence)
 
-B, A  |-  (B && A), (Belief:Intersection, Time:Compose)
-B, A  |-  (B || A), (Belief:Union, Time:Compose)
+//B, A  |-  (B && A), (Belief:Intersection, Time:Compose)
+//B, A  |-  (B || A), (Belief:Union, Time:Compose)
 
 B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) && polarizeBelief(A))), (Belief:IntersectionDD, Time:Sequence)
 //B, A, --is(A,"==>"), --is(B,"==>")  |- varIntro((polarizeTask(B) || polarizeBelief(A))), (Belief:UnionDD, Time:Sequence)

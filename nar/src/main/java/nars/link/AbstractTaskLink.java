@@ -10,144 +10,143 @@ import nars.Task;
 import nars.control.Why;
 import nars.task.util.TaskException;
 import nars.term.Term;
+import nars.term.Termed;
 import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.assertFinite;
-import static jcog.pri.op.PriReturn.Void;
 import static jcog.pri.op.PriReturn.*;
 
 public abstract class AbstractTaskLink implements TaskLink {
 
-    //private static final AtomicFloatFieldUpdater<AbstractTaskLink> PRI = new AtomicFloatFieldUpdater<AbstractTaskLink>(AbstractTaskLink.class, "pri");
+	//private static final AtomicFloatFieldUpdater<AbstractTaskLink> PRI = new AtomicFloatFieldUpdater<AbstractTaskLink>(AbstractTaskLink.class, "pri");
 
-    /**
-     * source,target as a 2-ary subterm
-     */
-    public final Term from;
-    public final Term to;
-    public final int hash;
+	static final FloatFloatToFloatFunction plus = PriMerge.plus::merge;
+	static final FloatFloatToFloatFunction mult = PriMerge.and::merge;
+	/**
+	 * source,target as a 2-ary subterm
+	 */
+	public final Term from;
+	public final Term to;
+	public final int hash;
+	public Termed why = null;
 
-    static final FloatFloatToFloatFunction plus = PriMerge.plus::merge;
-    static final FloatFloatToFloatFunction mult = PriMerge.and::merge;
-
-    public Term why = null;
-
-    /**
-     * cached; NaN means invalidated
-     */
-    private volatile float pri = 0;
+	/**
+	 * cached; NaN means invalidated
+	 */
+	private volatile float pri = 0;
 
 
-    protected AbstractTaskLink(Term source, Term target, int hash) {
-        this.from = source;
-        this.to = target;
-        this.hash = hash;
-    }
+	protected AbstractTaskLink(Term source, Term target, int hash) {
+		this.from = source;
+		this.to = target;
+		this.hash = hash;
+	}
 
-    protected AbstractTaskLink(Term source, Term target) {
-        this(source, Util.maybeEqual(source,target),
-            //TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
-            hash(source, target)
-        );
+	protected AbstractTaskLink(Term source, Term target) {
+		this(source, Util.maybeEqual(source, target),
+			//TODO construct hash as 16bit+16bit so that the short hash can be compared from external iterations
+			hash(source, target)
+		);
 
-        if (source instanceof Bool)
-            throw new TermException("source bool", source);
-        if (target instanceof Bool)
-            throw new TermException("target bool", target);
+		if (source instanceof Bool)
+			throw new TermException("source bool", source);
+		if (target instanceof Bool)
+			throw new TermException("target bool", target);
 
-        Op so = source.op();
-        if (!so.taskable)
-            throw new TaskException("source term not taskable", source);
-        if (!so.conceptualizable)
-            throw new TaskException("source term not conceptualizable", source);
+		Op so = source.op();
+		if (!so.taskable)
+			throw new TaskException("source term not taskable", source);
+		if (!so.conceptualizable)
+			throw new TaskException("source term not conceptualizable", source);
 //        if (NAL.DEBUG) {
 //            if (!source.isNormalized())
 //                throw new TaskException(source, "source term not normalized and can not name a task");
 //        }
-    }
+	}
 
-    @Override
-    public final Term why() {
-        return why;
-    }
-
-    private static int hash(Term source, Term target) {
-        int s = source.hashCodeShort();
-        int t = source!=target ? target.hashCodeShort() : s;
-        int hash = (t << 16) | s;
+	private static int hash(Term source, Term target) {
+		int s = source.hashCodeShort();
+		int t = source != target ? target.hashCodeShort() : s;
+		int hash = (t << 16) | s;
 //        if (t!=(hash >>> 16))
 //            throw new WTF();
 //        if (s!=(hash & 0xffff))
 //            throw new WTF();
-        return hash;
-    }
+		return hash;
+	}
 
-    @Override
-    public @Nullable final Term other(Term x, int xHashShort, boolean reverse) {
-        if (isSelf() || xHashShort != (reverse ? toHash() : fromHash()) || !x.equals(reverse ? to : from))
-            return null;
+	@Override
+	public final Term why() {
+        Termed w = why;
+		return w!=null ? w.term() : null;
+	}
 
-        return reverse ? from : to;
-    }
+	@Override  @Nullable
+	public final Term other(Term x, int xHashShort, boolean reverse) {
+		if (isSelf() || xHashShort != (reverse ? toHash() : fromHash()) || !x.equals(reverse ? to : from))
+			return null;
+
+		return reverse ? from : to;
+	}
 
 
+	public final int toHash() {
+		return (hash >>> 16);
+	}
 
-    public final int toHash() {
-        return (hash >>> 16);
-    }
-    public final int fromHash() {
-        return (hash & 0xffff);
-    }
+	public final int fromHash() {
+		return (hash & 0xffff);
+	}
 
-    @Override
-    public final boolean isSelf() {
-        return from == to;
-    }
+	@Override
+	public final boolean isSelf() {
+		return from == to;
+	}
 
-    @Override
-    public final TaskLink id() {
-        return this;
-    }
+	@Override
+	public final TaskLink id() {
+		return this;
+	}
 
-    @Override
-    public final boolean equals(Object obj) {
-        if (this == obj) return true;
-        if (obj instanceof TaskLink && hash == obj.hashCode()) {
-            TaskLink t = (TaskLink) obj;
-            return from.equals(t.from()) && to.equals(t.to());
-        }
-        return false;
-    }
+	@Override
+	public final boolean equals(Object obj) {
+		if (this == obj) return true;
+		if (obj instanceof TaskLink && hash == obj.hashCode()) {
+			TaskLink t = (TaskLink) obj;
+			return from.equals(t.from()) && to.equals(t.to());
+		}
+		return false;
+	}
 
-    @Override
-    public final int hashCode() {
-        return hash;
-    }
+	@Override
+	public final int hashCode() {
+		return hash;
+	}
 
-    @Override
-    public final Term from() {
-        return from;
-    }
+	@Override
+	public final Term from() {
+		return from;
+	}
 
-    @Override
-    public final Term to() {
-        return to;
-    }
+	@Override
+	public final Term to() {
+		return to;
+	}
 
-    @Override
-    public float pri() {
-        float p = this.pri;
-        if (p != p)
-            return this.pri = priSum() / 4; //update cached value
-        else
-            return p;
-    }
+	@Override
+	public float pri() {
+		float p = this.pri;
+		if (p != p)
+			return this.pri = priSum() / 4; //update cached value
+		else
+			return p;
+	}
 
-    protected void invalidate() {
-        this.pri = Float.NaN;
-    }
+	protected void invalidate() {
+		this.pri = Float.NaN;
+	}
 
 
 //    @Override
@@ -157,158 +156,154 @@ public abstract class AbstractTaskLink implements TaskLink {
 //        );
 //    }
 
-    @Override
-    public void delete(byte punc) {
-        priSet(punc, 0);
-    }
+	@Override
+	public void delete(byte punc) {
+		priSet(punc, 0);
+	}
 
-    @Override
-    public boolean delete() {
-        fill(0);
-        return true;
-    }
+	@Override
+	public boolean delete() {
+		fill(0);
+		return true;
+	}
 
-    @Override
-    public final boolean isDeleted() {
-        return false;
-    }
+	@Override
+	public final boolean isDeleted() {
+		return false;
+	}
 
-    public final void mergeComponent(byte punc, float pri, PriMerge merge) {
-        mergeComponent(punc, pri, merge, Void);
-    }
+	public final void mergeComponent(byte punc, float pri, PriMerge merge) {
+		mergeComponent(punc, pri, merge, null);
+	}
 
-    protected final float mergeComponentPost(byte punc, float pri, PriMerge merge) {
-        return mergeComponent(punc, pri, merge, Post);
-    }
+	protected final float mergeComponentPost(byte punc, float pri, PriMerge merge) {
+		return mergeComponent(punc, pri, merge, Post);
+	}
 
-    public final float mergeComponentDelta(byte punc, float pri, PriMerge merge) {
-        return mergeComponent(punc, pri, merge, Delta);
-    }
-
-
-    protected abstract float priSum();
-
-    /** merge a component; used internally.  does not invalidate so use the high-level methods like merge() */
-    protected abstract float apply(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning);
-
-    protected abstract void fill(float pri);
+	public final float mergeComponentDelta(byte punc, float pri, PriMerge merge) {
+		return mergeComponent(punc, pri, merge, Delta);
+	}
 
 
+	protected abstract float priSum();
 
-    @Override abstract public String toString();
+	/**
+	 * merge a component; used internally.  does not invalidate so use the high-level methods like merge()
+	 */
+	protected abstract float apply(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning);
 
-
-    public AbstractTaskLink priSet(byte punc, float puncPri) {
-        mergeComponent(punc, puncPri, PriMerge.replace, PriReturn.Void);
-        return this;
-    }
-    public final AbstractTaskLink priMax(byte punc, float puncPri) {
-        mergeComponent(punc, puncPri, PriMerge.max);
-        return this;
-    }
+	protected abstract void fill(float pri);
 
 
-    @Override
-    public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {
-
-        why = Why.why(why, incoming.why()); //TODO priority proportional Why merge
-
-        //if (incoming instanceof AtomicTaskLink) {
-            switch (returning) {
-                case Overflow:
-                case Delta:
-                    float o = 0;
-                    for (byte i = 0; i < 4; i++)
-                        o += merge(i, incoming.priIndex(i), merge, returning);
-                    return o/4;
-                case Void:
-                    for (byte i = 0; i < 4; i++)
-                        merge(i, incoming.priIndex(i), merge, Void);
-                    return Float.NaN;
-            }
-        //}
+	@Override
+	abstract public String toString();
 
 
-        throw new TODO();
-    }
+	public AbstractTaskLink priSet(byte punc, float puncPri) {
+		mergeComponent(punc, puncPri, PriMerge.replace, null);
+		return this;
+	}
+
+	@Override
+	public float merge(TaskLink incoming, PriMerge merge, PriReturn returning) {
+
+		why = Why.why(why(), incoming.why()); //TODO priority proportional Why merge
+
+		switch (returning) {
+			case Overflow:
+			case Delta:
+				float o = 0;
+				for (byte i = 0; i < 4; i++)
+					o += merge(i, incoming.priIndex(i), merge, returning);
+				return o / 4;
+			case Void:
+				for (byte i = 0; i < 4; i++)
+					merge(i, incoming.priIndex(i), merge, null);
+				return Float.NaN;
+
+            default:
+                throw new UnsupportedOperationException();
+		}
+
+	}
 
 //    protected void mergeComponent(byte punc, float pri, PriMerge merge) {
 //        mergeComponent(punc, pri, merge, PriReturn.Void);
 //    }
 
-    protected final float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
-        return merge(Task.i(punc), pri, merge, returning);
-    }
+	protected final float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
+		return merge(Task.i(punc), pri, merge, returning);
+	}
 
-    protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
-        //assertFinite(pri);
-        float y = apply(ith, pri,
-            merge::mergeUnitize, //necessary
-            returning);
+	protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
+		//assertFinite(pri);
+		float y = apply(ith, pri,
+			merge::mergeUnitize, //necessary
+			returning);
 
-        if (returning != PriReturn.Delta || y != 0)
-            invalidate();
+		if (returning != PriReturn.Delta || y != 0)
+			invalidate();
 
-        return y/4f;
-    }
+		return y / 4f;
+	}
 
 
-    @Override
-    public AbstractTaskLink pri(float p) {
+	@Override
+	public AbstractTaskLink pri(float p) {
 //        //TODO fully atomic
 //        float e = pri();
 //        priMult(  p/ e); } else { fill(p);  }
 //        return this;
-        throw new UnsupportedOperationException();
-    }
+		throw new UnsupportedOperationException();
+	}
 
-    @Override
-    public void priAdd(float a) {
-        throw new TODO();
-    }
-
-
-
-    @Override
-    public float priMult(float X) {
-        assertFinite(X);
-        if (!Util.equals(X, 1)) {
+	@Override
+	public void priAdd(float a) {
+		throw new TODO();
+	}
 
 
-            boolean changed = false;
-            //HACK not fully atomic but at least consistent
-            for (int i = 0; i < 4; i++)
-                changed |= apply(i, X, mult, Changed) != 0;
-
-            if (changed)
-                invalidate();
-        }
-        return pri();
-    }
-
-    @Override
-    public void priMult(float belief, float goal, float question, float quest) {
-        boolean changed;
-        changed  = apply(0, belief, mult, Changed) != 0;
-        changed |= apply(1, goal, mult, Changed) != 0;
-        changed |= apply(2, question, mult, Changed) != 0;
-        changed |= apply(3, quest, mult, Changed) != 0;
-        if (changed)
-            invalidate();
-    }
+	@Override
+	public float priMult(float X) {
+		assertFinite(X);
+		if (!Util.equals(X, 1)) {
 
 
-    @Nullable public final Term matchReverse(Term from, int fromHash, Term to, int toHash) {
-        int f = fromHash();
-        if (f != fromHash &&
-            f != toHash &&
-            toHash() == toHash &&
-            to.equals(this.to) &&
-            !from.equals(this.from))
-                return this.from;
-        else
-            return null;
-    }
+			boolean changed = false;
+			//HACK not fully atomic but at least consistent
+			for (int i = 0; i < 4; i++)
+				changed |= apply(i, X, mult, Changed) != 0;
+
+			if (changed)
+				invalidate();
+		}
+		return pri();
+	}
+
+	@Override
+	public void priMult(float belief, float goal, float question, float quest) {
+		boolean changed;
+		changed = apply(0, belief, mult, Changed) != 0;
+		changed |= apply(1, goal, mult, Changed) != 0;
+		changed |= apply(2, question, mult, Changed) != 0;
+		changed |= apply(3, quest, mult, Changed) != 0;
+		if (changed)
+			invalidate();
+	}
+
+
+	@Nullable
+	public final Term matchReverse(Term from, int fromHash, Term to, int toHash) {
+		int f = fromHash();
+		if (f != fromHash &&
+			f != toHash &&
+			toHash() == toHash &&
+			to.equals(this.to) &&
+			!from.equals(this.from))
+			return this.from;
+		else
+			return null;
+	}
 
 //    @Override
 //    public float pri(FloatFloatToFloatFunction update, float scalar) {

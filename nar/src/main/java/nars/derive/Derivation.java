@@ -490,8 +490,9 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 //            return false;
 
         this.eviSingle = task.isBeliefOrGoal() ? task.evi() : 0;
-        this.eviDouble = belief!=null ? //this.eviSingle + (belief!=null ? belief.evi() : 0);
-                            Math.min(eviSingle > 0 ? this.eviSingle : Double.POSITIVE_INFINITY, belief.evi())
+        this.eviDouble = belief!=null ?
+                            eviSingle + (belief!=null ? belief.evi() : 0)
+                            //Math.min(eviSingle > 0 ? this.eviSingle : Double.POSITIVE_INFINITY, belief.evi())
                             :
                             0;
         return true;

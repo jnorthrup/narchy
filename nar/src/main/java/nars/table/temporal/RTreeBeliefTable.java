@@ -204,7 +204,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 				//float dur = (float) (tRoot.bounds().range(0) / (1+n));
 
 				HyperIterator.HyperIteratorRanker<TaskRegion, TaskRegion> timeRank =
-					new HyperIterator.HyperIteratorRanker(z -> z, Answer.regionNearness(s, e));
+					new HyperIterator.HyperIteratorRanker<>(z -> z, Answer.regionNearness(s, e));
 
 				int cursorCapacity = Math.min(n,
 					//ac

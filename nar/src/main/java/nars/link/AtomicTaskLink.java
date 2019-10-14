@@ -6,6 +6,7 @@ import jcog.signal.tensor.WritableTensor;
 import jcog.util.FloatFloatToFloatFunction;
 import nars.term.Compound;
 import nars.term.Term;
+import org.jetbrains.annotations.Nullable;
 
 
 public class AtomicTaskLink extends AbstractTaskLink {
@@ -46,12 +47,12 @@ public class AtomicTaskLink extends AbstractTaskLink {
     }
 
     @Override
-    protected float apply(int ith, float pri, FloatFloatToFloatFunction componentMerge, PriReturn returning) {
+    protected float apply(int ith, float pri, FloatFloatToFloatFunction componentMerge, @Nullable PriReturn returning) {
         return punc.merge(ith, pri, componentMerge, returning);
     }
 
     @Override
-    public float priIndex(byte index) {
+    public final float priIndex(byte index) {
         return punc.getAt(index);
     }
 

@@ -201,21 +201,18 @@ public interface LongInterval {
 
 		if (a == ETERNAL)
 			return 0;
+		if (a == TIMELESS)
+			throw new WTF(); //return TIMELESS;
 
-		long s = start();
+		long s = start(); //assert(s!=TIMELESS);
+
 		if (s == ETERNAL || s == a)
 			return 0;
 
-		if (a == TIMELESS || s == TIMELESS)
-			return TIMELESS;
-
 		long e = end();
-		if (e!=s) {
-			//check for intersects
-			if (intersectsRaw(a,b,s,e))
-				return 0;
-		}
 
+		if (/*e != s && */intersectsRaw(a, b, s, e))
+			return 0;
 
 		long sa = Math.abs(s - a);
 		if (a == b) {

@@ -34,7 +34,7 @@ abstract public class MultiExec extends Exec {
 //            0.5;
 
     /** timeslice granularity */
-    long subCycleNS = 1_000_000;
+    long subCycleNS = 2_000_000;
 
 
     static private final float queueLatencyMeasurementProbability = 0.001f;

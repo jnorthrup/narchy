@@ -28,7 +28,7 @@ public class QuestionAnswering extends NativeHow {
 		if (answerTable != null && !answerTable.isEmpty()) {
 			Task a = answer(q, answerTable, d);
 			if (a!=null) {
-				d.add(new AbstractPremise(a, why.why(q)));
+				d.add(new AbstractPremise(a, why.why(q,a)));
 			}
 		}
 

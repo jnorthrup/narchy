@@ -3,6 +3,7 @@ package jcog.signal.tensor;
 import jcog.data.atomic.MetalAtomicLongFieldUpdater;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
+import org.jetbrains.annotations.Nullable;
 
 import static jcog.Texts.n4;
 
@@ -75,12 +76,11 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
         return n4(getAt(component));
     }
 
-    @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, PriReturn returning) {
+    @Override public final float merge(int c, float arg, FloatFloatToFloatFunction F, @Nullable PriReturn returning) {
         int shift = c * 16;
         long mask = ~((((long)('\uffff'))) << shift);
         long _x, _y;
         float x, y;
-
 
         do {
             _x = X.get(this);
@@ -100,7 +100,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
         } while (!X.compareAndSet(this, _x, _y));
 
-        return returning.apply(arg, x, y);
+        return returning!=null ? returning.apply(arg, x, y) : Float.NaN;
     }
 
     @Override

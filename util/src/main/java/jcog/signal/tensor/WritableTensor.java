@@ -4,6 +4,7 @@ import jcog.TODO;
 import jcog.pri.op.PriReturn;
 import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
+import org.jetbrains.annotations.Nullable;
 
 public interface WritableTensor extends Tensor {
 
@@ -36,14 +37,15 @@ public interface WritableTensor extends Tensor {
         return merge(linearCell, arg, x, PriReturn.Post);
     }
 
-    default float merge(int linearCell, float arg, FloatFloatToFloatFunction x, PriReturn returning) {
+    default float merge(int linearCell, float arg, FloatFloatToFloatFunction x, @Nullable PriReturn returning) {
         float prev = getAt(linearCell);
 
         float next = x.apply(prev, arg);
 
-        setAt(linearCell, next);
+        if (prev!=next)
+            setAt(linearCell, next);
 
-        return returning.apply(arg, prev, next);
+        return returning!=null ? returning.apply(arg, prev, next) : Float.NaN;
     }
 
     default void fill(float x) {

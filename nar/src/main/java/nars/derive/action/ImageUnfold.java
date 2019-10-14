@@ -8,6 +8,7 @@ import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
 import nars.link.DynamicTermDecomposer;
 import nars.term.Compound;
+import nars.term.Neg;
 import nars.term.Term;
 import nars.term.util.Image;
 
@@ -31,13 +32,14 @@ public class ImageUnfold extends NativeHow {
 		Term t = d._taskTerm;
 
 		Term t0 = t.sub(0), t1 = t.sub(1);
-		boolean t0p = t0 instanceof Compound && t0.opID() == PROD.id, t1p = t1 instanceof Compound && t1.opID() == PROD.id;
+		boolean
+			t0p = t0 instanceof Compound && t0.opID() == PROD.id,
+			t1p = t1 instanceof Compound && t1.opID() == PROD.id;
 
 		if (t0p)
 			unfold(why, d, t, t0, t1, true);
 		if (t1p)
 			unfold(why, d, t, t0, t1, false);
-
 	}
 
 	static boolean unfold(RuleCause why, Derivation d, Term t, Term t0, Term t1, boolean subjOrPred) {
@@ -46,7 +48,11 @@ public class ImageUnfold extends NativeHow {
 		if (forward != null) {
 			Term y = subjOrPred ? Image.imageExt(t, forward) : Image.imageInt(t, forward);
 			if (y instanceof Compound) {
-				y = y.unneg();
+				if (y instanceof Neg) {
+					y = y.unneg();
+					if (!(y instanceof Compound))
+						return false;
+				}
 				if (y.op().conceptualizable) {
 
 					Task task = d._task;

@@ -5,9 +5,7 @@
 package nars.derive.premise;
 
 import jcog.Util;
-import nars.NAL;
 import nars.Task;
-import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.rule.RuleCause;
 import nars.term.Img;
@@ -27,13 +25,13 @@ public class AbstractPremise implements Premise {
 	/**
 	 * does not include the task or belief's. these transfer separately
 	 */
-	public Term why;
+	public Termed why;
 
-	public AbstractPremise(Task task, Term why) {
-		this(task, task.term(), Why.why(task.why(), why));
+	public AbstractPremise(Task task, Termed why) {
+		this(task, task.term(), why);
 	}
 
-	public AbstractPremise(Termed task, Termed belief, Term why) {
+	public AbstractPremise(Termed task, Termed belief, Termed why) {
 		assert (valid(task) && task.term().op().taskable);
 		assert (valid(belief));
 		this.task = task;
@@ -64,7 +62,7 @@ public class AbstractPremise implements Premise {
 
 	@Override
 	public final Term why() {
-		return why;
+		return why.term();
 	}
 
 
@@ -89,12 +87,6 @@ public class AbstractPremise implements Premise {
 	public final Task belief() {
 		return belief instanceof Task ? (Task) belief : null;
 	}
-
-
-	public Term why(Derivation d) {
-		return Why.why(d.why(), this.why, NAL.causeCapacity.intValue());
-	}
-
 
 	@Override
 	public boolean equals(Object obj) {

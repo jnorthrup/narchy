@@ -7,14 +7,13 @@ import jcog.pri.ScalarValue;
 import nars.NAL;
 import nars.Task;
 import nars.attention.TaskLinkWhat;
-import nars.control.Caused;
-import nars.control.Why;
 import nars.derive.Derivation;
 import nars.derive.action.TaskAction;
 import nars.derive.rule.RuleCause;
 import nars.link.AbstractTaskLink;
 import nars.link.AtomicTaskLink;
 import nars.term.Term;
+import nars.term.Termed;
 import org.jetbrains.annotations.Nullable;
 
 import java.nio.BufferOverflowException;
@@ -51,21 +50,20 @@ public class STMLinker extends TaskAction {
 
 		if (pri >= ScalarValue.EPSILON) {
 			long dt = next.minTimeTo(prev);
-			pri = (float) NAL.evi(pri, dt, d.dur);
-
-			if (pri >= ScalarValue.EPSILON) {
-				TaskLinkWhat w = (TaskLinkWhat) d.what;
-
-				int causeCap = NAL.causeCapacity.intValue();
-				Term WHY =
-					Why.why(
-						why.why,
-						Why.why(new Caused[] { prev, next, d },
-			causeCap - 1), Integer.MAX_VALUE /* allow over */);
-
-				link(att, btt, next.punc(), pri, WHY, w);
-				link(btt, att, prev.punc(), pri, WHY, w);
+			if (dt > 0) {
+				pri = (float) NAL.evi(pri, dt, d.dur); //fade by time distance
+				if (pri < ScalarValue.EPSILON)
+					return true;
 			}
+
+			TaskLinkWhat w = (TaskLinkWhat) d.what;
+
+			int causeCap = NAL.causeCapacity.intValue();
+			Termed WHY =
+					why.why(prev, next /*, d*/ );
+
+			link(att, btt, next.punc(), pri, WHY, w);
+			link(btt, att, prev.punc(), pri, WHY, w);
 		}
 		return true;
 	}
@@ -78,7 +76,7 @@ public class STMLinker extends TaskAction {
 			//Util.or(next.priElseZero(), prev.priElseZero());
 	}
 
-	static void link(Term a, Term b, byte punc, float pri, Term why, TaskLinkWhat w) {
+	static void link(Term a, Term b, byte punc, float pri, Termed why, TaskLinkWhat w) {
 		AbstractTaskLink l = AtomicTaskLink.link(a, b).priSet(punc, pri);
 		l.why = why;
 		w.links.link(l);

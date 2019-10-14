@@ -100,11 +100,14 @@ public final class Answer implements Timed, Predicate<Task> {
 //    }
     public static FloatRank<TaskRegion> regionNearness(long qStart, long qEnd) {
         //TODO special impl for confPerTime==0
-//        return qStart == qEnd ?
+        return qStart == qEnd ?
+            (x,min) -> -x.minTimeTo(qStart)
+            :
+            (x,min) -> -x.minTimeTo(qStart,qEnd);
 //            (x,min) -> -(float)(((double)x.minTimeTo(qStart)) + x.confMax() * confPerTime) :
             //return (x,min) -> (float)(x.confMax() / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
         //return (x,min) -> (float)((1+x.confMin()) / (1.0 + x.maxTimeTo(qStart,qEnd)/dur));
-        return (x,min) -> -x.minTimeTo(qStart,qEnd);
+
     }
 
     /**

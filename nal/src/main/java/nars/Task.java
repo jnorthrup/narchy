@@ -130,10 +130,10 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         merge(pp, tt, PriMerge.max);
     }
     static void merge(Task pp, Task tt, PriMerge merge) {
-        merge(pp, tt, merge, PriReturn.Void, true);
+        merge(pp, tt, merge, null, true);
     }
 
-    static float merge(final Task e, final Task i, PriMerge merge, PriReturn returning, boolean updateCreationTime) {
+    static float merge(final Task e, final Task i, PriMerge merge, @Nullable PriReturn returning, boolean updateCreationTime) {
 
         if (e == i)
             return 0;

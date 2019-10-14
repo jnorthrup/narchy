@@ -3,7 +3,7 @@ package jcog.pri.op;
 /** selects the type of (float) value returned by a merge operation */
 public enum PriReturn {
 
-    /** NOP */
+    /** NOP - use null when possible */
     Void {
         @Override
         public float apply(float incoming, float pBefore, float pAfter) {
