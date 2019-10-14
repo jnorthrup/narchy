@@ -31,7 +31,7 @@ public class DefaultDerivePri implements DerivePri {
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
-    public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
+    public final FloatRange simplicityExponent = new FloatRange(1.5f, 0f, 4f);
 
     /** importance of frequency polarity in result */
     public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
@@ -164,23 +164,23 @@ public class DefaultDerivePri implements DerivePri {
 
     @Override public float prePri(Derivation d) {
 
-        //return 1;
+        return 1;
 
-        if (d.isBeliefOrGoal()) {
-            //TODO include time range as factor since it's average evi
-            double te = d.truth.evi();
-            double de = d.evi();
-            double maintained =
-                    te / (te + de) //as weight
-                    //TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
-            ;
-            return (float) (1 + (Math.min(1, maintained)));
-            //return (float) (1 + Math.min(1, maintained));
-            //return (float) (1 + sqrt(w2cSafe(te)));
-        } else {
-            //question
-            return 1;
-        }
+//        if (d.isBeliefOrGoal()) {
+//            //TODO include time range as factor since it's average evi
+//            double te = d.truth.evi();
+//            double de = d.evi();
+//            double maintained =
+//                    te / (te + de) //as weight
+//                    //TruthFunctions.w2cSafe(te)/(TruthFunctions.w2cSafe(te)+TruthFunctions.w2cSafe(de))
+//            ;
+//            return (float) (1 + (Math.min(1, maintained)));
+//            //return (float) (1 + Math.min(1, maintained));
+//            //return (float) (1 + sqrt(w2cSafe(te)));
+//        } else {
+//            //question
+//            return 1;
+//        }
     }
 }
 /*

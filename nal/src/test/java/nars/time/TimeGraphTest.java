@@ -334,6 +334,7 @@ class TimeGraphTest {
         TimeGraph C = newTimeGraph(1);
         C.know($$("x"), 1);
         C.know($$("y"), 2);
+        C.autoneg = true;
 
         assertSolved("(--x ==>+- y)", C, "((--,x) ==>+1 y)");
     }

@@ -117,21 +117,20 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	private transient Term solving;
 	private Predicate<Event> target;
 
-	static private Term unknownComponent(Subterms xx, List<Event>[] subEvents, int abs) {
+	static private Term unknownComponent(Subterms xx, List<Absolute>[] subEvents, int abs) {
 		int s = subEvents.length;
 		if (abs < s) {
 			if (s - abs > 1) {
 				Term[] unknowns = new Term[s - abs]; //assume in correct order
 				int j = 0;
 				for (int i = 0; i < s; i++)
-					if (subEvents[i].isEmpty())
+					if (subEvents[i]==null)
 						unknowns[j++] = xx.sub(i);
 				return CONJ.the(XTERNAL, unknowns);
 			} else {
 				for (int i = 0; i < s; i++) {
-					if (subEvents[i].isEmpty()) {
+					if (subEvents[i]==null)
 						return xx.sub(i);
-					}
 				}
 				throw new UnsupportedOperationException();
 			}
@@ -586,6 +585,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //        }
 
 		if (eventTerm instanceof CommonVariable) {
+			//TODO dynamic
 			CommonVariable c = ((CommonVariable) eventTerm);
 			for (Term v : c.common())
 				link(event, 0, shadow(v)); //equivalence
@@ -594,7 +594,6 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		if (decomposeAddedEvent(event)) {
 			int edt = eventTerm.dt();
-
 
 			switch (eventTerm.op()) {
 //                case NEG: {
@@ -607,7 +606,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 //                }
 
 				default: {
-					eventTerm.recurseTerms(s -> s.hasAny(Op.Temporal), s -> {
+					eventTerm.recurseTerms(s -> s instanceof Compound && s.hasAny(Op.Temporal), s -> {
 						if (s.op().temporal) {
 							/* absolute context for temporal subterm of non-temporal */
 							know(s);
@@ -661,12 +660,12 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 					long eventStart = event.start(), eventEnd = event.end();
 
-					boolean absolute;
+
 					Subterms eventSubs = eventTerm.subterms();
 					switch (edt) {
 
 						case XTERNAL:
-							absolute = false;
+//							absolute = false;
 							if (eventSubs.hasAny(Op.Temporal)) {
 								for (Term y : eventSubs) {
 									if (y.hasAny(Op.Temporal))
@@ -677,7 +676,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 						case DTERNAL:
 						default:
-							absolute = eventStart != ETERNAL && eventStart != TIMELESS;
+							boolean absolute = eventStart != ETERNAL && eventStart != TIMELESS;
 							if ((edt == 0 || (edt == DTERNAL && !Conj.isSeq(eventTerm)))) {
 
 								//commutive dternal: inherit event time simultaneously
@@ -790,14 +789,14 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		xx = xx.commuted();
 		int s = xx.subs();
 
-		List<Event>[] subEvents = new FasterList[s];
+		List<Absolute>[] subEvents = new FasterList[s];
 		int abs = solveAbsolutes(xx, subEvents);
 		if (abs > 0) {
 			if (s == 1) {
 				//(x &&+- x) so collapse to x
 				//assert(subEvents.length == 1);
 				for (Event e : subEvents[0]) {
-					if (!each.test(e))
+					if (e!=null && !each.test(e))
 						return false;
 				}
 			} else {
@@ -868,42 +867,42 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		return solveDTAbsolutePair(x, each, a, b) && solveDTpair(x, a, b, each);
 	}
 
-	private int solveAbsolutes(Subterms xx, List<Event>[] subEvents) {
+	private int solveAbsolutes(Subterms xx, List<Absolute>[] subEvents) {
 		int abs = 0;
 		int s = subEvents.length;
+		final FasterList<Absolute> f = new FasterList<>();
+		Predicate<Absolute> adder = (se) -> {
+			f.add(se);
+			//return false; //one should be enough
+			return true;
+		};
 		for (int i = 0; i < s; i++) {
-			FasterList<Event> f = new FasterList();
-			solveExact(xx.sub(i), (se) -> {
-				f.add(se);
-				//return false; //one should be enough
-				return true;
-			});
-			subEvents[i] = f;
-			if (!f.isEmpty()) {
-				f.shuffleThis(this::random);
+			solveExact(xx.sub(i), adder);
+			int fs = f.size();
+			if (fs > 0) {
+				FasterList<Absolute> ff = f.clone(); //TODO keep Absolute[], not List<Absolute>
+				subEvents[i] = ff;
+				if (fs > 1)
+					ff.shuffleThis(random());
 				abs++;
-			}
-
+				f.clear();
+			} else
+				subEvents[i] = null;
 		}
 		return abs;
 	}
 
-	private boolean solveAbsolutePermutations(Subterms xx, List<Event>[] subEvents, int abs, Predicate<Event> each) {
+	private boolean solveAbsolutePermutations(Subterms xx, List<Absolute>[] subEvents, int abs, Predicate<Event> each) {
 
 		Term unknown = unknownComponent(xx, subEvents, abs);
-
 
 		int s = subEvents.length;
 		if (abs > 1) {
 			//absolute value for each is known
 
-			for (int i = 0, subEventsLength = subEvents.length; i < subEventsLength; i++) {
-				if (subEvents[i].isEmpty())
-					subEvents[i] = null;
-			}
-			List<Event>[] subEvents2 = ArrayUtil.removeNulls(subEvents);
+			List<Absolute>[] subEvents2 = ArrayUtil.removeNulls(subEvents);
 
-			CartesianIterator<Event> ci = new CartesianIterator(Event[]::new, subEvents2);
+			CartesianIterator<Absolute> ci = new CartesianIterator<>(Absolute[]::new, subEvents2);
 
 			ConjBuilder cc =
 				new ConjList(abs);
@@ -913,10 +912,10 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 			while (ci.hasNext()) {
 				long start = Long.MAX_VALUE, range = 0;
 
-				Event[] ss = ci.next();
+				Absolute[] ss = ci.next();
 				cc.clear();
 				for (int i = 0; i < abs; i++) {
-					Event e = ss[i];
+					Absolute e = ss[i];
 //                    if (!ii.isEmpty()) {
 //                        Event e = ii.get(0);
 					long es = e.start();
@@ -948,17 +947,17 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 			int w = -1;
 			for (int i = 0; i < s; i++) {
-				if (!subEvents[i].isEmpty()) {
+				if (subEvents[i]!=null && !subEvents[i].isEmpty()) {
 					w = i;
 					break; //found
 				}
 			}
-			List<Event> ss = subEvents[w];
-			for (Event e : ss) {
-				Term nextKnown = e.id;
+			List<Absolute> ss = subEvents[w];
+			for (Absolute e : ss) {
+				if (e == null) continue;
 				long start = e.start();
 				long range = start != ETERNAL ? e.end() - start : 0;
-				if (!nextAbsolutePermutation(unknown, start, range, nextKnown, each))
+				if (!nextAbsolutePermutation(unknown, start, range, e.id, each))
 					return false;
 			}
 		}
@@ -1404,7 +1403,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 					Set<Term> s = new UnifiedSet(2);
 
 //                    int yv = yy.volume();
-					Op yyo = yy.op();
+//					Op yyo = yy.op();
 					solveDT(yy, z -> {
 //                        if (z.id.volume()<yv)
 //                            return true; //something probably collapsed
@@ -1555,9 +1554,19 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 	 */
 	private boolean solveOcc(Term x, boolean finish, Predicate<Event> each) {
 		return solveRootMatches(x, false, each) &&
-			solveRootMatches(x, true, each) &&
+			(!x.hasAny(Op.Temporal) || solveRootMatches(x, true, each)) &&
+//			(!autoneg || solveOccNeg(x, finish, each)) &&
 			solveOcc(shadow(x), finish, each);
 	}
+//	private boolean solveOccNeg(Term x, boolean finish, Predicate<Event> each) {
+//		Term xr = x.root();
+//		Term xn = x.neg();
+//
+//		if ((!byTerm.containsKey(x) && byTerm.containsKey(xn)) || (!x.equals(xr) && (!byTerm.containsKey(xr) && byTerm.containsKey(xn.root()))))  {
+//			return solveOcc(xn, finish, each);
+//		}
+//		return true;
+//	}
 
 	private boolean solveOcc(Event x, boolean finish, Predicate<Event> each) {
 		assert (!(x instanceof Absolute));

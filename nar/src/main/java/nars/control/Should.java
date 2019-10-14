@@ -20,7 +20,7 @@ import static jcog.Util.lerpSafe;
  */
 public enum Should { ;
 	@Deprecated static float momentum = 0.5f;
-	@Deprecated static float explorationRate = 0.01f;
+	@Deprecated static float explorationRate = 0.1f;
 
 	public static final boolean PRINT_AVG_ERR = Config.configIs("AVG_ERR", true);
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
@@ -36,11 +36,11 @@ public enum Should { ;
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-					new MLPMap.Layer(
-						dims
-						//Math.max(2, dims/2)
-						, /*TanhActivation.the*/  SigmoidActivation.the ),
-					new MLPMap.Layer( 1, null)
+//					new MLPMap.Layer(
+//						dims
+//						//Math.max(2, dims/2)
+//						, /*TanhActivation.the*/  SigmoidActivation.the ),
+					new MLPMap.Layer( 1, SigmoidActivation.the)
 				);
 			}
 		}
@@ -86,12 +86,10 @@ public enum Should { ;
 			if (range < ScalarValue.EPSILON) {
 //                        float flat = 1f/ww;
 //                        for (int i = 0; i < ww; i++)
-//                            c[i].setPri(flat);
+//                            c[i].pri(flat);
 			} else {
 
-				float learningRate = (float) (0.04f
-									//* Math.min(1,Math.log(1+range/10f))
-				);
+				float learningRate = 0.25f;
 
 				double errTotal = 0;
 				for (int i = 0; i < ww; i++) {
@@ -100,7 +98,7 @@ public enum Should { ;
 
 					float specificLearningRate =
 						//learningRate;
-						learningRate * Math.max(0.01f,
+						learningRate * Math.max(0.1f,
 							//Math.abs(0.5f-fNorm[i])*2f
 							Math.abs(f[i]) / Math.max(Math.abs(min), Math.abs(max)) //extremeness
 						);
