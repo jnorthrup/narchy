@@ -123,7 +123,11 @@ public enum MetaGoal {
         if (cc == 0)
             return;
 
+        if (Util.equals(Util.sumAbs(n.emotion.want),0))
+            return; //flat metagoal early exit
+
         Cause[] ccc = cause.array();
+
 
         double[] want = Util.toDouble(n.emotion.want);
 

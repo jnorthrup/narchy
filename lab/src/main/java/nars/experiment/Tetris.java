@@ -1,8 +1,10 @@
 package nars.experiment;
 
 import jcog.Config;
+import jcog.Util;
+import jcog.math.FloatNormalized;
 import jcog.math.FloatRange;
-import jcog.pri.ScalarValue;
+import jcog.math.FloatSupplier;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
@@ -110,22 +112,37 @@ public class Tetris extends GameX {
                 grid, /*0,*/ n));
 
 
-        rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
-                state::score
-                //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
-        );
+//        rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
+//                state::score
+//                //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
+//        );
 //        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
 //                1 - ((float) state.rowsFilled) / state.height
 //        ));
-        rewardNormalized("density", 0, ScalarValue.EPSILON, () -> {
+
+        actionUnipolar($.inh(id, "speed"), (s)->{
+            int fastest = 1, slowest = 16;
+            this.timePerFall.set( Math.round(Util.lerp(s, slowest, fastest)));
+        });
+        reward("density", 1, () -> {
 
             int filled = 0;
             for (float s : state.grid) if (s > 0) filled++;
 
             int r = state.rowsFilled;
             return r > 0 ? ((float) filled) / (r * state.width) : 0;
-        });
+        }).conf(0.25f);
 
+        FloatSupplier low = () -> {
+            return 1 - ((float) state.rowsFilled) / state.height;
+        };
+        reward("low", 1, low);
+
+        FloatNormalized dLow = difference(low);
+        reward("dontRise", 1, () -> {
+            float s = dLow.asFloat() < 0.5f /* HACK */ ? 0 : +1;
+            return s;
+        });
 
         actionPushButtonLR();
         actionPushButtonRotateFall();

@@ -14,7 +14,7 @@ public interface IWeightUpdater {
 
 
     default void updateWeight(final UMatrix data) {
-        for (UVector v : data.data) {
+        for (UVector v : data.row) {
             updateWeight(v);
         }
     }

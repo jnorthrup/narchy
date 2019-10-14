@@ -2,7 +2,6 @@ package jcog.learn;
 
 import jcog.learn.ntm.control.IDifferentiableFunction;
 import jcog.learn.ntm.control.SigmoidActivation;
-import jcog.random.XoRoShiRo128PlusRandom;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -28,6 +27,8 @@ import java.util.Random;
  and its training procedure work very robustly over a wide range of choices.
  */
 public class MLPMap {
+
+    public final MLPLayer[] layers;
 
     /** layer def */
     public static class Layer {
@@ -131,7 +132,6 @@ public class MLPMap {
         }
     }
 
-    public final MLPLayer[] layers;
 
     @Deprecated public MLPMap(int inputSize, int[] layersSize, Random r, boolean sigmoid) {
         layers = new MLPLayer[layersSize.length];
@@ -186,38 +186,8 @@ public class MLPMap {
         return errorOut;
     }
 
-    public static void main(String[] args) {
-
-        float[][] train = {new float[]{0, 0}, new float[]{0, 1}, new float[]{1, 0}, new float[]{1, 1}};
-
-        float[][] res = {new float[]{0}, new float[]{1}, new float[]{1}, new float[]{0}};
-
-        Random r = //new Random();
-            new XoRoShiRo128PlusRandom(1);
-
-        MLPMap mlp = new MLPMap(2,
-                new Layer(2,SigmoidActivation.the),
-                new Layer(1,null)
-        ).randomize(r);
-                //, new int[]{2, 1}, new Random(), true);
-
-
-        int en = 500;
-        for (int e = 0; e < en; e++) {
-
-            for (int i = 0; i < res.length; i++) {
-                int idx = r.nextInt(res.length);
-                mlp.put(train[idx], res[idx], 0.5f);
-            }
-
-            if ((e + 1) % 100 == 0) {
-                System.out.println();
-                for (int i = 0; i < res.length; i++) {
-                    float[] t = train[i];
-                    System.out.printf("%d epoch\n", e + 1);
-                    System.out.printf("%.1f, %.1f --> %.5f\n", t[0], t[1], mlp.get(t)[0]);
-                }
-            }
-        }
+    /** gets the last computed out, from either a get() or put() call */
+    public float[] out() {
+        return layers[layers.length-1].out;
     }
 }

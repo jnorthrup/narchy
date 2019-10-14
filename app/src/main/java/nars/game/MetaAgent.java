@@ -190,12 +190,12 @@ abstract public class MetaAgent extends Game {
                 GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
                     nar.emotion.want(mg,
 						x >= 0.5f ?
-							Util.lerp(Util.sqr((x - 0.5f) * 2), 0, +1) //positive (0.5..1)
+							(float) Util.lerp(Math.pow((x - 0.5f) * 2, 1 /* 2 */), 0, +1) //positive (0.5..1)
 							:
 							Util.lerp((x) * 2, -0.01f, 0) //negative (0..0.5): weaker
 					);
                 });
-                a.resolution(0.05f);
+                a.resolution(0.1f);
 			}
 
 //        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());

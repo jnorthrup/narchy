@@ -3,7 +3,7 @@ package nars.control;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.MLPMap;
-import jcog.learn.ntm.control.SigmoidActivation;
+import jcog.learn.ntm.control.TanhActivation;
 import jcog.util.ArrayUtil;
 import nars.NAR;
 
@@ -17,7 +17,7 @@ import static jcog.Util.lerpSafe;
  *  analogous to OS governor policy that decides priorities for the various cause's
  */
 public enum Should { ;
-	@Deprecated static float momentum = 0.9f;
+	@Deprecated static float momentum = 0.95f;
 	@Deprecated static float explorationRate = 0.05f;
 
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
@@ -25,6 +25,7 @@ public enum Should { ;
 
 		float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 		float[] fNorm = ArrayUtil.EMPTY_FLOAT_ARRAY;
+		Predictor[] predictor = new Predictor[0];
 
 		@Deprecated final int dims = MetaGoal.values().length;
 
@@ -32,13 +33,23 @@ public enum Should { ;
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-					new MLPMap.Layer( 2, SigmoidActivation.the),
-					//new MLPMap.Layer( 2 * (x.length + y.length), SigmoidActivation.the),
-					new MLPMap.Layer( 1, SigmoidActivation.the)
+					new MLPMap.Layer( 4, TanhActivation.the /* SigmoidActivation */),
+					new MLPMap.Layer( 1, null)
 				);
 			}
 		}
-		Predictor[] predictor = new Predictor[0];
+
+		private void allocate(NAR n, int ww) {
+			f = new float[ww];
+			fNorm = new float[ww];
+			predictor = new Predictor[ww];
+			Random rng = n.random();
+			for (int p = 0; p < ww; p++) {
+				Predictor pp = new Predictor();
+				pp.randomize(rng);
+				predictor[p] = pp;
+			}
+		}
 
 		@Override
 		public void accept(NAR n, FasterList<Cause> cc) {
@@ -48,25 +59,11 @@ public enum Should { ;
 			Cause[] c = cc.array();
 			int ww = Math.min(c.length, cc.size());
 			if (f.length != ww) {
-				f = new float[ww];
-				fNorm = new float[ww];
-				predictor = new Predictor[ww];
-				Random rng = n.random();
-				for (int p = 0; p < ww; p++) {
-					Predictor pp = new Predictor();
-					pp.randomize(rng);
-					this.predictor[p] = pp;
-				}
+				allocate(n, ww);
 			}
 
 			float[] want = n.emotion.want.clone();
 
-			//1. predict
-			for (int i = 0; i < ww; i++) {
-				float[] p = predictor[i].get(want);
-				float pri = p[0] + explorationRate;
-				c[i].pri(pri);
-			}
 
 			//2. learn
 			float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
@@ -88,17 +85,33 @@ public enum Should { ;
 
 				double errTotal = 0;
 				for (int i = 0; i < ww; i++) {
-					fNorm[i] = Util.normalizeSafe(f[i], min, max);
-					float[] err = predictor[i].put(want, new float[] { fNorm[i] }, learningRate);
+
+					float fNor = Util.normalizeSafe(f[i], min, max);
+					fNorm[i] = Util.lerp(momentum, fNorm[i], fNor);
+
+					float specificLearningRate =
+						learningRate;
+						//learningRate * fNorm[i];
+
+					Predictor P = this.predictor[i];
+
+					float[] err = P.put(want, new float[] { fNorm[i] }, specificLearningRate);
 					errTotal += Util.sumAbs(err);
+
+					float p = Util.unitize(P.out()[0]);
+					float pri = p * (1-explorationRate) + explorationRate;
+					c[i].pri(Util.unitize(pri));
 				}
+
 				double errAvg = errTotal / ww;
-				//System.out.println(this + ":\t" + errAvg + " avg err");
+				System.out.println(this + ":\t" + errAvg + " avg err");
 			}
 			//System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
 
 
 		}
+
+
 
 	};
 

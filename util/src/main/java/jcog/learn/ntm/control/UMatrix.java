@@ -5,17 +5,16 @@ package jcog.learn.ntm.control;
  */
 public class UMatrix {
 
-    public final UVector[] data;
+    public final UVector[] row;
 
     public UMatrix(int x, int y) {
-        data = new UVector[x];
-        for (int i = 0;i < x;i++) {
-            data[i] = new UVector(y);
-        }
+        row = new UVector[x];
+        for (int i = 0;i < x;i++)
+            row[i] = new UVector(y);
     }
 
-    public UVector row(int x) { return data[x]; }
+    public UVector row(int x) { return row[x]; }
 
-    public double value(int x, int y) { return data[x].value(y); }
-    public double grad(int x, int y) { return data[x].grad(y); }
+    public double value(int x, int y) { return row[x].value(y); }
+    public double grad(int x, int y) { return row[x].grad(y); }
 }

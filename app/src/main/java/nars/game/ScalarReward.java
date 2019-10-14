@@ -28,7 +28,7 @@ abstract public class ScalarReward extends Reward {
     /** target freq */
 
 
-    final MutableTruth goal = new MutableTruth();
+    final MutableTruth goal = new MutableTruth(1, 0.5f);
 
     /** whether reinforcement tasks are stamped */
     private final boolean stamped;
@@ -43,21 +43,30 @@ abstract public class ScalarReward extends Reward {
         new MutableTruth(0, NAL.truth.EVI_MIN);
     final MutableTruth RimplAMaybe =
         new MutableTruth(0.5f, NAL.truth.EVI_MIN);
-    final MutableTruth RimplRandomP =
-        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
-    final MutableTruth RimplRandomN =
-        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
+//    final MutableTruth RimplRandomP =
+//        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
+//    final MutableTruth RimplRandomN =
+//        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 
-    ScalarReward(Term id, float freq, boolean stamped, Game g) {
+    ScalarReward(Term id, boolean stamped, Game g) {
         super(id, g);
 
-        goal.freq(freq);
         negate = id.op()==NEG;
         this.stamped = stamped;
 //        if (concept == null)
 //            throw new NullPointerException("concept null for target: " + id);
 
+    }
 
+    /** sets the goal confidence */
+    public ScalarReward conf(float c) {
+        goal.conf(c);
+        return this;
+    }
+    /** sets the goal frequency */
+    public ScalarReward freq(float f) {
+        goal.freq(f);
+        return this;
     }
 
 
@@ -184,11 +193,11 @@ abstract public class ScalarReward extends Reward {
             //nar.confMin.floatValue() * strength;
             //cMax / 2;
 
-        RimplRandomP.conf(cMin); RimplRandomN.conf(cMin);
-        RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());
+//        RimplRandomP.conf(cMin); RimplRandomN.conf(cMin);
+//        RimplRandomP.freq(game.random().nextFloat()); RimplRandomN.freq(game.random().nextFloat());
 
-        //RimplAPos.freq(goal.freq());
-        //RimplANeg.freq(1 - goal.freq());
+        RimplAPos.freq(goal.freq());
+        RimplANeg.freq(1 - goal.freq());
         RimplAPos.conf(cMin);
         RimplANeg.conf(cMin);
         RimplAMaybe.conf(cMin);

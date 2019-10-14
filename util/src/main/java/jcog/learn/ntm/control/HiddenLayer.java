@@ -3,188 +3,167 @@ package jcog.learn.ntm.control;
 import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.ReadData;
 
-public class HiddenLayer   
-{
-    public final IDifferentiableFunction activation;
-    public final int inputs;
-    public final int heads;
-    public final int memoryUnitSizeM;
-
-    
-    public final UVector hiddenLayerThresholds;
-
-    
-    public final UMatrix inputToHiddenLayerWeights;
-
-    
-    public final Unit[][][] readDataToHiddenLayerWeights;
-
-    
-    public final UVector neurons;
-
-    public HiddenLayer(int controllerSize, int inputSize, int headCount, int memoryUnitSizeM) {
-        inputs = inputSize;
-        heads = headCount;
-        this.memoryUnitSizeM = memoryUnitSizeM;
-        this.neurons = new UVector(controllerSize);
-        activation = new SigmoidActivation();
-        readDataToHiddenLayerWeights = UnitFactory.getTensor3(controllerSize,headCount,memoryUnitSizeM);
-        inputToHiddenLayerWeights = new UMatrix(controllerSize,inputSize);
-        hiddenLayerThresholds = new UVector(controllerSize);
-    }
-
-    private HiddenLayer(Unit[][][] readDataToHiddenLayerWeights, UMatrix inputToHiddenLayerWeights, UVector hiddenLayerThresholds, UVector hiddenLayer, int inputSize, int headCount, int memoryUnitSizeM, IDifferentiableFunction activationFunction) {
-        this.readDataToHiddenLayerWeights = readDataToHiddenLayerWeights;
-        this.inputToHiddenLayerWeights = inputToHiddenLayerWeights;
-        this.hiddenLayerThresholds = hiddenLayerThresholds;
-        neurons = hiddenLayer;
-        inputs = inputSize;
-        heads = headCount;
-        this.memoryUnitSizeM = memoryUnitSizeM;
-        activation = activationFunction;
-    }
-
-    @Override
-    public HiddenLayer clone() {
-        try
-        {
-            return new HiddenLayer(readDataToHiddenLayerWeights, inputToHiddenLayerWeights, hiddenLayerThresholds,
-                    new UVector(neurons()),
-                    inputs, heads, memoryUnitSizeM, activation);
-        }
-        catch (RuntimeException __dummyCatchVar0)
-        {
-            throw __dummyCatchVar0;
-        }
-        catch (Exception __dummyCatchVar0)
-        {
-            throw new RuntimeException(__dummyCatchVar0);
-        }
-    
-    }
-
-    public final int neurons() {
-        return neurons.size();
-    }
-    public int inputs() {
-        return inputs;
-    }
+public class HiddenLayer {
+	public final IDifferentiableFunction activation;
+	public final int inputs;
+	public final int heads;
+	public final int memoryUnitSizeM;
 
 
-    
-    public void forwardPropagation(double[] input, ReadData[] readData) {
-
-        final double[] nv = neurons.value;
-
-        final double[] hlt = hiddenLayerThresholds.value;
-
-        final int N = neurons();
-
-        for (int neuronIndex = 0; neuronIndex < N; neuronIndex++) {
-            
-            double sum = 0.0;
-            sum += getReadDataContributionToHiddenLayer(neuronIndex, readData);
-            sum += getInputContributionToHiddenLayer(neuronIndex, input);
-
-            
-            sum += hlt[neuronIndex];
-
-            
-            nv[neuronIndex] = activation.value(sum);
-        }
-    }
-
-    private double getReadDataContributionToHiddenLayer(int neuronIndex, ReadData[] readData) {
-        Unit[][] readWeightsForEachHead = readDataToHiddenLayerWeights[neuronIndex];
-        double tempSum = 0;
-        for (int headIndex = 0;headIndex < heads;headIndex++)
-        {
-            Unit[] headWeights = readWeightsForEachHead[headIndex];
-            ReadData read = readData[headIndex];
-            for (int memoryCellIndex = 0;memoryCellIndex < memoryUnitSizeM;memoryCellIndex++)
-            {
-                tempSum += headWeights[memoryCellIndex].value * read.read[memoryCellIndex].value;
-            }
-        }
-        return tempSum;
-    }
-
-    private double getInputContributionToHiddenLayer(int neuronIndex, double[] input) {
-        UVector inputWeights = inputToHiddenLayerWeights.row(neuronIndex);
-        return inputWeights.sumDot(input);
-    }
+	public final UVector hiddenLayerThresholds;
 
 
+	public final UMatrix inputToHiddenLayerWeights;
 
 
+	public final Unit[][][] readDataToHiddenLayerWeights;
 
 
+	public final UVector neurons;
+
+	public HiddenLayer(int controllerSize, int inputSize, int headCount, int memoryUnitSizeM) {
+		inputs = inputSize;
+		heads = headCount;
+		this.memoryUnitSizeM = memoryUnitSizeM;
+		this.neurons = new UVector(controllerSize);
+		activation = new SigmoidActivation();
+		readDataToHiddenLayerWeights = UnitFactory.getTensor3(controllerSize, headCount, memoryUnitSizeM);
+		inputToHiddenLayerWeights = new UMatrix(controllerSize, inputSize);
+		hiddenLayerThresholds = new UVector(controllerSize);
+	}
+
+	private HiddenLayer(Unit[][][] readDataToHiddenLayerWeights, UMatrix inputToHiddenLayerWeights, UVector hiddenLayerThresholds, UVector hiddenLayer, int inputSize, int headCount, int memoryUnitSizeM, IDifferentiableFunction activationFunction) {
+		this.readDataToHiddenLayerWeights = readDataToHiddenLayerWeights;
+		this.inputToHiddenLayerWeights = inputToHiddenLayerWeights;
+		this.hiddenLayerThresholds = hiddenLayerThresholds;
+		neurons = hiddenLayer;
+		inputs = inputSize;
+		heads = headCount;
+		this.memoryUnitSizeM = memoryUnitSizeM;
+		activation = activationFunction;
+	}
+
+	@Override
+	public HiddenLayer clone() {
+//		try {
+			return new HiddenLayer(readDataToHiddenLayerWeights, inputToHiddenLayerWeights, hiddenLayerThresholds,
+				new UVector(neurons()),
+				inputs, heads, memoryUnitSizeM, activation);
+//		} catch (RuntimeException __dummyCatchVar0) {
+//			throw __dummyCatchVar0;
+//		} catch (Exception __dummyCatchVar0) {
+//			throw new RuntimeException(__dummyCatchVar0);
+//		}
+
+	}
+
+	public final int neurons() {
+		return neurons.size();
+	}
+
+	public int inputs() {
+		return inputs;
+	}
 
 
+	public void forwardPropagation(double[] i, ReadData[] d) {
+
+		final double[] nv = neurons.value;
+
+		final double[] hlt = hiddenLayerThresholds.value;
+
+		final int N = neurons();
+
+		for (int n = 0; n < N; n++) {
+			nv[n] = activation.value(
+			    readDataContributionToHiddenLayer(n, d) +
+                inputContributionToHiddenLayer(n, i) +
+                hlt[n]);
+		}
+	}
+
+	private double readDataContributionToHiddenLayer(int neuronIndex, ReadData[] readData) {
+		Unit[][] readWeightsForEachHead = readDataToHiddenLayerWeights[neuronIndex];
+		double tempSum = 0;
+		for (int headIndex = 0; headIndex < heads; headIndex++) {
+			Unit[] headWeights = readWeightsForEachHead[headIndex];
+			ReadData read = readData[headIndex];
+            Unit[] r = read.read;
+			for (int memoryCellIndex = 0; memoryCellIndex < memoryUnitSizeM; memoryCellIndex++) {
+                tempSum += headWeights[memoryCellIndex].value * r[memoryCellIndex].value;
+			}
+		}
+		return tempSum;
+	}
+
+	private double inputContributionToHiddenLayer(int neuronIndex, double[] input) {
+        return inputToHiddenLayerWeights.row[neuronIndex].sumDot(input);
+	}
 
 
+	public void updateWeights(IWeightUpdater u) {
+		u.updateWeight(readDataToHiddenLayerWeights);
+		u.updateWeight(inputToHiddenLayerWeights);
+		u.updateWeight(hiddenLayerThresholds);
+	}
 
-    public void updateWeights(IWeightUpdater weightUpdater) {
-        weightUpdater.updateWeight(readDataToHiddenLayerWeights);
-        weightUpdater.updateWeight(inputToHiddenLayerWeights);
-        weightUpdater.updateWeight(hiddenLayerThresholds);
-    }
+	public void backwardErrorPropagation(double[] input, ReadData[] reads) {
+		double[] hiddenLayerGradients = calculateHiddenLayerGradinets();
+		updateReadDataGradient(hiddenLayerGradients, reads);
+		updateInputToHiddenWeightsGradients(hiddenLayerGradients, input);
+		updateHiddenLayerThresholdsGradients(hiddenLayerGradients);
+	}
 
-    public void backwardErrorPropagation(double[] input, ReadData[] reads) {
-        double[] hiddenLayerGradients = calculateHiddenLayerGradinets();
-        updateReadDataGradient(hiddenLayerGradients, reads);
-        updateInputToHiddenWeightsGradients(hiddenLayerGradients, input);
-        updateHiddenLayerThresholdsGradients(hiddenLayerGradients);
-    }
+	private double[] calculateHiddenLayerGradinets() {
+		int n = neurons();
+		double[] hiddenLayerGradients = new double[n];
+		double[] g = this.neurons.grad;
+		double[] v = this.neurons.value;
+		IDifferentiableFunction a = this.activation;
+		for (int i = 0; i < n; i++)
+			hiddenLayerGradients[i] = a.derivative(g[i], v[i]);
+		return hiddenLayerGradients;
+	}
 
-    private double[] calculateHiddenLayerGradinets() {
-        double[] hiddenLayerGradients = new double[neurons()];
-        for (int i = 0;i < neurons();i++) {
-            
-            hiddenLayerGradients[i] = activation.derivative(neurons.grad(i),  neurons.value(i));
+	private void updateReadDataGradient(double[] hiddenLayerGradients, ReadData[] reads) {
+        int n = neurons(), h = heads, m = memoryUnitSizeM;
+        for (int neuronIndex = 0; neuronIndex < n; neuronIndex++) {
+			Unit[][] neuronToReadDataWeights = readDataToHiddenLayerWeights[neuronIndex];
+			double hiddenLayerGradient = hiddenLayerGradients[neuronIndex];
+			for (int headIndex = 0; headIndex < h; headIndex++) {
+				ReadData readData = reads[headIndex];
+				Unit[] neuronToHeadReadDataWeights = neuronToReadDataWeights[headIndex];
+				Unit[] r = readData.read;
+				for (int memoryCellIndex = 0; memoryCellIndex < m; memoryCellIndex++) {
+					r[memoryCellIndex].grad += hiddenLayerGradient * neuronToHeadReadDataWeights[memoryCellIndex].value;
+					neuronToHeadReadDataWeights[memoryCellIndex].grad += hiddenLayerGradient * r[memoryCellIndex].value;
+				}
+			}
+		}
+	}
 
-            
-            
-        }
-        return hiddenLayerGradients;
-    }
+	private void updateInputToHiddenWeightsGradients(double[] hiddenLayerGradients, double[] input) {
+		int n = neurons();
+		UVector[] inputToHiddenLayerWeights = this.inputToHiddenLayerWeights.row;
+		for (int i = 0; i < n; i++) {
+			double hiddenGradient = hiddenLayerGradients[i];
+			updateInputGradient(hiddenGradient, inputToHiddenLayerWeights[i], input);
+		}
+	}
 
-    private void updateReadDataGradient(double[] hiddenLayerGradients, ReadData[] reads) {
-        for (int neuronIndex = 0;neuronIndex < neurons(); neuronIndex++) {
-            Unit[][] neuronToReadDataWeights = readDataToHiddenLayerWeights[neuronIndex];
-            double hiddenLayerGradient = hiddenLayerGradients[neuronIndex];
-            for (int headIndex = 0;headIndex < heads;headIndex++) {
-                ReadData readData = reads[headIndex];
-                Unit[] neuronToHeadReadDataWeights = neuronToReadDataWeights[headIndex];
-                for (int memoryCellIndex = 0;memoryCellIndex < memoryUnitSizeM;memoryCellIndex++) {
-                    readData.read[memoryCellIndex].grad += hiddenLayerGradient * neuronToHeadReadDataWeights[memoryCellIndex].value;
-                    neuronToHeadReadDataWeights[memoryCellIndex].grad += hiddenLayerGradient * readData.read[memoryCellIndex].value;
-                }
-            }
-        }
-    }
+	private void updateInputGradient(double hiddenLayerGradient, UVector inputToHiddenNeuronWeights, double[] input) {
+		double[] g = inputToHiddenNeuronWeights.grad;
+		int n = this.inputs;
+		for (int i = 0; i < n; i++)
+			g[i] += hiddenLayerGradient * input[i];
+	}
 
-    private void updateInputToHiddenWeightsGradients(double[] hiddenLayerGradients, double[] input) {
-        for (int neuronIndex = 0;neuronIndex < neurons(); neuronIndex++) {
-            double hiddenGradient = hiddenLayerGradients[neuronIndex];
-            UVector inputToHiddenNeuronWeights = inputToHiddenLayerWeights.row(neuronIndex);
-            updateInputGradient(hiddenGradient, inputToHiddenNeuronWeights, input);
-        }
-    }
-
-    private void updateInputGradient(double hiddenLayerGradient, UVector inputToHiddenNeuronWeights, double[] input) {
-        double[] g = inputToHiddenNeuronWeights.grad;
-        for (int inputIndex = 0;inputIndex < inputs;inputIndex++) {
-            g[inputIndex] += hiddenLayerGradient * input[inputIndex];
-        }
-    }
-
-    private void updateHiddenLayerThresholdsGradients(final double[] hiddenLayerGradients) {
-        final double[] hgrad = hiddenLayerThresholds.grad;
-        for (int neuronIndex = 0;neuronIndex < neurons(); neuronIndex++) {
-            hgrad[neuronIndex] += hiddenLayerGradients[neuronIndex];
-        }
-    }
+	private void updateHiddenLayerThresholdsGradients(final double[] hiddenLayerGradients) {
+		final double[] hgrad = hiddenLayerThresholds.grad;
+		int n = neurons();
+		for (int i = 0; i < n; i++)
+			hgrad[i] += hiddenLayerGradients[i];
+	}
 
 }
 
