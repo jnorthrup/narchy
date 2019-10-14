@@ -597,8 +597,13 @@ public enum Util {
 		return lerpSafe(unitize(x), min, max);
 	}
 
+
 	public static float lerpSafe(float x, float min, float max) {
 		return min + x * (max - min);
+	}
+
+	public static float unlerp(float y, float min, float max) {
+		return (y - min) / (max-min);
 	}
 
 	/**

@@ -119,14 +119,14 @@ public interface Variable extends /* Atomic - but all implementations are subcla
             //swap neg for variable order
             if (xn && !yn && y instanceof Variable) {
                 Term xu = x.unneg();
-                if (xu instanceof Variable && xu.op().id < y.op().id) {
+                if (xu instanceof Variable && xu.opID() < y.opID()) {
                     x = xu;
                     y = y.neg();
                 } else if (y.equals(xu))
                     return false; //x != --x
             } else if (yn && !xn && x instanceof Variable) {
                 Term yu = y.unneg();
-                if (yu instanceof Variable && yu.op().id < x.op().id) {
+                if (yu instanceof Variable && yu.opID() < x.opID()) {
                     y = yu;
                     x = x.neg();
                 } else if (x.equals(yu))

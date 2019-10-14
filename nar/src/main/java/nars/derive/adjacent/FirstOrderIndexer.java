@@ -19,8 +19,8 @@ public class FirstOrderIndexer extends AbstractAdjacentIndexer {
 			UnifyAny u = new UnifyAny(); //TODO reuse from Derivation
 			u.ttl = NAL.derive.TTL_UNISUBST;
 
-			Op op = target.op();
-			int targetOp = op.id;
+
+			int targetOp = target.opID();
 			if (concept.opID() == targetOp && u.unifies(concept, target))
 				return true;
 

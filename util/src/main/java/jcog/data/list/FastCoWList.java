@@ -407,14 +407,19 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
             s += each.applyAsDouble(x);
         return s;
     }
+
+    /** NaN valued items are not included */
     public double meanBy(FloatFunction<X> each) {
         double s =  0;
         int i = 0;
         for (X x : array()) {
-            s += each.floatValueOf(x);
-            i++;
+            float v = each.floatValueOf(x);
+            if (v==v) {
+                s += v;
+                i++;
+            }
         }
-        return i > 0 ? s/i : 0;
+        return i > 0 ? s/i : Float.NaN;
     }
 
     public <Y> Y[] toArray(Y[] _target, Function<X, Y> f) {

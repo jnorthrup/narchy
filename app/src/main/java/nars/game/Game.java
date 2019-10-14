@@ -139,13 +139,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         double result = a == 0 ? 0 : actions.sumBy(ActionSignal::dexterity);
         return a > 0 ? result / a : 0;
     }
+
     public double coherency() {
         int a = actions.size();
         double result = a == 0 ? 0 : actions.sumBy(ActionSignal::coherency);
         return a > 0 ? result / a : 0;
     }
-
-
 
     public final float happiness() {
         return happiness(dur());
@@ -158,10 +157,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
      */
     @Paper
     public final float happiness(float dur) {
-        return (float) rewards.meanBy(rr -> {
-            float r = rr.happiness(dur);
-            return r != r ? 0.5f : r;
-        });
+        return (float) rewards.meanBy(rr -> rr.happiness(dur));
     }
 
     /** happiness metric applied to all sensor concepts */

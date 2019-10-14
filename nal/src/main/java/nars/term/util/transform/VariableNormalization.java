@@ -3,7 +3,6 @@ package nars.term.util.transform;
 import nars.Op;
 import nars.term.Term;
 import nars.term.Variable;
-import nars.term.atom.Atomic;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.HashMap;
@@ -30,31 +29,14 @@ public class VariableNormalization extends VariableTransform {
     /*@NotNull*/
     public final Map<Variable /* Input Variable */, Variable /*Variable*/> map;
 
-    
-
-    /*public VariableNormalization() {
-        this(0);
-    }*/
-
-
     @Override
-    public Term applyAtomic(Atomic atomic) {
-        if (normalizable(atomic)) {
-
-            if (atomic.equals(Op.VarAuto)) {
-                
-                return newVariableIncreasingCount((Variable) atomic);
-            } else {
-                return map.computeIfAbsent((Variable) atomic, this::newVariableIncreasingCount);
-            }
-        }
-
-        return atomic;
+    public Term applyVariable(Variable atomic) {
+        if (atomic.equals(Op.VarAuto))
+            return newVariableIncreasingCount(atomic);
+        else
+            return map.computeIfAbsent(atomic, this::newVariableIncreasingCount);
     }
 
-    private static boolean normalizable(Term atomic) {
-        return atomic instanceof Variable && !(atomic == Op.ImgExt || atomic == Op.ImgInt);
-    }
 
 
     /*@NotNull*/

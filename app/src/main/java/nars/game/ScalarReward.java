@@ -8,7 +8,6 @@ import nars.concept.Concept;
 import nars.control.channel.CauseChannel;
 import nars.game.sensor.ScalarSignal;
 import nars.game.sensor.Signal;
-import nars.table.BeliefTable;
 import nars.term.Term;
 import nars.term.Termed;
 import nars.truth.MutableTruth;
@@ -17,6 +16,7 @@ import nars.truth.Truth;
 
 import java.util.Iterator;
 
+import static java.lang.Float.NaN;
 import static nars.Op.*;
 
 /** base class for reward which represents current belief truth as the reward value  */
@@ -35,14 +35,14 @@ abstract public class ScalarReward extends Reward {
     protected CauseChannel<Task> in;
 
     boolean negate;
-    protected transient volatile float reward = Float.NaN;
+    protected transient volatile float reward = NaN;
 
     final MutableTruth RimplAPos =
         new MutableTruth(1, NAL.truth.EVI_MIN);
     final MutableTruth RimplANeg =
         new MutableTruth(0, NAL.truth.EVI_MIN);
-    final MutableTruth RimplAMaybe =
-        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
+//    final MutableTruth RimplAMaybe =
+//        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 //    final MutableTruth RimplRandomP =
 //        new MutableTruth(0.5f, NAL.truth.EVI_MIN);
 //    final MutableTruth RimplRandomN =
@@ -72,7 +72,7 @@ abstract public class ScalarReward extends Reward {
 
     @Override
     public final void accept(Game g) {
-        if (reinforcement.isEmpty()) {
+        if (reinforcement.isEmpty()) { //HACK
             reinforceInit(g);
         }
 
@@ -188,7 +188,7 @@ abstract public class ScalarReward extends Reward {
         float cMax = nar.confDefault(GOAL);
         goal.conf(cMax);
 
-        float strength = 4;
+        float strength = 1;
         float cMin = Math.min(NAL.truth.CONF_MAX,
             Math.max(nar.confMin.floatValue(), nar.confResolution.floatValue()) * strength
             //nar.confMin.floatValue() * strength
@@ -202,7 +202,7 @@ abstract public class ScalarReward extends Reward {
         RimplANeg.freq(1 - goal.freq());
         RimplAPos.conf(cMin);
         RimplANeg.conf(cMin);
-        RimplAMaybe.conf(cMin);
+//        RimplAMaybe.conf(cMin);
         super.reinforce();
     }
 
@@ -212,29 +212,27 @@ abstract public class ScalarReward extends Reward {
     public final float happiness(float dur) {
 
         float b = rewardFreq(true, dur);
+        if (b!=b) return NaN;
+
         float g = rewardFreq(false, dur);
-        if ((b!=b) || (g!=g))
-            return 0; //NaN
-        else
-            return (1 - Math.abs(b - g));
+        if (g!=g) return NaN;
+
+        return (1 - Math.abs(b - g));
+
     }
 
     @Override
     protected float rewardFreq(boolean beliefOrGoal, float dur) {
         Signal c = this.concept;
         if (c==null)
-            return Float.NaN;
+            return NaN;
 
-        BeliefTable bt = beliefOrGoal ? c.beliefs() : c.goals();
-
-
-        Truth t = bt.truth(game.time(), dur, nar());
-
+        Truth t = (beliefOrGoal ? c.beliefs() : c.goals()).truth(game.time(), dur, nar());
         if (t!=null) {
             float f = t.freq();
             return negate ? 1 - f : f;
         } else
-            return Float.NaN;
+            return NaN;
     }
 
 

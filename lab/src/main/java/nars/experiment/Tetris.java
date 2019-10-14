@@ -40,7 +40,7 @@ public class Tetris extends GameX {
     private final boolean opjects = false;
     public static final String TETRIS_FALL_TIME = Config.get2("TETRIS_FALL_TIME", "" + 1f, false);
     public static final String TETRIS_FALL_MIN = Config.get2("TETRIS_FALL_MIN", "" + 1f, false);
-    public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX",  ""+ 12f, false);
+    public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX",  ""+ 4f, false);
     public static final boolean TETRIS_CAN_FALL = Config.configIs("TETRIS_CAN_FALL", false);
     public static final boolean TETRIS_USE_DENSITY = Config.configIs("TETRIS_USE_DENSITY", true);
     public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
@@ -142,8 +142,10 @@ public class Tetris extends GameX {
 
         actionUnipolar($.inh(id, "speed"), (s)->{
             int fastest = (int)this.timePerFall.min, slowest = (int)this.timePerFall.max;
-            this.timePerFall.set( Math.round(Util.lerp(s, slowest, fastest)));
-        }).resolution(0.2f);
+            int t = Math.round(Util.lerp(s, slowest, fastest));
+            this.timePerFall.set(t);
+            return Util.unlerp(t, slowest, fastest); //get the effective frequency after discretizing
+        });
 
 
 //        FloatSupplier low = () -> {
@@ -170,7 +172,7 @@ public class Tetris extends GameX {
             }
         });
         Exe.runLater(()-> //HACK
-            lower.setDefault($.t(0.5f, n.confDefault(BELIEF)/2))
+            lower.setDefault($.t(0.5f, n.confDefault(BELIEF)/3))
         );
 
         actionPushButtonLR();
