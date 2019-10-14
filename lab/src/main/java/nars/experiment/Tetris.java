@@ -41,7 +41,7 @@ public class Tetris extends GameX {
     public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", false);
+    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
     public static AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
     public static int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW
