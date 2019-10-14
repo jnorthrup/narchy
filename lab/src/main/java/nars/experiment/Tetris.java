@@ -41,7 +41,7 @@ public class Tetris extends GameX {
     public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    public static final boolean TETRIS_V_2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", false);
+    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", false);
     public static AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
     public static int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW
@@ -117,14 +117,14 @@ public class Tetris extends GameX {
                 //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
                 grid, /*0,*/ n));
 
+        if(!TETRIS_V2_REWARDS) {
 
-        if (TETRIS_USE_SCORE) rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
-                state::score
-                //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
-        );
-        if (TETRIS_USE_DENSITY) rewardNormalized("density", 0, ScalarValue.EPSILON, this::density);
-
-        if(TETRIS_V_2_REWARDS){
+            if (TETRIS_USE_SCORE) rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
+                    state::score
+                    //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
+            );
+            if (TETRIS_USE_DENSITY) rewardNormalized("density", 0, ScalarValue.EPSILON, this::density);
+        }else {
             actionUnipolar($.inh(id, "speed"), (s)->{
                 int fastest = 1, slowest = 16;
                 this.timePerFall.set( Math.round(Util.lerp(s, slowest, fastest)));
