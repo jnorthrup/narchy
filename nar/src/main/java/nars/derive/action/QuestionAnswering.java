@@ -1,6 +1,8 @@
 package nars.derive.action;
 
+import jcog.Util;
 import nars.Task;
+import nars.attention.What;
 import nars.derive.Derivation;
 import nars.derive.premise.AbstractPremise;
 import nars.derive.rule.RuleCause;
@@ -47,25 +49,25 @@ public class QuestionAnswering extends NativeHow {
 		if (answer == null)
 			return null;
 
-//		answered(question, answer, d);
+		answered(question, answer, d);
 		return answer;
 	}
 
-//	private static void answered(Task q, Task a, Derivation d) {
+	private static void answered(Task q, Task a, Derivation d) {
 ////        if (x.conf() > d.confMin) {
 ////            if (x.isGoal())
 ////                d.what.accept(x);
 ////            else
-////		float qPri = q.priElseZero(), aPri = a.priElseZero();
-////		float pri =
-////			//qPri * aPri;
-////			Util.or(qPri, aPri);
+		float qPri = q.priElseZero(), aPri = a.priElseZero();
+		float pri =
+			//qPri * aPri;
+			Util.or(qPri, aPri);
 //
-////		What w = d.what;
+		What w = d.what;
 ////		((AbstractTask)a).why(q.why()); //merge question reason into answer
-////		w.link(a, pri);
-////		w.emit(a);
-//	}
+		w.link(a, pri);
+		w.emit(a);
+	}
 
 
 }

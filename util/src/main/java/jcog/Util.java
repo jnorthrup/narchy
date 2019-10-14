@@ -1107,6 +1107,13 @@ public enum Util {
 		}
 	}
 
+	public static float normalizeSafe(float x, float min, float max) {
+		if (max - min <= Float.MIN_NORMAL)
+			return 0.5f;
+		else
+			return (x - min) / (max - min);
+	}
+
 	public static float normalize(float x, float min, float max) {
 		if (x != x)
 			return Float.NaN;
@@ -1114,10 +1121,7 @@ public enum Util {
 		assertFinite(min);
 		assertFinite(max);
 		assert (max >= min);
-		if (max - min <= Float.MIN_NORMAL)
-			return 0.5f;
-		else
-			return (x - min) / (max - min);
+		return normalizeSafe(x, min, max);
 	}
 
 	public static float variance(float[] population) {

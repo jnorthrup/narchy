@@ -60,6 +60,7 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
+import static jcog.Texts.n4;
 import static jcog.Util.lerp;
 import static jcog.Util.lerpSafe;
 import static nars.$.$$;
@@ -731,11 +732,11 @@ abstract public class GameX extends Game {
      * @return
      */
     private static DurLoop addGovernor(NAR n) {
-        float momentum = 0.5f;
-        float explorationRate = 0.01f;
+        float momentum = 0.9f;
+        float explorationRate = 0.05f;
         return n.onDur(new Consumer<NAR>() {
 
-            final Consumer<FasterList<Cause>> reval = new Consumer<FasterList<Cause>>() {
+            final Consumer<FasterList<Cause>> normalize1 = new Consumer<FasterList<Cause>>() {
 
                 float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
@@ -751,13 +752,11 @@ abstract public class GameX extends Game {
                     for (int i = 0; i < ww; i++) {
                         float r = c[i].value;
 
-                        //if (r!=r) r = 0;
                         float v;
                         if (r == r)
                             f[i] = v = lerpSafe(momentum, r, f[i]);
-                        else {
+                        else
                             v = f[i]; //unchanged, hold existing value
-                        }
 
                         min = Math.min(v, min); max = Math.max(v, max);
                     }
@@ -768,21 +767,63 @@ abstract public class GameX extends Game {
                         for (int i = 0; i < ww; i++)
                             c[i].setPri(explorationRate); //flat
                     } else {
-//                        float explorationRateEach =
-//                            explorationRate;
-//                            //explorationRate / ww; // <- stricter
-//                        float basePri = explorationRateEach * (max - min);
+                        float range = 1 - explorationRate;
                         for (int i = 0; i < ww; i++)
-                            c[i].setPri(explorationRate + Util.normalize(f[i], min, max) );
+                            c[i].setPri(explorationRate + range * Util.normalizeSafe(f[i], min, max) );
                     }
                 }
 
             };
+            final Consumer<FasterList<Cause>> normalize2 = new Consumer<FasterList<Cause>>() {
 
+                float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
+                float[] fNorm = ArrayUtil.EMPTY_FLOAT_ARRAY;
+
+                @Override
+                public void accept(FasterList<Cause> cc) {
+
+                    Cause[] c = cc.array();
+                    int ww = Math.min(c.length, cc.size());
+                    if (f.length != ww) {
+                        f = new float[ww];
+                        fNorm = new float[ww];
+                    }
+
+
+                    float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
+                    for (int i = 0; i < ww; i++) {
+                        float v = c[i].value;
+                        v = Math.max(0, v); //clip at 0
+                        f[i] = v; min = Math.min(v, min); max = Math.max(v, max);
+                    }
+
+                    if (Util.equals(min, max)) {
+//                        float flat = 1f/ww;
+//                        for (int i = 0; i < ww; i++)
+//                            c[i].setPri(flat);
+                    } else {
+                        for (int i = 0; i < ww; i++) {
+                            float v = f[i];
+                            float vNorm = Util.normalizeSafe(v, min, max);
+                            fNorm[i] = lerpSafe(momentum, vNorm, fNorm[i]);
+                        }
+                    }
+                    //System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
+
+                    float range = 1 - explorationRate;
+                    for (int i = 0; i < ww; i++)
+                        c[i].setPri(explorationRate + range * fNorm[i] );
+
+                }
+
+            };
 
             @Override
             public void accept(NAR nn) {
-                MetaGoal.value(nn, reval);
+                MetaGoal.value(nn,
+                    //normalize1
+                    normalize2
+                );
 
 //                PartBag<How> H = nn.how;
 //

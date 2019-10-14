@@ -67,9 +67,9 @@ class QuestTest {
 
     private void quest(NAR nar, AtomicBoolean valid) throws Narsese.NarseseException {
         nar.onTask(a -> {
-            if (a.punc()==GOAL && a.toString().contains("(b-->a)!"))
+            if (a.toString().contains("(b-->a)!"))
                 valid.set(true);
-        });
+        }, GOAL);
 
         nar.quest($("a:?b@"));
     }

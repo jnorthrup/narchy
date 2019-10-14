@@ -1,9 +1,11 @@
 package jcog.signal.meter;
 
+import jcog.math.FloatSupplier;
+
 import java.util.concurrent.atomic.AtomicLong;
 
 /** NOTE: this can extend EITHER AtomicLong or LongAdder */
-public class FastCounter extends AtomicLong /*LongAdder*/{
+public class FastCounter extends AtomicLong /*LongAdder*/ implements FloatSupplier {
 
     private final String name;
 
@@ -22,5 +24,10 @@ public class FastCounter extends AtomicLong /*LongAdder*/{
 
     public final void increment() {
         incrementAndGet();
+    }
+
+    @Override
+    public float asFloat() {
+        return get();
     }
 }
