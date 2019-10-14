@@ -2,7 +2,6 @@ package nars.derive.pri;
 
 import jcog.Util;
 import jcog.math.FloatRange;
-import jcog.pri.ScalarValue;
 import nars.Task;
 import nars.derive.Derivation;
 import nars.truth.Truth;
@@ -26,7 +25,7 @@ public class DefaultDerivePri implements DerivePri {
      * how important is it to retain conf (evidence).
      * leniency towards uncertain derivations
      */
-    public final FloatRange eviImportance = new FloatRange(1f, 0f, 1f);
+    public final FloatRange eviImportance = new FloatRange(0.5f, 0f, 1f);
 
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
@@ -47,14 +46,17 @@ public class DefaultDerivePri implements DerivePri {
         if (t.isBeliefOrGoal()) {
             factor *= factorPolarity(t.freq());
         } else {
-            factor *= factor /* ^2 */ * questionGain.floatValue();
+            factor *=
+                questionGain.floatValue()
+                * factor /* ^2 */
+            ;
         }
 
         factor *= //factorEviAbsolute(t,d);
                   factorMaintainRangeAndAvgEvi(t,d);
 
         float y = postAmp(t, d.parentPri(), factor);
-        return Util.clamp(y, ScalarValue.EPSILON, 1);
+        return y;
     }
 
     /** default impl: pass-thru */
@@ -120,7 +122,7 @@ public class DefaultDerivePri implements DerivePri {
         return (float) Util.lerp(eviImportance.floatValue(), 1f, y);
     }
 
-    private double rangeRatio(Task t, Derivation d) {
+    private static double rangeRatio(Task t, Derivation d) {
         //eternal=1 dur
         long taskRange = d._task.rangeIfNotEternalElse(TIMELESS);
         long beliefRange = d.single ? taskRange : (d._belief.rangeIfNotEternalElse(TIMELESS));
@@ -129,7 +131,7 @@ public class DefaultDerivePri implements DerivePri {
             taskBeliefRange = beliefRange;
         } else if (taskRange != TIMELESS && beliefRange == TIMELESS) {
             taskBeliefRange = taskRange;
-        } else if (taskRange!=TIMELESS && beliefRange!=TIMELESS) {
+        } else if (taskRange!=TIMELESS /*&& beliefRange!=TIMELESS*/) {
             taskBeliefRange = Math.min(taskRange, beliefRange);
         } else {
             taskBeliefRange = TIMELESS;

@@ -1,7 +1,6 @@
 package nars.derive.action;
 
 import nars.NAL;
-import nars.NAR;
 import nars.Op;
 import nars.Task;
 import nars.control.Why;
@@ -56,7 +55,7 @@ public class MatchBelief extends NativeHow {
 	 * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
 	 */
 	@Nullable
-	private Premise match(Premise p, int var, RuleCause why, Derivation d) {
+	private static Premise match(Premise p, int var, RuleCause why, Derivation d) {
 
 		final Term beliefTerm = p.beliefTerm();
 		if (!beliefTerm.op().taskable)
@@ -107,7 +106,7 @@ public class MatchBelief extends NativeHow {
 			if (task != belief && task.stamp().length == 0) {
 				//only allow unstamped tasks to apply with stamped beliefs.
 				//otherwise stampless tasks could loop forever in single premise or in interaction with another stampless task
-				if (belief == null || belief.stamp().length == 0)
+				if (belief.stamp().length == 0)
 					return null;
 			}
 
@@ -150,11 +149,9 @@ public class MatchBelief extends NativeHow {
 
 	}
 
-	@Nullable private Task match(Task task, Term beliefTerm, Derivation d) {
+	@Nullable private static Task match(Task task, Term beliefTerm, Derivation d) {
 
-		NAR n = d.nar;
-
-		final BeliefTable beliefTable = n.tableDynamic(beliefTerm, true);
+		final BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
 
 		return beliefTable != null && !beliefTable.isEmpty() ?
 			match(task, beliefTerm, beliefTable, timeFocus(task, beliefTerm, d), d) : null;

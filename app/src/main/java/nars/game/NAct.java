@@ -354,9 +354,8 @@ import static nars.Op.BELIEF;
         GoalActionConcept LA = action(tl, (b, g) -> {
 
             float q = Q.q(b,g);
-            boolean xq = q > thresh.asFloat();
-            boolean x = xq && q > r.floatValue();
-            boolean y = L.accept(x);
+            boolean xq = q >= thresh.asFloat();
+            boolean y = L.accept(xq && q >= r.floatValue());
             l.set(xq ? q : 0);
 
 
@@ -369,9 +368,8 @@ import static nars.Op.BELIEF;
         });
         GoalActionConcept RA = action(tr, (b, g) -> {
             float q = Q.q(b,g);
-            boolean xq = q > thresh.asFloat();
-            boolean x = xq && q > l.floatValue();
-            boolean y = R.accept(x);
+            boolean xq = q >= thresh.asFloat();
+            boolean y = R.accept(xq && q >= l.floatValue());
             r.set(xq ? q : 0);
 
             float feedback =
@@ -406,8 +404,9 @@ import static nars.Op.BELIEF;
     default FloatSupplier midThresh() {
 
         return () ->
-            0.5f + nar().freqResolution.get()/2;
-            //0.5f;
+            0.5f;
+            //0.5f + nar().freqResolution.get()/2;
+
 
         //return () -> 0.66f;
         ///return () -> 0.5f + ScalarValue.EPSILON;

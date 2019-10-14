@@ -74,7 +74,7 @@ public abstract class DynamicTermDecomposer implements TermDecomposer {
     }
 
     protected Term subterm(Compound t, Random rng) {
-        return subterm(t, t instanceof SeparateSubtermsCompound ?  t.subterms() : t, rng);
+        return subterm(t, t instanceof SeparateSubtermsCompound ?  t.subtermsDirect() : t, rng);
     }
 
     protected Term subterm(Compound x, Subterms tt, Random rng) {

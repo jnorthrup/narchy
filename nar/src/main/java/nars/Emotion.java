@@ -109,16 +109,12 @@ public class Emotion implements Meter, Consumer<NAR> {
     public final FloatAveragedWindow
             busyVol = new FloatAveragedWindow(history, 0.75f, 0f),
             busyVolPriWeighted = new FloatAveragedWindow(history, 0.75f, 0);
-    private final NAR nar;
 
     /**
      * count of errors
      */
-
-
     public Emotion(NAR n) {
         super();
-        this.nar = n;
     }
 
     /**

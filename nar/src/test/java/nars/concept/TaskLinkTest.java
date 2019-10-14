@@ -6,6 +6,7 @@ import nars.Narsese;
 import nars.link.AtomicTaskLink;
 import org.junit.jupiter.api.Test;
 
+import static jcog.pri.op.PriReturn.Delta;
 import static nars.$.$;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
@@ -22,17 +23,17 @@ public class TaskLinkTest {
         t.priSet(BELIEF, 0.9f);
         assertEquals((1*0.9f)/4f, t.pri(), 0.001f);
 
-        float gd = t.mergeComponentDelta(GOAL, 0.9f, PriMerge.replace);
+        float gd = t.mergeComponent(GOAL, 0.9f, PriMerge.replace, Delta);
         assertEquals(0.9f/4f, gd, 0.001f);
         assertEquals((2*0.9f)/4f, t.pri(), 0.001f);
-        t.mergeComponentDelta(GOAL, 0f, PriMerge.replace);
+        t.mergeComponent(GOAL, 0f, PriMerge.replace, Delta);
 
-        t.mergeComponentDelta(BELIEF, 0.1f, PriMerge.plus);
+        t.mergeComponent(BELIEF, 0.1f, PriMerge.plus, Delta);
         assertEquals(0.25f, t.pri(), 0.01f);
         assertEquals(1, t.priPunc(BELIEF), 0.01f);
 
         //no change:
-        t.mergeComponentDelta(BELIEF, 0.1f, PriMerge.plus);
+        t.mergeComponent(BELIEF, 0.1f, PriMerge.plus, Delta);
         assertEquals(0.25f, t.pri(), 0.01f);
         assertEquals(1, t.priPunc(BELIEF), 0.01f);
 
@@ -41,8 +42,8 @@ public class TaskLinkTest {
 
     @Test void TaskLinkComponentRange() {
         AtomicTaskLink t = AtomicTaskLink.link($$("x"));
-        t.mergeComponentDelta(BELIEF, 0.9f, PriMerge.plus);
-        t.mergeComponentDelta(GOAL, 0.9f, PriMerge.plus);
+        t.mergeComponent(BELIEF, 0.9f, PriMerge.plus, Delta);
+        t.mergeComponent(GOAL, 0.9f, PriMerge.plus, Delta);
         assertEquals(0.5f, t.pri(), 0.1f);
         assertEquals("$.45:0.9,0,0.9,0 x", t.toString());
         t.priMult(0.9f);

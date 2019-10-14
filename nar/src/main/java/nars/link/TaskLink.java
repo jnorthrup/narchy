@@ -95,8 +95,8 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
     void delete(byte punc);
 
 
-    /** multiply by components */
-    void priMult(float belief, float goal, float question, float quest);
+//    /** multiply by components */
+//    void priMult(float belief, float goal, float question, float quest);
 
     float merge(TaskLink incoming, PriMerge merge, PriReturn returning);
 

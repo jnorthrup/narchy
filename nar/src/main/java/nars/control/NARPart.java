@@ -112,7 +112,7 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
     public void startIn(NAR nar, Part<NAR> container) {
         logger.info("start {} -> {} {}", container, term(), getClass().getName());
 
-        synchronized (this) {
+        //synchronized (this) {
             this.nar = nar;
 
             _state(Thing.ServiceState.OffToOn);
@@ -122,21 +122,21 @@ abstract public class NARPart extends Parts<NAR> implements Termed, OffOn, SubPa
 
             startLocal(nar);
             _state(Thing.ServiceState.On);
-        }
+        //}
     }
 
     public void stopIn(NAR nar, Part<NAR> container) {
 
         logger.info(" stop {} -> {} {}", container, term(), getClass().getName());
 
-        synchronized(this) {
+        //synchronized(this) {
             _state(Thing.ServiceState.OnToOff);
             stopLocal(nar);
 
             stopping(nar);
 
             _state(Thing.ServiceState.Off);
-        }
+        //}
     }
 
     /** MAKE SURE NOT TO CALL THIS DIRECTLY; IT WILL BE INVOKED.  LIKELY YOU WANT: n.start(x) NOT x.start(a) */

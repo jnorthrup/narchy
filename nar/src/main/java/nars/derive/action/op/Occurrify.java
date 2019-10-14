@@ -199,7 +199,7 @@ public class Occurrify extends TimeGraph {
         return solutions.get(Roulette.selectRoulette(ss, i->score[i], random()));
     }
 
-    private float score(Event e, boolean occ) {
+    private static float score(Event e, boolean occ) {
         Term st = e.id;
         float points = 1;
         if (e instanceof Absolute) {
@@ -521,9 +521,9 @@ public class Occurrify extends TimeGraph {
                     long taskStart = d.taskStart;
                     if (taskStart == ETERNAL) taskStart = d.time;
                     //if (taskStart != ETERNAL) { // && taskStart > x[0]){
-                        long r = x[1] - x[0];
-                        x[0] = taskStart;
-                        x[1] = taskStart + r;
+                    long r = x[1] - x[0];
+                    x[0] = taskStart;
+                    x[1] = taskStart + r;
                     //}
                 }
             }

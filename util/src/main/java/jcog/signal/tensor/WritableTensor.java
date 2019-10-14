@@ -1,6 +1,5 @@
 package jcog.signal.tensor;
 
-import jcog.TODO;
 import jcog.pri.op.PriReturn;
 import jcog.signal.Tensor;
 import jcog.util.FloatFloatToFloatFunction;
@@ -29,9 +28,9 @@ public interface WritableTensor extends Tensor {
             setAt(i++, v);
     }
 
-    default void readFrom(Tensor from, int[] fromStart, int[] fromEnd, int[] myStart, int[] myEnd) {
-        throw new TODO();
-    }
+//    default void readFrom(Tensor from, int[] fromStart, int[] fromEnd, int[] myStart, int[] myEnd) {
+//        throw new TODO();
+//    }
 
     default /* final */ float merge(int linearCell, float arg, FloatFloatToFloatFunction x) {
         return merge(linearCell, arg, x, PriReturn.Post);

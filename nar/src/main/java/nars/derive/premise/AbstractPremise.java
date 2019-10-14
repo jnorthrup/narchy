@@ -22,10 +22,7 @@ public class AbstractPremise implements Premise {
 
 	public final Termed task, belief;
 
-	/**
-	 * does not include the task or belief's. these transfer separately
-	 */
-	public Termed why;
+	private Termed why;
 
 	public AbstractPremise(Task task, Termed why) {
 		this(task, task.term(), why);

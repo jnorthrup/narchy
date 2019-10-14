@@ -93,7 +93,7 @@ public class WorkerExec extends ThreadedExec {
 					//Math.round(updateDurs * nar.dur()); //per-dur
 
 			if ((dExe = deriver()) != null)
-				dExe.nextCycle();
+				dExe.cycle();
 		}
 
 		@Override

@@ -64,7 +64,6 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
         for (int i = 0; i < 4; i++)
             s += shortAt(x, i);
         return toFloat(s);
-
     }
 
     @Override

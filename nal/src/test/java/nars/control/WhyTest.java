@@ -32,7 +32,7 @@ class WhyTest {
 
 	@Test void testEval() {
 		Map m = new HashMap();
-		Why.eval(x, 1, m::put);
+		Why.eval(x, 1, null, (x, v, p) -> m.put(v,p));
 		assertEquals("{1=0.5, 2=0.25, 3=0.25}", m.toString());
 	}
 

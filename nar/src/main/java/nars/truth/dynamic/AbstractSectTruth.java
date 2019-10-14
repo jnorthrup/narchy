@@ -17,7 +17,7 @@ abstract public class AbstractSectTruth extends AbstractDynamicTruth {
     protected abstract boolean truthNegComponents();
     protected abstract boolean negResult();
 
-    private Truth apply(DynTaskify d, boolean negComponents, boolean negResult) {
+    private static Truth apply(DynTaskify d, boolean negComponents, boolean negResult) {
         MutableTruth y = null;
         for (int i = 0, dSize = d.size(); i < dSize; i++) {
             Truth x = d.truth(i);

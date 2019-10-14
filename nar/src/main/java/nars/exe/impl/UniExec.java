@@ -63,7 +63,7 @@ public class UniExec extends Exec {
             kontinue = () -> nanoTime() < deadline;
         }
 
-        exe.nextCycle();
+        exe.cycle();
 
         for (What w : n.what) {
             if (w.isOn()) {

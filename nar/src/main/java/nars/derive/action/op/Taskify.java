@@ -1,6 +1,7 @@
 package nars.derive.action.op;
 
 import jcog.Util;
+import jcog.pri.ScalarValue;
 import nars.$;
 import nars.NAL;
 import nars.NAR;
@@ -59,7 +60,7 @@ public class Taskify extends ProxyTerm {
     }
 
 
-    private Term postFilter(Term y, Derivation d) {
+    private static Term postFilter(Term y, Derivation d) {
 
         if (y instanceof Compound) {
 
@@ -75,13 +76,12 @@ public class Taskify extends ProxyTerm {
             if (!VarIndep.validIndep(y, true)) {
                 //convert orphaned indep vars to query/dep variables
                 byte punc = d.punc;
-                Term z = y.transform(
+                y = y.transform(
                         (punc == QUESTION || punc == QUEST) ?
                                 VariableTransform.indepToQueryVar
                                 :
                                 VariableTransform.indepToDepVar
                 );
-                y = z;
             }
 
             //if (!d.single)
@@ -149,7 +149,7 @@ public class Taskify extends ProxyTerm {
         return timing;
     }
 
-    private void assertOccValid(Derivation d, long[] occ) {
+    private static void assertOccValid(Derivation d, long[] occ) {
         if (!((occ[0] != TIMELESS) && (occ[1] != TIMELESS) &&
                 (occ[0] == ETERNAL) == (occ[1] == ETERNAL) &&
                 (occ[1] >= occ[0])) || (occ[0] == ETERNAL && !d.occ.validEternal()))
@@ -289,7 +289,7 @@ public class Taskify extends ProxyTerm {
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
             return null;
         }
-        t.pri(priority);
+        t.pri(Util.clamp(priority, ScalarValue.EPSILON, 1));
 
         //these must be applied before possible merge on input to derivedTask bag
         t.why(rule.why(d));

@@ -9,8 +9,6 @@ import nars.term.Term;
 import nars.term.Termed;
 import nars.term.Terms;
 import nars.term.atom.Int;
-import nars.term.util.TermException;
-import org.eclipse.collections.api.block.procedure.primitive.ShortFloatProcedure;
 import org.eclipse.collections.api.block.procedure.primitive.ShortProcedure;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 import org.jetbrains.annotations.Nullable;
@@ -52,32 +50,7 @@ public enum Why { ;
 //		return why(whyA, new short[] { whyB }, capacity);
 //	}
 
-	public static Term why(Term whyA, short[] _whyB, int capacity) {
-		if (whyA == null)
-			return why(_whyB, capacity);
 
-		int wv = whyA.volume();
-
-		Term whyB = why(_whyB, capacity);
-		if (whyA.equals(whyB))
-			return whyA;
-
-		if (wv + _whyB.length + 1 > capacity) {
-
-			//must reduce or sample
-			int maxExistingSize = capacity - _whyB.length - 1;
-			if (maxExistingSize <= 0)
-				return whyB; //can not save any existing
-
-			RoaringBitmap s = new RoaringBitmap();
-			toSet(whyA, s::add);
-			whyA = why(s, maxExistingSize-1);
-			if (whyA.equals(whyB))
-				return whyA;
-		}
-
-		return SETe.the(whyA, whyB);
-	}
 
 	@Nullable public static Term why(RoaringBitmap s, int capacity) {
 		int ss = s.getCardinality();
@@ -92,18 +65,18 @@ public enum Why { ;
 		return why(i, capacity);
 	}
 
-	@Nullable public static Term why(ShortHashSet s, int capacity) {
-		if (s.isEmpty())
-			return null; //TODO prevent from having to reach
-		return why(s.toArray(), capacity);
-//		if (s.size() > capacity-1) {
-//			//too many, must sample
-//			return why(sample(capacity-1, true, s), capacity);
-//		} else {
-//			//store linearized
-//			return why(ss, capacity-1);
-//		}
-	}
+//	@Nullable public static Term why(ShortHashSet s, int capacity) {
+//		if (s.isEmpty())
+//			return null; //TODO prevent from having to reach
+//		return why(s.toArray(), capacity);
+////		if (s.size() > capacity-1) {
+////			//too many, must sample
+////			return why(sample(capacity-1, true, s), capacity);
+////		} else {
+////			//store linearized
+////			return why(ss, capacity-1);
+////		}
+//	}
 
 	@Nullable public static <C extends Caused> Termed whyLazy(@Nullable C... c) {
 		return whyLazy(c, NAL.causeCapacity.intValue());
@@ -112,10 +85,10 @@ public enum Why { ;
 	@Nullable public static <C extends Caused> Termed whyLazy(@Nullable C[] c, int capacity) {
 		switch (c.length) {
 			case 0: return null;
-			case 1: return c[0].why();
-			case 2: if (c[0]==c[1] || c[1] == null) return c[0].why();  if (c[0] == null) return c[1].why(); break;
+			case 1: return c[0] == null ? c[0].why() : null;
+			case 2: if (c[0]==c[1] || c[1] == null) return (c[0]!=null ? c[0].why() : null);  if (c[0] == null) return c[1].why(); break;
 		}
-		return new LazyTerm(()-> why(c, capacity)); //TODO custom LazyTerm impl
+		return new MyLazyTerm(c, capacity);
 	}
 
 	@Deprecated public static <C extends Caused> Term why(@Nullable C... c) {
@@ -220,24 +193,6 @@ public enum Why { ;
 		}
 	}
 
-	@Deprecated public static void eval(@Nullable Term why, float pri, ShortFloatProcedure each) {
-		if (why == null)
-			return;
-
-		if (why instanceof Int) {
-			each.value(s(why), pri);
-		} else {
-			//split
-			assert(why.opID()==SETe.id);
-			Subterms s = why.subterms();
-			int n = s.subs();
-			if (n <= 1)
-				throw new TermException("Malformed Why", why);
-			float priEach = pri/n;
-			for (int i = 0; i < n; i++)
-				eval(s.sub(i), priEach, each);
-		}
-	}
 
 	public static void forEachUnique(Term why, ShortProcedure s) {
 		if (why instanceof Int) {
@@ -271,6 +226,7 @@ public enum Why { ;
 		} else {
 			Subterms ww = w.subterms();
 			int wn = ww.subs();
+			assert (w.opID() == SETe.id  && wn > 1);
 			for (int i = 0; i < wn; i++)
 				toSet(ww.sub(i), each);
 		}
@@ -278,6 +234,21 @@ public enum Why { ;
 
 	private static short s(Term why) {
 		return (short)(((Int)why).i);
+	}
+
+	private static final class MyLazyTerm extends LazyTerm {
+		private final Caused[] c;
+		private final int capacity;
+
+		public MyLazyTerm(Caused[] c, int capacity) {
+			this.c = c;
+			this.capacity = capacity;
+		}
+
+		@Nullable @Override
+		protected Term build() {
+			return Why.why(c, capacity);
+		}
 	}
 
 //	static short[] sample(int maxLen, boolean deduplicate, short[]... s) {

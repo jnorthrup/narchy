@@ -53,7 +53,7 @@ abstract public class AbstractDynamicTruth {
 			subTerm, subStart, subEnd, filter, d);
 	}
 
-	public Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
+	public static Task subTask(BeliefTable table, Term subTerm, long subStart, long subEnd, Predicate<Task> filter, DynTaskify d) {
 		NAR nar = d.nar;
 		float dur = d.dur;
 		Task x;

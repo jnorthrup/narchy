@@ -7,6 +7,7 @@ import nars.$;
 import nars.GameX;
 import nars.NAR;
 import nars.experiment.pacman.PacmanGame;
+import nars.experiment.pacman.maze.Maze;
 import nars.game.GameTime;
 import nars.sensor.Bitmap2DSensor;
 import nars.video.SwingBitmap2D;
@@ -18,10 +19,12 @@ public class Pacman extends GameX {
 
     private final PacmanGame g;
 
+    static float fps = 20;
+
     public Pacman(NAR nar) {
         super($$("Pac"),
                 //GameTime.durs(0.5f),
-                GameTime.fps(20f),nar
+                GameTime.fps(fps),nar
 		);
 
         this.g = new PacmanGame();
@@ -54,19 +57,31 @@ public class Pacman extends GameX {
         }
 //        SpaceGraph.window(gg, 300, 300);
 
-        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), ()->{
-            g.keys[1] = true;
-            g.keys[0] = false;
-        }, ()->{
-            g.keys[0] = true;
-            g.keys[1] = false;
+        actionPushButtonMutex($.inh(id,"left"), $.inh(id,"right"), (b)->{
+            if (b) {
+                g.keys[1] = true;
+                g.keys[0] = false;
+                return !g.player.walled(Maze.Direction.left);
+            } else return false;
+        }, (b)->{
+            if (b) {
+                g.keys[0] = true;
+                g.keys[1] = false;
+                return !g.player.walled(Maze.Direction.right);
+            } else return false;
         });
-        actionPushButtonMutex($.inh(id,"up"), $.inh(id,"down"), ()->{
-            g.keys[2] = true;
-            g.keys[3] = false;
-        }, ()->{
-            g.keys[3] = true;
-            g.keys[2] = false;
+        actionPushButtonMutex($.inh(id,"up"), $.inh(id,"down"), (b)->{
+            if (b) {
+                g.keys[2] = true;
+                g.keys[3] = false;
+                return !g.player.walled(Maze.Direction.up);
+            } else return false;
+        }, (b)->{
+            if (b) {
+                g.keys[3] = true;
+                g.keys[2] = false;
+                return !g.player.walled(Maze.Direction.down);
+            } else return false;
         });
 //        actionTriState($.p(id,$.p($.the("x"), $.varQuery(1))), (dh) -> {
 //            switch (dh) {
@@ -132,7 +147,7 @@ public class Pacman extends GameX {
             n.add(a);
             return a;
 
-        }, 20);
+        }, fps*2);
     }
 
 }

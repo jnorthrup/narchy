@@ -20,7 +20,7 @@ import static jcog.Util.lerpSafe;
  */
 public enum Should { ;
 	@Deprecated static float momentum = 0.5f;
-	@Deprecated static float explorationRate = 0.1f;
+	@Deprecated static float explorationRate = 0.05f;
 
 	public static final boolean PRINT_AVG_ERR = Config.configIs("AVG_ERR", true);
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
@@ -94,7 +94,7 @@ public enum Should { ;
 
 			{
 
-				float learningRate = 0.04f;
+				float learningRate = 0.02f;
 
 				double errTotal = 0;
 				for (int i = 0; i < ww; i++) {

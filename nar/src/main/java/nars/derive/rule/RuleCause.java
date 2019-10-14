@@ -34,6 +34,9 @@ public final class RuleCause extends Cause {
 		return Why.why(why, d.why());
 	}
 	public final Termed why(Caused... c) {
+		return Why.why(ArrayUtil.add(c, this));
+	}
+	public final Termed whyLazy(Caused... c) {
 		return Why.whyLazy(ArrayUtil.add(c, this));
 	}
 }

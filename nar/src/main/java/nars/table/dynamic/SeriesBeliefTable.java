@@ -201,7 +201,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 		}
 	}
 
-	private boolean lastContinues(@Nullable Truth next, float dur, long nextStart, long nextEnd, AbstractTaskSeries<SeriesTask> series, SeriesTask last) {
+	private static boolean lastContinues(@Nullable Truth next, float dur, long nextStart, long nextEnd, AbstractTaskSeries<SeriesTask> series, SeriesTask last) {
 		long lastEnd = last.end();
 
 		long gapCycles = (nextStart - lastEnd);
@@ -229,7 +229,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 		return false;
 	}
 
-	private SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {
+	private static SeriesTask newTask(Term term, byte punc, long s, long e, Truth truth, NAL nar) {
 		return new SeriesTask(term, punc, truth, s, e, nar.evidence());
 	}
 

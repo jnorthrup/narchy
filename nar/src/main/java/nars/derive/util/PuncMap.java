@@ -21,7 +21,11 @@ public final class PuncMap extends AbstractPred<PreDerivation> {
     public static final byte FALSE = 0, TRUE = 1;
     public static final PuncMap All = new PuncMap(TRUE, TRUE, TRUE, TRUE, TRUE);
 
-    byte belief, goal, question, quest, command;
+    final byte belief;
+    final byte goal;
+    final byte question;
+    final byte quest;
+    final byte command;
 
     public static byte p(BytePredicate enable, ByteToByteFunction p, byte b) {
         return enable.accept(b) ? p.valueOf(b) : 0;

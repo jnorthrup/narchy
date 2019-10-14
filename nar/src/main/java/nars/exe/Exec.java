@@ -106,7 +106,7 @@ abstract public class Exec extends NARPart implements Executor {
             logger.warn("{} {}", e, t);
         }
     }
-    private void executeNow(Runnable t) {
+    private static void executeNow(Runnable t) {
         try {
             t.run();
         } catch (Throwable e) {

@@ -37,7 +37,6 @@ public abstract class AbstractTaskLink implements TaskLink {
 	 */
 	private volatile float pri = 0;
 
-
 	protected AbstractTaskLink(Term source, Term target, int hash) {
 		this.from = source;
 		this.to = target;
@@ -172,19 +171,6 @@ public abstract class AbstractTaskLink implements TaskLink {
 		return false;
 	}
 
-	public final void mergeComponent(byte punc, float pri, PriMerge merge) {
-		mergeComponent(punc, pri, merge, null);
-	}
-
-	protected final float mergeComponentPost(byte punc, float pri, PriMerge merge) {
-		return mergeComponent(punc, pri, merge, Post);
-	}
-
-	public final float mergeComponentDelta(byte punc, float pri, PriMerge merge) {
-		return mergeComponent(punc, pri, merge, Delta);
-	}
-
-
 	protected abstract float priSum();
 
 	/**
@@ -199,7 +185,7 @@ public abstract class AbstractTaskLink implements TaskLink {
 	abstract public String toString();
 
 
-	public AbstractTaskLink priSet(byte punc, float puncPri) {
+	public final AbstractTaskLink priSet(byte punc, float puncPri) {
 		mergeComponent(punc, puncPri, PriMerge.replace, null);
 		return this;
 	}
@@ -209,42 +195,52 @@ public abstract class AbstractTaskLink implements TaskLink {
 
 		why = Why.why(why(), incoming.why()); //TODO priority proportional Why merge
 
+		FloatFloatToFloatFunction m = merge::mergeUnitize;
+		float o;
 		switch (returning) {
 			case Overflow:
 			case Delta:
-				float o = 0;
+				o = 0;
 				for (byte i = 0; i < 4; i++)
-					o += merge(i, incoming.priIndex(i), merge, returning);
-				return o / 4;
+					o += mergeDirect(i, incoming.priIndex(i), m, returning);
+				o/=4;
+				break;
 			case Void:
 				for (byte i = 0; i < 4; i++)
-					merge(i, incoming.priIndex(i), merge, null);
-				return Float.NaN;
-
+					mergeDirect(i, incoming.priIndex(i), m, null);
+				o = Float.NaN;
+				break;
             default:
                 throw new UnsupportedOperationException();
 		}
 
+		invalidate();
+
+		return o;
 	}
 
 //    protected void mergeComponent(byte punc, float pri, PriMerge merge) {
 //        mergeComponent(punc, pri, merge, PriReturn.Void);
 //    }
 
-	protected final float mergeComponent(byte punc, float pri, PriMerge merge, PriReturn returning) {
+	public final float mergeComponent(byte punc, float pri, PriMerge merge, @Nullable PriReturn returning) {
 		return merge(Task.i(punc), pri, merge, returning);
 	}
 
-	protected float merge(int ith, float pri, PriMerge merge, PriReturn returning) {
+	/** does not invalidate */
+	protected float mergeDirect(int ith, float pri, FloatFloatToFloatFunction merge, @Nullable PriReturn returning) {
 		//assertFinite(pri);
-		float y = apply(ith, pri,
-			merge::mergeUnitize, //necessary
-			returning);
+		return apply(ith, pri, merge, returning);
+	}
 
-		if (returning != PriReturn.Delta || y != 0)
+	protected float merge(int ith, float pri, PriMerge merge, @Nullable PriReturn returning) {
+
+		float y = mergeDirect(ith, pri, merge::mergeUnitize, returning);
+
+		if (returning != PriReturn.Delta || y != 0) //delta==0 on individual component = unchanged
 			invalidate();
 
-		return y / 4f;
+		return y/4;
 	}
 
 
@@ -280,16 +276,16 @@ public abstract class AbstractTaskLink implements TaskLink {
 		return pri();
 	}
 
-	@Override
-	public void priMult(float belief, float goal, float question, float quest) {
-		boolean changed;
-		changed = apply(0, belief, mult, Changed) != 0;
-		changed |= apply(1, goal, mult, Changed) != 0;
-		changed |= apply(2, question, mult, Changed) != 0;
-		changed |= apply(3, quest, mult, Changed) != 0;
-		if (changed)
-			invalidate();
-	}
+//	@Override
+//	public void priMult(float belief, float goal, float question, float quest) {
+//		boolean changed;
+//		changed = apply(0, belief, mult, Changed) != 0;
+//		changed |= apply(1, goal, mult, Changed) != 0;
+//		changed |= apply(2, question, mult, Changed) != 0;
+//		changed |= apply(3, quest, mult, Changed) != 0;
+//		if (changed)
+//			invalidate();
+//	}
 
 
 	@Nullable

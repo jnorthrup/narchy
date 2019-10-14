@@ -430,7 +430,7 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 			case "hasVar": {
 				match(x, new TermMatcher.Has(Op.Variable, true), !negated);
 				if (!negated)
-					match(x, new TermMatcher.VolMin(2, 0), !negated);
+					match(x, new TermMatcher.VolMin(2, 0), true);
 				if (negated)
 					negationApplied = true;
 				break;
@@ -624,10 +624,6 @@ public abstract class CondHow/*Builder*/ extends HowBuilder {
 
 	private static PremiseTermAccessor TaskOrBelief(boolean taskOrBelief) {
 		return taskOrBelief ? HowBuilder.TaskTerm : HowBuilder.BeliefTerm;
-	}
-
-	public static Term pathTerm(@Nullable byte[] path) {
-		return path == null ? $.the(-1) /* null */ : $.p(path);
 	}
 
 	/** cost-sorted array of constraint enable procedures, bundled by common term via CompoundConstraint */

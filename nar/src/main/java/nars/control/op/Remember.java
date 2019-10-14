@@ -101,11 +101,11 @@ public class Remember {
         return Remember.class.getSimpleName() + '(' + input + ')';
     }
 
-    public Task next(What w) {
+    public void next(What w) {
         this.what = w;
         if (store) {
             if (!store(true))
-                return null;
+                return;
         } else {
            result = input;
        }
@@ -117,7 +117,7 @@ public class Remember {
         if (result!=input)
             input.delete();
 
-        return null;
+
     }
 
     public boolean store(boolean conceptualize) {

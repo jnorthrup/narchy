@@ -143,9 +143,10 @@ public enum Unifiable { ;
                 //TODO
                 return false; //undecided
             } else {
-                return !conj.eventsOR((when, what) -> {
-                    return Terms.possiblyUnifiable(what, x, false, Variable);
-                }, 0, true, conj.dt() == XTERNAL);
+                return !conj.eventsOR((when, what) ->
+                    Terms.possiblyUnifiable(what, x, false, Variable), 0,
+                    true, conj.dt() == XTERNAL
+                );
             }
 
 //                    conj.subterms().hasAll(x.structure() & ~(Op.Variables|CONJ.bit));

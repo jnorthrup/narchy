@@ -1,7 +1,6 @@
 package nars.exe.impl;
 
 import jcog.Util;
-import jcog.data.list.MetalConcurrentQueue;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
 import jcog.exe.Exe;

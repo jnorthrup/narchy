@@ -52,7 +52,7 @@ public class DynTaskify extends TaskList {
         }
 
         @Override public Task apply(DynTaskify d) {
-            return d.model.subTask(table, term, start, end, d.filter, d);
+            return AbstractDynamicTruth.subTask(table, term, start, end, d.filter, d);
         }
     }
 

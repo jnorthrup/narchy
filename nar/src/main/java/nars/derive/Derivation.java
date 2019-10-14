@@ -57,8 +57,9 @@ import static nars.time.Tense.TIMELESS;
  * evaluates a premise (task, belief, termlink, taskLink, ...) to derive 0 or more new tasks
  * instantiated threadlocal, and recycled mutably
  */
-public class Derivation extends PreDerivation implements Caused, Predicate<PremiseRunnable> {
+public abstract class Derivation extends PreDerivation implements Caused, Predicate<PremiseRunnable> {
 
+    public final Deriver deriver;
 
     /** premise formation (preprocessing) */
     public final PremiseBeliefMatcher beliefMatch = new PremiseBeliefMatcher();
@@ -113,8 +114,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
     /** characterizes the present moment, when it starts and ends */
     public When<What> when;
-
-    transient DeriverExecutor exe = null;
 
     /** current running premise, set at beginning of derivation in derive() */
     public transient Premise premise;
@@ -174,7 +173,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
      */
     public transient boolean temporal;
     public transient int ditherDT;
-    public final Deriver deriver;
 
     /**
      * precise time that the task and belief truth are sampled
@@ -217,7 +215,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
      */
     private transient float priSingle, priDouble;
     public Term _taskTerm;
-    private ImmutableMap<Atomic, Term> derivationFunctors;
+    private final ImmutableMap<Atomic, Term> derivationFunctors;
 
 
     public final Random random() {
@@ -302,14 +300,13 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     /**
      * if using this, must setAt: nar, index, random, DerivationBudgeting
      */
-    Derivation(DeriverExecutor exe) {
+    Derivation(Deriver deriver) {
         super();
 
-        this.exe = exe;
-        this.nar = exe.deriver.nar();
+        this.deriver = deriver;
+        this.nar = deriver.nar();
         this.derivationFunctors = DerivationFunctors.get(this);
 
-        this.deriver = exe.deriver;
 
         this.random = nar.random();
         for (Unify u : _u) u.random = random;
@@ -405,10 +402,10 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
     }
 
     //shift heuristic condition probabalities TODO refine
-    float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
-    float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
-    float PREMISE_SHIFT_OTHER = 0.9f;
-    float PREMISE_SHIFT_RANDOM = 0.5f;
+    final float PREMISE_SHIFT_EQUALS_ROOT = 0.02f;
+    final float PREMISE_SHIFT_CONTAINS_RECURSIVELY = 0.05f;
+    final float PREMISE_SHIFT_OTHER = 0.9f;
+    final float PREMISE_SHIFT_RANDOM = 0.5f;
 
     /** t = raw task term, b = raw belief term */
     public Term beliefTerm(AnonWithVarShift anon, Term t, Term b) {
@@ -479,7 +476,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         return nextTask;
     }
 
-    private boolean budget(Task task, Task belief) {
+    private void budget(Task task, Task belief) {
         float taskPri = task.priElseZero();
         priSingle = taskPri;
         priDouble = belief == null ?
@@ -490,12 +487,10 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 //            return false;
 
         this.eviSingle = task.isBeliefOrGoal() ? task.evi() : 0;
-        this.eviDouble = belief!=null ?
-                            eviSingle + (belief!=null ? belief.evi() : 0)
-                            //Math.min(eviSingle > 0 ? this.eviSingle : Double.POSITIVE_INFINITY, belief.evi())
+        this.eviDouble = eviSingle + (belief!=null ?
+                            belief.evi()
                             :
-                            0;
-        return true;
+                            0);
     }
 
     /**
@@ -530,28 +525,24 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || (!beliefTerm.equals(taskTerm) && Occurrify.temporal(beliefTerm));
     }
 
-    /** queue a premise for execution */
-    public final void add(Premise p) {
-        exe.add(p);
-    }
+    abstract public void add(Premise p);
+
 
     /** attached unifier instances */
     final private Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
 
     /** next cycle/dur/etc, updates cached values for remainder of cycle. call before any next(w) */
-    public Derivation next() {
+    public void cycle() {
         NAR n = nar;
         time = n.time();
         ditherDT = n.dtDither();
         confMin = n.confMin.conf();
         eviMin = n.confMin.evi();
         termVolMax = n.termVolMax.intValue();
-        return this;
     }
 
     /** switch to new context */
-    public Derivation next(What w) {
-        NAR n = nar;
+    public void next(What w) {
 
 //        if (this.what == w)
 //            return this; //continue using until reset by next() or it changes
@@ -575,7 +566,7 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
 
 
-        float uttd = n.unifyDTToleranceDurs.floatValue();
+        float uttd = nar.unifyDTToleranceDurs.floatValue();
         int dtTolerance =
             //n.dtDither(); //FINE
             //Math.round(n.dtDither() * n.unifyTimeToleranceDurs.floatValue()); //COARSE
@@ -587,7 +578,6 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
         w.derivePri.reset(this);
 
-        return this;
     }
 
 

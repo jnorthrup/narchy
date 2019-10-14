@@ -6,7 +6,9 @@
 //##################################
 
 //belief form:
-B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
+B, A, --is(A,"==>") |-          polarizeTask((  A ==> B)), (Belief:InductionDP, Time:BeliefRelative)
+B, A, --is(A,"==>") |-          polarizeTask((--A ==> B)), (Belief:InductionDN, Time:BeliefRelative)
 //B, A, --is(A,"==>") |-          (A ==> B), (Belief:InductionPP, Time:BeliefRelative)
 //B, A, --is(A,"==>") |-          (--A ==> B), (Belief:InductionPN, Time:BeliefRelative)
 //B, A, --is(A,"==>") |-          (A ==> --B), (Belief:InductionNP, Time:BeliefRelative)

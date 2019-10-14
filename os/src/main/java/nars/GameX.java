@@ -40,7 +40,6 @@ import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.time.clock.RealTime;
-import nars.time.part.DurLoop;
 import nars.video.SwingBitmap2D;
 import nars.video.WaveletBag;
 import org.jetbrains.annotations.Nullable;
@@ -432,11 +431,11 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.causeCapacity.set(32);
+        n.causeCapacity.set(16);
         n.termVolMax.set(
             //64
             //48
-            32
+            36
         );
 
         //n.confMin.set(1e-10);

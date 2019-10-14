@@ -58,9 +58,7 @@ public class STMLinker extends TaskAction {
 
 			TaskLinkWhat w = (TaskLinkWhat) d.what;
 
-			int causeCap = NAL.causeCapacity.intValue();
-			Termed WHY =
-					why.why(prev, next /*, d*/ );
+			Termed WHY = why.why(prev, next /*, d*/ );
 
 			link(att, btt, next.punc(), pri, WHY, w);
 			link(btt, att, prev.punc(), pri, WHY, w);

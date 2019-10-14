@@ -41,6 +41,7 @@ import org.eclipse.collections.api.block.predicate.primitive.BytePredicate;
 import org.eclipse.collections.api.set.ImmutableSet;
 import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 import java.util.Map;
@@ -99,7 +100,11 @@ public class PatternHow extends CondHow {
         return r;
     }
 
-    protected void _parse(String ruleSrc) throws Narsese.NarseseException {
+	public static Term pathTerm(@Nullable byte[] path) {
+		return path == null ? $.the(-1) /* null */ : $.p(path);
+	}
+
+	protected void _parse(String ruleSrc) throws Narsese.NarseseException {
         this.source = ruleSrc;
         this.id = new MyPremiseRuleNormalization().apply(
             new UppercaseAtomsToPatternVariables().apply(
@@ -369,7 +374,7 @@ public class PatternHow extends CondHow {
         return c;
     }
 
-    private Term restoreEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
+    private static Term restoreEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
         for (int i = 0, subbedConjSize = subbedConj.size(); i < subbedConjSize; i++) {
             Term y = subbedConj.get(i);
             Term x = savedConj.get(i);
@@ -382,7 +387,7 @@ public class PatternHow extends CondHow {
      * HACK preserve any && occurring in --> by substituting them then replacing them
      */
     @Deprecated
-    private Term saveEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
+    private static Term saveEteConj(Term c, List<Term> subbedConj, ArrayHashSet<Term> savedConj) {
 
         c.recurseTerms(x -> x.hasAll(INH.bit | CONJ.bit), t -> {
             if (t.op() == INH) {
@@ -632,7 +637,7 @@ public class PatternHow extends CondHow {
 
     private static final Term eteConj = $.the("eteConj");
 
-    private static final Map<Term, Truthify> truthifies = new ConcurrentHashMap<>();
+    private static final Map<Term, Truthify> truthifies = new ConcurrentHashMap<>(512);
 
 
     static class UppercaseAtomsToPatternVariables extends RecursiveTermTransform.NegObliviousTermTransform {

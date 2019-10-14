@@ -35,7 +35,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static jcog.Texts.n2;
 import static nars.$.$$;
+import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends GameX {
@@ -339,47 +341,47 @@ public class TrackXY_NAR extends GameX {
 //				//if (stampLen > 1)
 //					System.out.println(stampLen + " " + tt);
 //			});
-//			a.what().eventTask.on(tt -> {
-//
-//
-//				if (!tt.isEternal()) {
-//					{
-//						Term ttt = tt.term();
-//						boolean l = ttt.equals(L);
-//						boolean r = ttt.equals(R);
-//						System.out.println(tt);
-//						if (l || r) {
-//
-//
-//							//if (n.concept(tt) instanceof ActionConcept)
-//							long window = 2;
-//							float dur = n.dur();
-//							long now = n.time();
-//							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
-//
-//								float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
-//								float needsDir = a.track.tx - a.track.cx;
-//
-//
-//								boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
-//								if (!ok) {
-//									String summary = ok ? "OK" : "WRONG";
-//									System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-//									System.out.println(tt.proof());
-//									//n.proofPrint(tt);
-//								}
-//
-//								//System.out.println(NAR.proof(tt, n));
-//								System.out.println();
-//
-//							}
-//
-//
-//						}
-//
-//					}
-//				}
-//			}, GOAL);
+			a.what().eventTask.on(tt -> {
+
+
+				if (!tt.isEternal()) {
+					{
+						Term ttt = tt.term();
+						boolean l = ttt.equals(L);
+						boolean r = ttt.equals(R);
+						System.out.println(tt);
+						if (l || r) {
+
+
+							//if (n.concept(tt) instanceof ActionConcept)
+							long window = 2;
+							float dur = n.dur();
+							long now = n.time();
+							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
+
+								float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
+								float needsDir = a.track.tx - a.track.cx;
+
+
+								boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
+								if (!ok) {
+									String summary = ok ? "OK" : "WRONG";
+									System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+									System.out.println(tt.proof());
+									//n.proofPrint(tt);
+								}
+
+								//System.out.println(NAR.proof(tt, n));
+								System.out.println();
+
+							}
+
+
+						}
+
+					}
+				}
+			}, GOAL);
 
 
 		});

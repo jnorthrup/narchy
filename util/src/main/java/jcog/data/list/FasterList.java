@@ -459,7 +459,7 @@ public class FasterList<X> extends FastList<X> {
 
     @Override
     public boolean removeIf(Predicate<? super X> filter) {
-        int s = size();
+        int s = size;
         int ps = s;
         X[] a = this.items;
         for (int i = 0; i < s; ) {

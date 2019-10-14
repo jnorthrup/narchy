@@ -32,7 +32,7 @@ public class TaskResolve extends NativeHow {
 
 		Task y = get(x, d);
 		if (y != null) // && !x.equals(y))
-			d.add(new AbstractPremise(y, why.why(x, y)));
+			d.add(new AbstractPremise(y, why.whyLazy(x, y)));
 	}
 
 	@Nullable private final Predicate<nars.Task> tasklinkTaskFilter =
@@ -48,7 +48,7 @@ public class TaskResolve extends NativeHow {
 	}
 
 
-	@Nullable Task get(Term x, byte punc, When<What> w, @Nullable Predicate<Task> filter) {
+	@Nullable static Task get(Term x, byte punc, When<What> w, @Nullable Predicate<Task> filter) {
 
 		if (punc == 0)
 			punc = TaskLink.randomPunc(x, w.x.random()); //flat-lined tasklink

@@ -312,7 +312,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 
 	}
 
-	private boolean ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
+	private void ensureCapacity(Space<TaskRegion> treeRW, Remember r) {
 		int e = 0, cap;
 		while (treeRW.size() > (cap = capacity())) {
 
@@ -320,7 +320,7 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			if (cap == 0) {
 				//became deleted
 				treeRW.clear();
-				return true;
+				return;
 			}
 
 			if (e > 0) {
@@ -333,7 +333,6 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 			assert (e < cap) : this + " compressed " + e + " times (cap=" + cap + ")";
 		}
 
-		return true;
 	}
 
 //    /**
@@ -461,10 +460,11 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 	}
 
 	private TaskInsertion insert(Space<TaskRegion> treeRW, Remember R) {
+
 		TaskInsertion ii = (TaskInsertion) treeRW.insert(R.input);
-		if (ii.added()) {
+		if (ii.added())
 			ensureCapacity(treeRW, R);
-		}
+
 		return ii;
 	}
 

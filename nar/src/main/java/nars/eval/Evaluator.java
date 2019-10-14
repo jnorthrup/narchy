@@ -94,7 +94,7 @@ public class Evaluator extends HeapTermTransform {
         }
     }
 
-    private ArrayHashSet<Term> sortTopologically(ArrayHashSet<Term> a) {
+    private static ArrayHashSet<Term> sortTopologically(ArrayHashSet<Term> a) {
         a.list.sort(complexitySort);
         //HACK more work necessary
         return a;

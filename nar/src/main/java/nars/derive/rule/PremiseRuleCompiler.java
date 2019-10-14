@@ -122,7 +122,7 @@ public enum PremiseRuleCompiler {
         FasterList<PREDICATE<PreDerivation>> X = x.list;
 
         Map<PREDICATE, SubCond> conds = new HashMap(x.size());
-        for (int b = 0, xSize = n; b < xSize; b++) {
+        for (int b = 0; b < n; b++) {
             PREDICATE  p = X.get(b);
             if (p instanceof AND) {
                 int bb = b;

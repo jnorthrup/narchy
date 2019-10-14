@@ -177,12 +177,10 @@ import java.io.PrintStream;
 
     static final class TaskChannel extends CauseChannel<Task> {
 
-        private final short ci;
         final Term uniqueCause;
 
         TaskChannel(Cause cause) {
             super(cause);
-            this.ci = cause.id;
             this.uniqueCause = cause.why;
         }
 

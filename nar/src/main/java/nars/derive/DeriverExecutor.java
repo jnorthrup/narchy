@@ -1,6 +1,5 @@
 package nars.derive;
 
-import jcog.Util;
 import jcog.data.set.PrioritySet;
 import jcog.pri.HashedPLink;
 import jcog.pri.PLink;
@@ -8,6 +7,7 @@ import jcog.pri.PriReference;
 import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
+import jcog.signal.meter.FastCounter;
 import nars.Task;
 import nars.attention.What;
 import nars.derive.premise.Premise;
@@ -20,15 +20,11 @@ import java.util.function.Consumer;
 /**
  * instance of an execution model associating a Deriver with a Derivation
  */
-public abstract class DeriverExecutor  {
-
-	public final Deriver deriver;
-	public final Derivation d;
+public abstract class DeriverExecutor extends Derivation {
 
 
 	protected DeriverExecutor(Deriver deriver) {
-		this.deriver = deriver;
-		this.d = new Derivation(this);
+		super(deriver);
 	}
 
 	static protected float pri(Premise p) {
@@ -51,7 +47,7 @@ public abstract class DeriverExecutor  {
 	 * gets next tasklink premise
 	 */
 	protected final Premise sample() {
-		return d.what.sample(d.random);
+		return this.what.sample(this.random);
 
 //			//Pre-resolve
 //			if (x!=null) {
@@ -65,13 +61,13 @@ public abstract class DeriverExecutor  {
 	/**
 	 * run a premise
 	 */
-	protected final void run(Premise p, int ttl) {
-		d.run(p, ttl).increment();
+	protected final FastCounter run(Premise p, int ttl) {
+		FastCounter result = super.run(p, ttl);
+		result.increment();
+		return result;
 	}
 
 	public abstract void next();
-
-	public abstract void add(Premise p);
 
 	public void nextSynch(What w) {
 		next(w);
@@ -123,15 +119,6 @@ public abstract class DeriverExecutor  {
 
 	}
 
-	/** switches context */
-	public final void next(What w) {
-		d.next(w);
-	}
-
-	public void nextCycle() {
-		d.next();
-	}
-
 	public static class QueueDeriverExecutor extends DeriverExecutor {
 
 		final Queue<Premise> queue =
@@ -140,15 +127,15 @@ public abstract class DeriverExecutor  {
 		//new ArrayHashSet<>(capacity)
 
 
-		int iterationTTL = 7;
+		int iterationTTL = 8;
 
 		public QueueDeriverExecutor(Deriver deriver) {
 			super(deriver);
 		}
 
 		@Override
-		public void nextCycle() {
-			super.nextCycle();
+		public void cycle() {
+			super.cycle();
 			queue.clear();
 		}
 
@@ -156,7 +143,7 @@ public abstract class DeriverExecutor  {
 		public void next() {
 
 			int mainTTL = iterationTTL;
-			int branchTTL = d.nar.deriveBranchTTL.intValue();
+			int branchTTL = nar.deriveBranchTTL.intValue();
 //
 			Queue<Premise> q = this.queue;
 //			//q.clear();
@@ -216,7 +203,7 @@ public abstract class DeriverExecutor  {
 			bag.clear();
 			bag.capacity(bufferCap);
 
-			each = p -> run(p.get(), d.nar.deriveBranchTTL.intValue());
+			each = p -> run(p.get(), nar.deriveBranchTTL.intValue());
 		}
 
 		@Override
@@ -248,7 +235,7 @@ public abstract class DeriverExecutor  {
 			//System.out.println();
 
 			bag.commit(null);
-			bag.pop(d.random, runBatch, each); //HijackBag
+			bag.pop(random, runBatch, each); //HijackBag
 			//p.pop(null, runBatch, each); //ArrayBag
 //                p.commit();
 //                p.sample(rng, runBatch, each);
