@@ -411,9 +411,9 @@ final class RayTracer extends JPanel {
         float cg = Bitmap2D.decode8bGreen(current), ng = Bitmap2D.decode8bGreen(next);
         float cb = Bitmap2D.decode8bBlue(current), nb = Bitmap2D.decode8bBlue(next);
         return Bitmap2D.encodeRGB8b(
-                Util.lerp(alpha, cr, nr),
-                Util.lerp(alpha, cg, ng),
-                Util.lerp(alpha, cb, nb)
+                Util.lerpSafe(alpha, cr, nr),
+                Util.lerpSafe(alpha, cg, ng),
+                Util.lerpSafe(alpha, cb, nb)
         );
     }
 

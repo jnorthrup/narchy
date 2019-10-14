@@ -8,7 +8,6 @@ import nars.NAR;
 import nars.Task;
 import nars.attention.PriNode;
 import nars.concept.Concept;
-import nars.control.channel.CauseChannel;
 import nars.game.sensor.GameLoop;
 import nars.table.eternal.EternalDefaultTable;
 import nars.task.NALTask;
@@ -33,8 +32,6 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
     @Deprecated protected final Game game;
 	public final Term id;
-
-	protected CauseChannel<Task> in;
 
     protected Term why;
 
@@ -155,14 +152,11 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //			game.what().acceptAll(reinforcement);
 
 			//Supplier<Task> t = reinforcement.get(nar().random());
-			for (Supplier<Task> t : reinforcement)
-			{
+			for (Supplier<Task> t : reinforcement) {
 				if (t != null) {
 					Task tt = t.get();
-					if (tt != null) {
-						tt.pri(pri);
-						game.what().accept(tt);
-					}
+					if (tt != null)
+						in(tt.pri(pri));
 				}
 			}
 		}
@@ -203,6 +197,9 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 //            game.what().link(l);
 
 	}
+
+	/** channel for reinforcement signals */
+	protected abstract void in(Task input);
 
 	@Deprecated public void init(Game g) {
 

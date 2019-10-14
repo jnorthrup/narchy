@@ -882,7 +882,7 @@ public enum Draw {
     }
 
     public static void colorUnipolarHue(GL2 gl, float v, float hueMin, float hueMax, float alpha) {
-        hsb(gl, Util.lerp(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
+        hsb(gl, Util.lerpSafe(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
     }
 
     public static void colorUnipolarHue(float[] c, float v) {
@@ -894,7 +894,7 @@ public enum Draw {
     }
 
     public static void colorUnipolarHue(float[] c, float v, float hueMin, float hueMax, float alpha) {
-        hsb(c, Util.lerp(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
+        hsb(c, Util.lerpSafe(v, hueMin, hueMax), 0.7f, 0.7f, alpha);
     }
 
     public static void colorHash(Object x, float[] color) {
@@ -919,7 +919,7 @@ public enum Draw {
         colorHash(gl, hash, 0.7f, 0.7f, alpha);
     }
     public static void colorHashRange(GL2 gl, int hash, float hueStart, float hueEnd, float alpha) {
-        float h = Util.lerp( ((float)Math.abs(hash))/Integer.MAX_VALUE, hueStart, hueEnd);
+        float h = Util.lerpSafe( ((float)Math.abs(hash))/Integer.MAX_VALUE, hueStart, hueEnd);
         Draw.hsb(gl, h, 0.7f, 0.7f, alpha);
     }
 

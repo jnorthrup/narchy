@@ -1,5 +1,6 @@
 package jcog.signal.tensor;
 
+import jcog.data.atomic.AtomicFloatFieldUpdater;
 import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 
@@ -31,6 +32,14 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
     @Override
     public final float getAt(int linearCell) {
         return Float.intBitsToFloat( data.getOpaque(linearCell) );
+    }
+
+    public float getAndSet(int i, float v) {
+        return Float.intBitsToFloat( data.getAndSet(i, Float.floatToIntBits(v) ) );
+    }
+
+    public float getAndZero(int i) {
+        return Float.intBitsToFloat( data.getAndSet(i, AtomicFloatFieldUpdater.iZero ) );
     }
 
     @Override
@@ -93,4 +102,6 @@ public class AtomicFloatVector extends AbstractVector implements WritableTensor 
             getAt(x)
         )).collect(Collectors.joining(","));
     }
+
+
 }

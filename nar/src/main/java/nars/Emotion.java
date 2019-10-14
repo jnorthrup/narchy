@@ -182,8 +182,6 @@ public class Emotion implements Meter, Consumer<NAR> {
         int vol = t.volume();
         float pri = t.priElseZero();
 
-        MetaGoal.Perceive.learn(t, pri, nar);
-
         busy(pri, vol);
 
         perceivedTaskEnd.increment();

@@ -4,7 +4,6 @@ import jcog.Util;
 import jcog.data.graph.MapNodeGraph;
 import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
-import jcog.math.FloatRange;
 import jcog.pri.Prioritized;
 import jcog.pri.UnitPri;
 import nars.$;
@@ -110,8 +109,8 @@ public class PriNode implements Prioritized {
 
     }
 
-    public static PriNode.Source source(String name, float value) {
-        return new Source(name, value);
+    public static PriSource source(String name, float value) {
+        return new PriSource(name, value);
     }
 
     /** cached
@@ -121,32 +120,6 @@ public class PriNode implements Prioritized {
             _node = graph.node(this); //cache
         }
         return _node;
-    }
-
-    /** variably adjustable priority source */
-    public static final class Source extends PriNode {
-
-        public final FloatRange amp;
-
-        public Source(Object id, float p) {
-            super(id);
-            amp = new FloatRange(p, 0, 1);
-            _pri(p);
-        }
-
-        private void _pri(float x) {
-            this.pri.pri(x);
-        }
-
-        @Override
-        public void update(MapNodeGraph<PriNode, Object> graph) {
-            //assert(_node.edgeCount(true,false)==0);
-            _pri(amp.get());
-        }
-
-        public void pri(float p) {
-            amp.set(p);
-        }
     }
 
 }

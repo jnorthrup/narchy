@@ -8,6 +8,7 @@ import nars.derive.Derivation;
 import nars.truth.Truth;
 
 import static jcog.math.LongInterval.TIMELESS;
+import static nars.truth.func.TruthFunctions.w2cSafeDouble;
 
 /**
  * TODO parameterize, modularize, refactor etc
@@ -27,14 +28,10 @@ public class DefaultDerivePri implements DerivePri {
      */
     public final FloatRange eviImportance = new FloatRange(1f, 0f, 1f);
 
-
-
     /** occam's razor - increase this discriminate more heavily against more complex derivations */
     public final FloatRange simplicityImportance = new FloatRange(1f, 0f, 8f);
 
-
-    public final FloatRange simplicityExponent = new FloatRange(1.5f, 0f, 4f);
-
+    public final FloatRange simplicityExponent = new FloatRange(2f, 0f, 4f);
 
     /** importance of frequency polarity in result */
     public final FloatRange polarityImportance = new FloatRange(0.01f, 0f, 1f);
@@ -48,13 +45,13 @@ public class DefaultDerivePri implements DerivePri {
 
         float factor = factorCmpl;
         if (t.isBeliefOrGoal()) {
-            factor = factorPolarity(t.freq());
+            factor *= factorPolarity(t.freq());
         } else {
-            factor = questionGain.floatValue();
+            factor *= factor /* ^2 */ * questionGain.floatValue();
         }
 
         factor *= //factorEviAbsolute(t,d);
-                  factorMaintainAverageEvidence(t,d);
+                  factorMaintainRangeAndAvgEvi(t,d);
 
         float y = postAmp(t, d.parentPri(), factor);
         return Util.clamp(y, ScalarValue.EPSILON, 1);
@@ -142,7 +139,7 @@ public class DefaultDerivePri implements DerivePri {
     }
 
 
-    double factorMaintainAverageEvidence(Task t, Derivation d) {
+    double factorMaintainRangeAndAvgEvi(Task t, Derivation d) {
         double rangeRatio = rangeRatio(t, d);
 
         if (t.isQuestionOrQuest())
@@ -154,14 +151,13 @@ public class DefaultDerivePri implements DerivePri {
 //            throw new WTF("spontaneous belief inflation"); //not actually
             return rangeRatio;
         else {
-//            double cDerived = w2cSafeDouble(eDerived);
-//            double cParent = w2cSafeDouble(eParent);
-//            float f = (float) (1 - ((cParent - cDerived) / cParent));
-            double f = (float) (1 - ((eParent - eDerived) / eParent)) * rangeRatio;
+            double cDerived = w2cSafeDouble(eDerived);
+            double cParent = w2cSafeDouble(eParent);
+            float eRatio = (float) (1 - ((cParent - cDerived) / cParent));
+            //double f = (float) (1 - ((eParent - eDerived) / eParent));
 
-            Util.assertUnitized(f);
-            return Util.lerp(eviImportance.floatValue(), 1f, f);
-
+            Util.assertUnitized(eRatio);
+            return Util.lerp(eviImportance.floatValue(), 1f, eRatio  * rangeRatio);
         }
     }
 

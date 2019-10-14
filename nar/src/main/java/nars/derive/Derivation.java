@@ -481,18 +481,19 @@ public class Derivation extends PreDerivation implements Caused, Predicate<Premi
 
     private boolean budget(Task task, Task belief) {
         float taskPri = task.priElseZero();
-        float priSingle = taskPri;
-        float priDouble = belief == null ?
+        priSingle = taskPri;
+        priDouble = belief == null ?
                 taskPri :
                 NAL.DerivationPri.apply(taskPri, belief.priElseZero());
 
 //        if (Param.INPUT_BUFFER_PRI_BACKPRESSURE && Math.max(priDouble, priSingle) < nar.input.priMin() /* TODO cache */)
 //            return false;
 
-        this.priSingle = priSingle;
-        this.priDouble = priDouble;
         this.eviSingle = task.isBeliefOrGoal() ? task.evi() : 0;
-        this.eviDouble = this.eviSingle + (belief!=null ? belief.evi() : 0);
+        this.eviDouble = belief!=null ? //this.eviSingle + (belief!=null ? belief.evi() : 0);
+                            Math.min(eviSingle > 0 ? this.eviSingle : Double.POSITIVE_INFINITY, belief.evi())
+                            :
+                            0;
         return true;
     }
 

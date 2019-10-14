@@ -182,7 +182,29 @@ public enum Why { ;
 		}
 	}
 
-	public static void eval(@Nullable Term why, float pri, ShortFloatProcedure each) {
+	@FunctionalInterface interface Evaluator<X> {
+		void value(X[] x, short cause, float pri);
+	}
+	public static <X> void eval(@Nullable Term why, float pri, X[] causes, Evaluator<X> each) {
+		if (why == null)
+			return;
+
+		if (why instanceof Int) {
+			each.value(causes, s(why), pri);
+		} else {
+			//split
+			Subterms s = why.subterms();
+			int n = s.subs();
+
+			assert (why.opID() == SETe.id  && n > 1);
+
+			float priEach = pri/n;
+			for (int i = 0; i < n; i++)
+				eval(s.sub(i), priEach, causes, each);
+		}
+	}
+
+	@Deprecated public static void eval(@Nullable Term why, float pri, ShortFloatProcedure each) {
 		if (why == null)
 			return;
 

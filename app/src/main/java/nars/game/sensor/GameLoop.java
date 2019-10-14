@@ -29,10 +29,8 @@ public interface GameLoop extends Termed {
         Iterable<? extends Termed> cc = components();
         if (cc instanceof List) {
             List<Termed> ll = (List) cc;
-            if (ll.size() == 1)
-                return ll.get(0);
-            else
-                return ll.get(random.nextInt(ll.size()));
+            int s = ll.size();
+            return s == 1 ? ll.get(0) : ll.get(random.nextInt(s));
         }
         FasterList<Termed> a = new FasterList(cc); //HACK
         return a.get(random);

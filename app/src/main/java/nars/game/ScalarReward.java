@@ -3,7 +3,9 @@ package nars.game;
 import com.google.common.collect.Iterators;
 import nars.NAL;
 import nars.NAR;
+import nars.Task;
 import nars.concept.Concept;
+import nars.control.channel.CauseChannel;
 import nars.game.sensor.ScalarSignal;
 import nars.game.sensor.Signal;
 import nars.table.BeliefTable;
@@ -30,6 +32,7 @@ abstract public class ScalarReward extends Reward {
 
     /** whether reinforcement tasks are stamped */
     private final boolean stamped;
+    protected CauseChannel<Task> in;
 
     boolean negate;
     protected transient volatile float reward = Float.NaN;
@@ -71,6 +74,12 @@ abstract public class ScalarReward extends Reward {
         concept.update(g);
     }
 
+    @Override
+    protected final void in(Task input) {
+        in.accept(input, game.what());
+    }
+
+
     /**
      * HACK initialize on first call when all game actions are ready
      * TODO handle dynamic addition/removal of actions
@@ -78,7 +87,7 @@ abstract public class ScalarReward extends Reward {
     protected void reinforceInit(Game g) {
         Term Rpos = concept.term(), Rneg = Rpos.neg();
         Term rTarget = goal.isPositive() ? Rpos : Rneg;
-
+        Term rTargetNeg = rTarget.neg();
         //reinforceTemporal(concept.term(), GOAL, goal, newStamp());
         reinforce(concept.term(), GOAL, goal, newStamp());
 //        reinforce(CONJ.the(Rpos, $.varDep(1)), GOAL, RimplAPos);
@@ -88,11 +97,12 @@ abstract public class ScalarReward extends Reward {
 
         g.actions().forEach(a -> {
             Term A = a.term();
-            long[] stampP = newStamp(), stampN = newStamp();
+            long[] stampP = newStamp();
+            //long[] stampN = newStamp();
 
             //(goal || A), (goal || --A)
-            reinforce(CONJ.the(rTarget.neg(), A.neg()), GOAL, RimplANeg, stampP);
-            reinforce(CONJ.the(rTarget.neg(), A), GOAL, RimplANeg, stampP);
+            reinforce(CONJ.the(rTargetNeg, A.neg()), GOAL, RimplANeg, stampP);
+            reinforce(CONJ.the(rTargetNeg, A), GOAL, RimplANeg, stampP);
 
 //            reinforce(IMPL.the(Rpos, A), BELIEF, RimplAPos, stampP);
 //            reinforce(IMPL.the(Rneg, A), BELIEF, RimplAPos, stampN);
@@ -225,5 +235,18 @@ abstract public class ScalarReward extends Reward {
     @Override
     public Term term() {
         return id;
+    }
+
+    @Override
+    public void init(Game g) {
+        super.init(g);
+
+        in = g.nar.newChannel(id);
+
+        why = in.why.why;
+
+        concept = new ScalarSignal(id, () -> reward, why, pri, g.nar);
+//        if (!concept.pri.equals(attn))
+//            nar().control.input(concept.pri, attn);
     }
 }

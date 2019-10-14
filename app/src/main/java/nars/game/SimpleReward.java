@@ -1,10 +1,8 @@
 package nars.game;
 
-import jcog.math.FloatRange;
 import jcog.math.FloatSupplier;
 import nars.Task;
 import nars.control.op.Remember;
-import nars.game.sensor.ScalarSignal;
 import nars.table.BeliefTables;
 import nars.table.EmptyBeliefTable;
 import nars.term.Term;
@@ -79,25 +77,9 @@ public class SimpleReward extends ScalarReward {
         });
     }
 
-    public FloatRange resolution() {
-        return concept.resolution();
-    }
-
     @Override
     protected final float reward(Game a) {
         return rewardFunc.asFloat();
     }
 
-    @Override
-    public void init(Game g) {
-        super.init(g);
-
-        in = g.nar.newChannel(id);
-
-        why = in.why.why;
-
-        concept = new ScalarSignal(id, () -> reward, why, pri, g.nar);
-//        if (!concept.pri.equals(attn))
-//            nar().control.input(concept.pri, attn);
-    }
 }

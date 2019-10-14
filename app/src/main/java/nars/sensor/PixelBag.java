@@ -14,6 +14,7 @@ import java.util.List;
 
 import static java.lang.Math.round;
 import static jcog.Util.lerp;
+import static jcog.Util.lerpSafe;
 
 /**
  * 2D flat Raytracing Retina
@@ -89,7 +90,7 @@ public class PixelBag implements Bitmap2D {
 
 
         //TODO zoom lerp
-        Z = Util.lerp(zoomRate, Z, Znext);
+        Z = Util.lerpSafe(zoomRate, Z, Znext);
 
 
         float X = pos.x, Y = pos.y;
@@ -141,13 +142,13 @@ public class PixelBag implements Bitmap2D {
                 supersamplingY = (int) Math.floor(yRange / py / 2f);
 
         for (int oy = 0; oy < py; oy++) {
-            float sy = (lerp((oy / py), minY, maxY));
+            float sy = (lerpSafe((oy / py), minY, maxY));
 
             for (int ox = 0; ox < px; ox++) {
 
                 //TODO optimize sources which are already gray (ex: 8-bit grayscale)
 
-                float sx = (lerp((ox) / px, minX, maxX));
+                float sx = (lerpSafe((ox) / px, minX, maxX));
 
 
                 /** sampled pixels in the original image (inclusive) */

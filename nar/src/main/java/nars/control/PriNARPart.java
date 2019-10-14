@@ -2,17 +2,17 @@ package nars.control;
 
 import jcog.pri.Prioritizable;
 import nars.NAR;
-import nars.attention.PriNode;
+import nars.attention.PriSource;
 import nars.term.Term;
 import org.jetbrains.annotations.Nullable;
 
 public class PriNARPart extends NARPart implements Prioritizable {
 
-	public final PriNode.Source pri;
+	public final PriSource pri;
 
 	public PriNARPart(@Nullable Term id) {
 		super(id);
-		this.pri = new PriNode.Source(this.id, 0.5f);
+		this.pri = new PriSource(this.id, 0.5f);
 	}
 
 	@Override

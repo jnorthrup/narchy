@@ -8,6 +8,7 @@ import nars.attention.What;
 import nars.concept.Concept;
 import nars.concept.NodeConcept;
 import nars.concept.Operator;
+import nars.control.MetaGoal;
 import nars.eval.Evaluation;
 import nars.table.dynamic.SeriesBeliefTable;
 import nars.task.TemporalTask;
@@ -28,13 +29,19 @@ public enum Perceive {
 
     static final Logger logger = LoggerFactory.getLogger(Perceive.class);
 
-    public static void perceive(Task x, What w) {
+    public static void perceive(final Task x, What w) {
         //w.link(AtomicTaskLink.link(x.term().concept()).priSet(x.punc(), x.priElseZero()));
+
+        NAR n = w.nar;
+
+        final Term xx = x.term();
+
+        MetaGoal.Perceive.learn(x, ((float)xx.volume())/Short.MAX_VALUE, n);
 
         if (x instanceof SeriesBeliefTable.SeriesTask)
             return; //ignore
 
-        NAR n = w.nar;
+
         n.emotion.perceivedTaskStart.increment();
 
         byte punc = x.punc();
@@ -58,7 +65,7 @@ public enum Perceive {
 
 
 
-        if (!(x instanceof TemporalTask.Unevaluated) && Evaluation.evalable(x.term())) {
+        if (!(x instanceof TemporalTask.Unevaluated) && Evaluation.evalable(xx)) {
             FasterList<Task> rt = (FasterList<Task>) new TaskEvaluation(x, w).result;
             if (rt != null) {
                 //rt.removeInstance(x); //something was eval, remove the input HACK

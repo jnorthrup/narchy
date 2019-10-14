@@ -2,7 +2,7 @@ package nars.game.sensor;
 
 import jcog.math.FloatRange;
 import nars.NAR;
-import nars.attention.AttnBranch;
+import nars.attention.PriBranch;
 import nars.attention.PriNode;
 import nars.table.BeliefTable;
 import nars.term.Term;
@@ -25,7 +25,7 @@ public abstract class UniSignal extends Signal {
 
 		this.res = FloatRange.unit(n.freqResolution);
 
-		this.pri = pri!=null ? pri : new AttnBranch(term, components());
+		this.pri = pri!=null ? pri : new PriBranch(term, components());
 	}
 
 	public final float pri() {

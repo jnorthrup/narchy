@@ -10,6 +10,7 @@ import jcog.thing.Thing;
 import jcog.util.FloatFloatToFloatFunction;
 import jcog.util.Range;
 import nars.attention.PriNode;
+import nars.attention.PriSource;
 import nars.term.Term;
 import nars.term.atom.Atom;
 import nars.term.util.transform.Conceptualization;
@@ -136,9 +137,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
      * priority calculation here currently depends on a commutive and associaive function
      */
     public static final FloatFloatToFloatFunction DerivationPri =
-        (t, b) -> Util.unitize(t + b); //plus, max=1
+        //Math::max;
+        Util::or;
+        //(t, b) -> Util.unitize(t + b); //plus, max=1
         //Util::and;
-        //Util::or;
 
 //    /** durs surrounding a derived temporal goal with one eternal (of two) parent tasks */
 //    public static final float GOAL_PROJECT_TO_PRESENT_RADIUS_DURS = 1;
@@ -373,10 +375,10 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
     public final ConfRange goalConfDefault = new ConfRange(0.9f);
 
     /** HACK use PriNode.amp(..) to set these.  will figure this out.  pri wont work right, as this is the actual value vs. the advised (user provided) */
-    public final PriNode.Source beliefPriDefault = PriNode.source("pri.", 0.5f);
-    public final PriNode.Source goalPriDefault = PriNode.source("pri!", 0.5f);
-    public final PriNode.Source questionPriDefault = PriNode.source("pri?", 0.5f);
-    public final PriNode.Source questPriDefault = PriNode.source("pri@",0.5f);
+    public final PriSource beliefPriDefault = PriNode.source("pri.", 0.5f);
+    public final PriSource goalPriDefault = PriNode.source("pri!", 0.5f);
+    public final PriSource questionPriDefault = PriNode.source("pri?", 0.5f);
+    public final PriSource questPriDefault = PriNode.source("pri@",0.5f);
 
     public final Time time;
 

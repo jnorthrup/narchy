@@ -4,16 +4,12 @@ import jcog.Paper;
 import jcog.Skill;
 import jcog.Util;
 import jcog.pri.ScalarValue;
+import jcog.signal.tensor.AtomicFloatVector;
 import nars.$;
 import nars.term.Term;
 import nars.term.atom.Int;
 import nars.time.event.WhenInternal;
 import org.jetbrains.annotations.Nullable;
-
-import java.io.PrintStream;
-import java.util.stream.IntStream;
-
-import static java.util.stream.Collectors.toList;
 
 /**
  * 'cause (because)
@@ -50,7 +46,8 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
      * <p>
      * TODO allow redefinition at runtime
      */
-    public final Credit[] credit;
+    //public final Credit[] credit;
+    final AtomicFloatVector credit;
     /**
      * current scalar utility estimate for this cause's support of the current MetaGoal's.
      * may be positive or negative, and is in relation to other cause's values
@@ -68,17 +65,18 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
         this.id = id;
         this.why = Int.the(id);
         this.name = $.identity(name != null ? name : this);
-        credit = new Credit[MetaGoal.values().length];
-        for (int i = 0; i < credit.length; i++) {
-            credit[i] = new Credit();
-        }
+        credit = new AtomicFloatVector(MetaGoal.values().length);
+        //credit = new Credit[MetaGoal.values().length];
+        //for (int i = 0; i < credit.length; i++) {
+        //    credit[i] = new Credit();
+        //}
     }
 
     public float pri() {
         //return value;
         return pri;
     }
-    public float valueRaw() {
+    public float value() {
         return value;
     }
 
@@ -143,19 +141,22 @@ public class Cause extends WhenInternal implements Comparable<Cause>, Caused {
 //        }
 //    }
 
-    public void commit() {
-        for (Credit aGoal : credit)
-            aGoal.commit();
+    public final void commit(float[] target) {
+        int n = target.length;
+        for (int i = 0; i < n; i++)
+            target[i] = credit.getAndZero(i);
+//        for (Credit aGoal : credit)
+//            aGoal.commit();
     }
 
-    public void print(PrintStream out) {
-        out.println(this + "\t" +
-                IntStream.range(0, credit.length).mapToObj(x ->
-                        MetaGoal.values()[x] + "=" + credit[x]
-                ).collect(toList())
-        );
-
-    }
+//    public void print(PrintStream out) {
+//        out.println(this + "\t" +
+//                IntStream.range(0, credit.size()).mapToObj(x ->
+//                        MetaGoal.values()[x] + "=" + credit[x]
+//                ).collect(toList())
+//        );
+//
+//    }
 
 
     @Override

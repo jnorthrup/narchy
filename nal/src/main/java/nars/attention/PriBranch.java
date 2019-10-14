@@ -1,13 +1,7 @@
 package nars.attention;
 
-import com.google.common.collect.Streams;
 import jcog.Paper;
-import nars.NAR;
-import nars.concept.Concept;
 import nars.term.Termed;
-
-import java.util.Objects;
-import java.util.stream.Stream;
 
 /**
  * attention distribution node
@@ -18,7 +12,7 @@ import java.util.stream.Stream;
  * https://en.wikipedia.org/wiki/Average_absolute_deviation
  */
 @Paper
-public class AttnBranch extends PriAmp {
+public class PriBranch extends PriAmp {
 
     private final Iterable<? extends Termed> components;
 
@@ -33,14 +27,14 @@ public class AttnBranch extends PriAmp {
 
 //    float priMin = 0.01f;
 
-    public AttnBranch(Object id, Iterable<? extends Termed> components) {
+    public PriBranch(Object id, Iterable<? extends Termed> components) {
         super(id);
         this.components = components;
     }
-
-    public Stream<Concept> concepts(NAR nar) {
-        return Streams.stream(components).map(nar::concept).filter(Objects::nonNull);
-    }
+//
+//    public Stream<Concept> concepts(NAR nar) {
+//        return Streams.stream(components).map(nar::concept).filter(Objects::nonNull);
+//    }
 
     //    @Override protected float myDemand(NAR n) {
 //

@@ -6,7 +6,6 @@ import jcog.data.graph.Node;
 import jcog.data.graph.NodeGraph;
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
-import nars.NAL;
 import nars.NAR;
 import nars.Task;
 import nars.attention.PriAmp;
@@ -20,7 +19,6 @@ import org.eclipse.collections.api.block.function.primitive.ShortToObjectFunctio
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
-import java.util.Arrays;
 
 /**
  *  NAR Control
@@ -196,20 +194,6 @@ import java.util.Arrays;
             }
         }
 
-        private short[] append(short[] currentCause, int tcl) {
-            int cc = NAL.causeCapacity.intValue();
-            short[] tc = Arrays.copyOf(currentCause, Math.min(cc, tcl + 1));
-            int target;
-            if (tc.length == cc) {
-                //shift
-                System.arraycopy(tc, 1, tc, 0, tc.length - 1);
-                target = tc.length-1;
-            } else {
-                target = tcl;
-            }
-            tc[target] = ci;
-            return tc;
-        }
 
     }
 

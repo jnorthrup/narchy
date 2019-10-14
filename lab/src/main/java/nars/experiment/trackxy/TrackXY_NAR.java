@@ -18,10 +18,7 @@ import nars.game.GameTime;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
 import nars.memory.CaffeineMemory;
-import nars.op.stm.ConjClustering;
-import nars.op.stm.STMLinker;
 import nars.sensor.Bitmap2DSensor;
-import nars.task.DerivedTask;
 import nars.term.Term;
 import nars.time.clock.CycleTime;
 import org.eclipse.collections.api.block.predicate.primitive.BooleanPredicate;
@@ -38,10 +35,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static jcog.Texts.n2;
 import static nars.$.$$;
-import static nars.Op.BELIEF;
-import static nars.Op.GOAL;
 import static spacegraph.SpaceGraph.window;
 
 public class TrackXY_NAR extends GameX {
@@ -234,12 +228,12 @@ public class TrackXY_NAR extends GameX {
 			1, 8
 			//2, 8
 			//, "motivation.nal"
-		)
-		.add(new STMLinker(1))
-		.add(new ConjClustering(n, BELIEF,
-			//x -> true,
-			2, 4, Task::isInput
-		)));
+		));
+////		.add(new STMLinker(1))
+//		.add(new ConjClustering(n, BELIEF,
+//			//x -> true,
+//			2, 4, Task::isInput
+//		)));
 
 		//{
 //                    @Override
@@ -338,43 +332,56 @@ public class TrackXY_NAR extends GameX {
 //        new Impiler(n);
 
 			NAL.DEBUG = true;
-			a.what().eventTask.on(tt -> {
+			Term L = a.actions.get(0).term();
+			Term R = a.actions.get(1).term();
+//			a.what().eventTask.on(tt -> {
+//				int stampLen = tt.stamp().length;
+//				//if (stampLen > 1)
+//					System.out.println(stampLen + " " + tt);
+//			});
+//			a.what().eventTask.on(tt -> {
+//
+//
+//				if (!tt.isEternal()) {
+//					{
+//						Term ttt = tt.term();
+//						boolean l = ttt.equals(L);
+//						boolean r = ttt.equals(R);
+//						System.out.println(tt);
+//						if (l || r) {
+//
+//
+//							//if (n.concept(tt) instanceof ActionConcept)
+//							long window = 2;
+//							float dur = n.dur();
+//							long now = n.time();
+//							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
+//
+//								float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
+//								float needsDir = a.track.tx - a.track.cx;
+//
+//
+//								boolean ok = Math.signum(wantsDir) == Math.signum(needsDir);
+//								if (!ok) {
+//									String summary = ok ? "OK" : "WRONG";
+//									System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
+//									System.out.println(tt.proof());
+//									//n.proofPrint(tt);
+//								}
+//
+//								//System.out.println(NAR.proof(tt, n));
+//								System.out.println();
+//
+//							}
+//
+//
+//						}
+//
+//					}
+//				}
+//			}, GOAL);
 
 
-				if (!tt.isInput()) {
-					if (tt instanceof DerivedTask) {
-						Term ttt = tt.term();
-						boolean l = ttt.equals(a.actions.get(0).term());
-						boolean r = ttt.equals(a.actions.get(1).term());
-						if (l || r) {
-
-
-							//if (n.concept(tt) instanceof ActionConcept)
-							long window = 64;
-							float dur = n.dur();
-							long now = n.time();
-							if (tt.intersects(Math.round(now - window / 2 * dur), Math.round(now + window / 2 * dur))) {
-
-								float wantsDir = (l ? -1 : +1) * (tt.freq() < 0.5f ? -1 : +1);
-								float needsDir = a.track.tx - a.track.cx;
-
-
-								String summary = (Math.signum(wantsDir) == Math.signum(needsDir)) ? "OK" : "WRONG";
-								System.out.println(ttt + " " + n2(wantsDir) + " ? " + n2(needsDir) + " " + summary);
-								System.out.println(tt.proof());
-								n.proofPrint(tt);
-
-								//System.out.println(NAR.proof(tt, n));
-								System.out.println();
-
-							}
-
-
-						}
-
-					}
-				}
-			}, GOAL);
 		});
 		n.run(experimentTime);
 

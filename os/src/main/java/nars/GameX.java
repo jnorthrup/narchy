@@ -61,6 +61,7 @@ import java.util.function.Supplier;
 
 import static java.util.stream.Collectors.toList;
 import static jcog.Util.lerp;
+import static jcog.Util.lerpSafe;
 import static nars.$.$$;
 import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
@@ -437,8 +438,8 @@ abstract public class GameX extends Game {
 
         n.termVolMax.set(
             //64
-            48
-            //32
+            //48
+            32
         );
 
         //n.confMin.set(1e-10);
@@ -730,7 +731,7 @@ abstract public class GameX extends Game {
      * @return
      */
     private static DurLoop addGovernor(NAR n) {
-        float momentum = 0.75f;
+        float momentum = 0.5f;
         float explorationRate = 0.01f;
         return n.onDur(new Consumer<NAR>() {
 
@@ -748,12 +749,12 @@ abstract public class GameX extends Game {
 
                     float min = Float.POSITIVE_INFINITY, max = Float.NEGATIVE_INFINITY;
                     for (int i = 0; i < ww; i++) {
-                        float r = c[i].valueRaw();
+                        float r = c[i].value;
 
                         //if (r!=r) r = 0;
                         float v;
                         if (r == r)
-                            f[i] = v = lerp(momentum, r, f[i]);
+                            f[i] = v = lerpSafe(momentum, r, f[i]);
                         else {
                             v = f[i]; //unchanged, hold existing value
                         }
@@ -761,16 +762,18 @@ abstract public class GameX extends Game {
                         min = Math.min(v, min); max = Math.max(v, max);
                     }
 
+//                    System.out.println(min + "\t" + max);
+
                     if (Util.equals(min, max)) {
                         for (int i = 0; i < ww; i++)
                             c[i].setPri(explorationRate); //flat
                     } else {
-                        float explorationRateEach =
-                            explorationRate;
-                            //explorationRate / ww; // <- stricter
-                        float basePri = explorationRateEach * (max - min);
+//                        float explorationRateEach =
+//                            explorationRate;
+//                            //explorationRate / ww; // <- stricter
+//                        float basePri = explorationRateEach * (max - min);
                         for (int i = 0; i < ww; i++)
-                            c[i].setPri(basePri + Util.normalize(f[i], min, max));
+                            c[i].setPri(explorationRate + Util.normalize(f[i], min, max) );
                     }
                 }
 

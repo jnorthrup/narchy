@@ -57,7 +57,7 @@ public class EdgeVis<X> {
 
 
                 float scale = Math.min(from.w(), from.h());
-                float base = Util.lerp(e.weight, scale / 2, scale);
+                float base = Util.lerpSafe(e.weight, scale / 2, scale);
 
                 e.color(gl);
                 float fx = from.cx(), fy = from.cy();
@@ -81,11 +81,11 @@ public class EdgeVis<X> {
     }
 
     public EdgeVis<X> weightAddLerp(float w, float rate) {
-        this.weight = Util.lerp(rate, this.weight, this.weight + w);
+        this.weight = Util.lerpSafe(rate, this.weight, this.weight + w);
         return this;
     }
     public EdgeVis<X> weightLerp(float w, float rate) {
-        this.weight = Util.lerp(rate, this.weight, w);
+        this.weight = Util.lerpSafe(rate, this.weight, w);
         return this;
     }
 
@@ -97,15 +97,15 @@ public class EdgeVis<X> {
     }
 
     public EdgeVis<X> colorLerp(float r, float g, float b /* TODO type */, float rate) {
-        if (r==r) this.r = Util.lerp(rate, this.r, r);
-        if (g==g) this.g = Util.lerp(rate, this.g, g);
-        if (b==b) this.b = Util.lerp(rate, this.b, b);
+        if (r==r) this.r = Util.lerpSafe(rate, this.r, r);
+        if (g==g) this.g = Util.lerpSafe(rate, this.g, g);
+        if (b==b) this.b = Util.lerpSafe(rate, this.b, b);
         return this;
     }
     public EdgeVis<X> colorAdd(float r, float g, float b /* TODO type */, float rate) {
-        if (r==r) this.r = Util.lerp(rate, this.r, r + this.r);
-        if (g==g) this.g = Util.lerp(rate, this.g, g + this.g);
-        if (b==b) this.b = Util.lerp(rate, this.b, b + this.b);
+        if (r==r) this.r = Util.lerpSafe(rate, this.r, r + this.r);
+        if (g==g) this.g = Util.lerpSafe(rate, this.g, g + this.g);
+        if (b==b) this.b = Util.lerpSafe(rate, this.b, b + this.b);
         return this;
     }
 

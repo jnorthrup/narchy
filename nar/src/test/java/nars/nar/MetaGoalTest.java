@@ -89,14 +89,14 @@ class MetaGoalTest {
             System.out.println(k + '\t' + v);
         });
 
-        n.control.why.forEach(c -> {
-            c.commit();
-//            double perceive = c.credit[MetaGoal.PerceiveCmplx.ordinal()].total();
-//            double believe = c.credit[MetaGoal.Believe.ordinal()].total();
-//            double desire = c.credit[MetaGoal.Desire.ordinal()].total();
-//            if (perceive > 0) {
-                c.print(System.out);
-//            }
-        });
+//        n.control.why.forEach(c -> {
+//            c.commit();
+////            double perceive = c.credit[MetaGoal.PerceiveCmplx.ordinal()].total();
+////            double believe = c.credit[MetaGoal.Believe.ordinal()].total();
+////            double desire = c.credit[MetaGoal.Desire.ordinal()].total();
+////            if (perceive > 0) {
+//            //    c.print(System.out);
+////            }
+//        });
     }
 }

@@ -88,7 +88,7 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
 	public final PriBuffer<Task> inBuffer;
 
-	private final ConsumerX<Task> perceive = new ConsumerX<>() {
+	@Deprecated private final ConsumerX<Task> perceive = new ConsumerX<>() {
 
 		@Override
 		public int concurrency() {

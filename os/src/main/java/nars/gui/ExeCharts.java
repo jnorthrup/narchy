@@ -74,7 +74,7 @@ public class ExeCharts {
 		}
 		public void update() {
             color.x = Util.unitizeSafe(w.pri());
-            float v = w.valueRaw();
+            float v = w.value();
             color.y = v!=v ? 0 : Util.unitizeSafe(v);
 		}
 	}

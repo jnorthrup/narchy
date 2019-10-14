@@ -2,13 +2,13 @@ package nars.control;
 
 import com.google.common.collect.TreeBasedTable;
 import jcog.Paper;
+import jcog.Util;
 import jcog.data.list.FasterList;
 import nars.NAR;
 import nars.Task;
 import nars.term.Term;
 import org.eclipse.collections.api.tuple.primitive.ObjectBytePair;
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectDoubleHashMap;
-import org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples;
 import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,9 +36,7 @@ public enum MetaGoal {
 
     //Futile,
 
-    //PerceiveCmplx,  //by complexity
-
-    Perceive, //by priority
+    Perceive, //by volume, at beginning of input
 
     /**
      * pos: accepted as belief
@@ -69,9 +67,15 @@ public enum MetaGoal {
             learn(why, strength, n.control.why);
     }
 
-    void learn(Term why, float strength, FasterList<Cause> whies) {
-        Cause[] cc = whies.array();
-        Why.eval(why, strength, (w,p)-> learn(cc[w].credit, ordinal(), p));
+    void learn(Term why, float pri, FasterList<Cause> whies) {
+        Why.eval(why, pri, whies.array(), learner);
+    }
+
+    private final Why.Evaluator<Cause> learner = (CC, w, p)-> learn(CC[w], p);
+    private final int g = ordinal(); //just in case this isnt JIT'd
+
+    private void learn(Cause cause, float pri) {
+        cause.credit.addAt(pri, g);
     }
 
 //    /**
@@ -113,26 +117,29 @@ public enum MetaGoal {
 
         Cause[] ccc = cause.array();
 
-        float[] want = n.emotion.want;
+        double[] want = Util.toDouble(n.emotion.want);
+
+        float[] credit = new float[want.length];
 
         for (int i = 0; i < cc; i++) {
 
             Cause ci = ccc[i];
 
-            ci.commit();
-
             double v = 0;
-            boolean valued = false;
-            Credit[] cg = ci.credit;
-            for (int j = 0; j < want.length; j++) {
-                float c = cg[j].current;
-                if (Math.abs(c) > Float.MIN_NORMAL) {
-                    v += want[j] * ((double)c);
-                    valued = true;
-                }
+            //boolean valued = false;
+            ci.commit(credit);
+            for (int w = 0; w < want.length; w++) {
+
+                //if (Math.abs(c) > Float.MIN_NORMAL) {
+                    v += want[w] * credit[w];
+                    //valued = true;
+                //}
             }
 
-            ci.setValue(valued ? (float)v : Float.NaN);
+            ci.setValue(
+                //valued ? (float)v : Float.NaN
+                (float)v
+            );
         }
 
         if (value!=null)
@@ -152,12 +159,12 @@ public enum MetaGoal {
 //        return MetaGoal;
 //    }
 
-    /**
-     * contributes the value to a particular goal in a cause's goal vector
-     */
-    protected static void learn(Credit[] goalValue, int ordinal, float v) {
-        goalValue[ordinal].add(v);
-    }
+//    /**
+//     * contributes the value to a particular goal in a cause's goal vector
+//     */
+//    protected static void learn(Credit[] goalValue, int ordinal, float v) {
+//        goalValue[ordinal].add(v);
+//    }
 
 
     public static final Logger logger = LoggerFactory.getLogger(MetaGoal.class);
@@ -208,20 +215,21 @@ public enum MetaGoal {
 
             cc.forEach(c -> {
 
-                int i = 0;
-                MetaGoal[] values = MetaGoal.values();
-                for (Credit t : c.credit) {
-
-                    MetaGoal m = values[i];
-                    double tt = //t.total();
-                        t.floatValue();
-                    if (tt != 0) {
-                        synchronized (this) {
-                            addToValue(PrimitiveTuples.pair(c, (byte) i), tt);
-                        }
-                    }
-                    i++;
-                }
+//                int i = 0;
+//                MetaGoal[] values = MetaGoal.values();
+                //TODO
+//                for (Credit t : c.credit) {
+//
+//                    MetaGoal m = values[i];
+//                    double tt = //t.total();
+//                        t.floatValue();
+//                    if (tt != 0) {
+//                        synchronized (this) {
+//                            addToValue(PrimitiveTuples.pair(c, (byte) i), tt);
+//                        }
+//                    }
+//                    i++;
+//                }
 
             });
             return this;

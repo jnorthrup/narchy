@@ -3,7 +3,7 @@ package nars.game.sensor;
 import jcog.math.FloatSupplier;
 import nars.NAR;
 import nars.Task;
-import nars.attention.AttnBranch;
+import nars.attention.PriBranch;
 import nars.attention.PriAmp;
 import nars.attention.What;
 import nars.control.channel.CauseChannel;
@@ -29,7 +29,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
     protected VectorSensor(Term rootID, NAR n) {
         super(rootID, n);
 
-        this.pri = new AttnBranch(this.id, this);
+        this.pri = new PriBranch(this.id, this);
         this.in = n.newChannel(id != null ? id : this);
     }
 

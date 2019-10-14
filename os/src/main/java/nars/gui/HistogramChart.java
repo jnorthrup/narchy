@@ -58,7 +58,7 @@ public class HistogramChart extends PaintSurface {
 
             float v = data[i] / max;
 
-            gl.glColor3f(Util.lerp(v, ra, rb), Util.lerp(v, ga, gb), Util.lerp(v, ba, bb));
+            gl.glColor3f(Util.lerpSafe(v, ra, rb), Util.lerpSafe(v, ga, gb), Util.lerpSafe(v, ba, bb));
 
             Draw.rect(x, 0, dx, v, gl);
 

@@ -7,7 +7,7 @@ import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 
 import static jcog.Texts.n4;
-import static jcog.Util.lerp;
+import static jcog.Util.lerpSafe;
 import static jcog.tree.rtree.Spatialization.EPSILON;
 import static jcog.tree.rtree.Spatialization.EPSILONf;
 
@@ -318,12 +318,12 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
 
     /** note: this is sloppy lerp (non-cartesian) on dimensions independently */
     public RectFloat posLerp(float x, float y, float p) {
-        return RectFloat.XYWH(lerp(p, cx(), x),lerp(p, cy(), y) ,w , h);
+        return RectFloat.XYWH(lerpSafe(p, cx(), x),lerpSafe(p, cy(), y) ,w , h);
     }
 
-    public boolean nonZero(float epsilon) {
-        return w > epsilon && h > epsilon;
-    }
+//    public boolean nonZero(float epsilon) {
+//        return w > epsilon && h > epsilon;
+//    }
 
     public RectFloat rel(float cx, float cy, float pctW, float pctH) {
         float ww = this.w, hh = this.h;

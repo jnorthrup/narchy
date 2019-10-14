@@ -12,10 +12,7 @@ import jcog.util.FloatConsumer;
 import nars.$;
 import nars.Emotion;
 import nars.NAR;
-import nars.attention.PriAmp;
-import nars.attention.PriNode;
-import nars.attention.TaskLinkWhat;
-import nars.attention.What;
+import nars.attention.*;
 import nars.control.MetaGoal;
 import nars.game.action.GoalActionConcept;
 import nars.game.sensor.AbstractSensor;
@@ -115,13 +112,13 @@ abstract public class MetaAgent extends Game {
 		s.node(g).nodes(false, true).forEach((Node<PriNode, Object> x) -> actionCtlPriNodeRecursive(x.id(), g));
 	}
 
-	void priAction(PriNode.Source a) {
+	void priAction(PriSource a) {
 		priAction($.inh(a.id,pri), a);
 	}
 	void priAction(PriAmp a) {
 		floatAction($.inh(a.id,pri), a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
-	void priAction(Term id, PriNode.Source a) {
+	void priAction(Term id, PriSource a) {
 		floatAction(id, a.amp).resolution(PRI_ACTION_RESOLUTION);
 	}
 
@@ -191,9 +188,12 @@ abstract public class MetaAgent extends Game {
 
 			for (MetaGoal mg : MetaGoal.values()) {
                 GoalActionConcept a = actionUnipolar($.inh(SELF, $.the(mg.name())), (x) -> {
-                    nar.emotion.want(mg, Util.lerp(x,
-                        0,//-1,
-                        +1));
+                    nar.emotion.want(mg,
+						x >= 0.5f ?
+							Util.lerp(Util.sqrt((x - 0.5f) * 2), 0, +1) //positive (0.5..1)
+							:
+							Util.lerp((x) * 2, -0.1f, 0) //negative (0..0.5): weaker
+					);
                 });
                 a.resolution(0.1f);
 			}

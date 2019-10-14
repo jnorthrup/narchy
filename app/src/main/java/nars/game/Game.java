@@ -12,8 +12,8 @@ import jcog.thing.Part;
 import jcog.util.ArrayUtil;
 import nars.$;
 import nars.NAR;
-import nars.attention.PriAmp;
 import nars.attention.PriNode;
+import nars.attention.PriSource;
 import nars.attention.What;
 import nars.control.NARPart;
 import nars.game.action.ActionSignal;
@@ -72,7 +72,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public final AtomicInteger iteration = new AtomicInteger(0);
 
-    public PriAmp rewardPri, actionPri, sensorPri;
+    public PriSource rewardPri, actionPri, sensorPri;
 
     /** the context representing the experience of the game */
     @Deprecated private What what;
@@ -271,10 +271,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
         init();
 
-        PriNode gamePri = what.pri;
-        actionPri = nar.control.amp($.inh(id,ACTION), PriNode.Merge.And, gamePri, nar.goalPriDefault);
-        sensorPri = nar.control.amp($.inh(id,SENSOR), PriNode.Merge.And, gamePri, nar.beliefPriDefault);
-        rewardPri = nar.control.amp($.inh(id,REWARD), PriNode.Merge.And, gamePri, nar.goalPriDefault);
+        nar.control.add(actionPri = new PriSource($.inh(id,ACTION),
+            nar.goalPriDefault.pri()));
+        nar.control.add(sensorPri = new PriSource($.inh(id,SENSOR),
+            nar.beliefPriDefault.pri()));
+        nar.control.add(rewardPri = new PriSource($.inh(id,REWARD),
+            Util.or(nar.beliefPriDefault.pri(),nar.goalPriDefault.pri())));
 
         sensors.forEach(s -> init(sensorPri, s));
         actions.forEach(a -> init(actionPri, a));

@@ -5,7 +5,7 @@ import jcog.Util;
 import nars.$;
 import nars.NAR;
 import nars.Task;
-import nars.attention.AttnBranch;
+import nars.attention.PriBranch;
 import nars.attention.PriNode;
 import nars.control.channel.CauseChannel;
 import nars.game.Game;
@@ -80,7 +80,7 @@ public class BiPolarAction extends AbstractSensor {
                 throw new TODO();
             }
         };
-        this.pri = new AttnBranch(id, List.of(pos, neg));
+        this.pri = new PriBranch(id, List.of(pos, neg));
 
 //                //TemplateTermLinker.of(neg),
 //                //TemplateTermLinker.of(neg, 4, pos),
