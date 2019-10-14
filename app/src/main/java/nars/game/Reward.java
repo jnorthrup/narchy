@@ -78,9 +78,10 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 
 
     public void setDefault(PreciseTruth t) {
+    	NAR n = this.nar();
         for (Concept c : this) {
             //TODO assert that it has no eternal tables already
-            EternalDefaultTable.add(c,t,game.what().nar);
+            EternalDefaultTable.add(c,t,n);
         }
     }
 
@@ -145,7 +146,6 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
 		int n = reinforcement.size();
 		if (n > 0) {
 			float pri = this.pri.pri()
-				/ n
 				// *1f/Util.sqrt(n) //not too large or it will compete with the signal itself
 			;
 

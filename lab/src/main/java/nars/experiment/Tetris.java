@@ -2,10 +2,8 @@ package nars.experiment;
 
 import jcog.Config;
 import jcog.Util;
-import jcog.math.FloatNormalized;
+import jcog.exe.Exe;
 import jcog.math.FloatRange;
-import jcog.math.FloatSupplier;
-import jcog.pri.ScalarValue;
 import jcog.signal.wave2d.AbstractBitmap2D;
 import jcog.signal.wave2d.Bitmap2D;
 import nars.$;
@@ -13,6 +11,7 @@ import nars.GameX;
 import nars.NAR;
 import nars.game.GameTime;
 import nars.game.NAct;
+import nars.game.SimpleReward;
 import nars.gui.sensor.VectorSensorChart;
 import nars.op.java.Opjects;
 import nars.sensor.Bitmap2DSensor;
@@ -26,6 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
+import static nars.Op.BELIEF;
 import static spacegraph.SpaceGraph.window;
 
 /**
@@ -33,25 +33,28 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends GameX {
 
+    private static float thinkPerFrame = 2;
+    int debounceDurs = 3;
+    static float FPS = 24f;
+
+    private final boolean opjects = false;
     public static final String TETRIS_FALL_TIME = Config.get2("TETRIS_FALL_TIME", "" + 1f, false);
     public static final String TETRIS_FALL_MIN = Config.get2("TETRIS_FALL_MIN", "" + 1f, false);
-    public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX", "" + 8f, false);
+    public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX",  ""+ 12f, false);
     public static final boolean TETRIS_CAN_FALL = Config.configIs("TETRIS_CAN_FALL", false);
     public static final boolean TETRIS_USE_DENSITY = Config.configIs("TETRIS_USE_DENSITY", true);
     public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
+//    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
     public static AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
     public static int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.CENTER
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW};
-    static float FPS = 24f;
     private final Bitmap2D grid;
     private final TetrisState state;
-    private final boolean opjects = true;
     private final Bitmap2DSensor<Bitmap2D> gridVision;
     public Bitmap2DSensor<Bitmap2D> pixels;
     public FloatRange timePerFall = new FloatRange(Float.parseFloat(TETRIS_FALL_TIME), Float.parseFloat(TETRIS_FALL_MIN), Float.parseFloat(TETRIS_FALL_MAX));
@@ -126,31 +129,49 @@ public class Tetris extends GameX {
 //        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
 //                1 - ((float) state.rowsFilled) / state.height
 //        ));
-		reward("density", 1, () -> {
+        if (TETRIS_USE_DENSITY) {
+            reward("density", 1, () -> {
 
-			int filled = 0;
-			for (float s : state.grid) if (s > 0) filled++;
+                int filled = 0;
+                for (float s : state.grid) if (s > 0) filled++;
 
-			int r = state.rowsFilled;
-			return r > 0 ? ((float) filled) / (r * state.width) : 0;
-		}).conf(0.4f);
+                int r = state.rowsFilled;
+                return r > 0 ? ((float) filled) / (r * state.width) : 0;
+            });//.conf(0.4f);
+        }
 
         actionUnipolar($.inh(id, "speed"), (s)->{
-            int fastest = 2, slowest = 12;
+            int fastest = (int)this.timePerFall.min, slowest = (int)this.timePerFall.max;
             this.timePerFall.set( Math.round(Util.lerp(s, slowest, fastest)));
+        }).resolution(0.2f);
+
+
+//        FloatSupplier low = () -> {
+//            return 1 - ((float) state.rowsFilled) / state.height;
+//        };
+//        reward("low", 1, low);
+
+        final int[] lastRowsFilled = {0};
+        SimpleReward lower = reward("lower", 1, () -> {
+            int rowsFilled = state.rowsFilled;
+            int deltaRows = rowsFilled - lastRowsFilled[0];
+            lastRowsFilled[0] = rowsFilled;
+            if (deltaRows > 0) {
+                return -1;
+            } else if (deltaRows == 0)
+                return
+                    Float.NaN;
+                    //0.5f;
+            else {//if (deltaRows < 0) {
+                if (deltaRows > 5)
+                    return -1; //board clear
+                else
+                    return +1; //lower due to line
+            }
         });
-
-
-        FloatSupplier low = () -> {
-            return 1 - ((float) state.rowsFilled) / state.height;
-        };
-        reward("low", 1, low);
-
-        FloatNormalized dLow = difference(low);
-        reward("dontRise", 1, () -> {
-            float s = dLow.asFloat() < 0.5f /* HACK */ ? 0 : +1;
-            return s;
-        });
+        Exe.runLater(()-> //HACK
+            lower.setDefault($.t(0.5f, n.confDefault(BELIEF)/2))
+        );
 
         actionPushButtonLR();
         actionPushButtonRotateFall();
@@ -175,7 +196,7 @@ public class Tetris extends GameX {
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
 
-        }, FPS * 2);
+        }, FPS*thinkPerFrame);
 
 
     }
@@ -199,7 +220,6 @@ public class Tetris extends GameX {
 
     void actionPushButtonRotateFall() {
 
-        int debounceDurs = 4;
         actionPushButton(tROT, debounce(b ->
             b && state.act(TetrisState.actions.CW)
         , debounceDurs));
@@ -208,7 +228,7 @@ public class Tetris extends GameX {
             actionPushButton(tFALL,
                 debounce(b ->
                     b && state.act(TetrisState.actions.FALL)
-                , debounceDurs)
+                , debounceDurs * 2)
             );
 
     }

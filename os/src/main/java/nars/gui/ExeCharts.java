@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.IntStream;
 
+import static jcog.Util.lerpSafe;
 import static spacegraph.space2d.container.grid.Gridding.grid;
 
 public class ExeCharts {
@@ -73,9 +74,12 @@ public class ExeCharts {
 //            })));
 		}
 		public void update() {
-            color.x = Util.unitizeSafe(w.pri());
-            float v = w.value();
-            color.y = v!=v ? 0 : Util.unitizeSafe(v);
+            float p = w.pri();
+            color.hsl( lerpSafe(1-p, 0.1f, 0.8f), 0.75f,
+                lerpSafe(p, 0.1f, 0.5f), 1f);
+
+//            float v = w.value();
+//            color.y = v!=v ? 0 : Util.unitizeSafe(v);
 		}
 	}
 

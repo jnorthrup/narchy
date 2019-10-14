@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.MLPMap;
 import jcog.learn.ntm.control.SigmoidActivation;
-import jcog.learn.ntm.control.TanhActivation;
 import jcog.pri.ScalarValue;
 import jcog.util.ArrayUtil;
 import nars.NAR;
@@ -21,7 +20,7 @@ import static jcog.Util.lerpSafe;
  */
 public enum Should { ;
 	@Deprecated static float momentum = 0.5f;
-	@Deprecated static float explorationRate = 0.05f;
+	@Deprecated static float explorationRate = 0.01f;
 
 	public static final boolean PRINT_AVG_ERR = Config.configIs("AVG_ERR", true);
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
@@ -37,8 +36,11 @@ public enum Should { ;
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-					new MLPMap.Layer( Math.max(2, dims/2), TanhActivation.the  /*SigmoidActivation.the*/ ),
-					new MLPMap.Layer( 1, SigmoidActivation.the)
+					new MLPMap.Layer(
+						dims
+						//Math.max(2, dims/2)
+						, /*TanhActivation.the*/  SigmoidActivation.the ),
+					new MLPMap.Layer( 1, null)
 				);
 			}
 		}
@@ -87,7 +89,7 @@ public enum Should { ;
 //                            c[i].setPri(flat);
 			} else {
 
-				float learningRate = (float) (0.1f
+				float learningRate = (float) (0.04f
 									//* Math.min(1,Math.log(1+range/10f))
 				);
 
@@ -98,7 +100,7 @@ public enum Should { ;
 
 					float specificLearningRate =
 						//learningRate;
-						learningRate * Math.max(0.05f,
+						learningRate * Math.max(0.01f,
 							//Math.abs(0.5f-fNorm[i])*2f
 							Math.abs(f[i]) / Math.max(Math.abs(min), Math.abs(max)) //extremeness
 						);
@@ -115,8 +117,8 @@ public enum Should { ;
 
 				double errAvg = errTotal / ww;
 
-				if(PRINT_AVG_ERR)
-				System.out.println(this + ":\t" + errAvg + " avg err");
+				if(PRINT_AVG_ERR && n.random().nextFloat() < 0.05f)
+					System.out.println(this + ":\t" + errAvg + " avg err");
 			}
 			//System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
 

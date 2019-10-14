@@ -53,8 +53,8 @@ public class SensorBeliefTables extends BeliefTables {
 
         add(new MyRTreeBeliefTable());
 
-        /* series will override the r-tree table */
-        matchMode = 0;
+        /* 0=series will override the r-tree table */
+        //matchMode = 0;
     }
 
     @Deprecated public static int cleanMarginCycles(float dur) {
