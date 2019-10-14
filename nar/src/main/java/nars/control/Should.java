@@ -1,5 +1,6 @@
 package nars.control;
 
+import jcog.Config;
 import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.learn.MLPMap;
@@ -22,6 +23,7 @@ public enum Should { ;
 	@Deprecated static float momentum = 0.5f;
 	@Deprecated static float explorationRate = 0.05f;
 
+	public static final boolean PRINT_AVG_ERR = Config.configIs("AVG_ERR", true);
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
 	public static final BiConsumer<NAR,FasterList<Cause>> predictMLP = new BiConsumer<>() {
 
@@ -112,8 +114,9 @@ public enum Should { ;
 				}
 
 				double errAvg = errTotal / ww;
-				if (n.random().nextFloat() < 0.1f)
-					System.out.println(this + ":\t" + errAvg + " avg err");
+
+				if(PRINT_AVG_ERR)
+				System.out.println(this + ":\t" + errAvg + " avg err");
 			}
 			//System.out.println(n4(min) + " " + n4(max) + "\t" + n4(nmin) + " " + n4(nmax));
 
