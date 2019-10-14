@@ -44,8 +44,8 @@
     (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".")      |- (P --> S), (Belief:Abduction, Time:Compose)
 
         //dangerously sticky:
-        //(P --> M), (S --> M), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
-        //(M --> P), (M --> S), neqRCom(S,P)      |- (P --> S), (Goal:DesireWeak, Time:Task)
+        (P --> M), (S --> M), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
+        (M --> P), (M --> S), neqRCom(S,P)      |- (P --> S), (Goal:DesireWeak, Time:Task)
 
        (S --> P), (P --> M), neqRCom(S,M)  |- (S --> M), (Punctuation:AskAsk, Time:Task)
         (S --> P), (S --> M), neqRCom(P,M)  |- (P --> M), (Punctuation:AskAsk, Time:Task)
@@ -61,8 +61,8 @@
     (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".")      |- (P --> S), (Belief:Induction, Time:Compose)
 
         //dangerously sticky:
-        //(M --> P), (M --> S), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
-        //(P --> M), (S --> M), neqRCom(S,P)      |- (P --> S), (Goal:DesireWeak, Time:Task)
+        (M --> P), (M --> S), neqRCom(S,P)      |- (S --> P), (Goal:DesireWeak, Time:Task)
+        (P --> M), (S --> M), neqRCom(S,P)      |- (P --> S), (Goal:DesireWeak, Time:Task)
 
        (S --> P), (M --> P), neqRCom(M,S)  |- (M --> S), (Punctuation:AskAsk, Time:Task)
         (S --> P), (M --> S), neqRCom(M,P)  |- (M --> P), (Punctuation:AskAsk, Time:Task)

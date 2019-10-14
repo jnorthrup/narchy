@@ -250,25 +250,38 @@ public class NAL8Test extends NALTest {
             .mustGoal(cycles, "x", 1f, 0.81f, 0);
     }
 
-    @Disabled @Test void antigoal() {
+    @Disabled @Test void antigoal1() {
         //B, (X ==> A), --is(B,"==>"), --isVar(X) |- --unisubst(X,A,B,"$"), (Goal:PostNP, Time:TaskImmediate)
         test
             .input("--y!")
             .believe("(x ==> y)")
             .mustGoal(cycles, "x", 0f, 0.81f)
-            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, t->true)
+            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, t -> true)
         ;
-//        test
-//            .input("y!")
-//            .believe("(x ==> --y)")
-//            .mustGoal(cycles, "x", 0f, 0.81f);
+    }
+    @Disabled @Test void antigoal1_neg() {
+        test
+            .input("y!")
+            .believe("(x ==> --y)")
+            .mustGoal(cycles, "x", 0f, 0.81f)
+            .mustNotOutput(cycles, "x", GOAL, 0.5f, 1f, 0, 1, t -> true)
+            ;
+    }
+    @Disabled @Test void antigoal1_neg_inner() {
+        test
+            .input("--y!")
+            .believe("(--x ==> y)")
+            .mustGoal(cycles, "x", 1f, 0.81f)
+            .mustNotOutput(cycles, "x", GOAL, 0f, 0.5f, 0, 1, t -> true)
+        ;
+    }
 //        test
 //            .input("y! %0.50%")
 //            .believe("(x ==> --y)")
 //            .mustGoal(cycles, "x", 0.5f, 0.81f)
 //            .mustGoal(cycles, "x", 0f, 0.81f);
 
-    }
+//    }
 //    @Test
 //    void testGoalConjunctionDecomposeNeg() {
 //        test
