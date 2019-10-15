@@ -39,8 +39,8 @@ public class Tetris extends GameX {
     public static final boolean TETRIS_CAN_FALL = Config.configIs("TETRIS_CAN_FALL", false);
     public static final boolean TETRIS_USE_DENSITY = Config.configIs("TETRIS_USE_DENSITY", true);
     public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
-    private static final int tetris_width = 8;
-    private static final int tetris_height = 16;
+    static final int tetris_width = 8;
+    static final int tetris_height = 16;
     //    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
     public static AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
     public static int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
@@ -49,11 +49,11 @@ public class Tetris extends GameX {
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW};
     static float FPS = 24f;
-    private static float thinkPerFrame = 2;
+    static float thinkPerFrame = 2;
     private final boolean opjects = false;
     private final Bitmap2D grid;
     private final TetrisState state;
-    private final Bitmap2DSensor<Bitmap2D> gridVision;
+    final Bitmap2DSensor<Bitmap2D> gridVision;
     public Bitmap2DSensor<Bitmap2D> pixels;
     public FloatRange timePerFall = new FloatRange(Float.parseFloat(TETRIS_FALL_TIME), Float.parseFloat(TETRIS_FALL_MIN), Float.parseFloat(TETRIS_FALL_MAX));
     int debounceDurs = 3;
