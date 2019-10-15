@@ -123,7 +123,7 @@ public class Tetris extends GameX {
             reward("density", 1, () -> {
 
                 int filled = 0;
-                for (float s : state.grid) if (s > 0) filled++;
+                for (var s : state.grid) if (s > 0) filled++;
 
                 int r = state.rowsFilled;
                 return r > 0 ? ((float) filled) / (r * state.width) : 0;
@@ -287,7 +287,7 @@ public class Tetris extends GameX {
         public boolean easy = Tetris.easy.getAcquire();
         public int width;
         public int height;
-        public Float[] seen;
+        public double[] seen;
         public boolean running = true;
         public int currentBlockId;/*which block we're using in the block table*/
         public int currentRotation;
@@ -295,7 +295,7 @@ public class Tetris extends GameX {
         public int currentY;
         public float score;/* what is the current_score*/
         public boolean is_game_over;/*have we reached the end state yet*/
-        public Float[] grid;/*what the world looks like without the current block*/
+        public double[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
         List<TetrisPiece> possibleBlocks = Tetris.easy.get() ? asList(new TetrisPiece[]{new TetrisPiece() {{
@@ -312,10 +312,8 @@ public class Tetris extends GameX {
             this.width = width;
             this.height = height;
             this.timePerFall = timePerFall;
-            grid = new Float[this.height * this.width];
-            seen = new Float[width * height];
-            Arrays.fill(grid,0f);
-            Arrays.fill(seen,0f);
+            grid = new double[this.height * this.width];
+            seen = new double[width * height];
 
             reset();
         }
@@ -341,26 +339,23 @@ public class Tetris extends GameX {
 
         }
 
-        private void toVector(boolean monochrome, Float... target) {
+        private void toVector(boolean monochrome, double[] target) {
 
 
             Arrays.fill(target, -1f);
 
             var x = 0;
-            for (double i : grid) {
+            for (var i : grid) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else
-                    target[x] = i > 0 ? (float) i : -1.0f;
+                    target[x] = i > 0 ?   i : -1.0f;
                 x++;
             }
-
             writeCurrentBlock(0.5f, target);
-
-
         }
 
-        private void writeCurrentBlock(float color, Float... f) {
+        private void writeCurrentBlock(float color, double[] f) {
             var thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
 
             if (color == -1)
