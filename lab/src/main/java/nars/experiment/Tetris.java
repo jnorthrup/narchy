@@ -287,7 +287,7 @@ public class Tetris extends GameX {
         public boolean easy = Tetris.easy.getAcquire();
         public int width;
         public int height;
-        public float[] seen;
+        public Float[] seen;
         public boolean running = true;
         public int currentBlockId;/*which block we're using in the block table*/
         public int currentRotation;
@@ -295,7 +295,7 @@ public class Tetris extends GameX {
         public int currentY;
         public float score;/* what is the current_score*/
         public boolean is_game_over;/*have we reached the end state yet*/
-        public float[] grid;/*what the world looks like without the current block*/
+        public Float[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
         List<TetrisPiece> possibleBlocks = Tetris.easy.get() ? asList(new TetrisPiece[]{new TetrisPiece() {{
@@ -312,8 +312,11 @@ public class Tetris extends GameX {
             this.width = width;
             this.height = height;
             this.timePerFall = timePerFall;
-            grid = new float[this.height * this.width];
-            seen = new float[width * height];
+            grid = new Float[this.height * this.width];
+            seen = new Float[width * height];
+            Arrays.fill(grid,0f);
+            Arrays.fill(seen,0f);
+
             reset();
         }
 
@@ -321,7 +324,7 @@ public class Tetris extends GameX {
             currentX = width / 2 - 1;
             currentY = 0;
             score = 0;
-            for (var i = 0; i < grid.length; i++) grid[i] = 0;
+            for (var i = 0; i < grid.length; i++) grid[i] = 0f;
             currentRotation = 0;
             is_game_over = false;
 
@@ -338,10 +341,10 @@ public class Tetris extends GameX {
 
         }
 
-        private void toVector(boolean monochrome, float[] target) {
+        private void toVector(boolean monochrome, Float... target) {
 
 
-            Arrays.fill(target, -1);
+            Arrays.fill(target, -1f);
 
             var x = 0;
             for (double i : grid) {
@@ -352,12 +355,12 @@ public class Tetris extends GameX {
                 x++;
             }
 
-            writeCurrentBlock(target, 0.5f);
+            writeCurrentBlock(0.5f, target);
 
 
         }
 
-        private void writeCurrentBlock(float[] f, float color) {
+        private void writeCurrentBlock(float color, Float... f) {
             var thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
 
             if (color == -1)
@@ -588,7 +591,7 @@ public class Tetris extends GameX {
 
             if (onSomething || nextColliding()) {
                 running = false;
-                writeCurrentBlock(grid, -1);
+                writeCurrentBlock(-1, grid);
             } else {
                 if (time % timePerFall == 0)
                     currentY += 1;
@@ -689,7 +692,7 @@ public class Tetris extends GameX {
 
             for (var x = 0; x < width; ++x) {
                 var linearIndex = i(x, y);
-                grid[linearIndex] = 0;
+                grid[linearIndex] = 0f;
             }
 
 
@@ -703,7 +706,7 @@ public class Tetris extends GameX {
 
             for (var x = 0; x < width; ++x) {
                 var linearIndex = i(x, 0);
-                grid[linearIndex] = 0;
+                grid[linearIndex] = 0f;
             }
 
         }
