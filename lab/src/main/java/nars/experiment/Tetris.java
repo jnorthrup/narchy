@@ -33,31 +33,30 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Tetris extends GameX {
 
-    private static float thinkPerFrame = 2;
-    int debounceDurs = 3;
-    static float FPS = 24f;
-
-    private final boolean opjects = false;
     public static final String TETRIS_FALL_TIME = Config.get2("TETRIS_FALL_TIME", "" + 1f, false);
     public static final String TETRIS_FALL_MIN = Config.get2("TETRIS_FALL_MIN", "" + 1f, false);
-    public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX",  ""+ 4f, false);
+    public static final String TETRIS_FALL_MAX = Config.get2("TETRIS_FALL_MAX", "" + 4f, false);
     public static final boolean TETRIS_CAN_FALL = Config.configIs("TETRIS_CAN_FALL", false);
     public static final boolean TETRIS_USE_DENSITY = Config.configIs("TETRIS_USE_DENSITY", true);
     public static final boolean TETRIS_USE_SCORE = Config.configIs("TETRIS_USE_SCORE", true);
     private static final int tetris_width = 8;
     private static final int tetris_height = 16;
-//    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
+    //    public static final boolean TETRIS_V2_REWARDS = Config.configIs("TETRIS_V2_REWARDS", true);
     public static AtomicBoolean easy = new AtomicBoolean(Config.configIs("TETRIS_EASY", false));
     public static int[][] CENTER_5_X_5 = {TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.CENTER
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW};
+    static float FPS = 24f;
+    private static float thinkPerFrame = 2;
+    private final boolean opjects = false;
     private final Bitmap2D grid;
     private final TetrisState state;
     private final Bitmap2DSensor<Bitmap2D> gridVision;
     public Bitmap2DSensor<Bitmap2D> pixels;
     public FloatRange timePerFall = new FloatRange(Float.parseFloat(TETRIS_FALL_TIME), Float.parseFloat(TETRIS_FALL_MIN), Float.parseFloat(TETRIS_FALL_MAX));
+    int debounceDurs = 3;
     Term tLEFT =
             //$.the("left");
             //$.inh("left", id);
@@ -115,43 +114,29 @@ public class Tetris extends GameX {
                 return state.seen[y * w + x] > 0 ? 1f : 0f;
             }
         };
-        gridVision = addSensor(pixels = new Bitmap2DSensor<>(
-                (x, y) -> $.inh(id, $.p(x, y)),
-                //(x, y) -> $.p(GRID,$.the(x), $.the(y)),
-                grid, /*0,*/ n));
+        gridVision = addSensor(
+                pixels = new Bitmap2DSensor<>(
+                        (x, y) -> $.inh(id, $.p(x, y)),
+                        grid, n));
 
-        //if(!TETRIS_V2_REWARDS) {
-
-//        rewardNormalized("score", 0, ScalarValue.EPSILON, //0 /* ignore decrease */, 1,
-//                state::score
-//                //new FloatFirstOrderDifference(n::time, state::score).nanIfZero()
-//        );
-//        reward("height", 1, new FloatFirstOrderDifference(n::time, () ->
-//                1 - ((float) state.rowsFilled) / state.height
-//        ));
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {
 
                 int filled = 0;
-                for (float s : state.grid) if (s > 0) filled++;
+                for (var s : state.grid) if (s > 0) filled++;
 
                 int r = state.rowsFilled;
                 return r > 0 ? ((float) filled) / (r * state.width) : 0;
-            });//.conf(0.4f);
+            });
         }
 
-        actionUnipolar($.inh(id, "speed"), (s)->{
-            int fastest = (int)this.timePerFall.min, slowest = (int)this.timePerFall.max;
+        actionUnipolar($.inh(id, "speed"), (s) -> {
+            int fastest = (int) this.timePerFall.min, slowest = (int) this.timePerFall.max;
             int t = Math.round(Util.lerp(s, slowest, fastest));
             this.timePerFall.set(t);
             return Util.unlerp(t, slowest, fastest); //get the effective frequency after discretizing
         });
 
-
-//        FloatSupplier low = () -> {
-//            return 1 - ((float) state.rowsFilled) / state.height;
-//        };
-//        reward("low", 1, low);
 
         final int[] lastRowsFilled = {0};
         SimpleReward lower = reward("lower", 1, () -> {
@@ -162,8 +147,8 @@ public class Tetris extends GameX {
                 return -1;
             } else if (deltaRows == 0)
                 return
-                    Float.NaN;
-                    //0.5f;
+                        Float.NaN;
+                //0.5f;
             else {//if (deltaRows < 0) {
                 if (deltaRows > 5)
                     return -1; //board clear
@@ -171,8 +156,8 @@ public class Tetris extends GameX {
                     return +1; //lower due to line
             }
         });
-        Exe.runLater(()-> //HACK
-            lower.setDefault($.t(0.5f, n.confDefault(BELIEF)/3))
+        Exe.runLater(() -> //HACK
+                lower.setDefault($.t(0.5f, n.confDefault(BELIEF) / 3))
         );
 
         actionPushButtonLR();
@@ -198,7 +183,7 @@ public class Tetris extends GameX {
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
 
-        }, FPS*thinkPerFrame);
+        }, FPS * thinkPerFrame);
 
 
     }
@@ -223,14 +208,14 @@ public class Tetris extends GameX {
     void actionPushButtonRotateFall() {
 
         actionPushButton(tROT, debounce(b ->
-            b && state.act(TetrisState.actions.CW)
-        , debounceDurs));
+                        b && state.act(TetrisState.actions.CW)
+                , debounceDurs));
 
         if (TETRIS_CAN_FALL)
             actionPushButton(tFALL,
-                debounce(b ->
-                    b && state.act(TetrisState.actions.FALL)
-                , debounceDurs * 2)
+                    debounce(b ->
+                                    b && state.act(TetrisState.actions.FALL)
+                            , debounceDurs * 2)
             );
 
     }
@@ -302,7 +287,7 @@ public class Tetris extends GameX {
         public boolean easy = Tetris.easy.getAcquire();
         public int width;
         public int height;
-        public float[] seen;
+        public double[] seen;
         public boolean running = true;
         public int currentBlockId;/*which block we're using in the block table*/
         public int currentRotation;
@@ -310,7 +295,7 @@ public class Tetris extends GameX {
         public int currentY;
         public float score;/* what is the current_score*/
         public boolean is_game_over;/*have we reached the end state yet*/
-        public float[] grid;/*what the world looks like without the current block*/
+        public double[] grid;/*what the world looks like without the current block*/
         public int time;
         public int timePerFall;
         List<TetrisPiece> possibleBlocks = Tetris.easy.get() ? asList(new TetrisPiece[]{new TetrisPiece() {{
@@ -327,8 +312,9 @@ public class Tetris extends GameX {
             this.width = width;
             this.height = height;
             this.timePerFall = timePerFall;
-            grid = new float[this.height * this.width];
-            seen = new float[width * height];
+            grid = new double[this.height * this.width];
+            seen = new double[width * height];
+
             reset();
         }
 
@@ -336,7 +322,7 @@ public class Tetris extends GameX {
             currentX = width / 2 - 1;
             currentY = 0;
             score = 0;
-            for (var i = 0; i < grid.length; i++) grid[i] = 0;
+            for (var i = 0; i < grid.length; i++) grid[i] = 0f;
             currentRotation = 0;
             is_game_over = false;
 
@@ -353,26 +339,23 @@ public class Tetris extends GameX {
 
         }
 
-        private void toVector(boolean monochrome, float[] target) {
+        private void toVector(boolean monochrome, double[] target) {
 
 
-            Arrays.fill(target, -1);
+            Arrays.fill(target, -1f);
 
             var x = 0;
-            for (double i : grid) {
+            for (var i : grid) {
                 if (monochrome)
                     target[x] = i > 0 ? 1.0f : -1.0f;
                 else
-                    target[x] = i > 0 ? (float) i : -1.0f;
+                    target[x] = i > 0 ?   i : -1.0f;
                 x++;
             }
-
-            writeCurrentBlock(target, 0.5f);
-
-
+            writeCurrentBlock(0.5f, target);
         }
 
-        private void writeCurrentBlock(float[] f, float color) {
+        private void writeCurrentBlock(float color, double[] f) {
             var thisPiece = possibleBlocks.get(currentBlockId).thePiece[currentRotation];
 
             if (color == -1)
@@ -383,11 +366,6 @@ public class Tetris extends GameX {
 
 
                         var linearIndex = i(currentX + x, currentY + y);
-                        /*if(linearIndex<0){
-                            System.err.printf("Bogus linear index %d for %d + %d, %d + %d\n",linearIndex,currentX,x,currentY,y);
-                            Thread.dumpStack();
-                            System.exit(1);
-                        }*/
                         f[linearIndex] = color;
                     }
 
@@ -551,16 +529,22 @@ public class Tetris extends GameX {
          * @return
          */
         private boolean inBounds(int checkX, int checkY, int checkOrientation) {
+            boolean result = false;
+            boolean finished = false;
             try {
                 var thePiece = possibleBlocks.get(currentBlockId).thePiece[checkOrientation];
 
-                for (var y = 0; y < thePiece[0].length; ++y)
-                    for (var x = 0; x < thePiece.length; ++x)
-                        if (thePiece[x][y] != 0)
-                            if (!(checkX + x >= 0 && checkX + x < width && checkY + y >= 0 && checkY + y < height))
-                                return false;
+                for (var y = 0;!finished&& y < thePiece[0].length; ++y) {
+                    int i1 = checkY + y;
+                    boolean b = i1 >= 0 && i1 < height;
+                    for (var x = 0; !finished&&x < thePiece.length; ++x) {
+                        int i = checkX + x;
+                        finished =  ((!b || i < 0 || i >= width) && thePiece[x][y] != 0) ;
+                    }
+                }
 
-                return true;
+                result |= !finished;
+
             } catch (ArrayIndexOutOfBoundsException e) {
                 System.err.println("Error: ArrayIndexOutOfBoundsException in GameState::inBounds called with params: " + checkX + " , " + checkY + ", " + checkOrientation);
                 System.err.println("Error: The Exception was: " + e);
@@ -568,9 +552,9 @@ public class Tetris extends GameX {
                 System.err.println("Returning false from inBounds to help save from error.  Not sure if that's wise.");
                 System.err.println("Setting is_game_over to true to hopefully help us to recover from this problem");
                 is_game_over = true;
-                return false;
             }
 
+            return result;
         }
 
         public boolean nextInBounds() {
@@ -586,21 +570,27 @@ public class Tetris extends GameX {
             act();
             time++;
 
-
             if (!inBounds(currentX, currentY, currentRotation))
                 System.err.println("In GameState.Java the Current Position of the board is Out Of Bounds... Consistency Check Failed");
 
+            gomezAdamsMethod(!nextInBounds());
+        }
 
-            var onSomething = false;
-            if (!nextInBounds()) onSomething = true;
-            if (!onSomething) if (nextColliding()) onSomething = true;
+        /**
+         * casey jones you better watch your speed...
+         * @param onSomething is the engineer onSomething that has side effects?
+         */
+        void gomezAdamsMethod(boolean onSomething) {
 
-            if (onSomething) {
+            //running NextInbounds without nextColliding appears mutually exclusive
+
+            if (onSomething || nextColliding()) {
                 running = false;
-                writeCurrentBlock(grid, -1);
-            } else if (time % timePerFall == 0)
-                currentY += 1;
-
+                writeCurrentBlock(-1, grid);
+            } else {
+                if (time % timePerFall == 0)
+                    currentY += 1;
+            }
         }
 
         public int spawnBlock() {
@@ -697,7 +687,7 @@ public class Tetris extends GameX {
 
             for (var x = 0; x < width; ++x) {
                 var linearIndex = i(x, y);
-                grid[linearIndex] = 0;
+                grid[linearIndex] = 0f;
             }
 
 
@@ -711,7 +701,7 @@ public class Tetris extends GameX {
 
             for (var x = 0; x < width; ++x) {
                 var linearIndex = i(x, 0);
-                grid[linearIndex] = 0;
+                grid[linearIndex] = 0f;
             }
 
         }
