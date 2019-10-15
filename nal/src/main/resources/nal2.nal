@@ -2,11 +2,6 @@
     ({S} <-> {P}), ({S} <-> {P}) |- (S <-> P), (Belief:Identity, Goal:Identity)
     ([S] <-> [P]), ({S} <-> {P}) |- (S <-> P), (Belief:Identity, Goal:Identity)
 
-//Nothing is more specific than a instance, so its similar
-    ({P} <-> S),  S  |- (S --> {P}), (Belief:Identity, Goal:Identity)
-
-//nothing is more general than a property, so its similar
-    ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity, Goal:Identity)
 
 //single element set unwrap
     ({E} --> X),  {E}  |- polarizeTask((E --> X)), (Belief:StructuralDeductionDD, Goal:StructuralDeductionDD)
@@ -51,3 +46,8 @@
     ({ (V-->K), A..* }-->M), M |- ({V} --> (M,K)), (Belief:StructuralDeduction, Goal:StructuralDeduction)
 
 
+//Nothing is more specific than a instance, so its similar
+//    ({P} <-> S),  S  |- (S --> {P}), (Belief:Identity, Goal:Identity)
+
+//nothing is more general than a property, so its similar
+//    ([S] <-> P),  P  |- ([S] --> P), (Belief:Identity, Goal:Identity)

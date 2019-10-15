@@ -151,11 +151,10 @@ public class NARS {
                 n.termVolMax.set(22);
 
                 TaskLinkWhat main = (TaskLinkWhat) n.what();
-                main.links.linksMax.set(32);
                 main.links.decay.set(0.01f);
 
 
-                float p = 0.25f;
+                float p = 0.5f;
                 n.beliefPriDefault.pri(p);
                 n.goalPriDefault.pri(p);
                 n.questionPriDefault.pri(p);
@@ -182,7 +181,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new TaskLinkWhat(w, 32,
+        what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectTaskBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 0.1f)
                        //new PriBuffer.MapTaskBuffer()
@@ -201,8 +200,8 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume,
-                1, 256,
-                8, 48,
+                1, 192,
+                8, 64,
                 16, 32,
                 32, 16
         );

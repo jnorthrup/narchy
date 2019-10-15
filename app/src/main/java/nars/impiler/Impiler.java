@@ -121,7 +121,7 @@ public class Impiler {
 
 	/** all tasks in NAR memory */
 	public static void impile(NAR n) {
-		When<NAR> nxow = WhenTimeIs.now(n);
+//		When<NAR> nxow = WhenTimeIs.now(n);
 		n.tasks().forEach(t -> {
 			Impiler.impile(t, n);
 		});

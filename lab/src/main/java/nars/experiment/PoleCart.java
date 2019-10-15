@@ -53,7 +53,7 @@ public class PoleCart extends GameX {
 
 
 	static final boolean rl = false;
-	static final boolean beliefPredict = false;
+	static final boolean beliefPredict = true;
 	static final boolean impiler = false;
 	static final boolean speedControl = true;
 
@@ -77,9 +77,11 @@ public class PoleCart extends GameX {
 					Iterable<? extends Termed> predicting = Iterables.concat(
 						p.angX.sensors, p.angY.sensors, p.angVel.sensors, p.xVel.sensors, p.x.sensors
 					);
-					What what = p.what();
 
 					if (beliefPredict) {
+						Exe.runLater(()->{
+							What what = p.what();
+						what.nar = n; //HACK
 						new BeliefPredict(
 							predicting,
 							8,
@@ -89,6 +91,7 @@ public class PoleCart extends GameX {
 							//new LivePredictor.MLPPredictor(0.01f),
 							what
 						);
+						});
 					}
 					if (impiler) {
 

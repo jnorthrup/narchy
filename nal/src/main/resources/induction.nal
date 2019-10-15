@@ -6,9 +6,9 @@
 //##################################
 
 //belief form:
-//B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
-B, A, --is(A,"==>") |-          polarizeTask((  A ==> B)), (Belief:InductionDP, Time:BeliefRelative)
-B, A, --is(A,"==>") |-          polarizeTask((--A ==> B)), (Belief:InductionDN, Time:BeliefRelative)
+B, A, --is(A,"==>") |-          polarizeTask((polarizeBelief(A) ==> B)), (Belief:InductionDD, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          polarizeTask((  A ==> B)), (Belief:InductionDP, Time:BeliefRelative)
+//B, A, --is(A,"==>") |-          polarizeTask((--A ==> B)), (Belief:InductionDN, Time:BeliefRelative)
 //B, A, --is(A,"==>") |-          (A ==> B), (Belief:InductionPP, Time:BeliefRelative)
 //B, A, --is(A,"==>") |-          (--A ==> B), (Belief:InductionPN, Time:BeliefRelative)
 //B, A, --is(A,"==>") |-          (A ==> --B), (Belief:InductionNP, Time:BeliefRelative)
@@ -25,9 +25,9 @@ B, A, --is(A,"==>") |- polarizeTask(varIntro((polarizeBelief(A) ==> B))), (Belie
 //##################################
 
 //belief form:
-//B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDD, Time:TaskRelative)
-B, A, --is(B,"==>") |-          polarizeBelief((  B ==> A)), (Belief:AbductionPD, Time:TaskRelative)
-B, A, --is(B,"==>") |-          polarizeBelief((--B ==> A)), (Belief:AbductionND, Time:TaskRelative)
+B, A, --is(B,"==>") |-          polarizeBelief((polarizeTask(B) ==> A)), (Belief:AbductionDD, Time:TaskRelative)
+//B, A, --is(B,"==>") |-          polarizeBelief((  B ==> A)), (Belief:AbductionPD, Time:TaskRelative)
+//B, A, --is(B,"==>") |-          polarizeBelief((--B ==> A)), (Belief:AbductionND, Time:TaskRelative)
 B, A, --is(B,"==>") |- polarizeBelief(varIntro((polarizeTask(B) ==> A))), (Belief:AbductionDD, Time:TaskRelative)
 
 //question form:

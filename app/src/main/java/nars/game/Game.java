@@ -82,7 +82,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
     public volatile long now = ETERNAL;
 
-    public When<What> nowPercept = null, nowLoop = null;
+    public final When<What> nowPercept = new When(), nowLoop = new When();
 
     private final NAgentCycle cycle =
             //Cycles.Biphasic;
@@ -263,7 +263,12 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         super.starting(nar);
 
         this.now = nar.time();
+
         this.what = nar.fork(id, true);
+
+        nowPercept.the(what);
+        nowLoop.the(what);
+        nowPercept.end = (int)(now - what.dur()/2); //HACK
 
         init();
 
@@ -498,14 +503,14 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 //            System.out.println(this + " "  + state().toString() + " " + (now - prev));
 
             float durLoop = durLoop();
-            long lastEnd = nowPercept !=null ? nowPercept.end : Math.round(now-durLoop/2-1);
+            long lastEnd = nowPercept.end;
             long nextStart = Math.max(lastEnd+1, (long)Math.floor(now - durLoop/2));
             long nextEnd = Math.max(nextStart, Math.round(Math.ceil(now + durLoop/2 - 1)));
 
             float durPercept = dur();
 
-            this.nowPercept = new When<>(nextStart, nextEnd, durPercept, what);
-            this.nowLoop = new When<>(nextStart, nextEnd, durLoop, what);
+            nowPercept.range(nextStart, nextEnd).dur(durPercept);
+            nowLoop.range(nextStart, nextEnd).dur(durLoop);
 
             this.confDefaultBelief = nar.confDefault(BELIEF);
 

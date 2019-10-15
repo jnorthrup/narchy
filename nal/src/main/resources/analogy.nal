@@ -2,6 +2,9 @@
 //      https://en.wikipedia.org/wiki/Fluid_Concepts_and_Creative_Analogies
 //      https://cogsci.indiana.edu/
 
+// inheritance from similarty
+    (S <-> P), P  |- (S --> P), (Belief:Identity, Goal:Identity)
+
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 
 
@@ -22,12 +25,12 @@
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 
-      (S <-> P),    P                                |-   (S --> P), (Goal:StructuralDeduction, Time:Task)
-
 //      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
       (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Belief:Intersection, Time:Compose)
-        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DesireWeak, Time:Task)
+        //(S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DesireWeak, Time:Task)
+        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:Intersection, Time:Task)
+
 
       (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)
         //(M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:Desire, Time:Task)
@@ -126,6 +129,3 @@ Z, (X <-> Y), neq(Z,X), neq(Z,Y), --isVar(X), --isVar(Y)  |-   unisubst(Y, X, Z,
          //       (X --> A),  (--(Y --> A)<->(Y --> C)),  neqRCom(X,C), neq(X,Y)      |- (X-->C), (Belief:DesireN, Goal:DesireN)
           //  (A --> X),        ((A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:Desire, Goal:Desire)
           //      (A --> X),  (--(A --> Y)<->(C --> Y)),  neqRCom(X,C), neq(X,Y)      |- (C-->X), (Belief:DesireN, Goal:DesireN)
-//// inheritance from similarty
-    //(S <-> P), P         |- (S --> P), (Belief:Identity)
-    //(S <-> P), P, task("!")  |- (S --> P), (Goal:Identity)
