@@ -13,10 +13,13 @@ class Chimera{
 
             var t = new Tetris(n, tetris_width, tetris_height);
             var g = new Gradius(n);
-            n.add(t);
+
+
+        var x = new NARio(n);
+        n.add(x);
+        n.add(t);
 
             window(new VectorSensorChart(t.gridVision, t).withControls(), 400, 800);
-
             n.add(g);
             return g;
         }, FPS * thinkPerFrame);
