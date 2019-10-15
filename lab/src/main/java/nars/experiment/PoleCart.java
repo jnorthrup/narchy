@@ -65,14 +65,11 @@ public class PoleCart extends GameX {
 	static final float fps = 25;
 	private float speed = 1;
 
-	public static void main(String[] arg) {
-		//polecart(-1);
-
-		//int instances = 2; int threadsEach = 1;
+	public static void main(String[] arg) { 
 		int instances = 1;
 		int threadsEach = 4;
 		for (int i = 0; i < instances; i++)
-			runRTNet((n) -> {
+			runRTNet(n -> {
 					PoleCart p = new PoleCart(
 						instances > 1 ?
 							$.p(Atomic.the(PoleCart.class.getSimpleName()), n.self()) :
@@ -85,9 +82,6 @@ public class PoleCart extends GameX {
 					if (beliefPredict) {
 						new BeliefPredict(
 							predicting,
-//                java.util.List.of(
-//                        x, xVel,
-//                        angVel, angX, angY),
 							8,
 							Math.round(6 * n.dur()),
 							3,
@@ -108,10 +102,7 @@ public class PoleCart extends GameX {
 								@Nullable LongToObjectFunction<Truth> dd = d.estimator(a.term(), false);
 								if (dd != null)
 									a.meta("impiler", (Object) dd);
-//							d.get(a.term(), n.time(), false).forEach(t -> {
-//								System.out.println(t);
-//								what.accept(t);
-//							});
+
 							}
 						}).setFPS(1f);
 						n.onDur(() -> {
@@ -154,27 +145,6 @@ public class PoleCart extends GameX {
 
 	}
 
-
-//    public static class RL {
-//        public static void main(String[] args) {
-//            runRL(n -> {
-//
-//                try {
-//                    PoleCart p = new PoleCart($.the("rl"), n);
-//
-//                    p.tau.set(0.004f);
-//
-//                    return p;
-//                } catch (Exception e) {
-//
-//                    e.printStackTrace();
-//                    return null;
-//                }
-//            }, fps, fps);
-//
-//        }
-//    }
-
 	private final JPanel panel;
 
 
@@ -202,9 +172,6 @@ public class PoleCart extends GameX {
 		//0.007f, 0.001f, 0.02f
 		0.019f, 0.001f, 0.05f
 	);
-	//0.01;
-	//0.005;
-	//0.0025f;
 	static final double fricCart = 0.00005;
 	static final double fricPole =
 		0.01f;
@@ -246,21 +213,18 @@ public class PoleCart extends GameX {
 		 */
 
 
-		this.x = senseNumberBi($.p("x", id), () -> ((float) (pos - posMin) / (posMax - posMin)));
-		this.xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
+		x = senseNumberBi($.p("x", id), () -> (float) (pos - posMin) / (posMax - posMin));
+		xVel = senseNumberBi($.p(id, $.the("d"), $.the("x")),
 			new FloatNormalized(() -> (float) posDot)
 		);
 
-
-//        angX.resolution(0.02f);
-//        angY.resolution(0.02f);
-		this.angX = senseNumberTri($.p(id, $.the("ang"), $.the("x")),
-			() -> (float) (0.5f + 0.5f * (Math.sin(angle))));
-		this.angY = senseNumberTri($.p(id, $.the("ang"), $.the("y")),
-			() -> (float) (0.5f + 0.5f * (Math.cos(angle))));
+		angX = senseNumberTri($.p(id, $.the("ang"), $.the("x")),
+			() -> (float) (0.5f + 0.5f * Math.sin(angle)));
+		angY = senseNumberTri($.p(id, $.the("ang"), $.the("y")),
+			() -> (float) (0.5f + 0.5f * Math.cos(angle)));
 
 
-		this.angVel = senseNumberBi($.p(id, $.the("d"), $.the("ang")),
+		angVel = senseNumberBi($.p(id, $.the("d"), $.the("ang")),
 			new FloatNormalized(() -> (float) angleDot)
 		);
 
@@ -270,13 +234,13 @@ public class PoleCart extends GameX {
 		initUnipolar();
 
 		if (speedControl) {
-			actionUnipolar($.inh(id, "S"), (s) -> {
+			actionUnipolar($.inh(id, "S"), s -> {
 				speed = Util.sqr(s * 2);
 			});
 		}
 
 
-		this.panel = new JPanel(new BorderLayout()) {
+		panel = new JPanel(new BorderLayout()) {
 			public final Stroke stroke = new BasicStroke(4);
 
 			@Override
@@ -292,9 +256,9 @@ public class PoleCart extends GameX {
 				Color trackColor = Color.GRAY;
 
 
-				if ((offGraphics == null)
-					|| (d.width != offDimension.width)
-					|| (d.height != offDimension.height)) {
+				if (offGraphics == null
+					|| d.width != offDimension.width
+					|| d.height != offDimension.height) {
 					offDimension = d;
 					offImage = panel.createImage(d.width, d.height);
 					offGraphics = offImage.getGraphics();
@@ -318,10 +282,6 @@ public class PoleCart extends GameX {
 				offGraphics.fillPolygon(pixxs, pixys, 8);
 
 
-//                String msg = "Position = " + n2(pos) + " Angle = " + n2(angle) + " angleDot = " + n2(angleDot);
-//                offGraphics.drawString(msg, 20, d.height - 20);
-
-
 				offGraphics.setColor(cartColor);
 				offGraphics.fillRect(pixX(d, pos - 0.2), pixY(d, 0), pixDX(d, 0.4), pixDY(d, -0.2));
 
@@ -334,7 +294,7 @@ public class PoleCart extends GameX {
 
 
 				if (action != 0) {
-					int signAction = (action > 0 ? 1 : (action < 0) ? -1 : 0);
+					int signAction = action > 0 ? 1 : action < 0 ? -1 : 0;
 					int tipx = pixX(d, pos + 0.2 *
 						//signAction
 						action
@@ -385,14 +345,8 @@ public class PoleCart extends GameX {
 
 		Reward r = rewardNormalized("balanced", -1, +1, this::update);
 
-		//new RewardBooster(r);
-
-
-//        window(NARui.beliefCharts(predicting, nar)/*x, xVel, angVel, angX, angY)*/, 700, 700);
-
-
 		Exe.runLater(() ->
-			window(NARui.beliefCharts(nar, this.sensors.stream()
+			window(NARui.beliefCharts(nar, sensors.stream()
 				.flatMap(s -> Streams.stream(s.components()))
 				.collect(toList())), 900, 900)
 		);
@@ -400,12 +354,12 @@ public class PoleCart extends GameX {
 
 	public void initBipolar() {
 		final float SPEED = 1f;
-		BiPolarAction F = actionBipolarFrequencyDifferential(id, false, (x) -> {
+		BiPolarAction F = actionBipolarFrequencyDifferential(id, false, x -> {
 			float a =
 				x * SPEED;
 			//(x * x * x) * SPEED;
-			this.actionLeft = a < 0 ? -a : 0;
-			this.actionRight = a > 0 ? a : 0;
+			actionLeft = a < 0 ? -a : 0;
+			actionRight = a > 0 ? a : 0;
 			return x;
 		});
 	}
@@ -418,7 +372,7 @@ public class PoleCart extends GameX {
 	public void initUnipolar() {
 		GoalActionConcept L = actionUnipolar(
 			//$.funcImg("mx", id, $.the(-1))
-			$.inh(id, "L"), (a) -> {
+			$.inh(id, "L"), a -> {
 				if (!manualOverride) {
 					actionLeft = a > 0.5f ? power((a - 0.5f) * 2) : 0;
 					//action = Util.clampBi((float) (action + a * a));
@@ -427,7 +381,7 @@ public class PoleCart extends GameX {
 			});
 		GoalActionConcept R = actionUnipolar(
 			//$.funcImg("mx", id, $.the(+1))
-			$.inh(id, "R"), (a) -> {
+			$.inh(id, "R"), a -> {
 				if (!manualOverride) {
 					actionRight = a > 0.5f ? power((a - 0.5f) * 2) : 0;
 					//action = Util.clampBi((float) (action - a * a));
@@ -435,10 +389,6 @@ public class PoleCart extends GameX {
 				return a > 0.5f ? a : 0;
 			});
 
-		//curiosity.enable.set(false);
-//		curiosity.goal.set(false);
-//		L.goalDefault($.t(0.5f, 0.1f), nar);
-//		R.goalDefault($.t(0.5f, 0.1f), nar);
 	}
 
 
@@ -465,7 +415,7 @@ public class PoleCart extends GameX {
 		pos += posDot * tau;
 
 
-		if ((pos >= posMax) || (pos <= posMin)) {
+		if (pos >= posMax || pos <= posMin) {
 
 			pos = Util.clamp((float) pos, posMin, posMax);
 
@@ -489,7 +439,7 @@ public class PoleCart extends GameX {
 			SwingUtilities.invokeLater(panel::repaint);
 
 
-		float rewardLinear = (float) (Math.cos(angle));
+		float rewardLinear = (float) Math.cos(angle);
 		return rewardLinear;
 		//return rewardLinear * rewardLinear * rewardLinear;
 
