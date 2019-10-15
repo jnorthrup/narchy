@@ -58,12 +58,12 @@ public class ImageUnfold extends NativeHow {
 					Task task = d._task;
 
 					AbstractTaskLink l = AtomicTaskLink.link(y/*, d._beliefTerm*/).priSet(task.punc(),
-						task.pri() * ((TaskLinkWhat) d.what).links.grow.floatValue());
+						task.pri() * ((TaskLinkWhat) d.x).links.grow.floatValue());
 
 					//TODO lazy calculate
 					l.why = why.why(d);
 
-					d.what.link(l);
+					d.x.link(l);
 					return true;
 				}
 			}

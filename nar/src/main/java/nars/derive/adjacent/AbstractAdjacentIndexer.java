@@ -44,7 +44,7 @@ public abstract class AbstractAdjacentIndexer extends AdjacentIndexer {
 			List<Term> tangent = Snapshot.get(to, nar, id, d.time, ttl(d), (Concept targetConcept, List<Term> t) -> {
 				//TOO SLOW, impl indexes
 
-				TaskLinkBag bag = ((TaskLinkWhat) (d.what)).links.links;
+				TaskLinkBag bag = ((TaskLinkWhat) (d.x)).links.links;
 				final int[] ttl = {Math.max(4, bag.size() / 8)}; //TODO parameter
 
 				FasterList<Term> l = new FasterList<>(ttl[0]);

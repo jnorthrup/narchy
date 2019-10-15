@@ -42,7 +42,7 @@ public class CompoundDecompose extends NativeHow {
 			if (tgt.op().conceptualizable) {
 				assert(!tgt.equals(src));
 
-				TaskLinks links = ((TaskLinkWhat) d.what).links;
+				TaskLinks links = ((TaskLinkWhat) d.x).links;
 
 				AbstractTaskLink l = AtomicTaskLink.link(src, tgt)
 					.priSet(srcTask.punc(), srcTask.priElseZero() * links.grow.floatValue());

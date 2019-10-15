@@ -20,11 +20,13 @@ import static jcog.Util.lerpSafe;
  */
 public enum Should { ;
 	@Deprecated static float momentum = 0.5f;
-	@Deprecated static float explorationRate = 0.05f;
+	@Deprecated static float explorationRate = 0.02f;
 
 	public static final boolean PRINT_AVG_ERR = Config.configIs("AVG_ERR", true);
 	/** uses a small MLP for each cause to predict its value for the current metagoal vector */
 	public static final BiConsumer<NAR,FasterList<Cause>> predictMLP = new BiConsumer<>() {
+
+		float learningRate = 0.02f;
 
 		float[] f = ArrayUtil.EMPTY_FLOAT_ARRAY;
 		float[] fNorm = ArrayUtil.EMPTY_FLOAT_ARRAY;
@@ -36,15 +38,16 @@ public enum Should { ;
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-					new MLPMap.Layer(
-						dims
-						//Math.max(2, dims/2)
-						, /*TanhActivation.the*/  SigmoidActivation.the ),
+//					new MLPMap.Layer(
+//						dims
+//						//Math.max(2, dims/2)
+//						, /*TanhActivation.the*/  SigmoidActivation.the ),
 					new MLPMap.Layer( 1,
-						//SigmoidActivation.the
-						null
+						SigmoidActivation.the
+						//null
 					)
 				);
+
 			}
 		}
 
@@ -94,7 +97,6 @@ public enum Should { ;
 
 			{
 
-				float learningRate = 0.02f;
 
 				double errTotal = 0;
 				for (int i = 0; i < ww; i++) {

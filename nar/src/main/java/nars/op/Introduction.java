@@ -34,7 +34,7 @@ public abstract class Introduction extends TaskTransformAction {
         if (!filter(x))
             return null;
 
-        What w = d.what;
+        What w = d.x;
 
         Term y = apply(x, w);
 

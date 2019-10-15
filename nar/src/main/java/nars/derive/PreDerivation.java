@@ -2,12 +2,14 @@ package nars.derive;
 
 import jcog.Util;
 import jcog.data.ShortBuffer;
+import nars.attention.What;
 import nars.term.Term;
+import nars.time.When;
 import nars.truth.MutableTruth;
 
 /** contains only information which depends on the premise itself (Task, Belief, BeliefTerm).
  * used for first stage winnowing to determine the (memoizable) set of possible forkable outcomes */
-public abstract class PreDerivation {
+public abstract class PreDerivation extends When<What> {
 
 
 	public Term taskTerm;

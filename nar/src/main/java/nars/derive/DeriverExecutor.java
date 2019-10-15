@@ -8,11 +8,12 @@ import jcog.pri.bag.Bag;
 import jcog.pri.bag.impl.hijack.PLinkHijackBag;
 import jcog.pri.op.PriMerge;
 import jcog.signal.meter.FastCounter;
+import nars.NAL;
 import nars.Task;
 import nars.attention.What;
 import nars.derive.premise.Premise;
-import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
+import java.util.HashSet;
 import java.util.Queue;
 import java.util.function.BooleanSupplier;
 import java.util.function.Consumer;
@@ -47,7 +48,7 @@ public abstract class DeriverExecutor extends Derivation {
 	 * gets next tasklink premise
 	 */
 	protected final Premise sample() {
-		return this.what.sample(this.random);
+		return this.x.sample(this.random);
 
 //			//Pre-resolve
 //			if (x!=null) {
@@ -122,7 +123,7 @@ public abstract class DeriverExecutor extends Derivation {
 	public static class QueueDeriverExecutor extends DeriverExecutor {
 
 		final Queue<Premise> queue =
-			new PrioritySet<>(Deriver.sorter, new UnifiedSet<>()); //prevents duplicates (and caches pri calculation)
+			new PrioritySet<>(Deriver.sorter, new HashSet<>()); //prevents duplicates (and caches pri calculation)
 		//new CachedPriorityQueue<>(sorter); //caches pri calculation
 		//new ArrayHashSet<>(capacity)
 
@@ -131,8 +132,8 @@ public abstract class DeriverExecutor extends Derivation {
 		}
 
 		@Override
-		public void cycle() {
-			super.cycle();
+		public void next(What w) {
+			super.next(w);
 			queue.clear();
 		}
 
@@ -168,10 +169,12 @@ public abstract class DeriverExecutor extends Derivation {
 		public void add(Premise p) {
 
 			if (/*novel.putIfAbsent(p,p)==null && */ queue.offer(p)) {
+				use(NAL.derive.TTL_COST_TASK_TASKIFY);
 //                int qs = queue.size();
 //                if (qs >= capacity)
 //                    d.unify.ttl = 0; //CUT the current premise by depleting its TTL, forcing it to return
-			}
+			} else
+				use(NAL.derive.TTL_COST_DERIVE_TASK_SAME);
 
 		}
 

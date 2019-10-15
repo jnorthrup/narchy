@@ -178,7 +178,7 @@ public class MatchBelief extends NativeHow {
 	}
 
 	private static long[] timeFocus(Task task, Term beliefTerm, Derivation d) {
-		return d.deriver.timing.premise(d.what, task, beliefTerm);
+		return d.deriver.timing.premise(d.x, task, beliefTerm);
 
 //		if (NAL.premise.PREMISE_FOCUS_TIME_DITHER && l[0] != ETERNAL)
 //			Tense.dither(l, d.ditherDT);

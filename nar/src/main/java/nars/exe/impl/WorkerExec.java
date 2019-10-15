@@ -4,9 +4,12 @@ import jcog.Util;
 import jcog.exe.Exe;
 import jcog.math.FloatAveragedWindow;
 import jcog.random.XoRoShiRo128PlusRandom;
+import nars.NAR;
 import nars.attention.What;
+import nars.control.PartBag;
 import nars.derive.Deriver;
 import nars.derive.DeriverExecutor;
+import org.jctools.queues.MpmcArrayQueue;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -20,7 +23,7 @@ public class WorkerExec extends ThreadedExec {
 	/**
 	 * value of 1 means it shares 1/N of the current work. >1 means it will take on more proportionally more-than-fair share of work, which might reduce jitter at expense of responsive
 	 */
-	float workResponsibility =
+	static float workResponsibility =
 		Util.PHIf * 2;
 	//1f;
 	//1.5f;
@@ -40,7 +43,7 @@ public class WorkerExec extends ThreadedExec {
 
 	@Override
 	protected Supplier<Worker> loop() {
-		return WorkPlayLoop::new;
+		return ()->new WorkPlayLoop(nar);
 	}
 
 	@Override
@@ -67,16 +70,21 @@ public class WorkerExec extends ThreadedExec {
 //	}
 
 
-	private final class WorkPlayLoop implements ThreadedExec.Worker {
+	private static final class WorkPlayLoop implements ThreadedExec.Worker {
 
+
+		final int MAX_LOOPS = 64 * 1024; //safety limit
 
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
-		float updateDurs = 1;
+		private final NAR nar;
+		private final MpmcArrayQueue in;
 		private transient DeriverExecutor deriver;
 		private transient long nextUpdate;
 
-		WorkPlayLoop() {
+		WorkPlayLoop(NAR nar) {
+			this.nar = nar;
+			in = ((ThreadedExec)nar.exe).in;
 			rng = new XoRoShiRo128PlusRandom((31L * System.identityHashCode(this)) + nanoTime());
 			nextUpdate = nar.time();
 		}
@@ -95,17 +103,14 @@ public class WorkerExec extends ThreadedExec {
 				//Math.round(updateDurs * nar.dur()); //per-dur
 
 				DeriverExecutor d = this.deriver;
-				Deriver systemDeriver = WorkerExec.this.deriver;
+				Deriver systemDeriver = nar.exe.deriver;
 				if (systemDeriver != null) {
 					if (d == null || d.deriver != systemDeriver) {
 						//deriver has changed; create new executor
-						d = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
+						return this.deriver = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
 					}
 				}
-				if ((deriver = d) != null) {
-					d.cycle();
-					return d;
-				}
+
 				return null;
 			}
 		}
@@ -114,13 +119,13 @@ public class WorkerExec extends ThreadedExec {
 		public void run() {
 
 
-			FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
+			FloatAveragedWindow loopTime = new FloatAveragedWindow(16, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
 			loopTime.fill(50_000_000); //initial guess at cycle per loop
 
 			DeriverExecutor d;
 			while (alive.getOpaque()) {
 
-				long cycleTimeNS = nar.loop.cycleTimeNS * concurrency();
+				long cycleTimeNS = nar.loop.cycleTimeNS * nar.exe.concurrency();
 
 				long cycleStart = System.nanoTime();
 //
@@ -155,47 +160,40 @@ public class WorkerExec extends ThreadedExec {
 				d = deriver();
 				if (d == null) continue;
 
+				PartBag<What> ww = nar.what;
+				int N = ww.size();
 				double meanLoopTimeNS = loopTime.mean();
-				int loopsPlanned = (int)Math.ceil(cycleRemaining / meanLoopTimeNS);
-				int minLoops = 8;
-				int maxLoops = minLoops + (loopsPlanned / (1+nar.what.size())); //TODO tune
+				int loopsPlanned = Math.min(MAX_LOOPS, (int)Math.ceil(cycleRemaining / meanLoopTimeNS));
+				int minLoops = 6;
+				int maxLoops = minLoops + Math.round(((float)loopsPlanned) / N); //TODO tune
 
-				long beforePlay = System.nanoTime();
 
 				//StringBuilder y = new StringBuilder();
 
 				int loopsRemain = loopsPlanned;
 
-				double mass = nar.what.mass();
-
 				while (loopsRemain > 0) {
 
+					What w = ww.get(rng);
+					if (w == null)  break;
 
-					What w = nar.what.get(rng);
-					if (w != null) {
+					int loops = (int) Util.lerpSafe(w.priElseZero() / ww.mass(), minLoops, maxLoops);
+					loopsRemain -= loops;
 
-						int loops = (int) Util.lerp(w.priElseZero() / mass, minLoops, maxLoops);
-						loopsRemain -= loops;
+					long beforePlay = System.nanoTime();
 
-						try {
-							d.next(w, loops);
-						} catch (Throwable t) {
-							t.printStackTrace();
-						}
+					d.next(w, loops);
 
-						//y.append(w + " x " + loops + "\t");
+					long playTimeNS = System.nanoTime() - beforePlay;
+					float nsPerLoop = (float) ((double) playTimeNS) / loops;
+					loopTime.next(nsPerLoop);
 
-					}
+					//y.append(w + " x " + loops + "\t");
 
 					work();
 
 				}
 
-				long playTimeNS = System.nanoTime() - beforePlay;
-
-				float nsPerLoop = (float) ((double) playTimeNS) / loopsPlanned;
-
-				loopTime.next(nsPerLoop);
 
 				//System.out.println(loopsPlanned + ": " + y + " @ " + Texts.timeStr(playTimeNS) + "\t" + " (" + Texts.timeStr(nsPerLoop) + " per loop avg)");
 
@@ -218,9 +216,10 @@ public class WorkerExec extends ThreadedExec {
 
 			int batchSize = -1;
 			Object next;
+
 			while ((next = in.poll()) != null) {
 
-				executeNow(next);
+				nar.exe.executeNow(next);
 
 				if (batchSize == -1) {
 					//initialization once for subsequent attempts
@@ -230,7 +229,7 @@ public class WorkerExec extends ThreadedExec {
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Util.clamp((int) Math.ceil(workResponsibility / concurrency() * available), 1, available);
+						Util.clamp((int) Math.ceil(workResponsibility / nar.exe.concurrency() * available), 1, available);
 
 				} else if (--batchSize == 0)
 					break; //enough

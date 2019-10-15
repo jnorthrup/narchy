@@ -47,7 +47,7 @@ abstract public class Exec extends NARPart implements Executor {
 
     }
 
-    protected Deriver deriver = null;
+    public Deriver deriver = null;
 
     /** sets the deriver */
     public void deriver(Deriver deriver) {
@@ -119,7 +119,7 @@ abstract public class Exec extends NARPart implements Executor {
     /**
      * inline, synchronous
      */
-    protected final void executeNow(Object t) {
+    public final void executeNow(Object t) {
         if (t instanceof Consumer)
             executeNow((Consumer)t);
         else

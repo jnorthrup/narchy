@@ -36,7 +36,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
 
 
     protected static final int sizeDefault = Memoizers.DEFAULT_MEMOIZE_CAPACITY;
-    public static final int volMaxDefault = 7;
+    public static final int volMaxDefault = 9;
     private static final int ATOM_INTERNING_LENGTH_MAX = 16;
 
     /**
@@ -87,8 +87,6 @@ public class InterningTermBuilder extends HeapTermBuilder {
                 x -> new IntrinSubterms(x.subs), cacheSizePerOp);
 
         Function statements = newOpCache("statement", this::_statement, cacheSizePerOp * 3);
-
-
 
         for (int i = 0; i < ops.length; i++) {
             Op o = ops[i];
@@ -289,6 +287,9 @@ public class InterningTermBuilder extends HeapTermBuilder {
         if (op==IMPL && dt == DTERNAL)
             dt = 0; //HACK temporary normalize
 
+        subject = resolve(subject);
+        predicate = resolve(predicate);
+
         if (!(subject instanceof Bool) && !(predicate instanceof Bool) &&
                 internableSub(subject) && internableSub(predicate) &&
                 (subject.volume() + predicate.volume() < volInternedMax) &&
@@ -349,7 +350,7 @@ public class InterningTermBuilder extends HeapTermBuilder {
     @Override
     public Term conj(int dt, Term[] u) {
 
-        u = ConjBuilder.preSort(dt,u);
+        u = resolve(ConjBuilder.preSort(dt,u));
 
         return u.length > 1 && internable(u) ?
                 terms[CONJ.id].apply(

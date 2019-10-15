@@ -394,8 +394,12 @@ abstract public class TruthProjection extends TaskList {
 
 		//first non-eternal
 		int rootIndex = 0;
-		while (items[rootIndex].isEternal()) rootIndex++;
 		int size = this.size;
+		while (items[rootIndex].isEternal()) {
+			rootIndex++;
+			if (rootIndex >= size)
+				return; //all eternal
+		}
 
 		Task root = items[rootIndex];
 		long rs = root.start(); long re = root.end();

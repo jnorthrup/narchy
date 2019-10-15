@@ -29,7 +29,6 @@ import nars.term.util.TermTransformException;
 import nars.term.util.transform.InstantFunctor;
 import nars.term.util.transform.RecursiveTermTransform;
 import nars.time.When;
-import nars.time.event.WhenTimeIs;
 import nars.truth.MutableTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
@@ -113,7 +112,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     };
 
     /** characterizes the present moment, when it starts and ends */
-    public When<What> when;
+    public final When<What> when = this;
 
     /** current running premise, set at beginning of derivation in derive() */
     public transient Premise premise;
@@ -156,12 +155,6 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         }
     };
 
-
-
-    /**
-     * current context
-     */
-    public transient What what = null;
     public final NAR nar;
 
 
@@ -189,16 +182,8 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      */
     public transient long time = TIMELESS;
 
-    public transient float dur = Float.NaN;
-
     public transient Task _task, _belief;
     public transient Term _beliefTerm;
-
-
-
-
-
-
 
     /** evi avg */
     private double eviDouble, eviSingle;
@@ -237,7 +222,13 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         if (NAL.TRACE)
             a.trace(this);
 
-        a.run(this);
+        try {
+            a.run(this);
+        } catch (Throwable t) {
+            logger.error("{} {} {}", r, this, t);
+            if (NAL.DEBUG)
+                t.printStackTrace();
+        }
 
         return use(NAL.derive.TTL_COST_BRANCH);
     }
@@ -531,38 +522,28 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     /** attached unifier instances */
     final private Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
 
-    /** next cycle/dur/etc, updates cached values for remainder of cycle. call before any next(w) */
-    public void cycle() {
-        NAR n = nar;
-        time = n.time();
-        ditherDT = n.dtDither();
-        confMin = n.confMin.conf();
-        eviMin = n.confMin.evi();
-        termVolMax = n.termVolMax.intValue();
-    }
+
 
     /** switch to new context */
     public void next(What w) {
 
+        NAR n = nar;
+        time = n.time();
+
+        the(this.x = w);
+        dur(w.dur());
+
+        range(
+            (long) (time - dur/2),
+            (long) Math.ceil(time + dur/2)
+        );
+
+        ditherDT = n.dtDither();
+        confMin = n.confMin.conf();
+        eviMin = n.confMin.evi();
+        termVolMax = n.termVolMax.intValue();
+
         w.tryCommit();
-
-        this.what = w;
-
-
-        /**
-         *  setup the default temporal focus to be used throughout multiple successive derivations.
-         *  constructs a time interval surrounding the present moment, with a diameter of
-         *  1 duration.
-         *  TODO make mutable
-         * */
-        this.when = WhenTimeIs.now(w,
-            this.time,
-            (this.dur = w.dur()),
-            dur/2, dur/2,
-            //0, dur,
-            1 /*ditherDT*/);
-
-
 
         float uttd = nar.unifyDTToleranceDurs.floatValue();
         int dtTolerance =
@@ -651,7 +632,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
     public final boolean remember(Task t) {
 
-        what.accept(t);
+        x.accept(t);
         nar.emotion.deriveTask.increment();
 
         return unify.use(NAL.derive.TTL_COST_TASK_REMEMBER);
@@ -782,7 +763,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
      * punctuation equalizer: value factor for the conclusion punctuation type [0..1.0]
      */
     public final float preAmp(byte taskPunc, byte concPunc) {
-        return what.derivePri.preAmp(concPunc);
+        return x.derivePri.preAmp(concPunc);
     }
 
     public final float parentPri() {

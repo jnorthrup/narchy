@@ -319,7 +319,7 @@ abstract public class GameX extends Game {
                                         //32*1024
                                         //64 * 1024
                                         //128*1024
-                                        Math.round(ramGB * 256 * 1024)
+                                        Math.round(ramGB * 128 * 1024)
                                 )
                                 :
                                 CaffeineMemory.soft()

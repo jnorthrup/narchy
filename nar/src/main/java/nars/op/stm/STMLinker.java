@@ -56,7 +56,7 @@ public class STMLinker extends TaskAction {
 					return true;
 			}
 
-			TaskLinkWhat w = (TaskLinkWhat) d.what;
+			TaskLinkWhat w = (TaskLinkWhat) d.x;
 
 			Termed WHY = why.why(prev, next /*, d*/ );
 

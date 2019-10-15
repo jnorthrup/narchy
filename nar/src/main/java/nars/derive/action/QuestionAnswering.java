@@ -40,7 +40,7 @@ public class QuestionAnswering extends NativeHow {
 		//assert (task.isQuest() || match.punc() == BELIEF) : "quest answered with a belief but should be a goal";
 
 		Task answer = MatchBelief.task(answerTable, question.term(),
-			d.deriver.timing.premise(d.what, question), null, d);
+			d.deriver.timing.premise(d.x, question), null, d);
 
 		if (answer == null)
 			return null;
@@ -63,7 +63,7 @@ public class QuestionAnswering extends NativeHow {
 			//qPri * aPri;
 			Util.or(qPri, aPri);
 //
-		What w = d.what;
+		What w = d.x;
 ////		((AbstractTask)a).why(q.why()); //merge question reason into answer
 		w.link(a, pri);
 		w.emit(a);

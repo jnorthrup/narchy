@@ -182,7 +182,7 @@ public class NARS {
 
         exec = UniExec::new;
 
-        what = w -> new TaskLinkWhat(w, 64,
+        what = w -> new TaskLinkWhat(w, 32,
                        new PriBuffer.DirectTaskBuffer()
                        //new PriBuffer.BagTaskBuffer(128, 0.1f)
                        //new PriBuffer.MapTaskBuffer()
@@ -201,10 +201,10 @@ public class NARS {
 
         /** shared temporal belief and goal capacity curve */
         ToIntFunction<Concept> bgTemporal = curve(termVolume,
-                1, 96,
-                8, 72,
-                16, 48,
-                32, 24
+                1, 256,
+                8, 48,
+                16, 32,
+                32, 16
         );
 
         /** shared question and quest capacity curve */

@@ -136,7 +136,7 @@ public class Inperience extends TaskTransformAction {
         if (PROPAGATE_ETERNAL || !t.isEternal()) {
             s = t.start(); e = t.end();
         } else {
-            s = when.start(); e = when.end();
+            s = when.start; e = when.end;
         }
 
         Task u = null;

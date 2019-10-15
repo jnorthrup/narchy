@@ -84,8 +84,8 @@ public class ArkaNAR extends GameX {
 
 //                    (i, o) -> new HaiQae(i, o)
 
-            , 4, 2, true);
-
+            , 2, 3, true);
+            n.add(a);
 
             window(new Splitting(
                         NARui.game(a),

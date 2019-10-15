@@ -757,7 +757,7 @@ public class PatternHow extends CondHow {
             if (!truth.test(d))
                 return 0;
 
-            return puncFactor * d.what.derivePri.prePri(d);
+            return puncFactor * d.x.derivePri.prePri(d);
         }
 
         @Override

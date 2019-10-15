@@ -48,7 +48,7 @@ public class AdjacentLinks extends TaskAction {
 		Task task = d._task;
 		Term from = task.term().concept();
 		to = to.concept();
-		Term tgt = adj.adjacent(from, to, task.punc(), ((TaskLinkWhat)d.what).links, d);
+		Term tgt = adj.adjacent(from, to, task.punc(), ((TaskLinkWhat)d.x).links, d);
 
 		if (tgt != null) {
 			if (NAL.DEBUG) {

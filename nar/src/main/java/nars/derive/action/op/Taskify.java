@@ -283,7 +283,7 @@ public class Taskify extends ProxyTerm {
                         new DebugDerivedTask(x, punc, tru, S, E, d) :
                         new DerivedTask(x, punc, tru, d.time, S, E, d.evidence());
 
-        float priority = d.what.derivePri.pri(t, d);
+        float priority = d.x.derivePri.pri(t, d);
         if (priority != priority) {
             nar.emotion.deriveFailPrioritize.increment();
             spam(d, NAL.derive.TTL_COST_DERIVE_TASK_UNPRIORITIZABLE);
