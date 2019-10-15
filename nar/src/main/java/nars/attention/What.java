@@ -23,6 +23,7 @@ import nars.util.Timed;
 
 import java.io.Externalizable;
 import java.util.Random;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
@@ -127,8 +128,9 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 
 	@Override
 	protected void starting(NAR nar) {
-		super.starting(nar);
+		nextUpdate.set(nar.time());
 		durBase = nar.dur();
+		super.starting(nar);
 		inBuffer.start(perceive, nar);
 	}
 
@@ -217,20 +219,24 @@ abstract public class What extends PriNARPart implements Sampler<TaskLink>, Iter
 		return eventTask.on(listener, punctuations);
 	}
 
-
-
-
-
-
+	/** ensure at most only one commit is in progress at any time */
+	private final AtomicBoolean busy = new AtomicBoolean(false);
 
 	public boolean tryCommit() {
 		long nextUpdate = this.nextUpdate.getOpaque();
 		long now = time();
 		if (now > nextUpdate) {
+			float durBase = nar.dur();
 			long nextNextUpdate = now + (long) Math.ceil(durBase * commitDurs.floatValue());
 			if (this.nextUpdate.compareAndSet(nextUpdate, nextNextUpdate)) {
-				durBase = nar.dur();
-				commit(nar);
+				if (busy.compareAndSet(false, true)) {
+					try {
+						this.durBase = durBase;
+						commit(nar);
+					} finally {
+						busy.lazySet(false);
+					}
+				}
 				return true;
 			}
 		}

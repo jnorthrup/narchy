@@ -1,5 +1,6 @@
 package nars.exe.impl;
 
+import jcog.TODO;
 import jcog.Util;
 import jcog.event.Off;
 import jcog.exe.AffinityExecutor;
@@ -70,8 +71,9 @@ abstract public class ThreadedExec extends MultiExec {
 
         //HACK should somehow work in affinity mode too
         if (!affinity) {
-            long ci = this.cycleIdealNS;
-            if (ci > 0) {
+            //long ci = this.cycleIdealNS;
+            //if (ci > 0)
+            {
                 int idealThreads = Util.clamp(
                     (int) Math.ceil((nar.loop.throttle.floatValue()) * concurrencyMax),
                     1,
@@ -102,7 +104,8 @@ abstract public class ThreadedExec extends MultiExec {
                     logger.info("stop {} worker threads (ideal: {} )", excess, idealThreads);
                 }
             }
-        }
+        } else
+            throw new TODO();
 
 
         super.update();

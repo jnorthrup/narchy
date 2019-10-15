@@ -8,19 +8,15 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
      */
     private /* volatile */ long periodNS;
 
-    public FixedRateTimedFuture() {
+    protected FixedRateTimedFuture() {
         super();
     }
 
     FixedRateTimedFuture(int rounds,
                          Runnable callable,
-                         long recurringTimeout, long resolution, int wheels) {
+                         long periodNS, long resolution, int wheels) {
         super(rounds, callable);
-        init(recurringTimeout, resolution, wheels);
-    }
-
-    public void init(long recurringTimeout, long resolution, int wheels) {
-        this.periodNS = recurringTimeout;
+        setPeriodNS(periodNS);
         reset(wheels, resolution);
     }
 
@@ -36,12 +32,11 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     }
 
     @Override
-    public void execute(HashedWheelTimer t) {
+    public final void execute(HashedWheelTimer t) {
 
         if (!isCancelled()) {
             if (isReady())
                 super.execute(t);
-
 
             reset(t.wheels, t.resolution);
             t.reschedule(this);
@@ -76,15 +71,11 @@ public class FixedRateTimedFuture extends AbstractTimedRunnable {
     /** TODO cache this
      * */
     protected void reset(int wheels, long resolution) {
-        //int steps = (int) Math.round(((double) periodNS) / resolution);
-
         double epoch = resolution * wheels;
         long periodNS = this.periodNS;
         int rounds = Math.min(Integer.MAX_VALUE, (int)(periodNS / epoch));
         this.rounds = rounds;
-        this.offset = Math.max(1, (int) (((periodNS - rounds * epoch) / resolution)));
-
-
+        this.offset = Math.max(1, (int)(((periodNS - rounds * epoch) / resolution)));
     }
 
 

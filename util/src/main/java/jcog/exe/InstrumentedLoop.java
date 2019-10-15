@@ -14,9 +14,9 @@ abstract public class InstrumentedLoop extends Loop {
     /**
      * in seconds
      */
-    public final FloatAveragedWindow dutyTime = new FloatAveragedWindow(windowLength, 0.5f);
+    public final FloatAveragedWindow dutyTime = new FloatAveragedWindow(windowLength, 0.5f, false);
     public final FloatAveragedWindow cycleTime =
-            new FloatAveragedWindow(windowLength, 1f/windowLength /* == non-exponential mean? */);
+            new FloatAveragedWindow(windowLength, 1f/windowLength /* == non-exponential mean? */, false);
 
     /** the current cycle time delta (nanoseconds) */
     public long cycleTimeNS = 0;

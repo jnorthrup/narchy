@@ -97,6 +97,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
         return table.items.getSafe(index);
     }
 
+    /** different from sample(..); this will return uniform random results */
+    public final @Nullable Y get(Random rng) {
+        Object[] items = table.items.items;
+        int s = Math.min(items.length, size());
+        return s > 0 ? (Y)items[rng.nextInt(s)] : null;
+    }
+
     @Override
     protected void onCapacityChange(int before, int after) {
         if (before > after) {

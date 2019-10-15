@@ -67,11 +67,11 @@ public abstract class DeriverExecutor extends Derivation {
 		return result;
 	}
 
-	public abstract void next();
+	public abstract void next(int loops);
 
-	public void nextSynch(What w) {
+	public void next(What w, int loops) {
 		next(w);
-		next();
+		next(loops);
 	}
 
 
@@ -113,7 +113,7 @@ public abstract class DeriverExecutor extends Derivation {
 
 		do {
 
-			next();
+			next(1);
 
 		} while (kontinue.getAsBoolean());
 
@@ -126,9 +126,6 @@ public abstract class DeriverExecutor extends Derivation {
 		//new CachedPriorityQueue<>(sorter); //caches pri calculation
 		//new ArrayHashSet<>(capacity)
 
-
-		int iterationTTL = 8;
-
 		public QueueDeriverExecutor(Deriver deriver) {
 			super(deriver);
 		}
@@ -140,9 +137,8 @@ public abstract class DeriverExecutor extends Derivation {
 		}
 
 		@Override
-		public void next() {
+		public void next(int mainTTL) {
 
-			int mainTTL = iterationTTL;
 			int branchTTL = nar.deriveBranchTTL.intValue();
 //
 			Queue<Premise> q = this.queue;
@@ -214,13 +210,13 @@ public abstract class DeriverExecutor extends Derivation {
 		}
 
 		@Override
-		public void next() {
+		public void next(int tries) {
 
 			starting();
 
 			int cap = bag.capacity();
 
-			int tries = 1 + (cap - bag.size()); //TODO penalize duplicates more
+			//int tries = 1 + (cap - bag.size()); //TODO penalize duplicates more
 			do {
 				Premise x = sample();
 				if (x != null) {

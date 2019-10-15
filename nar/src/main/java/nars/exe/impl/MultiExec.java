@@ -1,23 +1,14 @@
 package nars.exe.impl;
 
 import jcog.Texts;
-import jcog.Util;
-import jcog.data.atomic.MetalAtomicReferenceArray;
 import jcog.data.list.FasterList;
 import jcog.event.Off;
 import nars.NAR;
-import nars.attention.AntistaticBag;
-import nars.attention.What;
 import nars.control.Cause;
 import nars.control.MetaGoal;
 import nars.exe.Exec;
-import nars.exe.NARLoop;
 import nars.time.clock.RealTime;
 
-import java.io.PrintStream;
-import java.util.Random;
-import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 
@@ -33,23 +24,11 @@ abstract public class MultiExec extends Exec {
 //    static final double lagAdjustmentFactor =
 //            0.5;
 
-    /** timeslice granularity */
-    long subCycleNS = 2_500_000;
-
+    ///** timeslice granularity */
+    //long subCycleNS = 2_500_000;
 
     static private final float queueLatencyMeasurementProbability = 0.001f;
-    /**
-     * 0..1.0: determines acceptable reaction latency.
-     * lower value allows queue to grow larger before it's processed,
-     * higher value demands faster response at (a likely) throughput cost
-     */
-    //public final FloatRange alertness = new FloatRange(1f, 0, 1f);
-//    protected NARPart updater;
-//    final FloatAveragedWindow CYCLE_DELTA_MS = new FloatAveragedWindow(3, 0.5f);
-    //1.5;
-    volatile long threadWorkTimePerCycle;
-    volatile long cycleIdealNS;
-    volatile long lastDur /* TODO lastNow */ = System.nanoTime();
+
     private Off onDur;
 
 
@@ -120,137 +99,34 @@ abstract public class MultiExec extends Exec {
 
         updateTiming();
 
-//        float workPct = 0; //HACK Math.max(0.5f, workDemand());
-
         BiConsumer<NAR, FasterList<Cause>> g = this.governor;
         if (g!=null)
             MetaGoal.value(nar, g);
 
-        schedule(nar.what, ((RealTime)nar.time).durNS(), subCycleNS, 3,
-            1-nar.loop.throttle.floatValue());
-        //System.out.println(schedWrite.size() + " sched entries");
-        //schedWrite.print(System.out); System.out.println();
+        if (nar.random().nextFloat() < queueLatencyMeasurementProbability)
+            execute(new QueueLatencyMeasurement(nanoTime()));
+
     }
 
-//    /** estimate proportion of duty cycle that needs applied to queued work tasks.
-//     *  calculated by some adaptive method wrt profiled measurements */
-//    abstract protected float workDemand();
 
-
-//    /** special consumer implementing work instruction */
-//    static final Consumer WORK = (e) -> {};
-
-    /** hijackbag-like array to sample tasks from, tiled in proportional amounts like a discrete
-     * roulette select on to a MetalAtomicReferenceArray*/
-    @Deprecated static class Schedule<X>  {
-
-
-        MetalAtomicReferenceArray<X /* switcher*/> tasks = new MetalAtomicReferenceArray<>(0);
-        final AtomicInteger writer = new AtomicInteger(0);
-        final AtomicBoolean writing = new AtomicBoolean(false);
-
-        void resize(double durNS, double timeSliceNS, float supersampling) {
-            resize( (int)Math.max(1, Math.ceil((durNS * supersampling) / timeSliceNS)) );
-        }
-
-        void resize(int capacity) {
-            MetalAtomicReferenceArray<X> t = this.tasks;
-            if (t.length() != capacity) {
-                MetalAtomicReferenceArray<X> newTasks = new MetalAtomicReferenceArray<>(capacity);
-                newTasks.fill(null); //TODO copy the original array, cyclically tiled into next
-                this.tasks = newTasks;
-            }
-        }
-
-        private void add(int k, X c) {
-            MetalAtomicReferenceArray<X> t = this.tasks;
-            int n = writer.get();
-            int len = t.length();
-            for (int i = 0; i < k; i++) {
-                if (n == len)
-                    n = 0;
-                t.setFast(n++, c);
-            }
-            writer.set(n);
-        }
-
-        public X get(Random r) {
-            MetalAtomicReferenceArray<X> t = this.tasks;
-            return t.getFast(r.nextInt(t.length()));
-        }
-
-        public Schedule() {
-            resize(1);
-        }
-
-
-        public void print(PrintStream out) {
-            //forEachEvent((when,what)->out.println(Texts.timeStr(when) + "\t" + what));
-        }
-    }
-
-    final Schedule<What> schedule = new Schedule<>();
-    public void schedule(AntistaticBag<What> w, double durNS, double timeSliceNS, float supersampling, double sleepPct) {
-        if (!schedule.writing.compareAndSet(false, true))
-            return;
-
-        try {
-
-            schedule.resize(durNS, timeSliceNS, supersampling); //durNS *= supersampling;
-
-//                if (workPct + sleepPct > 1) {
-//                    //only work and sleep but calculate the correct proportion:
-//                    workPct = (workPct / (workPct + sleepPct)); //renormalize
-//                    sleepPct = 1 - workPct;
-//                }
-
-//                double workNS = (durNS * workPct);
-
-//                int nw = (int) Math.max(1, workNS * supersampling / timeSliceNS);
-//                add(nw, WORK);
-
-            if (sleepPct > 0) {
-                double sleepNS = (durNS * sleepPct);
-                schedule.add(
-                    (int) Math.floor(sleepNS * supersampling / timeSliceNS),
-                    null);
-            }
-
-            double playPct = Math.max(0, 1f - sleepPct);
-            if (playPct > 0) {
-                double playNS = durNS * playPct;
-                double mass = w.mass();
-                for (What ww : w) {
-                    double priNorm = ww.priElseZero() / mass;
-                    double wPlayNS = (priNorm * playNS);
-                    schedule.add((int) Math.max(1, wPlayNS * supersampling / timeSliceNS),
-                        ww);
-                    //System.out.println(ww + " " + priNorm + " " + np);
-                }
-            }
-        } finally {
-            schedule.writing.set(false);
-        }
-    }
 
     private void updateTiming() {
 
-        long now = System.nanoTime();
         //long last = this.lastDur;
-        this.lastDur = now;
 
         //long durDeltaTime = now - last
 
-        NARLoop loop = nar.loop;
-        cycleIdealNS = loop.periodNS();
-        if (cycleIdealNS <= 0) {
+        //NARLoop loop = nar.loop;
+        //cycleIdealNS = loop.periodNS();
+        //if (cycleIdealNS <= 0) {
             //paused
-            threadWorkTimePerCycle = 0;
-        } else {
-            double throttle = loop.throttle.floatValue();
+            //threadWorkTimePerCycle = 0;
+        //} else {
+            //double throttle = loop.throttle.floatValue();
 
             //TODO better idle calculation in each thread / worker
-            long workTargetNS = (long) (Util.lerp(throttle, 0, cycleIdealNS));
+            //this.threadWorkTimePerCycle = (long) (Util.lerp(throttle, 0, cycleIdealNS));
+
             //float durCycles = nar.dur();
             //long cycleActualNS = Math.round(((double)durDeltaNS)/(UPDATE_DURS * durCycles)); //(long) (1_000_000.0 * CYCLE_DELTA_MS.valueOf((float) (durDeltaNS / 1.0E6)/(UPDATE_DURS * nar.dur())));
 //            long lagMeanNS = durDeltaNS - cycleIdealNS; //cycleActualNS - Math.round(UPDATE_DURS * cycleIdealNS);
@@ -273,10 +149,7 @@ abstract public class MultiExec extends Exec {
 ////                }
 //            }
 
-            this.threadWorkTimePerCycle = workTargetNS;
 
-            if (nar.random().nextFloat() < queueLatencyMeasurementProbability)
-                execute(new QueueLatencyMeasurement(nanoTime()));
 
 
 
@@ -285,7 +158,7 @@ abstract public class MultiExec extends Exec {
 //                Texts.timeStr(threadIdleTimePerCycle) + " idle, " +
 //                Texts.timeStr(lagMeanNS) + " lag"
 //                );
-        }
+        //}
 
     }
 

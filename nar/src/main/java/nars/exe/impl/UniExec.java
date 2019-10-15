@@ -17,6 +17,8 @@ public class UniExec extends Exec {
 
     private DeriverExecutor exe;
 
+    @Deprecated private int loops = 8;
+
     public UniExec() {
         this(1);
     }
@@ -68,7 +70,7 @@ public class UniExec extends Exec {
         for (What w : n.what) {
             if (w.isOn()) {
                 if (sync)
-                    exe.nextSynch(w);
+                    exe.next(w, loops);
                 else
                     exe.next(w, kontinue); //w.next(nanoTime(), timesliceNS);
             }

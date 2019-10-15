@@ -81,7 +81,7 @@ abstract public class Loop extends FixedRateTimedFuture {
 
     @Override
     protected final boolean isReady() {
-        return !running.get() && scheduled.compareAndSet(false,true);
+        return !running.getOpaque() && scheduled.compareAndSet(false,true);
     }
 
     public final Loop setFPS(float fps) {
@@ -90,7 +90,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     }
 
     public final void ready() {
-        running.set(false);
+        running.lazySet(false);
     }
 
     static int fpsToMS(float fps) {
@@ -129,7 +129,8 @@ abstract public class Loop extends FixedRateTimedFuture {
         //}
 
         HashedWheelTimer t = Exe.timer();
-        init(NANOSECONDS.convert(nextPeriodMS, TimeUnit.MILLISECONDS), t.resolution, t.wheels);
+        setPeriodNS(NANOSECONDS.convert(nextPeriodMS, TimeUnit.MILLISECONDS));
+        reset(t.wheels, t.resolution);
         t.reschedule(this);
     }
 
@@ -173,7 +174,7 @@ abstract public class Loop extends FixedRateTimedFuture {
     @Override
     public final void run() {
 
-        scheduled.set(false);
+        scheduled.lazySet(false);
 
         if (!running.compareAndSet(false, true))
             return;

@@ -2,11 +2,11 @@ package nars.exe.impl;
 
 import jcog.Util;
 import jcog.exe.Exe;
+import jcog.math.FloatAveragedWindow;
 import jcog.random.XoRoShiRo128PlusRandom;
 import nars.attention.What;
 import nars.derive.Deriver;
 import nars.derive.DeriverExecutor;
-import org.jetbrains.annotations.Nullable;
 
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -73,7 +73,7 @@ public class WorkerExec extends ThreadedExec {
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
 		float updateDurs = 1;
-		private transient DeriverExecutor.QueueDeriverExecutor dExe;
+		private transient DeriverExecutor deriver;
 		private transient long nextUpdate;
 
 		WorkPlayLoop() {
@@ -84,70 +84,134 @@ public class WorkerExec extends ThreadedExec {
 		/**
 		 * updated each system dur
 		 */
-		private void update() {
+		private DeriverExecutor deriver() {
 			long now = nar.time();
-			if (now < nextUpdate) return;
+			if (now < nextUpdate) {
+				return deriver; //same cycle
+			} else {
 
-			nextUpdate = now +
+				nextUpdate = now +
 					1; //per-cycle
-					//Math.round(updateDurs * nar.dur()); //per-dur
+				//Math.round(updateDurs * nar.dur()); //per-dur
 
-			if ((dExe = deriver()) != null)
-				dExe.cycle();
+				DeriverExecutor d = this.deriver;
+				Deriver systemDeriver = WorkerExec.this.deriver;
+				if (systemDeriver != null) {
+					if (d == null || d.deriver != systemDeriver) {
+						//deriver has changed; create new executor
+						d = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
+					}
+				}
+				if ((deriver = d) != null) {
+					d.cycle();
+					return d;
+				}
+				return null;
+			}
 		}
 
 		@Override
 		public void run() {
 
+
+			FloatAveragedWindow loopTime = new FloatAveragedWindow(8, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
+			loopTime.fill(50_000_000); //initial guess at cycle per loop
+
+			DeriverExecutor d;
 			while (alive.getOpaque()) {
 
-				try {
+				long cycleTimeNS = nar.loop.cycleTimeNS * concurrency();
 
-					work(); //HACK
+				long cycleStart = System.nanoTime();
+//
+				work();
+//
+//				long afterWork = System.nanoTime();
+//
+//				long workTime = afterWork - cycleStart;
+//				long cycleRemaining = cycleTimeNS - workTime;
+//				if (cycleRemaining < 0)
+//					continue; //worked until next morning so start again
+				long cycleRemaining = cycleTimeNS;
 
-					update();
 
-					What W = schedule.get(rng);
 
-					long t = subCycleNS;
-					if (W == null) {
-						Util.sleepNS(t);
-					} else {
-						DeriverExecutor dExe = this.dExe;
-						if (dExe == null) continue;
-
-						dExe.next(W);
-
-						long deadline = nanoTime() + t;
-
-						//int cycles = 0;
-						do {
-
-							dExe.next();
-						//		cycles++;
-
-						} while (nanoTime() < deadline);
-						//System.out.println(dExe.d.what + " " + cycles + " cyc");
-					}
-
-				} catch (Throwable t) {
-					t.printStackTrace();
+				float throttle = nar.loop.throttle.floatValue();
+				if (throttle > 0) {
+					//sleep at most until next cycle
+					long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
+					long naptime = 2_000_000;
+					Util.sleepNSwhile(cycleSleepNS, naptime, ()->{
+						work();
+						return true;
+					});
+					//Util.sleepNS(cycleSleepNS);
+					long afterSleep = System.nanoTime();
+					cycleRemaining = cycleTimeNS - (afterSleep - cycleStart);
+					if (cycleRemaining < 0)
+						continue; //slept all day
 				}
 
-			}
-		}
+				d = deriver();
+				if (d == null) continue;
 
-		@Nullable
-		DeriverExecutor.QueueDeriverExecutor deriver() {
-			Deriver systemDeriver = WorkerExec.this.deriver;
-			if (systemDeriver == null)
-				return null;
-			DeriverExecutor.QueueDeriverExecutor dExe = this.dExe;
-			if (dExe == null || dExe.deriver != systemDeriver) {
-				//deriver has changed; create new executor
-				dExe = new DeriverExecutor.QueueDeriverExecutor(systemDeriver);
+				double meanLoopTimeNS = loopTime.mean();
+				int loopsPlanned = (int)Math.ceil(cycleRemaining / meanLoopTimeNS);
+				int minLoops = 8;
+				int maxLoops = minLoops + (loopsPlanned / (1+nar.what.size())); //TODO tune
+
+				long beforePlay = System.nanoTime();
+
+				//StringBuilder y = new StringBuilder();
+
+				int loopsRemain = loopsPlanned;
+
+				double mass = nar.what.mass();
+
+				while (loopsRemain > 0) {
+
+
+					What w = nar.what.get(rng);
+					if (w != null) {
+
+						int loops = (int) Util.lerp(w.priElseZero() / mass, minLoops, maxLoops);
+						loopsRemain -= loops;
+
+						try {
+							d.next(w, loops);
+						} catch (Throwable t) {
+							t.printStackTrace();
+						}
+
+						//y.append(w + " x " + loops + "\t");
+
+					}
+
+					work();
+
+				}
+
+				long playTimeNS = System.nanoTime() - beforePlay;
+
+				float nsPerLoop = (float) ((double) playTimeNS) / loopsPlanned;
+
+				loopTime.next(nsPerLoop);
+
+				//System.out.println(loopsPlanned + ": " + y + " @ " + Texts.timeStr(playTimeNS) + "\t" + " (" + Texts.timeStr(nsPerLoop) + " per loop avg)");
+
+//						long deadline = nanoTime() + t;
+//
+//						//int cycles = 0;
+//						do {
+//
+//							d.next();
+//						//		cycles++;
+//
+//						} while (nanoTime() < deadline);
+//						//System.out.println(dExe.d.what + " " + cycles + " cyc");
+
+
 			}
-			return dExe;
 		}
 
 		protected void work() {

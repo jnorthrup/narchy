@@ -3,6 +3,7 @@ package jcog.math;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
 import jcog.signal.Tensor;
+import jcog.signal.tensor.ArrayTensor;
 import jcog.signal.tensor.AtomicFloatVector;
 import jcog.signal.tensor.TensorRing;
 import org.eclipse.collections.api.block.function.primitive.FloatToFloatFunction;
@@ -49,6 +50,11 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
     public final double min() {
         return window.minValue();
+    }
+
+    public final FloatAveragedWindow fill(float value) {
+        window.fill(value);
+        return this;
     }
 
     private interface AverageStrategy {
@@ -101,7 +107,11 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     public Mode mode = Mode.Exponential;
 
     public FloatAveragedWindow(int windowSize, float alpha) {
-        this(windowSize, new FloatRange(alpha, 0, 1f));
+        this(windowSize, alpha, true);
+    }
+
+    public FloatAveragedWindow(int windowSize, float alpha, boolean atomic) {
+        this(windowSize, new FloatRange(alpha, 0, 1f), atomic);
     }
 
     public FloatAveragedWindow(int windowSize, float alpha, float fill) {
@@ -110,7 +120,13 @@ public class FloatAveragedWindow implements FloatSupplier, FloatToFloatFunction 
     }
 
     public FloatAveragedWindow(int windowSize, FloatRange alpha) {
-        this.window = new TensorRing(new AtomicFloatVector(windowSize), 1, windowSize);
+        this(windowSize, alpha, true);
+    }
+
+    public FloatAveragedWindow(int windowSize, FloatRange alpha, boolean atomic) {
+        this.window = new TensorRing(
+            atomic ? new AtomicFloatVector(windowSize) : new ArrayTensor(windowSize)
+            , 1, windowSize);
         this.alpha = alpha;
         window.fillAll(Float.NaN);
     }

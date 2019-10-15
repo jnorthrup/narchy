@@ -544,9 +544,6 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     /** switch to new context */
     public void next(What w) {
 
-//        if (this.what == w)
-//            return this; //continue using until reset by next() or it changes
-
         w.tryCommit();
 
         this.what = w;
@@ -556,6 +553,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
          *  setup the default temporal focus to be used throughout multiple successive derivations.
          *  constructs a time interval surrounding the present moment, with a diameter of
          *  1 duration.
+         *  TODO make mutable
          * */
         this.when = WhenTimeIs.now(w,
             this.time,

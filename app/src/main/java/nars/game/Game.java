@@ -483,7 +483,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
 
 
         try {
-            int dither = nar.dtDither();
+//            int dither = nar.dtDither();
 
             long now =
                 nar.time();
