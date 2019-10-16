@@ -152,8 +152,8 @@
 
 
 //    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:UnionPB, Time:Compose)
-       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionPP, Time:Compose)
-       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:IntersectionNN, Time:Compose)
+      (P ==> M), (S ==> M)  |-   ((P || S) ==> M), (Belief:IntersectionPP, Time:Compose)
+      (P ==> M), (S ==> M)  |- --((P || S) ==> M), (Belief:IntersectionNN, Time:Compose)
 //    (P ==> M), (S ==> M)  |- ((P && S) ==> M), (Belief:IntersectionPB, Time:Compose)
 //       (P ==> M), (S ==> M)  |- ((P || S) ==> M), (Belief:UnionPB, Time:Compose)
 
@@ -174,16 +174,17 @@
 //     (M ==> P), (M ==> S)  |- (M ==> (--P && S)), (Belief:IntersectionNP, Time:Compose)
 //     (M ==> P), (M ==> S)  |- (M ==> (--P && --S)), (Belief:IntersectionNN, Time:Compose)
        //(M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) || polarizeBelief(S))), (Belief:UnionDD, Time:Compose)
-       (M ==> P), (M ==> S)  |- (M ==> (P && S)), (Belief:Intersection, Time:Compose)
-       (M ==> P), (M ==> S)  |- (M ==> (P || S)), (Belief:Union, Time:Compose)
+       //(M ==> P), (M ==> S)  |- (M ==> (P && S)), (Belief:Intersection, Time:Compose)
+       //(M ==> P), (M ==> S)  |- (M ==> (P || S)), (Belief:Union, Time:Compose)
 
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
-       (M ==> P), (M ==> S)  |- (M ==> (P && S)), (Punctuation:AskAsk, Time:Task)
-       (M ==> P), (M ==> S)  |- (M ==> (P || S)), (Punctuation:AskAsk, Time:Task)
+        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)
+
+        //(M ==> P), (M ==> S)  |- (M ==> (P && S)), (Punctuation:AskAsk, Time:Task)
+        //(M ==> P), (M ==> S)  |- (M ==> (P || S)), (Punctuation:AskAsk, Time:Task)
 
 
-//        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)
 
 
 

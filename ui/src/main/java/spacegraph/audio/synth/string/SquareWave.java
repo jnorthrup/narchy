@@ -37,10 +37,10 @@ public class SquareWave extends KarplusStrongString {
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume();
-        filterOut = C() * x + filterIn - C() * filterOut; // allpass tuning filter
+        double x = first * deltaVolume;
+		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
-        buffer.enqueue(checkMax(filterOut * deltaVolume()));
+        buffer.enqueue(checkMax(filterOut * deltaVolume));
     }
 
     public void release() {

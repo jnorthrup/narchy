@@ -36,7 +36,7 @@ public class Settings {
      * A "close to zero" float epsilon value for use
      */
     public static final float EPSILON =
-            1.1920928955078125E-7f;
+            1.1920928955078125E-5f;
     public static final float EPSILONsqr = sqr(EPSILON);
     public static final float EPSILONsqrt = sqrt(EPSILON);
 

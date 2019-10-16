@@ -18,7 +18,7 @@ public class StringSynth {
     private static final List<Integer> keycodes = Arrays.asList(192, 9, 20, 16, 49, 81, 65, 90, 50, 87, 83, 88, 51, 69, 68, 67, 52, 82, 70, 86, 53, 84, 71, 66, 54,
             89, 72, 78, 55, 85, 74, 77, 56, 73, 75, 44, 57, 79, 76, 46, 48, 80, 59, 47, 45, 91, 222, 16, 61, 93, 10, 8, 92);
     private final int keyboardSize = keycodes.size();
-    private final KarplusStrongString[] strings = new KarplusStrongString[2 * keyboardSize];
+    private final KarplusStrongString[] strings = new KarplusStrongString[keyboardSize];
     private int alt = 0;
     private boolean hold = false;
     private float amp = 1;
@@ -54,7 +54,7 @@ public class StringSynth {
                     new GuitarString(F);
             //new ViolinString(F);
             //new ViolinDiffDecayString(F);
-            strings[i + keyboardSize] = new SquareVolumeWave(indexToCustom(i, 2, asymmetric_5limit));
+            //strings[i + keyboardSize] = new SquareVolumeWave(indexToCustom(i, 2, asymmetric_5limit));
         }
     }
 
@@ -87,17 +87,16 @@ public class StringSynth {
 
     public void keyPress(int stringIndex, boolean hold) {
         KarplusStrongString string = strings[stringIndex + alt];
-        int status = string.status();
-        if (status == 3 || (status == 0 && hold)) {
-            string.setStatus(2);
-        } else if (status == 0) {
+//        int status = string.status();
+//        if (status == 3 || (status == 0 && hold)) {
+//            string.setStatus(2);
+//        } else if (status == 0) {
             string.setStatus(1);
-        }
-
-        if (hold) {
-            releaseHeld();
-            hold = true;
-        }
+//        }
+//
+//        if (hold) {
+//            string.release();
+//        }
     }
 
     public void keyReleased(KeyEvent e) {
@@ -226,16 +225,15 @@ public class StringSynth {
     }
 
     public double next() {
-        for (KarplusStrongString x : strings) {
-            if (x.status() == 1 || x.status() == 2) {
-                x.pluck();
-                x.setStatus(-1 * x.status());
-            }
-        }
 
-        /* compute the superposition of samples */
         double sample = 0.0;
+
         for (KarplusStrongString x : strings) {
+            int xs = x.status();
+            if (xs == 1 || xs == 2) {
+                x.pluck();
+                x.setStatus(-1 * xs);
+            }
             sample += x.sample() * amp;
         }
 

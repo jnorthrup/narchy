@@ -37,10 +37,10 @@ public class SquareHarmonicsWave extends KarplusStrongString {
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume();
-        filterOut = C() * x + filterIn - C() * filterOut; // allpass tuning filter
+        double x = first * deltaVolume;
+		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
-        buffer.enqueue(filterOut * deltaVolume());
+        buffer.enqueue(filterOut * deltaVolume);
     }
 
     private double getSample(int index) {

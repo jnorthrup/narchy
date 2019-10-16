@@ -31,7 +31,7 @@ public class SquareHarmonicsVariableString extends VariableDeltaString {
     public void tic() {
         double first = buffer.dequeue();
         double second = buffer.peek();
-        double last = (first + second) * (deltaVolume() / 2);
+		double last = (first + second) * (deltaVolume / 2);
         last = checkMax(last);
         buffer.enqueue(last);
         oneTic();

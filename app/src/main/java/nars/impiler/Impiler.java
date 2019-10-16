@@ -20,8 +20,6 @@ import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
 import nars.term.Termed;
-import nars.time.When;
-import nars.time.event.WhenTimeIs;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;

@@ -34,7 +34,9 @@ import static nars.$.$$;
  */
 abstract public class MetaAgent extends Game {
 
-	private static final float PRI_ACTION_RESOLUTION = 0.05f;
+	private static final float PRI_ACTION_RESOLUTION =
+		0.01f;
+		//0.05f;
 
 	//private static final Logger logger = Log.logger(MetaAgent.class);
 
@@ -195,7 +197,7 @@ abstract public class MetaAgent extends Game {
 							Util.lerp((x) * 2, -0.01f, 0) //negative (0..0.5): weaker
 					);
                 });
-                a.resolution(0.1f);
+//                a.resolution(0.1f);
 			}
 
 //        float maxPri = Math.max(n.beliefPriDefault.amp.floatValue(), n.goalPriDefault.amp.floatValue());
@@ -207,16 +209,16 @@ abstract public class MetaAgent extends Game {
 			    float y;
 				if (x >= 0.75f) {
 					x = 0.01f;
-					y = (1f+0.75f)/2;
+					y = 1;
 				} else if (x >= 0.5f) {
-					x = 0.05f;
-					y = (0.75f+0.5f)/2;
+					x = 0.02f;
+					y = 0.66f;
 				} else if (x >= 0.25f) {
-					x = 0.1f;
-					y = (0.5f+0.25f)/2;
+					x = 0.04f;
+					y = 0.33f;
 				} else {
-					x = 0.2f;
-					y = 0.25f/2;
+					x = 0.1f;
+					y = 0;
 				}
 				nar.freqResolution.set(x);
 				return y;
@@ -225,16 +227,16 @@ abstract public class MetaAgent extends Game {
 				float y;
 				if (x >= 0.75f) {
 					x = 0.01f;
-					y = (1f+0.75f)/2;
+					y = 1f;
 				} else if (x >= 0.5f) {
 					x = 0.02f;
-					y = (0.75f+0.5f)/2;
+					y = 0.66f;
 				} else if (x >= 0.25f) {
 					x = 0.03f;
-					y = (0.5f+0.25f)/2;
+					y = 0.33f;
 				} else {
 					x = 0.04f;
-					y = 0.25f/2;
+					y = 0;
 				}
 				nar.confResolution.set(x);
 				return y;

@@ -18,7 +18,7 @@ import spacegraph.space2d.widget.button.PushButton;
 /**
  * Splits a surface into a top and bottom or left and right sections
  */
-public class Splitting<X extends Surface, Y extends Surface> extends MutableArrayContainer {
+public class Splitting<X extends Surface, Y extends Surface> extends MutableArrayContainer<Surface> {
 
     private static final float resizeMargin = 0.0125f;
     private float split = Float.NaN;

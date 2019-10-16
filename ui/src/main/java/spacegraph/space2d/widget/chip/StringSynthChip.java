@@ -2,8 +2,10 @@ package spacegraph.space2d.widget.chip;
 
 import org.eclipse.collections.api.tuple.primitive.ObjectIntPair;
 import spacegraph.audio.synth.string.StringSynth;
+import spacegraph.space2d.Surface;
 import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.grid.Gridding;
+import spacegraph.space2d.widget.button.PushButton;
 import spacegraph.space2d.widget.port.BoolPort;
 import spacegraph.space2d.widget.port.FloatPort;
 import spacegraph.space2d.widget.port.TypedPort;
@@ -46,8 +48,13 @@ public class StringSynthChip extends Bordering {
 
         set(N, new Gridding(awesome(pitch, "music"), awesome(pluck, "compress")));
 
-        set(awesome( output, "play"));
+        Surface o = awesome(output, "play");
 
-        set(S, new Gridding(/*e, */new FloatSlider(h.amp(), 0, 8f).on(h::amp)));
+        set(o);
+
+
+        set(S, new Gridding(new PushButton("x").clicked(()->{
+            h.keyPress(10, false);
+        }),/*e, */new FloatSlider(h.amp(), 0, 8f).on(h::amp)));
     }
 }

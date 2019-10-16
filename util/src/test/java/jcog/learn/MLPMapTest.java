@@ -1,6 +1,5 @@
 package jcog.learn;
 
-import jcog.Util;
 import jcog.learn.ntm.control.SigmoidActivation;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.junit.jupiter.api.Test;
@@ -37,8 +36,8 @@ class MLPMapTest {
 					//i;
 					r.nextInt(cases);
 
-				float[] ee = mlp.put(train_in[idx], train_out[idx], learningRate);
-				err += Util.sumAbs(ee);
+				mlp.put(train_in[idx], train_out[idx], learningRate);
+				err += mlp.errorSquared();
 			}
 
 			if ((t + 1) % 10 == 0) {
@@ -52,7 +51,7 @@ class MLPMapTest {
 				}
 			}
 
-			if(err < 0.001)
+			if(err < 0.0001)
 				break;
 		}
 		assert(t < time);

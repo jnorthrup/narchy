@@ -38,9 +38,9 @@ public class SquareString extends KarplusStrongString {
         double first = buffer.dequeue();
         double second = buffer.peek();
         double x = (first + second) / 2; // lowpass filter
-        filterOut = C() * x + filterIn - C() * filterOut; // allpass tuning filter
+		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
-        buffer.enqueue(filterOut * deltaVolume());
+        buffer.enqueue(filterOut * deltaVolume);
     }
 
     public void release() {

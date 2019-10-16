@@ -28,7 +28,6 @@ import nars.memory.CaffeineMemory;
 import nars.op.Arithmeticize;
 import nars.op.AutoencodedBitmap;
 import nars.op.Factorize;
-import nars.op.mental.Abbreviation;
 import nars.op.mental.Inperience;
 import nars.op.stm.ConjClustering;
 import nars.op.stm.STMLinker;
@@ -431,11 +430,11 @@ abstract public class GameX extends Game {
                 //40
         );
 
-        n.causeCapacity.set(16);
+        n.causeCapacity.set(32);
         n.termVolMax.set(
-            //64
+            64
             //48
-            36
+            //36
         );
 
         //n.confMin.set(1e-10);

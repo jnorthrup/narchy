@@ -387,7 +387,6 @@ public class Fixture {
     public void createProxies(BroadPhase broadPhase, final Transform xf) {
         assert (m_proxyCount == 0);
 
-        
         m_proxyCount = shape.getChildCount();
 
         for (int i = 0; i < m_proxyCount; ++i) {
@@ -426,33 +425,34 @@ public class Fixture {
      * @param xf1
      * @param xf2
      */
-    void synchronize(BroadPhase broadPhase, final Transform transform1,
-                     final Transform transform2) {
-        if (m_proxyCount == 0) {
+    void synchronize(BroadPhase broadPhase, final Transform transform1, final Transform transform2) {
+        if (m_proxyCount == 0)
             return;
-        }
+
+        v2 t1p = transform1.pos, t2p = transform2.pos;
+
+        final AABB aabb1 = pool1, aabb2 = pool2;
+        v2 a1l = aabb1.lowerBound, a2l = aabb2.lowerBound;
+        v2 a1u = aabb1.upperBound, a2u = aabb2.upperBound;
 
         for (int i = 0; i < m_proxyCount; ++i) {
             FixtureProxy proxy = proxies[i];
+            int childIndex = proxy.childIndex;
 
-            
-            final AABB aabb1 = pool1;
-            final AABB aab = pool2;
-            shape.computeAABB(aabb1, transform1, proxy.childIndex);
-            shape.computeAABB(aab, transform2, proxy.childIndex);
+            shape.computeAABB(aabb1, transform1, childIndex);
+            shape.computeAABB(aabb2, transform2, childIndex);
 
-            proxy.aabb.lowerBound.x =
-                    aabb1.lowerBound.x < aab.lowerBound.x ? aabb1.lowerBound.x : aab.lowerBound.x;
-            proxy.aabb.lowerBound.y =
-                    aabb1.lowerBound.y < aab.lowerBound.y ? aabb1.lowerBound.y : aab.lowerBound.y;
-            proxy.aabb.upperBound.x =
-                    aabb1.upperBound.x > aab.upperBound.x ? aabb1.upperBound.x : aab.upperBound.x;
-            proxy.aabb.upperBound.y =
-                    aabb1.upperBound.y > aab.upperBound.y ? aabb1.upperBound.y : aab.upperBound.y;
-            displacement.x = transform2.pos.x - transform1.pos.x;
-            displacement.y = transform2.pos.y - transform1.pos.y;
+            AABB pab = proxy.aabb;
+            v2 pabl = pab.lowerBound, pabu = pab.upperBound;
+            pabl.x = Math.min(a1l.x, a2l.x);
+            pabl.y = Math.min(a1l.y, a2l.y);
+            pabu.x = Math.max(a1u.x, a2u.x);
+            pabu.y = Math.max(a1u.y, a2u.y);
 
-            broadPhase.moveProxy(proxy.id, proxy.aabb, displacement);
+            displacement.x = t2p.x - t1p.x;
+            displacement.y = t2p.y - t1p.y;
+
+            broadPhase.moveProxy(proxy.id, pab, displacement);
         }
     }
 }

@@ -49,11 +49,11 @@ public class SquareVolumeWave extends KarplusStrongString {
 
     public void tic() {
         double first = buffer.dequeue();
-        double x = first * deltaVolume();
-        filterOut = C() * x + filterIn - C() * filterOut; // allpass tuning filter
+        double x = first * deltaVolume;
+		filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
-        double next = checkMax(filterOut * deltaVolume());
-        if (state == 0 && next != filterOut * deltaVolume()) {
+        double next = checkMax(filterOut * deltaVolume);
+        if (state == 0 && next != filterOut * deltaVolume) {
             setDeltaVolume(decayDelta);
             state = 1;
         }

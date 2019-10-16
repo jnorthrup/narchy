@@ -6,7 +6,6 @@ import nars.NAR;
 import nars.NARS;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.exe.impl.UniExec;
 import nars.op.language.util.IRC;
 import nars.term.Compound;
 import nars.term.Term;

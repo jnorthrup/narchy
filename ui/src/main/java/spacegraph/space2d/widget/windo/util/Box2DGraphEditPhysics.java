@@ -6,7 +6,6 @@ import jcog.Util;
 import jcog.data.list.FasterList;
 import jcog.data.map.ConcurrentFastIteratingHashMap;
 import jcog.math.v2;
-import jcog.tree.rtree.Spatialization;
 import jcog.tree.rtree.rect.RectFloat;
 import org.eclipse.collections.api.block.procedure.primitive.ObjectLongProcedure;
 import org.jetbrains.annotations.Nullable;
@@ -77,15 +76,11 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         private transient float prw, prh;
         void pre(Dynamics2D physics, RectFloat r) {
-            float ncx = r.cx();
-            float ncy = r.cy();
-            float nrw = r.w;
-            float nrh = r.h;
-
             boolean resized = false, moved = false;
 
-            if (!Util.equals(nrw, prw, SHAPE_SIZE_EPSILON) ||
-                    !Util.equals(nrh, prh, SHAPE_SIZE_EPSILON)) {
+            float nrw = r.w, nrh = r.h;
+
+            if (!Util.equals(nrw, prw, SHAPE_SIZE_EPSILON) || !Util.equals(nrh, prh, SHAPE_SIZE_EPSILON)) {
 
                 prw = nrw;
                 prh = nrh;
@@ -93,20 +88,21 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
                 resized = true;
             }
 
-            if (body.setTransform(new v2(ncx / scaling, ncy / scaling), 0, Spatialization.EPSILONf)) {
+            float ncx = r.cx(), ncy = r.cy();
+            if (body.setTransform(new v2(ncx / scaling, ncy / scaling), 0, SHAPE_SIZE_EPSILON))
                 moved = true;
-            }
 
             if (resized || moved)
                 body.setAwake(true);
         }
 
-        void post(Dynamics2D physics) {
+        void post(Dynamics2D physics, RectFloat clamp) {
 
             v2 p = body.pos;
             surface.pos(RectFloat.XYWH(
                     p.x * scaling, p.y * scaling,
-                    surface.w(), surface.h()));
+                    surface.w(), surface.h()).clamp(clamp));
+
 
             //if (!r.equals(physBounds, Spatialization.EPSILONf)) {
 
@@ -186,9 +182,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         }
 
         @Override
-        void post(Dynamics2D physics) {
+        void post(Dynamics2D physics, RectFloat clamp) {
             if (!surface.fixed()) {
-                super.post(physics);
+                super.post(physics, clamp);
             }
         }
     }
@@ -217,9 +213,11 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
         clamp = g.bounds;
             //.scale(0.5f);
 
-        w.forEachValue(ww -> ww.pre(physics, preBounds(ww.surface)));
+        w.forEachValue(ww -> ww.pre(physics, ww.surface.bounds.clamp(clamp)));
+
         physics.step(dt * timeScale, velIter, posIter);
-        w.forEachValue(ww -> ww.post(physics));
+
+        w.forEachValue(ww -> ww.post(physics, clamp));
     }
 
     /** apply any preprocessing of bounds before entry to the physics engine (and affecting its possible feedback after it finishes)

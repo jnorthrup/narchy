@@ -55,7 +55,7 @@ public enum Intermpolate {;
         }
 
 
-        if (aa.subs() != bb.subs())
+        if (!subsEqual && aa.subs() != bb.subs())
             return Null;
 
         int dt = ao.temporal ? chooseDT(a, b, aProp, nar) : DTERNAL;

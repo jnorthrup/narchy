@@ -6,22 +6,21 @@ package spacegraph.audio.synth.string;
 public abstract class KarplusStrongString {
 
     private static final int SR = 44100; // Sampling Rate
-    private double deltaVolume; // energy change factor
+    protected double deltaVolume; // energy change factor
     private double maxVolume;
     private double initialVolume;
     private double frequency;
     public final BoundedQueue<Double> buffer;
     private int status; // 0 = ready to pluck, 1 = need to pluck, -1 = locked, 2 = need to pluck and hold, -2 = locked and held, 3 = held
-    private final double volumeAdd = .05;
+//    private final double volumeAdd = .05;
     private final double volumeMultiply = 1.2;
-    private double C;
+    protected double C;
 
 
     public KarplusStrongString(double frequency) {
         buffer = new ArrayRingBuffer<>((int) Math.round(SR / frequency));
-        for (int i = 0; i < buffer.capacity(); i++) {
+        for (int i = 0; i < buffer.capacity(); i++)
             buffer.enqueue(0.0);
-        }
         status = 0;
     }
 
@@ -65,10 +64,6 @@ public abstract class KarplusStrongString {
         double v = buffer.peek();
         tic();
         return v;
-    }
-
-    public double deltaVolume() {
-        return deltaVolume;
     }
 
     public void clear() {
@@ -135,7 +130,4 @@ public abstract class KarplusStrongString {
         initialVolume /= volumeMultiply;
     }
 
-    public double C() {
-        return C;
-    }
 }

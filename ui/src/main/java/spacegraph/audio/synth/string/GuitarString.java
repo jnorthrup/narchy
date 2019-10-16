@@ -2,7 +2,7 @@ package spacegraph.audio.synth.string;
 
 public class GuitarString extends KarplusStrongString {
 
-    private final double lowPass = 0.5;
+//    private final double lowPass = 0.5;
     private final double pluckDelta;
     private final double releaseDelta;
     private double filterIn;
@@ -53,9 +53,9 @@ public class GuitarString extends KarplusStrongString {
         double first = buffer.dequeue();
         double second = buffer.peek();
         double x = (first + second) / 2; // lowpass filter
-        filterOut = C() * x + filterIn - C() * filterOut; // allpass tuning filter
+        filterOut = C * x + filterIn - C * filterOut; // allpass tuning filter
         filterIn = x;
-        buffer.enqueue(filterOut * deltaVolume());
+        buffer.enqueue(filterOut * deltaVolume);
     }
 
 //    /** https://github.com/mrahtz/javascript-karplus-strong/blob/master/karplus-strong/guitarstring.js */
@@ -159,12 +159,12 @@ public class GuitarString extends KarplusStrongString {
         setDeltaVolume(releaseDelta);
     }
 
-    double v0;
-    @Override
-    public double sample() {
-        //double v = lowPass(v0, super.sample(), lowPass);
-        //resonate();
-        double v = super.sample();
-        return v0 = v;
-    }
+//    double v0;
+//    @Override
+//    public double sample() {
+//        //double v = lowPass(v0, super.sample(), lowPass);
+//        //resonate();
+//        double v = super.sample();
+//        return v0 = v;
+//    }
 }

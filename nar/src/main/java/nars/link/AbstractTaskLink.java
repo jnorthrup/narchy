@@ -16,7 +16,7 @@ import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static jcog.Util.assertFinite;
-import static jcog.pri.op.PriReturn.*;
+import static jcog.pri.op.PriReturn.Changed;
 
 public abstract class AbstractTaskLink implements TaskLink {
 

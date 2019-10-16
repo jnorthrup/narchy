@@ -148,13 +148,13 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         physics.above.pos(b);
         raw.pos(b);
 
-        forEach(w -> {
-            if (w.parent == null)
-                w.start(GraphEdit2D.this);
-
-//            if (fenceInside)
-//                w.pos(w.bounds.fenceInside(graphBounds));
-        });
+//        forEach(w -> {
+//            if (w.parent == null)
+//                w.start(GraphEdit2D.this);
+//
+////            if (fenceInside)
+////                w.pos(w.bounds.fenceInside(graphBounds));
+//        });
     }
 
     @Override

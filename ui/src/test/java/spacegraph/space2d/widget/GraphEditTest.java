@@ -180,16 +180,16 @@ public class GraphEditTest {
     public static class StringSynthTest {
         public static void main(String[] args) {
             GraphEdit2D g = new GraphEdit2D();
-            SpaceGraph.window(g, 1000, 1000);
+            SpaceGraph.window(g, 1600, 1000);
 
 
-            RectFloat r2 = RectFloat.XYXY((float) 0, (float) 0, (float) 250, (float) 250);
+            RectFloat r2 = RectFloat.XYXY((float) 100, (float) 100, (float) 250, (float) 250);
             ((Surface) g.add(new StringSynthChip())).pos(r2);
 
             RectFloat r1 = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
             ((Surface) g.add(new WaveViewChip())).pos(r1);
 
-            RectFloat r = RectFloat.XYXY((float) 500, (float) 30, (float) 450, (float) 350);
+            RectFloat r = RectFloat.XYXY((float) 300, (float) 230, (float) 450, (float) 350);
             ((Surface) g.add(new AudioOutPort())).pos(r);
 
 

@@ -2,7 +2,6 @@ package jcog.tree.rtree.rect;
 
 import jcog.TODO;
 import jcog.Util;
-import jcog.WTF;
 import jcog.math.v2;
 import jcog.tree.rtree.HyperRegion;
 
@@ -360,9 +359,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
         if (outer.contains(this))
             return this;
         else {
-            float w = this.w, h = this.h;
-            if (outer.w < w || outer.h < h)
-                throw new WTF(this +  " is too large to fit inside " + outer);
+            float w = Math.min(this.w, outer.w), h = Math.min(this.h, outer.h);
+//            if (outer.w < w || outer.h < h)
+//                throw new WTF(this +  " is too large to fit inside " + outer);
 
             //if ((cx != cx) || (cy != cy)) randomize(bounds);
             float x = cx(); if (!Float.isFinite(x)) x = 0;

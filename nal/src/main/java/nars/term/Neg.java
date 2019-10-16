@@ -1,59 +1,18 @@
 package nars.term;
 
 import jcog.Skill;
-import nars.NAL;
 import nars.Op;
 import nars.The;
 import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.compound.SemiCachedUnitCompound;
 import nars.term.compound.UnitCompound;
-import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
 import static nars.Op.NEG;
-import static nars.term.atom.Bool.False;
-import static nars.term.atom.Bool.Null;
 
 @Skill("Negativity_bias") public interface Neg extends Term { ;
 
-
-    static Term neg(Term u) {
-
-        Op uo = u.op();
-        switch (uo) {
-            case BOOL:
-                return u.neg();
-
-            case NEG:
-                return u.unneg();
-
-            case FRAG: {
-                switch (u.subs()) {
-                    case 0:
-                        return False; //Allow, assuming && superterm
-                    case 1:
-                        return u.sub(0).neg();
-                    default: {
-                        if (NAL.DEBUG)
-                            throw new TermException("fragment with subs >1 can not be negated", u);
-                        return Null;
-                    }
-                }
-            }
-
-            case IMG:
-                return u; //return Null;
-        }
-
-        short i = Intrin.id(u);
-        if (i!=0)
-            return new NegIntrin(i);
-
-        return NAL.NEG_CACHE_VOL_THRESHOLD <= 0 || (u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD) ?
-                new NegLight(u) : new NegCached(u);
-
-    }
 
     Term sub();
 
@@ -72,9 +31,7 @@ import static nars.term.atom.Bool.Null;
     @Nullable default Term normalize(byte varOffset) {
         Term x = sub();
         Term y = x instanceof Variable ? ((Variable) x).normalizedVariable((byte) (varOffset + 1)) : x.normalize(varOffset);
-        if (y != x)
-            return y.neg();
-        return this;
+        return y != x ? y.neg() : this;
     }
 
     @Override
@@ -98,7 +55,7 @@ import static nars.term.atom.Bool.Null;
     final class NegCached extends SemiCachedUnitCompound implements The, Neg {
 
 
-        NegCached(Term negated) {
+        public NegCached(Term negated) {
             super(NEG.id, negated);
         }
 

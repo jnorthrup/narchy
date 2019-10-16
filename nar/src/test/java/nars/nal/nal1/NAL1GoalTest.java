@@ -110,6 +110,14 @@ public class NAL1GoalTest extends NALTest {
 			.mustGoal(cycles, "(p<->s)", 1f, 0.81f)
 		;
 	}
+	@Test
+	void reduceConjGoal() {
+		test
+			.input("(s<->p)!")
+			.input("(p-->s).")
+			.mustGoal(cycles, "(s-->p)", 1f, 0.81f)
+		;
+	}
 
 //	@Test
 //	void resemblanceGoalPosBeliefNeg() {

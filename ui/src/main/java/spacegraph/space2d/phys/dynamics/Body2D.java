@@ -122,6 +122,9 @@ public class Body2D extends Transform {
     public final static AtomicInteger serial = new AtomicInteger();
     private final int id = serial.incrementAndGet();
 
+    final v2 posNext = new v2();
+    float angleNext;
+
     public Body2D(final BodyType t, Dynamics2D world) {
         this(new BodyDef(t), world);
     }
@@ -154,7 +157,9 @@ public class Body2D extends Transform {
         W = world;
 
         pos.set(bd.position);
+        posNext.set(pos);
         this.set(bd.angle);
+        angleNext = bd.angle;
 
         sweep.localCenter.set(0, 0);
         sweep.c0.set(pos);
@@ -250,20 +255,18 @@ public class Body2D extends Transform {
      */
     public final void updateFixtures(Consumer<Fixture> tx) {
         W.invoke(() -> {
+            BroadPhase broadPhase = W.contactManager.broadPhase;
+
             for (Fixture f = fixtures; f != null; f = f.next) {
 
-
-                BroadPhase broadPhase = W.contactManager.broadPhase;
                 f.destroyProxies(broadPhase);
 
                 tx.accept(f);
 
                 f.createProxies(broadPhase, this);
 
-
-                if (f.density > 0.0f) {
+                if (f.density > 0.0f)
                     resetMassData();
-                }
             }
             synchronizeFixtures();
             synchronizeTransform();
@@ -394,26 +397,39 @@ public class Body2D extends Transform {
         return setTransform(position, angle, Settings.EPSILON);
     }
 
+
+
     /**
      * Set the position of the body's origin and rotation. This breaks any contacts and wakes the
      * other bodies. Manipulating a body's transform may cause non-physical behavior. Note: contacts
      * are updated on the next call to World.step().
      *
-     * @param position the world position of the body's local origin.
+     * @param p the world position of the body's local origin.
      * @param angle    the world rotation in radians.
      */
-    public final boolean setTransform(v2 position, float angle, float epsilon) {
+    public final boolean setTransform(v2 p, float angle, float epsilon) {
 
-        if (pos.equals(position, epsilon) && Util.equals(angle, getAngle(), epsilon))
+        boolean change = false;
+        if (!posNext.equals(p, epsilon)) {
+            posNext.set(p);
+            change = true;
+        }
+        if (!Util.equals(angle, angleNext, epsilon)) {
+            angleNext = angle;
+            change = true;
+        }
+
+        if (!change)
             return false;
+
 
         W.invoke(() -> {
 
-            this.set(angle);
-            pos.set(position);
+            pos.set(posNext);
 
+            this.set(angleNext);
             Transform.mulToOutUnsafe(this, sweep.localCenter, sweep.c);
-            sweep.a = angle;
+            sweep.a = angleNext;
 
             sweep.c0.set(sweep.c);
             sweep.a0 = sweep.a;
@@ -1210,17 +1226,22 @@ public class Body2D extends Transform {
     protected void synchronizeFixtures() {
         final Transform xf1 = pxf;
 
+        float a = sweep.a0;
 
         Rot r = xf1;
-        r.s = (float) Math.sin(sweep.a0);
-        r.c = (float) Math.cos(sweep.a0);
-        xf1.pos.x = sweep.c0.x - r.c * sweep.localCenter.x + r.s * sweep.localCenter.y;
-        xf1.pos.y = sweep.c0.y - r.s * sweep.localCenter.x - r.c * sweep.localCenter.y;
+        float rs = r.s = (float) Math.sin(a);
+        float rc = r.c = (float) Math.cos(a);
+
+        float sx = sweep.localCenter.x, sy = sweep.localCenter.y;
+        v2 p = xf1.pos;
+        p.x = sweep.c0.x - rc * sx + rs * sy;
+        p.y = sweep.c0.y - rs * sx - rc * sy;
+
+        BroadPhase broadPhase = W.contactManager.broadPhase;
+        for (Fixture f = fixtures; f != null; f = f.next)
+            f.synchronize(broadPhase, xf1, this);
 
 
-        for (Fixture f = fixtures; f != null; f = f.next) {
-            f.synchronize(W.contactManager.broadPhase, xf1, this);
-        }
     }
 
     public final void synchronizeTransform() {

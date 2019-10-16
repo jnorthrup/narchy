@@ -3,7 +3,7 @@
 //      https://cogsci.indiana.edu/
 
 // inheritance from similarty
-    (S <-> P), P  |- (S --> P), (Belief:Identity, Goal:Identity)
+    (S <-> P), P  |- (S --> P), (Belief:Identity)
 
 ////// similarity-based syllogism ////////////////////////////////////////////////////////////////////////////////////
 
@@ -18,6 +18,7 @@
          (M <-> S), (M --> P), neqRCom(S,P), has(S,"."), has(P,".") |- (S --> P), (Goal:DesireWeak, Time:Task)
 
       (S <-> P), (P --> S), has(S,"."), has(P,".")   |-   (S --> P), (Belief:Undesire, Time:Compose)
+        (S <-> P), (P --> S), has(S,"."), has(P,".")   |-   (S --> P), (Belief:Desire, Time:Task)
             //ReduceConjunction ~= Undesire ~= Divide
         (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Punctuation:AskAsk, Time:Task)
         (S --> P), (S <-> P), has(S,"."), has(P,".")   |-   (P --> S), (Punctuation:AskAsk, Time:Task)
@@ -25,20 +26,17 @@
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (S --> P), (Goal:Desire, Time:Task)
 //        (S <-> P), (P --> S), --isVar(S), --isVar(P)   |-   (P --> S), (Goal:Undesire, Time:Task)
 
-//      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
       (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Belief:Intersection, Time:Compose)
-        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DesirePP, Time:Task)
-        //(S --> P), (P --> S), has(S,"."), has(P,".")   |- --(S <-> P), (Goal:DesireNN, Time:Task)
-
+        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:Desire, Time:Task)
 
       (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)
-        (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Goal:DesirePP, Time:Task)
-        //(M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- --(S <-> P), (Goal:DesirePN, Time:Task)
+        (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Goal:Desire, Time:Task)
 
       (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
+         (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:DesireWeak, Time:Task)
       (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
-        //these Comparison rules used to have: Goal:DesireWeak but seems presumptuous, even if weak
+        (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:DesireWeak, Time:Task)
 
 //Structural Analogy
       ((A-->B) <-> (A-->C)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)

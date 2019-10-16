@@ -5,8 +5,10 @@ import nars.NAL;
 import nars.Op;
 import nars.subterm.Subterms;
 import nars.term.Compound;
+import nars.term.Img;
 import nars.term.Neg;
 import nars.term.Term;
+import nars.term.anon.Intrin;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.atom.Interval;
@@ -20,6 +22,7 @@ import nars.term.util.conj.ConjPar;
 import nars.term.util.conj.ConjSeq;
 import nars.term.util.transform.CompoundNormalization;
 import nars.term.var.ellipsis.Ellipsislike;
+import nars.term.var.ellipsis.Fragment;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -36,6 +39,7 @@ import static nars.time.Tense.XTERNAL;
  * - reduction to another target or True/False/Null
  */
 public abstract class TermBuilder implements TermConstructor {
+
 
     public final Term newCompound(Op o, int dt, Term... u) {
         return newCompound(o, dt, u, null);
@@ -224,8 +228,45 @@ public abstract class TermBuilder implements TermConstructor {
 
     }
 
-    public Term neg(Term x) {
-        return Neg.neg(x);
+    public Term neg(Term u) {
+
+        if (u instanceof Neg || u instanceof Bool)
+            return u.neg();
+        if (u instanceof Fragment || u instanceof Img)
+            throw new UnsupportedOperationException();
+
+//        Op uo = u.op();
+//        switch (uo) {
+//            case BOOL:
+//            case NEG:
+//                throw new UnsupportedOperationException("detected above");
+//                //return u.unneg();
+//
+//            case FRAG:
+////                switch (u.subs()) {
+////                    case 0:
+////                        return False; //Allow, assuming && superterm
+////                    case 1:
+////                        return u.sub(0).neg();
+////                    default: {
+////                        if (NAL.DEBUG)
+//                throw new TermException("fragment can not be negated", u);
+////                        return Null;
+////                    }
+////                }
+//
+//
+//            case IMG:
+//                return u; //return Null;
+//        }
+
+        short i = Intrin.id(u);
+        if (i!=0)
+            return new Neg.NegIntrin(i);
+
+        return NAL.NEG_CACHE_VOL_THRESHOLD <= 0 || (u.volume() > NAL.NEG_CACHE_VOL_THRESHOLD) ?
+            new Neg.NegLight(u) : new Neg.NegCached(u);
+
     }
 
     public abstract Atomic atom(String id);

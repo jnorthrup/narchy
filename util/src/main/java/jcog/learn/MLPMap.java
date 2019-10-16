@@ -1,7 +1,7 @@
 package jcog.learn;
 
 import jcog.learn.ntm.control.IDifferentiableFunction;
-import jcog.learn.ntm.control.SigmoidActivation;
+import jcog.util.ArrayUtil;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -34,7 +34,9 @@ public class MLPMap {
      * gradient momentum.  The coefficient for how much of the previous delta is applied to each weight.
      * In theory, prevents local minima stall.
      */
-    float momentum = 0.1f;
+    float momentum = 0.9f;
+
+    private float[] errorOut = ArrayUtil.EMPTY_FLOAT_ARRAY;
 
     /** layer def */
     public static class Layer {
@@ -53,10 +55,13 @@ public class MLPMap {
         final float[] delta;
         public final float[] W;
         final float[] dW;
-        @Nullable
-        final IDifferentiableFunction activation;
+
+        @Nullable final IDifferentiableFunction activation;
         private final boolean bias;
 
+        public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {
+            this(inputSize, outputSize, activation, true);
+        }
 
         public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation, boolean bias) {
             this.bias = bias;
@@ -80,7 +85,8 @@ public class MLPMap {
             }
         }
 
-        public float[] run(float[] in) {
+        /** forward prop */
+        public float[] forward(float[] in) {
             System.arraycopy(in, 0, this.in, 0, in.length);
             if (bias)
                 this.in[this.in.length - 1] = 1; //bias
@@ -88,9 +94,9 @@ public class MLPMap {
             int il = this.in.length;
             for (int i = 0; i < out.length; i++) {
                 float o = 0;
-                for (int j = 0; j < il; j++) {
+                for (int j = 0; j < il; j++)
                     o += W[offs + j] * this.in[j];
-                }
+
                 if (activation!=null)
                     o = (float) activation.value(o);
                 out[i] = o;
@@ -99,10 +105,12 @@ public class MLPMap {
             return out;
         }
 
-        public float[] train(float[] incomingError, float learningRate, float momentum) {
+        /** backprop */
+        public float[] reverse(float[] incomingError, float learningRate, float momentum) {
 
+            float[] W = this.W, dW = this.dW, in = this.in, delta = this.delta, out = this.out;
 
-            Arrays.fill(this.delta, 0);
+            Arrays.fill(delta, 0);
             int inLength = in.length;
 
             int offs = 0;
@@ -116,19 +124,11 @@ public class MLPMap {
                 for (int i = 0; i < inLength; i++) {
                     int ij = offs++;
 
-                    this.delta[i] += W[ij] * gradient;
+                    delta[i] += W[ij] * gradient;
 
                     float dw = in[i] * outputDelta;
 
-                    //TODO check this
-
-                    float delta = (dw) + (dW[ij] * momentum);
-                    W[ij] += delta;
-                    dW[ij] = delta;
-//                    weights[idx] += dw * dweights[idx];
-//                    dweights[idx] += dw;
-
-
+                    W[ij] += (dW[ij] = (dw) + (dW[ij] * momentum));
                 }
 
             }
@@ -137,14 +137,14 @@ public class MLPMap {
     }
 
 
-    @Deprecated public MLPMap(int inputSize, int[] layersSize, Random r, boolean sigmoid) {
-        layers = new MLPLayer[layersSize.length];
-        for (int i = 0; i < layersSize.length; i++) {
-            int inSize = i == 0 ? inputSize : layersSize[i - 1];
-            layers[i] = new MLPLayer(inSize, layersSize[i], sigmoid ? SigmoidActivation.the : null, true);
-        }
-        randomize(r);
-    }
+//    @Deprecated public MLPMap(int inputSize, int[] layersSize, Random r, boolean sigmoid) {
+//        layers = new MLPLayer[layersSize.length];
+//        for (int i = 0; i < layersSize.length; i++) {
+//            int inSize = i == 0 ? inputSize : layersSize[i - 1];
+//            layers[i] = new MLPLayer(inSize, layersSize[i], sigmoid ? SigmoidActivation.the : null);
+//        }
+//        randomize(r);
+//    }
 
     public MLPMap(int inputs, Layer... layer) {
         assert(layer.length > 0);
@@ -152,7 +152,7 @@ public class MLPMap {
         for (int i = 0; i < layer.length; i++) {
             int inSize = i > 0 ? layer[i-1].size : inputs;
             int outSize = layer[i].size;
-            layers[i] = new MLPLayer(inSize, outSize, layer[i].activation, true);
+            layers[i] = new MLPLayer(inSize, outSize, layer[i].activation);
         }
     }
 //    public MLPMap(Random r, int inputs, Layer... layer) {
@@ -167,31 +167,45 @@ public class MLPMap {
     }
 
     public float[] get(float[] input) {
-        float[] actIn = input;
-        for (int i = 0; i < layers.length; i++) {
-            actIn = layers[i].run(actIn);
-        }
-        return actIn;
+        float[] i = input;
+        for (MLPLayer layer : layers)
+            i = layer.forward(i);
+        return i;
     }
 
-    /** returns an error vector */
-    public float[] put(float[] input, float[] targetOutput, float learningRate) {
-        float[] calcOut = get(input);
-        float[] errorOut = new float[calcOut.length];
+    /** returns the estimate for the input, prior to training */
+    public float[] put(float[] input, float[] out, float learningRate) {
+        float[] outPredicted = get(input);
 
+        if (errorOut.length!=outPredicted.length)
+            errorOut = new float[outPredicted.length];
         for (int i = 0; i < errorOut.length; i++)
-            errorOut[i] = targetOutput[i] - calcOut[i];
+            errorOut[i] = out[i] - outPredicted[i];
 
         //backprop
-        float[] error = errorOut;
+        float[] e = errorOut;
         for (int i = layers.length - 1; i >= 0; i--)
-            error = layers[i].train(error, learningRate, momentum);
+            e = layers[i].reverse(e, learningRate, momentum);
 
-        return errorOut;
+        return outPredicted;
     }
 
     /** gets the last computed out, from either a get() or put() call */
     public float[] out() {
         return layers[layers.length-1].out;
+    }
+
+    /** https://datascience.stackexchange.com/questions/5863/where-does-the-sum-of-squared-errors-function-in-neural-networks-come-from */
+    public double errorSquared() {
+        double err = 0;
+        for (float e : errorOut)
+            err += e*e;
+        return err;
+    }
+    public double errorAbs() {
+        double err = 0;
+        for (float e : errorOut)
+            err += Math.abs(e);
+        return err;
     }
 }
