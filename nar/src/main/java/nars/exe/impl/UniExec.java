@@ -19,12 +19,18 @@ public class UniExec extends Exec {
 
     @Deprecated private int loops = 8;
 
-    public UniExec() {
-        this(1);
+    public UniExec(int power) {
+        this(1, power);
     }
 
-    protected UniExec(int concurrencyMax) {
+    protected UniExec(int concurrencyMax, int power) {
         super(concurrencyMax);
+        power(power);
+    }
+
+    public final UniExec power(int itersPerCycle) {
+        this.loops = itersPerCycle;
+        return this;
     }
 
     @Override public void deriver(Deriver d) {

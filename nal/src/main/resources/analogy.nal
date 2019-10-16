@@ -29,7 +29,8 @@
 
       (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Belief:Intersection, Time:Compose)
         //(S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DesireWeak, Time:Task)
-        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:Intersection, Time:Task)
+        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DeductionPP, Time:Task)
+        (S --> P), (P --> S), has(S,"."), has(P,".")   |- --(S <-> P), (Goal:DeductionNN, Time:Task)
 
 
       (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)

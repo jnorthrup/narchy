@@ -49,7 +49,7 @@ public class Tetris extends GameX {
             , TetrisPiece.EMPTY_ROW
             , TetrisPiece.EMPTY_ROW};
     static float FPS = 24f;
-    static float thinkPerFrame = 2;
+    static float thinkPerFrame = 1;
     private final boolean opjects = false;
     private final Bitmap2D grid;
     private final TetrisState state;

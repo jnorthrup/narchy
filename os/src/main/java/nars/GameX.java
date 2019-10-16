@@ -534,10 +534,10 @@ abstract public class GameX extends Game {
                 //.add(new ConjClustering(n, GOAL, GOAL, 3, 8, t->true))
                 //.add(new AdjacentLinks(new FirstOrderIndexer())) //<- slow
 
-                //.add(new Abbreviation.AbbreviateRoot(4, 9))
-                .add(new Abbreviation.AbbreviateRecursive(4, 8))
-                //.add(new Abbreviation.UnabbreviateRoot())
-                .add(new Abbreviation.UnabbreviateRecursive())
+//                .add(new Abbreviation.AbbreviateRecursive(4, 8))
+//                .add(new Abbreviation.UnabbreviateRecursive())
+//                //.add(new Abbreviation.AbbreviateRoot(4, 9))
+//                //.add(new Abbreviation.UnabbreviateRoot())
 
             ,
             new MixedTimeFocus(

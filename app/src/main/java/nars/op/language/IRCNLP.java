@@ -180,10 +180,6 @@ public class IRCNLP extends IRC {
         //NAR n = NARS.realtime(durFPS).get();
         //new MatrixDeriver(Derivers.nal(n, 0, 8), n);
         NAR n = new NARS.DefaultNAR(8, true)
-                .exe(
-                        //new MultiExec.WorkerExec(new Valuator.DefaultValuator(0.5f),4)
-                        new UniExec()
-                )
                 .time(new RealTime.MS(false).durFPS(durFPS)).get();
 
         n.freqResolution.set(0.1f);

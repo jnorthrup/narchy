@@ -192,7 +192,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
          */
         private NAR nar(String path) {
             final Exec exe = nar.exe;
-            final Exec sharedExec = new UniExec() {
+            final Exec sharedExec = new UniExec(8) {
 
 //                @Override
 //                public boolean concurrent() {

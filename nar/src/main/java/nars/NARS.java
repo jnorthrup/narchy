@@ -129,7 +129,7 @@ public class NARS {
             this(0, nal, threadSafe);
         }
         public DefaultNAR(int nalMin, int nalMax, boolean threadSafe) {
-
+            super();
             assert(nalMin <= nalMax);
 
             if (threadSafe)
@@ -179,7 +179,7 @@ public class NARS {
 
         time = new CycleTime();
 
-        exec = UniExec::new;
+        exec = () -> new UniExec(8);
 
         what = w -> new TaskLinkWhat(w, 64,
                        new PriBuffer.DirectTaskBuffer()

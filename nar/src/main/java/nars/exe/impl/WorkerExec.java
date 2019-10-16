@@ -81,6 +81,7 @@ public class WorkerExec extends ThreadedExec {
 		private final MpmcArrayQueue in;
 		private transient DeriverExecutor deriver;
 		private transient long nextUpdate;
+		@Deprecated transient private int concurrency;
 
 		WorkPlayLoop(NAR nar) {
 			this.nar = nar;
@@ -119,30 +120,35 @@ public class WorkerExec extends ThreadedExec {
 		public void run() {
 
 
+			long loopNS_recorded_max = 5_000_000; //initial guess at cycle per loop
+			//Histogram loopTime = new Histogram(30_000, loopNS_recorded_max, 3);
+			//loopTime.recordValue(loopNS_recorded_max);
 			FloatAveragedWindow loopTime = new FloatAveragedWindow(16, 0.5f, false).mode(FloatAveragedWindow.Mode.Mean);
-			loopTime.fill(50_000_000); //initial guess at cycle per loop
+			loopTime.fill(loopNS_recorded_max);
 
 			DeriverExecutor d;
 			while (alive.getOpaque()) {
 
-				long cycleTimeNS = nar.loop.cycleTimeNS * nar.exe.concurrency();
+				concurrency = Math.max(1,nar.exe.concurrency());
+
+				long cycleTimeNS = nar.loop.cycleTimeNS;
 
 				long cycleStart = System.nanoTime();
 //
+
 				work();
 //
-//				long afterWork = System.nanoTime();
-//
-//				long workTime = afterWork - cycleStart;
-//				long cycleRemaining = cycleTimeNS - workTime;
-//				if (cycleRemaining < 0)
-//					continue; //worked until next morning so start again
-				long cycleRemaining = cycleTimeNS;
+				long afterWork = System.nanoTime();
+				long workTime = afterWork - cycleStart;
+				long cycleRemaining = cycleTimeNS - workTime;
+				if (cycleRemaining < 0)
+					continue; //worked until next morning so start again
+//				long cycleRemaining = cycleTimeNS;
 
 
 
 				float throttle = nar.loop.throttle.floatValue();
-				if (throttle > 0) {
+				if (throttle < 1) {
 					//sleep at most until next cycle
 					long cycleSleepNS = Math.min(cycleRemaining, (int)(cycleTimeNS * (1.0-throttle)));
 					long naptime = 2_000_000;
@@ -162,9 +168,11 @@ public class WorkerExec extends ThreadedExec {
 
 				PartBag<What> ww = nar.what;
 				int N = ww.size();
-				double meanLoopTimeNS = loopTime.mean();
-				int loopsPlanned = Math.min(MAX_LOOPS, (int)Math.ceil(cycleRemaining / meanLoopTimeNS));
-				int minLoops = 6;
+				if (N == 0) continue;
+
+				double meanLoopTimeNS = loopTime.mean(); //getMean();
+				int minLoops = 8;
+				int loopsPlanned = Math.max(minLoops, Math.min(MAX_LOOPS, (int)Math.ceil(cycleRemaining / meanLoopTimeNS)));
 				int maxLoops = minLoops + Math.round(((float)loopsPlanned) / N); //TODO tune
 
 
@@ -172,28 +180,38 @@ public class WorkerExec extends ThreadedExec {
 
 				int loopsRemain = loopsPlanned;
 
+				//long totalPlayTimeNS = 0;
+				long beforePlay = System.nanoTime();
+
 				while (loopsRemain > 0) {
 
 					What w = ww.get(rng);
 					if (w == null)  break;
 
-					int loops = (int) Util.lerpSafe(w.priElseZero() / ww.mass(), minLoops, maxLoops);
+					int loops = Math.min(loopsRemain, (int) Util.lerpSafe(w.priElseZero() / ww.mass(), minLoops, maxLoops));
 					loopsRemain -= loops;
 
-					long beforePlay = System.nanoTime();
+
 
 					d.next(w, loops);
 
-					long playTimeNS = System.nanoTime() - beforePlay;
-					float nsPerLoop = (float) ((double) playTimeNS) / loops;
-					loopTime.next(nsPerLoop);
-
+					//float nsPerLoop = (float) ((double) playTimeNS) / loops;
+					//loopTime.next(nsPerLoop);
 					//y.append(w + " x " + loops + "\t");
 
-					work();
+					//work();
 
 				}
 
+				long playTimeNS = System.nanoTime() - beforePlay;
+				//totalPlayTimeNS += playTimeNS;
+				int loopsRun = loopsPlanned - loopsRemain;
+				if (loopsRun > 0)
+					loopTime.next/*recordValue*/(/*Math.min(loopNS_recorded_max,*/ (((float)playTimeNS)/ loopsRun));
+
+				//work();
+
+				//System.out.println(loopTime.getMean());
 
 				//System.out.println(loopsPlanned + ": " + y + " @ " + Texts.timeStr(playTimeNS) + "\t" + " (" + Texts.timeStr(nsPerLoop) + " per loop avg)");
 
@@ -229,7 +247,7 @@ public class WorkerExec extends ThreadedExec {
 
 					batchSize = //Util.lerp(throttle,
 						//available, /* all of it if low throttle. this allows most threads to remains asleep while one awake thread takes care of it all */
-						Util.clamp((int) Math.ceil(workResponsibility / nar.exe.concurrency() * available), 1, available);
+						Util.clamp((int) Math.ceil(workResponsibility / concurrency * available), 1, available);
 
 				} else if (--batchSize == 0)
 					break; //enough

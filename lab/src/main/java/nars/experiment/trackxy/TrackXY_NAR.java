@@ -13,7 +13,6 @@ import nars.*;
 import nars.attention.TaskLinkWhat;
 import nars.derive.Deriver;
 import nars.derive.Derivers;
-import nars.exe.impl.UniExec;
 import nars.game.GameTime;
 import nars.gui.NARui;
 import nars.gui.sensor.VectorSensorChart;
@@ -189,7 +188,6 @@ public class TrackXY_NAR extends GameX {
 		g.windoSizeMinRel(0.02f, 0.02f);
 
 		NARS nb = new NARS.DefaultNAR(0, true)
-			.exe(new UniExec())
 			.time(new CycleTime().dur(dur))
 			.index(
 				new CaffeineMemory(2 * 1024 * 10)
