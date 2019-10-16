@@ -74,7 +74,7 @@ abstract public class TermMetadata implements Termlike {
         //depth first traversal, determine if variables encountered are monotonically increasing
 
         final ByteArrayList types = new ByteArrayList(vars);
-        return x.recurseTermsOrdered(Term::hasVars, (v) -> {
+        return x.recurseTermsOrdered(Term::hasVars, v -> {
             if (!(v instanceof Variable))
                 return true;
 
@@ -83,7 +83,7 @@ abstract public class TermMetadata implements Termlike {
                 byte varID = nv.id();
                 int nTypes = types.size();
                 if (varID <= nTypes) {
-                    return types.get(varID-1) == nv.anonType();
+                    return types.getByte(varID-1) == nv.anonType();
                 } else if (varID == 1 + nTypes) {
                     types.add(nv.anonType());
                     return true;
@@ -106,7 +106,10 @@ abstract public class TermMetadata implements Termlike {
         int minID = 0;
         int typeToMatch = -1;
         for (short x: subterms) {
-            if (x < 0) x = (short) -x;
+            boolean neg = x < 0;
+            if (neg) {
+                x = (short) -x;
+            }
             int varID = Intrin.isVariable(x, -1);
             if (varID == -1) {
                 /*..*/

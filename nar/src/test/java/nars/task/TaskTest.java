@@ -84,19 +84,49 @@ public class TaskTest {
         assertFalse(Task.validTaskTerm($$("(#1,#2)")));
     }
 
-    @Test
-    void testTaskPostNormalize() {
 
-        assertEq("((--,#1)==>(x,#1))", "(--#1 ==> (x, #1))"); //cant unnegate subj
-        assertEq("(((--,#1)==>x),#1)", "((--#1 ==> x),#1)"); //cant unnegate subj
+    @Test
+    void testTaskPostNormalize1() {
+
+        assertEq("((--,#1)==>(x,#1))", "(--#1 ==> (x, #1))");
+
+        assertEq("((--,$1)==>(x,$1))", "(--$1 ==> (x, $1))");
+
+
+        assertEq("(((--,#1)==>x),#1)", "((--#1 ==> x),#1)");
 
         assertEq("(#1==>x)", Task.postNormalize($$("(--#1 ==> x)")));
-        assertEq("((--,#1),#1)", Task.postNormalize($$("((--,#1),#1)"))); //can't
+        assertEq("(?1==>x)", Task.postNormalize($$("(--?1 ==> x)")));
+
+
         assertEq("(#1,x)", Task.postNormalize($$("((--,#1),x)")));
 
+        assertEq("($1==>(x,$1))", Task.postNormalize($$("(--$1 ==> (x, --$1))")));
         //multiple:
         assertEq("((#1,#1)==>x)", Task.postNormalize($$("((--#1,--#1) ==> x)")));
+        assertEq("((?1,?1)==>x)", Task.postNormalize($$("((--?1,--?1) ==> x)")));
+
     }
+
+    @Test
+    void testTaskPostNormalize1_multiple_imbalance() {
+
+        assertEq("((#1,#1,(--,#1))==>x)", Task.postNormalize($$("((--#1,--#1, #1) ==> x)")));
+        assertEq("((#1,(--,#1),#1)==>x)", Task.postNormalize($$("((--#1,#1,--#1) ==> x)")));
+
+        assertEq("((#1,#1,(--,#1),#2,#2)==>x)", Task.postNormalize($$("((--#1,--#1, #1,--#2,--#2) ==> x)")));
+    }
+
+    @Test
+    void testTaskPostNormalize2() {
+        assertEq("((#1,#2)==>x)", Task.postNormalize($$("((--#1,--#2) ==> x)")));
+    }
+
+//    @Test
+//    void testPostNormalize() {
+//        assertEq("((#1,#1)==>x)", $$("((--#1,--#1) ==> x)").normalize());
+//    }
+
     @Test
     void testTaskPostNormalize_Indep() {
         assertEq("(($1,x)==>a($1))", Task.postNormalize($$("((--$1,x) ==> a(--$1))")));

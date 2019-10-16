@@ -19,17 +19,24 @@ import nars.task.util.TaskRegion;
 import nars.task.util.TasksRegion;
 import nars.term.Variable;
 import nars.term.*;
+import nars.term.anon.Intrin;
 import nars.term.atom.Atom;
 import nars.term.atom.Atomic;
 import nars.term.atom.Bool;
 import nars.term.util.TermedDelegate;
+import nars.term.util.transform.RecursiveTermTransform;
+import nars.term.var.NormalizedVariable;
+import nars.term.var.VarDep;
 import nars.term.var.VarIndep;
+import nars.term.var.VarQuery;
 import nars.time.Tense;
 import nars.truth.PreciseTruth;
 import nars.truth.Stamp;
 import nars.truth.Truth;
 import nars.truth.Truthed;
 import nars.truth.proj.TruthIntegration;
+import org.eclipse.collections.api.tuple.primitive.ShortBytePair;
+import org.eclipse.collections.impl.map.mutable.primitive.ShortByteHashMap;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
@@ -56,9 +63,8 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
 
     Term VAR_DEP_1 = $.varDep(1);
     Term VAR_DEP_2 = $.varDep(2);
-    Term VAR_DEP_1_NEG = VAR_DEP_1.neg();
-    Term VAR_INDEP_1 = $.varIndep(1);
-    Term VAR_INDEP_1_NEG = VAR_INDEP_1.neg();
+
+
     /**
      * fast, imprecise sort.  for cache locality and concurrency purposes
      */
@@ -374,47 +380,44 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         t = t.normalize();
 
         if (t instanceof Compound && NAL.TASK_COMPOUND_POST_NORMALIZE)
-            t = Task.postNormalize(t);
+            t = Task.postNormalize((Compound)t);
 
         return Task.validTaskTerm(t/*.the()*/, punc, safe) ? Util.maybeEqual(t, t.negIf(negated)) : null;
     }
 
-    static Term postNormalize(Term t) {
+    static Compound postNormalize(Compound t) {
 
         int v = t.vars();
         //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
         if (v > 0 && t.hasAny(NEG.bit)) {
-            t = postNormalizeVar(t, VAR_DEP_1_NEG, VAR_DEP_1);
-            t = postNormalizeVar(t, VAR_INDEP_1_NEG, VAR_INDEP_1);
-        }
-        return t;
-    }
-
-    static Term postNormalizeVar(Term x, Term vn, Term vp) {
-
-        Term y;
-        int v = (vp instanceof VarIndep) ? x.varIndep() : x.varDep();
-        if (v == 0)
-            return x;
-        int negs;
-        if (v == 1) {
-            //simple case: only one instance
-            y = x.replace(vn, vp);
-            negs = 1;
-        } else {
-            negs = x.intifyRecurse((i, z) -> z instanceof Neg && z.unneg() == vp ? 1 + i : i, 0);
-            if (negs == v) {
-                y = x.replace(vn, vp);
-            } else {
-                //TODO if # negs > # pos, swap them
-                return x;
+            ShortByteHashMap counts = new ShortByteHashMap(v);
+            t.recurseTermsOrdered(Termlike::hasVars, x -> {
+                if (x instanceof Neg) {
+                    Term xu = x.unneg();
+                    if (xu instanceof Variable) {
+                        counts.addToValue(((NormalizedVariable)xu).i, (byte)-2); //-2 because +1 will be added when recursing inside it leaving net -1
+                    }
+                } else if (x instanceof Variable) {
+                    counts.addToValue(((NormalizedVariable)x).i, (byte)+1);
+                }
+                return true;
+            }, null);
+            int cs = counts.size();
+            if (cs == 1) {
+                ShortBytePair ee = counts.keyValuesView().getOnly();
+                if (ee.getTwo() < 0) {
+                    Term vv = Intrin.term(ee.getOne());
+                    return (Compound) t.replace(vv, vv.neg());
+                }
+            } else if (cs > 1) {
+                counts.values().removeIf(c -> c >= 0); //keep only entries where more neg than positive. these will be flipped
+                cs = counts.size();
+                if (cs > 0) {
+                    return (Compound) t.transform(new InvertVariableTransform(counts));
+                }
             }
         }
-        //else: ? why might this happen
-        if ((y.opID() == x.opID()) && y.volume() == x.volume() - negs) //validate
-            return y;
-        else
-            return x;
+        return t;
     }
 
     /**
@@ -934,4 +937,33 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
 
+    final class InvertVariableTransform implements RecursiveTermTransform {
+        private final ShortByteHashMap counts;
+
+        public InvertVariableTransform(ShortByteHashMap counts) {
+            this.counts = counts;
+        }
+
+        @Override
+        public Term applyCompound(Compound c) {
+            if (!c.hasVars()) return c; //TODO test by structure
+
+            if (c instanceof Neg) {
+                Term d = c.unneg();
+                if (d instanceof Variable && invert((Variable)d))
+                    return d;
+            }
+
+            return RecursiveTermTransform.super.applyCompound(c);
+        }
+
+        @Override
+        public Term applyAtomic(Atomic a) {
+            return a instanceof Variable && invert((Variable)a) ? a.neg() : a;
+        }
+
+        boolean invert(Variable d) {
+            return counts.get(((NormalizedVariable) d).i) < 0;
+        }
+    }
 }

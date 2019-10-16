@@ -10,7 +10,7 @@ import static nars.Op.GOAL;
 
 public class NAL1GoalTest extends NALTest {
 
-	private final int cycles = 50;
+	private final int cycles = 100;
 
 	@Override
 	protected NAR nar() {
@@ -77,7 +77,7 @@ public class NAL1GoalTest extends NALTest {
 	}
 
 	@Test
-	void similarityGoalPosBeliefPos() {
+	void intersectionGoalPosBeliefPos() {
 		test
 			.input("(a-->c)!")
 			.input("(c-->a).")
@@ -86,22 +86,38 @@ public class NAL1GoalTest extends NALTest {
 	}
 
 	@Test
-	void similarityGoalPosBeliefNeg() {
+	void intersectionGoalPosBeliefNeg() {
 		test
 			.input("(a-->c)!")
 			.input("(c-->a). %0.25;0.90%")
-			.mustGoal(cycles, "(a<->c)", 0.25f, 0.2f)
+			.mustGoal(cycles, "(a<->c)", 1f, 0.2f)
 		;
 	}
 
+//	@Test
+//	void intersectionGoalNegBeliefNeg() {
+//		test
+//			.input("--(c-->a)!")
+//			.input("--(a-->c).")
+//			.mustGoal(cycles, "(a<->c)", 0f, 0.81f)
+//		;
+//	}
 	@Test
-	void similarityGoalNegBeliefNeg() {
+	void resemblanceGoalPosBeliefPos() {
 		test
-			.input("--(c-->a)!")
-			.input("--(a-->c).")
-			.mustGoal(cycles, "(a<->c)", 0f, 0.81f)
+			.input("(m<->p)!")
+			.input("(m<->s).")
+			.mustGoal(cycles, "(p<->s)", 1f, 0.81f)
 		;
 	}
 
+//	@Test
+//	void resemblanceGoalPosBeliefNeg() {
+//		test
+//			.input("(m<->p)!")
+//			.input("--(m<->s).")
+//			.mustGoal(cycles, "--(p<->s)", 1f, 0.81f)
+//		;
+//	}
 
 }

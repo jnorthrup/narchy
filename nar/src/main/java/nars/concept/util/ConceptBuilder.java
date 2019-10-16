@@ -101,13 +101,13 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
         if (vars > 0) {
             if (t.hasAny(Op.VAR_QUERY.bit | Op.VAR_INDEP.bit))
                 return false; //TODO maybe some Indep cases can work
-            if (vars == 1)
+            /*if (vars == 1)
                 return true; //only one variable appearance, ok
             else {
                 //verify that there is only one unique variable, or some other constraint that can allow it
                 if (t.containsRecursively(Task.VAR_DEP_2))
                     return false;
-            }
+            }*/
         }
         return true;
     }

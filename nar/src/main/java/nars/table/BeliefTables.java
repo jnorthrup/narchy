@@ -179,6 +179,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
     /** stops after the first table accepts it */
     @Override public void remember(Remember r) {
+        BeliefTable[] items = this.items;
         for (int i = 0, thisSize = this.size; i < thisSize; i++) {
             items[i].remember(r);
             if (r.complete())

@@ -28,13 +28,13 @@
 //      (S <-> P), (S <-> M), --isVar(S), --isVar(P)   |-   (S <-> M), (Goal:Undesire, Time:Task)
 
       (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Belief:Intersection, Time:Compose)
-        //(S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DesireWeak, Time:Task)
-        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DeductionPP, Time:Task)
-        (S --> P), (P --> S), has(S,"."), has(P,".")   |- --(S <-> P), (Goal:DeductionNN, Time:Task)
+        (S --> P), (P --> S), has(S,"."), has(P,".")   |-   (S <-> P), (Goal:DesirePP, Time:Task)
+        //(S --> P), (P --> S), has(S,"."), has(P,".")   |- --(S <-> P), (Goal:DesireNN, Time:Task)
 
 
       (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Resemblance, Time:Compose)
-        //(M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:Desire, Time:Task)
+        (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Goal:DesirePP, Time:Task)
+        //(M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |- --(S <-> P), (Goal:DesirePN, Time:Task)
 
       (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
       (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)

@@ -130,7 +130,7 @@ public class Remember {
         }
     }
 
-    public boolean complete() {
+    public final boolean complete() {
         return result!=null;
     }
 
