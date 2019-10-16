@@ -34,14 +34,18 @@ public enum Should { ;
 
 		@Deprecated final int dims = MetaGoal.values().length;
 
-		/** value vector -> priority for an individual cause, independently learned */
+		/** value vector -> priority for an individual cause, independently learned
+		 *  1 hidden layer to be able to solve ~XOR problem
+		 *  "A limitation of single layer perceptron is that it is only capable of separating data points with a single line."
+		 *  http://www.mlopt.com/?p=160
+		 * */
 		final class Predictor extends MLPMap {
 			Predictor() {
 				super(dims,
-//					new MLPMap.Layer(
-//						dims
+					new MLPMap.Layer(
+						dims, SigmoidActivation.the),
 //						//Math.max(2, dims/2)
-//						, /*TanhActivation.the*/  SigmoidActivation.the ),
+//						, /*TanhActivation.the*/   ),
 					new MLPMap.Layer( 1,
 						SigmoidActivation.the
 						//null

@@ -27,7 +27,7 @@ public enum Why { ;
 		return Int.the(why);
 	}
 
-	public static Term why(short[] why, int capacity) {
+	static Term why(short[] why, int capacity) {
 		if (why.length == 0)
 			return null; //TODO prevent from having to reach here
 		if (why.length == 1)
@@ -42,7 +42,7 @@ public enum Why { ;
 			ArrayUtil.shuffle(why, ThreadLocalRandom.current());
 			why = Arrays.copyOf(why, capacity-1);
 		}
-		return SETe.the($.the(why));
+		return SETe.the($.ints(why));
 	}
 
 //	public static Term why(Term whyA, short whyB, int capacity) {
@@ -52,13 +52,19 @@ public enum Why { ;
 
 
 
-	@Nullable public static Term why(RoaringBitmap s, int capacity) {
-		int ss = s.getCardinality();
+	@Nullable public static Term why(RoaringBitmap why, int capacity) {
+		int ss = why.getCardinality();
 		if (ss == 0)
 			return null;
+
+		if (ss < capacity)
+			return SETe.the($.ints(why));
+
+		//convert to array for sampling
+
 		short[] i = new short[ss];
 		int in = 0;
-		PeekableIntIterator ii = s.getIntIterator();
+		PeekableIntIterator ii = why.getIntIterator();
 		while (ii.hasNext())
 			i[in++] = (short) ii.next();
 

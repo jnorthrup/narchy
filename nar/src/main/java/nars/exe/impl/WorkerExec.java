@@ -73,7 +73,6 @@ public class WorkerExec extends ThreadedExec {
 	private static final class WorkPlayLoop implements ThreadedExec.Worker {
 
 
-		final int MAX_LOOPS = 64 * 1024; //safety limit
 
 		final Random rng;
 		private final AtomicBoolean alive = new AtomicBoolean(true);
@@ -170,10 +169,12 @@ public class WorkerExec extends ThreadedExec {
 				int N = ww.size();
 				if (N == 0) continue;
 
+				float whatGranularity = 1; //increase what slicing
+
 				double meanLoopTimeNS = loopTime.mean(); //getMean();
-				int minLoops = 8;
-				int loopsPlanned = Math.max(minLoops, Math.min(MAX_LOOPS, (int)Math.ceil(cycleRemaining / meanLoopTimeNS)));
-				int maxLoops = minLoops + Math.round(((float)loopsPlanned) / N); //TODO tune
+				int minWhatLoops = 2;
+				int loopsPlanned = Math.max(minWhatLoops, (int)(cycleRemaining / meanLoopTimeNS));
+				int maxWhatLoops = minWhatLoops + Math.round(loopsPlanned / Math.max(1f,(N * whatGranularity)/concurrency)); //TODO tune
 
 
 				//StringBuilder y = new StringBuilder();
@@ -188,7 +189,7 @@ public class WorkerExec extends ThreadedExec {
 					What w = ww.get(rng);
 					if (w == null)  break;
 
-					int loops = Math.min(loopsRemain, (int) Util.lerpSafe(w.priElseZero() / ww.mass(), minLoops, maxLoops));
+					int loops = Math.min(loopsRemain, (int) Util.lerpSafe(w.priElseZero() / ww.mass(), minWhatLoops, maxWhatLoops));
 					loopsRemain -= loops;
 
 

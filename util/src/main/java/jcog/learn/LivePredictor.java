@@ -5,7 +5,6 @@ import jcog.Util;
 import jcog.learn.lstm.ExpectedVsActual;
 import jcog.learn.lstm.test.LiveSTM;
 import jcog.learn.ntm.control.SigmoidActivation;
-import jcog.learn.ntm.control.TanhActivation;
 import jcog.random.XoRoShiRo128PlusRandom;
 import org.eclipse.collections.api.block.function.primitive.LongToFloatFunction;
 
@@ -180,9 +179,9 @@ public class LivePredictor {
         public void learn(double[] x, double[] y) {
             if (mlp == null /*|| mlp.inputs()!=ins.length ...*/) {
                  mlp = new MLPMap(x.length,
-                         new MLPMap.Layer( (x.length + y.length), TanhActivation.the),
-                         new MLPMap.Layer( 2 * (x.length + y.length), SigmoidActivation.the),
-                         new MLPMap.Layer( y.length, null)
+                         new MLPMap.Layer( (x.length + y.length), SigmoidActivation.the),
+                         //new MLPMap.Layer( 2 * (x.length + y.length), SigmoidActivation.the),
+                         new MLPMap.Layer( y.length, SigmoidActivation.the)
                  ).randomize(rng);
             }
             mlp.put(Util.toFloat(x), Util.toFloat(y), learningRate);

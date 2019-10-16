@@ -1707,6 +1707,17 @@ public enum ArrayUtil {
         f[a] = f[b];
         f[b] = fx;
     }
+    public static void swapObjShort(Object[] o, short[] f, int a, int b) {
+        if (a==b)  return;
+
+        Object ox = o[a];
+        o[a] = o[b];
+        o[b] = ox;
+
+        short fx = f[a];
+        f[a] = f[b];
+        f[b] = fx;
+    }
     public static void swapObjInt(Object[] o, int[] f, int a, int b) {
         if (a==b)  return;
 

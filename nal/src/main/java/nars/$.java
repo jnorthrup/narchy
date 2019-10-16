@@ -235,7 +235,7 @@ public enum $ { ;
     }
 
     public static Term p(int... t) {
-        return t.length == 0 ? Op.EmptyProduct : $.p($.the(t));
+        return t.length == 0 ? Op.EmptyProduct : $.p($.ints(t));
     }
 
     /**
@@ -378,9 +378,8 @@ public enum $ { ;
         PeekableIntIterator ii = b.getIntIterator();
         Term[] t = new Term[size];
         int k = 0;
-        while (ii.hasNext()) {
+        while (ii.hasNext())
             t[k++] = Int.the(ii.next());
-        }
         return t;
     }
 
@@ -473,14 +472,14 @@ public enum $ { ;
         return theAtomic(new byte[]{c});
     }
 
-    public static Term[] the(short... i) {
+    public static Term[] ints(short... i) {
         int l = i.length;
         Term[] x = new Term[l];
         for (int j = 0; j < l; j++)
             x[j] = the(i[j]);
         return x;
     }
-    public static Term[] the(int... i) {
+    public static Term[] ints(int... i) {
         int l = i.length;
         Term[] x = new Term[l];
         for (int j = 0; j < l; j++)

@@ -597,7 +597,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         }
 
         @Override
-        protected Versioned<Term> newEntry(Variable x) {
+        public Versioned<Term> apply(Variable x) {
             return new ConstrainedVersionedTerm(x);
         }
     }

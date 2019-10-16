@@ -19,7 +19,7 @@ public class MultiVersionMap<X,Y> extends VersionMap<X,Y> {
     }
 
     @Override
-    protected Versioned<Y> newEntry(X x) {
+    public Versioned<Y> apply(X x) {
         return new KeyMultiVersioned<>(x, maxValuesPerItem);
     }
 }

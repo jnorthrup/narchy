@@ -98,12 +98,12 @@ public enum Terms {
 	 * TODO use op if that is the 2nd comparison property
 	 * */
 	static Term[] commuteTerms(Term[] x, boolean modifyInputArray) {
-		int[] volumes = new int[x.length];
+		short[] volumes = new short[x.length];
 		int volMin = Integer.MAX_VALUE, volMax = Integer.MIN_VALUE;
 		boolean allDecreasing = true;
 		for (int i = 0, xLength = x.length; i < xLength; i++) {
 
-			int v = x[i].volume();
+			short v = (short) x[i].volume();
 
 			volumes[i] = v;
 
@@ -131,8 +131,7 @@ public enum Terms {
 			int n = y.length;
 			QuickSort.quickSort(0, n,
 				(a, b) -> Integer.compare(volumes[b], volumes[a]),
-				(a, b) -> ArrayUtil.swapObjInt(y, volumes, a, b));
-
+				(a, b) -> ArrayUtil.swapObjShort(y, volumes, a, b));
 
 			int s = 0; //span start
 			int vs = volumes[0];

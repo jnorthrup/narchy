@@ -10,11 +10,12 @@ import java.util.*;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.BiPredicate;
+import java.util.function.Function;
 
 import static java.util.stream.Collectors.toList;
 
 
-public class VersionMap<X, Y> implements Map<X, Y> {
+public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     public final Versioning context;
     public final Map<X, Versioned<Y>> map;
@@ -100,7 +101,7 @@ public class VersionMap<X, Y> implements Map<X, Y> {
         throw new UnsupportedOperationException();
     }
 
-    protected Versioned<Y> newEntry(X x) {
+    @Override public Versioned<Y> apply(X x) {
         return new KeyUniVersioned<>(x);
     }
 
@@ -201,7 +202,7 @@ public class VersionMap<X, Y> implements Map<X, Y> {
     }
 
     public final Versioned<Y> getOrCreateIfAbsent(X key) {
-        return map.computeIfAbsent(key, this::newEntry);
+        return map.computeIfAbsent(key, this);
     }
 
 

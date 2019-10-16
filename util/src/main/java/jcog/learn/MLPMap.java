@@ -30,6 +30,12 @@ public class MLPMap {
 
     public final MLPLayer[] layers;
 
+    /**
+     * gradient momentum.  The coefficient for how much of the previous delta is applied to each weight.
+     * In theory, prevents local minima stall.
+     */
+    float momentum = 0.1f;
+
     /** layer def */
     public static class Layer {
         final int size;
@@ -49,18 +55,15 @@ public class MLPMap {
         final float[] dW;
         @Nullable
         final IDifferentiableFunction activation;
+        private final boolean bias;
 
-        /**
-         * The momentum.  The coefficient for how much of the previous delta is applied to each weight.
-         * In theory, prevents local minima stall.
-         */
-        float momentum = 0.1f;
 
-        public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation) {
+        public MLPLayer(int inputSize, int outputSize, @Nullable IDifferentiableFunction activation, boolean bias) {
+            this.bias = bias;
             out = new float[outputSize];
-            in = new float[inputSize + 1];
+            in = new float[inputSize + (bias ? 1 : 0)];
             delta = new float[in.length];
-            W = new float[(1 + inputSize) * outputSize];
+            W = new float[((bias ? 1 : 0) + inputSize) * outputSize];
             dW = new float[W.length];
             this.activation = activation;
         }
@@ -79,7 +82,8 @@ public class MLPMap {
 
         public float[] run(float[] in) {
             System.arraycopy(in, 0, this.in, 0, in.length);
-            this.in[this.in.length - 1] = 1;
+            if (bias)
+                this.in[this.in.length - 1] = 1; //bias
             int offs = 0;
             int il = this.in.length;
             for (int i = 0; i < out.length; i++) {
@@ -95,7 +99,7 @@ public class MLPMap {
             return out;
         }
 
-        public float[] train(float[] incomingError, float learningRate) {
+        public float[] train(float[] incomingError, float learningRate, float momentum) {
 
 
             Arrays.fill(this.delta, 0);
@@ -137,7 +141,7 @@ public class MLPMap {
         layers = new MLPLayer[layersSize.length];
         for (int i = 0; i < layersSize.length; i++) {
             int inSize = i == 0 ? inputSize : layersSize[i - 1];
-            layers[i] = new MLPLayer(inSize, layersSize[i], sigmoid ? SigmoidActivation.the : null);
+            layers[i] = new MLPLayer(inSize, layersSize[i], sigmoid ? SigmoidActivation.the : null, true);
         }
         randomize(r);
     }
@@ -148,13 +152,13 @@ public class MLPMap {
         for (int i = 0; i < layer.length; i++) {
             int inSize = i > 0 ? layer[i-1].size : inputs;
             int outSize = layer[i].size;
-            layers[i] = new MLPLayer(inSize, outSize, layer[i].activation);
+            layers[i] = new MLPLayer(inSize, outSize, layer[i].activation, true);
         }
     }
-    public MLPMap(Random r, int inputs, Layer... layer) {
-        this(inputs, layer);
-        randomize(r);
-    }
+//    public MLPMap(Random r, int inputs, Layer... layer) {
+//        this(inputs, layer);
+//        randomize(r);
+//    }
 
     public MLPMap randomize(Random r) {
         for (MLPLayer m : layers)
@@ -181,7 +185,7 @@ public class MLPMap {
         //backprop
         float[] error = errorOut;
         for (int i = layers.length - 1; i >= 0; i--)
-            error = layers[i].train(error, learningRate);
+            error = layers[i].train(error, learningRate, momentum);
 
         return errorOut;
     }
