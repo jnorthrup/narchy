@@ -44,7 +44,7 @@ public class FileContext extends NARPart {
      */
     public static class FileBelief {
 
-        final PriReferenceArrayBag<URL,jcog.pri.PriReference<URL>> active = new PLinkArrayBag<URL>(PriMerge.plus, 128);
+        final PriReferenceArrayBag<URL,jcog.pri.PriReference<URL>> active = new PLinkArrayBag<>(PriMerge.plus, 128);
 
         public FileBelief() {
 

@@ -22,12 +22,6 @@ import java.util.Stack;
 class Polygon {
 
     /**
-     * Was unsigned int!
-     * Number of contours.
-     */
-    private int _ncontours = 0;
-
-    /**
      * vector<unsigned int>    _nVertices;   
      */
     private int[] _nVertices = null;
@@ -53,15 +47,6 @@ class Polygon {
      * all edges
      */
     private final IntObjectHashMap<Linebase> _edges = new IntObjectHashMap<>(0);
-
-    /**
-     * See _pointsKeys ... same for _edges.
-     * ---{ Today, it's you }---
-     * Terry Pratchett's Death
-     * Right now I'm not sure wether number of edges can't change...
-     * ... better call initializeEdgesKeys() all the time ;)
-     */
-    private int[] _edgesKeys = null;
 
     /**
      * typedef priority_queue<Pointbase> PQueue; ... use PointbaseComparatorCoordinatesReverse! (Jakub Gemrot)
@@ -142,8 +127,11 @@ class Polygon {
         int i, j;
         int nextNumber = 1;
 
-        _ncontours = numContours;
-        _nVertices = new int[_ncontours];
+        /**
+         * Was unsigned int!
+         * Number of contours.
+         */
+        _nVertices = new int[numContours];
         for (i = 0; i < numContours; ++i) {
             for (j = 0; j < numVerticesInContours[i]; ++j) {
                 _points.put(nextNumber, new Pointbase(nextNumber, vertices[nextNumber - 1].x, vertices[nextNumber - 1].y, Poly2TriUtils.INPUT));
@@ -151,7 +139,7 @@ class Polygon {
             }
         }
         _nVertices[0] = numVerticesInContours[0];
-        for (i = 1; i < _ncontours; ++i) {
+        for (i = 1; i < numContours; ++i) {
             _nVertices[i] = _nVertices[i - 1] + numVerticesInContours[i];
         }
         i = 0;
@@ -159,7 +147,7 @@ class Polygon {
         int first = 1;
         Linebase edge;
 
-        while (i < _ncontours) {
+        while (i < numContours) {
             for (; j + 1 <= _nVertices[i]; ++j) {
                 edge = new Linebase((Pointbase) _points.get(j), (Pointbase) _points.get(j + 1), Poly2TriUtils.INPUT);
                 _edges.put(Poly2TriUtils.l_id.get(), edge);
@@ -171,7 +159,7 @@ class Polygon {
             first = _nVertices[i] + 1;
             ++i;
         }
-        Poly2TriUtils.p_id.set(_nVertices[_ncontours - 1]);
+        Poly2TriUtils.p_id.set(_nVertices[numContours - 1]);
     }
 
     /**
@@ -304,7 +292,14 @@ class Polygon {
     }
 
     private void initializeEdgesKeys() {
-        _edgesKeys = _edges.keySet().toSortedArray();
+        /**
+         * See _pointsKeys ... same for _edges.
+         * ---{ Today, it's you }---
+         * Terry Pratchett's Death
+         * Right now I'm not sure wether number of edges can't change...
+         * ... better call initializeEdgesKeys() all the time ;)
+         */
+        int[] _edgesKeys = _edges.keySet().toSortedArray();
     }
 
     private IntHashSet getSetFromStartAdjEdgeMap(int index) {

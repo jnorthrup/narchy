@@ -3,6 +3,7 @@ package asanf.FOM;
  * http:
  */
 
+import java.util.Arrays;
 import java.util.HashSet;
 
 public class StopWords {
@@ -39,11 +40,9 @@ public class StopWords {
 	private final HashSet<String> stopWords;
 
 	public StopWords() {
-		stopWords = new HashSet<String>(s_stopWords.length);
+		stopWords = new HashSet<>(s_stopWords.length);
 
-		for (String stopWord : s_stopWords) {
-			stopWords.add(stopWord);
-		}
+		stopWords.addAll(Arrays.asList(s_stopWords));
 	}
 
 	public boolean isStopWord(String word) {

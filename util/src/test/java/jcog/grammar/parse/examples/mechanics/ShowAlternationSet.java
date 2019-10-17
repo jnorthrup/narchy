@@ -33,7 +33,7 @@ public class ShowAlternationSet {
 
 		String s = "i = j = k = l = m";
 
-		HashSet<Assembly> v = new HashSet<Assembly>();
+		HashSet<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly(s));
 
 		System.out.println(assignment.match(v));

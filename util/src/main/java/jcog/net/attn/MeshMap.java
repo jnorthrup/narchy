@@ -100,7 +100,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     public static <K,V> MeshMap<K,V> get(String id, BiConsumer<K,V> x) {
         return the.computeIfAbsent(id, i -> {
             try {
-                MeshMap<K, V> y = new MeshMap<K, V>(id, x);
+                MeshMap<K, V> y = new MeshMap<>(id, x);
                 y.setFPS(mapFPS);
                 return y;
             } catch (IOException e) {

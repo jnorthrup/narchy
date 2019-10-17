@@ -14,12 +14,6 @@ public class BitFont {
     static final int defaultChar = 32;
     final int[] charWidth = new int[255];
     private final float[] texture;
-    private final int[] ascii;
-    private final int size;
-    private final int ascent;
-    private final int descent;
-    private final int glyphCount;
-    private final boolean lazy;
     private final Glyph[] glyphs;
     int characters;
     int charHeight;
@@ -36,14 +30,14 @@ public class BitFont {
         texture = decodeBitFont(theBytes);
         make();
 
-        size = lineHeight;
+        int size = lineHeight;
         glyphs = new Glyph[256];
-        ascii = new int[128];
+        int[] ascii = new int[128];
         Arrays.fill(ascii, -1);
-        lazy = false;
-        ascent = 4;
-        descent = 4;
-        glyphCount = 128;
+        boolean lazy = false;
+        int ascent = 4;
+        int descent = 4;
+        int glyphCount = 128;
         for (int i = 0; i < 128; i++) {
 
 

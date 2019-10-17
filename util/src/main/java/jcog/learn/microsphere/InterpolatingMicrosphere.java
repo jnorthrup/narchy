@@ -51,16 +51,6 @@ public class InterpolatingMicrosphere {
      */
     private final int size;
 
-    /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
-    private final float pointRadius = 0f;
-
-
-
-
-
-
-
-
 
     /**
      * Create an unitialiazed sphere.
@@ -317,6 +307,8 @@ public class InterpolatingMicrosphere {
             
             float[] X = data[i];
             final float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
+            /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
+            float pointRadius = 0f;
             final float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
 
             @Nullable float[] sampleDirection = distance!=0 ? diff : null;

@@ -6,9 +6,9 @@ import javax.swing.event.ListDataListener;
 import java.util.ArrayList;
 
 public class GroupList implements ListModel {
-	private final ArrayList<ArrayList<LevelObject>> groups = new ArrayList<ArrayList<LevelObject>>();
+	private final ArrayList<ArrayList<LevelObject>> groups = new ArrayList<>();
 	
-	private final ArrayList<ListDataListener> listeners = new ArrayList<ListDataListener>();
+	private final ArrayList<ListDataListener> listeners = new ArrayList<>();
 
 	public void add(ArrayList<LevelObject> obj) {
 		groups.add(obj);

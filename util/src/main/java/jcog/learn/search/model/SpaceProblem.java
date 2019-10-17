@@ -90,15 +90,11 @@ public class SpaceProblem implements Problem<SpaceProblem.SpaceFind> {
             return false;
         }
 
-        public final static Problem<SpaceFind> PROBLEM = new Problem<SpaceFind>() {
+        public final static Problem<SpaceFind> PROBLEM = new Problem<>() {
 
             @Override
             public double cost(SpaceFind currentNode, SpaceFind successorNode) {
-                return dist(currentNode.x, currentNode.y, successorNode.x, successorNode.y);
-            }
-
-            public double dist(int x, int y, int otherX, int otherY) {
-                return Math.sqrt(Math.pow(x - otherX, 2) + Math.pow(y - otherY, 2));
+                return Math.sqrt(Math.pow(currentNode.x - successorNode.x, 2) + Math.pow(currentNode.y - successorNode.y, 2));
             }
 
             @Override

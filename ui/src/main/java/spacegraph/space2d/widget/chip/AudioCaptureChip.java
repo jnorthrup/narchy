@@ -10,7 +10,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
 
 public class AudioCaptureChip extends Bordering {
 
-    final Port out = new TypedPort<Tensor>(Tensor.class);
+    final Port out = new TypedPort<>(Tensor.class);
 //    private final SignalSampling au;
     private Off on;
 

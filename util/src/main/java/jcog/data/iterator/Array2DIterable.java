@@ -27,15 +27,13 @@ import java.util.Iterator;
  */
 public class Array2DIterable<X> implements Iterable<X> {
 
-    private final X[][] array2D;
     public FasterList<X> order;
     
 
     public Array2DIterable(X[][] x) {
-        array2D = x;
-        
-        int cols = array2D[0].length;
-        int rows = array2D.length;
+
+        int cols = x[0].length;
+        int rows = x.length;
         int area = rows * cols;
         order = new FasterList(area);
 

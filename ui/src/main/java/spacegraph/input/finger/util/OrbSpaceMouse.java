@@ -25,7 +25,6 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
     private int mouseDragPrevX, mouseDragPrevY;
     private int mouseDragDX, mouseDragDY;
     private final v3 gOldPickingPos = v();
-    private float gOldPickingDist;
 
     private TypedConstraint pickConstraint;
 
@@ -117,7 +116,7 @@ public class OrbSpaceMouse extends SpaceMouse implements KeyListener {
             v3 eyePos = new v3(space.camPos);
             v3 tmp = new v3();
             tmp.sub(pickPos, eyePos);
-            gOldPickingDist = tmp.length();
+            float gOldPickingDist = tmp.length();
 
             p2p.tau = 0.1f;
 

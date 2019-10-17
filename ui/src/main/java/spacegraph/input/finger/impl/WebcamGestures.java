@@ -135,7 +135,6 @@ public class WebcamGestures extends Finger {
         private final ImageMotion2D motion2D;
         private final BackgroundModelMoving background;
         private final Homography2D_F32 firstToCurrent32;
-        private final ImageType imageType;
         private BufferedImage visualized;
 
         GrayF32 input = null;
@@ -145,7 +144,7 @@ public class WebcamGestures extends Finger {
 
             // Comment/Uncomment to switch input image type
             //imageType = ImageType.single(GrayU8.class);
-            imageType = ImageType.single(GrayF32.class);
+            ImageType imageType = ImageType.single(GrayF32.class);
 //		imageType = ImageType.il(3, InterleavedF32.class);
 ///		imageType = ImageType.il(3, InterleavedU8.class);
 

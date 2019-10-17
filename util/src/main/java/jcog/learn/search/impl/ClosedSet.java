@@ -9,7 +9,7 @@ public class ClosedSet<X> implements IClosedSet<X> {
     private final Comparator<X> comp;
 
     public ClosedSet(Comparator<X> comp) {
-        this.list = new ArrayList<X>();
+        this.list = new ArrayList<>();
         this.comp = comp;
     }
 

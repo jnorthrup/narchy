@@ -26,7 +26,6 @@ import java.util.Map;
 public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPressed {
 
 
-    private Dimension pixelSize;
     private TexSurface tex;
 
     public static void main(String[] args) throws IOException, JSchException {
@@ -54,7 +53,6 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     private final Object[] colors = {Color.black, Color.red, Color.green,
             Color.yellow, Color.blue, Color.magenta, Color.cyan, Color.white};
     private OutputStream out;
-    private InputStream in;
     private TerminalEmulator emulator = null;
     private Connection connection = null;
     private BufferedImage img, background;
@@ -72,7 +70,6 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     private int char_width, char_height;
 
     private int line_space = -2;
-    private int compression = 0;
     private boolean antialiasing = true;
 
     public SSHSurface() {
@@ -153,7 +150,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
     public void pixelSize(int w, int h) {
 
-        pixelSize = new Dimension(getTermWidth(), getTermHeight());
+        Dimension pixelSize = new Dimension(getTermWidth(), getTermHeight());
 
         BufferedImage imgOrg = img;
         if (graphics != null)
@@ -205,7 +202,7 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
 
         this.connection = connection;
         if (connection != null) {
-            in = connection.getInputStream();
+            InputStream in = connection.getInputStream();
             out = connection.getOutputStream();
             emulator = new EmulatorVT100(this, in);
             emulator.start();
@@ -492,7 +489,6 @@ public class SSHSurface extends MutableUnitContainer implements Terminal, KeyPre
     public void setCompression(int compression) {
         if (compression < 0 || 9 < compression)
             return;
-        this.compression = compression;
     }
 
     public void setDefaultForeGround(Object f) {

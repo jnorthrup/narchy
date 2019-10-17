@@ -24,7 +24,6 @@ public class MultistepBenchmarks {
     private
     String termVolumeMax;
 
-    private long concepts;
     private NAR n;
 
     public static void main(String[] args) throws RunnerException {
@@ -50,7 +49,7 @@ public class MultistepBenchmarks {
 
     @TearDown
     public void end() {
-        concepts = n.memory.size();
+        long concepts = n.memory.size();
     }
 
     @Benchmark

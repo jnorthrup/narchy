@@ -201,10 +201,8 @@ public class Impiler {
 	 */
 	static class ImpilerDeducer  {
 
-		private final CauseChannel<Task> in;
-
-		ImpilerDeducer(NAR n) {
-			in = n.newChannel(this);
+        ImpilerDeducer(NAR n) {
+            CauseChannel<Task> in = n.newChannel(this);
 		}
 
 //		@Override

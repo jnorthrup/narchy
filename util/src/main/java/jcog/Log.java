@@ -18,7 +18,7 @@ public class Log {
         LoggerContext c = root.getLoggerContext();
         c.reset();
 
-        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<ILoggingEvent>();
+        ConsoleAppender<ILoggingEvent> ca = new ConsoleAppender<>();
         ca.setContext(c);
         //ca.setWithJansi(true);
         ca.setName("*");
@@ -36,7 +36,7 @@ public class Log {
         ca.setImmediateFlush(false);
         ca.setLayout(layout);
 
-        LayoutWrappingEncoder<ILoggingEvent> encoder = new LayoutWrappingEncoder<ILoggingEvent>();
+        LayoutWrappingEncoder<ILoggingEvent> encoder = new LayoutWrappingEncoder<>();
         encoder.setContext(c);
         encoder.setLayout(layout);
         ca.setEncoder(encoder);

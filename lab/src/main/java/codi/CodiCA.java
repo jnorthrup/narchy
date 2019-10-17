@@ -14,9 +14,6 @@ public class CodiCA extends CA {
     private int CAChanged;
     private boolean SignalingInited;
 
-    /** add blocks every 2 cells TODO verify this is what it actually means */
-    private final boolean gridBlock = true;
-
 
     static class CodiCell {
         int Type;
@@ -76,6 +73,8 @@ public class CodiCA extends CA {
                     if ((ix % 2) * ((iy + 1) % 2) == 1)
                         cell.Chromo = (cell.Chromo & ~12) | 3;
 
+                    /** add blocks every 2 cells TODO verify this is what it actually means */
+                    boolean gridBlock = true;
                     if (gridBlock) {
                         if ((ix % 2) + (iy % 2) != 0)
                             cell.Chromo &= ~192;

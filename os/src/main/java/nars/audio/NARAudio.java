@@ -24,8 +24,6 @@ import static spacegraph.space2d.container.grid.Gridding.grid;
  */
 public class NARAudio extends WaveIn {
 
-    private final FreqVectorSensor hear;
-
     public NARAudio(Term id, NAR nar, SignalInput src, float fps) {
         super($.quote(src.toString()/*HACK*/), src, fps);
 
@@ -38,8 +36,9 @@ public class NARAudio extends WaveIn {
 //            this(src::writeTo, src.sampleRate(),Math.round(src.sampleRate() * bufferTime));
 //        }
         CircularFloatBuffer hearBuf = new CircularFloatBuffer(in.data);
-        hear = new FreqVectorSensor(hearBuf /* hack */,
-                f->$.inh(id, $.the(f)), 512,16, nar);
+        /* hack */
+        FreqVectorSensor hear = new FreqVectorSensor(hearBuf /* hack */,
+                f -> $.inh(id, $.the(f)), 512, 16, nar);
         h.addSensor(hear);
 
         //addSensor(hear);

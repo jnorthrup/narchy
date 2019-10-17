@@ -62,10 +62,8 @@ public abstract class AxisSweep3Internal extends Broadphase {
 	
 	
 	private OverlappingPairCallback userPairCallback;
-	
-	private final boolean ownsPairCache;
 
-	private int invalidPair;
+    private int invalidPair;
 	
 	
 	private final int mask;
@@ -75,9 +73,10 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		this.handleSentinel = handleSentinel;
 
 
-		int maxHandles = userMaxHandles + 1; 
+		int maxHandles = userMaxHandles + 1;
 
-		this.pairCache = (this.ownsPairCache = (pairCache!=null)) ? pairCache : new HashedOverlappingPairCache();
+        boolean ownsPairCache;
+        this.pairCache = (ownsPairCache = (pairCache!=null)) ? pairCache : new HashedOverlappingPairCache();
 
 
 		

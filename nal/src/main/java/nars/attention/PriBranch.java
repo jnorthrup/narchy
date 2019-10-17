@@ -14,8 +14,6 @@ import nars.term.Termed;
 @Paper
 public class PriBranch extends PriAmp {
 
-    private final Iterable<? extends Termed> components;
-
     //final MiniPID control = new MiniPID(0.5f, 0.5f, 0.5f);
 
 //    //v0: bang bang
@@ -29,7 +27,6 @@ public class PriBranch extends PriAmp {
 
     public PriBranch(Object id, Iterable<? extends Termed> components) {
         super(id);
-        this.components = components;
     }
 //
 //    public Stream<Concept> concepts(NAR nar) {

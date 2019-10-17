@@ -32,7 +32,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     public final P src;
 
     public final Array2DIterable<ComponentSignal> iter;
-    private final IntIntToObjectFunction<nars.term.Term> pixelTerm;
     private final float defaultFreq;
 
     protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, float defaultFreq, Bitmap2DSensor<?> s) {
@@ -46,8 +45,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
 
         this.matrix = new ComponentSignal[height][width];
 
-
-        this.pixelTerm = pixelTerm;
 
         this.defaultFreq = defaultFreq;
         for (int y = 0; y < height; y++) {

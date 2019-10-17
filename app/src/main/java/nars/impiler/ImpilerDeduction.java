@@ -55,9 +55,8 @@ public class ImpilerDeduction extends Search<Term, Task> {
 	private int volMax;
 
 	final ConjBuilder cc = new ConjTree();
-	private Term target;
 
-	public ImpilerDeduction(NAR nar) {
+    public ImpilerDeduction(NAR nar) {
 		this.nar = nar;
 	}
 
@@ -103,7 +102,7 @@ public class ImpilerDeduction extends Search<Term, Task> {
 		if (target.op() == IMPL)
 			target = target.sub(forward ? 0 /* subj */ : 1 /* pred */);
 
-		this.target = target.unneg();
+        Term target1 = target.unneg();
 		this.forward = forward;
 		this.start = when;
 

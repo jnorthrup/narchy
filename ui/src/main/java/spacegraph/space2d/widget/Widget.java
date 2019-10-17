@@ -215,11 +215,9 @@ public class Widget extends MutableUnitContainer<Surface> implements KeyPressed 
 
     /** temporary */
     private class MyHover extends Hover {
-        private final Surface hoverLabel;
 
         public MyHover(Surface hoverLabel) {
             super(Widget.this, b -> hoverLabel, new MyCursorModel());
-            this.hoverLabel = hoverLabel;
         }
 
         @Override

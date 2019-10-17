@@ -39,7 +39,7 @@ abstract public class JoglDisplay extends SpaceGraph {
 
     public final v3Anim camPos, camFwd, camUp;
 
-    private final float cameraSpeed = 100f, cameraRotateSpeed = cameraSpeed;
+    private final float cameraSpeed = 100f;
 
 
     public float zNear = 0.5f, zFar = 1000;
@@ -51,6 +51,7 @@ abstract public class JoglDisplay extends SpaceGraph {
         video = new MyJoglWindow();
 
         video.onUpdate(camPos = new v3Anim(0, 0, 5, cameraSpeed));
+        float cameraRotateSpeed = cameraSpeed;
         video.onUpdate(camFwd = new v3Anim(0, 0, -1, cameraRotateSpeed));
         video.onUpdate(camUp = new v3Anim(0, 1, 0, cameraRotateSpeed));
     }

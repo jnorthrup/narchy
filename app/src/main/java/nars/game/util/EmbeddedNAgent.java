@@ -21,8 +21,6 @@ public class EmbeddedNAgent extends Agent {
 
     private final Game env;
     final float[] senseValue;
-    private final GameLoop[] sense;
-    private final SwitchAction act;
     private int nextAction = -1;
     private float nextReward = Float.NaN;
 
@@ -46,9 +44,10 @@ public class EmbeddedNAgent extends Agent {
 
         this.env = new Game("agent");
 
-        this.sense = IntStream.range(0, inputs).mapToObj(i -> env.sense($.inh($.the(i), env.id), ()-> senseValue[i])
+        GameLoop[] sense = IntStream.range(0, inputs).mapToObj(i -> env.sense($.inh($.the(i), env.id), () -> senseValue[i])
         ).toArray(GameLoop[]::new);
 
+        SwitchAction act;
         this.env.addSensor(act = new SwitchAction(n, (a) -> {
                 nextAction = a;
                 return true;

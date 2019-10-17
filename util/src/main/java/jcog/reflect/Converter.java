@@ -40,12 +40,6 @@ import java.util.function.Function;
 public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements PrioritizedDouble {
     
     protected static final double defaultItemWeight = 1;
-    
-    private final WeightChangeListener listener = event -> {
-        Double oldw = Converter.this.weight;
-        Converter.this.weight = Double.NaN;
-        fireEvent(oldw, null);
-    };
 
     private final Function[] functionsArray;
 
@@ -90,6 +84,11 @@ public class Converter<X,Y> extends MutableWeightedCaster<X,Y> implements Priori
 
         for (Function c : functions) {
             if (c instanceof WeightChangeSender) {
+                WeightChangeListener listener = event -> {
+                    Double oldw = Converter.this.weight;
+                    Converter.this.weight = Double.NaN;
+                    fireEvent(oldw, null);
+                };
                 ((WeightChangeSender) c).addWeightChangeListener(listener, true);
             }
         }

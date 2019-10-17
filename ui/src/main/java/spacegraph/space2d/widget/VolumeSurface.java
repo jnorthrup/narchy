@@ -29,9 +29,8 @@ public class VolumeSurface extends PaintSurface {
 	private final SpaceGraph3D space;
 
 	final FPSLook mouse;
-	private float px1 = 0, py1 = 0, px2 = 1, py2 = 1;
 
-	final FingerAdapter fingerTo2D = new FingerAdapter();
+    final FingerAdapter fingerTo2D = new FingerAdapter();
 
 	public VolumeSurface(SpaceGraph3D space) {
 		this.space = space;
@@ -56,10 +55,10 @@ public class VolumeSurface extends PaintSurface {
 
 		float left = left();
 		float bottom = bottom();
-		px1 = ((left - r.x1) * r.scaleX);
-		py1 = ((bottom - r.y1) * r.scaleY);
-		px2 = ((left - r.x1 + w()) * r.scaleX);
-		py2 = ((bottom - r.y1 + h()) * r.scaleY);
+        float px1 = ((left - r.x1) * r.scaleX);
+        float py1 = ((bottom - r.y1) * r.scaleY);
+        float px2 = ((left - r.x1 + w()) * r.scaleX);
+        float py2 = ((bottom - r.y1 + h()) * r.scaleY);
 		gl.glViewport(Math.round(bounds.x),Math.round(bounds.y), Math.round(px2 - px1), Math.round(py2 - py1));
 
 		space.renderVolumeEmbedded(r.dtS(), gl, bounds);

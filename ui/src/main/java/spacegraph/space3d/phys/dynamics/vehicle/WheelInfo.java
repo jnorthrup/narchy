@@ -39,57 +39,37 @@ public class WheelInfo {
 	public final RaycastInfo raycastInfo = new RaycastInfo();
 
 	public final Transform worldTransform = new Transform();
-	
-	private final v3 chassisConnectionPointCS = new v3();
-	private final v3 wheelDirectionCS = new v3();
-	private final v3 wheelAxleCS = new v3();
-	private final float suspensionRestLength1;
-	private final float maxSuspensionTravelCm;
-	private final float maxSuspensionForce;
-	private final float wheelsRadius;
-	private final float suspensionStiffness;
-	private final float wheelsDampingCompression;
-	private final float wheelsDampingRelaxation;
-	private final float frictionSlip;
-	private final float steering;
-	private final float rotation;
-	private final float deltaRotation;
-	private final float rollInfluence;
 
-	private final float engineForce;
+    private final float suspensionRestLength1;
 
-	private final float brake;
-	
-	private final boolean bIsFrontWheel;
-	
-	public Object clientInfo; 
+    public Object clientInfo;
 
-	private float clippedInvContactDotSuspension;
-	private float suspensionRelativeVelocity;
-	
-	public float wheelsSuspensionForce;
+    public float wheelsSuspensionForce;
 	public float skidInfo;
 	
 	public WheelInfo(WheelInfoConstructionInfo ci) {
 		suspensionRestLength1 = ci.suspensionRestLength;
-		maxSuspensionTravelCm = ci.maxSuspensionTravelCm;
-                maxSuspensionForce = ci.maxSuspensionForce;
+        float maxSuspensionTravelCm = ci.maxSuspensionTravelCm;
+        float maxSuspensionForce = ci.maxSuspensionForce;
 
-		wheelsRadius = ci.wheelRadius;
-		suspensionStiffness = ci.suspensionStiffness;
-		wheelsDampingCompression = ci.wheelsDampingCompression;
-		wheelsDampingRelaxation = ci.wheelsDampingRelaxation;
-		chassisConnectionPointCS.set(ci.chassisConnectionCS);
-		wheelDirectionCS.set(ci.wheelDirectionCS);
-		wheelAxleCS.set(ci.wheelAxleCS);
-		frictionSlip = ci.frictionSlip;
-		steering = 0f;
-		engineForce = 0f;
-		rotation = 0f;
-		deltaRotation = 0f;
-		brake = 0f;
-		rollInfluence = 0.1f;
-		bIsFrontWheel = ci.bIsFrontWheel;
+        float wheelsRadius = ci.wheelRadius;
+        float suspensionStiffness = ci.suspensionStiffness;
+        float wheelsDampingCompression = ci.wheelsDampingCompression;
+        float wheelsDampingRelaxation = ci.wheelsDampingRelaxation;
+        v3 chassisConnectionPointCS = new v3();
+        chassisConnectionPointCS.set(ci.chassisConnectionCS);
+        v3 wheelDirectionCS = new v3();
+        wheelDirectionCS.set(ci.wheelDirectionCS);
+        v3 wheelAxleCS = new v3();
+        wheelAxleCS.set(ci.wheelAxleCS);
+        float frictionSlip = ci.frictionSlip;
+        float steering = 0f;
+        float engineForce = 0f;
+        float rotation = 0f;
+        float deltaRotation = 0f;
+        float brake = 0f;
+        float rollInfluence = 0.1f;
+        boolean bIsFrontWheel = ci.bIsFrontWheel;
 	}
 	
 	public float getSuspensionRestLength() {
@@ -97,7 +77,9 @@ public class WheelInfo {
 	}
 
 	public void updateWheel(Body3D chassis, RaycastInfo raycastInfo) {
-		if (raycastInfo.isInContact) {
+        float suspensionRelativeVelocity;
+        float clippedInvContactDotSuspension;
+        if (raycastInfo.isInContact) {
 			float project = raycastInfo.contactNormalWS.dot(raycastInfo.wheelDirectionWS);
 			v3 chassis_velocity_at_contactPoint = new v3();
 			v3 relpos = new v3();

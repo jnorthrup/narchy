@@ -684,12 +684,11 @@ public abstract class Main extends Base {
 	}
 
 	void MYgluPerspective(double fovy, double aspect, double zNear, double zFar) {
-		double xmin;
 
 		double ymax = zNear * Math.tan(fovy * Math.PI / 360.0);
 		double ymin = -ymax;
 
-		xmin = ymin * aspect;
+		double xmin = ymin * aspect;
 		double xmax = ymax * aspect;
 
 		xmin += - (2 * gl_state.camera_separation) / zNear;

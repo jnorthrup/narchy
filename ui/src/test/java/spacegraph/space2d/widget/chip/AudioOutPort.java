@@ -15,7 +15,6 @@ public class AudioOutPort extends Gridding  {
 
     private final Port in, passThru;
     private final IconToggleButton enableButton;
-    private Sound playback;
 
 
     public AudioOutPort() {
@@ -32,7 +31,13 @@ public class AudioOutPort extends Gridding  {
     @Override
     protected void starting() {
         super.starting();
-        playback = Audio.the().play(new SoundProducer() {
+        /* TODO buffer mix command object */
+        //input fill
+        //passthru WARNING the downstream access to pass through can modify the buffer unless it is cloned
+        //TODO
+        //buffer.skip(..);
+        //System.out.println("skip " + samplesToSkip);
+        Sound playback = Audio.the().play(new SoundProducer() {
             @Override
             public void read(float[] buf, int readRate) {
                 if (enableButton.on() && in.active()) {

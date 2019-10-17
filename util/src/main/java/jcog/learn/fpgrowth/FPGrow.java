@@ -24,7 +24,7 @@ public class FPGrow {
 
     int supportThreshold = 3;
 
-    private final Map<List<String>, Integer> freq = new HashMap<List<String>, Integer>();
+    private final Map<List<String>, Integer> freq = new HashMap<>();
 
     public FPGrow grow(List<List<String>> data) {
 
@@ -109,7 +109,7 @@ public class FPGrow {
             }
 
             
-            List<List<String>> newCPB = new LinkedList<List<String>>();
+            List<List<String>> newCPB = new LinkedList<>();
             FPNode nextNode = header;
             while ((nextNode = nextNode.next) != null) {
                 int leaf_supp = nextNode.support;
@@ -201,7 +201,7 @@ public class FPGrow {
 
 
     private static HashMap<String, Integer> count(List<List<String>> transactions) {
-        HashMap<String, Integer> itemCount = new HashMap<String, Integer>();
+        HashMap<String, Integer> itemCount = new HashMap<>();
         transactions.stream().flatMap(Collection::stream).forEach(item ->
                 itemCount.compute(item, (i, v) -> (v == null) ? 1 : v + 1)
         );
@@ -229,7 +229,7 @@ public class FPGrow {
             newline = matcher.replaceAll("");
             newline = newline.replaceAll("( )+", " "); 
             String[] items = newline.split(" ");
-            transactions.add(new ArrayList<String>(Arrays.asList(items)));
+            transactions.add(new ArrayList<>(Arrays.asList(items)));
         }
         br.close();
 

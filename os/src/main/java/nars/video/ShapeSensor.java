@@ -48,9 +48,6 @@ public class ShapeSensor extends NARPart {
     private final Bitmap2D input;
     private final CauseChannel<Task> in;
     private final Term id;
-    private final float R = 1f;
-    private final float G = 1f;
-    private final float B = 1f;
     private final Tex filteredTex = new Tex();
     private final What what;
     /**
@@ -63,7 +60,6 @@ public class ShapeSensor extends NARPart {
     GrayF32 imgF;
     long now = ETERNAL;
     private Grid grid;
-    private GrayU8 filtered;
     private BufferedImage filteredRGB;
 
     public ShapeSensor(Term id, Bitmap2D input, Game a) {
@@ -140,7 +136,10 @@ public class ShapeSensor extends NARPart {
         int h = imgF.height;
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
-                float b = input.brightness(x, y, R, G, B);
+                float b1 = 1f;
+                float g = 1f;
+                float r = 1f;
+                float b = input.brightness(x, y, r, g, b1);
                 imgF.unsafe_set(x, y, b);
 
             }
@@ -153,7 +152,7 @@ public class ShapeSensor extends NARPart {
         ThresholdImageOps.threshold(imgF, img, mean, true);
 
 
-        filtered = BinaryImageOps.dilate8(img, 1, null);
+        GrayU8 filtered = BinaryImageOps.dilate8(img, 1, null);
         filtered = BinaryImageOps.erode8(filtered, 1, null);
 
 

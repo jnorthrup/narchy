@@ -26,13 +26,12 @@ public class SpaceKeys extends KeyAdapter implements Consumer<JoglWindow> {
 
     private final MutableShortObjectMap<FloatProcedure> keyPressed = new ShortObjectHashMap<>();
     private final MutableShortObjectMap<FloatProcedure> keyReleased = new ShortObjectHashMap<>();
-    private final Off on;
 
     public SpaceKeys(JoglDisplay g) {
         this.space = g;
 
 
-        on = g.video.onUpdate(this);
+        Off on = g.video.onUpdate(this);
     }
 
     @Override

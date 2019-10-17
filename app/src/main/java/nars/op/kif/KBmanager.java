@@ -51,7 +51,7 @@ public class KBmanager implements Serializable {
     public static final KBmanager manager = new KBmanager();
     //protected static final String CONFIG_FILE = "config.xml";
 
-    private final HashMap<String,String> preferences = new HashMap<String,String>();
+    private final HashMap<String,String> preferences = new HashMap<>();
     public HashMap<String,KB> kbs = new HashMap<>();
     public static boolean initialized = false;
     public static boolean initializing = false;

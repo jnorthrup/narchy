@@ -32,11 +32,6 @@ final class RayTracer extends JPanel {
 
     double CAMERA_EPSILON = 0.001;
 
-    /** recursion depth of each grain */
-    private int grainDepthMax = 0;
-
-    private final float subPixelScatter = 0f;
-
     private final Scene scene;
     private final Input input;
     private BufferedImage image;
@@ -298,6 +293,8 @@ final class RayTracer extends JPanel {
                 float sy2 = Util.clamp(y + ph, 0, SH - 1);
 
 
+                /** recursion depth of each grain */
+                int grainDepthMax = 0;
                 double e = renderRecurse(alpha,
                     Math.min(grainDepthMax, (int) Math.floor(Math.log(grainPixels*grainPixels)/Math.log(2))),
                     sx1, sy1, sx2, sy2
@@ -335,9 +332,10 @@ final class RayTracer extends JPanel {
             double mx = (fx1 + fx2)/2f;
             double my = (fy1 + fy2)/2f;
 
-            if(subPixelScatter>0) {
-                mx+=subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fx2 - fx1));
-                my+=subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fy2 - fy1));
+            float subPixelScatter = 0f;
+            if(subPixelScatter >0) {
+                mx+= subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fx2 - fx1));
+                my+= subPixelScatter * (0.5f + (random.nextFloat() - 0.5f) * (fy2 - fy1));
             }
 
             int color = color(mx, my);

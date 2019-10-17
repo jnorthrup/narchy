@@ -63,11 +63,6 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
     public final int buttons;
 
-    /**
-     * drag threshold (in screen pixels)
-     */
-    private final float dragThresholdPx = 5f;
-
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
     private final AtomicFloat[] rotation = new AtomicFloat[3];
@@ -198,6 +193,10 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
     private boolean _dragging(int button) {
         v2 g = posPixelPress[button];
+        /**
+         * drag threshold (in screen pixels)
+         */
+        float dragThresholdPx = 5f;
         return (g.distanceSq(posPixel) > dragThresholdPx * dragThresholdPx);
     }
 

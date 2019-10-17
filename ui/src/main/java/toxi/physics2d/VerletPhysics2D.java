@@ -74,9 +74,6 @@ public class VerletPhysics2D {
 
     public SpatialIndex<VerletParticle2D> index;
 
-    private final float maxTimeStep = 1f;
-    private final float minTimeStep = 0.01f; //in seconds
-
 
     /**
      * Initializes an Verlet engine instance with the passed in configuration.
@@ -268,10 +265,13 @@ public class VerletPhysics2D {
     public VerletPhysics2D update(float dt) {
 
 
+        float maxTimeStep = 1f;
         dt = Math.min(dt, maxTimeStep); //hard uppper limit on timestep
 
         int ii = 0;
         while (++ii < maxIterations) {
+            //in seconds
+            float minTimeStep = 0.01f;
             if (dt / ii < minTimeStep)
                 break;
             //else: further subdivide

@@ -40,8 +40,6 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
     /** current action coherence value */
     private double actionCoh;
 
-    @Nullable private Truth nextFeedback = null;
-
     protected AbstractGoalActionConcept(Term term, NAR n) {
         this(term, new RTreeBeliefTable(), n);
     }
@@ -136,12 +134,12 @@ public abstract class AbstractGoalActionConcept extends ActionSignal {
 
         int perceptShift = (int) ((wLoop.end - wLoop.start) * NAL.ACTION_DESIRE_SHIFT_DUR); //half dur
 
-        this.nextFeedback = updateAction(
-            this.beliefTruth = truth(truth(true, limitBelief, wLoop, perceptShift), wPercept, perceptShift),
-            this.actionTruth = actionTruth(limitGoal, wPercept, perceptShift),
-            g);
+        @Nullable Truth nextFeedback = updateAction(
+                this.beliefTruth = truth(truth(true, limitBelief, wLoop, perceptShift), wPercept, perceptShift),
+                this.actionTruth = actionTruth(limitGoal, wPercept, perceptShift),
+                g);
 
-        input(nextFeedback!=null ? nextFeedback.dither(
+        input(nextFeedback !=null ? nextFeedback.dither(
             Math.max(resolution().floatValue(), wLoop.x.nar.freqResolution.floatValue()),
             wLoop.x.nar.confResolution.floatValue()
         ) : null, pri(), why, wLoop);

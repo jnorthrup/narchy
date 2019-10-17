@@ -194,8 +194,8 @@ public class a extends GamePanel {
 	BufferedImage[][] alphaSprites = new BufferedImage[256][SPRITES];
 	BufferedImage[] sprites = alphaSprites[255];
 	BufferedImage[] sprites2;
-	ArrayList<float[]> queue = new ArrayList<float[]>();
-	ArrayList<float[]> crosses = new ArrayList<float[]>();
+	ArrayList<float[]> queue = new ArrayList<>();
+	ArrayList<float[]> crosses = new ArrayList<>();
 	Random random = new Random();
 	float[] head = new float[32];
 

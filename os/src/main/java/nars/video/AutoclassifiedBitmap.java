@@ -65,7 +65,6 @@ public class AutoclassifiedBitmap extends VectorSensor {
     private final int nw, nh;
     private final int pw, ph;
     private final Game game;
-    private final boolean reconstruct = true;
     private final Term[] feature;
 
     private Bitmap2D src = null;
@@ -310,6 +309,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
                 }
 
 
+                boolean reconstruct = true;
                 if (reconstruct) {
 
 

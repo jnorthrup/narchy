@@ -51,8 +51,6 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     private DurLoop on;
 
-    private long start, end;
-
     /** how much evidence to include in result */
     public final IntRange truthPrecision = new IntRange(NAL.ANSWER_BELIEF_MATCH_CAPACITY, 1, 16);
 
@@ -128,7 +126,6 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 //    final AtomicBoolean ready = new AtomicBoolean(true);
 
     transient private Answer answer = null;
-    transient private int answerDetail;
     transient private int answerTries;
 
 
@@ -355,10 +352,10 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         long windowRadius = Math.round(dur * this.window.floatValue() / 2);
 
-        this.start = now - windowRadius;
-        this.end = now + windowRadius;
+        long start = now - windowRadius;
+        long end = now + windowRadius;
 
-        answerDetail = truthPrecision.intValue();
+        int answerDetail = truthPrecision.intValue();
         this.answerTries = (int)Math.ceil(answerDetail);
 
         if (answer == null) {

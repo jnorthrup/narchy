@@ -42,7 +42,7 @@ abstract class ComponentNode {
 	 * @return a textual description of this node
 	 */
 	public String toString() {
-		return toString(0, true, new Vector<ComponentNode>());
+		return toString(0, true, new Vector<>());
 	}
 
 	/*
@@ -64,6 +64,6 @@ abstract class ComponentNode {
 	 *         composite values
 	 */
 	public String toStringWithoutLabels() {
-		return toString(0, false, new Vector<ComponentNode>());
+		return toString(0, false, new Vector<>());
 	}
 }

@@ -245,7 +245,7 @@ public class a extends GamePanel {
 				+ "     sss s   sssss   ssss     ss      oo      ooo    ooooo   oo oo  " + "oo   o  oo   o oo    ooo       o                          aa      hh"
 				+ "      hh      h       ss      ss s   sssss  sssss   s ss    s ss    " + "  ss      ooo     oooo oo oo o  ooo  o   oo  oo                     " + "                   ";
 
-		ArrayList<int[]> queue = new ArrayList<int[]>();
+		ArrayList<int[]> queue = new ArrayList<>();
 
         int[] object = new int[OBJECT_ARRAY_SIZE];
 		queue.add(object);

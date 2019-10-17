@@ -162,7 +162,7 @@ public class ap extends GamePanel {
     final int[] polygonYs = new int[4];
     final float[][] ps = new float[2][3];
     
-    final ArrayList<float[]> elements = new ArrayList<float[]>();
+    final ArrayList<float[]> elements = new ArrayList<>();
     final BufferedImage[] sprites = new BufferedImage[17];
     final BufferedImage imageBuffer = new BufferedImage(
         800, 600, BufferedImage.TYPE_INT_RGB);
@@ -358,7 +358,7 @@ public class ap extends GamePanel {
             players[i][ELEMENT_D] = i << 1;
             players[i][ELEMENT_SPRITE] = i;
             players[i][ELEMENT_ITEM] = SPRITE_NONE;
-            shells[i] = new ArrayList<float[]>();
+            shells[i] = new ArrayList<>();
             
             
             roadColors[i] = new Color(

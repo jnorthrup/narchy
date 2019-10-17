@@ -46,8 +46,7 @@ public class Point2PointConstraint extends TypedConstraint {
 	/** strength */
 	public float tau = 0.3f;
 
-	private final float damping = 1f;
-	public float impulseClamp;
+    public float impulseClamp;
 
 
 
@@ -165,9 +164,10 @@ public class Point2PointConstraint extends TypedConstraint {
 
 			
 			tmp.sub(pivotAInW, pivotBInW);
-			float depth = -tmp.dot(normal); 
+			float depth = -tmp.dot(normal);
 
-			float impulse = depth * tau / timeStep * jacDiagABInv - damping * rel_vel * jacDiagABInv;
+            float damping = 1f;
+            float impulse = depth * tau / timeStep * jacDiagABInv - damping * rel_vel * jacDiagABInv;
 
 			float impulseClamp = this.impulseClamp;
 			if (impulseClamp > 0f) {

@@ -33,13 +33,6 @@ public class VerletSurface extends PaintSurface implements Animated {
 
     public VerletPhysics2D physics;
 
-    private final boolean animateWhenInvisible = false;
-
-    /**
-     * constrained to the surface's rectangular bounds
-     */
-    private final boolean bounded = true;
-
     public final AtomicBoolean debugRender = new AtomicBoolean(true);
 
     public VerletSurface(float w, float h) {
@@ -80,8 +73,13 @@ public class VerletSurface extends PaintSurface implements Animated {
 
     @Override
     public boolean animate(float dt) {
+        boolean animateWhenInvisible = false;
         if (animateWhenInvisible || showing()) {
 
+            /**
+             * constrained to the surface's rectangular bounds
+             */
+            boolean bounded = true;
             if (bounded)
                 physics.setBounds(bounds);
             else

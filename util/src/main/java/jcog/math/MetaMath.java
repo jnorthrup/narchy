@@ -146,8 +146,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     static int maxAxiomHypotheses; // set by axiom with the most hypotheses
     static int currentX;
     static int currentY;
-    /* [sound] */ static private ArrayList<String> audioSaveNameVec = new ArrayList<String>();
-    /* [sound] */ static private ArrayList<AudioClip> audioSaveClipVec = new ArrayList<AudioClip>();
+    /* [sound] */ static private ArrayList<String> audioSaveNameVec = new ArrayList<>();
+    /* [sound] */ static private ArrayList<AudioClip> audioSaveClipVec = new ArrayList<>();
     //private Button clear_button;
     private Choice option_choices;
     private Button proof_exit_button;
@@ -179,7 +179,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
     // and adds to it all user theorems that are valid in that
     // logic family
     static Axiom[] buildAxiomArr(int logicFamily) {
-        ArrayList<Axiom> axiomVec = new ArrayList<Axiom>(axiomFamily[logicFamily]);
+        ArrayList<Axiom> axiomVec = new ArrayList<>(axiomFamily[logicFamily]);
 
         // Build a string with all axiom labels
         String axiomLabels = " ";
@@ -231,12 +231,12 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     public void init() {
 
-        userTheorems = new ArrayList<Axiom>();
+        userTheorems = new ArrayList<>();
         currentFamily = PROP_CALC;
         currentState = new State();
-        undoStack = new Stack<State>();
-        redoStack = new Stack<State>();
-        ArrayList<Connective> connectiveVec = new ArrayList<Connective>();
+        undoStack = new Stack<>();
+        redoStack = new Stack<>();
+        ArrayList<Connective> connectiveVec = new ArrayList<>();
 
         // A future version could parse this from a file?
 
@@ -403,7 +403,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Propositional calculus
 
-        ArrayList<Axiom> axiomVec = new ArrayList<Axiom>();
+        ArrayList<Axiom> axiomVec = new ArrayList<>();
 
         // ax-1 $a |- ( P -> ( Q -> P ) ) $.
         // We define a new variable (ax_1Axiom) for the axiom if
@@ -439,7 +439,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Propositional calculus with definitions
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PROP_CALC]); // Start w/ prop calc
+        axiomVec = new ArrayList<>(axiomFamily[PROP_CALC]); // Start w/ prop calc
 
         // df-bi1 $a |- ( ( P <-> Q ) -> ( P -> Q ) ) $.
         Axiom df_bi1Axiom = new Axiom("df-bi1", "wi wb $1 $2 wi $1 $2",
@@ -470,7 +470,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Predicate calculus
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PROP_CALC]); // Start w/ prop calc
+        axiomVec = new ArrayList<>(axiomFamily[PROP_CALC]); // Start w/ prop calc
 
         // ax-4 $a |- ( A. x P -> P ) $.
         tmpAxiom = new Axiom("ax-4", "wi wal $1 $2 $2",
@@ -567,7 +567,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Predicate calculus with definitions
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PRED_CALC]); // Start w/ pred calc
+        axiomVec = new ArrayList<>(axiomFamily[PRED_CALC]); // Start w/ pred calc
 
         axiomVec.add(df_bi1Axiom);
         axiomVec.add(df_bi2Axiom);
@@ -591,7 +591,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Set theory
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PRED_CALC]); // Start w/ pred calc
+        axiomVec = new ArrayList<>(axiomFamily[PRED_CALC]); // Start w/ pred calc
 
         axiomVec.add(df_bi1Axiom);
         axiomVec.add(df_bi2Axiom);
@@ -681,7 +681,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Some set theory definitions
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[SET_THEORY]);
+        axiomVec = new ArrayList<>(axiomFamily[SET_THEORY]);
 
         axiomVec.add(df_subAxiom);
 
@@ -758,7 +758,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Implicational logic
 
-        axiomVec = new ArrayList<Axiom>();
+        axiomVec = new ArrayList<>();
 
         // (P -> P)
         Axiom ax_IAxiom = new Axiom("I", "wi $1 $1",
@@ -822,7 +822,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // ************ Intuitionistic propositional calculus
         // Source:  T. Thatcher Robinson, JSL Vol. 33 No. 2 265-270 (1968)
 
-        axiomVec = new ArrayList<Axiom>();
+        axiomVec = new ArrayList<>();
 
         axiomVec.add(ax_1Axiom);
         axiomVec.add(ax_2Axiom);
@@ -875,7 +875,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // ************ Modal logic
         // Source:  K. Goedel
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PROP_CALC]);
+        axiomVec = new ArrayList<>(axiomFamily[PROP_CALC]);
 
         // []P -> P
         tmpAxiom = new Axiom("ax-m1", "wi wnec $1 $1",
@@ -932,7 +932,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // ************ Modal provability logic
         // Source:  G. Boolos & R. Jeffrey, "Computability and Logic", 1989, ch. 27
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PROP_CALC]);
+        axiomVec = new ArrayList<>(axiomFamily[PROP_CALC]);
 
         // [](P -> Q) -> ([]P -> []Q)
         tmpAxiom = new Axiom("ax-g1", "wi wnec wi $1 $2 wi wnec $1 wnec $2",
@@ -965,7 +965,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // ************ Quantum logic
         // Source: M. Pavicic, Int. J. of Theoretical Physics 32, 1993, p. 1490.
 
-        axiomVec = new ArrayList<Axiom>();
+        axiomVec = new ArrayList<>();
 
         // A1.  |-  A <-> - - A
         tmpAxiom = new Axiom("A1", "wb $1 wn wn $1",
@@ -1045,7 +1045,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Axioms are also discussed in:
         // http://www.math.ucla.edu/~asl/bsl/0502/0502-002.ps
 
-        axiomVec = new ArrayList<Axiom>(axiomFamily[PRED_DEFS]); // Start w/ pred calc
+        axiomVec = new ArrayList<>(axiomFamily[PRED_DEFS]); // Start w/ pred calc
 
         // Remove equality axioms for membership connective
         axiomVec.remove(axiomFamily[PRED_CALC].size() - 3);
@@ -1224,7 +1224,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Source:  N. Megill & M. Bunder, "Weaker D-Complete Logics",
         //     J. of the IGPL, Vol. 4 No. 2, pp. 215-225 (1996)
 
-        axiomVec = new ArrayList<Axiom>();
+        axiomVec = new ArrayList<>();
 
         axiomVec.add(ax_IAxiom);
 
@@ -1359,7 +1359,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 /* [sound] */
                 audioName = "gate"; // Sound effect
                 undoStack.push(currentState.makeClone());
-                redoStack = new Stack<State>();
+                redoStack = new Stack<>();
                 int iEnd = currentState.assertionVec.size() - 1;
                 int iStart;
                 if (e.getItem() == "Rotate Stack") {
@@ -1382,7 +1382,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 /* [sound] */
                 audioName = "ouch"; // Sound effect
                 undoStack.push(currentState.makeClone());
-                redoStack = new Stack<State>();
+                redoStack = new Stack<>();
                 currentState.assertionVec.remove(
                         currentState.assertionVec.size() - 1);
                 currentState.proofVec.remove(
@@ -1396,7 +1396,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 /* [sound] */
                 audioName = "splat"; // Sound effect
                 undoStack.push(currentState.makeClone());
-                redoStack = new Stack<State>();
+                redoStack = new Stack<>();
                 currentState = new State();
                 rebuildFlag = true;
             } else if (e.getItem() == "Erase All") {
@@ -1404,8 +1404,8 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 audioName = "bomb"; // Sound effect
                 //init(); // rebuild is done in init()
                 undoStack.push(currentState.makeClone());
-                redoStack = new Stack<State>();
-                userTheorems = new ArrayList<Axiom>();
+                redoStack = new Stack<>();
+                userTheorems = new ArrayList<>();
                 currentState = new State();
                 currentFamily = PROP_CALC;
                 axiomArr = buildAxiomArr(currentFamily);
@@ -1448,14 +1448,14 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 /* [sound] */
                 audioName = "clink"; // Sound effect
                 undoStack.push(currentState.makeClone());
-                redoStack = new Stack<State>();
+                redoStack = new Stack<>();
                 currentState.addHyp();
                 rebuildFlag = true;
             } else if (e.getItem() == "Save as Axiom") {
                 /* [sound] */
                 audioName = "beep_spring"; // Sound effect
                 undoStack.push(currentState.makeClone());
-                redoStack = new Stack<State>();
+                redoStack = new Stack<>();
                 // Save theorem at stack top as a new axiom - must rebuild array
                 // with greater bound
                 userTheorems.add(new Axiom(currentState));
@@ -1571,7 +1571,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                 if (choice < 0) {
                     // Push undo stack
                     undoStack.push(currentState.makeClone());
-                    redoStack = new Stack<State>();
+                    redoStack = new Stack<>();
                     // It's a hypothesis; add it to the assertion stack
                     currentState.pushAssertion(
                             currentState.hypothesisVec.get(-choice - 1),
@@ -1594,7 +1594,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
                     // Push undo stack - no need to clone since unify does this
                     undoStack.push(currentState);
-                    redoStack = new Stack<State>();
+                    redoStack = new Stack<>();
                     // It's a axiom - it will always unify since that was determined
                     // when choice list was built
                     currentState = Unification.unify(axiomArr[choice], currentState,
@@ -1635,7 +1635,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
                         /* [sound] */
                         audioName = "clink"; // Sound effect
                         undoStack.push(currentState.makeClone());
-                        redoStack = new Stack<State>();
+                        redoStack = new Stack<>();
                         currentFamily = i;
                         axiomArr = buildAxiomArr(currentFamily);
                         currentState = new State();
@@ -1751,7 +1751,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         }
 
         this.add(axiom_label);
-        axiomChoiceVec = new ArrayList<Integer>();
+        axiomChoiceVec = new ArrayList<>();
         axiom_choices = new Choice();
 
         axiom_choices.addItemListener(this);
@@ -2562,15 +2562,15 @@ final class PrimFormula {
 
 // Get name for display of variable
 final class VariableName {
-    static ArrayList<String> varNameVec = new ArrayList<String>();
-    static ArrayList<Integer> varTypeVec = new ArrayList<Integer>();
+    static ArrayList<String> varNameVec = new ArrayList<>();
+    static ArrayList<Integer> varTypeVec = new ArrayList<>();
     static int[] varSoFar = new int[4]; // Counter for how many so far for
     // each type
 
     // Initialize (e.g. after renormalizing variables)
     static void init() {
-        varNameVec = new ArrayList<String>();
-        varTypeVec = new ArrayList<Integer>();
+        varNameVec = new ArrayList<>();
+        varTypeVec = new ArrayList<>();
         varSoFar = new int[4]; // Initialized to 0; there are 4 types
     }
 
@@ -2658,8 +2658,8 @@ class Axiom {
         // This is the constructor for built-in axioms
         this.label = label;
         this.assertion = englToNumStr(englRPN);
-        this.axiomHypothesisVec = new ArrayList<String>();
-        this.axiomDistVarVec = new ArrayList<String>();
+        this.axiomHypothesisVec = new ArrayList<>();
+        this.axiomDistVarVec = new ArrayList<>();
         this.description = description;
         this.proof = ""; // no proof for axiom (user-added theorems have proofs)
         makeMenuEntry();
@@ -2673,8 +2673,8 @@ class Axiom {
         State stCopy = st.makeClone();
 
         // Remove all assertions except last
-        ArrayList<String> trimmedAssertionVec = new ArrayList<String>();
-        ArrayList<String> trimmedProofVec = new ArrayList<String>();
+        ArrayList<String> trimmedAssertionVec = new ArrayList<>();
+        ArrayList<String> trimmedProofVec = new ArrayList<>();
         trimmedAssertionVec.add(stCopy.assertionVec.get(stCopy.assertionVec.size() - 1));
         trimmedProofVec.add(stCopy.proofVec.get(stCopy.proofVec.size() - 1));
         stCopy.assertionVec = trimmedAssertionVec;
@@ -2758,10 +2758,10 @@ class State {
 
     State() {  // Constructor
         maxVar = 0;
-        assertionVec = new ArrayList<String>();
-        proofVec = new ArrayList<String>();
-        hypothesisVec = new ArrayList<String>();
-        distinctVarVec = new ArrayList<String>();
+        assertionVec = new ArrayList<>();
+        proofVec = new ArrayList<>();
+        hypothesisVec = new ArrayList<>();
+        distinctVarVec = new ArrayList<>();
         userThVec = MetaMath.userTheorems;
         currentFam = MetaMath.currentFamily;
     }
@@ -2818,8 +2818,8 @@ class State {
                     labl.indexOf(' '))) - 1;
             stepSortMap[stepNum] = i;
         }
-        ArrayList<String> sortedAssertionVec = new ArrayList<String>();
-        ArrayList<String> sortedProofVec = new ArrayList<String>();
+        ArrayList<String> sortedAssertionVec = new ArrayList<>();
+        ArrayList<String> sortedProofVec = new ArrayList<>();
         for (int i = 0; i < stepSortMap.length; i++) {
             int step = stepSortMap[i];
             sortedAssertionVec.add(proofInfoState.assertionVec.get(step));
@@ -2841,11 +2841,11 @@ class State {
     State makeClone() {
         State c = new State();
         c.maxVar = maxVar;
-        c.assertionVec = new ArrayList<String>(assertionVec);
-        c.proofVec = new ArrayList<String>(proofVec);
-        c.hypothesisVec = new ArrayList<String>(hypothesisVec);
-        c.distinctVarVec = new ArrayList<String>(distinctVarVec);
-        c.userThVec = new ArrayList<Axiom>(userThVec);
+        c.assertionVec = new ArrayList<>(assertionVec);
+        c.proofVec = new ArrayList<>(proofVec);
+        c.hypothesisVec = new ArrayList<>(hypothesisVec);
+        c.distinctVarVec = new ArrayList<>(distinctVarVec);
+        c.userThVec = new ArrayList<>(userThVec);
         return c;
     }
 
@@ -2992,8 +2992,8 @@ final class Unification {
     static ArrayList<Substitution> substVec; // Substitution list to make throughout State
 
     // Local static variables
-    static ArrayList<String> axiomHypVec = new ArrayList<String>();
-    static ArrayList<String> stateHypVec = new ArrayList<String>();
+    static ArrayList<String> axiomHypVec = new ArrayList<>();
+    static ArrayList<String> stateHypVec = new ArrayList<>();
 
     // Unification algorithm - returns a new State if unification
     // possible, null otherwise
@@ -3009,7 +3009,7 @@ final class Unification {
         String axiomHyp;
         String stateHyp;
 
-        substVec = new ArrayList<Substitution>();
+        substVec = new ArrayList<>();
         int currentStateStackSize = currentState.assertionVec.size();
         if (testAxiom == null) return null; // To allow for sloppy axiom array
         int axiomHypSize = testAxiom.axiomHypothesisVec.size();
@@ -3020,20 +3020,20 @@ final class Unification {
         }
 
         // Build state hypothesis ArrayList
-        stateHypVec = new ArrayList<String>();
+        stateHypVec = new ArrayList<>();
         for (hyp = 0; hyp < axiomHypSize; hyp++) {
             stateHypVec.add(currentState.assertionVec.get(
                     currentStateStackSize - axiomHypSize + hyp));
         }
 
         // Don't destroy caller's distinctVarVec
-        newDistinctVarVec = new ArrayList<String>(currentState.distinctVarVec);
+        newDistinctVarVec = new ArrayList<>(currentState.distinctVarVec);
 
         oldMaxVar = currentState.maxVar;
         newMaxVar = currentState.maxVar;
 
         // Build axiom hypothesis ArrayList with renumbered variables
-        axiomHypVec = new ArrayList<String>();
+        axiomHypVec = new ArrayList<>();
         for (hyp = 0; hyp < axiomHypSize; hyp++) {
             axiomHypVec.add(renumberVars(testAxiom.axiomHypothesisVec.get(hyp)));
         }
@@ -3086,7 +3086,7 @@ final class Unification {
         // Build new State to return to caller
         State newState = new State();
         // Build new assertion stack
-        newState.assertionVec = new ArrayList<String>();
+        newState.assertionVec = new ArrayList<>();
 
         if (proofInfoFlag) {
             // Don't discard used-up assertions in this mode, but put them

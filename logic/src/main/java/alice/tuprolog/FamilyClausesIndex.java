@@ -62,13 +62,13 @@ class FamilyClausesIndex<K extends Comparable<? super K>> extends RBTree<K, Dequ
 
     public FamilyClausesIndex(){
         super();
-        shared = new ArrayDeque<ClauseInfo>();
+        shared = new ArrayDeque<>();
     }
 
     private Node<K,Deque<ClauseInfo>> createNewNode(K key, ClauseInfo clause, boolean first){
         int vs = shared.size();
         Deque<ClauseInfo> list =
-                new ArrayDeque<ClauseInfo>(vs +1);
+                new ArrayDeque<>(vs + 1);
 
         if(first){
             list.addFirst(clause);

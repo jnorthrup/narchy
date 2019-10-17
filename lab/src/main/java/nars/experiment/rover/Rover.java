@@ -8,12 +8,9 @@ import spacegraph.space3d.widget.CompoundSpatial;
  */
 public class Rover extends CompoundSpatial {
 
-    private final Timed timed;
-
 
     public Rover(Timed timed) {
         super(timed);
-        this.timed = timed;
 
 
     }

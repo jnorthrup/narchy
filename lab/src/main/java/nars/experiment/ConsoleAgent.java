@@ -178,22 +178,18 @@ public class ConsoleAgent extends GameX {
 
         final char[][] chars;
 
-        private final Signal[][][] charMatrix;
-        private final char[] alphabet;
         int[] c = new int[2];
 
 
         public TestConsole(Term id, int w, int h, char[] alphabet) {
             super(w, h);
 
-            this.alphabet = alphabet;
-
             this.chars = new char[w][h];
             for (char[] cc : chars)
                 Arrays.fill(cc, alphabet[0]);
 
             //TODO use Bitmap3D or Tensor something
-            this.charMatrix = new Signal[w][h][alphabet.length];
+            Signal[][][] charMatrix = new Signal[w][h][alphabet.length];
 
 
 //            PriNode charAttn = new PriNode(id);

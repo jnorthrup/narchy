@@ -774,7 +774,6 @@ public enum OsmSpace  { ;
         private final float r,g,b,a;
         private final float lw;
         private final short ls;
-        private final List<OsmNode> nn;
         //private final float[] coord;
         private final Consumer<GL2> draw;
 
@@ -785,7 +784,6 @@ public enum OsmSpace  { ;
             this.a = a;
             this.lw = lw;
             this.ls = ls;
-            this.nn = nn;
 
             GLUtessellator tobj = s.tobj;
 

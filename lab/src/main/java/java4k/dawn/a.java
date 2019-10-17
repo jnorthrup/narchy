@@ -318,7 +318,7 @@ public class a extends GamePanel {
 						for (int y = 0; y < T_H; y++) { for (int x = 0; x < T_W; x++) {
 							v_map[y][x] = 100000;
 						}}
-						LinkedList<Point> queue = new LinkedList<Point>();
+						LinkedList<Point> queue = new LinkedList<>();
 						v_map[(int) v_b_y][(int) v_b_x] = 0;
 						queue.add(new Point((int) v_b_x, (int) v_b_y));
 						while (!queue.isEmpty()) {

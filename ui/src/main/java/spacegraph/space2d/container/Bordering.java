@@ -28,8 +28,6 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
     protected float borderSouth = 0.25f;
     protected float borderNorth = 0.25f;
 
-    private final boolean autocollapse = true;
-
     public Bordering() {
         super(SE+1);
     }
@@ -100,6 +98,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         boolean ne = get(Bordering.NE) != null;
         boolean sw = get(Bordering.SW) != null;
         boolean nw = get(Bordering.NW) != null;
+        boolean autocollapse = true;
         float borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? 0 : this.borderWest;
         float borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? 0 : this.borderEast;
         float borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? 0 : this.borderNorth;

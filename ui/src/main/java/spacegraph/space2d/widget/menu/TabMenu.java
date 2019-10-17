@@ -22,9 +22,7 @@ import static java.util.stream.Collectors.toList;
 
 public class TabMenu extends Menu {
 
-    private final Gridding tabs = new Gridding();
     private final Splitting wrap;
-    private final Function<String, ToggleButton> buttonBuilder;
 
     private static final float MenuContentRatio = 0.9f;
 
@@ -40,8 +38,8 @@ public class TabMenu extends Menu {
 
     public TabMenu(Map<String, Supplier<Surface>> options, MenuView view, Function<String, ToggleButton> buttonBuilder) {
         super(options, view);
-        this.buttonBuilder = buttonBuilder;
         items.clear();
+        Gridding tabs = new Gridding();
         tabs.set(options.entrySet().stream()
                 .map(x -> toggle(buttonBuilder, x.getKey(), x.getValue()))
                 .collect(toList()));

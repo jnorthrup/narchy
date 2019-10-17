@@ -20,9 +20,6 @@ public class DoubleClicking {
     private v2 doubleClickSpot = null;
 
     /** in milliseconds */
-    private final long maxDoubleClickTimeNS = 250 * 1000 * 1000;
-
-    /** in milliseconds */
     private long doubleClickTime = Long.MIN_VALUE;
 
 
@@ -60,6 +57,8 @@ public class DoubleClicking {
         long now = System.nanoTime();
 
         boolean unclick = false;
+        /** in milliseconds */
+        long maxDoubleClickTimeNS = 250 * 1000 * 1000;
         if (c > 1 && doubleClickSpot != null && now - doubleClickTime > maxDoubleClickTimeNS) {
             //taking too long, assume only one click so far
             unclick = true;

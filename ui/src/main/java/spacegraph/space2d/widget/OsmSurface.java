@@ -75,7 +75,6 @@ public class OsmSurface extends PaintSurface {
     @Deprecated
     transient protected Osm o = null;
     float[] touch = new float[3];
-    private transient GL2 gl;
 
     public OsmSurface(IRL i) {
         this.index = i;
@@ -155,7 +154,6 @@ public class OsmSurface extends PaintSurface {
     }
 
     private void renderMap(GL2 gl) {
-        this.gl = gl;
 
         if (o != null) {
 

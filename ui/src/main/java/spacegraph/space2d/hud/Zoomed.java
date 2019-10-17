@@ -55,8 +55,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     private final NewtKeyboard keyboard;
     private final Deque<Surface> zoomStack = new ArrayDeque();
 
-    private final float camZmin = 1;
-    private final float zoomMargin = 0.1f;
     private final float wheelZoomRate = 0.6f;
 
     private final Fingering zoomDrag = new Dragging(ZOOM_BUTTON) {
@@ -299,6 +297,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
 
 
     public void zoom(RectFloat b) {
+        float zoomMargin = 0.1f;
         zoom(b.cx(), b.cy(), b.w, b.h, zoomMargin);
     }
 
@@ -345,10 +344,6 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
     public class Camera extends v3Anim implements SurfaceTransform {
 
         private static final float CHANGE_EPSILON = 0.001f;
-        /**
-         * TODO atomic
-         */
-        private final float CAM_RATE = 3f;
         protected boolean change = true;
 
         {
@@ -381,6 +376,10 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
             //System.out.println(z);
             float W = bounds.w;
             float H = bounds.h;
+            /**
+             * TODO atomic
+             */
+            float CAM_RATE = 3f;
             speed.set(Math.max(W, H) * CAM_RATE);
 
             float visW = W / scale.x / 2, visH = H / scale.y / 2; //TODO optional extra margin
@@ -396,6 +395,7 @@ public class Zoomed<S extends Surface> extends MutableUnitContainer<S> implement
         }
 
         public float camZ(float z) {
+            float camZmin = 1;
             return Util.clampSafe(z, camZmin, camZMax());
         }
 

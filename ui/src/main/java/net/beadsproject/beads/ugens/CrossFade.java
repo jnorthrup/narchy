@@ -19,7 +19,6 @@ public class CrossFade extends UGen {
     private UGen outgoing;
     private double crossfadeTimeSamps;
     private long currentTimeSamps;
-    private float incomingLevel, outgoingLevel;
     private boolean pauseAfterComplete;
 
     /**
@@ -97,8 +96,8 @@ public class CrossFade extends UGen {
                     bufOut[i][j] = incoming.getValue(i, j);
                 }
             } else {
-                incomingLevel = (float) (currentTimeSamps / crossfadeTimeSamps);
-                outgoingLevel = 1f - incomingLevel;
+                float incomingLevel = (float) (currentTimeSamps / crossfadeTimeSamps);
+                float outgoingLevel = 1f - incomingLevel;
                 for (int i = 0; i < outs; i++) {
                     bufOut[i][j] = incomingLevel * incoming.getValue(i, j) +
                             outgoingLevel * outgoing.getValue(i, j);

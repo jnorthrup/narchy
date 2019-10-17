@@ -17,12 +17,8 @@ abstract public class LiveSTM extends AbstractTraining {
 
     public final SimpleLSTM agent;
 
-    @Deprecated
-    private final int ERROR_WINDOW_SIZE = 8;
-
     public boolean train = true;
     DescriptiveStatistics errorHistory = new DescriptiveStatistics();
-    private final float learningRate = 0.1f;
 
     public LiveSTM(int inputs, int outputs, int cellBlocks) {
         this(new XorShift128PlusRandom(1), inputs, outputs, cellBlocks);
@@ -33,6 +29,7 @@ abstract public class LiveSTM extends AbstractTraining {
 
         this.agent = lstm(cellBlocks);
 
+        int ERROR_WINDOW_SIZE = 8;
         errorHistory.setWindowSize(ERROR_WINDOW_SIZE);
     }
 
@@ -58,6 +55,7 @@ abstract public class LiveSTM extends AbstractTraining {
 
         } else {
 
+            float learningRate = 0.1f;
             if (validation_mode)
                 predicted = agent.predict(inter.actual);
             else

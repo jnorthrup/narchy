@@ -27,9 +27,9 @@ public class Demos extends javax.swing.JFrame {
     
     private void initComponents() {
 
-        jButton1 = new javax.swing.JButton();
-        jButton2 = new javax.swing.JButton();
-        jButton3 = new javax.swing.JButton();
+        javax.swing.JButton jButton1 = new javax.swing.JButton();
+        javax.swing.JButton jButton2 = new javax.swing.JButton();
+        javax.swing.JButton jButton3 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         setTitle("JURLS - Choose Demo");
@@ -73,9 +73,5 @@ public class Demos extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new Demos().setVisible(true));
     }
 
-    
-    private javax.swing.JButton jButton1;
-    private javax.swing.JButton jButton2;
-    private javax.swing.JButton jButton3;
-    
+
 }

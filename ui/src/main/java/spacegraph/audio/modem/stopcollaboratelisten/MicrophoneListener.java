@@ -16,7 +16,6 @@ public class MicrophoneListener implements Runnable {
     public static final String kThreadName = "MicrophoneListener";
 
     protected AudioUtils.AudioBuffer buffer = null;
-    private Thread myThread = null;
     private final Object runLock = new Object();
     private boolean running = false;
 
@@ -26,7 +25,7 @@ public class MicrophoneListener implements Runnable {
      */
     public MicrophoneListener(AudioUtils.AudioBuffer _buffer) {
         buffer = _buffer;
-        myThread = new Thread(this, kThreadName);
+        Thread myThread = new Thread(this, kThreadName);
         myThread.start();
     }
 

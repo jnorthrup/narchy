@@ -23,10 +23,6 @@ public class HijackMemory extends Memory {
     private final PriHijackBag<Term,PLink<Concept>> table;
 
 
-    private final int forgetPeriodDurs = 64;
-    private final float forgetTemperature = 0.1f;
-
-
     /** eliding is faster but records less accurate access statistics.
      *  but if eliding, cache statistics will not reflect the full amount of access otherwise would be necessary */
     private static final boolean ElideGets = false;
@@ -36,10 +32,6 @@ public class HijackMemory extends Memory {
      */
     private final float initialTask, initialNode;
     private final float getBoost;
-
-    //    private long now;
-//    private int dur;
-    private DurLoop onDur;
 
 
     public HijackMemory(int capacity, int reprobes) {
@@ -100,7 +92,10 @@ public class HijackMemory extends Memory {
     @Override
     public void start(NAR nar) {
         super.start(nar);
-        onDur = nar.onDur(this::commit);
+        //    private long now;
+        //    private int dur;
+        DurLoop onDur = nar.onDur(this::commit);
+        int forgetPeriodDurs = 64;
         onDur.durs(forgetPeriodDurs);
     }
 
@@ -113,6 +108,7 @@ public class HijackMemory extends Memory {
     }
 
     private void commit() {
+        float forgetTemperature = 0.1f;
         table.commit(table.forget(forgetTemperature));
     }
 

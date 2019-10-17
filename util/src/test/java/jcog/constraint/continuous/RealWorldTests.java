@@ -17,8 +17,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 class RealWorldTests {
 
-    private static double EPSILON = 1.0e-2;
-
     private static final String LEFT = "left";
     private static final String RIGHT = "right";
     private static final String TOP = "top";
@@ -155,7 +153,7 @@ class RealWorldTests {
                 if (nodeHashMap.containsKey(nodeName)) {
                     node = nodeHashMap.get(nodeName);
                 } else {
-                    node = new HashMap<String, DoubleVar>();
+                    node = new HashMap<>();
                     nodeHashMap.put(nodeName, node);
                 }
                 return node;
@@ -218,6 +216,7 @@ class RealWorldTests {
 
         solver.update();
 
+        double EPSILON = 1.0e-2;
         assertEquals(20, nodes.get("thumb0").get("top").getAsDouble(), EPSILON);
         assertEquals(20, nodes.get("thumb1").get("top").getAsDouble(), EPSILON);
 

@@ -11,7 +11,7 @@ class TopTest {
 
     @Test
     void testTop() {
-        Top<String> c = new Top<String>(String::length);
+        Top<String> c = new Top<>(String::length);
         assertAdd(c, "x", "x");
         assertAdd(c, "xx", "xx");
         assertAdd(c, "y", "xx"); //unchanged, less
@@ -22,7 +22,7 @@ class TopTest {
 
     @Test
     void testTopN() {
-        TopN<String> c = new TopN<String>(new String[3], String::length);
+        TopN<String> c = new TopN<>(new String[3], String::length);
         assertEquals(NEGATIVE_INFINITY, c.minValueIfFull());
         assertAdd(c, "a", "[a]");
         assertAdd(c, "a", "[a, a]"); //duplicate kept
@@ -46,7 +46,7 @@ class TopTest {
 
     @Test
     void testCachedTopN() {
-        RankedN<String> c = new RankedN<String>(new String[3], String::length);
+        RankedN<String> c = new RankedN<>(new String[3], String::length);
         assertAdd(c, "a", "[a]");
         //assertAdd(c, "a", "[a]"); //duplicate absorbed
         assertAdd(c, "bbb", "[bbb, a]");

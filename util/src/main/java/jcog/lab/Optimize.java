@@ -69,9 +69,6 @@ public class Optimize<S, E> extends Lab<E>  {
     private double[] mid;
     private final List<Sensor<S, ?>> varSensors;
 
-    /** enable to print exceptions */
-    private final boolean debug = false;
-
     public Optimize(Supplier<S> subj,
                     Function<Supplier<S>, E> experiment, Goal<E> goal,
                     List<Var<S, ?>> _vars /* unsorted */,
@@ -216,7 +213,9 @@ public class Optimize<S, E> extends Lab<E>  {
 
         } catch (Throwable t) {
             //System.err.println(t.getMessage());
-            if (this.debug)
+            /** enable to print exceptions */
+            boolean debug = false;
+            if (debug)
                 t.printStackTrace();
             return Double.NEGATIVE_INFINITY;
         }

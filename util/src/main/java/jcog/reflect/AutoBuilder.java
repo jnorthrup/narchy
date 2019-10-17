@@ -337,10 +337,7 @@ public class AutoBuilder<X, Y> {
 
     public static class DeduceFields<X,R,Y> implements Deduce<R,Y> {
 
-        private final X source;
-
         public DeduceFields(X source) {
-            this.source = source;
         }
 
         @Override
@@ -352,10 +349,7 @@ public class AutoBuilder<X, Y> {
     /** for Iterable's incl. Collections */
     public static class DeduceIterable<X> implements Deduce<MutableInteger,X> {
 
-        private final Iterable<X> i;
-
         public DeduceIterable(Iterable<X> i) {
-            this.i = i;
         }
         @Override
         public Iterator<Pair<MutableInteger, X>> iterator() {

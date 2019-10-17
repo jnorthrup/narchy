@@ -31,14 +31,12 @@ public class InsertionSortedList<E extends Comparable> extends FasterList<E> /* 
     public InsertionSortedList(E[] toSort) {
         super(0, toSort.clone());
         Arrays.fill(items, null);
-        for (E e : toSort)
-            add(e);
+        this.addAll(Arrays.asList(toSort));
     }
 
     public InsertionSortedList(E[] toSort, E[] scratch) {
         super(0, scratch);
-        for (E e : toSort)
-            add(e);
+        this.addAll(Arrays.asList(toSort));
     }
 
     /**

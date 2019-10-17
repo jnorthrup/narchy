@@ -34,18 +34,6 @@ import java.awt.*;
     private static final Color TRANSLUCENT = new Color(Transparency.TRANSLUCENT);
 
 
-    /**
-     * percent of each grid cell width filled with the character
-     */
-    private final float charScaleX = 0.85f;
-
-    /**
-     * percent of each grid cell height filled with the character
-     */
-    private final float charScaleY = 0.85f;
-
-
-    
     private float fgAlpha = 0.9f;
 
 
@@ -62,8 +50,16 @@ import java.awt.*;
 
     private void doPaint(GL2 gl) {
 
-        float charScaleX = this.charScaleX;
-        float charScaleY = this.charScaleY;
+        /**
+         * percent of each grid cell width filled with the character
+         */
+        float charScaleX1 = 0.85f;
+        float charScaleX = charScaleX1;
+        /**
+         * percent of each grid cell height filled with the character
+         */
+        float charScaleY1 = 0.85f;
+        float charScaleY = charScaleY1;
 
 
         long t = System.currentTimeMillis(); 

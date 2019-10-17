@@ -505,7 +505,7 @@ public class NARui {
 
     public static Surface clusterView(ConjClustering c, NAR n) {
 
-        ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.SimpleXYScatterPlotModel<VLink<Task>>() {
+        ScatterPlot2D.ScatterPlotModel<VLink<Task>> model = new ScatterPlot2D.SimpleXYScatterPlotModel<>() {
 
 
             private long now = n.time();
@@ -527,7 +527,7 @@ public class NARui {
             public String label(VLink<Task> id) {
                 return id.get()
                         .term().toString();
-                        //toStringWithoutBudget();
+                //toStringWithoutBudget();
             }
 
 
@@ -547,23 +547,24 @@ public class NARui {
                     Draw.colorHash(centroid, c, 1, 0.75f + 0.25f * v.priElseZero(), a);
                     node.color(c[0], c[1], c[2], c[3]);
                 } else {
-                    node.color(0.5f,0.5f,0.5f, a); //unassigned
+                    node.color(0.5f, 0.5f, 0.5f, a); //unassigned
                 }
             }
 
             @Override
             public float width(VLink<Task> v, int population) {
                 var t = v.get();
-                return (t.term().eventRange() + t.range())/(population * 50f);
+                return (t.term().eventRange() + t.range()) / (population * 50f);
                 //return (0.5f + v.get().priElseZero()) * 1/20f;
             }
+
             @Override
             public float height(VLink<Task> v, int population) {
-                return 1/(population * 1f);
+                return 1 / (population * 1f);
             }
         };
 
-        var s = new ScatterPlot2D<VLink<Task>>(model);
+        var s = new ScatterPlot2D<>(model);
         return DurSurface.get(s, n, () -> {
 
             s.set(c.data.bag); //Iterable Concat the Centroids as dynamic VLink's

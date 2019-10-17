@@ -31,9 +31,7 @@ abstract public class UDiscover<P> {
     private final P id;
     MulticastSocket ms;
     private DatagramPacket p, q;
-    private InetAddress ia;
     private byte[] myID;
-    private byte[] theirID;
 
 
     public UDiscover(P payloadID) {
@@ -49,7 +47,9 @@ abstract public class UDiscover<P> {
 
 
             try {
-                ia = InetAddress
+                //.getLocalHost();
+                //.getLoopbackAddress();
+                InetAddress ia = InetAddress
                         //.getLocalHost();
                         //.getLoopbackAddress();
                         .getByName(address);
@@ -73,7 +73,7 @@ abstract public class UDiscover<P> {
 //                ms.setNetworkInterface(bestNic);
                 //System.out.println("nic=" + ms.getNetworkInterface());
 
-                theirID = new byte[MAX_PAYLOAD_ID];
+                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 myID = Util.toBytes(id);
                 p = new DatagramPacket(myID, myID.length, ia, port);
                 q = new DatagramPacket(theirID, theirID.length);

@@ -94,7 +94,6 @@ public class Opjects extends DefaultTermizer {
     final ByteBuddy bb = new ByteBuddy();
 
     public final FloatRange exeThresh = new FloatRange(0.75f, 0.5f, 1f);
-    private final DurLoop on;
 
 
     /**
@@ -119,7 +118,9 @@ public class Opjects extends DefaultTermizer {
     /**
      * cached; updated at most each duration
      */
-    private float beliefEvi = 0, doubtEvi = 0, beliefPri = 0, invokeEvi, uninvokeEvi, invokePri;
+    private float beliefEvi = 0;
+    private float beliefPri = 0;
+    private float invokeEvi;
 
     /**
      * set of operators in probing mode which are kept here for batched execution
@@ -217,7 +218,7 @@ public class Opjects extends DefaultTermizer {
         this.what = w;
         in = (nar = w.nar).newChannel(this);
         update(w.nar);
-        this.on = w.nar.onDur(this::update);
+        DurLoop on = w.nar.onDur(this::update);
     }
 
     /**
@@ -227,10 +228,10 @@ public class Opjects extends DefaultTermizer {
         float cMin = (float) c2wSafe(nar.confMin.evi());
         float cMax = c2wSafe(nar.confDefault(BELIEF));
         beliefEvi = Util.lerp(beliefEviFactor, cMin, cMax);
-        doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
+        float doubtEvi = Util.lerp(doubtEviFactor, cMin, cMax);
         invokeEvi = Util.lerp(invokeEviFactor, cMin, cMax);
-        uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
-        invokePri = beliefPri = pri.floatValue() * nar.priDefault(BELIEF);
+        float uninvokeEvi = Util.lerp(uninvokeEviFactor, cMin, cMax);
+        float invokePri = beliefPri = pri.floatValue() * nar.priDefault(BELIEF);
 
         probing.forEachWith(AtomicOperations::update, nar);
     }

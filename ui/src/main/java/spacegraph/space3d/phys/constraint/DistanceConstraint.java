@@ -26,7 +26,6 @@ public class DistanceConstraint extends TypedConstraint {
      */
     private float tau = 0.3f;
 
-    private final float damping = 1f;
     private final float impulseClamp;
     private float error;
 
@@ -86,8 +85,9 @@ public class DistanceConstraint extends TypedConstraint {
 
         
         tmp.sub(pivotAInW, pivotBInW);
-        float depth = -tmp.dot(normal); 
+        float depth = -tmp.dot(normal);
 
+        float damping = 1f;
         float impulse = error * ((depth * tau / timeStep) - (damping * rel_vel ));
 
         float impulseClamp = this.impulseClamp;

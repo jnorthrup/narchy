@@ -39,7 +39,7 @@ public class FrameHistory implements Cloneable {
      */
     public FrameHistory(int maxLength) {
         this.maxLength = maxLength;
-        frames = new LinkedList<ScreenMatrix>();
+        frames = new LinkedList<>();
     }
 
     /** Append a new frame to the end of the history.
@@ -74,11 +74,9 @@ public class FrameHistory implements Cloneable {
         try {
             FrameHistory obj = (FrameHistory)super.clone();
 
-            obj.frames = new LinkedList<ScreenMatrix>();
-            
-            for (ScreenMatrix screen : this.frames) {
-                obj.frames.add(screen);
-            }
+            obj.frames = new LinkedList<>();
+
+            obj.frames.addAll(this.frames);
             return obj;
         }
         catch (CloneNotSupportedException e) {

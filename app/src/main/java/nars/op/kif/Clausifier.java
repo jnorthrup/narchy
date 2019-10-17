@@ -206,8 +206,8 @@ public class Clausifier  {
                 ArrayList newClauses = new ArrayList();
                 Formula clause = null;
                 for (Formula o : (Iterable<Formula>) clauses) {
-                    ArrayList<Formula> negLits = new ArrayList<Formula>();
-                    ArrayList<Formula> posLits = new ArrayList<Formula>();
+                    ArrayList<Formula> negLits = new ArrayList<>();
+                    ArrayList<Formula> posLits = new ArrayList<>();
                     ArrayList literals = new ArrayList();
                     literals.add(negLits);
                     literals.add(posLits);

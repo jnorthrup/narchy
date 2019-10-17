@@ -85,7 +85,7 @@ import java.util.function.Function;
         static final int trainIterations = 10;
 
         final AtomicInteger iteration = new AtomicInteger();
-        final Bag<ActualExecution,ActualExecution> experience = new PriHijackBag<ActualExecution,ActualExecution>(PriMerge.plus,  64, 2) {
+        final Bag<ActualExecution,ActualExecution> experience = new PriHijackBag<>(PriMerge.plus, 64, 2) {
             @Override
             public ActualExecution key(ActualExecution value) {
                 return value;

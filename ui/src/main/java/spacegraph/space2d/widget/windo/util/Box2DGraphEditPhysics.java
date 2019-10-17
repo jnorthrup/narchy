@@ -52,9 +52,6 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
     private final ConcurrentFastIteratingHashMap<Surface, PhySurface> w =
             new ConcurrentFastIteratingHashMap<>(new PhySurface[0]);
 
-    private final int velIter = 2;
-    private final int posIter = 2;
-    private final float timeScale = 1f;
     private static final float minDimension = 0.5f;
     private static final float scaling = 10f;
     private static final float SHAPE_SIZE_EPSILON = Settings.EPSILON;
@@ -215,6 +212,9 @@ public class Box2DGraphEditPhysics extends GraphEditPhysics {
 
         w.forEachValue(ww -> ww.pre(physics, ww.surface.bounds.clamp(clamp)));
 
+        float timeScale = 1f;
+        int posIter = 2;
+        int velIter = 2;
         physics.step(dt * timeScale, velIter, posIter);
 
         w.forEachValue(ww -> ww.post(physics, clamp));

@@ -47,15 +47,6 @@ public class TaskLinks implements Sampler<TaskLink> {
         //1 - PHI_min_1f,
         0, 1f /* 2f */);
 
-//    /**
-//     * tasklink retention rate:
-//     * 0 = deducts all propagated priority from source tasklink (full resistance)
-//     * 1 = deducts no propagated priority (superconductive)
-//     **/
-//    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
-    private final PriMerge merge = NAL.tasklinkMerge;
-
-
 
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
@@ -83,6 +74,13 @@ public class TaskLinks implements Sampler<TaskLink> {
     public TaskLinks(/*TODO bag as parameter */) {
         int c = linksMax.intValue();
 
+        //    /**
+        //     * tasklink retention rate:
+        //     * 0 = deducts all propagated priority from source tasklink (full resistance)
+        //     * 1 = deducts no propagated priority (superconductive)
+        //     **/
+        //    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
+        PriMerge merge = NAL.tasklinkMerge;
         links = new nars.link.TaskLinkBag(
                 c, merge
 

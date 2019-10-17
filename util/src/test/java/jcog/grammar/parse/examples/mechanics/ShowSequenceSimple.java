@@ -30,7 +30,7 @@ public class ShowSequenceSimple {
 
 		Parser s = new VerboseSequence().get(hello).get(world).get(bang);
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly("Hello world!"));
 		s.match(v);
 	}

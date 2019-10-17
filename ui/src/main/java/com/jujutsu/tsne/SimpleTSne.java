@@ -39,25 +39,18 @@ public class SimpleTSne implements TSne {
     static final int TRIES = 50; //??
 
 
-    private final double eta =
-            //0.1f;
-            0.5;
-            //1f;
+    //1f;
 
-    private final double min_gain =
-            //Double.MIN_NORMAL;
-            ScalarValue.EPSILON;
-            //ScalarValue.EPSILONsqrt;
+    //ScalarValue.EPSILONsqrt;
             //0.01f;
 
     private double[][] numMatrix;
 
-    private final boolean pca = false;
-
     @Override
     public double[][] reset(double[][] X, TSneConfiguration config) {
         ///*if(/*use_pca && *//*X[0].length > initial_dims && initial_dims > 0*/) {
-        if (pca) {
+        boolean pca1 = false;
+        if (pca1) {
             PrincipalComponentAnalysis pca = new PrincipalComponentAnalysis();
             X = pca.pca(X, X[0].length);
             System.out.println("X:Shape after PCA is = " + X.length + " x " + X[0].length);
@@ -125,8 +118,12 @@ public class SimpleTSne implements TSne {
         gains = plus(scalarMultiply(scalarPlus(gains, .2), abs(negate(equal(biggerThan(dY, 0.0), biggerThan(iY, 0.0))))),
                 scalarMultiply(scalarMult(gains, .8), abs(equal(biggerThan(dY, 0.0), biggerThan(iY, 0.0)))));
 
+        //Double.MIN_NORMAL;
+        double min_gain = ScalarValue.EPSILON;
         assignAllLessThan(gains, min_gain, min_gain);
-        iY = minus(iY, scalarMult(scalarMultiply(gains, dY), eta*n));
+        //0.1f;
+        double eta = 0.5;
+        iY = minus(iY, scalarMult(scalarMultiply(gains, dY), eta *n));
         iY = scalarMult(iY,  (1-momentum.getAsDouble()));
         Y = plus(Y, iY);
 

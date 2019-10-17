@@ -21,16 +21,8 @@ public class MouseResponder extends UGen {
      */
     private Point point;
 
-    /**
-     * The current x value.
-     */
-    private float x;
     private float prevX;
 
-    /**
-     * The current y value.
-     */
-    private float y;
     private float prevY;
 
     /**
@@ -71,8 +63,14 @@ public class MouseResponder extends UGen {
     @Override
     public void gen() {
         point = MouseInfo.getPointerInfo().getLocation();
-        x = (float) point.x / width;
-        y = (float) point.y / height;
+        /**
+         * The current x value.
+         */
+        float x = (float) point.x / width;
+        /**
+         * The current y value.
+         */
+        float y = (float) point.y / height;
         for (int i = 0; i < bufferSize; i++) {
             float f = (float) i / bufferSize;
             bufOut[0][i] = f * x + (1f - f) * prevX;

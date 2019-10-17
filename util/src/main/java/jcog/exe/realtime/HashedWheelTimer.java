@@ -41,8 +41,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	static final int SHUTDOWN = Integer.MIN_VALUE;
 	public final long resolution;
 	public final int wheels;
-	final transient private boolean daemon = false;
-	private final WheelModel model;
+    private final WheelModel model;
 	private final Executor executor;
 	private final WaitStrategy waitStrategy;
 
@@ -430,7 +429,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		}
 
 		Thread t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
-		t.setDaemon(daemon);
+        boolean daemon = false;
+        t.setDaemon(daemon);
 		t.setPriority(THREAD_PRI);
 		t.start();
 	}

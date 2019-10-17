@@ -22,15 +22,10 @@ import java.util.function.Predicate;
  */
 public class OmniBox extends Widget {
 
-    private final TextEdit edit;
 
-
-    private final Gridding results;
     private final Gridding content;
 
-    private final Model model;
-
-//    @Deprecated
+    //    @Deprecated
 //    public OmniBox() {
 //        this(new JShellModel());
 //    }
@@ -39,11 +34,9 @@ public class OmniBox extends Widget {
     public OmniBox(Model m) {
         super();
 
-        this.model = m;
-
         content = new Gridding();
 
-        results = new Gridding() {
+        Gridding results = new Gridding() {
             @Override
             public void add(Surface... s) {
                 synchronized (content) {
@@ -69,17 +62,34 @@ public class OmniBox extends Widget {
         };
 
 
-
-
-
-
-
-
-
-
-
-
-        edit = new TextEdit(40, 1) {
+        //            @Override
+        //            public TextEdit onKey(Consumer<KeyEvent> e) {
+        //                return super.onKey(e);
+        //            }
+        //
+        //            @Override
+        //            protected void onKeyCtrlEnter() {
+        //                String t = text();
+        //                model.onTextChangeControlEnter(t, results);
+        //                clear();
+        //            }
+        //
+        //            @Override
+        //            protected void cursorChange(String next, TerminalPosition cp) {
+        //                if (cp.getRow() == 0) {
+        //                    model.onTextChange(next, cp.getColumn(), results);
+        //                } else {
+        //                    results.clear();
+        //                }
+        //            }
+        //
+        //            @Override
+        //            protected void textChange(String next) {
+        //                super.textChange(next);
+        //                TerminalPosition cp = getCursorPosition();
+        //                cursorChange(next, cp);
+        //            }
+        TextEdit edit = new TextEdit(40, 1) {
 
 //            @Override
 //            public TextEdit onKey(Consumer<KeyEvent> e) {

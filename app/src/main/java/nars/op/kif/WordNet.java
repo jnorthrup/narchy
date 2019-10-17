@@ -2175,11 +2175,13 @@ public class WordNet {
         String dir = WordNet.baseDir;
         String fname = "WordNet.pl";
 
-        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
-            writeNounsProlog(pw, kb);
-            writeVerbsProlog(pw, kb);
-            writeAdjectivesProlog(pw, kb);
-            writeAdverbsProlog(pw, kb);
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname)) {
+            try (PrintWriter pw = new PrintWriter(fw)) {
+                writeNounsProlog(pw, kb);
+                writeVerbsProlog(pw, kb);
+                writeAdjectivesProlog(pw, kb);
+                writeAdverbsProlog(pw, kb);
+            }
         } catch (Exception e) {
             System.out.println("Error writing file " + dir + File.separator + fname + '\n' + e.getMessage());
             e.printStackTrace();
@@ -2276,31 +2278,33 @@ public class WordNet {
         String dir = WordNet.baseDir;
         String fname = "Wn_s.pl";
 
-        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
-            if (wordsToSenses.keySet().size() < 1) {
-                System.out.println("Error in WordNet.writeWordNetS(): No contents in sense index");
-            }
-            for (Object o : wordsToSenses.keySet()) {
-                String word = (String) o;
-                String processedWord = processWordForProlog(word);
-                List keys = (ArrayList) wordsToSenses.get(word);
-                Iterator it2 = keys.iterator();
-                if (keys.size() < 1) {
-                    System.out.println("Error in WordNet.writeWordNetS(): No synsets for word: " + word);
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname)) {
+            try (PrintWriter pw = new PrintWriter(fw)) {
+                if (wordsToSenses.keySet().size() < 1) {
+                    System.out.println("Error in WordNet.writeWordNetS(): No contents in sense index");
                 }
-                while (it2.hasNext()) {
-                    String senseKey = (String) it2.next();
-
-                    String POS = senseKeyPOS(senseKey);
-                    String senseNum = senseKeySenseNum(senseKey);
-                    if (POS != null && POS.isEmpty() || senseNum != null && senseNum.isEmpty()) {
-                        System.out.println("Error in WordNet.writeWordNetS(): Bad sense key: " + senseKey);
+                for (Object o : wordsToSenses.keySet()) {
+                    String word = (String) o;
+                    String processedWord = processWordForProlog(word);
+                    List keys = (ArrayList) wordsToSenses.get(word);
+                    Iterator it2 = keys.iterator();
+                    if (keys.size() < 1) {
+                        System.out.println("Error in WordNet.writeWordNetS(): No synsets for word: " + word);
                     }
-                    POS = WordNetUtilities.posLettersToNumber(POS);
-                    String POSchar = Character.toString(WordNetUtilities.posNumberToLetter(POS.charAt(0)));
-                    String synset = (String) senseIndex.get(senseKey);
-                    int wordNum = findWordNum(POS, synset, word);
-                    pw.println("s(" + POS + synset + ',' + wordNum + ",'" + processedWord + "'," + POSchar + ',' + senseNum + ",1).");
+                    while (it2.hasNext()) {
+                        String senseKey = (String) it2.next();
+
+                        String POS = senseKeyPOS(senseKey);
+                        String senseNum = senseKeySenseNum(senseKey);
+                        if (POS != null && POS.isEmpty() || senseNum != null && senseNum.isEmpty()) {
+                            System.out.println("Error in WordNet.writeWordNetS(): Bad sense key: " + senseKey);
+                        }
+                        POS = WordNetUtilities.posLettersToNumber(POS);
+                        String POSchar = Character.toString(WordNetUtilities.posNumberToLetter(POS.charAt(0)));
+                        String synset = (String) senseIndex.get(senseKey);
+                        int wordNum = findWordNum(POS, synset, word);
+                        pw.println("s(" + POS + synset + ',' + wordNum + ",'" + processedWord + "'," + POSchar + ',' + senseNum + ",1).");
+                    }
                 }
             }
         } catch (Exception e) {
@@ -2317,25 +2321,27 @@ public class WordNet {
         String dir = WordNet.baseDir;
         String fname = "Wn_hyp.pl";
 
-        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname)) {
+            try (PrintWriter pw = new PrintWriter(fw)) {
 
-            if (relations.keySet().size() < 1) {
-                System.out.println("Error in WordNet.writeWordNetHyp(): No contents in relations");
-            }
-            for (Object o : relations.keySet()) {
-                String synset = (String) o;
-
-
-                List rels = (ArrayList) relations.get(synset);
-                if (rels == null || rels.size() < 1) {
-                    System.out.println("Error in WordNet.writeWordNetHyp(): No contents in rels for synset: " + synset);
+                if (relations.keySet().size() < 1) {
+                    System.out.println("Error in WordNet.writeWordNetHyp(): No contents in relations");
                 }
+                for (Object o : relations.keySet()) {
+                    String synset = (String) o;
 
-                if (rels != null) {
-                    for (Object rel1 : rels) {
-                        AVPair rel = (AVPair) rel1;
-                        if ("hypernym".equals(rel.attribute)) {
-                            pw.println("hyp(" + synset + ',' + rel.value + ").");
+
+                    List rels = (ArrayList) relations.get(synset);
+                    if (rels == null || rels.size() < 1) {
+                        System.out.println("Error in WordNet.writeWordNetHyp(): No contents in rels for synset: " + synset);
+                    }
+
+                    if (rels != null) {
+                        for (Object rel1 : rels) {
+                            AVPair rel = (AVPair) rel1;
+                            if ("hypernym".equals(rel.attribute)) {
+                                pw.println("hyp(" + synset + ',' + rel.value + ").");
+                            }
                         }
                     }
                 }
@@ -2370,34 +2376,36 @@ public class WordNet {
         String dir = WordNet.baseDir;
         String fname = "Wn_g.pl";
 
-        try (FileWriter fw = new FileWriter(dir + File.separator + fname); PrintWriter pw = new PrintWriter(fw)) {
-            Iterator it = nounDocumentationHash.keySet().iterator();
-            while (it.hasNext()) {
-                String synset = (String) it.next();
-                String doc = (String) nounDocumentationHash.get(synset);
-                doc = processPrologString(doc);
-                pw.println("g(" + '1' + synset + ",'(" + doc + ")').");
-            }
-            it = verbDocumentationHash.keySet().iterator();
-            while (it.hasNext()) {
-                String synset = (String) it.next();
-                String doc = (String) verbDocumentationHash.get(synset);
-                doc = processPrologString(doc);
-                pw.println("g(" + '2' + synset + ",'(" + doc + ")').");
-            }
-            it = adjectiveDocumentationHash.keySet().iterator();
-            while (it.hasNext()) {
-                String synset = (String) it.next();
-                String doc = (String) adjectiveDocumentationHash.get(synset);
-                doc = processPrologString(doc);
-                pw.println("g(" + '3' + synset + ",'(" + doc + ")').");
-            }
-            it = adverbDocumentationHash.keySet().iterator();
-            while (it.hasNext()) {
-                String synset = (String) it.next();
-                String doc = (String) adverbDocumentationHash.get(synset);
-                doc = processPrologString(doc);
-                pw.println("g(" + '4' + synset + ",'(" + doc + ")').");
+        try (FileWriter fw = new FileWriter(dir + File.separator + fname)) {
+            try (PrintWriter pw = new PrintWriter(fw)) {
+                Iterator it = nounDocumentationHash.keySet().iterator();
+                while (it.hasNext()) {
+                    String synset = (String) it.next();
+                    String doc = (String) nounDocumentationHash.get(synset);
+                    doc = processPrologString(doc);
+                    pw.println("g(" + '1' + synset + ",'(" + doc + ")').");
+                }
+                it = verbDocumentationHash.keySet().iterator();
+                while (it.hasNext()) {
+                    String synset = (String) it.next();
+                    String doc = (String) verbDocumentationHash.get(synset);
+                    doc = processPrologString(doc);
+                    pw.println("g(" + '2' + synset + ",'(" + doc + ")').");
+                }
+                it = adjectiveDocumentationHash.keySet().iterator();
+                while (it.hasNext()) {
+                    String synset = (String) it.next();
+                    String doc = (String) adjectiveDocumentationHash.get(synset);
+                    doc = processPrologString(doc);
+                    pw.println("g(" + '3' + synset + ",'(" + doc + ")').");
+                }
+                it = adverbDocumentationHash.keySet().iterator();
+                while (it.hasNext()) {
+                    String synset = (String) it.next();
+                    String doc = (String) adverbDocumentationHash.get(synset);
+                    doc = processPrologString(doc);
+                    pw.println("g(" + '4' + synset + ",'(" + doc + ")').");
+                }
             }
         } catch (Exception e) {
             System.out.println("Error writing file " + dir + File.separator + fname + '\n' + e.getMessage());

@@ -168,8 +168,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 	 */
 
 	public static class GlottalWave /*extends Out*/ {
-		private final int bufferSize;
-		/** Sampling rate in Hertz of Out. */
+        /** Sampling rate in Hertz of Out. */
 		public float srate;
 
 		/** Amplitude or volume*/
@@ -190,8 +189,7 @@ public class KellyLochbaumFilter /*implements Filter*/ {
 
 		public GlottalWave(float srate,int bufferSize) {
 			//super(bufferSize);
-			this.bufferSize = bufferSize;
-			this.srate = srate;
+            this.srate = srate;
 			computePars();
 		}
 

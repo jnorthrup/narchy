@@ -892,7 +892,7 @@ public class a extends GamePanel {
     
     final Color BACKGROUND_COLOR = new Color(0x7F92FF);
     
-    final ArrayList<int[]> enemies = new ArrayList<int[]>();
+    final ArrayList<int[]> enemies = new ArrayList<>();
        
     final int[][] blocks = new int[10][2];
     final int[][] map = new int[MAP_HEIGHT][MAP_WIDTH];

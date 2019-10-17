@@ -51,7 +51,6 @@ public class Optilive<S,E>  {
 
     private static final long SLEEP_TIME_MS = 500;
     private long currentStart;
-    private long currentEnd;
 
     Scientist sci = null;
     private volatile State state = State.Decide, nextState = null;
@@ -165,7 +164,7 @@ public class Optilive<S,E>  {
         } catch (Throwable t) {
             logger.error("{}", t);
         } finally {
-            currentEnd = System.currentTimeMillis();
+            long currentEnd = System.currentTimeMillis();
             logger.info("experiment end {}\t({})", new Date(currentEnd), Texts.timeStr(1_000_000 * (currentEnd - currentStart)));
 
             if (outDir!=null) {

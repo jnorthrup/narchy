@@ -37,7 +37,7 @@ public class CommandSequence extends Command {
 	 */
     private List<Command> commands() {
 		if (commands == null) {
-			commands = new ArrayList<Command>();
+			commands = new ArrayList<>();
 		}
 		return commands;
 	}

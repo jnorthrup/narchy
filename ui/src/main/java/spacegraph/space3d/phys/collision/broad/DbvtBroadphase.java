@@ -60,7 +60,6 @@ public class DbvtBroadphase extends Broadphase {
 	private final int dupdates;
 	private int pid;
 	private int gid;
-	private final boolean releasepaircache;
 	private final DbvtAabbMm bounds = new DbvtAabbMm();
 
 	private final OArrayList<Dbvt.Node[]> collideStack = new OArrayList<>(DOUBLE_STACKSIZE);
@@ -84,8 +83,8 @@ public class DbvtBroadphase extends Broadphase {
 		sets[0] = new Dbvt();
 		sets[1] = new Dbvt();
 
-		
-		releasepaircache = (paircache == null);
+
+		boolean releasepaircache = (paircache == null);
 		predictedframes = 2;
 		stageCurrent = 0;
 		fupdates = 1;

@@ -93,7 +93,7 @@ public class a extends GamePanel {
   public void run() {
     
     int[][][] stages = new int[6][80][16];
-    ArrayList<float[]> queue = new ArrayList<float[]>();    
+    ArrayList<float[]> queue = new ArrayList<>();
     int x = 0;
     int y = 0;
     int value = 0;

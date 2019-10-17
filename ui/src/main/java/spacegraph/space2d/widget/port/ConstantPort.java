@@ -4,8 +4,6 @@ public class ConstantPort<X> extends TypedPort<X> {
 
     private volatile X value = null;
 
-    private final boolean outOnConnect = true;
-
     public ConstantPort(X value, Class<? super X> klass) {
         super(klass);
         set(value);
@@ -26,6 +24,7 @@ public class ConstantPort<X> extends TypedPort<X> {
 
 
     @Override public void connected(Port other) {
+        boolean outOnConnect = true;
         if (outOnConnect) {
             In oi = other.in;
             if (oi!=null)

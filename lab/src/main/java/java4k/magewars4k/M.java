@@ -142,8 +142,8 @@ public class M extends Applet implements Runnable {
 	
 
 	
-	private MulticastSocket socket; 
-	private DatagramPacket txPacket, rxPacket; 
+	private MulticastSocket socket;
+    private DatagramPacket rxPacket;
 	private final byte[] txMsg = new byte[IDSIZE + 4 * ENTITIES * VARIABLES];
 	private final byte[] rxMsg = new byte[IDSIZE + 4 * ENTITIES * VARIABLES];
 	private InetAddress group; 
@@ -290,7 +290,7 @@ public class M extends Applet implements Runnable {
 			txMsg[3] = (byte) ((processID >> 24) & 0xff);
 		} catch (Exception e) {
 		}
-		txPacket = new DatagramPacket(txMsg, txMsg.length, group, PORT);
+        DatagramPacket txPacket = new DatagramPacket(txMsg, txMsg.length, group, PORT);
 		rxPacket = new DatagramPacket(rxMsg, rxMsg.length, group, PORT);
 
 		

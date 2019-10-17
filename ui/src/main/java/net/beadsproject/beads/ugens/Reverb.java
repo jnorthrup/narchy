@@ -35,7 +35,6 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
     private final RandomPWM delayModulator;
     private float lateDelay1, lateDelay2, lateDelay3, lateDelay4;
     private final float sampsPerMS;
-    private final TapIn earlyTapIn;
     private final TapOut earlyTapOut;
 
     /**
@@ -62,9 +61,8 @@ public class Reverb extends UGenChain implements DataBeadReceiver {
         
         src = new OnePoleFilter(context, 4000);
 
-        
-        
-        earlyTapIn = new TapIn(context, 125);
+
+        TapIn earlyTapIn = new TapIn(context, 125);
         earlyTapOut = new TapOut(context, earlyTapIn, 10);
         eAPF1 = new AllpassFilter(context, (int) (12.812 * sampsPerMS), 113,
                 .3f);

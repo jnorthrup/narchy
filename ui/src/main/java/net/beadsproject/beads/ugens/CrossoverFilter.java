@@ -33,21 +33,20 @@ import net.beadsproject.beads.data.DataBeadReceiver;
 public class CrossoverFilter extends UGen implements DataBeadReceiver {
 
     
-    private float a0, a1, a2, lb0, lb1; 
-    
-    private float k;
-    
+    private float a0, a1, a2, lb0, lb1;
+
     private static final float SQRT2 = (float) Math.sqrt(2);
-    private float sr = 41000;
     private float freq = 120;
     private final float pi_sr;
     private UGen freqUGen;
 
     
     private float x1, x2;
-    private float ly0, ly1, ly2;
+    private float ly1;
+    private float ly2;
     private float lz1, lz2;
-    private float hy0, hy1, hy2;
+    private float hy1;
+    private float hy2;
     private float hz1, hz2;
 
     
@@ -99,7 +98,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
             hyms = new float[channels][3];
             hzms = new float[channels][3];
         }
-        sr = context.getSampleRate();
+        float sr = context.getSampleRate();
         pi_sr = (float) (Math.PI / sr);
         setFrequency(freq);
     }
@@ -169,15 +168,14 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
 
             for (int i = 0; i < bufferSize; i++) {
 
-                
-                ly0 = (lb0 * (bi[i] + x2) + lb1 * x1 - a1 * ly1 - a2 * ly2)
+
+                float ly0 = (lb0 * (bi[i] + x2) + lb1 * x1 - a1 * ly1 - a2 * ly2)
                         / a0;
                 lo[i] = (lb0 * (ly0 + ly2) + lb1 * ly1 - a1 * lz1 - a2 * lz2)
                         / a0;
 
-                
-                
-                hy0 = (bi[i] - 2 * x1 + x2 - a1 * hy1 - a2 * hy2) / a0;
+
+                float hy0 = (bi[i] - 2 * x1 + x2 - a1 * hy1 - a2 * hy2) / a0;
                 hi[i] = (hy0 - 2 * hy1 + hy2 - a1 * hz1 - a2 * hz2) / a0;
 
                 
@@ -201,7 +199,7 @@ public class CrossoverFilter extends UGen implements DataBeadReceiver {
 
     private void calcVals() {
 
-        k = (float) Math.tan(freq * pi_sr);
+        float k = (float) Math.tan(freq * pi_sr);
         lb0 = k * k;
         lb1 = 2f * lb0;
         

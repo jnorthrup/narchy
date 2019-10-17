@@ -17,8 +17,6 @@ import java.util.Vector;
  * This class draws the map and handles things like bonuses and bombs.
  */
 public class BomberMap extends JPanel {
-    /** frame object */
-    private final BomberMain main;
     /** game over flag */
     private boolean gameOver;
     /** background color */
@@ -202,7 +200,7 @@ public class BomberMap extends JPanel {
     }
 
     public BomberMap(BomberMain main) {
-        this.main = main;
+        /** frame object */
         /** generator random level */
         level = levelRand.draw() % 2;
         MediaTracker tracker = new MediaTracker(this);

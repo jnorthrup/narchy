@@ -14,7 +14,7 @@ class MarkovChainTest {
     @Test
     void test1() {
 
-        MarkovChain<String> chain = new MarkovChain<String>(2);
+        MarkovChain<String> chain = new MarkovChain<>(2);
 
         String phrases[] = {
                 "foo foo ffoo foo foo foo bar oo",
@@ -44,7 +44,7 @@ class MarkovChainTest {
 
     @Test
     void testString() {
-        MarkovChain<String> chain = new MarkovChain<String>(3);
+        MarkovChain<String> chain = new MarkovChain<>(3);
         chain.learnAll(
                 "she sells sea shells by the sea shore fool".split(" "),
                 "a sea shell found by the beach sells for quite a bit".split(" "),

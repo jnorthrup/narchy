@@ -17,9 +17,6 @@ import java.util.Random;
  * */
 public class DQN2 extends Agent {
 
-    private final Random random;
-    private final int actions;
-
     private int lastAction = -1;
     private final float[] lastState;
 
@@ -48,15 +45,12 @@ public class DQN2 extends Agent {
     public DQN2( int inputs, int actions, Random rng ) {
         super(inputs, actions);
 
-        this.random = rng;
-
         actionDecider = new DecideEpsilonGreedy(0.05f, rng);
         learnConfig = new QLearningConfig();
         //mem = new FasterList<Memory>( experienceCapacity  );
 
         this.lastState = new float[inputs];
         this.targetFuture = new double[actions];
-        this.actions = actions;
 
         //LSTM
         valuePredict = new LivePredictor.LSTMPredictor(0.04f, 4);

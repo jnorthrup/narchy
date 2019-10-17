@@ -25,7 +25,7 @@ public class ShowReserved {
 		Tokenizer t = VolumeQuery2.tokenizer();
 		t.setString("How many cups are in a gallon?");
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly(t));
 
 		System.out.println(VolumeQuery2.query().match(v));

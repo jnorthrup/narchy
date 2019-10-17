@@ -292,7 +292,7 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
                     Document doc = reader.document(i);
                     V v = (V) this.fromString(doc.get(VALUE_FIELD));
                     K k = (K) this.fromString(doc.get(KEY_FIELD));
-                    entries.add(new Entry<K, V>() {
+                    entries.add(new Entry<>() {
                         @Override
                         public K getKey() {
                             return k;

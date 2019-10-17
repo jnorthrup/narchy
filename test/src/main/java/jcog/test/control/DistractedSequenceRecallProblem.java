@@ -163,8 +163,8 @@ public class DistractedSequenceRecallProblem extends AbstractAgentTest {
         sequenceState.fill( 0.f );
         sequenceActions.fill( 0.f );
 
-        ArrayList< Integer > targetBits = new ArrayList< Integer >();
-        ArrayList< Integer > targetTimes = new ArrayList< Integer >();
+        ArrayList< Integer > targetBits = new ArrayList<>();
+        ArrayList< Integer > targetTimes = new ArrayList<>();
 //        HashSet< Integer > usedTargetIndices = new HashSet< Integer >();
 
         int observations = numInputs();

@@ -51,7 +51,7 @@ import java.util.Collection;
  * </em></p>
  */
 public class MemoryWarningSystem {
-    private final Collection<Listener> listeners = new ArrayList<Listener>();
+    private final Collection<Listener> listeners = new ArrayList<>();
     private final MemoryPoolMXBean tenuredGenPool;
 
     public interface Listener {

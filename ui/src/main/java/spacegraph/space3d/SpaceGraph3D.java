@@ -58,14 +58,6 @@ import static com.jogamp.opengl.GL2.*;
  */
 public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>> {
 
-    private final boolean simulating = true;
-
-    /**
-     * 0 for variable timing
-     */
-    private final int maxSubsteps =
-            0;
-
     public final Dynamics3D<X> dyn;
 
     @Deprecated
@@ -165,8 +157,13 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 
         inputs.forEach((anIi) -> anIi.update(this, dtMS));
 
+        boolean simulating = true;
         if (simulating) {
 
+            /**
+             * 0 for variable timing
+             */
+            int maxSubsteps = 0;
             dyn.update(
 
                     Math.max(dtMS / 1000f, 1000000f / video.renderFPS)

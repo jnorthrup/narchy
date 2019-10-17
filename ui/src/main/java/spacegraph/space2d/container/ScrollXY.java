@@ -49,8 +49,6 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     //private volatile v2 viewDefault = new v2(0,0);
     protected v2 viewMax = new v2(1,1);
 
-    private final boolean autoHideScroll = true;
-
 
     public <X> ScrollXY(GridModel<X> grid, GridRenderer<X> renderer) {
         this((S) new DynGrid<>(grid, renderer));
@@ -226,6 +224,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 
         float x1 = x;
         float x2 = x + w;
+        boolean autoHideScroll = true;
         setScrollBar(true, (!autoHideScroll || w < viewMax.x), true);
 
         float y1 = y;

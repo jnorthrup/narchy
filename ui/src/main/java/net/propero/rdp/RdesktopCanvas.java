@@ -65,7 +65,6 @@ public abstract class RdesktopCanvas extends Canvas {
     private KeyCode_FileBased fbKeys;
     public String sKeys;
     private Rdp rdp;
-    private IndexColorModel colormap;
     public WrappedImage backstore;
 
     
@@ -139,7 +138,6 @@ public abstract class RdesktopCanvas extends Canvas {
      * @param cm Colour model to be used with this canvas
      */
     public void registerPalette(IndexColorModel cm) {
-        this.colormap = cm;
 
         backstore.setIndexColorModel(cm);
     }

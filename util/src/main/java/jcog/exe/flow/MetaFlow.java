@@ -159,7 +159,6 @@ public class MetaFlow {
     public final class StackCursor extends DynBytes {
 
         final StackWalker.StackFrame base;
-        private StackWalker.StackFrame at = null;
         final FasterList<StackWalker.StackFrame> buffer = new FasterList(256);
 
         public StackCursor(StackWalker.StackFrame base) {
@@ -190,7 +189,7 @@ public class MetaFlow {
                 return null;
             });
 
-            at = buffer.getLast();
+            StackWalker.StackFrame at = buffer.getLast();
 
 //            Optional<Class<?>> callerClass = walker.walk(s ->
 //                    s.map(StackWalker.StackFrame::getDeclaringClass)

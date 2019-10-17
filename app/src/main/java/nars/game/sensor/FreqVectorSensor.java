@@ -30,7 +30,6 @@ public class FreqVectorSensor extends VectorSensor {
     private float[] inBuf = null;
 
     public final FloatRange center, bandwidth;
-    private float intensity;
 
     public FreqVectorSensor(CircularFloatBuffer buf, IntFunction<Term> termizer, int fftSize, int components, NAR n) {
         super(termizer.apply(components) /*n+1*/, n);
@@ -85,6 +84,7 @@ public class FreqVectorSensor extends VectorSensor {
             double f = Util.interpSum(freqValue, a, b)/(b-a);
             componentValue[i] = (float) f;
         }
+        float intensity;
         Util.normalize(componentValue, 0, intensity = Util.max(componentValue));
 
         super.accept(g);

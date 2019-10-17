@@ -7,9 +7,7 @@ import jcog.constraint.continuous.ContinuousConstraint;
  */
 public class UnsatisfiableConstraintException extends KiwiException {
 
-    private final ContinuousConstraint constraint;
     public UnsatisfiableConstraintException(ContinuousConstraint constraint) {
         super(constraint.toString());
-        this.constraint = constraint;
     }
 }

@@ -49,7 +49,7 @@ public abstract class LevelObject implements Comparator<LevelObject> {
 	 * The list of handles that can manipulate this object. Must be set by objects
 	 * that inherits from this class.
 	 */
-	protected ArrayList<Handle> handles = new ArrayList<Handle>();
+	protected ArrayList<Handle> handles = new ArrayList<>();
 	
 	/**
 	 * Draws itself to the specified graphics object

@@ -19,10 +19,6 @@ public class Enemy extends Sprite {
     private float runTime;
     private boolean onGround;
     @SuppressWarnings("unused")
-    private boolean mayJump;
-    @SuppressWarnings("unused")
-    private int jumpTime;
-    @SuppressWarnings("unused")
     private float xJumpSpeed;
     @SuppressWarnings("unused")
     private float yJumpSpeed;
@@ -138,7 +134,7 @@ public class Enemy extends Sprite {
 
         xa = facing * sideWaysSpeed;
 
-        mayJump = (onGround);
+        boolean mayJump = (onGround);
 
         xFlipPic = facing == -1;
 
@@ -235,7 +231,7 @@ public class Enemy extends Sprite {
             }
             if (ya < 0) {
                 y = (int) ((y - height) / 16) * 16 + height;
-                jumpTime = 0;
+                int jumpTime = 0;
                 this.ya = 0;
             }
             if (ya > 0) {

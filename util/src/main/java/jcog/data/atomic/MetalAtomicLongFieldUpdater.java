@@ -10,8 +10,7 @@ public final class MetalAtomicLongFieldUpdater<T> extends AtomicLongFieldUpdater
 	private static final Unsafe U = Util.unsafe;
 
 	private final long offset;
-	private final Class<?> cclass;
-//        private final Class<T> tclass;
+    //        private final Class<T> tclass;
 
 	public MetalAtomicLongFieldUpdater(final Class<T> tclass, final String fieldName) {
 
@@ -22,8 +21,7 @@ public final class MetalAtomicLongFieldUpdater<T> extends AtomicLongFieldUpdater
 		try {
 			field = tclass.getDeclaredField(fieldName);
 			field.trySetAccessible();
-			this.cclass = tclass; //Modifier.isProtected(modifiers) && tclass.isAssignableFrom(caller) && !isSamePackage(tclass, caller) ? caller : tclass;
-//				this.tclass = tclass;
+            //				this.tclass = tclass;
 			this.offset = U.objectFieldOffset(field);
 		} catch (Throwable e) {
 			throw new RuntimeException(e);

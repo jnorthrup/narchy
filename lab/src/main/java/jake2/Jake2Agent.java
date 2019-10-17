@@ -262,7 +262,7 @@ public class Jake2Agent extends GameX implements Runnable {
 
                 "+map " + nextMap()
 
-        }, new Consumer<GL>() {
+        }, new Consumer<>() {
 
             int lastSamplePos = -1;
 
@@ -272,17 +272,17 @@ public class Jake2Agent extends GameX implements Runnable {
                 depth.update(g);
 
                 byte[] b = SND_JAVA.dma.buffer;
-                if(b ==null)
+                if (b == null)
                     return;
                 int samples = 1024;
                 int sample = SND_JAVA.SNDDMA_GetDMAPos();
-                if (sample!=lastSamplePos) {
+                if (sample != lastSamplePos) {
 
 
                     //System.out.println(sample + " " + SND_MIX.paintedtime);
 
-                    if (hear.buf.available() < samples*2)
-                        hear.buf.skip(samples*2);
+                    if (hear.buf.available() < samples * 2)
+                        hear.buf.skip(samples * 2);
 
                     int from = (sample - samples * 4) % b.length;
                     int to = (sample - samples * 2) % b.length;
@@ -296,7 +296,6 @@ public class Jake2Agent extends GameX implements Runnable {
                         hear.buf.writeS16(b, from, b.length, (float) 1);
                         hear.buf.writeS16(b, 0, to, (float) 1);
                     }
-
 
 
                     lastSamplePos = sample;

@@ -47,9 +47,7 @@ import java.util.*;
 public class TokenizedContextPopulationBuilder implements InitialPopulationBuilder {
 
     private final List<Node> population = new FastList();
-    private Map<String,Double> winnerMatchTokens;
-    private Map<String,Double> winnerUnMatchTokens;
-    
+
     private final Tokenizer tokenizer = new BasicTokenizer();
      
     /**
@@ -103,18 +101,18 @@ public class TokenizedContextPopulationBuilder implements InitialPopulationBuild
         }
          
         List<Node> newPopulation = new LinkedList<>();
-        
-        
-        this.winnerMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(usedTrainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
-        this.winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(usedTrainingDataset, TOKEN_UNMATCH_THREASHOLD, DISCARD_W_TOKENS);
+
+
+        Map<String, Double> winnerMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerMatchTokens(usedTrainingDataset, TOKEN_THREASHOLD, DISCARD_W_TOKENS);
+        Map<String, Double> winnerUnMatchTokens = TokenizedContextTerminalSetBuilder.calculateWinnerUnmatchTokens(usedTrainingDataset, TOKEN_UNMATCH_THREASHOLD, DISCARD_W_TOKENS);
         
         for(Example example : usedTrainingDataset.getExamples()){
             if(example.getMatch().isEmpty()){
                 
                 continue;
             }
-            newPopulation.addAll(createIndividualsFromExample(example, true, winnerMatchTokens,winnerUnMatchTokens));
-            newPopulation.addAll(createIndividualsFromExample(example, false, winnerMatchTokens,winnerUnMatchTokens));
+            newPopulation.addAll(createIndividualsFromExample(example, true, winnerMatchTokens, winnerUnMatchTokens));
+            newPopulation.addAll(createIndividualsFromExample(example, false, winnerMatchTokens, winnerUnMatchTokens));
             
         }
         

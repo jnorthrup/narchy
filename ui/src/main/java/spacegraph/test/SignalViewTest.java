@@ -223,7 +223,6 @@ public class SignalViewTest {
         final AtomicBoolean reshare = new AtomicBoolean(true);
 
         private final UDPeer udp;
-        private final HttpServer tcp;
 
         public SensorNode() throws IOException {
             this(0);
@@ -305,7 +304,6 @@ public class SignalViewTest {
             HttpServer tcp = new HttpServer(udp.addr(), h);
 
 
-            this.tcp = tcp;
             udp.setFPS(5);
             tcp.setFPS(5f);
 
@@ -378,12 +376,10 @@ public class SignalViewTest {
 
     public static class RealTimeLine extends Gridding {
 
-        private final SensorNode node;
         float viewWindowSeconds = 4;
 
         public RealTimeLine(SensorNode node) {
             super(VERTICAL);
-            this.node = node;
 
             node.sensors.values().forEach(s -> {
                 if (s instanceof VideoSensor)

@@ -276,7 +276,7 @@ public class InputParser implements Closeable {
 		if (input == null || input.isEmpty())
 			return Collections.EMPTY_LIST;
 
-		List<String> stringParts = new FasterList<String>();
+		List<String> stringParts = new FasterList<>();
 
 		//Heavily optimized string split by space with all characters after :
 		//added as a single entry. Under benchmarks, this is faster than

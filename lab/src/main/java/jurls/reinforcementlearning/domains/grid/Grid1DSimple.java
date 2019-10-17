@@ -9,8 +9,7 @@ package jurls.reinforcementlearning.domains.grid;
 */
 public class Grid1DSimple implements World {
     private final int size;
-    
-    private final double VISUALIZE_PERIOD;
+
     private final double REWARD_MAGNITUDE;
     private final double JUMP_FRACTION;
     private final double ENERGY_COST_FACTOR;
@@ -29,7 +28,7 @@ public class Grid1DSimple implements World {
     public Grid1DSimple(int size, int totalTime, double noise, double focusVelocity) {
         this.time = 1;
         this.size = size;
-        this.VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.ENERGY_COST_FACTOR = 0.5;
         this.MATCH_REWARD_FACTOR = size*1.1;
         this.REWARD_MAGNITUDE = 1;

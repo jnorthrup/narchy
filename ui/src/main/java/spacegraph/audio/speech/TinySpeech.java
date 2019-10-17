@@ -33,7 +33,6 @@ public class TinySpeech {
     private final static float PI_2 = 2 * (float) Math.PI;
     private final Random rng = new XoRoShiRo128PlusRandom(1);
 
-    private float amp = 0.01f;
     float f0 = 120;
     float period = 1.2f;
 
@@ -119,6 +118,7 @@ public class TinySpeech {
     private SoundSample _say(String text) {
         float[] buf = new float[10 * SAMPLE_FREQUENCY];
         int bufPos = 0;
+        float amp = 0.01f;
         return say(text, amp, f0, period, buf, bufPos);
     }
 

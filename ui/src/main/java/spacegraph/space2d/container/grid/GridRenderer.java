@@ -29,7 +29,7 @@ public interface GridRenderer<X> {
 //                    }
 //                };
 
-            final MRUMap<X, Surface> cache = new MRUMap<X, Surface>(capacity) {
+            final MRUMap<X, Surface> cache = new MRUMap<>(capacity) {
                 @Override
                 protected void onEvict(Map.Entry<X, Surface> entry) {
                     entry.getValue().stop();

@@ -27,8 +27,6 @@ public class BomberImageButton {
     private final int w;
     /** image height */
     private final int h;
-    /** area the object controls */
-    private Rectangle rect;
     /** the images of the button: normal / outerglowed */
     private final Image[] images;
     /** stae of button: normal / outglowed */
@@ -81,7 +79,8 @@ public class BomberImageButton {
         this.y = y;
         this.ID = ID;
         /** calculate area in which the object owns to handle mouse events */
-        rect = new Rectangle(this.x, this.y - 5, w, h + 10);
+        /** area the object controls */
+        Rectangle rect = new Rectangle(this.x, this.y - 5, w, h + 10);
     }
 
     /**

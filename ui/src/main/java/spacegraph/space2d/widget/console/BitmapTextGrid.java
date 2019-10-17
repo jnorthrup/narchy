@@ -32,8 +32,6 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
     private final Tex tex = new Tex().mipmap(true);
     @Deprecated
     private final Color cursorColor = new Color(255, 200, 0, 127);
-    private final boolean antialias = false;
-    private final boolean quality = false;
     protected int cursorCol, cursorRow;
     protected int fontWidth, fontHeight;
     private BufferedImage backbuffer = null;
@@ -101,6 +99,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
         Graphics2D next = b.createGraphics();
 //        System.out.println(cols + "," + rows + "\t" + b + "\t" + g);
 
+        boolean antialias = false;
         if (antialias) {
             next.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING,
                 RenderingHints.VALUE_TEXT_ANTIALIAS_ON
@@ -111,6 +110,7 @@ public abstract class BitmapTextGrid extends AbstractConsoleSurface {
             );
 
         }
+        boolean quality = false;
         if (quality)
             next.setRenderingHint(RenderingHints.KEY_ALPHA_INTERPOLATION,
                     RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY

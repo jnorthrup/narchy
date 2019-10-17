@@ -17,10 +17,8 @@ package jcog.grammar.parse.examples.engine.samples;
  * @version 1.0 
  */
 class City {
-	private String name;
-	private int altitude;
 
-	/**
+    /**
 	 * Constructs a city.
 	 *
 	 * @param String the city's name
@@ -28,7 +26,5 @@ class City {
 	 * @param int the city's altitude
 	 */
 	public City(String name, int altitude) {
-		this.name = name;
-		this.altitude = altitude;
-	}
+    }
 }

@@ -37,9 +37,6 @@ public class Audio implements Runnable {
     }
 
 
-
-    private final int bufferBytes;
-
     private final SourceDataLine sdl;
 
     private final int rate = 44100;
@@ -78,7 +75,7 @@ public class Audio implements Runnable {
 //                AudioSystem.getMixer(null);
                 //AudioSystem.getMixer(mixers[2]);
 
-        bufferBytes = bufferSize * 2 * 2;
+        int bufferBytes = bufferSize * 2 * 2;
 
         try {
             AudioFormat format = new AudioFormat(rate, 16, 2, true, false);
@@ -169,12 +166,10 @@ public class Audio implements Runnable {
 
     static class DefaultSource implements SoundSource {
 
-        private final SoundProducer producer;
         static final float distanceFactor = 1.0f;
         private final float balance;
 
         DefaultSource(SoundProducer p, float balance) {
-            this.producer = p;
             this.balance = balance;
         }
 

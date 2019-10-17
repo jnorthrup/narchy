@@ -49,7 +49,6 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     private final Object[] colors = {Color.black, Color.red, Color.green,
             Color.yellow, Color.blue, Color.magenta, Color.cyan, Color.white};
     private OutputStream out;
-    private InputStream in;
     private TerminalEmulator emulator = null;
     private Connection connection = null;
     private BufferedImage img;
@@ -74,7 +73,6 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     private int char_height;
     
     private int line_space = -2;
-    private int compression = 0;
     private boolean antialiasing = true;
 
     public JCTermSwing() {
@@ -203,7 +201,7 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
 
     public void start(Connection connection) {
         this.connection = connection;
-        in = connection.getInputStream();
+        InputStream in = connection.getInputStream();
         out = connection.getOutputStream();
         emulator = new EmulatorVT100(this, in);
         emulator.reset();
@@ -446,7 +444,6 @@ public class JCTermSwing extends JPanel implements KeyListener, /*Runnable,*/
     public void setCompression(int compression) {
         if (compression < 0 || 9 < compression)
             return;
-        this.compression = compression;
     }
 
     public void setDefaultForeGround(Object f) {

@@ -70,9 +70,6 @@ public class Arithmeticize {
 
     public static class ArithmeticIntroduction extends EventIntroduction {
 
-        /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
-        private float preEvalRate = 0.5f;
-
         static final int VOLUME_MARGIN = 6;
 
         public ArithmeticIntroduction() {
@@ -112,6 +109,8 @@ public class Arithmeticize {
         @Override
         protected Term applyUnnormalized(Term x, int volMax, What w) {
             Random random = w.random();
+            /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
+            float preEvalRate = 0.5f;
             return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / x.volume()), random);
         }
     }

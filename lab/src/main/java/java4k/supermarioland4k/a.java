@@ -200,7 +200,7 @@ public class a extends JPanel implements Runnable {
     float[] mario = null;
     
     int[] pixels = new int[64];
-    ArrayList<float[]> queue = new ArrayList<float[]>();
+    ArrayList<float[]> queue = new ArrayList<>();
     ArrayList<float[]>[] backgroundPlanes = new ArrayList[4];
     BufferedImage[][] sprites = new BufferedImage[3][64];
     BufferedImage image = new BufferedImage(160, 144, 1);
@@ -312,7 +312,7 @@ public class a extends JPanel implements Runnable {
 
               
               for(i = 0; i < 4; i++) {
-                backgroundPlanes[i] = new ArrayList<float[]>();
+                backgroundPlanes[i] = new ArrayList<>();
                 k = random.nextInt(80);
                 for(j = 0; j < 4; j++) {
                   float[] object = new float[32];

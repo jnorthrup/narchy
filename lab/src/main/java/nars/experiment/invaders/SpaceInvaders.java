@@ -28,7 +28,7 @@ public class SpaceInvaders {
     }
 
     public static void showCodes() throws Exception {
-        ArrayList<String> arr = new ArrayList<String>();
+        ArrayList<String> arr = new ArrayList<>();
         InputStream is = new FileInputStream("invaders.rom");
         int x = is.read();
         arr.add(toHexString((byte) x));

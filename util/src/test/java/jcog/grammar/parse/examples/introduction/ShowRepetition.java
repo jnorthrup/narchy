@@ -26,7 +26,7 @@ public class ShowRepetition {
 		Assembly a = new TokenAssembly(s);
 		Parser p = new Repetition(new Word());
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(a);
 
 		System.out.println(p.match(v));

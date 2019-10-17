@@ -11,7 +11,6 @@ public class arpeggiator_01 {
     private int tick = 0;
 
     private Envelope gainEnvelope;
-    private Gain gain;
 
     private int lastKeyPressed = -1;
 
@@ -52,8 +51,7 @@ public class arpeggiator_01 {
         beatClock = ac.clock(800f, arpeggiator).ticksPerBeat(4);
 
 
-
-        gain = new Gain(ac, 1, gainEnvelope);
+        Gain gain = new Gain(ac, 1, gainEnvelope);
         gain.setGain(1f);
         gain.in(wav);
 

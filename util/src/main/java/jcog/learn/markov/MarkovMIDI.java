@@ -15,7 +15,7 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
 
     public MarkovMIDI(int n) {
         super(new MarkovChain<>(n), new Random());
-        mLengthChain = new MarkovChain<Long>(n);
+        mLengthChain = new MarkovChain<>(n);
     }
 
 //    public void importMIDI(File file) throws InvalidMidiDataException, IOException {
@@ -31,8 +31,8 @@ public class MarkovMIDI extends MarkovSampler<MarkovMIDI.MidiMessageWrapper> {
     public void learnTrack(Track t) {
         int trackSize = t.size();
         if (trackSize == 0) return;
-        List<MidiMessageWrapper> msgs = new FasterList<MidiMessageWrapper>();
-        List<Long> times = new FasterList<Long>();
+        List<MidiMessageWrapper> msgs = new FasterList<>();
+        List<Long> times = new FasterList<>();
 
         MidiEvent event = t.get(0);
         long lastTick = event.getTick();

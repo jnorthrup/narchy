@@ -63,11 +63,8 @@ class UserTest {
 
     static class MyEvent extends Longerval {
 
-        private final String name;
-
         MyEvent(String name, long a, long b) {
             super(a, b);
-            this.name = name;
         }
     }
 }

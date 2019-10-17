@@ -14,9 +14,6 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
     public final ArrayHashSet<T> buttons = new ArrayHashSet<>();
 
 
-    /** TODO */
-    private final Mode mode;
-
     private ObjectBooleanProcedure<T> action = null;
 
     public enum Mode {
@@ -37,7 +34,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
     public ButtonSet(Mode mode, Iterable<T> buttons) {
         super();
 
-        this.mode = mode;
+        /** TODO */
 
         for (T b : buttons) {
             this.buttons.add(b);

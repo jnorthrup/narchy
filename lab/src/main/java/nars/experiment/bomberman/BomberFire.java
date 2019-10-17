@@ -17,10 +17,6 @@ public class BomberFire extends Thread {
      */
     private final BomberMap map;
     /**
-     * map grid handle
-     */
-    private final int[][] grid;
-    /**
      * position
      */
     private final int x;
@@ -67,7 +63,10 @@ public class BomberFire extends Thread {
 
     public BomberFire(BomberMap map, int x, int y, int type) {
         this.map = map;
-        grid = map.grid;
+        /**
+         * map grid handle
+         */
+        int[][] grid = map.grid;
         this.x = x;
         this.y = y;
         this.type = type;

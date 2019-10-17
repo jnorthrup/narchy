@@ -159,7 +159,7 @@ public class a extends GamePanel {
     Random random = new Random();
     AffineTransform affineTransform = new AffineTransform();
 
-    ArrayList<int[]> enemies = new ArrayList<int[]>();
+    ArrayList<int[]> enemies = new ArrayList<>();
 
     
     BufferedImage candleLight = new BufferedImage(112, 112, 2);

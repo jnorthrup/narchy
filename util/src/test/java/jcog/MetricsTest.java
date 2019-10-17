@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
  */
 class MetricsTest {
 
-    private static final FunctionMeter<Integer> timeDoubler = new FunctionMeter<Integer>("x") {
+    private static final FunctionMeter<Integer> timeDoubler = new FunctionMeter<>("x") {
 
         @Override
         public Integer getValue(Object when, int index) {

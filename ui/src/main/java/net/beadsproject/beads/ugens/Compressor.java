@@ -34,7 +34,6 @@ public class Compressor extends UGen implements DataBeadReceiver {
     private final int memSize;
     private int index;
     private final float[][] delayMem;
-    private UGen powerUGen;
     private BiquadFilter pf;
     private float downstep = .9998f, upstep = 1.0002f, ratio = .5f,
             threshold = .5f, knee = 1;
@@ -42,8 +41,6 @@ public class Compressor extends UGen implements DataBeadReceiver {
 
     private float attack, decay;
     private float currval = 1;
-    private float target = 1;
-    private final float delay;
     private final int delaySamps;
     private static final int rmsMemorySize = 500;
     private final UGen myInputs;
@@ -107,9 +104,8 @@ public class Compressor extends UGen implements DataBeadReceiver {
                        UGen sideChain) {
         super(context, channels, channels);
         this.channels = channels;
-        delay = lookAheadDelay;
-        delaySamps = (int) delay;
-        memSize = (int) context.msToSamples(delay) + 1;
+        delaySamps = (int) lookAheadDelay;
+        memSize = (int) context.msToSamples(lookAheadDelay) + 1;
         delayMem = new float[channels][memSize];
         myBufIn = bufIn;
 
@@ -136,6 +132,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
 
         pf.update();
 
+        float target = 1;
         if (channels == 1) {
 
             float[] bi = bufIn[0];
@@ -224,7 +221,7 @@ public class Compressor extends UGen implements DataBeadReceiver {
         pf = (new BiquadFilter(context, 1, BiquadFilter.BUTTERWORTH_LP))
                 .setFrequency(31);
         //if (sideChain == null) {
-            powerUGen = new RMS(context, channels, rmsMemorySize);
+        UGen powerUGen = new RMS(context, channels, rmsMemorySize);
             powerUGen.in(myInputs);
             pf.in(powerUGen);
 //        } else {

@@ -47,7 +47,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
             case 1:
                 return Set.of(c.get(0));
             default:
-                return new ArrayUnenforcedSet<X>(c.size(), c.array());
+                return new ArrayUnenforcedSet<>(c.size(), c.array());
         }
     }
 

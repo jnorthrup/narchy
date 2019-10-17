@@ -39,7 +39,7 @@ public class ShowVacation {
 
 		Parser vacation = new Seq().get(new VerboseRepetition(prepare)).get(new VerboseRepetition(enjoy));
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly("plan pack hike relax"));
 
 		vacation.match(v);

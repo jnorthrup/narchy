@@ -20,7 +20,6 @@ abstract public class StreamDecoder implements Runnable {
 
     public static String kThreadName = "StreamDecoder";
 
-    private Thread myThread = null;
     private final Object runLock = new Object();
     private boolean running = false;
 
@@ -41,7 +40,7 @@ abstract public class StreamDecoder implements Runnable {
      */
     public StreamDecoder(ByteArrayOutputStream _out) {
         out = _out;
-        myThread = new Thread(this, kThreadName);
+        Thread myThread = new Thread(this, kThreadName);
         myThread.start();
     }
 

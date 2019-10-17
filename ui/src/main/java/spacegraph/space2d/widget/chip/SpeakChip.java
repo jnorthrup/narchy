@@ -7,8 +7,6 @@ import spacegraph.space2d.widget.port.TextPort;
 
 public class SpeakChip extends Bordering {
 
-    private final TextPort in;
-
     enum Modulation {
         AirModem {
             @Override
@@ -39,6 +37,7 @@ public class SpeakChip extends Bordering {
 
     public SpeakChip() {
 
+        TextPort in;
         set(in = new TextPort() {
             @Override
             public boolean out(String x) {

@@ -91,12 +91,14 @@ abstract public class AND<X> extends AbstractPred<X> {
     }
     private final static class AND3_MH<X> extends AND<X> {
         /*@Stable*/
-        private final PREDICATE<X> a, b, c;
+        private final PREDICATE<X> a;
+        private final PREDICATE<X> c;
 
         final MethodHandle A, B, C;
         private AND3_MH(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
-            this.a = a; this.b = b; this.c = c;
+            this.a = a;
+            this.c = c;
             this.A = a.method();
             this.B = b.method();
             this.C = c.method();

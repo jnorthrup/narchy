@@ -80,8 +80,6 @@ public class Options {
     
     public static int bpp_mask = 0xFFFFFF >> 8 * (3 - Bpp);
     public static int imgCount;
-    private static DirectColorModel colour_model = new DirectColorModel(24,
-            0xFF0000, 0x00FF00, 0x0000FF);
     public static int server_rdp_version;
     public static int win_button_size; /* If zero, disable single app mode */
     public static boolean persistent_bitmap_caching;
@@ -113,7 +111,7 @@ public class Options {
         else
             bpp_mask = 0xFFFFFF;
 
-        colour_model = new DirectColorModel(24, 0xFF0000, 0x00FF00, 0x0000FF);
+        DirectColorModel colour_model = new DirectColorModel(24, 0xFF0000, 0x00FF00, 0x0000FF);
     }
 
 }

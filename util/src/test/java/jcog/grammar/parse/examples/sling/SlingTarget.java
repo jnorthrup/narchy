@@ -18,8 +18,7 @@ import javax.swing.*;
  * @version 1.0 
  */
 public class SlingTarget implements PubliclyCloneable<SlingTarget> {
-	private static int DEFAULT_NLINE = 100;
-	private Scope scope = new Scope();
+    private Scope scope = new Scope();
 	private JSlider s1;
 	private JSlider s2;
 	private RenderableCollection renderables = new RenderableCollection();
@@ -88,7 +87,8 @@ public class SlingTarget implements PubliclyCloneable<SlingTarget> {
 			v = lookup("nLine");
 		} else {
 			v = lookup("nLine");
-			v.setValue(new Point(0, DEFAULT_NLINE));
+            int DEFAULT_NLINE = 100;
+            v.setValue(new Point(0, DEFAULT_NLINE));
 		}
 		return v;
 	}

@@ -188,7 +188,7 @@ public class a extends Applet implements Runnable {
 		final BufferedImage image = new BufferedImage(152, 177, 1);
 		final Graphics2D g = (Graphics2D) image.getGraphics();
 		Graphics2D g2 = null;
-		final ArrayList<int[]> queue = new ArrayList<int[]>();
+		final ArrayList<int[]> queue = new ArrayList<>();
 		final Random random = new Random();
 
 		

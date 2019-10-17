@@ -31,7 +31,7 @@ public class ShowSequenceManual {
 
 		Parser s = new Seq().get(hello).get(world).get(bang);
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly("Hello world!"));
 
 		System.out.println(bang.match(world.match(hello.match(v))));

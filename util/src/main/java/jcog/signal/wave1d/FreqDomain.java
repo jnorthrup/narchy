@@ -13,14 +13,12 @@ public class FreqDomain {
     public final WritableTensor freq;
     final SlidingDFTTensor dft;
 
-    private ArrayTensor next;
-
 
     public FreqDomain(int fftSize, int history) {
         dft = new SlidingDFTTensor( fftSize);
         freq = history > 1 ? new TensorRing(dft.volume(), history) : new ArrayTensor(dft.volume());
 
-        next = new ArrayTensor(1); //empty
+        ArrayTensor next = new ArrayTensor(1); //empty
 
     }
 

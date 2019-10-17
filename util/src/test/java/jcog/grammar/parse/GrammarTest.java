@@ -156,7 +156,7 @@ class GrammarTest {
 
     @Test
     void textualRuleWithGroovyClosure() {
-        final List<Object> expectedMatches = new ArrayList<Object>();
+        final List<Object> expectedMatches = new ArrayList<>();
         expectedMatches.add(new Token("test"));
         String ruleName = grammar.defineRule("mystart = \"test\"", (matches, stack) -> {
             assertEquals(expectedMatches, matches);

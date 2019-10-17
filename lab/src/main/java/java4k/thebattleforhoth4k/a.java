@@ -160,8 +160,8 @@ public class a extends GamePanel {
 		float Y;
 		float Z;
 
-		ArrayList<float[]> lasers = new ArrayList<float[]>();
-		ArrayList<int[]> enemies = new ArrayList<int[]>();
+		ArrayList<float[]> lasers = new ArrayList<>();
+		ArrayList<int[]> enemies = new ArrayList<>();
 
 		AffineTransform transform = new AffineTransform();
 		BufferedImage image = new BufferedImage(362, 362, 1);

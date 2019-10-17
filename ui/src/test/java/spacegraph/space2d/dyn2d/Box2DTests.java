@@ -248,12 +248,6 @@ public class Box2DTests extends JComponent implements Runnable {
         t.start();
     }
 
-    private final int stepsInSecond = 50;
-    private final int iterations = 8;
-    private final int velocity = 8;
-    private final int slowmotion = 1;
-    private final int plynuleSlowMo = 1;
-
     private MyThread createThread() {
         return new MyThread();
     }
@@ -272,8 +266,12 @@ public class Box2DTests extends JComponent implements Runnable {
         public void run() {
             for (; ; ) {
                 long l1 = System.nanoTime();
-                
+
+                int stepsInSecond = 50;
                 if (running) {
+                    int plynuleSlowMo = 1;
+                    int velocity = 8;
+                    int iterations = 8;
                     w.step(1.0f / stepsInSecond / plynuleSlowMo, velocity, iterations);
                 }
                 if (destroyMj) {
@@ -296,6 +294,7 @@ public class Box2DTests extends JComponent implements Runnable {
                 int fulltime = (int) ((double) (l3 - l1) / 1000000);
 
                 try {
+                    int slowmotion = 1;
                     int interval = (int) (1000.0f / stepsInSecond * slowmotion);
                     interval -= fulltime;
                     interval = Math.max(interval, 0);

@@ -11,11 +11,9 @@ import java.util.function.Supplier;
 public class Surplier<T> extends ConstantPort<T> {
 
     private final AtomicReference<T> built = new AtomicReference(null);
-    private final Supplier<T> builder;
 
     public Surplier(String label, Class<? super T> type, Supplier<T> builder) {
         super(type);
-        this.builder = builder;
         CheckBox toggle;
         set(toggle = new CheckBox(label));
         toggle.set(false);

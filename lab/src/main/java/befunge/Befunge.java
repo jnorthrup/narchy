@@ -36,8 +36,6 @@ public enum Befunge {
      */
     static class Pointer {
         private int x, y, dx, dy;
-        private final char WIDTH = 80;
-        private final char HEIGHT = 25;
         private final Board board;
 
 
@@ -159,7 +157,9 @@ public enum Befunge {
         }
 
         private void move(){
+            char WIDTH = 80;
             x = (x+dx) % WIDTH;
+            char HEIGHT = 25;
             y = (y+dy) % HEIGHT;
         }
 

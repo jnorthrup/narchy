@@ -47,7 +47,7 @@ public class UppercaseWord extends Word {
 			letters[i] = (char) c;
 		}
 
-		List<String> v = new ArrayList<String>();
+		List<String> v = new ArrayList<>();
 		v.add(new String(letters));
 		return v;
 	}

@@ -85,7 +85,6 @@ public class PrologCore extends Prolog implements Consumer<Task> {
     public final Number answerConf = new AtomicFloat(confThreshold.floatValue() * 0.9f);
 
 
-    private final long timeoutMS = 50;
     private final CauseChannel<Task> in;
     private final What what;
 
@@ -189,6 +188,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
         logger.info("solve {}", questionTerm);
 
+        long timeoutMS = 50;
         solveWhile(questionTerm, (answer) -> {
 
 

@@ -24,9 +24,7 @@ public class SignalView extends Gridding {
     final static int PAN_BUTTON = 2;
     final static float PAN_SPEED = 1 / 100f;
 
-    private final SignalInput in;
-
-//    public final FloatRange gain = new FloatRange(1, 0, 100);
+    //    public final FloatRange gain = new FloatRange(1, 0, 100);
     static final float selectorAlpha = 0.5f;
 
 
@@ -36,7 +34,6 @@ public class SignalView extends Gridding {
 
     public SignalView(SignalInput in) {
         super();
-        this.in = in;
 
 
         FreqSpectrogram g = new FreqSpectrogram(128, 512);
@@ -140,7 +137,7 @@ public class SignalView extends Gridding {
         t.addEvents(new Timeline2D.SimpleEventBuffer(), (nv)-> nv.set(new PushButton(nv.id.toString())), new Timeline2DEvents.LaneTimelineUpdater());
         add(t.withControls());
 
-        this.in.wave.on(raw->{
+        in.wave.on(raw->{
             w.update();
             g.set(raw);
         });

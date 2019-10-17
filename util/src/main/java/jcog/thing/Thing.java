@@ -376,10 +376,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
     class PartResolveByClass<X extends Part<T>> implements Supplier<X> {
 
-        private final Class<X> klass;
-
         private PartResolveByClass(P key, Class<X> klass) {
-            this.klass = klass;
         }
 
         @Override

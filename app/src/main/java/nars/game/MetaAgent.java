@@ -307,14 +307,11 @@ abstract public class MetaAgent extends Game {
 		 * in case it forgets to unpause
 		 */
 		private final long autoResumePeriod = 256;
-		private final boolean allowPause;
 
-		public GameMetaAgent(Game g, boolean allowPause) {
+        public GameMetaAgent(Game g, boolean allowPause) {
 			super($.inh(g.what().id, $$("meta")), g.time.chain(2 /* nyquist */), g.nar);
 
-			this.allowPause = allowPause;
-
-			What w = g.what();
+            What w = g.what();
 
 			Term gid = w.id; //$.p(w.nar.self(), w.id);
 			//this.what().accept(new EternalTask($.inh(aid,this.id), BELIEF, $.t(1f, 0.9f), nar));

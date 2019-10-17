@@ -10,14 +10,9 @@ import java.util.function.Predicate;
 
 public class Clicking extends Fingering {
 
-    private final int fingerButton;
-    private final Surface surface;
-
     private final Predicate<Finger> pressable;
 
     public Clicking(int fingerButton, Surface surface, Consumer<Finger> clicked, Runnable armed, Runnable hover, Runnable becameIdle) {
-        this.fingerButton = fingerButton;
-        this.surface = surface;
         pressable = clicked(surface, fingerButton, clicked, armed, hover, becameIdle);
     }
 

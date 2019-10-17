@@ -275,7 +275,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
     static class WebSocketLogger implements Consumer<Task> {
 
         volatile WebSocket w;
-        final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 4);
+        final PriArrayBag<Task> out = new PriArrayBag<>(PriMerge.max, 4);
         final AtomicBoolean busy = new AtomicBoolean();
         public WebSocketLogger(WebSocket ws, NAR n) {
             this.w = ws;

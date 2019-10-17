@@ -44,8 +44,6 @@ import spacegraph.space3d.phys.util.BulletStack;
  */
 public class RagDoll  {
 
-    private Body3D head;
-
     public RagDoll() {
         super();
     }
@@ -165,7 +163,7 @@ public class RagDoll  {
         transform.setIdentity();
         transform.set(0f, scale_ragdoll * 1.6f, 0f);
         tmpTrans.mul(offset, transform);
-        this.head = bodies[BodyPart.BODYPART_HEAD.ordinal()] =
+        Body3D head = bodies[BodyPart.BODYPART_HEAD.ordinal()] =
                 localCreateRigidBody(1f, tmpTrans, shapes[BodyPart.BODYPART_HEAD.ordinal()]);
 
 

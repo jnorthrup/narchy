@@ -51,7 +51,7 @@ public class ChipBase {
 	 */
 	public static Dictionary<Integer, Chip> chip() {
 		if (chip == null) {
-			chip = new Hashtable<Integer, Chip>();
+			chip = new Hashtable<>();
 
 			add(new Chip(1001, "Carson City Silver Dollars", 8.95, 12, "Safflower"));
 
@@ -84,7 +84,7 @@ public class ChipBase {
 	 */
 	public static Dictionary<Integer, Customer> customer() {
 		if (customer == null) {
-			customer = new Hashtable<Integer, Customer>();
+			customer = new Hashtable<>();
 			add(new Customer(11156, "Hasskins", "Hank"));
 			add(new Customer(11158, "Shumacher", "Carol"));
 			add(new Customer(12116, "Zeldis", "Kim"));
@@ -112,7 +112,7 @@ public class ChipBase {
 	 */
 	public static Vector<Order> order() {
 		if (order == null) {
-			order = new Vector<Order>();
+			order = new Vector<>();
 			add(new Order(customer(11156), chip(1001), 2));
 			add(new Order(customer(11156), chip(1004), 1));
 			add(new Order(customer(11158), chip(1007), 4));

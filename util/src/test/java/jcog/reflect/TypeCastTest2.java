@@ -75,7 +75,7 @@ public class TypeCastTest2 {
             for( Path<Class,Function> p2 : lp2 ){
                 int p1n = p1.nodeCount();
                 int p2n = p2.nodeCount();
-                FasterList<Function> path = new FasterList<Function>(p1n+p2n);
+                FasterList<Function> path = new FasterList<>(p1n + p2n);
                 //p1.forEach( e1 -> { path.addAt(e1.getEdge()); } );
                 for( FromTo<jcog.data.graph.Node<Class, Function>, Function> e1 : p1.fetch(0, p1n) ){
                     path.addWithoutResize(e1.id());

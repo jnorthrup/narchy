@@ -9,9 +9,6 @@ import spacegraph.space2d.widget.text.VectorLabel;
  */
 public class TermIcon extends VectorLabel {
 
-    private Concept _concept;
-
-    
 
     public TermIcon(Termed c) {
         super(c.toString());
@@ -20,9 +17,8 @@ public class TermIcon extends VectorLabel {
     }
 
     public void update(Concept c, long time) {
-        this._concept = c;
 
-        Concept cc = this._concept;
+        Concept cc = c;
         if (cc == null)
             return;
 

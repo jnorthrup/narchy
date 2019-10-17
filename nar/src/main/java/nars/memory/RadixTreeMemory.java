@@ -25,12 +25,8 @@ import static jcog.Util.PHI_min_1f;
  */
 public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
-	private final float maxIterationRemovalPct = 0.05f;
-	private final float descentRate = PHI_min_1f;
-	private final float overflowSafetyPct = 0.1f;
 
-
-	public final ConceptRadixTree concepts;
+    public final ConceptRadixTree concepts;
 
 
 	private static AbstractBytes key(Term k) {
@@ -191,11 +187,13 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 			if (overflow < 0)
 				return;
 
-			int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
+            float maxIterationRemovalPct = 0.05f;
+            int maxConceptsThatCanBeRemovedAtATime = (int) Math.max(1, sizeBefore * maxIterationRemovalPct);
 //        if (overflow < maxConceptsThatCanBeRemovedAtATime)
 //            return;
 
-			if ((((float) overflow) / sizeLimit) > overflowSafetyPct) {
+            float overflowSafetyPct = 0.1f;
+            if ((((float) overflow) / sizeLimit) > overflowSafetyPct) {
 				//major collection, strong
 				concepts.acquireWriteLock();
 			} else {
@@ -213,8 +211,8 @@ public class RadixTreeMemory extends Memory implements Consumer<NAR> {
 
 					Node subRoot = volumeWeightedRoot(rng);
 
-					if (s == null)
-						s = concepts.random(subRoot, descentRate, rng);
+                    if (s == null)
+						s = concepts.random(subRoot, PHI_min_1f, rng);
 
 					Node f = s.found;
 
