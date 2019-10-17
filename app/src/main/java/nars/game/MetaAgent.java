@@ -211,13 +211,13 @@ abstract public class MetaAgent extends Game {
 					x = 0.01f;
 					y = 1;
 				} else if (x >= 0.5f) {
-					x = 0.02f;
+					x = 0.05f;
 					y = 0.66f;
 				} else if (x >= 0.25f) {
-					x = 0.04f;
+					x = 0.10f;
 					y = 0.33f;
 				} else {
-					x = 0.1f;
+					x = 0.20f;
 					y = 0;
 				}
 				nar.freqResolution.set(x);
