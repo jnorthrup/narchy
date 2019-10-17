@@ -21,6 +21,7 @@ public class NLPGen {
 
     final NAR terminal = NARS.shell();
 
+    @FunctionalInterface
     public interface Rule {
         @NotNull String get(Term t, float freq, float conf, Tense tense);
     }

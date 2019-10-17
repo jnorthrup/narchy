@@ -144,6 +144,7 @@ public final class JSchSession {
         pool.remove(key);
     }
 
+    @FunctionalInterface
     interface SessionFactory {
         Session getSession(String username, String hostname, int port)
                 ;

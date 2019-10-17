@@ -45,7 +45,7 @@ public class Memoizers {
     }
 
     public <X,B extends ByteKeyExternal,Y> Function<X,Y> memoizeByte(String id, Function<X,B> byter, Function<B,Y> computation, int capacity) {
-        Function<B, Y> c = memoizeByte(id, capacity, computation::apply);
+        Function<B, Y> c = memoizeByte(id, capacity, computation);
         return (X x) -> c.apply(byter.apply(x));
     }
 
@@ -59,10 +59,10 @@ public class Memoizers {
             //HACK just use a map
             for (MemoizationStatistics ii : memoize) {
                 if (ii.name.equals(id))
-                    return ((M) ii.memoize)::apply;
+                    return ((M) ii.memoize);
             }
             memoize.add(new MemoizationStatistics(id, m));
-            return m::apply;
+            return m;
         }
     }
 

@@ -49,7 +49,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         protected boolean containsAtomic(Atomic x) {
             if (!hasAny(x.op()))
                 return false;
-            return Arrays.stream(atoms).anyMatch(x::equals);
+            return Arrays.asList(atoms).contains(x);
         }
 
         @Override
@@ -181,6 +181,7 @@ public abstract class FastCompound implements SameSubtermsCompound /* The */ {
         return new SubtermView(this, 0);
     }
 
+    @FunctionalInterface
     public interface ByteIntPredicate {
         boolean test(byte a, int b);
     }

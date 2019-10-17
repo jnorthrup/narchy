@@ -77,11 +77,11 @@ public class CellMap<K, V> {
 
 
     public boolean whileEach(Predicate<CacheCell<K,V>> o) {
-        return map.whileEachValue(o::test);
+        return map.whileEachValue(o);
     }
 
     public boolean whileEachReverse(Predicate<CacheCell<K,V>> o) {
-        return map.whileEachValueReverse(o::test);
+        return map.whileEachValueReverse(o);
     }
 
     public void removeAll(Iterable<K> x) {

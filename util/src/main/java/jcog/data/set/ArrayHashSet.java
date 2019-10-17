@@ -101,7 +101,8 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
         return added;
     }
 
-    public boolean addAll(X... c) {
+    @SafeVarargs
+    public final boolean addAll(X... c) {
         //throw new TODO("optimized bulk addAt");
         boolean added = Arrays.stream(c).map(this::add).reduce(false, (a, b) -> a || b);
         return added;

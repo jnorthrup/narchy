@@ -69,6 +69,7 @@ public class SignalInput extends Loop {
 
                     int read = source.next(data, dataPtr, data.length - dataPtr);
 
+                    //noinspection NonAtomicOperationOnVolatileField
                     dataPtr += read; assert(dataPtr <= data.length);
 
                     //this.e = Math.round(dataPtr/((double)sampleRate)*1000) + this.s;

@@ -52,7 +52,7 @@ public abstract class IntVar {
     public static final int MAX_VALUE = 1000000000;
 
     public static int[] makeInt(int n, IntUnaryOperator f) {
-        int[] array = IntStream.range(0, n).map(f::applyAsInt).toArray();
+        int[] array = IntStream.range(0, n).map(f).toArray();
         return array;
     }
 

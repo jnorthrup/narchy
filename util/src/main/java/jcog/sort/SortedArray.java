@@ -448,7 +448,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         if (s > 0) {
             X[] ii = items;
             //(X) ITEM.getOpaque(ii,i)
-            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action::test);
+            return Arrays.stream(ii, 0, s).filter(Objects::nonNull).allMatch(action);
         }
         return true;
     }

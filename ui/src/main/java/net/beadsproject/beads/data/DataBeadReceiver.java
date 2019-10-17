@@ -11,6 +11,7 @@ package net.beadsproject.beads.data;
  * @author Benito Crawford
  * @version 0.9
  */
+@FunctionalInterface
 public interface DataBeadReceiver {
 
     /**

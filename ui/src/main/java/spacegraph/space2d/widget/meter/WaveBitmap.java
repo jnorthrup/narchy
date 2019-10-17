@@ -24,6 +24,7 @@ public class WaveBitmap extends Surface implements BitmapMatrixView.BitmapPainte
 
     private final int w, h;
 
+    @FunctionalInterface
     public interface BitmapEvaluator {
         float amplitude(double start, double end);
     }

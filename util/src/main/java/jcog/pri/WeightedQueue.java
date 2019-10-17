@@ -251,11 +251,13 @@ public class WeightedQueue<T> implements BlockingQueue<T>
         return count;
     }
 
+    @FunctionalInterface
     public interface Weigher<T>
     {
         int weigh(T weighable);
     }
 
+    @FunctionalInterface
     public interface Weighable
     {
         int weight();

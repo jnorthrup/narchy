@@ -99,6 +99,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
 //        });
     }
 
+    @SafeVarargs
     public SpaceGraph3D(AbstractSpace<X>... cc) {
         this();
 
@@ -106,6 +107,7 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
             add(c);
     }
 
+    @SafeVarargs
     public SpaceGraph3D(Spatial<X>... cc) {
         this();
 
@@ -260,7 +262,8 @@ public class SpaceGraph3D<X> extends JoglDisplay implements Iterable<Spatial<X>>
         tHv.disable(video.gl);    ////TTTTTTTTTTTTTTT
     }
 
-    public DynamicListSpace<X> add(Spatial<X>... s) {
+    @SafeVarargs
+    public final DynamicListSpace<X> add(Spatial<X>... s) {
         DynamicListSpace<X> l = new DynamicListSpace<>() {
 
             final List<Spatial<X>> ls = new FasterList<Spatial<X>>().with(s);

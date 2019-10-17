@@ -210,7 +210,8 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
             return new ArrayHashSet<>(cap);
         }
 
-        Collection<FromTo<Node<N, E>, E>> newEdgeCollection(FromTo<Node<N,E>,E>... ff) {
+        @SafeVarargs
+        final Collection<FromTo<Node<N, E>, E>> newEdgeCollection(FromTo<Node<N, E>, E>... ff) {
             Collection<FromTo<Node<N, E>, E>> c = newEdgeCollection(ff.length);
 			Collections.addAll(c, ff);
             return c;

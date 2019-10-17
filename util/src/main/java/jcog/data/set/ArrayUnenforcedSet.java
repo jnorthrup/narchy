@@ -51,6 +51,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
         }
     }
 
+    @SafeVarargs
     public ArrayUnenforcedSet(X... x) {
         this(x.length, x);
     }

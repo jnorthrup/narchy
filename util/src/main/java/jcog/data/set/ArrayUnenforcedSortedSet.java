@@ -28,6 +28,7 @@ public abstract class ArrayUnenforcedSortedSet<X> extends ArrayUnenforcedSet<X> 
         }
     };
 
+    @SafeVarargs
     private ArrayUnenforcedSortedSet(X... xx) {
         super(xx);
     }

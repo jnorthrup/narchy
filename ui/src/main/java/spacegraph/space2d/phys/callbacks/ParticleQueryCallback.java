@@ -12,6 +12,7 @@ import java.util.function.Predicate;
  *
  * @author dmurph
  */
+@FunctionalInterface
 public interface ParticleQueryCallback {
     /**
      * Called for each particle found in the query AABB.

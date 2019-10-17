@@ -519,11 +519,13 @@ public class TrackXY_NAR extends GameX {
 //            SpaceGraph.window(NARui.beliefCharts(s.sensors, nar), 300, 300);
 //        }
 
+	@SuppressWarnings("NonAtomicOperationOnVolatileField")
 	private void actionTriState() {
 
 		if (track.grid.height() > 1) {
 			actionTriState($.p($.the("Y"), id), (dy) -> {
 				float py = track.cy;
+				//noinspection NonAtomicOperationOnVolatileField
 				track.cy = Util.clamp(track.cy + track.controlSpeed.floatValue() * dy, 0, track.grid.height() - 1);
 				return !Util.equals(py, track.cy, 0.01f);
 			});

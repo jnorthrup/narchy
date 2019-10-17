@@ -28,6 +28,7 @@ public class HopfieldMap<X> {
     /**
      * TODO generalize to Iterable
      */
+    @SafeVarargs
     public HopfieldMap(FloatFunction<X> in, FloatObjectProcedure<X> out, X... x) {
         assert (x.length > 1);
         this.x = x;

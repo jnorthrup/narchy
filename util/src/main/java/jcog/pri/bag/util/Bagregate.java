@@ -14,7 +14,9 @@ import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 /**
  * a bag which wraps another bag, accepts its value as input but at a throttled rate
@@ -100,7 +102,7 @@ public class Bagregate<X> implements Iterable<PriReference<X>> {
 
     /** compose */
     public <Y> Iterable<Y> iterable(Function<X, Y> f) {
-        return Iterables.transform(Iterables.filter(bag, Objects::nonNull) /* HACK */, (b)->f.apply(b.get()));
+        return StreamSupport.stream(Iterables.filter(bag, Objects::nonNull).spliterator(), false).map((b) -> f.apply(b.get())).collect(Collectors.toList());
     }
 
     public final void setCapacity(int c) {

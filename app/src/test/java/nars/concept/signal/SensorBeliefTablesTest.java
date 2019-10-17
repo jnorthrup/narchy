@@ -47,8 +47,7 @@ class SensorBeliefTablesTest {
         assertEquals(2, xb.taskCount());
 
         {
-            List<Task> tt = xb.taskStream().collect(toList());
-            tt.sort(Comparator.comparing(Task::start));
+            List<Task> tt = xb.taskStream().sorted(Comparator.comparing(Task::start)).collect(toList());
             assertEquals(2, tt.size());
             assertEquals(2, tt.get(0).range());
             assertEquals(2, tt.get(1).range());

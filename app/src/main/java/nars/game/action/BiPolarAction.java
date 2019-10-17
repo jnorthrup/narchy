@@ -37,6 +37,7 @@ public class BiPolarAction extends AbstractSensor {
 
 
     /** model for computing the net result from the current truth inputs */
+    @FunctionalInterface
     public interface Polarization {
 
         /** produce a value in -1..+1 range, or NaN if undetermined */

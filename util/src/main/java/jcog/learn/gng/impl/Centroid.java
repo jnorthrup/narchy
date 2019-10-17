@@ -136,6 +136,7 @@ public class Centroid extends ArrayRealVector {
         return v == v;
     }
 
+    @FunctionalInterface
     public interface DistanceFunction {
         double distance(double[] a, double[] b);
 

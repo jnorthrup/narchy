@@ -10,6 +10,7 @@ import java.util.function.Consumer;
  * public final Counter deriveEval = new FastCounter("event");
 
  */
+@FunctionalInterface
 public interface Meter { ;
 
 

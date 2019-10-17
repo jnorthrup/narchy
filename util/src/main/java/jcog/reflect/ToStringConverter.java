@@ -30,6 +30,7 @@ import java.util.function.Function;
  *
  * @author gocha
  */
+@FunctionalInterface
 public interface ToStringConverter extends Function<Object,String> {
 //    /**
 //     * Конвертирует данные в текстовое представление

@@ -29,10 +29,12 @@ public class SpinAllocator<T> {
 
   public static final int MAX_SIMULTANEOUS_ALLOCATIONS = 64;
 
+  @FunctionalInterface
   public interface ICreator<T> {
     T createInstance();
   }
 
+  @FunctionalInterface
   public interface IDisposer<T> {
     void disposeInstance(T instance);
   }

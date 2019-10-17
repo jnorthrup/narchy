@@ -24,6 +24,7 @@
 package spacegraph.space2d.phys.callbacks;
 
 
+@FunctionalInterface
 public interface PairCallback {
     void addPair(Object userDataA, Object userDataB);
 }

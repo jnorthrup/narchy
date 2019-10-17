@@ -101,11 +101,13 @@ public abstract class SpaceWidget<T> extends SurfacedCuboid<T> {
 //        }
     }
 
+    @FunctionalInterface
     public interface TermVis<X extends SpaceWidget> extends Consumer<List<X>> {
 
     }
 
     /** for simple element-wise functions */
+    @FunctionalInterface
     public interface SimpleNodeVis<X extends SpaceWidget<?>> extends Consumer<List<X>> {
         default void accept(List<X> l) {
             l.forEach(this::each);

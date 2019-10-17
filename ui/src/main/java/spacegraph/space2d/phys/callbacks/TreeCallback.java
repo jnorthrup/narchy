@@ -32,6 +32,7 @@ import spacegraph.space2d.phys.collision.broadphase.DynamicTree;
  *
  * @author Daniel Murphy
  */
+@FunctionalInterface
 public interface TreeCallback {
 
     /**

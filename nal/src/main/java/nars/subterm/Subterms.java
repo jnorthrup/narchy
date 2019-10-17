@@ -155,6 +155,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      *
      *      byte[] cached = builtWith.arrayCopy(1) //skip prefix op byte
      */
+    @FunctionalInterface
     interface SubtermsBytesCached {
         void acceptBytes(DynBytes constructedWith);
     }

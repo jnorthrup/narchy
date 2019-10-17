@@ -23,6 +23,7 @@ public class OracleUtils {
 
     }
 
+    @FunctionalInterface
     public interface DiscriminativeOracle extends Predicate<String> {
     }
 

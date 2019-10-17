@@ -12,6 +12,7 @@ public abstract class ListModel<X> implements GridModel<X> {
 
     private DynGrid<X> surface;
 
+    @SafeVarargs
     public static <X> ListModel<X> of(X... items) {
         return of(List.of(items));
     }

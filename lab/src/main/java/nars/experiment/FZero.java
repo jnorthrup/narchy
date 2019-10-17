@@ -383,6 +383,7 @@ public class FZero extends GameX {
             if (x!=x || x < 0.5f) return 0;  x -= 0.5f; x*=2;
             float power = x * powerScale;
             left[0] = power;
+            //noinspection NonAtomicOperationOnVolatileField
             fz.playerAngle += power * rotSpeed;
             fz.vehicleMetrics[0][6] += (left[0] + right[0]) * fwdSpeed;
             //if (x <= 0.5f) return 0;

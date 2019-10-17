@@ -7,6 +7,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 
 /** resolves termlinks and grows tasklinks */
+@FunctionalInterface
 public interface TermDecomposer {
 
     @Nullable Term decompose(Compound t, Random rng);

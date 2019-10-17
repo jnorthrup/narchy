@@ -22,6 +22,7 @@ public class CartesianIterator<X> implements Iterator<X[]> {
 	 * Constructor
 	 * @param iterables array of Iterables being the source for the Cartesian product.
 	 */
+	@SafeVarargs
 	public CartesianIterator(IntFunction<X[]> arrayBuilder, Iterable<X>... iterables) {
 		int size = iterables.length;
 

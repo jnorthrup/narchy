@@ -26,6 +26,7 @@ import java.util.EventListener;
  *
  *
  */
+@FunctionalInterface
 public interface WarningListener extends EventListener {
     void onWarning(WarningEvent e);
 }

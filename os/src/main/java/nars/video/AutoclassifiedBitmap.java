@@ -105,6 +105,7 @@ public class AutoclassifiedBitmap extends VectorSensor {
 
 
 
+    @FunctionalInterface
     public interface MetaBits {
         float[] get(int subX, int subY);
     }

@@ -23,6 +23,7 @@ public class CompactArrayMap<K, V> {
     private static final AtomicReferenceFieldUpdater<CompactArrayMap, Object[]> ITEMS = AtomicReferenceFieldUpdater.newUpdater(CompactArrayMap.class, Object[].class, "items");
     private static final VarHandle AA = MethodHandles.arrayElementVarHandle(Object[].class);
 
+    @SuppressWarnings("VolatileArrayField")
     volatile Object[] items = null;
 
     public CompactArrayMap() {

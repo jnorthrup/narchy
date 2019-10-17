@@ -15,7 +15,8 @@ import java.util.List;
     public final List<float[]> rows = new FasterList();
     public final H[] cols;
 
-    public FloatTable( H... cols) {
+    @SafeVarargs
+    public FloatTable(H... cols) {
         this.cols = cols;
     }
 

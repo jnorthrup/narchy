@@ -107,7 +107,8 @@ public class MarkovChain<T> {
         return learn(Stream.of(phrase));
     }
 
-    public MarkovChain learnAll(T[]... phrases) {
+    @SafeVarargs
+    public final MarkovChain learnAll(T[]... phrases) {
         for (T[] p : phrases)
             learn(p);
         return this;

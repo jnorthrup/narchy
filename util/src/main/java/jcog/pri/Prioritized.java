@@ -11,6 +11,7 @@ import org.jetbrains.annotations.Nullable;
  *      reports a priority scalar value (32-bit float precision)
  *      NaN means it is 'deleted' which is a valid and testable state
  */
+@FunctionalInterface
 @Skill({"Demand", "Microeconomics", "Macroeconomics"})
 public interface Prioritized extends Deleteable {
 

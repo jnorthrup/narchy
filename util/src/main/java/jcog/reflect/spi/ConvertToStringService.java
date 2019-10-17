@@ -31,6 +31,7 @@ import java.util.function.Function;
  *
  * @author user
  */
+@FunctionalInterface
 public interface ConvertToStringService {
     /**
      * Возвращает тип объекта изкоторого происходит конвертирование

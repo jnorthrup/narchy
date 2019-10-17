@@ -126,6 +126,7 @@ public class BeliefTableChart extends DurSurface<Stacking> implements Labeled, M
         gl.glEnd();
     }
 
+    @FunctionalInterface
     public interface Colorize {
         void colorize(GL2 gl, float f, float c);
     }

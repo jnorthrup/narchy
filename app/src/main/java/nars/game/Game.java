@@ -421,6 +421,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
         what.pri(v);
     }
 
+    @FunctionalInterface
     public interface NAgentCycle {
         /**
          * in each iteration,

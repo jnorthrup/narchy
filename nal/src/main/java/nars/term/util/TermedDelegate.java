@@ -15,6 +15,7 @@ import java.util.function.Predicate;
  * use if the implementation is not a term but references a specific term instance.
  * this allows batch operations to occurr at the target, not through this instance which acts as an intermediary
  */
+@FunctionalInterface
 public interface TermedDelegate extends Termlike, Termed {
 
     @Override default int volume() {

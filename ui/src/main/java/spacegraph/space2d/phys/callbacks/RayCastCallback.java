@@ -37,6 +37,7 @@ import spacegraph.space2d.phys.dynamics.Fixture;
  * See {@link Dynamics2D#raycast(RayCastCallback, v2, v2)}
  * @author Daniel Murphy
  */
+@FunctionalInterface
 public interface RayCastCallback {
 
     /**

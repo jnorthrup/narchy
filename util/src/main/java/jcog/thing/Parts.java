@@ -40,6 +40,7 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
         this.local.forEachWith((c, T) -> c.stopIn(T, this), t);
     }
 
+    @SafeVarargs
     public final void addAll(SubPart<T>... local) {
         for (SubPart d : local)
             add(d);
@@ -52,6 +53,7 @@ public abstract class Parts<T extends Thing<T, ?>> extends Part<T>  {
             whenDeleted.add(component);
     }
 
+    @SafeVarargs
     public final void removeAll(SubPart<T>... dd) {
         for (SubPart d : dd)
             remove(d);

@@ -29,6 +29,7 @@ package jcog.reflect;
  *
  * @author Kamnev Georgiy (nt.gocha@gmail.com)
  */
+@FunctionalInterface
 public interface WeightChangeListener {
     void weightChanged(WeightChangeEvent event);
 }

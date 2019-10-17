@@ -28,6 +28,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 import static java.util.stream.Collectors.toList;
 
@@ -63,8 +64,8 @@ public class Lab<X> {
     }
 
     private static String varReflectedKey(Iterable<Pair<Class, ObjectGraph.Accessor>> path) {
-        return Joiner.on(':').join(Iterables.transform(path, e ->
-                e.getOne().getName() + '.' + e.getTwo()));
+        return Joiner.on(':').join(StreamSupport.stream(path.spliterator(), false).map(e ->
+                e.getOne().getName() + '.' + e.getTwo()).collect(toList()));
     }
 
     void initDefaults() {
@@ -169,15 +170,18 @@ public class Lab<X> {
         );
     }
 
-    public Optilive<X, X> optilive(FloatFunction<X>... goals) {
+    @SafeVarargs
+    public final Optilive<X, X> optilive(FloatFunction<X>... goals) {
         return optilive(Supplier::get, goals);
     }
 
-    public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
+    @SafeVarargs
+    public final <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, FloatFunction<Y>... goal) {
         return optilive(procedure, Stream.of(goal).map(Goal::new).collect(toList()), Collections.EMPTY_LIST);
     }
 
-    public <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, Goal<Y>... goal) {
+    @SafeVarargs
+    public final <Y> Optilive<X, Y> optilive(Function<Supplier<X>, Y> procedure, Goal<Y>... goal) {
         return optilive(procedure, List.of(goal), Collections.EMPTY_LIST);
     }
 

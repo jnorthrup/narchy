@@ -537,6 +537,7 @@ public class AudioTransceiver {
         /**
          * A base interface for a concrete class capable of interpreting data.
          */
+        @FunctionalInterface
         interface IDetector {
             /**
              * Detects a Symbol within an array of Samples and Confidences. Callers must define the segment they wish to analyze within the provided buffers.

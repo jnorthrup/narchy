@@ -46,7 +46,8 @@ public class Spatialization<X> {
         return new RBranch(max);
 
     }
-    public RBranch<X> newBranch(RNode<X>... l) {
+    @SafeVarargs
+    public final RBranch<X> newBranch(RNode<X>... l) {
         return new RBranch<>(max, l);
     }
 

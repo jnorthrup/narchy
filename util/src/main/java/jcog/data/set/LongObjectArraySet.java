@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 
@@ -185,7 +186,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public String toString() {
         //HACK this could be better
         final int[] i = {0};
-        return Joiner.on(',').join(Iterables.transform(this, n -> when[i[0]++] + ":" + n));
+        return Joiner.on(',').join(this.stream().map(n -> when[i[0]++] + ":" + n).collect(Collectors.toList()));
     }
 
     /**

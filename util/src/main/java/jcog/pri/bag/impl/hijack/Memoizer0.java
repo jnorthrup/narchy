@@ -160,6 +160,7 @@ final class Memoizer0 implements InvocationHandler {
         /**
          * Sample Interface to Memoize
          */
+        @FunctionalInterface
         public interface SampleInterface {
             String hash(final String in) throws NoSuchAlgorithmException;
         }

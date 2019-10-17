@@ -176,12 +176,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     public boolean whileEachValue(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        return Arrays.stream(x).allMatch(action::test);
+        return Arrays.stream(x).allMatch(action);
     }
 
     public boolean whileEachValueReverse(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        return IntStream.iterate(x.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> x[i]).allMatch(action::test);
+        return IntStream.iterate(x.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> x[i]).allMatch(action);
     }
 
     @Override

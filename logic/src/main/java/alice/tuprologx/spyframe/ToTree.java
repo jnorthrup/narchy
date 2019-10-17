@@ -4,6 +4,7 @@ package alice.tuprologx.spyframe;
  * @param <T> the type of some thing to make a tree out of.
  * @author franz.beslmeisl at googlemail.com
  */
+@FunctionalInterface
 public interface ToTree<T>{
   /**Construct a tree out of some thing.
    * @param thing to make the tree out of.

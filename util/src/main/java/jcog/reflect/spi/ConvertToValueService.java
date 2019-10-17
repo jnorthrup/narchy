@@ -31,6 +31,7 @@ import java.util.function.Function;
  *
  * @author user
  */
+@FunctionalInterface
 public interface ConvertToValueService {
     /**
      * Возвращает тип объекта в который происходит конвертирование

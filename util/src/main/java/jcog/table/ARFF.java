@@ -355,7 +355,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         }
 
         String[] values = categories(name);
-        boolean found = Arrays.stream(values).anyMatch(value -> value.equals(token));
+        boolean found = Arrays.asList(values).contains(token);
         return found;
     }
 

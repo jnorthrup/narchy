@@ -9,6 +9,7 @@ package jurls.core.approximation;
  *
  * @author thorsten
  */
+@FunctionalInterface
 public interface DiffableFunctionGenerator {
 
     GeneratorContext generate(

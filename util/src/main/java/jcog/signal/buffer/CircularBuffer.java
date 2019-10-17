@@ -39,6 +39,7 @@ import java.util.concurrent.locks.ReentrantLock;
  */
 @SuppressWarnings("unused")
 public abstract class CircularBuffer {
+    @FunctionalInterface
     public interface OnChangeListener {
         void onChanged(CircularBuffer buffer);
     }

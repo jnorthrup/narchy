@@ -7,6 +7,7 @@ import java.util.List;
 
 
 /** for applying NxN interactions */
+@FunctionalInterface
 public interface BroadConstraint {
     void solve(Broadphase b, List<Collidable> objects, float timeStep);
 }
