@@ -41,6 +41,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 /**
  * wall which organizes its sub-surfaces according to 2D phys dynamics
@@ -452,8 +453,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         void update() {
             boundsInfo.text(GraphEdit2D.this.bounds.toString());
 
-            children.text(Joiner.on("\n").join(Iterables.transform(
-                    GraphEdit2D.this.keySet(), t -> info(t, getValue(t)))));
+            children.text(Joiner.on("\n").join(GraphEdit2D.this.keySet().stream().map(t -> info(t, getValue(t))).collect(Collectors.toList())));
         }
 
         private String info(Surface x, ContainerSurface w) {

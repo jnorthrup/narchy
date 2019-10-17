@@ -120,6 +120,7 @@ public class MatrixImage extends JComponent {
         return val2col(value, -1, 1);
     }
 
+    @FunctionalInterface
     public interface Data2D {
 
         double getValue(int x, int y);

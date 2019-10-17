@@ -1202,6 +1202,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
 
+    @FunctionalInterface
     public interface Prefixed {
         byte getIncomingEdgeFirstCharacter();
     }
@@ -1220,6 +1221,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         List<Node> getOutgoingEdges();
     }
 
+    @FunctionalInterface
     public interface QuadFunction<A, B, C, D, R> {
         R apply(A a, B b, C c, D d);
     }

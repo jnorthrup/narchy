@@ -1,5 +1,6 @@
 package com.jujutsu.tsne.barneshut;
 
+@FunctionalInterface
 public interface Distance {
 	double distance(DataPoint d1, DataPoint d2);
 

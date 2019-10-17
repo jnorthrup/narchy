@@ -236,7 +236,8 @@ import java.util.function.Predicate;
         rows.clear();
     }
 
-    public <M extends Meters<C>, C> void addAll(M... m) {
+    @SafeVarargs
+    public final <M extends Meters<C>, C> void addAll(M... m) {
         for (M mm : m)
             add(mm);
     }

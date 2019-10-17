@@ -54,6 +54,7 @@ public class MemoryWarningSystem {
     private final Collection<Listener> listeners = new ArrayList<>();
     private final MemoryPoolMXBean tenuredGenPool;
 
+    @FunctionalInterface
     public interface Listener {
         void memoryUsageLow(long usedMemory, long maxMemory);
     }

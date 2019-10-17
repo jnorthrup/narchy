@@ -253,6 +253,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
 //    }
 
 
+    @FunctionalInterface
     public interface ScrolledXY {
 
         /**
@@ -262,6 +263,7 @@ public class ScrollXY<S extends ScrollXY.ScrolledXY> extends Bordering {
     }
 
 
+    @SafeVarargs
     public static <X> ScrollXY<DynGrid<X>> array(GridRenderer<X> builder, X...list) {
         return new ScrollXY<>(ListModel.of(list), builder);
     }

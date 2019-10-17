@@ -9,6 +9,7 @@ import java.util.function.Predicate;
 
 import static jcog.pri.bag.Sampler.SampleReaction.*;
 
+@FunctionalInterface
 public interface Sampler<X> {
 
 

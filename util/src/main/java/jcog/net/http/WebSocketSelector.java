@@ -276,6 +276,7 @@ class WebSocketSelector extends WebSocketAdapter {
         }
     }
 
+    @FunctionalInterface
     interface UpgradeWebSocketHandler {
         void upgradeWebSocketHandler(HttpConnection sChannel, ByteBuffer prependData);
     }

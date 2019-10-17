@@ -25,6 +25,7 @@ import java.util.List;
  *
  * @author MaleLabTs
  */
+@FunctionalInterface
 public interface Generation {
 
     List<Node> generate(int popSize);

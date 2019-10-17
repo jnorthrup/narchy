@@ -3,6 +3,7 @@ package nars;
 /**
  * NAR Input methods
  */
+@FunctionalInterface
 public interface NARIn {
 
     void input(Task t);

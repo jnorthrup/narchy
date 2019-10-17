@@ -176,7 +176,7 @@ public class VersionMap<X, Y> implements Map<X, Y>, Function<X,Versioned<Y>> {
 
     @Override
     public Collection<Y> values() {
-        return entrySet().stream().map(Entry::getValue).collect(toList()); //HACK
+        return new ArrayList<>(values()); //HACK
     }
 
 

@@ -271,12 +271,12 @@ public class LuceneMap<K extends Serializable, V extends Serializable> implement
 
     @Override
     public Set<K> keySet() {
-        return entrySet().stream().map(Entry::getKey).collect(Collectors.toSet());
+        return new HashSet<>(keySet());
     }
 
     @Override
     public Collection<V> values() {
-        return entrySet().stream().map(Entry::getValue).collect(Collectors.toList());
+        return new ArrayList<>(values());
     }
 
     @Override

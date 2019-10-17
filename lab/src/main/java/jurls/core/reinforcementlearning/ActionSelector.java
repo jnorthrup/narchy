@@ -11,6 +11,7 @@ import jurls.core.utils.ActionValuePair;
  *
  * @author thorsten
  */
+@FunctionalInterface
 public interface ActionSelector {
 
     ActionValuePair[] fromQValuesToProbabilities(double epsilon, ActionValuePair[] actionValuePairs);

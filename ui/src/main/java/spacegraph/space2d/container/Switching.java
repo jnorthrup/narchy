@@ -16,6 +16,7 @@ public class Switching extends ContainerSurface {
     private Surface current;
     private Supplier<Surface>[] states;
 
+    @SafeVarargs
     public Switching(Supplier<Surface>... states) {
         super();
 
@@ -30,6 +31,7 @@ public class Switching extends ContainerSurface {
     /**
      * sets the available states
      */
+    @SafeVarargs
     private Switching states(Supplier<Surface>... states) {
 
         switched = -1;

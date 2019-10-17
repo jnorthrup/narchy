@@ -271,7 +271,7 @@ public class FasterList<X> extends FastList<X> {
     public int indexOf(int atOrAfter, IntPredicate p) {
         int s = size;
         if (s > 0) {
-            return IntStream.range(Math.max(0, atOrAfter), s).filter(p::test).findFirst().orElse(-1);
+            return IntStream.range(Math.max(0, atOrAfter), s).filter(p).findFirst().orElse(-1);
         }
         return -1;
     }
@@ -631,7 +631,8 @@ public class FasterList<X> extends FastList<X> {
         return size();
     }
 
-    public FasterList<X> addingAll(X... x) {
+    @SafeVarargs
+    public final FasterList<X> addingAll(X... x) {
         int l = x.length;
         if (l > 0) {
             ensureCapacityForAdditional(l);
@@ -722,6 +723,7 @@ public class FasterList<X> extends FastList<X> {
         addFast(b);
     }
 
+    @SafeVarargs
     public final void addAll(X... x) {
         addAll(x.length, x);
     }

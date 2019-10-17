@@ -23,6 +23,7 @@ import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import static nars.Op.BELIEF;
 
@@ -118,7 +119,7 @@ public class NARHear extends Loop {
 
 
     public static @NotNull List<Term> tokenize(String msg) {
-        return Lists.transform(Twokenize.tokenize(msg), Twenglish::spanToTerm);
+        return Twokenize.tokenize(msg).stream().map(Twenglish::spanToTerm).collect(Collectors.toList());
     }
 
     @Override

@@ -8,6 +8,7 @@ import jcog.data.iterator.ArrayIterator;
 import java.io.*;
 import java.util.stream.Collectors;
 import java.util.stream.DoubleStream;
+import java.util.stream.StreamSupport;
 
 /**
  * dead simple CSV logging
@@ -22,10 +23,7 @@ public class CSVOutput extends PrintStream {
 
     public CSVOutput(OutputStream out, String... headers) {
         super(out);
-        println(Joiner.on(',').join(Iterables.transform(
-                new ArrayIterator<>(headers),
-                col -> '"' + col + '"'
-            )
+        println(Joiner.on(',').join(StreamSupport.stream(new ArrayIterator<String>(headers).spliterator(), false).map(col -> '"' + col + '"').collect(Collectors.toList())
         ));
     }
 

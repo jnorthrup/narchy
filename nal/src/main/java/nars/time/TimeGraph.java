@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 
 import static nars.Op.*;
@@ -1574,8 +1575,8 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 		if (!solutions.isEmpty()) {
 			Term t = x.id;
 			/** clone the list because modifying solutions while iterating will cause infinite loop */
-			return new FasterList<>(Iterables.filter(solutions.list, s ->
-				(s instanceof Absolute && (s.start() != ETERNAL) && s.id.equals(t) && !s.equals(x)))
+			return new FasterList<>(solutions.list.stream().filter(s ->
+					(s instanceof Absolute && (s.start() != ETERNAL) && s.id.equals(t) && !s.equals(x))).collect(Collectors.toList())
 			).allSatisfy(s -> {
 
 				Collection<Event> eee = events(t);

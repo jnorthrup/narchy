@@ -1,6 +1,5 @@
 package jcog.data.graph;
 
-import com.google.common.base.Function;
 import com.google.common.collect.Iterables;
 import com.google.common.collect.Streams;
 import jcog.Util;
@@ -14,10 +13,11 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Iterator;
+import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import static com.google.common.collect.Iterables.transform;
+import java.util.stream.StreamSupport;
 
 public interface Node<N, E> {
 
@@ -66,9 +66,9 @@ public interface Node<N, E> {
         if (!in && !out)
             return Collections.EMPTY_LIST;
 
-        Function<FromTo<Node<N, E>, E>, Node<N, E>> other = x -> x.other(this);
-        Iterable<Node<N, E>> i = in ? transform(edges(true, false), other) : null;
-        Iterable<Node<N, E>> o = out ? transform(edges(false,true), other) : null;
+        Function<FromTo<Node<N, E>, E>, @org.checkerframework.checker.nullness.qual.Nullable Node<N, E>> other = x -> x.other(this);
+        Iterable<Node<N, E>> i = in ? StreamSupport.stream(edges(true, false).spliterator(), false).map(other).collect(Collectors.toList()) : null;
+        Iterable<Node<N, E>> o = out ? StreamSupport.stream(edges(false, true).spliterator(), false).map(other).collect(Collectors.toList()) : null;
         if (in && out)
             return Iterables.concat(i, o);
         else if (in)

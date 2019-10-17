@@ -24,6 +24,7 @@ import java.util.EventListener;
  *
  * @since 1.3
  */
+@FunctionalInterface
 public interface TheoryListener extends EventListener {
     void theoryChanged(TheoryEvent e);
 }

@@ -9,7 +9,9 @@ import jcog.data.list.FasterList;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
+import java.util.stream.StreamSupport;
 
 
 /**
@@ -85,7 +87,7 @@ public class MapNodeGraph<N, E> extends NodeGraph<N, E> {
 
     /** ensures each root node is added before searching */
     public boolean bfsAdd(Iterable<N> roots, Search<N, E> search) {
-        return bfs(Iterables.transform(roots, r -> addNode(r).id), search);
+        return bfs(StreamSupport.stream(roots.spliterator(), false).map(r -> addNode(r).id).collect(Collectors.toList()), search);
     }
     /** ensures each root node is added before searching */
     public boolean bfsAdd(N root, Search<N, E> search) {

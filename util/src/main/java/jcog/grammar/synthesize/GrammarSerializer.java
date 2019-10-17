@@ -123,6 +123,7 @@ public class GrammarSerializer {
         }
     }
 
+    @FunctionalInterface
     private interface NodeSerialization {
         NodeData getData();
     }

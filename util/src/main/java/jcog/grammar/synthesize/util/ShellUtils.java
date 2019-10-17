@@ -97,6 +97,7 @@ public class ShellUtils {
         }
     }
 
+    @FunctionalInterface
     public interface CommandFactory {
         String getCommand(String filename, String auxFilename, String exePath);
     }

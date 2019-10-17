@@ -516,6 +516,7 @@ public class InterpolatingMicrosphere {
     /**
      * Determines the conservation and decay of evidence through time during interpolation of belief table evidence
      */
+    @FunctionalInterface
     public interface Focus {
         /**
          * @param dt absolute value of distance between target and the evidence's occurrence

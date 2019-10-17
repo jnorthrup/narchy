@@ -22,6 +22,7 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
         this.children = new MetalAtomicReferenceArray(size);
         this.length = size;
     }
+    @SafeVarargs
     public MutableArrayContainer(S... items) {
         this(items.length);
         for (int i = 0, itemsLength = items.length; i < itemsLength; i++) {
@@ -117,12 +118,12 @@ public abstract class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        return IntStream.range(0, length).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o::test);
+        return IntStream.range(0, length).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
     }
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        return IntStream.iterate(length - 1, i -> i >= 0, i -> i - 1).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o::test);
+        return IntStream.iterate(length - 1, i -> i >= 0, i -> i - 1).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o);
     }
     @Override
     public void add(Surface... s) {

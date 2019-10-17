@@ -54,6 +54,7 @@ public class FileFollower {
      * @param initialOutputDestinations an initial array of OutputDestinations which will be used when printing the
      *                                  contents of the file (this array may be <tt>null</tt>)
      */
+    @SafeVarargs
     public FileFollower(final File file, final int bufferSize, final int latency,
                         final Consumer<String>... initialOutputDestinations) {
         file_ = file;

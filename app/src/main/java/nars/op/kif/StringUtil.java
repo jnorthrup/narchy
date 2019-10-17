@@ -530,7 +530,7 @@ public class StringUtil {
 
         if (al == null || al.size() < 1)
             return "";
-        String sb = al.stream().collect(Collectors.joining(" "));
+        String sb = String.join(" ", al);
         return sb;
     }
 

@@ -3,6 +3,7 @@ package jcog.data.array;
 /**
  * Created by me on 6/8/15.
  */
+@FunctionalInterface
 public interface BigSwapper {
 	/**
 	 * Swaps the data at the given positions.

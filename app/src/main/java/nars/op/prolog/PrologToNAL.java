@@ -17,6 +17,8 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.eclipse.collections.impl.set.mutable.UnifiedSet;
 
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import static nars.Op.CONJ;
 
@@ -31,7 +33,7 @@ public class PrologToNAL {
     public static Iterable<Term> N(Iterable<alice.tuprolog.Term> t) {
         
 
-        return Iterables.transform(t, PrologToNAL::N);
+        return StreamSupport.stream(t.spliterator(), false).map(PrologToNAL::N).collect(Collectors.toList());
 
 
 

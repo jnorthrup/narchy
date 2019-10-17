@@ -14,6 +14,7 @@ import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.EMPTY_LIST;
 
@@ -74,12 +75,9 @@ public class Termutifcation extends ArrayHashSet<DeterministicUnification> imple
                 //HACK could be better
                 /* equals between Term and Unification:
                 Reports calls to .equals() where the target and argument are of incompatible types. While such a call might theoretically be useful, most likely it represents a bug. */
-                return Iterables.filter(
-                        Iterables.transform(shuffle(this, base.random), a -> a.transform(x)),
-                        z -> z != null
-                                &&
-                                z != Unification.Null
-                );
+                return shuffle(this, base.random).stream().map(a -> a.transform(x)).collect(Collectors.toList()).stream().filter(z -> z != null
+                        &&
+                        z != Unification.Null).collect(Collectors.toList());
         }
     }
 

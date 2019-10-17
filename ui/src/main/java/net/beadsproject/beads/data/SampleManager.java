@@ -465,6 +465,7 @@ class SampleManager {
      *
      * @author ollie
      */
+    @FunctionalInterface
     interface SampleGroupListener {
 
         /**

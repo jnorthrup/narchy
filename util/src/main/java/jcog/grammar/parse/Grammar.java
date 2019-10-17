@@ -14,7 +14,8 @@ import java.util.function.Consumer;
 
 public class Grammar {
 
-	public interface InitTokenizer {
+	@FunctionalInterface
+    public interface InitTokenizer {
 		void init(Tokenizer t);
 	}
 

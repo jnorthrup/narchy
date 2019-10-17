@@ -255,6 +255,7 @@ public class Opjects extends DefaultTermizer {
     }
 
 
+    @FunctionalInterface
     interface InstanceMethodValueModel {
 
         void update(Term instance, Object obj, Method method, Object[] args, Object nextValue, NAR nar);

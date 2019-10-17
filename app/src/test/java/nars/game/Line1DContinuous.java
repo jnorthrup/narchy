@@ -21,6 +21,7 @@ public class Line1DContinuous extends Game {
 
     }
 
+    @FunctionalInterface
     public interface IntToFloatFunction {
         float valueOf(int i);
     }

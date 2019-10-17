@@ -285,6 +285,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * A function computing a mapping from the given key to a value,
      * or {@code null} if there is no mapping.
      */
+    @FunctionalInterface
     public interface MappingFunction<K, V> {
         /**
          * Returns a value for the given key, or null if there is no
@@ -306,6 +307,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * current value to a new value, or {@code null} if there is
      * no mapping.
      */
+    @FunctionalInterface
     public interface RemappingFunction<K, V> {
         /**
          * Returns a new value for the given key and its current, or
@@ -322,6 +324,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * An object that may be subject to cleanup operations when
      * removed from a {@link java.lang.ref.ReferenceQueue}
      */
+    @FunctionalInterface
     interface Reclaimable {
         /**
          * The action taken upon removal of this object
@@ -333,6 +336,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     /**
      * A factory for Nodes.
      */
+    @FunctionalInterface
     interface NodeFactory extends Serializable {
         /**
          * Creates and returns a Node using the given parameters.

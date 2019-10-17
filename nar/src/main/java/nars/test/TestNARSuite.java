@@ -19,6 +19,7 @@ import java.util.stream.Stream;
     private final Supplier<NAR> narBuilder;
     private final Stream<Method> testMethods;
 
+    @SafeVarargs
     public TestNARSuite(Supplier<NAR> narBuilder, Class<? extends NALTest>... testClasses) {
         this(narBuilder, tests(testClasses));
     }
@@ -28,6 +29,7 @@ import java.util.stream.Stream;
         this.testMethods = testMethods;
     }
 
+    @SafeVarargs
     public static Stream<Method> tests(Class<? extends NALTest>... c) {
         return Stream.of(c)
                 .flatMap(cc -> Stream.of(cc.getDeclaredMethods())

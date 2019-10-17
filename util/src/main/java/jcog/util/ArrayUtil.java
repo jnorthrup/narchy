@@ -4101,6 +4101,7 @@ public enum ArrayUtil {
      * @throws IllegalArgumentException if the array types are incompatible
      * @since 2.1
      */
+    @SafeVarargs
     public static <T> T[] addAll(final T[] array1, final T... array2) {
         if (array1 == null) {
             return clone(array2);

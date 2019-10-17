@@ -33,6 +33,8 @@ import java.util.Set;
 import java.util.function.BiConsumer;
 import java.util.function.BiFunction;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 /**
  * Implements a graph which uses the neighbour list representation.
@@ -227,10 +229,10 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
 
     @Override
     public String toString() {
-        return nodes + " * " + Joiner.on(",").join(Iterables.transform(edges.keyValuesView(), (e)-> {
+        return nodes + " * " + Joiner.on(",").join(StreamSupport.stream(edges.keyValuesView().spliterator(), false).map((e) -> {
             long id = e.getOne();
             return (id >> 32) + "->" + (id & 0xffffffffL) + '=' + e.getTwo();
-        }));
+        }).collect(Collectors.toList()));
     }
 
     @Override

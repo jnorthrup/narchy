@@ -103,7 +103,7 @@ public class NARui {
     }
 
     public static Surface beliefCharts(NAR nar, Iterable<? extends Termed> ii) {
-        return new Gridding(Lists.newArrayList(Iterables.transform(ii, i -> beliefChart(i, nar))));
+        return new Gridding(Lists.newArrayList(StreamSupport.stream(ii.spliterator(), false).map(i -> beliefChart(i, nar)).collect(toList())));
     }
 
     public static Surface top(NAR n) {

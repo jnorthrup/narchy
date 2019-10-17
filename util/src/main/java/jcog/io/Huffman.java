@@ -886,6 +886,7 @@ public class Huffman {
         return outputStream.toByteArray();
     }
 
+    @FunctionalInterface
     interface Weight {
         long getWeight();
     }

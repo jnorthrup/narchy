@@ -123,7 +123,7 @@ public class Cvar extends Globals {
     public static cvar_t Get(String var_name, String var_value, int flags) {
 
         if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
-            if (!Cvar.InfoValidate(var_name)) {
+            if (!InfoValidate(var_name)) {
                 Com.Printf("invalid info cvar name\n");
                 return null;
             }
@@ -139,7 +139,7 @@ public class Cvar extends Globals {
             return null;
 
         if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
-            if (!Cvar.InfoValidate(var_value)) {
+            if (!InfoValidate(var_value)) {
                 Com.Printf("invalid info cvar value\n");
                 return null;
             }
@@ -159,12 +159,12 @@ public class Cvar extends Globals {
     }
 
     static void Init() {
-        Cmd.AddCommand("setAt", Cvar.Set_f);
-        Cmd.AddCommand("cvarlist", Cvar.List_f);
+        Cmd.AddCommand("setAt", Set_f);
+        Cmd.AddCommand("cvarlist", List_f);
     }
 
     public static String VariableString(String var_name) {
-        cvar_t var = Cvar.FindVar(var_name);
+        cvar_t var = FindVar(var_name);
         return (var == null) ? "" : var.string;
     }
 
@@ -205,7 +205,7 @@ public class Cvar extends Globals {
      * Sets the value of the variable without forcing.
      */
     public static cvar_t Set(String var_name, String value) {
-        return Cvar.Set2(var_name, value, false);
+        return Set2(var_name, value, false);
     }
 
     /**
@@ -228,7 +228,7 @@ public class Cvar extends Globals {
         }
 
         if ((var.flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
-            if (!Cvar.InfoValidate(value)) {
+            if (!InfoValidate(value)) {
                 Com.Printf("invalid info cvar value\n");
                 return var;
             }
@@ -352,7 +352,7 @@ public class Cvar extends Globals {
      * Returns an info string containing all the CVAR_SERVERINFO cvars.
      */
     public static String Serverinfo() {
-        return Cvar.BitInfo(Defines.CVAR_SERVERINFO);
+        return BitInfo(Defines.CVAR_SERVERINFO);
     }
 
 
@@ -360,26 +360,23 @@ public class Cvar extends Globals {
      * Any variables with latched values will be updated.
      */
     public static void GetLatchedVars() {
-        cvar_t var;
 
-        for (var = Globals.cvar_vars; var != null; var = var.next) {
-            if (var.latched_string == null || var.latched_string.length() == 0)
-                continue;
-            var.string = var.latched_string;
-            var.latched_string = null;
-            var.value = Lib.atof(var.string);
-            if (var.name.equals("game")) {
-                FS.SetGamedir(var.string);
+        Stream.iterate(Globals.cvar_vars, Objects::nonNull, theVar -> theVar.next).filter(theVar -> theVar.latched_string != null && theVar.latched_string.length() != 0).forEachOrdered(theVar -> {
+            theVar.string = theVar.latched_string;
+            theVar.latched_string = null;
+            theVar.value = Lib.atof(theVar.string);
+            if (theVar.name.equals("game")) {
+                FS.SetGamedir(theVar.string);
                 FS.ExecAutoexec();
             }
-        }
+        });
     }
 
     /**
      * Returns an info string containing all the CVAR_USERINFO cvars.
      */
     public static String Userinfo() {
-        return Cvar.BitInfo(Defines.CVAR_USERINFO);
+        return BitInfo(Defines.CVAR_USERINFO);
     }
 
     /**
@@ -392,42 +389,44 @@ public class Cvar extends Globals {
         String buffer;
 
         RandomAccessFile f = Lib.fopen(path, "rw");
-        if (f == null)
-            return;
-
-        try {
-            f.seek(f.length());
-        } catch (IOException e1) {
-            Lib.fclose(f);
-            return;
-        }
-        for (var = Globals.cvar_vars; var != null; var = var.next) {
-            if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
-                buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
-                try {
-                    f.writeBytes(buffer);
-                } catch (IOException e) {
+        if (f != null) {
+            try {
+                f.seek(f.length());
+            } catch (IOException e1) {
+                Lib.fclose(f);
+                return;
+            }
+            for (var = Globals.cvar_vars; var != null; var = var.next) {
+                if ((var.flags & Defines.CVAR_ARCHIVE) != 0) {
+                    buffer = "setAt " + var.name + " \"" + var.string + "\"\n";
+                    try {
+                        f.writeBytes(buffer);
+                    } catch (IOException e) {
+                    }
                 }
             }
+            Lib.fclose(f);
         }
-        Lib.fclose(f);
+
     }
 
     /**
      * Variable typing auto completition.
      */
     public static List CompleteVariable(String partial) {
-        return new CopyOnWriteArrayList( Stream.iterate(Globals.cvar_vars, Objects::nonNull, cvar -> cvar.next).filter(cvar -> cvar.name.startsWith(partial)).map(cvar -> cvar.name).collect(Collectors.toList()));
+        return (List) Stream.iterate(Globals.cvar_vars, Objects::nonNull, cvar -> cvar.next).filter(cvar -> cvar.name.startsWith(partial)).map(cvar -> cvar.name).collect(Collectors.toCollection((Supplier<CopyOnWriteArrayList>) CopyOnWriteArrayList::new));
     }
 
     /**
      * Some characters are invalid for info strings.
      */
     static boolean InfoValidate(String s) {
-        if (s.contains("\\"))
-            return false;
-        if (s.contains("\""))
-            return false;
-        return !s.contains(";");
+        boolean result = false;
+        if (!s.contains("\\")) {
+            if (!s.contains("\"")) {
+                result = !s.contains(";");
+            }
+        }
+        return result;
     }
 }

@@ -153,6 +153,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
         final Way<X>[] way;
         volatile int which = -1;
 
+        @SafeVarargs
         public Either(Way<X>... way) {
             assert(way.length > 1);
             this.way = way;

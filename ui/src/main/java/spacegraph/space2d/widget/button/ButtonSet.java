@@ -27,6 +27,7 @@ public class ButtonSet<T extends ToggleButton> extends Gridding {
         Multi
     }
 
+    @SafeVarargs
     public ButtonSet(Mode mode, T... buttons) {
         this(mode, ArrayIterator.iterable(buttons));
     }

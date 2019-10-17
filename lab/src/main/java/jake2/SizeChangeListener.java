@@ -10,6 +10,7 @@ package jake2;
 /** Provides a callback when the user changes the video mode of the
     game. */
 
+@FunctionalInterface
 public interface SizeChangeListener {
     void sizeChanged(int width, int height);
 }

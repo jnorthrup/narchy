@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import static nars.term.atom.Bool.Null;
 
 
+@FunctionalInterface
 public interface Subst extends RecursiveTermTransform {
 
     /**

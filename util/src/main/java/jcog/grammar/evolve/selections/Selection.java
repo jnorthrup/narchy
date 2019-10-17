@@ -24,6 +24,7 @@ import jcog.grammar.evolve.tree.Node;
  *
  * @author MaleLabTs
  */
+@FunctionalInterface
 public interface Selection {
 
     Node select(Ranking[] population);

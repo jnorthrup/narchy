@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import jcog.learn.decision.data.SimpleValue;
 import jcog.learn.decision.feature.P;
 import jcog.learn.decision.label.BooleanLabel;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
@@ -19,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class DecisionTreeTrainingTest {
 
 
-    static final com.google.common.base.Function<JsonNode, Function<String, Object>> jsonValue = (j) -> j::get;
+    static final Function<JsonNode, @Nullable Function<String, Object>> jsonValue = (j) -> j::get;
     
 
     /**

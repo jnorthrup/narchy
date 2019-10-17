@@ -469,6 +469,7 @@ public class HttpConnection {
         CLOSED
     }
 
+    @FunctionalInterface
     public interface ConnectionStateChangeListener {
         void connectionStateChange(HttpConnection conn, STATE oldState, STATE newState);
     }

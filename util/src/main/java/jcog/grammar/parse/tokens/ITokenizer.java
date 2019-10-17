@@ -2,6 +2,7 @@ package jcog.grammar.parse.tokens;
 
 import java.io.IOException;
 
+@FunctionalInterface
 public interface ITokenizer {
 
 	/**

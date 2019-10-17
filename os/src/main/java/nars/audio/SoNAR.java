@@ -17,6 +17,7 @@ import spacegraph.audio.synth.granular.Granulize;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.TimerTask;
@@ -56,7 +57,7 @@ public class SoNAR extends TimerTask {
          * gets a random sample from what is loaded
          */
         public SoundSample sample(int hash) {
-            List<SoundSample> l = samples.values().stream().collect(Collectors.toList());
+            List<SoundSample> l = new ArrayList<>(samples.values());
             if (l != null && !l.isEmpty()) {
                 SoundSample s;
                 do {

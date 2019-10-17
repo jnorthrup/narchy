@@ -47,10 +47,12 @@ public class PitchProcessor {
         }
     }
 
+    @FunctionalInterface
     public interface PitchDetector {
         PitchDetectionResult getPitch(float[] var1);
     }
 
+    @FunctionalInterface
     public interface PitchDetectionHandler {
         void handlePitch(PitchDetectionResult var1, AudioEvent var2);
     }

@@ -560,7 +560,7 @@ public class ClassReloader extends ClassLoader {
     }
 
     protected Class<?> retrieveFromCache(String s) {
-        Class<?> clazz = this.reloadableClassCache.stream().filter(c -> c.getName().compareTo(s) == 0).findFirst().map(c -> c).orElse(null);
+        Class<?> clazz = this.reloadableClassCache.stream().filter(c -> c.getName().compareTo(s) == 0).findFirst().orElse(null);
         return clazz;
     }
 

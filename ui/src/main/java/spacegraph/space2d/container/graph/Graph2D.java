@@ -153,7 +153,8 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
     /**
      * adds a rendering stage.  these are applied successively at each visible node
      */
-    public Graph2D<X> render(Graph2DRenderer<X>... renderStages) {
+    @SafeVarargs
+    public final Graph2D<X> render(Graph2DRenderer<X>... renderStages) {
         List<Graph2DRenderer<X>> nextRenderStages = List.of(renderStages);
         if (!renderers.equals(nextRenderStages)) {
             renderers = nextRenderStages;

@@ -927,7 +927,8 @@ public enum Util {
 		return mhRef(type, name).bindTo(fun);
 	}
 
-	public static <F> MethodHandle mh(String name, F... fun) {
+	@SafeVarargs
+    public static <F> MethodHandle mh(String name, F... fun) {
 		F fun0 = fun[0];
 		MethodHandle m = mh(name, fun0.getClass(), fun0);
 		for (int i = 1; i < fun.length; i++) {
@@ -1292,11 +1293,13 @@ public enum Util {
 	/**
 	 * TODO make a version of this which can return the input array if no modifications occurr either by .equals() or identity
 	 */
-	public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, X... src) {
+	@SafeVarargs
+    public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, X... src) {
 		return map(f, target, Math.min(target.length, src.length), src);
 	}
 
-	public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, int size, X... src) {
+	@SafeVarargs
+    public static <X, Y> Y[] map(Function<X, Y> f, Y[] target, int size, X... src) {
 		return map(f, target, 0, src, 0, size);
 	}
 
@@ -1310,7 +1313,8 @@ public enum Util {
 	/**
 	 * TODO make a version of this which can return the input array if no modifications occurr either by .equals() or identity
 	 */
-	public static <X, Y> Y[] map(Function<X, Y> f, IntFunction<Y[]> targetBuilder, X... src) {
+	@SafeVarargs
+    public static <X, Y> Y[] map(Function<X, Y> f, IntFunction<Y[]> targetBuilder, X... src) {
 		int i = 0;
 		Y[] target = targetBuilder.apply(src.length);
 		for (X x : src) {
@@ -1320,7 +1324,8 @@ public enum Util {
 		return target;
 	}
 
-	public static <X> X[] mapIfChanged(Function<X, X> f, X... src) {
+	@SafeVarargs
+    public static <X> X[] mapIfChanged(Function<X, X> f, X... src) {
 		X[] target = null;
 		for (int i = 0, srcLength = src.length; i < srcLength; i++) {
 			X x = src[i];
@@ -1338,20 +1343,23 @@ public enum Util {
 			return target;
 	}
 
-	public static <X> float sum(FloatFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> float sum(FloatFunction<X> value, X... xx) {
 		float y = 0;
 		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y;
 	}
 
-	public static <X> double sumDouble(FloatFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> double sumDouble(FloatFunction<X> value, X... xx) {
 		double y = stream(xx).mapToDouble(value::floatValueOf).sum();
         return y;
 	}
 
-	public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
-		double y = stream(xx).mapToDouble(value::applyAsDouble).sum();
+	@SafeVarargs
+    public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
+		double y = stream(xx).mapToDouble(value).sum();
         return y;
 	}
 
@@ -1379,36 +1387,42 @@ public enum Util {
 		return y / count;
 	}
 
-	public static <X> int sum(ToIntFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> int sum(ToIntFunction<X> value, X... xx) {
 		return sum(value, 0, xx.length, xx);
 	}
 
-	public static <X> int sum(ToIntFunction<X> value, int from, int to, X... xx) {
+	@SafeVarargs
+    public static <X> int sum(ToIntFunction<X> value, int from, int to, X... xx) {
         int len = to - from;
         int y = IntStream.range(from, len).map(i -> value.applyAsInt(xx[i])).sum();
 		return y;
 	}
 
-	public static <X> long sum(ToLongFunction<X> value, X... xx) {
-		long y = stream(xx).mapToLong(value::applyAsLong).sum();
+	@SafeVarargs
+    public static <X> long sum(ToLongFunction<X> value, X... xx) {
+		long y = stream(xx).mapToLong(value).sum();
         return y;
 	}
 
-	public static <X> long min(ToLongFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> long min(ToLongFunction<X> value, X... xx) {
 		long y = Long.MAX_VALUE;
 		for (X x : xx)
 			y = Math.min(y, value.applyAsLong(x));
 		return y;
 	}
 
-	public static <X> long max(ToLongFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> long max(ToLongFunction<X> value, X... xx) {
 		long y = Long.MIN_VALUE;
 		for (X x : xx)
 			y = Math.max(y, value.applyAsLong(x));
 		return y;
 	}
 
-	public static <X> int max(ToIntFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> int max(ToIntFunction<X> value, X... xx) {
 		int y = Integer.MIN_VALUE;
 		for (X x : xx)
 			y = Math.max(y, value.applyAsInt(x));
@@ -1429,7 +1443,8 @@ public enum Util {
 		return y;
 	}
 
-	public static <X> boolean sumBetween(ToIntFunction<X> value, int min, int max, X... xx) {
+	@SafeVarargs
+    public static <X> boolean sumBetween(ToIntFunction<X> value, int min, int max, X... xx) {
 		int y = 0;
 		for (X x : xx) {
 			if ((y += value.applyAsInt(x)) > max)
@@ -1438,7 +1453,8 @@ public enum Util {
 		return (y >= min);
 	}
 
-	public static <X> boolean sumExceeds(ToIntFunction<X> value, int max, X... xx) {
+	@SafeVarargs
+    public static <X> boolean sumExceeds(ToIntFunction<X> value, int max, X... xx) {
 		int y = 0;
 		for (X x : xx) {
 			if ((y += value.applyAsInt(x)) > max)
@@ -1464,14 +1480,16 @@ public enum Util {
 		return best;
 	}
 
-	public static <X> float mean(FloatFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> float mean(FloatFunction<X> value, X... xx) {
 		float y = 0;
 		for (X x : xx)
 			y += value.floatValueOf(x);
 		return y / xx.length;
 	}
 
-	public static <X> float max(FloatFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> float max(FloatFunction<X> value, X... xx) {
 		float y = Float.NEGATIVE_INFINITY;
 		for (X x : xx)
 			y = Math.max(y, value.floatValueOf(x));
@@ -1485,7 +1503,8 @@ public enum Util {
 		return y;
 	}
 
-	public static <X> float min(FloatFunction<X> value, X... xx) {
+	@SafeVarargs
+    public static <X> float min(FloatFunction<X> value, X... xx) {
 		float y = Float.POSITIVE_INFINITY;
 		for (X x : xx)
 			y = Math.min(y, value.floatValueOf(x));
@@ -2102,7 +2121,7 @@ public enum Util {
 
 
 	public static <X> int count(Predicate<X> p, X[] xx) {
-		int i = (int) stream(xx).filter(p::test).count();
+		int i = (int) stream(xx).filter(p).count();
         return i;
 	}
 
@@ -2753,6 +2772,7 @@ public enum Util {
 		//TODO SortedSet.getFirst() etc
 	}
 
+	@SafeVarargs
 	public static <X> IntSet intSet(ToIntFunction<X> f, X... items) {
 		switch (items.length) {
 			case 0:

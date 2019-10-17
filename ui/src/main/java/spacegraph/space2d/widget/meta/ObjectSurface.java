@@ -104,10 +104,12 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
     public ObjectSurface(Object x, int depth) {
         this(x, depth, builtin);
     }
+    @SafeVarargs
     public ObjectSurface(Object x, int depth, Map<Class, BiFunction<?, Object, Surface>>... classers) {
         this(x, DefaultObjectSurfaceBuilder, depth, classers);
     }
 
+    @SafeVarargs
     public ObjectSurface(Object x, AutoBuilder.AutoBuilding<Object, Surface> builder, int maxDepth, Map<Class, BiFunction<?, Object, Surface>>... classers) {
         this(x, new AutoBuilder(maxDepth, builder, classers));
     }

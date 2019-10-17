@@ -306,6 +306,7 @@ public class AutoBuilder<X, Y> {
         final Way<X>[] way;
         volatile int which = -1;
 
+        @SafeVarargs
         public Either(Way<X>... way) {
             assert(way.length > 1);
             this.way = way;
@@ -330,6 +331,7 @@ public class AutoBuilder<X, Y> {
 
     /** essentially a decomposition of a subject into its components,
      *  include a descriptive relations to each */
+    @FunctionalInterface
     public interface Deduce<R,X> extends Iterable<Pair<R,X>> {
 
     }
