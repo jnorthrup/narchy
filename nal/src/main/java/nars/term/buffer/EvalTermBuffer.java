@@ -65,10 +65,10 @@ public class EvalTermBuffer extends TermBuffer {
     private static final class DeferredEval extends LightCompound {
         //private static final class DeferredEval extends LighterCompound {
 
-        final static AtomicInteger serial = new AtomicInteger(0);
+        static final AtomicInteger serial = new AtomicInteger(0);
 
         /** https://unicode-table.com/en/1F47E/ */
-        final static Atom DeferredEvalPrefix = Atomic.atom("⚛");
+        static final Atom DeferredEvalPrefix = Atomic.atom("⚛");
         //final static String DeferredEvalPrefix = ("⚛");
 
         private final InlineFunctor f;

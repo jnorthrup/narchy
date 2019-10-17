@@ -19,16 +19,14 @@ public class DerivedTask extends TemporalTask {
     /**
      * provided in DebugDerivedTask subclass
      */
-    @Nullable
-    public Task parentTask() {
+    public @Nullable Task parentTask() {
         return null;
     }
 
     /**
      * provided in DebugDerivedTask subclass
      */
-    @Nullable
-    public Task parentBelief() {
+    public @Nullable Task parentBelief() {
         return null;
     }
 

@@ -48,7 +48,7 @@ public class GrammarUtils {
         public final String extraPre;
         public final String extraPost;
 
-        public final static Context EMPTY = new Context();
+        public static final Context EMPTY = new Context();
 
         private Context() {
             this.pre = "";

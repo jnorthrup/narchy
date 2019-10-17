@@ -9,14 +9,10 @@ import java.util.Random;
  */
 public class Hsom {
 
-    @NotNull
-    final float[][][] links;
-    @NotNull
-    final float[] inputs;
-    @NotNull
-    final float[][] coords1;
-    @NotNull
-    final float[][] coords2;
+    final @NotNull float[][][] links;
+    final @NotNull float[] inputs;
+    final @NotNull float[][] coords1;
+    final @NotNull float[][] coords2;
     
     final int numInputs;
     final int SomSize;

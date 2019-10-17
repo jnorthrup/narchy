@@ -26,7 +26,6 @@ import org.jetbrains.annotations.Nullable;
 public class SlidingDFT {
     private final int fftSize;
     private final int fftSizeP2;
-    private final int bins;
 
 
     private final float[] cos;
@@ -41,7 +40,7 @@ public class SlidingDFT {
     public SlidingDFT(int fftSize, int numChannels) {
         this.fftSize = fftSize;
 
-        bins = fftSize / 2;
+        int bins = fftSize / 2;
         fftSizeP2 = fftSize + 2;
         fftBufD = new float[numChannels][fftSizeP2];
 

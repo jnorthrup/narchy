@@ -21,11 +21,6 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
     public final FloatRange expand = new FloatRange(1f, 0, 32f);
     public final FloatRange condense = new FloatRange(1f, 0, 3f);
     private final int iterations;
-    private final boolean center = true;
-    /**
-     * speed at which center correction is applied
-     */
-    private final float centerSpeed = 0.1f;
 
     private final v3 boundsMin;
     private final v3 boundsMax;
@@ -116,6 +111,7 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
             b.forEach((int) Math.ceil((float) n / clusters), objects, this::batch);
 
 
+            boolean center = true;
             if (center) {
                 float cx = 0, cy = 0, cz = 0;
                 for (int i = 0, objectsSize = n; i < objectsSize; i++) {
@@ -129,6 +125,10 @@ public class ForceDirected3D implements spacegraph.space3d.phys.constraint.Broad
                 cz /= -n;
 
                 v3 correction = v3.v(cx, cy, cz);
+                /**
+                 * speed at which center correction is applied
+                 */
+                float centerSpeed = 0.1f;
                 if (correction.lengthSquared() > centerSpeed * centerSpeed)
                     correction.normalize(centerSpeed);
 

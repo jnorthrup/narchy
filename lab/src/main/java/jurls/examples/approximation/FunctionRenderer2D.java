@@ -15,7 +15,6 @@ import java.awt.*;
 public class FunctionRenderer2D extends JPanel {
 
     private RenderFunction2D renderFunction2D = null;
-    private final int n = 20;
 
     public void setRenderFunction2D(RenderFunction2D renderFunction2D) {
         this.renderFunction2D = renderFunction2D;
@@ -24,6 +23,7 @@ public class FunctionRenderer2D extends JPanel {
     @Override
     protected void paintComponent(Graphics g) {
         if (renderFunction2D != null) {
+            int n = 20;
             for (int i = 0; i < n; ++i) {
                 final int x = i * getWidth() / n;
                 double mx = (i + 0.5) / n;

@@ -52,7 +52,6 @@ public class Huffman {
     private int defsymbl2CodLstIdx;
     private int altCodeIdx;
     private int altCodeBytes;
-    private int removedBytes;
     private int highestLevel;
     private int totalSymbols;
     private byte[][] codeValues;
@@ -610,7 +609,7 @@ public class Huffman {
 
     //convert freqList hashmap to priorty queue ordered by frequency (lowest first)
     private void freqToTree(int freqDivide, boolean addAltNode) {
-        removedBytes = 1;
+        int removedBytes = 1;
         int maxSymbols = config.maxSymbols;
         Entry<ByteAry, Integer> ent;
         trees = new PriorityQueue<>();
@@ -1060,7 +1059,7 @@ public class Huffman {
         }
     }
 
-    static abstract class HuffmanTree implements Comparable<Weight>, Weight {
+    abstract static class HuffmanTree implements Comparable<Weight>, Weight {
         final long frequency;
         final int id;
 

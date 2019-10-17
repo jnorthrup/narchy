@@ -13,7 +13,7 @@ import java.util.function.Consumer;
 /**
  * concurrent buffering bag wrapper
  */
-abstract public class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBag<X, Y> {
+public abstract class BufferedBag<X, B, Y extends Prioritizable> extends ProxyBag<X, Y> {
 
 	/**
 	 * pre-bag accumulating buffer

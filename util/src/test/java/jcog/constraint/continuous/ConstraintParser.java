@@ -15,7 +15,7 @@ public class ConstraintParser {
 
     private static final Pattern pattern = Pattern.compile("\\s*(.*?)\\s*(<=|==|>=|[GL]?EQ)\\s*(.*?)\\s*(!(required|strong|medium|weak))?");
 
-    private final static String OPS = "-+/*^";
+    private static final String OPS = "-+/*^";
 
     public interface CassowaryVariableResolver {
 
@@ -71,7 +71,7 @@ public class ConstraintParser {
 
         List<String> postFixExpression = infixToPostfix(tokenizeExpression(expressionString));
 
-        Stack<Expression> expressionStack = new Stack<Expression>();
+        Stack<Expression> expressionStack = new Stack<>();
 
         for (String expression : postFixExpression) {
             if ("+".equals(expression)) {
@@ -101,9 +101,9 @@ public class ConstraintParser {
 
     private static List<String> infixToPostfix(List<String> tokenList) {
 
-        Stack<Integer> s = new Stack<Integer>();
+        Stack<Integer> s = new Stack<>();
 
-        List<String> postFix = new ArrayList<String>();
+        List<String> postFix = new ArrayList<>();
         for (String token : tokenList) {
             char c = token.charAt(0);
             int idx = OPS.indexOf(c);
@@ -136,7 +136,7 @@ public class ConstraintParser {
     }
 
     private static List<String> tokenizeExpression(String expressionString) {
-        ArrayList<String> tokenList = new ArrayList<String>();
+        ArrayList<String> tokenList = new ArrayList<>();
 
         StringBuilder stringBuilder = new StringBuilder();
         int i;

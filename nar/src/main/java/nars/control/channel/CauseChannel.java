@@ -10,7 +10,7 @@ import java.util.List;
 /**
  * metered and mixable extension of Cause base class
  */
-abstract public class CauseChannel<X extends Prioritizable>  {
+public abstract class CauseChannel<X extends Prioritizable>  {
 
     public final Cause why;
     public final short id;

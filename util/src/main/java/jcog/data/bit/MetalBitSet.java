@@ -15,11 +15,11 @@ import java.util.stream.IntStream;
  *
  * TODO methods from: http://hg.openjdk.java.net/jdk/jdk/file/2cc1ae79b303/src/java.xml/share/classes/com/sun/org/apache/xalan/internal/xsltc/dom/BitArray.java
  */
-abstract public class MetalBitSet {
+public abstract class MetalBitSet {
 
     public abstract boolean get(int i);
 
-    final public boolean getNot(int i) {
+    public final boolean getNot(int i) {
         return !get(i);
     }
 
@@ -73,7 +73,7 @@ abstract public class MetalBitSet {
     }
 
 
-    abstract public int capacity();
+    public abstract int capacity();
 
     public final IntComparator indexComparator() {
         return (a,b) -> Boolean.compare(get(a), get(b));
@@ -97,12 +97,12 @@ abstract public class MetalBitSet {
      *  warning this may modify bits beyond the expected range, causing unexpected cardinality changes
      *  returns this instance
      * */
-    abstract public MetalBitSet negate();
+    public abstract MetalBitSet negate();
 
     /** returns a new instance with the values inverted
      * warning this may modify bits beyond the expected range, causing unexpected cardinality changes
      * */
-    abstract public MetalBitSet negated();
+    public abstract MetalBitSet negated();
 
 
     public void setAll(int bitVector, int o) {

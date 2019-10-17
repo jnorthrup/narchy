@@ -63,7 +63,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     private static final String ANSI_PURPLE = "\u001B[35m";
     private static final String ANSI_CYAN = "\u001B[36m";
     private static final String ANSI_WHITE = "\u001B[37m";
-    private final static Logger LOG = Logger.getLogger(DefaultExecutionListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(DefaultExecutionListener.class.getName());
     private final Map<Integer, String> screen = new TreeMap<>();
     private final Map<Integer, Long> jobStartTimes = new ConcurrentHashMap<>();
     private final NavigableSet<Integer> remove = new TreeSet<>();
@@ -282,7 +282,7 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
      * when f(i) = g(i) we have to raise the i; i=i+1 and check again
      * @param candidate
      */
-    synchronized public void updateBest(FinalSolution candidate){
+     public synchronized void updateBest(FinalSolution candidate){
         if(this.best == null){
             this.best = candidate;
             return;

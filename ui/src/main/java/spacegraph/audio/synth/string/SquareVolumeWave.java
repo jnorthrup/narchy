@@ -8,7 +8,6 @@ public class SquareVolumeWave extends KarplusStrongString {
 
     private final double attackDelta;
     private final double decayDelta;
-    private final double sustainDelta;
     private final double releaseDelta;
     private double initialVolume;
     private int state; //0-3 for ADSR
@@ -27,7 +26,7 @@ public class SquareVolumeWave extends KarplusStrongString {
 
         attackDelta = Math.pow(1.1, 440.0 / frequency);
         decayDelta = Math.pow(.9998, 440.0 / frequency);
-        sustainDelta = Math.pow(.9998, 440.0 / frequency);
+        double sustainDelta = Math.pow(.9998, 440.0 / frequency);
         releaseDelta = Math.pow(.9, 440.0 / frequency);
     }
 

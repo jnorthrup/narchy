@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 public class TruthModel {
 
 	/** used during construction */
-	transient private MutableMap<Term, TruthFunction> _table = new UnifiedMap<>(256);
+	private transient MutableMap<Term, TruthFunction> _table = new UnifiedMap<>(256);
 
 	private final ImmutableMap<Term, TruthFunction> table;
 
@@ -37,8 +37,7 @@ public class TruthModel {
 		_table = null; //not needed any more
 	}
 
-	@Nullable
-	public final TruthFunction get(Term a) {
+	public final @Nullable TruthFunction get(Term a) {
 		return table.get(a);
 	}
 

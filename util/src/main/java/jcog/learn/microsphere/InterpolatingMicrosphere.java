@@ -35,13 +35,11 @@ public class InterpolatingMicrosphere {
     /**
      * Microsphere.
      */
-    @NotNull
-    public final List<float[]> microsphere; /* n-element (size) */
+    public final @NotNull List<float[]> microsphere; /* n-element (size) */
     /**
      * Microsphere data.
      */
-    @NotNull
-    public final List<float[]> microsphereData; /* 2-element illumination, value pairs */
+    public final @NotNull List<float[]> microsphereData; /* 2-element illumination, value pairs */
     /**
      * Space dimension.
      */
@@ -50,16 +48,6 @@ public class InterpolatingMicrosphere {
      * Number of surface elements.
      */
     private final int size;
-
-    /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
-    private final float pointRadius = 0f;
-
-
-
-
-
-
-
 
 
     /**
@@ -216,8 +204,7 @@ public class InterpolatingMicrosphere {
      * @return the estimated value at the given {@code point}.
      * @throws NotPositiveException if {@code exponent < 0}.
      */
-    @NotNull
-    public float[] value(@NotNull float[] targetPoint,
+    public @NotNull float[] value(@NotNull float[] targetPoint,
                          float[][] data,
                          Focus curve,
                          int numSamples) {
@@ -317,6 +304,8 @@ public class InterpolatingMicrosphere {
             
             float[] X = data[i];
             final float[] diff = ebeSubtract(new float[] { X[0] }, targetPoint);
+            /** effective (minimum) radius of one point, an interval within which distance is zero (co-tangent) */
+            float pointRadius = 0f;
             final float distance = Math.max(0, safeNorm(epsilon, diff) - pointRadius);
 
             @Nullable float[] sampleDirection = distance!=0 ? diff : null;
@@ -385,8 +374,7 @@ public class InterpolatingMicrosphere {
      * @return the value estimated from the current illumination of the
      * microsphere.
      */
-    @NotNull
-    private float[] interpolate() {
+    private @NotNull float[] interpolate() {
 
         int size = this.size;
 

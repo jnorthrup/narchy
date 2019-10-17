@@ -14,13 +14,8 @@ import java.util.function.Consumer;
 
 public class CarTest implements Consumer<Dynamics2D> {
 
-  private Body2D m_car;
-  private Body2D m_wheel1;
-  private Body2D m_wheel2;
-
-  private float m_hz;
-  private float m_zeta;
-  private float m_speed;
+    private float m_hz;
+    private float m_speed;
   private WheelJoint m_spring1;
   private WheelJoint m_spring2;
 
@@ -87,7 +82,7 @@ public class CarTest implements Consumer<Dynamics2D> {
   @Override public void accept(Dynamics2D m_world) {
     
     m_hz = 4.0f;
-    m_zeta = 0.7f;
+      float m_zeta = 0.7f;
     m_speed = 50.0f;
 
     Body2D ground = null;
@@ -246,7 +241,7 @@ public class CarTest implements Consumer<Dynamics2D> {
       BodyDef bd = new BodyDef();
       bd.type = BodyType.DYNAMIC;
       bd.position.set(0.0f, 1.0f);
-      m_car = m_world.addBody(bd);
+        Body2D m_car = m_world.addBody(bd);
       m_car.addFixture(chassis, 1.0f);
 
       FixtureDef fd = new FixtureDef();
@@ -255,11 +250,11 @@ public class CarTest implements Consumer<Dynamics2D> {
       fd.friction = 0.9f;
 
       bd.position.set(-1.0f, 0.35f);
-      m_wheel1 = m_world.addBody(bd);
+        Body2D m_wheel1 = m_world.addBody(bd);
       m_wheel1.addFixture(fd);
 
       bd.position.set(1.0f, 0.4f);
-      m_wheel2 = m_world.addBody(bd);
+        Body2D m_wheel2 = m_world.addBody(bd);
       m_wheel2.addFixture(fd);
 
       WheelJointDef jd = new WheelJointDef();

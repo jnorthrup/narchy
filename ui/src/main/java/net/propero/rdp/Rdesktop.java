@@ -84,7 +84,6 @@ public class Rdesktop {
 
     private static boolean showTools;
     private static String mapFile = "en-us";
-    private static String keyMapLocation = "";
     private static SendEvent toolFrame;
 
     /**
@@ -253,7 +252,7 @@ public class Rdesktop {
         readytosend = false;
         showTools = false;
         mapFile = "en-us";
-        keyMapLocation = "";
+        String keyMapLocation = "";
         toolFrame = null;
 
 

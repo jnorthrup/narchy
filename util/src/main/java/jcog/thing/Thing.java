@@ -165,8 +165,7 @@ public class Thing<T, P /* service key */  /* context */> {
     /**
      * reverse lookup by instance.  this default impl is an exhaustive search.  improve in subclasses
      */
-    @Nullable
-    public P term(Part<T> p) {
+    public @Nullable P term(Part<T> p) {
         //HACK TODO improve
         return entrySet().stream().filter(z -> z.getValue() == p).findFirst().get().getKey();
     }
@@ -376,10 +375,7 @@ public class Thing<T, P /* service key */  /* context */> {
 
     class PartResolveByClass<X extends Part<T>> implements Supplier<X> {
 
-        private final Class<X> klass;
-
         private PartResolveByClass(P key, Class<X> klass) {
-            this.klass = klass;
         }
 
         @Override

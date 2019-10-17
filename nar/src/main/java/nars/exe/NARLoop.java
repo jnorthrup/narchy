@@ -8,7 +8,7 @@ import nars.NAR;
  * self managed set of processes which run a NAR
  * as a loop at a certain frequency.
  */
-abstract public class NARLoop extends InstrumentedLoop {
+public abstract class NARLoop extends InstrumentedLoop {
 
     public final NAR nar;
 
@@ -22,7 +22,7 @@ abstract public class NARLoop extends InstrumentedLoop {
         nar = n;
     }
 
-    public final static class NARLoopSync extends NARLoop {
+    public static final class NARLoopSync extends NARLoop {
 
         public NARLoopSync(NAR n) { super(n); }
 
@@ -36,7 +36,7 @@ abstract public class NARLoop extends InstrumentedLoop {
         }
     }
 
-    public final static class NARLoopAsync extends NARLoop {
+    public static final class NARLoopAsync extends NARLoop {
 
         public NARLoopAsync(NAR n) {
             super(n);

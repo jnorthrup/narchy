@@ -48,7 +48,7 @@ class PrettyParser {
 	 * Return a collection of complete parses of the given assembly.
 	 */
     private Set<Assembly> completeMatches(Assembly inAssembly) {
-		Set<Assembly> inState = new HashSet<Assembly>();
+		Set<Assembly> inState = new HashSet<>();
 		inState.add(inAssembly);
 		Set<Assembly> outState = parser.matchAndAssemble(inState);
 		Set<Assembly> outComplete = outState.stream().filter(a -> !a.hasNext()).collect(Collectors.toSet());

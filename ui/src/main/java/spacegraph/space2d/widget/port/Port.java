@@ -49,7 +49,7 @@ public class Port<X> extends Widget implements Wiring.Wireable {
 
     private transient Node<spacegraph.space2d.Surface, Wire> node;
 
-    static final private int WIRING_BUTTON = 2;
+    private static final int WIRING_BUTTON = 2;
 
 
     public Port() {

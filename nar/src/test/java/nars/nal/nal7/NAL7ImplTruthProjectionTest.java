@@ -83,7 +83,7 @@ class NAL7ImplTruthProjectionTest {
     private final double absoluteThreshold;
 
     final double min, max;
-    final private DoubleToDoubleFunction func;
+    private final DoubleToDoubleFunction func;
 
 
 

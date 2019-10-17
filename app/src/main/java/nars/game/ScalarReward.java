@@ -20,7 +20,7 @@ import static java.lang.Float.NaN;
 import static nars.Op.*;
 
 /** base class for reward which represents current belief truth as the reward value  */
-abstract public class ScalarReward extends Reward {
+public abstract class ScalarReward extends Reward {
 
     public ScalarSignal concept;
 

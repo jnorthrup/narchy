@@ -14,8 +14,8 @@ public class GradualTest {
         String longPhrase[] = "a b c d e f g h i j k l m n o p q r s t u v w x y z".split(" ");
         String ragamuffin[] = "i a q a v a z a d a".split(" ");
 
-        MarkovChain<String> longChain = new MarkovChain<String>(1);
-        MarkovChain<String> shortChain = new MarkovChain<String>(1);
+        MarkovChain<String> longChain = new MarkovChain<>(1);
+        MarkovChain<String> shortChain = new MarkovChain<>(1);
 
         longChain.learn(longPhrase);
         longChain.learn(ragamuffin);

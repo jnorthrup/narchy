@@ -233,7 +233,7 @@ public class SeriesBeliefTable extends DynamicTaskTable {
 		return new SeriesTask(term, punc, truth, s, e, nar.evidence());
 	}
 
-	static private void stretch(SeriesTask t, long e) {
+	private static void stretch(SeriesTask t, long e) {
 //        System.out.println("stretch " + t.end() + " .. " +  e + " (" + (e - t.end()) + " cycles)");
 		t.setEnd(e);
 	}

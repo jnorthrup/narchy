@@ -762,7 +762,7 @@ public class Plot2D extends Widget {
             return AbstractSeries.this;
         }
 
-        abstract public void forEach(FloatProcedure f);
+        public abstract void forEach(FloatProcedure f);
 
         public Series range(float min, float max) {
             AbstractSeries.this.minValue = min;

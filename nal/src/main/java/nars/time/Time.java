@@ -12,7 +12,7 @@ import static nars.time.Tense.ETERNAL;
 public abstract class Time implements Serializable {
 
 
-    abstract public long now();
+    public abstract long now();
 
     /**
      * time elapsed since last cycle

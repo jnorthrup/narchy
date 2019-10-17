@@ -91,7 +91,7 @@ public class Graph2D<X> extends MutableMapContainer<X, NodeVis<X>> {
 
     private volatile Graph2DUpdater<X> updater = NullUpdater;
 
-    private final static Graph2DUpdater NullUpdater = (c, d) -> {
+    private static final Graph2DUpdater NullUpdater = (c, d) -> {
     };
 
     private final transient Set<X> wontRemain = new ArrayHashSet();

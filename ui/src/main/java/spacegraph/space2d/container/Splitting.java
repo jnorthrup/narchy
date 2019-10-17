@@ -98,8 +98,7 @@ public class Splitting<X extends Surface, Y extends Surface> extends MutableArra
         return this;
     }
 
-    @Nullable
-    public Surface resizer() {
+    public @Nullable Surface resizer() {
         return get(2);
     }
 

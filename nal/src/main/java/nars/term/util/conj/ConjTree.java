@@ -288,8 +288,7 @@ public class ConjTree implements ConjBuilder {
         return nx;
     }
 
-    @Nullable
-    private Term reinsertNN(Term nx, FasterList<Term> toAdd, long nxshift) {
+    private @Nullable Term reinsertNN(Term nx, FasterList<Term> toAdd, long nxshift) {
         //add at shifted time
         if (nxshift == ETERNAL || nxshift == 0) {
             //continue, adding at present parallel time
@@ -735,8 +734,7 @@ public class ConjTree implements ConjBuilder {
     /**
      * construct the sequence component of the Conj
      */
-    @Nullable
-    private Term termSeq(TermBuilder B) {
+    private @Nullable Term termSeq(TermBuilder B) {
 
         int ss = seq.size();
 

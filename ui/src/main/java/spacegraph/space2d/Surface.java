@@ -21,14 +21,14 @@ import java.util.function.Supplier;
  * planar subspace.
  * (fractal) 2D Surface embedded relative to a parent 2D surface or 3D space
  */
-abstract public class Surface implements Surfacelike {
+public abstract class Surface implements Surfacelike {
 
 
     public static final Surface[] EmptySurfaceArray = new Surface[0];
     public static final Supplier<Surface> TODO = () -> new VectorLabel("TODO");
     private static final AtomicReferenceFieldUpdater<Surface, RectFloat> BOUNDS = AtomicReferenceFieldUpdater.newUpdater(Surface.class, RectFloat.class, "bounds");
-    private final static AtomicReferenceFieldUpdater<Surface, Surfacelike> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, Surfacelike.class, "parent");
-    private final static AtomicInteger serial = new AtomicInteger();
+    private static final AtomicReferenceFieldUpdater<Surface, Surfacelike> PARENT = AtomicReferenceFieldUpdater.newUpdater(Surface.class, Surfacelike.class, "parent");
+    private static final AtomicInteger serial = new AtomicInteger();
     /**
      * serial id unique to each instanced surface
      */
@@ -253,7 +253,7 @@ abstract public class Surface implements Surfacelike {
     }
 
     /** actual render implementation */
-    abstract protected void render(ReSurface r);
+    protected abstract void render(ReSurface r);
 
     /**
      * test visibility in the current rendering context

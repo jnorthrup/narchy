@@ -96,9 +96,8 @@ public abstract class NALTask extends AbstractTask {
 
 
 
-    @Nullable
     @Override
-    public final Truth truth() {
+    public final @Nullable Truth truth() {
         return truth;
     }
 

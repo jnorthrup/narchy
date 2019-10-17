@@ -56,7 +56,6 @@ public class RLBooster  {
     private final WritableTensor history;
     private final boolean nothingAction;
 
-    transient private float[] _in = null;
     public double lastReward = Float.NaN;
     public float[] actionFeedback = null;
 
@@ -204,9 +203,8 @@ public class RLBooster  {
         long start = w.start;
         long end = w.end;
         float[] ii = input(start, end);
-        _in = ii;
         if (history instanceof TensorRing) {
-            ((TensorRing)history).setSpin(ii).snapshot(_in);
+            ((TensorRing)history).setSpin(ii).snapshot(ii);
         } else {
             ((ArrayTensor)history).set(ii); //TODO just make ArrayTensor wrapping _in
         }

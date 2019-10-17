@@ -14,7 +14,7 @@ import java.util.function.Consumer;
 
 import static java.lang.System.nanoTime;
 
-abstract public class MultiExec extends Exec {
+public abstract class MultiExec extends Exec {
 
 //    /**
 //     * global sleep nap period
@@ -27,7 +27,7 @@ abstract public class MultiExec extends Exec {
     ///** timeslice granularity */
     //long subCycleNS = 2_500_000;
 
-    static private final float queueLatencyMeasurementProbability = 0.001f;
+    private static final float queueLatencyMeasurementProbability = 0.001f;
 
     private Off onDur;
 
@@ -88,7 +88,7 @@ abstract public class MultiExec extends Exec {
     /**
      * execute later
      */
-    abstract protected void execute(Object r);
+    protected abstract void execute(Object r);
 
     @Override
     public final void execute(Runnable async) {
@@ -162,7 +162,7 @@ abstract public class MultiExec extends Exec {
 
     }
 
-    static private class QueueLatencyMeasurement implements Consumer<NAR> {
+    private static class QueueLatencyMeasurement implements Consumer<NAR> {
 
         private final long start;
 

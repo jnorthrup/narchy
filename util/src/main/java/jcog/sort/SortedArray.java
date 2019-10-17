@@ -307,8 +307,7 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
         return Arrays.copyOf(xx, s);
     }
 
-    @Nullable
-    public X removeFirst() {
+    public @Nullable X removeFirst() {
         return size == 0 ? null : remove(0);
     }
 
@@ -420,16 +419,14 @@ public class SortedArray<X> /*extends AbstractList<X>*/ implements Iterable<X> {
     /**
      * Returns the first (lowest) element currently in this list.
      */
-    @Nullable
-    public final X first() {
+    public final @Nullable X first() {
         return size == 0 ? null : items[0];
     }
 
     /**
      * Returns the last (highest) element currently in this list.
      */
-    @Nullable
-    public final X last() {
+    public final @Nullable X last() {
         int size = this.size;
         return size == 0 ? null : items[size - 1];
     }

@@ -51,8 +51,6 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
     private DurLoop on;
 
-    private long start, end;
-
     /** how much evidence to include in result */
     public final IntRange truthPrecision = new IntRange(NAL.ANSWER_BELIEF_MATCH_CAPACITY, 1, 16);
 
@@ -69,7 +67,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     //public final AtomicBoolean pris = new AtomicBoolean(true);
 
 
-    abstract public static class Layer {
+    public abstract static class Layer {
         float[] value;
         public final FloatRange opacity = new FloatRange(0.75f, 0, 1);
 
@@ -79,9 +77,9 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
             update(v);
         }
 
-        abstract public void blend(float v, float opacity, float[] rgbTarget);
+        public abstract void blend(float v, float opacity, float[] rgbTarget);
 
-        abstract public void update(VectorSensorChart v);
+        public abstract void update(VectorSensorChart v);
 
         protected void update(VectorSensorChart v, IntIntToFloatFunction f) {
             int w = v.w;
@@ -98,7 +96,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
         }
     }
 
-    abstract public static class ColoredLayer extends Layer {
+    public abstract static class ColoredLayer extends Layer {
 
         private final float[] color;
 
@@ -123,13 +121,12 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
     private TaskConcept touchConcept;
 
     private Consumer<TaskConcept> touchMode = (x) -> { };
-    transient public final TaskConcept[][] concept;
+    public final transient TaskConcept[][] concept;
 
 //    final AtomicBoolean ready = new AtomicBoolean(true);
 
-    transient private Answer answer = null;
-    transient private int answerDetail;
-    transient private int answerTries;
+    private transient Answer answer = null;
+    private transient int answerTries;
 
 
 
@@ -310,8 +307,7 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
                 concept(touchPixel.x, height() - 1 - touchPixel.y);
     }
 
-    @Nullable
-    private TaskConcept concept(int x, int y) {
+    private @Nullable TaskConcept concept(int x, int y) {
         //if (x < width() && y < height())
             return concept[y][x];
 //        else
@@ -355,10 +351,10 @@ public class VectorSensorChart extends BitmapMatrixView implements BitmapMatrixV
 
         long windowRadius = Math.round(dur * this.window.floatValue() / 2);
 
-        this.start = now - windowRadius;
-        this.end = now + windowRadius;
+        long start = now - windowRadius;
+        long end = now + windowRadius;
 
-        answerDetail = truthPrecision.intValue();
+        int answerDetail = truthPrecision.intValue();
         this.answerTries = (int)Math.ceil(answerDetail);
 
         if (answer == null) {

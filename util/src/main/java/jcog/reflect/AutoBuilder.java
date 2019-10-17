@@ -60,8 +60,7 @@ public class AutoBuilder<X, Y> {
         return build(root, null, null, root, 0);
     }
 
-    @Nullable
-    protected <C> Y build(C root, @Nullable Y parentRepr, Object relation, @Nullable X obj, int depth) {
+    protected @Nullable <C> Y build(C root, @Nullable Y parentRepr, Object relation, @Nullable X obj, int depth) {
         if (!add(obj))
             return null; //cycle
 
@@ -251,7 +250,7 @@ public class AutoBuilder<X, Y> {
         Y build(Object context, List<Pair<X, Iterable<Y>>> features, X obj);
     }
 
-    abstract public static class Way<X> implements Supplier<X> {
+    public abstract static class Way<X> implements Supplier<X> {
         public String name;
     }
 
@@ -337,10 +336,7 @@ public class AutoBuilder<X, Y> {
 
     public static class DeduceFields<X,R,Y> implements Deduce<R,Y> {
 
-        private final X source;
-
         public DeduceFields(X source) {
-            this.source = source;
         }
 
         @Override
@@ -352,10 +348,7 @@ public class AutoBuilder<X, Y> {
     /** for Iterable's incl. Collections */
     public static class DeduceIterable<X> implements Deduce<MutableInteger,X> {
 
-        private final Iterable<X> i;
-
         public DeduceIterable(Iterable<X> i) {
-            this.i = i;
         }
         @Override
         public Iterator<Pair<MutableInteger, X>> iterator() {

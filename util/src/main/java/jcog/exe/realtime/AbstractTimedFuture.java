@@ -22,7 +22,7 @@ public abstract class AbstractTimedFuture<T> implements TimedFuture<T> {
 
 
     @Override
-    abstract public int offset(long resolution);
+    public abstract int offset(long resolution);
 
 
     @Override

@@ -34,7 +34,7 @@ import static spacegraph.input.finger.Fingering.Idle;
  * <p>
  * TODO differentiate this between subclasses which touch only one surface at a time, and those which can touch several (multi-select)
  */
-abstract public class Finger extends Part<SpaceGraph> implements Predicate<Fingering> {
+public abstract class Finger extends Part<SpaceGraph> implements Predicate<Fingering> {
 
 
     public final v2 posPixel = new v2();
@@ -62,11 +62,6 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
     final FasterList<SurfaceTransform> transforms = new FasterList();
 
     public final int buttons;
-
-    /**
-     * drag threshold (in screen pixels)
-     */
-    private final float dragThresholdPx = 5f;
 
     //@Deprecated protected transient Function<v2, v2> _screenToGlobalRect;
     private final AtomicMetalBitSet buttonDown = new AtomicMetalBitSet();
@@ -113,7 +108,7 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
         return y;
     }
 
-    @Nullable public final Surface touching() {
+    public final @Nullable Surface touching() {
         return focused() ? touching.getOpaque() : null;
     }
 
@@ -198,6 +193,10 @@ abstract public class Finger extends Part<SpaceGraph> implements Predicate<Finge
 
     private boolean _dragging(int button) {
         v2 g = posPixelPress[button];
+        /**
+         * drag threshold (in screen pixels)
+         */
+        float dragThresholdPx = 5f;
         return (g.distanceSq(posPixel) > dragThresholdPx * dragThresholdPx);
     }
 

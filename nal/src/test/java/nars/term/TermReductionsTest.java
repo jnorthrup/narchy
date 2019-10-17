@@ -26,14 +26,10 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class TermReductionsTest extends NarseseTest {
 
-    @Nullable
-    private final static Term p = Atomic.the("P");
-    @Nullable
-    private final static Term q = Atomic.the("Q");
-    @Nullable
-    private final static Term r = Atomic.the("R");
-    @Nullable
-    private final static Term s = Atomic.the("S");
+    private static final @Nullable Term p = Atomic.the("P");
+    private static final @Nullable Term q = Atomic.the("Q");
+    private static final @Nullable Term r = Atomic.the("R");
+    private static final @Nullable Term s = Atomic.the("S");
 
 
     @Test

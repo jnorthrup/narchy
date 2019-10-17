@@ -5,7 +5,7 @@ import nars.term.Term;
 import nars.term.control.AbstractPred;
 import nars.term.control.PREDICATE;
 
-abstract public class InstrumentedDerivationPredicate extends AbstractPred<Derivation> {
+public abstract class InstrumentedDerivationPredicate extends AbstractPred<Derivation> {
 
     protected InstrumentedDerivationPredicate( PREDICATE<Derivation> inner) {
         super(inner);
@@ -42,8 +42,8 @@ abstract public class InstrumentedDerivationPredicate extends AbstractPred<Deriv
     }
 
 
-    abstract protected void onEnter(PREDICATE<Derivation> p, Derivation d);
+    protected abstract void onEnter(PREDICATE<Derivation> p, Derivation d);
 
-    abstract protected void onExit(PREDICATE<Derivation> p, Derivation d, boolean returnValue, Throwable thrown, long nanos);
+    protected abstract void onExit(PREDICATE<Derivation> p, Derivation d, boolean returnValue, Throwable thrown, long nanos);
 
 }

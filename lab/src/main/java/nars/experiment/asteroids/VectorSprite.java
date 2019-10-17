@@ -35,7 +35,6 @@ public class VectorSprite {
 
     final int[][] upgrades = new int[3][4];
     final int[][] upgradeCost = new int[3][4];
-    private final boolean eternal = true;
 
     public VectorSprite() {
         active = true;
@@ -52,6 +51,7 @@ public class VectorSprite {
     public void updatePosition(int w, int h) {
         counter++;
 
+        boolean eternal = true;
         if (!eternal)
             invincCounter++;
 

@@ -28,8 +28,8 @@ import java.util.Set;
  
 public class Constant extends Leaf<String> {
 
-    transient private final boolean charClass;
-    transient private final boolean escaped;
+    private final transient boolean charClass;
+    private final transient boolean escaped;
 
     static final Set<String> allowedClasses = new HashSet<>(
             Arrays.asList("\\w", "\\d", ".", "\\b", "\\s")

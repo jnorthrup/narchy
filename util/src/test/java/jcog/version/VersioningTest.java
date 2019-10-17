@@ -14,8 +14,7 @@ class VersioningTest {
 
     private
     MultiVersioned a = new MultiVersioned(8);
-    @NotNull
-    private
+    private @NotNull
     MultiVersioned b = new MultiVersioned(8);
 
     @Test

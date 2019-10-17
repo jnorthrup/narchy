@@ -6,14 +6,13 @@ import java.io.IOException;
 
 
 public class Replayer {
-    private final ByteArrayInputStream bais;
     private final DataInputStream dis;
 
     private byte tick;
     private int tickCount = -99999999;
 
     public Replayer(byte[] bytes) {
-        bais = new ByteArrayInputStream(bytes);
+        ByteArrayInputStream bais = new ByteArrayInputStream(bytes);
         dis = new DataInputStream(bais);
     }
 

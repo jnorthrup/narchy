@@ -15,11 +15,10 @@ import java.util.List;
 
 
 public class LevelScene extends Scene implements SpriteContext {
-    private final boolean renderBackground = false;
 
-    private final List<Sprite> sprites = new ArrayList<Sprite>();
-    private final List<Sprite> spritesToAdd = new ArrayList<Sprite>();
-    private final List<Sprite> spritesToRemove = new ArrayList<Sprite>();
+    private final List<Sprite> sprites = new ArrayList<>();
+    private final List<Sprite> spritesToAdd = new ArrayList<>();
+    private final List<Sprite> spritesToRemove = new ArrayList<>();
 
     public Level level;
     public final Mario mario;
@@ -104,13 +103,13 @@ public class LevelScene extends Scene implements SpriteContext {
 
     public int fireballsOnScreen;
 
-    List<Shell> shellsToCheck = new ArrayList<Shell>();
+    List<Shell> shellsToCheck = new ArrayList<>();
 
     public void checkShellCollide(Shell shell) {
         shellsToCheck.add(shell);
     }
 
-    List<Fireball> fireballsToCheck = new ArrayList<Fireball>();
+    List<Fireball> fireballsToCheck = new ArrayList<>();
 
     public void checkFireballCollide(Fireball fireball) {
         fireballsToCheck.add(fireball);
@@ -282,6 +281,7 @@ public class LevelScene extends Scene implements SpriteContext {
         if (yCam > level.height * 16 - 240) yCam = level.height * 16 - 240;
 
 
+        boolean renderBackground = false;
         if (renderBackground) {
             for (int i = 0; i < 2; i++) {
                 bgLayer[i].setCam(xCam, yCam);

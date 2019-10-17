@@ -27,9 +27,9 @@ public final class BasicStats {
 
     
     public long fp = 0;
-    transient public long fn = 0;
+    public transient long fn = 0;
     public long tp = 0;
-    transient public long tn = 0;
+    public transient long tn = 0;
 
     @Override
     public String toString() {

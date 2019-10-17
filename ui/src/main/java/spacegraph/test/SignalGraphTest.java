@@ -19,15 +19,14 @@ public class SignalGraphTest {
 
     public static class VideoTransformPort extends Bordering {
 
-        private final ConstantPort<VideoSource> in;
         private final ConstantPort<VideoSource> out;
 
         private transient VideoTransform y;
 
         public VideoTransformPort(Function<VideoSource,VideoTransform> t) {
             super();
-            in = new ConstantPort<VideoSource>(VideoSource.class);
-            out = new ConstantPort<VideoSource>(VideoSource.class);
+            ConstantPort<VideoSource> in = new ConstantPort<>(VideoSource.class);
+            out = new ConstantPort<>(VideoSource.class);
             west(in);
             east(out);
             //in.update((xx)->{

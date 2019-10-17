@@ -9,7 +9,7 @@ import java.util.function.Consumer;
 /**
  * Created by unkei on 2017/04/26.
  */
-abstract public class OsmElement implements HyperRegion {
+public abstract class OsmElement implements HyperRegion {
 
     public final long id;
 

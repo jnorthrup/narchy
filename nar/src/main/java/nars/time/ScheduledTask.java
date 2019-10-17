@@ -14,10 +14,10 @@ public abstract class ScheduledTask extends WhenInternal implements Consumer<NAR
     public volatile boolean scheduled = false;
 
     /** when or after this task may be run next */
-    abstract public long start();
+    public abstract long start();
 
     @Override
-    abstract public Term term();
+    public abstract Term term();
 
     @Override
     public final String toString() {

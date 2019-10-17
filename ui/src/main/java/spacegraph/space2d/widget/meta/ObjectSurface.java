@@ -52,7 +52,7 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
     };
 
 
-    @Nullable private static Surface collectionSurface(List<Surface> x) {
+    private static @Nullable Surface collectionSurface(List<Surface> x) {
         Surface y = null;
         int xs = x.size();
         switch (xs) {
@@ -360,7 +360,6 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
         //private static final float EPSILON = 0.001f;
 
 
-        private final boolean autoUpdate = true; //TODO configurable rate
         public final FloatSlider slider;
         private final FloatSupplier get;
 
@@ -380,6 +379,8 @@ public class ObjectSurface extends MutableUnitContainer<Surface> {
 
         @Override
         protected void renderContent(ReSurface r) {
+            //TODO configurable rate
+            boolean autoUpdate = true;
             if (autoUpdate) {
                 slider.set(this.get.asFloat());
             }

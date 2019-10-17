@@ -8,7 +8,7 @@ import org.jetbrains.annotations.Nullable;
 public final class TimeRangeFilter extends TimeRange implements LongLongPredicate {
 
 
-    final static private TimeRangeFilter Eternal = new TimeRangeFilter(Tense.ETERNAL, Tense.ETERNAL, Mode.Near);
+    private static final TimeRangeFilter Eternal = new TimeRangeFilter(Tense.ETERNAL, Tense.ETERNAL, Mode.Near);
 
     public enum Mode  {
         Near {
@@ -30,12 +30,11 @@ public final class TimeRangeFilter extends TimeRange implements LongLongPredicat
             }
         };
 
-        abstract public boolean accept(long s, long e, long start, long end);
+        public abstract boolean accept(long s, long e, long start, long end);
     }
 
     /** if null, allows as if Mode.Near */
-    @Nullable
-    private final Mode mode;
+    private final @Nullable Mode mode;
 
     public static TimeRangeFilter the(long start, long end, Mode mode) {
         assert(start!=TIMELESS);

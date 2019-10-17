@@ -91,8 +91,7 @@ class TermIDTest {
     
 
 
-    @NotNull
-    private Term testBytesRepresentation(@NotNull String expectedCompactOutput, int expectedLength) {
+    private @NotNull Term testBytesRepresentation(@NotNull String expectedCompactOutput, int expectedLength) {
         try {
             return testBytesRepresentation(
                     null,
@@ -104,8 +103,7 @@ class TermIDTest {
         }
     }
 
-    @NotNull
-    private Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
+    private @NotNull Term testBytesRepresentation(@Nullable String expectedCompactOutput, @NotNull String expectedPrettyOutput, int expectedLength) throws Narsese.NarseseException {
         
         Termed i = $.$(expectedPrettyOutput);
         
@@ -122,7 +120,7 @@ class TermIDTest {
     }
 
     private static void areEqualAndIfNotWhy(@NotNull String a, @NotNull String b) {
-        assertEquals(a, b, charComparison(a, b));
+        assertEquals(a, b, () -> charComparison(a, b));
     }
 
     private static String charComparison(String a, String b) {

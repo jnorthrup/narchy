@@ -23,8 +23,7 @@ public class SimpleSpatial<X> extends AbstractSpatial<X> {
 
     public Body3D body;
 
-    @Nullable
-    private final List<TypedConstraint> constraints = null; 
+    private final @Nullable List<TypedConstraint> constraints = null;
 
     /** physics motion state */
     

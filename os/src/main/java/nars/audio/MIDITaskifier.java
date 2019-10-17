@@ -191,14 +191,8 @@ public class MIDITaskifier {
 
     public class MidiInReceiver implements Receiver {
 
-        
-
-        private final MidiDevice device;
-        private final Timed timed;
 
         public MidiInReceiver(MidiDevice device, Timed timed) throws MidiUnavailableException {
-            this.device = device;
-            this.timed = timed;
 
             if (!device.isOpen()) {
                 device.open();

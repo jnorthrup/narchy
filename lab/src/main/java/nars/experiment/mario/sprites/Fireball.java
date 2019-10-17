@@ -11,7 +11,6 @@ public class Fireball extends Sprite {
     private float runTime;
     private boolean onGround;
 
-    private final int width = 4;
     int height = 24;
 
     private final LevelScene world;
@@ -115,6 +114,7 @@ public class Fireball extends Sprite {
         }
 
         boolean collide = false;
+        int width = 4;
         if (ya > 0) {
             if (isBlocking(x + xa - width, y + ya, xa, 0)) collide = true;
             else if (isBlocking(x + xa + width, y + ya, xa, 0)) collide = true;

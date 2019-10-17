@@ -169,7 +169,6 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     private int count;
     private int chPrev;
     private int ch2;
-    private int i;
     private int tPos;
     private int rNToGo = 0;
     private int rTPos  = 0;
@@ -700,6 +699,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         char ch;
 
         cftab[0] = 0;
+        int i;
         for (i = 1; i <= 256; i++) {
             cftab[i] = unzftab[i - 1];
         }

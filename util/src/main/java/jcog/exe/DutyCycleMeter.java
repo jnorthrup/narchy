@@ -5,7 +5,6 @@ package jcog.exe;
  * from: jsyn (LoadAnalyzer.java) */
 public class DutyCycleMeter {
     private long stopTime;
-    private long previousStopTime;
     private long startTime;
     private double averageTotalTime;
     private double averageOnTime;
@@ -19,7 +18,7 @@ public class DutyCycleMeter {
      * doing something without interruption.
      */
     public void stop() {
-        previousStopTime = stopTime;
+        long previousStopTime = stopTime;
         stopTime = System.nanoTime();
         long onTime = stopTime - startTime;
         long totalTime = stopTime - previousStopTime;

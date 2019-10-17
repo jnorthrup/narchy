@@ -25,7 +25,7 @@ import static spacegraph.space2d.widget.windo.util.DragEdit.MOVE;
  */
 public class Windo extends MutableUnitContainer {
 
-    private final static float resizeBorder = 0.1f;
+    private static final float resizeBorder = 0.1f;
     public static final short DRAG_BUTTON = Zoomed.PAN_BUTTON;
     public Dragging dragMode = null;
     public DragEdit potentialDragMode = null;
@@ -101,8 +101,7 @@ public class Windo extends MutableUnitContainer {
         return dragMode != null;
     }
 
-    @Nullable
-    private Dragging fingering(DragEdit mode) {
+    private @Nullable Dragging fingering(DragEdit mode) {
         if (mode == null)
             return null;
         else

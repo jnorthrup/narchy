@@ -49,7 +49,6 @@ public class RdpApplet extends Applet {
 
     private TextArea aTextArea;
 
-    private PrintStream aPrintStream;
     private boolean redirectOutput;
     private RdpThread rThread;
 
@@ -76,7 +75,7 @@ public class RdpApplet extends Applet {
     public void init() {
         redirectOutput = isSet("redirectOutput");
         if (redirectOutput) {
-            aPrintStream = new PrintStream(new FilteredStream(
+            PrintStream aPrintStream = new PrintStream(new FilteredStream(
                     new ByteArrayOutputStream()));
             System.setOut(aPrintStream);
             System.setErr(aPrintStream);

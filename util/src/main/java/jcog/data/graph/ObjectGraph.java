@@ -134,11 +134,11 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
     /** whether to recurse into a value, after having added it as a node */
     public boolean recurse(Object x) { return true; }
 
-    abstract public boolean includeValue(Object v);
+    public abstract boolean includeValue(Object v);
 
-    abstract public boolean includeClass(Class<?> c);
+    public abstract boolean includeClass(Class<?> c);
 
-    abstract public boolean includeField(Field f);
+    public abstract boolean includeField(Field f);
 
 
 
@@ -206,7 +206,7 @@ public abstract class ObjectGraph extends MapNodeGraph<Object, ObjectGraph.Acces
             return (Y) path.getLast().getTwo().get(current);
         };
     }
-    abstract public static class Accessor {
+    public abstract static class Accessor {
         abstract Object get(Object container);
         abstract void set(Object container, Object value);
     }

@@ -14,8 +14,6 @@ public class Grid2DRelative implements World {
     private final double ENERGY_COST_FACTOR;
     private final double MATCH_REWARD_FACTOR;
 
-    private double[] action;
-
     private final int totalTime;
     private int time;
 
@@ -136,8 +134,7 @@ public class Grid2DRelative implements World {
         time++;
 
         this.sensor = sensor;
-        this.action = action;
-        
+
         double speed = 0.001;
         focusPositionX = speed * ((double)nextFocusPositionX) + (1.0 - speed) * focusPositionX;
         focusPositionY = speed * ((double)nextFocusPositionY) + (1.0 - speed) * focusPositionY;

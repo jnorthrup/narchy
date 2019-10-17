@@ -1,6 +1,6 @@
 package nars.time;
 
-abstract public class RecurringTask extends ScheduledTask {
+public abstract class RecurringTask extends ScheduledTask {
 
     public volatile long nextStart = Long.MIN_VALUE;
 

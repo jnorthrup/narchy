@@ -95,13 +95,13 @@ public class DynTaskify extends TaskList {
         this(model, beliefOrGoal, a.ditherTruth, (Compound)a.term(), a.dur, a.filter, a.nar);
     }
 
-    @Nullable
-    public Task eval(long start, long end) {
+    public @Nullable Task eval(long start, long end) {
         return model.evalComponents(template, start, end, this::evalComponent) && components() ?
             task() : null;
     }
 
-    @Override @Nullable public Task task() {
+    @Override
+    public @Nullable Task task() {
 
         long s, e;
         long earliest;

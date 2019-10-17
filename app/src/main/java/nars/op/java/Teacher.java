@@ -9,7 +9,7 @@ import java.util.function.Predicate;
 
 public class Teacher<X> {
 
-    final static org.slf4j.Logger logger = LoggerFactory.getLogger(Teacher.class);
+    static final org.slf4j.Logger logger = LoggerFactory.getLogger(Teacher.class);
     protected final X x;
     protected final NAR n;
 

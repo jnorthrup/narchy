@@ -959,7 +959,7 @@ public final class Dbvt {
 
 
 
-	abstract public static class ICollide {
+	public abstract static class ICollide {
 		void process(Node n1, Node n2) {
 
 		}
@@ -980,7 +980,7 @@ public final class Dbvt {
 		}
 	}
 
-	public static abstract class IWriter {
+	public abstract static class IWriter {
 		public abstract void Prepare(Node root, int numnodes);
 		public abstract void WriteNode(Node n, int index, int parent, int child0, int child1);
 		public abstract void WriteLeaf(Node n, int index, int parent);

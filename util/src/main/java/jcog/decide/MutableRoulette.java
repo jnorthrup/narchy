@@ -25,7 +25,7 @@ import static java.lang.Float.MIN_NORMAL;
  */
 public class MutableRoulette {
 
-    private final static float EPSILON = MIN_NORMAL;
+    private static final float EPSILON = MIN_NORMAL;
     /**
      * weights of each choice
      */

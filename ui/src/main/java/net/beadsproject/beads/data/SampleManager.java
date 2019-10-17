@@ -21,19 +21,19 @@ class SampleManager {
     /**
      * List of all Samples, indexed by name.
      */
-    private final static Map<String, Sample> samples = new TreeMap<>();
+    private static final Map<String, Sample> samples = new TreeMap<>();
 
     /**
      * List of Sample groups, indexed by group name.
      */
-    private final static Map<String, ArrayList<Sample>> groups = new TreeMap<>();
+    private static final Map<String, ArrayList<Sample>> groups = new TreeMap<>();
 
     /**
      * List of group names mapped to group directories, groups only in this list if from same directory.
      */
-    private final static Map<String, String> groupDirs = new TreeMap<>();
+    private static final Map<String, String> groupDirs = new TreeMap<>();
 
-    private final static Collection<SampleGroupListener> listeners = new HashSet<>();
+    private static final Collection<SampleGroupListener> listeners = new HashSet<>();
 
     private static boolean verbose = true;
 

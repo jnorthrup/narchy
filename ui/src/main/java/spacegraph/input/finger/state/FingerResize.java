@@ -8,7 +8,7 @@ import spacegraph.input.finger.FingerRenderer;
 import spacegraph.space2d.widget.windo.util.DragEdit;
 
 public abstract class FingerResize extends Dragging {
-    private final static float aspectRatioRatioLimit = 0.1f;
+    private static final float aspectRatioRatioLimit = 0.1f;
     private final boolean invY;
     private RectFloat before;
 
@@ -155,7 +155,7 @@ public abstract class FingerResize extends Dragging {
 
     }
 
-    abstract protected v2 pos(Finger finger);
+    protected abstract v2 pos(Finger finger);
 
     /** current size */
     protected abstract RectFloat size();
@@ -169,7 +169,7 @@ public abstract class FingerResize extends Dragging {
         this.mode = null;
     }
 
-    @Nullable public FingerResize mode(DragEdit mode) {
+    public @Nullable FingerResize mode(DragEdit mode) {
         if (null == (this.mode = mode))
             return null;
         else

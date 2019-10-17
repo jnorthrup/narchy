@@ -29,7 +29,7 @@ package jake2.client;
  * cl_sustain_t
  */
 public class cl_sustain_t {
-	static abstract class ThinkAdapter {
+	abstract static class ThinkAdapter {
 		abstract void think(cl_sustain_t self);
 	}
 	

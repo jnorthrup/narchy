@@ -13,8 +13,6 @@ import spacegraph.space2d.container.layout.ForceDirected2D;
 /** debugging/meta-view */
 public class Inspector extends Bordering {
 
-    private final Graph2D graphView;
-
     MapNodeGraph<Surface,Object> graph = new MapNodeGraph();
 
 
@@ -26,7 +24,7 @@ public class Inspector extends Bordering {
         int depth = 4;
         include(s, depth);
 
-        graphView = new Graph2D<Node<Surface, Object>>()
+        Graph2D graphView = new Graph2D<Node<Surface, Object>>()
 
                 .update(new ForceDirected2D())
 

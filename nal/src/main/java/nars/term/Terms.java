@@ -276,8 +276,7 @@ public enum Terms {
 	}
 
 
-	@Nullable
-	public static Term[] concat(Term[] a, Term... b) {
+	public static @Nullable Term[] concat(Term[] a, Term... b) {
 
 		if (a.length == 0) return b;
 		if (b.length == 0) return a;
@@ -294,22 +293,19 @@ public enum Terms {
 	}
 
 
-	@Nullable
-	public static Atom atomOr(@Nullable Term possiblyCompound, Atom other) {
+	public static @Nullable Atom atomOr(@Nullable Term possiblyCompound, Atom other) {
 		return (possiblyCompound instanceof Atom) ? (Atom) possiblyCompound : other;
 	}
 
-	@Nullable
-	public static Atom atomOrNull(@Nullable Term t) {
+	public static @Nullable Atom atomOrNull(@Nullable Term t) {
 		return atomOr(t, null);
 	}
 
 	/**
 	 * dangerous because some operations involving concepts can naturally reduce to atoms, and using this interprets them as non-existent
 	 */
-	@Nullable
 	@Deprecated
-	public static Compound compoundOrNull(@Nullable Term t) {
+	public static @Nullable Compound compoundOrNull(@Nullable Term t) {
 		return t instanceof Compound ? (Compound) t : null;
 	}
 
@@ -333,8 +329,7 @@ public enum Terms {
 	 *
 	 * @param superterm filter applies to the immediate superterm of a potential subterm
 	 */
-	@Nullable
-	public static Term[] nextRepeat(Subterms c, ToIntFunction<Term> countIf, int minCount) {
+	public static @Nullable Term[] nextRepeat(Subterms c, ToIntFunction<Term> countIf, int minCount) {
 		ObjectIntHashMap<Term> oi = Terms.subtermScore(c, countIf, minCount);
 		if (oi == null)
 			return null;
@@ -355,8 +350,7 @@ public enum Terms {
 	/**
 	 * counts the repetition occurrence count of each subterm within a compound
 	 */
-	@Nullable
-	public static ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
+	public static @Nullable ObjectIntHashMap<Term> subtermScore(Subterms c, ToIntFunction<Term> score, int minTotalScore) {
 		ObjectIntHashMap<Term> uniques = new ObjectIntHashMap(8); //c.volume());
 
 
@@ -453,8 +447,7 @@ public enum Terms {
 	 * paths in subterms of commutive terms are excluded also because the
 	 * position is undeterministic.
 	 */
-	@Nullable
-	public static byte[] pathConstant(Term container, Term subterm) {
+	public static @Nullable byte[] pathConstant(Term container, Term subterm) {
 		if (!canExtractFixedPath(container))
 			return null;
 

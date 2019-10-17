@@ -90,7 +90,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     /**
      * list of current colidables in the engine, aggregated from the spatials that are present
      */
-    abstract public List<Collidable> collidables();
+    public abstract List<Collidable> collidables();
 
     
 
@@ -221,7 +221,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     }
 
 
-    private final static ConvexShape pointShape = (ConvexShape) new SphereShape(Util.sqrt(Float.MIN_NORMAL)).setMargin(Float.MIN_NORMAL);
+    private static final ConvexShape pointShape = (ConvexShape) new SphereShape(Util.sqrt(Float.MIN_NORMAL)).setMargin(Float.MIN_NORMAL);
 
     public static void rayTestSingle(Transform rayFromTrans, Transform rayToTrans,
                                      Collidable collidable,
@@ -640,7 +640,7 @@ public abstract class Collisions<X> extends BulletGlobals {
     /**
      * RayResultCallback is used to report new raycast results.
      */
-    public static abstract class RayResultCallback {
+    public abstract static class RayResultCallback {
         protected float closestHitFraction = 1f;
         public Collidable collidable;
         protected short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
@@ -675,7 +675,7 @@ public abstract class Collisions<X> extends BulletGlobals {
         }
     }
 
-    public static abstract class ConvexResultCallback {
+    public abstract static class ConvexResultCallback {
         float closestHitFraction = 1f;
         short collisionFilterGroup = CollisionFilterGroups.DEFAULT_FILTER;
         short collisionFilterMask = CollisionFilterGroups.ALL_FILTER;

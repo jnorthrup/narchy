@@ -12,7 +12,7 @@ public class RecycledDynBytes extends DynBytes {
 
     static final int MAX_KEY_CAPACITY = 8192;
     //final static ThreadLocal<DequePool<byte[]>> bytesPool = DequePool.threadLocal(()->new byte[MAX_KEY_CAPACITY]);
-    final static ThreadLocal<MetalPool<RecycledDynBytes>> bytesPool = MetalPool.threadLocal(()->
+    static final ThreadLocal<MetalPool<RecycledDynBytes>> bytesPool = MetalPool.threadLocal(()->
             new UnsafeRecycledDynBytes(
             //new RecycledDynBytes(
                     MAX_KEY_CAPACITY));

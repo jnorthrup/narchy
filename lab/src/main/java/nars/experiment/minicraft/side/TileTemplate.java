@@ -16,7 +16,7 @@ package nars.experiment.minicraft.side;
 public final class TileTemplate implements java.io.Serializable {
     private static final long serialVersionUID = 1L;
 
-    public final static TileTemplate tree = new TileTemplate(
+    public static final TileTemplate tree = new TileTemplate(
             new TileID[][]{
                     {TileID.NONE, TileID.LEAVES, TileID.LEAVES, TileID.NONE, TileID.NONE,
                             TileID.NONE},

@@ -34,8 +34,7 @@ public abstract class SpaceMouse extends MouseAdapter {
         throw new TODO();
     }
 
-    @Nullable
-    public Collidable pickCollidable(float x, float y) {
+    public @Nullable Collidable pickCollidable(float x, float y) {
         ClosestRay c = pickRay(x, y);
         if (c.hasHit()) {
             Collidable co = c.collidable;

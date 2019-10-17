@@ -23,8 +23,7 @@ public interface Sampler<X> {
      * gets the next value without removing changing it or removing it from any index.  however
      * the bag is cycled so that subsequent elements are different.
      */
-    @Nullable
-    default X sample(Random rng) {
+    default @Nullable X sample(Random rng) {
         Object[] result = new Object[1];
         sample(rng, ((Predicate<? super X>) (x) -> {
             result[0] = x;

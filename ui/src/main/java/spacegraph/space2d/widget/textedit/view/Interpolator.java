@@ -75,7 +75,7 @@ public enum Interpolator {
   };
 
   @Deprecated private final LoadingCache<Integer, double[]> cache =
-      CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<Integer, double[]>() {
+      CacheBuilder.newBuilder().maximumSize(1000).build(new CacheLoader<>() {
         @Override
         public double[] load(Integer divOfNum) {
           return newCurve(divOfNum);

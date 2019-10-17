@@ -128,7 +128,7 @@ public class ConceptWidget extends SpaceWidget<Concept> {
 
         float termlinkPri, tasklinkPri;
         boolean inactive;
-        final static float priTHRESH = ScalarValue.EPSILON;
+        static final float priTHRESH = ScalarValue.EPSILON;
 
         public ConceptEdge(ConceptWidget src, ConceptWidget target, float pri) {
             super(src, target, pri);

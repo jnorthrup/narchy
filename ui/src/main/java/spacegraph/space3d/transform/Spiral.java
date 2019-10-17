@@ -9,11 +9,7 @@ import spacegraph.space3d.Spatial;
  */
 public class Spiral<X> implements SpaceTransform<X> {
 
-    private final float nodeSpeed = 0.3f;
     private int order;
-
-    private final float baseRad = 40f;
-    private final float angleRate = 0.5f;
 
     @Override
     public void update(Iterable<Spatial<X>> g, float dt) {
@@ -37,16 +33,19 @@ public class Spiral<X> implements SpaceTransform<X> {
         int o = order++;
 
 
+        float angleRate = 0.5f;
         float angle = o * angleRate;
+        float baseRad = 40f;
         float r = baseRad + o * angleRate * 1.6f /* ~phi */ ;
         SimpleSpatial vv = (SimpleSpatial) v;
         vv.body.clearForces();
         vv.body.setLinearVelocity(0,0,0);
+        float nodeSpeed = 0.3f;
         vv.move(
             (float) (Math.sin(angle) * r),
             (float) (Math.cos(angle) * r),
             0,
-            nodeSpeed
+                nodeSpeed
         );
 
 

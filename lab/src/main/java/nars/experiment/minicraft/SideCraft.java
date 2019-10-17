@@ -24,8 +24,6 @@ import static nars.$.$;
 public class SideCraft extends GameX {
 
     private final SideScrollMinicraft craft;
-    private final Bitmap2DSensor<PixelBag> pixels;
-    private final AutoclassifiedBitmap camAE;
 
     public static void main(String[] args) {
         runRT(nar1 -> {
@@ -50,12 +48,12 @@ public class SideCraft extends GameX {
                 .addActions($.$("cra"), this);
 
 
-        camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap("cra", cam.pixels, 8, 8, 32, this);
         camAE.alpha.set(0.1f);
         SpaceGraph.window(camAE.newChart(), 500, 500);
 
 
-        pixels = senseCamera("cra", cam);
+        Bitmap2DSensor<PixelBag> pixels = senseCamera("cra", cam);
 
 
         /* slow */

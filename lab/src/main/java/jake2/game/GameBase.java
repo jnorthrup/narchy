@@ -123,7 +123,7 @@ public class GameBase {
 
     public static cvar_t sv_maplist = new cvar_t();
 
-    public final static float STOP_EPSILON = 0.1f;
+    public static final float STOP_EPSILON = 0.1f;
 
     /**
      * Slide off of the impacting object returns the blocked flags (1 = floor, 2 =

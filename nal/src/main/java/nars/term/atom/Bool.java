@@ -17,7 +17,8 @@ import static nars.Op.BOOL;
  *
  *  Implements "Unknown-state logic" (https://en.wikipedia.org/wiki/Ternary_computer)
  */
-@Skill("Ternary_computer") abstract public class Bool extends Keyword {
+@Skill("Ternary_computer")
+public abstract class Bool extends Keyword {
 
     /**
      * absolutely nonsense
@@ -83,7 +84,7 @@ import static nars.Op.BOOL;
 
 
     @Override
-    abstract public boolean equalsNeg(Term t);
+    public abstract boolean equalsNeg(Term t);
 
 
 }

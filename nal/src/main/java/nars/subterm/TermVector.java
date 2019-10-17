@@ -61,7 +61,7 @@ public abstract class TermVector extends TermMetadata implements Subterms, The /
 
 
     @Override
-    abstract public Term sub(int i);
+    public abstract Term sub(int i);
 
     @Override
     public String toString() {

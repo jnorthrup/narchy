@@ -35,8 +35,6 @@ public class ExperimentRun<E> implements Runnable {
      */
     private final List<Sensor<E, ?>> sensors;
     private final E experiment;
-    private long startTime;
-    private long endTime;
 
     public ExperimentRun(E experiment, DataTable data, List<Sensor<E, ?>> sensors, BiConsumer<E, ExperimentRun<E>> procedure) {
         this.experiment = experiment;
@@ -61,7 +59,7 @@ public class ExperimentRun<E> implements Runnable {
 
     @Override
     public void run() {
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
 
         try {
             procedure.accept(experiment, this);
@@ -70,7 +68,7 @@ public class ExperimentRun<E> implements Runnable {
             t.printStackTrace();
         }
 
-        endTime = System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
 
         if (data != null) {
             ((ARFF)data).setComment(experiment + ": " + procedure +

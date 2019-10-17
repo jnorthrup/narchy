@@ -292,7 +292,7 @@ public class Builtin {
         }
         statiks = s.toImmutable();
     }
-    @Nullable public static Functor functor(Term x) {
+    public static @Nullable Functor functor(Term x) {
         return statiks.get(x);
     }
 

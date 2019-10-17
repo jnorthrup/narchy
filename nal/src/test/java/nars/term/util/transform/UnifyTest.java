@@ -65,7 +65,7 @@ public class UnifyTest {
     }
 
 
-    static private void test(/**/ Op type, String s1, String s2, boolean shouldUnify) {
+    private static void test(/**/ Op type, String s1, String s2, boolean shouldUnify) {
         for (int seed : new int[]{1, 2, 3, 4}) {
             try {
                 test(seed, type, s1, s2, shouldUnify, false, false);
@@ -80,7 +80,7 @@ public class UnifyTest {
         assertNotEquals( $$("{a, %X}"), $$("{a, %X..+}"));
     }
 
-    static private Unify test(int rngSeed, /**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) throws Narsese.NarseseException {
+    private static Unify test(int rngSeed, /**/ Op type, String s1, String s2, boolean shouldSub, boolean anon1, boolean anon2) throws Narsese.NarseseException {
 
 
         Anon a = new Anon();
@@ -143,7 +143,7 @@ public class UnifyTest {
 
                 } else {
 
-                    assertTrue(n1 > xy.size(), "why matched?: " + xy);
+                    assertTrue(n1 > xy.size(), () -> "why matched?: " + xy);
 
                 }
 

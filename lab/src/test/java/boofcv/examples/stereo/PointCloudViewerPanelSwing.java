@@ -138,7 +138,7 @@ public class PointCloudViewerPanelSwing extends JPanel
 		shiftPressed = false;
 	}
 
-	synchronized public void setWorldToCamera( Se3_F32 worldToCamera ) {
+	public synchronized void setWorldToCamera(Se3_F32 worldToCamera ) {
 		this.worldToCamera.set(worldToCamera);
 	}
 
@@ -146,18 +146,18 @@ public class PointCloudViewerPanelSwing extends JPanel
 		this.hfov = radians;
 	}
 
-	synchronized public void clearCloud() {
+	public synchronized void clearCloud() {
 		cloudXyz.reset();
 		cloudColor.reset();
 	}
 
-	synchronized public void addPoint( float x , float y , float z , int rgb ) {
+	public synchronized void addPoint(float x , float y , float z , int rgb ) {
 		cloudXyz.add(x);
 		cloudXyz.add(y);
 		cloudXyz.add(z);
 		cloudColor.add(rgb);
 	}
-	synchronized public void addPoints( float pointsXYZ[] , int pointsRGB[] , int length ) {
+	public synchronized void addPoints(float pointsXYZ[] , int pointsRGB[] , int length ) {
 		int idxSrc = cloudXyz.size*3;
 
 		cloudXyz.extend( cloudXyz.size + length*3 );

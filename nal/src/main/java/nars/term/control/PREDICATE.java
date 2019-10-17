@@ -83,8 +83,7 @@ public interface PREDICATE<X> extends Term, Predicate<X> {
         }
     }
 
-    @Nullable
-    static <X> PREDICATE<X> andFlat(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {
+    static @Nullable <X> PREDICATE<X> andFlat(Collection<PREDICATE<X>> cond, @Nullable PREDICATE<X> conseq) {
         Iterator<PREDICATE<X>> c = cond.iterator();
         return andFlat(Iterators.toArray(
                     (conseq != null ? Iterators.concat(c, Iterators.singletonIterator(conseq)) : c),

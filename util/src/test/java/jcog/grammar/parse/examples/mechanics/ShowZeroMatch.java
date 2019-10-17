@@ -33,7 +33,7 @@ public class ShowZeroMatch {
 	public static void main(String[] args) {
 
 		Parser p = new Repetition(new Word());
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		String s = "41 42 43";
 		v.add(new TokenAssembly(s));
 		System.out.println(p.match(v));

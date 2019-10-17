@@ -13,18 +13,12 @@ package net.beadsproject.beads.data;
  */
 public class SampleAudioFormat {
 
-    private final int channels;
     public final int bitDepth;
     public final float sampleRate;
-    private final boolean bigEndian;
-    private final boolean signed;
 
     private SampleAudioFormat(float sampleRate, int bitDepth, int channels, boolean signed, boolean bigEndian) {
         this.sampleRate = sampleRate;
         this.bitDepth = bitDepth;
-        this.signed = signed;
-        this.bigEndian = bigEndian;
-        this.channels = channels;
     }
 
     public SampleAudioFormat(float sampleRate, int bitDepth, int channels) {

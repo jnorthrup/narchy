@@ -177,7 +177,7 @@ public class a extends GamePanel {
 		Graphics2D g = (Graphics2D) image.getGraphics();
 		Graphics2D g2 = null;
 		Random random = new Random();
-		ArrayList<float[]> queue = new ArrayList<float[]>();
+		ArrayList<float[]> queue = new ArrayList<>();
 		float[] player = null;
 
 		

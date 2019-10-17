@@ -132,9 +132,9 @@ public abstract class CircularBuffer {
         }
     }
 
-    abstract protected void reallocate(int capacity);
+    protected abstract void reallocate(int capacity);
 
-    abstract public int capacityInternal();
+    public abstract int capacityInternal();
 
     public int writeAt() {
         lock.lock();

@@ -4,7 +4,7 @@ import nars.truth.MutableTruth;
 import nars.truth.Truth;
 import nars.truth.func.NALTruth;
 
-abstract public class AbstractSectTruth extends AbstractDynamicTruth {
+public abstract class AbstractSectTruth extends AbstractDynamicTruth {
 
 
 

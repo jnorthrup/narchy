@@ -20,7 +20,7 @@ class Rect1DTest {
 
         HyperPoint centroid = rect.center();
         double x = centroid.coord(0);
-        assertTrue(x == 2.0d, "Bad X-coord of centroid - expected " + 2.0 + " but was " + x);
+        assertTrue(x == 2.0d, () -> "Bad X-coord of centroid - expected " + 2.0 + " but was " + x);
 
     }
 

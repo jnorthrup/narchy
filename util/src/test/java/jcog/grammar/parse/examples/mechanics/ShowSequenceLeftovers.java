@@ -30,7 +30,7 @@ public class ShowSequenceLeftovers {
 	 */
 	public static void main(String args[]) {
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly("3 * 4 + 5"));
 
 		System.out.println(ArithmeticParser.start().match(v));

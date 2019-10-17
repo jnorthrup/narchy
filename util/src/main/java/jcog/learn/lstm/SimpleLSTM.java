@@ -13,10 +13,7 @@ public class SimpleLSTM  {
 	public double[] out;
 	public double[] in;
 
-	private final double init_weight_range = 1.0;
-	private final double SCALE_OUTPUT_DELTA = 1.0;
-
-	private final int full_input_dimension;
+    private final int full_input_dimension;
 	private final int output_dimension;
 	private final int cell_blocks;
 	private final Neuron F;
@@ -31,13 +28,9 @@ public class SimpleLSTM  {
 	
 	private final double [][] dSdF;
 	private final double [][] dSdG;
-	
-	private final NeuronType neuron_type_F = NeuronType.Sigmoid;
-	private final NeuronType neuron_type_G = NeuronType.Sigmoid;
-	
 
 
-	private double[] sumF;
+    private double[] sumF;
 	private double[] actF;
 	private double[] sumG;
 	private double[] actG;
@@ -53,18 +46,21 @@ public class SimpleLSTM  {
 		
 		context = new double[cell_blocks];
 		
-		full_input_dimension = input_dimension + cell_blocks + 1; 
-		
-		F = Neuron.build(neuron_type_F);
-		G = Neuron.build(neuron_type_G);
+		full_input_dimension = input_dimension + cell_blocks + 1;
+
+        NeuronType neuron_type_F = NeuronType.Sigmoid;
+        F = Neuron.build(neuron_type_F);
+        NeuronType neuron_type_G = NeuronType.Sigmoid;
+        G = Neuron.build(neuron_type_G);
 		
 		weightsF = new double[cell_blocks][full_input_dimension];
 		weightsG = new double[cell_blocks][full_input_dimension];
 		
 		dSdF = new double[cell_blocks][full_input_dimension];
 		dSdG = new double[cell_blocks][full_input_dimension];
-		
-		for (int i = 0; i < full_input_dimension; i++) {
+
+        double init_weight_range = 1.0;
+        for (int i = 0; i < full_input_dimension; i++) {
 			for (int j = 0; j < cell_blocks; j++) {
 				weightsF[j][i] = (r.nextDouble() * 2.0d - 1d) * init_weight_range;
 				weightsG[j][i] = (r.nextDouble() * 2.0d - 1d) * init_weight_range;
@@ -238,7 +234,8 @@ public class SimpleLSTM  {
 				Arrays.fill(deltaH, 0);
 			}
 
-			final double outputDeltaScale = SCALE_OUTPUT_DELTA;
+            double SCALE_OUTPUT_DELTA = 1.0;
+            final double outputDeltaScale = SCALE_OUTPUT_DELTA;
 
 			for (int k = 0; k < output_dimension; k++) {
 

@@ -71,8 +71,6 @@ public class KIFParser {
      */
     public HashMap<String, Formula> formulaMap = new HashMap<>();
 
-    private final String filename = "";
-
     private int totalLinesForComments = 0;
 
     /** warnings generated during parsing */
@@ -168,6 +166,7 @@ public class KIFParser {
         StringBuilder expression = new StringBuilder();
         int lastVal;
         Formula f = new Formula();
+        String filename = "";
         String errStart = "Parsing error in " + filename;
         String errStr = null;
         int duplicateCount = 0;
@@ -471,8 +470,10 @@ public class KIFParser {
      */
     public void writeFile(String fname) {
 
-        try (FileWriter fr = new FileWriter(fname); PrintWriter pr = new PrintWriter(fr)) {
-            for (Formula formula : formulaMap.values()) pr.println(formula.theFormula);
+        try (FileWriter fr = new FileWriter(fname)) {
+            try (PrintWriter pr = new PrintWriter(fr)) {
+                for (Formula formula : formulaMap.values()) pr.println(formula.theFormula);
+            }
         } catch (Exception ex) {
             System.out.println(ex.getMessage());
             ex.printStackTrace();

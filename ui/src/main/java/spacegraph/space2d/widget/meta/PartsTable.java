@@ -70,9 +70,8 @@ public class PartsTable extends Gridding implements GridModel, GridRenderer {
         return partEntries.size();
     }
 
-    @Nullable
     @Override
-    public Object get(int x, int y) {
+    public @Nullable Object get(int x, int y) {
         try {
             Map.Entry<?, Part> pe = partEntries.get(y);
             Object k = pe.getKey();

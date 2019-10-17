@@ -294,8 +294,7 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     }
 
     /** removes the last item in the list, or null if empty */
-    @Nullable
-    public X poll() {
+    public @Nullable X poll() {
         X x = list.poll();
         if (x != null)
             set.remove(x);

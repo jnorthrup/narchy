@@ -12,10 +12,8 @@ import org.jetbrains.annotations.Nullable;
 
 public class DeductiveChainTest  {
 
-    @NotNull
-    public final Term q;
-    @NotNull
-    public final Term[] beliefs;
+    public final @NotNull Term q;
+    public final @NotNull Term[] beliefs;
 
     @FunctionalInterface
     public interface IndexedStatementBuilder {
@@ -23,14 +21,11 @@ public class DeductiveChainTest  {
         Term apply(int x, int y);
     }
 
-    @Nullable
-    public static final IndexedStatementBuilder inh = (int x, int y) ->
+    public static final @Nullable IndexedStatementBuilder inh = (int x, int y) ->
             $.inh(a(x), a(y));
-    @Nullable
-    public static final IndexedStatementBuilder sim = (int x, int y) ->
+    public static final @Nullable IndexedStatementBuilder sim = (int x, int y) ->
             $.sim(a(x), a(y));
-    @Nullable
-    public static final IndexedStatementBuilder impl = (int x, int y) ->
+    public static final @Nullable IndexedStatementBuilder impl = (int x, int y) ->
             $.impl(a(x), a(y));
 
 
@@ -58,8 +53,7 @@ public class DeductiveChainTest  {
     }
 
 
-    @NotNull
-    static Atomic a(int i) {
+    static @NotNull Atomic a(int i) {
         return $.the((byte)('a' + i));
     }
 

@@ -38,7 +38,7 @@ import spacegraph.space3d.phys.math.Transform;
  */
 public abstract class DiscreteCollisionDetectorInterface {
 
-	public static abstract class Result {
+	public abstract static class Result {
 		
 		public abstract void setShapeIdentifiers(int partId0, int index0, int partId1, int index1);
 

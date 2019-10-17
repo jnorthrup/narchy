@@ -53,9 +53,6 @@ public enum Why { ;
 
 
 	@Nullable public static Term why(RoaringBitmap why, int capacity) {
-		if (capacity==0)
-			return null;
-
 		int ss = why.getCardinality();
 		if (ss == 0)
 			return null;
@@ -87,7 +84,7 @@ public enum Why { ;
 ////		}
 //	}
 
-	@Nullable public static Termed whyLazy(@Nullable Caused... c) {
+	public static @Nullable Termed whyLazy(@Nullable Caused... c) {
 		return whyLazy(c, NAL.causeCapacity.intValue());
 	}
 
@@ -254,8 +251,8 @@ public enum Why { ;
 			this.capacity = capacity;
 		}
 
-		@Nullable @Override
-		protected Term build() {
+		@Override
+		protected @Nullable Term build() {
 			return Why.why(c, capacity);
 		}
 	}

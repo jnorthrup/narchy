@@ -56,7 +56,7 @@ public enum PriMerge implements BiConsumer<Prioritizable, Prioritized> {
 
 
 
-    abstract public float merge(float e, float i);
+    public abstract float merge(float e, float i);
 
 
     @Override public final void accept(Prioritizable existing, Prioritized incoming) {

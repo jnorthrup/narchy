@@ -41,13 +41,9 @@ public class SendEvent extends JFrame {
     private Rdp rdp;
     private javax.swing.JPanel jContentPane;
     private JTextField inputTypeField;
-    private JLabel jLabel;
     private JTextField flagsField;
-    private JLabel jLabel1;
     private JTextField param1Field;
-    private JLabel jLabel2;
     private JTextField param2Field;
-    private JLabel jLabel3;
     private JButton jButton;
     private JTextField flagMaskField;
     private JButton jButton1;
@@ -82,10 +78,10 @@ public class SendEvent extends JFrame {
      */
     private javax.swing.JPanel getJContentPane() {
         if (jContentPane == null) {
-            jLabel3 = new JLabel();
-            jLabel2 = new JLabel();
-            jLabel1 = new JLabel();
-            jLabel = new JLabel();
+            JLabel jLabel3 = new JLabel();
+            JLabel jLabel2 = new JLabel();
+            JLabel jLabel1 = new JLabel();
+            JLabel jLabel = new JLabel();
             GridBagConstraints gridBagConstraints1 = new GridBagConstraints();
             GridBagConstraints gridBagConstraints2 = new GridBagConstraints();
             GridBagConstraints gridBagConstraints3 = new GridBagConstraints();

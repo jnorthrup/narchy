@@ -45,8 +45,6 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
     private String xhost = "127.0.0.1";
     private int xport = 0;
     private boolean xforwarding = false;
-    private String user = "";
-    private String host = "127.0.0.1";
     private String proxy_http_host = null;
     private int proxy_http_port = 0;
     private String proxy_socks5_host = null;
@@ -122,6 +120,8 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         while (thread != null) {
             try {
                 int port = 22;
+                String host1 = "127.0.0.1";
+                String user1 = "";
                 try {
                     String[] destinations = JCTermSwing.getCR().load(configName).destinations;
                     String _host = promptDestination(term, destinations);
@@ -141,14 +141,14 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
                         }
                         _host = _host.substring(0, _host.indexOf(':'));
                     }
-                    user = _user;
-                    host = _host;
+                    user1 = _user;
+                    host1 = _host;
                 } catch (Exception ee) {
                     continue;
                 }
 
-                String user = this.user;
-                String host = this.host;
+                String user = user1;
+                String host = host1;
 
 
                 Configuration conf = JCTermSwing.getCR().load(configName);

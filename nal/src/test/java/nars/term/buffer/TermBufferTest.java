@@ -100,7 +100,7 @@ class TermBufferTest {
         assertLazyTransforms("x(a)");
     }
 
-    static private void assertLazyTransforms(String x) {
+    private static void assertLazyTransforms(String x) {
         assertEquals(x, $$(x).transform(nullTransform).toString());
     }
 

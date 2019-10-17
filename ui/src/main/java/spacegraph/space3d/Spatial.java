@@ -98,10 +98,9 @@ public abstract class Spatial<X> implements Active {
     }
 
 
-    abstract public void forEachBody(Consumer<Collidable> c);
+    public abstract void forEachBody(Consumer<Collidable> c);
 
-    @Nullable
-    abstract public List<TypedConstraint> constraints();
+    public abstract @Nullable List<TypedConstraint> constraints();
 
     public abstract void renderAbsolute(GL2 gl, int dtMS);
 
@@ -124,7 +123,7 @@ public abstract class Spatial<X> implements Active {
     }
 
 
-    abstract public float radius();
+    public abstract float radius();
 
     public void onUntouch(JoglWindow space) {
 

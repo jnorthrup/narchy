@@ -17,7 +17,6 @@ public class Node<T> {
      * Susedne prvky spojoveho zoznamu.
      */
     public Node<T> next;
-    private Node<T> prev;
 
     /**
      * Inicializuje uzol.
@@ -39,6 +38,5 @@ public class Node<T> {
     public Node(T p, Node<T> left, Node<T> right) {
         this(p);
         this.next = left;
-        this.prev = right;
     }
 }

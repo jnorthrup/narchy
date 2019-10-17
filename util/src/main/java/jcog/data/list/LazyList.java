@@ -7,7 +7,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.IntStream;
 
-abstract public class LazyList<X> extends AbstractList<X> {
+public abstract class LazyList<X> extends AbstractList<X> {
 
     private final FasterList<Object> list;
 
@@ -91,7 +91,7 @@ abstract public class LazyList<X> extends AbstractList<X> {
     }
 
     /** default value supplied for an inactive element */
-    abstract protected X inactive();
+    protected abstract X inactive();
 
     @Override
     public int size() {

@@ -16,7 +16,7 @@ import java.util.function.IntPredicate;
 
 public class SwitchAction extends DigitizedScalar implements FloatSupplier {
 
-    final static float EXP_IF_UNKNOWN = 0;
+    static final float EXP_IF_UNKNOWN = 0;
 
     private final Deciding decider;
     final float[] exp;

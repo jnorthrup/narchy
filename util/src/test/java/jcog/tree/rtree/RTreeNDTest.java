@@ -72,7 +72,7 @@ class RTreeNDTest {
             final int expectedCount = 9;
             
 
-            assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
             
             Collections.sort(results);
@@ -131,10 +131,10 @@ class RTreeNDTest {
                 final int expectedCount = rects.length;
                 
                 assertTrue(Math.abs(expectedCount - foundCount) < 10,
-                        "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
+                        () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
 
                 assertTrue(Math.abs(expectedCount - resultCount) < 10,
-                        "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount /* in case of duplicates */);
+                        () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount /* in case of duplicates */);
 
                 Set<HyperRectFloat> output = new HashSet();
                 Collections.addAll(output, results);
@@ -174,8 +174,8 @@ class RTreeNDTest {
             int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
 
             final int expectedCount = 3;
-            assertEquals(expectedCount, foundCount, "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
-            assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, foundCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
+            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
             Arrays.sort(results);
             
@@ -213,9 +213,9 @@ class RTreeNDTest {
             final int resultCount = results.size();
 
 
-            assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + resultCount);
             assertEquals(
-                    expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+                    expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
             Collections.sort(results);
 
@@ -284,8 +284,8 @@ class RTreeNDTest {
             assertEquals(entryCount, visitCount.get());
 
             final int expectedCount = entryCount;
-            assertEquals(expectedCount, foundCount, "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
-            assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, foundCount, () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
+            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
         }
     }
 
@@ -384,7 +384,7 @@ class RTreeNDTest {
 
         assertEquals(1, rTree.size());
 
-        assertFalse(rTree.containedToSet(rects[0]).isEmpty(), "Missing hyperRect that should  be found " + rects[0]);
+        assertFalse(rTree.containedToSet(rects[0]).isEmpty(), () -> "Missing hyperRect that should  be found " + rects[0]);
 
         for (int i = 1; i < rects.length; i++) {
             assertTrue(rTree.containedToSet(rects[i]).isEmpty(), "Found hyperRect that should have been removed on search " + rects[i]);

@@ -41,8 +41,7 @@ public interface CommandTask extends Task {
 	}
 
 	@Override
-	@Nullable
-	default Truth truth() {
+	default @Nullable Truth truth() {
 		return null;
 	}
 

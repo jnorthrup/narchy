@@ -7,9 +7,9 @@ import jcog.User;
  *      -saves state by leaf requests
  *      -updates matching leafs on state changes
  */
-abstract public class Root implements Contexter {
+public abstract class Root implements Contexter {
 
-    abstract public Iterable get(StatePath p);
+    public abstract Iterable get(StatePath p);
 
     /** the 'id' of a root node corresponds to the overall user context, which
      * the user controls to switch between global states

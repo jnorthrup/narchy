@@ -42,28 +42,28 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    private final static Type LP = Type.LP;
+    private static final Type LP = Type.LP;
 
     /**
      * Indicates a high-pass filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    private final static Type HP = Type.HP;
+    private static final Type HP = Type.HP;
 
     /**
      * Indicates a band-pass filter with constant skirt gain; coefficients are
      * calculated from equations given in "Cookbook formulae for audio EQ biquad
      * filter coefficients" by Robert Bristow-Johnson.
      */
-    public final static Type BP_SKIRT = Type.BP_SKIRT;
+    public static final Type BP_SKIRT = Type.BP_SKIRT;
 
     /**
      * Indicates a band-pass filter with constant peak gain; coefficients are
      * calculated from equations given in "Cookbook formulae for audio EQ biquad
      * filter coefficients" by Robert Bristow-Johnson.
      */
-    private final static Type BP_PEAK = Type.BP_PEAK;
+    private static final Type BP_PEAK = Type.BP_PEAK;
 
     /**
      * Indicates a notch (band-reject) filter; coefficients are calculated from
@@ -71,14 +71,14 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * "Cookbook formulae for audio EQ biquad filter coefficients" by Robert
      * Bristow-Johnson.
      */
-    private final static Type NOTCH = Type.NOTCH;
+    private static final Type NOTCH = Type.NOTCH;
 
     /**
      * Indicates an all-pass filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    private final static Type AP = Type.AP;
+    private static final Type AP = Type.AP;
 
     /**
      * Indicates a peaking-EQ filter; coefficients are calculated from equations
@@ -87,50 +87,50 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      * <p>
      * <em>untested!</em>
      */
-    private final static Type PEAKING_EQ = Type.PEAKING_EQ;
+    private static final Type PEAKING_EQ = Type.PEAKING_EQ;
 
     /**
      * Indicates a low-shelf filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    private final static Type LOW_SHELF = Type.LOW_SHELF;
+    private static final Type LOW_SHELF = Type.LOW_SHELF;
 
     /**
      * Indicates a high-shelf filter; coefficients are calculated from equations
      * given in "Cookbook formulae for audio EQ biquad filter coefficients" by
      * Robert Bristow-Johnson.
      */
-    private final static Type HIGH_SHELF = Type.HIGH_SHELF;
+    private static final Type HIGH_SHELF = Type.HIGH_SHELF;
 
     /**
      * Indicates a Butterworth low-pass filter; only the frequency parameter is
      * relevant.
      */
-    public final static Type BUTTERWORTH_LP = Type.BUTTERWORTH_LP;
+    public static final Type BUTTERWORTH_LP = Type.BUTTERWORTH_LP;
 
     /**
      * Indicates a Butterworth high-pass filter; only the frequency parameter is
      * relevant.
      */
-    private final static Type BUTTERWORTH_HP = Type.BUTTERWORTH_HP;
+    private static final Type BUTTERWORTH_HP = Type.BUTTERWORTH_HP;
 
     /**
      * Indicates a Bessel low-pass filter; only frequency is relevant.
      */
-    public final static Type BESSEL_LP = Type.BESSEL_LP;
+    public static final Type BESSEL_LP = Type.BESSEL_LP;
 
     /**
      * Indicates a Bessel high-pass filter; only frequency is relevant.
      */
-    private final static Type BESSEL_HP = Type.BESSEL_HP;
+    private static final Type BESSEL_HP = Type.BESSEL_HP;
 
     /**
      * Indicates a user-defined filter; see
      * {@link #setCustomType(CustomCoeffCalculator) setCustomType}. This
      * constant is not recognized by {@link #setType(int) setType}.
      */
-    private final static Type CUSTOM_FILTER = Type.CUSTOM_FILTER;
+    private static final Type CUSTOM_FILTER = Type.CUSTOM_FILTER;
 
     public enum Type {
         LP, HP, BP_PEAK, BP_SKIRT, NOTCH, AP, PEAKING_EQ, LOW_SHELF, HIGH_SHELF, BUTTERWORTH_LP, BUTTERWORTH_HP, BESSEL_LP, BESSEL_HP, CUSTOM_FILTER

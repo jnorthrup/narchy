@@ -33,7 +33,7 @@ public abstract class EvidenceEvaluator extends LongFloatTrapezoidalIntegrator  
 //
 //    }
 
-    abstract private static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
+    private abstract static class TemporalPointEvidenceEvaluator extends EvidenceEvaluator {
         final long s;
 
 

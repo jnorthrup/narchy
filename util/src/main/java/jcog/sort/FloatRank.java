@@ -38,7 +38,7 @@ import java.util.function.Predicate;
 
     final class FilteredFloatRank<X> implements FloatRank<X> {
 
-        private @Nullable final Predicate<X> filter;
+        private final @Nullable Predicate<X> filter;
         private final FloatRank<X> rank;
 
         public FilteredFloatRank(@Nullable Predicate<X> filter, FloatRank<X> rank) {

@@ -31,11 +31,9 @@ public class IRCAgent extends IRC {
 
     
     private final NAR nar;
-    
 
-    private final boolean hearTwenglish = false;
 
-    final int wordDelayMS = 100; 
+    final int wordDelayMS = 100;
 //    private final MyLeakOut out;
 
     boolean trace;
@@ -156,6 +154,7 @@ public class IRCAgent extends IRC {
 
 
     void hear(String text, String src) {
+        boolean hearTwenglish = false;
         NARHear.hear(nar, text, src, hearTwenglish ? wordDelayMS : -1);
     }
 

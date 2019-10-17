@@ -173,10 +173,8 @@ public class ExeCharts {
     }
 
     static class CausableWidget<X> extends Widget {
-        private final X c;
 
         CausableWidget(X c, String s) {
-            this.c = c;
             set(new VectorLabel(s));
         }
     }
@@ -276,12 +274,12 @@ public class ExeCharts {
     static class NARLoopPanel extends LoopPanel {
 
         final IntRange durMS = new IntRange(1, 1, 1000);
-        private final RealTime time;
 
         NARLoopPanel(NARLoop loop) {
             super(loop);
             NAR nar = loop.nar;
             durMS.set(nar.dur());
+            RealTime time;
             if (nar.time instanceof RealTime) {
                 time = ((RealTime) nar.time);
                 add(

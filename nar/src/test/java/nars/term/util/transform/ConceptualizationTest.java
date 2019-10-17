@@ -392,7 +392,7 @@ class ConceptualizationTest {
             assertEquals("(x " + op + "+- y)", f0.root().toString());
 
             Concept f = n.conceptualize(f0);
-            assertSame(e, f, e + "==" + f);
+            assertSame(e, f, () -> e + "==" + f);
 
 
             Concept g = n.conceptualize($("(x " + op + "+- x)"));

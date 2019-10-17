@@ -33,7 +33,7 @@ public class PrologAgent extends Prolog {
     private String goalText;
     
   
-    private final static OutputListener defaultOutputListener = ev -> System.out.print(ev.msg);
+    private static final OutputListener defaultOutputListener = ev -> System.out.print(ev.msg);
     
     
     /**
@@ -85,7 +85,7 @@ public class PrologAgent extends Prolog {
     /**
      * Starts agent execution in another thread
      */
-    final public Thread spawn(){
+    public final Thread spawn(){
         Thread t = new Thread(this::run);
         t.start();
         return t;

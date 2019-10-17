@@ -34,9 +34,8 @@ import java.util.logging.Logger;
  * @author MaleLabTs
  */
 public class SimpleConfig {
-    
-    
-    transient private final double STRIPING_DEFAULT_MARGIN_SIZE = 5;
+
+
     public int numberThreads = 4;
     public int numberOfJobs = 1;
     public int generations;
@@ -46,8 +45,8 @@ public class SimpleConfig {
     public boolean isStriped = true;
     public boolean isFlagging = false;
     
-    transient public String datasetName;
-    transient public String outputFolder;
+    public transient String datasetName;
+    public transient String outputFolder;
 
     /**
      * Percentange [0,100] of the number of the generations used for the Spared termination
@@ -100,6 +99,7 @@ public class SimpleConfig {
         if(isStriped){
             Logger.getLogger(this.getClass().getName()).info("Enabled striping.");
             datasetContainer.setDataSetsStriped(true);
+            double STRIPING_DEFAULT_MARGIN_SIZE = 5;
             datasetContainer.setDatasetStripeMarginSize(STRIPING_DEFAULT_MARGIN_SIZE);
             datasetContainer.setProposedNormalDatasetInterval(100);
         }

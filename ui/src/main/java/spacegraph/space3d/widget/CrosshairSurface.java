@@ -14,8 +14,6 @@ import spacegraph.video.JoglWindow;
 public class CrosshairSurface extends PaintSurface implements MouseListener {
 
     private final JoglWindow space;
-    private int mx;
-    private int my;
     private boolean mouseEnabled;
     private float smx, smy;
     private short[] pressed;
@@ -103,10 +101,10 @@ public class CrosshairSurface extends PaintSurface implements MouseListener {
     }
 
     private void update(MouseEvent e) {
-        mx = e.getX();
+        int mx = e.getX();
         smx = mx;
-        my = e.getY();
-        smy = (space.getHeight() - ((float)my)) ;
+        int my = e.getY();
+        smy = (space.getHeight() - ((float) my)) ;
 
         pressed = e.getButtonsDown();
     }

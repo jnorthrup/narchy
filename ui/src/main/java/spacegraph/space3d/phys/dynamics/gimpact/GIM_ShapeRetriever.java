@@ -40,23 +40,23 @@ class GIM_ShapeRetriever {
 	private final TriangleShapeEx trishape = new TriangleShapeEx();
 	private final TetrahedronShapeEx tetrashape = new TetrahedronShapeEx();
 
-	private final ChildShapeRetriever child_retriever = new ChildShapeRetriever();
-	private final TriangleShapeRetriever tri_retriever = new TriangleShapeRetriever();
-	private final TetraShapeRetriever tetra_retriever = new TetraShapeRetriever();
-	private final ChildShapeRetriever current_retriever;
+    private final ChildShapeRetriever current_retriever;
 
 	public GIM_ShapeRetriever(GImpactShape gim_shape) {
 		this.gim_shape = gim_shape;
 		
 		
 		if (gim_shape.needsRetrieveTriangles()) {
-			current_retriever = tri_retriever;
+            TriangleShapeRetriever tri_retriever = new TriangleShapeRetriever();
+            current_retriever = tri_retriever;
 		}
 		else if (gim_shape.needsRetrieveTetrahedrons()) {
-			current_retriever = tetra_retriever;
+            TetraShapeRetriever tetra_retriever = new TetraShapeRetriever();
+            current_retriever = tetra_retriever;
 		}
 		else {
-			current_retriever = child_retriever;
+            ChildShapeRetriever child_retriever = new ChildShapeRetriever();
+            current_retriever = child_retriever;
 		}
 
 		current_retriever.parent = this;

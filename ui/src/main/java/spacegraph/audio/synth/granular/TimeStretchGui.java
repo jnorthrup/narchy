@@ -8,14 +8,12 @@ import java.awt.*;
 
 public class TimeStretchGui extends JPanel {
 
-	private final Audio player;
-	private final JSlider tempoSlider;
+    private final JSlider tempoSlider;
 
 	public TimeStretchGui(Audio /*AudioPlayer */ player) {
 
 
-		this.player = player;
-		setLayout(null);
+        setLayout(null);
 		setSize(200, 340);
 
 		

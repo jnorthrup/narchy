@@ -155,7 +155,7 @@ public class GameItems {
             return true;
         }
     };
-    final static EntInteractAdapter Pickup_Health = new EntInteractAdapter() {
+    static final EntInteractAdapter Pickup_Health = new EntInteractAdapter() {
         @Override
         public String getID() { return "pickup_health";}
         @Override

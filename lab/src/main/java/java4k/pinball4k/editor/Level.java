@@ -31,10 +31,7 @@ public class Level {
 	private static final int DEFAULT_WIDTH = 256*4;
 	private static final int DEFAULT_HEIGHT = 256*6;
 
-	private final int width = DEFAULT_WIDTH;
-	private final int height = DEFAULT_HEIGHT;
-	
-	private final ArrayList<LevelObject> levelObjects = new ArrayList<LevelObject>();
+	private final ArrayList<LevelObject> levelObjects = new ArrayList<>();
 	public GroupList groups = new GroupList();
 	
 	/**
@@ -57,7 +54,7 @@ public class Level {
 	 * @return the size of the level
 	 */
 	public Dimension getSize() {
-		return new Dimension(width, height);
+		return new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT);
 	}
 	
 	/**
@@ -100,7 +97,7 @@ public class Level {
 	}
 	
 	public ArrayList<Handle> select(ArrayList<LevelObject> objects) {
-		ArrayList<Handle> selected = new ArrayList<Handle>();
+		ArrayList<Handle> selected = new ArrayList<>();
 		for (LevelObject obj : levelObjects) {
 			if (objects.contains(obj)) {
 				selected.addAll(obj.getHandles());
@@ -129,7 +126,7 @@ public class Level {
 	
 	private ArrayList<ArrayList<Line>> createLineStrips(ArrayList<Line> lines) {
 		ArrayList<Line> clone = (ArrayList<Line>) lines.clone();
-		ArrayList<ArrayList<Line>> strips = new ArrayList<ArrayList<Line>>();
+		ArrayList<ArrayList<Line>> strips = new ArrayList<>();
 		
 		while (clone.size() > 0) {
 			ArrayList<Line> strip = createStrip(clone);
@@ -146,7 +143,7 @@ public class Level {
 	 * @param lines line soup
 	 */
 	private ArrayList<Line> createStrip(ArrayList<Line> lines) {
-		ArrayList<Line> strip = new ArrayList<Line>();
+		ArrayList<Line> strip = new ArrayList<>();
 		
 		ArrayList<Line> searchList = (ArrayList<Line>) lines.clone();
 		Line start = searchList.get(0);
@@ -229,11 +226,11 @@ public class Level {
 	 */
 	public void write(OutputStream out, boolean writeBeziers) throws IOException {
 		
-		ArrayList<Flipper> flippers = new ArrayList<Flipper>();
-		ArrayList<Line> lines = new ArrayList<Line>();
-		ArrayList<Sircle> sircles = new ArrayList<Sircle>();
-		ArrayList<Arrow> arrows = new ArrayList<Arrow>();
-		ArrayList<Bezier> beziers = new ArrayList<Bezier>();
+		ArrayList<Flipper> flippers = new ArrayList<>();
+		ArrayList<Line> lines = new ArrayList<>();
+		ArrayList<Sircle> sircles = new ArrayList<>();
+		ArrayList<Arrow> arrows = new ArrayList<>();
+		ArrayList<Bezier> beziers = new ArrayList<>();
 		
 		for (LevelObject obj : levelObjects) {
 			if (obj instanceof Flipper) {
@@ -276,7 +273,7 @@ public class Level {
 		sortGroups(sircles);
 
 		
-		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<ArrayList<Line>, Integer>();
+		HashMap<ArrayList<Line>, Integer> stripLineMap = new HashMap<>();
 		ArrayList<ArrayList<Line>> strips = createLineStrips(lines);
 		lines.clear();
 		for (int stripIdx=0; stripIdx<strips.size(); stripIdx++) {
@@ -291,23 +288,15 @@ public class Level {
 			lines.add(firstLine);
 		}
 
-		ArrayList<LevelObject> objects = new ArrayList<LevelObject>();
+		ArrayList<LevelObject> objects = new ArrayList<>();
 
-		for (Sircle sircle : sircles) {
-			objects.add(sircle);
-		}
+		objects.addAll(sircles);
 
-		for (Arrow arrow : arrows) {
-			objects.add(arrow);
-		}
+		objects.addAll(arrows);
 
-		for (Flipper flipper : flippers) {
-			objects.add(flipper);
-		}
-		
-		for (Line line : lines) {
-			objects.add(line);
-		}
+		objects.addAll(flippers);
+
+		objects.addAll(lines);
 		
 		
 		DataOutputStream dataOut = new DataOutputStream(out);
@@ -320,7 +309,7 @@ public class Level {
 		dataOut.writeByte(lines.size());
 		dataOut.writeByte(lines.size()+arrows.size()+sircles.size()+flippers.size());
 		
-		HashMap<LevelObject, Integer> objIdxMap = new HashMap<LevelObject, Integer>();
+		HashMap<LevelObject, Integer> objIdxMap = new HashMap<>();
 
 		int idx = 0;
 		for (LevelObject obj : objects) {
@@ -518,14 +507,14 @@ public class Level {
 		}
 
 
-		ArrayList<ArrayList<Line>> stripsArray = new ArrayList<ArrayList<Line>>();
+		ArrayList<ArrayList<Line>> stripsArray = new ArrayList<>();
 		
 		int strips = dataIn.readByte();
 		int stripBytes = 1+(strips*2);
 		for (int stripIdx=0; stripIdx<strips; stripIdx++) {
 			int lines = dataIn.readUnsignedByte();
 			int prevIdx = dataIn.readUnsignedByte();
-			ArrayList<Line> linesArray = new ArrayList<Line>();
+			ArrayList<Line> linesArray = new ArrayList<>();
 			linesArray.add((Line) levelObjects.get(prevIdx));
 			for (int lineIdx=0; lineIdx<lines; lineIdx++) {
 				Line line = new Line((Line) levelObjects.get(prevIdx));

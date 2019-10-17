@@ -38,7 +38,7 @@ import static nars.time.Tense.ETERNAL;
  */
 public class PrologCore extends Prolog implements Consumer<Task> {
 
-    final static Logger logger = LoggerFactory.getLogger(PrologCore.class);
+    static final Logger logger = LoggerFactory.getLogger(PrologCore.class);
 
     //    public static final String AxiomTheory;
     public static final alice.tuprolog.Term ONE = new NumberTerm.Int(1);
@@ -85,7 +85,6 @@ public class PrologCore extends Prolog implements Consumer<Task> {
     public final Number answerConf = new AtomicFloat(confThreshold.floatValue() * 0.9f);
 
 
-    private final long timeoutMS = 50;
     private final CauseChannel<Task> in;
     private final What what;
 
@@ -189,6 +188,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
 
         logger.info("solve {}", questionTerm);
 
+        long timeoutMS = 50;
         solveWhile(questionTerm, (answer) -> {
 
 
@@ -242,8 +242,7 @@ public class PrologCore extends Prolog implements Consumer<Task> {
         return Util.map(PrologCore::nterm, new Term[t.length], t);
     }
 
-    @Nullable
-    private static Term[] nterms(Struct s) {
+    private static @Nullable Term[] nterms(Struct s) {
         int len = s.subs();
         Term[] n = new Term[len];
         for (int ni = 0; ni < len; ni++) {

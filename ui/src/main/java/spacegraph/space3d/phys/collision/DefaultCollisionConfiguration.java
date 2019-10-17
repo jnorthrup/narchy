@@ -38,12 +38,8 @@ import spacegraph.space3d.phys.dynamics.gimpact.GImpactCollisionAlgorithm;
  */
 public class DefaultCollisionConfiguration extends CollisionConfiguration {
 
-	
-	private final VoronoiSimplexSolver simplexSolver;
-	private final ConvexPenetrationDepthSolver pdSolver;
 
-	
-	private final CollisionAlgorithmCreateFunc convexConvexCreateFunc;
+    private final CollisionAlgorithmCreateFunc convexConvexCreateFunc;
 	private final CollisionAlgorithmCreateFunc convexConcaveCreateFunc;
 	private final CollisionAlgorithmCreateFunc swappedConvexConcaveCreateFunc;
 	private final CollisionAlgorithmCreateFunc compoundCreateFunc;
@@ -59,11 +55,10 @@ public class DefaultCollisionConfiguration extends CollisionConfiguration {
 	private final CollisionAlgorithmCreateFunc convexPlaneCF;
 
 	public DefaultCollisionConfiguration() {
-		simplexSolver = new VoronoiSimplexSolver();
+        VoronoiSimplexSolver simplexSolver = new VoronoiSimplexSolver();
 
-		
-		
-		pdSolver = new GjkEpaPenetrationDepthSolver();
+
+        ConvexPenetrationDepthSolver pdSolver = new GjkEpaPenetrationDepthSolver();
 		
 		
 		

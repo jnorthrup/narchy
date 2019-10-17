@@ -17,8 +17,6 @@ import java.util.Random;
 public class ForceDirected2D<X> extends DynamicLayout2D<X> {
 
     final Random rng = new XoRoShiRo128PlusRandom(1);
-    private final int iterations = 1;
-    private float AUTOSCALE = 0f;
 
 
     public final FloatRange repelSpeed = new FloatRange(6f, 0, 10f);
@@ -57,7 +55,7 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         float gRad = g.radius();
         float gRadPerSec = gRad / dtS;
 
-        AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
+        float AUTOSCALE = (float) (nodeScale.floatValue() * gRad / Math.sqrt(1f + n));
         assert (AUTOSCALE == AUTOSCALE);
 
 
@@ -66,7 +64,8 @@ public class ForceDirected2D<X> extends DynamicLayout2D<X> {
         equilibriumDistFactor = nodeSpacing.floatValue();
 
 
-        int iterations = this.iterations;
+        int iterations1 = 1;
+        int iterations = iterations1;
         float repelSpeed = this.repelSpeed.floatValue() * gRadPerSec / iterations / gRad;
         float attractSpeed = this.attractSpeed.floatValue() / iterations / gRad;
 

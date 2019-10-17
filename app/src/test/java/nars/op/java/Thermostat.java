@@ -10,7 +10,7 @@ public class Thermostat {
     /**
      * limits
      */
-    final static int cold = 0, hot = 3;
+    static final int cold = 0, hot = 3;
 
     public int is() {
         return current;

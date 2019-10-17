@@ -139,7 +139,7 @@ public class TaskList extends FasterList<Task> implements TaskRegion {
         }
     }
 
-    @Nullable public final long[] stamp(int component) {
+    public final @Nullable long[] stamp(int component) {
         Task t = items[component];
         return t!=null ? t.stamp() : null;
     }

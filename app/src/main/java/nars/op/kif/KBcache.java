@@ -928,7 +928,7 @@ public class KBcache implements Serializable {
             }
 
             fillArray("Entity", domainArray, 1, maxIndex);
-            ArrayList<String> domains = new ArrayList<String>(Arrays.asList(domainArray).subList(0, maxIndex + 1));
+            ArrayList<String> domains = new ArrayList<>(Arrays.asList(domainArray).subList(0, maxIndex + 1));
             signatures.put(rel, domains);
             valences.put(rel, maxIndex);
         }

@@ -12,7 +12,7 @@ import java.util.ArrayList;
  */
 public class ObjectPropertiesUI extends JPanel {
 	
-	public ArrayList<LevelObject> selection = new ArrayList<LevelObject>();
+	public ArrayList<LevelObject> selection = new ArrayList<>();
 	private final MyTableModel tableModel = new MyTableModel();
 	
 	public ObjectPropertiesUI() {

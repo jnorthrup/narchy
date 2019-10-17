@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DecisionTreeGetLabelTest {
 
-    private final static Object it = Boolean.TRUE;
+    private static final Object it = Boolean.TRUE;
 
     @Test
     void testGetLabelOnEmptyList() {

@@ -12,7 +12,6 @@ import spacegraph.space2d.widget.text.LabeledPane;
     //private static final float EPSILON = 0.001f;
 
     public final FloatRange f;
-    private final boolean autoUpdate = true; //TODO configurable rate
     public final FloatSlider slider;
 
     public FloatRangePort(float val, float min, float max) {
@@ -36,6 +35,8 @@ import spacegraph.space2d.widget.text.LabeledPane;
 
     @Override
     protected void renderContent(ReSurface r) {
+        //TODO configurable rate
+        boolean autoUpdate = true;
         if (autoUpdate) {
             if (active())
                 LOAD();

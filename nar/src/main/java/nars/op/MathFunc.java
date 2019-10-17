@@ -19,13 +19,12 @@ public enum MathFunc {
     ;
 
 
-    public final static Functor mul =
+    public static final Functor mul =
             new ArithmeticCommutiveBinaryBidiFunctor("mul") {
 
 
                 @Override
-                @Nullable
-                protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
+                protected @Nullable Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
                     if (xi) {
                         switch (xx) {
                             case 1:
@@ -59,11 +58,10 @@ public enum MathFunc {
                         return Int.the(xy / xx);
                 }
             };
-    public final static Functor add = new ArithmeticCommutiveBinaryBidiFunctor("add") {
+    public static final Functor add = new ArithmeticCommutiveBinaryBidiFunctor("add") {
 
         @Override
-        @Nullable
-        protected Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
+        protected @Nullable Term preFilter(Term x, int xx, boolean xi, Term y, int yy, boolean yi) {
 
             if (xi && xx == 0)
                 return y;
@@ -172,9 +170,9 @@ public enum MathFunc {
             return args.subs() == 2 && args.AND(x -> x.op() == INT) ? super.applyInline(args) : null;
         }
 
-        abstract protected Term compute(int xx, int yy);
+        protected abstract Term compute(int xx, int yy);
 
-        abstract protected Term uncompute(int xy, int xx);
+        protected abstract Term uncompute(int xy, int xx);
 
         @Override
         protected Term apply2(Evaluation e, Term x, Term y) {

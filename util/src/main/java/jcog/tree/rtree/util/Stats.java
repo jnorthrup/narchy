@@ -30,7 +30,7 @@ import java.util.Arrays;
  */
 public class Stats {
 
-    private final static int MAX_DEPTH = 96;
+    private static final int MAX_DEPTH = 96;
     private final int[] entriesAtDepth = new int[MAX_DEPTH];
     private final int[] branchesAtDepth = new int[MAX_DEPTH];
     private final int[] leavesAtDepth = new int[MAX_DEPTH];

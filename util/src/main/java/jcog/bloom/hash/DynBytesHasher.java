@@ -2,9 +2,9 @@ package jcog.bloom.hash;
 
 import jcog.data.byt.DynBytes;
 
-abstract public class DynBytesHasher<X> implements Hasher<X> {
+public abstract class DynBytesHasher<X> implements Hasher<X> {
 
-    abstract protected void write(X x, DynBytes d);
+    protected abstract void write(X x, DynBytes d);
 
     private final DynBytes d;
 

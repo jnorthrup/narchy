@@ -16,7 +16,6 @@ public class PacmanGame {
     public static final float GHOST_SPEED = 0.2f;
     public static final int UPDATES = -25;
     public static int periodMS = 50;
-    private final float playerSpeed = GHOST_SPEED*2;
 
     public void resetGhosts() {
 
@@ -77,6 +76,7 @@ public class PacmanGame {
 
     public void restart() {
         maze = Maze.create(15, 13);
+        float playerSpeed = GHOST_SPEED * 2;
         player = new Player(maze, maze.playerStart().x, maze.playerStart().y, playerSpeed);
         resetGhosts();
         text = "";

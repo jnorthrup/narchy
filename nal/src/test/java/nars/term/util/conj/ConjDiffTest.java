@@ -153,7 +153,7 @@ class ConjDiffTest {
 
     }
 
-    static private void assertConjDiffPN(Term xy, Term r, String s) {
+    private static void assertConjDiffPN(Term xy, Term r, String s) {
 
         assertEventOf(xy, r);
 

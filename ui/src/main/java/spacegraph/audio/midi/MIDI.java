@@ -10,7 +10,6 @@ import java.util.Arrays;
  */
 class MIDI {
 
-    private final MidiInReceiver receiver;
     private final float[] volume = new float[128];
 
     public MIDI() {
@@ -47,7 +46,7 @@ class MIDI {
             }
         }
 
-        this.receiver = receiver;
+        MidiInReceiver receiver1 = receiver;
 
         Arrays.fill(volume, Float.NaN);
 
@@ -60,12 +59,8 @@ class MIDI {
 
     class MidiInReceiver implements Receiver {
 
-        
-
-        private final MidiDevice device;
 
         MidiInReceiver(MidiDevice device) throws MidiUnavailableException {
-            this.device = device;
 
             if (!device.isOpen()) {
                 device.open();

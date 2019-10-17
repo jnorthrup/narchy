@@ -12,7 +12,7 @@
 
 package nars.experiment.minicraft.side;
 
-final public class Int2 implements java.io.Serializable {
+public final class Int2 implements java.io.Serializable {
 
     public int x, y;
 

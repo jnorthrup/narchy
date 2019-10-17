@@ -75,9 +75,6 @@ public class StackProfiler2 implements InternalProfiler {
             "Attach Listener"
     };
 
-    private final int stackLines = 12;
-    private final int topStacks = 10;
-    private final int periodMsec = 1;
     private final Trie<String, Boolean> excludePackageNames;
 
     public StackProfiler2() throws ProfilerException {
@@ -108,6 +105,7 @@ public class StackProfiler2 implements InternalProfiler {
     @Override
     public Collection<? extends Result> afterIteration(BenchmarkParams benchmarkParams, IterationParams iterationParams, IterationResult result) {
         samplingTask.stop();
+        int topStacks = 10;
         return Collections.singleton(new StackResult(samplingTask.stacks, new HashBag() /* TODO */, topStacks));
     }
 
@@ -137,6 +135,7 @@ public class StackProfiler2 implements InternalProfiler {
             while (!Thread.interrupted()) {
                 measure(threadBean.dumpAllThreads(false, false));
                 /*if (!*/
+                int periodMsec = 1;
                 Util.sleepMS(periodMsec);//)
                 //break;
             }
@@ -161,6 +160,7 @@ public class StackProfiler2 implements InternalProfiler {
                 }
 
 
+                int stackLines = 12;
                 StackRecord lines = new StackRecord(stackLines);
                 Stream.of(info.getStackTrace())
                         .filter(f -> !exclude(f.getClassName()))

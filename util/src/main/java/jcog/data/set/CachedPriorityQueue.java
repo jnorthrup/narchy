@@ -47,7 +47,7 @@ public class CachedPriorityQueue<X> extends AbstractQueue<X> {
 		queue.clear();
 	}
 
-	@Nullable private static <X> X id(@Nullable NLink<X> p) {
+	private static @Nullable <X> X id(@Nullable NLink<X> p) {
 		return p != null ? p.id : null;
 	}
 

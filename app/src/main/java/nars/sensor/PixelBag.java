@@ -52,8 +52,6 @@ public class PixelBag implements Bitmap2D {
 
     public List<ActionSignal> actions;
 
-    private final boolean inBoundsOnly = false;
-
 
     public PixelBag(Bitmap2D src, int px, int py) {
         this.src = src;
@@ -103,6 +101,7 @@ public class PixelBag implements Bitmap2D {
 
 
         float minX, maxX, minY, maxY;
+        boolean inBoundsOnly = false;
         if (inBoundsOnly) {
 
 

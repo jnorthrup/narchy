@@ -311,8 +311,7 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
     /**
      * undirected link
      */
-    @Nullable
-    public Wire addWire(final Wire wire) {
+    public @Nullable Wire addWire(final Wire wire) {
 
         Surface aa = wire.a, bb = wire.b;
 
@@ -405,9 +404,9 @@ public class GraphEdit2D extends MutableMapContainer<Surface, ContainerSurface> 
         }
 
 
-        abstract protected class VisibleLinkSurface extends PaintSurface {
+        protected abstract class VisibleLinkSurface extends PaintSurface {
 
-            abstract protected void paintLink(GL2 gl, ReSurface reSurface);
+            protected abstract void paintLink(GL2 gl, ReSurface reSurface);
 
             @Override
             protected final void paint(GL2 gl, ReSurface reSurface) {

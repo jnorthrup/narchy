@@ -29,12 +29,12 @@ public abstract class EndianHandler
 {
 	private static final int mask = 0xFF;
 
-	abstract public float BigFloat(float f);
-	abstract public short BigShort(short s);
-	abstract public int BigLong(int i);
-	abstract public float LittleFloat(float f);
-	abstract public short LittleShort(short s);
-	abstract public int LittleLong(int i);
+	public abstract float BigFloat(float f);
+	public abstract short BigShort(short s);
+	public abstract int BigLong(int i);
+	public abstract float LittleFloat(float f);
+	public abstract short LittleShort(short s);
+	public abstract int LittleLong(int i);
 
 	public static float swapFloat(float f)
 	{

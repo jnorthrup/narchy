@@ -15,7 +15,7 @@ public class SignalInput extends Loop {
 
     public int sampleRate;
 
-    volatile public DigitizedSignal source;
+    public volatile DigitizedSignal source;
 
     /** TODO make private */
     public float[] data;

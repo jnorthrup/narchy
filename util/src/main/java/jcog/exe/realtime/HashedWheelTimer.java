@@ -30,7 +30,7 @@ import static java.util.concurrent.TimeUnit.NANOSECONDS;
  */
 public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 
-	public final static Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
+	public static final Logger logger = LoggerFactory.getLogger(HashedWheelTimer.class);
 	static final int THREAD_PRI =
 		//Thread.MAX_PRIORITY;
 		Thread.NORM_PRIORITY;
@@ -41,8 +41,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 	static final int SHUTDOWN = Integer.MIN_VALUE;
 	public final long resolution;
 	public final int wheels;
-	final transient private boolean daemon = false;
-	private final WheelModel model;
+    private final WheelModel model;
 	private final Executor executor;
 	private final WaitStrategy waitStrategy;
 
@@ -430,7 +429,8 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		}
 
 		Thread t = this.loop = new Thread(this, HashedWheelTimer.class.getSimpleName() + '_' + hashCode());
-		t.setDaemon(daemon);
+        boolean daemon = false;
+        t.setDaemon(daemon);
 		t.setPriority(THREAD_PRI);
 		t.start();
 	}
@@ -498,7 +498,7 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		 *
 		 * @param deadlineNanoseconds deadline to wait for, in milliseconds
 		 */
-		abstract public void waitUntil(long deadlineNanoseconds) throws InterruptedException;
+		public abstract void waitUntil(long deadlineNanoseconds) throws InterruptedException;
 
 	}
 
@@ -526,17 +526,17 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		 * returns how approximately how many entries were in the wheel at start.
 		 * used in part to determine if the entire wheel is empty.
 		 */
-		abstract public int run(int wheel, HashedWheelTimer timer);
+		public abstract int run(int wheel, HashedWheelTimer timer);
 
 		/**
 		 * return false if unable to schedule
 		 */
-		abstract public boolean accept(TimedFuture<?> r, HashedWheelTimer hashedWheelTimer);
+		public abstract boolean accept(TimedFuture<?> r, HashedWheelTimer hashedWheelTimer);
 
 		/**
 		 * return false if unable to reschedule
 		 */
-		abstract public boolean reschedule(int wheel, TimedFuture r);
+		public abstract boolean reschedule(int wheel, TimedFuture r);
 
 		public final boolean schedule(TimedFuture r, int c, HashedWheelTimer timer) {
 			int offset = r.offset(resolution);
@@ -554,12 +554,12 @@ public class HashedWheelTimer implements ScheduledExecutorService, Runnable {
 		/**
 		 * estimated number of tasks currently in the wheel
 		 */
-		abstract public int size();
+		public abstract int size();
 
 		/**
 		 * allows the model to interrupt the wheel before it decides to sleep
 		 */
-		abstract public boolean isEmpty();
+		public abstract boolean isEmpty();
 
 		public void restart(HashedWheelTimer h) {
 

@@ -23,7 +23,7 @@ import java.io.Serializable;
  * a type, and a  priority.
  *
  */
-final public class PrologOp implements Serializable {
+public final class PrologOp implements Serializable {
 	private static final long serialVersionUID = 1L;
     /**
 	 * operator name

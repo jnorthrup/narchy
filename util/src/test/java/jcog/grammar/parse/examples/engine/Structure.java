@@ -59,7 +59,7 @@ public class Structure implements Term {
 	/*
 	 * the empty list singleton
 	 */
-	private final static EmptyList emptyList = new EmptyList();
+    private static final EmptyList emptyList = new EmptyList();
 
 	/**
 	 * Contructs a structure from the specified object.

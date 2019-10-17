@@ -69,7 +69,7 @@ public class CircularArrayList<E> extends AbstractList<E> implements RandomAcces
 
     @Override
     public Iterator<E> descendingIterator() {
-        return new Iterator<E>() {
+        return new Iterator<>() {
             int pos = size - 1;
 
             @Override

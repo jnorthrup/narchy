@@ -94,9 +94,8 @@ public class DefaultTermizer implements Termizer {
     /**
      * dereference a target to an object (but do not un-termize)
      */
-    @Nullable
     @Override
-    public Object object(Term t) {
+    public @Nullable Object object(Term t) {
 
         if (t == NULL) return null;
         if (t instanceof Int && t.op() == INT)
@@ -279,8 +278,7 @@ public class DefaultTermizer implements Termizer {
         return $.p(System.identityHashCode(o), 36);
     }
 
-    @Nullable
-    protected Term classInPackage(Term classs, @Deprecated Term packagge) {
+    protected @Nullable Term classInPackage(Term classs, @Deprecated Term packagge) {
 
         return null;
     }
@@ -290,8 +288,7 @@ public class DefaultTermizer implements Termizer {
     }
 
     @Override
-    @Nullable
-    public Term term(@Nullable Object o) {
+    public @Nullable Term term(@Nullable Object o) {
         if (o == null) return NULL;
         else if (o instanceof Boolean) {
             return (Boolean) o ? TRUE_TERM : FALSE_TERM;
@@ -324,8 +321,7 @@ public class DefaultTermizer implements Termizer {
 
     }
 
-    @Nullable
-    public Term obj2termCached(@Nullable Object o) {
+    public @Nullable Term obj2termCached(@Nullable Object o) {
 
         if (o == null)
             return NULL;

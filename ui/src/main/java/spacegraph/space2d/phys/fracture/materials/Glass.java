@@ -17,16 +17,6 @@ public class Glass extends Material {
     private final Random r = new XoRoShiRo128PlusRandom(1);
 
     /**
-     * Pocet prvkov kruznice.
-     */
-    private final int levels = 4;
-
-    /**
-     * Pocet prvkov v jednej kruznici.
-     */
-    private final int count = 30;
-
-    /**
      * Konstruktor inicializujuci sklo.
      */
     public Glass() {
@@ -39,6 +29,12 @@ public class Glass extends Material {
         Transform t = new Transform();
         t.set(startPoint, 0);
 
+        /**
+         * Pocet prvkov v jednej kruznici.
+         */
+        int count = 30; /**
+         * Pocet prvkov kruznice.
+         */int levels = 4;
         int allCount = count * levels;
 
         v2[] va = new v2[allCount];

@@ -24,11 +24,6 @@ public class TimeStamp {
     private final int index;
 
     /**
-     * The time ms.
-     */
-    private double timeMs;
-
-    /**
      * The time samples.
      */
     private long timeSamples;
@@ -67,7 +62,10 @@ public class TimeStamp {
      * @return the time in milliseconds.
      */
     private double getTimeMS() {
-        timeMs = context.samplesToMs(getTimeSamples());
+        /**
+         * The time ms.
+         */
+        double timeMs = context.samplesToMs(getTimeSamples());
         return timeMs;
     }
 

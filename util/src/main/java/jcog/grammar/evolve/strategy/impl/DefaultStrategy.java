@@ -291,7 +291,7 @@ public class DefaultStrategy implements RunStrategy {
         return this.context;
     }
 
-    final static Comparator<Ranking> RankingComparator = (o1, o2) -> {
+    static final Comparator<Ranking> RankingComparator = (o1, o2) -> {
         if (o1 == o2) return 0;
 
         double[] f1 = o1.getFitness();

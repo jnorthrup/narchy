@@ -7,7 +7,6 @@ import java.awt.*;
 public class WinScene extends Scene {
     private final MarioComponent component;
     private int tick;
-    private final String scrollMessage = "Thank you for saving me, Mario!";
 
     public WinScene(MarioComponent component) {
         this.component = component;
@@ -22,6 +21,7 @@ public class WinScene extends Scene {
         g.setColor(Color.decode("#8080a0"));
         g.fillRect(0, 0, 320, 240);
         g.drawImage(Art.endScene[tick / 24 % 2][0], 160 - 48, 100 - 48, null);
+        String scrollMessage = "Thank you for saving me, Mario!";
         drawString(g, scrollMessage, 160 - scrollMessage.length() * 4, 160, 0);
     }
 

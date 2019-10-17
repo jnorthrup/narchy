@@ -36,11 +36,8 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 	public final UDPeer peer;
 	public final FloatRange incomingPriMult = new FloatRange(1f, 0, 2f);
 	final What what;
-	private final int port;
-	private final boolean discover; //TODO AtomicBoolean for GUI control etc
 	private final CauseChannel<Task> recv;
 	private final PriBuffer.BagTaskBuffer send;
-	private final float outRate = 1; //TODO
 	private float peerFPS = 1;
 
 	/**
@@ -85,10 +82,11 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
 		this.what = w;
 		/*this.nar = nar;       should be set in start()  */
 		assert (nar.time instanceof RealTime.MS);
-		this.port = port;
-		this.discover = discover;
+		//TODO AtomicBoolean for GUI control etc
 
 
+		//TODO
+		float outRate = 1;
 		this.send = new PriBuffer.BagTaskBuffer(outCapacity, outRate);
 
 
@@ -232,12 +230,12 @@ public class InterNAR extends NARPart implements TriConsumer<NAR, Task /* questi
      *  anyway that the local NAR is choosing to serve,
      *  so forgetting from this helps limit possible overburden.
      */
-	final Bag<Task,MsgLink<Task, UDPeer.MsgReceived>> questions = new PriHijackBag<Task,MsgLink<Task, UDPeer.MsgReceived>>(PriMerge.max, questionCapacity, 4) {
-        @Override
-        public Task key(MsgLink<Task, UDPeer.MsgReceived> value) {
-            return value.id;
-        }
-    };
+	final Bag<Task,MsgLink<Task, UDPeer.MsgReceived>> questions = new PriHijackBag<>(PriMerge.max, questionCapacity, 4) {
+		@Override
+		public Task key(MsgLink<Task, UDPeer.MsgReceived> value) {
+			return value.id;
+		}
+	};
 
 	/** TODO this isnt attached to any event handler yet */
 	@Override public void accept(NAR NAR, Task question, Task answer) {

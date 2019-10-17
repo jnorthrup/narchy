@@ -33,7 +33,7 @@ public class BagClustering<X> {
     /**
      * how to interpret the bag items as vector space data
      */
-    abstract public static class Dimensionalize<X> {
+    public abstract static class Dimensionalize<X> {
 
         final int dims;
 
@@ -41,7 +41,7 @@ public class BagClustering<X> {
             this.dims = dims;
         }
 
-        abstract public void coord(X t, double[] d);
+        public abstract void coord(X t, double[] d);
 
         /**
          * default impl, feel free to override

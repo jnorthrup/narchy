@@ -50,7 +50,7 @@ public abstract class AbstractPath<N, E> implements Path<N, E> {
         this.graph = graph;
     }
 
-    abstract public AbstractPath<N,E> clone();
+    public abstract AbstractPath<N,E> clone();
 
     @Override
     public E edge(int beginIndex, int endIndex) {

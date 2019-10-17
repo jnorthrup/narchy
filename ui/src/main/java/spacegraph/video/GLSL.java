@@ -23,7 +23,6 @@ import static com.jogamp.opengl.GL2ES2.GL_FRAGMENT_SHADER;
 public class GLSL extends PaintSurface {
 
     private ShaderState st;
-    private ShaderCode /*vp0, */fp0;
 
     public static void main(String[] args) {
         RectFloat r = RectFloat.XYXY((float) 1, (float) 1, (float) 500, (float) 500);
@@ -85,8 +84,9 @@ public class GLSL extends PaintSurface {
         }
 
 
-        
-        fp0 = new ShaderCode(GL_FRAGMENT_SHADER, 1, new CharSequence[][]{{fsrc}});
+
+        /*vp0, */
+        ShaderCode fp0 = new ShaderCode(GL_FRAGMENT_SHADER, 1, new CharSequence[][]{{fsrc}});
         
         fp0.defaultShaderCustomization(gl, true, true);
         final ShaderProgram sp0 = new ShaderProgram();

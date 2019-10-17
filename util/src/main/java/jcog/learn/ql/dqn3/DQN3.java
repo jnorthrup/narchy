@@ -23,7 +23,6 @@ public class DQN3 extends Agent {
     private final int experienceSize;
     private final int experienceLearnedPerIteration;
     private final double tdErrorClamp;
-    private final int numHiddenUnits;
 
     private final double alpha;
     public final Mat W1;
@@ -55,7 +54,8 @@ public class DQN3 extends Agent {
         this.gamma = config.getOrDefault(Option.GAMMA, 0.9);
         this.alpha = config.getOrDefault(Option.ALPHA, 0.01);
 
-        this.numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double)inputs*numActions /* estimate */));
+        /* estimate */
+        int numHiddenUnits = (int) Math.round(config.getOrDefault(Option.NUM_HIDDEN_UNITS, (double) inputs * numActions /* estimate */));
 
         this.experienceAddProb = 1f/(int) Math.round(config.getOrDefault(Option.EXPERIENCE_ADD_EVERY, 25.0));
         this.experienceSize = (int) Math.round(config.getOrDefault(Option.EXPERIENCE_SIZE, 64.0 /* 1024 */));
@@ -67,9 +67,9 @@ public class DQN3 extends Agent {
                 //0.5f;
                 //0.01f;
 
-        this.W1 = DQN3.matRandom(rng, this.numHiddenUnits, this.inputs, rngRange);
-        this.B1 = DQN3.matRandom(rng, this.numHiddenUnits, 1, rngRange);
-        this.W2 = DQN3.matRandom(rng, this.actions, this.numHiddenUnits, rngRange);
+        this.W1 = DQN3.matRandom(rng, numHiddenUnits, this.inputs, rngRange);
+        this.B1 = DQN3.matRandom(rng, numHiddenUnits, 1, rngRange);
+        this.W2 = DQN3.matRandom(rng, this.actions, numHiddenUnits, rngRange);
         this.B2 = DQN3.matRandom(rng, this.actions, 1, rngRange);
 
         this.experience = new FasterList(experienceSize);

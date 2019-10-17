@@ -10,8 +10,8 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
     private final SoundSource source;
     private float volume;
     private final float priority;
-    
-    private float x, y, z;
+
+    private float z;
     private float score;
     
     public float pan;
@@ -32,8 +32,8 @@ public class Sound<S extends SoundProducer> implements SoundSource, Comparable
 
         if (volume > 0) {
 
-            x = source.getX(alpha) - listener.getX(alpha);
-            y = source.getY(alpha) - listener.getY(alpha);
+            float x = source.getX(alpha) - listener.getX(alpha);
+            float y = source.getY(alpha) - listener.getY(alpha);
 
             float distSqr = x * x + y * y + z * z;
             float dist = (float) Math.sqrt(distSqr);

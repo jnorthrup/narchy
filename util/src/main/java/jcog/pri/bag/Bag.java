@@ -188,11 +188,10 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
 //    };
 
 
-    abstract protected void onCapacityChange(int before, int after);
+    protected abstract void onCapacityChange(int before, int after);
 
     @Override
-    @Nullable
-    abstract public Y remove(X x);
+    public abstract @Nullable Y remove(X x);
 
     public Y put(Y x) {
         return put(x, null);
@@ -206,14 +205,14 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
         c.accept(this::put);
     }
 
-    abstract public Y put(Y b, NumberX overflowing);
+    public abstract Y put(Y b, NumberX overflowing);
 
     /**
      * returns the bag to an empty state.
      * should also depressurize to zero
      */
     @Override
-    abstract public void clear();
+    public abstract void clear();
 
     public Stream<Y> stream() {
         return StreamSupport.stream(this::spliterator, 0, false);
@@ -238,7 +237,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
         return i[0] < target.length ? Arrays.copyOf(target, i[0]) : target;
     }
 
-    @Nullable public <X> X reduce(BiFunction<Y,X,X> each, X init) {
+    public @Nullable <X> X reduce(BiFunction<Y,X,X> each, X init) {
         X x = init;
         for (Y y : this) {
             x = each.apply(y, x);
@@ -251,7 +250,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * forEach may be used to avoid allocation of iterator instances
      */
     @Override
-    abstract public Iterator<Y> iterator();
+    public abstract Iterator<Y> iterator();
 
     /**
      * Check if an item is in the bag.  both its key and its value must match the parameter
@@ -291,7 +290,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     /**
      * returns the priority of a value, or NaN if such entry is not present
      */
-    abstract public float pri(Y key);
+    public abstract float pri(Y key);
 
 
 
@@ -313,7 +312,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
     /**
      * resolves the key associated with a particular value
      */
-    abstract public X key(Y value);
+    public abstract X key(Y value);
 
     public void print() {
         print(System.out);
@@ -323,7 +322,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
         forEach(p::println);
     }
 
-    abstract public void forEach(int max, Consumer<? super Y> action);
+    public abstract void forEach(int max, Consumer<? super Y> action);
 
     /**
      * priIfy only non-deleted items
@@ -418,7 +417,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      *
      * @return this bag
      */
-    abstract public Bag<X, Y> commit(Consumer<Y> update);
+    public abstract Bag<X, Y> commit(Consumer<Y> update);
 
     @Override
     public void forEachKey(Consumer<? super X> each) {
@@ -453,7 +452,7 @@ public abstract class Bag<X, Y> implements Table<X, Y>, Sampler<Y>, jcog.pri.Pre
      * @return The NumberX of items
      */
     @Override
-    abstract public int size();
+    public abstract int size();
 
     @Override
     public int capacity() {

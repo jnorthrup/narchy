@@ -34,7 +34,7 @@ import java.util.function.Consumer;
  */
 public class FileFollower {
 
-    final static Logger logger = LoggerFactory.getLogger(FileFollower.class);
+    static final Logger logger = LoggerFactory.getLogger(FileFollower.class);
 
 
     Charset encoding_;

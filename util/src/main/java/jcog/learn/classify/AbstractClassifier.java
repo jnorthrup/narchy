@@ -11,10 +11,10 @@ public abstract class AbstractClassifier<X> {
     }
 
     /** dimensionality of this, ie. how many bits it requires */
-    abstract public int dimension();
+    public abstract int dimension();
 
     /** sets the applicable bits between offset and offset+dimensoinality (exclusive) */
-    abstract public void classify(X x, RoaringBitmap bmp, int offset);
+    public abstract void classify(X x, RoaringBitmap bmp, int offset);
 
     public String name(int i) {
         return dimension()==1 ? name.toString() : name.toString() + i; 

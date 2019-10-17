@@ -52,22 +52,13 @@ public class TestNAR {
      * +1 = success in <= 1 cycles
      */
     public float score;
-    /**
-     * enable this to print reports even if the test was successful.
-     * it can cause a lot of output that can be noisy and slow down
-     * the test running.
-     * TODO separate way to generate a test report containing
-     * both successful and unsuccessful tests
-     */
-    private final boolean trace = false;
-    private final int temporalTolerance = 0;
     public float freqTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private float confTolerance = NAL.test.TRUTH_ERROR_TOLERANCE;
     private final ByteTopic<Task> taskEvent;
     private boolean finished;
     private boolean exitOnAllSuccess = true;
 
-    private final static int maxSimilars = 3;
+    private static final int maxSimilars = 3;
     private boolean reportStats = false;
 
     public TestNAR(NAR nar) {
@@ -133,7 +124,15 @@ public class TestNAR {
         score = Math.min(-1, finalCycle);
 
         StringWriter trace;
-        if (this.trace)
+        /**
+         * enable this to print reports even if the test was successful.
+         * it can cause a lot of output that can be noisy and slow down
+         * the test running.
+         * TODO separate way to generate a test report containing
+         * both successful and unsuccessful tests
+         */
+        boolean trace1 = false;
+        if (trace1)
             nar.trace(trace = new StringWriter());
         else
             trace = null;
@@ -217,7 +216,7 @@ public class TestNAR {
             try {
                 nar.input(x);
             } catch (Narsese.NarseseException e) {
-                fail(e.toString());
+                fail(e::toString);
             }
         return this;
     }
@@ -299,7 +298,7 @@ public class TestNAR {
         requireConditions = false;
         nar.onTask(c -> {
             if (!c.isInput())
-                fail(c + " output, but must not output anything");
+                fail(() -> c + " output, but must not output anything");
         });
         return this;
     }
@@ -364,6 +363,7 @@ public class TestNAR {
         if (freqMin == -1)
             freqMin = freqMax;
 
+        int temporalTolerance = 0;
         int tt = temporalTolerance;
         cycleStart -= tt;
         cycleEnd += tt;

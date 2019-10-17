@@ -13,7 +13,7 @@ import java.util.List;
 /**
  * an individual solution
  */
-abstract public class DeterministicUnification implements Unification {
+public abstract class DeterministicUnification implements Unification {
 
     public DeterministicUnification() {
         super();
@@ -28,7 +28,7 @@ abstract public class DeterministicUnification implements Unification {
             return false;
     }
 
-    abstract protected boolean equals(DeterministicUnification obj);
+    protected abstract boolean equals(DeterministicUnification obj);
 
     @Override
     public final int forkKnown() {
@@ -48,8 +48,7 @@ abstract public class DeterministicUnification implements Unification {
         return transform;
     }
 
-    @Nullable
-    abstract public Term xy(Variable t);
+    public abstract @Nullable Term xy(Variable t);
 
     /**
      * sets the mappings in a target unify

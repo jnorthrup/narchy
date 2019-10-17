@@ -69,8 +69,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
     /**
      * returns the overlay tables builder for the term, or null if the target is not dynamically truthable
      */
-    @Nullable
-    public static ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicModel(Compound t) {
+    public static @Nullable ObjectBooleanToObjectFunction<Term, BeliefTable[]> dynamicModel(Compound t) {
 
         if (!dynamicPreFilter(t))
             return null; //TODO maybe this can answer query questions by index query
@@ -185,8 +184,7 @@ public abstract class ConceptBuilder implements BiFunction<Term, Concept, Concep
 //        conceptors.put(c.target, c);
 //    }
 
-    @Nullable
-    private static AbstractDynamicTruth dynamicInhSect(Subterms ii) {
+    private static @Nullable AbstractDynamicTruth dynamicInhSect(Subterms ii) {
         if (ii.hasAny(Op.CONJ /*| Op.PROD.bit*/)) {
 
             Term s = ii.sub(0), p = ii.sub(1);

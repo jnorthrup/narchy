@@ -6,7 +6,6 @@ import nars.experiment.minicraft.top.gfx.Screen;
 import nars.experiment.minicraft.top.sound.Sound;
 
 public class TitleMenu extends Menu {
-    private final int selected = 0;
 
     private static final String[] options = {"Start game", "How to play", "About"};
 
@@ -42,6 +41,7 @@ public class TitleMenu extends Menu {
         for (int i = 0; i < 3; i++) {
             String msg = options[i];
             int col = Color.get(0, 222, 222, 222);
+            int selected = 0;
             if (i == selected) {
                 msg = "> " + msg + " <";
                 col = Color.get(0, 555, 555, 555);

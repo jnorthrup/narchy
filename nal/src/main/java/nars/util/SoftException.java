@@ -11,10 +11,9 @@ import java.util.stream.Stream;
  */
 public class SoftException extends RuntimeException {
 
-    private final static int depth = 7;
+    private static final int depth = 7;
 
-    @Nullable
-    private StackWalker.StackFrame[] stack;
+    private @Nullable StackWalker.StackFrame[] stack;
 
     public SoftException() {
         super();

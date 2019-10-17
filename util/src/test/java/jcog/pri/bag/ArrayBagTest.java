@@ -49,7 +49,7 @@ class ArrayBagTest {
 
         PriReference<String> agx = a.get("x");
         UnitPri expect = new UnitPri(0.2f);
-        assertTrue(Util.equals(expect.priElseNeg1(), agx.priElseNeg1(), 0.01f), agx + "==?==" + expect);
+        assertTrue(Util.equals(expect.priElseNeg1(), agx.priElseNeg1(), 0.01f), () -> agx + "==?==" + expect);
 
     }
 

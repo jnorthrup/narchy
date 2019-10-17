@@ -27,8 +27,8 @@ public class PriArrayBag<X extends Prioritizable> extends ArrayBag<X,X> {
 //        //dont affect the result
 //    }
 
-    @Nullable
-    @Override public X key(X k) {
+    @Override
+    public @Nullable X key(X k) {
         return k;
     }
 

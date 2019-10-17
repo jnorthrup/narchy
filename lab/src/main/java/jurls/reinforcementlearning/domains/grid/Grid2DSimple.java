@@ -3,20 +3,16 @@ package jurls.reinforcementlearning.domains.grid;
 
 public class Grid2DSimple implements World {
     private final int size;
-    
-    private final double VISUALIZE_PERIOD;
+
     private final double REWARD_MAGNITUDE;
     private final double JUMP_FRACTION;
     private final double ENERGY_COST_FACTOR;
     private final double MATCH_REWARD_FACTOR;
 
-        
-    private double[] action;
 
-    private final int totalTime;    
+    private final int totalTime;
     private int time;
-    
-    private final double noise;
+
     private final int w;
     private final int h;
     private double focusPositionW;
@@ -27,13 +23,12 @@ public class Grid2DSimple implements World {
         this.w = x;
         this.h = y;
         this.size = x * y;
-        this.VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.ENERGY_COST_FACTOR = 1.0;
         this.MATCH_REWARD_FACTOR = size*1.0;
         this.REWARD_MAGNITUDE = 1;
-        this.JUMP_FRACTION = 0.1;        
-        this.noise = noise;
-        
+        this.JUMP_FRACTION = 0.1;
+
         this.totalTime = totalTime;
     }
 
@@ -56,10 +51,8 @@ public class Grid2DSimple implements World {
     public double step(double[] action, double[] sensor) {
 
         time++;
-        
-        this.action = action;
-        
-        
+
+
         if (Math.random() < JUMP_FRACTION) {
             focusPositionW = w * Math.random();
             focusPositionH = h * Math.random();

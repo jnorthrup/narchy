@@ -9,7 +9,7 @@ import nars.term.control.AbstractPred;
 
 public final class SingleOrDoublePremise extends AbstractPred<PreDerivation> {
 
-    private final static Atomic S = Atomic.atom("SinglePremise"), D = Atomic.atom("DoublePremise");
+    private static final Atomic S = Atomic.atom("SinglePremise"), D = Atomic.atom("DoublePremise");
 
     private final PuncMap requires;
     private final boolean singleOrDouble;

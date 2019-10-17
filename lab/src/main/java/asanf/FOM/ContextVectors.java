@@ -32,7 +32,7 @@ public class ContextVectors<E> extends DTMatrix<E> implements Iterable<E> {
      * @brief iteratore sui termini
      */
     public ArrayList<E> getConcepts() {
-        ArrayList<E> filteredConcepts = new ArrayList<E>();
+        ArrayList<E> filteredConcepts = new ArrayList<>();
         terms.forEachKey(concept -> {
             if (getValue(concept) >= 0)
                 filteredConcepts.add(concept);

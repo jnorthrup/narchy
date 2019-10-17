@@ -19,7 +19,7 @@ import java.util.function.Function;
 import static nars.Op.NEG;
 import static nars.Op.VAR_PATTERN;
 
-abstract public class TermMatcher {
+public abstract class TermMatcher {
 
     /** basic term constraints */
     public static void constrain(Term x, int depth, Function<?, Term> accessor, MutableSet pre) {
@@ -51,7 +51,7 @@ abstract public class TermMatcher {
     /**
      * test the exact target, if found
      */
-    abstract public boolean test(Term t);
+    public abstract boolean test(Term t);
 
     //    abstract public static class TermMatchEliminatesFalseSuper extends TermMatch {
 //
@@ -176,7 +176,7 @@ abstract public class TermMatcher {
 //        }
     }
 
-    public final static class VolMin extends TermMatcher {
+    public static final class VolMin extends TermMatcher {
         private final int volMin;
         private final Atomic param;
         private final float cost;
@@ -207,7 +207,7 @@ abstract public class TermMatcher {
         }
 
     }
-    public final static class VolMax extends TermMatcher {
+    public static final class VolMax extends TermMatcher {
         private final int volMax;
         private final Atomic param;
         private final float cost;
@@ -238,7 +238,7 @@ abstract public class TermMatcher {
      * has the target in its structure, meaning it either IS or HAS
      * one of the true bits of the provide vector ("has any")
      */
-    public final static class Has extends TermMatcher {
+    public static final class Has extends TermMatcher {
         private static final Atom ANY = (Atom) Atomic.the("any");
         private static final Atom ALL = (Atom) Atomic.the("all");
         final int struct;
@@ -295,7 +295,7 @@ abstract public class TermMatcher {
     /**
      * compound is of a specific type, and has the target in its structure
      */
-    public final static class IsHas extends TermMatcher {
+    public static final class IsHas extends TermMatcher {
 
         final int struct;
         final int structSubs;
@@ -350,7 +350,7 @@ abstract public class TermMatcher {
     /**
      * non-recursive containment
      */
-    public final static class Contains extends TermMatcher {
+    public static final class Contains extends TermMatcher {
 
         public final Term x;
 //        private final int xStruct;
@@ -387,7 +387,7 @@ abstract public class TermMatcher {
     /**
      * non-recursive containment
      */
-    public final static class Equals extends TermMatcher {
+    public static final class Equals extends TermMatcher {
 
         public final Term x;
 
@@ -455,7 +455,7 @@ abstract public class TermMatcher {
 //        }
 //    }
 
-    public final static class SubsMin extends TermMatcher {
+    public static final class SubsMin extends TermMatcher {
 
         final short subsMin;
 

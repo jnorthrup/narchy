@@ -11,7 +11,7 @@ import java.util.function.Consumer;
 /**
  * Represents the active state of a topic stream (Subscription)
  */
-abstract public class AbstractOff<V> implements Off {
+public abstract class AbstractOff<V> implements Off {
 
     protected final Consumer<Consumer<V>> disconnector;
 
@@ -34,7 +34,7 @@ abstract public class AbstractOff<V> implements Off {
         return new AbstractOff.Weak<>(x, y);
     }
 
-    abstract public void close();
+    public abstract void close();
 
     public static class Strong<V> extends AbstractOff<V> {
 

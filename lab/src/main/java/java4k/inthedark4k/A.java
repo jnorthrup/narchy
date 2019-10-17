@@ -454,7 +454,7 @@ public class A extends GamePanel {
 				playerZ = c[k + 3];
 
 				
-				entities = new ArrayList<int[]>();
+				entities = new ArrayList<>();
 				addEntity(
 						entities,
 						
@@ -1289,7 +1289,7 @@ public class A extends GamePanel {
 			
 			for (int x = (FRUSTUM_SIZE << 1) - 1; x >= 0; x--) {
 				
-				ArrayList<Integer> blocksList = new ArrayList<Integer>();
+				ArrayList<Integer> blocksList = new ArrayList<>();
 
 				
 				for (i = 1; i < WORLD_SIZE_Y + (FRUSTUM_SIZE << 1); i++) {

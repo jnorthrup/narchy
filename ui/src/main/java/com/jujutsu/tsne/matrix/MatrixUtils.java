@@ -56,9 +56,10 @@ public class MatrixUtils {
     public static String[] simpleReadLines(File file) {
         Collection<String> rows;
 
-        try (FileReader fr = new FileReader(file);
-             BufferedReader b = new BufferedReader(fr)) {
-            rows = b.lines().map(String::trim).collect(Collectors.toList());
+        try (FileReader fr = new FileReader(file)) {
+            try (BufferedReader b = new BufferedReader(fr)) {
+                rows = b.lines().map(String::trim).collect(Collectors.toList());
+            }
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

@@ -47,7 +47,7 @@ public abstract class Memory {
         set(t, new NodeConcept.PermanentNodeConcept(t));
     }
 
-    abstract public void clear();
+    public abstract void clear();
 
     public void start(NAR nar) {
         this.nar = nar;
@@ -70,7 +70,7 @@ public abstract class Memory {
         out.println();
     }
 
-    abstract public Stream<Concept> stream();
+    public abstract Stream<Concept> stream();
 
 
     /**

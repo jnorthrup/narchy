@@ -21,9 +21,6 @@ public enum AutoTranscodeTensor { ;
         public final Autoencoder ae;
 
         /** TODO FloatRange */
-        private final double learnRate = 0.01f;
-
-        /** TODO FloatRange */
         float noise = 0.0005f;
 
         public AutoEncodeTensor(Tensor input, int outputs) {
@@ -45,6 +42,8 @@ public enum AutoTranscodeTensor { ;
 
 
                 //setAt(a.train(dii, learnRate, 0));
+                /** TODO FloatRange */
+                double learnRate = 0.01f;
                 ae.put(ii, (float) learnRate, 0, 0, true);
                 set(ae.y);
 

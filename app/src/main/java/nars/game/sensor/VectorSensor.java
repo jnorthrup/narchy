@@ -17,7 +17,7 @@ import org.eclipse.collections.api.block.function.primitive.FloatToObjectFunctio
 /**
  * base class for a group of concepts representing a sensor 'vector'
  */
-abstract public class VectorSensor extends AbstractSensor implements Iterable<ComponentSignal> {
+public abstract class VectorSensor extends AbstractSensor implements Iterable<ComponentSignal> {
 
 
     public final CauseChannel<Task> in;
@@ -36,7 +36,7 @@ abstract public class VectorSensor extends AbstractSensor implements Iterable<Co
     /**
      * best to override
      */
-    abstract public int size();// {return Iterables.size(this);}
+    public abstract int size();// {return Iterables.size(this);}
 
 //    /** surPRIse */
 //    public double surprise() {

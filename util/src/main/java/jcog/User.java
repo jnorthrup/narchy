@@ -458,7 +458,7 @@ public class User {
                 }
                 /* byte[] */
             },
-            "msgpack", new DocCodec<Object>() {
+            "msgpack", new DocCodec<>() {
                 @Override
                 public void apply(Document d, Object o) {
                     try {
@@ -468,24 +468,24 @@ public class User {
                                 Field.Store.YES));
 
                         if (o instanceof HyperRectFloat) {
-                            HyperRectFloat r = (HyperRectFloat)o;
+                            HyperRectFloat r = (HyperRectFloat) o;
                             if (r.dim() == 4) {
                                 double[] min = Util.toDouble(r.min.data);
                                 double[] max = Util.toDouble(r.max.data);
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
                         } else if (o instanceof HyperRectDouble) {
-                            HyperRectDouble r = (HyperRectDouble)o;
+                            HyperRectDouble r = (HyperRectDouble) o;
                             if (r.dim() == 4) {
                                 double[] min = (r.min.coord);
                                 double[] max = (r.max.coord);
                                 d.add(new DoubleRange(BOUNDS, min, max));
                             }
                         } else if (o instanceof Longerval) {
-                            
-                            Longerval l = (Longerval)o;
-                            double[] min = { l.start, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY };
-                            double[] max = { l.end, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY };
+
+                            Longerval l = (Longerval) o;
+                            double[] min = {l.start, NEGATIVE_INFINITY, NEGATIVE_INFINITY, NEGATIVE_INFINITY};
+                            double[] max = {l.end, POSITIVE_INFINITY, POSITIVE_INFINITY, POSITIVE_INFINITY};
                             d.add(new DoubleRange(BOUNDS, min, max));
                         }
 

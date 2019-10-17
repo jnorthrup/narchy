@@ -31,7 +31,7 @@ public class ShowAstarAB {
 
 		Parser aStarAB = new Seq().get(aStar).get(ab); 
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new CharacterAssembly("aaaab"));
 
 		System.out.println(aStar.match(v));

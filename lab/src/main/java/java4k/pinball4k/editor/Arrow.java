@@ -9,10 +9,8 @@ public class Arrow extends LevelObject {
 	public int id = nextId++;
 	public int angle;
 	private final ArrowHandle handle;
-	
-	private final Arrow outerInstance;
-	
-	public Arrow(Point p1, Point p2) {
+
+    public Arrow(Point p1, Point p2) {
 		this.p = new Point(p1);
 		int dx = p2.x - p1.x;
 		int dy = p2.y - p1.y;
@@ -21,8 +19,8 @@ public class Arrow extends LevelObject {
 			angle += 360;
 		}
 		angle /= 2;
-    	
-    	outerInstance = this;
+
+        Arrow outerInstance = this;
     	handle = new ArrowHandle();
     	handles.add(handle);
 	}

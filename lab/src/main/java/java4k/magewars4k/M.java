@@ -52,27 +52,17 @@ public class M extends Applet implements Runnable {
 	
 	
 
-	private final static int PLAYERS = 4; 
-	private final static int ENTITIES = 21; 
-	private final static int VARIABLES = 8; 
-	private final static int IDSIZE = 4; 
+	private static final int PLAYERS = 4;
+	private static final int ENTITIES = 21;
+	private static final int VARIABLES = 8;
+	private static final int IDSIZE = 4;
 
 	
-	private final static int PORT = 6789; 
-	private final static String GROUP = "228.5.6.7";
-	private final static int RATE = 100000000; 
-	private final static long TIMEOUT = 1000000000; 
+	private static final int PORT = 6789;
+	private static final String GROUP = "228.5.6.7";
+	private static final int RATE = 100000000;
+	private static final long TIMEOUT = 1000000000;
 
-	
-	
-	
-	
-	
-
-	
-	
-	
-	
 	
 	
 	
@@ -82,68 +72,78 @@ public class M extends Applet implements Runnable {
 	
 	
 	
+	
+	
+	
+	
+	
+	
 
-	private final static int SCREENHEIGHT = 400; 
-	private final static int SCREENWIDTH = 600; 
-	private final static float SCREENDEPTH = 693f; 
-	private final static int DEPTH = 750; 
-	private final static float DEPTHRATIO = 1.3f; 
-	private final static float ENTITYDEPTH = 9f; 
-	private final static float PLAYERHEIGHT = 2f; 
-	private final static int TILETYPES = 4; 
-	private final static int TILESIZE = 1024; 
-	private final static int ENTITYSIZE = 8; 
-	private final static int MAPSIZE = 7; 
+	
+	
+	
 
-	private final static int DAPPLE = 32; 
-	private final static float ENTITYRADIUS = 32f / TILESIZE * 32f / TILESIZE / 2f; 
-	private final static float COLLISIONRADIUS = 48f / TILESIZE * 48f / TILESIZE / 2f; 
-	private final static float CENTRE = ENTITYSIZE / 2 - 0.5f; 
-	private final static int ENTITYSCALE = 4; 
+	private static final int SCREENHEIGHT = 400;
+	private static final int SCREENWIDTH = 600;
+	private static final float SCREENDEPTH = 693f;
+	private static final int DEPTH = 750;
+	private static final float DEPTHRATIO = 1.3f;
+	private static final float ENTITYDEPTH = 9f;
+	private static final float PLAYERHEIGHT = 2f;
+	private static final int TILETYPES = 4;
+	private static final int TILESIZE = 1024;
+	private static final int ENTITYSIZE = 8;
+	private static final int MAPSIZE = 7;
 
-	private final static int PLAIN = 0; 
-	private final static int GRASS = 1;
-	private final static int MOUNTAIN = 2;
-	private final static int CASTLE = 3;
+	private static final int DAPPLE = 32;
+	private static final float ENTITYRADIUS = 32f / TILESIZE * 32f / TILESIZE / 2f;
+	private static final float COLLISIONRADIUS = 48f / TILESIZE * 48f / TILESIZE / 2f;
+	private static final float CENTRE = ENTITYSIZE / 2 - 0.5f;
+	private static final int ENTITYSCALE = 4;
+
+	private static final int PLAIN = 0;
+	private static final int GRASS = 1;
+	private static final int MOUNTAIN = 2;
+	private static final int CASTLE = 3;
 
 	
 	
 	
 
 	
-	private final static float SCALEXYZ = TILESIZE * 100f; 
-	private final static float DEGREES = 18000f / (float) Math.PI;
+	private static final float SCALEXYZ = TILESIZE * 100f;
+	private static final float DEGREES = 18000f / (float) Math.PI;
 
-	private final static float ROTATERATE = 1e-9f;
-	private final static float TRANSLATERATE = 4e-10f;
+	private static final float ROTATERATE = 1e-9f;
+	private static final float TRANSLATERATE = 4e-10f;
 
-	private final static long FIREBALLTIMEOUT1 = 2000000000l;
-	private final static long FIREBALLTIMEOUT2 = 10000000l; 
-	private final static int ENEMIES = 6; 
-	private final static int PLAYERFIREBALLS = 8; 
+	private static final long FIREBALLTIMEOUT1 = 2000000000l;
+	private static final long FIREBALLTIMEOUT2 = 10000000l;
+	private static final int ENEMIES = 6;
+	private static final int PLAYERFIREBALLS = 8;
 
-	private final static int PLAYERHEALTH = 100; 
-	private final static int ENEMYHEALTH = 20; 
+	private static final int PLAYERHEALTH = 100;
+	private static final int ENEMYHEALTH = 20;
 
-	private final static float TOOCLOSE = 100f / TILESIZE; 
-	private final static float TOOFAR = 400f / TILESIZE; 
+	private static final float TOOCLOSE = 100f / TILESIZE;
+	private static final float TOOFAR = 400f / TILESIZE;
 
-	private final static int X = 0; 
-	private final static int Y = 1; 
-	private final static int Z = 2; 
-	private final static int A = 3; 
-	private final static int T = 4; 
-	private final static int VX = 5; 
-	private final static int VY = 6; 
-	private final static int VZ = 7; 
-
-	
-	
-	
+	private static final int X = 0;
+	private static final int Y = 1;
+	private static final int Z = 2;
+	private static final int A = 3;
+	private static final int T = 4;
+	private static final int VX = 5;
+	private static final int VY = 6;
+	private static final int VZ = 7;
 
 	
-	private MulticastSocket socket; 
-	private DatagramPacket txPacket, rxPacket; 
+	
+	
+
+	
+	private MulticastSocket socket;
+    private DatagramPacket rxPacket;
 	private final byte[] txMsg = new byte[IDSIZE + 4 * ENTITIES * VARIABLES];
 	private final byte[] rxMsg = new byte[IDSIZE + 4 * ENTITIES * VARIABLES];
 	private InetAddress group; 
@@ -290,7 +290,7 @@ public class M extends Applet implements Runnable {
 			txMsg[3] = (byte) ((processID >> 24) & 0xff);
 		} catch (Exception e) {
 		}
-		txPacket = new DatagramPacket(txMsg, txMsg.length, group, PORT);
+        DatagramPacket txPacket = new DatagramPacket(txMsg, txMsg.length, group, PORT);
 		rxPacket = new DatagramPacket(rxMsg, rxMsg.length, group, PORT);
 
 		

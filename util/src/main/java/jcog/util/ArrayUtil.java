@@ -6574,8 +6574,7 @@ public enum ArrayUtil {
             return removeNulls(array, nulls);
     }
 
-    @NotNull
-    public static <T> T[] removeNulls(T[] array, int nulls) {
+    public static @NotNull <T> T[] removeNulls(T[] array, int nulls) {
         int s = array.length - nulls;
         T[] a = Arrays.copyOf(array, s);
         if (s > 0) {

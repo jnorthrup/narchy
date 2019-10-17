@@ -35,9 +35,8 @@ public interface RuleTest {
 
 
 
-	@NotNull
-	static TestNAR get(@NotNull TestNAR test, @NotNull String task, @NotNull String belief, @NotNull String result, float minFreq,
-					   float maxFreq, float minConf, float maxConf) {
+	static @NotNull TestNAR get(@NotNull TestNAR test, @NotNull String task, @NotNull String belief, @NotNull String result, float minFreq,
+                                float maxFreq, float minConf, float maxConf) {
 		test(
 				
 				test, task, belief, result, minFreq, maxFreq, minConf,

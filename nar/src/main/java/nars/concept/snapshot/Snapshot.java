@@ -26,19 +26,18 @@ public class Snapshot<X> {
 
 
 	/** concept()'s the given term in the given NAR */
-	@Nullable public static <X> X get(Term src, NAR nar, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
+    public static @Nullable <X> X get(Term src, NAR nar, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
 		Concept c = nar.conceptualize(src);
 		return c != null ? get(c, id, now, ttl, updater) : null;
 	}
 
-	@Nullable public static <X> X get(Concept src, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
+	public static @Nullable <X> X get(Concept src, String id, long now, int ttl, BiFunction<Concept, X, X> updater) {
 		return src.<Snapshot<X>>meta(id, Snapshot::new)
 			.get(now, ttl, (existing) -> updater.apply(src, existing));
 	}
 
 
-	@Nullable
-	public X get() {
+	public @Nullable X get() {
 		Object v = value;
 		return v instanceof Reference ? ((Reference<X>) v).get() : (X) v;
 	}

@@ -94,7 +94,6 @@ public class Generic6DofConstraint extends TypedConstraint {
     private final JacobianEntry[] jacAng/*[3]*/ = {new JacobianEntry(), new JacobianEntry(), new JacobianEntry()};
     private final TranslationalLimitMotor linearLimits = new TranslationalLimitMotor();
     private final RotationalLimitMotor[] angularLimits/*[3]*/ = {new RotationalLimitMotor(), new RotationalLimitMotor(), new RotationalLimitMotor()};
-    private float timeStep;
     private final Transform calculatedTransformA = new Transform();
     private final Transform calculatedTransformB = new Transform();
     private final v3 calculatedAxisAngleDiff = new v3();
@@ -379,11 +378,9 @@ public class Generic6DofConstraint extends TypedConstraint {
 
 	@Override
 	public void solveConstraint(float timeStep) {
-		this.timeStep = timeStep;
 
-		
 
-		int i;
+        int i;
 
 		
 
@@ -405,7 +402,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 				}
 
 				linearLimits.solveLinearAxis(
-						this.timeStep,
+                        timeStep,
 						jacDiagABInv,
 						rbA, pointInA,
 						rbB, pointInB,
@@ -424,7 +421,7 @@ public class Generic6DofConstraint extends TypedConstraint {
 				angularJacDiagABInv = 1f / jacAng[i].Adiag;
 
 				angularLimits[i].solveAngularLimits(
-                                        this.timeStep,
+                        timeStep,
                                         angular_axis,
                                         angularJacDiagABInv,
                                         rbA,

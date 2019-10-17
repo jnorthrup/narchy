@@ -18,15 +18,13 @@ package jcog.grammar.parse.examples.cloning;
  * @version 1.0 
  */
 public class Customer implements Cloneable {
-	private String name;
-	private int IQ;
+    private int IQ;
 
 	/**
 	 * Construct a customer.
 	 */
 	public Customer(String name, int IQ) {
-		this.name = name;
-		this.IQ = IQ;
+        this.IQ = IQ;
 	}
 
 	/**

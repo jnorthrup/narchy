@@ -16,12 +16,10 @@ package jcog.grammar.parse.tokens;
  * @version 1.0
  */
 public class TokenType {
-	private final String name;
 
-	/**
+    /**
 	 * Creates a token type of the given name.
 	 */
 	public TokenType(String name) {
-		this.name = name;
-	}
+    }
 }

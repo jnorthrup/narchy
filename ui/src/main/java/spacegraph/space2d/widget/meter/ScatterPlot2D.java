@@ -61,7 +61,7 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
         default void start()  { }
     }
 
-    public static abstract class SimpleXYScatterPlotModel<X> implements ScatterPlotModel<X> {
+    public abstract static class SimpleXYScatterPlotModel<X> implements ScatterPlotModel<X> {
         @Override
         public int dimensionInternal() {
             return 2;
@@ -150,49 +150,51 @@ public class ScatterPlot2D<X> extends Graph2D<X> {
             });
         });
         render(
-            new Graph2DRenderer<X>() {
+                new Graph2DRenderer<>() {
 
 
+                    int currentCoord = 0;
 
-                int currentCoord = 0;
+                    @Override
+                    public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
 
-                @Override
-                public void nodes(CellMap<X, NodeVis<X>> cells, GraphEditing<X> edit) {
+                        int n = cells.size();
 
-                    int n = cells.size();
+                        model.start();
 
-                    model.start();
+                        if (coord.length < n || coord.length > n * 2 /* TODO || coord[0].length!=dimensionInternal ... */) {
+                            coord = new float[n][model.dimensionInternal()];
+                            coordOut = new float[n][model.dimensionExternal()];
+                        }
 
-                    if (coord.length < n || coord.length > n*2 /* TODO || coord[0].length!=dimensionInternal ... */) {
-                        coord = new float[n][model.dimensionInternal()];
-                        coordOut = new float[n][model.dimensionExternal()];
+                        currentCoord = 0;
+                        Graph2DRenderer.super.nodes(cells, edit);
+
+                        MutableRectFloat nextExtent = model.layout(coord, coordOut);
+                        if (Util.equals(0, nextExtent.w))
+                            nextExtent.w = 1;
+                        if (Util.equals(0, nextExtent.h))
+                            nextExtent.h = 1;
+
+                        extent.set(nextExtent, extentUpdatePeriodS);
                     }
 
-                    currentCoord = 0;
-                    Graph2DRenderer.super.nodes(cells, edit);
 
-                    MutableRectFloat nextExtent = model.layout(coord, coordOut);
-                    if (Util.equals(0,nextExtent.w))
-                        nextExtent.w = 1;
-                    if (Util.equals(0, nextExtent.h))
-                        nextExtent.h = 1;
-
-                    extent.set(nextExtent, extentUpdatePeriodS);
-                }
-
-
-                /** pre */
-                @Override public void node(NodeVis<X> node, GraphEditing<X> graph) {
-                    int c = currentCoord++;
-                    if(c < coord.length) {
-                        model.coord(node.id, coord[c]);
-                        node.i = c;
-                    } else {
-                        node.i = Integer.MIN_VALUE;
+                    /**
+                     * pre
+                     */
+                    @Override
+                    public void node(NodeVis<X> node, GraphEditing<X> graph) {
+                        int c = currentCoord++;
+                        if (c < coord.length) {
+                            model.coord(node.id, coord[c]);
+                            node.i = c;
+                        } else {
+                            node.i = Integer.MIN_VALUE;
+                        }
                     }
-                }
 
-            }
+                }
         );
     }
 

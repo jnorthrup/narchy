@@ -80,7 +80,7 @@ public class SimpleGraph3D<X> extends DynamicListSpace<X> {
         return active;
     }
 
-    private final static Random rng2 = new XoRoShiRo128PlusRandom(1);
+    private static final Random rng2 = new XoRoShiRo128PlusRandom(1);
 
     public static class DefaultSpaceWidget<X> extends SpaceWidget<X> {
 

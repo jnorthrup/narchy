@@ -22,9 +22,8 @@ public class ArrayBagGridModel<X extends Prioritizable> implements GridModel<X> 
 		return bag.capacity();
 	}
 
-	@Nullable
 	@Override
-	public X get(int x, int y) {
+	public @Nullable X get(int x, int y) {
 		return x==0 ? bag.get(y) : null;
 	}
 }

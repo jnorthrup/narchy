@@ -56,9 +56,8 @@ public class Top<X> implements TopFilter<X> {
         return false;
     }
 
-    @Nullable
     @Override
-    public X pop() {
+    public @Nullable X pop() {
         X x = this.the;
         clear();
         return x;

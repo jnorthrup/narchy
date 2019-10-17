@@ -69,7 +69,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     public final UniSubst uniSubstFunctor = new UniSubst(this);
 
 
-    protected final static Logger logger = LoggerFactory.getLogger(Derivation.class);
+    protected static final Logger logger = LoggerFactory.getLogger(Derivation.class);
 
     public static final Atom Substitute = Atomic.atom("substitute");
     public static final Atom ConjWithout = Atomic.atom("conjWithout");
@@ -77,14 +77,15 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     /** current taskify for use in unification match */
     transient Taskify taskify = null;
 
-    private final static int ANON_INITIAL_CAPACITY = 16;
+    private static final int ANON_INITIAL_CAPACITY = 16;
     public final AnonWithVarShift anon;
 
     /**
      * second layer additional substitutions
      */
     public final Map<Term, Term> retransform = new MapAdapter<>(new UnifiedMap<>()) {
-        @Nullable @Override public Term put(Term key, Term value) {
+        @Override
+        public @Nullable Term put(Term key, Term value) {
             return key.equals(value) ? null : delegate.put(key, value);
         }
     };
@@ -326,7 +327,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         };
     }
 
-    static private void assertAnon(Term x, @Nullable Term y, @Nullable nars.Task cause) {
+    private static void assertAnon(Term x, @Nullable Term y, @Nullable nars.Task cause) {
         TermTransformException e;
         if (y == null)
             e = new TermTransformException(x, null, "invalid Derivation Anon: null");
@@ -419,7 +420,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
 
-    @Nullable private Truth beliefAtTask(Task nextBelief) {
+    private @Nullable Truth beliefAtTask(Task nextBelief) {
         @Nullable Truth t = nextBelief.truth(taskStart, taskEnd, dur, true); //integration-calculated
         return t!=null && t.evi() >= eviMin ? t : null;
     }
@@ -511,11 +512,11 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
         this.temporal = !eternalCompletely || Occurrify.temporal(taskTerm) || (!beliefTerm.equals(taskTerm) && Occurrify.temporal(beliefTerm));
     }
 
-    abstract public void add(Premise p);
+    public abstract void add(Premise p);
 
 
     /** attached unifier instances */
-    final private Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
+    private final Unify[] _u = new Unify[] { unify, uniSubstFunctor.u, beliefMatch};
 
 
 
@@ -556,16 +557,14 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 
 
 
-    @Nullable
-    private long[] evidenceSingle() {
+    private @Nullable long[] evidenceSingle() {
         if (stampSingle == null) {
             stampSingle = _task.stamp();
         }
         return stampSingle;
     }
 
-    @Nullable
-    private long[] evidenceDouble() {
+    private @Nullable long[] evidenceDouble() {
         if (stampDouble == null) {
             double te, be;
             if (taskPunc == BELIEF || taskPunc == GOAL) {
@@ -805,7 +804,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     }
 
 	@Override
-	@Nullable public final Term why() {
+    public final @Nullable Term why() {
 		return premise.why();
 	}
 

@@ -149,7 +149,7 @@ public class ClauseInfo {
         return (clause.sub(0) + " :-\n\t" + st + ".\n");
     }
 
-    static private String indentPredicates(Term t) {
+    private static String indentPredicates(Term t) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             return co.name().equals(",") ? co.sub(0) + ",\n\t" + indentPredicates(co.sub(1)) : t.toString();
@@ -188,7 +188,7 @@ public class ClauseInfo {
         }
     }*/
 
-    static private String indentPredicatesAsArgX(Term t, PrologOperators op, int p) {
+    private static String indentPredicatesAsArgX(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             if (co.name().equals(",")) {
@@ -209,7 +209,7 @@ public class ClauseInfo {
         }
     }
 
-    static private String indentPredicatesAsArgY(Term t, PrologOperators op, int p) {
+    private static String indentPredicatesAsArgY(Term t, PrologOperators op, int p) {
         if (t instanceof Struct) {
             Struct co = (Struct) t;
             if (co.name().equals(",")) {

@@ -32,52 +32,32 @@ public class A extends Applet implements Runnable {
 	private final int GAMEPAUSE = 0;
 	private final int GAMEINIT = 1;
 	private final int GAMERUN = 2;
-	private final int GAMELOOSE = 3;
-	private final int GAMEWIN = 4;
-	private final int NOFIRE = 0;
-	private final int HOLDFIRE = 1;
-	private final int _X = 0;
+    private final int GAMEWIN = 4;
+    private final int _X = 0;
 	private final int _Y = 1;
-	
 
-	private final int firerate_div = 6;
-	private final int shootspeed = 10;
-	private final int bossmul = 64;
-	private final int boss_dmg_div = 8;
-	private final int addlife = 4;
-	private final int energyboost = 16;
-	private final int baselife = 18;
 
     private final String[] text = {"", "Thrusters Upgrade Unlocked!", "", "Double Damage Unlocked!", "",
             "Regeneration Boost Unlocked!", "", "Energy Boost Unlocked!", "", ""};
     private final String[] textlvl = {"Please! Don't hurt me captain galaxy!",
             "I love the smell of laser in the morning.", "Do you know Chuck norris? it's my follower!"};
-	
-	private final int BKBUFFER = 0;
-	private final int MAP1 = 2;
-	private final int MAP1T = 3;
-	private final int _BIGSPRIT = 10;
 
-	private final int EXPLODE_FOE = 10;
+    private final int MAP1T = 3;
+
+    private final int EXPLODE_FOE = 10;
 	private final int EXPLODE_S = 110;
 	private final int SHIP_HIT = 120;
 
-	private final int _MIDSPRIT = 150;
+    private final int SHOOT2 = 150;
 
-	private final int SHOOT2 = 150;
-	private final int _SPECIAL = 151;
-
-	private final int TMP = 151;
-	private final int SHIP_S = 152;
+    private final int SHIP_S = 152;
 	private final int SHIP_E = 159;
 	private final int SHOOT1 = 159;
 	private final int E_SHOOT = 160;
-	private final int E_SHOOT2 = 161;
-	private final int CUR = 173;
+    private final int CUR = 173;
 	private final int FOE = 174;
-	private final int _SMLSPRIT = 184;
 
-	private final float[] BLUR = { .1f, .1f, .1f, .1f, .21f, .1f, .1f, .1f, .1f };
+    private final float[] BLUR = { .1f, .1f, .1f, .1f, .21f, .1f, .1f, .1f, .1f };
 	private final Color[][] color = new Color[5][60];
 	private final Color BLACK = new Color(0x0);
 	private final Color WHITE = new Color(0xFFFFFFFF);
@@ -111,16 +91,13 @@ public class A extends Applet implements Runnable {
 	private int level = 1;
 	private int score;
 	private int energy = 100;
-	private int nextship;
-	private int nextshoot;
-	private Random rand;
+    private Random rand;
 	private boolean r = true;
 	
 	private int x, y, i, j, k, l;
 	private int dx = 350, dy = 400;
 	private double d1, d2;
-	private long timer;
-	private Graphics2D g;
+    private Graphics2D g;
     private Graphics2D[] bg;
     private BufferedImage[] buf;
 	private int frame;
@@ -142,11 +119,15 @@ public class A extends Applet implements Runnable {
 		enableEvents(48); 
 							
 		g = (Graphics2D) getGraphics();
-		
-		buf = new BufferedImage[_SMLSPRIT];
+
+        int _SMLSPRIT = 184;
+        buf = new BufferedImage[_SMLSPRIT];
 		bg = new Graphics2D[_SMLSPRIT];
 		for (i = 0; i < _SMLSPRIT; i++) {
-			if (i < _BIGSPRIT)
+            int _SPECIAL = 151;
+            int _MIDSPRIT = 150;
+            int _BIGSPRIT = 10;
+            if (i < _BIGSPRIT)
 				buf[i] = new BufferedImage(800, 600, 2);
 			else if (i < _MIDSPRIT)
 				buf[i] = new BufferedImage(64, 64, 2);
@@ -162,8 +143,9 @@ public class A extends Applet implements Runnable {
 		for (i = 0; i < 1200; i++) {
 			buf[MAP1T].setRGB(rand.nextInt(800), rand.nextInt(600), 0x00FFFFFF | (rand.nextInt(255) << 24));
 		}
-		
-		bg[TMP].setColor(WHITE);
+
+        int TMP = 151;
+        bg[TMP].setColor(WHITE);
 		bg[TMP].drawOval(12, 2, 8, 20);
 		bg[TMP].setColor(BLACK);
 		bg[TMP].fillOval(0, 14, 31, 14);
@@ -210,14 +192,15 @@ public class A extends Applet implements Runnable {
 		for (i = 0; i < 5; i++) {
 			bg[E_SHOOT + 2 * i].setColor(color[i][34]);
 			bg[E_SHOOT + 2 * i].fillOval(8, 4, 18, 24);
-			bg[E_SHOOT2 + 2 * i].setColor(color[i][50]);
-			bg[E_SHOOT2 + 2 * i].fillOval(6, 6, 20, 20);
-			bg[E_SHOOT2 + 2 * i].setColor(WHITE);
+            int e_SHOOT2 = 161;
+            bg[e_SHOOT2 + 2 * i].setColor(color[i][50]);
+			bg[e_SHOOT2 + 2 * i].fillOval(6, 6, 20, 20);
+			bg[e_SHOOT2 + 2 * i].setColor(WHITE);
 			bg[E_SHOOT + 2 * i].setColor(WHITE);
 			bg[E_SHOOT + 2 * i].fillRect(14, 6, 6, 20);
-			bg[E_SHOOT2 + 2 * i].fillOval(10, 10, 12, 12);
+			bg[e_SHOOT2 + 2 * i].fillOval(10, 10, 12, 12);
 			blur(E_SHOOT + 2 * i, 8 - i);
-			blur(E_SHOOT2 + 2 * i, 8 - i);
+			blur(e_SHOOT2 + 2 * i, 8 - i);
 		}
 		
 		for (i = 0; i < 10; i++) {
@@ -296,7 +279,8 @@ public class A extends Applet implements Runnable {
 				firestatus2 = SHOOT2;
 		if (e.getID() == 502) 
 		{
-			if (e.getButton() == 1)
+            int NOFIRE = 0;
+            if (e.getButton() == 1)
 				firestatus1 = NOFIRE;
 			firestatus2 = NOFIRE;
 			if (gamestatus == GAMEPAUSE)
@@ -312,10 +296,11 @@ public class A extends Applet implements Runnable {
 	@Override
     public void run() { 
 		while (r) {
-			
-			bg[BKBUFFER].setColor(BLACK);
+
+            int BKBUFFER = 0;
+            bg[BKBUFFER].setColor(BLACK);
 			bg[BKBUFFER].fillRect(0, 0, 800, 600);
-			timer = System.nanoTime();
+            long timer = System.nanoTime();
 			frame++;
 			
 			if (dx > x + movespeed)
@@ -338,16 +323,23 @@ public class A extends Applet implements Runnable {
 				x = 800;
 			if (x < 0)
 				x = 0;
-			
-			clear(MAP1);
+
+            int MAP1 = 2;
+            clear(MAP1);
 			bg[MAP1].drawImage(buf[MAP1T], 0, 6, this);
 			for (i = 0; i < 12; i++)
 				buf[MAP1].setRGB(rand.nextInt(800), rand.nextInt(1), 0x00FFFFFF | (rand.nextInt(255) << 24));
 			clear(MAP1T);
 			bg[MAP1T].drawImage(buf[MAP1], null, this);
 			bg[BKBUFFER].drawImage(buf[MAP1], null, this);
-			
-			switch (gamestatus) {
+
+            int baselife = 18;
+            int energyboost = 16;
+            int addlife = 4;
+            int firerate_div = 6;
+            int HOLDFIRE = 1;
+            final int GAMELOOSE = 3;
+            switch (gamestatus) {
 			case GAMESTART:
 				
 				setCursor(null);
@@ -433,8 +425,8 @@ public class A extends Applet implements Runnable {
 								for (j = 0; j < 128; j++)
 									if (enemy[4][j] == 0) {
 										boss = (wave == lastwave);
-										nextship = (boss ? (i < 7 && level != 1 ? level - 2 : level - 1) : rand
-												.nextInt(level));
+                                        int nextship = (boss ? (i < 7 && level != 1 ? level - 2 : level - 1) : rand
+                                                .nextInt(level));
 										
 										enemy[0][j] = 50 * i;
 										enemy[1][j] = 0;
@@ -442,7 +434,8 @@ public class A extends Applet implements Runnable {
 										enemy[3][j] = rand.nextInt(3) + 1;
 										enemy[4][j] = FOE + nextship;
 										enemy[6][j] = (boss ? 1 : 0);
-										enemy[5][j] = (baselife + addlife * nextship) + (enemy[6][j] * bossmul * level);
+                                        int bossmul = 64;
+                                        enemy[5][j] = (baselife + addlife * nextship) + (enemy[6][j] * bossmul * level);
 										enemy[7][j] = enemy[5][j];
 										break;
 									}
@@ -530,7 +523,8 @@ public class A extends Applet implements Runnable {
 									break;
 								}
 							}
-						firetable[_Y][i] -= shootspeed;
+                        int shootspeed = 10;
+                        firetable[_Y][i] -= shootspeed;
 						
 					} else if (firestatus1 == SHOOT1) {
 						firetable[_X][i] = x;
@@ -549,7 +543,7 @@ public class A extends Applet implements Runnable {
 								l++;
 							if (chalenge > 300)
 								l++;
-							nextshoot = enemy[4][i] % 2;
+                            int nextshoot = enemy[4][i] % 2;
 							for (j = 0; j < 128; j++)
 								if (enemy_fire[4][j] == 0) {
 									enemy_fire[0][j] = enemy[0][i];
@@ -571,7 +565,8 @@ public class A extends Applet implements Runnable {
 										enemy_fire[3][j] = l * d2;
 									}
 									enemy_fire[4][j] = E_SHOOT + enemy[4][i] - FOE;
-									enemy_fire[5][j] = enemy[5][i] / (1 + enemy[6][i] * boss_dmg_div);
+                                    int boss_dmg_div = 8;
+                                    enemy_fire[5][j] = enemy[5][i] / (1 + enemy[6][i] * boss_dmg_div);
 									break;
 								}
 						}

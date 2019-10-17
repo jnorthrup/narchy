@@ -10,7 +10,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class PriMergeTest {
-    private final static float tol = 0.01f;
+    private static final float tol = 0.01f;
 
     private static final PriRO a = new PriRO(1);
     private static final PriRO b = new PriRO(0.5f);

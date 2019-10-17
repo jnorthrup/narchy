@@ -19,7 +19,7 @@ import java.util.stream.Stream;
 import static jcog.data.iterator.ArrayIterator.stream;
 
 /** AND/while predicate chain */
-abstract public class AND<X> extends AbstractPred<X> {
+public abstract class AND<X> extends AbstractPred<X> {
 
     private final float cost;
 
@@ -36,7 +36,7 @@ abstract public class AND<X> extends AbstractPred<X> {
         this.cost = Util.sum((FloatFunction<PREDICATE<X>>) PREDICATE::cost, cond);
     }
 
-    private final static class ANDn<X> extends AND<X> {
+    private static final class ANDn<X> extends AND<X> {
         /*@Stable*/
         private final PREDICATE<X>[] cond;
 
@@ -60,7 +60,7 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
-    private final static class AND2<X> extends AND<X> {
+    private static final class AND2<X> extends AND<X> {
         /*@Stable*/
         private final PREDICATE<X> a, b;
 
@@ -89,14 +89,16 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
-    private final static class AND3_MH<X> extends AND<X> {
+    private static final class AND3_MH<X> extends AND<X> {
         /*@Stable*/
-        private final PREDICATE<X> a, b, c;
+        private final PREDICATE<X> a;
+        private final PREDICATE<X> c;
 
         final MethodHandle A, B, C;
         private AND3_MH(PREDICATE<X> a, PREDICATE<X> b, PREDICATE<X> c) {
             super(new PREDICATE[] { a, b, c });
-            this.a = a; this.b = b; this.c = c;
+            this.a = a;
+            this.c = c;
             this.A = a.method();
             this.B = b.method();
             this.C = c.method();
@@ -121,7 +123,7 @@ abstract public class AND<X> extends AbstractPred<X> {
         }
 
     }
-    private final static class AND3<X> extends AND<X> {
+    private static final class AND3<X> extends AND<X> {
         /*@Stable*/
         private final PREDICATE<X> a, b, c;
 
@@ -208,7 +210,7 @@ abstract public class AND<X> extends AbstractPred<X> {
             b = ((AND<X> )b).first();
         return b;
     }
-    @Nullable public static <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
+    public static @Nullable <X> PREDICATE<X>  first(AND<X>  b, Predicate<PREDICATE<X> > test) {
         int s = b.subs();
         return IntStream.range(0, s).mapToObj(i -> (PREDICATE<X>) b.sub(i)).filter(test).findFirst().orElse(null);
     }

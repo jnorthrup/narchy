@@ -16,7 +16,7 @@ public abstract class AbstractAgentTest {
 //
 //    }
 
-    abstract protected void test(IntIntToObjectFunction<Agent> agentBuilder);
+    protected abstract void test(IntIntToObjectFunction<Agent> agentBuilder);
 
     public void after(TestReporter context) {
 //        String message = String.format(

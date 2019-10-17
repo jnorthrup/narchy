@@ -38,14 +38,14 @@ public class RLDemo extends javax.swing.JFrame {
 
         private final JRadioButtonMenuItem follow1D = new JRadioButtonMenuItem(new MyAction("Follow 1D"));
         private final JRadioButtonMenuItem poleBalancing = new JRadioButtonMenuItem(new MyAction("Pole Balancing"));
-        private final JRadioButtonMenuItem wanderBot = new JRadioButtonMenuItem(new MyAction("Wander Bot"));
-        
+
 
         public DomainMenu() {
             super("Domain");
 
             ButtonGroup bg = new ButtonGroup();
             bg.add(poleBalancing);
+            JRadioButtonMenuItem wanderBot = new JRadioButtonMenuItem(new MyAction("Wander Bot"));
             bg.add(wanderBot);
             bg.add(follow1D);
             
@@ -97,34 +97,6 @@ public class RLDemo extends javax.swing.JFrame {
 
     public final MatrixImage parameterChart = new MatrixImage(50, 50);
 
-    private final Action menuAction = new AbstractAction() {
-
-        @Override
-        public void actionPerformed(ActionEvent e) {
-            synchronized (RLDemo.this) {
-                timer.stop();
-
-                rLDomain = domainMenu.getDomain();
-                if (agent != null) {
-                    agent.stop();
-                }
-                agent = agentMenu.getAgent(
-                        rLDomain.numActions(),
-                        rLDomain.observe(), approxParameters, rLParameters
-                );
-
-                parameterChart.removeAll();
-
-                renderPanel.removeAll();
-                renderPanel.add(rLDomain.component());
-
-                action = 0;
-                numPhysicsIterations = 0;
-
-                timer.start();
-            }
-        }
-    };
     private final Timer timer = new Timer(updatePeriodMS, new ActionListener() {
         @Override
         public void actionPerformed(ActionEvent e) {
@@ -199,6 +171,34 @@ public class RLDemo extends javax.swing.JFrame {
         timer.setCoalesce(true);
 
         jMenuBar1.add(agentMenu);
+        Action menuAction = new AbstractAction() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                synchronized (RLDemo.this) {
+                    timer.stop();
+
+                    rLDomain = domainMenu.getDomain();
+                    if (agent != null) {
+                        agent.stop();
+                    }
+                    agent = agentMenu.getAgent(
+                            rLDomain.numActions(),
+                            rLDomain.observe(), approxParameters, rLParameters
+                    );
+
+                    parameterChart.removeAll();
+
+                    renderPanel.removeAll();
+                    renderPanel.add(rLDomain.component());
+
+                    action = 0;
+                    numPhysicsIterations = 0;
+
+                    timer.start();
+                }
+            }
+        };
         agentMenu.addActionListener(menuAction);
         jMenuBar1.add(domainMenu);
         domainMenu.addActionListener(menuAction);
@@ -234,36 +234,33 @@ public class RLDemo extends javax.swing.JFrame {
 
     private void initComponents() {
 
-        buttonGroup1 = new javax.swing.ButtonGroup();
-        approximatorButtonGroup = new javax.swing.ButtonGroup();
-        actionSelectorButtonGroup = new javax.swing.ButtonGroup();
-        numFeaturesButtonGroup = new javax.swing.ButtonGroup();
-        agentButtonGroup = new javax.swing.ButtonGroup();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel3 = new javax.swing.JPanel();
+        ButtonGroup buttonGroup1 = new ButtonGroup();
+        ButtonGroup approximatorButtonGroup = new ButtonGroup();
+        ButtonGroup actionSelectorButtonGroup = new ButtonGroup();
+        ButtonGroup numFeaturesButtonGroup = new ButtonGroup();
+        ButtonGroup agentButtonGroup = new ButtonGroup();
+        JTabbedPane jTabbedPane1 = new JTabbedPane();
+        JPanel jPanel3 = new JPanel();
 
-        parametersPanel = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        jLabel2 = new javax.swing.JLabel();
-
-
+        JPanel parametersPanel = new JPanel();
+        JLabel jLabel1 = new JLabel();
+        JLabel jLabel2 = new JLabel();
 
 
+        JLabel jLabel9 = new JLabel();
+        JLabel jLabel10 = new JLabel();
+        JLabel jLabel3 = new JLabel();
 
-        jLabel9 = new javax.swing.JLabel();
-        jLabel10 = new javax.swing.JLabel();
-        jLabel3 = new javax.swing.JLabel();
-
-        jLabel4 = new javax.swing.JLabel();
+        JLabel jLabel4 = new JLabel();
         debugLabel = new javax.swing.JLabel();
         renderPanel = new javax.swing.JPanel();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jScrollPane2 = new javax.swing.JScrollPane();
-        jTextArea2 = new javax.swing.JTextArea();
-        jPanel6 = new javax.swing.JPanel();
-        jScrollPane3 = new javax.swing.JScrollPane();
-        jTextArea3 = new javax.swing.JTextArea();
+        JPanel jPanel4 = new JPanel();
+        JPanel jPanel5 = new JPanel();
+        JScrollPane jScrollPane2 = new JScrollPane();
+        JTextArea jTextArea2 = new JTextArea();
+        JPanel jPanel6 = new JPanel();
+        JScrollPane jScrollPane3 = new JScrollPane();
+        JTextArea jTextArea3 = new JTextArea();
         jTextArea1 = new javax.swing.JTextArea();
         jMenuBar1 = new javax.swing.JMenuBar();
 
@@ -378,38 +375,15 @@ public class RLDemo extends javax.swing.JFrame {
         java.awt.EventQueue.invokeLater(() -> new RLDemo().setVisible(true));
     }
 
-    
-    private javax.swing.ButtonGroup actionSelectorButtonGroup;
-    private javax.swing.ButtonGroup agentButtonGroup;
-    
-    private javax.swing.ButtonGroup approximatorButtonGroup;
-    private javax.swing.ButtonGroup buttonGroup1;
+
     private javax.swing.JLabel debugLabel;
-    
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel10;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
-    private javax.swing.JLabel jLabel9;
+
     private javax.swing.JMenuBar jMenuBar1;
-    
-    
-    private javax.swing.JPanel jPanel3;
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel parametersPanel;
-    private javax.swing.JScrollPane jScrollPane2;
-    private javax.swing.JScrollPane jScrollPane3;
-    private javax.swing.JTabbedPane jTabbedPane1;
+
+
     private javax.swing.JTextArea jTextArea1;
-    private javax.swing.JTextArea jTextArea2;
-    private javax.swing.JTextArea jTextArea3;
-    
-    private javax.swing.ButtonGroup numFeaturesButtonGroup;
-    
-    
+
+
     private javax.swing.JPanel renderPanel;
     
 }

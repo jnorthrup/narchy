@@ -15,8 +15,6 @@ import java.util.Arrays;
  */
 public class WeightedInterpolationFunction implements ParameterizedFunction {
 
-    private final double gravity = 0.00001;
-    private final double decay = 0.1;
     private final int numPoints;
     private final double power;
     private double minOutput = Double.POSITIVE_INFINITY;
@@ -142,6 +140,7 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
                     if (l == 0) {
                         l = 1;
                     }
+                    double gravity = 0.00001;
                     d.mapMultiplyToSelf(gravity / l / l / l);
                     b.velocity.setSubVector(0, b.velocity.add(d));
                 }
@@ -149,6 +148,7 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
         }
 
         for (Point p : points) {
+            double decay = 0.1;
             p.velocity.mapMultiplyToSelf(decay);
             p.xs.setSubVector(0, p.xs.add(p.velocity));
 

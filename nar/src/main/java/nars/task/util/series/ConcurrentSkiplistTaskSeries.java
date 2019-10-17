@@ -139,13 +139,13 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
     }
 
 
-    @Nullable
-    @Override public T last() {
+    @Override
+    public @Nullable T last() {
         Map.Entry<Long, T> x = q.lastEntry();
         return x!=null ? x.getValue() : null;
     }
-    @Nullable
-    @Override public T first() {
+    @Override
+    public @Nullable T first() {
         Map.Entry<Long, T> x = q.firstEntry();
         return x!=null ? x.getValue() : null;
     }
@@ -153,7 +153,8 @@ public class ConcurrentSkiplistTaskSeries<T extends SeriesBeliefTable.SeriesTask
 
 
 
-    @Nullable @Override protected T pop() {
+    @Override
+    protected @Nullable T pop() {
         return q.remove(q.firstKey());
     }
 

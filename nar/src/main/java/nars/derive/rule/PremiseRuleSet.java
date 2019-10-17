@@ -48,7 +48,7 @@ public class PremiseRuleSet {
     }
 
 
-    private final static Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
+    private static final Function<String, Collection<PremiseRule>> ruleFileCache = CaffeineMemoize.build((String n) -> {
 
         byte[] bb;
         try (InputStream nn = NAR.class.getClassLoader().getResourceAsStream(n)) {

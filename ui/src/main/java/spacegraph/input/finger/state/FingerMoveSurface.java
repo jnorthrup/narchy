@@ -16,8 +16,7 @@ public class FingerMoveSurface extends FingerMove {
     /**
      * bounds of moved surface, captured at drag start
      */
-    @Nullable
-    private RectFloat before;
+    private @Nullable RectFloat before;
 
     @Deprecated public FingerMoveSurface(Surface moving) {
         this(moving, 0 /* LEFT BUTTON */);

@@ -33,7 +33,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
     private final Ellipsis xEllipsis;
 
 
-    private final static Atom CHOOSE_2 = $.the(Choose2.class);
+    private static final Atom CHOOSE_2 = $.the(Choose2.class);
 
 //    public Choose2(Ellipsis xEllipsis, Unify f, MutableSet<Term> x, SortedSet<Term> yFree) {
 //        this(xEllipsis, f,
@@ -62,7 +62,7 @@ public class Choose2 extends Termutator.AbstractTermutator {
 
     }
 
-    @Nullable public static Termutator choose2(Ellipsis ellipsis, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
+    public static @Nullable Termutator choose2(Ellipsis ellipsis, List<Term> xFixed, SortedSet<Term> yFree, Unify u) {
 //        int ys = yFree.size();
 //        if (ellipsis.minArity > ys - 2)
 //            return null; //impossible

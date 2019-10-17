@@ -10,13 +10,9 @@ import spacegraph.space2d.widget.text.BitmapLabel;
 
 public class NetPanel extends Bordering {
 
-    private final NAR nar;
-    private final InterNAR net;
     private final AbstractLabel status;
 
     public NetPanel(NAR n, InterNAR net) {
-        this.nar = n;
-        this.net = net;
 
         north(new BitmapLabel(net.peer.name() + ' ' + net.peer.addr));
         this.status = new BitmapLabel();

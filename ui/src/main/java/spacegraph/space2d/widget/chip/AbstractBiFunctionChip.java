@@ -6,7 +6,7 @@ import spacegraph.space2d.widget.text.LabeledPane;
 
 import java.util.function.BiFunction;
 
-abstract public class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
+public abstract class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
     protected final TypedPort<X> xIn;
     protected final TypedPort<Y> yIn;
     protected final TypedPort<Z> out;
@@ -39,7 +39,7 @@ abstract public class AbstractBiFunctionChip<X, Y, Z> extends Gridding {
 
     }
 
-    abstract protected BiFunction<X, Y, Z> f();
+    protected abstract BiFunction<X, Y, Z> f();
 
     private void commit(X x, Y y) {
         Z z = f().apply(x, y);

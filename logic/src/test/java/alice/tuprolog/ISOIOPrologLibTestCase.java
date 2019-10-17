@@ -128,7 +128,7 @@ public class ISOIOPrologLibTestCase {
 		final String dataToRead = "ciao";
 		
 		
-		OutputListener listener = e -> assertEquals("", dataToRead, e.msg);
+		OutputListener listener = e -> assertEquals("", dataToRead, () -> e.msg);
 
 		engine.addOutputListener(listener);
 
@@ -155,7 +155,7 @@ public class ISOIOPrologLibTestCase {
 			@Override
 			public void onOutput(OutputEvent e) 
 			{
-                assertEquals("", dataToRead[count], e.msg);
+                assertEquals("", dataToRead[count], () -> e.msg);
 				count++;
 			}
 		};
@@ -181,7 +181,7 @@ public class ISOIOPrologLibTestCase {
 		final String dataToRead = "c";
 		
 		
-		OutputListener listener = e -> assertEquals("", dataToRead, e.msg);
+		OutputListener listener = e -> assertEquals("", dataToRead, () -> e.msg);
 
 		engine.addOutputListener(listener);
 
@@ -197,7 +197,7 @@ public class ISOIOPrologLibTestCase {
 		final int dataToRead = 51;
 		
 		
-		OutputListener listener = e -> assertEquals("", dataToRead+"", e.msg);
+		OutputListener listener = e -> assertEquals("", dataToRead+"", () -> e.msg);
 
 		engine.addOutputListener(listener);
 

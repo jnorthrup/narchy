@@ -3,11 +3,11 @@ package jcog.data;
 /** extends Number with mutable methods
  * TODO add more mutation methods
  * */
-abstract public class NumberX extends Number {
+public abstract class NumberX extends Number {
 
-    abstract public void add(float x);
+    public abstract void add(float x);
 
-    abstract public void set(float v);
+    public abstract void set(float v);
 
     public float getAndSet(float r) {
         float p = floatValue();
@@ -15,7 +15,7 @@ abstract public class NumberX extends Number {
         return p;
     }
 
-    final public void subtract(float x) {
+    public final void subtract(float x) {
         add(-x);
     }
 

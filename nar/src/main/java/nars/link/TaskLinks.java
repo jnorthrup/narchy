@@ -47,15 +47,6 @@ public class TaskLinks implements Sampler<TaskLink> {
         //1 - PHI_min_1f,
         0, 1f /* 2f */);
 
-//    /**
-//     * tasklink retention rate:
-//     * 0 = deducts all propagated priority from source tasklink (full resistance)
-//     * 1 = deducts no propagated priority (superconductive)
-//     **/
-//    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
-    private final PriMerge merge = NAL.tasklinkMerge;
-
-
 
     /**
      * short target memory, TODO abstract and remove, for other forms of attention that dont involve TaskLinks or anything like them
@@ -83,6 +74,13 @@ public class TaskLinks implements Sampler<TaskLink> {
     public TaskLinks(/*TODO bag as parameter */) {
         int c = linksMax.intValue();
 
+        //    /**
+        //     * tasklink retention rate:
+        //     * 0 = deducts all propagated priority from source tasklink (full resistance)
+        //     * 1 = deducts no propagated priority (superconductive)
+        //     **/
+        //    public final FloatRange sustain = new FloatRange(0.5f, 0, 1f);
+        PriMerge merge = NAL.tasklinkMerge;
         links = new nars.link.TaskLinkBag(
                 c, merge
 
@@ -91,14 +89,14 @@ public class TaskLinks implements Sampler<TaskLink> {
         links.setCapacity(c);
     }
 
-    @Nullable public Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
+    public @Nullable Multimap<Term,TaskLink> get(Predicate<Term> f, boolean sourceOrTargetMatch) {
         return get((t)->{
             Term tgt = sourceOrTargetMatch ? t.from() : t.to();
             return f.test(tgt) ? tgt : null;
         });
     }
 
-    @Nullable public Multimap<Term,TaskLink> get(Function<TaskLink,Term> f) {
+    public @Nullable Multimap<Term,TaskLink> get(Function<TaskLink,Term> f) {
         Multimap<Term,TaskLink> m = null;
         for (TaskLink x : links) {
             @Nullable Term y = f.apply(x);
@@ -134,9 +132,8 @@ public class TaskLinks implements Sampler<TaskLink> {
         links.commit(f /*g*/);
     }
 
-    @Nullable
     @Override
-    public final TaskLink sample(Random rng) {
+    public final @Nullable TaskLink sample(Random rng) {
         return links.sample(rng);
     }
 

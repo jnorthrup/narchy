@@ -21,9 +21,8 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 
     abstract int dt(Compound x);
 
-    @Nullable
     @Override
-	public final Term applyPosCompound(final Compound x) {
+    public final @Nullable Term applyPosCompound(final Compound x) {
         return x.hasAny(Op.Temporal) ? transformTemporal(x, dt(x)) : x;
     }
 
@@ -43,7 +42,7 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 //        }
     }
 
-    public final static class RetemporalizeAll extends Retemporalize {
+    public static final class RetemporalizeAll extends Retemporalize {
 
         final int targetDT;
 
@@ -59,7 +58,7 @@ public abstract class Retemporalize extends RecursiveTermTransform.NegObliviousT
 
 
 
-    public final static class RetemporalizeFromTo extends Retemporalize {
+    public static final class RetemporalizeFromTo extends Retemporalize {
 
         final int from, to;
 

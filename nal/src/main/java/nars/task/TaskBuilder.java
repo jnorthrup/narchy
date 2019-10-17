@@ -44,11 +44,9 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 
 	protected final byte punc;
 
-	@Nullable
-	private Truth truth;
+	private @Nullable Truth truth;
 
-	@Nullable
-	private long[] evidence = LongArrays.EMPTY_ARRAY;
+	private @Nullable long[] evidence = LongArrays.EMPTY_ARRAY;
 
 	private long creation = ETERNAL;
 	private long start = ETERNAL, end = ETERNAL;
@@ -204,8 +202,7 @@ public class TaskBuilder extends UnitPri implements TermedDelegate, Function<NAL
 		return punc == Op.COMMAND;
 	}
 
-	@Nullable
-	public final Truth truth() {
+	public final @Nullable Truth truth() {
 		return truth;
 	}
 

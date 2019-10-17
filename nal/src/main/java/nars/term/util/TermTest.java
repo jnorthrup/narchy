@@ -55,7 +55,7 @@ public enum TermTest { ;
             assertEq(term1.term(), term2.term());
 
         } catch (Exception e) {
-            fail(e.toString());
+            fail(e::toString);
         }
     }
 
@@ -116,7 +116,7 @@ public enum TermTest { ;
             y = $.$(x.toString());
         } catch (Narsese.NarseseException e) {
             e.printStackTrace();
-            fail(x + " -> " + e);
+            fail(() -> x + " -> " + e);
         }
         //assertEquals(u, t, ()-> is + " unstable:\n0:\t" + t + "\n1:\t" + u);
         assertEquals(x, y);
@@ -207,7 +207,7 @@ public enum TermTest { ;
 
         boolean aNorm = a.isNormalized();
         boolean bNorm = b.isNormalized();
-        assertEquals(aNorm, bNorm,  a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm );
+        assertEquals(aNorm, bNorm, () -> a + " (" + a.getClass() + ") normalized=" + aNorm + ", " + " (" + b.getClass() + ") normalized=" + bNorm);
         assertEquals(a.isSorted(), b.isSorted());
         assertEquals(a.isCommuted(), b.isCommuted());
 

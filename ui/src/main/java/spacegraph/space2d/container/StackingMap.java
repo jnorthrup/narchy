@@ -15,7 +15,7 @@ public class StackingMap<X,Y extends Surface> extends AbstractMutableContainer<Y
 
 	public StackingMap(Y[] emptyArray) {
 		super();
-		this.map = new ConcurrentFastIteratingHashMap<X, Y>(emptyArray);
+		this.map = new ConcurrentFastIteratingHashMap<>(emptyArray);
 	}
 
 	@Override

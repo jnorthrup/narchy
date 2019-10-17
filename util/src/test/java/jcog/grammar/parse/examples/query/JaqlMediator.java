@@ -26,8 +26,7 @@ import java.awt.event.ActionListener;
 public class JaqlMediator implements ActionListener {
 	private JButton goButton;
 	private JButton clearButton;
-	private JTextArea metadataArea;
-	private JTextArea queryArea;
+    private JTextArea queryArea;
 	private JTextArea resultArea;
 
 	private Parser parser;
@@ -91,8 +90,7 @@ public class JaqlMediator implements ActionListener {
 
 		this.goButton = goButton;
 		this.clearButton = clearButton;
-		this.metadataArea = metadataArea;
-		this.queryArea = queryArea;
+        this.queryArea = queryArea;
 		this.resultArea = resultArea;
 	}
 

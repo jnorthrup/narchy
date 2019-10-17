@@ -5,7 +5,7 @@ import nars.term.anon.Intrin;
 
 import static nars.term.anon.Intrin.ANOMs;
 
-abstract public class MaskedIntrinSubterms extends ProxySubterms<IntrinSubterms> {
+public abstract class MaskedIntrinSubterms extends ProxySubterms<IntrinSubterms> {
 
     protected MaskedIntrinSubterms(IntrinSubterms ref) {
         super(ref);

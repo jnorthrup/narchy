@@ -64,15 +64,13 @@ public abstract class Performance {
 		}
 	}
 
-	@NotNull
-	public Performance print() {
+	public @NotNull Performance print() {
 		System.out.print(": " + df.format(getCycleTimeMS()) + "ms/test, ");
 		System.out
 				.print(df.format(totalMemory / repeats / 1024.0) + " kb/test");
 		return this;
 	}
-	@NotNull
-	public Performance printCSV(boolean finalComma) {
+	public @NotNull Performance printCSV(boolean finalComma) {
 		System.out.print(name + ", " + df.format(getCycleTimeMS()) + ", ");
 		System.out.print(df.format(totalMemory / repeats / 1024.0));
 		if (finalComma)

@@ -15,8 +15,6 @@ import java.io.IOException;
 public final class TextureProvider {
     public static final String DEFAULT_FONT_PATH = "font/CourierPrimeCode.ttf";
     private final int FONT_SIZE = 64;
-    private final int FONT_BITMAP_WIDTH = 48;
-    private final int FONT_BITMAP_HEIGHT = FONT_SIZE;
 
     private final LoadingCache<String, BufferedImage> glyphCache = CacheBuilder.newBuilder().maximumSize(2048)
             .build(new CacheLoader<>() {
@@ -24,7 +22,8 @@ public final class TextureProvider {
                 public BufferedImage load(String c) {
                     //return AWTTextureIO.newTexture(gl.getGLProfile(), getTexture(c, FONT_SIZE), true);
                     //return TextureIO.newTexture(gl.getGLProfile(), charTex, true);
-                    BufferedImage charTex = getTexture(c, FONT_BITMAP_WIDTH, FONT_BITMAP_HEIGHT);
+                    int FONT_BITMAP_WIDTH = 48;
+                    BufferedImage charTex = getTexture(c, FONT_BITMAP_WIDTH, FONT_SIZE);
                     return charTex;
                 }
             });

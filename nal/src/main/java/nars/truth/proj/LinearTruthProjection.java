@@ -20,8 +20,7 @@ public class LinearTruthProjection extends TruthProjection {
     }
 
     @Override
-    @Nullable
-    public final Truth get(double eviMin, boolean dither, NAL n) {
+    public final @Nullable Truth get(double eviMin, boolean dither, NAL n) {
 
 
 

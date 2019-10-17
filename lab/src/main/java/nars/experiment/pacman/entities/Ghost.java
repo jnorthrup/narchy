@@ -12,7 +12,7 @@ import java.util.stream.Collectors;
 
 public class Ghost extends Entity {
 
-    public final static double[][] ghostShape = {
+    public static final double[][] ghostShape = {
             {0, 0.3}, {0.2, 0}, {0.8, 0}, {1, .3}, {1, 1}, {0.8, 0.7}, {0.5, 1}, {0.2, 0.7}, {0, 1}
     };
 
@@ -139,7 +139,7 @@ public class Ghost extends Entity {
 
         ArrayList<Direction> openDirs = getAvailableDirections();
 
-        dir = Arrays.stream(dirs).filter(openDirs::contains).findFirst().orElse(this.dir);
+        dir = Arrays.stream(dirs).filter(openDirs::contains).findFirst().orElseGet(() -> this.dir);
 
     }
 

@@ -17,7 +17,7 @@ import spacegraph.space2d.container.unit.MutableUnitContainer;
 
 import java.util.function.Consumer;
 
-abstract public class AbstractTaskView<X> extends MutableUnitContainer implements GridRenderer<PriReference<X>>, Consumer<Task> {
+public abstract class AbstractTaskView<X> extends MutableUnitContainer implements GridRenderer<PriReference<X>>, Consumer<Task> {
 	final Bag<X, PriReference<X>> bag;
 	private final What what;
 	private final ScrollXY<ScrollXY.ScrolledXY> scroll;

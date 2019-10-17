@@ -13,14 +13,13 @@ import static nars.$.$;
 public class ConceptBrowser extends Bordering {
 
     private final NAR nar;
-    private final TextEdit edit;
     private Term current = null;
 
     public ConceptBrowser(NAR nar) {
         super();
 
         this.nar = nar;
-        this.edit = new TextEdit(16, 2).onChange((te)->{
+        TextEdit edit = new TextEdit(16, 2).onChange((te) -> {
             update(te.text());
         });
 
@@ -30,7 +29,7 @@ public class ConceptBrowser extends Bordering {
 
     }
 
-    synchronized private void update(String termString) {
+    private synchronized void update(String termString) {
         Term t;
         try {
             t = $(termString);

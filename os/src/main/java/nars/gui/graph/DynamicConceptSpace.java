@@ -45,7 +45,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
     final float bagUpdateRate = 0.25f;
 
 
-    volatile static int serial = 0;
+    static volatile int serial = 0;
     final String spaceID;
 
     
@@ -223,7 +223,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
             }
         };
 
-        abstract public void color(ConceptWidget cw, NAR nar);
+        public abstract void color(ConceptWidget cw, NAR nar);
     }
 
     public class ConceptVis2 implements SpaceWidget.TermVis<ConceptWidget>, BiConsumer<ConceptWidget, PriReference<? extends Termed>> {

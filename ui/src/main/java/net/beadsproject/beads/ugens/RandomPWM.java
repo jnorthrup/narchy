@@ -31,12 +31,12 @@ import net.beadsproject.beads.data.DataBeadReceiver;
  * @beads.category synth
  */
 public class RandomPWM extends UGen implements DataBeadReceiver {
-    private final static Mode ALTERNATING = Mode.ALTERNATING;
-    public final static Mode NOISE = Mode.NOISE;
-    private final static Mode PULSING = Mode.PULSING;
-    private final static Mode SAW = Mode.SAW;
-    public final static Mode RAMPED_NOISE = Mode.RAMPED_NOISE;
-    private final static Mode NOISE_ENVELOPE = Mode.NOISE_ENVELOPE;
+    private static final Mode ALTERNATING = Mode.ALTERNATING;
+    public static final Mode NOISE = Mode.NOISE;
+    private static final Mode PULSING = Mode.PULSING;
+    private static final Mode SAW = Mode.SAW;
+    public static final Mode RAMPED_NOISE = Mode.RAMPED_NOISE;
+    private static final Mode NOISE_ENVELOPE = Mode.NOISE_ENVELOPE;
 
     public enum Mode {
         ALTERNATING, NOISE, PULSING, SAW, RAMPED_NOISE, NOISE_ENVELOPE

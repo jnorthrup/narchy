@@ -73,11 +73,11 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    @Nullable default Term subSub(byte[] path) {
+    default @Nullable Term subSub(byte[] path) {
         return subSub(0, path.length, path);
     }
 
-    @Nullable default Term subSub(int start, int end, byte[] path) {
+    default @Nullable Term subSub(int start, int end, byte[] path) {
         Termlike ptr = this;
         for (int i = start; i < end; i++) {
             byte b = path[i];
@@ -87,7 +87,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return ptr != this ? (Term) ptr : null;
     }
 
-    @Nullable default Term subSubUnsafe(int start, int end, byte[] path) {
+    default @Nullable Term subSubUnsafe(int start, int end, byte[] path) {
         Termlike ptr = this;
         for (int i = start; i < end; )
             ptr = ptr.sub(path[i++]);
@@ -122,7 +122,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         return IntStream.range(0, n).noneMatch(i -> sub(i) != x.sub(i));
     }
 
-    @Nullable default Term subRoulette(FloatFunction<Term> subValue, Random rng) {
+    default @Nullable Term subRoulette(FloatFunction<Term> subValue, Random rng) {
         int s = subs();
         switch (s) {
             case 0: return null;
@@ -131,7 +131,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    @Nullable default Term sub(Random rng) {
+    default @Nullable Term sub(Random rng) {
         int s = subs();
         switch (s) {
             case 0: return null;
@@ -140,7 +140,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
         }
     }
 
-    @Nullable default Subterms remove(Term event) {
+    default @Nullable Subterms remove(Term event) {
         Term[] t = removing(event);
         if (t == null)
             return null;
@@ -693,8 +693,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     /**
      * return the first subterm matching the predicate, or null if none match
      */
-    @Nullable
-    default Term subFirst(Predicate<Term> match) {
+    default @Nullable Term subFirst(Predicate<Term> match) {
         int i = indexOf(match);
         return i != -1 ? sub(i) : null;
     }
@@ -1076,7 +1075,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     default Term[] removing(MetalBitSet toRemove) {
         return subsIncExc(toRemove, false);
     }
-    @Nullable default Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
+    default @Nullable Term[] subsIncExc(MetalBitSet s, boolean includeOrExclude) {
 
         int c = s.cardinality();
 
@@ -1330,7 +1329,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
     }
 
 
-    @Nullable default Term[] removing(Term x) {
+    default @Nullable Term[] removing(Term x) {
         MetalBitSet toRemove = indicesOfBits(x::equals);
         return toRemove.cardinality() == 0 ? null : removing(toRemove);
     }
@@ -1364,7 +1363,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
      * providing a hint about the target operator the subterms is being constructed for
      * this allows certain fail-fast cases
      */
-    @Nullable default Subterms transformSubs(Function<Term,Term> f, Op superOp) {
+    default @Nullable Subterms transformSubs(Function<Term,Term> f, Op superOp) {
 
         TermList y = null;
 
@@ -1435,7 +1434,7 @@ public interface Subterms extends Termlike, Iterable<Term> {
 //        );
     }
 
-    @Nullable static TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
+    static @Nullable TermList transformSubInline(Subterms e, Function<Term,Term> f, TermList out, int subsTotal, int i) {
         int xes = e.subs();
 
         if (out == null)

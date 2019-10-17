@@ -43,7 +43,7 @@ class BooleanTest {
         testSAT2Individual(1, 1);
     }
 
-    static private void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
+    private static void testSAT2Individual(int i, int j) throws Narsese.NarseseException {
 
         final float confThresh = 0.7f;
 
@@ -115,10 +115,10 @@ class BooleanTest {
 
 
             if (positive && b.isNegative() && b.conf() > confThresh)
-                fail("wrong true case:\n" + t.proof());
+                fail(() -> "wrong true case:\n" + t.proof());
 
             if (!positive && b != null && b.isPositive() && b.conf() > confThresh)
-                fail("wrong false case:\n" + t.proof());
+                fail(() -> "wrong false case:\n" + t.proof());
 
         }
 

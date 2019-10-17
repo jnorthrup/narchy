@@ -15,12 +15,12 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * https:
  */
-abstract public class UDiscover<P> {
+public abstract class UDiscover<P> {
 
-    static protected final Logger logger = LoggerFactory.getLogger(UDiscover.class);
+    protected static final Logger logger = LoggerFactory.getLogger(UDiscover.class);
 
-    final static String address = "228.5.6.7";
-    final static int port = 6576;
+    static final String address = "228.5.6.7";
+    static final int port = 6576;
     static final int MAX_PAYLOAD_ID = 256;
 
     /**
@@ -31,9 +31,7 @@ abstract public class UDiscover<P> {
     private final P id;
     MulticastSocket ms;
     private DatagramPacket p, q;
-    private InetAddress ia;
     private byte[] myID;
-    private byte[] theirID;
 
 
     public UDiscover(P payloadID) {
@@ -41,7 +39,7 @@ abstract public class UDiscover<P> {
     }
 
 
-    abstract protected void found(P theirs, InetAddress who, int port);
+    protected abstract void found(P theirs, InetAddress who, int port);
 
 
     public void start() {
@@ -49,7 +47,9 @@ abstract public class UDiscover<P> {
 
 
             try {
-                ia = InetAddress
+                //.getLocalHost();
+                //.getLoopbackAddress();
+                InetAddress ia = InetAddress
                         //.getLocalHost();
                         //.getLoopbackAddress();
                         .getByName(address);
@@ -73,7 +73,7 @@ abstract public class UDiscover<P> {
 //                ms.setNetworkInterface(bestNic);
                 //System.out.println("nic=" + ms.getNetworkInterface());
 
-                theirID = new byte[MAX_PAYLOAD_ID];
+                byte[] theirID = new byte[MAX_PAYLOAD_ID];
                 myID = Util.toBytes(id);
                 p = new DatagramPacket(myID, myID.length, ia, port);
                 q = new DatagramPacket(theirID, theirID.length);

@@ -15,12 +15,11 @@ import java.util.function.Predicate;
  * on memory (beliefs, and other measurable quantities/qualities).
  * use these to form adaptive runtime hypervisors ensuring optimal and correct operation
  */
-abstract public class TaskCondition implements NARCondition, Predicate<Task> {
+public abstract class TaskCondition implements NARCondition, Predicate<Task> {
 
 
 	protected Task firstMatch = null;
-	@Nullable
-	protected TopFilter<Task> similar = null;
+	protected @Nullable TopFilter<Task> similar = null;
 	/**
 	 * whether to apply meta-feedback to drive the reasoner toward success conditions
 	 */
@@ -65,7 +64,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task> {
 		return dist;
 	}
 
-	abstract public boolean matches(@Nullable Task task);
+	public abstract boolean matches(@Nullable Task task);
 
 	@Override
 	public boolean test(Task t) {
@@ -92,7 +91,7 @@ abstract public class TaskCondition implements NARCondition, Predicate<Task> {
 		this.similar = new RankedN<>(new Task[maxSimilars], this::value);
 	}
 
-    abstract protected float value(Task task, float worstDiffNeg);
+    protected abstract float value(Task task, float worstDiffNeg);
 
 }
 

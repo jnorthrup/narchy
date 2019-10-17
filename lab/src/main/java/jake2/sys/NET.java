@@ -41,7 +41,7 @@ import java.nio.channels.DatagramChannel;
 
 public final class NET {
 
-    private final static int MAX_LOOPBACK = 4;
+    private static final int MAX_LOOPBACK = 4;
 
     /** Local loopback adress. */
     private static final netadr_t net_local_adr = new netadr_t();

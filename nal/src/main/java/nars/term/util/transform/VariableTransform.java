@@ -23,7 +23,7 @@ public abstract class VariableTransform extends RecursiveTermTransform.NegOblivi
         return a instanceof Variable ? applyVariable((Variable)a) : a;
     }
 
-    abstract protected Term applyVariable(Variable v);
+    protected abstract Term applyVariable(Variable v);
 
     public boolean preFilter(Compound x) {
         return x.hasVars();

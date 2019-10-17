@@ -71,8 +71,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
         return DEFAULT_VALUE;
     }
 
-    @Nullable
-    public final Y getIfPresent(Object k) {
+    public final @Nullable Y getIfPresent(Object k) {
         PriProxy<X, Y> exists = bag.get(k);
         if (exists != null) {
             Y e = exists.get();
@@ -96,8 +95,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
 
 
 
-    @Nullable
-    public Y removeIfPresent(X x) {
+    public @Nullable Y removeIfPresent(X x) {
         @Nullable PriProxy<X, Y> exists = bag.remove(x);
         return exists != null ? exists.get() : null;
     }
@@ -107,8 +105,7 @@ public class HijackMemoize<X, Y> extends AbstractMemoize<X,Y> {
     }
 
     @Override
-    @Nullable
-    public Y apply(X x) {
+    public @Nullable Y apply(X x) {
         Y y = getIfPresent(x);
         if (y == null) {
             y = func.apply(x);

@@ -51,8 +51,6 @@ public class Tetris extends GameX {
             , TetrisPiece.EMPTY_ROW};
     static float FPS = 24f;
     static float thinkPerFrame = 2;
-    private final boolean opjects = false;
-    private final Bitmap2D grid;
     private final TetrisState state;
     final Bitmap2DSensor<Bitmap2D> gridVision;
     public Bitmap2DSensor<Bitmap2D> pixels;
@@ -101,6 +99,7 @@ public class Tetris extends GameX {
         );
 
 
+        boolean opjects = false;
         state = opjects ?
                 actionsReflect(n) :
                 new TetrisState(width, height, timePerFall);
@@ -109,7 +108,7 @@ public class Tetris extends GameX {
 
         state.timePerFall = Math.round(this.timePerFall.floatValue());
 
-        grid = new AbstractBitmap2D(state.width, state.height) {
+        Bitmap2D grid = new AbstractBitmap2D(state.width, state.height) {
             @Override
             public float brightness(int x, int y) {
                 return state.seen[y * w + x] > 0 ? 1f : 0f;

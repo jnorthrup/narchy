@@ -35,6 +35,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.text.NumberFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.prefs.Preferences;
 
 public class BoofSwingUtil {
@@ -139,9 +140,7 @@ public class BoofSwingUtil {
 		String []fileNames = encodedString.split("\n");
 
 		java.util.List<String> output = new ArrayList<>();
-		for( String f : fileNames ) {
-			output.add(f);
-		}
+		output.addAll(Arrays.asList(fileNames));
 		return output;
 	}
 

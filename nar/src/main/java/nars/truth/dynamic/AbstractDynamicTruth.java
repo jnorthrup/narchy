@@ -27,9 +27,9 @@ import static nars.time.Tense.ETERNAL;
 /**
  * Created by me on 12/4/16.
  */
-abstract public class AbstractDynamicTruth {
+public abstract class AbstractDynamicTruth {
 
-	abstract public Truth truth(DynTaskify d /* eviMin, */);
+	public abstract Truth truth(DynTaskify d /* eviMin, */);
 
 
 	public abstract boolean evalComponents(Compound superterm, long start, long end, ObjectLongLongPredicate<Term> each);
@@ -41,7 +41,7 @@ abstract public class AbstractDynamicTruth {
 	/**
 	 * used to reconstruct a dynamic target from some or all components
 	 */
-	abstract public Term reconstruct(Compound superterm, long start, long end, DynTaskify d);
+	public abstract Term reconstruct(Compound superterm, long start, long end, DynTaskify d);
 
 
 	/**
@@ -86,7 +86,7 @@ abstract public class AbstractDynamicTruth {
 	/**
 	 * estimates number of components, for allocation purposes
 	 */
-	abstract public int componentsEstimate();
+	public abstract int componentsEstimate();
 
 	public @Nullable Task task(Compound template, long earliest, long s, long e, DynTaskify d) {
 		Term y = reconstruct(template, s, e, d);

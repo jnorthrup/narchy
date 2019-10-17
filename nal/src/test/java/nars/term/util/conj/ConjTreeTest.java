@@ -10,10 +10,10 @@ import static nars.time.Tense.ETERNAL;
 
 class ConjTreeTest {
 
-    final static Term w = $$("w");
-    final static Term x = $$("x");
-    final static Term y = $$("y");
-    final static Term z = $$("z");
+    static final Term w = $$("w");
+    static final Term x = $$("x");
+    static final Term y = $$("y");
+    static final Term z = $$("z");
 
     @Test
     void testSimple() {

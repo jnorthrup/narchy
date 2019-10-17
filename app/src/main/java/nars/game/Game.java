@@ -64,7 +64,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     private final AtomicBoolean busy = new AtomicBoolean(false);
     public final AtomicBoolean trace = new AtomicBoolean(false);
 
-    private final static Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
+    private static final Atom ACTION = Atomic.atom("action"), SENSOR = Atomic.atom("sensor"), REWARD = Atomic.atom("reward");
 
     public final FastCoWList<GameLoop> sensors = new FastCoWList<>(GameLoop[]::new);
     public final FastCoWList<ActionSignal> actions = new FastCoWList<>(ActionSignal[]::new);
@@ -392,7 +392,7 @@ public class Game extends NARPart /* TODO extends ProxyWhat -> .. and commit whe
     /**
      * default reward module
      */
-    final public synchronized Reward reward(Reward r) {
+    public final synchronized Reward reward(Reward r) {
         if (rewards.OR(e -> e.term().equals(r.term())))
             throw new RuntimeException("reward exists with the ID: " + r.term());
 

@@ -35,7 +35,7 @@ public final class Answer implements Timed, Predicate<Task> {
     /** whether to store any dynamically created tasks that match the query */
     public boolean storeDynamic = NAL.CACHE_DYNAMIC_TASKS;
 
-	@Nullable private Term term = null;
+	private @Nullable Term term = null;
 
     public final RankedN<Task> tasks;
 
@@ -220,7 +220,7 @@ public final class Answer implements Timed, Predicate<Task> {
         return this;
     }
 
-    @Nullable public final Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
+    public final @Nullable Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth) {
         assert(!forceProject || topOrSample);
         return task(topOrSample, forceProject, ditherTruth, ditherTruth);
     }
@@ -233,7 +233,7 @@ public final class Answer implements Timed, Predicate<Task> {
      * <p>
      * clears the cache and tasks before returning
      */
-    @Nullable private Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
+    private @Nullable Task task(boolean topOrSample, boolean forceProject, boolean ditherTruth, boolean ditherTime) {
 
         int s = tasks.size();
         if (s == 0)
@@ -297,8 +297,7 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * clears the cache and tasks before returning
      */
-    @Nullable
-    public Truth truth(float perceptualDur) {
+    public @Nullable Truth truth(float perceptualDur) {
         assert (!ditherTruth); //assert (eviMin() <= NAL.truth.EVI_MIN);
 
         TruthProjection tp = truthProjection();
@@ -310,11 +309,11 @@ public final class Answer implements Timed, Predicate<Task> {
             return null;
     }
 
-    @Nullable public final Truth truth() {
+    public final @Nullable Truth truth() {
         return truth(dur);
     }
 
-    @Nullable public final TruthProjection truthProjection() {
+    public final @Nullable TruthProjection truthProjection() {
         int numTasks = tasks.size();
         if (numTasks == 0)
             return null;
@@ -404,11 +403,11 @@ public final class Answer implements Timed, Predicate<Task> {
     /**
      * term template
      */
-    @Nullable public Term term() {
+    public @Nullable Term term() {
         return term;
     }
 
-    @Nullable public Task sample() {
+    public @Nullable Task sample() {
         switch (tasks.size()) {
             case 0: return null;
             case 1: return tasks.get(0);

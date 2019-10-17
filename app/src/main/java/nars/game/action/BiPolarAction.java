@@ -34,8 +34,6 @@ public class BiPolarAction extends AbstractSensor {
     private final FloatToFloatFunction motor;
 
     public final PriNode pri;
-    private final CauseChannel<Task> cause;
-    private final short[] causeArray;
 
 
     /** model for computing the net result from the current truth inputs */
@@ -62,8 +60,8 @@ public class BiPolarAction extends AbstractSensor {
     private BiPolarAction(Term pos, Term neg, Polarization model, FloatToFloatFunction motor, NAR n) {
         super(PROD.the(pos, neg), n);
 
-        this.cause = n.newChannel(id);
-        this.causeArray = new short[] { cause.id };
+        CauseChannel<Task> cause = n.newChannel(id);
+        short[] causeArray = new short[]{cause.id};
 
 
 

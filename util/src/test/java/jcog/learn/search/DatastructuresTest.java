@@ -20,7 +20,7 @@ class DatastructuresTest {
 				return 0;
 			}
 		}
-		HashPriorityQueue<Integer, Integer> Q = new HashPriorityQueue<Integer, Integer>(
+		HashPriorityQueue<Integer, Integer> Q = new HashPriorityQueue<>(
 				new InconsistentComparator());
 
 		Q.add(0, 0);

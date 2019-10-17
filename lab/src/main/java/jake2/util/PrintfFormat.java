@@ -3158,7 +3158,7 @@ public class PrintfFormat {
 		 */
 		private int precision;
 		/** Default precision. */
-		private final static int defaultDigits = 6;
+		private static final int defaultDigits = 6;
 		/**
 		 * Flag indicating that the precision is *.
 		 */

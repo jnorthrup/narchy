@@ -11,7 +11,7 @@ import org.junit.jupiter.api.Test;
 import static nars.Op.BELIEF;
 import static nars.Op.QUESTION;
 
-abstract public class NAL6DecomposeTest extends NALTest {
+public abstract class NAL6DecomposeTest extends NALTest {
     private static final int cycles = 700;
 
     @BeforeEach

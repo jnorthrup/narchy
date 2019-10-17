@@ -266,7 +266,7 @@ public final class HttpUtil
 
                 return bytes;
         }
-        public final static Charset UTF8 = StandardCharsets.UTF_8;
+        public static final Charset UTF8 = StandardCharsets.UTF_8;
 
         
         public static File findDirectoryIndex(File dir)
@@ -499,7 +499,7 @@ public final class HttpUtil
              * SimpleDateFormat is not threadsafe as noted in {@link SimpleDateFormat its javadoc}.
              *
              */
-            final static class DateFormatHolder
+            static final class DateFormatHolder
             {
                     private static final ThreadLocal<SoftReference<Map<String, SimpleDateFormat>>> THREADLOCAL_FORMATS = ThreadLocal.withInitial(() -> new SoftReference<>(
                             new HashMap<>()));

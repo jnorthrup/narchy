@@ -91,7 +91,7 @@ class MatrixTransform {
     }
 
 
-    static private class Backprop {
+    private static class Backprop {
         private final BackpropMethod backpropMethod;
         private final Mat[] args;
 
@@ -142,7 +142,7 @@ class MatrixTransform {
             }
         }
 
-        static private void addBack(final Mat mat1, final Mat mat2, final Mat out) {
+        private static void addBack(final Mat mat1, final Mat mat2, final Mat out) {
             int bound = mat1.w.length;
             for (int i = 0; i < bound; i++) {
                 double dwi = out.dw[i];
@@ -153,7 +153,7 @@ class MatrixTransform {
             }
         }
 
-        static private  void tanhBack(final Mat mat, final Mat out) {
+        private static void tanhBack(final Mat mat, final Mat out) {
             double[] matdw = mat.dw;
             int bound = mat.w.length;
             for (int i = 0; i < bound; i++) {

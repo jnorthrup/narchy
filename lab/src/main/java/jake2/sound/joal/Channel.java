@@ -49,11 +49,11 @@ import java.util.Map;
  */
 public class Channel {
 
-	final static int LISTENER = 0;
-	final static int FIXED = 1;
-	final static int DYNAMIC = 2;
-	final static int MAX_CHANNELS = 32;
-	final static float[] NULLVECTOR = {0, 0, 0};
+	static final int LISTENER = 0;
+	static final int FIXED = 1;
+	static final int DYNAMIC = 2;
+	static final int MAX_CHANNELS = 32;
+	static final float[] NULLVECTOR = {0, 0, 0};
 	
 	private static AL al;
 	private static final Channel[] channels = new Channel[MAX_CHANNELS];

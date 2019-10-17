@@ -64,8 +64,7 @@ public class CellMap<K, V> {
         }, each);
     }
 
-    @Nullable
-    public CellMap.CacheCell<K, V> update(K key, CellMap.CacheCell<K, V> entry, boolean keep) {
+    public @Nullable CellMap.CacheCell<K, V> update(K key, CellMap.CacheCell<K, V> entry, boolean keep) {
         if (keep) {
             //added or continues
             return entry;
@@ -92,8 +91,7 @@ public class CellMap<K, V> {
             invalidated();
     }
 
-    @Nullable
-    public V getValue(Object x) {
+    public @Nullable V getValue(Object x) {
         CacheCell<K, V> y = map.get(x);
         return y != null ? y.value : null;
     }
@@ -167,17 +165,17 @@ public class CellMap<K, V> {
         });
     }
 
-    @Nullable public V get(Object from) {
+    public @Nullable V get(Object from) {
         CacheCell<K, V> v = map.get(from);
         return v != null ? v.value : null;
     }
 
     /** find first corresponding key to the provided value */
-    @Nullable public K first(Predicate v) {
+    public @Nullable K first(Predicate v) {
         return Arrays.stream(map.valueArray()).filter(c -> v.test(c.value)).findFirst().map(c -> c.key).orElse(null);
     }
 
-    @Nullable public K firstByIdentity(V x) {
+    public @Nullable K firstByIdentity(V x) {
         return Arrays.stream(map.valueArray()).filter(c -> c.value == x).findFirst().map(c -> c.key).orElse(null);
     }
 

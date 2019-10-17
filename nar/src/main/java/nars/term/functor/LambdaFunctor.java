@@ -19,9 +19,8 @@ public final class LambdaFunctor extends Functor implements The {
         this.f = f;
     }
 
-    @Nullable
     @Override
-    public final Term apply(Evaluation e, Subterms terms) {
+    public final @Nullable Term apply(Evaluation e, Subterms terms) {
         return f.apply(terms);
     }
 

@@ -22,7 +22,9 @@ public class FingerResizeSurface extends FingerResize {
 
     /** move most of Windo.drag() logic here
      * @param finger*/
-    @Nullable @Override @Deprecated public DragEdit mode(Finger finger) {
+    @Deprecated
+    @Override
+    public @Nullable DragEdit mode(Finger finger) {
         return mode;
     }
 

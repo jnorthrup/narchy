@@ -705,7 +705,7 @@ public class FormulaPreprocessor {
      *
      * @return an ArrayList of Formula(s), which could be empty.
      */
-    static private ArrayList<Formula> replacePredVarsAndRowVars(Formula form, KB kb, boolean addHoldsPrefix) {
+    private static ArrayList<Formula> replacePredVarsAndRowVars(Formula form, KB kb, boolean addHoldsPrefix) {
 
         Formula startF = new Formula();
         startF.read(form.theFormula);

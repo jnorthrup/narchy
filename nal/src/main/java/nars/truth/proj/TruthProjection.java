@@ -51,9 +51,9 @@ import static nars.term.util.Intermpolate.dtDiff;
  * https:
  * https:
  */
-@Paper
 @Skill({"Interpolation", "Extrapolation"})
-abstract public class TruthProjection extends TaskList {
+@Paper
+public abstract class TruthProjection extends TaskList {
 
 	protected long start, end;
 
@@ -88,8 +88,7 @@ abstract public class TruthProjection extends TaskList {
 		return this;
 	}
 
-	@Nullable
-	public static Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
+	public static @Nullable Task merge(Supplier<Task[]> tasks, Term x, Truth t, Supplier<long[]> stamp, boolean beliefOrGoal, final long start, final long end, NAL n) {
 		Term y = Task.taskTerm(x, beliefOrGoal ? BELIEF : GOAL, !NAL.test.DEBUG_EXTRA);
 		if (y == null)
 			return null;
@@ -153,8 +152,7 @@ abstract public class TruthProjection extends TaskList {
 	/**
 	 * computes the final truth value
 	 * (commit(..) is not invoked here; if commit is necessary, use truth(..) method */
-	@Nullable
-	public abstract Truth get(double eviMin, boolean dither, NAL nar);
+	public abstract @Nullable Truth get(double eviMin, boolean dither, NAL nar);
 
 	private boolean update(int i) {
 		Task t = items[i];
@@ -991,8 +989,7 @@ abstract public class TruthProjection extends TaskList {
 		return get(0).punc();
 	}
 
-	@Nullable
-	public final Truth truth() {
+	public final @Nullable Truth truth() {
 		return truth(start, end, NAL.truth.EVI_MIN, false, false, null);
 	}
 
@@ -1152,8 +1149,7 @@ abstract public class TruthProjection extends TaskList {
 		return (active() == size);
 	}
 
-	@Nullable
-	public Task task(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
+	public @Nullable Task task(double eviMin, boolean ditherTruth, boolean beliefOrGoal, boolean forceProject, NAL n) {
 		@Nullable Truth tt = truth(start, end, eviMin, ditherTruth, !forceProject, n);
 		if (tt == null)
 			return null;

@@ -19,7 +19,6 @@ import spacegraph.SpaceGraph;
 public class TopCraft extends GameX {
 
     private final TopDownMinicraft craft;
-    private final AutoclassifiedBitmap camAE;
     private float prevHealth;
     float prevScore;
     private Bitmap2DSensor<PixelBag> pixels;
@@ -33,7 +32,8 @@ public class TopCraft extends GameX {
 
         PixelBag p = new PixelBag(new MonoBufImgBitmap2D(() -> craft.image), 64, 64).addActions(id, this);
         int nx = 8;
-        camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
+        //return new float[]{p.X, p.Y, p.Z};
+        AutoclassifiedBitmap camAE = new AutoclassifiedBitmap("cae", p.pixels, nx, nx, (subX, subY) -> {
             return new float[1]; //return new float[]{p.X, p.Y, p.Z};
         }, 8, this);
         camAE.alpha.set(0.04f);

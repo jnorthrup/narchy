@@ -27,7 +27,6 @@ import java.util.logging.Logger;
  */
 public class DiffableFunctionMarshaller implements ParameterizedFunction {
 
-    private final DiffableFunctionSource fs;
     private final DiffableFunction f;
     private double minOutputDebug = Double.POSITIVE_INFINITY;
     private double maxOutputDebug = Double.NEGATIVE_INFINITY;
@@ -35,9 +34,8 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
     private final double[] inputValues;
     private final int numInputs;
     private static int COMPILED_CLASS_INDEX = 0;
-    private final boolean debug = true;
 
-    private final static class JaninoRestrictedClassLoader extends
+    private static final class JaninoRestrictedClassLoader extends
             SecureClassLoader {
 
         Class<?> defineClass(String name, byte[] b) {
@@ -51,7 +49,7 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
             int numInputs
     ) {
         GeneratorContext gc = diffableFunctionGenerator.generate(numInputs);
-        fs = gc.getDiffableFunctionSource();
+        DiffableFunctionSource fs = gc.getDiffableFunctionSource();
         int n = numInputs + gc.getParameterScalars().size();
         inputScalars = new Scalar[n];
         inputValues = new double[n];
@@ -101,6 +99,7 @@ public class DiffableFunctionMarshaller implements ParameterizedFunction {
                     new Parser(scanner).parseAbstractCompilationUnit(),
                     new ClassLoaderIClassLoader(cl));
 
+            boolean debug = true;
             ClassFile[] classFiles = unitCompiler.compileUnit(debug, debug, debug);
             Class<?> clazz = cl.defineClass(classPackage + "." + className,
                     classFiles[0].toByteArray());

@@ -93,5 +93,5 @@ public abstract class Overlay extends PaintSurface {
         return true;
     }
 
-    abstract protected Surface target();
+    protected abstract Surface target();
 }

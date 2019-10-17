@@ -94,8 +94,7 @@ public class MutableMapContainer<K, V> extends AbstractMutableContainer<Surface>
         return cells.map.keySet();
     }
 
-    @Nullable
-    public V getValue(K x) {
+    public @Nullable V getValue(K x) {
         return cells.getValue(x);
     }
 

@@ -72,7 +72,7 @@ public class Editor extends JFrame {
 		*/
 
 		
-		ArrayList<LevelObject> uniqueObjs = new ArrayList<LevelObject>();
+		ArrayList<LevelObject> uniqueObjs = new ArrayList<>();
 		String selectionStr = "";
 		for (Handle handle : selection) {
 			LevelObject obj = handle.getLevelObject();

@@ -220,7 +220,7 @@ public class BagTest {
                 boolean unordered = diff > orderThresh;
                 if (unordered) {
                     bag.print();
-                    fail("sampling distribution not ordered. contents=" + bag);
+                    fail(() -> "sampling distribution not ordered. contents=" + bag);
                 }
             }
         }
@@ -233,7 +233,7 @@ public class BagTest {
                     float maxMinRatio = ff[highs] / ff[lows];
                     assertTrue(
                             maxMinRatio > MIN_RATIO,
-                            maxMinRatio + " ratio between max and min"
+                            () -> maxMinRatio + " ratio between max and min"
                     );
                 }
             }

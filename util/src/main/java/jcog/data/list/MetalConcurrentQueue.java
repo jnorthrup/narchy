@@ -179,8 +179,7 @@ public class MetalConcurrentQueue<X> extends MetalAtomicReferenceArray<X> {
 
 
 
-    @Nullable
-    public final X poll() {
+    public final @Nullable X poll() {
         return poll(0);
     }
 

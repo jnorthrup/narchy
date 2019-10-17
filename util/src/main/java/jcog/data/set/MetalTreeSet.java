@@ -108,9 +108,8 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 		return this.size;
 	}
 
-	@Nullable
 	@Override
-	public Comparator<? super T> comparator() {
+	public @Nullable Comparator<? super T> comparator() {
 		throw new UnsupportedOperationException();
 	}
 
@@ -140,14 +139,12 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 		return this.lastNode().x;
 	}
 
-	@Nullable
-	private TreeNode<T> firstNode() {
+	private @Nullable TreeNode<T> firstNode() {
 		return root!=null ? root.first() : null;
 	}
 
 
-	@Nullable
-	private TreeNode<T> lastNode() {
+	private @Nullable TreeNode<T> lastNode() {
 		return root!=null ? root.last() : null;
 	}
 
@@ -227,7 +224,7 @@ public class MetalTreeSet<T extends Comparable> extends AbstractSet<T> implement
 
 	}
 
-	private final static class TreeSetIterator<T> extends FasterList<TreeNode<T>> implements Iterator<T> {
+	private static final class TreeSetIterator<T> extends FasterList<TreeNode<T>> implements Iterator<T> {
 
 		private TreeNode<T> next;
 

@@ -39,9 +39,9 @@ public class GraphMeter {
 
 
 
-    private final static int WHITE = 0;
-    private final static int GREY = 1;
-    private final static int BLACK = 2;
+    private static final int WHITE = 0;
+    private static final int GREY = 1;
+    private static final int BLACK = 2;
     /**
      * output of some algorithms is passed here
      */

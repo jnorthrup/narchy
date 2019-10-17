@@ -14,7 +14,8 @@ import nars.term.Term;
  *
  *
  * */
-@Skill("Antistatic_bag") abstract public class AntistaticBag<X extends Prioritizable> extends ArrayBag<Term, X> {
+@Skill("Antistatic_bag")
+public abstract class AntistaticBag<X extends Prioritizable> extends ArrayBag<Term, X> {
 
     public AntistaticBag(int capacity) {
         super(PriMerge.replace, capacity, PriMap.newMap(false));

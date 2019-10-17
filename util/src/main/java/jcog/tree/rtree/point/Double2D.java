@@ -108,7 +108,7 @@ public class Double2D implements HyperPoint, Comparable<Double2D> {
         return b;
     }
 
-    public final static class Builder implements Function<Double2D, HyperRegion> {
+    public static final class Builder implements Function<Double2D, HyperRegion> {
 
         @Override
         public HyperRegion apply(final Double2D point) {

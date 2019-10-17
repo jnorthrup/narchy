@@ -36,15 +36,11 @@ public enum Befunge {
      */
     static class Pointer {
         private int x, y, dx, dy;
-        private final char WIDTH = 80;
-        private final char HEIGHT = 25;
         private final Board board;
 
 
-        @NotNull
-        private final Map<Character, Runnable> map;
-        @NotNull
-        private final BefungeStack stack;
+        private final @NotNull Map<Character, Runnable> map;
+        private final @NotNull BefungeStack stack;
 
         public Pointer(Board board){
             x = y = 0;
@@ -159,7 +155,9 @@ public enum Befunge {
         }
 
         private void move(){
+            char WIDTH = 80;
             x = (x+dx) % WIDTH;
+            char HEIGHT = 25;
             y = (y+dy) % HEIGHT;
         }
 
@@ -199,8 +197,7 @@ public enum Befunge {
      */
     public static class Board {
 
-        @NotNull
-        private final char[][] board;
+        private final @NotNull char[][] board;
 
         Board() {
             board = new char[25][80];

@@ -18,12 +18,8 @@ import static spacegraph.space2d.container.Bordering.S;
 /** adapter for embedding 3d spacegraph in 2d (surface) view */
 public class Surface3D extends PaintSurface {
 
-    private final AbstractSpace<?> space;
-    private final SpaceGraph3D<Object> sg;
-
     public Surface3D(AbstractSpace space) {
-        this.space = space;
-        this.sg = new SpaceGraph3D<>(space);
+        SpaceGraph3D<Object> sg = new SpaceGraph3D<>(space);
     }
 
     @Override

@@ -178,8 +178,7 @@ public class EternalTable extends SortedArray<Task> implements BeliefTable, Floa
 
 
     /** direct insert; not ordinarily invoked from external */
-    @Nullable
-	public Task insert(Task incoming) {
+    public @Nullable Task insert(Task incoming) {
 
         Task displaced = null;
 

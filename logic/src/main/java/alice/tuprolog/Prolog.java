@@ -77,7 +77,7 @@ public class Prolog {
     /* path history for including documents */
     private List<String> absolutePathList;
 
-    public final static Logger logger = LoggerFactory.getLogger(Prolog.class);
+    public static final Logger logger = LoggerFactory.getLogger(Prolog.class);
 
     public Prolog() {
         this(new ConcurrentHashClauseIndex());

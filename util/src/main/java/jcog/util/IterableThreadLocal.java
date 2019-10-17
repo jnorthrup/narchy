@@ -26,8 +26,7 @@ import java.util.function.Supplier;
 public class IterableThreadLocal<T> extends ThreadLocal<T>
                                     implements Iterable<T> {
     private final ConcurrentMap<Thread,T> map;
-    @Nullable
-    private final Supplier<? extends T> supplier;
+    private final @Nullable Supplier<? extends T> supplier;
 
     public IterableThreadLocal() {
         this(null);

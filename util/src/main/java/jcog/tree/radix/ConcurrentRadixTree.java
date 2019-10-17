@@ -10,7 +10,7 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 /** TODO use StampedLock? */
 public class ConcurrentRadixTree<X> extends MyRadixTree<X> {
 
-    private @Nullable final Lock readLock;
+    private final @Nullable Lock readLock;
     private final Lock writeLock;
 
     /**

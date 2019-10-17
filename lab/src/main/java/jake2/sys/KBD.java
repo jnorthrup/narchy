@@ -29,21 +29,21 @@ package jake2.sys;
 /**
  * KBD
  */
-abstract public class KBD {
+public abstract class KBD {
 	
 	
 	public static int mx;
 	public static int my;
 	
-	abstract public void Init();
+	public abstract void Init();
 
-	abstract public void Update();
+	public abstract void Update();
 
-	abstract public void Close();
-	abstract public void Do_Key_Event(int key, boolean down);
+	public abstract void Close();
+	public abstract void Do_Key_Event(int key, boolean down);
 
-	abstract public void installGrabs();
-	abstract public void uninstallGrabs();
+	public abstract void installGrabs();
+	public abstract void uninstallGrabs();
 	
 }
 

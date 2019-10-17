@@ -7,7 +7,7 @@ import spacegraph.space2d.widget.port.TypedPort;
 
 public class SpectrogramChip extends TypedPort<float[]> {
 
-    transient private Spectrogram s = null;
+    private transient Spectrogram s = null;
 
     int history = 128;
 

@@ -68,7 +68,7 @@ public abstract class DynamicListSpace<X> extends AbstractSpace<X> {
 
     }
 
-    abstract protected List<? extends Spatial<X>> get();
+    protected abstract List<? extends Spatial<X>> get();
 
 
     /**

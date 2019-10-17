@@ -6,7 +6,7 @@ import spacegraph.SpaceGraph;
 import spacegraph.video.OrthoSurfaceGraph;
 
 /** satellite cursor attached to a Finger */
-abstract public class SubFinger extends Finger {
+public abstract class SubFinger extends Finger {
 
     public final Finger parent;
     final v2 posRel = new v2();

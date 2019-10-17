@@ -22,8 +22,7 @@ public class ClassLocal<V> extends ClassValue<V> {
      * @param <V>            the type of value in this ClassLocal
      * @return the ClassLocal
      */
-    @NotNull
-    public static <V> ClassLocal<V> withInitial(Function<Class<?>, V> classVFunction) {
+    public static @NotNull <V> ClassLocal<V> withInitial(Function<Class<?>, V> classVFunction) {
         return new ClassLocal<>(classVFunction);
     }
 

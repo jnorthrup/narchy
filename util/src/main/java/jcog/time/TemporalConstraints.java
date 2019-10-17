@@ -35,37 +35,37 @@ public class TemporalConstraints<E> {
 
 
     
-    final static short bin_before = 1; 
-    private final static short bin_after = 2;  
-    private final static short bin_during = 4; 
-    final static short bin_contains = 8; 
-    final static short bin_overlaps = 16; 
-    private final static short bin_overlappedby = 32; 
-    final static short bin_meets = 64; 
-    private final static short bin_metby = 128; 
-    final static short bin_starts = 256;
-    private final static short bin_startedby = 512; 
-    final static short bin_finishes = 1024;  
-    private final static short bin_finishedby = 2048;
-    final static short bin_equals = 4096;    
-    private final static short bin_all = (bin_before | bin_after | bin_during | bin_contains | bin_overlaps | bin_overlappedby | bin_meets | bin_metby | bin_starts | bin_startedby | bin_finishes | bin_finishedby | bin_equals);          
+    static final short bin_before = 1;
+    private static final short bin_after = 2;
+    private static final short bin_during = 4;
+    static final short bin_contains = 8;
+    static final short bin_overlaps = 16;
+    private static final short bin_overlappedby = 32;
+    static final short bin_meets = 64;
+    private static final short bin_metby = 128;
+    static final short bin_starts = 256;
+    private static final short bin_startedby = 512;
+    static final short bin_finishes = 1024;
+    private static final short bin_finishedby = 2048;
+    static final short bin_equals = 4096;
+    private static final short bin_all = (bin_before | bin_after | bin_during | bin_contains | bin_overlaps | bin_overlappedby | bin_meets | bin_metby | bin_starts | bin_startedby | bin_finishes | bin_finishedby | bin_equals);
     
-    private final static String str_before = "before";
-    private final static String str_after = "after";
-    private final static String str_during = "during";
-    private final static String str_contains = "contains";
+    private static final String str_before = "before";
+    private static final String str_after = "after";
+    private static final String str_during = "during";
+    private static final String str_contains = "contains";
 
     
-    private final static String str_overlaps = "overlaps";
-    private final static String str_overlappedby = "overlapped by";
-    private final static String str_meets = "meets";
-    private final static String str_metby = "met by";
-    private final static String str_starts = "starts";
-    private final static String str_startedby = "started by";
-    private final static String str_finishes = "finishes";
-    private final static String str_finishedby = "finished by";
-    private final static String str_equals = "equals";
-    private final static short[][] transitivematrixshort = {
+    private static final String str_overlaps = "overlaps";
+    private static final String str_overlappedby = "overlapped by";
+    private static final String str_meets = "meets";
+    private static final String str_metby = "met by";
+    private static final String str_starts = "starts";
+    private static final String str_startedby = "started by";
+    private static final String str_finishes = "finishes";
+    private static final String str_finishedby = "finished by";
+    private static final String str_equals = "equals";
+    private static final short[][] transitivematrixshort = {
             
             {bin_before, bin_all, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before, bin_before | bin_overlaps | bin_meets | bin_during | bin_starts, bin_before, bin_before},
             

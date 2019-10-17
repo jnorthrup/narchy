@@ -7,7 +7,7 @@ import java.util.Iterator;
 import java.util.function.Consumer;
 import java.util.stream.Stream;
 
-abstract public class AbstractRNode<V,D> implements RNode<V> {
+public abstract class AbstractRNode<V,D> implements RNode<V> {
 
     public /*volatile*/ short size = 0;
     public /*volatile*/ HyperRegion bounds = null;

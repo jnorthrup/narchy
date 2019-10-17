@@ -249,7 +249,7 @@ public class a extends Applet implements Runnable {
 		int[][] permutations = null;
 		int[] pixels = new int[8];
 		BufferedImage[] sprites = new BufferedImage[24];
-		ArrayList<Integer> values = new ArrayList<Integer>();
+		ArrayList<Integer> values = new ArrayList<>();
 		Random random = new Random();
 		int[] result = null;
 		int[][] board = null;

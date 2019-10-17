@@ -10,7 +10,7 @@ import nars.truth.Truth;
 import org.eclipse.collections.api.block.function.primitive.FloatFloatToObjectFunction;
 
 /** accepts a scalar input that is decomposed into components represented via multiple concepts */
-abstract public class DemultiplexedScalarSensor extends VectorSensor implements FloatSupplier {
+public abstract class DemultiplexedScalarSensor extends VectorSensor implements FloatSupplier {
 
     public final NumberX value = new AtomicFloat();
     public FloatSupplier input;

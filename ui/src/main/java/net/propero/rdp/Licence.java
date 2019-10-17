@@ -68,7 +68,7 @@ class Licence {
     private final Secure secure;
     private final byte[] licence_sign_key;
     private byte[] licence_key;
-    private byte[] in_token, in_sig;
+    private byte[] in_token;
 
     Licence(Secure s) {
         secure = s;
@@ -266,8 +266,8 @@ class Licence {
         this.in_token = new byte[tokenlen];
         data.copyToByteArray(this.in_token, 0, data.getPosition(), tokenlen);
         data.incrementPosition(tokenlen);
-        this.in_sig = new byte[LICENCE_SIGNATURE_SIZE];
-        data.copyToByteArray(this.in_sig, 0, data.getPosition(),
+        byte[] in_sig = new byte[LICENCE_SIGNATURE_SIZE];
+        data.copyToByteArray(in_sig, 0, data.getPosition(),
                 LICENCE_SIGNATURE_SIZE);
         data.incrementPosition(LICENCE_SIGNATURE_SIZE);
 

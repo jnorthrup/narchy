@@ -54,8 +54,7 @@ public class MatchBelief extends NativeHow {
 	 *
 	 * @param matchTime - temporal focus control: determines when a matching belief or answer should be projected to
 	 */
-	@Nullable
-	private static Premise match(Premise p, int var, RuleCause why, Derivation d) {
+    private static @Nullable Premise match(Premise p, int var, RuleCause why, Derivation d) {
 
 		final Term beliefTerm = p.beliefTerm();
 		if (!beliefTerm.op().taskable)
@@ -149,7 +148,7 @@ public class MatchBelief extends NativeHow {
 
 	}
 
-	@Nullable private static Task match(Task task, Term beliefTerm, Derivation d) {
+	private static @Nullable Task match(Task task, Term beliefTerm, Derivation d) {
 
 		final BeliefTable beliefTable = d.nar.tableDynamic(beliefTerm, true);
 
@@ -160,14 +159,14 @@ public class MatchBelief extends NativeHow {
 
 
 
-	@Nullable public static Task task(BeliefTable t, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
+	public static @Nullable Task task(BeliefTable t, Term beliefTerm, long[] when, @Nullable Predicate<Task> beliefFilter, Derivation d) {
 		return t
 			.matching(when[0], when[1], beliefTerm, beliefFilter, d.dur, d.nar)
 			.task(true, false, false);
 	}
 
 
-	@Nullable private static Task match(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
+	private static @Nullable Task match(Task task, Term beliefTerm, BeliefTable bb, long[] when, Derivation d) {
 
 		boolean tBelief = task.isBelief();
 

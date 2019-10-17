@@ -16,7 +16,7 @@ import org.junit.jupiter.api.Test;
 class DigitizedScalarTest {
 
 
-    private final static float tolerance = 0.2f;
+    private static final float tolerance = 0.2f;
 
 
     @Test

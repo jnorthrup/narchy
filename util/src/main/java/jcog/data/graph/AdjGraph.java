@@ -206,13 +206,11 @@ public class AdjGraph<V, E> implements Graph<V, E>, java.io.Serializable {
      * Returns null always.
      */
     @Override
-    @Nullable
-    public E edge(int i, int j) {
+    public @Nullable E edge(int i, int j) {
         return edges.get(eid(i, j));
     }
 
-    @Nullable
-    public E edge(V i, V j) {
+    public @Nullable E edge(V i, V j) {
         int ii = node(i);
         if (ii != -1) {
             int jj = node(j);

@@ -97,9 +97,9 @@ public interface Space<X> extends Nodelike<X> {
 
 
 
-        abstract public boolean acceptItem(HyperRegion target, HyperRegion x);
+        public abstract boolean acceptItem(HyperRegion target, HyperRegion x);
 
-        abstract public boolean acceptNode(HyperRegion target, HyperRegion x);
+        public abstract boolean acceptNode(HyperRegion target, HyperRegion x);
     }
 
 

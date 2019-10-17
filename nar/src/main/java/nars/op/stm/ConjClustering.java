@@ -35,9 +35,6 @@ public class ConjClustering extends TaskAction {
     @Deprecated static final int ITERATIONS = 1; //temporary
 
     public final BagClustering<Task> data;
-    private final BagClustering.Dimensionalize<Task> model;
-
-    private final byte puncIn, puncOut;
 
     public final FloatRange termVolumeMaxPct = new FloatRange(1f, 0, 1f);
     public final FloatRange forgetRate = new FloatRange(1f, 0, 1);
@@ -52,19 +49,13 @@ public class ConjClustering extends TaskAction {
     int learningIterations = 1;
     float minDurationsPerLearning = 1f;
 
-    /** HACK */
-    @Deprecated private int volEstimateInflationFactor = 2;
-
     private final Predicate<Task> filter;
 
     private float confMin;
     private int volMax;
 
-    private final boolean popConjoinedTasks = false;
-
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
-    private volatile long now;
     private volatile long lastLearn;
     @Deprecated private NAR nar;
 
@@ -88,39 +79,49 @@ public class ConjClustering extends TaskAction {
         taskPunc(puncIn);
         //TODO other filters
 
-        this.puncIn = puncIn;
-        this.puncOut = puncOut;
-
         this.filter = filter;
         /** TODO make this a constructor parameter */
-        this.model = new BagClustering.Dimensionalize<>(4) {
+        //mid
+        //range
+        //dMid  (div by range to normalize against scale)
+        //dRange
+        //dConf
+        //dPolarity
+        //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
+        //                        *
+        //                        (
+        //                                Math.abs(a[1] - b[1])
+        //                                        + Math.abs(a[2] - b[2])
+        //                                        + Math.abs(a[3] - b[3]) * 0.1f
+        //                        );
+        BagClustering.Dimensionalize<Task> model = new BagClustering.Dimensionalize<>(4) {
 
             @Override
             public void coord(Task t, double[] c) {
                 Truth tt = t.truth();
                 long s = t.start(), e = t.end();
-                c[0] = (s+e)/2; //mid
+                c[0] = (s + e) / 2; //mid
 
                 c[1] = tt.polarity();
                 c[2] = tt.conf();
 
-                c[3] = (e-s); //range
+                c[3] = (e - s); //range
             }
 
             @Override
             public double distanceSq(double[] a, double[] b) {
 
-				double range = 1 + Math.max(a[3], b[3]);
-                return (1 + Math.abs(a[0] - b[0])/range) //dMid  (div by range to normalize against scale)
+                double range = 1 + Math.max(a[3], b[3]);
+                return (1 + Math.abs(a[0] - b[0]) / range) //dMid  (div by range to normalize against scale)
                         *
-                       (1 + Math.abs(a[3] - b[3])/ range) //dRange
+                        (1 + Math.abs(a[3] - b[3]) / range) //dRange
                         *
-                       (1 + (
-                           Math.abs(a[2] - b[2]) //dConf
-                           +
-                           Math.abs(a[1] - b[1]) //dPolarity
-                       )/2)
-                       ;
+                        (1 + (
+                                Math.abs(a[2] - b[2]) //dConf
+                                        +
+                                        Math.abs(a[1] - b[1]) //dPolarity
+                        ) / 2)
+                        ;
 
 //                return (1 + (Math.abs(a[0] - b[0]) / Math.min(a[4], b[4])) + (Math.abs(a[4] - b[4]) / dur))
 //                        *
@@ -275,7 +276,6 @@ public class ConjClustering extends TaskAction {
     private void _update(long now) {
         //parameters must be set even if data is empty due to continued use in the filter
         //but at most once per cycle or duration
-        this.now = now;
         this.stampLenMax =
                 NAL.STAMP_CAPACITY / 2; //for minimum of 2 tasks in each conjunction
         //Param.STAMP_CAPACITY - 1;
@@ -333,11 +333,7 @@ public class ConjClustering extends TaskAction {
         final FasterList<Task> tried = new FasterList();
 
         /** centroid buffer */
-        transient public TaskList[] centroids = new TaskList[0];
-
-
-        private transient int tasksGeneratedPerCentroidIterationMax;
-
+        public transient TaskList[] centroids = new TaskList[0];
 
 
         private CentroidConjoiner() {
@@ -350,8 +346,6 @@ public class ConjClustering extends TaskAction {
             if (s < 2)
                 return 0;
 
-
-            this.tasksGeneratedPerCentroidIterationMax = limit;
 
             int count = 0;
             float confMinThresh = confMin + d.nar.confResolution.floatValue()/2f;
@@ -428,6 +422,8 @@ public class ConjClustering extends TaskAction {
 //                            if (null == vv.putIfAbsent(pair(tStart, term), t)) {
 
 
+                        /** HACK */
+                        int volEstimateInflationFactor = 2;
                         volEstimate += ((xtv+1) * volEstimateInflationFactor);
 
                         if (start > tStart) start = tStart;
@@ -455,6 +451,7 @@ public class ConjClustering extends TaskAction {
 
                                     s -= x.length;
 
+                                    boolean popConjoinedTasks = false;
                                     if (popConjoinedTasks) {
                                         for (Task aa : x)
                                             data.remove(aa);
@@ -462,7 +459,7 @@ public class ConjClustering extends TaskAction {
 
                                     d.remember( ((AbstractTask)y).why(why.why) );
 
-                                    if (++count >= tasksGeneratedPerCentroidIterationMax)
+                                    if (++count >= limit)
                                         break main;
 
                                 } else {

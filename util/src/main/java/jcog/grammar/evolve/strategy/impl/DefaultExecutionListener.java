@@ -35,7 +35,7 @@ import java.util.logging.Logger;
  */
 public class DefaultExecutionListener implements ExecutionListener,ExecutionListenerFactory {
 
-    private final static Logger LOG = Logger.getLogger(DefaultExecutionListener.class.getName());
+    private static final Logger LOG = Logger.getLogger(DefaultExecutionListener.class.getName());
 
 
 

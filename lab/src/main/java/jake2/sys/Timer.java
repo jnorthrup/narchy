@@ -10,7 +10,7 @@ import jake2.qcommon.Com;
 
 public abstract class Timer {
 
-	abstract public long currentTimeMillis();
+	public abstract long currentTimeMillis();
 	static Timer t;
 	
 	static {

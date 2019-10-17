@@ -26,7 +26,7 @@ import java.util.List;
  */
 public class Anchor extends Leaf<String> {
 
-    final static List<String> allowedClasses = Arrays.asList("\\w", "\\d", ".", "\\b", "\\s");
+    static final List<String> allowedClasses = Arrays.asList("\\w", "\\d", ".", "\\b", "\\s");
 
     public Anchor() {
         super(allowedClasses.get((int)(Math.random()*allowedClasses.size())));

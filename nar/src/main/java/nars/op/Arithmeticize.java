@@ -58,7 +58,7 @@ public class Arithmeticize {
             16 * 1024, Arithmeticize::_mods);
     }
 
-    private final static Variable A = $.varDep("A_"), B = $.varDep("B_");
+    private static final Variable A = $.varDep("A_"), B = $.varDep("B_");
     private static final Op Aop = A.op();
 
     private static final Function<Atom, Functor> ArithFunctors = Map.of(
@@ -69,9 +69,6 @@ public class Arithmeticize {
     )::get;
 
     public static class ArithmeticIntroduction extends EventIntroduction {
-
-        /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
-        private float preEvalRate = 0.5f;
 
         static final int VOLUME_MARGIN = 6;
 
@@ -112,6 +109,8 @@ public class Arithmeticize {
         @Override
         protected Term applyUnnormalized(Term x, int volMax, What w) {
             Random random = w.random();
+            /** rate at which input is pre-evaluated.  TODO make FloatRange etc */
+            float preEvalRate = 0.5f;
             return Arithmeticize.apply(x, null, volMax, random.nextFloat() < (preEvalRate / x.volume()), random);
         }
     }
@@ -175,7 +174,7 @@ public class Arithmeticize {
         return x.isNormalized() ? y.normalize() : y;
     }
 
-    final static class IntArrayListCached  {
+    static final class IntArrayListCached  {
         private final int hash;
         private final int[] val;
 

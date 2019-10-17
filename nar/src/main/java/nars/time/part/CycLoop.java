@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * per-cycle invoked part
  * NOT AFFILIATED WITH CYCORP
  */
-abstract public class CycLoop extends NARPart implements Consumer<NAR> {
+public abstract class CycLoop extends NARPart implements Consumer<NAR> {
 
     private final AtomicBoolean busy = new AtomicBoolean(false);
 
@@ -62,7 +62,7 @@ abstract public class CycLoop extends NARPart implements Consumer<NAR> {
         }
     }
 
-    abstract protected void run(NAR n);
+    protected abstract void run(NAR n);
 
 
     private static final class LambdaCycLoop extends CycLoop {

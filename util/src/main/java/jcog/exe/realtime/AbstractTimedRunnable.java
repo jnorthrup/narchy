@@ -2,7 +2,7 @@ package jcog.exe.realtime;
 
 import java.util.concurrent.TimeUnit;
 
-abstract public class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
+public abstract class AbstractTimedRunnable extends AbstractTimedFuture<Void> {
 
     public final Runnable run;
 

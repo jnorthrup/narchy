@@ -11,8 +11,7 @@ package jurls.reinforcementlearning.domains.grid;
 */
 public class Grid1DRelative implements World {
     private final int size;
-    
-    private final double VISUALIZE_PERIOD;
+
     private final double REWARD_MAGNITUDE;
     private final double JUMP_FRACTION;
     private final double ENERGY_COST_FACTOR;
@@ -21,10 +20,8 @@ public class Grid1DRelative implements World {
     private double position;
     private double focusPosition;
     private final double focusVelocity;
-        
-    private double[] action;
 
-    private final int totalTime;    
+    private final int totalTime;
     private int time;
     
     private final double noise;
@@ -32,7 +29,7 @@ public class Grid1DRelative implements World {
     public Grid1DRelative(int size, int totalTime, double noise, double focusVelocity) {
         this.time = 1;
         this.size = size;
-        this.VISUALIZE_PERIOD = Math.pow(10, 4);
+        double VISUALIZE_PERIOD = Math.pow(10, 4);
         this.ENERGY_COST_FACTOR = 0.01;
         this.MATCH_REWARD_FACTOR = 1.0;
         this.REWARD_MAGNITUDE = 1;
@@ -56,10 +53,8 @@ public class Grid1DRelative implements World {
     public double step(double[] action, double[] sensor) {
 
         time++;
-        
-        this.action = action;
-        
-        
+
+
         if (Math.random() < JUMP_FRACTION) {
             focusPosition = size * Math.random();
         }

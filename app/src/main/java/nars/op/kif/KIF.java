@@ -95,10 +95,8 @@ public class KIF implements Iterable<Task> {
             //new TreeSet();
 
     private final KIFParser kif;
-    private final boolean includeRelatedInternalConcept = true;
-    private final boolean includeDoc = false;
 
-    private transient final Map<Term, FnDef> fn = new HashMap();
+    private final transient Map<Term, FnDef> fn = new HashMap();
     private final Set<Term> symmetricRelations = new HashSet();
     {
         symmetricRelations.add(SYMMETRIC_RELATION);
@@ -302,6 +300,8 @@ public class KIF implements Iterable<Task> {
         String xCar = x.car();
         String root = xCar;
         Term y = null;
+        boolean includeDoc = false;
+        boolean includeRelatedInternalConcept = true;
         switch (root) {
             case "ListFn":
                 y = $.p(args);

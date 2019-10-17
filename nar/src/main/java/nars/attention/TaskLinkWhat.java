@@ -80,9 +80,8 @@ public class TaskLinkWhat extends What {
         links.sample(rng, each);
     }
 
-    @Nullable
     @Override
-    public TaskLink sample(Random rng) {
+    public @Nullable TaskLink sample(Random rng) {
         return links.sample(rng);
     }
 

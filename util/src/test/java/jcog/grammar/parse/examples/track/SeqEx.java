@@ -83,7 +83,7 @@ public class SeqEx extends Seq {
 	 */
 	private static void throwTrackException(Set<Assembly> previousState, Parser p) {
 
-		Assembly best = best(new HashSet<Assembly>(previousState)); 
+		Assembly best = best(new HashSet<>(previousState));
 		String after = best.consumed(" ");
 		if (after.equals("")) {
 			after = "-nothing-";

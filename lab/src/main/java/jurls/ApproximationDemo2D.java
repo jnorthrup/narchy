@@ -108,26 +108,26 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
     
     private void initComponents() {
 
-        functionButtonGroup = new javax.swing.ButtonGroup();
-        hiddenButtonGroup = new javax.swing.ButtonGroup();
-        outputButtonGroup = new javax.swing.ButtonGroup();
-        jTabbedPane1 = new javax.swing.JTabbedPane();
-        jPanel1 = new javax.swing.JPanel();
-        jPanel8 = new javax.swing.JPanel();
+        ButtonGroup functionButtonGroup = new ButtonGroup();
+        ButtonGroup hiddenButtonGroup = new ButtonGroup();
+        ButtonGroup outputButtonGroup = new ButtonGroup();
+        JTabbedPane jTabbedPane1 = new JTabbedPane();
+        JPanel jPanel1 = new JPanel();
+        JPanel jPanel8 = new JPanel();
         functionRenderer2D1 = new jurls.examples.approximation.FunctionRenderer2D();
-        jPanel9 = new javax.swing.JPanel();
+        JPanel jPanel9 = new JPanel();
         functionRenderer2D2 = new jurls.examples.approximation.FunctionRenderer2D();
-        
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTextArea1 = new javax.swing.JTextArea();
-        jPanel4 = new javax.swing.JPanel();
-        jPanel5 = new javax.swing.JPanel();
-        jPanel6 = new javax.swing.JPanel();
+
+        JScrollPane jScrollPane1 = new JScrollPane();
+        JTextArea jTextArea1 = new JTextArea();
+        JPanel jPanel4 = new JPanel();
+        JPanel jPanel5 = new JPanel();
+        JPanel jPanel6 = new JPanel();
         alphaComboBox = new javax.swing.JComboBox();
         momentumComboBox = new javax.swing.JComboBox();
-        jPanel7 = new javax.swing.JPanel();
-        jLabel3 = new javax.swing.JLabel();
-        jLabel4 = new javax.swing.JLabel();
+        JPanel jPanel7 = new JPanel();
+        JLabel jLabel3 = new JLabel();
+        JLabel jLabel4 = new JLabel();
         jMenuBar1 = new javax.swing.JMenuBar();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
@@ -270,25 +270,10 @@ public class ApproximationDemo2D extends javax.swing.JFrame {
 
     
     private javax.swing.JComboBox alphaComboBox;
-    private javax.swing.ButtonGroup functionButtonGroup;
     private jurls.examples.approximation.FunctionRenderer2D functionRenderer2D1;
     private jurls.examples.approximation.FunctionRenderer2D functionRenderer2D2;
-    private javax.swing.ButtonGroup hiddenButtonGroup;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenuBar jMenuBar1;
-    private javax.swing.JPanel jPanel1;
-    
-    private javax.swing.JPanel jPanel4;
-    private javax.swing.JPanel jPanel5;
-    private javax.swing.JPanel jPanel6;
-    private javax.swing.JPanel jPanel7;
-    private javax.swing.JPanel jPanel8;
-    private javax.swing.JPanel jPanel9;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTabbedPane jTabbedPane1;
-    private javax.swing.JTextArea jTextArea1;
+
     private javax.swing.JComboBox momentumComboBox;
-    private javax.swing.ButtonGroup outputButtonGroup;
-    
+
 }

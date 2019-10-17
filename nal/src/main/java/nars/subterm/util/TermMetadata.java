@@ -13,7 +13,7 @@ import nars.term.var.NormalizedVariable;
 /**
  * cached values for target/subterm metadata
  */
-abstract public class TermMetadata implements Termlike {
+public abstract class TermMetadata implements Termlike {
 
     /**
      * bitvector of subterm types, indexed by Op.id and OR'd into by each subterm
@@ -189,5 +189,5 @@ abstract public class TermMetadata implements Termlike {
     }
 
     @Override
-    abstract public boolean equals(Object obj);
+    public abstract boolean equals(Object obj);
 }

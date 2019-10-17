@@ -22,7 +22,7 @@ import static java.lang.Float.NEGATIVE_INFINITY;
 public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilter<X> {
 
 
-    public final static TopFilter Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
+    public static final TopFilter Empty = new TopN(ArrayUtil.EMPTY_OBJECT_ARRAY, (x, min) -> Float.NaN) {
         @Override
         public void setCapacity(int capacity) {
 
@@ -131,7 +131,8 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         min = size == capacity ? minValue() : NEGATIVE_INFINITY;
     }
 
-    @Override @Nullable public X pop() {
+    @Override
+    public @Nullable X pop() {
         X x = removeFirst();
         if (x!=null)
             commit();
@@ -212,17 +213,14 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
         return (size >= capacity * thresh);
     }
 
-    @Nullable
-    public final X getRoulette(Random rng) {
+    public final @Nullable X getRoulette(Random rng) {
         return size > 0 ? getRoulette(rng::nextFloat) : null;
     }
-    @Nullable
-    public final X getRoulette(Supplier<Random> rng) {
+    public final @Nullable X getRoulette(Supplier<Random> rng) {
         return size > 0 ? getRoulette(()->rng.get().nextFloat()) : null;
     }
 
-    @Nullable
-    public X getRoulette(FloatSupplier rng) {
+    public @Nullable X getRoulette(FloatSupplier rng) {
         return getRoulette(rng, rank);
     }
 
@@ -230,7 +228,7 @@ public class TopN<X> extends SortedArray<X> implements FloatFunction<X>, TopFilt
     /**
      * roulette select
      */
-    @Nullable public X getRoulette(FloatSupplier rng, FloatFunction<X> rank) {
+    public @Nullable X getRoulette(FloatSupplier rng, FloatFunction<X> rank) {
         int n = size;
         switch (n) {
             case 0:

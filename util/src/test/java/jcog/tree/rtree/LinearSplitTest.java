@@ -126,7 +126,7 @@ class LinearSplitTest {
         final int expectedEntryCount = 17;
 
         final Stats stats = rTree.stats();
-        assertEquals(expectedEntryCount, stats.size(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
+        assertEquals(expectedEntryCount, stats.size(), () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
 

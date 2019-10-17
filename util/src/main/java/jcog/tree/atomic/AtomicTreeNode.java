@@ -17,7 +17,7 @@ public abstract class AtomicTreeNode<T extends AtomicTreeNode<T>> {
     /** TODO use VarHandle */
     private final AtomicReference<T> parent = new AtomicReference(null);
 
-    private final static AtomicInteger serial = new AtomicInteger();
+    private static final AtomicInteger serial = new AtomicInteger();
     final int hash;
 
     protected AtomicTreeNode() {

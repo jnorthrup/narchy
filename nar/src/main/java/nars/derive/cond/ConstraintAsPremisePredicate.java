@@ -13,7 +13,7 @@ import nars.unify.constraint.UnifyConstraint;
 
 import java.util.function.BiFunction;
 
-abstract public class ConstraintAsPremisePredicate<C extends UnifyConstraint<Derivation.PremiseUnify>> extends ConstraintAsPredicate<PreDerivation,C> {
+public abstract class ConstraintAsPremisePredicate<C extends UnifyConstraint<Derivation.PremiseUnify>> extends ConstraintAsPredicate<PreDerivation,C> {
 
     private static final BiFunction<Term, Term, Term> TASK = (t, b) -> t;
     private static final BiFunction<Term, Term, Term> BELIEF = (t, b) -> b;

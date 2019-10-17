@@ -174,8 +174,8 @@ public class a extends GamePanel {
 	int[][] explodeIDs;
 	int[] explodeCounts;
 	int[] pixels = new int[256];
-	ArrayList<int[]> explosions = new ArrayList<int[]>();
-	ArrayList<int[]> chains = new ArrayList<int[]>();
+	ArrayList<int[]> explosions = new ArrayList<>();
+	ArrayList<int[]> chains = new ArrayList<>();
 	BufferedImage[] sprites = new BufferedImage[128];
 
 	BufferedImage offscreenImage;

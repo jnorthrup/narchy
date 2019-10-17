@@ -28,7 +28,7 @@ public interface FromTo<N, E> /* extends Triple<F,X,F> */ {
 
 
     /** other by equality */
-    @Nullable default N otherEquality(N x) {
+    default @Nullable N otherEquality(N x) {
         N f = from(), t = to();
         //TODO maybe this needs to be .equals()
         if (f.equals(x)) return t;
@@ -38,8 +38,7 @@ public interface FromTo<N, E> /* extends Triple<F,X,F> */ {
     }
 
     /** other by identity */
-    @Nullable
-    default N other(N x) {
+    default @Nullable N other(N x) {
         N f = from(), t = to();
         //TODO maybe this needs to be .equals()
         if (f == x) return t;

@@ -50,7 +50,7 @@ public class MarkovSampler<T> {
         MarkovChain.Chain<T> current = model.START.next(rng);
 
         
-        List<T> phrase = new FasterList<T>();
+        List<T> phrase = new FasterList<>();
 
         
         

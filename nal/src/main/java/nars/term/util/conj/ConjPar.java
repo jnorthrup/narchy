@@ -88,7 +88,7 @@ public enum ConjPar {
         return ct.term(B);
     }
 
-    @Nullable private static Term xternalDistribute(int dt, Term[] xx, TermBuilder B) {
+    private static @Nullable Term xternalDistribute(int dt, Term[] xx, TermBuilder B) {
         int xternalCount = 0;
         int lastXternal = -1;
         for (int i = 0, xxLength = xx.length; i < xxLength; i++) {
@@ -223,8 +223,7 @@ public enum ConjPar {
 //        return CONJ.the(all);
 //    }
 
-    @Nullable
-    public static Term disjunctiveFactor(Term[] xx, int dt, TermBuilder B) {
+    public static @Nullable Term disjunctiveFactor(Term[] xx, int dt, TermBuilder B) {
         @Deprecated MetalBitSet cond = null;
         int n = xx.length;
         for (int i = 0, xxLength = n; i < xxLength; i++) {

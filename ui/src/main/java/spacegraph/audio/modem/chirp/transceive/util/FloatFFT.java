@@ -1163,15 +1163,15 @@ public strictfp class FloatFFT {
     }
 
     private static void cftf1st(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3;
+        int j0;
         float wk1r, wk1i, wk3r, wk3i;
         float y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i;
         int idx0, idx4, idx5;
         int mh = n >> 3;
         int m = 2 * mh;
-        j1 = m;
-        j2 = j1 + m;
-        j3 = j2 + m;
+        int j1 = m;
+        int j2 = j1 + m;
+        int j3 = j2 + m;
         int idx1 = offa + j1;
         int idx2 = offa + j2;
         int idx3 = offa + j3;
@@ -1381,15 +1381,15 @@ public strictfp class FloatFFT {
     }
 
     private static void cftb1st(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3;
+        int j0;
         float wk1r, wk1i, wk3r, wk3i;
         float y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i;
         int idx0, idx4, idx5;
         int mh = n >> 3;
         int m = 2 * mh;
-        j1 = m;
-        j2 = j1 + m;
-        j3 = j2 + m;
+        int j1 = m;
+        int j2 = j1 + m;
+        int j3 = j2 + m;
         int idx1 = offa + j1;
         int idx2 = offa + j2;
         int idx3 = offa + j3;
@@ -1688,15 +1688,15 @@ public strictfp class FloatFFT {
     }
 
     private static void cftmdl1(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3;
+        int j0;
         float wk1r, wk1i, wk3r, wk3i;
         int idx0, idx4, idx5;
 
         int mh = n >> 3;
         int m = 2 * mh;
-        j1 = m;
-        j2 = j1 + m;
-        j3 = j2 + m;
+        int j1 = m;
+        int j2 = j1 + m;
+        int j3 = j2 + m;
         int idx1 = offa + j1;
         int idx2 = offa + j2;
         int idx3 = offa + j3;
@@ -1812,7 +1812,7 @@ public strictfp class FloatFFT {
     }
 
     private static void cftmdl2(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3, kr;
+        int j0;
         float wk1r, wk1i, wk3r, wk3i, wd1r, wd1i, wd3r, wd3i;
         float y2r, y2i;
         int idx0, idx4, idx5, idx6;
@@ -1820,9 +1820,9 @@ public strictfp class FloatFFT {
         int mh = n >> 3;
         int m = 2 * mh;
         float wn4r = w[startw + 1];
-        j1 = m;
-        j2 = j1 + m;
-        j3 = j2 + m;
+        int j1 = m;
+        int j2 = j1 + m;
+        int j3 = j2 + m;
         int idx1 = offa + j1;
         int idx2 = offa + j2;
         int idx3 = offa + j3;
@@ -1847,7 +1847,7 @@ public strictfp class FloatFFT {
         a[idx3] = x1r + y0i;
         a[idx3 + 1] = x1i - y0r;
         int k = 0;
-        kr = 2 * m;
+        int kr = 2 * m;
         for (int j = 2; j < mh; j += 2) {
             k += 4;
             idx4 = startw + k;

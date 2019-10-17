@@ -27,7 +27,7 @@ import static jcog.pri.PriMap.newMap;
  * regulates a flow of supplied tasks to a target consumer
  * TODO some of this can be moved to util/
  */
-abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> {
+public abstract class PriBuffer<T extends Prioritizable> implements Consumer<T> {
 
 
 	/**
@@ -35,7 +35,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 	 * true if the implementation will manage async target suppliying,
 	 * false if it needs periodic flushing
 	 */
-	abstract public void start(ConsumerX<T> target, NAR nar);
+	public abstract void start(ConsumerX<T> target, NAR nar);
 
 	public void stop() {
 	}
@@ -51,9 +51,9 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 	/**
 	 * known or estimated number of tasks present
 	 */
-	abstract public int size();
+	public abstract int size();
 
-	abstract public int capacity();
+	public abstract int capacity();
 
 	/**
 	 * estimate current utilization: size/capacity (as a value between 0 and 100%)
@@ -189,7 +189,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 
 	}
 
-	abstract public static class SyncPriBuffer<X extends Prioritizable> extends PriBuffer<X> {
+	public abstract static class SyncPriBuffer<X extends Prioritizable> extends PriBuffer<X> {
 		protected ConsumerX<X> target;
 		private Off onCycle;
 		protected NAR nar;
@@ -209,7 +209,7 @@ abstract public class PriBuffer<T extends Prioritizable> implements Consumer<T> 
 			this.nar = null;
 		}
 
-		abstract protected void commit();
+		protected abstract void commit();
 	}
 
 	/**

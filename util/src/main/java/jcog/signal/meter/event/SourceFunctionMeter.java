@@ -10,7 +10,7 @@ import jcog.signal.meter.FunctionMeter;
 /**
  * Function meter with one specific ID
  */
-abstract public class SourceFunctionMeter<T> extends FunctionMeter<T> {
+public abstract class SourceFunctionMeter<T> extends FunctionMeter<T> {
     
     private final String name;
 

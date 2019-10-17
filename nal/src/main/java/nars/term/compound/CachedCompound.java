@@ -15,7 +15,7 @@ import static nars.time.Tense.XTERNAL;
 /**
  * on-heap, caches many commonly used methods for fast repeat access while it survives
  */
-abstract public class CachedCompound extends SeparateSubtermsCompound implements The {
+public abstract class CachedCompound extends SeparateSubtermsCompound implements The {
 
     /**
      * subterm vector
@@ -87,7 +87,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
         }
     }
 
-    public final static class SimpleCachedCompound extends UnnormalizedCachedCompound {
+    public static final class SimpleCachedCompound extends UnnormalizedCachedCompound {
 
         SimpleCachedCompound(Op op, Subterms subterms) {
             super(op, subterms);
@@ -174,7 +174,7 @@ abstract public class CachedCompound extends SeparateSubtermsCompound implements
     }
 
 
-    abstract public int dt();
+    public abstract int dt();
 
     @Override
     public final int volume() {

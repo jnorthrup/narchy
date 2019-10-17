@@ -170,7 +170,7 @@ public class a extends GamePanel {
 		Graphics2D g = image.createGraphics();
 		Graphics2D g2 = null;
 		Random random = new Random();
-		ArrayList<float[]> queue = new ArrayList<float[]>();
+		ArrayList<float[]> queue = new ArrayList<>();
 		int playerFiring = 0;
 		int level = 0;
 		int playerDying = 0;
@@ -320,7 +320,7 @@ public class a extends GamePanel {
 					
 					for (i = 0; i < 16; i++) {
 						for (j = 0; j < 16; j++) {
-							objectMap[i][j] = new ArrayList<float[]>();
+							objectMap[i][j] = new ArrayList<>();
 						}
 					}
 

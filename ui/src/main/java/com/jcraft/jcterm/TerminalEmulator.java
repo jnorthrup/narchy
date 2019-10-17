@@ -26,7 +26,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 public abstract class TerminalEmulator {
-    private final int tab = 8;
     final Terminal term;
     private final InputStream in;
     private final byte[] buf = new byte[1024];
@@ -299,6 +298,7 @@ public abstract class TerminalEmulator {
 
     void tab() {
         term.draw_cursor();
+        int tab = 8;
         x = (((x / char_width) / tab + 1) * tab * char_width);
         if (x >= term_width * char_width) {
             x = 0;

@@ -16,10 +16,10 @@ import java.util.Random;
 /**
  * remove abstract, removing dependency on NTM
  */
-abstract public class SequenceLearner {
+public abstract class SequenceLearner {
 
-    final static double log2 = Math.log(2.0);
-    final static NumberFormat twoDigits = new DecimalFormat("0.00");
+    static final double log2 = Math.log(2.0);
+    static final NumberFormat twoDigits = new DecimalFormat("0.00");
     public final NTM machine;
     protected final int vectorSize;
     protected final int statisticsWindow = 16;
@@ -174,7 +174,7 @@ abstract public class SequenceLearner {
         return averageError;
     }
 
-    abstract protected TrainingSequence nextTrainingSequence();
+    protected abstract TrainingSequence nextTrainingSequence();
 
     public void onTrained(int sequenceNum, TrainingSequence sequence, NTM[] output, long trainTimeNS, double avgError) {
 

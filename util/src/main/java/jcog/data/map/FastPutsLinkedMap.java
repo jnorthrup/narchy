@@ -131,7 +131,7 @@ public class FastPutsLinkedMap<K, V> extends AbstractMap<K, V> implements Serial
     @Override
     public Set<Map.Entry<K, V>> entrySet() {
         if (entrySet == null) {
-            entrySet = new AbstractSet<Map.Entry<K,V>>() {
+            entrySet = new AbstractSet<>() {
                 @Override
                 public Iterator<Map.Entry<K, V>> iterator() {
                     compact();

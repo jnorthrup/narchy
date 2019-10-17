@@ -28,21 +28,12 @@ import jcog.TODO;
  */
 public class Anomalysis {
 
-    private final double predicted;
-
-    private final AnomalyLevel level;
-
-    private final AnomalyThresholds thresholds;
-
     /** TODO */
     public interface Anomalyzer {
 
     }
 
     public Anomalysis(double predicted, AnomalyLevel level, AnomalyThresholds thresh) {
-        this.predicted = predicted;
-        this.level = level;
-        this.thresholds = thresh;
     }
 
     /** trainer provided meta-classification of the classification, for interactive or online training purposes */

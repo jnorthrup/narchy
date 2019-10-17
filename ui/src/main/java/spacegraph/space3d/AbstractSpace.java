@@ -11,7 +11,7 @@ import java.util.function.Consumer;
  * @param X input "key" object type
  * @param Y visualized "value" spatial type
  */
-abstract public class AbstractSpace<X>  {
+public abstract class AbstractSpace<X>  {
 
     
 

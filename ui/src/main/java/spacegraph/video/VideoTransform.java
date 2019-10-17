@@ -6,7 +6,7 @@ import jcog.signal.wave2d.RGBBufImgBitmap2D;
 import java.awt.image.BufferedImage;
 import java.util.function.Function;
 
-abstract public class VideoTransform<T extends VideoSource> extends VideoSource {
+public abstract class VideoTransform<T extends VideoSource> extends VideoSource {
     public final T src;
     private Off off;
 

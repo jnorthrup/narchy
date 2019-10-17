@@ -652,7 +652,7 @@ public class Parser {
 		 return atom.matcher(s).matches();
 	 }
 
-	 static private final Pattern atom = Pattern.compile("(!|[a-z][a-zA-Z_0-9]*)");
+	 private static final Pattern atom = Pattern.compile("(!|[a-z][a-zA-Z_0-9]*)");
 
     /**
      * This class represents an iterator of terms from Prolog text embedded

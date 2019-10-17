@@ -25,7 +25,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  * temporal events.  at any given time it will contain zero or one of this
  * Dur's immutable and re-usable AtDur event.
  */
-abstract public class DurLoop extends NARPart {
+public abstract class DurLoop extends NARPart {
 
     /**
      * ideal duration multiple to be called, since time after implementation's procedure finished last
@@ -102,7 +102,7 @@ abstract public class DurLoop extends NARPart {
     /**
      * time (raw cycles, not durations) which elapsed since run was scheduled last
      */
-    abstract protected void run(NAR n, long dt);
+    protected abstract void run(NAR n, long dt);
 
 
 

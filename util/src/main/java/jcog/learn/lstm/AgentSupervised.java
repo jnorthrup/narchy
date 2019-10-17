@@ -3,7 +3,7 @@ package jcog.learn.lstm;
 import java.util.List;
 
 public abstract class AgentSupervised {
-	public final static class NonResetInteraction {
+	public static final class NonResetInteraction {
 		public double[] observation;
 		public double[] target_output;
 	}

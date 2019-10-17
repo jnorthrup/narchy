@@ -76,7 +76,7 @@ public final class Menu extends Key {
     
     /* Support Routines */
 
-    public final static int MAX_MENU_DEPTH = 8;
+    public static final int MAX_MENU_DEPTH = 8;
 
     public static class menulayer_t {
         xcommand_t draw;
@@ -103,7 +103,7 @@ public final class Menu extends Key {
     }
 
     abstract static class mcallback {
-        abstract public void execute(Object self);
+        public abstract void execute(Object self);
     }
 
     static class menucommon_s {
@@ -2190,7 +2190,7 @@ public final class Menu extends Key {
      * =============================================================================
      */
 
-    public final static int MAX_SAVEGAMES = 15;
+    public static final int MAX_SAVEGAMES = 15;
 
     static final menuframework_s s_savegame_menu = new menuframework_s();
 

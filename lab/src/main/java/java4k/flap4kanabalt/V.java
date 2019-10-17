@@ -42,7 +42,7 @@ public class V extends Applet implements Runnable {
 
 	private boolean down;
 
-	private final static char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
+	private static final char[] ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/".toCharArray();
 
 	private static final int[] toInt = new int[128];
 

@@ -93,8 +93,7 @@ public abstract class PrologLib implements Serializable {
      * Gets the synonym mapping, as array of
      * elements like  { synonym, original name}
      */
-    @Nullable
-    public String[][] buildSynonyms() {
+    public @Nullable String[][] buildSynonyms() {
         return null;
     }
 

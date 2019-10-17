@@ -7,9 +7,6 @@ import jcog.constraint.continuous.ContinuousConstraint;
  */
 public class DuplicateConstraintException extends KiwiException {
 
-    private final ContinuousConstraint constraint;
-
     public DuplicateConstraintException(ContinuousConstraint constraint) {
-        this.constraint = constraint;
     }
 }

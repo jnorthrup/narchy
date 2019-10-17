@@ -42,7 +42,7 @@ import java.util.stream.IntStream;
 public class ArrayPool<T> extends FasterList<T> {
 
     private static final ThreadLocal<ArrayPool<byte[]>> bytes =
-            ThreadLocal.withInitial(() -> new ArrayPool<byte[]>(byte[].class) {
+            ThreadLocal.withInitial(() -> new ArrayPool<>(byte[].class) {
                 @Override
                 protected byte[] create(int length) {
                     return new byte[length];
@@ -54,7 +54,7 @@ public class ArrayPool<T> extends FasterList<T> {
                 }
             });
     private static final ThreadLocal<ArrayPool<short[]>> shorts =
-            ThreadLocal.withInitial(() -> new ArrayPool<short[]>(short[].class) {
+            ThreadLocal.withInitial(() -> new ArrayPool<>(short[].class) {
                 @Override
                 protected short[] create(int length) {
                     return new short[length];
@@ -66,7 +66,7 @@ public class ArrayPool<T> extends FasterList<T> {
                 }
             });
 
-    final static int capacity = 16;
+    static final int capacity = 16;
 
     private static final ThreadLocal<Map<Class, ArrayPool>> typed = ThreadLocal.withInitial(HashMap::new);
 
@@ -117,8 +117,6 @@ public class ArrayPool<T> extends FasterList<T> {
         }
     }
 
-    private final ArrayLengthMatcher comparator;
-
     /**
      * Creates object pool.
      *
@@ -131,6 +129,7 @@ public class ArrayPool<T> extends FasterList<T> {
         this.componentType = arrayType.getComponentType();
 
         this.primitive = componentType.isPrimitive();
+        ArrayLengthMatcher comparator;
         if (this.primitive) {
             if (componentType == byte.class) {
                 comparator = new ByteArrayLengthMatcher();

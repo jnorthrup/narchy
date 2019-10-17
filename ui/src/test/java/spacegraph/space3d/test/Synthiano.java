@@ -13,22 +13,17 @@ import static net.beadsproject.beads.arpeggiator_01.midiPitchToFrequency;
 
 public class Synthiano extends Widget {
 
-    private final AudioContext ac;
-
-    private final FuncGen arpeggiator;
     private final Clock beatClock;
-    private final Gain gain;
     private final Envelope gainEnvelope;
     float frequency = 0;
 
     public Synthiano() {
-        ac = new AudioContext();
+        AudioContext ac = new AudioContext();
 
         gainEnvelope = new Envelope(ac, 0.0f);
 
 
-        
-        arpeggiator = new FuncGen(gainEnvelope) {
+        FuncGen arpeggiator = new FuncGen(gainEnvelope) {
 
             int tick = 0;
 
@@ -55,8 +50,8 @@ public class Synthiano extends Widget {
         beatClock.on(arpeggiator);
         ac.out.dependsOn(beatClock);
 
-        
-        gain = new Gain(ac, 1, gainEnvelope);
+
+        Gain gain = new Gain(ac, 1, gainEnvelope);
         gain.in(square);
 
 

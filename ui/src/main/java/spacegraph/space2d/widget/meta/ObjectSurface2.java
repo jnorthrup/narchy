@@ -28,9 +28,9 @@ public class ObjectSurface2 extends MutableUnitContainer {
         SpaceGraph.window(new ObjectSurface2(x), 500, 500);
     }
 
-    static public final CastGraph DefaultBuilder = new CastGraph();
+    public static final CastGraph DefaultBuilder = new CastGraph();
 
-    static private <X> void build(Class<? extends X> from, Function<? extends X,Surface> builder) {
+    private static <X> void build(Class<? extends X> from, Function<? extends X,Surface> builder) {
         DefaultBuilder.addEdge(from, builder, Surface.class);
     }
     {
@@ -97,7 +97,7 @@ public class ObjectSurface2 extends MutableUnitContainer {
         }
     }
 
-    abstract public static class Way<X> implements Supplier<X> {
+    public abstract static class Way<X> implements Supplier<X> {
         public String name;
     }
 

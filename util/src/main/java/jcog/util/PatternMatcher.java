@@ -200,7 +200,7 @@ public class PatternMatcher {
      * array treats each field as a character if positive and a unique token placeholder if
      * negative. This method will throw on any pattern structure violations.
      */
-    synchronized static int[] parseAndVerifyAdvancedPattern(String pattern) {
+    static synchronized int[] parseAndVerifyAdvancedPattern(String pattern) {
         int ip = 0;
         final int LP = pattern.length();
         int it = 0;

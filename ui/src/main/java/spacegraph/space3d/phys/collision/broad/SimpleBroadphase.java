@@ -39,7 +39,6 @@ public class SimpleBroadphase extends Broadphase {
     private final OArrayList<SimpleBroadphasing> handles = new OArrayList<>();
     
     private final OverlappingPairCache pairCache;
-    private boolean ownsPairCache;
 
     public SimpleBroadphase() {
         this(16384, null);
@@ -54,7 +53,7 @@ public class SimpleBroadphase extends Broadphase {
 
         if (overlappingPairCache == null) {
             this.pairCache = new HashedOverlappingPairCache();
-            this.ownsPairCache = true;
+            boolean ownsPairCache = true;
         } else {
             this.pairCache = overlappingPairCache;
         }

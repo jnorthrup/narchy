@@ -10,7 +10,7 @@ import spacegraph.space2d.Surface;
  * it can be used to drag move/resize with additional functionality or constraints
  * applied in real-time.
  * */
-abstract public class Fingering {
+public abstract class Fingering {
 
     /** return true to allow begin */
     protected abstract boolean start(Finger f);
@@ -34,7 +34,7 @@ abstract public class Fingering {
 
     /** override to provide a custom renderer (cursor)
      * @param finger*/
-    @Nullable public FingerRenderer renderer(Finger finger) {
+    public @Nullable FingerRenderer renderer(Finger finger) {
         return null;
     }
 
@@ -76,7 +76,7 @@ abstract public class Fingering {
     }
 
     /** optional cursor override */
-    @Nullable public FingerRenderer cursor() {
+    public @Nullable FingerRenderer cursor() {
         return null;
     }
 

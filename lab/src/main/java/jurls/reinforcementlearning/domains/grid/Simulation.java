@@ -17,14 +17,12 @@ public class Simulation {
     public final Agent agent;
 
     private JFrame jf;
-    private int time = 1;
 
     public static boolean DISPLAY = true;
-    private final boolean displayRewardChart = DISPLAY;
-    
+
     long displayPeriodMS = 1000;
-    
-    private double reward, rewardTotal;
+
+    private double rewardTotal;
     
     long cycleDelayMS;
     long lastDisplay = -1;
@@ -75,6 +73,7 @@ public class Simulation {
         if (DISPLAY) {
             displayAgent(agent);
         }
+        boolean displayRewardChart = DISPLAY;
         if (displayRewardChart) {
 
 
@@ -122,8 +121,8 @@ public class Simulation {
 
         action = np.zeros((world.num_actions,1))
         */
-        
-        time = 0;
+
+        int time = 0;
         lastCycleTime = System.nanoTime();
         int cycles = 0;
         
@@ -136,8 +135,8 @@ public class Simulation {
             return agent.report_performance()
             */
 
-            reward = world.step(agent.getAction(), agent.getSensor());
-            rewardTotal+=reward;
+            double reward = world.step(agent.getAction(), agent.getSensor());
+            rewardTotal+= reward;
             
             agent.step(reward);
 

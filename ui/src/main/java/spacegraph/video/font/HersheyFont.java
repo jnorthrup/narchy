@@ -13,7 +13,7 @@ import java.util.List;
 
 public final class HersheyFont {
 
-    private final static HersheyFont[] fontMono;
+    private static final HersheyFont[] fontMono;
 
     static final int offsetR = ('R');
     /*int idx, verts, */

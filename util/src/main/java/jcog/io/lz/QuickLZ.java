@@ -4,14 +4,14 @@ package jcog.io.lz;
 public final class QuickLZ {
 
 
-	public final static int QLZ_POINTERS_1 = 1;
-	public final static int QLZ_POINTERS_3 = 16;
-	private final static int HASH_VALUES = 4096;
-	private final static int MINOFFSET = 2;
-	private final static int UNCONDITIONAL_MATCHLEN = 6;
-	private final static int UNCOMPRESSED_END = 4;
-	private final static int CWORD_LEN = 4;
-	private final static int DEFAULT_HEADERLEN = 9;
+	public static final int QLZ_POINTERS_1 = 1;
+	public static final int QLZ_POINTERS_3 = 16;
+	private static final int HASH_VALUES = 4096;
+	private static final int MINOFFSET = 2;
+	private static final int UNCONDITIONAL_MATCHLEN = 6;
+	private static final int UNCOMPRESSED_END = 4;
+	private static final int CWORD_LEN = 4;
+	private static final int DEFAULT_HEADERLEN = 9;
 
 	static int headerLen(byte[] source, int offset) {
 		return (headerLong(source, offset) ? 9 : 3) + offset;
@@ -21,12 +21,12 @@ public final class QuickLZ {
 		return ((source[offset] & 2) == 2);
 	}
 
-	static public long sizeDecompressed(byte[] source, int offset) {
+	public static long sizeDecompressed(byte[] source, int offset) {
 		return headerLong(source, offset) ?
 			fast_read_long(source, 5 + offset, 4) : fast_read_long(source, 2 + offset, 1);
 	}
 
-	static public long sizeCompressed(byte[] source) {
+	public static long sizeCompressed(byte[] source) {
 		return fast_read_long(source, 1, (headerLong(source, 0)) ? 4 : 1);
 	}
 
@@ -262,11 +262,11 @@ public final class QuickLZ {
 			a[i++] = (byte) (value >>> (j * 8));
 	}
 
-	static public byte[] decompress(byte[] in) {
+	public static byte[] decompress(byte[] in) {
 		return decompress(in, 0);
 	}
 
-	static public byte[] decompress(byte[] in, int offset) {
+	public static byte[] decompress(byte[] in, int offset) {
 		int size = (int) sizeDecompressed(in, offset);
 		int initSrc = headerLen(in, offset);
 		int src = initSrc;

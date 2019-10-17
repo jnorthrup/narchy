@@ -263,7 +263,7 @@ public class WeightedQueue<T> implements BlockingQueue<T>
 
     public WeightedQueue(int maxWeight)
     {
-        this(maxWeight, new LinkedBlockingQueue<T>(), NATURAL_WEIGHER);
+        this(maxWeight, new LinkedBlockingQueue<>(), NATURAL_WEIGHER);
     }
 
     public WeightedQueue(int maxWeight, BlockingQueue<T> queue, Weigher<T> weigher)

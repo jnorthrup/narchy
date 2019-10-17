@@ -28,7 +28,7 @@ public abstract class DeriverExecutor extends Derivation {
 		super(deriver);
 	}
 
-	static protected float pri(Premise p) {
+	protected static float pri(Premise p) {
 		Task t = p.task(), b = p.belief();
 		float tPri = t.priElseZero();
 		if (b != null)

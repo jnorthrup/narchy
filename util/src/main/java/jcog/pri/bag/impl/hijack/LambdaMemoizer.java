@@ -14,7 +14,7 @@ import java.util.function.Function;
 public class LambdaMemoizer {
 
 
-    final static private AtomicInteger serial = new AtomicInteger();
+    private static final AtomicInteger serial = new AtomicInteger();
 
 
     public static <V> Function<Object[], V> memoize(Class klass, String methodName, Class[] paramTypes, MemoizeBuilder<V> m) {
@@ -57,7 +57,7 @@ public class LambdaMemoizer {
     /**
      * TODO make work like TermKey, etc
      */
-    public final static class ArgKey {
+    public static final class ArgKey {
 
         final int methodID;
 

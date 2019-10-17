@@ -220,9 +220,9 @@ public class a extends Applet implements Runnable {
 		Graphics2D g = (Graphics2D) image.getGraphics();
 		Graphics2D g2 = null;
 
-		ArrayList<int[]> customers = new ArrayList<int[]>();
-		ArrayList<int[]> sliders = new ArrayList<int[]>();
-		ArrayList<int[]> points = new ArrayList<int[]>();
+		ArrayList<int[]> customers = new ArrayList<>();
+		ArrayList<int[]> sliders = new ArrayList<>();
+		ArrayList<int[]> points = new ArrayList<>();
 
 		int i;
 		int j;

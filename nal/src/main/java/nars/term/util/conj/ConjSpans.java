@@ -19,7 +19,7 @@ public enum ConjSpans { ;
 	//TODO: boolean inclStart, boolean inclEnd, int intermediateDivisions
 
 	/** returns null on failure */
-	@Nullable public static ConjBuilder add(List<Task> tt, int dither, MetalBitSet componentPolarity, ConjBuilder b) {
+	public static @Nullable ConjBuilder add(List<Task> tt, int dither, MetalBitSet componentPolarity, ConjBuilder b) {
 		int n = tt.size();
 		if (n == 0)
 			return b; //nothing

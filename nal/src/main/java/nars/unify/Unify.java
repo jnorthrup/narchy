@@ -434,7 +434,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
 //            revert(when, versionedToBiConsumer(each));
 //    }
 
-    static private Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
+    private static Consumer<Versioned<Term>> versionedToBiConsumer(BiConsumer<Term, Term> each) {
         return (Versioned<Term> v)->{
             if (v instanceof KeyMultiVersioned) {
                 each.accept(((KeyMultiVersioned<Term,Term>)v).key, v.get());
@@ -552,7 +552,7 @@ public abstract class Unify extends Versioning<Term> implements RecursiveTermTra
         return x.transformSubs(this::resolveTermRecurse, null);
     }
 
-    @Nullable public final TermList resolveListIfChanged(Subterms x, boolean recurse) {
+    public final @Nullable TermList resolveListIfChanged(Subterms x, boolean recurse) {
         Subterms y = recurse ? resolveSubsRecurse(x) : resolveSubs(x);
         if (y == null)
             return new TermList(Bool.Null); //HACK

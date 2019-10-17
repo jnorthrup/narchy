@@ -45,10 +45,8 @@ public class AudioTransceiver {
      * Declare the Galois Field. (5-bit, using root polynomial a^5 + a^2 + 1.)
      * Allocate the ReedSolomonEncoder and ReedSolomonDecoder.
      */
-    final private ReedSolomonEncoder mReedSolomonEncoder = new ReedSolomonEncoder(lGenericGF);
-    final private ReedSolomonDecoder mReedSolomonDecoder = new ReedSolomonDecoder(lGenericGF);
-
-    private final boolean active = true;
+    private final ReedSolomonEncoder mReedSolomonEncoder = new ReedSolomonEncoder(lGenericGF);
+    private final ReedSolomonDecoder mReedSolomonDecoder = new ReedSolomonDecoder(lGenericGF);
 
     private final boolean mSampleSelf;
     private FloatArrayList pitchBuffer;
@@ -385,7 +383,8 @@ public class AudioTransceiver {
     }
 
     private boolean isActive() {
-        return this.active;
+        boolean active = true;
+        return active;
     }
 
 //    @SuppressWarnings("unused")
@@ -455,8 +454,6 @@ public class AudioTransceiver {
         private static final double SEMITONE = 1.05946311;
         private static final int MINIMUM_PERIOD_MS = 120;
         static final int DEFAULT_PERIOD_MS = Synth.MINIMUM_PERIOD_MS;
-        /* Member Variables. */
-        private final double freqBase;
         private final String identifier;
         private final Range range;
         private final int payloadLen;
@@ -490,7 +487,7 @@ public class AudioTransceiver {
                 lMapFreqChar.put(lFrequency, c);
             }
             // Initialize Member Variables.
-            this.freqBase = pBaseFrequency;
+            /* Member Variables. */
             this.identifier = pIdentifier;
             this.range = pRange;
             this.payloadLen = pPayloadLength;
@@ -600,19 +597,16 @@ public class AudioTransceiver {
          * Factory Pattern.
          */
         static final class Builder {
-            /* Default Declarations. */
-            private final double mBaseFrequency = Synth.DEFAULT_FREQUENCY_BASE; // Declares the initial frequency which the range of transmissions uses
             private final Range mRange = Synth.DEFAULT_RANGE;
-            private final String id = Synth.DEFAULT_IDENTIFIER;
-            private final int mPayloadLength = Synth.DEFAULT_LENGTH_PAYLOAD;
-            private final int mErrorLength = Synth.DEFAULT_LENGTH_CRC;
             private int mSymbolPeriodMs = Synth.DEFAULT_PERIOD_MS;
 
 
             final Synth build() throws IllegalStateException {
 
                 /** TODO: Check lengths etc */
-                return new Synth(this.mBaseFrequency, this.id, this.mRange, this.mPayloadLength, this.mErrorLength, this.getSymbolPeriodMs());
+                /* Default Declarations. */
+                // Declares the initial frequency which the range of transmissions uses
+                return new Synth(Synth.DEFAULT_FREQUENCY_BASE, Synth.DEFAULT_IDENTIFIER, this.mRange, Synth.DEFAULT_LENGTH_PAYLOAD, Synth.DEFAULT_LENGTH_CRC, this.getSymbolPeriodMs());
             }
 
             final int getSymbolPeriodMs() {

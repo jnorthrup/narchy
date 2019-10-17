@@ -50,10 +50,6 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      */
     public float dtS = 0;
     public float renderFPS = UI.FPS_default;
-    /**
-     * factor to decrease FPS of unfocused windows
-     */
-    private final float renderFPSUnfocusedRate = 0.5f;
     private long lastRenderNS = System.nanoTime();
     private volatile int nx = -1, ny = -1, nw = -1, nh = -1;
 
@@ -118,7 +114,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
         //Exe.invokeLater(w::destroy);
     }
 
-    abstract protected void init(GL2 gl);
+    protected abstract void init(GL2 gl);
 
     public void printHardware() {
 
@@ -188,6 +184,10 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
 
     @Override
     public void windowLostFocus(WindowEvent windowEvent) {
+        /**
+         * factor to decrease FPS of unfocused windows
+         */
+        float renderFPSUnfocusedRate = 0.5f;
         renderer.loop.setFPS(renderFPSUnfocusedRate * renderFPS);
     }
 
@@ -203,7 +203,7 @@ public abstract class JoglWindow implements GLEventListener, WindowListener {
      *
      * @param dtMS
      */
-    abstract protected void render(float dtS);
+    protected abstract void render(float dtS);
 
 
     @Override

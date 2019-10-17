@@ -262,12 +262,10 @@ public class SimpleIntSet extends AbstractSet<Integer> implements Serializable {
 
 
     private class IntegerIterator implements Iterator<Integer> {
-        private final int startPos;
         int pos;
         int prevPos;
 
         public IntegerIterator(int startPos) {
-            this.startPos = startPos;
             pos = startPos;
             prevPos = -1;
         }

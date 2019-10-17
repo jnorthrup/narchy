@@ -86,9 +86,8 @@ public class ProxyBag<X,Y> extends Bag<X,Y> {
         bag.setCapacity(after);
     }
 
-    @Nullable
     @Override
-    public Y remove(X x) {
+    public @Nullable Y remove(X x) {
         return bag.remove(x);
     }
 

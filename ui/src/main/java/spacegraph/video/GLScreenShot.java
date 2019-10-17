@@ -20,17 +20,17 @@ public class GLScreenShot implements Supplier<BufferedImage> {
     Buffer seen;
     int width, height;
 
-    final static int[] rgbBits = {8, 8, 8};
-    final static int[] rgbOffsets = {2, 1, 0};
-    final static ComponentColorModel rgbColorModel = new ComponentColorModel(
+    static final int[] rgbBits = {8, 8, 8};
+    static final int[] rgbOffsets = {2, 1, 0};
+    static final ComponentColorModel rgbColorModel = new ComponentColorModel(
             ColorSpace.getInstance(ColorSpace.CS_sRGB), rgbBits, false, false, 1, 0);
 
-    final static int[] grayBits = {8};
-    final static int[] grayOffsets = {0};
-    final static ComponentColorModel grayColorModel = new ComponentColorModel(
+    static final int[] grayBits = {8};
+    static final int[] grayOffsets = {0};
+    static final ComponentColorModel grayColorModel = new ComponentColorModel(
             ColorSpace.getInstance(ColorSpace.CS_GRAY), grayBits, false, false, 1, 0);
 
-    volatile private BufferedImage current;
+    private volatile BufferedImage current;
 
     final boolean rgbOrDepth;
 

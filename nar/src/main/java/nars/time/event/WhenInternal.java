@@ -5,9 +5,9 @@ import nars.term.Term;
 import nars.term.atom.Atomic;
 
 /** internal, system event */
-abstract public class WhenInternal {
+public abstract class WhenInternal {
 
-    abstract public Term term();
+    public abstract Term term();
 
     public Term category() {
         return Atomic.the(getClass().getSimpleName());

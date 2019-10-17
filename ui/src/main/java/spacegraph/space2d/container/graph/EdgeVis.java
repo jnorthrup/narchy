@@ -5,7 +5,7 @@ import jcog.Util;
 import spacegraph.video.Draw;
 
 public class EdgeVis<X> {
-    volatile public NodeVis<X> to;
+    public volatile NodeVis<X> to;
 
     public volatile boolean invalid;
 

@@ -33,7 +33,7 @@ public class ShowRepetitionMatch {
 	public static void main(String[] args) {
 
 		Parser p = new Repetition(new Word());
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		String s = "How many cups are in a gallon?";
 		v.add(new TokenAssembly(s));
 		System.out.println(p.match(v));

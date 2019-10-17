@@ -151,16 +151,14 @@ public class AttentionUI {
 	static class ObjectGraphs extends Bordering {
 		public static final float INNER_CONTENT_SCALE = 0.9f;
 		private final Map<Class, BiFunction<?, Object, Surface>> builders;
-		private final Graph2D.Graph2DRenderer<Object> renderer;
 
-		private final Iterable content;
+        private final Iterable content;
 		private final Graph2D graph;
 
 		ObjectGraphs(Iterable/*<X>*/ content, Map<Class, BiFunction<?, Object, Surface>> builders, Graph2D.Graph2DRenderer<Object> renderer) {
 
 			this.builders = builders;
-			this.renderer = renderer;
-			this.content = content;
+            this.content = content;
 
 			this.graph = graph(objectGraph(renderer));
 			set(graph.widget());

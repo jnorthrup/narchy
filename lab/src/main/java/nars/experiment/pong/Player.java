@@ -5,9 +5,9 @@ package nars.experiment.pong;/*
  *  Read the file 'COPYING' for more information
  */
 
-abstract public class Player {
+public abstract class Player {
 
-    abstract public void computePosition(PongModel pong);
+    public abstract void computePosition(PongModel pong);
 
     public void bounce() {
         points++;

@@ -11,7 +11,7 @@ public class SoftMemoize<X, Y> extends CustomConcurrentHashMap<X, Object> implem
 
     private final Function<X, Object> f;
 
-    final private Object NULL = new Object();
+    private final Object NULL = new Object();
 
     public SoftMemoize(Function<X, Y> g, int expSize, Strength strength) {
         this(g, expSize, strength, strength);

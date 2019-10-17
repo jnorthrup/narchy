@@ -10,7 +10,7 @@ import java.util.function.Supplier;
 /**
  * Created by me on 12/2/16.
  */
-abstract public class Menu extends MutableUnitContainer {
+public abstract class Menu extends MutableUnitContainer {
 
     protected final MenuView content;
 
@@ -22,10 +22,10 @@ abstract public class Menu extends MutableUnitContainer {
 
     /** view model */
     public abstract static class MenuView {
-        abstract public Surface view();
+        public abstract Surface view();
 
-        abstract public void active(Surface surface);
-        abstract public boolean inactive(Surface surface);
+        public abstract void active(Surface surface);
+        public abstract boolean inactive(Surface surface);
 
         public abstract boolean isEmpty();
     }

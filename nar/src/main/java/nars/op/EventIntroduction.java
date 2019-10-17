@@ -47,7 +47,7 @@ public abstract class EventIntroduction extends Introduction {
         return y!=null && !x.equals(y) && y.volume() <= volMax ? y.normalize() : x;
     }
 
-    abstract protected Term applyUnnormalized(Term x, int volMax, What w);
+    protected abstract Term applyUnnormalized(Term x, int volMax, What w);
 
     /** dont separate in conj and impl components if variables because renormalization will cause them to become distinct HACK */
     public Term applyUnnormalized(Term x, What w) {

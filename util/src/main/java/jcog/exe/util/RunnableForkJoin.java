@@ -14,7 +14,8 @@ public abstract class RunnableForkJoin extends ForkJoinTask<Void> implements Run
     @Override public final void setRawResult(Void v) {
     }
 
-    @Override abstract public boolean exec();
+    @Override
+    public abstract boolean exec();
 
     public final void run() {
         invoke();

@@ -16,7 +16,7 @@ import java.util.function.Predicate;
 /**
  * Generic handler for matching individual Tasks's
  */
-abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
+public abstract class TaskMatch implements Consumer<Task>, Predicate<Task> {
 
     protected final NAR nar;
     private final Off on;
@@ -78,7 +78,7 @@ abstract public class TaskMatch implements Consumer<Task>, Predicate<Task> {
      * @param xy
      * @return true for callee to continue matching, false to stop
      */
-    abstract protected void accept(Task task, Map<Variable, Term> xy);
+    protected abstract void accept(Task task, Map<Variable, Term> xy);
 
 
 }

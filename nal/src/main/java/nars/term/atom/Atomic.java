@@ -123,8 +123,7 @@ public abstract class Atomic implements Term {
         return (Atom)the(id);
     }
 
-    @Nullable
-    public static Atomic the(char c) {
+    public static @Nullable Atomic the(char c) {
         switch (c) {
             case Op.VarAutoSym:
                 return Op.VarAuto;
@@ -309,15 +308,13 @@ public abstract class Atomic implements Term {
     }
 
     @Override
-    @Nullable
-    public Term subPath(int start, int end, byte... path) {
+    public @Nullable Term subPath(int start, int end, byte... path) {
         if (start==0 && start==end) return this;
         else return null;
     }
 
     @Override
-    @Nullable
-    public Term subPath(ByteList path, int start, int end) {
+    public @Nullable Term subPath(ByteList path, int start, int end) {
         if (start==0 && start==end) return this;
         else return null;
     }

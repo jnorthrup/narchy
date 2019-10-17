@@ -40,9 +40,8 @@ public final class SimpleValue<L> implements Function<String,L> {
         return new SimpleValue(header, values);
     }
 
-    @Nullable
     @Override
-    public L apply(String column) {
+    public @Nullable L apply(String column) {
         return values.get(column);
     }
 

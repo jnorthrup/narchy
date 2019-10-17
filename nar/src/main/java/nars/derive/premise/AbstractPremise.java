@@ -74,14 +74,12 @@ public class AbstractPremise implements Premise {
 	}
 
 	@Override
-	@Nullable
-	public final Task task() {
+	public final @Nullable Task task() {
 		return task instanceof Task ? (Task) task : null;
 	}
 
 	@Override
-	@Nullable
-	public final Task belief() {
+	public final @Nullable Task belief() {
 		return belief instanceof Task ? (Task) belief : null;
 	}
 

@@ -9,7 +9,7 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 
 
-abstract public class Var<X,Y> implements Comparable<Var> {
+public abstract class Var<X,Y> implements Comparable<Var> {
 
     public final BiFunction<X,Y,Y> set;
     public final Function<X,Y> get;
@@ -64,7 +64,7 @@ abstract public class Var<X,Y> implements Comparable<Var> {
     }
 
 
-    abstract public boolean ready();
+    public abstract boolean ready();
 
 
     /** creates a (read-only) sensor proxy to the current value of this variable */
@@ -72,7 +72,7 @@ abstract public class Var<X,Y> implements Comparable<Var> {
         return new VarProxySensor<>(this);
     }
 
-    final static class VarProxySensor<X,Y> extends Sensor<X,Y> {
+    static final class VarProxySensor<X,Y> extends Sensor<X,Y> {
 
         private final Var<X,Y> var;
 

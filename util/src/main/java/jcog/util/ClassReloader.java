@@ -281,7 +281,7 @@ public class ClassReloader extends ClassLoader {
 //    }
 
 
-    static public ClassReloader inClassPathOf(Class clazz) throws URISyntaxException {
+    public static ClassReloader inClassPathOf(Class clazz) throws URISyntaxException {
 
         URI pkgLocal = clazz.getResource(".").toURI();
 
@@ -314,12 +314,12 @@ public class ClassReloader extends ClassLoader {
             initReloadedClasses();
         }
 
-        this.classpath = new TreeSet<String>();
+        this.classpath = new TreeSet<>();
         Iterables.addAll(this.classpath, classpath);
 
-        this.reloadableCache = new TreeSet<String>();
-        this.reloadableClassCache = new LinkedList<Class<?>>();
-        this.specificClassPaths = new TreeMap<String, String>();
+        this.reloadableCache = new TreeSet<>();
+        this.reloadableClassCache = new LinkedList<>();
+        this.specificClassPaths = new TreeMap<>();
 
     }
 
@@ -355,7 +355,7 @@ public class ClassReloader extends ClassLoader {
             initReloadedClasses();
         }
         this.classpath = classpath;
-        this.reloadableClassCache = new LinkedList<Class<?>>();
+        this.reloadableClassCache = new LinkedList<>();
     }
 
     public void setSpecificClassPath(String className, String path) {
@@ -363,7 +363,7 @@ public class ClassReloader extends ClassLoader {
     }
 
     private ClassReloader cleanReloader() {
-        Set<String> childReloadableCache = new TreeSet<String>(this.reloadableCache);
+        Set<String> childReloadableCache = new TreeSet<>(this.reloadableCache);
         ClassLoader firstClassloader = getFirstClassLoader();
         ClassReloader cleanSlate = new ClassReloader(this.classpath, firstClassloader, childReloadableCache, this.specificClassPaths);
         cleanSlate.reloadersCreated = 1;
@@ -554,7 +554,7 @@ public class ClassReloader extends ClassLoader {
         if (this.reloadersCreated == ClassReloader.MAX_RELOADERS_BEFORE_CLEANING) {
             return this.cleanReloader();
         } else {
-            Set<String> childReloadableCache = new TreeSet<String>(this.reloadableCache);
+            Set<String> childReloadableCache = new TreeSet<>(this.reloadableCache);
             return new ClassReloader(this.classpath, this, childReloadableCache, this.specificClassPaths);
         }
     }
@@ -692,19 +692,19 @@ public class ClassReloader extends ClassLoader {
             this.classByteCodeMap = classByteCodeMap;
             this.classesToReload = classesToReload;
             this.verifyFileChanges = verifyFileChanges;
-            this.filePerClass = new TreeMap<String, String>();
+            this.filePerClass = new TreeMap<>();
         }
 
         public ByteCodeContainer() {
-            this(new TreeMap<String, byte[]>(), new TreeSet<String>(), false);
+            this(new TreeMap<>(), new TreeSet<>(), false);
         }
 
         public ByteCodeContainer(Set<String> classesToReload) {
-            this(new TreeMap<String, byte[]>(), classesToReload, false);
+            this(new TreeMap<>(), classesToReload, false);
         }
 
         public ByteCodeContainer(boolean verifyFileChanges) {
-            this(new TreeMap<String, byte[]>(), new TreeSet<String>(), verifyFileChanges);
+            this(new TreeMap<>(), new TreeSet<>(), verifyFileChanges);
         }
 
         public void eliminateClass(String className) {

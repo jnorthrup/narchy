@@ -32,9 +32,9 @@ import java.lang.reflect.Modifier;
  */
 public class PrologPrim {
     
-    public final static int DIRECTIVE  = 0;
-    public final static int PREDICATE  = 1;
-    public final static int FUNCTOR    = 2;
+    public static final int DIRECTIVE  = 0;
+    public static final int PREDICATE  = 1;
+    public static final int FUNCTOR    = 2;
     private static final MethodHandles.Lookup LOOKUP = MethodHandles.lookup();
 
     public final int type;

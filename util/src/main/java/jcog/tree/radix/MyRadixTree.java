@@ -35,9 +35,9 @@ import static org.eclipse.collections.impl.tuple.Tuples.pair;
 public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements /*RadixTree<X>,*/Serializable, Iterable<X> {
 
 
-    private final static Comparator<? super Prefixed> NODE_COMPARATOR = Comparator.comparingInt(Prefixed::getIncomingEdgeFirstCharacter);
+    private static final Comparator<? super Prefixed> NODE_COMPARATOR = Comparator.comparingInt(Prefixed::getIncomingEdgeFirstCharacter);
     @Deprecated
-    private final static FasterList<Node> emptyList = new FasterList<>(0, new Node[]{}) {
+    private static final FasterList<Node> emptyList = new FasterList<>(0, new Node[]{}) {
         @Override
         public boolean add(Node x) {
             throw new UnsupportedOperationException();
@@ -113,15 +113,15 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         return (FasterList<Node>) outs;
     }
 
-    static private ByteArrayNodeDefault inner(AbstractBytes in, Object value, List<Node> outs) {
+    private static ByteArrayNodeDefault inner(AbstractBytes in, Object value, List<Node> outs) {
         return new ByteArrayNodeDefault(in, value, leafList(outs));
     }
 
-    static private ByteArrayNodeNonLeafVoidValue innerVoid(AbstractBytes in, List<Node> outs) {
+    private static ByteArrayNodeNonLeafVoidValue innerVoid(AbstractBytes in, List<Node> outs) {
         return new ByteArrayNodeNonLeafVoidValue(in, leafList(outs));
     }
 
-    static private ByteArrayNodeNonLeafNullValue innerNull(AbstractBytes in, List<Node> outs) {
+    private static ByteArrayNodeNonLeafNullValue innerNull(AbstractBytes in, List<Node> outs) {
         return new ByteArrayNodeNonLeafNullValue(in, leafList(outs));
     }
 
@@ -1302,9 +1302,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
             return this.incomingEdgeCharArray.at(0);
         }
 
-        @Nullable
         @Override
-        public final Node getOutgoingEdge(byte edgeFirstCharacter) {
+        public final @Nullable Node getOutgoingEdge(byte edgeFirstCharacter) {
 
 
             Node[] a = array();

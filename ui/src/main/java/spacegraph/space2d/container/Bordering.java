@@ -10,15 +10,15 @@ import spacegraph.space2d.container.collection.MutableArrayContainer;
 
  */
 public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
-    public final static int C = 0;
-    public final static int N = 1;
-    public final static int S = 2;
-    public final static int E = 3;
-    public final static int W = 4;
-    public final static int NE = 5;
-    public final static int NW = 6;
-    public final static int SW = 7;
-    public final static int SE = 8;
+    public static final int C = 0;
+    public static final int N = 1;
+    public static final int S = 2;
+    public static final int E = 3;
+    public static final int W = 4;
+    public static final int NE = 5;
+    public static final int NW = 6;
+    public static final int SW = 7;
+    public static final int SE = 8;
 
     /**
      * in percent of the half total size of the corresponding dimension
@@ -27,8 +27,6 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
     protected float borderEast = 0.25f;
     protected float borderSouth = 0.25f;
     protected float borderNorth = 0.25f;
-
-    private final boolean autocollapse = true;
 
     public Bordering() {
         super(SE+1);
@@ -100,6 +98,7 @@ public class Bordering<S extends Surface> extends MutableArrayContainer<S> {
         boolean ne = get(Bordering.NE) != null;
         boolean sw = get(Bordering.SW) != null;
         boolean nw = get(Bordering.NW) != null;
+        boolean autocollapse = true;
         float borderWest = autocollapse && !(sw || nw || get(Bordering.W) != null) ? 0 : this.borderWest;
         float borderEast = autocollapse && !(se || ne || get(Bordering.E) != null) ? 0 : this.borderEast;
         float borderNorth = autocollapse && !(ne || nw || get(Bordering.N) != null) ? 0 : this.borderNorth;

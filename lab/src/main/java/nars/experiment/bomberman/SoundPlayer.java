@@ -40,10 +40,6 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
      */
     private boolean midiEOM, audioEOM;
     /**
-     * sound synthesizer
-     */
-    private Synthesizer synthesizer;
-    /**
      * channel objects for playing midi
      */
     private MidiChannel[] channels;
@@ -129,7 +125,10 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
             /** get the system sequencer */
             sequencer = MidiSystem.getSequencer();
             if (sequencer instanceof Synthesizer) {
-                synthesizer = (Synthesizer) sequencer;
+                /**
+                 * sound synthesizer
+                 */
+                Synthesizer synthesizer = (Synthesizer) sequencer;
                 /** get the system channels */
                 channels = synthesizer.getChannels();
             }

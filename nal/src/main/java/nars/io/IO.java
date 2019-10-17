@@ -56,7 +56,7 @@ public class IO {
     public static final int gzipWindowBytesDefault =
             //512; //default
             1024;
-    public final static int outputBufferBytesDefault = 128 * 1024;
+    public static final int outputBufferBytesDefault = 128 * 1024;
 
     public static int readTasks(byte[] t, Consumer<Task> each) throws IOException {
         return readTasks(new ByteArrayInputStream(t), each);
@@ -123,8 +123,7 @@ public class IO {
     }
 
 
-    @Nullable
-    public static byte[] taskToBytes(Task x) {
+    public static @Nullable byte[] taskToBytes(Task x) {
         DynBytes dos = new DynBytes(termBytesEstimate(x));
 
         byte[] b = taskToBytes(x, dos);
@@ -134,7 +133,7 @@ public class IO {
         return b;
     }
 
-    public @Nullable static byte[] taskToBytes(Task x, DynBytes dos) {
+    public static @Nullable byte[] taskToBytes(Task x, DynBytes dos) {
         TaskIO.write(x, dos,true, true);
         return dos.arrayCopy();
     }

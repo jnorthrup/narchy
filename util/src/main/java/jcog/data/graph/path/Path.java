@@ -213,7 +213,7 @@ public interface Path<N, E> {
         };
 
 
-        abstract public <N, E> N next(FromTo<Node<N, E>, E> edge);
+        public abstract <N, E> N next(FromTo<Node<N, E>, E> edge);
 
     }
 }

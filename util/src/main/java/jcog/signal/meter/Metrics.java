@@ -144,10 +144,8 @@ import java.util.function.Predicate;
     private static class firstColumnIterator implements Function<Object[], Object[]> {
         final Object[] next;
         final int thecolumn;
-        private final int[] columns;
 
         public firstColumnIterator(int... columns) {
-            this.columns = columns;
             next = new Object[1];
             thecolumn = columns[0];
         }

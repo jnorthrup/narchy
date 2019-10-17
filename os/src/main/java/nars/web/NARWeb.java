@@ -37,7 +37,7 @@ import java.util.function.Supplier;
 import static jcog.data.map.CustomConcurrentHashMap.*;
 import static nars.web.TaskJsonCodec.Native.taskify;
 
-abstract public class NARWeb extends EvalSocket<NAR> {
+public abstract class NARWeb extends EvalSocket<NAR> {
 
     static final int DEFAULT_PORT = 60606;
 
@@ -74,8 +74,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
         }
     }
 
-    @Nullable
-    protected abstract NAR nar(WebSocketConnection conn, String url);
+    protected abstract @Nullable NAR nar(WebSocketConnection conn, String url);
 
 
 //    @Override
@@ -275,7 +274,7 @@ abstract public class NARWeb extends EvalSocket<NAR> {
     static class WebSocketLogger implements Consumer<Task> {
 
         volatile WebSocket w;
-        final PriArrayBag<Task> out = new PriArrayBag<Task>(PriMerge.max, 4);
+        final PriArrayBag<Task> out = new PriArrayBag<>(PriMerge.max, 4);
         final AtomicBoolean busy = new AtomicBoolean();
         public WebSocketLogger(WebSocket ws, NAR n) {
             this.w = ws;

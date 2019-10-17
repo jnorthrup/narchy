@@ -31,7 +31,7 @@ public final class AudioUtils {
      * @param out buffer of floats.
      * @param in  buffer of shorts.
      */
-    static public void shortToFloat(float[] out, short[] in) {
+    public static void shortToFloat(float[] out, short[] in) {
         for (int i = 0; i < in.length; i++) {
             out[i] = (float) (in[i] / 32768.);
         }
@@ -43,7 +43,7 @@ public final class AudioUtils {
      * @param out buffer of shorts.
      * @param in  buffer of floats.
      */
-    static public void floatToShort(short[] out, float[] in) {
+    public static void floatToShort(short[] out, float[] in) {
         for (int i = 0; i < in.length; i++) {
             out[i] = (short) (32767. * in[i]);
         }
@@ -56,7 +56,7 @@ public final class AudioUtils {
      * @param in        buffer of floats.
      * @param bigEndian true for big endian byte order, false otherwise.
      */
-    static public void floatToByte(byte[] out, float[] in, boolean bigEndian) {
+    public static void floatToByte(byte[] out, float[] in, boolean bigEndian) {
         floatToByte(out, 0, in, 0, in.length, bigEndian);
     }
 
@@ -96,7 +96,7 @@ public final class AudioUtils {
      * @param in        buffer of bytes.
      * @param bigEndian true for big endian byte order, false otherwise.
      */
-    static public void byteToFloat(float[] out, byte[] in, boolean bigEndian) {
+    public static void byteToFloat(float[] out, byte[] in, boolean bigEndian) {
         byteToFloat(out, in, bigEndian, out.length);
     }
 
@@ -223,7 +223,7 @@ public final class AudioUtils {
      * @param nFrames   second dimension of resulting 2D array.
      * @param result    the result
      */
-    static public void deinterleave(float[] source, int nChannels, int nFrames, float[][] result) {
+    public static void deinterleave(float[] source, int nChannels, int nFrames, float[][] result) {
         for (int i = 0, count = 0; i < nFrames; ++i) {
             for (int j = 0; j < nChannels; ++j) {
                 result[j][i] = source[count++];
@@ -240,7 +240,7 @@ public final class AudioUtils {
      * @param nFrames   second dimension of input 2D array.
      * @param result    the result
      */
-    static public void interleave(float[][] source, int nChannels,
+    public static void interleave(float[][] source, int nChannels,
                                   int nFrames, float[] result) {
         for (int i = 0, counter = 0; counter < result.length && i < nFrames; ++i) {
             for (int j = 0; j < nChannels; ++j) {
@@ -259,7 +259,7 @@ public final class AudioUtils {
      * @param offset    the number of frames offset
      * @param result    the result
      */
-    static public void interleave(float[][] source, int nChannels,
+    public static void interleave(float[][] source, int nChannels,
                                   int nFrames, int offset, float[] result) {
         for (int i = offset, counter = 0; counter < result.length && i < nFrames; ++i) {
             for (int j = 0; j < nChannels; ++j) {
@@ -274,7 +274,7 @@ public final class AudioUtils {
      * @param source
      * @param dest
      */
-    static public void stretchBuffer(float[][] source, float[][] dest) {
+    public static void stretchBuffer(float[][] source, float[][] dest) {
         int numChannels = Math.min(source.length, dest.length);
         
         double segStep = (source[0].length - 1.0) / (dest[0].length - 1.0);
@@ -330,7 +330,7 @@ public final class AudioUtils {
      *
      * @param buffer
      */
-    static public void reverseBuffer(float[][] buffer) {
+    public static void reverseBuffer(float[][] buffer) {
         for (float[] b : buffer) {
             for (int left = 0, right = b.length - 1; left < right; left++, right--) {
                 

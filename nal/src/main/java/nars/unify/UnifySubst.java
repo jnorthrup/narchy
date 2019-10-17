@@ -11,7 +11,7 @@ import java.util.Random;
  *
  * not thread safe, use 1 per thread (do not interrupt matchAll)
  */
-abstract public class UnifySubst extends Unify {
+public abstract class UnifySubst extends Unify {
 
 
     protected Term input;
@@ -31,7 +31,7 @@ abstract public class UnifySubst extends Unify {
         return this;
     }
 
-    abstract protected boolean each(Term t);
+    protected abstract boolean each(Term t);
 
     /**
      *  x and y are two terms being unified to form the set of substitutions.

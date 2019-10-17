@@ -14,7 +14,7 @@ public abstract class Pitch {
     /**
      * The constant log(2) = 0.6931472.
      */
-    private final static float LOG2 = 0.6931472f;
+    private static final float LOG2 = 0.6931472f;
 
     /**
      * Convert frequency to MIDI note number.

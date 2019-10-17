@@ -19,7 +19,7 @@ import static nars.time.Tense.XTERNAL;
  */
 public class Conceptualization {
 
-    public final static Retemporalize DirectXternal = new Untemporalization() {
+    public static final Retemporalize DirectXternal = new Untemporalization() {
         @Override
         protected Term transformConj(Compound y) {
             return y.dt(XTERNAL);
@@ -27,7 +27,7 @@ public class Conceptualization {
     };
 
     /** distinguishes between sequences and non-sequences */
-    public final static Retemporalize PreciseXternal = new Untemporalization() {
+    public static final Retemporalize PreciseXternal = new Untemporalization() {
         @Override
         protected Term transformConj(Compound y) {
             int ydt = y.dt();
@@ -35,7 +35,7 @@ public class Conceptualization {
         }
     };
 
-    public final static Retemporalize FlattenAndDeduplicateConj = new Untemporalization() {
+    public static final Retemporalize FlattenAndDeduplicateConj = new Untemporalization() {
         @Override
         protected  Term transformConj(Compound y) {
             Subterms yy;
@@ -115,9 +115,9 @@ public class Conceptualization {
 
     };
 
-    abstract private static class Untemporalization extends Retemporalize {
+    private abstract static class Untemporalization extends Retemporalize {
 
-        abstract protected Term transformConj(Compound y);
+        protected abstract Term transformConj(Compound y);
 
         @Override
         public final Term transformTemporal(Compound x, int dtNext) {

@@ -25,12 +25,6 @@ public class TaskRule extends TaskMatch {
     /** the output pattern */
     private final Compound output;
 
-    /** version of output with the original GenericVariable's, for display or reference purposes */
-    private final Compound outputRaw;
-
-    /** mapping of input variables to normalized variables */
-    private final Map<Variable, Variable> io;
-
     private final Term input;
     private final Term id;
 
@@ -38,7 +32,8 @@ public class TaskRule extends TaskMatch {
         super(nar);
 
         this.input = $.$(input);
-        this.outputRaw = (Compound) Narsese.term(output, false);
+        /** version of output with the original GenericVariable's, for display or reference purposes */
+        Compound outputRaw = (Compound) Narsese.term(output, false);
 
         VariableNormalization varNorm = new VariableNormalization(outputRaw.subs() /* est */, 0);
 
@@ -46,7 +41,8 @@ public class TaskRule extends TaskMatch {
         if (this.output == null)
             throw new RuntimeException("output pattern is not compound");
 
-        this.io = varNorm.map;
+        /** mapping of input variables to normalized variables */
+        Map<Variable, Variable> io = varNorm.map;
         this.id = $.impl($.p(this.input, outputRaw, this.output), $.varQuery("what")).normalize();
 
 

@@ -6,8 +6,7 @@ public interface Labeled {
 
     Surface label();
 
-    @Nullable
-    default Runnable labelClicked() {
+    default @Nullable Runnable labelClicked() {
         return null;
     }
 

@@ -25,7 +25,7 @@ public class DTMatrix<E> {
 	 * @param size grandezza della matrice, che sarà size * (size + 1)/2
 	 */
 	public DTMatrix(int size){
-		terms = new ObjectIntHashMap<E>(size);
+		terms = new ObjectIntHashMap<>(size);
 		values = allocateMatrix(size);
 	}
 	

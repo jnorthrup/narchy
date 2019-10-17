@@ -182,7 +182,7 @@ public class ConsoleRegexTurtle {
         }
     }
 
-    static private final String HELP_MESSAGE
+    private static final String HELP_MESSAGE
             = "Usage:\n"
             + "java -jar ConsoleRegexTurtle -t 4 -p 500 -g 1000 -e 20.0 -c \"interesting evolution\" -x true -d dataset.json -o ./outputfolder/\n"
             + "\nOn linux you can invoke this tool using the alternative script:\n"
@@ -202,7 +202,7 @@ public class ConsoleRegexTurtle {
             + "-f enables the flagging mode: solves a flagging problem with a separate-and-conquer strategy\n"
             + "-h visualizes this help message\n";
 
-    static private void parseArgs(String[] args, SimpleConfig simpleConfig) {
+    private static void parseArgs(String[] args, SimpleConfig simpleConfig) {
         try {
             if (args.length == 0) {
                 System.out.println(HELP_MESSAGE);

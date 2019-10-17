@@ -70,8 +70,7 @@ public class Spatialization<X> {
      *  existing and incoming will not be the same instance.
      *  default implementation: test for equality and re-use existing item
      * */
-    @Nullable
-    public X merge(X existing, X incoming, RInsertion<X> i) {
+    public @Nullable X merge(X existing, X incoming, RInsertion<X> i) {
         return null;
     }
 
@@ -141,7 +140,7 @@ public class Spatialization<X> {
             }
         };
 
-        abstract public <T> Split<T> get();
+        public abstract <T> Split<T> get();
 
     }
 }

@@ -18,7 +18,6 @@ public class Mario extends Sprite {
     public static String levelString = "none";
     private final int kill_reward_coins = 4;
     private static final int medical_bill = 2;
-    private final int retirement_benefit = 8;
     private final int burial_cost = 4;
 
     public static void resetStatic() {
@@ -503,6 +502,7 @@ public class Mario extends Sprite {
     }
 
     private void win() {
+        int retirement_benefit = 8;
         coins += retirement_benefit;
 
         xDeathPos = (int) x;

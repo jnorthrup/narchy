@@ -90,11 +90,11 @@ public enum Draw {
 	*/
 
     public static final GLU glu = new GLU();
-    private final static GLSRT glsrt = new GLSRT(glu);
+    private static final GLSRT glsrt = new GLSRT(glu);
     public static final GLUT glut = new GLUT();
 
     @Deprecated
-    final static BulletStack stack = new BulletStack();
+    static final BulletStack stack = new BulletStack();
     private static final float[] glMat = new float[16];
     private static final v3 a = new v3(), b = new v3();
 
@@ -594,7 +594,7 @@ public enum Draw {
 
     }
 
-    static public void renderHalfTriEdge(GL2 gl, SimpleSpatial src, EDraw<?> e, float width, float twist, Quat4f tmpQ) {
+    public static void renderHalfTriEdge(GL2 gl, SimpleSpatial src, EDraw<?> e, float width, float twist, Quat4f tmpQ) {
 
 
         Transform st = src.transform;

@@ -31,10 +31,8 @@ import static spacegraph.SpaceGraph.window;
  */
 public class Dimensionaleyez extends SimpleSpatial {
 
-    private final MeshMap<Integer, List<Float>> m;
-
-    final static int THREE_D = 3;
-    final static int IN = 5;
+    static final int THREE_D = 3;
+    static final int IN = 5;
     final NeuralGasMap n = new NeuralGasMap(IN, 64, THREE_D);
     final FloatRange scale = new FloatRange(10, 0.5f, 300f);
 
@@ -46,8 +44,8 @@ public class Dimensionaleyez extends SimpleSpatial {
         super(id);
 
         s = new StreamingNormalizer(IN);
-        
-        m = MeshMap.get(id, this::accept);
+
+        MeshMap<Integer, List<Float>> m = MeshMap.get(id, this::accept);
 
         new Loop() {
 

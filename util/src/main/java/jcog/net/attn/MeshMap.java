@@ -21,7 +21,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     static final float seedFPS = 4, mapFPS = 4;
 
     static final ConcurrentHashMap<String,MeshMap> the = new ConcurrentHashMap<>();
-    final static UDPeer seed;
+    static final UDPeer seed;
     static {
         try {
             seed = new UDPeer();
@@ -100,7 +100,7 @@ public class MeshMap<K,V> extends UDPeer /* implements Map<K,V>*/ {
     public static <K,V> MeshMap<K,V> get(String id, BiConsumer<K,V> x) {
         return the.computeIfAbsent(id, i -> {
             try {
-                MeshMap<K, V> y = new MeshMap<K, V>(id, x);
+                MeshMap<K, V> y = new MeshMap<>(id, x);
                 y.setFPS(mapFPS);
                 return y;
             } catch (IOException e) {

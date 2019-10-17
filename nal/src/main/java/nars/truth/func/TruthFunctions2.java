@@ -120,7 +120,7 @@ public enum TruthFunctions2 {
 //    }
 
     /** TODO rename 'Conduction' ?  */
-    @Nullable public static Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
+    public static @Nullable Truth desire(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean bipolar, boolean strong) {
 
         float cc = confCompose(belief, goal);
         if (cc >= minConf) {
@@ -167,7 +167,7 @@ public enum TruthFunctions2 {
 
 
     /** full positive, half negative */
-    @Nullable public static Truth desireSemiBipolar(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
+    public static @Nullable Truth desireSemiBipolar(/*@NotNull*/ Truth goal, /*@NotNull*/ Truth belief, float minConf, boolean strong) {
 
         float cc = confCompose(belief, goal);
         if (cc < minConf)
@@ -206,7 +206,7 @@ public enum TruthFunctions2 {
     }
 
     @Deprecated
-    @Nullable public static Truth weak(@Nullable Truth t, float minConf) {
+    public static @Nullable Truth weak(@Nullable Truth t, float minConf) {
         if (t == null)
             return null;
         float c = weak(t.conf());
@@ -404,7 +404,8 @@ public enum TruthFunctions2 {
      *
      *  http://www.math.sk/fsta2014/presentations/VemuriHareeshSrinath.pdf
      * */
-    @Skill("Fuzzy_set") @Nullable public static Truth divide(Truth XY, Truth X, float minConf) {
+    @Skill("Fuzzy_set")
+    public static @Nullable Truth divide(Truth XY, Truth X, float minConf) {
         //float c = confCompose(X, XY);
         float c = Math.min(XY.conf(), X.conf());
         if (c < minConf)

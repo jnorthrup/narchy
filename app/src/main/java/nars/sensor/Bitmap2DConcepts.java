@@ -32,7 +32,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
     public final P src;
 
     public final Array2DIterable<ComponentSignal> iter;
-    private final IntIntToObjectFunction<nars.term.Term> pixelTerm;
     private final float defaultFreq;
 
     protected Bitmap2DConcepts(P src, @Nullable IntIntToObjectFunction<nars.term.Term> pixelTerm, float defaultFreq, Bitmap2DSensor<?> s) {
@@ -46,8 +45,6 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
 
         this.matrix = new ComponentSignal[height][width];
 
-
-        this.pixelTerm = pixelTerm;
 
         this.defaultFreq = defaultFreq;
         for (int y = 0; y < height; y++) {
@@ -83,7 +80,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
      * iterate columns (x) first, then rows (y)
      */
     @Override
-    final public Iterator<ComponentSignal> iterator() {
+    public final Iterator<ComponentSignal> iterator() {
         return iter.iterator();
     }
 
@@ -117,8 +114,7 @@ public class Bitmap2DConcepts<P extends Bitmap2D> implements Iterable<ComponentS
         return matrix[y][x];
     }
 
-    @Nullable
-    public Signal get(int x, int y) {
+    public @Nullable Signal get(int x, int y) {
         if ((x < 0) || (y < 0) || (x >= width || y >= height))
             return null;
         return getSafe(x, y);

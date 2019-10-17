@@ -9,9 +9,9 @@ import jcog.tree.rtree.point.Double1D;
 public abstract class RectDouble1D implements HyperRegion {
 
 
-    abstract public double from();
+    public abstract double from();
 
-    abstract public double to();
+    public abstract double to();
 
     @Override
     public HyperRegion mbr(HyperRegion r) {

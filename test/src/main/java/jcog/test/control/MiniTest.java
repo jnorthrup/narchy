@@ -6,7 +6,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 
 import static nars.$.the;
 
-abstract public class MiniTest extends Game {
+public abstract class MiniTest extends Game {
 
     public float rewardSum = 0;
     public final SummaryStatistics dex = new SummaryStatistics();
@@ -31,7 +31,7 @@ abstract public class MiniTest extends Game {
     }
 
 
-    abstract protected float myReward();
+    protected abstract float myReward();
 
     public float avgReward() {
         return rewardSum / (((float) nar.time()) / nar.dur());

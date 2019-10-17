@@ -91,7 +91,7 @@ class RTree2DTest {
 
             final int expectedCount = 9;
             
-            assertEquals(expectedCount, resultCount, "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
+            assertEquals(expectedCount, resultCount, () -> "[" + type + "] Search returned incorrect number of rectangles - expected: " + expectedCount + " actual: " + resultCount);
 
             Collections.sort(results);
 
@@ -131,9 +131,9 @@ class RTree2DTest {
 
             final int expectedCount = entryCount;
             assertTrue(Math.abs(expectedCount - foundCount) < 10,
-                    "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
+                    () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
             assertTrue(Math.abs(expectedCount - resultCount) < 10,
-                    "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
+                    () -> "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount /* in case of duplicates */);
 
         }
     }

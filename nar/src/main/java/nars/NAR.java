@@ -411,7 +411,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * gets a concept if it exists, or returns null if it does not
      */
-    @Nullable public final Concept conceptualize(String conceptTerm) throws NarseseException {
+    public final @Nullable Concept conceptualize(String conceptTerm) throws NarseseException {
         return conceptualize($(conceptTerm));
     }
 
@@ -433,8 +433,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return que(c, QUEST);
     }
 
-    @Nullable
-    public Task want(String goalTermString, Tense tense, float freq, float conf) throws NarseseException {
+    public @Nullable Task want(String goalTermString, Tense tense, float freq, float conf) throws NarseseException {
         return want($(goalTermString), tense, freq, conf);
     }
 
@@ -657,9 +656,8 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         input(task);
     }
 
-    @Nullable
     @Override
-    public final Term term(Part<NAR> p) {
+    public final @Nullable Term term(Part<NAR> p) {
         return ((NARPart) p).id;
     }
 
@@ -767,8 +765,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     }
 
 
-    @Nullable
-    public final Truth truth(Termed concept, byte punc, long when) {
+    public final @Nullable Truth truth(Termed concept, byte punc, long when) {
         return truth(concept, punc, when, when);
     }
 
@@ -776,8 +773,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * returns concept belief/goal truth evaluated at a given time
      */
-    @Nullable
-    public final Truth truth(Termed concept, byte punc, long start, long end) {
+    public final @Nullable Truth truth(Termed concept, byte punc, long start, long end) {
 
         boolean neg = concept.term().op()==NEG;
         if (neg)
@@ -787,23 +783,19 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return table != null ? Truth.negIf(table.truth(start, end, concept instanceof Term ? ((Term) concept) : null, null, this),neg) : null;
     }
 
-    @Nullable
-    public final Truth beliefTruth(String concept, long when) throws NarseseException {
+    public final @Nullable Truth beliefTruth(String concept, long when) throws NarseseException {
         return truth($(concept), BELIEF, when);
     }
 
-    @Nullable
-    public final Truth goalTruth(String concept, long when) throws NarseseException {
+    public final @Nullable Truth goalTruth(String concept, long when) throws NarseseException {
         return truth($(concept), GOAL, when);
     }
 
-    @Nullable
-    public final Truth beliefTruth(Termed concept, long when) {
+    public final @Nullable Truth beliefTruth(Termed concept, long when) {
         return truth(concept, BELIEF, when);
     }
 
-    @Nullable
-    public final Truth beliefTruth(Termed concept, long start, long end) {
+    public final @Nullable Truth beliefTruth(Termed concept, long start, long end) {
         return truth(concept, BELIEF, start, end);
     }
 
@@ -811,13 +803,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
      *  for this reasoner to a stream
      * */
 
-    @Nullable
-    public final Truth goalTruth(Termed concept, long when) {
+    public final @Nullable Truth goalTruth(Termed concept, long when) {
         return truth(concept, GOAL, when);
     }
 
-    @Nullable
-    public final Truth goalTruth(Termed concept, long start, long end) {
+    public final @Nullable Truth goalTruth(Termed concept, long start, long end) {
         return truth(concept, GOAL, start, end);
     }
 
@@ -1041,26 +1031,22 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * resolves a target or concept to its currrent Concept
      */
-    @Nullable
-    public final Concept concept(Termed x) {
+    public final @Nullable Concept concept(Termed x) {
         return concept(x, false);
     }
 
-    @Nullable
-    public final Concept concept(String term) {
+    public final @Nullable Concept concept(String term) {
         return concept($$(term), false);
     }
 
     /**
      * resolves a target to its Concept; if it doesnt exist, its construction will be attempted
      */
-    @Nullable
-    public final Concept conceptualize(/**/ Termed termed) {
+    public final @Nullable Concept conceptualize(/**/ Termed termed) {
         return concept(termed, true);
     }
 
-    @Nullable
-    public final Concept concept(/**/Termed _x, boolean createIfMissing) {
+    public final @Nullable Concept concept(/**/Termed _x, boolean createIfMissing) {
 //        if (Param.DEBUG) {
 //            int v = x.target().volume();
 //            int max = termVolumeMax.intValue();
@@ -1367,8 +1353,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
     /**
      * strongest matching belief for the target time
      */
-    @Nullable
-    public Task belief(Termed c, long start, long end) {
+    public @Nullable Task belief(Termed c, long start, long end) {
         return answer(c, BELIEF, start, end);
     }
 
@@ -1384,13 +1369,11 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return belief(c, ETERNAL);
     }
 
-    @Nullable
-    public final Task answer(Term c, byte punc, long when) {
+    public final @Nullable Task answer(Term c, byte punc, long when) {
         return answer(c, punc, when, when);
     }
 
-    @Nullable
-    public Task answer(Termed t, byte punc, long start, long end) {
+    public @Nullable Task answer(Termed t, byte punc, long start, long end) {
         assert (punc == BELIEF || punc == GOAL);
 
 
@@ -1663,7 +1646,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         return null;
     }
 
-    @Nullable public TaskTable tableDynamic(Termed concept, byte punc) {
+    public @Nullable TaskTable tableDynamic(Termed concept, byte punc) {
         if (punc == BELIEF)
             return tableDynamic(concept, true);
         else if (punc==GOAL)
@@ -1674,7 +1657,7 @@ public final class NAR extends NAL<NAR> implements Consumer<Task>, NARIn, NAROut
         }
     }
 
-    @Nullable public BeliefTable tableDynamic(Termed concept, boolean beliefOrGoal) {
+    public @Nullable BeliefTable tableDynamic(Termed concept, boolean beliefOrGoal) {
         //heavyweight, concept construction involved
         if (!concept.term().op().conceptualizable) {
             if (NAL.DEBUG)

@@ -19,7 +19,7 @@ import static nars.Op.NEG;
  * TODO separate into 2 abstract subclasses: Direct and Negating
  * ShuffledSubterms will inherit from Direct, otherwise generally use Negating
  * */
-abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterms<S> {
+public abstract class RemappedSubterms<S extends Subterms> extends MappedSubterms<S> {
 
 
     public static <S extends Subterms> ArrayRemappedSubterms<S> the(Term[] x, S base) {
@@ -93,7 +93,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
         return new ReversedSubterms(x);
     }
 
-    public static abstract class HashCachedRemappedSubterms<S extends Subterms> extends RemappedSubterms<S> {
+    public abstract static class HashCachedRemappedSubterms<S extends Subterms> extends RemappedSubterms<S> {
 
         /**
          * make sure to calculate hash code in implementation's constructor
@@ -347,7 +347,7 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
     }
 
     @Override
-    abstract public int subs();
+    public abstract int subs();
 
     @Override
     public final int structure() {

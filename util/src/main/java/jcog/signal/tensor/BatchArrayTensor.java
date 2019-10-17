@@ -5,7 +5,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 /**
  * disallows non-batch accessor methods
  */
-abstract public class BatchArrayTensor extends ArrayTensor {
+public abstract class BatchArrayTensor extends ArrayTensor {
 
     final AtomicBoolean busy = new AtomicBoolean(false);
 

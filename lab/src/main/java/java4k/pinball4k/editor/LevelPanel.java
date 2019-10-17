@@ -25,7 +25,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	Level level;
 	
 	private static final boolean snapToGrid = true;
-	private final ArrayList<Point> clickedPoints = new ArrayList<Point>();
+	private final ArrayList<Point> clickedPoints = new ArrayList<>();
 	private Point pressedPoint;
 	private Point draggedPoint;
 	private Point movedPoint;
@@ -270,7 +270,7 @@ public class LevelPanel extends JComponent implements MouseListener
 		} else if (e.getSource() == bezierBtn) {
 			setState(State.BEZIER);
 		} else if (e.getSource() == groupBtn) {
-			ArrayList<LevelObject> group = new ArrayList<LevelObject>();
+			ArrayList<LevelObject> group = new ArrayList<>();
 			for (Handle handle : selection) {
 				LevelObject obj = handle.getLevelObject();
 				if (obj != null && !group.contains(obj)) {

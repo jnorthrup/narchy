@@ -46,7 +46,7 @@ import static java.util.stream.Collectors.toList;
  */
 public class Optimize<S, E> extends Lab<E>  {
 
-    static final private Logger logger = LoggerFactory.getLogger(Optimize.class);
+    private static final Logger logger = LoggerFactory.getLogger(Optimize.class);
 
 
     //static final int goalColumn = 0;
@@ -68,9 +68,6 @@ public class Optimize<S, E> extends Lab<E>  {
     private double[] max;
     private double[] mid;
     private final List<Sensor<S, ?>> varSensors;
-
-    /** enable to print exceptions */
-    private final boolean debug = false;
 
     public Optimize(Supplier<S> subj,
                     Function<Supplier<S>, E> experiment, Goal<E> goal,
@@ -216,7 +213,9 @@ public class Optimize<S, E> extends Lab<E>  {
 
         } catch (Throwable t) {
             //System.err.println(t.getMessage());
-            if (this.debug)
+            /** enable to print exceptions */
+            boolean debug = false;
+            if (debug)
                 t.printStackTrace();
             return Double.NEGATIVE_INFINITY;
         }
@@ -319,12 +318,12 @@ public class Optimize<S, E> extends Lab<E>  {
 //    }
 
 
-    abstract public static class OptimizationStrategy {
+    public abstract static class OptimizationStrategy {
 
-        abstract public void run(Optimize eOptimize);
+        public abstract void run(Optimize eOptimize);
     }
 
-    abstract public static class ApacheCommonsMathOptimizationStrategy extends OptimizationStrategy {
+    public abstract static class ApacheCommonsMathOptimizationStrategy extends OptimizationStrategy {
 
 
         @Override
@@ -332,7 +331,7 @@ public class Optimize<S, E> extends Lab<E>  {
             run(o, new ObjectiveFunction(o::run));
         }
 
-        abstract protected void run(Optimize o, ObjectiveFunction func);
+        protected abstract void run(Optimize o, ObjectiveFunction func);
     }
 
     public static class SimplexOptimizationStrategy extends ApacheCommonsMathOptimizationStrategy {

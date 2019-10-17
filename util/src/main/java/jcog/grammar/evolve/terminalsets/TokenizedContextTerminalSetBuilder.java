@@ -44,14 +44,14 @@ import java.util.*;
  */
 public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     
-    static private final Tokenizer tokenizer = new BasicTokenizer();
+    private static final Tokenizer tokenizer = new BasicTokenizer();
     
     
-    static private boolean matchW(String string){
+    private static boolean matchW(String string){
         return (string.length()==1 && matchW(string.charAt(0)));
     }
     
-    static private boolean matchW(char character){
+    private static boolean matchW(char character){
         return Character.isAlphabetic(character) || Character.isDigit(character) || character == '_';
     }
     
@@ -152,7 +152,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
     }
 
     
-    static public Map<String,Double> calculateWinnerMatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
+    public static Map<String,Double> calculateWinnerMatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
         Map<String,Double> tokensCounter = new HashMap<>();
         Map<String,Double> winnerMatchTokensLocal = new HashMap<>();
         for (Example example : dataSet.getExamples()) {
@@ -187,7 +187,7 @@ public class TokenizedContextTerminalSetBuilder implements TerminalSetBuilder{
         return winnerMatchTokensLocal;
     }
     
-    static public Map<String,Double> calculateWinnerUnmatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
+    public static Map<String,Double> calculateWinnerUnmatchTokens(DataSet dataSet, double threashold, boolean discardWtokens){
         Map<String,Double> tokensCounter = new HashMap<>();
         Map<String,Double> winnerUnmatchTokensLocal = new HashMap<>();
         int numberOfPositiveExamples = 0;

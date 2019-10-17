@@ -45,8 +45,8 @@ public interface TruthFunction {
             super(o);
         }
 
-        @Nullable @Override
-        public Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
+        @Override
+        public @Nullable Truth apply(@Nullable Truth task, @Nullable Truth belief, float minConf, NAL n) {
             return o.apply(belief, task, minConf, n);
         }
 
@@ -84,7 +84,8 @@ public interface TruthFunction {
             return new RepolarizedTruth(o, beliefPolarity, taskPolarity,true,suffix);
         }
 
-        @Override @Nullable public Truth apply(@Nullable Truth T, @Nullable Truth B, float minConf, NAL n) {
+        @Override
+        public @Nullable Truth apply(@Nullable Truth T, @Nullable Truth B, float minConf, NAL n) {
             if (swap) {
                 @Nullable Truth x = T;
                 T = B;
@@ -93,7 +94,7 @@ public interface TruthFunction {
             return o.apply(repolarize(T, taskPolarity), repolarize(B, beliefPolarity), minConf, n);
         }
 
-        @Nullable private static Truth repolarize(@Nullable Truth t, int polarity) {
+        private static @Nullable Truth repolarize(@Nullable Truth t, int polarity) {
             if (t == null || polarity==1)
                 return t;
             else if (polarity==-1 || (polarity==0 && t.isNegative()))
@@ -108,15 +109,14 @@ public interface TruthFunction {
     }
 
 
-    @Nullable static Truth unnegIfNotNull(@Nullable Truth x) {
+    static @Nullable Truth unnegIfNotNull(@Nullable Truth x) {
         return x != null ? x.pos() : null;
     }
 
 
 
 
-    @Nullable
-    static Truth identity(@Nullable Truth t, float minConf) {
+    static @Nullable Truth identity(@Nullable Truth t, float minConf) {
         return (t == null || (t.conf() < minConf)) ? null : t;
     }
 }

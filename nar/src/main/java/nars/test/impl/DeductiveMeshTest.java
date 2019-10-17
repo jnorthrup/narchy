@@ -77,8 +77,7 @@ public class DeductiveMeshTest {
 //        });
     }
 
-    @Nullable
-    private Term edge(int x1, int y1, int x2, int y2) {
+    private @Nullable Term edge(int x1, int y1, int x2, int y2) {
         return $.sim(vertex(x1, y1), vertex(x2, y2));
     }
 

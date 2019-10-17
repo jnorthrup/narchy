@@ -293,33 +293,27 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
             throw new TaskException(reason, t);
     }
 
-    @Nullable
-    static Task clone(Task x, Term newContent) {
+    static @Nullable Task clone(Task x, Term newContent) {
         return x.term().equals(newContent) ? x :
             clone(x, newContent, x.truth(), x.punc());
     }
 
-    @Nullable
-    static AbstractTask clone(Task x, byte newPunc) {
+    static @Nullable AbstractTask clone(Task x, byte newPunc) {
         return clone(x, x.term(), x.truth(), newPunc);
     }
 
-    @Nullable
-    static AbstractTask clone(Task x) {
+    static @Nullable AbstractTask clone(Task x) {
         return clone(x, x.punc());
     }
 
-    @Nullable
-    static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
+    static @Nullable AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc) {
         return clone(x, newContent, newTruth, newPunc, x.start(), x.end());
     }
 
-    @Nullable
-    static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
+    static @Nullable AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end) {
         return clone(x, newContent, newTruth, newPunc, start, end, x.stamp());
     }
-    @Nullable
-    static AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
+    static @Nullable AbstractTask clone(Task x, Term newContent, Truth newTruth, byte newPunc, long start, long end, long[] stamp) {
 
         Term c = Task.taskValid(newContent, newPunc, newTruth, false);
         AbstractTask y = NALTask.the(c, newPunc, newTruth, x.creation(), start, end, stamp);
@@ -334,13 +328,13 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return y;
     }
 
-    @Deprecated @Nullable
-    static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
+    @Deprecated
+    static @Nullable <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult) {
         return tryTask(t, punc, tr, withResult, !NAL.test.DEBUG_EXTRA);
     }
 
-    @Deprecated @Nullable
-    static <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
+    @Deprecated
+    static @Nullable <T extends Task> T tryTask(Term t, byte punc, Truth tr, BiFunction<Term, Truth, T> withResult, boolean safe) {
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
                 throw new TaskException("non-null truth required for belief or goal", t);
@@ -355,7 +349,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return x != null ? withResult.apply(x.unneg(), tr != null ? tr.negIf(x instanceof Neg) : null) : null;
     }
 
-    @Nullable static Term taskValid(Term t, byte punc, Truth tr, boolean safe) {
+    static @Nullable Term taskValid(Term t, byte punc, Truth tr, boolean safe) {
         if (punc == BELIEF || punc == GOAL) {
             if (tr == null)
                 throw new TaskException("non-null truth required for belief or goal", t);
@@ -427,8 +421,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * start!=ETERNAL
      * TODO boolean eternalize=false
      */
-    @Nullable
-    static Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, boolean eternalize, NAL n) {
+    static @Nullable Task project(Task t, long start, long end, double eviMin, boolean ditherTruth, int dtDither, float dur, boolean eternalize, NAL n) {
 
         if (dtDither > 1) {
             start = Tense.dither(start, dtDither, -1);
@@ -729,8 +722,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         return (punc() == COMMAND);
     }
 
-    @Nullable
-    default Appendable toString(boolean showStamp) {
+    default @Nullable Appendable toString(boolean showStamp) {
         return appendTo(new StringBuilder(128), showStamp);
     }
 
@@ -751,8 +743,7 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
      * return the input task, or a modification of it to use a customized matched premise belief. or null to
      * to cancel any matched premise belief.
      */
-    @Nullable
-    default Task onAnswered(/*@NotNull*/Task answer) {
+    default @Nullable Task onAnswered(/*@NotNull*/Task answer) {
 
         Task question = this;
 
@@ -862,12 +853,12 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
     }
 
 
-    @Nullable
-    @Deprecated default Truth truth(long targetStart, long targetEnd, float dur) {
+    @Deprecated
+    default @Nullable Truth truth(long targetStart, long targetEnd, float dur) {
         return truth(targetStart, targetEnd, dur, false);
     }
 
-    @Nullable default Truth truth(long qStart, long qEnd, float dur, boolean eternalize) {
+    default @Nullable Truth truth(long qStart, long qEnd, float dur, boolean eternalize) {
 
         if (isEternal())
             return truth();

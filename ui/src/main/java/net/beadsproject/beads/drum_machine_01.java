@@ -9,15 +9,8 @@ import net.beadsproject.beads.ugens.Gain;
 import net.beadsproject.beads.ugens.WavePlayer;
 
 public class drum_machine_01 {
-    private WavePlayer kick;
-    private WavePlayer snareNoise;
-    private WavePlayer snareTone;
     private Envelope kickGainEnvelope;
     private Envelope snareGainEnvelope;
-    private Gain kickGain;
-    private Gain snareGain;
-    private BiquadFilter kickFilter;
-    private BiquadFilter snareFilter;
 
     public static void main(String[] args) {
         drum_machine_01 synth = new drum_machine_01();
@@ -34,13 +27,13 @@ public class drum_machine_01 {
 
         
         kickGainEnvelope = new Envelope(ac, 0.0f);
-        
-        kick = new WavePlayer(ac, 100.0f, WaveFactory.SINE);
-        
-        kickFilter = new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f);
+
+        WavePlayer kick = new WavePlayer(ac, 100.0f, WaveFactory.SINE);
+
+        BiquadFilter kickFilter = new BiquadFilter(ac, BiquadFilter.BESSEL_LP, 500.0f, 1.0f);
         kickFilter.in(kick);
-        
-        kickGain = new Gain(ac, 1, kickGainEnvelope);
+
+        Gain kickGain = new Gain(ac, 1, kickGainEnvelope);
         kickGain.in(kickFilter);
 
         
@@ -49,15 +42,15 @@ public class drum_machine_01 {
 
         
         snareGainEnvelope = new Envelope(ac, 0.0f);
-        
-        snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
-        snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
-        
-        snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
+
+        WavePlayer snareNoise = new WavePlayer(ac, 1.0f, WaveFactory.NOISE);
+        WavePlayer snareTone = new WavePlayer(ac, 200.0f, WaveFactory.SINE);
+
+        BiquadFilter snareFilter = new BiquadFilter(ac, BiquadFilter.BP_SKIRT, 2500.0f, 1.0f);
         snareFilter.in(snareNoise);
         snareFilter.in(snareTone);
-        
-        snareGain = new Gain(ac, 1, snareGainEnvelope);
+
+        Gain snareGain = new Gain(ac, 1, snareGainEnvelope);
         snareGain.in(snareFilter);
 
         

@@ -14,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class EJMLVsPython {
-	public final static String s = "1 2 3 4 5\n" +
+	public static final String s = "1 2 3 4 5\n" +
 			"6 7 8 9 5\n" +
 			"3 4 2 7 3\n" +
 			"7 3 6 7 3\n" +
@@ -22,7 +22,7 @@ public class EJMLVsPython {
 			"3 4 3 3 5\n" +
 			"8 6 9 4 2\n";
 
-	final static double epsilon = 0.0000001;
+	static final double epsilon = 0.0000001;
 	
 	static void assertEqualDoubleArrays(double[][] a1, double[][] a2, double tol) {
 		for (int i = 0; i < a2.length; i++) {

@@ -7,7 +7,6 @@ import java.awt.*;
 public class LoseScene extends Scene {
     private final MarioComponent component;
     private int tick;
-    private final String scrollMessage = "Game over!";
 
     public LoseScene(MarioComponent component) {
         this.component = component;
@@ -24,6 +23,7 @@ public class LoseScene extends Scene {
         int f = tick / 3 % 10;
         if (f >= 6) f = 10 - f;
         g.drawImage(Art.gameOver[f][0], 160 - 48, 100 - 32, null);
+        String scrollMessage = "Game over!";
         drawString(g, scrollMessage, 160 - scrollMessage.length() * 4, 160, 0);
     }
 

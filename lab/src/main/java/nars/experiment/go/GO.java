@@ -13,7 +13,7 @@ import java.util.Arrays;
 public class GO extends JPanel implements MouseListener {
 
 
-    ArrayList<int[][]> boardHist = new ArrayList<int[][]>();
+    ArrayList<int[][]> boardHist = new ArrayList<>();
     Color bg = new Color(0xA2, 0x64, 0x18);
     public static final int DIM = 9;
     static int[][] board = new int[DIM][DIM];

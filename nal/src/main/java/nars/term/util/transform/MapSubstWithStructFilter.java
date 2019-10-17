@@ -17,7 +17,6 @@ public abstract class MapSubstWithStructFilter implements Subst {
         return !x.hasAny(structure) ? x : Subst.super.applyCompound(x);
     }
 
-    @Nullable
     @Override
-    public abstract Term xy(Term t);
+    public abstract @Nullable Term xy(Term t);
 }

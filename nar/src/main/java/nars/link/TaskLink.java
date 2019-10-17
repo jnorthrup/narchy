@@ -108,12 +108,11 @@ public interface TaskLink extends UnitPrioritizable, FromTo<Term, TaskLink>, Com
         return from().equals(to());
     }
 
-    @Nullable
-    default Term other(Term x, boolean reverse) {
+    default @Nullable Term other(Term x, boolean reverse) {
         return x.equals(reverse ? to() : from()) ? (reverse ? from() : to()) : null;
     }
     /** hashcode optimized impl */
-    @Nullable default Term other(Term x, int xh, boolean reverse) {
+    default @Nullable Term other(Term x, int xh, boolean reverse) {
         throw new UnsupportedOperationException();
         //return other(x, reverse);
     }

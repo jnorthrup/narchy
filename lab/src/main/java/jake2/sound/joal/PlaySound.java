@@ -36,7 +36,7 @@ import jake2.util.Math3D;
  */
 public class PlaySound {
     
-	final static int MAX_PLAYSOUNDS = 128;
+	static final int MAX_PLAYSOUNDS = 128;
 	
 	
 	private static final PlaySound freeList;

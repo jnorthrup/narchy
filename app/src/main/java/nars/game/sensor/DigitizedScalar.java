@@ -66,7 +66,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * [ ] = freq 0
      * [x] = freq 1,
      */
-    public final static ScalarEncoder Fluid = (v, i, indices) -> {
+    public static final ScalarEncoder Fluid = (v, i, indices) -> {
 
 
         float vv = v * (indices);
@@ -94,7 +94,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     /**
      * hard
      */
-    public final static ScalarEncoder Needle = (v, i, indices) -> {
+    public static final ScalarEncoder Needle = (v, i, indices) -> {
         float vv = v * indices;
         int which = (int) Math.floor(vv);
         return i == which ? 1 : 0;
@@ -108,7 +108,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * + + +    + + +     + + +
      * TODO need to analyze the interaction of the produced frequency values being reported by all concepts.
      */
-    public final static ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
+    public static final ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
 
         float dr = 1f / (indices - 1);
 
@@ -119,7 +119,7 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
     /**
      * TODO not quite working yet. it is supposed to recursively subdivide like a binary number, and each concept represents the balance corresponding to each radix's progressively increasing sensitivity
      */
-    public final static ScalarEncoder FuzzyBinary = (v, i, indices) -> {
+    public static final ScalarEncoder FuzzyBinary = (v, i, indices) -> {
 
 
 

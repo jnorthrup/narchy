@@ -32,7 +32,7 @@ import static nars.term.Terms.atomOrNull;
  * a result Term from the TermContainer arguments of
  * a function target, for example: f(x) or f(x, y).
  */
-abstract public class Functor extends AbstractAtomic implements BiFunction<Evaluation, Subterms, Term>, Term, The {
+public abstract class Functor extends AbstractAtomic implements BiFunction<Evaluation, Subterms, Term>, Term, The {
 
     protected Functor(String atom) {
         this(fName(atom));
@@ -63,7 +63,7 @@ abstract public class Functor extends AbstractAtomic implements BiFunction<Evalu
         return ((Compound)x.sub(0)).subtermsDirect();
     }
 
-    @Nullable public static Subterms args(Compound x, int requireArity) {
+    public static @Nullable Subterms args(Compound x, int requireArity) {
         Subterms s = _args(x);
         return s.subs()==requireArity ?  s : null;
     }

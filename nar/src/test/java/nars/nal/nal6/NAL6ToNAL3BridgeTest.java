@@ -9,7 +9,7 @@ import org.junit.jupiter.api.Test;
 
 class NAL6ToNAL3BridgeTest extends NALTest {
     private static final float CONF = 0.81f;
-    private final static int cycles = 256;
+    private static final int cycles = 256;
 
 
         @BeforeEach

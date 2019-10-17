@@ -9,7 +9,7 @@ import nars.term.atom.Atom;
 import java.util.Arrays;
 import java.util.function.Function;
 
-abstract public class PremiseTermAccessor implements Function<PreDerivation, Term> {
+public abstract class PremiseTermAccessor implements Function<PreDerivation, Term> {
 
     /** root component id: 0=task, 1=belief ... others could be defined later */
     private final int rootID;

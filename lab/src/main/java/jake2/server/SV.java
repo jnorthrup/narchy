@@ -115,7 +115,7 @@ public final class SV {
      * Returns the clipflags if the velocity was modified (hit something solid)
      * 1 = floor 2 = wall / step 4 = dead stop
      */
-    public final static int MAX_CLIP_PLANES = 5;
+    public static final int MAX_CLIP_PLANES = 5;
 
     public static int SV_FlyMove(edict_t ent, float time, int mask) {
         edict_t hit;

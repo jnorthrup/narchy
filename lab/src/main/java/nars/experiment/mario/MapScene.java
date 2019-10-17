@@ -23,8 +23,6 @@ public class MapScene extends Scene {
     private int xMarioA, yMarioA;
 
     private int tick;
-    @SuppressWarnings("unused")
-    private final GraphicsConfiguration graphicsConfiguration;
     private final Image staticBg;
     private final Graphics staticGr;
     private Random random = new Random();
@@ -39,7 +37,6 @@ public class MapScene extends Scene {
     private int yFarthestCap;
 
     public MapScene(GraphicsConfiguration graphicsConfiguration, MarioComponent marioComponent, long seed) {
-        this.graphicsConfiguration = graphicsConfiguration;
         this.marioComponent = marioComponent;
         this.seed = seed;
 

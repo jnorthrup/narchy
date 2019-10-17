@@ -20,7 +20,7 @@ public enum Exe { ;
         //true;
         false;
 
-	final static org.slf4j.Logger logger = LoggerFactory.getLogger(Exe.class);
+	static final org.slf4j.Logger logger = LoggerFactory.getLogger(Exe.class);
 
     /**
      * global timer

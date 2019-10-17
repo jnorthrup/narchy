@@ -46,8 +46,8 @@ public class IRL {
     /**
      * gets the Osm grid cell containing the specified coordinate, of our conventional size
      */
-    @Nullable @Deprecated
-    public Osm request(float lon, float lat, float lonRange, float latRange) {
+    @Deprecated
+    public @Nullable Osm request(float lon, float lat, float lonRange, float latRange) {
         Osm o  = reqCache.apply(
                 RectFloat.XYXY(
                     Util.round(lon - lonRange/(2-Float.MIN_NORMAL), lonRange),

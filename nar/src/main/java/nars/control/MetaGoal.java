@@ -114,7 +114,7 @@ public enum MetaGoal {
      * @param valuePrioritizer responsible for reading the 'value' computed here and assigning an effective
      *                         priority to it
      **/
-    static public void value(NAR n, @Nullable BiConsumer<NAR, FasterList<Cause>> valuePrioritizer) {
+    public static void value(NAR n, @Nullable BiConsumer<NAR, FasterList<Cause>> valuePrioritizer) {
 
         FasterList<Cause> cause = n.control.why;
         int cc = cause.size();

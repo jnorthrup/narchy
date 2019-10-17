@@ -195,7 +195,7 @@ public enum Tense {
         return new long[] { start, end };
     }
 
-    @Nullable private static long[] intersect(Iterable<? extends TaskRegion> t) {
+    private static @Nullable long[] intersect(Iterable<? extends TaskRegion> t) {
         long start = MAX_VALUE, end = Long.MIN_VALUE;
 
         for (TaskRegion x : t) {

@@ -15,8 +15,8 @@ import static java.lang.Float.intBitsToFloat;
 /** @see AtomicFloat */
 public final class AtomicFloatFieldUpdater<X>  {
 
-    public final static int iNaN = floatToIntBits(Float.NaN);
-    public final static int iZero = floatToIntBits(0f);
+    public static final int iNaN = floatToIntBits(Float.NaN);
+    public static final int iZero = floatToIntBits(0f);
     public final MetalAtomicIntegerFieldUpdater<X> INT;
 
 

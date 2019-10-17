@@ -34,7 +34,7 @@ public class ShowAlternationBasic {
 		a.get(new Literal("steaming"));
 		a.get(new Literal("hot"));
 
-		Set<Assembly> v = new HashSet<Assembly>();
+		Set<Assembly> v = new HashSet<>();
 		v.add(new TokenAssembly("hot hot steaming hot coffee"));
 
 		System.out.println("a match: \n" + a.match(v));

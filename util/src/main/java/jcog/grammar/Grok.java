@@ -362,8 +362,7 @@ public class Grok implements Serializable {
         compiledNamedRegex = Pattern.compile(namedRegex);
     }
 
-    @NotNull
-    private String compiled(String pattern, boolean namedOnly) {
+    private @NotNull String compiled(String pattern, boolean namedOnly) {
         if (isBlank(pattern)) {
             throw new RuntimeException("{pattern} should not be empty or null");
         }
@@ -537,8 +536,8 @@ public class Grok implements Serializable {
     }
 
 
-    private final static Pattern complexity = Pattern.compile("\\Q" + '|' + "\\E");
-    private final static Pattern wordBoundary = Pattern.compile(".\\b.");
+    private static final Pattern complexity = Pattern.compile("\\Q" + '|' + "\\E");
+    private static final Pattern wordBoundary = Pattern.compile(".\\b.");
 
     /**
      * {@code Discovery} try to find the best pattern for the given string.

@@ -3,7 +3,7 @@ package spacegraph.input.finger.state;
 import spacegraph.input.finger.Finger;
 import spacegraph.input.finger.Fingering;
 
-abstract public class Dragging extends Fingering {
+public abstract class Dragging extends Fingering {
 
     public final int button;
     private boolean active = false;
@@ -60,6 +60,6 @@ abstract public class Dragging extends Fingering {
         return pressed(finger) && drag(finger);
     }
 
-    abstract protected boolean drag(Finger f);
+    protected abstract boolean drag(Finger f);
 
 }

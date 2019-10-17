@@ -548,7 +548,7 @@ public final class Intern {
         } else {
             @SuppressWarnings("cast") 
                     /*@Interned*/ Integer result = a;
-            internedIntegers.put(result, new WeakReference</*@Interned*/ Integer>(result));
+            internedIntegers.put(result, new WeakReference<>(result));
             return result;
         }
     }
@@ -596,7 +596,7 @@ public final class Intern {
         } else {
             @SuppressWarnings("cast") 
                     /*@Interned*/ Long result = a;
-            internedLongs.put(result, new WeakReference</*@Interned*/ Long>(result));
+            internedLongs.put(result, new WeakReference<>(result));
             return result;
         }
     }
@@ -651,7 +651,7 @@ public final class Intern {
         } else {
             @SuppressWarnings("cast") 
                     /*@Interned*/ int[] result = a;
-            internedIntArrays.put(result, new WeakReference<int /*@Interned*/[]>(result));
+            internedIntArrays.put(result, new WeakReference<>(result));
             return result;
         }
     }
@@ -675,7 +675,7 @@ public final class Intern {
         } else {
             @SuppressWarnings("cast") 
                     /*@Interned*/ long[] result = a;
-            internedLongArrays.put(result, new WeakReference<long /*@Interned*/[]>(result));
+            internedLongArrays.put(result, new WeakReference<>(result));
             return result;
         }
     }
@@ -707,7 +707,7 @@ public final class Intern {
         } else {
             @SuppressWarnings("cast") 
                     /*@Interned*/ Double result = a;
-            internedDoubles.put(result, new WeakReference</*@Interned*/ Double>(result));
+            internedDoubles.put(result, new WeakReference<>(result));
             return result;
         }
     }
@@ -758,7 +758,7 @@ public final class Intern {
         } else {
             @SuppressWarnings("cast") 
                     /*@Interned*/ double[] result = a;
-            internedDoubleArrays.put(result, new WeakReference<double /*@Interned*/[]>(result));
+            internedDoubleArrays.put(result, new WeakReference<>(result));
             return result;
         }
     }
@@ -796,7 +796,7 @@ public final class Intern {
         if (result == null) {
             result = a;
             internedStringArrays.put(
-                    result, new WeakReference</*@Nullable*/ /*@Interned*/ String /*@Interned*/[]>(result));
+                    result, new WeakReference<>(result));
         }
         @SuppressWarnings(
                 "nullness") 
@@ -829,7 +829,7 @@ public final class Intern {
         if (result == null) {
             result = a;
             internedObjectArrays.put(
-                    result, new WeakReference</*@Nullable*/ /*@Interned*/ Object /*@Interned*/[]>(result));
+                    result, new WeakReference<>(result));
         }
         @SuppressWarnings(
                 "nullness") 
@@ -899,7 +899,7 @@ public final class Intern {
             throw new IllegalArgumentException();
         }
         SequenceAndIndices<int /*@Interned*/[]> sai =
-                new SequenceAndIndices<int /*@Interned*/[]>(seq, start, end);
+                new SequenceAndIndices<>(seq, start, end);
         WeakReference<int /*@Interned*/[]> lookup = internedIntSequenceAndIndices.get(sai);
         int[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
@@ -907,7 +907,7 @@ public final class Intern {
         } else {
             int[] subseqUninterned = ArrayUtil.subarray(seq, start, end - start);
             int /*@Interned*/[] subseq = Intern.intern(subseqUninterned);
-            internedIntSequenceAndIndices.put(sai, new WeakReference<int /*@Interned*/[]>(subseq));
+            internedIntSequenceAndIndices.put(sai, new WeakReference<>(subseq));
             return subseq;
         }
     }
@@ -927,7 +927,7 @@ public final class Intern {
             throw new IllegalArgumentException();
         }
         SequenceAndIndices<long /*@Interned*/[]> sai =
-                new SequenceAndIndices<long /*@Interned*/[]>(seq, start, end);
+                new SequenceAndIndices<>(seq, start, end);
         WeakReference<long /*@Interned*/[]> lookup = internedLongSequenceAndIndices.get(sai);
         long[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
@@ -935,7 +935,7 @@ public final class Intern {
         } else {
             long[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             long /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
-            internedLongSequenceAndIndices.put(sai, new WeakReference<long /*@Interned*/[]>(subseq));
+            internedLongSequenceAndIndices.put(sai, new WeakReference<>(subseq));
             return subseq;
         }
     }
@@ -955,7 +955,7 @@ public final class Intern {
             throw new IllegalArgumentException();
         }
         SequenceAndIndices<double /*@Interned*/[]> sai =
-                new SequenceAndIndices<double /*@Interned*/[]>(seq, start, end);
+                new SequenceAndIndices<>(seq, start, end);
         WeakReference<double /*@Interned*/[]> lookup = internedDoubleSequenceAndIndices.get(sai);
         double[] result1 = (lookup != null) ? lookup.get() : null;
         if (result1 != null) {
@@ -963,7 +963,7 @@ public final class Intern {
         } else {
             double[] subseq_uninterned = ArrayUtil.subarray(seq, start, end - start);
             double /*@Interned*/[] subseq = Intern.intern(subseq_uninterned);
-            internedDoubleSequenceAndIndices.put(sai, new WeakReference<double /*@Interned*/[]>(subseq));
+            internedDoubleSequenceAndIndices.put(sai, new WeakReference<>(subseq));
             return subseq;
         }
     }
@@ -983,7 +983,7 @@ public final class Intern {
             throw new IllegalArgumentException();
         }
         SequenceAndIndices</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]> sai =
-                new SequenceAndIndices</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]>(seq, start, end);
+                new SequenceAndIndices<>(seq, start, end);
         @SuppressWarnings("nullness") 
                 WeakReference</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]> lookup =
                 internedObjectSequenceAndIndices.get(sai);
@@ -1001,7 +1001,7 @@ public final class Intern {
                     ignore = 
                     internedObjectSequenceAndIndices.put(
                             sai,
-                            new WeakReference</*@PolyNull*/ /*@Interned*/ Object /*@Interned*/[]>(subseq));
+                            new WeakReference<>(subseq));
             return subseq;
         }
     }
@@ -1021,7 +1021,7 @@ public final class Intern {
             throw new IllegalArgumentException();
         }
         SequenceAndIndices</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]> sai =
-                new SequenceAndIndices</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]>(seq, start, end);
+                new SequenceAndIndices<>(seq, start, end);
         @SuppressWarnings("nullness") 
                 WeakReference</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]> lookup =
                 internedStringSequenceAndIndices.get(sai);
@@ -1039,7 +1039,7 @@ public final class Intern {
                     ignore = 
                     internedStringSequenceAndIndices.put(
                             sai,
-                            new WeakReference</*@PolyNull*/ /*@Interned*/ String /*@Interned*/[]>(subseq));
+                            new WeakReference<>(subseq));
             return subseq;
         }
     }

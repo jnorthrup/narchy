@@ -135,7 +135,7 @@ class AxialSplitTest {
         final int expectedEntryCount = 17;
 
         final Stats stats = rTree.stats();
-        assertEquals( expectedEntryCount, stats.size(), "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
+        assertEquals( expectedEntryCount, stats.size(), () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + expectedEntryCount + " actual: " + stats.size());
     }
 
     /**
@@ -155,7 +155,7 @@ class AxialSplitTest {
 
         final Stats stats = rTree.stats();
         assertTrue(Math.abs(entryCount - stats.size()) == 0,
-                "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size() /* in case of duplicates */);
+                () -> "Unexpected number of entries in " + TYPE + " split tree: " + stats.size() + " entries - expected: " + entryCount + " actual: " + stats.size() /* in case of duplicates */);
         stats.print(System.out);
     }
 

@@ -74,7 +74,8 @@ public class PatternHow extends CondHow {
     protected BytePredicate taskPunc = null;
     @Deprecated protected ByteToByteFunction concPunc = null;
 
-    @Deprecated transient private boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
+    @Deprecated
+    private transient boolean concBelief = false, concQuestion = false, concGoal = false, concQuest = false;
 
 
 
@@ -711,7 +712,7 @@ public class PatternHow extends CondHow {
         }
     };
 
-    public final static class TruthifyDeriveAction extends How {
+    public static final class TruthifyDeriveAction extends How {
 
         public final Truthify truth;
         public final UnifyConstraint<Derivation.PremiseUnify>[] constraints;

@@ -15,7 +15,7 @@ import static java.util.Arrays.fill;
  */
 public class Autoencoder {
 
-    final static float NORMALIZATION_EPSILON = (float) Math.sqrt(ScalarValue.EPSILON);
+    static final float NORMALIZATION_EPSILON = (float) Math.sqrt(ScalarValue.EPSILON);
 
 
     /**
@@ -26,7 +26,7 @@ public class Autoencoder {
     /**
      * output vector
      */
-    final public float[] y;
+    public final float[] y;
 
     public final float[][] W;
 
@@ -35,8 +35,8 @@ public class Autoencoder {
     public final Random rng;
 
     public final float[] z;
-    final private float[] L_vbias;
-    final private float[] L_hbias;
+    private final float[] L_vbias;
+    private final float[] L_hbias;
 
     private float uniform(float min, float max) {
         return rng.nextFloat() * (max - min) + min;

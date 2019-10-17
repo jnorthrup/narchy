@@ -60,7 +60,7 @@ public enum DragEdit {
     ;
 
 
-    @Nullable public static DragEdit mode(v2 p, float margin) {
+    public static @Nullable DragEdit mode(v2 p, float margin) {
         DragEdit m = null;
         if (p.x >= 0.5f - margin / 2f && p.x <= 0.5f + margin / 2) {
             if (p.y <= margin) {
@@ -104,5 +104,5 @@ public enum DragEdit {
 
     }
 
-    abstract public FingerRenderer cursor();
+    public abstract FingerRenderer cursor();
 }

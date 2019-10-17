@@ -15,10 +15,10 @@ import static nars.time.Tense.ETERNAL;
 public class DefaultPuncWeightedDerivePri extends DefaultDerivePri {
 
     long lastUpdate = ETERNAL;
-    final static float updateDurs = 1;
+    static final float updateDurs = 1;
 
     /** cache of punctuation priorities */
-    transient private float beliefPri, goalPri, questionPri, questPri;
+    private transient float beliefPri, goalPri, questionPri, questPri;
 
     public DefaultPuncWeightedDerivePri() {
     }

@@ -8,7 +8,7 @@ import nars.term.atom.Bool;
 
 import java.util.function.BiFunction;
 
-abstract public class AbstractInlineFunctor2 extends AbstractInlineFunctor {
+public abstract class AbstractInlineFunctor2 extends AbstractInlineFunctor {
 
     protected AbstractInlineFunctor2(Atom atom) {
         super(atom);
@@ -18,7 +18,7 @@ abstract public class AbstractInlineFunctor2 extends AbstractInlineFunctor {
     }
 
     @Override
-    final public Term apply(Evaluation e, Subterms terms) {
+    public final Term apply(Evaluation e, Subterms terms) {
         return terms.subs() != 2 ? Bool.Null : apply(terms.sub(0), terms.sub(1));
     }
 

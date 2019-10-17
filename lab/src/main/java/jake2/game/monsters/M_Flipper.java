@@ -31,327 +31,327 @@ public class M_Flipper {
 
     
 
-    public final static int FRAME_flpbit01 = 0;
+    public static final int FRAME_flpbit01 = 0;
 
-    public final static int FRAME_flpbit02 = 1;
+    public static final int FRAME_flpbit02 = 1;
 
-    public final static int FRAME_flpbit03 = 2;
+    public static final int FRAME_flpbit03 = 2;
 
-    public final static int FRAME_flpbit04 = 3;
+    public static final int FRAME_flpbit04 = 3;
 
-    public final static int FRAME_flpbit05 = 4;
+    public static final int FRAME_flpbit05 = 4;
 
-    public final static int FRAME_flpbit06 = 5;
+    public static final int FRAME_flpbit06 = 5;
 
-    public final static int FRAME_flpbit07 = 6;
+    public static final int FRAME_flpbit07 = 6;
 
-    public final static int FRAME_flpbit08 = 7;
+    public static final int FRAME_flpbit08 = 7;
 
-    public final static int FRAME_flpbit09 = 8;
+    public static final int FRAME_flpbit09 = 8;
 
-    public final static int FRAME_flpbit10 = 9;
+    public static final int FRAME_flpbit10 = 9;
 
-    public final static int FRAME_flpbit11 = 10;
+    public static final int FRAME_flpbit11 = 10;
 
-    public final static int FRAME_flpbit12 = 11;
+    public static final int FRAME_flpbit12 = 11;
 
-    public final static int FRAME_flpbit13 = 12;
+    public static final int FRAME_flpbit13 = 12;
 
-    public final static int FRAME_flpbit14 = 13;
+    public static final int FRAME_flpbit14 = 13;
 
-    public final static int FRAME_flpbit15 = 14;
+    public static final int FRAME_flpbit15 = 14;
 
-    public final static int FRAME_flpbit16 = 15;
+    public static final int FRAME_flpbit16 = 15;
 
-    public final static int FRAME_flpbit17 = 16;
+    public static final int FRAME_flpbit17 = 16;
 
-    public final static int FRAME_flpbit18 = 17;
+    public static final int FRAME_flpbit18 = 17;
 
-    public final static int FRAME_flpbit19 = 18;
+    public static final int FRAME_flpbit19 = 18;
 
-    public final static int FRAME_flpbit20 = 19;
+    public static final int FRAME_flpbit20 = 19;
 
-    public final static int FRAME_flptal01 = 20;
+    public static final int FRAME_flptal01 = 20;
 
-    public final static int FRAME_flptal02 = 21;
+    public static final int FRAME_flptal02 = 21;
 
-    public final static int FRAME_flptal03 = 22;
+    public static final int FRAME_flptal03 = 22;
 
-    public final static int FRAME_flptal04 = 23;
+    public static final int FRAME_flptal04 = 23;
 
-    public final static int FRAME_flptal05 = 24;
+    public static final int FRAME_flptal05 = 24;
 
-    public final static int FRAME_flptal06 = 25;
+    public static final int FRAME_flptal06 = 25;
 
-    public final static int FRAME_flptal07 = 26;
+    public static final int FRAME_flptal07 = 26;
 
-    public final static int FRAME_flptal08 = 27;
+    public static final int FRAME_flptal08 = 27;
 
-    public final static int FRAME_flptal09 = 28;
+    public static final int FRAME_flptal09 = 28;
 
-    public final static int FRAME_flptal10 = 29;
+    public static final int FRAME_flptal10 = 29;
 
-    public final static int FRAME_flptal11 = 30;
+    public static final int FRAME_flptal11 = 30;
 
-    public final static int FRAME_flptal12 = 31;
+    public static final int FRAME_flptal12 = 31;
 
-    public final static int FRAME_flptal13 = 32;
+    public static final int FRAME_flptal13 = 32;
 
-    public final static int FRAME_flptal14 = 33;
+    public static final int FRAME_flptal14 = 33;
 
-    public final static int FRAME_flptal15 = 34;
+    public static final int FRAME_flptal15 = 34;
 
-    public final static int FRAME_flptal16 = 35;
+    public static final int FRAME_flptal16 = 35;
 
-    public final static int FRAME_flptal17 = 36;
+    public static final int FRAME_flptal17 = 36;
 
-    public final static int FRAME_flptal18 = 37;
+    public static final int FRAME_flptal18 = 37;
 
-    public final static int FRAME_flptal19 = 38;
+    public static final int FRAME_flptal19 = 38;
 
-    public final static int FRAME_flptal20 = 39;
+    public static final int FRAME_flptal20 = 39;
 
-    public final static int FRAME_flptal21 = 40;
+    public static final int FRAME_flptal21 = 40;
 
-    public final static int FRAME_flphor01 = 41;
+    public static final int FRAME_flphor01 = 41;
 
-    public final static int FRAME_flphor02 = 42;
+    public static final int FRAME_flphor02 = 42;
 
-    public final static int FRAME_flphor03 = 43;
+    public static final int FRAME_flphor03 = 43;
 
-    public final static int FRAME_flphor04 = 44;
+    public static final int FRAME_flphor04 = 44;
 
-    public final static int FRAME_flphor05 = 45;
+    public static final int FRAME_flphor05 = 45;
 
-    public final static int FRAME_flphor06 = 46;
+    public static final int FRAME_flphor06 = 46;
 
-    public final static int FRAME_flphor07 = 47;
+    public static final int FRAME_flphor07 = 47;
 
-    public final static int FRAME_flphor08 = 48;
+    public static final int FRAME_flphor08 = 48;
 
-    public final static int FRAME_flphor09 = 49;
+    public static final int FRAME_flphor09 = 49;
 
-    public final static int FRAME_flphor10 = 50;
+    public static final int FRAME_flphor10 = 50;
 
-    public final static int FRAME_flphor11 = 51;
+    public static final int FRAME_flphor11 = 51;
 
-    public final static int FRAME_flphor12 = 52;
+    public static final int FRAME_flphor12 = 52;
 
-    public final static int FRAME_flphor13 = 53;
+    public static final int FRAME_flphor13 = 53;
 
-    public final static int FRAME_flphor14 = 54;
+    public static final int FRAME_flphor14 = 54;
 
-    public final static int FRAME_flphor15 = 55;
+    public static final int FRAME_flphor15 = 55;
 
-    public final static int FRAME_flphor16 = 56;
+    public static final int FRAME_flphor16 = 56;
 
-    public final static int FRAME_flphor17 = 57;
+    public static final int FRAME_flphor17 = 57;
 
-    public final static int FRAME_flphor18 = 58;
+    public static final int FRAME_flphor18 = 58;
 
-    public final static int FRAME_flphor19 = 59;
+    public static final int FRAME_flphor19 = 59;
 
-    public final static int FRAME_flphor20 = 60;
+    public static final int FRAME_flphor20 = 60;
 
-    public final static int FRAME_flphor21 = 61;
+    public static final int FRAME_flphor21 = 61;
 
-    public final static int FRAME_flphor22 = 62;
+    public static final int FRAME_flphor22 = 62;
 
-    public final static int FRAME_flphor23 = 63;
+    public static final int FRAME_flphor23 = 63;
 
-    public final static int FRAME_flphor24 = 64;
+    public static final int FRAME_flphor24 = 64;
 
-    public final static int FRAME_flpver01 = 65;
+    public static final int FRAME_flpver01 = 65;
 
-    public final static int FRAME_flpver02 = 66;
+    public static final int FRAME_flpver02 = 66;
 
-    public final static int FRAME_flpver03 = 67;
+    public static final int FRAME_flpver03 = 67;
 
-    public final static int FRAME_flpver04 = 68;
+    public static final int FRAME_flpver04 = 68;
 
-    public final static int FRAME_flpver05 = 69;
+    public static final int FRAME_flpver05 = 69;
 
-    public final static int FRAME_flpver06 = 70;
+    public static final int FRAME_flpver06 = 70;
 
-    public final static int FRAME_flpver07 = 71;
+    public static final int FRAME_flpver07 = 71;
 
-    public final static int FRAME_flpver08 = 72;
+    public static final int FRAME_flpver08 = 72;
 
-    public final static int FRAME_flpver09 = 73;
+    public static final int FRAME_flpver09 = 73;
 
-    public final static int FRAME_flpver10 = 74;
+    public static final int FRAME_flpver10 = 74;
 
-    public final static int FRAME_flpver11 = 75;
+    public static final int FRAME_flpver11 = 75;
 
-    public final static int FRAME_flpver12 = 76;
+    public static final int FRAME_flpver12 = 76;
 
-    public final static int FRAME_flpver13 = 77;
+    public static final int FRAME_flpver13 = 77;
 
-    public final static int FRAME_flpver14 = 78;
+    public static final int FRAME_flpver14 = 78;
 
-    public final static int FRAME_flpver15 = 79;
+    public static final int FRAME_flpver15 = 79;
 
-    public final static int FRAME_flpver16 = 80;
+    public static final int FRAME_flpver16 = 80;
 
-    public final static int FRAME_flpver17 = 81;
+    public static final int FRAME_flpver17 = 81;
 
-    public final static int FRAME_flpver18 = 82;
+    public static final int FRAME_flpver18 = 82;
 
-    public final static int FRAME_flpver19 = 83;
+    public static final int FRAME_flpver19 = 83;
 
-    public final static int FRAME_flpver20 = 84;
+    public static final int FRAME_flpver20 = 84;
 
-    public final static int FRAME_flpver21 = 85;
+    public static final int FRAME_flpver21 = 85;
 
-    public final static int FRAME_flpver22 = 86;
+    public static final int FRAME_flpver22 = 86;
 
-    public final static int FRAME_flpver23 = 87;
+    public static final int FRAME_flpver23 = 87;
 
-    public final static int FRAME_flpver24 = 88;
+    public static final int FRAME_flpver24 = 88;
 
-    public final static int FRAME_flpver25 = 89;
+    public static final int FRAME_flpver25 = 89;
 
-    public final static int FRAME_flpver26 = 90;
+    public static final int FRAME_flpver26 = 90;
 
-    public final static int FRAME_flpver27 = 91;
+    public static final int FRAME_flpver27 = 91;
 
-    public final static int FRAME_flpver28 = 92;
+    public static final int FRAME_flpver28 = 92;
 
-    public final static int FRAME_flpver29 = 93;
+    public static final int FRAME_flpver29 = 93;
 
-    public final static int FRAME_flppn101 = 94;
+    public static final int FRAME_flppn101 = 94;
 
-    public final static int FRAME_flppn102 = 95;
+    public static final int FRAME_flppn102 = 95;
 
-    public final static int FRAME_flppn103 = 96;
+    public static final int FRAME_flppn103 = 96;
 
-    public final static int FRAME_flppn104 = 97;
+    public static final int FRAME_flppn104 = 97;
 
-    public final static int FRAME_flppn105 = 98;
+    public static final int FRAME_flppn105 = 98;
 
-    public final static int FRAME_flppn201 = 99;
+    public static final int FRAME_flppn201 = 99;
 
-    public final static int FRAME_flppn202 = 100;
+    public static final int FRAME_flppn202 = 100;
 
-    public final static int FRAME_flppn203 = 101;
+    public static final int FRAME_flppn203 = 101;
 
-    public final static int FRAME_flppn204 = 102;
+    public static final int FRAME_flppn204 = 102;
 
-    public final static int FRAME_flppn205 = 103;
+    public static final int FRAME_flppn205 = 103;
 
-    public final static int FRAME_flpdth01 = 104;
+    public static final int FRAME_flpdth01 = 104;
 
-    public final static int FRAME_flpdth02 = 105;
+    public static final int FRAME_flpdth02 = 105;
 
-    public final static int FRAME_flpdth03 = 106;
+    public static final int FRAME_flpdth03 = 106;
 
-    public final static int FRAME_flpdth04 = 107;
+    public static final int FRAME_flpdth04 = 107;
 
-    public final static int FRAME_flpdth05 = 108;
+    public static final int FRAME_flpdth05 = 108;
 
-    public final static int FRAME_flpdth06 = 109;
+    public static final int FRAME_flpdth06 = 109;
 
-    public final static int FRAME_flpdth07 = 110;
+    public static final int FRAME_flpdth07 = 110;
 
-    public final static int FRAME_flpdth08 = 111;
+    public static final int FRAME_flpdth08 = 111;
 
-    public final static int FRAME_flpdth09 = 112;
+    public static final int FRAME_flpdth09 = 112;
 
-    public final static int FRAME_flpdth10 = 113;
+    public static final int FRAME_flpdth10 = 113;
 
-    public final static int FRAME_flpdth11 = 114;
+    public static final int FRAME_flpdth11 = 114;
 
-    public final static int FRAME_flpdth12 = 115;
+    public static final int FRAME_flpdth12 = 115;
 
-    public final static int FRAME_flpdth13 = 116;
+    public static final int FRAME_flpdth13 = 116;
 
-    public final static int FRAME_flpdth14 = 117;
+    public static final int FRAME_flpdth14 = 117;
 
-    public final static int FRAME_flpdth15 = 118;
+    public static final int FRAME_flpdth15 = 118;
 
-    public final static int FRAME_flpdth16 = 119;
+    public static final int FRAME_flpdth16 = 119;
 
-    public final static int FRAME_flpdth17 = 120;
+    public static final int FRAME_flpdth17 = 120;
 
-    public final static int FRAME_flpdth18 = 121;
+    public static final int FRAME_flpdth18 = 121;
 
-    public final static int FRAME_flpdth19 = 122;
+    public static final int FRAME_flpdth19 = 122;
 
-    public final static int FRAME_flpdth20 = 123;
+    public static final int FRAME_flpdth20 = 123;
 
-    public final static int FRAME_flpdth21 = 124;
+    public static final int FRAME_flpdth21 = 124;
 
-    public final static int FRAME_flpdth22 = 125;
+    public static final int FRAME_flpdth22 = 125;
 
-    public final static int FRAME_flpdth23 = 126;
+    public static final int FRAME_flpdth23 = 126;
 
-    public final static int FRAME_flpdth24 = 127;
+    public static final int FRAME_flpdth24 = 127;
 
-    public final static int FRAME_flpdth25 = 128;
+    public static final int FRAME_flpdth25 = 128;
 
-    public final static int FRAME_flpdth26 = 129;
+    public static final int FRAME_flpdth26 = 129;
 
-    public final static int FRAME_flpdth27 = 130;
+    public static final int FRAME_flpdth27 = 130;
 
-    public final static int FRAME_flpdth28 = 131;
+    public static final int FRAME_flpdth28 = 131;
 
-    public final static int FRAME_flpdth29 = 132;
+    public static final int FRAME_flpdth29 = 132;
 
-    public final static int FRAME_flpdth30 = 133;
+    public static final int FRAME_flpdth30 = 133;
 
-    public final static int FRAME_flpdth31 = 134;
+    public static final int FRAME_flpdth31 = 134;
 
-    public final static int FRAME_flpdth32 = 135;
+    public static final int FRAME_flpdth32 = 135;
 
-    public final static int FRAME_flpdth33 = 136;
+    public static final int FRAME_flpdth33 = 136;
 
-    public final static int FRAME_flpdth34 = 137;
+    public static final int FRAME_flpdth34 = 137;
 
-    public final static int FRAME_flpdth35 = 138;
+    public static final int FRAME_flpdth35 = 138;
 
-    public final static int FRAME_flpdth36 = 139;
+    public static final int FRAME_flpdth36 = 139;
 
-    public final static int FRAME_flpdth37 = 140;
+    public static final int FRAME_flpdth37 = 140;
 
-    public final static int FRAME_flpdth38 = 141;
+    public static final int FRAME_flpdth38 = 141;
 
-    public final static int FRAME_flpdth39 = 142;
+    public static final int FRAME_flpdth39 = 142;
 
-    public final static int FRAME_flpdth40 = 143;
+    public static final int FRAME_flpdth40 = 143;
 
-    public final static int FRAME_flpdth41 = 144;
+    public static final int FRAME_flpdth41 = 144;
 
-    public final static int FRAME_flpdth42 = 145;
+    public static final int FRAME_flpdth42 = 145;
 
-    public final static int FRAME_flpdth43 = 146;
+    public static final int FRAME_flpdth43 = 146;
 
-    public final static int FRAME_flpdth44 = 147;
+    public static final int FRAME_flpdth44 = 147;
 
-    public final static int FRAME_flpdth45 = 148;
+    public static final int FRAME_flpdth45 = 148;
 
-    public final static int FRAME_flpdth46 = 149;
+    public static final int FRAME_flpdth46 = 149;
 
-    public final static int FRAME_flpdth47 = 150;
+    public static final int FRAME_flpdth47 = 150;
 
-    public final static int FRAME_flpdth48 = 151;
+    public static final int FRAME_flpdth48 = 151;
 
-    public final static int FRAME_flpdth49 = 152;
+    public static final int FRAME_flpdth49 = 152;
 
-    public final static int FRAME_flpdth50 = 153;
+    public static final int FRAME_flpdth50 = 153;
 
-    public final static int FRAME_flpdth51 = 154;
+    public static final int FRAME_flpdth51 = 154;
 
-    public final static int FRAME_flpdth52 = 155;
+    public static final int FRAME_flpdth52 = 155;
 
-    public final static int FRAME_flpdth53 = 156;
+    public static final int FRAME_flpdth53 = 156;
 
-    public final static int FRAME_flpdth54 = 157;
+    public static final int FRAME_flpdth54 = 157;
 
-    public final static int FRAME_flpdth55 = 158;
+    public static final int FRAME_flpdth55 = 158;
 
-    public final static int FRAME_flpdth56 = 159;
+    public static final int FRAME_flpdth56 = 159;
 
-    public final static float MODEL_SCALE = 1.000000f;
+    public static final float MODEL_SCALE = 1.000000f;
 
     static int sound_chomp;
 
@@ -385,7 +385,7 @@ public class M_Flipper {
         }
     };
 
-    public final static int FLIPPER_RUN_SPEED = 24;
+    public static final int FLIPPER_RUN_SPEED = 24;
 
     static final mframe_t[] flipper_frames_run = {
             new mframe_t(GameAI.ai_run, FLIPPER_RUN_SPEED, null), 

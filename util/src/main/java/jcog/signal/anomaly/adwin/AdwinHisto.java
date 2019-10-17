@@ -162,7 +162,7 @@ class AdwinHisto {
     }
 
     public Iterable<Bucket> forwardBucketIterable() {
-        return () -> new Iterator<Bucket>() {
+        return () -> new Iterator<>() {
 
             BucketContainer currentBucketContainer = head;
             int currentBucketIndex = -1;

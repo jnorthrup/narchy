@@ -5,7 +5,7 @@ import jcog.math.FloatAveragedWindow;
 import java.util.SortedMap;
 
 /** loop which collects timing measurements */
-abstract public class InstrumentedLoop extends Loop {
+public abstract class InstrumentedLoop extends Loop {
 
 
 

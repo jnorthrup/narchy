@@ -27,8 +27,7 @@ public class AdjacentIndexer implements AdjacentConcepts {
 	}
 
 	@Override
-	@Nullable
-	public Term adjacent(Term from, Term to, byte punc, TaskLinks links, Derivation d) {
+	public @Nullable Term adjacent(Term from, Term to, byte punc, TaskLinks links, Derivation d) {
 
 
 //		float probability;

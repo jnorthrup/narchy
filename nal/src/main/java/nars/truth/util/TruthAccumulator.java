@@ -15,10 +15,10 @@ public class TruthAccumulator extends AtomicReference<double[]> {
         commit();
     }
 
-    @Nullable public Truth commitAverage() {
+    public @Nullable Truth commitAverage() {
         return truth(commit(), false);
     }
-    @Nullable public Truth commitSum() {
+    public @Nullable Truth commitSum() {
         return truth(commit(), true);
     }
 
@@ -29,12 +29,11 @@ public class TruthAccumulator extends AtomicReference<double[]> {
     public PreciseTruth peekSum() {
         return truth(get(), true);
     }
-    @Nullable public Truth peekAverage() {
+    public @Nullable Truth peekAverage() {
         return truth(get(), false);
     }
 
-    @Nullable
-    private static PreciseTruth truth(double[] fc, boolean sumOrAverage) {
+    private static @Nullable PreciseTruth truth(double[] fc, boolean sumOrAverage) {
 
         double e = fc[1];
         if (e <= 0)

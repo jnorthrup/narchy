@@ -54,9 +54,8 @@ public class HashMapTagSet implements TagSet, Serializable {
         return id + '=' + data;
     }
 
-    @NotNull
     @Override
-    public String id() {
+    public @NotNull String id() {
         return id;
     }
 
@@ -133,8 +132,7 @@ public class HashMapTagSet implements TagSet, Serializable {
         }
     }
 
-    @Nullable
-    public static HashMapTagSet fromBytes(byte[] b) {
+    public static @Nullable HashMapTagSet fromBytes(byte[] b) {
         try {
             return Util.fromBytes(b, HashMapTagSet.class);
         } catch (IOException e) {

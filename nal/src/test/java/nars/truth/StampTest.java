@@ -106,16 +106,13 @@ class StampTest {
         }
     }
 
-    @NotNull
-    private static long[] zipReverse(@NotNull long[] a, @NotNull long[] b, int i) {
+    private static @NotNull long[] zipReverse(@NotNull long[] a, @NotNull long[] b, int i) {
         return zip(a, b, 0.5f, i, false);
     }
-    @NotNull
-    private static long[] zipForward(@NotNull long[] a, @NotNull long[] b, int i) {
+    private static @NotNull long[] zipForward(@NotNull long[] a, @NotNull long[] b, int i) {
         return zip(a, b, 0.5f, i, true);
     }
-    @NotNull
-    private static long[] zipForward(@NotNull long[] a, @NotNull long[] b, float aToB, int i) {
+    private static @NotNull long[] zipForward(@NotNull long[] a, @NotNull long[] b, float aToB, int i) {
         return zip(a, b, aToB, i, true);
     }
 

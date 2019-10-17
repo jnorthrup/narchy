@@ -839,7 +839,7 @@ public class Reflect {
 //     *
 //     * @author Lukas Eder
 //     */
-    final static class ReflectException extends RuntimeException {
+static final class ReflectException extends RuntimeException {
 
         ReflectException(String msg) {
             super(msg);

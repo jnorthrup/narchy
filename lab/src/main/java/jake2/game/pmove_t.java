@@ -75,20 +75,20 @@ public class pmove_t {
     public PointContentsAdapter pointcontents;
 
     
-    public final static int PMF_DUCKED = 1;
+    public static final int PMF_DUCKED = 1;
 
-    public final static int PMF_JUMP_HELD = 2;
+    public static final int PMF_JUMP_HELD = 2;
 
-    public final static int PMF_ON_GROUND = 4;
+    public static final int PMF_ON_GROUND = 4;
 
-    public final static int PMF_TIME_WATERJUMP = 8; 
+    public static final int PMF_TIME_WATERJUMP = 8;
 
-    public final static int PMF_TIME_LAND = 16; 
+    public static final int PMF_TIME_LAND = 16;
 
-    public final static int PMF_TIME_TELEPORT = 32; 
+    public static final int PMF_TIME_TELEPORT = 32;
                                                     
 
-    public final static int PMF_NO_PREDICTION = 64; 
+    public static final int PMF_NO_PREDICTION = 64;
                                                     
                                                     
 

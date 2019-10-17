@@ -73,7 +73,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     
 
     @Override
-    final public boolean isEmptyList() {
+    public final boolean isEmptyList() {
         return false;
     }
     
@@ -81,31 +81,31 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
     
     /** is this term a constant prolog term? */
     @Override
-    final public boolean isAtom() {
+    public final boolean isAtom() {
         return true;
     }
     
     /** is this term a prolog compound term? */
     @Override
-    final public boolean isCompound() {
+    public final boolean isCompound() {
         return false;
     }
     
     /** is this term a prolog (alphanumeric) atom? */
     @Override
-    final public boolean isAtomic() {
+    public final boolean isAtomic() {
         return false;
     }
     
     /** is this term a prolog list? */
     @Override
-    final public boolean isList() {
+    public final boolean isList() {
         return false;
     }
     
     /** is this term a ground term? */
     @Override
-    final public boolean isGround() {
+    public final boolean isGround() {
         return true;
     }
     
@@ -164,7 +164,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public int intValue() {
+        public final int intValue() {
             return (int) value;
         }
 
@@ -173,7 +173,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public float floatValue() {
+        public final float floatValue() {
             return value;
         }
 
@@ -182,7 +182,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public double doubleValue() {
+        public final double doubleValue() {
             return value;
         }
 
@@ -191,20 +191,20 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public long longValue() {
+        public final long longValue() {
             return value;
         }
 
 
         /** is this term a prolog integer term? */
         @Override
-        final public boolean isInteger() {
+        public final boolean isInteger() {
             return true;
         }
 
         /** is this term a prolog real term? */
         @Override
-        final public boolean isReal() {
+        public final boolean isReal() {
             return false;
         }
 
@@ -274,7 +274,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public int intValue() {
+        public final int intValue() {
             return value;
         }
 
@@ -283,7 +283,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public float floatValue() {
+        public final float floatValue() {
             return value;
         }
 
@@ -292,7 +292,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public double doubleValue() {
+        public final double doubleValue() {
             return value;
         }
 
@@ -301,20 +301,20 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public long longValue() {
+        public final long longValue() {
             return value;
         }
 
 
         /** is this term a prolog integer term? */
         @Override
-        final public boolean isInteger() {
+        public final boolean isInteger() {
             return true;
         }
 
         /** is this term a prolog real term? */
         @Override
-        final public boolean isReal() {
+        public final boolean isReal() {
             return false;
         }
 
@@ -394,7 +394,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public int intValue() {
+        public final int intValue() {
             return (int) value;
         }
 
@@ -403,7 +403,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public float floatValue() {
+        public final float floatValue() {
             return value;
         }
 
@@ -412,7 +412,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public double doubleValue() {
+        public final double doubleValue() {
             return value;
         }
 
@@ -421,20 +421,20 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public long longValue() {
+        public final long longValue() {
             return (long) value;
         }
 
 
         /** is this term a prolog integer term? */
         @Override
-        final public boolean isInteger() {
+        public final boolean isInteger() {
             return false;
         }
 
         /** is this term a prolog real term? */
         @Override
-        final public boolean isReal() {
+        public final boolean isReal() {
             return true;
         }
 
@@ -503,7 +503,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *  Returns the value of the Double as int
          */
         @Override
-        final public int intValue() {
+        public final int intValue() {
             return (int) value;
         }
 
@@ -512,7 +512,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public float floatValue() {
+        public final float floatValue() {
             return (float) value;
         }
 
@@ -521,7 +521,7 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *
          */
         @Override
-        final public double doubleValue() {
+        public final double doubleValue() {
             return value;
         }
 
@@ -529,20 +529,20 @@ public abstract class NumberTerm extends Term implements Comparable<NumberTerm> 
          *  Returns the value of the Double as long
          */
         @Override
-        final public long longValue() {
+        public final long longValue() {
             return (long) value;
         }
 
 
         /** is this term a prolog integer term? */
         @Override
-        final public boolean isInteger() {
+        public final boolean isInteger() {
             return false;
         }
 
         /** is this term a prolog real term? */
         @Override
-        final public boolean isReal() {
+        public final boolean isReal() {
             return true;
         }
 

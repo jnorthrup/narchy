@@ -20,7 +20,7 @@ import static org.junit.jupiter.api.Assertions.*;
  */
 public class JavaDynamicClassLoaderTestCase {
 
-    final static int PATHS_NUMBER = 2;
+    static final int PATHS_NUMBER = 2;
     String[] paths = new String[PATHS_NUMBER];
 
     @Test

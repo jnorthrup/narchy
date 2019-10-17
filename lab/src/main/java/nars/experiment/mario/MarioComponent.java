@@ -35,7 +35,6 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     private static final long serialVersionUID = 739318775993206607L;
 
-    private boolean running = false;
     public boolean paused = false;
     private final int width;
     private final int height;
@@ -106,7 +105,7 @@ public class MarioComponent extends JComponent implements Runnable, KeyListener,
 
     @Override
     public void run() {
-        running = true;
+        boolean running = true;
         graphicsConfiguration = getGraphicsConfiguration();
 
         mapScene = new MapScene(graphicsConfiguration, this, new Random().nextLong());

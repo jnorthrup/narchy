@@ -66,7 +66,7 @@ import static spacegraph.SpaceGraph.window;
  * --chart output (spacegraph)
  * --cameras (Swing and OpenGL)
  */
-abstract public class GameX extends Game {
+public abstract class GameX extends Game {
 
     static final boolean initMeta = true;
     static final boolean initMetaRL = false;

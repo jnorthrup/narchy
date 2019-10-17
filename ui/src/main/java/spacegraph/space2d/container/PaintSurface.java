@@ -5,14 +5,14 @@ import spacegraph.space2d.ReSurface;
 import spacegraph.space2d.Surface;
 
 /** leaf node */
-abstract public class PaintSurface extends Surface {
+public abstract class PaintSurface extends Surface {
 
     @Override
     protected void render(ReSurface r) {
         r.on(this::paint);
     }
 
-    abstract protected void paint(GL2 gl, ReSurface reSurface);
+    protected abstract void paint(GL2 gl, ReSurface reSurface);
 
 
 }

@@ -19,18 +19,16 @@ import org.jetbrains.annotations.Nullable;
  */
 public class reflect {
 
-    final static Atomic REFLECT_OP = Atomic.the("reflect");
+    static final Atomic REFLECT_OP = Atomic.the("reflect");
 
     /**
      * <(*,subject,object) --> predicate>
      */
-    @Nullable
-    public static Term sop(Term subject, Term object, Term predicate) {
+    public static @Nullable Term sop(Term subject, Term object, Term predicate) {
         return $.inh($.p(reflect(subject), reflect(object)), predicate);
     }
 
-    @Nullable
-    public static Term sopNamed(String operatorName, @NotNull Compound s) {
+    public static @Nullable Term sopNamed(String operatorName, @NotNull Compound s) {
         
 
         
@@ -53,13 +51,11 @@ public class reflect {
         return $.inh($.p(reflect(s.sub(0)), reflect(s.sub(1))), $.quote(operatorName));
     }
 
-    @Nullable
-    public static Term sop(@NotNull Subterms s, Term predicate) {
+    public static @Nullable Term sop(@NotNull Subterms s, Term predicate) {
         return $.inh($.p(reflect(s.sub(0)), reflect(s.sub(1))), predicate);
     }
 
-    @Nullable
-    public static Term sop(String operatorName, @NotNull Subterms c) {
+    public static @Nullable Term sop(String operatorName, @NotNull Subterms c) {
         Term[] m = new Term[c.subs()];
         for (int i = 0; i < c.subs(); i++) {
             if ((m[i] = reflect(c.sub(i))) == null)
@@ -88,8 +84,7 @@ public class reflect {
         return $.inh($.p(m), $.quote(operatorName));
     }
 
-    @Nullable
-    public static Term reflect(Term t) {
+    public static @Nullable Term reflect(Term t) {
         if (t.subs() == 0) {
             return t;
         }

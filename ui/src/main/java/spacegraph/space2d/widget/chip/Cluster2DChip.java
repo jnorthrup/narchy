@@ -15,7 +15,6 @@ import spacegraph.space2d.widget.port.TypedPort;
 
 public class Cluster2DChip extends Bordering {
 
-    private final Port<Tensor> in;
     private final ScatterPlot2D centroids;
 
     //TODO allow choice or more abstract mapping from certain dimensions
@@ -48,7 +47,7 @@ public class Cluster2DChip extends Bordering {
 
         config.update(1);
 
-        in = new TypedPort<>(Tensor.class).on((Tensor t) -> {
+        Port<Tensor> in = new TypedPort<>(Tensor.class).on((Tensor t) -> {
             synchronized (Cluster2DChip.this) {
                 int volume = t.volume();
                 config.update(volume);

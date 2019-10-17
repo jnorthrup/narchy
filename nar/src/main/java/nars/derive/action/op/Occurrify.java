@@ -185,8 +185,7 @@ public class Occurrify extends TimeGraph {
     }
 
 
-    @Nullable
-    private Event selectSolution(boolean occ, ArrayHashSet<Event> s) {
+    private @Nullable Event selectSolution(boolean occ, ArrayHashSet<Event> s) {
         int ss = s.size();
         if (ss == 0)
             return null;
@@ -389,7 +388,7 @@ public class Occurrify extends TimeGraph {
 
         Default() {
             @Override
-            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+            public @Nullable Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solve(x, d, true, true);
             }
 
@@ -412,7 +411,7 @@ public class Occurrify extends TimeGraph {
             final BeliefProjection PROJ = combine == OccMerge.UnionDilute ?  BeliefProjection.Mean : BeliefProjection.Task;
 
             @Override
-            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+            public @Nullable Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 if (x.hasXternal()) {
                     return solveDT(d, x, true);
                 } else {
@@ -487,7 +486,7 @@ public class Occurrify extends TimeGraph {
         TaskEvent() {
 
             @Override
-            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+            public @Nullable Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solve(x, d, true, false);
             }
 
@@ -503,7 +502,7 @@ public class Occurrify extends TimeGraph {
         TaskImmediate() {
 
             @Override
-            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+            public @Nullable Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 @Nullable Pair<Term, long[]> p = solve(x, d, true, false);
                 if (p!=null)
                     filter(d, p.getTwo());
@@ -538,7 +537,7 @@ public class Occurrify extends TimeGraph {
         BeliefEvent() {
 
             @Override
-            @Nullable public Pair<Term, long[]> occurrence(Term x, Derivation d) {
+            public @Nullable Pair<Term, long[]> occurrence(Term x, Derivation d) {
                 return solve(x, d, false, true);
             }
 
@@ -677,14 +676,14 @@ public class Occurrify extends TimeGraph {
          */
         abstract long[] occurrence(Derivation d);
 
-        abstract public Pair<Term, long[]> occurrence(Term x, Derivation d);
+        public abstract Pair<Term, long[]> occurrence(Term x, Derivation d);
 
 
 
         /**
          * gets the optional premise pre-filter for this consequence.
          */
-        @Nullable public Predicate<Derivation> filter() {
+        public @Nullable Predicate<Derivation> filter() {
             return null;
         }
 
@@ -757,7 +756,7 @@ public class Occurrify extends TimeGraph {
             }
         }
 
-        abstract public BeliefProjection beliefProjection();
+        public abstract BeliefProjection beliefProjection();
     }
 
     /** semi-auto-unneg to help occurrify */

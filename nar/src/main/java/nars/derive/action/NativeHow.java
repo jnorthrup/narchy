@@ -8,7 +8,7 @@ import nars.derive.rule.RuleCause;
 import nars.term.control.PREDICATE;
 
 /** stateless by default */
-abstract public class NativeHow/*Builder*/ extends CondHow {
+public abstract class NativeHow/*Builder*/ extends CondHow {
 
 	protected abstract void run(RuleCause why, Derivation d);
 

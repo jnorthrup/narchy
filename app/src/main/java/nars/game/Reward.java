@@ -60,7 +60,7 @@ public abstract class Reward implements GameLoop, TermedDelegate, Iterable<Conce
      *
      * happiness = 1 - Math.abs(rewardBeliefExp - rewardGoalExp)/Math.max(rewardBeliefExp,rewardGoalExp)
      * */
-    abstract public float happiness(float dur);
+	public abstract float happiness(float dur);
 
 //    protected final float rewardFreq(boolean beliefOrGoal) {
 //        return rewardFreq(beliefOrGoal, game.dur());
