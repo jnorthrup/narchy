@@ -5,9 +5,11 @@ import spacegraph.space2d.Surface;
 import spacegraph.space2d.Surfacelike;
 import spacegraph.space2d.widget.textedit.TextEdit;
 
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 /** TODO support resizing */
 abstract public class MutableArrayContainer<S extends Surface> extends AbstractMutableContainer<S> {
@@ -92,12 +94,9 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     public int childrenCount() {
-        int count = 0;
+        int count;
         int l = this.length;
-        for (int i = 0; i < l; i++) {
-            if (children.getFast(i)!=null)
-                count++;
-        }
+        count = (int) IntStream.range(0, l).filter(i -> children.getFast(i) != null).count();
         return count;
     }
 
@@ -119,24 +118,12 @@ abstract public class MutableArrayContainer<S extends Surface> extends AbstractM
 
     @Override
     public boolean whileEach(Predicate<Surface> o) {
-        for (int i = 0; i < length; i++) {
-            S ii = children.getFast(i);
-            if (ii !=null)
-                if (!o.test(ii))
-                    return false;
-        }
-        return true;
+        return IntStream.range(0, length).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o::test);
     }
 
     @Override
     public boolean whileEachReverse(Predicate<Surface> o) {
-        for (int i = length - 1; i >= 0; i--) {
-            S ii = children.getFast(i);
-            if (ii !=null)
-                if (!o.test(ii))
-                    return false;
-        }
-        return true;
+        return IntStream.iterate(length - 1, i -> i >= 0, i -> i - 1).mapToObj(children::getFast).filter(Objects::nonNull).allMatch(o::test);
     }
     @Override
     public void add(Surface... s) {

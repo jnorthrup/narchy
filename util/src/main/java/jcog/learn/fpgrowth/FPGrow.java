@@ -8,6 +8,8 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static jcog.Texts.n4;
@@ -141,12 +143,7 @@ public class FPGrow {
         for (int i = 1; i < c; i++) {
 
             String bitmap = Integer.toBinaryString(i); 
-            List<FPNode> combine = new ArrayList<>();
-            for (int j = 0; j < bitmap.length(); j++) {
-                if (bitmap.charAt(j) == '1') {
-                    combine.add(path.get(length - bitmap.length() + j));
-                }
-            }
+            List<FPNode> combine = IntStream.range(0, bitmap.length()).filter(j -> bitmap.charAt(j) == '1').mapToObj(j -> path.get(length - bitmap.length() + j)).collect(Collectors.toList());
             combinations.add(combine);
         }
     }

@@ -34,6 +34,8 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Базовый путь
@@ -73,10 +75,7 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
         if (ncnt == 0 || ncnt == 1) return Collections.EMPTY_LIST; //empty
 
 
-        List<E> l = new ArrayList<>();
-        for (FromTo<Node<N, E>, E> ed : fetch(beginIndex, endIndex)) {
-            l.add(ed.id());
-        }
+        List<E> l = fetch(beginIndex, endIndex).stream().map(FromTo::id).collect(Collectors.toList());
 
         return l;
     }
@@ -155,11 +154,9 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     @Override
     public int count(N n) {
         if (n == null) return 0;
-        int cnt = 0;
+        int cnt;
         int s = nodeCount();
-        for (int ni = 0; ni < s; ni++)
-            if (n.equals(node(ni)))
-                cnt++;
+        cnt = (int) IntStream.range(0, s).filter(ni -> n.equals(node(ni))).count();
 
         return cnt;
     }

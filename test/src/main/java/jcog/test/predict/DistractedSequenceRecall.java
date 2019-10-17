@@ -5,6 +5,7 @@ import jcog.learn.lstm.ExpectedVsActual;
 
 import java.util.Random;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class DistractedSequenceRecall extends AbstractTraining {
 	final int length;
@@ -23,13 +24,11 @@ public class DistractedSequenceRecall extends AbstractTraining {
 		for (int i = 0; i < this.batches; i++) {
 
 
-			int[] seq = new int[length];
+			int[] seq;
 
 			int target1 = random.nextInt(outputs);
 			int target2 = random.nextInt(outputs);
-			for (int t = 0; t < length; t++) {
-				seq[t] = random.nextInt(outputs) + outputs;
-			}
+            seq = IntStream.range(0, length).map(t -> random.nextInt(outputs) + outputs).toArray();
 			int loc1 = random.nextInt(length);
 			int loc2 = random.nextInt(length);
 			while (loc1 == loc2)

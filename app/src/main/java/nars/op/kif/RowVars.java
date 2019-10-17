@@ -1,6 +1,8 @@
 package nars.op.kif;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class RowVars {
 
@@ -75,16 +77,13 @@ public class RowVars {
         for (String rowvar : ar.keySet()) {
             HashSet<String> preds = ar.get(rowvar);
             for (String pred : preds) {
-                int nonRowVar = 0;
+                int nonRowVar;
                 int start = f.theFormula.indexOf('(' + pred);
                 int end = f.theFormula.indexOf(')', start);
                 String simpleFS = f.theFormula.substring(start, end + 1);
                 Formula simpleF = new Formula();
                 simpleF.read(simpleFS);
-                for (int i = 0; i < simpleF.listLength(); i++) {
-                    if (simpleF.getArgument(i).startsWith(Formula.V_PREF))
-                        nonRowVar++;
-                }
+                nonRowVar = (int) IntStream.range(0, simpleF.listLength()).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
 
                 if (kb.kbCache != null && kb.kbCache.valences != null &&
                     kb.kbCache.valences.get(pred) != null) {
@@ -282,9 +281,7 @@ public class RowVars {
             result = newresult;
         }
 
-        for (String r : result) {
-            formresult.add(new Formula(r));
-        }
+        formresult = result.stream().map(Formula::new).collect(Collectors.toCollection(ArrayList::new));
         if (DEBUG)
             System.out.println("Info in RowVars.expandRowVars(): exiting with: " + formresult);
         return formresult;

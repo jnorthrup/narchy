@@ -8,6 +8,8 @@ import alice.tuprolog.*;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * This class provides basic ISO I/O predicates.
@@ -125,10 +127,7 @@ public class ISOIOLibrary extends PrologLib {
                             }
                             int arity = option.subs();
                             if(arity > 1){
-                                Term[] arrayTerm = new Term[arity];
-                                for(int k = 0; k<arity; k++){
-                                    arrayTerm[k] = option.sub(k);
-                                }
+                                Term[] arrayTerm = IntStream.range(0, arity).mapToObj(option::sub).toArray(Term[]::new);
                                 properties.put(option.name(),new Struct(".",arrayTerm));
                             }
                             else{
@@ -497,16 +496,12 @@ public class ISOIOLibrary extends PrologLib {
 
         switch (propertyName) {
             case "input": {
-                for (Map.Entry<InputStream, Hashtable<String, Term>> stream : inputStreams.entrySet()) {
-                    resultList.add(new Struct(stream.getKey().toString()));
-                }
+                resultList = inputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
                 Struct result = new Struct(resultList.toArray(new Struct[1]));
                 return unify(list, result);
             }
             case "output":
-                for (Map.Entry<OutputStream, Hashtable<String, Term>> stream : outputStreams.entrySet()) {
-                    resultList.add(new Struct(stream.getKey().toString()));
-                }
+                resultList = outputStreams.keySet().stream().map(stringTermHashtable -> new Struct(stringTermHashtable.toString())).collect(Collectors.toList());
                 Struct result = new Struct(resultList.toArray(new Struct[1]));
                 return unify(list, result);
             default:
@@ -2074,17 +2069,9 @@ public class ISOIOLibrary extends PrologLib {
     
     
     private String get_output_name(OutputStream output){
-        Term file_name = null;
-        
-        
-        
-        for(Map.Entry<OutputStream, Hashtable<String, Term>> element : outputStreams.entrySet()){
-            if((element.getKey().toString()).equals(output.toString())){
-                Hashtable<String,Term>properties = element.getValue();
-                file_name = properties.get("file_name");
-                break;
-            }
-        }
+        Term file_name = outputStreams.entrySet().stream().filter(element -> (element.getKey().toString()).equals(output.toString())).map(Map.Entry::getValue).findFirst().map(properties -> properties.get("file_name")).orElse(null);
+
+
         Struct returnElement = (Struct)file_name;
         return returnElement.name();
     }

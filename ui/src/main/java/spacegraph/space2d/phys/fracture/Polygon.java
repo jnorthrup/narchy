@@ -9,6 +9,7 @@ import spacegraph.space2d.phys.fracture.poly2Tri.Triangulation;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.stream.IntStream;
 
 /**
  * Polygon - je reprezentovany postupnostou vrcholov
@@ -236,10 +237,7 @@ public class Polygon implements Iterable<v2>, Cloneable {
         }
 
         
-        v2[] reverseArray = new v2[vertexCount];
-        for (int i = 0; i < vertexCount; ++i) {
-            reverseArray[i] = get(vertexCount - i - 1);
-        }
+        v2[] reverseArray = IntStream.range(0, vertexCount).mapToObj(i -> get(vertexCount - i - 1)).toArray(v2[]::new);
 
         ArrayList<int[]> triangles = Triangulation.triangulate(reverseArray, vertexCount);
 

@@ -7,6 +7,8 @@ import org.junit.jupiter.api.Test;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Created by jeff on 16/05/16.
@@ -47,11 +49,7 @@ class FalsePositiveRateTest {
     }
 
     private static List<String> randomStrings(String prefix, int count) {
-        List<String> strings = new ArrayList<>();
-        for (int i = 0; i < count; i++) {
-            String value = prefix + UUID.randomUUID();
-            strings.add(value);
-        }
+        List<String> strings = IntStream.range(0, count).mapToObj(i -> prefix + UUID.randomUUID()).collect(Collectors.toList());
         return strings;
     }
 

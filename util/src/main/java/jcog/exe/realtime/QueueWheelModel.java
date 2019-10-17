@@ -3,6 +3,8 @@ package jcog.exe.realtime;
 import jcog.TODO;
 import jcog.Util;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Queue;
 import java.util.function.Supplier;
 import java.util.function.ToIntFunction;
@@ -88,10 +90,7 @@ public class QueueWheelModel extends HashedWheelTimer.WheelModel {
 
 	@Override
 	public boolean isEmpty() {
-		for (Queue<TimedFuture> q : q)
-			if (!q.isEmpty())
-				return false;
-		return true;
+        return Arrays.stream(q).allMatch(Collection::isEmpty);
 	}
 
 

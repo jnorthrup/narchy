@@ -7,6 +7,7 @@ import jcog.constraint.continuous.exceptions.UnknownConstraintException;
 import jcog.constraint.continuous.exceptions.UnsatisfiableConstraintException;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by alex on 30/01/15.
@@ -332,12 +333,7 @@ public class ContinuousConstraintSolver {
             /**this looks wrong!!!*/
             
 
-            LinkedList<Symbol> deleteQueue = new LinkedList<>();
-            for (Map.Entry<Symbol, Row> symbolRowEntry : rows.entrySet()) {
-                if (symbolRowEntry.getValue() == rowptr) {
-                    deleteQueue.add(symbolRowEntry.getKey());
-                }
-            }
+            LinkedList<Symbol> deleteQueue = rows.entrySet().stream().filter(symbolRowEntry -> symbolRowEntry.getValue() == rowptr).map(Map.Entry::getKey).collect(Collectors.toCollection(LinkedList::new));
             while (!deleteQueue.isEmpty()) {
                 rows.remove(deleteQueue.pop());
             }

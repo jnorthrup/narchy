@@ -2,6 +2,7 @@ package jcog.learn.deep;
 
 import java.util.Random;
 import java.util.function.DoubleFunction;
+import java.util.stream.IntStream;
 
 import static jcog.learn.deep.utils.binomial;
 import static jcog.learn.deep.utils.uniform;
@@ -54,10 +55,7 @@ public class HiddenLayer {
     }
 
     public double output(double[] input, double[] w, double b) {
-        double linear_output = 0.0;
-        for(int j=0; j<n_in; j++) {
-            linear_output += w[j] * input[j];
-        }
+        double linear_output = IntStream.range(0, n_in).mapToDouble(j -> w[j] * input[j]).sum();
         linear_output += b;
 
         return activation.apply(linear_output);
@@ -94,11 +92,7 @@ public class HiddenLayer {
     }
 
     public double[] dropout(int size, double p, Random rng) {
-        double[] mask = new double[size];
-
-        for(int i=0; i<size; i++) {
-            mask[i] = binomial(1, p, rng);
-        }
+        double[] mask = IntStream.range(0, size).mapToDouble(i -> binomial(1, p, rng)).toArray();
 
         return mask;
     }

@@ -5,6 +5,7 @@ import jcog.data.atomic.AtomicCycle;
 import org.apache.commons.math3.linear.ArrayRealVector;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import static jcog.Texts.n4;
 
@@ -101,12 +102,9 @@ public class Centroid extends ArrayRealVector {
 
 
     public static double distanceCartesianSq(double[] x, double[] y) {
-        double s = 0;
+        double s;
         int l = y.length;
-        for (int i = 0; i < l; i++) {
-            final double d = y[i] - x[i];
-            s += d * d;
-        }
+        s = IntStream.range(0, l).mapToDouble(i -> y[i] - x[i]).map(d -> d * d).sum();
         return s;
     }
 
@@ -148,21 +146,15 @@ public class Centroid extends ArrayRealVector {
          * avoid needing to calculate sqrt() this can be used in a comparison
          */
         static double distanceCartesianSq(double[] x, double[] y) {
-            double s = 0;
+            double s;
             int l = y.length;
-            for (int i = 0; i < l; i++) {
-                final double d = (y[i] - x[i]);
-                s += d * d;
-            }
+            s = IntStream.range(0, l).mapToDouble(i -> (y[i] - x[i])).map(d -> d * d).sum();
             return s;
         }
         static double distanceCartesianManhattan(double[] x, double[] y) {
-            double s = 0;
+            double s;
             int l = y.length;
-            for (int i = 0; i < l; i++) {
-                final double d = Math.abs(y[i] - x[i]);
-                s += d;
-            }
+            s = IntStream.range(0, l).mapToDouble(i -> Math.abs(y[i] - x[i])).sum();
             return s;
         }
 

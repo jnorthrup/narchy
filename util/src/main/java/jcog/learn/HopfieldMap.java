@@ -8,7 +8,10 @@ import jcog.data.graph.AdjGraph;
 import org.eclipse.collections.api.block.function.primitive.FloatFunction;
 import org.eclipse.collections.api.block.procedure.primitive.FloatObjectProcedure;
 
+import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /** untested */
 public class HopfieldMap<X> {
@@ -60,11 +63,8 @@ public class HopfieldMap<X> {
 
     @Override
     public String toString() {
-        StringBuilder sb = new StringBuilder(x.length * 6);
-        for (X xx : x) {
-            sb.append(Texts.n4(in.floatValueOf(xx))).append(',');
-        }
-        return sb.toString();
+        String sb = Arrays.stream(x).map(xx -> Texts.n4(in.floatValueOf(xx)) + ',').collect(Collectors.joining());
+        return sb;
     }
 
     public HopfieldMap<X> learn(int cycles) {
@@ -137,8 +137,7 @@ public class HopfieldMap<X> {
 
     public static void main(String[] args) {
         int n = 8;
-        NumberX[] m = new NumberX[n];
-        for (int i = 0; i < n; i++) m[i] = new MutableFloat();
+        NumberX[] m = IntStream.range(0, n).mapToObj(i -> new MutableFloat()).toArray(NumberX[]::new);
 
         HopfieldMap<NumberX> h = new HopfieldMap<>(NumberX::floatValue,
                 (float v, NumberX x) -> x.set(v), m);

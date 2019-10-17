@@ -2,17 +2,14 @@ package jcog.tree.perfect;
 
 import org.eclipse.collections.api.list.primitive.ByteList;
 
+import java.util.stream.IntStream;
+
 class TrieSequencerByteList implements TrieSequencer<ByteList> {
 
     @Override
     public int matches(ByteList sequenceA, int indexA, ByteList sequenceB, int indexB, int count) {
-        for (int i = 0; i < count; i++) {
-            if (sequenceA.get(indexA + i) != sequenceB.get(indexB + i)) {
-                return i;
-            }
-        }
+        return IntStream.range(0, count).filter(i -> sequenceA.get(indexA + i) != sequenceB.get(indexB + i)).findFirst().orElse(count);
 
-        return count;
     }
 
     @Override

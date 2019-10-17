@@ -13,6 +13,8 @@ import spacegraph.space2d.phys.fracture.util.MyList;
 
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 import static spacegraph.space2d.phys.fracture.Material.CIRCLEVERTICES;
@@ -156,11 +158,7 @@ public final class Fracture {
         
         List<Fixture> fixtures = new FasterList<>();
         if (f1.polygon != null) {
-            for (Fixture f = b1.fixtures; f != null; f = f.next) {
-                if (f.polygon == f1.polygon) {
-                    fixtures.add(f);
-                }
-            }
+            fixtures = Stream.iterate(b1.fixtures, Objects::nonNull, f -> f.next).filter(f -> f.polygon == f1.polygon).collect(Collectors.toCollection(FasterList::new));
         } else {
             fixtures.add(f1);
         }

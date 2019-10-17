@@ -6,6 +6,8 @@ import nars.$;
 import nars.term.Term;
 import nars.term.atom.Atomic;
 
+import java.util.stream.IntStream;
+
 import static nars.Op.SETe;
 
 /**
@@ -18,10 +20,7 @@ public enum JsonTerm { ;
 
         if (j.isArray()) {
             int s = j.size();
-            Term[] subterms = new Term[s];
-            for (int i = 0; i < s; i++) {
-                subterms[i] = the(j.get(i));
-            }
+            Term[] subterms = IntStream.range(0, s).mapToObj(i -> the(j.get(i))).toArray(Term[]::new);
             return $.p(subterms);
 
         } else if (j.isValueNode()) {

@@ -217,20 +217,12 @@ public class Player extends Mob {
 
     private boolean use(int x0, int y0, int x1, int y1) {
         List<Entity> entities = level.getEntities(x0, y0, x1, y1);
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
-            if (e != this) if (e.use(this, attackDir)) return true;
-        }
-        return false;
+        return entities.stream().filter(e -> e != this).anyMatch(e -> e.use(this, attackDir));
     }
 
     private boolean interact(int x0, int y0, int x1, int y1) {
         List<Entity> entities = level.getEntities(x0, y0, x1, y1);
-        for (int i = 0; i < entities.size(); i++) {
-            Entity e = entities.get(i);
-            if (e != this) if (e.interact(this, activeItem, attackDir)) return true;
-        }
-        return false;
+        return entities.stream().filter(e -> e != this).anyMatch(e -> e.interact(this, activeItem, attackDir));
     }
 
     private void hurt(int x0, int y0, int x1, int y1) {

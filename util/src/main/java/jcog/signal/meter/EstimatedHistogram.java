@@ -22,10 +22,7 @@ import org.slf4j.Logger;
 
 import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicLongArray;
-
-
-
-
+import java.util.stream.IntStream;
 
 
 public class EstimatedHistogram {
@@ -167,14 +164,12 @@ public class EstimatedHistogram {
      */
     long[] getBuckets(boolean reset) {
         final int len = buckets.length();
-        long[] rv = new long[len];
+        long[] rv;
 
         if (reset)
-            for (int i = 0; i < len; i++)
-                rv[i] = buckets.getAndSet(i, 0L);
+            rv = IntStream.range(0, len).mapToLong(i -> buckets.getAndSet(i, 0L)).toArray();
         else
-            for (int i = 0; i < len; i++)
-                rv[i] = buckets.get(i);
+            rv = IntStream.range(0, len).mapToLong(buckets::get).toArray();
 
         return rv;
     }
@@ -262,9 +257,7 @@ public class EstimatedHistogram {
      * @return the total number of non-zero values
      */
     public long count() {
-        long sum = 0L;
-        for (int i = 0; i < buckets.length(); i++)
-            sum += buckets.get(i);
+        long sum = IntStream.range(0, buckets.length()).mapToLong(buckets::get).sum();
         return sum;
     }
 

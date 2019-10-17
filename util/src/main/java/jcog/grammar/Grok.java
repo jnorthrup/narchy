@@ -24,6 +24,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import static java.lang.String.format;
 
@@ -325,13 +326,8 @@ public class Grok implements Serializable {
     private static boolean isBlank(String str) {
         int strLen;
         if (str != null && (strLen = str.length()) != 0) {
-            for (int i = 0; i < strLen; ++i) {
-                if (!Character.isWhitespace(str.charAt(i))) {
-                    return false;
-                }
-            }
 
-            return true;
+            return IntStream.range(0, strLen).allMatch(i -> Character.isWhitespace(str.charAt(i)));
         } else {
             return true;
         }
@@ -341,12 +337,8 @@ public class Grok implements Serializable {
         if (!str.isEmpty()) {
             int sl = sub.length();
             if (sl > 0) {
-                int count = 0;
+                int count = (int) IntStream.iterate(0, idx -> (idx = str.indexOf(sub, idx)) != -1, idx -> idx + sl).count();
 
-
-                for (int idx = 0; (idx = str.indexOf(sub, idx)) != -1; idx += sl) {
-                    ++count;
-                }
 
                 return count;
             }

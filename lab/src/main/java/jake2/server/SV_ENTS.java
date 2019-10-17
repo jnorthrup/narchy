@@ -28,6 +28,7 @@ import jake2.qcommon.*;
 import jake2.util.Math3D;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class SV_ENTS {
 
@@ -291,10 +292,7 @@ public class SV_ENTS {
             MSG.WriteByte(msg, ps.rdflags);
 
         
-        int statbits = 0;
-        for (int i = 0; i < Defines.MAX_STATS; i++)
-            if (ps.stats[i] != ops.stats[i])
-                statbits |= 1 << i;
+        int statbits = IntStream.range(0, Defines.MAX_STATS).filter(i -> ps.stats[i] != ops.stats[i]).map(i -> 1 << i).reduce(0, (a, b) -> a | b);
         MSG.WriteLong(msg, statbits);
         for (int i = 0; i < Defines.MAX_STATS; i++)
             if ((statbits & (1 << i)) != 0)

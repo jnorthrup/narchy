@@ -33,6 +33,8 @@ import spacegraph.space3d.phys.Collidable;
 import spacegraph.space3d.phys.math.MiscUtil;
 import spacegraph.space3d.phys.math.VectorUtil;
 
+import java.util.stream.IntStream;
+
 /**
  * AxisSweep3Internal is an internal base class that implements sweep and prune.
  * Use concrete implementation {@link AxisSweep3} or {@link AxisSweep3_32}.
@@ -154,16 +156,6 @@ public abstract class AxisSweep3Internal extends Broadphase {
 	}
 	
 	private static boolean testOverlap(int ignoreAxis, Handle pHandleA, Handle pHandleB) {
-		
-
-		for (int axis=0; axis<3; axis++) {
-			if (axis != ignoreAxis) {
-				if (pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
-						pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis)) {
-					return false;
-				}
-			}
-		}
 
 		
 
@@ -177,7 +169,8 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		}
 		*/
 
-		return true;
+		return IntStream.range(0, 3).filter(axis -> axis != ignoreAxis).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
+                pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
 	}
 	
 	
@@ -586,15 +579,9 @@ public abstract class AxisSweep3Internal extends Broadphase {
 		Handle pHandleA = (Handle)proxy0;
 		Handle pHandleB = (Handle)proxy1;
 
-		
 
-		for (int axis = 0; axis < 3; axis++) {
-			if (pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
-					pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis)) {
-				return false;
-			}
-		}
-		return true;
+        return IntStream.range(0, 3).noneMatch(axis -> pHandleA.getMaxEdges(axis) < pHandleB.getMinEdges(axis) ||
+                pHandleB.getMaxEdges(axis) < pHandleA.getMinEdges(axis));
 	}
 
 	@Override

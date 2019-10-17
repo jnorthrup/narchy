@@ -2,6 +2,7 @@ package nars.experiment.pacman.maze;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 public class Maze {
 
@@ -363,14 +364,7 @@ public class Maze {
 
         int[] check = {x, y};
 
-        for (int[] place : this.bigDots) {
-
-            if (check[0] == place[0] && check[1] == place[1])
-                return true;
-
-        }
-
-        return false;
+        return Arrays.stream(this.bigDots).anyMatch(place -> check[0] == place[0] && check[1] == place[1]);
 
     }
 

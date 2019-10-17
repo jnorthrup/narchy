@@ -15,6 +15,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.stream.Collectors;
 
 import static com.jogamp.opengl.GL2ES2.GL_FRAGMENT_SHADER;
 
@@ -45,21 +46,17 @@ public class GLSL extends PaintSurface {
 
 
     private String[] loadShaderSrc(String name) {
-        StringBuilder sb = new StringBuilder();
+        String sb = "";
         try {
             InputStream is = getClass().getResourceAsStream(name);
             BufferedReader br = new BufferedReader(new InputStreamReader(is));
-            String line;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
-                sb.append('\n');
-            }
+            sb = br.lines().map(line -> line + '\n').collect(Collectors.joining());
             is.close();
         } catch (Exception e) {
             e.printStackTrace();
         }
         System.out.println("Shader is " + sb);
-        return new String[]{sb.toString()};
+        return new String[]{sb};
     }
 
 

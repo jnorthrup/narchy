@@ -40,21 +40,25 @@ public abstract class AbstractButton extends Widget {
 
     @Override
     public Surface finger(Finger finger) {
+        Surface result = this;
+        boolean finished = false;
         Surface f = super.finger(finger);
         if (f == this) {
-            if (enabled() && finger.test(click))
-                return this;
-
-            /* HACK */
-            /* HACK */
-            if (IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging)) {
+            if (enabled() && finger.test(click)) {
+                result = this;
+                finished = true;
+            } else if (IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging)) {
                 //allow pass-through for drag actions
-                return null;
+                result = null;
+                finished = true;
             }
 
 
         }
-        return f;
+        if (!finished) {
+            result = f;
+        }
+        return result;
     }
 
     public AbstractButton icon(String s) {

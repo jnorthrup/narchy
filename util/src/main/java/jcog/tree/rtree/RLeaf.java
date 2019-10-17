@@ -206,12 +206,7 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (s > 0 && bounds.contains(b)) {
 
             X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X t = data[i];
-                if (x == t || model.mergeContain(x, t)) {
-                    return true;
-                }
-            }
+            return Arrays.stream(data, 0, s).anyMatch(t -> x == t || model.mergeContain(x, t));
         }
         return false;
     }
@@ -282,11 +277,8 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (s > 0 && rect.intersects(bounds)) {
             boolean containsAll = s > 1 && rect.contains(bounds);
             X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X d = data[i];
-                if (/*d != null && */ (containsAll || rect.intersects(model.bounds(d))) && !t.test(d))
-                    return false;
-            }
+            /*d != null && */
+            return Arrays.stream(data, 0, s).noneMatch(d -> (containsAll || rect.intersects(model.bounds(d))) && !t.test(d));
         }
         return true;
     }
@@ -297,11 +289,8 @@ public class RLeaf<X> extends AbstractRNode<X,X> {
         if (s > 0 && rect.intersects(bounds)) {
             boolean fullyContained = s > 1 && rect.contains(bounds);
             X[] data = this.data;
-            for (int i = 0; i < s; i++) {
-                X d = data[i];
-                if (/*d != null && */(fullyContained || rect.contains(model.bounds(d))) && !t.test(d))
-                    return false;
-            }
+            /*d != null && */
+            return Arrays.stream(data, 0, s).noneMatch(d -> (fullyContained || rect.contains(model.bounds(d))) && !t.test(d));
         }
         return true;
     }

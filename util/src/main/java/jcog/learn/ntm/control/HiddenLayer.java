@@ -3,6 +3,8 @@ package jcog.learn.ntm.control;
 import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.ReadData;
 
+import java.util.stream.IntStream;
+
 public class HiddenLayer {
 	public final IDifferentiableFunction activation;
 	public final int inputs;
@@ -89,9 +91,7 @@ public class HiddenLayer {
 			Unit[] headWeights = readWeightsForEachHead[headIndex];
 			ReadData read = readData[headIndex];
             Unit[] r = read.read;
-			for (int memoryCellIndex = 0; memoryCellIndex < memoryUnitSizeM; memoryCellIndex++) {
-                tempSum += headWeights[memoryCellIndex].value * r[memoryCellIndex].value;
-			}
+            tempSum += IntStream.range(0, memoryUnitSizeM).mapToDouble(memoryCellIndex -> headWeights[memoryCellIndex].value * r[memoryCellIndex].value).sum();
 		}
 		return tempSum;
 	}
@@ -116,12 +116,11 @@ public class HiddenLayer {
 
 	private double[] calculateHiddenLayerGradinets() {
 		int n = neurons();
-		double[] hiddenLayerGradients = new double[n];
+		double[] hiddenLayerGradients;
 		double[] g = this.neurons.grad;
 		double[] v = this.neurons.value;
 		IDifferentiableFunction a = this.activation;
-		for (int i = 0; i < n; i++)
-			hiddenLayerGradients[i] = a.derivative(g[i], v[i]);
+        hiddenLayerGradients = IntStream.range(0, n).mapToDouble(i -> a.derivative(g[i], v[i])).toArray();
 		return hiddenLayerGradients;
 	}
 

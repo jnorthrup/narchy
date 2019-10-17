@@ -325,12 +325,7 @@ class SampleManager {
      * @param sample the Sample.
      */
     private static void removeSample(Sample sample) {
-        for (Map.Entry<String, Sample> stringSampleEntry : samples.entrySet()) {
-            if (stringSampleEntry.getValue().equals(sample)) {
-                removeSample(stringSampleEntry.getKey());
-                break;
-            }
-        }
+        samples.entrySet().stream().filter(stringSampleEntry -> stringSampleEntry.getValue().equals(sample)).findFirst().ifPresent(stringSampleEntry -> removeSample(stringSampleEntry.getKey()));
     }
 
     /**

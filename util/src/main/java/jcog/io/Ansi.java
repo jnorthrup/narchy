@@ -20,6 +20,7 @@ import com.google.common.collect.FluentIterable;
 
 import java.io.PrintStream;
 import java.util.Collections;
+import java.util.stream.IntStream;
 
 /** Encapsulates the specifics of writing to a particular kind of terminal.
  *  https:
@@ -226,11 +227,6 @@ public final class Ansi {
   /** @return the index of the first character that's not a tab, or -1 if none is found. */
   private static int indexOfFirstNonTab(String s) {
     final int length = s.length();
-    for (int i = 1; i < length; i++) {
-      if (s.charAt(i) != '\t') {
-        return i;
-      }
-    }
-    return -1;
+      return IntStream.range(1, length).filter(i -> s.charAt(i) != '\t').findFirst().orElse(-1);
   }
 }

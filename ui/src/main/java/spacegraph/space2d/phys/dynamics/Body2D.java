@@ -40,8 +40,10 @@ import spacegraph.space2d.phys.dynamics.joints.JointEdge;
 import spacegraph.space2d.phys.fracture.Polygon;
 import spacegraph.space2d.phys.fracture.PolygonFixture;
 
+import java.util.Objects;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 import static spacegraph.space2d.phys.dynamics.BodyType.STATIC;
@@ -1269,13 +1271,7 @@ public class Body2D extends Transform {
         }
 
 
-        for (JointEdge jn = joints; jn != null; jn = jn.next) {
-            if (jn.other == other && !jn.joint.getCollideConnected()) {
-                return false;
-            }
-        }
-
-        return true;
+        return Stream.iterate(joints, Objects::nonNull, jn -> jn.next).noneMatch(jn -> jn.other == other && !jn.joint.getCollideConnected());
     }
 
     final void advance(float t) {

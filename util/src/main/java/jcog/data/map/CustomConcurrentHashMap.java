@@ -19,6 +19,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 import static com.github.benmanes.caffeine.base.UnsafeAccess.UNSAFE;
 
@@ -1068,12 +1070,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
     public final boolean isEmpty() {
         MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
-        for (int i = 0; i < ss; ++i) {
-            Segment seg = segs.getFast(i);
-            if (seg != null && !seg.isEmpty())
-                return false;
-        }
-        return true;
+        return IntStream.range(0, ss).mapToObj(segs::getFast).noneMatch(seg -> seg != null && !seg.isEmpty());
     }
 
     /**
@@ -1085,14 +1082,10 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final int size() {
-        long sum = 0;
+        long sum;
         MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
-        for (int i = 0; i < ss; ++i) {
-            Segment seg = segs.getFast(i);
-            if (seg != null)
-                sum += seg.count.getOpaque();
-        }
+        sum = IntStream.range(0, ss).mapToObj(segs::getFast).filter(Objects::nonNull).mapToLong(seg -> seg.count.getOpaque()).sum();
         return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
     }
 
@@ -1118,15 +1111,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
             Segment seg = segs.getFast(i);
             Node[] tab;
             if (seg != null && (tab = seg.table()) != null) {
-                for (Node aTab : tab) {
-                    for (Node p = aTab;
-                         p != null;
-                         p = p.getLinkage()) {
-                        V v = (V) (p.getValue());
-                        if (v == value ||
-                                (v != null && valueEquivalence.equal(v, value)))
-                            return true;
-                    }
+                if (Arrays.stream(tab).anyMatch(aTab -> Stream.iterate(aTab, Objects::nonNull, Node::getLinkage).map(p -> (V) (p.getValue())).anyMatch(v -> v == value ||
+                        (v != null && valueEquivalence.equal(v, value))))) {
+                    return true;
                 }
             }
         }
@@ -1660,8 +1647,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      * @return the hash code
      */
     public int hashCode() {
-        int h = 0;
-        for (Entry<K, V> kvEntry : entrySet()) h += kvEntry.hashCode();
+        int h = entrySet().stream().mapToInt(Entry::hashCode).sum();
         return h;
     }
 
@@ -1795,8 +1781,7 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
          * @return the hash code
          */
         public int hashCode() {
-            int h = 0;
-            for (K k : this) h += cchm.keyEquivalence.hash(k);
+            int h = this.stream().mapToInt(cchm.keyEquivalence::hash).sum();
             return h;
         }
     }

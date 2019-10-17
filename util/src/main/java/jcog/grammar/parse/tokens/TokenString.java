@@ -2,7 +2,9 @@ package jcog.grammar.parse.tokens;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -107,13 +109,7 @@ public class TokenString {
 	 */
 	@Override
 	public String toString() {
-		StringBuilder buf = new StringBuilder();
-		for (int i = 0; i < tokens.length; i++) {
-			if (i > 0) {
-				buf.append(' ');
-			}
-			buf.append(tokens[i]);
-		}
-		return buf.toString();
+		String buf = Arrays.stream(tokens).map(String::valueOf).collect(Collectors.joining(" "));
+        return buf;
 	}
 }

@@ -34,6 +34,8 @@ package spacegraph.util.math;
 import jcog.math.VecMathUtil;
 import jcog.math.v3;
 
+import java.util.stream.IntStream;
+
 /**
  * A single precision floating point 3 by 3 matrix.
  * Primarily to support 3D rotations.
@@ -1136,8 +1138,7 @@ public final class Matrix3f implements java.io.Serializable, Cloneable {
         }
 
         
-        double[] result = new double[9];
-        for (int i = 0; i < 9; i++) result[i] = 0.0;
+        double[] result = IntStream.range(0, 9).mapToDouble(i -> 0.0).toArray();
         result[0] = 1.0;
         result[4] = 1.0;
         result[8] = 1.0;

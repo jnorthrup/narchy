@@ -133,10 +133,7 @@ public class Renderer {
         }
 
         int count = drivers.size();
-        String[] names = new String[count];
-        for (int i = 0; i < count; i++) {
-            names[i] = drivers.get(i).getName();
-        }
+        String[] names = drivers.stream().map(Ref::getName).toArray(String[]::new);
         return names;
     }
 

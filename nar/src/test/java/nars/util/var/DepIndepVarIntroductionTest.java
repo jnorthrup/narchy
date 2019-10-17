@@ -8,8 +8,10 @@ import nars.term.Terms;
 import org.jetbrains.annotations.Nullable;
 import org.junit.jupiter.api.Test;
 
-import java.util.Arrays;
-import java.util.TreeSet;
+import java.util.*;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
@@ -96,13 +98,7 @@ class DepIndepVarIntroductionTest {
 
     private final NAR n = NARS.shell();
 
-    private TreeSet<Term> introduce(String term, int iterations) {
-        TreeSet<Term> s = new TreeSet();
-        for (int i = 0; i < iterations; i++) {
-            Term u = n.eval($.func("varIntro", $$(term).normalize()));
-            if (u != null)
-                s.add(u);
-        }
-        return s;
+    private SortedSet<Term> introduce(String term, int iterations) {
+        return(SortedSet<Term>) IntStream.range(0, iterations).mapToObj(i -> n.eval($.func("varIntro", $$(term).normalize()))).filter(Objects::nonNull).collect(Collectors.toCollection((Supplier<SortedSet>) TreeSet::new));
     }
 }

@@ -81,13 +81,7 @@ public class CachedTreeEvaluator extends DefaultTreeEvaluator implements CachedE
     @Override
     public long getCacheSizeBytes(){
         synchronized (cache) {
-            long cacheSize = 0;
-            for (Map.Entry<Triplet<EvaluationPhases, Boolean, String>, List<Bounds[]>> entry : cache.entrySet()) {
-                List<Bounds[]> list = entry.getValue();
-                for (Bounds[] exampleResult : list) {
-                    cacheSize+=exampleResult.length;
-                }            
-            }
+            long cacheSize = cache.values().stream().mapToLong(list -> list.stream().mapToLong(exampleResult -> exampleResult.length).sum()).sum();
             cacheSize*=(Integer.SIZE/4);
             return cacheSize;
         }

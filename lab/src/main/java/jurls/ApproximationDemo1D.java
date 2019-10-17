@@ -16,6 +16,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -82,10 +83,7 @@ public class ApproximationDemo1D extends javax.swing.JFrame {
         });
         iterationsMenu.notifyListeners();
 
-        double[] ys = new double[components];
-        for (int i = 0; i < ys.length; ++i) {
-            ys[i] = 2f * (Math.random() - 0.5);
-        }
+        double[] ys = IntStream.range(0, components).mapToDouble(i -> 2f * (Math.random() - 0.5)).toArray();
         f = new RenderArrayFunction1D(Color.blue, ys);
 
         functionRenderer1.renderFunctions.add(f);

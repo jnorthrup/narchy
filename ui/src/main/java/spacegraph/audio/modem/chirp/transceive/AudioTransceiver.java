@@ -13,6 +13,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * adapted from
@@ -219,12 +220,9 @@ public class AudioTransceiver {
                 // Decode the Sample.
                 pReedSolomonDecoder.decode(lPacketized, synth.errLen);
                 // Declare the search metric.
-                boolean lIsValid = true;
+                boolean lIsValid = IntStream.range(0, synth.identifier.length()).mapToObj(i -> synth.identifier.charAt(i) == (synth.range.chars.charAt(lPacketized[i]))).reduce(true, (a, b) -> a && b);
                 // Iterate the Identifier characters.
-                for (int i = 0; i < synth.identifier.length(); i++) {
-                    // Update the search metric.
-                    lIsValid &= synth.identifier.charAt(i) == (synth.range.chars.charAt(lPacketized[i]));
-                }
+                // Update the search metric.
                 // Is the message directed to us?
                 if (lIsValid) {
                     // Fetch the Message data.

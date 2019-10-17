@@ -64,6 +64,8 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static spacegraph.SpaceGraph.window;
 
@@ -492,14 +494,10 @@ public class WebcamStereoTest {
 
             findMatches.associate(left,right);
 
-            List<AssociatedPair> matches = new ArrayList<>();
+            List<AssociatedPair> matches;
             FastQueue<AssociatedIndex> matchIndexes = associate.getMatches();
 
-            for( int i = 0; i < matchIndexes.size; i++ ) {
-                AssociatedIndex a = matchIndexes.get(i);
-                AssociatedPair p = new AssociatedPair(findMatches.pointsA.get(a.src) , findMatches.pointsB.get(a.dst));
-                matches.add( p);
-            }
+            matches = IntStream.range(0, matchIndexes.size).mapToObj(matchIndexes::get).map(a -> new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst))).collect(Collectors.toList());
 
             return matches;
         }

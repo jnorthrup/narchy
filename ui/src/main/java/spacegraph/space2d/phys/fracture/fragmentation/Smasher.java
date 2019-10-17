@@ -20,6 +20,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static spacegraph.space2d.phys.dynamics.BodyType.DYNAMIC;
 
@@ -258,14 +260,7 @@ public class Smasher {
                     jcog.math.v2 centroid = opposite.centroid();
                     opposite.visited = true;
                     if (ic.contains(centroid)) {
-                        boolean intersection = false;
-                        for (EdgeDiagram edge : allEdgesPolygon) {
-
-                            if (edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0])) {
-                                intersection = true;
-                                break;
-                            }
-                        }
+                        boolean intersection = allEdgesPolygon.stream().anyMatch(edge -> edge.d1 != startPolygon[0] && edge.d2 != startPolygon[0] && edge.intersectAre(centroid, kolmicovyBod[0]));
 
 
                         if (!intersection) {
@@ -280,12 +275,7 @@ public class Smasher {
         }
 
         Fragment[] fragmentsArray = vysledneFragmenty.toArray(new Fragment[0]);
-        MyList<Fragment> fragmentsBody = new MyList<>();
-        for (Fragment fx : allIntersections) {
-            if (!vysledneFragmenty.contains(fx)) {
-                fragmentsBody.add(fx);
-            }
-        }
+        MyList<Fragment> fragmentsBody = allIntersections.stream().filter(fx -> !vysledneFragmenty.contains(fx)).collect(Collectors.toCollection(MyList::new));
 
         MyList<Polygon> result = zjednotenie(fragmentsBody);
 
@@ -484,10 +474,7 @@ public class Smasher {
 
         List<Fragment> fragmentList = new FasterList<>(focee.length);
 
-        v2[] pp = new v2[factory.pCount];
-        for (int i = 0; i < factory.pCount; ++i) {
-            pp[i] = new v2(factory.points[i]);
-        }
+        v2[] pp = IntStream.range(0, factory.pCount).mapToObj(i -> new v2(factory.points[i])).toArray(v2[]::new);
 
         for (int i = 0; i < focee.length; i++) {
 

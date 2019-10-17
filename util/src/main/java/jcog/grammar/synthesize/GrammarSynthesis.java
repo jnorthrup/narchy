@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import static jcog.grammar.synthesize.util.GrammarUtils.*;
 
@@ -72,10 +73,7 @@ public class GrammarSynthesis {
     }
 
     public static Grammar getRegularGrammarMultiple(Collection<String> examples, Predicate<String> oracle) {
-        List<Node> roots = new ArrayList<>();
-        for (String example : examples) {
-            roots.add(getNode(example, oracle));
-        }
+        List<Node> roots = examples.stream().map(example -> getNode(example, oracle)).collect(Collectors.toList());
         return getRegularGrammarMultipleFromRoots(roots, oracle);
     }
 

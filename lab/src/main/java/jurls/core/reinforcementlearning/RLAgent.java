@@ -12,6 +12,7 @@ import jurls.core.utils.ActionValuePair;
 import jurls.core.utils.Utils;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -98,16 +99,7 @@ public class RLAgent extends LearnerAndActor {
             memoryIndex = 0;
         }
 
-        double nextFactor1 = 0;
-        for (int i = 0; i < memory.length; ++i) {
-            double[] m = memory[i];
-            double sum2 = 0;
-            for (int j = 0; j < m.length; ++j) {
-                double d = normalizedState[j] - m[j];
-                sum2 += d * d;
-            }
-            nextFactor1 += 1 / (1 + sum2 * factor1ComponentDivisor);
-        }
+        double nextFactor1 = Arrays.stream(memory).mapToDouble(m -> IntStream.range(0, m.length).mapToDouble(j -> normalizedState[j] - m[j]).map(d -> d * d).sum()).map(sum2 -> 1 / (1 + sum2 * factor1ComponentDivisor)).sum();
         nextFactor1 /= memory.length;
 
         if (reward > rewardMax) {
@@ -146,14 +138,10 @@ public class RLAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        ActionValuePair[] actionValuePairs = new ActionValuePair[numActions];
-
-        for (int i = 0; i < numActions; ++i) {
-            actionValuePairs[i] = new ActionValuePair(
-                    i,
-                    Utils.q(parameterizedFunction, stateAction, state, i)
-            );
-        }
+        ActionValuePair[] actionValuePairs = IntStream.range(0, numActions).mapToObj(i -> new ActionValuePair(
+                i,
+                Utils.q(parameterizedFunction, stateAction, state, i)
+        )).toArray(ActionValuePair[]::new);
 
         return actionSelector.fromQValuesToProbabilities(epsilon, actionValuePairs);
     }

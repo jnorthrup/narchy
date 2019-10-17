@@ -19,6 +19,7 @@ import java.util.Arrays;
 import java.util.NoSuchElementException;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 
 /**
@@ -160,11 +161,7 @@ public class LongObjectArraySet<X> extends FasterList<X> {
     public final boolean contains(long w, X what, int startIndex, int finalIndexExc) {
         long[] longs = this.when;
         X[] ii = this.items;
-        for (int i = startIndex; i < finalIndexExc; i++) {
-            if (longs[i] == w && ii[i].equals(what))
-                return true;
-        }
-        return false;
+        return IntStream.range(startIndex, finalIndexExc).anyMatch(i -> longs[i] == w && ii[i].equals(what));
     }
 
     /** assumes its been sorted */

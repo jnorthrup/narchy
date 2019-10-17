@@ -21,16 +21,8 @@ package jcog.data.bit;
  */
 
 
-
-
-
-
-
-
-
-
-
-
+import java.util.stream.Collectors;
+import java.util.stream.LongStream;
 
 /** An abstract implementation of a {@link BitVector}.
  * 
@@ -90,9 +82,8 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public long getLong(long from, long to ) {
 		if ( to - from > 64 ) throw new IllegalArgumentException( "Range too large for a long: [" + from + ".." + to + ')');
-		long result = 0;
-		for( long i = from; i < to; i++ ) if ( getBoolean( i ) ) result |= 1L << i - from;
-		return result;
+		long result = LongStream.range(from, to).filter(this::getBoolean).map(i -> 1L << i - from).reduce(0, (a, b) -> a | b);
+        return result;
 	}
 	public boolean getBoolean( int index ) { return getBoolean( (long)index ); }
 
@@ -187,9 +178,8 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public long nextOne(long index ) {
 		long length = length();
-		for( long i = index; i < length; i++ ) if ( getBoolean( i ) ) return i;
-		return -1;
-	}
+        return LongStream.range(index, length).filter(this::getBoolean).findFirst().orElse(-1L);
+    }
 	
 	@Override
 	public long previousOne(long index ) {
@@ -200,9 +190,8 @@ public abstract class AbstractBitVector implements BitVector {
 	@Override
 	public long nextZero(long index ) {
 		long length = length();
-		for( long i = index; i < length; i++ ) if ( ! getBoolean( i ) ) return i;
-		return -1;
-	}
+        return LongStream.range(index, length).filter(i -> !getBoolean(i)).findFirst().orElse(-1L);
+    }
 	
 	@Override
 	public long previousZero(long index ) {
@@ -289,8 +278,7 @@ public abstract class AbstractBitVector implements BitVector {
 		long length = length();
 		if ( length != v.length() ) return false;
 		long fullLength = length - length % Long.SIZE;
-		for( long i = 0; i < fullLength; i += Long.SIZE ) if ( getLong( i, i + Long.SIZE ) != v.getLong( i, i + Long.SIZE ) ) return false;
-		return getLong( fullLength, length ) == v.getLong( fullLength, length );
+        return LongStream.iterate(0, i -> i < fullLength, i -> (long) (i + Long.SIZE)).noneMatch(i -> getLong(i, i + Long.SIZE) != v.getLong(i, i + Long.SIZE)) && getLong(fullLength, length) == v.getLong(fullLength, length);
 	}
 
 	@Override
@@ -656,10 +644,10 @@ public abstract class AbstractBitVector implements BitVector {
 	 */
 	
 	public String toString() {
-		StringBuilder s = new StringBuilder();
+		String s;
 		long size = size64();
-		for( long i = 0; i < size; i++ ) s.append( getInt( i ) );
-		return s.toString();
+        s = LongStream.range(0, size).mapToObj(i -> String.valueOf(getInt(i))).collect(Collectors.joining());
+		return s;
 	}
 
 	/** A subvector of a given bit vector, specified by an initial and a final bit. */

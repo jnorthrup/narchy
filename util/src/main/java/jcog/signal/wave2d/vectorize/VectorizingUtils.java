@@ -2,8 +2,10 @@ package jcog.signal.wave2d.vectorize;
 
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class VectorizingUtils {
 
@@ -238,11 +240,8 @@ public class VectorizingUtils {
 
 	
 	public static ArrayList<ArrayList<ArrayList<Integer[]>>> batchpathscan (int [][][] layers, float pathomit){
-		ArrayList<ArrayList<ArrayList<Integer[]>>> bpaths = new ArrayList<>();
-		for (int[][] layer : layers) {
-			bpaths.add(pathscan(layer,pathomit));
-		}
-		return bpaths;
+		ArrayList<ArrayList<ArrayList<Integer[]>>> bpaths = Arrays.stream(layers).map(layer -> pathscan(layer, pathomit)).collect(Collectors.toCollection(ArrayList::new));
+        return bpaths;
 	}
 
 
@@ -310,11 +309,8 @@ public class VectorizingUtils {
 
 	
 	static ArrayList<ArrayList<ArrayList<Double[]>>> batchinternodes (ArrayList<ArrayList<ArrayList<Integer[]>>> bpaths){
-		ArrayList<ArrayList<ArrayList<Double[]>>> binternodes = new ArrayList<>();
-		for (ArrayList<ArrayList<Integer[]>> bpath : bpaths) {
-			binternodes.add(internodes(bpath));
-		}
-		return binternodes;
+		ArrayList<ArrayList<ArrayList<Double[]>>> binternodes = bpaths.stream().map(VectorizingUtils::internodes).collect(Collectors.toCollection(ArrayList::new));
+        return binternodes;
 	}
 
 
@@ -462,21 +458,15 @@ public class VectorizingUtils {
 
 	
 	public static ArrayList<ArrayList<Double[]>> batchtracepaths (ArrayList<ArrayList<Double[]>> internodepaths, float ltres,float qtres){
-		ArrayList<ArrayList<Double[]>> btracedpaths = new ArrayList<>();
-		for (ArrayList<Double[]> internodepath : internodepaths) {
-			btracedpaths.add(tracepath(internodepath, ltres, qtres));
-		}
-		return btracedpaths;
+		ArrayList<ArrayList<Double[]>> btracedpaths = internodepaths.stream().map(internodepath -> tracepath(internodepath, ltres, qtres)).collect(Collectors.toCollection(ArrayList::new));
+        return btracedpaths;
 	}
 
 
 	
 	public static ArrayList<ArrayList<ArrayList<Double[]>>> batchtracelayers (ArrayList<ArrayList<ArrayList<Double[]>>> binternodes, float ltres, float qtres){
-		ArrayList<ArrayList<ArrayList<Double[]>>> btbis = new ArrayList<>();
-		for (ArrayList<ArrayList<Double[]>> binternode : binternodes) {
-			btbis.add(batchtracepaths(binternode, ltres, qtres));
-		}
-		return btbis;
+		ArrayList<ArrayList<ArrayList<Double[]>>> btbis = binternodes.stream().map(binternode -> batchtracepaths(binternode, ltres, qtres)).collect(Collectors.toCollection(ArrayList::new));
+        return btbis;
 	}
 
 	

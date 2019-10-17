@@ -21,6 +21,7 @@ package jcog.grammar.evolve.configuration;
 import jcog.TODO;
 
 import java.io.*;
+import java.util.stream.Collectors;
 
 /**
  * @author MaleLabTs
@@ -40,13 +41,10 @@ public class Configurator {
 
     public static Configuration configure(BufferedReader r) throws IOException {
 
-        StringBuilder sb = new StringBuilder();
-        String line;
-        while ((line = r.readLine()) != null) {
-            sb.append(line);
-        }
+        String sb;
+        sb = r.lines().collect(Collectors.joining());
 
-        String json = sb.toString();
+        String json = sb;
         return configureFromJson(json);
     }
 

@@ -33,6 +33,7 @@ import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -86,12 +87,7 @@ class RTree2DTest {
             List<RectDouble> results = new ArrayList();
 
             rTree.intersectsWhile(searchRect, results::add);
-            int resultCount = 0;
-            for(int i = 0; i < results.size(); i++) {
-                if(results.get(i) != null) {
-                    resultCount++;
-                }
-            }
+            int resultCount = (int) IntStream.range(0, results.size()).filter(i -> results.get(i) != null).count();
 
             final int expectedCount = 9;
             
@@ -131,12 +127,7 @@ class RTree2DTest {
             RectDouble[] results = new RectDouble[entryCount];
 
             final int foundCount = rTree.containedToArray(searchRect, results);
-            int resultCount = 0;
-            for(int i = 0; i < results.length; i++) {
-                if(results[i] != null) {
-                    resultCount++;
-                }
-            }
+            int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
 
             final int expectedCount = entryCount;
             assertTrue(Math.abs(expectedCount - foundCount) < 10,

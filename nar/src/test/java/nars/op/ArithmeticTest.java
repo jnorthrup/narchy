@@ -15,6 +15,9 @@ import org.junit.jupiter.api.Test;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.term.atom.Bool.Null;
@@ -82,11 +85,8 @@ class ArithmeticTest {
     }
 
     private void assertArith(String q, String... p) {
-        Set<String> each = new TreeSet();
-        Set<String> s = Set.of(p);
-        for (int i = 0; i < p.length*4; i++) {
-            each.add(Arithmeticize.apply($$(q), rng).toString());
-        }
+        var s = Set.of(p);
+        var  each = IntStream.range(0, p.length * 4).mapToObj(i -> Arithmeticize.apply($$(q), rng).toString()).collect(Collectors.toCollection((Supplier<TreeSet>) TreeSet::new));
         assertEquals(s, each);
     }
 
@@ -140,8 +140,6 @@ class ArithmeticTest {
 
         new Arithmeticize.ArithmeticIntroduction();
 
-        final int cycles = 500;
-
         TestNAR t = new TestNAR(n);
         t.confTolerance(0.8f);
         n.freqResolution.set(0.25f);
@@ -152,6 +150,7 @@ class ArithmeticTest {
             t.believe(("(a," + a + ")"));
         }
 
+        final int cycles = 500;
         for (int x = 3; x <= 4; x++) {
             //t.input("(a," + x + ")?");
             t.mustBelieve(cycles, "(a," + x + ")", 1f, 0.5f);

@@ -37,6 +37,7 @@ import java.util.Set;
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static nars.Op.*;
 import static nars.term.atom.Bool.False;
@@ -945,14 +946,9 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		} else {
 
-			int w = -1;
-			for (int i = 0; i < s; i++) {
-				if (subEvents[i]!=null && !subEvents[i].isEmpty()) {
-					w = i;
-					break; //found
-				}
-			}
-			List<Absolute> ss = subEvents[w];
+			int w = IntStream.range(0, s).filter(i -> subEvents[i] != null && !subEvents[i].isEmpty()).findFirst().orElse(-1);
+            //found
+            List<Absolute> ss = subEvents[w];
 			for (Absolute e : ss) {
 				if (e == null) continue;
 				long start = e.start();
@@ -1096,10 +1092,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 				solveOcc(b, false, bx -> {
 					if ((bx instanceof Absolute) && ae.add(bx)) {
-						for (Event ax : aa) {
-							if (!solveDTAbsolutePair(x, ax, bx, each))
-								return false;
-						}
+                        return Arrays.stream(aa).allMatch(ax -> solveDTAbsolutePair(x, ax, bx, each));
 					}
 					return true;
 				});
@@ -1282,10 +1275,7 @@ public class TimeGraph extends MapNodeGraph<TimeGraph.Event, TimeSpan> {
 
 		Collection<Event> ee = events(f.id);
 		if (ee != null) {
-			for (Event e : ee) {
-				if (e instanceof Absolute && !each.test((Absolute) e))
-					return false;
-			}
+            return ee.stream().noneMatch(e -> e instanceof Absolute && !each.test((Absolute) e));
 		}
 
 		return true;

@@ -3,6 +3,7 @@ package jcog.data.map;
 import jcog.data.pool.MetalPool;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.function.*;
 
@@ -173,19 +174,11 @@ public class CellMap<K, V> {
 
     /** find first corresponding key to the provided value */
     @Nullable public K first(Predicate v) {
-        for (CacheCell<K,V> c : map.valueArray()) {
-            if (v.test(c.value))
-                return c.key;
-        }
-        return null;
+        return Arrays.stream(map.valueArray()).filter(c -> v.test(c.value)).findFirst().map(c -> c.key).orElse(null);
     }
 
     @Nullable public K firstByIdentity(V x) {
-        for (CacheCell<K,V> c : map.valueArray()) {
-            if (c.value == x)
-                return c.key;
-        }
-        return null;
+        return Arrays.stream(map.valueArray()).filter(c -> c.value == x).findFirst().map(c -> c.key).orElse(null);
     }
 
     /**

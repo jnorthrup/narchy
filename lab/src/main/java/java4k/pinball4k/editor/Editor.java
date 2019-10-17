@@ -4,6 +4,7 @@ import javax.swing.*;
 import javax.swing.border.BevelBorder;
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Pinball level editor.
@@ -54,7 +55,7 @@ public class Editor extends JFrame {
 		levelPnl.requestFocusInWindow();
 	}
 	
-	public void select(ArrayList<Handle> selection) {
+	public void select(List<Handle> selection) {
 		/*
 		ArrayList<ObjectProperties> props = new ArrayList<ObjectProperties>();
 		for (Handle handle : selection) {

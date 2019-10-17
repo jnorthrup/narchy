@@ -2,6 +2,8 @@ package com.jujutsu.tsne.barneshut;
 
 import com.jujutsu.tsne.matrix.MatrixOps;
 
+import java.util.stream.IntStream;
+
 import static java.lang.Math.max;
 import static java.lang.Math.sqrt;
 
@@ -49,9 +51,8 @@ public class SPTree {
 		for(int d = 0; d < D; d++) mean_Y[d] /= N;
 
 		
-		double [] width = new double [D];
-		for(int d = 0; d < D; d++) width[d] = max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5;
-		init(null, D, inp_data, mean_Y, width);
+		double [] width = IntStream.range(0, D).mapToDouble(d -> max(max_Y[d] - mean_Y[d], mean_Y[d] - min_Y[d]) + 1e-5).toArray();
+        init(null, D, inp_data, mean_Y, width);
 		fill(N);
 	}
 
@@ -218,10 +219,9 @@ public class SPTree {
 	
 	private boolean isCorrect()
 	{
-		for(int n = 0; n < size; n++) {
-			double [] point = MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension);
-			if(!boundary.containsPoint(point)) return false;
-		}
+        if (IntStream.range(0, size).mapToObj(n -> MatrixOps.extractRowFromFlatMatrix(data, index[n], dimension)).anyMatch(point -> !boundary.containsPoint(point))) {
+            return false;
+        }
 		if(!is_leaf) {
 			boolean correct = true;
 			for(int i = 0; i < no_children; i++) correct = correct && children[i].isCorrect();

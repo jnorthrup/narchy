@@ -21,6 +21,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static nars.Op.NEG;
 
@@ -146,9 +147,7 @@ public class DynTaskify extends TaskList {
 
         if (cn > 1) {
 
-            int[] order = new int[cn];
-            for (int i = 0; i < cn; i++)
-                order[i] = i;
+            int[] order = IntStream.range(0, cn).toArray();
             Component[] cc = c.array();
 
             IntToFloatFunction smallestFirst = (int j) -> +cc[j].termVolume;

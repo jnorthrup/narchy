@@ -120,13 +120,8 @@ public class SymbolNode {
 	 * Find a child with the given character.
 	 */
 	SymbolNode findChildWithChar(char c) {
-		for (SymbolNode n : children) {
-			if (n.myChar == c) {
-				return n;
-			}
-		}
-		return null;
-	}
+        return children.stream().filter(n -> n.myChar == c).findFirst().orElse(null);
+    }
 
 	/**
 	 * Find a descendant which is down the path the given string indicates.

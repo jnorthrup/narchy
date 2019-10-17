@@ -6,6 +6,7 @@ import nars.experiment.minicraft.top.item.resource.Resource;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 public class Inventory {
     public List<Item> items = new ArrayList<>();
@@ -29,13 +30,7 @@ public class Inventory {
     }
 
     private ResourceItem findResource(Resource resource) {
-        for (int i = 0; i < items.size(); i++) {
-            if (items.get(i) instanceof ResourceItem) {
-                ResourceItem has = (ResourceItem) items.get(i);
-                if (has.resource == resource) return has;
-            }
-        }
-        return null;
+        return IntStream.range(0, items.size()).filter(i -> items.get(i) instanceof ResourceItem).mapToObj(i -> (ResourceItem) items.get(i)).filter(has -> has.resource == resource).findFirst().orElse(null);
     }
 
     public boolean hasResources(Resource r, int count) {
@@ -58,10 +53,7 @@ public class Inventory {
             ResourceItem ri = findResource(((ResourceItem) item).resource);
             if (ri != null) return ri.count;
         } else {
-            int count = 0;
-            for (int i = 0; i < items.size(); i++) {
-                if (items.get(i).matches(item)) count++;
-            }
+            int count = (int) IntStream.range(0, items.size()).filter(i -> items.get(i).matches(item)).count();
             return count;
         }
         return 0;

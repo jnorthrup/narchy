@@ -17,8 +17,10 @@
 package jcog.tree.perfect;
 
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 
 /**
@@ -222,13 +224,7 @@ public class TrieNode<S, T> implements Entry<S, T> {
         int size = 0;
 
         if (nodes != null) {
-            for (int i = nodes.capacity() - 1; i >= 0; i--) {
-                TrieNode<S, T> n = nodes.valueAt(i);
-
-                if (n != null) {
-                    size += n.size;
-                }
-            }
+            size = IntStream.iterate(nodes.capacity() - 1, i -> i >= 0, i -> i - 1).mapToObj(nodes::valueAt).filter(Objects::nonNull).mapToInt(n -> n.size).sum();
         }
 
         return size;

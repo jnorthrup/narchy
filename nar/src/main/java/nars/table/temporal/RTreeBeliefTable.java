@@ -26,6 +26,8 @@ import org.eclipse.collections.api.tuple.Pair;
 import org.jetbrains.annotations.Nullable;
 
 import java.io.PrintStream;
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
@@ -69,14 +71,8 @@ public class RTreeBeliefTable extends ConcurrentRTree<TaskRegion> implements Tem
 				mergeableLeaf.accept(l);
 
 		} else {
-			for (RNode bb : ((RBranch<TaskRegion>) next).data) {
-
-				if (bb == null) break; //null-terminated
-
-				if (!findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf))
-					return false;
-
-			}
+            //null-terminated
+            return Arrays.stream(((RBranch<TaskRegion>) next).data).takeWhile(Objects::nonNull).allMatch(bb -> findEvictable(tree, bb, /*closest, */weakest, mergeableLeaf));
 		}
 
 		return true;

@@ -42,6 +42,7 @@ import jake2.sys.IN;
 import jake2.util.Vargs;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.List;
 
@@ -187,15 +188,10 @@ public class VID extends Globals {
 
 		Com.Printf( "------- Loading " + name + " -------\n");
 		
-		boolean found = false;
+		boolean found;
 		
 		String[] driverNames = Renderer.getDriverNames();
-		for (String driverName : driverNames) {
-			if (driverName.equals(name)) {
-				found = true;
-				break;
-			}
-		}
+        found = Arrays.stream(driverNames).anyMatch(driverName -> driverName.equals(name));
 
 		if (!found) {
 			Com.Printf( "LoadLibrary(\"" + name +"\") failed\n");

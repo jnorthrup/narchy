@@ -3,6 +3,8 @@ package spacegraph.space2d.phys.fracture;
 import jcog.math.v2;
 import spacegraph.space2d.phys.common.PlatformMathUtils;
 
+import java.util.stream.IntStream;
+
 /**
  * Polygon pre voronoi diagram. Funguje ako ArrayList 2D bodov typu Point2D,
  * ktory potom zotriedim podla ohniska na konvexny polygon. V pripade potreby si
@@ -48,10 +50,7 @@ public class Fragment extends Polygon {
      */
     public void resort() {
         int size = size();
-        double[] comparer = new double[size];
-        for (int i = 0; i != size; ++i) {
-            comparer[i] = PlatformMathUtils.angle(get(i), focus);
-        }
+        double[] comparer = IntStream.range(0, size).mapToDouble(i -> PlatformMathUtils.angle(get(i), focus)).toArray();
         for (int i = 0; i != size; ++i) {
             int maxIndex = i;
             for (int j = i + 1; j != size; ++j) {

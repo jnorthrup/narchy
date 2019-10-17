@@ -3,6 +3,7 @@ package spacegraph.space2d.phys.fracture.util;
 import java.util.AbstractList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Optializovany ArrayList.
@@ -101,12 +102,7 @@ public class MyList<T> extends AbstractList<T> implements List<T> {
      */
     @Override
     public boolean contains(Object v) {
-        for (int i = 0; i < count; ++i) {
-            if (v == array[i]) {
-                return true;
-            }
-        }
-        return false;
+        return IntStream.range(0, count).anyMatch(i -> v == array[i]);
     }
 
     /**

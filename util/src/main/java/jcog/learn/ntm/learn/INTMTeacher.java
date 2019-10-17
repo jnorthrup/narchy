@@ -3,7 +3,9 @@ package jcog.learn.ntm.learn;
 import jcog.learn.ntm.NTM;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public interface INTMTeacher {
 
@@ -21,10 +23,7 @@ public interface INTMTeacher {
     NTM[] trainInternal(double[][] input, double[][] knownOutput);
 
     static List<double[]> getMachineOutputs(NTM[] machines) {
-        List<double[]> realOutputs = new ArrayList<>(machines.length);
-        for (NTM machine : machines) {
-            realOutputs.add(machine.getOutput());
-        }
+        List<double[]> realOutputs = Arrays.stream(machines).map(NTM::getOutput).collect(Collectors.toCollection(() -> new ArrayList<>(machines.length)));
         return realOutputs;
     }
 }

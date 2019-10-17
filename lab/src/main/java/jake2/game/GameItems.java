@@ -29,6 +29,7 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.Arrays;
 import java.util.StringTokenizer;
 import java.util.stream.Stream;
 
@@ -845,17 +846,9 @@ public class GameItems {
      * ===============
      */
     static gitem_t FindItemByClassname(String classname) {
-    
-        for (int i = 1; i < GameBase.game.num_items; i++) {
-            gitem_t it = GameItemList.itemlist[i];
-    
-            if (it.classname == null)
-                continue;
-            if (it.classname.equalsIgnoreCase(classname))
-                return it;
-        }
-    
-        return null;
+
+        return Arrays.stream(GameItemList.itemlist, 1, GameBase.game.num_items).filter(it -> it.classname != null).filter(it -> it.classname.equalsIgnoreCase(classname)).findFirst().orElse(null);
+
     }
 
     /*

@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -41,10 +42,7 @@ class UtilMiscTest {
     @Test
     void testCurveSawtooth() {
         int N = 32;
-        Integer[] x = new Integer[N];
-        for (int i = 0; i < N; i++) {
-            x[i] = Math.round(Util.sawtoothCurved((float)i/(N-1)) * N);
-        }
+        Integer[] x = IntStream.range(0, N).mapToObj(i -> Math.round(Util.sawtoothCurved((float) i / (N - 1)) * N)).toArray(Integer[]::new);
         System.out.println(SparkLine.render(x));
     }
     @Test

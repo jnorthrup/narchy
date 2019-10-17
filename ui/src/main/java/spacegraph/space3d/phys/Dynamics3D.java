@@ -962,11 +962,7 @@ public class Dynamics3D<X> extends Collisions<X> {
                         
                         OArrayList<PersistentManifold> manifoldArray = new OArrayList<>();
                         collisionPair.algorithm.getAllContactManifolds(manifoldArray);
-                        for (PersistentManifold aManifoldArray : manifoldArray) {
-                            if (aManifoldArray.numContacts() > 0) {
-                                return false;
-                            }
-                        }
+                        return manifoldArray.stream().noneMatch(aManifoldArray -> aManifoldArray.numContacts() > 0);
                     }
                 }
             }

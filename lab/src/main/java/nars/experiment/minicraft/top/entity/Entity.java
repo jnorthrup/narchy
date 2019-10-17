@@ -111,13 +111,8 @@ public class Entity {
             e.touchedBy(this);
         }
         isInside.removeAll(wasInside);
-        for (int i = 0; i < isInside.size(); i++) {
-            Entity e = isInside.get(i);
-            if (e == this) continue;
-
-            if (e.blocks(this)) {
-                return false;
-            }
+        if (isInside.stream().filter(e -> e != this).anyMatch(e -> e.blocks(this))) {
+            return false;
         }
 
         x += xa;

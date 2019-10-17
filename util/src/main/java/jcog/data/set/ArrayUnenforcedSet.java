@@ -5,6 +5,7 @@ import jcog.data.list.FasterList;
 
 import java.util.Collection;
 import java.util.Set;
+import java.util.stream.IntStream;
 
 /**
  * Helper for efficiently representing small sets whose elements are known to be unique by
@@ -80,10 +81,9 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
 //        return h;
 
         //Obeying (Abstract)Set<> semantics:
-        int hashCode = 0, s = this.size;
+        int hashCode, s = this.size;
         X[] ii = this.items;
-        for (int i = 0; i < s; i++)
-            hashCode += ii[i].hashCode();
+        hashCode = IntStream.range(0, s).map(i -> ii[i].hashCode()).sum();
 
         return hashCode;
     }
@@ -91,10 +91,7 @@ public class ArrayUnenforcedSet<X> extends FasterList<X> implements Set<X> {
 
     @Override
     public boolean addAll(Collection<? extends X> source) {
-        boolean changed = false;
-        for (X x : source) {
-            changed |= add(x);
-        }
+        boolean changed = source.stream().map(this::add).reduce(false, (a, b) -> a || b);
         return changed;
     }
 

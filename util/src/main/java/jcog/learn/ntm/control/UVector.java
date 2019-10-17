@@ -1,6 +1,7 @@
 package jcog.learn.ntm.control;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * Created by me on 7/18/15.
@@ -40,11 +41,9 @@ public class UVector {
     }
 
     public double sumGradientValueProducts() {
-        double s = 0;
+        double s;
         final double[] value = this.value;
-        for (int i = 0; i < value.length; i++) {
-            s += value[i] * grad[i];
-        }
+        s = IntStream.range(0, value.length).mapToDouble(i -> value[i] * grad[i]).sum();
         return s;
     }
 
@@ -73,13 +72,11 @@ public class UVector {
     }
 
     public double sumDot(final double[] input) {
-        double s = 0;
+        double s;
 
         final double[] v = this.value;
 
-        for (int j = 0; j < size(); j++) {
-            s += v[j] * input[j];
-        }
+        s = IntStream.range(0, size()).mapToDouble(j -> v[j] * input[j]).sum();
         return s;
     }
 }

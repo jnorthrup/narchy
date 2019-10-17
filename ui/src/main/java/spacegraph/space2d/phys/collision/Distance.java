@@ -30,6 +30,8 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 
+import java.util.stream.IntStream;
+
 
 /**
  * This is non-static for faster pooling. To get an instance, use the {@link SingletonPool}, don't
@@ -720,15 +722,9 @@ public class Distance {
             ++GJK_ITERS;
 
             
-            boolean duplicate = false;
-            for (int i = 0; i < saveCount; ++i) {
-                if (vertex.indexA == saveA[i] && vertex.indexB == saveB[i]) {
-                    duplicate = true;
-                    break;
-                }
-            }
+            boolean duplicate = IntStream.range(0, saveCount).anyMatch(i -> vertex.indexA == saveA[i] && vertex.indexB == saveB[i]);
 
-            
+
             if (duplicate) {
                 break;
             }

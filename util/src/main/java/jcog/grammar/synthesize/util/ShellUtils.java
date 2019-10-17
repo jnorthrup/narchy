@@ -20,6 +20,7 @@ import jcog.grammar.synthesize.util.OracleUtils.Oracle;
 import java.io.*;
 import java.util.concurrent.*;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class ShellUtils {
     public static void delete(String filename) {
@@ -43,14 +44,11 @@ public class ShellUtils {
 
     public static String read(InputStream input) {
         try {
-            StringBuilder result = new StringBuilder();
+            String result;
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
-            String line;
-            while ((line = br.readLine()) != null) {
-                result.append(line).append('\n');
-            }
+            result = br.lines().map(line -> line + '\n').collect(Collectors.joining());
             br.close();
-            return result.toString();
+            return result;
         } catch (IOException e) {
             throw new RuntimeException("Error reading program output stream!", e);
         }

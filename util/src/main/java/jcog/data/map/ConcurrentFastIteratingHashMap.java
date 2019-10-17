@@ -8,6 +8,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.*;
+import java.util.stream.IntStream;
 
 public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
@@ -175,21 +176,12 @@ public class ConcurrentFastIteratingHashMap<X, Y> extends AbstractMap<X, Y>  {
 
     public boolean whileEachValue(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        for (Y xi : x) {
-            if (!action.test(xi))
-                return false;
-        }
-        return true;
+        return Arrays.stream(x).allMatch(action::test);
     }
 
     public boolean whileEachValueReverse(Predicate<? super Y> action) {
         Y[] x = valueArray();
-        for (int i = x.length - 1; i >= 0; i--) {
-            Y xi = x[i];
-            if (!action.test(xi))
-                return false;
-        }
-        return true;
+        return IntStream.iterate(x.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> x[i]).allMatch(action::test);
     }
 
     @Override

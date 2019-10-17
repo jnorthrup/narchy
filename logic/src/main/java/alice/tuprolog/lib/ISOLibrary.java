@@ -19,6 +19,8 @@ package alice.tuprolog.lib;
 
 import alice.tuprolog.*;
 
+import java.util.stream.IntStream;
+
 /**
  * This class represents a tuProlog library providing most of the built-ins
  * predicates and functors defined by ISO standard.
@@ -81,10 +83,7 @@ public class ISOLibrary extends PrologLib {
                         "atom", arg0);
             }
             String st = ((Struct) arg0).name();
-            Term[] tlist = new Term[st.length()];
-            for (int i = 0; i < st.length(); i++) {
-                tlist[i] = new Struct(new String(new char[] { st.charAt(i) }));
-            }
+            Term[] tlist = IntStream.range(0, st.length()).mapToObj(i -> new Struct(new String(new char[]{st.charAt(i)}))).toArray(Term[]::new);
             Struct list = new Struct(tlist);
             /*
              * for (int i=0; i<st.length(); i++){ Struct ch=new Struct(new

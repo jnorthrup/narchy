@@ -32,8 +32,10 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.System.arraycopy;
@@ -66,17 +68,11 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
 //        int s = size;
 //        if (s > 0) {
 //            Node<X>[] c = this.data;
-            for (RNode c : data) {
-//            for (int i = 0; i < s; i++) {
-                if (c == null)
-                    break; //null-terminator
-                if (c.contains(x, b, model))
-                    return true;
+        //            for (int i = 0; i < s; i++) {
+        //null-terminator
+        //        }
 
-            }
-//        }
-
-        return false;
+        return Arrays.stream(data).takeWhile(Objects::nonNull).anyMatch(c -> c.contains(x, b, model));
     }
 
 
@@ -429,40 +425,24 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
     }
     @Override
     public boolean OR(Predicate<X> p) {
-        for (RNode<X> x : data) {
-            if (x == null) break; //null terminator
-            if (x.OR(p))
-                return true;
-        }
-        return false;
+        //null terminator
+        return Arrays.stream(data).takeWhile(Objects::nonNull).anyMatch(x -> x.OR(p));
     }
 
     @Override
     public boolean AND(Predicate<X> p) {
-        for (RNode<X> x : data) {
-            if (x == null) break; //null terminator
-            if (!x.AND(p))
-                return false;
-        }
-        return true;
+        //null terminator
+        return Arrays.stream(data).takeWhile(Objects::nonNull).allMatch(x -> x.AND(p));
     }
     public boolean ANDlocal(Predicate<RNode<X>> p) {
         RNode<X>[] n = this.data;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
-            if (!p.test(n[i]))
-                return false;
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> p.test(n[i]));
     }
     public boolean ORlocal(Predicate<RNode<X>> p) {
         RNode<X>[] n = this.data;
         short s = this.size;
-        for (int i = 0; i < s; i++) {
-            if (p.test(n[i]))
-                return true;
-        }
-        return false;
+        return IntStream.range(0, s).anyMatch(i -> p.test(n[i]));
     }
 
 
@@ -472,14 +452,10 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
             int s = size;
-            for (int i = 0; i < s; i++) {
-                RNode d = data[i];
-//                if (d == null)
-//                    continue;
-                /*else */
-                if (!d.containing(rect, t, model))
-                    return false;
-            }
+            //                if (d == null)
+            //                    continue;
+            /*else */
+            return Arrays.stream(data, 0, s).allMatch(d -> d.containing(rect, t, model));
         }
         return true;
     }
@@ -489,10 +465,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b) && t.test(this)) {
             int s = size;
-            for (int i = 0; i < s; i++) {
-                if (!data[i].intersectingNodes(rect, t, model))
-                    return false;
-            }
+            return IntStream.range(0, s).allMatch(i -> data[i].intersectingNodes(rect, t, model));
         }
         return true;
     }
@@ -502,10 +475,7 @@ public class RBranch<X> extends AbstractRNode<X,RNode<X>> {
         HyperRegion b = this.bounds;
         if (b != null && rect.intersects(b)) {
             int s = size;
-            for (int i = 0; i < s; i++) {
-                if (!data[i].intersecting(rect, t, model))
-                    return false;
-            }
+            return IntStream.range(0, s).allMatch(i -> data[i].intersecting(rect, t, model));
         }
         return true;
     }

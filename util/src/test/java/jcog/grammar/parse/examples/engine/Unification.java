@@ -3,6 +3,8 @@ package jcog.grammar.parse.examples.engine;
 import jcog.data.set.ArrayHashSet;
 
 import java.util.Iterator;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -99,14 +101,8 @@ public class Unification {
 	 * @return a string representation of this unification
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < size(); i++) {
-			if (i > 0) {
-				buf.append(", ");
-			}
-			buf.append(variableAt(i).definitionString());
-		}
-		return buf.toString();
+		String buf = IntStream.range(0, size()).mapToObj(i -> variableAt(i).definitionString()).collect(Collectors.joining(", "));
+        return buf;
 	}
 
 	/**
@@ -117,14 +113,8 @@ public class Unification {
 	 *         variable names
 	 */
 	public String toStringQuiet() {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < size(); i++) {
-			if (i > 0) {
-				buf.append(", ");
-			}
-			buf.append(variableAt(i));
-		}
-		return buf.toString();
+		String buf = IntStream.range(0, size()).mapToObj(i -> String.valueOf(variableAt(i))).collect(Collectors.joining(", "));
+        return buf;
 	}
 
 	/**

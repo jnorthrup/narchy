@@ -30,6 +30,7 @@ import javax.swing.event.MenuListener;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.*;
+import java.util.stream.IntStream;
 
 import static com.jcraft.jcterm.Terminal.SFTP;
 import static com.jcraft.jcterm.Terminal.SHELL;
@@ -844,10 +845,7 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
             dialog.setVisible(true);
             Object o = pane.getValue();
             if (o != null && (Integer) o == JOptionPane.OK_OPTION) {
-                String[] response = new String[prompt.length];
-                for (int i = 0; i < prompt.length; i++) {
-                    response[i] = texts[i].getText();
-                }
+                String[] response = IntStream.range(0, prompt.length).mapToObj(i -> texts[i].getText()).toArray(String[]::new);
                 return response;
             } else {
                 return null;

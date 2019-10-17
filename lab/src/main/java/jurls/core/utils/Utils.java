@@ -7,6 +7,10 @@ package jurls.core.utils;
 
 import jurls.core.approximation.ParameterizedFunction;
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  *
  * @author thorsten
@@ -19,11 +23,8 @@ public class Utils {
     }
 
     public static String makeIndent(int n) {
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < n; ++i) {
-            sb.append(' ');
-        }
-        return sb.toString();
+        String sb = IntStream.range(0, n).mapToObj(i -> " ").collect(Collectors.joining());
+        return sb;
     }
 
     public static double q(ParameterizedFunction f, double[] stateAction, double[] state, int action) {
@@ -47,10 +48,7 @@ public class Utils {
     }
 
     public static double lengthSquare(double[] v) {
-        double s = 0;
-        for (double x : v) {
-            s += x * x;
-        }
+        double s = Arrays.stream(v).map(x -> x * x).sum();
         return s;
     }
 

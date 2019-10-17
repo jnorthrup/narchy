@@ -70,14 +70,10 @@ public class PermissionUtils {
 	private static final boolean isPosix = FileSystems.getDefault().supportedFileAttributeViews().contains("posix");
 
 	private static int posixPermissions(File f) {
-		int number = 0;
+		int number;
 		try {
 			Set<PosixFilePermission> permissions = Files.getPosixFilePermissions(f.toPath());
-			for (Map.Entry<PosixFilePermission, Integer> entry : posixPermissionToInteger.entrySet()) {
-				if (permissions.contains(entry.getKey())) {
-					number += entry.getValue();
-				}
-			}
+            number = posixPermissionToInteger.entrySet().stream().filter(entry -> permissions.contains(entry.getKey())).mapToInt(Map.Entry::getValue).sum();
 		} catch (IOException e) {
 			throw new RuntimeException(e);
 		}
@@ -99,11 +95,9 @@ public class PermissionUtils {
 	}
 
 	private static Integer standardPermissions(File f) {
-		int number = 0;
+		int number;
 		Set<StandardFilePermission> permissions = readStandardPermissions(f);
-		for (StandardFilePermission permission : permissions) {
-			number += permission.mode;
-		}
+        number = permissions.stream().mapToInt(permission -> permission.mode).sum();
 		return number;
 	}
 }

@@ -21,6 +21,7 @@ import jcog.Util;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 /**
  * Struct class represents both compound prolog term
@@ -262,10 +263,7 @@ public class Struct extends Term {
     public boolean isGround() {
         if (!isAtomic()) {
             Term[] a = this.subs;
-            for (int i = 0; i < subs(); i++) {
-                if (!a[i].isGround())
-                    return false;
-            }
+            return IntStream.range(0, subs()).allMatch(i -> a[i].isGround());
         }
 
         return true;
@@ -297,16 +295,7 @@ public class Struct extends Term {
                 }
             }
         }
-        for (int i = 0; i < subs(); i++) {
-            if (subs[i] instanceof Struct) {
-                Struct s = (Struct) subs[i];
-                Struct sol = s.sub(name);
-                if (sol != null) {
-                    return sol;
-                }
-            }
-        }
-        return null;
+        return IntStream.range(0, subs()).filter(i -> subs[i] instanceof Struct).mapToObj(i -> (Struct) subs[i]).map(s -> s.sub(name)).filter(Objects::nonNull).findFirst().orElse(null);
     }
 
 
@@ -392,11 +381,7 @@ public class Struct extends Term {
             Struct ts = (Struct) t;
             if (subs() == ts.subs() && name.equals(ts.name)) {
                 if (this.subs != ts.subs) {
-                    for (int c = 0; c < subs(); c++) {
-                        if (!subs[c].equals(ts.subs[c])) {
-                            return false;
-                        }
-                    }
+                    return IntStream.range(0, subs()).allMatch(c -> subs[c].equals(ts.subs[c]));
 
                 }
                 return true;
@@ -729,15 +714,8 @@ public class Struct extends Term {
             if (arity == yy.subs() && name.equals(yy.name)) {
                 Term[] xarg = this.subs;
                 Term[] yarg = yy.subs;
-                for (int c = 0; c < arity; c++) {
-                    if (c > 0 && xarg[c] == xarg[c - 1] && yarg[c] == yarg[c - 1])
-                        continue; //repeat term, skip
-
-                    if (!xarg[c].unify(vl1, vl2, yarg[c]))
-                        return false;
-
-                }
-                return true;
+                //repeat term, skip
+                return IntStream.range(0, arity).filter(c -> c <= 0 || xarg[c] != xarg[c - 1] || yarg[c] != yarg[c - 1]).allMatch(c -> xarg[c].unify(vl1, vl2, yarg[c]));
             }
         } else if (y instanceof Var) {
             return y.unify(vl2, vl1, this);

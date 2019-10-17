@@ -208,10 +208,7 @@ public class Variation {
             return true;
         }
 
-        boolean ret = true;
-        for (Node child : root.children()) {
-            ret &= checkMaxDepth(child, depth + 1);
-        }
+        boolean ret = root.children().stream().map(child -> checkMaxDepth(child, depth + 1)).reduce(true, (a, b) -> a && b);
 
         return ret;
     }

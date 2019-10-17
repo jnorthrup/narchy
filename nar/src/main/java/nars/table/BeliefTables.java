@@ -229,10 +229,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     /** gets first matching table of the provided type */
     @Nullable
     public <X extends TaskTable> X tableFirst(Class<? extends X> t) {
-        for (Object x : this)
-            if (t.isInstance(x))
-                return (X) x;
-        return null;
+        return (X) this.stream().filter(t::isInstance).findFirst().orElse(null);
     }
 
     @Override

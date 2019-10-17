@@ -6,6 +6,7 @@ import jcog.math.FloatRange;
 import java.awt.image.BufferedImage;
 import java.awt.image.WritableRaster;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class VideoEqualizer extends VideoTransform {
 
@@ -72,10 +73,7 @@ public class VideoEqualizer extends VideoTransform {
         if (bands == 0)
             return in.getSample(x, y, 0);
         else {
-            int total = 0;
-            for (int i = 0; i < bands; i++) {
-                total += in.getSample(x, y, i);
-            }
+            int total = IntStream.range(0, bands).map(i -> in.getSample(x, y, i)).sum();
             return (total) / bands;
         }
     }

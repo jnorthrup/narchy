@@ -207,11 +207,7 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
     public float density() {
         MetalAtomicReferenceArray<V> m = map;
         int mm = m.length();
-        int filled = 0;
-        for (int i = 0; i < mm; i++) {
-            if (m.getFast(i) != null)
-                filled++;
-        }
+        int filled = (int) IntStream.range(0, mm).filter(i -> m.getFast(i) != null).count();
         return ((float) filled) / mm;
     }
 

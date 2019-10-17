@@ -1,6 +1,7 @@
 package jurls.reinforcementlearning.domains.wander;
 
 import java.awt.*;
+import java.util.stream.IntStream;
 
 public class World {
 	public static final int SIZE = 300;
@@ -52,12 +53,7 @@ public class World {
 		if(!inside(x, SIZE) || !inside(y, SIZE)) {
 			return true;
 		}
-		for (int i = 0; i < obstacles.length; i++) {
-			if(obstacles[i].pointCollides(x, y)) {
-				return true;
-			}
-		}
-		return false;
+        return IntStream.range(0, obstacles.length).anyMatch(i -> obstacles[i].pointCollides(x, y));
 	}
 
 	public int getTime() {

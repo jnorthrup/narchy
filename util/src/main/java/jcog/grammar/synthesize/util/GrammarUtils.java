@@ -15,14 +15,13 @@
 package jcog.grammar.synthesize.util;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GrammarUtils {
     public static <V> Map<V, Integer> getInverse(List<V> list) {
         int l = list.size();
-        Map<V, Integer> inverse = new HashMap<>(l);
-        for (int i = 0; i < l; i++) {
-            inverse.put(list.get(i), i);
-        }
+        Map<V, Integer> inverse = IntStream.range(0, l).boxed().collect(Collectors.toMap(list::get, i -> i, (a, b) -> b, () -> new HashMap<>(l)));
         return inverse;
     }
 

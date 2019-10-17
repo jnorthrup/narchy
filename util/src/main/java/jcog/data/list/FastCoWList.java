@@ -16,6 +16,7 @@ import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /** be careful about synchronizing to instances of this class
@@ -365,46 +366,25 @@ public class FastCoWList<X> /*extends AbstractList<X>*/ /*implements List<X>*/ i
     public boolean isEmpty() { return size() == 0; }
 
     public boolean AND(Predicate<X> o) {
-        for (X x : array()) {
-            if (!o.test(x))
-                return false;
-        }
-        return true;
+        return Arrays.stream(array()).allMatch(o::test);
     }
     public boolean OR(Predicate<X> o) {
-        for (X x : array()) {
-            if (o.test(x))
-                return true;
-        }
-        return false;
+        return Arrays.stream(array()).anyMatch(o::test);
     }
     public boolean whileEach(Predicate<X> o) {
-        for (X x : array()) {
-            if (x!=null && !o.test(x))
-                return false;
-        }
-        return true;
+        return Arrays.stream(array()).noneMatch(x -> x != null && !o.test(x));
     }
     public boolean whileEachReverse(Predicate<X> o) {
         @Nullable X[] xx = this.array();
-        for (int i = xx.length - 1; i >= 0; i--) {
-            X x = xx[i];
-            if (x!=null && !o.test(x))
-                return false;
-        }
-        return true;
+        return IntStream.iterate(xx.length - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> xx[i]).noneMatch(x -> x != null && !o.test(x));
     }
 
     public double sumBy(FloatFunction<X> each) {
-        double s =  0;
-        for (X x : array())
-            s += each.floatValueOf(x);
+        double s = Arrays.stream(array()).mapToDouble(each::floatValueOf).sum();
         return s;
     }
     public double sumBy(ToDoubleFunction<X> each) {
-        double s =  0;
-        for (X x : array())
-            s += each.applyAsDouble(x);
+        double s = Arrays.stream(array()).mapToDouble(each::applyAsDouble).sum();
         return s;
     }
 

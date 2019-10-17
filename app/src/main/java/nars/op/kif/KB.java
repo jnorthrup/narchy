@@ -69,6 +69,8 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -523,11 +525,9 @@ public class KB implements Serializable {
      */
     public Set<String> instances(String term) {
 
-        Set<String> result = new HashSet<>();
+        Set<String> result;
         ArrayList<Formula> forms = askWithRestriction(2, term, 0, "instance");
-        for (Formula f : forms) {
-            result.add(f.getArgument(1));
-        }
+        result = forms.stream().map(f -> f.getArgument(1)).collect(Collectors.toSet());
         return result;
     }
 
@@ -747,17 +747,11 @@ public class KB implements Serializable {
      */
     private static String literalListToString(List<String> literal) {
 
-        StringBuilder b = new StringBuilder();
+        String b = "";
         if (literal instanceof List) {
-            b.append('(');
-            for (int i = 0; i < literal.size(); i++) {
-                if (i > 0)
-                    b.append(' ');
-                b.append(literal.get(i));
-            }
-            b.append(')');
+            b = literal.stream().collect(Collectors.joining(" ", "(", ")"));
         }
-        return b.toString();
+        return b;
     }
 
     /***************************************************************
@@ -1948,10 +1942,7 @@ public class KB implements Serializable {
         forms.addAll(askWithRestriction(0,"instance",1,term));
         forms.addAll(askWithRestriction(0,"subrelation",1,term));
         forms.addAll(askWithRestriction(0,"subAttribute",1,term));
-        for (Formula f : forms) {
-            if (!f.isCached())
-                result.add(f.getArgument(2));
-        }
+        result = forms.stream().filter(f -> !f.isCached()).map(f -> f.getArgument(2)).collect(Collectors.toCollection(HashSet::new));
         
         return result;
     }
@@ -2070,11 +2061,7 @@ public class KB implements Serializable {
      */
     public int getCountRules() {
 
-        int count = 0;
-        for (Formula f : formulaMap.values()) {
-            if (f.isRule())
-                count++;
-        }
+        int count = (int) formulaMap.values().stream().filter(Formula::isRule).count();
         return count;
     }
 
@@ -2083,9 +2070,7 @@ public class KB implements Serializable {
      */
     private static ArrayList<String> arrayListWithBlanks(int size) {
 
-        ArrayList<String> al = new ArrayList<>(size);
-        for (int i = 0; i < size; i++)
-            al.add("");
+        ArrayList<String> al = IntStream.range(0, size).mapToObj(i -> "").collect(Collectors.toCollection(() -> new ArrayList<>(size)));
         return al;
     }
 
@@ -2325,14 +2310,8 @@ public class KB implements Serializable {
      */
     public void deleteUserAssertions() {
 
-        String toRemove = null;
-        for (String name : constituents) {
-            if (name.endsWith(_userAssertionsString)) {
-                toRemove = name;
-                break;
-            }
-        }
-        
+        String toRemove = constituents.stream().filter(name -> name.endsWith(_userAssertionsString)).findFirst().orElse(null);
+
         if (toRemove != null) {
             constituents.remove(toRemove);
         }
@@ -2458,12 +2437,9 @@ public class KB implements Serializable {
      */
     public String reload() {
 
-        List<String> newConstituents = new ArrayList<>();
+        List<String> newConstituents;
         synchronized (this.getTerms()) {
-            for (String cName : constituents) {
-                if (!cName.endsWith(_cacheFileSuffix))
-                    newConstituents.add(cName);
-            }
+            newConstituents = constituents.stream().filter(cName -> !cName.endsWith(_cacheFileSuffix)).collect(Collectors.toList());
             constituents.clear();
             formulas.clear();
             formulaMap.clear();

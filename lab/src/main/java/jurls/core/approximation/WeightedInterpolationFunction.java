@@ -7,6 +7,8 @@ package jurls.core.approximation;
 
 import org.apache.commons.math3.linear.ArrayRealVector;
 
+import java.util.Arrays;
+
 /**
  *
  * @author thorsten
@@ -79,20 +81,14 @@ public class WeightedInterpolationFunction implements ParameterizedFunction {
         adjustBorders(xs);
 
         ArrayRealVector xs3 = new ArrayRealVector(xs);
-        double y = 0;
-        double sumOfWeights = 0;
-
-        for (Point p : points) {
-            sumOfWeights += weight(p.xs, xs3);
-        }
+        double y;
+        double sumOfWeights = Arrays.stream(points).mapToDouble(p -> weight(p.xs, xs3)).sum();
 
         if (sumOfWeights == 0) {
             sumOfWeights = 1;
         }
 
-        for (Point p : points) {
-            y += weight(p.xs, xs3) * p.y;
-        }
+        y = Arrays.stream(points).mapToDouble(p -> weight(p.xs, xs3) * p.y).sum();
 
         y /= sumOfWeights;
 

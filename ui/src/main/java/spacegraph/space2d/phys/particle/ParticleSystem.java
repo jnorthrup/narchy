@@ -407,10 +407,7 @@ public class ParticleSystem {
         RotateBuffer(groupA.m_firstIndex, groupA.m_lastIndex, groupB.m_firstIndex);
         assert (groupA.m_lastIndex == groupB.m_firstIndex);
 
-        int particleFlags = 0;
-        for (int i = groupA.m_firstIndex; i < groupB.m_lastIndex; i++) {
-            particleFlags |= m_flagsBuffer.data[i];
-        }
+        int particleFlags = Arrays.stream(m_flagsBuffer.data, groupA.m_firstIndex, groupB.m_lastIndex).reduce(0, (a, b) -> a | b);
 
         updateContacts(true);
         if ((particleFlags & k_pairFlags) != 0) {

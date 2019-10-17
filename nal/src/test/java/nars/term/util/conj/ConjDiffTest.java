@@ -5,6 +5,9 @@ import org.junit.jupiter.api.Test;
 
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.term.atom.Bool.False;
@@ -155,9 +158,7 @@ class ConjDiffTest {
 
         assertEventOf(xy, r);
 
-        Set<Term> results = new TreeSet();
-        for (int i = 0; i < 16; i++)
-            results.add(Conj.diffAllPN(xy, r));
+        var results = IntStream.range(0, 16).mapToObj(i -> Conj.diffAllPN(xy, r)).collect (Collectors.toCollection((Supplier<TreeSet>) TreeSet::new));
         assertEquals(s, results.toString());
     }
 

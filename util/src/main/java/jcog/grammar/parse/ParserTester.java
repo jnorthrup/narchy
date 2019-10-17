@@ -2,6 +2,7 @@ package jcog.grammar.parse;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.
@@ -28,6 +29,10 @@ public abstract class ParserTester {
 	 */
 	protected ParserTester(Parser p) {
 		this.p = p;
+	}
+
+	private static boolean test(Assembly a) {
+		return !a.hasNext();
 	}
 
 	/*
@@ -64,14 +69,9 @@ public abstract class ParserTester {
 	 * 
 	 * @return a collection of completely matched assemblies
 	 */
-	private static Set<Assembly> completeMatches(Set<Assembly> in) {
-		Set<Assembly> out = new HashSet<>();
-		for (Assembly a : out) {
-			if (!a.hasNext()) {
-				out.add(a);
-			}
-		}
-		return out;
+	private static Set<Assembly> completeMatches(Set<Assembly> in ) {
+		Set<Assembly> out =null==in? new HashSet<>() :in;
+		return out.stream().filter(ParserTester::test).collect(Collectors.toSet());
 	}
 
 	/*

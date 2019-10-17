@@ -3,6 +3,7 @@ package jcog.grammar.parse;
 import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 public abstract class Parser {
 	/*
@@ -124,11 +125,8 @@ public abstract class Parser {
 	 * @return a copy of the input Set, cloning each element of it
 	 */
 	static Set<Assembly> elementClone(Set<Assembly> v) {
-		Set<Assembly> copy = new HashSet<>();
-		for (Assembly a : v) {
-			copy.add(a.clone());
-		}
-		return copy;
+		Set<Assembly> copy = v.stream().map(Assembly::clone).collect(Collectors.toSet());
+        return copy;
 	}
 
 	/**

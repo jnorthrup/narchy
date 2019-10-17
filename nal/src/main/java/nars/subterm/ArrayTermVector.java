@@ -5,6 +5,7 @@ import nars.term.Term;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.IntStream;
 
 /**
  * Holds a vector or tuple of terms.
@@ -76,9 +77,7 @@ public class ArrayTermVector extends TermVector {
             if (s != that.subs())
                 return false;
 
-            for (int i = 0; i < s; i++)
-                if (!x[i].equals(that.sub(i)))
-                    return false;
+            return IntStream.range(0, s).allMatch(i -> x[i].equals(that.sub(i)));
 
         }
 
@@ -86,7 +85,6 @@ public class ArrayTermVector extends TermVector {
 //            equivalentTo((TermVector) obj);
 
 
-        return true;
     }
 
 

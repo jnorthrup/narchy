@@ -1,5 +1,7 @@
 package jcog.signal.wave1d;
 
+import java.util.stream.IntStream;
+
 /**
  * https://github.com/JorenSix/TarsosDSP/blob/master/src/core/be/tarsos/dsp/filters/IIRFilter.java
  * An Infinite Impulse Response, or IIR, filter is a filter that uses a set of
@@ -96,13 +98,8 @@ public abstract class IIRFilter {
 	
 			//calculate y based on a and b coefficients
 			//and in and out.
-			double y = 0;
-			for(int j = 0 ; j < a.length ; j++){
-				y += a[j] * in[j];
-			}			
-			for(int j = 0 ; j < b.length ; j++){
-				y += b[j] * out[j];
-			}
+			double y = IntStream.range(0, a.length).mapToDouble(j -> a[j] * in[j]).sum();
+            y += IntStream.range(0, b.length).mapToDouble(j -> b[j] * out[j]).sum();
 			//shift the out array
 			//TODO use ring buffer to avoid these copies
 			System.arraycopy(out, 0, out, 1, out.length - 1);

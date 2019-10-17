@@ -5,6 +5,7 @@ import jcog.Util;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static java.lang.System.arraycopy;
 import static java.lang.System.out;
@@ -524,12 +525,8 @@ public enum OneDHaar {
     
     private static void thresholdSignal(double[] signal, double thresh) {
         int n = signal.length;
-        double[] thresholdedSignal = new double[n];
-        
-        for(int t = 0; t < n; t++) {
-            thresholdedSignal[t] = Math.abs(signal[t]) > thresh ? signal[t] : 0;
-        }
-        
+        double[] thresholdedSignal = IntStream.range(0, n).mapToDouble(t -> Math.abs(signal[t]) > thresh ? signal[t] : 0).toArray();
+
         arraycopy(thresholdedSignal, 0, signal, 0, n);
         double[] o = null;
     }

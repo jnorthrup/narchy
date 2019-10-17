@@ -23,6 +23,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.PrintStream;
 import java.util.BitSet;
+import java.util.stream.IntStream;
 
 /**
  * Implements static methods to load and write graphs.
@@ -195,8 +196,7 @@ public enum GraphIO { ;
         if (g.directed()) System.err.println(
                 "warning: you're saving a directed graph in Chaco format");
 
-        long edges = 0;
-        for (int i = 0; i < g.size(); ++i) edges += g.neighborsOut(i).size();
+        long edges = IntStream.range(0, g.size()).mapToLong(i -> g.neighborsOut(i).size()).sum();
 
         out.println(g.size() + " " + edges / 2);
 

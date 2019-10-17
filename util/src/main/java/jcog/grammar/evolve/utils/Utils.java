@@ -36,6 +36,8 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -245,11 +247,9 @@ public class Utils {
 
                 int end = Math.min(i + n, word.length());
 
-                StringBuilder builder = new StringBuilder(end-i /* estimate */);
-                for (int c = i; c < end; c++) {
-                    builder.append(escape(word.charAt(c)));
-                }
-                subparts.add(builder.toString());
+                String builder = IntStream.range(i, end).mapToObj(c -> escape(word.charAt(c))).collect(Collectors.joining());
+                /* estimate */
+                subparts.add(builder);
             }
         }
         return subparts;

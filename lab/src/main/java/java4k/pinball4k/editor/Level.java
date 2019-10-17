@@ -4,8 +4,12 @@ import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Before packing flags, score and behavior id:
@@ -92,18 +96,10 @@ public class Level {
 	 * @param rect the selection bounds
 	 * @return a list of selected handles
 	 */
-	public ArrayList<Handle> select(Rectangle rect) {
-		ArrayList selected = new ArrayList();
-		for (LevelObject obj : levelObjects) {
-			ArrayList<Handle> handles = obj.getHandles();
-			for (Handle handle : handles) {
-				if (handle.intersects(rect)) {
-					selected.add(handle);
-				}
-			}
-		}
-		
-		return selected;
+	public  List<Handle> select(Rectangle rect) {
+		var selected = levelObjects.stream().map(LevelObject::getHandles).flatMap(Collection::stream).filter(handle -> handle.intersects(rect)).collect(Collectors.toList());
+
+        return selected;
 	}
 	
 	public ArrayList<Handle> select(ArrayList<LevelObject> objects) {
@@ -121,7 +117,7 @@ public class Level {
 	 * Deletes the specified handles.
 	 * @param selection the handles to delete
 	 */
-	public void delete(ArrayList<Handle> selection) {
+	public void delete(List<Handle> selection) {
 		System.out.println("delete " + selection.size());
 		for (int i = selection.size() - 1; i >= 0; i--) {
 			Handle handle = selection.get(i);
@@ -556,13 +552,8 @@ public class Level {
 		for (int groupIdx = 0; groupIdx < groupCnt; groupIdx++) {
 			int objCnt = dataIn.readByte();
 			int firstIdx = dataIn.readByte();
-			ArrayList<LevelObject> group = new ArrayList<LevelObject>();
-			for (int objIdx = 0; objIdx < objCnt; objIdx++) {
-				int groupObjIdx = firstIdx + objIdx;
-				LevelObject groupObj = levelObjects.get(groupObjIdx);
-				group.add(groupObj);
-			}
-			groups.add(group);
+			ArrayList<LevelObject> group = IntStream.range(0, objCnt).map(objIdx -> firstIdx + objIdx).mapToObj(levelObjects::get).collect(Collectors.toCollection(ArrayList::new));
+            groups.add(group);
 		}
 
 		if (dataIn.available() > 0) {

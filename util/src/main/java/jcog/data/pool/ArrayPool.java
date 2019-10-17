@@ -32,6 +32,7 @@ import java.util.Arrays;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 /**
  * Object pool for arrays.
@@ -239,13 +240,7 @@ public class ArrayPool<T> extends FasterList<T> {
 
                 //TODO use binary insertion
                 int l = len(array);
-                int index = s;
-                for (int i = 0; i < s; i++) {
-                    if (l > len(i)) {
-                        index = i;
-                        break;
-                    }
-                }
+                int index = IntStream.range(0, s).filter(i -> l > len(i)).findFirst().orElse(s);
                 add(index, array);
                 //assertSorted();
                 break;

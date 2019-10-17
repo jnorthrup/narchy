@@ -3,11 +3,9 @@ package spacegraph.space2d.phys.fracture.util;
 import jcog.TODO;
 
 import java.lang.reflect.Array;
-import java.util.AbstractSet;
-import java.util.Arrays;
-import java.util.Iterator;
-import java.util.Set;
+import java.util.*;
 import java.util.function.Consumer;
+import java.util.stream.Stream;
 
 /**
  * Genericka optimalizovana hashovacia tabulka. Implementuje abstraktnu triedu
@@ -123,14 +121,7 @@ public class HashTabulka<T> extends AbstractSet<T> implements Set<T> {
      */
     public T get(Object o) {
         int oh = o.hashCode();
-        for (Node<T> chain = hashtable[oh & n]; chain != null; chain = chain.next) {
-            if (chain.hash == oh) {
-                T v = chain.value;
-                if (v.equals(o))
-                    return v;
-            }
-        }
-        return null;
+        return Stream.iterate(hashtable[oh & n], Objects::nonNull, chain -> chain.next).filter(chain -> chain.hash == oh).map(chain -> chain.value).filter(v -> v.equals(o)).findFirst().orElse(null);
     }
 
     /**

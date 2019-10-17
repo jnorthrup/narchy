@@ -10,6 +10,7 @@ import net.beadsproject.beads.core.UGen;
 
 import java.util.Collection;
 import java.util.LinkedList;
+import java.util.stream.Collectors;
 
 /**
  * An Envelope generates a sequence of timed transitions (segments) between
@@ -328,9 +329,7 @@ public class Envelope extends UGen {
     }
 
     public LinkedList<Segment> getSegments() {
-        LinkedList<Segment> segmentsCopy = new LinkedList<>();
-        for (Segment s : segments)
-            segmentsCopy.add(new Segment(s));
+        LinkedList<Segment> segmentsCopy = segments.stream().map(Segment::new).collect(Collectors.toCollection(LinkedList::new));
         return segmentsCopy;
     }
 

@@ -36,6 +36,8 @@ import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 
+import java.util.stream.IntStream;
+
 /**
  * Functions used for computing contact points, distance queries, and TOI queries. Collision methods
  * are non-static for pooling speed, retrieve a collision object from the {@link SingletonPool}.
@@ -110,11 +112,8 @@ public class Collision {
 
             state1[i] = PointState.REMOVE_STATE;
 
-            for (int j = 0; j < manifold2.pointCount; j++) {
-                if (manifold2.points[j].id.isEqual(id)) {
-                    state1[i] = PointState.PERSIST_STATE;
-                    break;
-                }
+            if (IntStream.range(0, manifold2.pointCount).anyMatch(j -> manifold2.points[j].id.isEqual(id))) {
+                state1[i] = PointState.PERSIST_STATE;
             }
         }
 
@@ -124,11 +123,8 @@ public class Collision {
 
             state2[i] = PointState.ADD_STATE;
 
-            for (int j = 0; j < manifold1.pointCount; j++) {
-                if (manifold1.points[j].id.isEqual(id)) {
-                    state2[i] = PointState.PERSIST_STATE;
-                    break;
-                }
+            if (IntStream.range(0, manifold1.pointCount).anyMatch(j -> manifold1.points[j].id.isEqual(id))) {
+                state2[i] = PointState.PERSIST_STATE;
             }
         }
     }

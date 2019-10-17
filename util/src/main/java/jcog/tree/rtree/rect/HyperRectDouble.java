@@ -27,6 +27,7 @@ import jcog.util.ArrayUtil;
 
 import java.io.Serializable;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 import static java.lang.Double.NEGATIVE_INFINITY;
 import static java.lang.Double.POSITIVE_INFINITY;
@@ -121,11 +122,9 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     @Override
     public double cost() {
-        double sigma = 1f;
+        double sigma;
         int dim = dim();
-        for (int i = 0; i < dim; i++) {
-            sigma *= rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */);
-        }
+        sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
         return sigma;
     }
 
@@ -163,10 +162,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     public DoubleND center() {
         int dim = dim();
-        double[] c = new double[dim];
-        for (int i = 0; i < dim; i++) {
-            c[i] = centerF(i);
-        }
+        double[] c = IntStream.range(0, dim).mapToDouble(this::centerF).toArray();
         return new DoubleND(c);
     }
 

@@ -25,6 +25,8 @@ import org.ejml.dense.row.NormOps_DDRM;
 import org.ejml.dense.row.factory.DecompositionFactory_DDRM;
 import org.ejml.interfaces.decomposition.SingularValueDecomposition;
 
+import java.util.stream.IntStream;
+
 import static org.ejml.dense.row.CommonOps_DDRM.*;
 import static org.ejml.dense.row.SingularOps_DDRM.descendingOrder;
 
@@ -229,11 +231,7 @@ public class PrincipalComponentAnalysis {
         double[] reproj = eigenToSampleSpace(eig);
 
 
-        double total = 0;
-        for( int i = 0; i < reproj.length; i++ ) {
-            double d = sampleA[i] - reproj[i];
-            total += d*d;
-        }
+        double total = IntStream.range(0, reproj.length).mapToDouble(i -> sampleA[i] - reproj[i]).map(d -> d * d).sum();
 
         return Math.sqrt(total);
     }

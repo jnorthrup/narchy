@@ -21,6 +21,8 @@ import jcog.constraint.discrete.trail.Trail;
 
 import java.util.Arrays;
 import java.util.function.IntUnaryOperator;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Superclass to be instantiated by any integer variable.
@@ -50,10 +52,7 @@ public abstract class IntVar {
     public static final int MAX_VALUE = 1000000000;
 
     public static int[] makeInt(int n, IntUnaryOperator f) {
-        int[] array = new int[n];
-        for (int i = 0; i < n; i++) {
-            array[i] = f.applyAsInt(i);
-        }
+        int[] array = IntStream.range(0, n).map(f::applyAsInt).toArray();
         return array;
     }
 
@@ -271,11 +270,7 @@ public abstract class IntVar {
         int[] domain = new int[size()];
         copyDomain(domain);
         Arrays.sort(domain);
-        StringBuilder bf = new StringBuilder("{");
-        for (int i = 0; i < domain.length - 1; i++) {
-            bf.append(domain[i]).append(", ");
-        }
-        bf.append(domain[domain.length - 1]).append("}");
-        return bf.toString();
+        String bf = IntStream.range(0, domain.length - 1).mapToObj(i -> domain[i] + ", ").collect(Collectors.joining("", "{", domain[domain.length - 1] + "}"));
+        return bf;
     }
 }

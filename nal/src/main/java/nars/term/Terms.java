@@ -26,6 +26,7 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.ToIntFunction;
+import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
 import static nars.Op.NEG;
@@ -484,10 +485,7 @@ public enum Terms {
 
 	public static boolean isSorted(Term[] s) {
 		if (s.length < 2) return true;
-		for (int i = 1; i < s.length; i++)
-			if (s[(i - 1)].compareTo(s[i]) >= 0)
-				return false;
-		return true;
+        return IntStream.range(1, s.length).noneMatch(i -> s[(i - 1)].compareTo(s[i]) >= 0);
 	}
 
 	public static boolean possiblyUnifiable(Term x, Term y, boolean strict, int var) {
@@ -528,9 +526,8 @@ public enum Terms {
 
 
 		if (!xo.commutative) {
-			for (int i = n - 1; i >= 0; i--) //reverse since smallest terms are last
-				if (!possiblyUnifiable(xx.sub(i), yy.sub(i), false, var))
-					return false;
+            //reverse since smallest terms are last
+            return IntStream.iterate(n - 1, i -> i >= 0, i -> i - 1).allMatch(i -> possiblyUnifiable(xx.sub(i), yy.sub(i), false, var));
 		}
 
 		return true;

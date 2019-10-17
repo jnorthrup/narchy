@@ -3,6 +3,7 @@ package jcog.pri;
 import jcog.Util;
 import jcog.math.FloatSupplier;
 
+import java.util.Arrays;
 import java.util.function.BiConsumer;
 import java.util.function.Supplier;
 
@@ -41,10 +42,7 @@ public interface PriReference<X> extends Prioritizable, Supplier<X>, FloatSuppli
         pp.forEach(y -> each.accept(y, d));
 
         for (double[] e : d) {
-            double total = 0;
-            for (double anE : e) {
-                total += anE;
-            }
+            double total = Arrays.stream(e).sum();
             if (total > 0) {
                 for (int i = 0, eLength = e.length; i < eLength; i++) {
                     double f = e[i];

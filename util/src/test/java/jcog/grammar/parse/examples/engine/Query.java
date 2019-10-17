@@ -9,6 +9,9 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+
 /**
  * A Query is a dynamic rule that stands outside of a program and proves itself
  * by referring to a program.
@@ -94,13 +97,7 @@ public class Query extends DynamicRule {
 	 * @return a string representation of this query.
 	 */
 	public String toString() {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < structures.length; i++) {
-			if (i > 0) {
-				buf.append(", ");
-			}
-			buf.append(structures[i]);
-		}
-		return buf.toString();
+		String buf = Arrays.stream(structures).map(String::valueOf).collect(Collectors.joining(", "));
+        return buf;
 	}
 }

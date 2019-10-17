@@ -21,6 +21,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.stream.IntStream;
 
 /**
  * <i>Standard audio</i>. This class provides a basic capability for
@@ -143,10 +144,7 @@ final class StdAudio {
     public static double[] read(String filename) {
         byte[] data = readByte(filename);
         int N = data.length;
-        double[] d = new double[N / 2];
-        for (int i = 0; i < N / 2; i++) {
-            d[i] = ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT;
-        }
+        double[] d = IntStream.range(0, N / 2).mapToDouble(i -> ((short) (((data[2 * i + 1] & 0xFF) << 8) + (data[2 * i] & 0xFF))) / MAX_16_BIT).toArray();
         return d;
     }
 

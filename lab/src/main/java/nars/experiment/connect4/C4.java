@@ -20,6 +20,9 @@ import spacegraph.space2d.container.Splitting;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * connect-4 experiments
@@ -150,9 +153,7 @@ public class C4 {
 
         public Surface beliefCharts() {
 
-            List<Term> c = new FasterList();
-            for (int i = 0; i < play.game.cols; i++)
-                c.add(dropConcept(i, true).term());
+            List<Term> c =(List<Term>) IntStream.range(0, play.game.cols).mapToObj(i -> dropConcept(i, true).term()).collect(Collectors.toCollection((Supplier<FasterList>) FasterList::new));
 
             c.add($.$$("whoWon(c,1)"));
             c.add($.$$("whoWon(c,0)"));

@@ -1,5 +1,7 @@
 package jcog.learn.deep;
 
+import java.util.Arrays;
+
 public class LogisticRegression {
     public int n_in;
     public int n_out;
@@ -41,10 +43,10 @@ public class LogisticRegression {
     }
 
     public void softmax(double[] x) {
-        double max = 0.0;
+        double max;
         double sum = 0.0;
 
-        for(int i=0; i<n_out; i++) if(max < x[i]) max = x[i];
+        max = Arrays.stream(x, 0, n_out).filter(i -> i >= 0.0).max().orElse(0.0);
 
         for(int i=0; i<n_out; i++) {
             x[i] = Math.exp(x[i] - max);

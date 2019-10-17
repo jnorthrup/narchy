@@ -18,6 +18,8 @@ import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static nars.$.*;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -102,14 +104,9 @@ class TermutatorTest {
     @Test
     void testChoose2_4() {
 
-        Set<String> series = new HashSet();
-        for (int i = 0; i < 5; i++) {
-            series.add(
-                    assertTermutatorProducesUniqueResults(
-                            new Choose2(e1, p2p3, ((Compound)p("a", "b", "c", "d")).toSetSorted()
-                            ), 12)
-            );
-        }
+        Set<String> series = IntStream.range(0, 5).mapToObj(i -> assertTermutatorProducesUniqueResults(
+                new Choose2(e1, p2p3, ((Compound) p("a", "b", "c", "d")).toSetSorted()
+                ), 12)).collect(Collectors.toSet());
 
         assertTrue(series.size() > 1); 
     }

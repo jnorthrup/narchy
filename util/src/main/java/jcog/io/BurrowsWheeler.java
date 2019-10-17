@@ -6,6 +6,7 @@ import org.eclipse.collections.impl.list.mutable.primitive.IntArrayList;
 import org.eclipse.collections.impl.map.mutable.primitive.ByteObjectHashMap;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /** modified from https://github.com/fujiawu/burrows-wheeler-compression/blob/master/BurrowsWheeler.java */
 public class BurrowsWheeler {
@@ -87,11 +88,9 @@ public class BurrowsWheeler {
 
 		Arrays.sort(in); // sort last word
 
-		int[] next = new int[n];
-		for (int i = 0; i < n; i++)
-			next[i] = positions.get(in[i]).removeAtIndex(0);
+		int[] next = IntStream.range(0, n).map(i -> positions.get(in[i]).removeAtIndex(0)).toArray();
 
-		int cur = key;
+        int cur = key;
 		for (int i = 0; i < n; i++) {
 			out[i] = in[cur];
 			cur = next[cur];

@@ -20,8 +20,9 @@ package jurls.core.reinforcementlearning;
     import jurls.core.utils.Utils;
 
     import java.util.Arrays;
+    import java.util.stream.IntStream;
 
-/**
+    /**
  *
  * @author thorsten
  */
@@ -64,13 +65,9 @@ public class QZeroAgent extends LearnerAndActor {
     }
 
     public ActionValuePair[] getActionProbabilities(double[] state) {
-        ActionValuePair[] actionValuePairs = new ActionValuePair[numActions];
-
-        for (int i = 0; i < numActions; ++i) {
-            actionValuePairs[i] = new ActionValuePair(
-                    i, Utils.q(parameterizedFunction, stateAction, state, i)
-            );
-        }
+        ActionValuePair[] actionValuePairs = IntStream.range(0, numActions).mapToObj(i -> new ActionValuePair(
+                i, Utils.q(parameterizedFunction, stateAction, state, i)
+        )).toArray(ActionValuePair[]::new);
 
         return actionSelector.fromQValuesToProbabilities(rLParameters.getEpsilon(), actionValuePairs);
     }

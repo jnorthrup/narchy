@@ -7,8 +7,11 @@ package jcog.signal.meter;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Convenience implementation for a 1-signal meter
@@ -19,15 +22,11 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     private M[] vector;
 
     public static String[] newDefaultSignalIDs(String prefix, int n) {
-        String[] s = new String[n];
-        for (int i = 0; i < n; i++)
-            s[i] = prefix + '_' + i;
+        String[] s = IntStream.range(0, n).mapToObj(i -> prefix + '_' + i).toArray(String[]::new);
         return s;
     }
     public static String[] newDefaultSignalIDs(String prefix, String... prefixes) {
-        String[] s = new String[prefixes.length];
-        for (int i = 0; i < prefixes.length; i++)
-            s[i] = prefix + '_' + prefixes[i];
+        String[] s = Arrays.stream(prefixes).map(item -> prefix + '_' + item).toArray(String[]::new);
         return s;
     }
     
@@ -39,12 +38,8 @@ public abstract class FunctionMeter<M> implements Meters<M>, Serializable {
     }
     
     public FunctionMeter(String... ids) {
-        List<ScalarColumn> s = new ArrayList();
-        for (String n : ids) {
-            s.add(new ScalarColumn(n, null));
-        }
 
-        signals = Collections.unmodifiableList(s);
+        signals = Arrays.stream(ids).map(n -> new ScalarColumn(n, null)).collect(Collectors.toUnmodifiableList());
     }
     
     public void setUnits(String... units) { 

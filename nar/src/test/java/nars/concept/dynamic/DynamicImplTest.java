@@ -4,8 +4,13 @@ import nars.$;
 import nars.Narsese;
 import nars.Task;
 import nars.truth.Truth;
+import org.eclipse.collections.api.bag.Bag;
 import org.eclipse.collections.impl.bag.mutable.HashBag;
 import org.junit.jupiter.api.Test;
+
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.term.util.TermTest.assertEq;
@@ -113,11 +118,7 @@ class DynamicImplTest extends AbstractDynamicTaskTest {
         n.input("x. %0.95%");
         n.input("y.");
 
-        HashBag<String> results = new HashBag();
-        for (int i = 0; i < 100; i++) {
-            Task t = n.belief($$("(x==>y)"));
-            results.add(t.toStringWithoutBudget());
-        }
-        System.out.println(results.toStringOfItemToCount());
+        var  results = IntStream.range(0, 100).mapToObj(i -> n.belief($$("(x==>y)"))).map(Task::toStringWithoutBudget).collect(Collectors.toCollection((Supplier<HashBag>) HashBag::new));
+        System.out.println(((HashBag)results).toStringOfItemToCount());
     }
 }

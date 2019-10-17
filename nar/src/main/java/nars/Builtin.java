@@ -27,6 +27,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Arrays;
 import java.util.Map;
 import java.util.TreeSet;
+import java.util.stream.IntStream;
 
 import static nars.Op.*;
 import static nars.io.NarseseParser.termDynamic;
@@ -202,10 +203,7 @@ public class Builtin {
             Functor.f2("varMask", (x, y) -> {
                 int s = x.subs();
                 if (s > 0) {
-                    Term[] t = new Term[s];
-                    for (int i = 0; i < s; i++) {
-                        t[i] = x.sub(i).equals(y) ? y : $.varDep("z" + i);
-                    }
+                    Term[] t = IntStream.range(0, s).mapToObj(i -> x.sub(i).equals(y) ? y : $.varDep("z" + i)).toArray(Term[]::new);
                     return $.p(t);
                 }
                 return Null;

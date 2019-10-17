@@ -1,14 +1,13 @@
 package jcog.learn.ntm.control;
 
 
+import java.util.stream.IntStream;
+
 public class UnitFactory {
 
 
     @Deprecated public static Unit[] getVector(int vectorSize) {
-        Unit[] vector = new Unit[vectorSize];
-        for (int i = 0;i < vectorSize;i++) {
-            vector[i] = new Unit();
-        }
+        Unit[] vector = IntStream.range(0, vectorSize).mapToObj(i -> new Unit()).toArray(Unit[]::new);
         return vector;
     }
 
@@ -18,20 +17,14 @@ public class UnitFactory {
 
 
     @Deprecated public static Unit[][] getTensor2(int x, int y) {
-        Unit[][] tensor = new Unit[x][y];
-        
-        for (int i = 0;i < x;i++) {
-            tensor[i] = getVector(y);
-        }
+        Unit[][] tensor = IntStream.range(0, x).mapToObj(i -> getVector(y)).toArray(Unit[][]::new);
+
         return tensor;
     }
 
     public static Unit[][][] getTensor3(int x, int y, int z) {
-        Unit[][][] tensor = new Unit[x][y][z];
-        
-        for (int i = 0;i < x;i++) {
-            tensor[i] = getTensor2(y,z);
-        }
+        Unit[][][] tensor = IntStream.range(0, x).mapToObj(i -> getTensor2(y, z)).toArray(Unit[][][]::new);
+
         return tensor;
     }
 

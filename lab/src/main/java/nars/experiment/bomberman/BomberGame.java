@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.stream.IntStream;
 
 /**
  * File:         BomberGame.java
@@ -264,14 +265,8 @@ public class BomberGame extends JPanel
                 BomberBGM.mute();
             }
             /** set default game result = draw */
-            winner = 4;
             /** find winner */
-            for (int i = 0; i < totalPlayers; i++) {
-                if (!players[i].isDead()) {
-                    winner = i;
-                    break;
-                }
-            }
+            winner = IntStream.range(0, totalPlayers).filter(i -> !players[i].isDead()).findFirst().orElse(4);
             gameOver = true;
             map.setGameOver();
             /** restart timer with new delay */

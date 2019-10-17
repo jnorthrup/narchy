@@ -19,6 +19,7 @@ import jcog.constraint.discrete.trail.Trail;
 import org.junit.jupiter.api.Test;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -30,12 +31,7 @@ abstract class IntVarTest {
 
   
   private boolean containsAll(IntVar x, int... values) {
-    for (int i = 0; i < values.length; i++) {
-      if (!x.contains(values[i])) {
-        return false;
-      }
-    }
-    return true;
+      return IntStream.range(0, values.length).allMatch(i -> x.contains(values[i]));
   }
 
   

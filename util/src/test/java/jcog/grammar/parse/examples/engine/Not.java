@@ -8,6 +8,9 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.Arrays;
+import java.util.stream.IntStream;
+
 /**
  * A Not is a structure that fails if it can prove itself against a program.
  * <p>
@@ -133,11 +136,8 @@ public class Not extends Structure {
 	 * @return a <code>ConsultingNot</code> counterpart that can prove itself
 	 */
 	public Term copyForProof(AxiomSource as, Scope scope) {
-		Term[] newTerms = new Term[terms.length];
-		for (int i = 0; i < terms.length; i++) {
-			newTerms[i] = terms[i].copyForProof(as, scope);
-		}
-		return new ConsultingNot(new ConsultingStructure(as, functor, newTerms));
+		Term[] newTerms = Arrays.stream(terms).map(term -> term.copyForProof(as, scope)).toArray(Term[]::new);
+        return new ConsultingNot(new ConsultingStructure(as, functor, newTerms));
 	}
 
 	/**
@@ -156,12 +156,7 @@ public class Not extends Structure {
 		if (!functorAndArityEquals(n)) {
 			return false;
 		}
-		for (int i = 0; i < terms.length; i++) {
-			if (!(terms[i].equals(n.terms[i]))) {
-				return false;
-			}
-		}
-		return true;
+        return IntStream.range(0, terms.length).allMatch(i -> terms[i].equals(n.terms[i]));
 	}
 
 	/**

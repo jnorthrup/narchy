@@ -9,6 +9,7 @@ import jcog.learn.ntm.memory.address.content.BetaSimilarity;
 import jcog.learn.ntm.memory.address.content.ContentAddressing;
 
 import java.lang.ref.WeakReference;
+import java.util.stream.IntStream;
 
 public class NTMMemory {
 
@@ -227,12 +228,8 @@ public class NTMMemory {
     }
 
     private static double[][] getTensor2(int x, int y) {
-        double[][] tensor = new double[x][y];
+        double[][] tensor = IntStream.range(0, x).mapToObj(i -> new double[y]).toArray(double[][]::new);
 
-        
-        for (int i = 0; i < x; i++) {
-            tensor[i] = new double[y];
-        }
 
         return tensor;
     }

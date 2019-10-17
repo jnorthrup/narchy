@@ -5,6 +5,8 @@ import org.junit.jupiter.api.Test;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static jcog.learn.decision.label.BooleanLabel.FALSE_LABEL;
 import static jcog.learn.decision.label.BooleanLabel.TRUE_LABEL;
@@ -41,10 +43,7 @@ class DecisionTreeGetLabelTest {
     @Test
     void testGetLabelOn95vs5() {
         DecisionTree tree = new DecisionTree();
-        List<Function<Object,Object>> data = Lists.newArrayList();
-        for (int i = 0; i < 95; i++) {
-            data.add(new TestValue(TRUE_LABEL));
-        }
+        List<Function<Object,Object>> data = IntStream.range(0, 95).mapToObj(i -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
         for (int i = 0; i < 5; i++) {
             data.add(new TestValue(FALSE_LABEL));
         }
@@ -64,9 +63,7 @@ class DecisionTreeGetLabelTest {
     }
 
     private static List<Function<Object,Object>> buildSample(int a, int b) {
-        List<Function<Object,Object>> homogenous = Lists.newArrayList();
-        for (int i = 0; i < a; i++)
-            homogenous.add(new TestValue(TRUE_LABEL));
+        List<Function<Object,Object>> homogenous = IntStream.range(0, a).mapToObj(i -> new TestValue(TRUE_LABEL)).collect(Collectors.toList());
         for (int i = 0; i < b; i++)
             homogenous.add(new TestValue(FALSE_LABEL));
         return homogenous;

@@ -6,7 +6,9 @@ import nars.experiment.pacman.maze.Maze.Direction;
 
 import java.awt.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class Ghost extends Entity {
 
@@ -113,14 +115,7 @@ public class Ghost extends Entity {
 
     ArrayList<Direction> getAvailableDirections() {
 
-        ArrayList<Direction> dirs = new ArrayList<>();
-
-        for (Direction d : Direction.values()) {
-
-            if (!walled(d))
-                dirs.add(d);
-
-        }
+        ArrayList<Direction> dirs = Arrays.stream(Direction.values()).filter(d -> !walled(d)).collect(Collectors.toCollection(ArrayList::new));
 
         dirs.remove(this.dir.opposite());
 
@@ -144,16 +139,7 @@ public class Ghost extends Entity {
 
         ArrayList<Direction> openDirs = getAvailableDirections();
 
-        for (Direction dir : dirs) {
-
-            if (openDirs.contains(dir)) {
-
-                this.dir = dir;
-                return;
-
-            }
-
-        }
+        dir = Arrays.stream(dirs).filter(openDirs::contains).findFirst().orElse(this.dir);
 
     }
 

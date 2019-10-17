@@ -12,6 +12,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.TreeMap;
 import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 import static jcog.signal.wave2d.vectorize.SVGUtils.svgpathstring;
 import static jcog.signal.wave2d.vectorize.SVGUtils.tosvgcolorstr;
@@ -88,12 +89,7 @@ public class ImageTracer {
 
 
     private static int arraycontains(String[] arr, String str) {
-        for (int j = 0; j < arr.length; j++) {
-            if (arr[j].toLowerCase().equals(str)) {
-                return j;
-            }
-        }
-        return -1;
+        return IntStream.range(0, arr.length).filter(j -> arr[j].toLowerCase().equals(str)).findFirst().orElse(-1);
     }
 
 

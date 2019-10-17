@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.ThreadLocalRandom;
+import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -107,17 +108,10 @@ public class Alternation extends CollectionParser {
 
 		
 
-		List<Terminal> terms = new ArrayList<>();
-		for (Parser j : subparsers) {
-			if (j instanceof Terminal) {
-				terms.add((Terminal) j);
-			}
-		}
+		List<Terminal> terms = subparsers.stream().filter(j -> j instanceof Terminal).map(j -> (Terminal) j).collect(Collectors.toList());
 
-		
-		
 
-		List<? extends Parser> which = terms;
+        List<? extends Parser> which = terms;
 		if (terms.isEmpty()) {
 			which = subparsers;
 		}

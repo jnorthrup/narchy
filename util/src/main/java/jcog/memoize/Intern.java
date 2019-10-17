@@ -6,6 +6,7 @@ import jcog.util.ArrayUtil;
 import java.lang.ref.WeakReference;
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.stream.IntStream;
 
 /*>>>
 import org.checkerframework.checker.interning.qual.*;
@@ -259,12 +260,7 @@ public final class Intern {
             if (da1.length != da2.length) {
                 return false;
             }
-            for (int i = 0; i < da1.length; i++) {
-                if (!((da1[i] == da2[i]) || (Double.isNaN(da1[i]) && Double.isNaN(da2[i])))) {
-                    return false;
-                }
-            }
-            return true;
+            return IntStream.range(0, da1.length).allMatch(i -> (da1[i] == da2[i]) || (Double.isNaN(da1[i]) && Double.isNaN(da2[i])));
         }
 
         @Override

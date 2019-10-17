@@ -63,9 +63,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 //            s += toFloat(x, i);
 //        return s;
 
-        long s = 0;
-        for (int i = 0; i < 4; i++)
-            s += shortAt(x, i);
+        long s = IntStream.range(0, 4).mapToLong(i -> shortAt(x, i)).sum();
         return toFloat(s);
     }
 

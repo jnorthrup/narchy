@@ -10,6 +10,7 @@ import nars.term.Term;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static nars.Op.NEG;
 
@@ -366,17 +367,12 @@ abstract public class RemappedSubterms<S extends Subterms> extends MappedSubterm
 
     protected boolean wrapsNeg() {
         int s = subs();
-        for (int i = 0; i < s; i++)
-            if (subMap(i) < 0)
-                return true;
-        return false;
+        return IntStream.range(0, s).anyMatch(i -> subMap(i) < 0);
     }
 
     protected int negs() {
-        int n = 0, s = subs();
-        for (int i = 0; i < s; i++)
-            if (subMap(i) < 0)
-                n++;
+        int n, s = subs();
+        n = (int) IntStream.range(0, s).filter(i -> subMap(i) < 0).count();
         return n;
     }
 

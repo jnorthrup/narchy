@@ -24,6 +24,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.stream.IntStream;
 
 public class M extends JFrame {
 
@@ -287,11 +288,7 @@ public class M extends JFrame {
         
           
           rank = 1;
-          for(int i = 1; i < 4; i++) {
-            if (vehicleMetrics[0][1] < vehicleMetrics[i][1]) {
-              rank++;
-            }
-          }
+            rank += IntStream.range(1, 4).filter(i -> vehicleMetrics[0][1] < vehicleMetrics[i][1]).count();
 
           
           if (hitWallCount > 0) {

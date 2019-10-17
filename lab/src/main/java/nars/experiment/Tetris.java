@@ -22,6 +22,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 import static java.util.Arrays.asList;
 import static java.util.stream.Collectors.toList;
@@ -122,8 +123,7 @@ public class Tetris extends GameX {
         if (TETRIS_USE_DENSITY) {
             reward("density", 1, () -> {
 
-                int filled = 0;
-                for (var s : state.grid) if (s > 0) filled++;
+                int filled = (int) Arrays.stream(state.grid).filter(s -> s > 0).count();
 
                 int r = state.rowsFilled;
                 return r > 0 ? ((float) filled) / (r * state.width) : 0;
@@ -243,8 +243,7 @@ public class Tetris extends GameX {
     }
 
     private float density() {
-        var filled = 0;
-        for (var s : state.grid) if (s > 0) filled++;
+        var filled = (int) Arrays.stream(state.grid).filter(s -> s > 0).count();
 
         var r = state.rowsFilled;
         return r > 0 ? (float) filled / (r * state.width) : 0;
@@ -665,11 +664,7 @@ public class Tetris extends GameX {
          * @return
          */
         public boolean isRow(int y, boolean filledOrClear) {
-            for (var x = 0; x < width; ++x) {
-                var s = grid[i(x, y)];
-                if (filledOrClear ? s == 0 : s != 0) return false;
-            }
-            return true;
+            return IntStream.range(0, width).mapToDouble(x -> grid[i(x, y)]).noneMatch(s -> filledOrClear ? s == 0 : s != 0);
         }
 
         /**

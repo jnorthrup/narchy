@@ -56,6 +56,7 @@ import java.util.concurrent.locks.LockSupport;
 import java.util.concurrent.locks.StampedLock;
 import java.util.function.*;
 import java.util.stream.DoubleStream;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Math.pow;
@@ -649,12 +650,9 @@ public enum Util {
 	}
 
 	public static double mean(double... d) {
-		double result = 0.0;
+		double result = stream(d).sum();
 
-		for (double val : d)
-			result += val;
-
-		return result / d.length;
+        return result / d.length;
 	}
 
 	/**
@@ -821,11 +819,7 @@ public enum Util {
 	public static boolean equals(float[] a, float[] b, float epsilon) {
 		if (a == b) return true;
 		int l = a.length;
-		for (int i = 0; i < l; i++) {
-			if (!equals(a[i], b[i], epsilon))
-				return false;
-		}
-		return true;
+        return IntStream.range(0, l).allMatch(i -> equals(a[i], b[i], epsilon));
 	}
 
 	/**
@@ -842,14 +836,9 @@ public enum Util {
 			return Integer.compare(xlen, yLen);
 		} else {
 
-			for (int i = 0; i < xlen; i++) {
-				int c = Long.compare(x[i], y[i]);
-				if (c != 0)
-					return c;
-			}
+            return IntStream.range(0, xlen).map(i -> Long.compare(x[i], y[i])).filter(c -> c != 0).findFirst().orElse(0);
 
-			return 0;
-		}
+        }
 	}
 
 	public static byte[] intAsByteArray(int index) {
@@ -1085,12 +1074,8 @@ public enum Util {
 		return x;
 	}
 	public static double[] normalizeCartesian(double[] x) {
-		double magSq = 0;
-		for (int i = 0; i < x.length; i++) {
-			double xi = x[i];
-			magSq += xi * xi;
-		}
-		if (magSq < Math.sqrt(Double.MIN_NORMAL))
+		double magSq = stream(x).map(xi -> xi * xi).sum();
+        if (magSq < Math.sqrt(Double.MIN_NORMAL))
 			return x; //~zero vector, leave unchanged
 		double mag = Math.sqrt(magSq);
 		for (int i = 0; i < x.length; i++) {
@@ -1181,11 +1166,8 @@ public enum Util {
 	}
 
 	public static double[] avgvar(double[] population) {
-		double average = 0.0;
-		for (double p : population) {
-			average += p;
-		}
-		int n = population.length;
+		double average = stream(population).sum();
+        int n = population.length;
 		average /= n;
 
 		double variance = 0.0;
@@ -1206,13 +1188,9 @@ public enum Util {
 
 		double avg = dd.average();
 
-		double variance = 0.0;
+		double variance;
 		int n = dd.size();
-		for (int i = 0; i < n; i++) {
-			double p = dd.get(i);
-			double d = p - avg;
-			variance += d * d;
-		}
+        variance = IntStream.range(0, n).mapToDouble(dd::get).map(p -> p - avg).map(d -> d * d).sum();
 		variance /= n;
 
 		return new double[]{avg, variance};
@@ -1236,10 +1214,8 @@ public enum Util {
 
 	public static double[] toDouble(float[] d) {
 		int l = d.length;
-		double[] f = new double[l];
-		for (int i = 0; i < l; i++)
-			f[i] = d[i];
-		return f;
+		double[] f = IntStream.range(0, l).mapToDouble(i -> d[i]).toArray();
+        return f;
 	}
 
 	public static long[] minmax(IntToLongFunction f, int from, int to) {
@@ -1370,17 +1346,13 @@ public enum Util {
 	}
 
 	public static <X> double sumDouble(FloatFunction<X> value, X... xx) {
-		double y = 0;
-		for (X x : xx)
-			y += value.floatValueOf(x);
-		return y;
+		double y = stream(xx).mapToDouble(value::floatValueOf).sum();
+        return y;
 	}
 
 	public static <X> double sum(ToDoubleFunction<X> value, X... xx) {
-		double y = 0;
-		for (X x : xx)
-			y += value.applyAsDouble(x);
-		return y;
+		double y = stream(xx).mapToDouble(value::applyAsDouble).sum();
+        return y;
 	}
 
 	public static <X> int sum(ToIntFunction<X> value, Iterable<X> xx) {
@@ -1412,18 +1384,15 @@ public enum Util {
 	}
 
 	public static <X> int sum(ToIntFunction<X> value, int from, int to, X... xx) {
-		int y = 0;
+		int y;
 		int len = to - from;
-		for (int i = from; i < len; i++)
-			y += value.applyAsInt(xx[i]);
+        y = IntStream.range(from, len).map(i -> value.applyAsInt(xx[i])).sum();
 		return y;
 	}
 
 	public static <X> long sum(ToLongFunction<X> value, X... xx) {
-		long y = 0;
-		for (X x : xx)
-			y += value.applyAsLong(x);
-		return y;
+		long y = stream(xx).mapToLong(value::applyAsLong).sum();
+        return y;
 	}
 
 	public static <X> long min(ToLongFunction<X> value, X... xx) {
@@ -1525,27 +1494,18 @@ public enum Util {
 	}
 
 	public static int sum(int... x) {
-		int y = 0;
-		for (int f : x)
-			y += f;
-		return y;
+		int y = stream(x).sum();
+        return y;
 	}
 
 	public static int sum(int[] x, int from, int to) {
-		int y = 0;
-		for (int i = from; i < to; i++) {
-			y += x[i];
-		}
-		return y;
+		int y = stream(x, from, to).sum();
+        return y;
 	}
 
 	public static double max(double... x) {
-		double y = Double.NEGATIVE_INFINITY;
-		for (double f : x) {
-			if (f > y)
-				y = f;
-		}
-		return y;
+		double y = stream(x).filter(f -> f >= Double.NEGATIVE_INFINITY).max().orElse(Double.NEGATIVE_INFINITY);
+        return y;
 	}
 
 	public static byte max(byte... x) {
@@ -1567,12 +1527,8 @@ public enum Util {
 	}
 
 	public static double min(double... x) {
-		double y = Double.POSITIVE_INFINITY;
-		for (double f : x) {
-			if (f < y)
-				y = f;
-		}
-		return y;
+		double y = stream(x).filter(f -> f <= Double.POSITIVE_INFINITY).min().orElse(Double.POSITIVE_INFINITY);
+        return y;
 	}
 
 	public static float min(float... x) {
@@ -1723,20 +1679,12 @@ public enum Util {
 	public static boolean equals(double[] a, double[] b, double epsilon) {
 		if (a == b) return true;
 		int l = a.length;
-		for (int i = 0; i < l; i++) {
-			if (!equals(a[i], b[i], epsilon))
-				return false;
-		}
-		return true;
+        return IntStream.range(0, l).allMatch(i -> equals(a[i], b[i], epsilon));
 	}
 
 	public static boolean equals(long[] a, long[] b, int firstN) {
 		if (a == b) return true;
-		for (int i = 0; i < firstN; i++) {
-			if (a[i] != b[i])
-				return false;
-		}
-		return true;
+        return IntStream.range(0, firstN).noneMatch(i -> a[i] != b[i]);
 	}
 
 	public static boolean equals(long[] a, long[] b) {
@@ -1744,11 +1692,7 @@ public enum Util {
 		int l = a.length;
 		if (b.length != l)
 			return false;
-		for (int i = 0; i < l; i++) {
-			if (a[i] != b[i])
-				return false;
-		}
-		return true;
+        return IntStream.range(0, l).noneMatch(i -> a[i] != b[i]);
 	}
 
 	public static boolean equals(short[] a, short[] b) {
@@ -1756,11 +1700,7 @@ public enum Util {
 		int l = a.length;
 		if (b.length != l)
 			return false;
-		for (int i = 0; i < l; i++) {
-			if (a[i] != b[i])
-				return false;
-		}
-		return true;
+        return IntStream.range(0, l).noneMatch(i -> a[i] != b[i]);
 	}
 
 	public static int short2Int(short high, short low) {
@@ -1825,11 +1765,8 @@ public enum Util {
 	 */
 	public static int[] intArray(int a, int b) {
 		int ba = b - a;
-		int[] x = new int[ba];
-		for (int i = 0; i < ba; i++) {
-			x[i] = a + i;
-		}
-		return x;
+		int[] x = IntStream.range(0, ba).map(i -> a + i).toArray();
+        return x;
 	}
 
 	public static double sqr(long x) {
@@ -2166,25 +2103,16 @@ public enum Util {
 
 
 	public static <X> int count(Predicate<X> p, X[] xx) {
-		int i = 0;
-		for (X x : xx)
-			if (p.test(x))
-				i++;
-		return i;
+		int i = (int) stream(xx).filter(p::test).count();
+        return i;
 	}
 
 	public static <X> boolean and(Predicate<X> p, int from, int to, X[] xx) {
-		for (int i = from; i < to; i++)
-			if (!p.test(xx[i]))
-				return false;
-		return true;
+        return IntStream.range(from, to).allMatch(i -> p.test(xx[i]));
 	}
 
 	public static <X> boolean or(Predicate<X> p, int from, int to, X[] xx) {
-		for (int i = from; i < to; i++)
-			if (p.test(xx[i]))
-				return true;
-		return false;
+        return IntStream.range(from, to).anyMatch(i -> p.test(xx[i]));
 	}
 
 	public static <X> boolean and(Predicate<X> p, X[] xx) {
@@ -2459,12 +2387,8 @@ public enum Util {
 		int l = Integer.compare(al, b.length);
 		if (l != 0)
 			return l;
-		for (int i = 0; i < al; i++) {
-			int d = a[i] - b[i];
-			if (d != 0) return d;
-		}
-		return 0;
-	}
+        return IntStream.range(0, al).map(i -> a[i] - b[i]).filter(d -> d != 0).findFirst().orElse(0);
+    }
 
 	public static <X> Supplier<Stream<X>> buffer(Stream<X> x) {
 		List<X> buffered = x.collect(toList());
@@ -2721,22 +2645,15 @@ public enum Util {
 	 */
 	public static <X extends Comparable> boolean isSorted(X[] x) {
 		if (x.length < 2) return true;
-		for (int i = 1; i < x.length; i++) {
-			if (x[i - 1].compareTo(x[i]) > 0)
-				return false;
-		}
-		return true;
+        return IntStream.range(1, x.length).noneMatch(i -> x[i - 1].compareTo(x[i]) > 0);
 	}
 
 	public static int[] bytesToInts(byte[] array) {
 		int n = array.length;
 		if (n == 0)
 			return ArrayUtil.EMPTY_INT_ARRAY;
-		int[] t = new int[n];
-		for (int i = 0; i < n; i++) {
-			t[i] = array[i];
-		}
-		return t;
+		int[] t = IntStream.range(0, n).map(i -> array[i]).toArray();
+        return t;
 	}
 
 	public static Class[] typesOfArray(Object[] orgs) {

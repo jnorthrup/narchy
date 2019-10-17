@@ -23,8 +23,10 @@ package nars.op.kif;
 import com.google.common.collect.Sets;
 
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class FormulaPreprocessor {
 
@@ -136,28 +138,22 @@ public class FormulaPreprocessor {
 
         if (debug) System.out.println("addTypeRestrictions: form " + form);
 
-        HashMap<String, HashSet<String>> varDomainTypes = computeVariableTypes(form, kb);
+        Map<String, HashSet<String>> varDomainTypes = computeVariableTypes(form, kb);
 
         HashMap<String, HashSet<String>> varExplicitTypes = findExplicitTypesClassesInAntecedent(kb, form);
 
 
-        HashMap<String, HashSet<String>> varmap = new HashMap<>();
+        Map<String, Set<String>> varmap = new HashMap<>();
         for (Map.Entry<String, HashSet<String>> entry : varDomainTypes.entrySet()) {
             String var = entry.getKey();
             if (!varExplicitTypes.containsKey(var)) {
 
                 varmap.put(var, entry.getValue());
             } else {
-
-                HashSet<String> domainTypes = entry.getValue();
-                HashSet<String> explicitTypes = varExplicitTypes.get(var);
-                HashSet<String> types = new HashSet();
-                for (String dt : domainTypes) {
-                    if (dt.endsWith("+")) types.add(dt);
-                }
-                for (String et : explicitTypes) {
-                    if (et.endsWith("+")) types.add(et);
-                }
+                 Set<String> domainTypes = entry.getValue();
+                 Set<String> explicitTypes = varExplicitTypes.get(var);
+                 var types = domainTypes.stream().filter(dt -> dt.endsWith("+")).collect (Collectors.toSet());
+                explicitTypes.stream().filter(et -> et.endsWith("+")).forEach(types::add);
                 varmap.put(var, types);
             }
         }
@@ -165,12 +161,12 @@ public class FormulaPreprocessor {
 
         ArrayList<ArrayList<String>> quantifiedUnquantifiedVariables =
                 form.collectQuantifiedUnquantifiedVariables();
-        ArrayList<String> unquantifiedVariables = quantifiedUnquantifiedVariables.get(1);
+        Iterable<String> unquantifiedVariables = quantifiedUnquantifiedVariables.get(1);
 
         StringBuffer sb = new StringBuffer();
         boolean begin = true;
         for (String unquantifiedV : unquantifiedVariables) {
-            HashSet<String> types = varmap.get(unquantifiedV);
+            Set<String> types = varmap.get(unquantifiedV);
             if (types != null && !types.isEmpty()) {
                 for (String t : types) {
                     if (begin) {
@@ -230,13 +226,13 @@ public class FormulaPreprocessor {
 
 
                 sb.append(f.getArgument(1)).append(' ');
-                ArrayList<String> quantifiedVariables = collectVariables(f.getArgument(1));
+                Collection<String> quantifiedVariables = collectVariables(f.getArgument(1));
 
 
-                boolean addSortals = false;
+                boolean addSortals;
 
                 HashMap<String, HashSet<String>> varDomainTypes = computeVariableTypes(f, kb);
-                HashMap<String, HashSet<String>> varExplicitTypes = findExplicitTypesClassesInAntecedent(kb, f);
+                Map<String, HashSet<String>> varExplicitTypes = findExplicitTypesClassesInAntecedent(kb, f);
 
 
                 HashMap<String, HashSet<String>> varmap = (HashMap<String, HashSet<String>>) varDomainTypes.clone();
@@ -245,20 +241,14 @@ public class FormulaPreprocessor {
                         varmap.remove(v);
                 }
 
-                for (String ev : quantifiedVariables) {
-                    HashSet<String> types = varmap.get(ev);
-                    if (types != null && !types.isEmpty()) {
-                        addSortals = true;
-                        break;
-                    }
-                }
+                addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(types -> types != null && !types.isEmpty());
                 if (addSortals) {
                     if (carstr.equals(Formula.EQUANT)) sb.append("(and ");
                     else if (carstr.equals(Formula.UQUANT)) sb.append("(=> (and ");
                 }
 
                 for (String existentiallyQV : quantifiedVariables) {
-                    HashSet<String> types = varmap.get(existentiallyQV);
+                    Set<String> types = varmap.get(existentiallyQV);
                     if (types != null && !types.isEmpty()) {
                         for (String t : types) {
                             if (!t.endsWith("+"))
@@ -530,7 +520,7 @@ public class FormulaPreprocessor {
      * of an HashSet of Strings
      */
     static HashMap<String, HashSet<String>> mergeToMap(HashMap<String, HashSet<String>> map1,
-                                                       HashMap<String, HashSet<String>> map2, KB kb) {
+                                                       Map<String, HashSet<String>> map2, KB kb) {
 
         HashMap<String, HashSet<String>> result = new HashMap<>(map1);
 
@@ -913,7 +903,7 @@ public class FormulaPreprocessor {
             ArrayList<Formula> variableReplacements = replacePredVarsAndRowVars(form, kb, addHoldsPrefix);
             form.errors.addAll(f.getErrors());
 
-            ArrayList<Formula> accumulator =
+            List<Formula> accumulator =
 
                     variableReplacements;
 

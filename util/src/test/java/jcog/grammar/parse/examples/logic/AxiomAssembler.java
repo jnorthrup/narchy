@@ -6,6 +6,7 @@ import jcog.grammar.parse.examples.engine.Rule;
 import jcog.grammar.parse.examples.engine.Structure;
 
 import java.util.Stack;
+import java.util.stream.IntStream;
 
 /**
  * Pops the structures of a rule from an assembly's stack, 
@@ -24,11 +25,8 @@ class AxiomAssembler implements IAssembler {
 	 */
 	public void accept(Assembly a) {
 		Stack s = a.getStack();
-		Structure[] sa = new Structure[s.size()];
-		for (int i = 0; i < s.size(); i++) {
-			sa[i] = (Structure) s.elementAt(i);
-		}
-		s.removeAllElements();
+		Structure[] sa = IntStream.range(0, s.size()).mapToObj(i -> (Structure) s.elementAt(i)).toArray(Structure[]::new);
+        s.removeAllElements();
 		a.push(new Rule(sa));
 	}
 }

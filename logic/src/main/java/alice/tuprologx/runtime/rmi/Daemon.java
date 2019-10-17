@@ -4,6 +4,7 @@ import java.net.InetAddress;
 import java.rmi.Naming;
 import java.rmi.RMISecurityManager;
 import java.rmi.registry.LocateRegistry;
+import java.util.Arrays;
 
 public class Daemon {
 
@@ -49,10 +50,7 @@ public class Daemon {
     }
 
     static String getOpt(String[] args,String prefix){
-        for (String arg : args)
-            if (arg.startsWith(prefix))
-                return arg.substring(prefix.length());
-        return null;
+        return Arrays.stream(args).filter(arg -> arg.startsWith(prefix)).findFirst().map(arg -> arg.substring(prefix.length())).orElse(null);
     }
 }
 

@@ -21,6 +21,7 @@ import org.roaringbitmap.RoaringBitmap;
 import java.util.Arrays;
 import java.util.function.BiPredicate;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 import static jcog.util.ArrayUtil.EMPTY_INT_ARRAY;
 import static nars.Op.CONJ;
@@ -249,11 +250,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     @Override
     public int eventCount(long w) {
         int s = size;
-        int c = 0;
+        int c;
         long[] when = this.when;
-        for (int i = 0; i < s; i++)
-            if (when[i] == w)
-                c++;
+        c = (int) IntStream.range(0, s).filter(i -> when[i] == w).count();
         return c;
     }
 
@@ -283,13 +282,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
         if (B instanceof InterningTermBuilder) {
             long w0 = when[0];
-            boolean allParallel = true;
-            for (int i = 1; i < n; i++) {
-                if (when[i] != w0) {
-                    allParallel = false;
-                    break; //difference
-                }
-            }
+            boolean allParallel = IntStream.range(1, n).noneMatch(i -> when[i] != w0);
+            //difference
             //all same time
             if (allParallel) {
                 return B.conj( toArrayRecycled(Term[]::new));
@@ -547,11 +541,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
         int midIndex = centerByIndex(startIndex, endIndex);
         if (n <= 2)
             return midIndex;
-        int[] v = new int[n];
+        int[] v = IntStream.range(0, n).map(i -> get(startIndex + i).volume()).toArray();
 
-        for (int i = 0; i < n; i++) {
-            v[i] = get(startIndex + i).volume();
-        }
         int bestSplit = 1, bestSplitDiff = Integer.MAX_VALUE;
         for (int i = 1; i < n-1; i++) {
             int pd = Math.abs(Util.sum(v, 0, i) - Util.sum(v, i, n));
@@ -583,12 +574,10 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     boolean removeAllAt(int f, ConjList x) {
         int xn = x.size;
-        boolean removed = false;
+        boolean removed;
         long[] ww = x.when;
         Term[] ii = x.items;
-        for (int i = 0; i < xn; i++) {
-            removed |= remove(ww[i] + f, ii[i]);
-        }
+        removed = IntStream.range(0, xn).mapToObj(i -> remove(ww[i] + f, ii[i])).reduce(false, (a, b) -> a || b);
         return removed;
     }
 

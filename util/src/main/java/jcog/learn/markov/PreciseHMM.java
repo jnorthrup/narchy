@@ -25,7 +25,9 @@
 package jcog.learn.markov;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.Vector;
+import java.util.stream.IntStream;
 
 /**
  * This is a Hidden Markov Model implementation which internally provides
@@ -215,12 +217,9 @@ public class PreciseHMM {
 		}
 		
 		
-		double sum0 = 0;
-		for(int i=0; i<help.length; i++) {
-			sum0+=help[i][0];
-		}
-		
-		for(int i=0; i<scaled.length; i++) {
+		double sum0 = Arrays.stream(help).mapToDouble(doubles -> doubles[0]).sum();
+
+        for(int i=0; i<scaled.length; i++) {
 			scaled[i][0] = help[i][0] / sum0;
 		}
 		
@@ -346,17 +345,10 @@ public class PreciseHMM {
 			}
 		}
 		
-		double lp = Double.NEGATIVE_INFINITY;
-		for(int i=0; i<this.numStates; i++) {
-			if(phi[i][o.length-1]>lp) {
-				lp = phi[i][o.length-1];
-			}
-		}
-		
-		
-		
-		
-		System.out.println("prob = "+Math.exp(lp));
+		double lp = IntStream.range(0, this.numStates).mapToDouble(i -> phi[i][o.length - 1]).filter(i -> i >= Double.NEGATIVE_INFINITY).max().orElse(Double.NEGATIVE_INFINITY);
+
+
+        System.out.println("prob = "+Math.exp(lp));
 		return Math.exp(lp);
 		
 	}

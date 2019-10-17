@@ -49,11 +49,7 @@ abstract public class FastCompound implements SameSubtermsCompound /* The */ {
         protected boolean containsAtomic(Atomic x) {
             if (!hasAny(x.op()))
                 return false;
-            for (Term y : atoms) {
-                if (x.equals(y))
-                    return true;
-            }
-            return false;
+            return Arrays.stream(atoms).anyMatch(x::equals);
         }
 
         @Override

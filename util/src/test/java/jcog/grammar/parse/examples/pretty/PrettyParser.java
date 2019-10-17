@@ -7,6 +7,7 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.
@@ -50,13 +51,8 @@ class PrettyParser {
 		Set<Assembly> inState = new HashSet<Assembly>();
 		inState.add(inAssembly);
 		Set<Assembly> outState = parser.matchAndAssemble(inState);
-		Set<Assembly> outComplete = new HashSet<Assembly>();
-		for (Assembly a : outState) {
-			if (!a.hasNext()) {
-				outComplete.add(a);
-			}
-		}
-		return outComplete;
+		Set<Assembly> outComplete = outState.stream().filter(a -> !a.hasNext()).collect(Collectors.toSet());
+        return outComplete;
 	}
 
 	/**

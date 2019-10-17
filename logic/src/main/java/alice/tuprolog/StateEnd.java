@@ -20,8 +20,10 @@ package alice.tuprolog;
 import jcog.data.list.FasterList;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
+import java.util.stream.Collectors;
 
 import static java.util.Collections.EMPTY_LIST;
 
@@ -219,11 +221,7 @@ public class StateEnd extends State {
 
                 ArrayList<Term> initGoalBagListOrdered = new ArrayList<>();
                 if (((Struct) query).name().equals("setof")) {
-                    ArrayList<String> initGoalBagListVar = new ArrayList<>();
-                    for (Term anInitGoalBagList : initGoalBagList) {
-                        if (anInitGoalBagList instanceof Var)
-                            initGoalBagListVar.add(((Var) anInitGoalBagList).name());
-                    }
+                    ArrayList<String> initGoalBagListVar = initGoalBagList.stream().filter(anInitGoalBagList -> anInitGoalBagList instanceof Var).map(anInitGoalBagList -> ((Var) anInitGoalBagList).name()).collect(Collectors.toCollection(ArrayList::new));
 
                     List<Term> left = new ArrayList<>();
                     left.add(initGoalBagList.get(0));
@@ -287,10 +285,7 @@ public class StateEnd extends State {
                 initGoalBagTemp = (Struct) initGoalBag;
 
                 Object[] t = initGoalBagListOrdered.toArray();
-                Term[] t1 = new Term[t.length];
-                for (int i = 0; i < t.length; i++) {
-                    t1[i] = (Term) t[i];
-                }
+                Term[] t1 = Arrays.stream(t).map(item -> (Term) item).toArray(Term[]::new);
 
 
                 initGoalBag = new Struct(initGoalBagTemp.name(), t1);
@@ -308,10 +303,7 @@ public class StateEnd extends State {
                 }
 
                 Object[] tNoOrd = initBagList.toArray();
-                Term[] termNoOrd = new Term[tNoOrd.length];
-                for (int i = 0; i < tNoOrd.length; i++) {
-                    termNoOrd[i] = (Term) tNoOrd[i];
-                }
+                Term[] termNoOrd = Arrays.stream(tNoOrd).map(o -> (Term) o).toArray(Term[]::new);
 
 
                 initBag = new Struct(initGoalBagTemp.name(), termNoOrd);

@@ -5,6 +5,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.function.BiPredicate;
+import java.util.stream.IntStream;
 
 /**
  * Created by sserban on 2/17/15.
@@ -35,10 +36,7 @@ public class FormulaUtil {
      */
     public static List<int[]> getPermutations(int size, BiPredicate<Integer, Integer> validateFn) {
 
-        int[] array = new int[size];
-        for( int i = 0; i< size; i++) {
-            array[i] = i;
-        }
+        int[] array = IntStream.range(0, size).toArray();
         List<int[]> result = new LinkedList<>();
         permutation(new int[0], array, result, validateFn);
         return result;

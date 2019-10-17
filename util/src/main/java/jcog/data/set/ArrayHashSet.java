@@ -97,17 +97,13 @@ public class ArrayHashSet<X> extends AbstractSet<X> implements ArraySet<X> {
     @Override
     public boolean addAll(Collection<? extends X> c) {
         //throw new TODO("optimized bulk addAt");
-        boolean added = false;
-        for (X x : c)
-            added |= add(x);
+        boolean added = c.stream().map(this::add).reduce(false, (a, b) -> a || b);
         return added;
     }
 
     public boolean addAll(X... c) {
         //throw new TODO("optimized bulk addAt");
-        boolean added = false;
-        for (X x : c)
-            added |= add(x);
+        boolean added = Arrays.stream(c).map(this::add).reduce(false, (a, b) -> a || b);
         return added;
     }
 

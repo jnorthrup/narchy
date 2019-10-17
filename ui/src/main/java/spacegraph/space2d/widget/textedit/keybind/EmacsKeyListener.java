@@ -11,6 +11,7 @@ import java.net.URL;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 import static com.jogamp.newt.event.KeyEvent.*;
 import static spacegraph.space2d.widget.textedit.keybind.SupportKey.*;
@@ -258,11 +259,7 @@ public class EmacsKeyListener implements TextEditKeys {
         if (cs > keybinding.size()) {
             return false;
         }
-        for (int i = 0; i < cs; i++)
-            if (current.get(i).equals(keybinding.get(i))) {
-                return true;
-        }
-        return false;
+        return IntStream.range(0, cs).anyMatch(i -> current.get(i).equals(keybinding.get(i)));
     }
 
 

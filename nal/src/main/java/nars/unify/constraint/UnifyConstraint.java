@@ -193,11 +193,8 @@ public abstract class UnifyConstraint<U extends Unify> extends AbstractPred<U> {
 
 		@Override
 		public boolean invalid(Term x, U f) {
-			for (UnifyConstraint<U> c : subConstraint)
-				if (c.invalid(x, f))
-					return true;
 
-			return false;
+            return Arrays.stream(subConstraint).anyMatch(c -> c.invalid(x, f));
 		}
 
 

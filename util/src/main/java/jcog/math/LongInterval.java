@@ -2,6 +2,8 @@ package jcog.math;
 
 import jcog.WTF;
 
+import java.util.Arrays;
+
 import static java.lang.Math.max;
 import static java.lang.Math.min;
 
@@ -120,18 +122,12 @@ public interface LongInterval {
 
 	default boolean isDuringAny(long... when) {
 		if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]);
-		for (long x : when) {
-			if (isDuring(x)) return true;
-		}
-		return false;
+        return Arrays.stream(when).anyMatch(this::isDuring);
 	}
 
 	default boolean isDuringAll(long... when) {
 		if (when.length == 2 && when[0] == when[1]) return isDuring(when[0]);
-		for (long x : when) {
-			if (!isDuring(x)) return false;
-		}
-		return true;
+        return Arrays.stream(when).allMatch(this::isDuring);
 	}
 
 	default boolean isDuring(long when) {

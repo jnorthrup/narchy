@@ -7,6 +7,8 @@ package spacegraph.audio.modem.stopcollaboratelisten;
  */
 
 
+import java.util.Arrays;
+
 /**
  * A set of handy array manipulation utilities
  * @author CVL
@@ -38,10 +40,7 @@ package spacegraph.audio.modem.stopcollaboratelisten;
      */
     public static byte[] concatenate(byte[][] input) {
         //sum the lengths of the columns
-        int totalLength = 0;
-        for (byte[] value : input) {
-            totalLength += value.length;
-        }
+        int totalLength = Arrays.stream(input).mapToInt(value -> value.length).sum();
         //create the result array
         byte[] result = new byte[totalLength];
 

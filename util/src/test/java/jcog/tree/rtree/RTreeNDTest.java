@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Test;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.IntFunction;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -66,12 +67,7 @@ class RTreeNDTest {
             List<HyperRectFloat> results = new ArrayList();
 
             rTree.intersectsWhile(searchRect, results::add);
-            int resultCount = 0;
-            for (int i = 0; i < results.size(); i++) {
-                if (results.get(i) != null) {
-                    resultCount++;
-                }
-            }
+            int resultCount = (int) IntStream.range(0, results.size()).filter(i -> results.get(i) != null).count();
 
             final int expectedCount = 9;
             
@@ -130,12 +126,7 @@ class RTreeNDTest {
                 HyperRectFloat[] results = new HyperRectFloat[rects.length];
 
                 final int foundCount = rTree.containedToArray(searchRect, results);
-                int resultCount = 0;
-                for (int i = 0; i < results.length; i++) {
-                    if (results[i] != null) {
-                        resultCount++;
-                    }
-                }
+                int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
 
                 final int expectedCount = rects.length;
                 
@@ -180,12 +171,7 @@ class RTreeNDTest {
             RectDouble[] results = new RectDouble[3];
 
             final int foundCount = rTree.containedToArray(searchRect, results);
-            int resultCount = 0;
-            for (int i = 0; i < results.length; i++) {
-                if (results[i] != null) {
-                    resultCount++;
-                }
-            }
+            int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
 
             final int expectedCount = 3;
             assertEquals(expectedCount, foundCount, "[" + type + "] Search returned incorrect search result count - expected: " + expectedCount + " actual: " + foundCount);
@@ -288,12 +274,7 @@ class RTreeNDTest {
             RectDouble[] results = new RectDouble[entryCount];
 
             final int foundCount = rTree.containedToArray(searchRect, results);
-            int resultCount = 0;
-            for (int i = 0; i < results.length; i++) {
-                if (results[i] != null) {
-                    resultCount++;
-                }
-            }
+            int resultCount = (int) IntStream.range(0, results.length).filter(i -> results[i] != null).count();
 
             final AtomicInteger visitCount = new AtomicInteger();
             rTree.containsWhile(searchRect, (n) -> {

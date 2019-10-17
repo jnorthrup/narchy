@@ -38,11 +38,13 @@ import org.roaringbitmap.RoaringBitmap;
 import java.net.URI;
 import java.net.URL;
 import java.nio.file.Path;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.SortedSet;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static java.lang.Character.isDigit;
@@ -245,11 +247,7 @@ public enum $ { ;
         if (t.length == 0) return Op.EmptyProduct;
 
         if (t.length < 31) {
-            int b = 0;
-            for (int i = 0; i < t.length; i++) {
-                if (t[i])
-                    b |= 1 << i;
-            }
+            int b = IntStream.range(0, t.length).filter(i -> t[i]).map(i -> 1 << i).reduce(0, (a, b1) -> a | b1);
             return Int.the(b);
         } else {
             throw new TODO();
@@ -329,10 +327,7 @@ public enum $ { ;
     }
 
     public static Term p(char[] c, CharToObjectFunction<Term> f) {
-        Term[] x = new Term[c.length];
-        for (int i = 0; i < c.length; i++) {
-            x[i] = f.valueOf(c[i]);
-        }
+        Term[] x = IntStream.range(0, c.length).mapToObj(i -> f.valueOf(c[i])).toArray(Term[]::new);
         return $.p(x);
     }
 
@@ -474,16 +469,12 @@ public enum $ { ;
 
     public static Term[] ints(short... i) {
         int l = i.length;
-        Term[] x = new Term[l];
-        for (int j = 0; j < l; j++)
-            x[j] = the(i[j]);
+        Term[] x = IntStream.range(0, l).mapToObj(j -> the(i[j])).toArray(Term[]::new);
         return x;
     }
     public static Term[] ints(int... i) {
         int l = i.length;
-        Term[] x = new Term[l];
-        for (int j = 0; j < l; j++)
-            x[j] = the(i[j]);
+        Term[] x = Arrays.stream(i).mapToObj($::the).toArray(Term[]::new);
         return x;
     }
 
@@ -623,12 +614,8 @@ public enum $ { ;
 
         int[] xx = radix(x, radix, maxX);
 
-        Term[] tt = new Term[xx.length];
-        for (int i = 0; i < xx.length; i++) {
-            tt[i] =
-                //$.the(BinTxt.symbols[xx[i]]);
-                Int.the(xx[i]);
-        }
+        Term[] tt = Arrays.stream(xx).mapToObj(Int::the).toArray(Term[]::new);
+        //$.the(BinTxt.symbols[xx[i]]);
         return tt;
     }
 

@@ -299,12 +299,7 @@ public class PrologLibraries {
      * found
      */
     public PrologLib getLibrary(String name) {
-        for (PrologLib alib : currentLibraries) {
-            if (alib.getName().equals(name)) {
-                return alib;
-            }
-        }
-        return null;
+        return currentLibraries.stream().filter(alib -> alib.getName().equals(name)).findFirst().orElse(null);
     }
 
     public void onSolveBegin(Term g) {

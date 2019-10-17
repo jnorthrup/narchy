@@ -33,6 +33,7 @@ import net.propero.rdp.RdpPacket;
 
 import java.awt.datatransfer.DataFlavor;
 import java.awt.datatransfer.Transferable;
+import java.util.Arrays;
 
 public abstract class TypeHandler {
 
@@ -108,10 +109,6 @@ public abstract class TypeHandler {
 
     public boolean clipboardValid(DataFlavor[] dataTypes) {
 
-        for (DataFlavor dataType : dataTypes) {
-            if (mimeTypeValid(dataType.getPrimaryType()))
-                return true;
-        }
-        return false;
+        return Arrays.stream(dataTypes).anyMatch(dataType -> mimeTypeValid(dataType.getPrimaryType()));
     }
 }

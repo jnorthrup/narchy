@@ -4,6 +4,7 @@ import com.jujutsu.tsne.barneshut.VpTree.HeapItem;
 import org.junit.jupiter.api.Test;
 
 import java.util.*;
+import java.util.stream.IntStream;
 
 import static org.junit.jupiter.api.Assertions.assertArrayEquals;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,19 +46,13 @@ public class BHUtilsTest {
         
         Collections.reverse(results);
         DataPoint [] expectedRes = { _items[1], _items[2], _items[0] };
-        DataPoint [] actualRes = new DataPoint[expectedRes.length];
-        for (int i = 0; i < actualRes.length; i++) {
-        	actualRes[i] = results.get(i);
-		}
+        DataPoint [] actualRes = IntStream.range(0, expectedRes.length).mapToObj(results::get).toArray(DataPoint[]::new);
 
         assertArrayEquals(expectedRes, actualRes);
         
         Collections.reverse(distances);
         double [] expected = {4.1,5.1,7.2};
-        double [] actual = new double[expected.length];
-        for (int i = 0; i < actual.length; i++) {
-			actual[i] = distances.get(i);
-		}
+        double [] actual = IntStream.range(0, expected.length).mapToDouble(distances::get).toArray();
         assertArrayEquals(expected, actual, 0.000000001);
 	}
 	

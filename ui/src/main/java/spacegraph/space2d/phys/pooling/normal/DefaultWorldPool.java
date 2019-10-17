@@ -40,6 +40,8 @@ import spacegraph.space2d.phys.dynamics.contacts.*;
 import spacegraph.space2d.phys.pooling.IDynamicStack;
 import spacegraph.space2d.phys.pooling.IWorldPool;
 
+import java.util.stream.IntStream;
+
 /**
  * Provides object pooling for all objects used in the engine. Objects retrieved from here should
  * only be used temporarily, and then pushed back (with the exception of arrays).
@@ -307,10 +309,7 @@ public class DefaultWorldPool implements IWorldPool {
 
     public final v2[] getVec2Array(int argLength) {
         if (!avecs.containsKey(argLength)) {
-            v2[] ray = new v2[argLength];
-            for (int i = 0; i < argLength; i++) {
-                ray[i] = new v2();
-            }
+            v2[] ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
             avecs.put(argLength, ray);
         }
 

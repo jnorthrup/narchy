@@ -15,6 +15,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintStream;
 import java.util.function.BiConsumer;
+import java.util.stream.IntStream;
 
 import static jcog.Texts.n4;
 
@@ -134,16 +135,13 @@ public enum MetaGoal {
 
             Cause ci = ccc[i];
 
-            double v = 0;
+            double v;
             //boolean valued = false;
             ci.commit(credit);
-            for (int w = 0; w < want.length; w++) {
-
-                //if (Math.abs(c) > Float.MIN_NORMAL) {
-                    v += want[w] * credit[w];
-                    //valued = true;
-                //}
-            }
+            //if (Math.abs(c) > Float.MIN_NORMAL) {
+            //valued = true;
+            //}
+            v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
 
             ci.value(
                 //valued ? (float)v : Float.NaN

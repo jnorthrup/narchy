@@ -26,6 +26,7 @@ package spacegraph.space2d.phys.pooling;
 import jcog.math.v2;
 
 import java.util.HashMap;
+import java.util.stream.IntStream;
 
 /**
  * not thread safe Vec2[] pool
@@ -48,10 +49,7 @@ public class Vec2Array {
     }
 
     private static v2[] getInitializedArray(int argLength) {
-        final v2[] ray = new v2[argLength];
-        for (int i = 0; i < ray.length; i++) {
-            ray[i] = new v2();
-        }
+        final v2[] ray = IntStream.range(0, argLength).mapToObj(i -> new v2()).toArray(v2[]::new);
         return ray;
     }
 }

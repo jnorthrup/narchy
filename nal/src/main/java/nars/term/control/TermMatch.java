@@ -54,16 +54,7 @@ public final class TermMatch<X extends Unify> extends AbstractTermMatchPred<X> {
         if (resolveCost == 0)
             return false; //dont bother grouping root accessors
 
-        TermMatch other = null;
-        for (PREDICATE x : p) {
-            if (x != this && x instanceof TermMatch) {
-                TermMatch t = ((TermMatch) x);
-                if (resolve.equals(t.resolve)) {
-                    other = t;
-                    break;
-                }
-            }
-        }
+        TermMatch other = p.stream().filter(x -> x != this && x instanceof TermMatch).map(x -> ((TermMatch) x)).filter(t -> resolve.equals(t.resolve)).findFirst().orElse(null);
         if (other!=null) {
 
             int myIndex = ((FasterList)p).indexOfInstance(this);

@@ -4,6 +4,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public class MatrixUtils {
     private static final Pattern LINE = Pattern.compile("\\s*");
@@ -53,14 +54,11 @@ public class MatrixUtils {
     }
 
     public static String[] simpleReadLines(File file) {
-        Collection<String> rows = new ArrayList<>();
+        Collection<String> rows;
 
         try (FileReader fr = new FileReader(file);
              BufferedReader b = new BufferedReader(fr)) {
-            String line;
-            while ((line = b.readLine()) != null) {
-                rows.add(line.trim());
-            }
+            rows = b.lines().map(String::trim).collect(Collectors.toList());
         } catch (IOException e) {
             throw new IllegalArgumentException(e);
         }

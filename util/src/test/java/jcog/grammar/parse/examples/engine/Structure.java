@@ -8,6 +8,10 @@ package jcog.grammar.parse.examples.engine;
  * including the implied warranty of merchantability.
  */
 
+import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  * A Structure is a functor associated with a number of terms; a functor can be
  * any object. A term is an object that implements the Term interface, including
@@ -125,11 +129,8 @@ public class Structure implements Term {
 	 *         with other structures.
 	 */
 	public Term copyForProof(AxiomSource as, Scope scope) {
-		Term[] newTerms = new Term[terms.length];
-		for (int i = 0; i < terms.length; i++) {
-			newTerms[i] = terms[i].copyForProof(as, scope);
-		}
-		return new ConsultingStructure(as, functor, newTerms);
+		Term[] newTerms = Arrays.stream(terms).map(term -> term.copyForProof(as, scope)).toArray(Term[]::new);
+        return new ConsultingStructure(as, functor, newTerms);
 	}
 
 	/**
@@ -148,12 +149,7 @@ public class Structure implements Term {
 		if (!functorAndArityEquals(s)) {
 			return false;
 		}
-		for (int i = 0; i < terms.length; i++) {
-			if (!(terms[i].equals(s.terms[i]))) {
-				return false;
-			}
-		}
-		return true;
+        return IntStream.range(0, terms.length).allMatch(i -> terms[i].equals(s.terms[i]));
 	}
 
 	/**
@@ -319,18 +315,11 @@ public class Structure implements Term {
 			 */
 			return '[' + listTermsToString() + ']';
 		}
-		StringBuffer buf = new StringBuffer(functor.toString());
+		String buf = "";
 		if (terms.length > 0) {
-			buf.append('(');
-			for (int i = 0; i < terms.length; i++) {
-				if (i > 0) {
-					buf.append(", ");
-				}
-				buf.append(terms[i]);
-			}
-			buf.append(')');
-		}
-		return buf.toString();
+            buf = Arrays.stream(terms).map(String::valueOf).collect(Collectors.joining(", ", functor.toString() + '(', ")"));
+        }
+		return buf;
 	}
 
 	/**

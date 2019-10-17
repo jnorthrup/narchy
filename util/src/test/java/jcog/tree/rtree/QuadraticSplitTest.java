@@ -24,6 +24,8 @@ import jcog.tree.rtree.rect.RectDouble;
 import jcog.tree.rtree.util.Stats;
 import org.junit.jupiter.api.Test;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -75,12 +77,7 @@ class QuadraticSplitTest {
 
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
-        int childCount = 0;
-        for(RNode c : children) {
-            if (c != null) {
-                childCount++;
-            }
-        }
+        int childCount = (int) Arrays.stream(children).filter(Objects::nonNull).count();
         assertEquals(2, childCount, "Expected different number of children after split");
 
         RNode<RectDouble> child1 = children[0];

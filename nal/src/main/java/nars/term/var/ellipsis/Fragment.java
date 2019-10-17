@@ -11,6 +11,7 @@ import nars.unify.Unify;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.SortedSet;
+import java.util.stream.IntStream;
 
 import static nars.Op.FRAG;
 import static nars.time.Tense.DTERNAL;
@@ -132,11 +133,7 @@ public final class Fragment extends LightCompound {
         if (s + from > y.subs())
             return false;
 
-        for (int i = 0; i < s; i++) {
-            if (!y.sub(i + from).unify(sub(i), subst))
-                return false;
-        }
-        return true;
+        return IntStream.range(0, s).allMatch(i -> y.sub(i + from).unify(sub(i), subst));
     }
 
 

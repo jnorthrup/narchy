@@ -174,12 +174,7 @@ public class Solution implements Serializable/*, ISolution<Term,Term,Term>*/  {
      */
     public Term getVarValue(String varName) throws NoSolutionException {
         if (isSuccess) {
-            for (Var v : bindings) {
-                if (v != null && v.name().equals(varName)) {
-                    return v.term();
-                }
-            }
-            return null;
+            return bindings.stream().filter(v -> v != null && v.name().equals(varName)).findFirst().map(Var::term).orElse(null);
         } else
             throw new NoSolutionException();
     }

@@ -3,6 +3,7 @@ package jcog.exe.realtime;
 import jcog.Util;
 import jcog.data.list.MetalConcurrentQueue;
 
+import java.util.Arrays;
 import java.util.function.ToIntFunction;
 
 import static jcog.exe.realtime.TimedFuture.*;
@@ -88,10 +89,7 @@ public class MetalConcurrentQueueWheelModel extends HashedWheelTimer.WheelModel 
 
     @Override
     public boolean isEmpty() {
-        for (MetalConcurrentQueue<TimedFuture> q : q)
-            if (!q.isEmpty())
-                return false;
-        return true;
+        return Arrays.stream(q).allMatch(MetalConcurrentQueue::isEmpty);
     }
 
 

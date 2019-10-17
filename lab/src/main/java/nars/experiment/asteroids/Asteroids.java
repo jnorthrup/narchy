@@ -9,6 +9,7 @@ import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
 import java.text.DecimalFormat;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
@@ -463,24 +464,8 @@ public class Asteroids extends JFrame implements KeyListener, ActionListener {
 
     public boolean collision(VectorSprite object1, VectorSprite object2) {
 
-        for (int i = 0; i < object1.drawShape.npoints; i++) {
 
-            if (object2.drawShape.contains(object1.drawShape.xpoints[i], object1.drawShape.ypoints[i]) && object1.active && object2.active) {
-                return true;
-            }
-
-        }
-
-
-        for (int i = 0; i < object2.drawShape.npoints; i++) {
-
-            if (object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active) {
-                return true;
-            }
-
-        }
-
-        return false;
+        return IntStream.range(0, object1.drawShape.npoints).anyMatch(i -> object2.drawShape.contains(object1.drawShape.xpoints[i], object1.drawShape.ypoints[i]) && object1.active && object2.active) || IntStream.range(0, object2.drawShape.npoints).anyMatch(i -> object1.drawShape.contains(object2.drawShape.xpoints[i], object2.drawShape.ypoints[i]) && object1.active && object2.active);
 
     }
 

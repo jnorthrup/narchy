@@ -25,7 +25,9 @@
 package jcog.reflect;
 
 
+import java.util.Arrays;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Конвертор массива байтов
@@ -66,11 +68,8 @@ public class ByteArrayConvertor {
         if (bytes == null) {
             throw new IllegalArgumentException("bytes==null");
         }
-        StringBuilder sb = new StringBuilder();
-        for (Byte aByte : bytes) {
-            sb.append(getHex(aByte));
-        }
-        return sb.toString();
+        String sb = Arrays.stream(bytes).map(ByteArrayConvertor::getHex).collect(Collectors.joining());
+        return sb;
     }
 
     /**

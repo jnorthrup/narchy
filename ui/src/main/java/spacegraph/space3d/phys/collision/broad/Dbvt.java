@@ -37,6 +37,7 @@ import spacegraph.space3d.phys.util.OArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -788,11 +789,8 @@ public final class Dbvt {
 			if (leaves.size() > bu_treshold) {
 				DbvtAabbMm vol = bounds(leaves);
 				v3 org = vol.center(new v3());
-				FasterList[] sets = new FasterList[2];
-				for (int i=0; i<sets.length; i++) {
-					sets[i] = new FasterList();
-				}
-				int bestaxis = -1;
+				FasterList[] sets = IntStream.range(0, 2).mapToObj(i -> new FasterList()).toArray(FasterList[]::new);
+                int bestaxis = -1;
 				int bestmidp = leaves.size();
 				int[][] splitcount = {{0, 0}, {0, 0}, {0, 0}};
 

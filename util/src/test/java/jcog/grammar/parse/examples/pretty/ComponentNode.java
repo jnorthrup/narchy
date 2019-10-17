@@ -1,6 +1,8 @@
 package jcog.grammar.parse.examples.pretty;
 
 import java.util.Vector;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.
@@ -30,11 +32,8 @@ abstract class ComponentNode {
 	 * @return  a string of blanks
 	 */
 	static String indent(int n) {
-		StringBuffer buf = new StringBuffer();
-		for (int i = 0; i < n; i++) {
-			buf.append("    ");
-		}
-		return buf.toString();
+		String buf = IntStream.range(0, n).mapToObj(i -> "    ").collect(Collectors.joining());
+        return buf;
 	}
 
 	/**

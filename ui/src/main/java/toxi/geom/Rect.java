@@ -31,6 +31,8 @@ import toxi.math.MathUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static java.lang.Float.floatToIntBits;
 
@@ -280,10 +282,7 @@ public class Rect implements Shape2D {
 
     @Override
     public List<Line2D> getEdges() {
-        List<Line2D> edges = new ArrayList<>();
-        for (int i = 0; i < 4; i++) {
-            edges.add(getEdge(i));
-        }
+        List<Line2D> edges = IntStream.range(0, 4).mapToObj(this::getEdge).collect(Collectors.toList());
         return edges;
     }
 

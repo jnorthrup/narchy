@@ -15,6 +15,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -45,10 +46,7 @@ public class DataTable extends Table implements Externalizable {
             addColumns(column.emptyCopy(rc));
         }
 
-        int[] rows = new int[rc];
-        for (int i = 0; i < rc; i++) {
-            rows[i] = i;
-        }
+        int[] rows = IntStream.range(0, rc).toArray();
         Rows.copyRowsToTable(rows, copy, this);
         nominalCats = new HashMap<>();
     }

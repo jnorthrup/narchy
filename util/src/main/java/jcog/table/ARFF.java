@@ -51,11 +51,13 @@ import tech.tablesaw.columns.strings.StringColumnType;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Scanner;
 import java.util.function.Function;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 
 /**
@@ -353,13 +355,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
         }
 
         String[] values = categories(name);
-        boolean found = false;
-        for (String value : values) {
-            if (value.equals(token)) {
-                found = true;
-                break;
-            }
-        }
+        boolean found = Arrays.stream(values).anyMatch(value -> value.equals(token));
         return found;
     }
 
@@ -633,10 +629,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         public boolean put(X x) {
             int n = columnCount();
-            Object[] o = new Object[n];
-            for (int i = 0; i < n; i++) {
-                o[i] = extractor[i].apply(x);
-            }
+            Object[] o = IntStream.range(0, n).mapToObj(i -> extractor[i].apply(x)).toArray();
             return add(o);
         }
     }

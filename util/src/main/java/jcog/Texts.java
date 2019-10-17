@@ -11,6 +11,8 @@ import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.function.BiConsumer;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * Utilities for process Text & String input/output, ex: encoding/escaping and decoding/unescaping Terms
@@ -573,12 +575,9 @@ public enum Texts {
 	}
 
 	public static int countRows(String s, char x) {
-		int c = 0;
-		for (int i = 0; i < s.length(); i++)
-			if (s.charAt(i) == x)
-				c++;
+		int c = (int) IntStream.range(0, s.length()).filter(i -> s.charAt(i) == x).count();
 
-		return c;
+        return c;
 	}
 	public static int countCols(String next) {
 		int cols = 0;
@@ -631,12 +630,10 @@ public enum Texts {
 	 * prints an array of numbers separated by tab, suitable for a TSV line
 	 */
 	public static String n2(byte... v) {
-		StringBuilder sb = new StringBuilder(v.length * 3);
+		String sb;
 		int s = v.length;
-		for (int i = 0; i < s; i++) {
-			sb.append(Integer.toHexString(Byte.toUnsignedInt(v[i]))).append(' ');
-		}
-		return sb.toString();
+        sb = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
+		return sb;
 	}
 
 	/**

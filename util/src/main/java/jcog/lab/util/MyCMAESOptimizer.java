@@ -21,6 +21,7 @@ import java.io.PrintStream;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * adapted from Apache Commons Math 3.6
@@ -299,14 +300,10 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return a sorted array of indices pointing into doubles.
 	 */
 	private static int[] sortedIndices(final double[] x) {
-		final MyCMAESOptimizer.DoubleIndex[] y = new MyCMAESOptimizer.DoubleIndex[x.length];
-		for (int i = 0; i < x.length; i++)
-		    y[i] = new DoubleIndex(x[i], i);
-		Arrays.sort(y);
-		final int[] j = new int[x.length];
-		for (int i = 0; i < x.length; i++)
-		    j[i] = y[i].index;
-		return j;
+		final DoubleIndex[] y = IntStream.range(0, x.length).mapToObj(i -> new DoubleIndex(x[i], i)).toArray(DoubleIndex[]::new);
+        Arrays.sort(y);
+		final int[] j = IntStream.range(0, x.length).map(i -> y[i].index).toArray();
+        return j;
 	}
 
 	/**
@@ -582,9 +579,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return the indices in inverse order (last is first).
 	 */
 	private static int[] reverse(final int[] indices) {
-		final int[] reverse = new int[indices.length];
-		for (int i = 0; i < indices.length; i++) reverse[i] = indices[indices.length - i - 1];
-		return reverse;
+		final int[] reverse = IntStream.range(0, indices.length).map(i -> indices[indices.length - i - 1]).toArray();
+        return reverse;
 	}
 
 	/**
@@ -896,9 +892,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 	 * @return an array of Gaussian random numbers.
 	 */
 	private double[] randn(int size) {
-		final double[] randn = new double[size];
-		for (int i = 0; i < size; i++) randn[i] = random.nextGaussian();
-		return randn;
+		final double[] randn = IntStream.range(0, size).mapToDouble(i -> random.nextGaussian()).toArray();
+        return randn;
 	}
 
 	/**
@@ -1083,10 +1078,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 		 * @return Penalty value according to the violation of the bounds.
 		 */
 		private double penalty(final double[] x, final double[] repaired) {
-			double penalty = 0;
-			for (int i = 0; i < x.length; i++)
-			    penalty += Math.abs(x[i] - repaired[i]);
-			return isMinimize ? penalty : -penalty;
+			double penalty = IntStream.range(0, x.length).mapToDouble(i -> Math.abs(x[i] - repaired[i])).sum();
+            return isMinimize ? penalty : -penalty;
 		}
 
         public boolean iterate() {
@@ -1164,11 +1157,8 @@ public class MyCMAESOptimizer extends MultivariateOptimizer {
 
             final double[] sqrtDiagC = sqrt(diagC).getColumn(0);
             final double[] pcCol = pc.getColumn(0);
-            for (int i = 0; i < dimension; i++) {
-                if (sigma * Math.max(Math.abs(pcCol[i]), sqrtDiagC[i]) > stopTolX)
-                    break;
-                if (i >= dimension - 1)
-                    return false;
+            if (IntStream.range(0, dimension).takeWhile(i -> !(sigma * Math.max(Math.abs(pcCol[i]), sqrtDiagC[i]) > stopTolX)).anyMatch(i -> i >= dimension - 1)) {
+                return false;
             }
             for (int i = 0; i < dimension; i++)
                 if (sigma * sqrtDiagC[i] > stopTolUpX)

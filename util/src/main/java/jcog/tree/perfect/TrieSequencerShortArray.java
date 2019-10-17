@@ -17,7 +17,7 @@
 package jcog.tree.perfect;
 
 
-
+import java.util.stream.IntStream;
 
 /**
  * A {@link TrieSequencer} implementation where short[] is the sequence type.
@@ -31,15 +31,8 @@ public class TrieSequencerShortArray implements TrieSequencer<short[]>
    @Override
    public int matches( short[] sequenceA, int indexA, short[] sequenceB, int indexB, int count )
    {
-      for (int i = 0; i < count; i++)
-      {
-         if (sequenceA[indexA + i] != sequenceB[indexB + i])
-         {
-            return i;
-         }
-      }
+       return IntStream.range(0, count).filter(i -> sequenceA[indexA + i] != sequenceB[indexB + i]).findFirst().orElse(count);
 
-      return count;
    }
 
    @Override

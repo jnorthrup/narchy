@@ -11,6 +11,7 @@ import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /**
  *
@@ -137,51 +138,25 @@ public final class HttpUtil
         
         public static int findCRLF(ByteBuffer buf, int offset)
         {
-                
-                for (int a = offset; a < buf.limit() - 1; a++)
-                {
-                        if (isCR(buf.get(a)) && isLF(buf.get(a + 1)))
-                        {
-                                return a;
-                        }
-                }
 
-                return -1;
+            return IntStream.range(offset, buf.limit() - 1).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).findFirst().orElse(-1);
+
         }
 
         
         public static int findCRLFIgnoreLWS(ByteBuffer buf, int offset)
         {
-                
 
-                
-                for (int a = offset; a < buf.limit() - 2; a++)
-                {
-                        if (isCR(buf.get(a)) && isLF(buf.get(a + 1)))
-                        {
-                                
-                                if (!isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2)))
-                                {
-                                        return a;
-                                }
-                        }
-                }
 
-                return -1;
+            return IntStream.range(offset, buf.limit() - 2).filter(a -> isCR(buf.get(a)) && isLF(buf.get(a + 1))).filter(a -> !isSP(buf.get(a + 2)) && !isHT(buf.get(a + 2))).findFirst().orElse(-1);
+
         }
 
         
         public static int findSP(ByteBuffer buf, int offset)
         {
-                for (int a = offset; a < buf.limit(); a++)
-                {
-                        if (isSP(buf.get(a)))
-                        {
-                                return a;
-                        }
-                }
+            return IntStream.range(offset, buf.limit()).filter(a -> isSP(buf.get(a))).findFirst().orElse(-1);
 
-                return -1;
         }
 
         public enum METHOD

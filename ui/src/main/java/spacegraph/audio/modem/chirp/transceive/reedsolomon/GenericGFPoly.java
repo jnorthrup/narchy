@@ -16,6 +16,8 @@
 
 package spacegraph.audio.modem.chirp.transceive.reedsolomon;
 
+import java.util.Arrays;
+
 /**
  * <p>Represents a polynomial whose coefficients are elements of a GF.
  * Instances of this class are immutable.</p>
@@ -175,10 +177,7 @@ final class GenericGFPoly {
             return this;
         }
         int size = coefficients.length;
-        int[] product = new int[size];
-        for (int i = 0; i < size; i++) {
-            product[i] = field.multiply(coefficients[i], scalar);
-        }
+        int[] product = Arrays.stream(coefficients).map(coefficient -> field.multiply(coefficient, scalar)).toArray();
         return new GenericGFPoly(field, product);
     }
 

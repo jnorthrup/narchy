@@ -10,6 +10,7 @@ import java.util.Random;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 
 /**
  * BFS that descends through RTree visiting nodes and leaves in an order determined
@@ -97,10 +98,9 @@ public class HyperIterator<X>  {
     private void bfsRoundRobin(Predicate whle, Random random) {
         int leaves = plan.size(); //assert(leaves > 0);
         int[] remain = new int[leaves];
-        int n = 0;
+        int n;
         Object[] pp = plan.items;
-        for (int i = 0; i < leaves; i++)
-            n+= (remain[i] = ((RLeaf) pp[i]).size);
+        n = IntStream.range(0, leaves).map(i -> (remain[i] = ((RLeaf) pp[i]).size)).sum();
         int c = 0;
         int k = 0;
         int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order

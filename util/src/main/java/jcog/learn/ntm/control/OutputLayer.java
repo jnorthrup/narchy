@@ -4,6 +4,7 @@ import jcog.learn.ntm.learn.IWeightUpdater;
 import jcog.learn.ntm.memory.address.Head;
 
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 public class OutputLayer {
     private final int _outputSize;
@@ -49,13 +50,10 @@ public class OutputLayer {
 
         for (int i = 0; i < _outputSize; i++) {
             
-            double sum = 0.0;
+            double sum;
             Unit[] weights = _hiddenToOutputLayerWeights[i];
 
-            for (int j = 0; j < controllerSize; j++) {
-                
-                sum += weights[j].value * hiddenLayerNeurons[j];
-            }
+            sum = IntStream.range(0, controllerSize).mapToDouble(j -> weights[j].value * hiddenLayerNeurons[j]).sum();
 
             
             sum += weights[controllerSize].value;
@@ -69,13 +67,10 @@ public class OutputLayer {
             final Head head = heads[i];
 
             for (int j = 0; j < headsWeights.length; j++) {
-                double sum = 0.0;
+                double sum;
                 Unit[] headWeights = headsWeights[j];
 
-                for (int k = 0; k < controllerSize; k++) {
-                    
-                    sum += headWeights[k].value * hiddenLayerNeurons[k];
-                }
+                sum = IntStream.range(0, controllerSize).mapToDouble(k -> headWeights[k].value * hiddenLayerNeurons[k]).sum();
 
                 
                 sum += headWeights[controllerSize].value;

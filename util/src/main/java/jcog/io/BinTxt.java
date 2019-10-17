@@ -1,5 +1,8 @@
 package jcog.io;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 /**
  * Binar <-> Text Transducers
  */
@@ -8,14 +11,10 @@ public class BinTxt {
 	public static final char[] symbols;
 
 	static {
-		StringBuilder x = new StringBuilder("0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.~");
+		String x = IntStream.rangeClosed(192, 255).mapToObj(i -> String.valueOf((char) i)).collect(Collectors.joining("", "0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ_.~", ""));
 
 
-		for (int i = 192; i <= 255; i++) {
-			x.append((char) i);
-		}
-
-		symbols = x.toString().toCharArray();
+        symbols = x.toCharArray();
 	}
 
 	public static final int maxBase = symbols.length;

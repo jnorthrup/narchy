@@ -18,6 +18,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.function.Function;
 import java.util.function.IntPredicate;
+import java.util.stream.IntStream;
 
 import static nars.Op.CONJ;
 import static nars.time.Tense.*;
@@ -107,12 +108,7 @@ public class Sequence extends CachedCompound.TemporalCachedCompound {
     public boolean subTimesWhile(Term match, IntPredicate each) {
         int n = times.size();
         Subterms ss = subterms();
-        for (int i = 0; i < n; i++) {
-            if (times.key(i, ss).equals(match))
-                if (!each.test(Tense.occToDT(times.value(i))))
-                    return false;
-        }
-        return true;
+        return IntStream.range(0, n).filter(i -> times.key(i, ss).equals(match)).allMatch(i -> each.test(occToDT(times.value(i))));
     }
 
 //    /** transform each sub component-wise so that a remapping can be determined before constructing new ConjSeq*/

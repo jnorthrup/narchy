@@ -26,6 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.ValueSource;
 
+import java.util.Arrays;
+import java.util.Objects;
 import java.util.Random;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -79,12 +81,7 @@ class AxialSplitTest {
 
         RBranch<RectDouble> root = (RBranch<RectDouble>) rTree.root();
         RNode<RectDouble>[] children = root.data;
-        int childCount = 0;
-        for(RNode c : children) {
-            if (c != null) {
-                childCount++;
-            }
-        }
+        int childCount = (int) Arrays.stream(children).filter(Objects::nonNull).count();
         assertEquals(2, root.size);
         assertEquals( 2, childCount, "Expected different number of children after split");
 

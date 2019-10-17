@@ -56,14 +56,8 @@ public class TypesConverters
         ToStringConverters convs = (ToStringConverters) toString;
         if (convs == null) return null;
 
-        for (Map.Entry<Class, Function<Object, String>> classToStringConverterEntry : convs.entrySet()) {
-            if (classToStringConverterEntry.getKey() == null) continue;
-            if (classToStringConverterEntry.getKey().equals(c)) {
-                return classToStringConverterEntry.getValue();
-            }
-        }
+        return convs.entrySet().stream().filter(classToStringConverterEntry -> classToStringConverterEntry.getKey() != null).filter(classToStringConverterEntry -> classToStringConverterEntry.getKey().equals(c)).findFirst().map(Map.Entry::getValue).orElse(null);
 
-        return null;
     }
 
     /**
@@ -80,13 +74,7 @@ public class TypesConverters
         Map<Class, Function<String, Object>> convs = toValues;
         if (convs == null) return null;
 
-        for (Map.Entry<Class, Function<String, Object>> classToValueConvertorEntry : convs.entrySet()) {
-            if (classToValueConvertorEntry.getKey() == null) continue;
-            if (classToValueConvertorEntry.getKey().equals(c)) {
-                return classToValueConvertorEntry.getValue();
-            }
-        }
+        return convs.entrySet().stream().filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey() != null).filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey().equals(c)).findFirst().map(Map.Entry::getValue).orElse(null);
 
-        return null;
     }
 }

@@ -3,6 +3,7 @@ package spacegraph.audio.speech;
 import java.applet.Applet;
 import java.awt.*;
 import java.awt.event.*;
+import java.util.stream.IntStream;
 
 /**
  * Voice synthesizer models the vocal tract
@@ -423,11 +424,8 @@ class VocSynthApplet extends Applet implements ActionListener {
 		outwave[0] += dif * 0.4;
 		outwave[length - 1] -= dif * 0.4;
 		// Normalize to 0.9 amplitude to prevent clipping
-		double max = 0;
-		for (int i = 0; i < length; i++) {
-			if (Math.abs(outwave[i]) > max) max = Math.abs(outwave[i]);
-		}
-		for (int i = 0; i < length; i++) {
+		double max = IntStream.range(0, length).mapToDouble(i -> Math.abs(outwave[i])).filter(i -> i >= 0).max().orElse(0);
+        for (int i = 0; i < length; i++) {
 			outwave[i] = outwave[i] * 0.9 / max;
 		}
 		wpan.outw.repaint();            //Redraw Waveform

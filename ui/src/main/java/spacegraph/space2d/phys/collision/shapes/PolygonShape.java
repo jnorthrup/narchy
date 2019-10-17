@@ -31,6 +31,8 @@ import spacegraph.space2d.phys.common.Rot;
 import spacegraph.space2d.phys.common.Settings;
 import spacegraph.space2d.phys.common.Transform;
 
+import java.util.stream.IntStream;
+
 /**
  * A convex polygon shape. Polygons have a maximum number of vertices equal to _maxPolygonVertices.
  * In most cases you should not need many vertices for a convex polygon.
@@ -626,14 +628,8 @@ public class PolygonShape extends Shape {
 
             v2 e = pool1.set(vertex[i2]).subbed(p);
 
-            for (int j = 0; j < vertices; ++j) {
-                if (j == i1 || j == i2) {
-                    continue;
-                }
-
-                if (v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f) {
-                    return false;
-                }
+            if (IntStream.range(0, vertices).filter(j -> j != i1 && j != i2).anyMatch(j -> v2.cross(e, pool2.set(vertex[j]).subbed(p)) < 0.0f)) {
+                return false;
             }
         }
 

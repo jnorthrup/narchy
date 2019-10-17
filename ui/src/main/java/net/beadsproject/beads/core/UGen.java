@@ -12,6 +12,9 @@ import net.beadsproject.beads.ugens.Gain;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.function.Function;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 /**
  * A UGen is the main base class for implementing signal generation and processing units (unit generators). UGens can have any number of audio input and output channels, which adopt the audio format of the {@link AudioContext} used to construct the UGen. Any UGen output can be connected to any other UGen input, using {@link #addInput(int, UGen, int)} (or use {@link #in(UGen)} to connect all outputs of one UGen to all inputs of another). UGens are constructed using an
@@ -474,13 +477,8 @@ public abstract class UGen extends Auvent {
 	 * @return set of UGens
 	 */
 	public synchronized Set<UGen> getConnectedInputs() {
-		Set<UGen> connectedInputs = new HashSet<>();
-		for (int i = 0; i < ins; i++) {
-			for (BufferPointer bp : inputsAtChannel[i]) {
-				connectedInputs.add(bp.ugen);
-			}
-		}
-		return connectedInputs;
+		Set<UGen> connectedInputs = IntStream.range(0, ins).mapToObj(i -> inputsAtChannel[i].stream()).flatMap(Function.identity()).map(bp -> bp.ugen).collect(Collectors.toSet());
+        return connectedInputs;
 	}
 
 //	/**
@@ -589,8 +587,7 @@ public abstract class UGen extends Auvent {
 			}
 			if (inputCount == 0) {
 
-				for (List<BufferPointer> ch : inputsAtChannel)
-					inputCount += ch.size();
+                inputCount += Arrays.stream(inputsAtChannel).mapToInt(FasterList::size).sum();
 			}
 			if (inputCount == 0) {
 				noInputs = true;

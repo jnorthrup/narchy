@@ -45,6 +45,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 import java.util.function.IntFunction;
+import java.util.stream.IntStream;
 
 import static nars.time.Tense.ETERNAL;
 import static org.eclipse.collections.impl.tuple.primitive.PrimitiveTuples.pair;
@@ -508,18 +509,11 @@ public interface Stamp {
     }
 
     static boolean overlap(Task a, IntToObjectFunction<Task> b, int from, int to) {
-        for (int i = from; i < to; i++) {
-            if (Stamp.overlap(a,b.apply(i)))
-                return true;
-        }
-        return false;
+        return IntStream.range(from, to).anyMatch(i -> Stamp.overlap(a, b.apply(i)));
     }
 
     static boolean overlapsAny(MetalLongSet aa,  long[] b) {
-        for (long x : b)
-            if (aa.contains(x))
-                return true;
-        return false;
+        return Arrays.stream(b).anyMatch(aa::contains);
     }
 
     static boolean overlapNullable(@Nullable Task x, Task y) {
@@ -624,10 +618,7 @@ public interface Stamp {
                 int rr = ptr[i];
                 if (rr >= 0) {
                     long[] ss = stamps.get(i);
-                    for (int j = 0; j < rr; j++) {
-                        if (l.contains(ss[j]))
-                            repeats++;
-                    }
+                    repeats += IntStream.range(0, rr).filter(j -> l.contains(ss[j])).count();
                 }
             }
         }
@@ -715,10 +706,7 @@ public interface Stamp {
         return Util.unitize(((float) common) / denom);
     }
     private static int overlapCount(LongSet aa,  long[] b) {
-        int common = 0;
-        for (long x : b)
-            if (aa.contains(x))
-                common++;
+        int common = (int) Arrays.stream(b).filter(aa::contains).count();
         return common;
     }
 

@@ -36,7 +36,8 @@ import jake2.util.Lib;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
-import java.util.Vector;
+import java.util.List;
+import java.util.stream.IntStream;
 
 /**
  * Key
@@ -466,13 +467,9 @@ public class Key extends Globals {
 		if (str.length() == 1)
 			return str.charAt(0);
 
-		for (int i = 0; i < keynames.length; i++) {
-			if (str.equalsIgnoreCase(keynames[i]))
-				return i;
-		}
+        return IntStream.range(0, keynames.length).filter(i -> str.equalsIgnoreCase(keynames[i])).findFirst().orElse(-1);
 
-		return -1;
-	}
+    }
 
 	public static void Message(int key) {
 
@@ -671,7 +668,7 @@ public class Key extends Globals {
 
 	}
 
-	private static void printCompletions(String type, Vector compl) {
+	private static void printCompletions(String type, List compl) {
 		Com.Printf(type);
 		for (int i = 0; i < compl.size(); i++) {
 			Com.Printf(compl.get(i) + " ");
@@ -690,8 +687,8 @@ public class Key extends Globals {
 			
 		String s = new String(key_lines[edit_line], start, end-start);
 		
-		Vector cmds = Cmd.CompleteCommand(s);
-		Vector vars = Cvar.CompleteVariable(s);
+		var cmds = Cmd.CompleteCommand(s);
+		var vars = Cvar.CompleteVariable(s);
 		
 		int c = cmds.size();
 		int v = vars.size();

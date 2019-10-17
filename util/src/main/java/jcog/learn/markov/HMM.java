@@ -26,6 +26,7 @@ package jcog.learn.markov;
 
 import java.io.Serializable;
 import java.text.DecimalFormat;
+import java.util.Arrays;
 
 
 /**
@@ -230,12 +231,10 @@ public class HMM implements Serializable{
 	 * @return probability that sequence o belongs to this hmm
 	 */
 	public double getProbability(int[] o) {
-		double prob = 0.0;
+		double prob;
 		double[][] forward = this.forwardProc(o);
-		
-		for (int i = 0; i < forward.length; i++) { 
-			prob += forward[i][forward[i].length - 1];
-		}
+
+        prob = Arrays.stream(forward).mapToDouble(doubles -> doubles[doubles.length - 1]).sum();
 		return prob;
 	}
 	

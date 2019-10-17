@@ -74,12 +74,7 @@ public class ConsoleRegexTurtle {
             System.exit(1);
         }
         
-        int numberPositiveExamples = 0;
-        for (Example example : simpleConfiguration.dataset.getExamples()) {
-            if (example.getNumberMatches() > 0) {
-                numberPositiveExamples++;
-            }
-        }
+        int numberPositiveExamples = (int) simpleConfiguration.dataset.getExamples().stream().filter(example -> example.getNumberMatches() > 0).count();
         String message = null;
         if (simpleConfiguration.dataset.getNumberMatches() < 25 || numberPositiveExamples < 2) {
             message = WARNING_MESSAGE;

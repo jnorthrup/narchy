@@ -332,14 +332,7 @@ public class Classpath {
             File[] arr$ = files;
             int len$ = files.length;
 
-            for (int i$ = 0; i$ < len$; ++i$) {
-                File c = arr$[i$];
-                if (c.isFile() || !isEmpty(c)) {
-                    return false;
-                }
-            }
-
-            return true;
+            return Arrays.stream(arr$, 0, len$).noneMatch(c -> c.isFile() || !isEmpty(c));
         }
     }
 

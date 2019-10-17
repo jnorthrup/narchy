@@ -36,6 +36,8 @@ import java.io.File;
 import java.io.FileWriter;
 import java.io.Serializable;
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class KBcache implements Serializable {
 
@@ -381,10 +383,8 @@ public class KBcache implements Serializable {
         int size = typeList.size();
         for (int i = 0; i < size; i++) {
             String rel1 = typeList.get(i);
-            for (int j = i+1; j < size; j++) {
-                String rel2 = typeList.get(j);
-                if (checkDisjoint(kb, rel1, rel2) == true)
-                    return true;
+            if (IntStream.range(i + 1, size).mapToObj(typeList::get).anyMatch(rel2 -> checkDisjoint(kb, rel1, rel2) == true)) {
+                return true;
             }
         }
         return false;
@@ -632,11 +632,7 @@ public class KBcache implements Serializable {
      */
     public static HashSet<String> collectArgFromFormulas(int arg, ArrayList<Formula> forms) {
         
-        HashSet<String> subs = new HashSet<>();
-        for (Formula f : forms) {
-            String sub = f.getArgument(arg);
-            subs.add(sub);
-        }
+        HashSet<String> subs = forms.stream().map(f -> f.getArgument(arg)).collect(Collectors.toCollection(HashSet::new));
         return subs;
     }
    
@@ -1072,17 +1068,12 @@ public class KBcache implements Serializable {
     public void buildInstTransRels() {
 
         for (String rel : transRels) {
-            boolean instrel = true;
+            boolean instrel;
             ArrayList<String> sig = signatures.get(rel);
             if (sig == null) {
                 System.out.println("Error in KBcache.buildInstTransRels(): Error " + rel + " not found.");
             } else {
-                for (String s : sig) {
-                    if (s.endsWith("+")) {
-                        instrel = false;
-                        break;
-                    }
-                }
+                instrel = sig.stream().noneMatch(s -> s.endsWith("+"));
                 if (instrel)
                     instTransRels.add(rel);
             }

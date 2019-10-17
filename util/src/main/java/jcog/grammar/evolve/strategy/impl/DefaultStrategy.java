@@ -37,10 +37,7 @@ import jcog.grammar.evolve.variations.Variation;
 import org.eclipse.collections.api.map.MutableMap;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.function.BiConsumer;
 
 /**
@@ -152,13 +149,7 @@ public class DefaultStrategy implements RunStrategy {
                 if (listener != null) {
                     listener.logGeneration(this, doneGenerations, best.getNode(), best.getFitness(), rankings);
                 }
-                boolean allPerfect = true;
-                for (double fitness : best.getFitness()) {
-                    if (Math.round(fitness * 10000) != 0) {
-                        allPerfect = false;
-                        break;
-                    }
-                }
+                boolean allPerfect = Arrays.stream(best.getFitness()).noneMatch(fitness -> Math.round(fitness * 10000) != 0);
                 if (allPerfect) {
                     break;
                 }

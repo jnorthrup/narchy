@@ -15,6 +15,8 @@ import nars.term.atom.Bool;
 import nars.term.util.TermException;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.IntStream;
+
 import static jcog.Util.assertFinite;
 import static jcog.pri.op.PriReturn.Changed;
 
@@ -265,12 +267,10 @@ public abstract class AbstractTaskLink implements TaskLink {
 		if (!Util.equals(X, 1)) {
 
 
-			boolean changed = false;
+			boolean changed = IntStream.range(0, 4).mapToObj(i -> apply(i, X, mult, Changed) != 0).reduce(false, (a, b) -> a || b);
 			//HACK not fully atomic but at least consistent
-			for (int i = 0; i < 4; i++)
-				changed |= apply(i, X, mult, Changed) != 0;
 
-			if (changed)
+            if (changed)
 				invalidate();
 		}
 		return pri();

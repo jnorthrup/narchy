@@ -22,6 +22,8 @@ import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeNode;
 import jcog.grammar.synthesize.util.ParseTreeUtils.ParseTreeRepetitionNode;
 
 import java.util.*;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class GrammarFuzzer {
     public static class SampleParameters {
@@ -99,11 +101,9 @@ public class GrammarFuzzer {
             return sampleHelper(grammar.getChildren().get(choice), recursiveNodes, parameters, random, backup, length);
         } else if (grammar instanceof RepetitionNode) {
             ParseTreeNode start = sampleHelper(((RepetitionNode) grammar).start, recursiveNodes, parameters, random, backup, length);
-            List<ParseTreeNode> rep = new ArrayList<>();
+            List<ParseTreeNode> rep;
             int reps = parameters.randRepetition(random);
-            for (int i = 0; i < reps; i++) {
-                rep.add(sampleHelper(((RepetitionNode) grammar).rep, recursiveNodes, parameters, random, backup, length));
-            }
+            rep = IntStream.range(0, reps).mapToObj(i -> sampleHelper(((RepetitionNode) grammar).rep, recursiveNodes, parameters, random, backup, length)).collect(Collectors.toList());
             ParseTreeNode end = sampleHelper(((RepetitionNode) grammar).end, recursiveNodes, parameters, random, backup, length);
             return new ParseTreeRepetitionNode((RepetitionNode) grammar, start, rep, end);
         } else if (grammar instanceof MultiConstantNode) {

@@ -16,8 +16,10 @@ package nars.op.kif;
 
 import java.io.*;
 import java.util.*;
+import java.util.function.Supplier;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * ***************************************************************
@@ -28,7 +30,7 @@ public class WordNetUtilities {
     /**
      * POS-prefixed mappings from a new synset number to the old one.
      */
-    HashMap mappings = new HashMap();
+    HashMap<String, String> mappings = new HashMap<>();
 
     /**
      * ***************************************************************
@@ -62,14 +64,10 @@ public class WordNetUtilities {
      * Convert a list of Terms in the format "&%term1 &%term2" to an ArrayList
      * of bare target Strings
      */
-    public static ArrayList convertTermList(String termList) {
+    public static  List convertTermList(String termList) {
 
-        ArrayList result = new ArrayList();
         String[] list = termList.split(" ");
-        for (String aList : list) {
-            result.add(getBareSUMOTerm(aList));
-        }
-        return result;
+        return Arrays.stream(list).map(WordNetUtilities::getBareSUMOTerm).collect(Collectors.toList());
     }
 
     /**
@@ -401,14 +399,14 @@ public class WordNetUtilities {
      * ***************************************************************
      * HTML format a TreeMap of word senses and their associated synset
      */
-    public static String formatWords(TreeMap words, String kbName) {
+    public static String formatWords(TreeMap<String, String> words, String kbName) {
 
         StringBuilder result = new StringBuilder();
         int count = 0;
-        Iterator it = words.keySet().iterator();
+        Iterator<String> it = words.keySet().iterator();
         while (it.hasNext() && count < 50) {
-            String word = (String) it.next();
-            CharSequence synset = (String) words.get(word);
+            String word = it.next();
+            CharSequence synset = words.get(word);
             result.append("<a href=\"WordNet.jsp?word=");
             result.append(word);
             result.append("&POS=");
@@ -433,16 +431,16 @@ public class WordNetUtilities {
      * ***************************************************************
      * HTML format a TreeMap of ArrayLists word senses
      */
-    public static String formatWordsList(TreeMap words, String kbName) {
+    public static String formatWordsList(TreeMap<String, ArrayList<String>> words, String kbName) {
 
         StringBuilder result = new StringBuilder();
         int count = 0;
-        Iterator it = words.keySet().iterator();
+        Iterator<String> it = words.keySet().iterator();
         while (it.hasNext() && count < 50) {
-            String word = (String) it.next();
-            ArrayList synsetList = (ArrayList) words.get(word);
+            String word = it.next();
+            ArrayList<String> synsetList = words.get(word);
             for (int i = 0; i < synsetList.size(); i++) {
-                CharSequence synset = (String) synsetList.get(i);
+                CharSequence synset = synsetList.get(i);
                 result.append("<a href=\"WordNet.jsp?word=");
                 result.append(word);
                 result.append("&POS=");
@@ -472,7 +470,7 @@ public class WordNetUtilities {
      * Routine called by mergeUpdates which does the bulk of the work. Should
      * not be called during normal interactive running of Sigma.
      */
-    private static void processMergers(HashMap hm, String fileName, String pattern, String posNum) throws IOException {
+    private static void processMergers(HashMap<String, String> hm, String fileName, String pattern, String posNum) throws IOException {
 
         FileWriter fw = null;
         PrintWriter pw = null;
@@ -496,7 +494,7 @@ public class WordNetUtilities {
                     String bareOldTerm = getBareSUMOTerm(oldTerm);
                     String mapType = oldTerm.substring(oldTerm.length() - 1);
                     String synset = posNum + m.group(1);
-                    String newTerm = (String) hm.get(synset);
+                    String newTerm = hm.get(synset);
                     if (!bareOldTerm.contains("&%") && newTerm != null && !newTerm.isEmpty() && !newTerm.equals(bareOldTerm) && kb.childOf(newTerm, bareOldTerm)) {
                         pw.println(m.group(1) + m.group(2) + "| " + m.group(3) + " &%" + newTerm + mapType);
                         System.out.println("INFO in WordNet.processMergers(): synset, oldTerm, newterm: "
@@ -530,7 +528,7 @@ public class WordNetUtilities {
     @SuppressWarnings("HardcodedFileSeparator")
     public static void mergeUpdates() throws IOException {
 
-        HashMap hm = new HashMap();
+        HashMap<String, String> hm = new HashMap<>();
 
         String dir = "/Program Files/Apache Software Foundation/Tomcat 5.5/KBs";
         FileReader r = new FileReader(dir + File.separator + "newMappings20.dat");
@@ -713,7 +711,7 @@ public class WordNetUtilities {
                 Matcher m = p.matcher(line);
                 if (m.matches()) {
                     String newsynset = posNum + m.group(1);
-                    String oldsynset = (String) mappings.get(newsynset);
+                    String oldsynset = mappings.get(newsynset);
                     if (oldsynset != null && !oldsynset.isEmpty()) {
                         String term = "";
                         oldsynset = oldsynset.substring(1);

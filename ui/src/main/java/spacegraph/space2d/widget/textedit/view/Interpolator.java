@@ -6,17 +6,16 @@ import com.google.common.cache.LoadingCache;
 import jcog.TODO;
 
 import java.util.concurrent.ExecutionException;
+import java.util.stream.IntStream;
 
 public enum Interpolator {
 
   LINEAR {
     @Override
     protected double[] newCurve(int divOfNum) {
-      double[] result = new double[divOfNum];
+      double[] result;
       double gain = 1.0 / divOfNum;
-      for (int i = 0; i < divOfNum; i++) {
-        result[i] = gain;
-      }
+        result = IntStream.range(0, divOfNum).mapToDouble(i -> gain).toArray();
       return result;
     }
   },

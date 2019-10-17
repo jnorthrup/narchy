@@ -22,6 +22,7 @@ package jcog.tree.rtree;
 
 
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 /**
  * An N dimensional rectangle or "hypercube" that is a representation of a data entry.
@@ -139,11 +140,8 @@ public interface HyperRegion {
     default boolean contains(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
-        for (int i = 0; i < d; i++)
-            if (coord(i, false) > x.coord(i, false) ||
-                    coord(i, true) < x.coord(i, true))
-                return false;
-        return true;
+        return IntStream.range(0, d).noneMatch(i -> coord(i, false) > x.coord(i, false) ||
+                coord(i, true) < x.coord(i, true));
     }
 
 
@@ -156,12 +154,8 @@ public interface HyperRegion {
     default boolean intersects(HyperRegion x) {
         if (this == x) return true;
         int d = dim();
-        for (int i = 0; i < d; i++) {
-            if (coord(i, false) > x.coord(i, true) ||
-                    coord(i, true) < x.coord(i, false))
-                return false;
-        }
-        return true;
+        return IntStream.range(0, d).noneMatch(i -> coord(i, false) > x.coord(i, true) ||
+                coord(i, true) < x.coord(i, false));
     }
 
 
@@ -173,10 +167,7 @@ public interface HyperRegion {
      */
     default double cost() {
         int n = dim();
-        double a = 1.0;
-        for (int d = 0; d < n; d++) {
-            a *= cost(d);
-        }
+        double a = IntStream.range(0, n).mapToDouble(this::cost).reduce(1.0, (a1, b) -> a1 * b);
         return a;
     }
 
@@ -186,11 +177,9 @@ public interface HyperRegion {
      * @return - perimeter
      */
     default double perimeter() {
-        double p = 0.0;
+        double p;
         final int n = this.dim();
-        for (int d = 0; d < n; d++) {
-            p += this.cost(d);
-        }
+        p = IntStream.range(0, n).mapToDouble(this::cost).sum();
         return p;
     }
 

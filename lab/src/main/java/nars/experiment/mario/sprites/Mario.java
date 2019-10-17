@@ -6,6 +6,8 @@ import nars.experiment.mario.LevelScene;
 import nars.experiment.mario.Scene;
 import nars.experiment.mario.level.Level;
 
+import java.util.stream.IntStream;
+
 
 public class Mario extends Sprite {
     public static boolean large;
@@ -581,10 +583,7 @@ public class Mario extends Sprite {
     }
 
     public byte getKeyMask() {
-        int mask = 0;
-        for (int i = 0; i < 7; i++) {
-            if (keys[i]) mask |= (1 << i);
-        }
+        int mask = IntStream.range(0, 7).filter(i -> keys[i]).map(i -> (1 << i)).reduce(0, (a, b) -> a | b);
         return (byte) mask;
     }
 

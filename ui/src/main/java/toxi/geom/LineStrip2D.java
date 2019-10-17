@@ -35,6 +35,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class LineStrip2D implements Iterable<Vec2D> {
 
@@ -168,10 +170,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
      */
     public List<Line2D> getEdges() {
         int num = vertices.size();
-        List<Line2D> edges = new ArrayList<>(num - 1);
-        for (int i = 1; i < num; i++) {
-            edges.add(new Line2D(vertices.get(i - 1), vertices.get(i)));
-        }
+        List<Line2D> edges = IntStream.range(1, num).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
         return edges;
     }
 
@@ -224,10 +223,7 @@ public class LineStrip2D implements Iterable<Vec2D> {
 
     public List<Line2D> getSegments() {
         final int num = vertices.size();
-        List<Line2D> segments = new ArrayList<>(num - 1);
-        for (int i = 1; i < num; i++) {
-            segments.add(new Line2D(vertices.get(i - 1), vertices.get(i)));
-        }
+        List<Line2D> segments = IntStream.range(1, num).mapToObj(i -> new Line2D(vertices.get(i - 1), vertices.get(i))).collect(Collectors.toCollection(() -> new ArrayList<>(num - 1)));
         return segments;
     }
 

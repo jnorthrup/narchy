@@ -4,6 +4,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.Arrays;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 import static org.apache.commons.math3.util.MathArrays.scaleInPlace;
 
@@ -189,10 +190,9 @@ public class SimpleLSTM  {
 		
 		for (int k = 0; k < output_dimension; k++)
 		{
-			double s = 0;
+			double s;
             double[] wk = weightsOut[k];
-			for (int j = 0; j < cell_blocks + 1; j++)
-				s += wk[j] * full_hidden[j];
+            s = IntStream.range(0, cell_blocks + 1).mapToDouble(j -> wk[j] * full_hidden[j]).sum();
 
 			out[k] = s; 
 		}

@@ -17,6 +17,7 @@ OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
 package jcog.util;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class StringSimilarity {
 
@@ -137,12 +138,7 @@ public class StringSimilarity {
                     si++;
                 }
             }
-            int transpositions = 0;
-            for (int mi = 0; mi < ms1.length; mi++) {
-                if (ms1[mi] != ms2[mi]) {
-                    transpositions++;
-                }
-            }
+            int transpositions = (int) IntStream.range(0, ms1.length).filter(mi -> ms1[mi] != ms2[mi]).count();
             int prefix = 0;
             for (int mi = 0; mi < min.length(); mi++) {
                 if (s1.charAt(mi) == s2.charAt(mi)) {

@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 /** from: https:
 
@@ -642,17 +643,8 @@ public class Reflect {
             return true;
 
         if (declared.length == actual.length) {
-            for (int i = 0; i < actual.length; i++) {
-                if (actual[i] == NULL.class)
-                    continue;
 
-                if (wrapper(declared[i]).isAssignableFrom(wrapper(actual[i])))
-                    continue;
-
-                return false;
-            }
-
-            return true;
+            return IntStream.range(0, actual.length).filter(i -> actual[i] != NULL.class).allMatch(i -> wrapper(declared[i]).isAssignableFrom(wrapper(actual[i])));
         }
         else {
             return false;

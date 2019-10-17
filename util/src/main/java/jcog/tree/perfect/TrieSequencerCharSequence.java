@@ -17,7 +17,7 @@
 package jcog.tree.perfect;
 
 
-
+import java.util.stream.IntStream;
 
 /**
  * A {@link TrieSequencer} implementation where any subclass of CharSequence
@@ -32,15 +32,8 @@ public class TrieSequencerCharSequence<S extends CharSequence> implements TrieSe
    @Override
    public int matches( S sequenceA, int indexA, S sequenceB, int indexB, int count )
    {
-      for (int i = 0; i < count; i++)
-      {
-         if (sequenceA.charAt( indexA + i ) != sequenceB.charAt( indexB + i ))
-         {
-            return i;
-         }
-      }
+       return IntStream.range(0, count).filter(i -> sequenceA.charAt(indexA + i) != sequenceB.charAt(indexB + i)).findFirst().orElse(count);
 
-      return count;
    }
 
    @Override

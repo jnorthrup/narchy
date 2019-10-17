@@ -3,6 +3,8 @@ package jcog.learn.ntm.memory;
 import jcog.learn.ntm.control.UVector;
 import jcog.learn.ntm.control.Unit;
 
+import java.util.stream.IntStream;
+
 /** TODO extend UVector for 'read' */
 public class ReadData  {
     public final HeadSetting head;
@@ -60,10 +62,7 @@ public class ReadData  {
     public static ReadData[] getVector(NTMMemory memory, HeadSetting[] h) {
         int x = memory.headNum();
 
-        ReadData[] vector = new ReadData[x];
-        for (int i = 0;i < x;i++) {
-            vector[i] = new ReadData(h[i], memory);
-        }
+        ReadData[] vector = IntStream.range(0, x).mapToObj(i -> new ReadData(h[i], memory)).toArray(ReadData[]::new);
         return vector;
     }
 

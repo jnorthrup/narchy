@@ -32,9 +32,11 @@ import jake2.qcommon.*;
 import jake2.server.SV_GAME;
 import jake2.util.Lib;
 
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.Vector;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 /**
  * Cmd
@@ -1177,19 +1179,14 @@ public final class Cmd {
 
     /**
      * Cmd_CompleteCommand.
-     */
-    public static Vector CompleteCommand(String partial) {
-        Vector cmds = new Vector();
+     *
+     * TODO: revisit Vector syncronization replaced with lockless COW Array here
+     * */
+    public static List  CompleteCommand(String partial) {
+        var cmds = Stream.iterate(cmd_functions, Objects::nonNull, cmd -> cmd.next).filter(cmd -> cmd.name.startsWith(partial)).map(cmd -> cmd.name).collect(Collectors.toList());
 
-        
-        for (cmd_function_t cmd = cmd_functions; cmd != null; cmd = cmd.next)
-            if (cmd.name.startsWith(partial))
-                cmds.add(cmd.name);
-        for (cmdalias_t a = Globals.cmd_alias; a != null; a = a.next)
-            if (a.name.startsWith(partial))
-                cmds.add(a.name);
-
-        return cmds;
+        Stream.iterate(Globals.cmd_alias, Objects::nonNull, a -> a.next).filter(a -> a.name.startsWith(partial)).map(a -> a.name).forEach(cmds::add);
+        return new CopyOnWriteArrayList( cmds);
     }
 
     /**

@@ -4,6 +4,8 @@ import jcog.TODO;
 import jcog.data.list.MetalConcurrentQueue;
 
 import java.util.ArrayDeque;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Queue;
 
 import static jcog.exe.realtime.TimedFuture.*;
@@ -93,10 +95,7 @@ public class AdmissionQueueWheelModel extends HashedWheelTimer.WheelModel {
 
     @Override
     public int size() {
-        int sum = 0;
-        for (Queue d : wheel) {
-            sum += d.size();
-        }
+        int sum = Arrays.stream(wheel).mapToInt(Collection::size).sum();
         return sum;
     }
 

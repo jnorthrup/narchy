@@ -30,6 +30,7 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /** ***************************************************************
  * A utility class that defines static methods for common string
@@ -530,13 +531,8 @@ public class StringUtil {
 
         if (al == null || al.size() < 1)
             return "";
-        StringBuilder sb = new StringBuilder();
-        for (int i = 0; i < al.size(); i++) {
-            if (i != 0)
-                sb.append(' ');
-            sb.append(al.get(i));
-        }
-        return sb.toString();
+        String sb = al.stream().collect(Collectors.joining(" "));
+        return sb;
     }
 
     /***************************************************************
@@ -1546,30 +1542,26 @@ public class StringUtil {
      */
      public static String getContents(File aFile) {
         
-        StringBuilder contents = new StringBuilder();
+        String contents = "";
 
         try {
 
 
             try (BufferedReader input = new BufferedReader(new FileReader(aFile))) {
-                String line = null;
                 /*
                  * readLine is a bit quirky :
                  * it returns the content of a line MINUS the newline.
                  * it returns null only for the END of the stream.
                  * it returns an empty String if two newlines appear in a row.
                  */
-                while ((line = input.readLine()) != null) {
-                    contents.append(line);
-                    contents.append(System.getProperty("line.separator"));
-                }
+                contents = input.lines().map(line -> line + System.getProperty("line.separator")).collect(Collectors.joining());
             }
         }
         catch (IOException ex){
             ex.printStackTrace();
         }
 
-        return contents.toString();
+        return contents;
     }
 
     /** ***************************************************************

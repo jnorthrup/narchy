@@ -39,13 +39,9 @@ public class HeadSetting
         final double[] addr = addressingVector.value;
 
         final Unit[] sv = getShiftedVector();
-        double sum = 0.0;
-        for (int i = 0;i < cellCount; i++) {
-            sum +=
-                    (addr[i] = Math.pow(sv[i].value, gammaIndex));
-        }
-        
-            addressingVector.valueMultiplySelf(1.0/sum);
+        double sum = IntStream.range(0, cellCount).mapToDouble(i -> (addr[i] = Math.pow(sv[i].value, gammaIndex))).sum();
+
+        addressingVector.valueMultiplySelf(1.0/sum);
         
     }
 
@@ -109,17 +105,9 @@ public class HeadSetting
             s += temps[i];
         }
         double lnexps = lnexp / s;
-        double gradient2 = 0.0;
+        double gradient2 = IntStream.range(0, cells).filter(i -> !(sv[i].value < NTMMemory.EPSILON)).mapToDouble(i -> addrGrad[i] * (addrValue[i] * (lns[i] - lnexps))).sum();
 
 
-        for (int i = 0;i < cells;i++) {
-
-            if (sv[i].value < NTMMemory.EPSILON) {
-                continue;
-            }
-
-            gradient2 += addrGrad[i] * (addrValue[i] * (lns[i] - lnexps));
-        }
         gradient2 /= (1.0 + Math.exp(-gamma.value));
         gamma.grad += gradient2;
     }
@@ -127,14 +115,11 @@ public class HeadSetting
     public static HeadSetting[] getVector(NTMMemory memory) {
         final int x = memory.headNum();
 
-        HeadSetting[] vector = new HeadSetting[x];
+        HeadSetting[] vector = IntStream.range(0, x).mapToObj(i -> new HeadSetting(
+                new Unit(0.0),
+                memory.memoryHeight,
+                memory.getContentAddressing()[i])).toArray(HeadSetting[]::new);
 
-        for (int i = 0; i < x; i++) {
-            vector[i] = new HeadSetting(
-                    new Unit(0.0),
-                    memory.memoryHeight,
-                    memory.getContentAddressing()[i]);
-        }
         return vector;
     }
 

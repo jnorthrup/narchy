@@ -35,6 +35,7 @@ import java.io.ObjectOutput;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
+import java.util.stream.IntStream;
 
 /**
  * accelerated short int hashmap. not thread safe
@@ -243,11 +244,7 @@ public class MyShortIntHashMap extends AbstractMutableIntValuesMap implements Mu
             }
         }
 
-        for (int i = 0; i < this.keys.length; ++i) {
-            if (isNonSentinel(this.keys[i])) {
-                result += this.keys[i] ^ this.values[i];
-            }
-        }
+        result += IntStream.range(0, this.keys.length).filter(i -> isNonSentinel(this.keys[i])).map(i -> this.keys[i] ^ this.values[i]).sum();
 
         return result;
     }

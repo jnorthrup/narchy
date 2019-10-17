@@ -2,6 +2,8 @@ package asanf.FOM.Util;
 
 import org.eclipse.collections.impl.map.mutable.primitive.ObjectIntHashMap;
 
+import java.util.stream.IntStream;
+
 /**
  * Classe che modella una matrice triangolare espandibile dinamicamente
  * 
@@ -34,10 +36,8 @@ public class DTMatrix<E> {
 	 */
 	protected double[][] allocateMatrix(int size)
 	{
-		double[][] tmp = new double[size][];
-		for(int i = 0; i < size; i++)
-			tmp[i] = new double[i+1];
-		return tmp;
+		double[][] tmp = IntStream.range(0, size).mapToObj(i -> new double[i + 1]).toArray(double[][]::new);
+        return tmp;
 	}
 	
 	

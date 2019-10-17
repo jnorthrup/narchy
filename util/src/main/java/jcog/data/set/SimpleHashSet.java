@@ -1,9 +1,7 @@
 package jcog.data.set;
 
-import java.util.AbstractSet;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
+import java.util.*;
+import java.util.stream.Stream;
 
 /**
  * A simple HashSet, save 25% memory.
@@ -201,12 +199,7 @@ public class SimpleHashSet<T> extends AbstractSet<T> implements Cloneable {
         }
         int hash = secondaryHash(key);
         SimpleHashSetEntry<T>[] tab = mTable;
-        for (SimpleHashSetEntry<T> e = tab[hash & (tab.length - 1)]; e != null; e = e.mNext) {
-            if (e.mKey == key || (e.mHash == hash && e.mKey.equals(key))) {
-                return true;
-            }
-        }
-        return false;
+        return Stream.iterate(tab[hash & (tab.length - 1)], Objects::nonNull, e -> e.mNext).anyMatch(e -> e.mKey == key || (e.mHash == hash && e.mKey.equals(key)));
     }
 
     @Override

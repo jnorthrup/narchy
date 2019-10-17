@@ -38,6 +38,7 @@ import jake2.util.Vargs;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.stream.IntStream;
 
 /**
  * Com
@@ -713,11 +714,9 @@ public final class Com
 		
 		int crc = CRC.CRC_Block(chkb, length);
 
-		int x = 0;
-		for (int n=0; n < length; n++)
-			x += chkb[n] & 0xFF;
+		int x = IntStream.range(0, length).map(n -> chkb[n] & 0xFF).sum();
 
-		crc ^= x;
+        crc ^= x;
 
 		return (byte)(crc & 0xFF);
 	}

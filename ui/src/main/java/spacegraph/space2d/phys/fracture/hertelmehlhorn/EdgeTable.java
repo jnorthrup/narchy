@@ -3,6 +3,9 @@ package spacegraph.space2d.phys.fracture.hertelmehlhorn;
 import spacegraph.space2d.phys.fracture.util.HashTabulka;
 import spacegraph.space2d.phys.fracture.util.Node;
 
+import java.util.Objects;
+import java.util.stream.Stream;
+
 /**
  * Hashovacia tabulka hran pre hertel-mehlhornov algoritmus.
  *
@@ -10,13 +13,7 @@ import spacegraph.space2d.phys.fracture.util.Node;
  */
 class EdgeTable extends HashTabulka<Diagonal> {
     public Diagonal get(int i1, int i2) {
-        for (Node<Diagonal> chain = super.hashtable[Diagonal.hashCode(i1, i2) & super.n]; chain != null; chain = chain.next) {
-            Diagonal e = chain.value;
-            if ((e.n11.index == i1 && e.n12.index == i2) || (e.n11.index == i2 && e.n12.index == i1)) {
-                return e;
-            }
-        }
-        return null;
+        return Stream.iterate(super.hashtable[Diagonal.hashCode(i1, i2) & super.n], Objects::nonNull, chain -> chain.next).map(chain -> chain.value).filter(e -> (e.n11.index == i1 && e.n12.index == i2) || (e.n11.index == i2 && e.n12.index == i1)).findFirst().orElse(null);
     }
 
     private void remove(int i1, int i2) {

@@ -8,6 +8,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferStrategy;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class M extends GamePanel {
 	MouseEvent click;
@@ -416,15 +417,9 @@ public class M extends GamePanel {
 	}
 
 	boolean inRange() {
-		for (int p2 = 0; p2 < 24; p2++) {
-			if (p_owner[p2] == selE &&
-					((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
-					e_range[selE] * e_range[selE])
-			{
-				return true;
-			}
-		}
-		return false;
+        return IntStream.range(0, 24).anyMatch(p2 -> p_owner[p2] == selE &&
+                ((p_x[p2] - p_x[selP]) * (p_x[p2] - p_x[selP]) + (p_y[p2] - p_y[selP]) * (p_y[p2] - p_y[selP])) <=
+                        e_range[selE] * e_range[selE]);
 	}
 
 	int value(int a) {
@@ -547,11 +542,8 @@ public class M extends GamePanel {
 	boolean antechamber = true;
 
 	boolean needAntechamber() {
-		int hps = 0;
-		for (int e = 1; e < 5; e++) {
-			if (e_human[e]) { hps++; }
-		}
-		return hps > 1 && e_human[selE];
+		int hps = (int) IntStream.range(1, 5).filter(e -> e_human[e]).count();
+        return hps > 1 && e_human[selE];
 	}
 
 	@Override

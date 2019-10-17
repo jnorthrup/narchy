@@ -8,6 +8,7 @@ import javax.sound.sampled.SourceDataLine;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
+import java.util.stream.IntStream;
 
 public class P extends GamePanel {
 	
@@ -286,12 +287,9 @@ public class P extends GamePanel {
 			int animation = 0;
 
 			
-			final Color[] color = new Color[str_colors.length() >> 1];
-			for (int i = 0; i < color.length; i++) {
-				color[i] = new Color((str_colors.charAt(2 * i + 0) << 16) + str_colors.charAt(2 * i + 1));
-			}
+			final Color[] color = IntStream.range(0, str_colors.length() >> 1).mapToObj(i -> new Color((str_colors.charAt(2 * i + 0) << 16) + str_colors.charAt(2 * i + 1))).toArray(Color[]::new);
 
-			int i, k;
+            int i, k;
 			int j = data.length();
 			final int[] level_data = new int[j * 2];
 			for (i = 0; i < j; i++) {

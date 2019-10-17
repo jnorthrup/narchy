@@ -242,13 +242,7 @@ public class Termerator extends EvalTermBuffer implements Iterable<Term> {
                 termutes.clear();
                 return Iterators.filter(Iterators.transform(ci, tt -> {
                     Term y;
-                    boolean fail = false;
-                    for (Predicate<Termerator> p : tt) {
-                        if (!p.test(this)) {
-                            fail = true;
-                            break;
-                        }
-                    }
+                    boolean fail = Arrays.stream(tt).anyMatch(p -> !p.test(this));
                     if (!fail) {
                         int during = v.size();
                         y = term();

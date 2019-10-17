@@ -21,6 +21,7 @@ import java.awt.*;
 import java.awt.event.*;
 import java.awt.image.BufferedImage;
 import java.util.function.Consumer;
+import java.util.stream.IntStream;
 
 /**
  * GUI pre testovacie scenare. Ovladanie:
@@ -503,10 +504,7 @@ public class Box2DTests extends JComponent implements Runnable {
 
             pane.setLayout(new BoxLayout(pane, BoxLayout.Y_AXIS));
 
-            String[] caseNames = new String[cases.length];
-            for (int i = 0; i < cases.length; ++i) {
-                caseNames[i] = (i + 1) + ". " + cases[i];
-            }
+            String[] caseNames = IntStream.range(0, cases.length).mapToObj(i -> (i + 1) + ". " + cases[i]).toArray(String[]::new);
 
             JComboBox petList = new JComboBox(caseNames);
             pane.add(petList);

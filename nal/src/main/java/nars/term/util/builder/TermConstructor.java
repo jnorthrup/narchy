@@ -6,6 +6,8 @@ import nars.term.Term;
 import nars.term.anon.Intrin;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.IntStream;
+
 import static nars.time.Tense.DTERNAL;
 
 /** lowest-level (raw, possibly un-checked) compound construction interface */
@@ -48,13 +50,8 @@ import static nars.time.Tense.DTERNAL;
 
                 default: {
                     //TODO Param.SUBTERM_BYTE_KEY_CACHED_BELOW_VOLUME
-                    boolean different = false;
-                    for (int i = 1; i < t.length; i++) {
-                        if (!t[i].equals(t[i-1])) { //if (t[i] != t[i - 1]) {
-                            different = true;
-                            break;
-                        }
-                    }
+                    boolean different = IntStream.range(1, t.length).anyMatch(i -> !t[i].equals(t[i - 1]));
+                    //if (t[i] != t[i - 1]) {
 
                     return different ?
                         new ArrayTermVector(t) :

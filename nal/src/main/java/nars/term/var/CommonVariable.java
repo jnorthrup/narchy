@@ -14,6 +14,8 @@ import nars.unify.Unify;
 import org.eclipse.collections.impl.set.mutable.primitive.ShortHashSet;
 
 import java.util.Arrays;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 import static nars.term.atom.Bool.Null;
 
@@ -93,9 +95,7 @@ public final class CommonVariable extends UnnormalizedVariable {
         if (cv.length < 2 || cv.length > NAL.unify.UNIFY_COMMON_VAR_MAX)
             return Null;
 
-        MetalTreeSet<Variable> s = new MetalTreeSet<>();
-        for (Object o : cv)
-            s.add((Variable) o);
+        MetalTreeSet<Variable> s = Arrays.stream(cv).map(o -> (Variable) o).collect(Collectors.toCollection(MetalTreeSet::new));
 
         int ss = s.size();
         if (ss < 2 || ss > NAL.unify.UNIFY_COMMON_VAR_MAX)
@@ -123,12 +123,8 @@ public final class CommonVariable extends UnnormalizedVariable {
 
     static String key(Op o, IntrinSubterms vars) {
         int n = vars.subs();
-        StringBuilder sb = new StringBuilder(1 + n * 2);
-        sb.append(o.ch);
-        for (int i = 0; i < n; i++) {
-            sb.append(vars.sub(i));
-        }
-        return sb.toString();
+        String sb = IntStream.range(0, n).mapToObj(i -> String.valueOf(vars.sub(i))).collect(Collectors.joining("", String.valueOf(o.ch), ""));
+        return sb;
     }
 
     public static boolean unify(Variable X, Variable Y, Unify u) {

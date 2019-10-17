@@ -31,6 +31,7 @@ import jcog.grammar.evolve.tree.operator.MatchOneOrMore;
 import jcog.grammar.evolve.utils.Utils;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Create a population, 3 individuals for each positive example.
@@ -78,17 +79,12 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
     }
     
     private List<Node> setup(Configuration configuration, DataSet usedTrainingDataset) {
-        Set<String> phrases = new HashSet<>();
+        Set<String> phrases;
         List<Node> newPopulation = new LinkedList<>();
         DataSet dataSet = usedTrainingDataset;
 
-        
-        for (Example example : dataSet.getExamples()) {
-            if(!example.match.isEmpty()){
-                
-                phrases.add(example.getString());
-            }
-        }
+
+        phrases = dataSet.getExamples().stream().filter(example -> !example.match.isEmpty()).map(Example::getString).collect(Collectors.toSet());
 
         int examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
 

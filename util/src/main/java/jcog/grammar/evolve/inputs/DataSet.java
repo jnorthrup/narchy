@@ -27,6 +27,7 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 /**
  * New dataset structure, this is intended to be serialized in Json format using Gson
@@ -577,10 +578,7 @@ public class DataSet implements Serializable {
         }
         
         private int getNumberCharsInsideIntervals(List<Bounds> textIntervals){
-            int countChars = 0;
-            for(Bounds interval : textIntervals){
-                countChars += (interval.end - interval.start);
-            }
+            int countChars = textIntervals.stream().mapToInt(interval -> (interval.end - interval.start)).sum();
             return countChars;
         }
         
@@ -653,10 +651,7 @@ public class DataSet implements Serializable {
          * @return a list of all annotated strings
          */
         public List<String> getAnnotatedStrings(){
-            List<String> annotatedStrings = new ArrayList<>();
-            for(Bounds bounds : this.getMatch()){
-                annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
-            }
+            List<String> annotatedStrings = this.getMatch().stream().map(bounds -> this.getString().substring(bounds.start, bounds.end)).collect(Collectors.toList());
             for(Bounds bounds : this.getUnmatch()){
                 annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
             }
@@ -673,10 +668,7 @@ public class DataSet implements Serializable {
             List<Bounds> boundsList = new ArrayList<>(this.getMatch());
             boundsList.addAll(this.getUnmatch());
             Collections.sort(boundsList);  
-            List<String> annotatedStrings = new ArrayList<>(boundsList.size());
-            for(Bounds bounds : boundsList){
-                annotatedStrings.add(this.getString().substring(bounds.start, bounds.end));
-    }
+            List<String> annotatedStrings = boundsList.stream().map(bounds -> this.getString().substring(bounds.start, bounds.end)).collect(Collectors.toCollection(() -> new ArrayList<>(boundsList.size())));
             return annotatedStrings;
         }
     
@@ -793,18 +785,7 @@ public class DataSet implements Serializable {
             Collections.sort(zoneRanges);
              
             
-            int overallEOAA = 0;
-            for (Bounds extractedBounds : ranges) {
-                for (Bounds expectedBounds : zoneRanges) {
-                    if(expectedBounds.start >= extractedBounds.end){
-                        break;
-                    } 
-                    if(extractedBounds.overlaps(expectedBounds)){
-                        overallEOAA++;
-                        break;
-                    }
-                }
-            }
+            int overallEOAA = (int) Arrays.stream(ranges).filter(extractedBounds -> zoneRanges.stream().takeWhile(expectedBounds -> expectedBounds.start < extractedBounds.end).anyMatch(extractedBounds::overlaps)).count();
             return overallEOAA;
         }
 

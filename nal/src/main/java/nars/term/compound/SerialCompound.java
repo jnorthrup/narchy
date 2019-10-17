@@ -10,7 +10,10 @@ import nars.io.TermIO;
 import nars.subterm.Subterms;
 import nars.term.Compound;
 import nars.term.Term;
+import nars.term.Termlike;
 import nars.term.util.TermException;
+
+import java.util.Arrays;
 
 import static nars.time.Tense.DTERNAL;
 
@@ -34,8 +37,7 @@ public class SerialCompound extends DynBytes implements SameSubtermsCompound, Th
         super(subterms.length * 4 /* estimate */);
 
         int v = 1;
-        for (Term x: subterms)
-            v += x.volume();
+        v += Arrays.stream(subterms).mapToInt(Termlike::volume).sum();
 
         if (v > NAL.term.COMPOUND_VOLUME_MAX)
             throw new TermException("complexity overflow");

@@ -8,6 +8,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.concurrent.ThreadLocalRandom;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 import static jcog.math.LongInterval.TIMELESS;
@@ -267,11 +268,7 @@ public class RingBufferTaskSeries<T extends Task> extends AbstractTaskSeries<T> 
             //just return the latest items while it keeps asking
             //TODO iterate from oldest to newest if the target time is before or near series start
             //            int offset = ThreadLocalRandom.current().nextInt(qs);
-            for (int i = q.size() - 1; i >= 0; i--) {
-                T qi = q.peek(head, i, len);
-                if (qi!=null && !whle.test(qi))
-                    return false;
-            }
+            return IntStream.iterate(q.size() - 1, i -> i >= 0, i -> i - 1).mapToObj(i -> q.peek(head, i, len)).noneMatch(qi -> qi != null && !whle.test(qi));
         }
 
 

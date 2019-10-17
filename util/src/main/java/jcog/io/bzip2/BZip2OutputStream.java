@@ -63,6 +63,7 @@ package jcog.io.bzip2;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * An output stream that compresses into the BZip2 format (without the file
@@ -1006,10 +1007,7 @@ public class BZip2OutputStream extends OutputStream implements BZip2Constants {
     private void qSort3(int loSt, int hiSt, int dSt) {
         int unLo, unHi, ltLo, gtHi, med, n, m;
         int sp, lo, hi, d;
-        StackElem[] stack = new StackElem[QSORT_STACK_SIZE];
-        for (int count = 0; count < QSORT_STACK_SIZE; count++) {
-            stack[count] = new StackElem();
-        }
+        StackElem[] stack = IntStream.range(0, QSORT_STACK_SIZE).mapToObj(count -> new StackElem()).toArray(StackElem[]::new);
 
         sp = 0;
 

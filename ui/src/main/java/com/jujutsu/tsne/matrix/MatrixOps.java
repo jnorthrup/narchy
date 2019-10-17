@@ -6,11 +6,9 @@ import org.ejml.data.DMatrix;
 import org.ejml.data.DMatrixRBlock;
 
 import java.text.DecimalFormat;
+import java.util.Arrays;
 import java.util.concurrent.ThreadLocalRandom;
-
-
-
-
+import java.util.stream.IntStream;
 
 
 public enum MatrixOps { ;
@@ -372,11 +370,8 @@ public enum MatrixOps { ;
 	 * @return new vector with values sqrt'ed
 	 */
 	public static double [] sqrt(double [] v1) {
-		double [] vector = new double[v1.length];
-		for (int i = 0; i < vector.length; i++) {
-			vector[i] = Math.sqrt(v1[i]);
-		}
-		return vector;
+		double [] vector = Arrays.stream(v1).map(Math::sqrt).toArray();
+        return vector;
 	}
 
 	
@@ -385,11 +380,8 @@ public enum MatrixOps { ;
 	 * @return mean of values in vector
 	 */
 	public static double mean(double [] vector) {
-		double sum = 0.0;
-		for (double aVector : vector) {
-			sum += aVector;
-		}
-		return sum/vector.length;
+		double sum = Arrays.stream(vector).sum();
+        return sum/vector.length;
 	}
 
 	
@@ -431,11 +423,8 @@ public enum MatrixOps { ;
 	 * @return  same matrix with values pow'ed
 	 */
 	public static double [] pow(double [] m1, double power) {
-		double[] matrix = new double[m1.length];
-		for (int i = 0; i < matrix.length; i++) {
-			matrix[i] = Math.pow(m1[i], power);
-		}
-		return matrix;
+		double[] matrix = Arrays.stream(m1).map(v -> Math.pow(v, power)).toArray();
+        return matrix;
 	}
 
 	/**
@@ -483,11 +472,8 @@ public enum MatrixOps { ;
 	 * @return scalar inverse of vector
 	 */
 	public static double [] scalarInverse(double [] v1) {
-		double [] vector = new double[v1.length];
-		for (int i = 0; i < vector.length; i++) {
-			vector[i] = 1/v1[i];
-		}
-		return vector;
+		double [] vector = Arrays.stream(v1).map(v -> 1 / v).toArray();
+        return vector;
 	}
 
 	/**
@@ -506,19 +492,13 @@ public enum MatrixOps { ;
 	}
 	
 	public static double [] rnorm(int n, double [] mus, double [] sigmas) {
-		double [] res = new double[n];
-		for (int i = 0; i < res.length; i++) {
-			res[i] = mus[i] + (ThreadLocalRandom.current().nextGaussian() * sigmas[i]);
-		}
-		return res; 
+		double [] res = IntStream.range(0, n).mapToDouble(i -> mus[i] + (ThreadLocalRandom.current().nextGaussian() * sigmas[i])).toArray();
+        return res;
 	}
 
 	public static double [] rnorm(int n, double mu, double [] sigmas) {
-		double [] res = new double[n];
-		for (int i = 0; i < res.length; i++) {
-			res[i] = mu + (ThreadLocalRandom.current().nextGaussian() * sigmas[i]);
-		}
-		return res; 
+		double [] res = IntStream.range(0, n).mapToDouble(i -> mu + (ThreadLocalRandom.current().nextGaussian() * sigmas[i])).toArray();
+        return res;
 	}
 
 	public static double rnorm() {
@@ -646,11 +626,8 @@ public enum MatrixOps { ;
 	 * @return
 	 */
 	public static double [] abs(double [] vals) {
-		double [] absolutes = new double[vals.length];
-		for (int i = 0; i < vals.length; i++) {
-			absolutes[i] = Math.abs(vals[i]);
-		}
-		return absolutes;
+		double [] absolutes = Arrays.stream(vals).map(Math::abs).toArray();
+        return absolutes;
 	}
 
 	public static double [][] sign(double [][] matrix) {
@@ -745,18 +722,7 @@ public enum MatrixOps { ;
 
 		int cols = matrix[0].length;
 		int rows = matrix.length;
-		double sum = 0;
-
-
-        for (double[] aMatrix : matrix)
-            for (int col = 0; col < cols; col++)
-                sum += aMatrix[col];
-
-
-
-
-
-
+		double sum = Arrays.stream(matrix).mapToDouble(aMatrix -> Arrays.stream(aMatrix, 0, cols).sum()).sum();
 
 
 		return sum;
@@ -818,18 +784,13 @@ public enum MatrixOps { ;
 	 * @return sum of all values in the matrix
 	 */
 	public static double sum(double [][] matrix) {
-		double sum = 0.0;
-		for (double[] r : matrix)
-			sum += sum(r);
-		return sum;
+		double sum = Arrays.stream(matrix).mapToDouble(MatrixOps::sum).sum();
+        return sum;
 	}
 
 	public static double sum(double [] vector) {
-		double res = 0.0;
-		for (double aVector : vector) {
-			res += aVector;
-		}
-		return res;
+		double res = Arrays.stream(vector).sum();
+        return res;
 	}
 
 	/**
@@ -997,10 +958,8 @@ public enum MatrixOps { ;
 	}
 	
 	public static int [] range(int n) {
-		int [] result = new int[n];
-		for (int i = 0; i < n; i++)
-			result[i] = i;
-		return result;
+		int [] result = IntStream.range(0, n).toArray();
+        return result;
 	}
 
 	public static int [] range(int a, int b) {
@@ -1193,15 +1152,11 @@ public enum MatrixOps { ;
 	private static double stdev(double[][] matrix) {
 		double m = mean(matrix);
 
-        double total = 0;
+        double total;
 
         final int N = matrix.length * matrix[0].length;
 
-		for (double[] aMatrix : matrix) {
-			for (double x : aMatrix) {
-				total += (x - m) * (x - m);
-			}
-		}
+        total = Arrays.stream(matrix).mapToDouble(aMatrix -> Arrays.stream(aMatrix).map(x -> (x - m) * (x - m)).sum()).sum();
 
         return Math.sqrt(total / (N-1));
 	}
@@ -1305,10 +1260,8 @@ public enum MatrixOps { ;
 
 	
 	public static double [] scalarPlus(double[] m1, double m2) {
-		double[] matrix = new double[m1.length];
-		for (int i = 0; i < m1.length; i++)
-			matrix[i] = m1[i] + m2;
-		return matrix;
+		double[] matrix = Arrays.stream(m1).map(v -> v + m2).toArray();
+        return matrix;
 	}
 
 	public static double[][] minus(double[][] m1, double[][] m2) {
@@ -1335,26 +1288,20 @@ public enum MatrixOps { ;
 
 	
 	public static double [] scalarDivide(double numerator, double[] denom) {
-		double[] vector = new double[denom.length];
-		for (int i = 0; i < denom.length; i++)
-			vector[i] = numerator / denom[i] ;
-		return vector;
+		double[] vector = Arrays.stream(denom).map(v -> numerator / v).toArray();
+        return vector;
 	}
 
 	
 	public static double [] scalarDivide(double[] numerator, double denom) {
-		double[] vector = new double[numerator.length];
-		for (int i = 0; i < numerator.length; i++)
-			vector[i] = numerator[i] / denom;
-		return vector;
+		double[] vector = Arrays.stream(numerator).map(v -> v / denom).toArray();
+        return vector;
 	}
 
 	
 	public static double [] scalarDivide(double [] numerator, double[] denom) {
-		double[] vector = new double[denom.length];
-		for (int i = 0; i < denom.length; i++)
-			vector[i] = numerator[i] / denom[i] ;
-		return vector;
+		double[] vector = IntStream.range(0, denom.length).mapToDouble(i -> numerator[i] / denom[i]).toArray();
+        return vector;
 	}
 
 	
@@ -1396,17 +1343,13 @@ public enum MatrixOps { ;
 	}
 
 	public static double [] scalarMultiply(double[] m1, double mul) {
-		double[] matrix = new double[m1.length];
-		for (int i = 0; i < m1.length; i++)
-			matrix[i] = m1[i] * mul;
-		return matrix;
+		double[] matrix = Arrays.stream(m1).map(v -> v * mul).toArray();
+        return matrix;
 	}
 
 	public static double [] scalarMultiply(double[] m1, double [] m2) {
-		double[] matrix = new double[m1.length];
-		for (int i = 0; i < m1.length; i++)
-			matrix[i] = m1[i] * m2[i];
-		return matrix;
+		double[] matrix = IntStream.range(0, m1.length).mapToDouble(i -> m1[i] * m2[i]).toArray();
+        return matrix;
 	}
 
 	public static double[][] diag(double[][] ds) {
@@ -1444,11 +1387,8 @@ public enum MatrixOps { ;
 		if(a.length!=b.length) {
 			throw new IllegalArgumentException("Vectors are not of equal length");
 		}
-		double res = 0.0;
-		for (int i = 0; i < b.length; i++) {
-			res += a[i] * b[i];
-		}
-		return res;
+		double res = IntStream.range(0, b.length).mapToDouble(i -> a[i] * b[i]).sum();
+        return res;
 	}
 	
 	public static double dot2P1(double [] a1, double [] a2, double [] b) {
@@ -1487,11 +1427,8 @@ public enum MatrixOps { ;
 	}
 
 	public static double[] extractColVector(int col, double[][] matrix) {
-		double [] res = new double[matrix.length];
-		for (int row = 0; row < matrix.length; row++) {
-			res[row] = matrix[row][col];
-		}
-		return res;
+		double [] res = Arrays.stream(matrix).mapToDouble(doubles -> doubles[col]).toArray();
+        return res;
 	}
 
 	public static double [][] extractDoubleArray(DMatrix p) {
@@ -1576,11 +1513,8 @@ public enum MatrixOps { ;
 	}
 
 	public static double[] toPrimitive(Double[] ds) {
-		double [] result = new double[ds.length];
-		for (int i = 0; i < ds.length; i++) {
-			result[i] = ds[i];
-		}
-		return result;
+		double [] result = Arrays.stream(ds).mapToDouble(d -> d).toArray();
+        return result;
 	}
 	
 	public static double [] extractRowFromFlatMatrix(double[] flatMatrix, int rowIdx, int dimension) {

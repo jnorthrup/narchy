@@ -20,6 +20,7 @@ import jcog.data.bit.MetalBitSet;
 
 import java.util.List;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 
 /**
@@ -69,10 +70,7 @@ public class LongBitsetBloomFilter {
     public LongBitsetBloomFilter(List<Long> serializedBloom) {
         this(serializedBloom.get(0), Double.longBitsToDouble(serializedBloom.get(1)));
         List<Long> bitSet = serializedBloom.subList(2, serializedBloom.size());
-        long[] data = new long[bitSet.size()];
-        for (int i = 0; i < bitSet.size(); i++) {
-            data[i] = bitSet.get(i);
-        }
+        long[] data = bitSet.stream().mapToLong(aLong -> aLong).toArray();
         this.bitSet = new MetalBitSet.LongArrayBitSet(data);
     }
 
@@ -106,13 +104,7 @@ public class LongBitsetBloomFilter {
         int m = this.m;
         MetalBitSet bits = bitSet;
 
-        for (int i = 1; i <= k; i++) {
-            int combinedHash = combineHash(hash1, hash2, i);
-            if (!bits.get( /*pos*/ combinedHash % m)) {
-                return false;
-            }
-        }
-        return true;
+        return IntStream.rangeClosed(1, k).map(i -> combineHash(hash1, hash2, i)).allMatch(combinedHash -> bits.get( /*pos*/ combinedHash % m));
     }
 
 

@@ -1,6 +1,7 @@
 package jcog.learn.deep;
 
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class RBM {
     private final double[] ph_mean, nh_samples, ph_sample, nv_means, nv_samples, nh_means;
@@ -100,10 +101,7 @@ public class RBM {
     }
 
     public double propup(double[] v, double[] w, double b) {
-        double pre_sigmoid_activation = 0.0;
-        for (int j = 0; j < n_visible; j++) {
-            pre_sigmoid_activation += w[j] * v[j];
-        }
+        double pre_sigmoid_activation = IntStream.range(0, n_visible).mapToDouble(j -> w[j] * v[j]).sum();
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }
@@ -113,10 +111,7 @@ public class RBM {
     }
 
     public double propdown(double[] h, int i, double b) {
-        double pre_sigmoid_activation = 0.0;
-        for (int j = 0; j < n_hidden; j++) {
-            pre_sigmoid_activation += W[j][i] * h[j];
-        }
+        double pre_sigmoid_activation = IntStream.range(0, n_hidden).mapToDouble(j -> W[j][i] * h[j]).sum();
         pre_sigmoid_activation += b;
         return activate(pre_sigmoid_activation);
     }

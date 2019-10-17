@@ -939,11 +939,7 @@ public abstract class Surf extends Draw {
 
         gl_lms.lightmap_buffer.rewind();
         if (dynamic) {
-            int height = 0;
-            for (int i = 0; i < BLOCK_WIDTH; i++) {
-                if (gl_lms.allocated[i] > height)
-                    height = gl_lms.allocated[i];
-            }
+            int height = Arrays.stream(gl_lms.allocated, 0, BLOCK_WIDTH).filter(i -> i >= 0).max().orElse(0);
 
             gl.glTexSubImage2D(GL_TEXTURE_2D,
                     0,

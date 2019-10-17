@@ -500,9 +500,7 @@ public enum Op {
     }
 
     public static int or(/*@NotNull*/ Op... o) {
-        int bits = 0;
-        for (Op n : o)
-            bits |= n.bit;
+        int bits = Arrays.stream(o).mapToInt(n -> n.bit).reduce(0, (a, b) -> a | b);
         return bits;
     }
 
@@ -760,10 +758,7 @@ public enum Op {
     }
     private static int _conceptualizable;
     static {
-        int c = 0;
-        for (Op x : Op.ops)
-            if (x.conceptualizable)
-                c |= x.bit;
+        int c = Arrays.stream(Op.ops).filter(x -> x.conceptualizable).mapToInt(x -> x.bit).reduce(0, (a, b) -> a | b);
         Op._conceptualizable = c;
     }
     public static final int Conceptualizable = _conceptualizable;

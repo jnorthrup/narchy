@@ -8,6 +8,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 
 public class LevelPanel extends JComponent implements MouseListener
 		, MouseMotionListener, ActionListener, KeyListener {
@@ -55,7 +56,7 @@ public class LevelPanel extends JComponent implements MouseListener
 	File currentFile;
 	
 	Rectangle selectRect = new Rectangle();
-	ArrayList<Handle> selection = new ArrayList<Handle>();
+	List<Handle> selection = new ArrayList<>();
 	boolean dragSelection;
 	
 	private BufferedImage backgroundImage;
@@ -348,7 +349,7 @@ public class LevelPanel extends JComponent implements MouseListener
 			
 			if (currentState == State.SELECT) {
 				selectRect = new Rectangle(e.getPoint(), new Dimension(1, 1));
-				ArrayList<Handle> newSelection = level.select(selectRect);
+				var newSelection = level.select(selectRect);
 				
 				if (!e.isControlDown()) {
 					selection.clear();
@@ -598,23 +599,13 @@ public class LevelPanel extends JComponent implements MouseListener
 	 * @return true if handle is selected false otherwise
 	 */
 	public boolean isHandleSelected(Handle handle) {
-		for (Handle h : selection) {
-			if (h == handle) {
-				return true;
-			}
-		}
-		
-		return false;
+
+        return selection.stream().anyMatch(h -> h == handle);
 	}
 	
 	public boolean isSelected(LevelObject obj) {
-		for (Handle h : selection) {
-			if (h.getLevelObject() == obj) {
-				return true;
-			}
-		}
-		
-		return false;		
+
+        return selection.stream().anyMatch(h -> h.getLevelObject() == obj);
 	}
 	
 	/**

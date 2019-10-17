@@ -32,6 +32,7 @@ import jake2.qcommon.Cvar;
 
 import java.nio.ByteBuffer;
 import java.util.Vector;
+import java.util.stream.IntStream;
 
 /**
  * S
@@ -225,11 +226,8 @@ public class S {
 	 * Returns a string array containing all sound driver names.
 	 */
 	public static String[] getDriverNames() {
-		String[] names = new String[drivers.size()];
-		for (int i = 0; i < names.length; i++) {
-			names[i] = ((Sound)drivers.get(i)).getName();
-		}
-		return names;
+		String[] names = IntStream.range(0, drivers.size()).mapToObj(i -> ((Sound) drivers.get(i)).getName()).toArray(String[]::new);
+        return names;
 	}
 	
 	/**

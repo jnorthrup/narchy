@@ -6,6 +6,7 @@ import jcog.tree.rtree.point.LongND;
 
 import java.io.Serializable;
 import java.util.function.Function;
+import java.util.stream.IntStream;
 
 
 /**
@@ -69,12 +70,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         final RectLongND inner = (RectLongND) _inner;
 
         int dim = dim();
-        for (int i = 0; i < dim; i++) {
-            if (!(min.coord[i] <= inner.min.coord[i] && max.coord[i] >= inner.max.coord[i]))
-                
-                return false;
-        }
-        return true;
+        return IntStream.range(0, dim).allMatch(i -> min.coord[i] <= inner.min.coord[i] && max.coord[i] >= inner.max.coord[i]);
     }
 
     @Override
@@ -82,14 +78,9 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         final RectLongND x = (RectLongND) r;
 
         int dim = dim();
-        for (int i = 0; i < dim; i++) {
-            /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
+        /*return !((min.x > r2.max.x) || (r2.min.x > max.x) ||
                     (min.y > r2.max.y) || (r2.min.y > max.y));*/
-
-            if (min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i])
-                return false;
-        }
-        return true;
+        return IntStream.range(0, dim).noneMatch(i -> min.coord[i] > x.max.coord[i] || x.min.coord[i] > max.coord[i]);
     }
 
     @Override
@@ -137,10 +128,7 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
 
     public LongND center() {
         int dim = dim();
-        long[] c = new long[dim];
-        for (int i = 0; i < dim; i++) {
-            c[i] = (min.coord(i) + max.coord(i))/2;
-        }
+        long[] c = IntStream.range(0, dim).mapToLong(i -> (min.coord(i) + max.coord(i)) / 2).toArray();
         return new LongND(c);
     }
 

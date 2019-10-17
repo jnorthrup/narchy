@@ -4,7 +4,9 @@ import jcog.Util;
 
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /*
  * Copyright (c) 1999 Steven J. Metsker. All Rights Reserved.
@@ -89,14 +91,8 @@ public class Terminal extends Parser {
 	 */
 	@Override
 	public Set<Assembly> match(Set<Assembly> in) {
-		Set<Assembly> out = new HashSet<>();
-		for (Assembly a : in) {
-			Assembly b = matchOneAssembly(a);
-			if (b != null) {
-				out.add(b);
-			}
-		}
-		return out;
+		Set<Assembly> out = in.stream().map(this::matchOneAssembly).filter(Objects::nonNull).collect(Collectors.toSet());
+        return out;
 	}
 
 	/**

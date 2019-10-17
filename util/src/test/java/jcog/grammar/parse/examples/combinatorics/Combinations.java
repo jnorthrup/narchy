@@ -1,6 +1,7 @@
 package jcog.grammar.parse.examples.combinatorics;
 
 import java.util.Iterator;
+import java.util.stream.IntStream;
 
 /*
  * Copyright (c) 2000 Steven J. Metsker. All Rights Reserved.
@@ -152,12 +153,9 @@ class Combinations implements Iterator<Object> {
 			return null;
 		}
 
-		Object[] out = new Object[m];
-		for (int i = 0; i < m; i++) {
-			out[i] = inArray[index[i]];
-		}
+		Object[] out = IntStream.range(0, m).mapToObj(i -> inArray[index[i]]).toArray();
 
-		moveIndex();
+        moveIndex();
 		return out;
 	}
 
@@ -166,13 +164,8 @@ class Combinations implements Iterator<Object> {
 	 */
     private int rightmostIndexBelowMax() {
 
-		for (int i = m - 1; i >= 0; i--) {
-			if (index[i] < n - m + i) {
-				return i;
-			}
-		}
-		return -1;
-	}
+        return IntStream.iterate(m - 1, i -> i >= 0, i -> i - 1).filter(i -> index[i] < n - m + i).findFirst().orElse(-1);
+    }
 
 	public void remove() {
 		throw new UnsupportedOperationException();

@@ -43,6 +43,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 /**
  * A textual interface that works only on Unix systems. Uses the ANSI escape
@@ -266,15 +267,8 @@ public class CoolTextualExecutionListener implements ExecutionListener, Executio
     }
 
     private String printArray(double[] fitness) {
-        StringBuilder sb = new StringBuilder();
-        sb.append('[');
-        sb.append(Math.round(fitness[0] * 100) / 100f);
-        for (int i = 1; i < fitness.length; i++) {
-            sb.append(',');
-            sb.append(Math.round(fitness[i] * 100) / 100f);
-        }
-        sb.append(']');
-        return sb.toString();
+        String sb = Arrays.stream(fitness).mapToObj(v -> String.valueOf(Math.round(v * 100) / 100f)).collect(Collectors.joining(",", "[", "]"));
+        return sb;
     }
 
     

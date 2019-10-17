@@ -27,6 +27,8 @@
 
 package spacegraph.space3d.phys.dynamics.gimpact;
 
+import java.util.stream.IntStream;
+
 /**
  *
  * @author jezek2
@@ -58,11 +60,8 @@ class PairSet {
 	
 	@SuppressWarnings("unchecked")
 	private void expand() {
-		Pair[] newArray = new Pair[array.length << 1];
-		for (int i=array.length; i<newArray.length; i++) {
-			newArray[i] = new Pair();
-		}
-		System.arraycopy(array, 0, newArray, 0, array.length);
+		Pair[] newArray = IntStream.range(array.length, array.length << 1).mapToObj(i -> new Pair()).toArray(Pair[]::new);
+        System.arraycopy(array, 0, newArray, 0, array.length);
 		array = newArray;
 	}
 

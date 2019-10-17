@@ -15,11 +15,7 @@ public class RadialBasisFunctionFactory implements ActivationFunctionFactory {
 
     @Override
     public DiffableFunctionSource newInstance(GeneratorContext gc, List<DiffableFunctionSource> xs) {
-        DiffableFunctionSource[] fs = new DiffableFunctionSource[xs.size()];
-
-        for (int i = 0; i < fs.length; ++i) {
-            fs[i] = new Product(xs.get(i), xs.get(i));
-        }
+        DiffableFunctionSource[] fs = xs.stream().map(x -> new Product(x, x)).toArray(DiffableFunctionSource[]::new);
 
         Scalar p = gc.newParameter(-1);
         p.setUpperBound(0);
