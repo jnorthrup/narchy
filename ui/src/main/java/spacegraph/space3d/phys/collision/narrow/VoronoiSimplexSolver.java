@@ -27,6 +27,8 @@ package spacegraph.space3d.phys.collision.narrow;
 import jcog.math.v3;
 import spacegraph.space3d.phys.math.VectorUtil;
 
+import java.util.stream.IntStream;
+
 /**
  * VoronoiSimplexSolver is an implementation of the closest point distance algorithm
  * from a 1-4 points simplex to the origin. Can be used with GJK, as an alternative
@@ -706,10 +708,7 @@ public class VoronoiSimplexSolver extends SimplexSolverInterface {
 		}
 
 		boolean isValid() {
-			boolean valid = (barycentricCoords[0] >= 0f) &&
-					(barycentricCoords[1] >= 0f) &&
-					(barycentricCoords[2] >= 0f) &&
-					(barycentricCoords[3] >= 0f);
+			boolean valid = IntStream.of(0, 1, 2, 3).allMatch(i -> (barycentricCoords[i] >= 0f));
 			return valid;
 		}
 

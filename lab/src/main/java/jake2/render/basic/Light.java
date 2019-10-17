@@ -37,6 +37,7 @@ import jake2.util.Math3D;
 import java.nio.ByteBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * Light
@@ -520,8 +521,7 @@ public abstract class Light extends Warp {
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    if (scale[0] == 1.0F && scale[1] == 1.0F
-                            && scale[2] == 1.0F) {
+                    if (IntStream.of(0, 1, 2).allMatch(v -> scale[v] == 1.0F)) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] = lightmap.get(lightmapIndex++) & 0xFF;
                             bl[blp++] = lightmap.get(lightmapIndex++) & 0xFF;
@@ -556,8 +556,7 @@ public abstract class Light extends Warp {
                         scale[i] = gl_modulate.value
                                 * r_newrefdef.lightstyles[surf.styles[maps] & 0xFF].rgb[i];
 
-                    if (scale[0] == 1.0F && scale[1] == 1.0F
-                            && scale[2] == 1.0F) {
+                    if (IntStream.of(0, 1, 2).allMatch(v -> scale[v] == 1.0F)) {
                         for (i = 0; i < size; i++) {
                             bl[blp++] += lightmap.get(lightmapIndex++) & 0xFF;
                             bl[blp++] += lightmap.get(lightmapIndex++) & 0xFF;

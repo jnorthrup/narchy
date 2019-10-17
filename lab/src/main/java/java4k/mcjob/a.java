@@ -27,6 +27,7 @@ import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class a extends Applet implements Runnable {
 
@@ -315,7 +316,7 @@ public class a extends Applet implements Runnable {
 
 				
 
-				if (!(a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT] || a[VK_START] || a[VK_PAUSE])) {
+				if (IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START, VK_PAUSE).noneMatch(i1 -> a[i1])) {
 					keysReleased = true;
 				}
 
@@ -332,7 +333,7 @@ public class a extends Applet implements Runnable {
 					gameOverScale = (float) (1 + 0.01f * (1 + Math.cos(.03f * gameOver)) * gameOver);
 					if (showTitle || --gameOver == 0) {
 						gameOver = 1;
-						if (keysReleased && (a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT] || a[VK_START])) {
+						if (keysReleased && (IntStream.of(VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT, VK_START).anyMatch(v -> a[v]))) {
 
 							
 

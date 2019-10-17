@@ -69,6 +69,7 @@ import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.regex.PatternSyntaxException;
+import java.util.stream.Stream;
 
 /**
  * ***************************************************************** Contains
@@ -302,9 +303,7 @@ public class KB implements Serializable {
      */
     public static String REswitch(String term) {
 
-        if (term.contains("(") || term.contains("[") || term.contains("{") || term.contains("\\") || term.contains("^")
-                || term.contains("$") || term.contains("|") || term.contains("}") || term.contains("]")
-                || term.contains(")") || term.contains("?") || term.contains("*") || term.contains("+"))
+        if (Stream.of("(", "[", "{", "\\", "^", "$", "|", "}", "]", ")", "?", "*", "+").anyMatch(term::contains))
             return "2";
         return "1";
     }
@@ -649,8 +648,7 @@ public class KB implements Serializable {
             return true;
         if (kbCache.transInstOf(child, parent))
             return true;
-        return kbCache.childOfP("instance", parent, child) || kbCache.childOfP("subclass", parent, child)
-                || kbCache.childOfP("subrelation", parent, child) || kbCache.childOfP("subAttribute", parent, child);
+        return Stream.of("instance", "subclass", "subrelation", "subAttribute").anyMatch(s -> kbCache.childOfP(s, parent, child));
     }
 
     /***************************************************************
@@ -906,8 +904,7 @@ public class KB implements Serializable {
         args[1] = "term3 = " + term3;
 
         ArrayList<Formula> result = new ArrayList<>();
-        if (StringUtil.isNonEmptyString(term1) && StringUtil.isNonEmptyString(term2)
-                && StringUtil.isNonEmptyString(term3)) {
+        if (Stream.of(term1, term2, term3).allMatch(StringUtil::isNonEmptyString)) {
             
             ArrayList<Formula> partiala = new ArrayList<>();
             ArrayList<Formula> partial1 = ask("arg", argnum1, term1);

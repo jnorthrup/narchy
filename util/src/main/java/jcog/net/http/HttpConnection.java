@@ -20,6 +20,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
+import java.util.stream.Stream;
 
 /**
  * @author Joris
@@ -71,7 +72,7 @@ public class HttpConnection {
         lastReceivedNS = System.nanoTime();
 
 
-        if (state == STATE.CLOSED || state == STATE.BAD_REQUEST || state == STATE.UPGRADE) {
+        if (Stream.of(STATE.CLOSED, STATE.BAD_REQUEST, STATE.UPGRADE).anyMatch(v -> state == v)) {
             return;
         }
 

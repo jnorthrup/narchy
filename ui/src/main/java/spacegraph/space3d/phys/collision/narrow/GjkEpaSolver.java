@@ -34,6 +34,7 @@ import spacegraph.util.math.Matrix3f;
 import spacegraph.util.math.Quat4f;
 
 import java.util.Arrays;
+import java.util.stream.Stream;
 
 /*
 GJK-EPA collision solver by Nathanael Presson
@@ -558,9 +559,7 @@ public class GjkEpaSolver {
 			tmp2.cross(b.w, c.w);
 			tmp3.cross(c.w, a.w);
 
-			boolean valid = (tmp1.dot(nrm) >= -EPA_inface_eps) &&
-					(tmp2.dot(nrm) >= -EPA_inface_eps) &&
-					(tmp3.dot(nrm) >= -EPA_inface_eps);
+			boolean valid = Stream.of(tmp1, tmp2, tmp3).allMatch(v3 -> (v3.dot(nrm) >= -EPA_inface_eps));
 
 			f.v[0] = a;
 			f.v[1] = b;

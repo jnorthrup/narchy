@@ -27,6 +27,8 @@ import jake2.Globals;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 public class GameFunc {
 
     static void Move_Calc(edict_t ent, float[] dest, EntThinkAdapter func) {
@@ -906,8 +908,7 @@ public class GameFunc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            if (self.avelocity[0] != 0 || self.avelocity[1] != 0
-                    || self.avelocity[2] != 0)
+            if (IntStream.of(0, 1, 2).anyMatch(i -> self.avelocity[i] != 0))
                 GameCombat.T_Damage(other, self, self, Globals.vec3_origin,
                         other.s.origin, Globals.vec3_origin, self.dmg, 1, 0,
                         Defines.MOD_CRUSH);

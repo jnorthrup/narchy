@@ -27,6 +27,8 @@ import jake2.game.monsters.M_Player;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.Stream;
+
 public class PlayerClient {
 
     public static int player_die_i;
@@ -291,20 +293,7 @@ public class PlayerClient {
             return;
         }
 
-        if ((Lib.Q_stricmp(GameBase.level.mapname, "jail2") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "jail4") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "mine1") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "mine2") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "mine3") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "mine4") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "lab") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "boss1") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "fact3") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "biggun") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "space") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "command") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "power2") == 0)
-                || (Lib.Q_stricmp(GameBase.level.mapname, "strike") == 0)) {
+        if (Stream.of("jail2", "jail4", "mine1", "mine2", "mine3", "mine4", "lab", "boss1", "fact3", "biggun", "space", "command", "power2", "strike").anyMatch(s -> (Lib.Q_stricmp(GameBase.level.mapname, s) == 0))) {
             
             self.think = PlayerClient.SP_FixCoopSpots;
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;

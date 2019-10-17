@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
+import java.util.stream.IntStream;
 
 /**
  * This class defines a parser of prolog terms and sentences.
@@ -433,7 +434,7 @@ public class Parser {
         }
 		/**/
 		
-		if (t1.isType(Tokenizer.ATOM) || t1.isType(Tokenizer.SQ_SEQUENCE) || t1.isType(Tokenizer.DQ_SEQUENCE)) {
+		if (IntStream.of(Tokenizer.ATOM, Tokenizer.SQ_SEQUENCE, Tokenizer.DQ_SEQUENCE).anyMatch(t1::isType)) {
 			if (!t1.isFunctor())
 			/*Castagna 06/2011*/
 			{

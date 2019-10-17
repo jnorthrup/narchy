@@ -28,6 +28,8 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.Stream;
+
 public class M_Soldier {
 
     
@@ -1357,9 +1359,7 @@ public class M_Soldier {
                 return true;
             }
 
-            if (self.monsterinfo.currentmove == soldier_move_walk1
-                    || self.monsterinfo.currentmove == soldier_move_walk2
-                    || self.monsterinfo.currentmove == soldier_move_start_run) {
+            if (Stream.of(soldier_move_walk1, soldier_move_walk2, soldier_move_start_run).anyMatch(mmove_t -> self.monsterinfo.currentmove == mmove_t)) {
                 self.monsterinfo.currentmove = soldier_move_run;
             } else {
                 self.monsterinfo.currentmove = soldier_move_start_run;
@@ -1381,8 +1381,7 @@ public class M_Soldier {
 
             if (GameBase.level.time < self.pain_debounce_time) {
                 if ((self.velocity[2] > 100)
-                        && ((self.monsterinfo.currentmove == soldier_move_pain1)
-                                || (self.monsterinfo.currentmove == soldier_move_pain2) || (self.monsterinfo.currentmove == soldier_move_pain3)))
+                        && (Stream.of(soldier_move_pain1, soldier_move_pain2, soldier_move_pain3).anyMatch(mmove_t -> (self.monsterinfo.currentmove == mmove_t))))
                     self.monsterinfo.currentmove = soldier_move_pain4;
                 return;
             }

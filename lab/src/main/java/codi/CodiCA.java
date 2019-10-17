@@ -8,6 +8,7 @@ import spacegraph.space2d.container.PaintSurface;
 import spacegraph.video.Draw;
 
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 public class CodiCA extends CA {
     private int CAChanged;
@@ -175,21 +176,11 @@ public class CodiCA extends CA {
                             }
 
                             int InputSum =
-                                    caio[0] +
-                                            caio[1] +
-                                            caio[2] +
-                                            caio[3] +
-                                            caio[4] +
-                                            caio[5];
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i2 -> caio[i2]).sum();
                             if (InputSum == 0) break;
 
                             InputSum =
-                                    (caio[0] & AXON_SIG) +
-                                            (caio[1] & AXON_SIG) +
-                                            (caio[2] & AXON_SIG) +
-                                            (caio[3] & AXON_SIG) +
-                                            (caio[4] & AXON_SIG) +
-                                            (caio[5] & AXON_SIG);
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i1 -> (caio[i1] & AXON_SIG)).sum();
                             if (InputSum == AXON_SIG) {
                                 ca.Type = AXON;
                                 CAChanged = 1;
@@ -207,12 +198,7 @@ public class CodiCA extends CA {
                             }
 
                             InputSum =
-                                    (caio[0] & DEND_SIG) +
-                                            (caio[1] & DEND_SIG) +
-                                            (caio[2] & DEND_SIG) +
-                                            (caio[3] & DEND_SIG) +
-                                            (caio[4] & DEND_SIG) +
-                                            (caio[5] & DEND_SIG);
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(v -> (caio[v] & DEND_SIG)).sum();
                             if (InputSum == DEND_SIG) {
                                 CAChanged = 1;
                                 ca.Type = DEND;
@@ -290,12 +276,7 @@ public class CodiCA extends CA {
                             break;
                         case DEND: {
                             int InputSum =
-                                    caio[0] +
-                                            caio[1] +
-                                            caio[2] +
-                                            caio[3] +
-                                            caio[4] +
-                                            caio[5];
+                                    IntStream.of(0, 1, 2, 3, 4, 5).map(i -> caio[i]).sum();
                             if (InputSum > 2) InputSum = 2;
                             Arrays.fill(caio, 0);
 

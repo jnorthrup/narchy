@@ -43,6 +43,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.stream.IntStream;
 
 /**
  * CL
@@ -861,10 +862,7 @@ public final class CL {
             
             
             
-            if (Globals.net_message.data[0] == -1
-                    && Globals.net_message.data[1] == -1
-                    && Globals.net_message.data[2] == -1
-                    && Globals.net_message.data[3] == -1) {
+            if (IntStream.of(0, 1, 2, 3).allMatch(i -> Globals.net_message.data[i] == -1)) {
                 
                 ConnectionlessPacket();
                 continue;

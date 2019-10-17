@@ -773,7 +773,7 @@ public enum $ { ;
             }
             case 3: {
                 Term a = t[0], b = t[1], c = t[2];
-                if (Intrin.intrin(a.unneg()) && Intrin.intrin(b.unneg()) && Intrin.intrin(c.unneg()))
+                if (Stream.of(a, b, c).allMatch(term -> Intrin.intrin(term.unneg())))
                     return new IntrinSubterms(a, b, c);
                 break;
             }

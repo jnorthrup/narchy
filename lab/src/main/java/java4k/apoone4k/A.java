@@ -32,6 +32,7 @@ import java4k.GamePanel;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
+import java.util.stream.IntStream;
 
 public class A extends GamePanel {
 
@@ -135,7 +136,7 @@ public class A extends GamePanel {
 		while (think >= 10000000L) {
 			think -= 10000000L;
 
-			if ((pressed[KeyEvent.VK_SPACE]) || (pressed[KeyEvent.VK_LEFT]) || (pressed[KeyEvent.VK_RIGHT]) || (pressed[KeyEvent.VK_UP]) || (pressed[KeyEvent.VK_DOWN])) {
+			if (IntStream.of(KeyEvent.VK_SPACE, KeyEvent.VK_LEFT, KeyEvent.VK_RIGHT, KeyEvent.VK_UP, KeyEvent.VK_DOWN).anyMatch(v -> (pressed[v]))) {
 				if (boolValues[1]) {
 					boolValues[0] = true;
 				} else {

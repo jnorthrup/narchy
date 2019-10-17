@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 public class a extends GamePanel {
 
@@ -383,7 +384,7 @@ public class a extends GamePanel {
 						
 
 						restartDelay--;
-					} else if (a[VK_JUMP] || a[VK_UP] || a[VK_DOWN] || a[VK_LEFT] || a[VK_RIGHT]) { 
+					} else if (IntStream.of(VK_JUMP, VK_UP, VK_DOWN, VK_LEFT, VK_RIGHT).anyMatch(v -> a[v])) {
 
 						
 						attractMode = false;

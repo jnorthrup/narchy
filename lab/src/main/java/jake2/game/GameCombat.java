@@ -28,6 +28,8 @@ import jake2.Globals;
 import jake2.qcommon.Com;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 public class GameCombat {
 
     /**
@@ -115,9 +117,7 @@ public class GameCombat {
             }
         }
     
-        if (targ.movetype == Defines.MOVETYPE_PUSH
-                || targ.movetype == Defines.MOVETYPE_STOP
-                || targ.movetype == Defines.MOVETYPE_NONE) { 
+        if (IntStream.of(Defines.MOVETYPE_PUSH, Defines.MOVETYPE_STOP, Defines.MOVETYPE_NONE).anyMatch(i -> targ.movetype == i)) {
                                                              
             targ.die.die(targ, inflictor, attacker, damage, point);
             return;

@@ -5,6 +5,9 @@ import jcog.pri.op.PriReturn;
 import jcog.util.FloatFloatToFloatFunction;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+
 import static jcog.Texts.n4;
 
 /**
@@ -68,7 +71,7 @@ public class AtomicFixedPoint4x16bitVector implements WritableTensor {
 
     @Override
     public String toString() {
-        return toString(0) + ',' + toString(1) + ',' + toString(2) + ',' + toString(3);
+        return IntStream.of(0, 1, 2, 3).mapToObj(this::toString).collect(Collectors.joining(","));
     }
 
     private String toString(int component) {

@@ -20,6 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.List;
 
 import static nars.Op.*;
 import static nars.time.Tense.ETERNAL;
@@ -283,7 +284,7 @@ public class IRCNLP extends IRC {
         Runnable r = null;
         synchronized (channels) {
             String w = $.unquote(o);
-            boolean punctuation = w.equals(".") || w.equals("!") || w.equals("?");
+            boolean punctuation = List.of(".", "!", "?").contains(w);
             this.s += w;
             if (!punctuation)
                 s += " ";

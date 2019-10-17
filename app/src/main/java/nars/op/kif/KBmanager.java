@@ -245,7 +245,7 @@ public class KBmanager implements Serializable {
             
             
             File testOutputDir = new File(tomcatRootDir,
-                    ("webapps" + sep + "sigma" + sep + "tests"));
+                    (String.join(sep, "webapps", "sigma", "tests")));
             preferences.put("baseDir",baseDir.getCanonicalPath());
             preferences.put("tptpHomeDir",tptpHomeDir.getCanonicalPath());
             preferences.put("systemsDir",systemsDir.getCanonicalPath());
@@ -256,7 +256,7 @@ public class KBmanager implements Serializable {
             File graphVizDir = new File("/usr/bin");
             preferences.put("graphVizDir", graphVizDir.getCanonicalPath());
 
-            File graphDir = new File(tomcatRootDir, "webapps" + sep + "sigma" + sep + "graph");
+            File graphDir = new File(tomcatRootDir, String.join(sep, "webapps", "sigma", "graph"));
             if (!graphDir.exists())
                 graphDir.mkdir();
             preferences.put("graphDir", graphDir.getCanonicalPath());

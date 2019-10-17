@@ -25,6 +25,7 @@ import org.jetbrains.annotations.Nullable;
 import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 import static nars.Op.*;
 import static nars.time.Tense.*;
@@ -300,7 +301,7 @@ public class Occurrify extends TimeGraph {
                 imageNormalize(beliefEvent);
         }
 
-        autoneg = (taskTerm.hasAny(NEG) || beliefTerm.hasAny(NEG) || pattern.hasAny(NEG));
+        autoneg = (Stream.of(taskTerm, beliefTerm, pattern).anyMatch(term -> term.hasAny(NEG)));
 
 
         //compact(); //TODO compaction removes self-loops which is bad, not sure if it does anything else either

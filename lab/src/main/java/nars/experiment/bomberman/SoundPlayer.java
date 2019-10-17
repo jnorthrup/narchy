@@ -14,6 +14,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.net.URL;
 import java.util.Vector;
+import java.util.stream.Stream;
 
 /**
  * This class is used to play sound files.
@@ -201,9 +202,7 @@ public class SoundPlayer extends JPanel implements Runnable, LineListener, MetaE
     private void addSound(File file) {
         String s = file.getName();
         /** if the file has right extension */
-        if (s.endsWith(".au") || s.endsWith(".rmf") ||
-                s.endsWith(".mid") || s.endsWith(".wav") ||
-                s.endsWith(".aif") || s.endsWith(".aiff")) {
+        if (Stream.of(".au", ".rmf", ".mid", ".wav", ".aif", ".aiff").anyMatch(s::endsWith)) {
             /** add the file */
             sounds.add(file);
         }

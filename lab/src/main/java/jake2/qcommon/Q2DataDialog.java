@@ -35,7 +35,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         int x = (mode.getWidth() - getWidth()) / 2;
         int y = (mode.getHeight() - getHeight()) / 2;
         setLocation(x, y);
-        dir = home + sep + "Jake2" + sep + "baseq2";
+        dir = String.join(sep, home, "Jake2", "baseq2");
         jTextField1.setText(dir);
     }
 

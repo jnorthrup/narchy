@@ -34,6 +34,8 @@ import jake2.qcommon.PMove;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 /**
  * CL_pred
  */
@@ -61,15 +63,15 @@ public class CL_pred {
                 Globals.cl.predicted_origins[frame], delta);
 
         
-        len = Math.abs(delta[0]) + Math.abs(delta[1]) + Math.abs(delta[2]);
+        len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
         if (len > 640) 
         { 
             Math3D.VectorClear(Globals.cl.prediction_error);
         } else {
             if (Globals.cl_showmiss.value != 0.0f
-                    && (delta[0] != 0 || delta[1] != 0 || delta[2] != 0))
+                    && (IntStream.of(0, 1, 2).anyMatch(i1 -> delta[i1] != 0)))
                 Com.Printf("prediction miss on " + Globals.cl.frame.serverframe
-                        + ": " + (delta[0] + delta[1] + delta[2]) + '\n');
+                        + ": " + (IntStream.of(0, 1, 2).map(v -> delta[v]).sum()) + '\n');
 
             Math3D.VectorCopy(Globals.cl.frame.playerstate.pmove.origin,
                     Globals.cl.predicted_origins[frame]);

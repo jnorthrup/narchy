@@ -3,6 +3,7 @@ package nars.experiment.bomberman;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.io.File;
+import java.util.stream.IntStream;
 
 /**
  * File:         BomberPlayer.java
@@ -271,10 +272,7 @@ public class BomberPlayer extends Thread {
     public void keyReleased(KeyEvent evt) {
         /** if a direction key is released */
         if (!isExploding && !isDead && (
-                evt.getKeyCode() == keys[UP] ||
-                        evt.getKeyCode() == keys[DOWN] ||
-                        evt.getKeyCode() == keys[LEFT] ||
-                        evt.getKeyCode() == keys[RIGHT])) {
+                IntStream.of(UP, DOWN, LEFT, RIGHT).anyMatch(i -> evt.getKeyCode() == keys[i]))) {
             /** if down key is released */
             if (evt.getKeyCode() == keys[DOWN]) {
                 /** remove key from the all keys down buffer */

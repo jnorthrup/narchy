@@ -28,6 +28,7 @@ import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 public class ap extends GamePanel {
 
@@ -832,10 +833,7 @@ public class ap extends GamePanel {
           }
         }
                 
-        if (polygonYs[0] > -128
-            && polygonYs[1] > -128
-            && polygonYs[2] > -128
-            && polygonYs[3] > -128) {
+        if (IntStream.of(0, 1, 2, 3).allMatch(v -> polygonYs[v] > -128)) {
           
           g.setColor(roadColors[
               k == 0 ? (startingLine >> 1) : (band % ROAD_COLORS)]);

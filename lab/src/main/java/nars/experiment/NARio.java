@@ -23,6 +23,7 @@ import nars.video.AutoclassifiedBitmap;
 
 import javax.swing.*;
 import java.util.List;
+import java.util.stream.IntStream;
 
 import static nars.$.$$;
 import static nars.experiment.mario.level.Level.*;
@@ -274,7 +275,7 @@ public class NARio extends GameX {
 				//System.out.println(s.mario.x + " " + s.mario.y);
 				byte block = ll.getBlock(Math.round((s.mario.x - 8) / 16f) + dx, Math.round((s.mario.y - 8) / 16f) + dy);
 				byte t = Level.TILE_BEHAVIORS[block & 0xff];
-				boolean breakable = ((t & BIT_BREAKABLE) != 0) || ((t & BIT_PICKUPABLE) != 0) || (t & BIT_BUMPABLE) != 0;
+				boolean breakable = IntStream.of(BIT_BREAKABLE, BIT_PICKUPABLE, BIT_BUMPABLE).anyMatch(i -> ((t & i) != 0));
 				if (breakable)
 					return 2;
 				boolean blocking = ((t & BIT_BLOCK_ALL) != 0);

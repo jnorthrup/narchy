@@ -30,6 +30,7 @@ import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.util.StringTokenizer;
+import java.util.stream.Stream;
 
 
 public class GameItems {
@@ -1222,9 +1223,7 @@ public class GameItems {
                 }
             }
             if (((int) GameBase.dmflags.value & Defines.DF_NO_HEALTH) != 0) {
-                if (item.pickup == Pickup_Health
-                        || item.pickup == Pickup_Adrenaline
-                        || item.pickup == Pickup_AncientHead) {
+                if (Stream.of(Pickup_Health, Pickup_Adrenaline, Pickup_AncientHead).anyMatch(entInteractAdapter -> item.pickup == entInteractAdapter)) {
                     GameUtil.G_FreeEdict(ent);
                     return;
                 }

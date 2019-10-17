@@ -4,6 +4,7 @@ package nars.ca;
 
 
 import java.util.StringTokenizer;
+import java.util.stream.IntStream;
 
 public class RuleMarg {
 	public static final int TYPE_MS = 1; 
@@ -109,8 +110,7 @@ public class RuleMarg {
 		int iCnt, iNewCnt;
 
 		
-		if ((mgCells[0] < 2) && (mgCells[1] < 2) && (mgCells[2] < 2)
-				&& (mgCells[3] < 2)) {
+		if (IntStream.of(0, 1, 2, 3).allMatch(i -> (mgCells[i] < 2))) {
 			iCnt = 0;
 			if (mgCells[0] > 0)
 				iCnt += 1;
@@ -166,7 +166,7 @@ public class RuleMarg {
 				mgCellsOld[2] = mgCells[2] = tmpState[c1][r2] = crrState[c1][r2]; 
 				mgCellsOld[3] = mgCells[3] = tmpState[c2][r2] = crrState[c2][r2]; 
 
-				if ((mgCells[0] + mgCells[1] + mgCells[2] + mgCells[3] > 0)
+				if ((IntStream.of(0, 1, 2, 3).map(v -> mgCells[v]).sum() > 0)
 						|| (swapArray[0] > 0)) {
 					SwapMargCells(mgCells); 
 

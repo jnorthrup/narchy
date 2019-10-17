@@ -441,13 +441,8 @@ class TestTrie
       t.put( "java.util.", Boolean.FALSE );
       t.put( "java.lang.Boolean", Boolean.FALSE );
 
-      String expected = 
-         "java." + LS + 
-         "     io. = true" + LS +
-         "     lang. = true" + LS +
-         "          Boolean = false" + LS +
-         "     util. = false" + LS +
-         "          concurrent. = true" + LS;
+      String expected =
+              String.join(LS, "java.", "     io. = true", "     lang. = true", "          Boolean = false", "     util. = false", "          concurrent. = true") + LS;
       
       StringBuilder printed = print( t );
       

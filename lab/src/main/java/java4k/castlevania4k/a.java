@@ -29,6 +29,7 @@ import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class a extends GamePanel {
 
@@ -669,7 +670,7 @@ public class a extends GamePanel {
 									crosses.remove(object);
 									queue.remove(i);
 								}
-							} else if (playerStunned == 0 && (object[OBJ_TYPE] == TYPE_FIREBALL || object[OBJ_TYPE] == TYPE_BRICK || object[OBJ_TYPE] == TYPE_IGOR)) {
+							} else if (playerStunned == 0 && (IntStream.of(TYPE_FIREBALL, TYPE_BRICK, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v))) {
 								queue.remove(i);
 								float[] flame = new float[32];
 								queue.add(flame);
@@ -689,7 +690,7 @@ public class a extends GamePanel {
 						
 						if (playerWhipping > 0 && playerWhipping <= WHIP_EXTENDED && !playerThrowing && whipX2 >= object[OBJ_X] + object[OBJ_X1] && whipX1 <= object[OBJ_X] + object[OBJ_X2]
 								&& whipY2 >= object[OBJ_Y] + object[OBJ_Y1] && whipY1 <= object[OBJ_Y] + object[OBJ_Y2]) {
-							if (object[OBJ_TYPE] == TYPE_FIREBALL || object[OBJ_TYPE] == TYPE_DRACULA_HEAD || object[OBJ_TYPE] == TYPE_IGOR) {
+							if (IntStream.of(TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v)) {
 								queue.remove(i);
 								float[] flame = new float[32];
 								queue.add(flame);
@@ -705,7 +706,7 @@ public class a extends GamePanel {
 						}
 
 						
-						if (object[OBJ_TYPE] == TYPE_FIREBALL || object[OBJ_TYPE] == TYPE_DRACULA_HEAD || object[OBJ_TYPE] == TYPE_IGOR) {
+						if (IntStream.of(TYPE_FIREBALL, TYPE_DRACULA_HEAD, TYPE_IGOR).anyMatch(v -> object[OBJ_TYPE] == v)) {
 							for (j = 0; j < crosses.size(); j++) {
 								float[] cross = crosses.get(j);
 								if (cross[OBJ_X] + cross[OBJ_X2] >= object[OBJ_X] + object[OBJ_X1] && cross[OBJ_X] + cross[OBJ_X1] <= object[OBJ_X] + object[OBJ_X2]

@@ -134,7 +134,7 @@ abstract public class AND<X> extends AbstractPred<X> {
 
         @Override
         public final boolean test(X x) {
-            return a.test(x) && b.test(x) && c.test(x);
+            return Stream.of(a, b, c).allMatch(xpredicate -> xpredicate.test(x));
         }
 
         public PREDICATE<X> first() {

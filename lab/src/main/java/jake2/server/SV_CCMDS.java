@@ -38,6 +38,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.util.Calendar;
+import java.util.stream.Stream;
 
 public class SV_CCMDS {
 
@@ -621,7 +622,7 @@ public class SV_CCMDS {
 		Com.Printf("Loading game...\n");
 
 		String dir = Cmd.Argv(1);
-		if ( (dir.contains("..")) || (dir.contains("/")) || (dir.contains("\\"))) {
+		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
 			Com.Printf("Bad savedir.\n");
 		}
 
@@ -685,7 +686,7 @@ public class SV_CCMDS {
 		}
 
 		dir = Cmd.Argv(1);
-		if ( (dir.contains("..")) || (dir.contains("/")) || (dir.contains("\\"))) {
+		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
 			Com.Printf("Bad savedir.\n");
 		}
 		

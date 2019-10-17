@@ -276,7 +276,7 @@ private static void joinWith(Row r, Appendable s, CharSequence del) throws IOExc
 
         String lowertype = type.toLowerCase();
 
-        if (lowertype.equals("real") || lowertype.equals("numeric") || lowertype.equals("integer")) {
+        if (List.of("real", "numeric", "integer").contains(lowertype)) {
             defineNumeric(name);
         } else if (lowertype.equals("string")) {
             defineText(name);

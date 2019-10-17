@@ -6,6 +6,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.util.function.Supplier;
+import java.util.stream.IntStream;
 
 /**
  * 2D monochrome adapter to BufferedImage
@@ -145,7 +146,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[3];
                             break;
                         case RGB:
-                            v = (rgb[1] + rgb[2] + rgb[3]) / 3f;
+                            v = (IntStream.of(1, 2, 3).map(i -> rgb[i]).sum()) / 3f;
                             break;
                         default:
                             throw new UnsupportedOperationException();
@@ -162,7 +163,7 @@ public class MonoBufImgBitmap2D implements Bitmap2D {
                             v = rgb[2];
                             break;
                         case RGB:
-                            v = (rgb[0] + rgb[1] + rgb[2]) / 3f;
+                            v = (IntStream.of(0, 1, 2).map(i -> rgb[i]).sum()) / 3f;
                             break;
                         default:
                             throw new UnsupportedOperationException();

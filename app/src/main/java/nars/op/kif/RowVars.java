@@ -151,7 +151,7 @@ public class RowVars {
             else
                 return result;
         }
-        else if (pred.equals(Formula.EQUAL) || pred.equals(Formula.IFF)  || pred.equals(Formula.IF)) {
+        else if (List.of(Formula.EQUAL, Formula.IFF, Formula.IF).contains(pred)) {
             Formula arg1 = new Formula(f.getArgument(1));
             Formula arg2 = new Formula(f.getArgument(2));
             if (arg1 != null && arg2 != null)

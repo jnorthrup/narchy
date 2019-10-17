@@ -629,7 +629,7 @@ public class TermTestMisc {
     @Test
     void reuseVariableTermsDuringNormalization2() throws Narsese.NarseseException {
         for (String v : new String[]{"?a", "?b", "#a", "#c"}) {
-            Compound x = $("((" + v + " --> b) ==> (" + v + " --> c))");
+            Compound x = $(String.join(v, "((", " --> b) ==> (", " --> c))"));
             Term a = x.subPath((byte) 0, (byte) 0);
             Term b = x.subPath((byte) 1, (byte) 0);
             assertNotEquals(a, x.subPath((byte) 0, (byte) 1));

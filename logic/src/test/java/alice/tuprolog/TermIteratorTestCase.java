@@ -26,11 +26,7 @@ public class TermIteratorTestCase {
 	}
 	
 	@Test public void testIterationCount() {
-		String theory = "q(1)." + '\n' +
-		                "q(2)." + '\n' +
-		                "q(3)." + '\n' +
-		                "q(5)." + '\n' +
-		                "q(7).";
+		String theory = String.join("\n", "q(1).", "q(2).", "q(3).", "q(5).", "q(7).");
 		Iterator<Term> i = Term.getIterator(theory);
 		int count = 0;
 		for (; i.hasNext(); count++)
@@ -49,12 +45,7 @@ public class TermIteratorTestCase {
 	}
 	
 	@Test public void testMultipleNext() {
-		String theory = "p(X):-q(X),X>1." + '\n' +
-		                "q(1)." + '\n' +
-						"q(2)." + '\n' +
-						"q(3)." + '\n' +
-						"q(5)." + '\n' +
-						"q(7).";
+		String theory = String.join("\n", "p(X):-q(X),X>1.", "q(1).", "q(2).", "q(3).", "q(5).", "q(7).");
 		Iterator<Term> i = Term.getIterator(theory);
 		assertTrue(i.hasNext());
 		i.next(); 
@@ -80,11 +71,7 @@ public class TermIteratorTestCase {
 	}
 	
 	@Test public void testIterationOnInvalidTheory() {
-		String theory = "q(1)." + '\n' +
-		                "q(2)." + '\n' +
-						"q(3) " + '\n' +
-						"q(5)." + '\n' +
-						"q(7).";
+		String theory = String.join("\n", "q(1).", "q(2).", "q(3) ", "q(5).", "q(7).");
 		Struct firstTerm = new Struct("q", new NumberTerm.Int(1));
 		Struct secondTerm = new Struct("q", new NumberTerm.Int(2));
 		Iterator<Term> i1 = Term.getIterator(theory);

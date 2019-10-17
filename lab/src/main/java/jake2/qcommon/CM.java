@@ -1086,7 +1086,7 @@ public class CM {
 
         
         if (headnode != box_headnode
-                && (angles[0] != 0 || angles[1] != 0 || angles[2] != 0)) {
+                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0))) {
             Math3D.AngleVectors(angles, forward, right, up);
 
             Math3D.VectorCopy(p_l, temp);
@@ -1547,7 +1547,7 @@ public class CM {
 
         
         rotated = headnode != box_headnode
-                && (angles[0] != 0 || angles[1] != 0 || angles[2] != 0);
+                && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0));
 
         if (rotated) {
             Math3D.AngleVectors(angles, forward, right, up);

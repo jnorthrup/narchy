@@ -37,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import java.io.EOFException;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.util.stream.IntStream;
 
 public class MCS {
     public static final int MCS_GLOBAL_CHANNEL = 1003;
@@ -173,9 +174,7 @@ public class MCS {
      */
     private static int domainParamSize(int max_channels, int max_users,
                                        int max_tokens, int max_pdusize) {
-        int endSize = BERIntSize(max_channels) + BERIntSize(max_users)
-                + BERIntSize(max_tokens) + BERIntSize(1) + BERIntSize(0)
-                + BERIntSize(1) + BERIntSize(max_pdusize) + BERIntSize(2);
+        int endSize = IntStream.of(max_channels, max_users, max_tokens, 1, 0, 1, max_pdusize, 2).map(MCS::BERIntSize).sum();
         return berHeaderSize(TAG_DOMAIN_PARAMS, endSize) + endSize;
     }
 

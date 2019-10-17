@@ -33,6 +33,8 @@ import spacegraph.space3d.phys.math.VectorUtil;
 import spacegraph.space3d.phys.shape.ShapeHull;
 import spacegraph.space3d.phys.util.IntArrayList;
 
+import java.util.stream.IntStream;
+
 /**
  * HullLibrary class can create a convex hull from a collection of vertices, using
  * the ComputeHull method. The {@link ShapeHull} class uses this HullLibrary to create
@@ -858,7 +860,7 @@ public class HullLibrary {
 	
 
 	private static boolean hasvert(Int3 t, int v) {
-		return (t.getCoord(0) == v || t.getCoord(1) == v || t.getCoord(2) == v);
+		return (IntStream.of(0, 1, 2).anyMatch(i -> t.getCoord(i) == v));
 	}
 
 	private static v3 orth(v3 v, v3 out) {

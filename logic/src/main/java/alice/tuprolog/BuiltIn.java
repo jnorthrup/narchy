@@ -24,6 +24,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.IdentityHashMap;
 import java.util.Iterator;
+import java.util.List;
 
 import static alice.tuprolog.PrologPrim.PREDICATE;
 
@@ -354,7 +355,7 @@ public final class BuiltIn extends PrologLib {
         if (term instanceof Struct) {
             Struct s = (Struct) term;
             String pi = s.key();
-            if (pi.equals(";/2") || pi.equals(",/2") || pi.equals("->/2")) {
+            if (List.of(";/2", ",/2", "->/2").contains(pi)) {
                 int n = s.subs();
                 for (int i = 0; i < n; i++) {
                     Term t = s.sub(i);

@@ -31,6 +31,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 
 class Sftp implements Runnable {
     private static final String[] help = {
@@ -196,7 +197,7 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("rm") || cmd.equals("rmdir") || cmd.equals("mkdir")) {
+                if (List.of("rm", "rmdir", "mkdir").contains(cmd)) {
                     if (cmds.size() < 2)
                         continue;
                     String path = (String) cmds.elementAt(1);
@@ -236,7 +237,7 @@ class Sftp implements Runnable {
                     continue;
                 }
 
-                if (cmd.equals("chgrp") || cmd.equals("chown") || cmd.equals("chmod")) {
+                if (List.of("chgrp", "chown", "chmod").contains(cmd)) {
                     if (cmds.size() != 3)
                         continue;
                     String path = (String) cmds.elementAt(2);
@@ -360,7 +361,7 @@ class Sftp implements Runnable {
                     }
                     continue;
                 }
-                if (cmd.equals("ln") || cmd.equals("symlink") || cmd.equals("rename")) {
+                if (List.of("ln", "symlink", "rename").contains(cmd)) {
                     if (cmds.size() != 3)
                         continue;
                     String p1 = (String) cmds.elementAt(1);

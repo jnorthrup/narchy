@@ -27,6 +27,8 @@ import jake2.game.*;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 public class M_Flyer {
     
 
@@ -966,9 +968,7 @@ public class M_Flyer {
         float[] dir = { 0, 0, 0 };
         int effect;
 
-        if ((self.s.frame == FRAME_attak204)
-                || (self.s.frame == FRAME_attak207)
-                || (self.s.frame == FRAME_attak210))
+        if (IntStream.of(FRAME_attak204, FRAME_attak207, FRAME_attak210).anyMatch(i -> (self.s.frame == i)))
             effect = Defines.EF_HYPERBLASTER;
         else
             effect = 0;

@@ -19,10 +19,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.xml.namespace.QName;
 import java.io.*;
-import java.util.Collections;
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -360,16 +357,13 @@ public abstract class NQuadsRDF {
         if (predicatesIgnored.contains(predicate))
             return null;
 
-        if (predicate.equals(type) || predicate.equals(subClassOf) || predicate.equals(subPropertyOf)) {
+        if (Arrays.asList(type, subClassOf, subPropertyOf).contains(predicate)) {
             if (object.equals(owlClass)) {
                 belief = $.inst($.varDep(1), subject); 
             }
 
             
-            else if (object.equals(dataTypeProperty) ||
-                    object.equals(funcProp) ||
-                    object.equals(invFuncProp) ||
-                    object.equals(objProperty)
+            else if (Arrays.asList(dataTypeProperty, funcProp, invFuncProp, objProperty).contains(object)
                     ) {
                 return null;
             } else {

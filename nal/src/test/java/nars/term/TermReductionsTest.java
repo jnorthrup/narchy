@@ -117,7 +117,7 @@ public class TermReductionsTest extends NarseseTest {
     void testInterCONJntReduction_to_one() {
         for (String o : new String[] { "||", "&&" }) {
             assertEq("(robin-->bird)", "(robin-->(" + o + ",bird))");
-            assertEq("(robin-->bird)", "((" + o + ",robin)-->(" + o + ",bird))");
+            assertEq("(robin-->bird)", String.join(o, "((", ",robin)-->(", ",bird))"));
         }
     }
 

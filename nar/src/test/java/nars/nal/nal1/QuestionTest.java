@@ -227,7 +227,7 @@ class QuestionTest {
                 .termVolMax(10 + args.length())
                 .confMin(0.75f)
                 .input("f(#x" + args + ").")
-                .input("(f($x"+ args + ") ==> g($x" + args + ")).")
+                .input(String.join(args, "(f($x", ") ==> g($x", "))."))
                 .mustBelieve(cycles, "g(#1" + args + ")", 1f, 0.81f)
                 .test();
     }

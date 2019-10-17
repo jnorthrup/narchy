@@ -38,6 +38,7 @@ import java.util.Deque;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.regex.Pattern;
+import java.util.stream.Stream;
 
 /**
  * FS
@@ -688,8 +689,7 @@ public final class FS extends Globals {
     public static void SetGamedir(String dir) {
         searchpath_t next;
 
-        if (dir.contains("..") || dir.contains("/")
-                || dir.contains("\\") || dir.contains(":")) {
+        if (Stream.of("..", "/", "\\", ":").anyMatch(dir::contains)) {
             Com.Printf("Gamedir should be a single filename, not a path\n");
             return;
         }

@@ -30,6 +30,7 @@ import java.awt.event.MouseEvent;
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 public class A extends GamePanel {
 
@@ -177,7 +178,7 @@ public class A extends GamePanel {
 						if (gameData.charAt(g + 140) == 'e')
 							g2d.fillRect(((g - z - j * h) % spriteSize[m]) * n, ((g - z - j * h) / spriteSize[m]) * n, n, n);
 
-					if (i == 6 || i == 8 || i == 21) {
+					if (IntStream.of(6, 8, 21).anyMatch(i1 -> i == i1)) {
 						g2d.setColor(colorChart[12]); 
 						g2d.fillRect(2, 4, 2, 2);
 						g2d.fillRect(2, 16, 2, 2);

@@ -5,6 +5,7 @@ import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferInt;
 import java.util.Random;
+import java.util.stream.IntStream;
 
 /**
  * "On!" - 4k shooter, elements from Raiden II.
@@ -1064,7 +1065,7 @@ public class O extends Applet implements Runnable {
 		
 		
 		boolean down = false;
-		if (e.id == KEY_PRESS || e.id == KEY_ACTION || e.id == MOUSE_DOWN) {
+		if (IntStream.of(KEY_PRESS, KEY_ACTION, MOUSE_DOWN).anyMatch(i -> e.id == i)) {
 			down = true;
 		}
 		

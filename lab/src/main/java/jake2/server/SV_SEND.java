@@ -31,6 +31,7 @@ import jake2.util.Lib;
 import jake2.util.Math3D;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class SV_SEND {
 	/*
@@ -512,9 +513,7 @@ public class SV_SEND {
 				SV_MAIN.SV_DropClient(c);
 			}
 
-			if (SV_INIT.sv.state == Defines.ss_cinematic
-				|| SV_INIT.sv.state == Defines.ss_demo
-				|| SV_INIT.sv.state == Defines.ss_pic)
+			if (IntStream.of(Defines.ss_cinematic, Defines.ss_demo, Defines.ss_pic).anyMatch(v -> SV_INIT.sv.state == v))
 				Netchan.Transmit(c.netchan, msglen, msgbuf);
 			else if (c.state == Defines.cs_spawned) {
 				

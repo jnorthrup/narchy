@@ -27,6 +27,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.stream.IntStream;
 
 public class a extends GamePanel {
 
@@ -1058,7 +1059,7 @@ public class a extends GamePanel {
         
         int px = playerX;
         int py = (int)playerY;
-        if (!(a[KEY_X] || a[KEY_R] || a[KEY_N] || a[KEY_P])) {
+        if (IntStream.of(KEY_X, KEY_R, KEY_N, KEY_P).noneMatch(v -> a[v])) {
           keysReleased = true;
         }
         if (keysReleased && a[KEY_R]) {
@@ -1396,8 +1397,7 @@ public class a extends GamePanel {
     final int KEY_R = 114; 
     final int KEY_X = 120;
         
-    return a[e.key != KEY_LEFT && e.key != KEY_RIGHT && e.key != KEY_N
-        && e.key != KEY_P && e.key != KEY_R ? KEY_X : e.key] 
+    return a[IntStream.of(KEY_LEFT, KEY_RIGHT, KEY_N, KEY_P, KEY_R).allMatch(i -> e.key != i) ? KEY_X : e.key]
             = e.id == 401 || e.id == 403;
   }  
 

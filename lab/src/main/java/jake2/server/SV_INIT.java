@@ -34,6 +34,7 @@ import jake2.util.Math3D;
 
 import java.io.IOException;
 import java.io.RandomAccessFile;
+import java.util.stream.Stream;
 
 public class SV_INIT {
 
@@ -417,7 +418,7 @@ public class SV_INIT {
         
         if (firstmap.length() == 0)
         {        
-        	if (!levelstring.endsWith(".cin") && !levelstring.endsWith(".pcx") && !levelstring.endsWith(".dm2"))
+        	if (Stream.of(".cin", ".pcx", ".dm2").noneMatch(levelstring::endsWith))
         	{
         		int pos = levelstring.indexOf('+');
         		firstmap = levelstring.substring(pos + 1);

@@ -39,6 +39,7 @@ import java.nio.ByteOrder;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * Surf
@@ -605,7 +606,7 @@ public abstract class Surf extends Draw {
 
         boolean rotated;
         float[] ea = e.angles;
-        if (ea[0] != 0 || ea[1] != 0 || ea[2] != 0) {
+        if (IntStream.of(0, 1, 2).anyMatch(v -> ea[v] != 0)) {
             rotated = true;
 
             float[] eo = e.origin;

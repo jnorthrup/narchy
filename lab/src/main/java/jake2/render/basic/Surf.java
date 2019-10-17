@@ -36,6 +36,7 @@ import jake2.util.Math3D;
 import java.nio.ByteOrder;
 import java.nio.IntBuffer;
 import java.util.Arrays;
+import java.util.stream.IntStream;
 
 /**
  * Surf
@@ -964,7 +965,7 @@ public abstract class Surf extends Draw {
 		currententity = e;
 		gl_state.currenttextures[0] = gl_state.currenttextures[1] = -1;
 
-		if (e.angles[0] != 0 || e.angles[1] != 0 || e.angles[2] != 0)
+		if (IntStream.of(0, 1, 2).anyMatch(v -> e.angles[v] != 0))
 		{
 			rotated = true;
 			for (i=0 ; i<3 ; i++)

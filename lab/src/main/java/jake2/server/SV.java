@@ -33,6 +33,8 @@ import jake2.qcommon.Com;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 /**
  * SV
  */
@@ -684,8 +686,7 @@ public final class SV {
 
         wasonground = groundentity != null;
 
-        if (ent.avelocity[0] != 0 || ent.avelocity[1] != 0
-                || ent.avelocity[2] != 0)
+        if (IntStream.of(0, 1, 2).anyMatch(v -> ent.avelocity[v] != 0))
             SV_AddRotationalFriction(ent);
 
         
@@ -726,8 +727,7 @@ public final class SV {
             ent.velocity[2] *= newspeed;
         }
 
-        if (ent.velocity[2] != 0 || ent.velocity[1] != 0
-                || ent.velocity[0] != 0) {
+        if (IntStream.of(2, 1, 0).anyMatch(i -> ent.velocity[i] != 0)) {
             
             
             if ((wasonground)

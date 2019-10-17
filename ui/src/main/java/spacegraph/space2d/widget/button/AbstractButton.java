@@ -10,6 +10,7 @@ import spacegraph.space2d.widget.text.VectorLabel;
 import spacegraph.video.ImageTexture;
 
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.IntStream;
 
 import static java.awt.event.KeyEvent.VK_ENTER;
 import static java.awt.event.KeyEvent.VK_SPACE;
@@ -44,7 +45,9 @@ public abstract class AbstractButton extends Widget {
             if (enabled() && finger.test(click))
                 return this;
 
-            if (finger.dragging(CLICK_BUTTON) || finger.dragging(1 /* HACK */) || finger.dragging(0 /* HACK */)) {
+            /* HACK */
+            /* HACK */
+            if (IntStream.of(CLICK_BUTTON, 1, 0).anyMatch(finger::dragging)) {
                 //allow pass-through for drag actions
                 return null;
             }

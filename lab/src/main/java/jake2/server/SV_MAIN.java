@@ -31,6 +31,7 @@ import jake2.sys.Timer;
 import jake2.util.Lib;
 
 import java.io.IOException;
+import java.util.stream.IntStream;
 
 public class SV_MAIN {
 
@@ -566,10 +567,7 @@ public class SV_MAIN {
                 Globals.net_message)) {
 
             
-            if ((Globals.net_message.data[0] == -1)
-                    && (Globals.net_message.data[1] == -1)
-                    && (Globals.net_message.data[2] == -1)
-                    && (Globals.net_message.data[3] == -1)) {
+            if (IntStream.of(0, 1, 2, 3).allMatch(v -> (Globals.net_message.data[v] == -1))) {
                 SV_ConnectionlessPacket();
                 continue;
             }

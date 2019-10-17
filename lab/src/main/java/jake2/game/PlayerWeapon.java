@@ -28,6 +28,8 @@ import jake2.game.monsters.M_Player;
 import jake2.util.Lib;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 public class PlayerWeapon {
 
     public static final EntThinkAdapter Weapon_Grenade = new EntThinkAdapter() {
@@ -68,10 +70,7 @@ public class PlayerWeapon {
                     return true;
                 }
 
-                if ((ent.client.ps.gunframe == 29)
-                        || (ent.client.ps.gunframe == 34)
-                        || (ent.client.ps.gunframe == 39)
-                        || (ent.client.ps.gunframe == 48)) {
+                if (IntStream.of(29, 34, 39, 48).anyMatch(i -> (ent.client.ps.gunframe == i))) {
                     if ((Lib.rand() & 15) != 0)
                         return true;
                 }

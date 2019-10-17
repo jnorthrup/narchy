@@ -43,6 +43,7 @@ import org.eclipse.collections.impl.factory.Sets;
 import org.eclipse.collections.impl.map.mutable.UnifiedMap;
 import org.jetbrains.annotations.Nullable;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -700,7 +701,7 @@ public class PatternHow extends CondHow {
 
                 Term cc = a.sub(0);
                 if (cc.op()==VAR_PATTERN) {
-                    if (f.equals(ConjMatch.BEFORE) || f.equals(ConjMatch.AFTER) || f.equals(ConjMatch.CONJ_WITHOUT_UNIFY)) {
+                    if (Arrays.asList(ConjMatch.BEFORE, ConjMatch.AFTER, ConjMatch.CONJ_WITHOUT_UNIFY).contains(f)) {
                         is(cc, Op.CONJ);
                     }
                 }

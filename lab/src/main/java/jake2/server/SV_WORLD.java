@@ -28,6 +28,8 @@ import jake2.qcommon.CM;
 import jake2.qcommon.Com;
 import jake2.util.Math3D;
 
+import java.util.stream.IntStream;
+
 public class SV_WORLD {
     
     
@@ -201,7 +203,7 @@ public class SV_WORLD {
             ent.s.solid = 0;
         
         if (ent.solid == Defines.SOLID_BSP
-                && (ent.s.angles[0] != 0 || ent.s.angles[1] != 0 || ent.s.angles[2] != 0)) {
+                && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != 0))) {
             
             float max, v;
             max = 0;
