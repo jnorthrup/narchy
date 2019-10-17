@@ -1,6 +1,9 @@
 package jcog.grammar.parse.examples.mechanics;
 
-import jcog.grammar.parse.*;
+import jcog.grammar.parse.Alternation;
+import jcog.grammar.parse.IAssembler;
+import jcog.grammar.parse.Parser;
+import jcog.grammar.parse.Repetition;
 import jcog.grammar.parse.tokens.TokenAssembly;
 
 /**

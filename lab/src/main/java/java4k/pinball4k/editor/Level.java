@@ -3,11 +3,8 @@ package java4k.pinball4k.editor;
 import java.awt.*;
 import java.awt.geom.Point2D;
 import java.io.*;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.List;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 

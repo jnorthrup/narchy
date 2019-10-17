@@ -21,7 +21,6 @@ import jcog.grammar.evolve.EvolveGrammar;
 import jcog.grammar.evolve.SimpleConfig;
 import jcog.grammar.evolve.configuration.Configuration;
 import jcog.grammar.evolve.inputs.DataSet;
-import jcog.grammar.evolve.inputs.DataSet.Example;
 import jcog.grammar.evolve.outputs.FinalSolution;
 import jcog.grammar.evolve.outputs.Results;
 import jcog.grammar.evolve.postprocessing.BasicPostprocessor;

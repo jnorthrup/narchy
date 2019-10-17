@@ -767,14 +767,13 @@ public class Occurrify extends TimeGraph {
     /** ignores temporal subterms ofof --> and <-> */
     static boolean nonTemporal(Term x) {
         return !x.hasAny(Op.Temporal) ||
-                (!x.hasXternal() && x.hasAny(INH.bit | SIM.bit) && x.recurseTerms(term->term.hasAny(Op.Temporal), (Term term, Compound suuper)->{
-
+                (!x.hasXternal() && x.hasAny(INH.bit | SIM.bit) &&
+                x.recurseTerms(term->term.hasAny(Op.Temporal), (Term term, Compound suuper)->{
                     if (term.op().temporal) {
                         if (suuper==null)
                             return false;
                         Op suo = suuper.op();
-                        if (suo != INH && suo != SIM)
-                            return false;
+                        return suo == INH || suo == SIM;
                     }
                     return true;
                 }, null));

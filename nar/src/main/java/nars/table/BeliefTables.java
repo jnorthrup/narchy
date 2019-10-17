@@ -42,8 +42,7 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
     @Override
     public void match(Answer a) {
         int size = this.size;
-        if (size == 0) return;
-        else {
+        if (size != 0) {
             BeliefTable[] items = this.items;
             if (size == 1) { items[0].match(a); }
             else {
@@ -104,7 +103,6 @@ public class BeliefTables extends FasterList<BeliefTable> implements BeliefTable
 
             }
         }
-
     }
 
 

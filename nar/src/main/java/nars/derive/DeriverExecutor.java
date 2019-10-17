@@ -120,6 +120,42 @@ public abstract class DeriverExecutor extends Derivation {
 
 	}
 
+//	/** simplest depth-first impl - wont work unless post[] is stack alloc */
+//	public static class DepthFirstDeriverExecutor extends DeriverExecutor {
+//
+//		private int breadth;
+//		int depth;
+//		final int maxDepth = 3;
+//
+//		public DepthFirstDeriverExecutor(Deriver d) {
+//			super(d);
+//		}
+//
+//		@Override
+//		public void next(int loops) {
+//
+//			breadth = nar.deriveBranchTTL.intValue();
+//			for (int i = 0; i < loops; i++) {
+//				Premise p = sample();
+//				if (p==null)
+//					break;
+//				depth = 0;
+//				run(p, breadth);
+//			}
+//		}
+//
+//		@Override
+//		public void add(Premise p) {
+//			if (depth >= maxDepth) {
+//				unify.ttl = 0;
+//				return;
+//			}
+//			depth++;
+//			run(p, breadth);
+//			depth--;
+//		}
+//	}
+
 	public static class QueueDeriverExecutor extends DeriverExecutor {
 
 		final Queue<Premise> queue =

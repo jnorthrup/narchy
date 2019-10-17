@@ -1,7 +1,6 @@
 package spacegraph.space2d.phys.fracture.hertelmehlhorn;
 
 import spacegraph.space2d.phys.fracture.util.HashTabulka;
-import spacegraph.space2d.phys.fracture.util.Node;
 
 import java.util.Objects;
 import java.util.stream.Stream;

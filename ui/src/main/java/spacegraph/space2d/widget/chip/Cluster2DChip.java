@@ -115,19 +115,19 @@ public class Cluster2DChip extends Bordering {
         set(S, new Gridding(new ObjectSurface(g), new ObjectSurface(config)), 0.15f);
     }
 
-    @Override
-    protected void starting() {
-        super.starting();
-//        update = root().animate((dt) -> {
-//            //if (visible()) {
-//            //}
-////            for (Centroid c : g.centroids) {
-////                float a = (float) (1.0 / (1 + c.localError()));
-////                ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
-////            }
-//            return true;
-//        });
-    }
+//    @Override
+//    protected void starting() {
+//        super.starting();
+////        update = root().animate((dt) -> {
+////            //if (visible()) {
+////            //}
+//////            for (Centroid c : g.centroids) {
+//////                float a = (float) (1.0 / (1 + c.localError()));
+//////                ae.put(Util.toFloat(c.getDataRef()), a * 0.05f, 0.001f, 0, false);
+//////            }
+////            return true;
+////        });
+//    }
 
     @Override
     protected void renderContent(ReSurface r) {

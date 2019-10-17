@@ -17,7 +17,7 @@ public class UniExec extends Exec {
 
     private DeriverExecutor exe;
 
-    @Deprecated private int loops = 8;
+    @Deprecated private int loops;
 
     public UniExec(int power) {
         this(1, power);
@@ -35,7 +35,9 @@ public class UniExec extends Exec {
 
     @Override public void deriver(Deriver d) {
         super.deriver(d);
-        this.exe = new DeriverExecutor.QueueDeriverExecutor(d);
+        this.exe =
+            new DeriverExecutor.QueueDeriverExecutor(d);
+
     }
 
 

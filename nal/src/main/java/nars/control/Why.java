@@ -28,7 +28,7 @@ public enum Why { ;
 	}
 
 	static Term why(short[] why, int capacity) {
-		if (why.length == 0)
+		if (capacity == 0 || why.length == 0)
 			return null; //TODO prevent from having to reach here
 		if (why.length == 1)
 			return why(why[0]);
@@ -52,7 +52,7 @@ public enum Why { ;
 
 
 
-	public static @Nullable Term why(RoaringBitmap why, int capacity) {
+	@Nullable public static Term why(RoaringBitmap why, int capacity) {
 		int ss = why.getCardinality();
 		if (ss == 0)
 			return null;
@@ -88,11 +88,12 @@ public enum Why { ;
 		return whyLazy(c, NAL.causeCapacity.intValue());
 	}
 
-	public static @Nullable <C extends Caused> Termed whyLazy(@Nullable C[] c, int capacity) {
+	@Nullable public static Termed whyLazy(@Nullable Caused[] c, int capacity) {
+		if (capacity == 0) return null;
 		switch (c.length) {
 			case 0: return null;
 			case 1: return c[0] == null ? c[0].why() : null;
-			case 2: if (c[0]==c[1] || c[1] == null) return (c[0]!=null ? c[0].why() : null);  if (c[0] == null) return c[1].why(); break;
+			case 2: if (c[0] == c[1] || c[1] == null) return (c[0]!=null ? c[0].why() : null);  if (c[0] == null) return c[1].why(); break;
 		}
 		return new MyLazyTerm(c, capacity);
 	}
@@ -102,7 +103,9 @@ public enum Why { ;
 	}
 
 
-	public static <C extends Caused> Term why(@Nullable C[] c, int capacity) {
+	@Nullable public static Term why(@Nullable Caused[] c, int capacity) {
+		if (capacity == 0) return null;
+
 		switch (c.length) {
 			case 0: throw new UnsupportedOperationException();
 			case 1: return c[0].why(); //TODO check capacity
@@ -112,7 +115,7 @@ public enum Why { ;
 				int vt = 0;
 				boolean nulls = false;
 				for (int i = 0, cLength = c.length; i < cLength; i++) {
-					C ci = c[i];
+					Caused ci = c[i];
 					if (ci!=null) {
 						Term cti = ct[i] = ci.why();
 						if (cti!=null)
@@ -129,10 +132,7 @@ public enum Why { ;
 
 				if (vt < capacity - 1) {
 					ct = Terms.commute(ct);
-					if (ct.length == 1)
-						return ct[0];
-					else
-						return SETe.the(ct);
+					return ct.length == 1 ? ct[0] : SETe.the(ct);
 				} else {
 					//flatten and sample
 					//ShortHashSet s = new ShortHashSet(ct.length * capacity);

@@ -139,21 +139,19 @@ public class UniSubst extends Functor implements InlineFunctor<Evaluation> {
             cc = c.replace(x, y); //result can be determined by substitution
         else if (yv && !xv)
             cc = c.replace(y, x); //result can be determined by substitution
-        else if (!xv && x.op()!=y.op())
+        else if (!xv && x.opID()!=y.opID())
             cc = null; //impossible TODO check if this is always the case, and whether Terms.possiblyUnifiable(x, y) hel
         else
-            cc = unify(c, x, y, var, strict);
+            cc = unify(c, x, y, var, strict, NAL.derive.TTL_UNISUBST);
 
         return cc == null || (strict && c.equals(cc)) ? Null : cc;
     }
 
-    private Term unify(Term c, Term x, Term y, int var, boolean strict) {
+    private Term unify(Term c, Term x, Term y, int var, boolean strict, int subTTL) {
 
         //int subTTL = Util.clamp(parent.unify.ttl, 0, NAL.derive.TTL_UNISUBST_MAX);
 //        if (subTTL == 0)
 //            return Null;
-
-        int subTTL = NAL.derive.TTL_UNISUBST;
 
         u.setTTL(subTTL);
 

@@ -1,7 +1,6 @@
 package nars.derive;
 
 import jcog.Util;
-import jcog.WTF;
 import jcog.data.ShortBuffer;
 import jcog.decide.MutableRoulette;
 import jcog.pri.ScalarValue;
@@ -75,16 +74,11 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
     public static final Atom Substitute = Atomic.atom("substitute");
     public static final Atom ConjWithout = Atomic.atom("conjWithout");
 
-
-
-
     /** current taskify for use in unification match */
     transient Taskify taskify = null;
 
     private static final int ANON_INITIAL_CAPACITY = 16;
     public final AnonWithVarShift anon;
-
-
 
     /**
      * second layer additional substitutions
@@ -95,8 +89,9 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
             return key.equals(value) ? null : delegate.put(key, value);
         }
     };
+
     public final Occurrify occ = new Occurrify(this);
-//    public final long[] taskBelief_TimeIntersection = new long[2];
+
     public final Functor polarizeTask = new AbstractInstantFunctor1("polarizeTask") {
         @Override
         protected Term apply1(Term arg) {
@@ -831,6 +826,7 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 		public Term applyAtomic(Atomic a) {
         	if (a instanceof Variable)
 				return unify.resolveVar((Variable)a);
+
         	else {
         		//atomic constant
 				if (a instanceof Atom) {
@@ -843,12 +839,12 @@ public abstract class Derivation extends PreDerivation implements Caused, Predic
 					Term b = derivationFunctors.get(a);
 
 					if (b!=null) {
-						if (NAL.DEBUG) {
-							if (b == DerivationFunctors.TaskTerm)
-								throw new WTF("should have been detected earlier"); //return taskTerm;
-							else if (b == DerivationFunctors.BeliefTerm)
-								throw new WTF("should have been detected earlier"); //return beliefTerm;
-						}
+//						if (NAL.DEBUG) {
+//							if (b == DerivationFunctors.TaskTerm)
+//								throw new WTF("should have been detected earlier"); //return taskTerm;
+//							else if (b == DerivationFunctors.BeliefTerm)
+//								throw new WTF("should have been detected earlier"); //return beliefTerm;
+//						}
 						return b;
 					}
 				}

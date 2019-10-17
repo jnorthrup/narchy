@@ -48,7 +48,7 @@ class NARTestOptimize {
 //                .var("attnCapacity", 4, 128, 8,
 //                        (NAR n, int i) -> n.attn.links.setCapacity(i))
 
-                .var("ttlMax", 1 * NAL.derive.TTL_MIN, 8 * NAL.derive.TTL_MIN, 3,
+                .var("ttlMax", 4, 32, 3,
                         (NAR n, int i) -> n.deriveBranchTTL.set(i))
 //                .var("linkFanOut", 1, 16, 1,
 //                        (NAR n, int f) -> Param.LinkFanoutMax = f)

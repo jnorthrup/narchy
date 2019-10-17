@@ -30,7 +30,7 @@ public class Remember {
     public Task input;
     public @Nullable Task result = null;
 
-    public boolean store;
+    public final boolean store;
     public boolean link;
     public boolean notify;
 
