@@ -1,6 +1,5 @@
 package nars.gui;
 
-import com.google.common.collect.Iterables;
 import com.google.common.collect.Lists;
 import com.google.common.util.concurrent.AtomicDouble;
 import jcog.TODO;
@@ -103,7 +102,8 @@ public class NARui {
     }
 
     public static Surface beliefCharts(NAR nar, Iterable<? extends Termed> ii) {
-        return new Gridding(Lists.newArrayList(StreamSupport.stream(ii.spliterator(), false).map(i -> beliefChart(i, nar)).collect(toList())));
+        return new Gridding(Lists.newArrayList(StreamSupport.stream(ii.spliterator(), false).map(i -> beliefChart(i, nar))
+            .collect(toList())));
     }
 
     public static Surface top(NAR n) {
