@@ -17,10 +17,10 @@ public class StringSynth {
     //    private static final String keyboard = " `1qaz2wsx3edc4rfv5tgb6yhn7ujm8ik,9ol.0p;/-['=]\\~!QAZ@WSX#EDC$RFV%TGB^YHN&UJM*IK<(OL>)P:?_{\"+}|";
     private static final List<Integer> keycodes = Arrays.asList(192, 9, 20, 16, 49, 81, 65, 90, 50, 87, 83, 88, 51, 69, 68, 67, 52, 82, 70, 86, 53, 84, 71, 66, 54,
             89, 72, 78, 55, 85, 74, 77, 56, 73, 75, 44, 57, 79, 76, 46, 48, 80, 59, 47, 45, 91, 222, 16, 61, 93, 10, 8, 92);
-    private final int keyboardSize = keycodes.size();
+    private final int keyboardSize = keycodes.size()/2;
     private final KarplusStrongString[] strings = new KarplusStrongString[keyboardSize];
     private int alt = 0;
-    private boolean hold = false;
+//    private boolean hold = false;
     private float amp = 1;
 
     public StringSynth() {
@@ -81,7 +81,7 @@ public class StringSynth {
             alt = keyboardSize - alt;
         } else if (e.getKeyCode() == KeyEvent.VK_CONTROL) {
             releaseHeld();
-            hold = true;
+            //hold = true;
         }
     }
 
@@ -122,7 +122,7 @@ public class StringSynth {
                 strings[index + keyboardSize].setStatus(3);
             }
         } else if (cut) {
-            hold = false;
+            //hold = false;
         }
     }
 
@@ -237,7 +237,7 @@ public class StringSynth {
             sample += x.sample() * amp;
         }
 
-        return Util.clamp(sample, -1, +1);
+        return Util.clampSafe(sample, -1, +1);
     }
 
     public void amp(float a) {

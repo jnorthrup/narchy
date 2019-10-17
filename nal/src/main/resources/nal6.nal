@@ -179,7 +179,7 @@
 
 
      (M ==> P), (M ==> S)  |- (M ==> (polarizeTask(P) && polarizeBelief(S))), (Punctuation:AskAsk, Time:Task)
-        (M ==> P), (M ==> S), task("?"), hasBelief() |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)
+        (M ==> P), (M ==> S), task("?") |- (M ==> (polarizeRandom(P) && polarizeBelief(S))), (Punctuation:Question, Time:Compose)
 
         //(M ==> P), (M ==> S)  |- (M ==> (P && S)), (Punctuation:AskAsk, Time:Task)
         //(M ==> P), (M ==> S)  |- (M ==> (P || S)), (Punctuation:AskAsk, Time:Task)

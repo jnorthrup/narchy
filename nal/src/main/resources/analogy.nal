@@ -34,13 +34,13 @@
         (M <-> P), (S <-> M), neqRCom(S,P), has(S,"."), has(P,".") |-   (S <-> P), (Goal:Desire, Time:Task)
 
       (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
-         (P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:DesireWeak, Time:Task)
+         //(P --> M), (S --> M), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Goal:DesireWeak, Time:Task)
       (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:Comparison, Time:Compose)
-        (M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:DesireWeak, Time:Task)
+         //(M --> P), (M --> S), neqRCom(S,P), has(S,"."), has(P,".") |- (S <-> P), (Belief:DesireWeak, Time:Task)
 
 //Structural Analogy
-      ((A-->B) <-> (A-->C)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
-      ((B-->A) <-> (C-->A)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak, Goal:StructuralDeductionWeak)
+      ((A-->B) <-> (A-->C)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak)
+      ((B-->A) <-> (C-->A)), A, neqRCom(B,C), has(B,"."), has(C,".") |- (B <-> C), (Belief:StructuralDeductionWeak)
 
 
 // the similarity beliefs here act as a sort of transistor switch in determining Desire result truth

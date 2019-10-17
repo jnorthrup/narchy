@@ -389,11 +389,16 @@ public interface Task extends Truthed, Stamp, TermedDelegate, TaskRegion, UnitPr
         //TODO VAR_QUERY and VAR_INDEP, including non-0th variable id
         if (v > 0 && t.hasAny(NEG.bit)) {
             ShortByteHashMap counts = new ShortByteHashMap(v);
+            final boolean[] skipNext = {false};
             t.recurseTermsOrdered(Termlike::hasVars, x -> {
-                if (x instanceof Neg) {
+                if (skipNext[0] == true) {
+                    skipNext[0] = false;
+                    return true; //this is the variable contained inside a Neg that was counted
+                } if (x instanceof Neg) {
                     Term xu = x.unneg();
                     if (xu instanceof Variable) {
-                        counts.addToValue(((NormalizedVariable)xu).i, (byte)-2); //-2 because +1 will be added when recursing inside it leaving net -1
+                        counts.addToValue(((NormalizedVariable)xu).i, (byte)-1);
+                        skipNext[0] = true;
                     }
                 } else if (x instanceof Variable) {
                     counts.addToValue(((NormalizedVariable)x).i, (byte)+1);

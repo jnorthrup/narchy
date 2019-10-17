@@ -1,5 +1,6 @@
 package spacegraph.space2d.widget;
 
+import jcog.exe.Exe;
 import jcog.signal.Tensor;
 import jcog.signal.buffer.CircularFloatBuffer;
 import jcog.tree.rtree.rect.RectFloat;
@@ -13,9 +14,7 @@ import spacegraph.space2d.container.Bordering;
 import spacegraph.space2d.container.graph.GraphEdit2D;
 import spacegraph.space2d.container.grid.Gridding;
 import spacegraph.space2d.widget.button.PushButton;
-import spacegraph.space2d.widget.chip.AudioOutPort;
-import spacegraph.space2d.widget.chip.StringSynthChip;
-import spacegraph.space2d.widget.chip.WaveViewChip;
+import spacegraph.space2d.widget.chip.*;
 import spacegraph.space2d.widget.meter.WaveBitmap;
 import spacegraph.space2d.widget.port.*;
 import spacegraph.space2d.widget.slider.XYSlider;
@@ -182,16 +181,24 @@ public class GraphEditTest {
             GraphEdit2D g = new GraphEdit2D();
             SpaceGraph.window(g, 1600, 1000);
 
+            Exe.runLater(()->{
+//                RectFloat r5 = RectFloat.XYXY((float) 500, (float) 300, (float) 250, (float) 250);
+//                ((Surface) g.add(new SpectrogramChip())).pos(r5);
 
-            RectFloat r2 = RectFloat.XYXY((float) 100, (float) 100, (float) 250, (float) 250);
-            ((Surface) g.add(new StringSynthChip())).pos(r2);
+//                RectFloat r4 = RectFloat.XYXY((float) 400, (float) 400, (float) 250, (float) 250);
+//                ((Surface) g.add(new AudioCaptureChip())).pos(r4);
 
-            RectFloat r1 = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
-            ((Surface) g.add(new WaveViewChip())).pos(r1);
+                RectFloat r2 = RectFloat.XYXY((float) 100, (float) 100, (float) 250, (float) 250);
+                ((Surface) g.add(new StringSynthChip())).pos(r2);
 
-            RectFloat r = RectFloat.XYXY((float) 300, (float) 230, (float) 450, (float) 350);
-            ((Surface) g.add(new AudioOutPort())).pos(r);
+                RectFloat r1 = RectFloat.XYXY((float) 300, (float) 0, (float) 850, (float) 550);
+                ((Surface) g.add(new WaveViewChip())).pos(r1);
 
+                RectFloat r = RectFloat.XYXY((float) 300, (float) 230, (float) 450, (float) 350);
+                ((Surface) g.add(new AudioOutPort())).pos(r);
+
+
+            });
 
 
         }

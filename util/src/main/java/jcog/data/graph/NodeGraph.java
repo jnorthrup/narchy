@@ -157,7 +157,7 @@ public abstract class NodeGraph<N, E> /* TODO merge with guava Graph: implements
         private Collection<FromTo<Node<N, E>, E>> out;
 
         public MutableNode(N id) {
-            this(id, Collections.<FromTo<Node<N, E>, E>>emptyList(), Collections.<FromTo<Node<N, E>, E>>emptyList());
+            this(id, Collections.EMPTY_LIST, Collections.EMPTY_LIST);
         }
 
         MutableNode(N id, Collection<FromTo<Node<N, E>, E>> in, Collection<FromTo<Node<N, E>, E>> out) {
