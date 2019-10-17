@@ -344,8 +344,10 @@ class RTreeBeliefTableTest {
         RTreeBeliefTable r = new RTreeBeliefTable();
         r.setTaskCapacity(4);
 
-        long as, ae, bs, be;
-        as = 0; ae = 3; bs = 1; be = 2;
+        long as = 0;
+        long ae = 3;
+        long bs = 1;
+        long be = 2;
         long sameStamp = 1;
         Task x = add(r, AB, 1f, 0.9f, forward ?  as : bs, forward ? ae : be, sameStamp, n);
         Task y = add(r, AB, 1f, 0.9f, forward ?  bs : as, forward ? be : ae, sameStamp, n);

@@ -477,8 +477,7 @@ public class MainPanel extends JPanel implements MouseListener {
 
         if (putNumber == END_NUMBER) {
 
-            Counter counter;
-            counter = countStone();
+            Counter counter = countStone();
 
 
             if (counter.blackCount > 32) {

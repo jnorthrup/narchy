@@ -65,8 +65,7 @@ public final class Cmd {
                 return;
             }
 
-            byte[] f = null;
-            f = FS.LoadFile(Cmd.Argv(1));
+            byte[] f = FS.LoadFile(Cmd.Argv(1));
             if (f == null) {
                 Com.Printf("couldn't exec " + Cmd.Argv(1) + '\n');
                 return;
@@ -176,26 +175,19 @@ public final class Cmd {
         int anum1 = GameBase.game.clients[anum].ps.stats[Defines.STAT_FRAGS];
         int bnum1 = GameBase.game.clients[bnum].ps.stats[Defines.STAT_FRAGS];
 
-        if (anum1 < bnum1)
-            return -1;
-        if (anum1 > bnum1)
-            return 1;
-        return 0;
+        return Integer.compare(anum1, bnum1);
     };
 
     /** 
      * Cmd_MacroExpandString.
      */
     public static char[] MacroExpandString(char[] text, int len) {
-        int i, j, count;
-        boolean inquote;
-
-        char[] scan;
+        int i, j;
 
         String token;
-        inquote = false;
+        boolean inquote = false;
 
-        scan = text;
+        char[] scan = text;
 
         if (len >= Defines.MAX_STRING_CHARS) {
             Com.Printf("Line exceeded " + Defines.MAX_STRING_CHARS
@@ -203,7 +195,7 @@ public final class Cmd {
             return null;
         }
 
-        count = 0;
+        int count = 0;
 
         for (i = 0; i < len; i++) {
             if (scan[i] == '"')
@@ -343,9 +335,9 @@ public final class Cmd {
      * Cmd_RemoveCommand 
      */
     public static void RemoveCommand(String cmd_name) {
-        cmd_function_t cmd, back = null;
+        cmd_function_t cmd;
 
-        back = cmd = cmd_functions;
+        cmd_function_t back = cmd = cmd_functions;
 
         while (true) {
 
@@ -450,11 +442,8 @@ public final class Cmd {
      * Give items to a client.
      */
     public static void Give_f(edict_t ent) {
-        String name;
         gitem_t it;
-        int index;
         int i;
-        boolean give_all;
         edict_t it_ent;
 
         if (GameBase.deathmatch.value != 0 && GameBase.sv_cheats.value == 0) {
@@ -463,9 +452,9 @@ public final class Cmd {
             return;
         }
 
-        name = Cmd.Args();
+        String name = Cmd.Args();
 
-        give_all = 0 == Lib.Q_stricmp(name, "all");
+        boolean give_all = 0 == Lib.Q_stricmp(name, "all");
 
         if (give_all || 0 == Lib.Q_stricmp(Cmd.Argv(1), "health")) {
             if (Cmd.Argc() == 3)
@@ -503,7 +492,6 @@ public final class Cmd {
         }
 
         if (give_all || Lib.Q_stricmp(name, "armor") == 0) {
-            gitem_armor_t info;
 
             it = GameItems.FindItem("Jacket Armor");
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = 0;
@@ -512,7 +500,7 @@ public final class Cmd {
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = 0;
 
             it = GameItems.FindItem("Body Armor");
-            info = it.info;
+            gitem_armor_t info = it.info;
             ent.client.pers.inventory[GameItems.ITEM_INDEX(it)] = info.max_count;
 
             if (!give_all)
@@ -559,7 +547,7 @@ public final class Cmd {
             return;
         }
 
-        index = GameItems.ITEM_INDEX(it);
+        int index = GameItems.ITEM_INDEX(it);
 
         if ((it.flags & Defines.IT_AMMO) != 0) {
             if (Cmd.Argc() == 3)
@@ -657,13 +645,10 @@ public final class Cmd {
      * Use an inventory item.
      */
     public static void Use_f(edict_t ent) {
-        int index;
-        gitem_t it;
-        String s;
 
-        s = Cmd.Args();
+        String s = Cmd.Args();
 
-        it = GameItems.FindItem(s);
+        gitem_t it = GameItems.FindItem(s);
         Com.dprintln("using:" + s);
         if (it == null) {
             SV_GAME.PF_cprintfhigh(ent, "unknown item: " + s + '\n');
@@ -673,7 +658,7 @@ public final class Cmd {
             SV_GAME.PF_cprintfhigh(ent, "Item is not usable.\n");
             return;
         }
-        index = GameItems.ITEM_INDEX(it);
+        int index = GameItems.ITEM_INDEX(it);
         if (0 == ent.client.pers.inventory[index]) {
             SV_GAME.PF_cprintfhigh(ent, "Out of item: " + s + '\n');
             return;
@@ -688,12 +673,9 @@ public final class Cmd {
      * Drop an inventory item.
      */
     public static void Drop_f(edict_t ent) {
-        int index;
-        gitem_t it;
-        String s;
 
-        s = Cmd.Args();
-        it = GameItems.FindItem(s);
+        String s = Cmd.Args();
+        gitem_t it = GameItems.FindItem(s);
         if (it == null) {
             SV_GAME.PF_cprintfhigh(ent, "unknown item: " + s + '\n');
             return;
@@ -703,7 +685,7 @@ public final class Cmd {
                     "Item is not dropable.\n");
             return;
         }
-        index = GameItems.ITEM_INDEX(it);
+        int index = GameItems.ITEM_INDEX(it);
         if (0 == ent.client.pers.inventory[index]) {
             SV_GAME.PF_cprintfhigh(ent, "Out of item: " + s + '\n');
             return;
@@ -717,9 +699,8 @@ public final class Cmd {
      */
     public static void Inven_f(edict_t ent) {
         int i;
-        gclient_t cl;
 
-        cl = ent.client;
+        gclient_t cl = ent.client;
 
         cl.showscores = false;
         cl.showhelp = false;
@@ -742,7 +723,6 @@ public final class Cmd {
      * Cmd_InvUse_f.
      */
     public static void InvUse_f(edict_t ent) {
-        gitem_t it;
 
         Cmd.ValidateSelectedItem(ent);
 
@@ -751,7 +731,7 @@ public final class Cmd {
             return;
         }
 
-        it = GameItemList.itemlist[ent.client.pers.selected_item];
+        gitem_t it = GameItemList.itemlist[ent.client.pers.selected_item];
         if (it.use == null) {
             SV_GAME.PF_cprintfhigh(ent, "Item is not usable.\n");
             return;
@@ -763,17 +743,15 @@ public final class Cmd {
      * Cmd_WeapPrev_f.
      */
     public static void WeapPrev_f(edict_t ent) {
-        gclient_t cl;
         int i, index;
         gitem_t it;
-        int selected_weapon;
 
-        cl = ent.client;
+        gclient_t cl = ent.client;
 
         if (cl.pers.weapon == null)
             return;
 
-        selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
+        int selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         
         for (i = 1; i <= Defines.MAX_ITEMS; i++) {
@@ -797,17 +775,15 @@ public final class Cmd {
      * Cmd_WeapNext_f.
      */
     public static void WeapNext_f(edict_t ent) {
-        gclient_t cl;
         int i, index;
         gitem_t it;
-        int selected_weapon;
 
-        cl = ent.client;
+        gclient_t cl = ent.client;
 
         if (null == cl.pers.weapon)
             return;
 
-        selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
+        int selected_weapon = GameItems.ITEM_INDEX(cl.pers.weapon);
 
         
         for (i = 1; i <= Defines.MAX_ITEMS; i++) {
@@ -833,19 +809,16 @@ public final class Cmd {
      * Cmd_WeapLast_f.
      */
     public static void WeapLast_f(edict_t ent) {
-        gclient_t cl;
-        int index;
-        gitem_t it;
 
-        cl = ent.client;
+        gclient_t cl = ent.client;
 
         if (null == cl.pers.weapon || null == cl.pers.lastweapon)
             return;
 
-        index = GameItems.ITEM_INDEX(cl.pers.lastweapon);
+        int index = GameItems.ITEM_INDEX(cl.pers.lastweapon);
         if (0 == cl.pers.inventory[index])
             return;
-        it = GameItemList.itemlist[index];
+        gitem_t it = GameItemList.itemlist[index];
         if (null == it.use)
             return;
         if (0 == (it.flags & Defines.IT_WEAPON))
@@ -857,7 +830,6 @@ public final class Cmd {
      * Cmd_InvDrop_f 
      */
     public static void InvDrop_f(edict_t ent) {
-        gitem_t it;
 
         Cmd.ValidateSelectedItem(ent);
 
@@ -866,7 +838,7 @@ public final class Cmd {
             return;
         }
 
-        it = GameItemList.itemlist[ent.client.pers.selected_item];
+        gitem_t it = GameItemList.itemlist[ent.client.pers.selected_item];
         if (it.drop == null) {
             SV_GAME.PF_cprintfhigh(ent, "Item is not dropable.\n");
             return;
@@ -949,13 +921,11 @@ public final class Cmd {
      */
     public static void Players_f(edict_t ent) {
         int i;
-        int count;
         String small;
-        String large;
 
         Integer[] index = new Integer[256];
 
-        count = 0;
+        int count = 0;
         for (i = 0; i < GameBase.maxclients.value; i++) {
             if (GameBase.game.clients[i].pers.connected) {
                 index[count] = i;
@@ -966,8 +936,8 @@ public final class Cmd {
         
         Arrays.sort(index, 0, count - 1, Cmd.PlayerSort);
 
-        
-        large = "";
+
+        String large = "";
 
         for (i = 0; i < count; i++) {
             small = GameBase.game.clients[index[i]].ps.stats[Defines.STAT_FRAGS]
@@ -990,9 +960,8 @@ public final class Cmd {
      * Cmd_Wave_f
      */
     public static void Wave_f(edict_t ent) {
-        int i;
 
-        i = Lib.atoi(Cmd.Argv(1));
+        int i = Lib.atoi(Cmd.Argv(1));
 
         
         if ((ent.client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
@@ -1129,11 +1098,10 @@ public final class Cmd {
     public static void PlayerList_f(edict_t ent) {
         int i;
         String st;
-        String text;
         edict_t e2;
 
-        
-        text = "";
+
+        String text = "";
 
         for (i = 0; i < GameBase.maxclients.value; i++) {
             e2 = GameBase.g_edicts[1 + i];
@@ -1160,9 +1128,8 @@ public final class Cmd {
      * when they are typed in at the console, they will need to be forwarded.
      */
     public static void ForwardToServer() {
-        String cmd;
 
-        cmd = Cmd.Argv(0);
+        String cmd = Cmd.Argv(0);
         if (Globals.cls.state <= Defines.ca_connected || cmd.charAt(0) == '-'
                 || cmd.charAt(0) == '+') {
             Com.Printf("Unknown command \"" + cmd + "\"\n");
@@ -1193,12 +1160,11 @@ public final class Cmd {
      * Processes the commands the player enters in the quake console.
      */
     public static void ClientCommand(edict_t ent) {
-        String cmd;
-    
+
         if (ent.client == null)
-            return; 
-    
-        cmd = game_import_t.argv(0).toLowerCase();
+            return;
+
+        String cmd = game_import_t.argv(0).toLowerCase();
     
         if (cmd.equals("players")) {
             Players_f(ent);

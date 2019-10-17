@@ -163,16 +163,16 @@ public strictfp class FloatFFT {
     }
 
     private static void bitrv2(int n, int[] ip, float[] a, int offa) {
-        int j1, k1, l, m, nh, nm;
+        int j1, k1, l;
         float xr, xi, yr, yi;
         int idx0, idx1, idx2;
 
-        m = 1;
+        int m = 1;
         for (l = n >> 2; l > 8; l >>= 2) {
             m <<= 1;
         }
-        nh = n >> 1;
-        nm = 4 * m;
+        int nh = n >> 1;
+        int nm = 4 * m;
         if (l == 8) {
             for (int k = 0; k < m; k++) {
                 idx0 = 4 * k;
@@ -575,16 +575,16 @@ public strictfp class FloatFFT {
     }
 
     private static void bitrv2conj(int n, int[] ip, float[] a, int offa) {
-        int j1, k1, l, m, nh, nm;
+        int j1, k1, l;
         float xr, xi, yr, yi;
         int idx0, idx1, idx2;
 
-        m = 1;
+        int m = 1;
         for (l = n >> 2; l > 8; l >>= 2) {
             m <<= 1;
         }
-        nh = n >> 1;
-        nm = 4 * m;
+        int nh = n >> 1;
+        int nm = 4 * m;
         if (l == 8) {
             for (int k = 0; k < m; k++) {
                 idx0 = 4 * k;
@@ -995,32 +995,31 @@ public strictfp class FloatFFT {
     }
 
     private static void bitrv216(float[] a, int offa) {
-        float x1r, x1i, x2r, x2i, x3r, x3i, x4r, x4i, x5r, x5i, x7r, x7i, x8r, x8i, x10r, x10i, x11r, x11i, x12r, x12i, x13r, x13i, x14r, x14i;
 
-        x1r = a[offa + 2];
-        x1i = a[offa + 3];
-        x2r = a[offa + 4];
-        x2i = a[offa + 5];
-        x3r = a[offa + 6];
-        x3i = a[offa + 7];
-        x4r = a[offa + 8];
-        x4i = a[offa + 9];
-        x5r = a[offa + 10];
-        x5i = a[offa + 11];
-        x7r = a[offa + 14];
-        x7i = a[offa + 15];
-        x8r = a[offa + 16];
-        x8i = a[offa + 17];
-        x10r = a[offa + 20];
-        x10i = a[offa + 21];
-        x11r = a[offa + 22];
-        x11i = a[offa + 23];
-        x12r = a[offa + 24];
-        x12i = a[offa + 25];
-        x13r = a[offa + 26];
-        x13i = a[offa + 27];
-        x14r = a[offa + 28];
-        x14i = a[offa + 29];
+        float x1r = a[offa + 2];
+        float x1i = a[offa + 3];
+        float x2r = a[offa + 4];
+        float x2i = a[offa + 5];
+        float x3r = a[offa + 6];
+        float x3i = a[offa + 7];
+        float x4r = a[offa + 8];
+        float x4i = a[offa + 9];
+        float x5r = a[offa + 10];
+        float x5i = a[offa + 11];
+        float x7r = a[offa + 14];
+        float x7i = a[offa + 15];
+        float x8r = a[offa + 16];
+        float x8i = a[offa + 17];
+        float x10r = a[offa + 20];
+        float x10i = a[offa + 21];
+        float x11r = a[offa + 22];
+        float x11i = a[offa + 23];
+        float x12r = a[offa + 24];
+        float x12i = a[offa + 25];
+        float x13r = a[offa + 26];
+        float x13i = a[offa + 27];
+        float x14r = a[offa + 28];
+        float x14i = a[offa + 29];
         a[offa + 2] = x8r;
         a[offa + 3] = x8i;
         a[offa + 4] = x4r;
@@ -1048,38 +1047,37 @@ public strictfp class FloatFFT {
     }
 
     private static void bitrv216neg(float[] a, int offa) {
-        float x1r, x1i, x2r, x2i, x3r, x3i, x4r, x4i, x5r, x5i, x6r, x6i, x7r, x7i, x8r, x8i, x9r, x9i, x10r, x10i, x11r, x11i, x12r, x12i, x13r, x13i, x14r, x14i, x15r, x15i;
 
-        x1r = a[offa + 2];
-        x1i = a[offa + 3];
-        x2r = a[offa + 4];
-        x2i = a[offa + 5];
-        x3r = a[offa + 6];
-        x3i = a[offa + 7];
-        x4r = a[offa + 8];
-        x4i = a[offa + 9];
-        x5r = a[offa + 10];
-        x5i = a[offa + 11];
-        x6r = a[offa + 12];
-        x6i = a[offa + 13];
-        x7r = a[offa + 14];
-        x7i = a[offa + 15];
-        x8r = a[offa + 16];
-        x8i = a[offa + 17];
-        x9r = a[offa + 18];
-        x9i = a[offa + 19];
-        x10r = a[offa + 20];
-        x10i = a[offa + 21];
-        x11r = a[offa + 22];
-        x11i = a[offa + 23];
-        x12r = a[offa + 24];
-        x12i = a[offa + 25];
-        x13r = a[offa + 26];
-        x13i = a[offa + 27];
-        x14r = a[offa + 28];
-        x14i = a[offa + 29];
-        x15r = a[offa + 30];
-        x15i = a[offa + 31];
+        float x1r = a[offa + 2];
+        float x1i = a[offa + 3];
+        float x2r = a[offa + 4];
+        float x2i = a[offa + 5];
+        float x3r = a[offa + 6];
+        float x3i = a[offa + 7];
+        float x4r = a[offa + 8];
+        float x4i = a[offa + 9];
+        float x5r = a[offa + 10];
+        float x5i = a[offa + 11];
+        float x6r = a[offa + 12];
+        float x6i = a[offa + 13];
+        float x7r = a[offa + 14];
+        float x7i = a[offa + 15];
+        float x8r = a[offa + 16];
+        float x8i = a[offa + 17];
+        float x9r = a[offa + 18];
+        float x9i = a[offa + 19];
+        float x10r = a[offa + 20];
+        float x10i = a[offa + 21];
+        float x11r = a[offa + 22];
+        float x11i = a[offa + 23];
+        float x12r = a[offa + 24];
+        float x12i = a[offa + 25];
+        float x13r = a[offa + 26];
+        float x13i = a[offa + 27];
+        float x14r = a[offa + 28];
+        float x14i = a[offa + 29];
+        float x15r = a[offa + 30];
+        float x15i = a[offa + 31];
         a[offa + 2] = x15r;
         a[offa + 3] = x15i;
         a[offa + 4] = x7r;
@@ -1113,16 +1111,15 @@ public strictfp class FloatFFT {
     }
 
     private static void bitrv208(float[] a, int offa) {
-        float x1r, x1i, x3r, x3i, x4r, x4i, x6r, x6i;
 
-        x1r = a[offa + 2];
-        x1i = a[offa + 3];
-        x3r = a[offa + 6];
-        x3i = a[offa + 7];
-        x4r = a[offa + 8];
-        x4i = a[offa + 9];
-        x6r = a[offa + 12];
-        x6i = a[offa + 13];
+        float x1r = a[offa + 2];
+        float x1i = a[offa + 3];
+        float x3r = a[offa + 6];
+        float x3i = a[offa + 7];
+        float x4r = a[offa + 8];
+        float x4i = a[offa + 9];
+        float x6r = a[offa + 12];
+        float x6i = a[offa + 13];
         a[offa + 2] = x4r;
         a[offa + 3] = x4i;
         a[offa + 6] = x6r;
@@ -1134,22 +1131,21 @@ public strictfp class FloatFFT {
     }
 
     private static void bitrv208neg(float[] a, int offa) {
-        float x1r, x1i, x2r, x2i, x3r, x3i, x4r, x4i, x5r, x5i, x6r, x6i, x7r, x7i;
 
-        x1r = a[offa + 2];
-        x1i = a[offa + 3];
-        x2r = a[offa + 4];
-        x2i = a[offa + 5];
-        x3r = a[offa + 6];
-        x3i = a[offa + 7];
-        x4r = a[offa + 8];
-        x4i = a[offa + 9];
-        x5r = a[offa + 10];
-        x5i = a[offa + 11];
-        x6r = a[offa + 12];
-        x6i = a[offa + 13];
-        x7r = a[offa + 14];
-        x7i = a[offa + 15];
+        float x1r = a[offa + 2];
+        float x1i = a[offa + 3];
+        float x2r = a[offa + 4];
+        float x2i = a[offa + 5];
+        float x3r = a[offa + 6];
+        float x3i = a[offa + 7];
+        float x4r = a[offa + 8];
+        float x4i = a[offa + 9];
+        float x5r = a[offa + 10];
+        float x5i = a[offa + 11];
+        float x6r = a[offa + 12];
+        float x6i = a[offa + 13];
+        float x7r = a[offa + 14];
+        float x7i = a[offa + 15];
         a[offa + 2] = x7r;
         a[offa + 3] = x7i;
         a[offa + 4] = x3r;
@@ -1167,26 +1163,26 @@ public strictfp class FloatFFT {
     }
 
     private static void cftf1st(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3, k, m, mh;
-        float wn4r, csc1, csc3, wk1r, wk1i, wk3r, wk3i, wd1r, wd1i, wd3r, wd3i;
-        float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i, y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i;
-        int idx0, idx1, idx2, idx3, idx4, idx5;
-        mh = n >> 3;
-        m = 2 * mh;
+        int j0, j1, j2, j3;
+        float wk1r, wk1i, wk3r, wk3i;
+        float y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i;
+        int idx0, idx4, idx5;
+        int mh = n >> 3;
+        int m = 2 * mh;
         j1 = m;
         j2 = j1 + m;
         j3 = j2 + m;
-        idx1 = offa + j1;
-        idx2 = offa + j2;
-        idx3 = offa + j3;
-        x0r = a[offa] + a[idx2];
-        x0i = a[offa + 1] + a[idx2 + 1];
-        x1r = a[offa] - a[idx2];
-        x1i = a[offa + 1] - a[idx2 + 1];
-        x2r = a[idx1] + a[idx3];
-        x2i = a[idx1 + 1] + a[idx3 + 1];
-        x3r = a[idx1] - a[idx3];
-        x3i = a[idx1 + 1] - a[idx3 + 1];
+        int idx1 = offa + j1;
+        int idx2 = offa + j2;
+        int idx3 = offa + j3;
+        float x0r = a[offa] + a[idx2];
+        float x0i = a[offa + 1] + a[idx2 + 1];
+        float x1r = a[offa] - a[idx2];
+        float x1i = a[offa + 1] - a[idx2 + 1];
+        float x2r = a[idx1] + a[idx3];
+        float x2i = a[idx1 + 1] + a[idx3 + 1];
+        float x3r = a[idx1] - a[idx3];
+        float x3i = a[idx1 + 1] - a[idx3 + 1];
         a[offa] = x0r + x2r;
         a[offa + 1] = x0i + x2i;
         a[idx1] = x0r - x2r;
@@ -1195,14 +1191,14 @@ public strictfp class FloatFFT {
         a[idx2 + 1] = x1i + x3r;
         a[idx3] = x1r + x3i;
         a[idx3 + 1] = x1i - x3r;
-        wn4r = w[startw + 1];
-        csc1 = w[startw + 2];
-        csc3 = w[startw + 3];
-        wd1r = 1;
-        wd1i = 0;
-        wd3r = 1;
-        wd3i = 0;
-        k = 0;
+        float wn4r = w[startw + 1];
+        float csc1 = w[startw + 2];
+        float csc3 = w[startw + 3];
+        float wd1r = 1;
+        float wd1i = 0;
+        float wd3r = 1;
+        float wd3i = 0;
+        int k = 0;
         for (int j = 2; j < mh - 2; j += 4) {
             k += 4;
             idx4 = startw + k;
@@ -1385,27 +1381,27 @@ public strictfp class FloatFFT {
     }
 
     private static void cftb1st(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3, k, m, mh;
-        float wn4r, csc1, csc3, wk1r, wk1i, wk3r, wk3i, wd1r, wd1i, wd3r, wd3i;
-        float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i, y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i;
-        int idx0, idx1, idx2, idx3, idx4, idx5;
-        mh = n >> 3;
-        m = 2 * mh;
+        int j0, j1, j2, j3;
+        float wk1r, wk1i, wk3r, wk3i;
+        float y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i;
+        int idx0, idx4, idx5;
+        int mh = n >> 3;
+        int m = 2 * mh;
         j1 = m;
         j2 = j1 + m;
         j3 = j2 + m;
-        idx1 = offa + j1;
-        idx2 = offa + j2;
-        idx3 = offa + j3;
+        int idx1 = offa + j1;
+        int idx2 = offa + j2;
+        int idx3 = offa + j3;
 
-        x0r = a[offa] + a[idx2];
-        x0i = -a[offa + 1] - a[idx2 + 1];
-        x1r = a[offa] - a[idx2];
-        x1i = -a[offa + 1] + a[idx2 + 1];
-        x2r = a[idx1] + a[idx3];
-        x2i = a[idx1 + 1] + a[idx3 + 1];
-        x3r = a[idx1] - a[idx3];
-        x3i = a[idx1 + 1] - a[idx3 + 1];
+        float x0r = a[offa] + a[idx2];
+        float x0i = -a[offa + 1] - a[idx2 + 1];
+        float x1r = a[offa] - a[idx2];
+        float x1i = -a[offa + 1] + a[idx2 + 1];
+        float x2r = a[idx1] + a[idx3];
+        float x2i = a[idx1 + 1] + a[idx3 + 1];
+        float x3r = a[idx1] - a[idx3];
+        float x3i = a[idx1 + 1] - a[idx3 + 1];
         a[offa] = x0r + x2r;
         a[offa + 1] = x0i - x2i;
         a[idx1] = x0r - x2r;
@@ -1414,14 +1410,14 @@ public strictfp class FloatFFT {
         a[idx2 + 1] = x1i + x3r;
         a[idx3] = x1r - x3i;
         a[idx3 + 1] = x1i - x3r;
-        wn4r = w[startw + 1];
-        csc1 = w[startw + 2];
-        csc3 = w[startw + 3];
-        wd1r = 1;
-        wd1i = 0;
-        wd3r = 1;
-        wd3i = 0;
-        k = 0;
+        float wn4r = w[startw + 1];
+        float csc1 = w[startw + 2];
+        float csc3 = w[startw + 3];
+        float wd1r = 1;
+        float wd1i = 0;
+        float wd3r = 1;
+        float wd3i = 0;
+        int k = 0;
         for (int j = 2; j < mh - 2; j += 4) {
             k += 4;
             idx4 = startw + k;
@@ -1692,27 +1688,26 @@ public strictfp class FloatFFT {
     }
 
     private static void cftmdl1(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3, k, m, mh;
-        float wn4r, wk1r, wk1i, wk3r, wk3i;
-        float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
-        int idx0, idx1, idx2, idx3, idx4, idx5;
+        int j0, j1, j2, j3;
+        float wk1r, wk1i, wk3r, wk3i;
+        int idx0, idx4, idx5;
 
-        mh = n >> 3;
-        m = 2 * mh;
+        int mh = n >> 3;
+        int m = 2 * mh;
         j1 = m;
         j2 = j1 + m;
         j3 = j2 + m;
-        idx1 = offa + j1;
-        idx2 = offa + j2;
-        idx3 = offa + j3;
-        x0r = a[offa] + a[idx2];
-        x0i = a[offa + 1] + a[idx2 + 1];
-        x1r = a[offa] - a[idx2];
-        x1i = a[offa + 1] - a[idx2 + 1];
-        x2r = a[idx1] + a[idx3];
-        x2i = a[idx1 + 1] + a[idx3 + 1];
-        x3r = a[idx1] - a[idx3];
-        x3i = a[idx1 + 1] - a[idx3 + 1];
+        int idx1 = offa + j1;
+        int idx2 = offa + j2;
+        int idx3 = offa + j3;
+        float x0r = a[offa] + a[idx2];
+        float x0i = a[offa + 1] + a[idx2 + 1];
+        float x1r = a[offa] - a[idx2];
+        float x1i = a[offa + 1] - a[idx2 + 1];
+        float x2r = a[idx1] + a[idx3];
+        float x2i = a[idx1 + 1] + a[idx3 + 1];
+        float x3r = a[idx1] - a[idx3];
+        float x3i = a[idx1 + 1] - a[idx3 + 1];
         a[offa] = x0r + x2r;
         a[offa + 1] = x0i + x2i;
         a[idx1] = x0r - x2r;
@@ -1721,8 +1716,8 @@ public strictfp class FloatFFT {
         a[idx2 + 1] = x1i + x3r;
         a[idx3] = x1r + x3i;
         a[idx3 + 1] = x1i - x3r;
-        wn4r = w[startw + 1];
-        k = 0;
+        float wn4r = w[startw + 1];
+        int k = 0;
         for (int j = 2; j < mh; j += 2) {
             k += 4;
             idx4 = startw + k;
@@ -1817,30 +1812,30 @@ public strictfp class FloatFFT {
     }
 
     private static void cftmdl2(int n, float[] a, int offa, float[] w, int startw) {
-        int j0, j1, j2, j3, k, kr, m, mh;
-        float wn4r, wk1r, wk1i, wk3r, wk3i, wd1r, wd1i, wd3r, wd3i;
-        float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i, y0r, y0i, y2r, y2i;
-        int idx0, idx1, idx2, idx3, idx4, idx5, idx6;
+        int j0, j1, j2, j3, kr;
+        float wk1r, wk1i, wk3r, wk3i, wd1r, wd1i, wd3r, wd3i;
+        float y2r, y2i;
+        int idx0, idx4, idx5, idx6;
 
-        mh = n >> 3;
-        m = 2 * mh;
-        wn4r = w[startw + 1];
+        int mh = n >> 3;
+        int m = 2 * mh;
+        float wn4r = w[startw + 1];
         j1 = m;
         j2 = j1 + m;
         j3 = j2 + m;
-        idx1 = offa + j1;
-        idx2 = offa + j2;
-        idx3 = offa + j3;
-        x0r = a[offa] - a[idx2 + 1];
-        x0i = a[offa + 1] + a[idx2];
-        x1r = a[offa] + a[idx2 + 1];
-        x1i = a[offa + 1] - a[idx2];
-        x2r = a[idx1] - a[idx3 + 1];
-        x2i = a[idx1 + 1] + a[idx3];
-        x3r = a[idx1] + a[idx3 + 1];
-        x3i = a[idx1 + 1] - a[idx3];
-        y0r = wn4r * (x2r - x2i);
-        y0i = wn4r * (x2i + x2r);
+        int idx1 = offa + j1;
+        int idx2 = offa + j2;
+        int idx3 = offa + j3;
+        float x0r = a[offa] - a[idx2 + 1];
+        float x0i = a[offa + 1] + a[idx2];
+        float x1r = a[offa] + a[idx2 + 1];
+        float x1i = a[offa + 1] - a[idx2];
+        float x2r = a[idx1] - a[idx3 + 1];
+        float x2i = a[idx1 + 1] + a[idx3];
+        float x3r = a[idx1] + a[idx3 + 1];
+        float x3i = a[idx1 + 1] - a[idx3];
+        float y0r = wn4r * (x2r - x2i);
+        float y0i = wn4r * (x2i + x2r);
         a[offa] = x0r + y0r;
         a[offa + 1] = x0i + y0i;
         a[idx1] = x0r - y0r;
@@ -1851,7 +1846,7 @@ public strictfp class FloatFFT {
         a[idx2 + 1] = x1i + y0r;
         a[idx3] = x1r + y0i;
         a[idx3 + 1] = x1i - y0r;
-        k = 0;
+        int k = 0;
         kr = 2 * m;
         for (int j = 2; j < mh; j += 2) {
             k += 4;
@@ -1981,28 +1976,27 @@ public strictfp class FloatFFT {
     }
 
     private static void cftf161(float[] a, int offa, float[] w, int startw) {
-        float wn4r, wk1r, wk1i, x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i, y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i, y4r, y4i, y5r, y5i, y6r, y6i, y7r, y7i, y8r, y8i, y9r, y9i, y10r, y10i, y11r, y11i, y12r, y12i, y13r, y13i, y14r, y14i, y15r, y15i;
 
-        wn4r = w[startw + 1];
-        wk1r = w[startw + 2];
-        wk1i = w[startw + 3];
+        float wn4r = w[startw + 1];
+        float wk1r = w[startw + 2];
+        float wk1i = w[startw + 3];
 
-        x0r = a[offa] + a[offa + 16];
-        x0i = a[offa + 1] + a[offa + 17];
-        x1r = a[offa] - a[offa + 16];
-        x1i = a[offa + 1] - a[offa + 17];
-        x2r = a[offa + 8] + a[offa + 24];
-        x2i = a[offa + 9] + a[offa + 25];
-        x3r = a[offa + 8] - a[offa + 24];
-        x3i = a[offa + 9] - a[offa + 25];
-        y0r = x0r + x2r;
-        y0i = x0i + x2i;
-        y4r = x0r - x2r;
-        y4i = x0i - x2i;
-        y8r = x1r - x3i;
-        y8i = x1i + x3r;
-        y12r = x1r + x3i;
-        y12i = x1i - x3r;
+        float x0r = a[offa] + a[offa + 16];
+        float x0i = a[offa + 1] + a[offa + 17];
+        float x1r = a[offa] - a[offa + 16];
+        float x1i = a[offa + 1] - a[offa + 17];
+        float x2r = a[offa + 8] + a[offa + 24];
+        float x2i = a[offa + 9] + a[offa + 25];
+        float x3r = a[offa + 8] - a[offa + 24];
+        float x3i = a[offa + 9] - a[offa + 25];
+        float y0r = x0r + x2r;
+        float y0i = x0i + x2i;
+        float y4r = x0r - x2r;
+        float y4i = x0i - x2i;
+        float y8r = x1r - x3i;
+        float y8i = x1i + x3r;
+        float y12r = x1r + x3i;
+        float y12i = x1i - x3r;
         x0r = a[offa + 2] + a[offa + 18];
         x0i = a[offa + 3] + a[offa + 19];
         x1r = a[offa + 2] - a[offa + 18];
@@ -2011,18 +2005,18 @@ public strictfp class FloatFFT {
         x2i = a[offa + 11] + a[offa + 27];
         x3r = a[offa + 10] - a[offa + 26];
         x3i = a[offa + 11] - a[offa + 27];
-        y1r = x0r + x2r;
-        y1i = x0i + x2i;
-        y5r = x0r - x2r;
-        y5i = x0i - x2i;
+        float y1r = x0r + x2r;
+        float y1i = x0i + x2i;
+        float y5r = x0r - x2r;
+        float y5i = x0i - x2i;
         x0r = x1r - x3i;
         x0i = x1i + x3r;
-        y9r = wk1r * x0r - wk1i * x0i;
-        y9i = wk1r * x0i + wk1i * x0r;
+        float y9r = wk1r * x0r - wk1i * x0i;
+        float y9i = wk1r * x0i + wk1i * x0r;
         x0r = x1r + x3i;
         x0i = x1i - x3r;
-        y13r = wk1i * x0r - wk1r * x0i;
-        y13i = wk1i * x0i + wk1r * x0r;
+        float y13r = wk1i * x0r - wk1r * x0i;
+        float y13i = wk1i * x0i + wk1r * x0r;
         x0r = a[offa + 4] + a[offa + 20];
         x0i = a[offa + 5] + a[offa + 21];
         x1r = a[offa + 4] - a[offa + 20];
@@ -2031,18 +2025,18 @@ public strictfp class FloatFFT {
         x2i = a[offa + 13] + a[offa + 29];
         x3r = a[offa + 12] - a[offa + 28];
         x3i = a[offa + 13] - a[offa + 29];
-        y2r = x0r + x2r;
-        y2i = x0i + x2i;
-        y6r = x0r - x2r;
-        y6i = x0i - x2i;
+        float y2r = x0r + x2r;
+        float y2i = x0i + x2i;
+        float y6r = x0r - x2r;
+        float y6i = x0i - x2i;
         x0r = x1r - x3i;
         x0i = x1i + x3r;
-        y10r = wn4r * (x0r - x0i);
-        y10i = wn4r * (x0i + x0r);
+        float y10r = wn4r * (x0r - x0i);
+        float y10i = wn4r * (x0i + x0r);
         x0r = x1r + x3i;
         x0i = x1i - x3r;
-        y14r = wn4r * (x0r + x0i);
-        y14i = wn4r * (x0i - x0r);
+        float y14r = wn4r * (x0r + x0i);
+        float y14i = wn4r * (x0i - x0r);
         x0r = a[offa + 6] + a[offa + 22];
         x0i = a[offa + 7] + a[offa + 23];
         x1r = a[offa + 6] - a[offa + 22];
@@ -2051,18 +2045,18 @@ public strictfp class FloatFFT {
         x2i = a[offa + 15] + a[offa + 31];
         x3r = a[offa + 14] - a[offa + 30];
         x3i = a[offa + 15] - a[offa + 31];
-        y3r = x0r + x2r;
-        y3i = x0i + x2i;
-        y7r = x0r - x2r;
-        y7i = x0i - x2i;
+        float y3r = x0r + x2r;
+        float y3i = x0i + x2i;
+        float y7r = x0r - x2r;
+        float y7i = x0i - x2i;
         x0r = x1r - x3i;
         x0i = x1i + x3r;
-        y11r = wk1i * x0r - wk1r * x0i;
-        y11i = wk1i * x0i + wk1r * x0r;
+        float y11r = wk1i * x0r - wk1r * x0i;
+        float y11i = wk1i * x0i + wk1r * x0r;
         x0r = x1r + x3i;
         x0i = x1i - x3r;
-        y15r = wk1r * x0r - wk1i * x0i;
-        y15i = wk1r * x0i + wk1i * x0r;
+        float y15r = wk1r * x0r - wk1i * x0i;
+        float y15i = wk1r * x0i + wk1i * x0r;
         x0r = y12r - y14r;
         x0i = y12i - y14i;
         x1r = y12r + y14r;
@@ -2140,35 +2134,34 @@ public strictfp class FloatFFT {
       --------------------------------------------------------*/
 
     private static void cftf162(float[] a, int offa, float[] w, int startw) {
-        float wn4r, wk1r, wk1i, wk2r, wk2i, wk3r, wk3i, x0r, x0i, x1r, x1i, x2r, x2i, y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i, y4r, y4i, y5r, y5i, y6r, y6i, y7r, y7i, y8r, y8i, y9r, y9i, y10r, y10i, y11r, y11i, y12r, y12i, y13r, y13i, y14r, y14i, y15r, y15i;
 
-        wn4r = w[startw + 1];
-        wk1r = w[startw + 4];
-        wk1i = w[startw + 5];
-        wk3r = w[startw + 6];
-        wk3i = -w[startw + 7];
-        wk2r = w[startw + 8];
-        wk2i = w[startw + 9];
-        x1r = a[offa] - a[offa + 17];
-        x1i = a[offa + 1] + a[offa + 16];
-        x0r = a[offa + 8] - a[offa + 25];
-        x0i = a[offa + 9] + a[offa + 24];
-        x2r = wn4r * (x0r - x0i);
-        x2i = wn4r * (x0i + x0r);
-        y0r = x1r + x2r;
-        y0i = x1i + x2i;
-        y4r = x1r - x2r;
-        y4i = x1i - x2i;
+        float wn4r = w[startw + 1];
+        float wk1r = w[startw + 4];
+        float wk1i = w[startw + 5];
+        float wk3r = w[startw + 6];
+        float wk3i = -w[startw + 7];
+        float wk2r = w[startw + 8];
+        float wk2i = w[startw + 9];
+        float x1r = a[offa] - a[offa + 17];
+        float x1i = a[offa + 1] + a[offa + 16];
+        float x0r = a[offa + 8] - a[offa + 25];
+        float x0i = a[offa + 9] + a[offa + 24];
+        float x2r = wn4r * (x0r - x0i);
+        float x2i = wn4r * (x0i + x0r);
+        float y0r = x1r + x2r;
+        float y0i = x1i + x2i;
+        float y4r = x1r - x2r;
+        float y4i = x1i - x2i;
         x1r = a[offa] + a[offa + 17];
         x1i = a[offa + 1] - a[offa + 16];
         x0r = a[offa + 8] + a[offa + 25];
         x0i = a[offa + 9] - a[offa + 24];
         x2r = wn4r * (x0r - x0i);
         x2i = wn4r * (x0i + x0r);
-        y8r = x1r - x2i;
-        y8i = x1i + x2r;
-        y12r = x1r + x2i;
-        y12i = x1i - x2r;
+        float y8r = x1r - x2i;
+        float y8i = x1i + x2r;
+        float y12r = x1r + x2i;
+        float y12i = x1i - x2r;
         x0r = a[offa + 2] - a[offa + 19];
         x0i = a[offa + 3] + a[offa + 18];
         x1r = wk1r * x0r - wk1i * x0i;
@@ -2177,10 +2170,10 @@ public strictfp class FloatFFT {
         x0i = a[offa + 11] + a[offa + 26];
         x2r = wk3i * x0r - wk3r * x0i;
         x2i = wk3i * x0i + wk3r * x0r;
-        y1r = x1r + x2r;
-        y1i = x1i + x2i;
-        y5r = x1r - x2r;
-        y5i = x1i - x2i;
+        float y1r = x1r + x2r;
+        float y1i = x1i + x2i;
+        float y5r = x1r - x2r;
+        float y5i = x1i - x2i;
         x0r = a[offa + 2] + a[offa + 19];
         x0i = a[offa + 3] - a[offa + 18];
         x1r = wk3r * x0r - wk3i * x0i;
@@ -2189,10 +2182,10 @@ public strictfp class FloatFFT {
         x0i = a[offa + 11] - a[offa + 26];
         x2r = wk1r * x0r + wk1i * x0i;
         x2i = wk1r * x0i - wk1i * x0r;
-        y9r = x1r - x2r;
-        y9i = x1i - x2i;
-        y13r = x1r + x2r;
-        y13i = x1i + x2i;
+        float y9r = x1r - x2r;
+        float y9i = x1i - x2i;
+        float y13r = x1r + x2r;
+        float y13i = x1i + x2i;
         x0r = a[offa + 4] - a[offa + 21];
         x0i = a[offa + 5] + a[offa + 20];
         x1r = wk2r * x0r - wk2i * x0i;
@@ -2201,10 +2194,10 @@ public strictfp class FloatFFT {
         x0i = a[offa + 13] + a[offa + 28];
         x2r = wk2i * x0r - wk2r * x0i;
         x2i = wk2i * x0i + wk2r * x0r;
-        y2r = x1r + x2r;
-        y2i = x1i + x2i;
-        y6r = x1r - x2r;
-        y6i = x1i - x2i;
+        float y2r = x1r + x2r;
+        float y2i = x1i + x2i;
+        float y6r = x1r - x2r;
+        float y6i = x1i - x2i;
         x0r = a[offa + 4] + a[offa + 21];
         x0i = a[offa + 5] - a[offa + 20];
         x1r = wk2i * x0r - wk2r * x0i;
@@ -2213,10 +2206,10 @@ public strictfp class FloatFFT {
         x0i = a[offa + 13] - a[offa + 28];
         x2r = wk2r * x0r - wk2i * x0i;
         x2i = wk2r * x0i + wk2i * x0r;
-        y10r = x1r - x2r;
-        y10i = x1i - x2i;
-        y14r = x1r + x2r;
-        y14i = x1i + x2i;
+        float y10r = x1r - x2r;
+        float y10i = x1i - x2i;
+        float y14r = x1r + x2r;
+        float y14i = x1i + x2i;
         x0r = a[offa + 6] - a[offa + 23];
         x0i = a[offa + 7] + a[offa + 22];
         x1r = wk3r * x0r - wk3i * x0i;
@@ -2225,10 +2218,10 @@ public strictfp class FloatFFT {
         x0i = a[offa + 15] + a[offa + 30];
         x2r = wk1i * x0r - wk1r * x0i;
         x2i = wk1i * x0i + wk1r * x0r;
-        y3r = x1r + x2r;
-        y3i = x1i + x2i;
-        y7r = x1r - x2r;
-        y7i = x1i - x2i;
+        float y3r = x1r + x2r;
+        float y3i = x1i + x2i;
+        float y7r = x1r - x2r;
+        float y7i = x1i - x2i;
         x0r = a[offa + 6] + a[offa + 23];
         x0i = a[offa + 7] - a[offa + 22];
         x1r = wk1i * x0r + wk1r * x0i;
@@ -2237,10 +2230,10 @@ public strictfp class FloatFFT {
         x0i = a[offa + 15] - a[offa + 30];
         x2r = wk3i * x0r - wk3r * x0i;
         x2i = wk3i * x0i + wk3r * x0r;
-        y11r = x1r + x2r;
-        y11i = x1i + x2i;
-        y15r = x1r - x2r;
-        y15i = x1i - x2i;
+        float y11r = x1r + x2r;
+        float y11i = x1i + x2i;
+        float y15r = x1r - x2r;
+        float y15i = x1i - x2i;
         x1r = y0r + y2r;
         x1i = y0i + y2i;
         x2r = y1r + y3r;
@@ -2316,25 +2309,24 @@ public strictfp class FloatFFT {
     }
 
     private static void cftf081(float[] a, int offa, float[] w, int startw) {
-        float wn4r, x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i, y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i, y4r, y4i, y5r, y5i, y6r, y6i, y7r, y7i;
 
-        wn4r = w[startw + 1];
-        x0r = a[offa] + a[offa + 8];
-        x0i = a[offa + 1] + a[offa + 9];
-        x1r = a[offa] - a[offa + 8];
-        x1i = a[offa + 1] - a[offa + 9];
-        x2r = a[offa + 4] + a[offa + 12];
-        x2i = a[offa + 5] + a[offa + 13];
-        x3r = a[offa + 4] - a[offa + 12];
-        x3i = a[offa + 5] - a[offa + 13];
-        y0r = x0r + x2r;
-        y0i = x0i + x2i;
-        y2r = x0r - x2r;
-        y2i = x0i - x2i;
-        y1r = x1r - x3i;
-        y1i = x1i + x3r;
-        y3r = x1r + x3i;
-        y3i = x1i - x3r;
+        float wn4r = w[startw + 1];
+        float x0r = a[offa] + a[offa + 8];
+        float x0i = a[offa + 1] + a[offa + 9];
+        float x1r = a[offa] - a[offa + 8];
+        float x1i = a[offa + 1] - a[offa + 9];
+        float x2r = a[offa + 4] + a[offa + 12];
+        float x2i = a[offa + 5] + a[offa + 13];
+        float x3r = a[offa + 4] - a[offa + 12];
+        float x3i = a[offa + 5] - a[offa + 13];
+        float y0r = x0r + x2r;
+        float y0i = x0i + x2i;
+        float y2r = x0r - x2r;
+        float y2i = x0i - x2i;
+        float y1r = x1r - x3i;
+        float y1i = x1i + x3r;
+        float y3r = x1r + x3i;
+        float y3i = x1i - x3r;
         x0r = a[offa + 2] + a[offa + 10];
         x0i = a[offa + 3] + a[offa + 11];
         x1r = a[offa + 2] - a[offa + 10];
@@ -2343,18 +2335,18 @@ public strictfp class FloatFFT {
         x2i = a[offa + 7] + a[offa + 15];
         x3r = a[offa + 6] - a[offa + 14];
         x3i = a[offa + 7] - a[offa + 15];
-        y4r = x0r + x2r;
-        y4i = x0i + x2i;
-        y6r = x0r - x2r;
-        y6i = x0i - x2i;
+        float y4r = x0r + x2r;
+        float y4i = x0i + x2i;
+        float y6r = x0r - x2r;
+        float y6i = x0i - x2i;
         x0r = x1r - x3i;
         x0i = x1i + x3r;
         x2r = x1r + x3i;
         x2i = x1i - x3r;
-        y5r = wn4r * (x0r - x0i);
-        y5i = wn4r * (x0r + x0i);
-        y7r = wn4r * (x2r - x2i);
-        y7i = wn4r * (x2r + x2i);
+        float y5r = wn4r * (x0r - x0i);
+        float y5i = wn4r * (x0r + x0i);
+        float y7r = wn4r * (x2r - x2i);
+        float y7i = wn4r * (x2r + x2i);
         a[offa + 8] = y1r + y5r;
         a[offa + 9] = y1i + y5i;
         a[offa + 10] = y1r - y5r;
@@ -2374,43 +2366,42 @@ public strictfp class FloatFFT {
     }
 
     private static void cftf082(float[] a, int offa, float[] w, int startw) {
-        float wn4r, wk1r, wk1i, x0r, x0i, x1r, x1i, y0r, y0i, y1r, y1i, y2r, y2i, y3r, y3i, y4r, y4i, y5r, y5i, y6r, y6i, y7r, y7i;
 
-        wn4r = w[startw + 1];
-        wk1r = w[startw + 2];
-        wk1i = w[startw + 3];
-        y0r = a[offa] - a[offa + 9];
-        y0i = a[offa + 1] + a[offa + 8];
-        y1r = a[offa] + a[offa + 9];
-        y1i = a[offa + 1] - a[offa + 8];
-        x0r = a[offa + 4] - a[offa + 13];
-        x0i = a[offa + 5] + a[offa + 12];
-        y2r = wn4r * (x0r - x0i);
-        y2i = wn4r * (x0i + x0r);
+        float wn4r = w[startw + 1];
+        float wk1r = w[startw + 2];
+        float wk1i = w[startw + 3];
+        float y0r = a[offa] - a[offa + 9];
+        float y0i = a[offa + 1] + a[offa + 8];
+        float y1r = a[offa] + a[offa + 9];
+        float y1i = a[offa + 1] - a[offa + 8];
+        float x0r = a[offa + 4] - a[offa + 13];
+        float x0i = a[offa + 5] + a[offa + 12];
+        float y2r = wn4r * (x0r - x0i);
+        float y2i = wn4r * (x0i + x0r);
         x0r = a[offa + 4] + a[offa + 13];
         x0i = a[offa + 5] - a[offa + 12];
-        y3r = wn4r * (x0r - x0i);
-        y3i = wn4r * (x0i + x0r);
+        float y3r = wn4r * (x0r - x0i);
+        float y3i = wn4r * (x0i + x0r);
         x0r = a[offa + 2] - a[offa + 11];
         x0i = a[offa + 3] + a[offa + 10];
-        y4r = wk1r * x0r - wk1i * x0i;
-        y4i = wk1r * x0i + wk1i * x0r;
+        float y4r = wk1r * x0r - wk1i * x0i;
+        float y4i = wk1r * x0i + wk1i * x0r;
         x0r = a[offa + 2] + a[offa + 11];
         x0i = a[offa + 3] - a[offa + 10];
-        y5r = wk1i * x0r - wk1r * x0i;
-        y5i = wk1i * x0i + wk1r * x0r;
+        float y5r = wk1i * x0r - wk1r * x0i;
+        float y5i = wk1i * x0i + wk1r * x0r;
         x0r = a[offa + 6] - a[offa + 15];
         x0i = a[offa + 7] + a[offa + 14];
-        y6r = wk1i * x0r - wk1r * x0i;
-        y6i = wk1i * x0i + wk1r * x0r;
+        float y6r = wk1i * x0r - wk1r * x0i;
+        float y6i = wk1i * x0i + wk1r * x0r;
         x0r = a[offa + 6] + a[offa + 15];
         x0i = a[offa + 7] - a[offa + 14];
-        y7r = wk1r * x0r - wk1i * x0i;
-        y7i = wk1r * x0i + wk1i * x0r;
+        float y7r = wk1r * x0r - wk1i * x0i;
+        float y7i = wk1r * x0i + wk1i * x0r;
         x0r = y0r + y2r;
         x0i = y0i + y2i;
-        x1r = y4r + y6r;
-        x1i = y4i + y6i;
+        float x1r = y4r + y6r;
+        float x1i = y4i + y6i;
         a[offa] = x0r + x1r;
         a[offa + 1] = x0i + x1i;
         a[offa + 2] = x0r - x1r;
@@ -2442,16 +2433,15 @@ public strictfp class FloatFFT {
     }
 
     private static void cftf040(float[] a, int offa) {
-        float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
-        x0r = a[offa] + a[offa + 4];
-        x0i = a[offa + 1] + a[offa + 5];
-        x1r = a[offa] - a[offa + 4];
-        x1i = a[offa + 1] - a[offa + 5];
-        x2r = a[offa + 2] + a[offa + 6];
-        x2i = a[offa + 3] + a[offa + 7];
-        x3r = a[offa + 2] - a[offa + 6];
-        x3i = a[offa + 3] - a[offa + 7];
+        float x0r = a[offa] + a[offa + 4];
+        float x0i = a[offa + 1] + a[offa + 5];
+        float x1r = a[offa] - a[offa + 4];
+        float x1i = a[offa + 1] - a[offa + 5];
+        float x2r = a[offa + 2] + a[offa + 6];
+        float x2i = a[offa + 3] + a[offa + 7];
+        float x3r = a[offa + 2] - a[offa + 6];
+        float x3i = a[offa + 3] - a[offa + 7];
         a[offa] = x0r + x2r;
         a[offa + 1] = x0i + x2i;
         a[offa + 2] = x1r - x3i;
@@ -2463,16 +2453,15 @@ public strictfp class FloatFFT {
     }
 
     private static void cftb040(float[] a, int offa) {
-        float x0r, x0i, x1r, x1i, x2r, x2i, x3r, x3i;
 
-        x0r = a[offa] + a[offa + 4];
-        x0i = a[offa + 1] + a[offa + 5];
-        x1r = a[offa] - a[offa + 4];
-        x1i = a[offa + 1] - a[offa + 5];
-        x2r = a[offa + 2] + a[offa + 6];
-        x2i = a[offa + 3] + a[offa + 7];
-        x3r = a[offa + 2] - a[offa + 6];
-        x3i = a[offa + 3] - a[offa + 7];
+        float x0r = a[offa] + a[offa + 4];
+        float x0i = a[offa + 1] + a[offa + 5];
+        float x1r = a[offa] - a[offa + 4];
+        float x1i = a[offa + 1] - a[offa + 5];
+        float x2r = a[offa + 2] + a[offa + 6];
+        float x2i = a[offa + 3] + a[offa + 7];
+        float x3r = a[offa + 2] - a[offa + 6];
+        float x3i = a[offa + 3] - a[offa + 7];
         a[offa] = x0r + x2r;
         a[offa + 1] = x0i + x2i;
         a[offa + 2] = x1r + x3i;
@@ -2484,9 +2473,8 @@ public strictfp class FloatFFT {
     }
 
     private static void cftx020(float[] a, int offa) {
-        float x0r, x0i;
-        x0r = a[offa] - a[offa + 2];
-        x0i = -a[offa + 1] + a[offa + 3];
+        float x0r = a[offa] - a[offa + 2];
+        float x0i = -a[offa + 1] + a[offa + 3];
         a[offa] += a[offa + 2];
         a[offa + 1] += a[offa + 3];
         a[offa + 2] = x0r;
@@ -2494,10 +2482,9 @@ public strictfp class FloatFFT {
     }
 
     private static void cftxb020(float[] a, int offa) {
-        float x0r, x0i;
 
-        x0r = a[offa] - a[offa + 2];
-        x0i = a[offa + 1] - a[offa + 3];
+        float x0r = a[offa] - a[offa + 2];
+        float x0i = a[offa + 1] - a[offa + 3];
         a[offa] += a[offa + 2];
         a[offa + 1] += a[offa + 3];
         a[offa + 2] = x0r;
@@ -2505,9 +2492,8 @@ public strictfp class FloatFFT {
     }
 
     private static void cftxc020(float[] a, int offa) {
-        float x0r, x0i;
-        x0r = a[offa] - a[offa + 2];
-        x0i = a[offa + 1] + a[offa + 3];
+        float x0r = a[offa] - a[offa + 2];
+        float x0i = a[offa + 1] + a[offa + 3];
         a[offa] += a[offa + 2];
         a[offa + 1] -= a[offa + 3];
         a[offa + 2] = x0r;
@@ -2515,13 +2501,13 @@ public strictfp class FloatFFT {
     }
 
     private static void rftfsub(int n, float[] a, int offa, int nc, float[] c, int startc) {
-        int k, kk, ks, m;
+        int k;
         float wkr, wki, xr, xi, yr, yi;
         int idx1, idx2;
 
-        m = n >> 1;
-        ks = 2 * nc / m;
-        kk = 0;
+        int m = n >> 1;
+        int ks = 2 * nc / m;
+        int kk = 0;
         for (int j = 2; j < m; j += 2) {
             k = n - j;
             kk += ks;
@@ -2542,13 +2528,13 @@ public strictfp class FloatFFT {
     }
 
     private static void rftbsub(int n, float[] a, int offa, int nc, float[] c, int startc) {
-        int k, kk, ks, m;
+        int k;
         float wkr, wki, xr, xi, yr, yi;
         int idx1, idx2;
 
-        m = n >> 1;
-        ks = 2 * nc / m;
-        kk = 0;
+        int m = n >> 1;
+        int ks = 2 * nc / m;
+        int kk = 0;
         for (int j = 2; j < m; j += 2) {
             k = n - j;
             kk += ks;
@@ -2735,7 +2721,6 @@ public strictfp class FloatFFT {
 
         switch (plan) {
             case SPLIT_RADIX:
-                float xi;
 
                 if (n > 4) {
                     cftfsub(n, a, offa, ip, nw, w);
@@ -2743,7 +2728,7 @@ public strictfp class FloatFFT {
                 } else if (n == 4) {
                     cftx020(a, offa);
                 }
-                xi = a[offa] - a[offa + 1];
+                float xi = a[offa] - a[offa + 1];
                 a[offa] += a[offa + 1];
                 a[offa + 1] = xi;
                 break;
@@ -3053,7 +3038,6 @@ public strictfp class FloatFFT {
             return;
         switch (plan) {
             case SPLIT_RADIX:
-                float xi;
 
                 if (n > 4) {
                     cftfsub(n, a, offa, ip, nw, w);
@@ -3061,7 +3045,7 @@ public strictfp class FloatFFT {
                 } else if (n == 4) {
                     cftbsub(n, a, offa, ip, nw, w);
                 }
-                xi = a[offa] - a[offa + 1];
+                float xi = a[offa] - a[offa + 1];
                 a[offa] += a[offa + 1];
                 a[offa + 1] = xi;
                 if (scale) {
@@ -3109,18 +3093,17 @@ public strictfp class FloatFFT {
 
         final int twon = 2 * n;
         final int fourn = 4 * n;
-        float argh;
-        int idot, ntry = 0, i, j;
+        int idot, ntry = 0, i;
         float argld;
-        int i1, k1, l1, l2, ib;
+        int i1, k1, l2, ib;
         float fi;
-        int ld, ii, nf, ip, nl, nq, nr;
+        int ld, ii, ip, nq, nr;
         float arg;
         int ido, ipm;
 
-        nl = n;
-        nf = 0;
-        j = 0;
+        int nl = n;
+        int nf = 0;
+        int j = 0;
 
         factorize_loop:
         while (true) {
@@ -3150,9 +3133,9 @@ public strictfp class FloatFFT {
         }
         wtable[offw + fourn] = n;
         wtable[offw + 1 + fourn] = nf;
-        argh = TWO_PI / (float) n;
+        float argh = TWO_PI / (float) n;
         i = 1;
-        l1 = 1;
+        int l1 = 1;
         for (k1 = 1; k1 <= nf; k1++) {
             ip = (int) wtable[offw + k1 + 1 + fourn];
             ld = 0;
@@ -3193,18 +3176,17 @@ public strictfp class FloatFFT {
 
         final int twon = 2 * n;
         final int fourn = 4 * n;
-        float argh;
-        int idot, ntry = 0, i, j;
+        int idot, ntry = 0, i;
         float argld;
-        int i1, k1, l1, l2, ib;
+        int i1, k1, l2, ib;
         float fi;
-        int ld, ii, nf, ip, nl, nq, nr;
+        int ld, ii, ip, nq, nr;
         float arg;
         int ido, ipm;
 
-        nl = n;
-        nf = 0;
-        j = 0;
+        int nl = n;
+        int nf = 0;
+        int j = 0;
 
         factorize_loop:
         while (true) {
@@ -3234,9 +3216,9 @@ public strictfp class FloatFFT {
         }
         wtable[fourn] = n;
         wtable[1 + fourn] = nf;
-        argh = TWO_PI / (float) n;
+        float argh = TWO_PI / (float) n;
         i = 1;
-        l1 = 1;
+        int l1 = 1;
         for (k1 = 1; k1 <= nf; k1++) {
             ip = (int) wtable[k1 + 1 + fourn];
             ld = 0;
@@ -3281,19 +3263,17 @@ public strictfp class FloatFFT {
         if (n == 1)
             return;
         final int twon = 2 * n;
-        float argh;
-        int ntry = 0, i, j;
+        int ntry = 0, i;
         float argld;
-        int k1, l1, l2, ib;
+        int k1, l2, ib;
         float fi;
-        int ld, ii, nf, ip, nl, is, nq, nr;
+        int ld, ii, ip, nq, nr;
         float arg;
         int ido, ipm;
-        int nfm1;
 
-        nl = n;
-        nf = 0;
-        j = 0;
+        int nl = n;
+        int nf = 0;
+        int j = 0;
 
         factorize_loop:
         while (true) {
@@ -3324,10 +3304,10 @@ public strictfp class FloatFFT {
         }
         wtable_r[twon] = n;
         wtable_r[1 + twon] = nf;
-        argh = TWO_PI / (float) (n);
-        is = 0;
-        nfm1 = nf - 1;
-        l1 = 1;
+        float argh = TWO_PI / (float) (n);
+        int is = 0;
+        int nfm1 = nf - 1;
+        int l1 = 1;
         if (nfm1 == 0)
             return;
         for (k1 = 1; k1 <= nfm1; k1++) {
@@ -3447,11 +3427,11 @@ public strictfp class FloatFFT {
     }
 
     private void makeipt(int nw) {
-        int j, l, m, m2, p, q;
+        int j, l, m2, p, q;
 
         ip[2] = 0;
         ip[3] = 16;
-        m = 2;
+        int m = 2;
         for (l = nw; l > 32; l >>= 2) {
             m2 = m << 1;
             q = m2 << 3;
@@ -4087,14 +4067,14 @@ public strictfp class FloatFFT {
     private void rfftf(final float[] a, final int offa) {
         if (n == 1)
             return;
-        int l1, l2, na, kh, nf, ip, iw, ido, idl1;
+        int l1, kh, ip, ido, idl1;
 
         final float[] ch = new float[n];
         final int twon = 2 * n;
-        nf = (int) wtable_r[1 + twon];
-        na = 1;
-        l2 = n;
-        iw = twon - 1;
+        int nf = (int) wtable_r[1 + twon];
+        int na = 1;
+        int l2 = n;
+        int iw = twon - 1;
         for (int k1 = 1; k1 <= nf; ++k1) {
             kh = nf - k1;
             ip = (int) wtable_r[kh + 2 + twon];
@@ -4157,14 +4137,14 @@ public strictfp class FloatFFT {
     private void rfftb(final float[] a, final int offa) {
         if (n == 1)
             return;
-        int l1, l2, na, nf, ip, iw, ido, idl1;
+        int l2, ip, ido, idl1;
 
         float[] ch = new float[n];
         final int twon = 2 * n;
-        nf = (int) wtable_r[1 + twon];
-        na = 0;
-        l1 = 1;
-        iw = n;
+        int nf = (int) wtable_r[1 + twon];
+        int na = 0;
+        int l1 = 1;
+        int iw = n;
         for (int k1 = 1; k1 <= nf; k1++) {
             ip = (int) wtable_r[k1 + 1 + twon];
             l2 = ip * l1;
@@ -4225,12 +4205,11 @@ public strictfp class FloatFFT {
        radf2: Real FFT's forward processing of factor 2
       -------------------------------------------------*/
     private void radf2(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
-        int i, ic, idx0, idx1, idx2, idx3, idx4;
+        int i, ic, idx2, idx3, idx4;
         float t1i, t1r, w1r, w1i;
-        int iw1;
-        iw1 = offset;
-        idx0 = l1 * ido;
-        idx1 = 2 * ido;
+        int iw1 = offset;
+        int idx0 = l1 * ido;
+        int idx1 = 2 * ido;
         for (int k = 0; k < l1; k++) {
             int oidx1 = out_off + k * idx1;
             int oidx2 = oidx1 + idx1 - 1;
@@ -4366,9 +4345,8 @@ public strictfp class FloatFFT {
         final float taui = 0.866025403784438707610604524234076962f;
         int i, ic;
         float ci2, di2, di3, cr2, dr2, dr3, ti2, ti3, tr2, tr3, w1r, w2r, w1i, w2i;
-        int iw1, iw2;
-        iw1 = offset;
-        iw2 = iw1 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
 
         int idx0 = l1 * ido;
         for (int k = 0; k < l1; k++) {
@@ -4452,9 +4430,8 @@ public strictfp class FloatFFT {
         final float taui = 0.866025403784438707610604524234076962f;
         int i, ic;
         float ci2, ci3, di2, di3, cr2, cr3, dr2, dr3, ti2, tr2, w1r, w2r, w1i, w2i;
-        int iw1, iw2;
-        iw1 = offset;
-        iw2 = iw1 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
 
         for (int k = 0; k < l1; k++) {
             int idx1 = k * ido;
@@ -4536,10 +4513,9 @@ public strictfp class FloatFFT {
         final float hsqt2 = 0.707106781186547572737310929369414225f;
         int i, ic;
         float ci2, ci3, ci4, cr2, cr3, cr4, ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4, w1r, w1i, w2r, w2i, w3r, w3i;
-        int iw1, iw2, iw3;
-        iw1 = offset;
-        iw2 = offset + ido;
-        iw3 = iw2 + ido;
+        int iw1 = offset;
+        int iw2 = offset + ido;
+        int iw3 = iw2 + ido;
         int idx0 = l1 * ido;
         for (int k = 0; k < l1; k++) {
             int idx1 = k * ido;
@@ -4673,10 +4649,9 @@ public strictfp class FloatFFT {
         int i, ic;
         float ci2, ci3, ci4, cr2, cr3, cr4;
         float ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4, w1r, w1i, w2r, w2i, w3r, w3i;
-        int iw1, iw2, iw3;
-        iw1 = offset;
-        iw2 = iw1 + ido;
-        iw3 = iw2 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
+        int iw3 = iw2 + ido;
 
         int idx0 = l1 * ido;
         for (int k = 0; k < l1; k++) {
@@ -4818,11 +4793,10 @@ public strictfp class FloatFFT {
         final float ti12 = 0.587785252292473248125759255344746634f;
         int i, ic;
         float ci2, di2, ci4, ci5, di3, di4, di5, ci3, cr2, cr3, dr2, dr3, dr4, dr5, cr5, cr4, ti2, ti3, ti5, ti4, tr2, tr3, tr4, tr5, w1r, w1i, w2r, w2i, w3r, w3i, w4r, w4i;
-        int iw1, iw2, iw3, iw4;
-        iw1 = offset;
-        iw2 = iw1 + ido;
-        iw3 = iw2 + ido;
-        iw4 = iw3 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
+        int iw3 = iw2 + ido;
+        int iw4 = iw3 + ido;
 
         int idx0 = l1 * ido;
         for (int k = 0; k < l1; k++) {
@@ -4961,11 +4935,10 @@ public strictfp class FloatFFT {
         final float ti12 = 0.587785252292473248125759255344746634f;
         int i, ic;
         float ci2, ci3, ci4, ci5, di3, di4, di5, di2, cr2, cr3, cr5, cr4, ti2, ti3, ti4, ti5, dr3, dr4, dr5, dr2, tr2, tr3, tr4, tr5, w1r, w1i, w2r, w2i, w3r, w3i, w4r, w4i;
-        int iw1, iw2, iw3, iw4;
-        iw1 = offset;
-        iw2 = iw1 + ido;
-        iw3 = iw2 + ido;
-        iw4 = iw3 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
+        int iw3 = iw2 + ido;
+        int iw4 = iw3 + ido;
 
         int idx0 = l1 * ido;
         for (int k = 0; k < l1; k++) {
@@ -5097,15 +5070,15 @@ public strictfp class FloatFFT {
        radfg: Real FFT's forward processing of general factor
       --------------------------------------------------------*/
     private void radfg(final int ido, final int ip, final int l1, final int idl1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
-        int idij, ipph, j2, ic, jc, lc, is, nbd;
-        float dc2, ai1, ai2, ar1, ar2, ds2, dcp, arg, dsp, ar1h, ar2h, w1r, w1i;
+        int idij, j2, ic, jc, lc, is;
+        float dc2, ai2, ar2, ds2, ar1h, ar2h, w1r, w1i;
         int iw1 = offset;
 
-        arg = TWO_PI / (float) ip;
-        dcp = (float) Math.cos(arg);
-        dsp = (float) Math.sin(arg);
-        ipph = (ip + 1) / 2;
-        nbd = (ido - 1) / 2;
+        float arg = TWO_PI / (float) ip;
+        float dcp = (float) Math.cos(arg);
+        float dsp = (float) Math.sin(arg);
+        int ipph = (ip + 1) / 2;
+        int nbd = (ido - 1) / 2;
         if (ido != 1) {
             if (idl1 >= 0) System.arraycopy(in, in_off + 0, out, out_off + 0, idl1);
             for (int j = 1; j < ip; j++) {
@@ -5240,8 +5213,8 @@ public strictfp class FloatFFT {
             }
         }
 
-        ar1 = 1;
-        ai1 = 0;
+        float ar1 = 1;
+        float ai1 = 0;
         int idx0 = (ip - 1) * idl1;
         for (int l = 1; l < ipph; l++) {
             lc = ip - l;
@@ -5385,17 +5358,16 @@ public strictfp class FloatFFT {
        radbg: Real FFT's backward processing of general factor
       --------------------------------------------------------*/
     private void radbg(final int ido, final int ip, final int l1, final int idl1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset) {
-        int idij, ipph, j2, ic, jc, lc, is;
-        float dc2, ai1, ai2, ar1, ar2, ds2, w1r, w1i;
-        int nbd;
-        float dcp, arg, dsp, ar1h, ar2h;
+        int idij, j2, ic, jc, lc, is;
+        float dc2, ai2, ar2, ds2, w1r, w1i;
+        float ar1h, ar2h;
         int iw1 = offset;
 
-        arg = TWO_PI / (float) ip;
-        dcp = (float) Math.cos(arg);
-        dsp = (float) Math.sin(arg);
-        nbd = (ido - 1) / 2;
-        ipph = (ip + 1) / 2;
+        float arg = TWO_PI / (float) ip;
+        float dcp = (float) Math.cos(arg);
+        float dsp = (float) Math.sin(arg);
+        int nbd = (ido - 1) / 2;
+        int ipph = (ip + 1) / 2;
         int idx0 = ip * ido;
         if (ido >= l1) {
             for (int k = 0; k < l1; k++) {
@@ -5500,8 +5472,8 @@ public strictfp class FloatFFT {
             }
         }
 
-        ar1 = 1;
-        ai1 = 0;
+        float ar1 = 1;
+        float ai1 = 0;
         int idx01 = (ip - 1) * idl1;
         for (int l = 1; l < ipph; l++) {
             lc = ip - l;
@@ -5681,21 +5653,20 @@ public strictfp class FloatFFT {
       --------------------------------------------------------*/
     private void cfftf(float[] a, int offa, int isign) {
         int idot;
-        int l1, l2;
-        int na, nf, ip, iw, ido, idl1;
+        int l2;
+        int ip, ido, idl1;
         int[] nac = new int[1];
         final int twon = 2 * n;
 
-        int iw1, iw2;
         float[] ch = new float[twon];
 
-        iw1 = twon;
-        iw2 = 4 * n;
+        int iw1 = twon;
+        int iw2 = 4 * n;
         nac[0] = 0;
-        nf = (int) wtable[1 + iw2];
-        na = 0;
-        l1 = 1;
-        iw = iw1;
+        int nf = (int) wtable[1 + iw2];
+        int na = 0;
+        int l1 = 1;
+        int iw = iw1;
         for (int k1 = 2; k1 <= nf + 1; k1++) {
             ip = (int) wtable[k1 + iw2];
             l2 = ip * l1;
@@ -5756,8 +5727,7 @@ public strictfp class FloatFFT {
 
     private void passf2(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
         float t1i, t1r;
-        int iw1;
-        iw1 = offset;
+        int iw1 = offset;
         int idx = ido * l1;
         if (ido <= 2) {
             for (int k = 0; k < l1; k++) {
@@ -5813,10 +5783,9 @@ public strictfp class FloatFFT {
         final float taur = -0.5f;
         final float taui = 0.866025403784438707610604524234076962f;
         float ci2, ci3, di2, di3, cr2, cr3, dr2, dr3, ti2, tr2;
-        int iw1, iw2;
 
-        iw1 = offset;
-        iw2 = iw1 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
 
         final int idxt = l1 * ido;
 
@@ -5902,10 +5871,9 @@ public strictfp class FloatFFT {
       ----------------------------------------------------------------------*/
     private void passf4(final int ido, final int l1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
         float ci2, ci3, ci4, cr2, cr3, cr4, ti1, ti2, ti3, ti4, tr1, tr2, tr3, tr4;
-        int iw1, iw2, iw3;
-        iw1 = offset;
-        iw2 = iw1 + ido;
-        iw3 = iw2 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
+        int iw3 = iw2 + ido;
 
         int idx0 = l1 * ido;
         if (ido == 2) {
@@ -6018,12 +5986,11 @@ public strictfp class FloatFFT {
         final float tr12 = -0.809016994374947340240566973079694435f;
         final float ti12 = 0.587785252292473248125759255344746634f;
         float ci2, ci3, ci4, ci5, di3, di4, di5, di2, cr2, cr3, cr5, cr4, ti2, ti3, ti4, ti5, dr3, dr4, dr5, dr2, tr2, tr3, tr4, tr5;
-        int iw1, iw2, iw3, iw4;
 
-        iw1 = offset;
-        iw2 = iw1 + ido;
-        iw3 = iw2 + ido;
-        iw4 = iw3 + ido;
+        int iw1 = offset;
+        int iw2 = iw1 + ido;
+        int iw3 = iw2 + ido;
+        int iw4 = iw3 + ido;
 
         int idx0 = l1 * ido;
 
@@ -6163,14 +6130,13 @@ public strictfp class FloatFFT {
        isign is +1 for backward and -1 for forward transforms
       ----------------------------------------------------------------------*/
     private void passfg(final int[] nac, final int ido, final int ip, final int l1, final int idl1, final float[] in, final int in_off, final float[] out, final int out_off, final int offset, final int isign) {
-        int idij, idlj, idot, ipph, l, jc, lc, idj, idl, inc, idp;
+        int idij, idlj, l, jc, lc, idj;
         float w1r, w1i, w2i, w2r;
-        int iw1;
 
-        iw1 = offset;
-        idot = ido / 2;
-        ipph = (ip + 1) / 2;
-        idp = ip * ido;
+        int iw1 = offset;
+        int idot = ido / 2;
+        int ipph = (ip + 1) / 2;
+        int idp = ip * ido;
         if (ido >= l1) {
             for (int j = 1; j < ipph; j++) {
                 jc = ip - j;
@@ -6225,8 +6191,8 @@ public strictfp class FloatFFT {
             }
         }
 
-        idl = 2 - ido;
-        inc = 0;
+        int idl = 2 - ido;
+        int inc = 0;
         int idxt0 = (ip - 1) * idl1;
         for (l = 1; l < ipph; l++) {
             lc = ip - l;
@@ -6413,11 +6379,10 @@ public strictfp class FloatFFT {
 
     private void cftrec4_th(final int n, final float[] a, final int offa, final int nw, final float[] w) {
         int i;
-        int idiv4, m, nthreads;
         int idx = 0;
-        nthreads = 2;
-        idiv4 = 0;
-        m = n >> 1;
+        int nthreads = 2;
+        int idiv4 = 0;
+        int m = n >> 1;
         if (n > ConcurrencyUtils.getThreadsBeginN_1D_FFT_4Threads()) {
             nthreads = 4;
             idiv4 = 1;
@@ -6429,15 +6394,15 @@ public strictfp class FloatFFT {
             final int firstIdx = offa + i * m;
             if (i != idiv4) {
                 futures[idx++] = ConcurrencyUtils.submit(() -> {
-                    int isplt, j, k, m12;
+                    int isplt, j;
                     int idx1 = firstIdx + mf;
-                    m12 = n;
+                    int m12 = n;
                     while (m12 > 512) {
                         m12 >>= 2;
                         cftmdl1(m12, a, idx1 - m12, w, nw - (m12 >> 1));
                     }
                     cftleaf(m12, 1, a, idx1 - m12, nw, w);
-                    k = 0;
+                    int k = 0;
                     int idx2 = firstIdx - m12;
                     for (j = mf - m12; j > 0; j -= m12) {
                         k++;
@@ -6447,10 +6412,10 @@ public strictfp class FloatFFT {
                 });
             } else {
                 futures[idx++] = ConcurrencyUtils.submit(() -> {
-                    int isplt, j, k, m1;
+                    int isplt, j;
                     int idx1 = firstIdx + mf;
-                    k = 1;
-                    m1 = n;
+                    int k = 1;
+                    int m1 = n;
                     while (m1 > 512) {
                         m1 >>= 2;
                         k <<= 2;
@@ -6471,16 +6436,16 @@ public strictfp class FloatFFT {
     }
 
     private void cftrec4(int n, float[] a, int offa, int nw, float[] w) {
-        int isplt, j, k, m;
+        int isplt, j;
 
-        m = n;
+        int m = n;
         int idx1 = offa + n;
         while (m > 512) {
             m >>= 2;
             cftmdl1(m, a, idx1 - m, w, nw - (m >> 1));
         }
         cftleaf(m, 1, a, idx1 - m, nw, w);
-        k = 0;
+        int k = 0;
         int idx2 = offa - m;
         for (j = n - m; j > 0; j -= m) {
             k++;

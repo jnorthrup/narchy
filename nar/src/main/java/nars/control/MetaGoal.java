@@ -135,13 +135,12 @@ public enum MetaGoal {
 
             Cause ci = ccc[i];
 
-            double v;
             //boolean valued = false;
             ci.commit(credit);
             //if (Math.abs(c) > Float.MIN_NORMAL) {
             //valued = true;
             //}
-            v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
+            double v = IntStream.range(0, want.length).mapToDouble(w -> want[w] * credit[w]).sum();
 
             ci.value(
                 //valued ? (float)v : Float.NaN

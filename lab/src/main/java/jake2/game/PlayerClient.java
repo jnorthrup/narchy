@@ -141,11 +141,10 @@ public class PlayerClient {
         public String getID() { return "SP_FixCoopSpots"; }
         @Override
         public boolean think(edict_t self) {
-    
-            edict_t spot;
+
             float[] d = { 0, 0, 0 };
-    
-            spot = null;
+
+            edict_t spot = null;
             EdictIterator es = null;
     
             while (true) {
@@ -506,11 +505,10 @@ public class PlayerClient {
      * is called after each death and level change in deathmatch. 
      */
     public static void InitClientPersistant(gclient_t client) {
-        gitem_t item;
 
         client.pers = new client_persistant_t();
 
-        item = GameItems.FindItem("Blaster");
+        gitem_t item = GameItems.FindItem("Blaster");
         client.pers.selected_item = GameItems.ITEM_INDEX(item);
         client.pers.inventory[client.pers.selected_item] = 1;
 
@@ -579,12 +577,11 @@ public class PlayerClient {
      */
     static float PlayersRangeFromSpot(edict_t spot) {
         edict_t player;
-        float bestplayerdistance;
         float[] v = { 0, 0, 0 };
         int n;
         float playerdistance;
 
-        bestplayerdistance = 9999999;
+        float bestplayerdistance = 9999999;
 
         for (n = 1; n <= GameBase.maxclients.value; n++) {
             player = GameBase.g_edicts[n];
@@ -609,12 +606,11 @@ public class PlayerClient {
      * Go to a random point, but NOT the two points closest to other players.
      */
     public static edict_t SelectRandomDeathmatchSpawnPoint() {
-        edict_t spot, spot1, spot2;
+        edict_t spot1, spot2;
         int count = 0;
-        int selection;
         float range, range1, range2;
 
-        spot = null;
+        edict_t spot = null;
         range1 = range2 = 99999;
         spot1 = spot2 = null;
 
@@ -642,7 +638,7 @@ public class PlayerClient {
         } else
             count -= 2;
 
-        selection = Lib.rand() % count;
+        int selection = Lib.rand() % count;
 
         spot = null;
         es = null;
@@ -665,13 +661,11 @@ public class PlayerClient {
 	 * If turned on in the dmflags, select a spawn point far away from other players.
      */
     static edict_t SelectFarthestDeathmatchSpawnPoint() {
-        edict_t bestspot;
-        float bestdistance, bestplayerdistance;
-        edict_t spot;
+        float bestplayerdistance;
 
-        spot = null;
-        bestspot = null;
-        bestdistance = 0;
+        edict_t spot = null;
+        edict_t bestspot = null;
+        float bestdistance = 0;
 
         EdictIterator es = null;
         while ((es = GameBase.G_Find(es, GameBase.findByClass,
@@ -708,18 +702,16 @@ public class PlayerClient {
     }
 
     public static edict_t SelectCoopSpawnPoint(edict_t ent) {
-        int index;
-        edict_t spot = null;
         String target;
 
-        
-        index = ent.client.index;
+
+        int index = ent.client.index;
 
         
         if (index == 0)
             return null;
 
-        spot = null;
+        edict_t spot = null;
         EdictIterator es = null;
 
         
@@ -817,11 +809,10 @@ public class PlayerClient {
     }
 
     public static void CopyToBodyQue(edict_t ent) {
-        edict_t body;
 
-        
+
         int i = (int) GameBase.maxclients.value + GameBase.level.body_que + 1;
-        body = GameBase.g_edicts[i];
+        edict_t body = GameBase.g_edicts[i];
         GameBase.level.body_que = (GameBase.level.body_que + 1)
                 % Defines.BODY_QUEUE_SIZE;
 
@@ -972,9 +963,7 @@ public class PlayerClient {
     public static void PutClientInServer(edict_t ent) {
         float[] mins = { -16, -16, -24 };
         float[] maxs = { 16, 16, 32 };
-        int index;
         float[] spawn_origin = { 0, 0, 0 }, spawn_angles = { 0, 0, 0 };
-        gclient_t client;
         int i;
         client_persistant_t saved = new client_persistant_t();
         client_respawn_t resp = new client_respawn_t();
@@ -984,8 +973,8 @@ public class PlayerClient {
         
         SelectSpawnPoint(ent, spawn_origin, spawn_angles);
 
-        index = ent.index - 1;
-        client = ent.client;
+        int index = ent.index - 1;
+        gclient_t client = ent.client;
 
         
         if (GameBase.deathmatch.value != 0) {           
@@ -1213,16 +1202,14 @@ public class PlayerClient {
      *
      */
     public static String ClientUserinfoChanged(edict_t ent, String userinfo) {
-        String s;
-        int playernum;
 
-        
+
         if (!Info.Info_Validate(userinfo)) {
             return "\\name\\badinfo\\skin\\male/grunt";
         }
 
-        
-        s = Info.Info_ValueForKey(userinfo, "name");
+
+        String s = Info.Info_ValueForKey(userinfo, "name");
 
         ent.client.pers.netname = s;
 
@@ -1234,7 +1221,7 @@ public class PlayerClient {
         
         s = Info.Info_ValueForKey(userinfo, "skin");
 
-        playernum = ent.index - 1;
+        int playernum = ent.index - 1;
 
         
         game_import_t.configstring(Defines.CS_PLAYERSKINS + playernum,
@@ -1273,10 +1260,9 @@ public class PlayerClient {
      * will. 
      */
     public static boolean ClientConnect(edict_t ent, String userinfo) {
-        String value;
 
-        
-        value = Info.Info_ValueForKey(userinfo, "ip");
+
+        String value = Info.Info_ValueForKey(userinfo, "ip");
         if (GameSVCmds.SV_FilterPacket(value)) {
             userinfo = Info.Info_SetValueForKey(userinfo, "rejmsg", "Banned.");
             return false;
@@ -1341,7 +1327,6 @@ public class PlayerClient {
      * Called when a player drops from the server. Will not be called between levels. 
      */
     public static void ClientDisconnect(edict_t ent) {
-        int playernum;
 
         if (ent.client == null)
             return;
@@ -1362,7 +1347,7 @@ public class PlayerClient {
         ent.classname = "disconnected";
         ent.client.pers.connected = false;
 
-        playernum = ent.index - 1;
+        int playernum = ent.index - 1;
         game_import_t.configstring(Defines.CS_PLAYERSKINS + playernum, "");
     }
 
@@ -1391,13 +1376,12 @@ public class PlayerClient {
      * couple times for each server frame.
      */
     public static void ClientThink(edict_t ent, usercmd_t ucmd) {
-        gclient_t client;
         edict_t other;
         int i, j;
         pmove_t pm = null;
 
         GameBase.level.current_entity = ent;
-        client = ent.client;
+        gclient_t client = ent.client;
 
         if (GameBase.level.intermissiontime != 0) {
             client.ps.pmove.pm_type = Defines.PM_FREEZE;
@@ -1563,13 +1547,12 @@ public class PlayerClient {
      * entities in the world. 
      */
     public static void ClientBeginServerFrame(edict_t ent) {
-        gclient_t client;
         int buttonMask;
 
         if (GameBase.level.intermissiontime != 0)
             return;
 
-        client = ent.client;
+        gclient_t client = ent.client;
 
         if (GameBase.deathmatch.value != 0
                 && client.pers.spectator != client.resp.spectator
@@ -1614,12 +1597,11 @@ public class PlayerClient {
      * Returns true, if the players gender flag was set to female.
      */
     public static boolean IsFemale(edict_t ent) {
-        char info;
-    
+
         if (null == ent.client)
             return false;
-    
-        info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
+
+        char info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
                 .charAt(0);
         return info == 'f' || info == 'F';
     }
@@ -1629,12 +1611,11 @@ public class PlayerClient {
      * male.
      */
     public static boolean IsNeutral(edict_t ent) {
-        char info;
-    
+
         if (ent.client == null)
             return false;
-    
-        info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
+
+        char info = Info.Info_ValueForKey(ent.client.pers.userinfo, "gender")
                 .charAt(0);
 
         return info != 'f' && info != 'F' && info != 'm' && info != 'M';
@@ -1678,15 +1659,14 @@ public class PlayerClient {
      * Drop items and weapons in deathmatch games. 
      */ 
     public static void TossClientWeapon(edict_t self) {
-        gitem_t item;
         edict_t drop;
         boolean quad;
         float spread;
     
         if (GameBase.deathmatch.value == 0)
             return;
-    
-        item = self.client.pers.weapon;
+
+        gitem_t item = self.client.pers.weapon;
         if (0 == self.client.pers.inventory[self.client.ammo_index])
             item = null;
         if (item != null && (Lib.strcmp(item.pickup_name, "Blaster") == 0))

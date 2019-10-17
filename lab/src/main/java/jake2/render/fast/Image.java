@@ -313,11 +313,10 @@ public abstract class Image extends Main {
     void GL_ImageList_f() {
 
         image_t image;
-        int texels;
         final String[] palstrings = {"RGB", "PAL"};
 
         VID.Printf(Defines.PRINT_ALL, "------------------\n");
-        texels = 0;
+        int texels = 0;
 
         for (int i = 0; i < numgltextures; i++) {
             image = gltextures[i];
@@ -440,11 +439,8 @@ public abstract class Image extends Main {
     ==============
     */
     static byte[] LoadPCX(String filename, byte[][] palette, Dimension dim) {
-        qfiles.pcx_t pcx;
 
-        
-        
-        
+
         byte[] raw = FS.LoadFile(filename);
 
         if (raw == null) {
@@ -452,10 +448,8 @@ public abstract class Image extends Main {
             return null;
         }
 
-        
-        
-        
-        pcx = new qfiles.pcx_t(raw);
+
+        qfiles.pcx_t pcx = new qfiles.pcx_t(raw);
 
         if (pcx.manufacturer != 0x0a
                 || pcx.version != 5
@@ -530,25 +524,18 @@ public abstract class Image extends Main {
 	=============
 	*/
     byte[] LoadTGA(String name, Dimension dim) {
-        int columns, rows, numPixels;
-        int pixbuf; 
+        int pixbuf;
         int row, column;
-        byte[] raw;
-        ByteBuffer buf_p;
-        qfiles.tga_t targa_header;
-        byte[] pic = null;
 
-        
-        
-        
-        raw = FS.LoadFile(name);
+
+        byte[] raw = FS.LoadFile(name);
 
         if (raw == null) {
             VID.Printf(Defines.PRINT_DEVELOPER, "Bad tga file " + name + '\n');
             return null;
         }
 
-        targa_header = new qfiles.tga_t(raw);
+        qfiles.tga_t targa_header = new qfiles.tga_t(raw);
 
         if (targa_header.image_type != 2 && targa_header.image_type != 10)
             Com.Error(Defines.ERR_DROP, "LoadTGA: Only type 2 and 10 targa RGB images supported\n");
@@ -556,21 +543,21 @@ public abstract class Image extends Main {
         if (targa_header.colormap_type != 0 || (targa_header.pixel_size != 32 && targa_header.pixel_size != 24))
             Com.Error(Defines.ERR_DROP, "LoadTGA: Only 32 or 24 bit images supported (no colormaps)\n");
 
-        columns = targa_header.width;
-        rows = targa_header.height;
-        numPixels = columns * rows;
+        int columns = targa_header.width;
+        int rows = targa_header.height;
+        int numPixels = columns * rows;
 
         if (dim != null) {
             dim.setWidth(columns);
             dim.setHeight(rows);
         }
 
-        pic = new byte[numPixels * 4]; 
+        byte[] pic = new byte[numPixels * 4];
 
         if (targa_header.id_length != 0)
-            targa_header.data.position(targa_header.id_length);  
+            targa_header.data.position(targa_header.id_length);
 
-        buf_p = targa_header.data;
+        ByteBuffer buf_p = targa_header.data;
 
         byte red, green, blue, alphabyte;
         red = green = blue = alphabyte = 0;
@@ -923,10 +910,10 @@ public abstract class Image extends Main {
     */
     void GL_LightScaleTexture(int[] in, int inwidth, int inheight, boolean only_gamma) {
         if (only_gamma) {
-            int i, c;
+            int i;
             int r, g, b, color;
 
-            c = inwidth * inheight;
+            int c = inwidth * inheight;
             for (i = 0; i < c; i++) {
                 color = in[i];
                 r = (color >> 0) & 0xFF;
@@ -940,10 +927,10 @@ public abstract class Image extends Main {
                 in[i] = (r << 0) | (g << 8) | (b << 16) | (color & 0xFF000000);
             }
         } else {
-            int i, c;
+            int i;
             int r, g, b, color;
 
-            c = inwidth * inheight;
+            int c = inwidth * inheight;
             for (i = 0; i < c; i++) {
                 color = in[i];
                 r = (color >> 0) & 0xFF;
@@ -969,9 +956,8 @@ public abstract class Image extends Main {
     */
     static void GL_MipMap(int[] in, int width, int height) {
         int i, j;
-        int[] out;
 
-        out = in;
+        int[] out = in;
 
         int inIndex = 0;
         int outIndex = 0;
@@ -1037,9 +1023,8 @@ public abstract class Image extends Main {
     final IntBuffer tex = Lib.newIntBuffer(512 * 256, ByteOrder.LITTLE_ENDIAN);
 
     boolean GL_Upload32(int[] data, int width, int height, boolean mipmap) {
-        int samples;
         int scaled_width, scaled_height;
-        int i, c;
+        int i;
         int comp;
 
         Arrays.fill(scaled, 0);
@@ -1079,9 +1064,9 @@ public abstract class Image extends Main {
         if (scaled_width * scaled_height > 256 * 256)
             Com.Error(Defines.ERR_DROP, "GL_Upload32: too big");
 
-        
-        c = width * height;
-        samples = gl_solid_format;
+
+        int c = width * height;
+        int samples = gl_solid_format;
 
         for (i = 0; i < c; i++) {
             if ((data[i] & 0xff000000) != 0xff000000) {
@@ -1162,8 +1147,7 @@ public abstract class Image extends Main {
             }
 
             if (mipmap) {
-                int miplevel;
-                miplevel = 0;
+                int miplevel = 0;
                 while (scaled_width > 1 || scaled_height > 1) {
                     GL_MipMap(scaled, scaled_width, scaled_height);
                     scaled_width >>= 1;
@@ -1323,7 +1307,7 @@ public abstract class Image extends Main {
         
         if (image.type == it_pic && bits == 8 && image.width < 64 && image.height < 64) {
             final pos_t pos = new pos_t(0, 0);
-            int j, k;
+            int j;
 
             int texnum = Scrap_AllocBlock(image.width, image.height, pos);
 
@@ -1364,8 +1348,8 @@ public abstract class Image extends Main {
 
             scrap_dirty = true;
 
-            
-            k = 0;
+
+            int k = 0;
             int px = pos.x;
             int py = pos.y;
             for (i = 0; i < image.height; i++)
@@ -1421,8 +1405,6 @@ public abstract class Image extends Main {
     */
     image_t GL_LoadWal(String name) {
 
-        image_t image = null;
-
         byte[] raw = FS.LoadFile(name);
         if (raw == null) {
             VID.Printf(Defines.PRINT_ALL, "GL_FindImage: can't load " + name + '\n');
@@ -1434,7 +1416,7 @@ public abstract class Image extends Main {
         byte[] pix = new byte[mt.width * mt.height];
         System.arraycopy(raw, mt.offsets[0], pix, 0, pix.length);
 
-        image = GL_LoadPic(name, pix, mt.width, mt.height, it_wall, 8);
+        image_t image = GL_LoadPic(name, pix, mt.width, mt.height, it_wall, 8);
 
         return image;
     }

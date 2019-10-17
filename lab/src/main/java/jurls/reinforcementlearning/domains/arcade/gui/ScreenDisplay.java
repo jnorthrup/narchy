@@ -63,11 +63,10 @@ public class ScreenDisplay extends JPanel {
     }
 
     public Dimension getPreferredSize() {
-        int width, height;
 
         statusBarY = defaultHeight * yScaleFactor;
-        width = defaultWidth * xScaleFactor;
-        height = statusBarY + statusBarHeight;
+        int width = defaultWidth * xScaleFactor;
+        int height = statusBarY + statusBarHeight;
 
         windowWidth = width;
         windowHeight = height;

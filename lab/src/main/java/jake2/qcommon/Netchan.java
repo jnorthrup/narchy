@@ -105,10 +105,9 @@ public final class Netchan extends SV_MAIN {
      * 
      */
     public static void Netchan_Init() {
-        long port;
 
-        
-        port = Timer.Milliseconds() & 0xffff;
+
+        long port = Timer.Milliseconds() & 0xffff;
 
         showpackets = Cvar.Get("showpackets", "0", 0);
         showdrop = Cvar.Get("showdrop", "0", 0);
@@ -163,11 +162,9 @@ public final class Netchan extends SV_MAIN {
 
     
     public static boolean Netchan_NeedReliable(netchan_t chan) {
-        boolean send_reliable;
 
-        
 
-        send_reliable = chan.incoming_acknowledged > chan.last_reliable_sequence
+        boolean send_reliable = chan.incoming_acknowledged > chan.last_reliable_sequence
                 && chan.incoming_reliable_acknowledged != chan.reliable_sequence;
 
         
@@ -187,10 +184,8 @@ public final class Netchan extends SV_MAIN {
      * messages.
      */
     public static void Transmit(netchan_t chan, int length, byte[] data) {
-        int send_reliable;
-        int w1, w2;
 
-        
+
         if (chan.message.overflowed) {
             chan.fatal_error = true;
             Com.Printf(NET.AdrToString(chan.remote_address)
@@ -198,7 +193,7 @@ public final class Netchan extends SV_MAIN {
             return;
         }
 
-        send_reliable = Netchan_NeedReliable(chan) ? 1 : 0;
+        int send_reliable = Netchan_NeedReliable(chan) ? 1 : 0;
 
         if (chan.reliable_length == 0 && chan.message.cursize != 0) {
             System.arraycopy(chan.message_buf, 0, chan.reliable_buf, 0,
@@ -211,8 +206,8 @@ public final class Netchan extends SV_MAIN {
         
         SZ.Init(send, send_buf, send_buf.length);
 
-        w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
-        w2 = (chan.incoming_sequence & ~(1 << 31))
+        int w1 = (chan.outgoing_sequence & ~(1 << 31)) | (send_reliable << 31);
+        int w2 = (chan.incoming_sequence & ~(1 << 31))
                 | (chan.incoming_reliable_sequence << 31);
 
         chan.outgoing_sequence++;

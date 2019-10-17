@@ -273,17 +273,12 @@ public abstract class Main extends Base {
     void R_DrawSpriteModel(entity_t e) {
         float alpha = 1.0F;
 
-        qfiles.dsprframe_t frame;
-        qfiles.dsprite_t psprite;
 
-        
-        
-
-        psprite = (qfiles.dsprite_t) currentmodel.extradata;
+        qfiles.dsprite_t psprite = (qfiles.dsprite_t) currentmodel.extradata;
 
         e.frame %= psprite.numframes;
 
-        frame = psprite.frames[e.frame];
+        qfiles.dsprframe_t frame = psprite.frames[e.frame];
 
         if ((e.flags & Defines.RF_TRANSLUCENT) != 0)
             alpha = e.alpha;
@@ -602,10 +597,9 @@ public abstract class Main extends Base {
      * SignbitsForPlane
      */
     static int SignbitsForPlane(cplane_t out) {
-        
-        int bits;
+
         float[] n = out.normal;
-        bits = IntStream.range(0, 3).filter(j -> n[j] < 0).map(j -> (1 << j)).reduce(0, (a, b) -> a | b);
+        int bits = IntStream.range(0, 3).filter(j -> n[j] < 0).map(j -> (1 << j)).reduce(0, (a, b) -> a | b);
         return bits;
     }
 
@@ -1344,10 +1338,8 @@ public abstract class Main extends Base {
          ** change modes if necessary
          */
         if (gl_mode.modified || vid_fullscreen.modified) {
-            
-            cvar_t ref;
 
-            ref = Cvar.Get("vid_ref", "lwjgl", 0);
+            cvar_t ref = Cvar.Get("vid_ref", "lwjgl", 0);
             ref.modified = true;
         }
 

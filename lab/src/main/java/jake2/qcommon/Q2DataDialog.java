@@ -42,8 +42,6 @@ public class Q2DataDialog extends javax.swing.JDialog {
     private void initComponents() {
         JComponent.setDefaultLocale(Locale.US);
 
-        java.awt.GridBagConstraints gridBagConstraints;
-
         choosePanel = new javax.swing.JPanel();
         statusPanel = new JPanel();
         status = new JLabel("initializing Jake2...");
@@ -70,7 +68,7 @@ public class Q2DataDialog extends javax.swing.JDialog {
         choosePanel.setPreferredSize(new java.awt.Dimension(400, 100));
 
 
-        gridBagConstraints = new java.awt.GridBagConstraints();
+        GridBagConstraints gridBagConstraints = new GridBagConstraints();
         gridBagConstraints.gridx = 0;
         gridBagConstraints.gridy = 0;
         gridBagConstraints.gridwidth = 1;
@@ -588,9 +586,9 @@ public class Q2DataDialog extends javax.swing.JDialog {
             progress.setMaximum(100);
             progress.setStringPainted(true);
             setLayout(new GridBagLayout());
-            GridBagConstraints gridBagConstraints = new GridBagConstraints();
+            new GridBagConstraints();
 
-            gridBagConstraints = new GridBagConstraints();
+            GridBagConstraints gridBagConstraints = new GridBagConstraints();
             gridBagConstraints.gridx = 0;
             gridBagConstraints.gridy = 0;
             gridBagConstraints.gridwidth = 1;

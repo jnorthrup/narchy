@@ -87,8 +87,7 @@ public class CNFBooleanFunction implements ParameterizedFunction {
         List<List<Integer>> ys = new ArrayList<>();
 
         for (int i = 0; i < xs.size(); ++i) {
-            List<Integer> is;
-            is = new ArrayList<>(xs.get(i));
+            List<Integer> is = new ArrayList<>(xs.get(i));
             is.add(-k);
             ys.add(is);
             is = new ArrayList<>(xs.get(i));

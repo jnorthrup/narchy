@@ -811,9 +811,8 @@ public class BiquadFilter extends IIRFilter implements DataBeadReceiver {
      */
     private BiquadFilter setParams(DataAuvent paramBead) {
         if (paramBead != null) {
-            Object o;
 
-            o = paramBead.get("type");
+            Object o = paramBead.get("type");
             if (o instanceof Number) {
                 setType(((Number) o).intValue());
             } else if (o instanceof Type) {

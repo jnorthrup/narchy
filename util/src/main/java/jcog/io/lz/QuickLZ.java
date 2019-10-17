@@ -157,15 +157,14 @@ public final class QuickLZ {
 			} else {
 				fetch = fast_read_int(in, src, 3);
 
-				int o, offset2;
-				int matchlen, k, m/*, best_k = 0*/;
-				byte c;
-				int remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
+				int o;
+                int k, m/*, best_k = 0*/;
+                int remaining = (Math.min((in.length - UNCOMPRESSED_END - src + 1 - 1), 255));
 				int hash = ((fetch >>> 12) ^ fetch) & (HASH_VALUES - 1);
 
-				c = hash_counter[hash];
-				matchlen = 0;
-				offset2 = 0;
+                byte c = hash_counter[hash];
+                int matchlen = 0;
+                int offset2 = 0;
 
                 int[] hth = hashtable[hash];
 				for (k = 0; k < QLZ_POINTERS_3 && (c > k || c < 0); k++) {

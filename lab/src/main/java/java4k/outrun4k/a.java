@@ -107,7 +107,6 @@ public class a extends Applet implements Runnable {
     Graphics2D g = (Graphics2D)image.getGraphics();
     Graphics2D g2 = null;
     Graphics2D g3 = null;
-    Graphics2D g4 = null;
     ArrayList<float[]> queue = new ArrayList<float[]>();
     ArrayList[] renderList = new ArrayList[8192];
     float[][] roadInfos = new float[8192][16];
@@ -251,7 +250,7 @@ public class a extends Applet implements Runnable {
 
     
     sprites[SNOWMAN_SPRITE] = new BufferedImage(256, 256, 2);
-    g4 = (Graphics2D)sprites[SNOWMAN_SPRITE].getGraphics();
+    Graphics2D g4 = (Graphics2D) sprites[SNOWMAN_SPRITE].getGraphics();
     AffineTransform transform = g4.getTransform();
     for(x = 2; x >= 0; x--) {
       for(i = 0; i < 16; i++) {

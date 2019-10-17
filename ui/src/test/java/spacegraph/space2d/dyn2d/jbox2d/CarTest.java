@@ -204,12 +204,11 @@ public class CarTest implements Consumer<Dynamics2D> {
       PolygonShape box = new PolygonShape();
       box.setAsBox(0.5f, 0.5f);
 
-      Body2D body = null;
-      BodyDef bd = new BodyDef();
+        BodyDef bd = new BodyDef();
       bd.type = BodyType.DYNAMIC;
 
       bd.position.set(230.0f, 0.5f);
-      body = m_world.addBody(bd);
+        Body2D body = m_world.addBody(bd);
       body.addFixture(box, 0.5f);
 
       bd.position.set(230.0f, 1.5f);

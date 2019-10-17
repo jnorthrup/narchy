@@ -163,9 +163,7 @@ public final class RuleMethodInterpreter extends BasicInterpreter {
         if (!(value instanceof InstructionGraphNode))
             throw new InvalidGrammarException(errorMessage);
 
-        InstructionGraphNode node;
-
-        node = (InstructionGraphNode) value;
+        InstructionGraphNode node = (InstructionGraphNode) value;
 
         while (true) {
             final int opcode = node.getInstruction().getOpcode();

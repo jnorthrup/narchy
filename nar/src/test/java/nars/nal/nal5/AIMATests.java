@@ -123,13 +123,11 @@ class AIMATests {
         for (int i = 0; i < time; i += metricPeriod) {
             n.run(metricPeriod);
 
-            float symConf = 0;
-
             Task y = n.belief($.the(x), i);
             if (y == null)
                 continue;
 
-            symConf = y.conf();
+            float symConf = y.conf();
             assertTrue(y.isPositive() == expcted && y.polarity() > 0.5f);
 
             evis.add(c2wSafe(symConf, 1));

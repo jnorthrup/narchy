@@ -77,13 +77,12 @@ public class RowVars {
         for (String rowvar : ar.keySet()) {
             HashSet<String> preds = ar.get(rowvar);
             for (String pred : preds) {
-                int nonRowVar;
                 int start = f.theFormula.indexOf('(' + pred);
                 int end = f.theFormula.indexOf(')', start);
                 String simpleFS = f.theFormula.substring(start, end + 1);
                 Formula simpleF = new Formula();
                 simpleF.read(simpleFS);
-                nonRowVar = (int) IntStream.range(0, simpleF.listLength()).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
+                int nonRowVar = (int) IntStream.range(0, simpleF.listLength()).filter(i -> simpleF.getArgument(i).startsWith(Formula.V_PREF)).count();
 
                 if (kb.kbCache != null && kb.kbCache.valences != null &&
                     kb.kbCache.valences.get(pred) != null) {

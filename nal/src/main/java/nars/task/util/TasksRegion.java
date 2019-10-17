@@ -122,19 +122,17 @@ public final class TasksRegion extends Longerval implements TaskRegion {
     @Override public String toString() {
 
         int decimals = 3;
-        return new StringBuilder(64)
-                .append('@')
-                .append(Tense.tStr(start, end))
-                .append('[')
-                .append(Texts.n(freqMin(), decimals))
-                .append("..")
-                .append(Texts.n(freqMax(), decimals))
-                .append(Op.VALUE_SEPARATOR)
-                .append(Texts.n(confMin(), decimals))
-                .append("..")
-                .append(Texts.n(confMax(), decimals))
-                .append(Op.TRUTH_VALUE_MARK).append(']')
-                .toString();
+        return '@' +
+                Tense.tStr(start, end) +
+                '[' +
+                Texts.n(freqMin(), decimals) +
+                ".." +
+                Texts.n(freqMax(), decimals) +
+                Op.VALUE_SEPARATOR +
+                Texts.n(confMin(), decimals) +
+                ".." +
+                Texts.n(confMax(), decimals) +
+                Op.TRUTH_VALUE_MARK + ']';
     }
 
 

@@ -117,7 +117,7 @@ public interface Truth extends Truthed {
 
     class TruthException extends RuntimeException {
         public TruthException(String reason, double value) {
-            super(new StringBuilder(64).append(reason).append(": ").append(value).toString());
+            super(reason + ": " + value);
         }
     }
 

@@ -185,19 +185,19 @@ public class MJPalette {
 	
 	
 	public void GeneratePalette(Color c1, Color c2, int iSttCnt) {
-		int r, dr, r1, r2;
-		int g, dg, g1, g2;
-		int b, db, b1, b2;
+		int r;
+		int g;
+		int b;
 		int i;
-		r1 = c1.getRed();
-		r2 = c2.getRed();
-		g1 = c1.getGreen();
-		g2 = c2.getGreen();
-		b1 = c1.getBlue();
-		b2 = c2.getBlue();
-		dr = (r2 - r1) / (iSttCnt - 1);
-		dg = (g2 - g1) / (iSttCnt - 1);
-		db = (b2 - b1) / (iSttCnt - 1);
+        int r1 = c1.getRed();
+        int r2 = c2.getRed();
+        int g1 = c1.getGreen();
+        int g2 = c2.getGreen();
+        int b1 = c1.getBlue();
+        int b2 = c2.getBlue();
+		int dr = (r2 - r1) / (iSttCnt - 1);
+		int dg = (g2 - g1) / (iSttCnt - 1);
+		int db = (b2 - b1) / (iSttCnt - 1);
 
 		
 		for (i = 1; i < iSttCnt; i++) {

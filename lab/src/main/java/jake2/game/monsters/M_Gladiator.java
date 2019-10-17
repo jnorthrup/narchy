@@ -464,12 +464,11 @@ public class M_Gladiator {
         @Override
         public boolean think(edict_t self) {
 
-            float range;
             float[] v = { 0, 0, 0 };
 
             
             Math3D.VectorSubtract(self.s.origin, self.enemy.s.origin, v);
-            range = Math3D.VectorLength(v);
+            float range = Math3D.VectorLength(v);
             if (range <= (Defines.MELEE_DISTANCE + 32))
                 return true;
 

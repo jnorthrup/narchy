@@ -72,16 +72,15 @@ public class NEWTWin {
     public static String getModeString(MonitorMode mm) {
         final SurfaceSize ss = mm.getSurfaceSize();
         final DimensionImmutable m = ss.getResolution();
-        final StringBuilder sb = new StringBuilder();
-        sb.append(m.getWidth());
-        sb.append('x');
-        sb.append(m.getHeight());
-        sb.append('x');
-        sb.append(ss.getBitsPerPixel());
-        sb.append('@');
-        sb.append(mm.getRefreshRate());
-        sb.append("Hz");
-        return sb.toString();
+        String sb = String.valueOf(m.getWidth()) +
+                'x' +
+                m.getHeight() +
+                'x' +
+                ss.getBitsPerPixel() +
+                '@' +
+                mm.getRefreshRate() +
+                "Hz";
+        return sb;
     }
 
     /**

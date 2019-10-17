@@ -149,8 +149,7 @@ public class Point2PointConstraint extends TypedConstraint {
 		v3 vel = new v3();
 		vel.sub(vel1, vel2);
 
-		float rel_vel;
-		rel_vel = normal.dot(vel);
+        float rel_vel = normal.dot(vel);
 
 
 		for (int i = 0; i < 3; i++) {

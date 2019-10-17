@@ -301,11 +301,10 @@ public class PolygonShape extends Shape {
 
     @Override
     public final boolean testPoint(final Transform xf, final v2 p) {
-        float tempx, tempy;
         final Rot xfq = xf;
 
-        tempx = p.x - xf.pos.x;
-        tempy = p.y - xf.pos.y;
+        float tempx = p.x - xf.pos.x;
+        float tempy = p.y - xf.pos.y;
         final float pLocalx = xfq.c * tempx + xfq.s * tempy;
         final float pLocaly = -xfq.s * tempx + xfq.c * tempy;
 
@@ -444,11 +443,10 @@ public class PolygonShape extends Shape {
         final float xfqc = xf.c;
         final float xfqs = xf.s;
         final v2 xfp = xf.pos;
-        float tempx, tempy;
 
 
-        tempx = input.p1.x - xfp.x;
-        tempy = input.p1.y - xfp.y;
+        float tempx = input.p1.x - xfp.x;
+        float tempy = input.p1.y - xfp.y;
         final float p1x = xfqc * tempx + xfqs * tempy;
         final float p1y = -xfqs * tempx + xfqc * tempy;
 

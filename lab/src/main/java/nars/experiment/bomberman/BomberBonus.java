@@ -37,8 +37,7 @@ public class BomberBonus extends Thread {
         /** if java runtime is Java 2 */
         if (Main.J2) {
             /** create the rendering hints for better graphics output */
-            RenderingHints h = null;
-            h = new RenderingHints(null);
+            RenderingHints h = new RenderingHints(null);
             h.put(RenderingHints.KEY_TEXT_ANTIALIASING,
                     RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
             h.put(RenderingHints.KEY_FRACTIONALMETRICS,

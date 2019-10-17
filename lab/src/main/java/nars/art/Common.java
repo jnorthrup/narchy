@@ -18,8 +18,8 @@ public enum Common
              * returns -1 if it was not found
              */
     public static int instanceInSequence(ArrayList<ArrayList<Integer>> prototypesSequence, int instanceI) {
-        int i, j, prototypeNumber;
-        prototypeNumber = -1;
+        int i, j;
+        int prototypeNumber = -1;
         for (i = 0;i < prototypesSequence.size();i++)
         {
             for (j = 0;j < prototypesSequence.get(i).size();j++)
@@ -50,8 +50,8 @@ public enum Common
              * It is used by ART 1, ART 2A and ART 2A-C algorithms
              **/
     public static int findItem(ArrayList<DynamicVector<Float>> samples, DynamicVector<Float> instance, boolean mustFind) {
-        int index, i;
-        index = -1;
+        int i;
+        int index = -1;
         for (i = 0;i < samples.size();i++)
         {
             if (samples.get(i).equals(instance))

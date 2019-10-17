@@ -74,8 +74,7 @@ public class PrologLibraries {
         }
 
         try {
-            PrologLib lib = null;
-            lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
+            PrologLib lib = (PrologLib) Class.forName(className).getConstructor().newInstance();
             bindLibrary(lib);
             prolog.notifyLoadedLibrary(new LibraryEvent(prolog, className));
             return lib;

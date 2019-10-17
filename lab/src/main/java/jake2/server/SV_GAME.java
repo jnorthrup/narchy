@@ -39,17 +39,15 @@ public class SV_GAME {
      * Sends the contents of the mutlicast buffer to a single client.
      */
     public static void PF_Unicast(edict_t ent, boolean reliable) {
-        int p;
-        client_t client;
 
         if (ent == null)
             return;
 
-        p = ent.index;
+        int p = ent.index;
         if (p < 1 || p > SV_MAIN.maxclients.value)
             return;
 
-        client = SV_INIT.svs.clients[p - 1];
+        client_t client = SV_INIT.svs.clients[p - 1];
 
         if (reliable)
             SZ.Write(client.netchan.message, SV_INIT.sv.multicast.data,
@@ -105,9 +103,8 @@ public class SV_GAME {
      * centerprint to a single client.
      */
     public static void PF_centerprintf(edict_t ent, String fmt) {
-        int n;
 
-        n = ent.index;
+        int n = ent.index;
         if (n < 1 || n > SV_MAIN.maxclients.value)
             return; 
 
@@ -135,13 +132,12 @@ public class SV_GAME {
      * Also sets mins and maxs for inline bmodels.
      */
     public static void PF_setmodel(edict_t ent, String name) {
-        int i;
         cmodel_t mod;
 
         if (name == null)
             Com.Error(Defines.ERR_DROP, "PF_setmodel: NULL");
 
-        i = SV_INIT.SV_ModelIndex(name);
+        int i = SV_INIT.SV_ModelIndex(name);
 
         ent.s.modelindex = i;
 
@@ -221,19 +217,15 @@ public class SV_GAME {
      * Also checks portalareas so that doors block sight.
      */
     public static boolean PF_inPVS(float[] p1, float[] p2) {
-        int leafnum;
-        int cluster;
-        int area1, area2;
-        byte[] mask;
 
-        leafnum = CM.CM_PointLeafnum(p1);
-        cluster = CM.CM_LeafCluster(leafnum);
-        area1 = CM.CM_LeafArea(leafnum);
-        mask = CM.CM_ClusterPVS(cluster);
+        int leafnum = CM.CM_PointLeafnum(p1);
+        int cluster = CM.CM_LeafCluster(leafnum);
+        int area1 = CM.CM_LeafArea(leafnum);
+        byte[] mask = CM.CM_ClusterPVS(cluster);
 
         leafnum = CM.CM_PointLeafnum(p2);
         cluster = CM.CM_LeafCluster(leafnum);
-        area2 = CM.CM_LeafArea(leafnum);
+        int area2 = CM.CM_LeafArea(leafnum);
 
         
         if (cluster == -1)
@@ -251,19 +243,15 @@ public class SV_GAME {
      * Also checks portalareas so that doors block sound.
      */
     public static boolean PF_inPHS(float[] p1, float[] p2) {
-        int leafnum;
-        int cluster;
-        int area1, area2;
-        byte[] mask;
 
-        leafnum = CM.CM_PointLeafnum(p1);
-        cluster = CM.CM_LeafCluster(leafnum);
-        area1 = CM.CM_LeafArea(leafnum);
-        mask = CM.CM_ClusterPHS(cluster);
+        int leafnum = CM.CM_PointLeafnum(p1);
+        int cluster = CM.CM_LeafCluster(leafnum);
+        int area1 = CM.CM_LeafArea(leafnum);
+        byte[] mask = CM.CM_ClusterPHS(cluster);
 
         leafnum = CM.CM_PointLeafnum(p2);
         cluster = CM.CM_LeafCluster(leafnum);
-        area2 = CM.CM_LeafArea(leafnum);
+        int area2 = CM.CM_LeafArea(leafnum);
 
         
         if (cluster == -1)

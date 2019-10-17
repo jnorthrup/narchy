@@ -47,10 +47,8 @@ public class CL_view {
      * =================
      */
     static void PrepRefresh() {
-        String mapname;
         int i;
         String name;
-        float rotate;
         float[] axis = new float[3];
 
         if ((i = Globals.cl.configstrings[Defines.CS_MODELS + 1].length()) == 0)
@@ -59,8 +57,8 @@ public class CL_view {
         SCR.AddDirtyPoint(0, 0);
         SCR.AddDirtyPoint(Globals.viddef.getWidth() - 1, Globals.viddef.getHeight() - 1);
 
-        
-        mapname = Globals.cl.configstrings[Defines.CS_MODELS + 1].substring(5,
+
+        String mapname = Globals.cl.configstrings[Defines.CS_MODELS + 1].substring(5,
                 i - 4); 
         
 
@@ -140,7 +138,7 @@ public class CL_view {
         
         Com.Printf("sky\r");
         SCR.UpdateScreen();
-        rotate = Float
+        float rotate = Float
                 .parseFloat(Globals.cl.configstrings[Defines.CS_SKYROTATE]);
         StringTokenizer st = new StringTokenizer(
                 Globals.cl.configstrings[Defines.CS_SKYAXIS]);
@@ -164,7 +162,6 @@ public class CL_view {
 
     public static void AddNetgraph() {
         int i;
-        int in;
         int ping;
 
         
@@ -178,8 +175,8 @@ public class CL_view {
         for (i = 0; i < Globals.cl.surpressCount; i++)
             SCR.DebugGraph(30, 0xdf);
 
-        
-        in = Globals.cls.netchan.incoming_acknowledged
+
+        int in = Globals.cls.netchan.incoming_acknowledged
                 & (Defines.CMD_BACKUP - 1);
         ping = Globals.cls.realtime - Globals.cl.cmd_time[in];
         ping /= 30;

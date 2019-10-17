@@ -44,9 +44,8 @@ public class ShellUtils {
 
     public static String read(InputStream input) {
         try {
-            String result;
             BufferedReader br = new BufferedReader(new InputStreamReader(input));
-            result = br.lines().map(line -> line + '\n').collect(Collectors.joining());
+            String result = br.lines().map(line -> line + '\n').collect(Collectors.joining());
             br.close();
             return result;
         } catch (IOException e) {

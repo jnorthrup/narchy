@@ -2058,9 +2058,8 @@ public class ParticleSystem {
                     v2 ap = system.m_positionBuffer.data[a];
                     if (aabblowerBoundx <= ap.x && ap.x <= aabbupperBoundx && aabblowerBoundy <= ap.y
                             && ap.y <= aabbupperBoundy) {
-                        float d;
                         final v2 n = tempVec;
-                        d = fixture.distance(ap, childIndex, n);
+                        float d = fixture.distance(ap, childIndex, n);
                         if (d < system.m_particleDiameter) {
                             float invAm =
                                     (system.m_flagsBuffer.data[a] & ParticleType.b2_wallParticle) != 0 ? 0 : system

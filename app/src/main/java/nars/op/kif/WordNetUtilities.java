@@ -576,8 +576,7 @@ public class WordNetUtilities {
             for (Object rel : rels) {
                 AVPair avp = (AVPair) rel;
                 if ("hypernym".equals(avp.attribute) || "instance hypernym".equals(avp.attribute)) {
-                    String mappingChar;
-                    mappingChar = "instance hypernym".equals(avp.attribute) ? "@" : "+";
+                    String mappingChar = "instance hypernym".equals(avp.attribute) ? "@" : "+";
                     String targetSynset = avp.value;
                     String targetSUMO = WordNet.wn.getSUMOMapping(targetSynset);
                     if (targetSUMO != null && !targetSUMO.isEmpty()) {

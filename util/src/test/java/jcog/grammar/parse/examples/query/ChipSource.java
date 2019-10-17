@@ -84,14 +84,10 @@ public class ChipSource implements AxiomSource {
 	 */
 	public static Program program() {
 		Program p = new Program();
-		Dictionary d;
-		Vector v;
-		Enumeration e;
 
-		
 
-		d = ChipBase.chip();
-		e = d.elements();
+        Dictionary d = ChipBase.chip();
+        Enumeration e = d.elements();
 		while (e.hasMoreElements()) {
 			p.addAxiom(fact((Chip) e.nextElement()));
 		}
@@ -104,9 +100,8 @@ public class ChipSource implements AxiomSource {
 			p.addAxiom(fact((Customer) e.nextElement()));
 		}
 
-		
 
-		v = ChipBase.order();
+        Vector v = ChipBase.order();
 		e = v.elements();
 		while (e.hasMoreElements()) {
 			p.addAxiom(fact((Order) e.nextElement()));

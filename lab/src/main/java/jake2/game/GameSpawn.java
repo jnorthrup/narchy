@@ -377,10 +377,9 @@ public class GameSpawn {
 
     static void ED_ParseEdict(Com.ParseHelp ph, edict_t ent) {
 
-        boolean init;
         String keyname;
         String com_token;
-        init = false;
+        boolean init = false;
 
         GameBase.st = new spawn_temp_t();
         while (true) {
@@ -432,9 +431,8 @@ public class GameSpawn {
     static void G_FindTeams() {
         edict_t e, e2, chain;
         int i, j;
-        int c, c2;
-        c = 0;
-        c2 = 0;
+        int c = 0;
+        int c2 = 0;
         for (i = 1; i < GameBase.num_edicts; i++) {
             e = GameBase.g_edicts[i];
 
@@ -480,13 +478,10 @@ public class GameSpawn {
             String spawnpoint) {
         
         Com.dprintln("SpawnEntities(), mapname=" + mapname);
-        edict_t ent;
-        int inhibit;
         String com_token;
         int i;
-        float skill_level;
-        
-        skill_level = (float) Math.floor(GameBase.skill.value);
+
+        float skill_level = (float) Math.floor(GameBase.skill.value);
 
         if (skill_level < 0)
             skill_level = 0;
@@ -509,8 +504,8 @@ public class GameSpawn {
         for (i = 0; i < GameBase.game.maxclients; i++)
             GameBase.g_edicts[i + 1].client = GameBase.game.clients[i];
 
-        ent = null;
-        inhibit = 0; 
+        edict_t ent = null;
+        int inhibit = 0;
 
         Com.ParseHelp ph = new Com.ParseHelp(entities);
 

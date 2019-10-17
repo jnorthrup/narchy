@@ -41,8 +41,7 @@ public class Configurator {
 
     public static Configuration configure(BufferedReader r) throws IOException {
 
-        String sb;
-        sb = r.lines().collect(Collectors.joining());
+        String sb = r.lines().collect(Collectors.joining());
 
         String json = sb;
         return configureFromJson(json);

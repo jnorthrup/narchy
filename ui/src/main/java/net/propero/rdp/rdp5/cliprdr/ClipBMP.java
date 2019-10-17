@@ -509,7 +509,6 @@ public class ClipBMP extends Component {
      *
      */
     private boolean convertImage(Image parImage, int parWidth, int parHeight) {
-        int pad;
         bitmap = new int[parWidth * parHeight];
         PixelGrabber pg = new PixelGrabber(parImage, 0, 0, parWidth, parHeight,
                 bitmap, 0, parWidth);
@@ -519,7 +518,7 @@ public class ClipBMP extends Component {
             e.printStackTrace();
             return (false);
         }
-        pad = (4 - ((parWidth * 3) % 4)) * parHeight;
+        int pad = (4 - ((parWidth * 3) % 4)) * parHeight;
         biSizeImage = ((parWidth * parHeight) * 3) + pad;
         bfSize = biSizeImage + BITMAPFILEHEADER_SIZE + BITMAPINFOHEADER_SIZE;
         biWidth = parWidth;
@@ -534,24 +533,18 @@ public class ClipBMP extends Component {
      * Each scan line must be padded to an even 4-byte boundary.
      */
     private void writeBitmap() {
-        int size;
         int value;
         int j;
         int i;
-        int rowCount;
-        int rowIndex;
-        int lastRowIndex;
-        int pad;
-        int padCount;
         byte[] rgb = new byte[3];
-        size = (biWidth * biHeight) - 1;
-        pad = 4 - ((biWidth * 3) % 4);
+        int size = (biWidth * biHeight) - 1;
+        int pad = 4 - ((biWidth * 3) % 4);
         if (pad == 4) 
-            pad = 0; 
-        rowCount = 1;
-        padCount = 0;
-        rowIndex = size - biWidth;
-        lastRowIndex = rowIndex;
+            pad = 0;
+        int rowCount = 1;
+        int padCount = 0;
+        int rowIndex = size - biWidth;
+        int lastRowIndex = rowIndex;
         try {
             for (j = 0; j < size; j++) {
                 value = bitmap[rowIndex];

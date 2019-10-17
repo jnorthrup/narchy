@@ -79,9 +79,7 @@ public class SingletonHM {
             NodeHM b = new NodeHM(i2);
             NodeHM c = new NodeHM(i3);
 
-            Diagonal e;
-
-            e = table.get(i1, i2);
+            Diagonal e = table.get(i1, i2);
             if (e == null) {
                 e = new Diagonal();
                 e.add(i, a, b);

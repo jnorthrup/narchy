@@ -202,11 +202,9 @@ public class Monster {
 
         
         if (self.target != null) {
-            boolean notcombat;
-            boolean fixup;
             edict_t target = null;
-            notcombat = false;
-            fixup = false;
+            boolean notcombat = false;
+            boolean fixup = false;
             /*
              * if (true) { Com.Printf("all entities:\n");
              * 

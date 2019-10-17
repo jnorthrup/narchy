@@ -45,11 +45,10 @@ public class MetalBloomFilter<E> {
     }
 
     public int[] hash(E element) {
-        int[] hashes;
 
         int h1 = hasher.hash1(element);
         int h2 = hasher.hash2(element);
-        hashes = IntStream.range(0, numberOfHashes).map(i -> Math.abs(((h1 + i * h2) % numberOfCells))).toArray();
+        int[] hashes = IntStream.range(0, numberOfHashes).map(i -> Math.abs(((h1 + i * h2) % numberOfCells))).toArray();
 
         return hashes;
     }

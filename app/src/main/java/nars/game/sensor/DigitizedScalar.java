@@ -88,21 +88,16 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
 //        return i == 0 ? v : 1 - v;
 //    };
 
+    //        public final float defaultTruth() {
+//            return 0;
+//        }
     /**
      * hard
      */
-    public final static ScalarEncoder Needle = new ScalarEncoder() {
-
-//        public final float defaultTruth() {
-//            return 0;
-//        }
-
-        @Override
-        public float truth(float v, int i, int indices) {
-            float vv = v * indices;
-            int which = (int) Math.floor(vv);
-            return i == which ? 1 : 0;
-        }
+    public final static ScalarEncoder Needle = (v, i, indices) -> {
+        float vv = v * indices;
+        int which = (int) Math.floor(vv);
+        return i == which ? 1 : 0;
     };
 
     /**
@@ -113,15 +108,11 @@ public class DigitizedScalar extends DemultiplexedScalarSensor {
      * + + +    + + +     + + +
      * TODO need to analyze the interaction of the produced frequency values being reported by all concepts.
      */
-    public final static ScalarEncoder FuzzyNeedle = new ScalarEncoder() {
+    public final static ScalarEncoder FuzzyNeedle = (v, i, indices) -> {
 
-        @Override
-        public float truth(float v, int i, int indices) {
+        float dr = 1f / (indices - 1);
 
-            float dr = 1f / (indices - 1);
-
-            return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
-        }
+        return Math.max(0, (1f - Math.abs((i * dr) - v) / dr));
     };
 
 

@@ -55,17 +55,15 @@ public class GameItems {
         @Override
         public boolean think(edict_t ent) {
             if (ent.team != null) {
-                edict_t master;
                 int count;
-                int choice = 0;
-    
-                master = ent.teammaster;
+
+                edict_t master = ent.teammaster;
     
                 
                 for (count = 0, ent = master; ent != null; ent = ent.chain, count++)
                     ;
-    
-                choice = Lib.rand() % count;
+
+                int choice = Lib.rand() % count;
     
                 for (count = 0, ent = master; count < choice; ent = ent.chain, count++)
                     ;
@@ -86,8 +84,7 @@ public class GameItems {
         public String getID() { return "pickup_pack";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-    
-            gitem_t item;
+
             int index;
     
             if (other.client.pers.max_bullets < 300)
@@ -102,8 +99,8 @@ public class GameItems {
                 other.client.pers.max_cells = 300;
             if (other.client.pers.max_slugs < 100)
                 other.client.pers.max_slugs = 100;
-    
-            item = FindItem("Bullets");
+
+            gitem_t item = FindItem("Bullets");
             if (item != null) {
                 index = ITEM_INDEX(item);
                 other.client.pers.inventory[index] += item.quantity;
@@ -415,11 +412,9 @@ public class GameItems {
         public String getID() { return "pickup_ammo";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            int oldcount;
             int count;
-            boolean weapon;
-    
-            weapon = (ent.item.flags & Defines.IT_WEAPON) != 0;
+
+            boolean weapon = (ent.item.flags & Defines.IT_WEAPON) != 0;
             if ((weapon)
                     && ((int) GameBase.dmflags.value & Defines.DF_INFINITE_AMMO) != 0)
                 count = 1000;
@@ -427,8 +422,8 @@ public class GameItems {
                 count = ent.count;
             else
                 count = ent.item.quantity;
-    
-            oldcount = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+
+            int oldcount = other.client.pers.inventory[ITEM_INDEX(ent.item)];
     
             if (!Add_Ammo(other, ent.item, count))
                 return false;
@@ -450,17 +445,15 @@ public class GameItems {
         public String getID() { return "pickup_armor";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            int old_armor_index;
             gitem_armor_t oldinfo;
-            gitem_armor_t newinfo;
             int newcount;
             float salvage;
             int salvagecount;
-    
-            
-            newinfo = ent.item.info;
-    
-            old_armor_index = ArmorIndex(other);
+
+
+            gitem_armor_t newinfo = ent.item.info;
+
+            int old_armor_index = ArmorIndex(other);
     
             
             if (ent.item.tag == Defines.ARMOR_SHARD) {
@@ -535,10 +528,8 @@ public class GameItems {
         public String getID() { return "pickup_powerarmor";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-    
-            int quantity;
-    
-            quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+
+            int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
     
             other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
@@ -557,9 +548,8 @@ public class GameItems {
         public String getID() { return "pickup_powerup";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            int quantity;
-    
-            quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+
+            int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
             if ((GameBase.skill.value == 1 && quantity >= 2)
                     || (GameBase.skill.value >= 2 && quantity >= 1))
                 return false;
@@ -625,7 +615,6 @@ public class GameItems {
         public String getID() { return "pickup_bandolier";}
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            gitem_t item;
             int index;
     
             if (other.client.pers.max_bullets < 250)
@@ -636,8 +625,8 @@ public class GameItems {
                 other.client.pers.max_cells = 250;
             if (other.client.pers.max_slugs < 75)
                 other.client.pers.max_slugs = 75;
-    
-            item = FindItem("Bullets");
+
+            gitem_t item = FindItem("Bullets");
             if (item != null) {
                 index = ITEM_INDEX(item);
                 other.client.pers.inventory[index] += item.quantity;
@@ -666,11 +655,9 @@ public class GameItems {
         public String getID() { return "drop_ammo";}
         @Override
         public void drop(edict_t ent, gitem_t item) {
-            edict_t dropped;
-            int index;
-    
-            index = ITEM_INDEX(item);
-            dropped = Drop_Item(ent, item);
+
+            int index = ITEM_INDEX(item);
+            edict_t dropped = Drop_Item(ent, item);
             if (ent.client.pers.inventory[index] >= item.quantity)
                 dropped.count = item.quantity;
             else
@@ -718,7 +705,6 @@ public class GameItems {
         public String getID() { return "drop_to_floor";}
         @Override
         public boolean think(edict_t ent) {
-            trace_t tr;
             float[] dest = { 0, 0, 0 };
     
             
@@ -740,8 +726,8 @@ public class GameItems {
 
             float[] v = {0, 0, -128};
             Math3D.VectorAdd(ent.s.origin, v, dest);
-    
-            tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
+
+            trace_t tr = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, dest, ent,
                     Defines.MASK_SOLID);
             if (tr.startsolid) {
                 game_import_t.dprintf("droptofloor: " + ent.classname
@@ -882,12 +868,11 @@ public class GameItems {
     }
 
     static edict_t Drop_Item(edict_t ent, gitem_t item) {
-        edict_t dropped;
         float[] forward = { 0, 0, 0 };
         float[] right = { 0, 0, 0 };
         float[] offset = { 0, 0, 0 };
-    
-        dropped = GameUtil.G_Spawn();
+
+        edict_t dropped = GameUtil.G_Spawn();
     
         dropped.classname = item.classname;
         dropped.item = item;
@@ -905,13 +890,12 @@ public class GameItems {
         dropped.owner = ent;
     
         if (ent.client != null) {
-            trace_t trace;
-    
+
             Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
             Math3D.VectorSet(offset, 24, 0, -16);
             Math3D.G_ProjectSource(ent.s.origin, offset, forward, right,
                     dropped.s.origin);
-            trace = game_import_t.trace(ent.s.origin, dropped.mins, dropped.maxs,
+            trace_t trace = game_import_t.trace(ent.s.origin, dropped.mins, dropped.maxs,
                     dropped.s.origin, ent, Defines.CONTENTS_SOLID);
             Math3D.VectorCopy(trace.endpos, dropped.s.origin);
         } else {
@@ -978,9 +962,8 @@ public class GameItems {
     }
 
     public static boolean Pickup_PowerArmor(edict_t ent, edict_t other) {
-        int quantity;
-    
-        quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
+
+        int quantity = other.client.pers.inventory[ITEM_INDEX(ent.item)];
     
         other.client.pers.inventory[ITEM_INDEX(ent.item)]++;
     
@@ -996,7 +979,6 @@ public class GameItems {
     }
 
     public static boolean Add_Ammo(edict_t ent, gitem_t item, int count) {
-        int index;
         int max;
     
         if (null == ent.client)
@@ -1016,8 +998,8 @@ public class GameItems {
             max = ent.client.pers.max_slugs;
         else
             return false;
-    
-        index = ITEM_INDEX(item);
+
+        int index = ITEM_INDEX(item);
     
         if (ent.client.pers.inventory[index] == max)
             return false;
@@ -1056,11 +1038,10 @@ public class GameItems {
     }
 
     public static void SelectNextItem(edict_t ent, int itflags) {
-        gclient_t cl;
         int i, index;
         gitem_t it;
-    
-        cl = ent.client;
+
+        gclient_t cl = ent.client;
     
         if (cl.chase_target != null) {
             GameChase.ChaseNext(ent);
@@ -1086,11 +1067,10 @@ public class GameItems {
     }
 
     public static void SelectPrevItem(edict_t ent, int itflags) {
-        gclient_t cl;
         int i, index;
         gitem_t it;
-    
-        cl = ent.client;
+
+        gclient_t cl = ent.client;
     
         if (cl.chase_target != null) {
             GameChase.ChasePrev(ent);
@@ -1124,7 +1104,6 @@ public class GameItems {
      * ===============
      */
     public static void PrecacheItem(gitem_t it) {
-        String s;
         String data;
         int len;
         gitem_t ammo;
@@ -1150,9 +1129,9 @@ public class GameItems {
             if (ammo != it)
                 PrecacheItem(ammo);
         }
-    
-        
-        s = it.precaches;
+
+
+        String s = it.precaches;
         if (s == null || s.length() != 0)
             return;
     
@@ -1325,17 +1304,16 @@ public class GameItems {
      */
     public static void Touch_Item(edict_t ent, edict_t other, cplane_t plane,
             csurface_t surf) {
-        boolean taken;
 
-        
+
         if (other.client == null || ent.item == null)
             return;
         if (other.health < 1)
             return; 
         if (ent.item.pickup == null)
-            return; 
-    
-        taken = ent.item.pickup.interact(ent, other);
+            return;
+
+        boolean taken = ent.item.pickup.interact(ent, other);
     
         if (taken) {
             

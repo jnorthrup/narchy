@@ -37,27 +37,15 @@ public class Demos extends javax.swing.JFrame {
         getContentPane().setLayout(new java.awt.GridLayout(0, 1));
 
         jButton1.setText("Function Approximation 1D");
-        jButton1.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton1ActionPerformed(evt);
-            }
-        });
+        jButton1.addActionListener(this::jButton1ActionPerformed);
         getContentPane().add(jButton1);
 
         jButton2.setText("Function Approximation 2D");
-        jButton2.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton2ActionPerformed(evt);
-            }
-        });
+        jButton2.addActionListener(this::jButton2ActionPerformed);
         getContentPane().add(jButton2);
 
         jButton3.setText("Reinforcement Learning");
-        jButton3.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                jButton3ActionPerformed(evt);
-            }
-        });
+        jButton3.addActionListener(this::jButton3ActionPerformed);
         getContentPane().add(jButton3);
 
         pack();
@@ -82,11 +70,7 @@ public class Demos extends javax.swing.JFrame {
 
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-                new Demos().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new Demos().setVisible(true));
     }
 
     

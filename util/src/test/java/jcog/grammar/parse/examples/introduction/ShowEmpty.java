@@ -25,17 +25,15 @@ public class ShowEmpty {
 	 */
 	public static void main(String args[]) {
 
-		Parser empty, commaTerm, actualList, contents, list;
+        Parser empty = new Empty();
 
-		empty = new Empty();
+        Parser commaTerm = new Seq().get(new Symbol(',').ok()).get(new Word());
 
-		commaTerm = new Seq().get(new Symbol(',').ok()).get(new Word());
+        Parser actualList = new Seq().get(new Word()).get(new Repetition(commaTerm));
 
-		actualList = new Seq().get(new Word()).get(new Repetition(commaTerm));
+        Parser contents = new Alternation().get(empty).get(actualList);
 
-		contents = new Alternation().get(empty).get(actualList);
-
-		list = new Seq().get(new Symbol('[').ok()).get(contents).get(new Symbol(']').ok());
+        Parser list = new Seq().get(new Symbol('[').ok()).get(contents).get(new Symbol(']').ok());
 
 		String test[] = new String[] { "[die_bonder_2, oven_7, wire_bonder_3, mold_1]", "[]", "[mold_1]" };
 		for (int i = 0; i < test.length; i++) {

@@ -662,8 +662,6 @@ public class M_Infantry {
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
 
-            int n;
-
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
 
@@ -673,9 +671,9 @@ public class M_Infantry {
             self.pain_debounce_time = GameBase.level.time + 3;
 
             if (GameBase.skill.value == 3)
-                return; 
+                return;
 
-            n = Lib.rand() % 2;
+            int n = Lib.rand() % 2;
             if (n == 0) {
                 self.monsterinfo.currentmove = infantry_move_pain1;
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
@@ -966,11 +964,10 @@ public class M_Infantry {
         public String getID() { return "infantry_cock_gun"; }
         @Override
         public boolean think(edict_t self) {
-            int n;
 
             game_import_t.sound(self, Defines.CHAN_WEAPON, sound_weapon_cock, 1,
                     Defines.ATTN_NORM, 0);
-            n = (Lib.rand() & 15) + 3 + 7;
+            int n = (Lib.rand() & 15) + 3 + 7;
             self.monsterinfo.pausetime = GameBase.level.time + n
                     * Defines.FRAMETIME;
             return true;

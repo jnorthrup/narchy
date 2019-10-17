@@ -167,15 +167,12 @@ public class PrimitiveTriangle {
 
 		OArrayList<v3> clipped_points = tmpVecList3;
 
-		int clipped_count;
-		
-		
 
-		TriangleContact contacts1 = new TriangleContact();
+        TriangleContact contacts1 = new TriangleContact();
 
 		contacts1.separating_normal.set(plane);
 
-		clipped_count = clip_triangle(other, clipped_points);
+        int clipped_count = clip_triangle(other, clipped_points);
 
 		if (clipped_count == 0) {
 			return false; 

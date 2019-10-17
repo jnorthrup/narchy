@@ -48,10 +48,10 @@ public class Windo extends MutableUnitContainer {
     public Surface finger(Finger finger) {
 
 
-        boolean unDrag, canDrag = finger.pressed(DRAG_BUTTON);
+        boolean canDrag = finger.pressed(DRAG_BUTTON);
 
         Dragging current = this.dragMode;
-        unDrag = (current != null && !current.active());
+        boolean unDrag = (current != null && !current.active());
 
         Surface other = super.finger(finger);
 

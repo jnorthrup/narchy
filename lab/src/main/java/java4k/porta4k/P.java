@@ -576,14 +576,13 @@ public class P extends GamePanel {
 
 						final int line = (int) intersect[LINE_INDEX];
 						if ((int) level[line + DEAD] + (int) level[line + DIE] == 0) {
-							float x1, y1, x2, y2;
-							final float dx = level[line + DX] * HALF_PORTAL_WIDTH;
+                            final float dx = level[line + DX] * HALF_PORTAL_WIDTH;
 							final float dy = level[line + DY] * HALF_PORTAL_WIDTH;
 
-							x1 = intersect[X] - dx;
-							y1 = intersect[Y] - dy;
-							x2 = intersect[X] + dx;
-							y2 = intersect[Y] + dy;
+                            float x1 = intersect[X] - dx;
+                            float y1 = intersect[Y] - dy;
+                            float x2 = intersect[X] + dx;
+                            float y2 = intersect[Y] + dy;
 
 							if (intersect[LINE_T] * level[line + LENGTH] < HALF_PORTAL_WIDTH) {
 								x1 = level[line + X];

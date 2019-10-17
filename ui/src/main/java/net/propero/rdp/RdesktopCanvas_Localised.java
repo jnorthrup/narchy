@@ -53,9 +53,7 @@ public class RdesktopCanvas_Localised extends RdesktopCanvas {
         if (Options.server_bpp == 8)
             return;
 
-        BufferedImage img = null;
-
-        img = new BufferedImage(image.getWidth(null), image.getHeight(null),
+        BufferedImage img = new BufferedImage(image.getWidth(null), image.getHeight(null),
                 BufferedImage.TYPE_INT_RGB);
         Graphics g = img.getGraphics();
         g.drawImage(image, 0, 0, null);

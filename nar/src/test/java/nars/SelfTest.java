@@ -216,15 +216,14 @@ public class SelfTest {
                 return;
 
             if (src instanceof MethodSource) {
-                String pk, cl, me;
                 MethodSource m = (MethodSource)src;
-                cl = //ClassName.fromString(m.getClassName()).getNameWithoutPackage().toString();
-                        m.getClassName();
+                //ClassName.fromString(m.getClassName()).getNameWithoutPackage().toString();
+                String cl = m.getClassName();
 
                 assert(!cl.isEmpty());
-                pk = Reflection.getPackageName(m.getClassName());
+                String pk = Reflection.getPackageName(m.getClassName());
                 assert(!pk.isEmpty());
-                me = m.getMethodName() +
+                String me = m.getMethodName() +
                         (!m.getMethodParameterTypes().isEmpty() ? ('(' + id.getDisplayName() + ')') : "");
                 assert(!me.isEmpty());
                 out.add(pk, cl, me, startUnixTime, success, error, wallTimeNS);
@@ -386,13 +385,10 @@ public class SelfTest {
             rn.setProp("debug", "true");
 
 
-            DataTable s = cloud.node(/*"**"*/ "eus").exec(new Callable<>() {
-                @Override
-                public DataTable call() {
+            DataTable s = cloud.node(/*"**"*/ "eus").exec(() -> {
 
-                    //return new TestServer("nars.nal.nal1").unitTestsByPackage();
-                    throw new TODO();
-                }
+                //return new TestServer("nars.nal.nal1").unitTestsByPackage();
+                throw new TODO();
             });
 
             s.write().csv(System.out);

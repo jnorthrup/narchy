@@ -419,10 +419,9 @@ public class StringUtil {
      */
     public static String removePunctuation(String sentence) {
 
-        Matcher m = null;
         if (StringUtil.emptyString(sentence))
             return sentence;
-        m = Pattern.compile("(\\w)'re").matcher(sentence);
+        Matcher m = Pattern.compile("(\\w)'re").matcher(sentence);
         
         while (m.find()) {
             

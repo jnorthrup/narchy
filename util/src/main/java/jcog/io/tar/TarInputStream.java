@@ -131,9 +131,8 @@ public class TarInputStream extends FilterInputStream {
 	public TarEntry getNextEntry() throws IOException {
 		closeCurrentEntry();
 
-		byte[] header, theader;
-		header = new byte[TarConstants.HEADER_BLOCK];
-		theader = new byte[TarConstants.HEADER_BLOCK];
+        byte[] header = new byte[TarConstants.HEADER_BLOCK];
+        byte[] theader = new byte[TarConstants.HEADER_BLOCK];
 		int tr = 0;
 
 		

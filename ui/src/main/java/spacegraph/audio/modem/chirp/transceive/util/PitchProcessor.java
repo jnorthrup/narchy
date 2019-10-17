@@ -29,13 +29,12 @@ public class PitchProcessor {
         }
 
         static PitchDetector getDetector(float var1, int var2) {
-            PitchDetector var3;
-//            if (this == MPM) {
+            //            if (this == MPM) {
 //                var3 = new McLeodPitchMethod(var1, var2);
 //            } else if (this == DYNAMIC_WAVELET) {
 //                var3 = new DynamicWavelet(var1, var2);
 //            } else if (this == FFT_YIN) {
-            var3 = new Yin(var1, var2);
+            PitchDetector var3 = new Yin(var1, var2);
 //            } else if (this == AMDF) {
 //                var3 = new AMDF(var1, var2);
 //            } else if (this == FFT_PITCH) {
@@ -135,7 +134,6 @@ public class PitchProcessor {
          */
         public PitchDetectionResult getPitch(final float[] audioBuffer) {
 
-            final int tauEstimate;
             final float pitchInHertz;
 
             // step 2
@@ -145,7 +143,7 @@ public class PitchProcessor {
             cumulativeMeanNormalizedDifference();
 
             // step 4
-            tauEstimate = absoluteThreshold();
+            final int tauEstimate = absoluteThreshold();
 
             // step 5
             if (tauEstimate != -1) {
@@ -284,10 +282,9 @@ public class PitchProcessor {
                     betterTau = x0;
                 }
             } else {
-                float s0, s1, s2;
-                s0 = yinBuffer[x0];
-                s1 = yinBuffer[tauEstimate];
-                s2 = yinBuffer[x2];
+                float s0 = yinBuffer[x0];
+                float s1 = yinBuffer[tauEstimate];
+                float s2 = yinBuffer[x2];
                 // fixed AUBIO implementation, thanks to Karl Helgason:
                 // (2.0f * s1 - s2 - s0) was incorrectly multiplied with -1
                 betterTau = tauEstimate + (s2 - s0) / (2 * (2 * s1 - s2 - s0));

@@ -31,12 +31,12 @@ public class RuleGenBin {
 	
 	
 	private String ExpandIt(String sStr) {
-		int i, j, iNum;
-		String sRetString = "";
+		int i, j;
+        String sRetString = "";
 		char cChar;
 		int iCharVal;
 
-		iNum = 0;
+        int iNum = 0;
 		sStr = sStr.trim();
 		for (i = 0; i < sStr.length(); i++) {
 			cChar = sStr.charAt(i);
@@ -64,12 +64,10 @@ public class RuleGenBin {
 	public void InitFromString(String sStr) {
 		int i, iTmp;
 		String sTok;
-		
-		StringTokenizer st;
 
-		ResetToDefaults();
+        ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken();
 			
@@ -116,9 +114,9 @@ public class RuleGenBin {
 
 	
 	private String OneToken(int iVal, int iCnt) {
-		String sChr, sRetStr;
+		String sChr;
 
-		sRetStr = "";
+        String sRetStr = "";
 		if (iCnt > 0) {
 			sChr = iVal == 0 ? "a" : "b";
 
@@ -134,11 +132,11 @@ public class RuleGenBin {
 
 	
 	private String CompactIt(String sStr) {
-		int i, iCnt, iThis, iLast;
-		String sResult = "";
+		int i, iThis;
+        String sResult = "";
 
-		iLast = -1;
-		iCnt = 0;
+        int iLast = -1;
+        int iCnt = 0;
 		for (i = 0; i < sStr.length(); i++) {
 			iThis = Integer.valueOf(sStr.substring(i, i + 1));
 			if ((iThis != 0) && (iThis != 1))
@@ -157,16 +155,14 @@ public class RuleGenBin {
 	
 	
 	public String GetAsString() {
-		String sBff, sTmp;
-		int i, ih, maxIdx;
+        int i, maxIdx;
 
 		
 		Validate();
 
-		
-		
-		ih = isHist ? iClo : 0;
-		sBff = 'C' + String.valueOf(ih);
+
+        int ih = isHist ? iClo : 0;
+        String sBff = 'C' + String.valueOf(ih);
 
 		
 		if (iNgh == MJRules.NGHTYP_NEUM) 
@@ -179,8 +175,8 @@ public class RuleGenBin {
 			maxIdx = 255;
 		}
 
-		
-		sTmp = "";
+
+        String sTmp = "";
 		for (i = 0; i < maxIdx; i++) {
 			sTmp = sTmp + (rulesS[i] ? '1' : '0');
 		}

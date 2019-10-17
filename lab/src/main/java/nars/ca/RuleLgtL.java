@@ -39,13 +39,12 @@ public class RuleLgtL {
 	
 	
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok, sBff;
+
+        String sTok, sBff;
 		int i, iTmp;
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			sTok = sTok.trim();
@@ -124,17 +123,15 @@ public class RuleLgtL {
 	
 	
 	public String GetAsString() {
-		String sBff;
-		int ih;
 
-		
-		Validate();
 
-		
-		sBff = 'R' + String.valueOf(iRng);
+        Validate();
 
-		
-		ih = isHist ? iClo : 0;
+
+        String sBff = 'R' + String.valueOf(iRng);
+
+
+        int ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
 		
@@ -155,9 +152,9 @@ public class RuleLgtL {
 	
 	
 	public void Validate() {
-		int i, iMax;
+		int i;
 
-		if (iClo < 2)
+        if (iClo < 2)
 			iClo = 2;
 		else if (iClo > MJBoard.MAX_CLO)
 			iClo = MJBoard.MAX_CLO;
@@ -168,9 +165,9 @@ public class RuleLgtL {
 			iRng = MAX_RANGE;
 
 		if (iNgh != MJRules.NGHTYP_NEUM)
-			iNgh = MJRules.NGHTYP_MOOR; 
+			iNgh = MJRules.NGHTYP_MOOR;
 
-		iMax = isCentr ? 1 : 0;
+        int iMax = isCentr ? 1 : 0;
 		for (i = 1; i <= iRng; i++)
 			
 			iMax = iMax + i * 8;

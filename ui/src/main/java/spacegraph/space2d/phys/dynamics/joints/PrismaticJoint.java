@@ -503,10 +503,9 @@ public class PrismaticJoint extends Joint {
         
 
         if (m_enableLimit && m_limitState != LimitState.INACTIVE) {
-            
-            float Cdot2;
+
             temp.set(vB).subbed(vA);
-            Cdot2 = v2.dot(m_axis, temp) + m_a2 * wB - m_a1 * wA;
+            float Cdot2 = v2.dot(m_axis, temp) + m_a2 * wB - m_a1 * wA;
 
             final v3 Cdot = pool.popVec3();
             Cdot.set(Cdot1.x, Cdot1.y, Cdot2);

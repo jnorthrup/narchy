@@ -95,15 +95,12 @@ public class ConcurrentMapStream<K, V> extends ConcurrentHashMap<K, ConcurrentMa
         }
 
         public String toString() {
-            StringBuilder sb = new StringBuilder();
-            sb.append(this.the);
-            sb.append(':');
-            sb.append(this.doubleValue());
 
 
-
-
-            return sb.toString();
+            String sb = String.valueOf(this.the) +
+                    ':' +
+                    this.doubleValue();
+            return sb;
         }
 
         public boolean isNewItem() {

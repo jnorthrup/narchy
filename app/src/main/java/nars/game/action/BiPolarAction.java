@@ -97,11 +97,9 @@ public class BiPolarAction extends AbstractSensor {
     @Override public void accept(Game g) {
 
 
-        Truth p, n;
+        Truth p = pos.actionTruth();
 
-            p = pos.actionTruth();
-
-            n = neg.actionTruth();
+        Truth n = neg.actionTruth();
 
 
         float x = model.update(p, n, g.nowPercept.start, g.nowPercept.end);
@@ -124,8 +122,7 @@ public class BiPolarAction extends AbstractSensor {
             y = Util.clamp(y, -1, +1);
             //y = (y + 1)/2; //0...1 range
 
-            float yp, yn;
-//            yp = 0.5f + y / 2f;
+            //            yp = 0.5f + y / 2f;
 //            yn = 1f - yp;
 
 //            float thresh = nar.freqResolution.floatValue();
@@ -145,7 +142,8 @@ public class BiPolarAction extends AbstractSensor {
 
             //balanced around 0.5
 
-            yn = 0.5f - y/2; yp = 0.5f + y/2;
+            float yn = 0.5f - y / 2;
+            float yp = 0.5f + y / 2;
             //System.out.println(p + "," + n + "\t" + y + "\t" + yp + "," + yn);
 
 //            if ((p == null && n == null) /* curiosity */ || (p!=null && n!=null) /* both active */) {
@@ -223,13 +221,12 @@ public class BiPolarAction extends AbstractSensor {
             float pq = q(pos), nq = q(neg);
 
             //fill in missing NaN values
-            float pg, ng;
-//            if (pq!=pq) pg = latch ? fp.floatValue() : 0;
+            //            if (pq!=pq) pg = latch ? fp.floatValue() : 0;
 //            else pg = fp.valueOf(pq);
 //            if (nq!=nq) ng = latch ? fn.floatValue() : 0;
 //            else ng = fn.valueOf(nq);
-            pg = pq == pq ? pq : 0;
-            ng = nq == nq ? nq : 0;
+            float pg = pq == pq ? pq : 0;
+            float ng = nq == nq ? nq : 0;
 
 
 

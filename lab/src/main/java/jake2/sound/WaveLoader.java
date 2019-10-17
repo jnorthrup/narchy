@@ -123,13 +123,11 @@ public class WaveLoader {
 	 */
 	public static void ResampleSfx (sfx_t sfx, int inrate, int inwidth, byte[] data, int offset)
 	{
-        int             outcount;
         int             srcsample;
         int             i;
-        int             sample, samplefrac, fracstep;
-        sfxcache_t      sc;
-        
-        sc = sfx.cache;
+        int             sample;
+
+        sfxcache_t sc = sfx.cache;
         
         if (sc == null)
         	return;
@@ -141,8 +139,8 @@ public class WaveLoader {
         if (DONT_DO_A_RESAMPLING_FOR_JOAL_AND_LWJGL)
         	stepscale = 1;
         else
-        	stepscale = (float)inrate / S.getDefaultSampleRate();  
-        outcount = (int) (sc.length/stepscale);
+        	stepscale = (float)inrate / S.getDefaultSampleRate();
+        int outcount = (int) (sc.length / stepscale);
         sc.length = outcount;
         
         if (sc.loopstart != -1)
@@ -154,8 +152,8 @@ public class WaveLoader {
 
         sc.width = inwidth;
         sc.stereo = 0;
-        samplefrac = 0;
-        fracstep = (int) (stepscale * 256);
+        int samplefrac = 0;
+        int fracstep = (int) (stepscale * 256);
         
         for (i = 0; i < outcount; i++) {
             srcsample = samplefrac >> 8;
@@ -192,8 +190,7 @@ public class WaveLoader {
 
 
 	static short GetLittleShort() {
-		int val = 0;
-		val = data_b[data_p] & 0xFF;
+        int val = data_b[data_p] & 0xFF;
 		data_p++;
 		val |= ((data_b[data_p] & 0xFF) << 8);
 		data_p++;
@@ -201,8 +198,7 @@ public class WaveLoader {
 	}
 
 	static int GetLittleLong() {
-		int val = 0;
-		val = data_b[data_p] & 0xFF;
+        int val = data_b[data_p] & 0xFF;
 		data_p++;
 		val |= ((data_b[data_p] & 0xFF) << 8);
 		data_p++;
@@ -254,10 +250,8 @@ public class WaveLoader {
 	static wavinfo_t GetWavinfo(String name, byte[] wav, int wavlength) {
 		wavinfo_t info = new wavinfo_t();
 		int i;
-		int format;
-		int samples;
 
-		if (wav == null)
+        if (wav == null)
 			return info;
 
 		iff_data = 0;
@@ -282,7 +276,7 @@ public class WaveLoader {
 			return info;
 		}
 		data_p += 8;
-		format = GetLittleShort();
+        int format = GetLittleShort();
 		if (format != 1) {
 			Com.Printf("Microsoft PCM format only\n");
 			return info;
@@ -325,7 +319,7 @@ public class WaveLoader {
 		}
 
 		data_p += 4;
-		samples = GetLittleLong() / info.width;
+        int samples = GetLittleLong() / info.width;
 
 		if (info.samples != 0) {
 			if (samples < info.samples)

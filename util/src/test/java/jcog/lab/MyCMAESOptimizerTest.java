@@ -274,14 +274,11 @@ class MyCMAESOptimizerTest {
 		final MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma);
-		final MultivariateFunction fitnessFunction = new MultivariateFunction() {
-			@Override
-			public double value(double[] parameters) {
-				final double target = 1;
-				final double error = target - parameters[0];
-				return error * error;
-			}
-		};
+		final MultivariateFunction fitnessFunction = parameters -> {
+            final double target = 1;
+            final double error = target - parameters[0];
+            return error * error;
+        };
 
 		final double[] start = {0};
 		final double[] lower = {-1e6};
@@ -305,14 +302,11 @@ class MyCMAESOptimizerTest {
 		MyCMAESOptimizer optimizer
 			= new MyCMAESOptimizer(30000, 0, true, 10,
 			0, rng(), false, null, 5, sigma1);
-		final MultivariateFunction fitnessFunction = new MultivariateFunction() {
-			@Override
-			public double value(double[] parameters) {
-				final double target = 11.1;
-				final double error = target - parameters[0];
-				return error * error;
-			}
-		};
+		final MultivariateFunction fitnessFunction = parameters -> {
+            final double target = 11.1;
+            final double error = target - parameters[0];
+            return error * error;
+        };
 
 		final double[] start = {1};
 

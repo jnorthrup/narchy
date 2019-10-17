@@ -95,8 +95,8 @@ public class KaratePuzzle {
 	 */
     private void solve() throws CombinatoricException {
 		Object[] lasts, specs;
-		Permutations lastNamePerm, specPerm;
-		lastNamePerm = new Permutations(lastNames);
+		Permutations specPerm;
+        Permutations lastNamePerm = new Permutations(lastNames);
 
 		while (lastNamePerm.hasNext()) {
 			lasts = (Object[]) lastNamePerm.next();

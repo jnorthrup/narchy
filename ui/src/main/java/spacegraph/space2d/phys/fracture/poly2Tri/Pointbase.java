@@ -62,10 +62,9 @@ public class Pointbase implements Comparable {
 
     
     public void rotate(double theta) {
-        double cosa = Math.cos(theta), sina = Math.sin(theta),
-                newx, newy;
-        newx = x * cosa - y * sina;
-        newy = x * sina + y * cosa;
+        double cosa = Math.cos(theta), sina = Math.sin(theta);
+        double newx = x * cosa - y * sina;
+        double newy = x * sina + y * cosa;
         x = newx;
         y = newy;
     }

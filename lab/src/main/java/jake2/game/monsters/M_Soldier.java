@@ -1373,8 +1373,6 @@ public class M_Soldier {
         public String getID(){ return "soldier_pain"; }
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
-            float r;
-            int n;
 
             if (self.health < (self.max_health / 2))
                 self.s.skinnum |= 1;
@@ -1388,7 +1386,7 @@ public class M_Soldier {
 
             self.pain_debounce_time = GameBase.level.time + 3;
 
-            n = self.s.skinnum | 1;
+            int n = self.s.skinnum | 1;
             if (n == 1)
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain_light,
                         1, Defines.ATTN_NORM, 0);
@@ -1405,9 +1403,9 @@ public class M_Soldier {
             }
 
             if (GameBase.skill.value == 3)
-                return; 
+                return;
 
-            r = Lib.random();
+            float r = Lib.random();
 
             if (r < 0.33)
                 self.monsterinfo.currentmove = soldier_move_pain1;
@@ -2285,9 +2283,8 @@ public class M_Soldier {
         public String getID(){ return "soldier_dodge"; }
         @Override
         public void dodge(edict_t self, edict_t attacker, float eta) {
-            float r;
 
-            r = Lib.random();
+            float r = Lib.random();
             if (r > 0.25)
                 return;
 

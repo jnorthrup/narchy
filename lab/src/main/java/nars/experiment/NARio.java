@@ -232,8 +232,7 @@ public class NARio extends GameX {
 		runRT((NAR n) -> {
 
 
-			NARio x;
-			x = new NARio(n);
+            NARio x = new NARio(n);
 			n.add(x);
 //            n.freqResolution.setAt(0.02f);
 //            n.confResolution.setAt(0.01f);

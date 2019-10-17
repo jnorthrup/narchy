@@ -384,10 +384,9 @@ public enum BigArrays {
 			swapper.swap( b++, c-- );
 		}
 
-		
-		long s;
-		long n = from + len;
-		s = Math.min( a - from, b - a );
+
+        long n = from + len;
+        long s = Math.min(a - from, b - a);
 		vecSwap( swapper, from, b - s, s );
 		s = Math.min( d - c, n - d - 1 );
 		vecSwap( swapper, b, n - s, s );

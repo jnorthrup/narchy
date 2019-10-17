@@ -597,7 +597,6 @@ public class M_Flipper {
         public String getID() { return "flipper_pain"; }
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
-            int n;
 
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
@@ -608,9 +607,9 @@ public class M_Flipper {
             self.pain_debounce_time = GameBase.level.time + 3;
 
             if (GameBase.skill.value == 3)
-                return; 
+                return;
 
-            n = (Lib.rand() + 1) % 2;
+            int n = (Lib.rand() + 1) % 2;
             if (n == 0) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

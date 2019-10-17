@@ -24,11 +24,9 @@ public class DistractedSequenceRecall extends AbstractTraining {
 		for (int i = 0; i < this.batches; i++) {
 
 
-			int[] seq;
-
-			int target1 = random.nextInt(outputs);
+            int target1 = random.nextInt(outputs);
 			int target2 = random.nextInt(outputs);
-            seq = IntStream.range(0, length).map(t -> random.nextInt(outputs) + outputs).toArray();
+            int[] seq = IntStream.range(0, length).map(t -> random.nextInt(outputs) + outputs).toArray();
 			int loc1 = random.nextInt(length);
 			int loc2 = random.nextInt(length);
 			while (loc1 == loc2)

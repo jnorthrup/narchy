@@ -494,10 +494,9 @@ public class WebcamStereoTest {
 
             findMatches.associate(left,right);
 
-            List<AssociatedPair> matches;
             FastQueue<AssociatedIndex> matchIndexes = associate.getMatches();
 
-            matches = IntStream.range(0, matchIndexes.size).mapToObj(matchIndexes::get).map(a -> new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst))).collect(Collectors.toList());
+            List<AssociatedPair> matches = IntStream.range(0, matchIndexes.size).mapToObj(matchIndexes::get).map(a -> new AssociatedPair(findMatches.pointsA.get(a.src), findMatches.pointsB.get(a.dst))).collect(Collectors.toList());
 
             return matches;
         }

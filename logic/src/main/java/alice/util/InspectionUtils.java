@@ -59,7 +59,7 @@ public class InspectionUtils
             {
             	Class<?>[] interfaces = sources[i].getInterfaces();
             	for (Class<?> in : interfaces) {
-					if(targets[i].equals(in))
+					if(targets[i] == in)
 						return true;
 				}
             }
@@ -80,21 +80,21 @@ public class InspectionUtils
         if(!primitive.isPrimitive())
             return(primitive);
 
-        if(Boolean.TYPE.equals(primitive))
+        if(Boolean.TYPE == primitive)
             return( Boolean.class );
-        if(Character.TYPE.equals(primitive))
+        if(Character.TYPE == primitive)
             return(Character.class);
-        if(Byte.TYPE.equals(primitive))
+        if(Byte.TYPE == primitive)
             return( Byte.class);
-        if(Short.TYPE.equals(primitive))
+        if(Short.TYPE == primitive)
             return( Short.class);
-        if(Integer.TYPE.equals(primitive))
+        if(Integer.TYPE == primitive)
             return(Integer.class);
-        if(Long.TYPE.equals(primitive))
+        if(Long.TYPE == primitive)
             return(Long.class);
-        if(Float.TYPE.equals(primitive))
+        if(Float.TYPE == primitive)
             return(Float.class);
-        if(Double.TYPE.equals(primitive))
+        if(Double.TYPE == primitive)
             return(Double.class);
 
         throw new RuntimeException("Error translating type:" + primitive);

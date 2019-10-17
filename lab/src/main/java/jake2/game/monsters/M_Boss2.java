@@ -445,10 +445,8 @@ public class M_Boss2 {
         public boolean think(edict_t self) {
             float[] vec = { 0, 0, 0 };
 
-            float range;
-
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
             if (range <= 125) {
                 self.monsterinfo.currentmove = boss2_move_attack_pre_mg;
@@ -558,9 +556,6 @@ public class M_Boss2 {
             float chance;
             trace_t tr;
 
-            int enemy_range;
-            float enemy_yaw;
-
             if (self.enemy.health > 0) {
                 
                 Math3D.VectorCopy(self.s.origin, spot1);
@@ -578,9 +573,9 @@ public class M_Boss2 {
                     return false;
             }
 
-            enemy_range = GameUtil.range(self, self.enemy);
+            int enemy_range = GameUtil.range(self, self.enemy);
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
-            enemy_yaw = Math3D.vectoyaw(temp);
+            float enemy_yaw = Math3D.vectoyaw(temp);
 
             self.ideal_yaw = enemy_yaw;
 

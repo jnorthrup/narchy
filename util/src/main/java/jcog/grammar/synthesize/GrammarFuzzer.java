@@ -101,9 +101,8 @@ public class GrammarFuzzer {
             return sampleHelper(grammar.getChildren().get(choice), recursiveNodes, parameters, random, backup, length);
         } else if (grammar instanceof RepetitionNode) {
             ParseTreeNode start = sampleHelper(((RepetitionNode) grammar).start, recursiveNodes, parameters, random, backup, length);
-            List<ParseTreeNode> rep;
             int reps = parameters.randRepetition(random);
-            rep = IntStream.range(0, reps).mapToObj(i -> sampleHelper(((RepetitionNode) grammar).rep, recursiveNodes, parameters, random, backup, length)).collect(Collectors.toList());
+            List<ParseTreeNode> rep = IntStream.range(0, reps).mapToObj(i -> sampleHelper(((RepetitionNode) grammar).rep, recursiveNodes, parameters, random, backup, length)).collect(Collectors.toList());
             ParseTreeNode end = sampleHelper(((RepetitionNode) grammar).end, recursiveNodes, parameters, random, backup, length);
             return new ParseTreeRepetitionNode((RepetitionNode) grammar, start, rep, end);
         } else if (grammar instanceof MultiConstantNode) {

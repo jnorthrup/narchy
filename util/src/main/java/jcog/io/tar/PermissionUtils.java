@@ -95,9 +95,8 @@ public class PermissionUtils {
 	}
 
 	private static Integer standardPermissions(File f) {
-		int number;
-		Set<StandardFilePermission> permissions = readStandardPermissions(f);
-        number = permissions.stream().mapToInt(permission -> permission.mode).sum();
+        Set<StandardFilePermission> permissions = readStandardPermissions(f);
+        int number = permissions.stream().mapToInt(permission -> permission.mode).sum();
 		return number;
 	}
 }

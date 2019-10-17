@@ -280,16 +280,13 @@ public class PadSynthetizer {
         for (i=0;i<N/2;i++) freq_amp[i]=0.0;
 
         for (nh=1;nh<number_harmonics;nh++){//for each harmonic
-            double bw_Hz;//bandwidth of the current harmonic measured in Hz
-            double bwi;
-            double fi;
-            bw_Hz=(Math.pow(2.0,bw/1200.0)-1.0)*f*nh;
+            //bandwidth of the current harmonic measured in Hz
+            double bw_Hz = (Math.pow(2.0, bw / 1200.0) - 1.0) * f * nh;
 
-            bwi=bw_Hz/(2.0*samplerate);
-            fi=f*nh/samplerate;
+            double bwi = bw_Hz / (2.0 * samplerate);
+            double fi = f * nh / samplerate;
             for (i=0;i<N/2;i++){
-                double hprofile;
-                hprofile=profile((i/(double) N)-fi,bwi);
+                double hprofile = profile((i / (double) N) - fi, bwi);
                 freq_amp[i]+=hprofile*A[nh];
             }
         }

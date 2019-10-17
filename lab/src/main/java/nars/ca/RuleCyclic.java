@@ -33,12 +33,11 @@ public class RuleCyclic {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",/", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",/", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			
@@ -97,9 +96,9 @@ public class RuleCyclic {
 	
 	
 	public void Validate() {
-		int i, iMax;
+		int i;
 
-		if (iClo < 2)
+        if (iClo < 2)
 			iClo = 2;
 		else if (iClo > MJBoard.MAX_CLO)
 			iClo = MJBoard.MAX_CLO;
@@ -109,7 +108,7 @@ public class RuleCyclic {
 		else if (iRng > MAX_RANGE)
 			iRng = MAX_RANGE;
 
-		iMax = 0;
+        int iMax = 0;
 		for (i = 1; i <= iRng; i++)
 			
 			iMax = iMax + i * 8;
@@ -135,9 +134,8 @@ public class RuleCyclic {
 		int colL, colR, rowT, rowB;
 		int ic, ir, iTmp;
 		short nxtStt;
-		boolean fMoore; 
 
-		fMoore = (iNgh == MJRules.NGHTYP_MOOR); 
+        boolean fMoore = (iNgh == MJRules.NGHTYP_MOOR);
 
 		for (i = 0; i < sizX; i++) {
 			for (j = 0; j < sizY; j++) {

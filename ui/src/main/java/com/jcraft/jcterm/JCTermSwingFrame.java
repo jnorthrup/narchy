@@ -522,11 +522,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
 
     public JMenuBar getJMenuBar() {
         JMenuBar mb = new JMenuBar();
-        JMenu m;
-        JMenuItem mi;
 
-        m = new JMenu("File");
-        mi = new JMenuItem("Open SHELL Session...");
+        JMenu m = new JMenu("File");
+        JMenuItem mi = new JMenuItem("Open SHELL Session...");
         mi.addActionListener(this);
         mi.setActionCommand("Open SHELL Session...");
         m.add(mi);
@@ -615,10 +613,9 @@ public class JCTermSwingFrame extends JFrame implements ActionListener, Runnable
         };
         mfsize.addMenuListener(new MenuListener() {
             public void menuSelected(MenuEvent me) {
-                JMenuItem mi;
                 JMenu jm = (JMenu) me.getSource();
                 int font_size = JCTermSwing.getCR().load(configName).font_size;
-                mi = new JMenuItem("Smaller (" + (font_size - 1) + ')');
+                JMenuItem mi = new JMenuItem("Smaller (" + (font_size - 1) + ')');
                 mi.setActionCommand(String.valueOf(font_size - 1));
                 mi.addActionListener(mfsize_action);
                 jm.add(mi);

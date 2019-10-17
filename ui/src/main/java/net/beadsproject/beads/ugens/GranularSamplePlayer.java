@@ -460,8 +460,7 @@ public class GranularSamplePlayer extends SamplePlayer {
             for (int i = 0; i < bufferSize; i++) {
                 
                 if (timeSinceLastGrain > grainIntervalEnvelope.getValue(0, i)) {
-                    Grain g = null;
-                    g = !freeGrains.isEmpty() ? freeGrains.pollFirst() : new Grain();
+                    Grain g = !freeGrains.isEmpty() ? freeGrains.pollFirst() : new Grain();
                     resetGrain(g, i);
                     setGrainPan(g, randomPanEnvelope.getValue(0, i));
                     grains.add(g);

@@ -141,8 +141,6 @@ class FNMatch {
                                                case '[':
 
 
-                                                   boolean not;
-
                                                    if (string.length() == n) {
                                                        finished = true;
                                                        break;
@@ -155,7 +153,7 @@ class FNMatch {
                                                        finished = true;
                                                        break;
                                                    }
-                                                   not = (pattern.charAt(p) == '!' || pattern.charAt(p) == '^');
+                                                   boolean not = (pattern.charAt(p) == '!' || pattern.charAt(p) == '^');
                                                    if (not)
                                                        ++p;
 

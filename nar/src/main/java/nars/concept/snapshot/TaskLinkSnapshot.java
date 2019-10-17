@@ -55,9 +55,8 @@ public final class TaskLinkSnapshot {
 		if (lls == 0)
 			return null;
 		else {
-			PLink<Term> l;
 
-			int li = Roulette.selectRouletteCached(lls, (int i) -> {
+            int li = Roulette.selectRouletteCached(lls, (int i) -> {
 
 				PLink<Term> x = (PLink) ll[i];
 				return x != null && filter.test(x.id) ?
@@ -70,7 +69,7 @@ public final class TaskLinkSnapshot {
 
 			}, rng::nextFloat);
 
-			l = li >= 0 ? (PLink<Term>) ll[li] : null;
+            PLink<Term> l = li >= 0 ? (PLink<Term>) ll[li] : null;
 
 			return l != null ? l.id : null;
 		}

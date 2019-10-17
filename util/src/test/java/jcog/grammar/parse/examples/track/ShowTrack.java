@@ -23,17 +23,15 @@ public class ShowTrack {
 	 */
 	private static Parser list() {
 
-		Parser empty, commaWord, actualList, contents, list;
+        Parser empty = new Empty();
 
-		empty = new Empty();
+        Parser commaWord = new SeqEx().get(new Symbol(',').ok()).get(new Word());
 
-		commaWord = new SeqEx().get(new Symbol(',').ok()).get(new Word());
+        Parser actualList = new Seq().get(new Word()).get(new Repetition(commaWord));
 
-		actualList = new Seq().get(new Word()).get(new Repetition(commaWord));
+        Parser contents = new Alternation().get(empty).get(actualList);
 
-		contents = new Alternation().get(empty).get(actualList);
-
-		list = new SeqEx().get(new Symbol('(').ok()).get(contents).get(new Symbol(')').ok());
+        Parser list = new SeqEx().get(new Symbol('(').ok()).get(contents).get(new Symbol(')').ok());
 
 		return list;
 	}

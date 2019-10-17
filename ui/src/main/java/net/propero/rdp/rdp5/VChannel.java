@@ -50,9 +50,8 @@ public abstract class VChannel {
      * @throws RdesktopException
      */
     public static RdpPacket_Localised init(int length) throws RdesktopException {
-        RdpPacket_Localised s;
 
-        s = Common.secure.init(Options.encryption ? Secure.SEC_ENCRYPT : 0,
+        RdpPacket_Localised s = Common.secure.init(Options.encryption ? Secure.SEC_ENCRYPT : 0,
                 length + 8);
         s.setHeader(RdpPacket.CHANNEL_HEADER);
         s.incrementPosition(8);

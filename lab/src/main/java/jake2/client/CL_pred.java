@@ -48,7 +48,6 @@ public class CL_pred {
         int frame;
         int[] delta = new int[3];
         int i;
-        int len;
 
         if (Globals.cl_predict.value == 0.0f
                 || (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION) != 0)
@@ -62,8 +61,8 @@ public class CL_pred {
         Math3D.VectorSubtract(Globals.cl.frame.playerstate.pmove.origin,
                 Globals.cl.predicted_origins[frame], delta);
 
-        
-        len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
+
+        int len = IntStream.of(0, 1, 2).map(i2 -> Math.abs(delta[i2])).sum();
         if (len > 640) 
         { 
             Math3D.VectorClear(Globals.cl.prediction_error);
@@ -159,10 +158,9 @@ public class CL_pred {
 
     static trace_t PMTrace(float[] start, float[] mins, float[] maxs,
             float[] end) {
-        trace_t t;
 
-        
-        t = CM.BoxTrace(start, end, mins, maxs, 0, Defines.MASK_PLAYERSOLID);
+
+        trace_t t = CM.BoxTrace(start, end, mins, maxs, 0, Defines.MASK_PLAYERSOLID);
 
         if (t.fraction < 1.0f) {
             t.ent = DUMMY_ENT;
@@ -184,9 +182,8 @@ public class CL_pred {
         entity_state_t ent;
         int num;
         cmodel_t cmodel;
-        int contents;
 
-        contents = CM.PointContents(point, 0);
+        int contents = CM.PointContents(point, 0);
 
         for (i = 0; i < Globals.cl.frame.num_entities; i++) {
             num = (Globals.cl.frame.parse_entities + i)

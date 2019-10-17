@@ -453,9 +453,8 @@ public class M_Boss31 {
         public String getID() { return "jorg_search"; }
         @Override
         public boolean think(edict_t self) {
-            float r;
 
-            r = Lib.random();
+            float r = Lib.random();
 
             if (r <= 0.3)
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_search1, 1,
@@ -726,10 +725,9 @@ public class M_Boss31 {
         @Override
         public boolean think(edict_t self) {
             float[] vec = { 0, 0, 0 };
-            float range = 0;
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
             if (Lib.random() <= 0.75) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_attack1, 1,
@@ -797,9 +795,6 @@ public class M_Boss31 {
             float chance;
             trace_t tr;
 
-            int enemy_range;
-            float enemy_yaw;
-
             if (self.enemy.health > 0) {
                 
                 Math3D.VectorCopy(self.s.origin, spot1);
@@ -817,9 +812,9 @@ public class M_Boss31 {
                     return false;
             }
 
-            enemy_range = GameUtil.range(self, self.enemy);
+            int enemy_range = GameUtil.range(self, self.enemy);
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, temp);
-            enemy_yaw = Math3D.vectoyaw(temp);
+            float enemy_yaw = Math3D.vectoyaw(temp);
 
             self.ideal_yaw = enemy_yaw;
 

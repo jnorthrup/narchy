@@ -161,21 +161,17 @@ public class Orders {
      */
     private static void processColorCache(RdpPacket_Localised data)
             throws RdesktopException {
-        byte[] palette = null;
 
-        byte[] red = null;
-        byte[] green = null;
-        byte[] blue = null;
         int j = 0;
 
         int cache_id = data.get8();
-        int n_colors = data.getLittleEndian16(); 
-        
+        int n_colors = data.getLittleEndian16();
 
-        palette = new byte[n_colors * 4];
-        red = new byte[n_colors];
-        green = new byte[n_colors];
-        blue = new byte[n_colors];
+
+        byte[] palette = new byte[n_colors * 4];
+        byte[] red = new byte[n_colors];
+        byte[] green = new byte[n_colors];
+        byte[] blue = new byte[n_colors];
         data.copyToByteArray(palette, 0, data.getPosition(), palette.length);
         data.incrementPosition(palette.length);
         for (int i = 0; i < n_colors; i++) {
@@ -199,12 +195,11 @@ public class Orders {
     private static void processBitmapCache(RdpPacket_Localised data)
             throws RdesktopException {
         int bufsize, pad2, row_size, final_size, size;
-        int pad1;
 
         bufsize = pad2 = row_size = final_size = size = 0;
 
         int cache_id = data.get8();
-        pad1 = data.get8(); 
+        int pad1 = data.get8();
         int width = data.get8();
         int height = data.get8();
         int bpp = data.get8();
@@ -270,12 +265,11 @@ public class Orders {
                                           boolean compressed) throws RdesktopException, IOException {
         Bitmap bitmap;
         int y;
-        int cache_id, cache_idx_low, width, height, Bpp;
-        int cache_idx, bufsize;
-        byte[] bmpdata, bitmap_id;
+        int cache_idx_low, width, height, Bpp;
+        int bufsize;
 
-        bitmap_id = new byte[8]; /* prevent compiler warning */
-        cache_id = flags & ID_MASK;
+        byte[] bitmap_id = new byte[8]; /* prevent compiler warning */
+        int cache_id = flags & ID_MASK;
         Bpp = ((flags & MODE_MASK) >> MODE_SHIFT) - 2;
         Bpp = Options.Bpp;
         if ((flags & PERSIST) != 0) {
@@ -293,7 +287,7 @@ public class Orders {
 
         bufsize = data.getBigEndian16(); 
         bufsize &= BUFSIZE_MASK;
-        cache_idx = data.get8(); 
+        int cache_idx = data.get8();
 
         if ((cache_idx & LONG_FORMAT) != 0) {
             cache_idx_low = data.get8(); 
@@ -304,7 +298,7 @@ public class Orders {
 
         logger.info("BMPCACHE2(compr={},flags={},cx={},cy={},id={},idx={},Bpp={},bs={}" + ')', compressed, flags, width, height, cache_id, cache_idx, Bpp, bufsize);
 
-        bmpdata = new byte[width * height * Bpp];
+        byte[] bmpdata = new byte[width * height * Bpp];
         int[] bmpdataInt = new int[width * height];
 
         if (compressed) {
@@ -359,13 +353,12 @@ public class Orders {
             throws RdesktopException {
         Glyph glyph = null;
 
-        int font = 0, nglyphs = 0;
         int character = 0, offset = 0, baseline = 0, width = 0, height = 0;
         int datasize = 0;
         byte[] fontdata = null;
 
-        font = data.get8();
-        nglyphs = data.get8();
+        int font = data.get8();
+        int nglyphs = data.get8();
 
         for (int i = 0; i < nglyphs; i++) {
             character = data.getLittleEndian16();
@@ -416,9 +409,8 @@ public class Orders {
      */
     private static void parseBounds(RdpPacket_Localised data, BoundsOrder bounds)
             throws OrderException {
-        int present = 0;
 
-        present = data.get8();
+        int present = data.get8();
 
         if ((present & 1) != 0) {
             bounds.setLeft(setCoordinate(data, bounds.getLeft(), false));
@@ -482,11 +474,9 @@ public class Orders {
      * @return Integer colour value read from packet
      */
     private static int setColor(RdpPacket_Localised data) {
-        int color = 0;
-        int i = 0;
 
-        i = data.get8(); 
-        color = i; 
+        int i = data.get8();
+        int color = i;
         i = data.get8(); 
         color |= i << 8; 
         i = data.get8(); 
@@ -701,16 +691,12 @@ public class Orders {
      */
     private static void processSecondaryOrders(RdpPacket_Localised data)
             throws RdesktopException {
-        int length = 0;
-        int type = 0;
-        int flags = 0;
-        int next_order = 0;
 
-        length = data.getLittleEndian16();
-        flags = data.getLittleEndian16();
-        type = data.get8();
+        int length = data.getLittleEndian16();
+        int flags = data.getLittleEndian16();
+        int type = data.get8();
 
-        next_order = data.getPosition() + length + 7;
+        int next_order = data.getPosition() + length + 7;
 
         switch (type) {
 
@@ -931,7 +917,6 @@ public class Orders {
     private void processDeskSave(RdpPacket_Localised data,
                                  DeskSaveOrder desksave, int present, boolean delta)
             throws RdesktopException {
-        int width = 0, height = 0;
 
         if ((present & 0x01) != 0) {
             desksave.setOffset(data.getLittleEndian32());
@@ -958,8 +943,8 @@ public class Orders {
             desksave.setAction(data.get8());
         }
 
-        width = desksave.getRight() - desksave.getLeft() + 1;
-        height = desksave.getBottom() - desksave.getTop() + 1;
+        int width = desksave.getRight() - desksave.getLeft() + 1;
+        int height = desksave.getBottom() - desksave.getTop() + 1;
 
         if (desksave.getAction() == 0) {
             int[] pixel = surface.getImage(desksave.getLeft(), desksave

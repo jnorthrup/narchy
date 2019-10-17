@@ -510,10 +510,9 @@ public class ClassReloader extends ClassLoader {
     }
 
     private String getClassName(File file, String pkg) {
-        String className;
         String classSimpleName = file.getName();
         int lastDotIdx = classSimpleName.lastIndexOf('.');
-        className = classSimpleName.substring(0, lastDotIdx);
+        String className = classSimpleName.substring(0, lastDotIdx);
         if (!pkg.isEmpty()) {
             className = pkg + '.' + className;
         }
@@ -531,7 +530,6 @@ public class ClassReloader extends ClassLoader {
     }
 
     protected Class<?> reload(String s) throws ClassNotFoundException {
-        Class<?> clazz = null;
         ClassReloader r = newReloader();
         for (String c : this.reloadableCache) {
             if (c.compareTo(s) != 0) {
@@ -546,7 +544,7 @@ public class ClassReloader extends ClassLoader {
                 //r.addToCache(newClass);
             }
         }
-        clazz = r.loadAgain(s);
+        Class<?> clazz = r.loadAgain(s);
         this.child = r;
         r.addToCache(clazz);
         return clazz;

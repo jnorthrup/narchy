@@ -80,7 +80,7 @@ public class PlayerHud {
 
     public static void BeginIntermission(edict_t targ) {
         int i, n;
-        edict_t ent, client;
+        edict_t client;
 
         if (GameBase.level.intermissiontime != 0)
             return; 
@@ -124,8 +124,8 @@ public class PlayerHud {
 
         GameBase.level.exitintermission = false;
 
-        
-        ent = GameBase.G_FindEdict(null, GameBase.findByClass,
+
+        edict_t ent = GameBase.G_FindEdict(null, GameBase.findByClass,
                 "info_player_intermission");
         if (ent == null) { 
                            
@@ -172,15 +172,15 @@ public class PlayerHud {
         int i, j, k;
         int[] sorted = new int[Defines.MAX_CLIENTS];
         int[] sortedscores = new int[Defines.MAX_CLIENTS];
-        int score, total;
+        int score;
         int picnum;
         int x, y;
         gclient_t cl;
         edict_t cl_ent;
         String tag;
 
-        
-        total = 0;
+
+        int total = 0;
         for (i = 0; i < GameBase.game.maxclients; i++) {
             cl_ent = GameBase.g_edicts[1 + i];
             if (!cl_ent.inuse || GameBase.game.clients[i].resp.spectator)
@@ -292,12 +292,9 @@ public class PlayerHud {
      */
     public static void G_SetStats(edict_t ent) {
         gitem_t item;
-        int index, cells = 0;
-        int power_armor_type;
+        int cells = 0;
 
-        
-        
-        
+
         gclient_t C = ent.client;
         short[] S = C.ps.stats;
 
@@ -321,10 +318,8 @@ public class PlayerHud {
             S[Defines.STAT_AMMO] = (short) C.pers.inventory[C.ammo_index];
         }
 
-        
-        
-        
-        power_armor_type = GameItems.PowerArmorType(ent);
+
+        int power_armor_type = GameItems.PowerArmorType(ent);
         if (power_armor_type != 0) {
             cells = C.pers.inventory[GameItems.ITEM_INDEX(GameItems.FindItem("cells"))];
             if (cells == 0) { 
@@ -337,7 +332,7 @@ public class PlayerHud {
             }
         }
 
-        index = GameItems.ArmorIndex(ent);
+        int index = GameItems.ArmorIndex(ent);
         if (power_armor_type != 0
                 && (0 == index || 0 != (GameBase.level.framenum & 8))) { 
                                                                          

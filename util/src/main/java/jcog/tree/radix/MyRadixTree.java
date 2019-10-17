@@ -774,11 +774,10 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
     }
 
     public SearchResult random(SearchResult at, float descendProb, Random rng) {
-        Node current, parent, parentParent;
 
-        current = at.found;
-        parent = at.parentNode;
-        parentParent = at.parentNodesParent;
+        Node current = at.found;
+        Node parent = at.parentNode;
+        Node parentParent = at.parentNodesParent;
         return random(current, parent, parentParent, descendProb, rng);
     }
 
@@ -823,20 +822,14 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         acquireReadLockIfNecessary();
         try {
 
-            X newValue, foundX;
-            SearchResult result;
-            int matched;
-            Object foundValue;
-            Node found;
 
+            SearchResult result = searchTree(key);
+            Node found = result.found;
+            int matched = result.charsMatched;
+            Object foundValue = found != null ? found.getValue() : null;
+            X foundX = ((matched == key.length()) && (foundValue != VoidValue.the)) ? ((X) foundValue) : null;
 
-            result = searchTree(key);
-            found = result.found;
-            matched = result.charsMatched;
-            foundValue = found != null ? found.getValue() : null;
-            foundX = ((matched == key.length()) && (foundValue != VoidValue.the)) ? ((X) foundValue) : null;
-
-            newValue = computeFunc.apply(key, result, foundX, value);
+            X newValue = computeFunc.apply(key, result, foundX, value);
 
             if (newValue != foundX) {
 
@@ -1285,8 +1278,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
 
         public String toString() {
-            return new StringBuilder().append(ref)
-                    /*.append('=').append(VoidValue.the)*/.toString();
+            return String.valueOf(ref)
+                    /*.append('=').append(VoidValue.the)*/;
         }
     }
 
@@ -1339,7 +1332,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
 
         public String toString() {
-            return new StringBuilder().append(this.getIncomingEdge()).append('=').append(getValue()).toString();
+            return String.valueOf(this.getIncomingEdge()) + '=' + getValue();
         }
     }
 
@@ -1372,7 +1365,7 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
 
         public String toString() {
-            return new StringBuilder().append(ref).append('=').append(this.value).toString();
+            return String.valueOf(ref) + '=' + this.value;
         }
     }
 
@@ -1388,8 +1381,8 @@ public class MyRadixTree<X> /* TODO extends ReentrantReadWriteLock */ implements
         }
 
         public String toString() {
-            return new StringBuilder().append(ref)
-                    .append("=null").toString();
+            return ref +
+                    "=null";
         }
     }
 

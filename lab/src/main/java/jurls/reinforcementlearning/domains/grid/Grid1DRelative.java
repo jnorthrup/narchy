@@ -96,11 +96,10 @@ public class Grid1DRelative implements World {
         }
         if (position < 0) position = size-1;
         if (position >= size) position = 0;
-        
-        double match = 0;        
+
         double energyCost = 0;
-        
-        match = 1.0 / (1.0 + Math.abs(position - focusPosition));
+
+        double match = 1.0 / (1.0 + Math.abs(position - focusPosition));
         
         if (action[0] > 0.25)
             energyCost += 1.0;

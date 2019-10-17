@@ -386,8 +386,6 @@ public class GameTarget {
         @Override
         public boolean think(edict_t self) {
 
-            float save;
-
             game_import_t.WriteByte(Defines.svc_temp_entity);
             game_import_t.WriteByte(Defines.TE_EXPLOSION1);
             game_import_t.WritePosition(self.s.origin);
@@ -396,7 +394,7 @@ public class GameTarget {
             GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
                     self.dmg + 40, Defines.MOD_EXPLOSIVE);
 
-            save = self.delay;
+            float save = self.delay;
             self.delay = 0;
             GameUtil.G_UseTargets(self, self.activator);
             self.delay = save;
@@ -510,9 +508,8 @@ public class GameTarget {
         public String getID() { return "use_target_spawner"; }
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            edict_t ent;
 
-            ent = GameUtil.G_Spawn();
+            edict_t ent = GameUtil.G_Spawn();
             ent.classname = self.target;
             Math3D.VectorCopy(self.s.origin, ent.s.origin);
             Math3D.VectorCopy(self.s.angles, ent.s.angles);
@@ -607,7 +604,6 @@ public class GameTarget {
         @Override
         public boolean think(edict_t self) {
 
-            edict_t ignore;
             float[] start = { 0, 0, 0 };
             float[] end = { 0, 0, 0 };
             trace_t tr;
@@ -629,7 +625,7 @@ public class GameTarget {
                     self.spawnflags |= 0x80000000;
             }
 
-            ignore = self;
+            edict_t ignore = self;
             Math3D.VectorCopy(self.s.origin, start);
             Math3D.VectorMA(start, 2048, self.movedir, end);
             while (true) {
@@ -771,9 +767,8 @@ public class GameTarget {
             if ((GameBase.level.time - self.timestamp) < self.speed) {
                 self.nextthink = GameBase.level.time + Defines.FRAMETIME;
             } else if ((self.spawnflags & 1) != 0) {
-                char temp;
 
-                temp = (char) self.movedir[0];
+                char temp = (char) self.movedir[0];
                 self.movedir[0] = self.movedir[1];
                 self.movedir[1] = temp;
                 self.movedir[2] *= -1;
@@ -789,10 +784,9 @@ public class GameTarget {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
             if (self.enemy == null) {
-                edict_t e;
 
-                
-                e = null;
+
+                edict_t e = null;
                 EdictIterator es = null;
 
                 while (true) {

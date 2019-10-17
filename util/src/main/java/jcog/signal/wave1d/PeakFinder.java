@@ -78,9 +78,8 @@ public class PeakFinder {
 	 * @return True if a peak is detected, false otherwise.
 	 **/
 	public boolean pickPeak(float onset) {
-		float mean, median;
-		
-		int length = win_post + win_pre + 1;
+
+        int length = win_post + win_pre + 1;
 		
 		
 		/* store onset in onset_keep */
@@ -105,8 +104,8 @@ public class PeakFinder {
 			sum += (scratch[j] = onset_proc[j]);
 		}
 		Arrays.sort(scratch);
-		median = scratch[scratch.length/2];
-		mean = sum/ length;
+        float median = scratch[scratch.length / 2];
+        float mean = sum / length;
 				
 		/* shift peek array */
 		System.arraycopy(onset_peek, 1, onset_peek, 0, 3 - 1);

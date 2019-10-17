@@ -241,11 +241,9 @@ public class RectFloat implements HyperRegion, Comparable<RectFloat> {
     }
 
     public String toString() {
-        return new StringBuilder(64 /* estimate */)
-                .append('(').append(n4(cx())).append(',').append(n4(cy())).append(')')
-                .append('x')
-                .append('(').append(n4(w)).append(',').append(n4(h)).append(')')
-                .toString();
+        return /* estimate */ '(' + n4(cx()) + ',' + n4(cy()) + ')' +
+                'x' +
+                '(' + n4(w) + ',' + n4(h) + ')';
     }
 
     @Override

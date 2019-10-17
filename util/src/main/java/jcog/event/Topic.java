@@ -42,7 +42,7 @@ public interface Topic<X> extends Iterable<Consumer<X>> {
 
 
         for (Field field : fieldCache.computeIfAbsent(c, (cc) ->
-                Stream.of(cc.getFields()).filter(x -> x.getType().equals(Topic.class)).toArray(Field[]::new)
+                Stream.of(cc.getFields()).filter(x -> x.getType() == Topic.class).toArray(Field[]::new)
         )) {
             f.accept(field);
         }

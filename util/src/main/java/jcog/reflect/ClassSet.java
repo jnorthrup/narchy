@@ -224,7 +224,7 @@ public class ClassSet extends HashSet<Class> {
             if (o1 == null && o2 == null) return 0;
             if (o1 != null && o2 == null) return inverse ? 1 : -1;
             if (o1 == null && o2 != null) return inverse ? -1 : 1;
-            if (o1.equals(o2)) return 0;
+            if (o1 == o2) return 0;
 
             boolean assignO1O2 = o1.isAssignableFrom(o2);
             boolean assignO2O1 = o2.isAssignableFrom(o1);

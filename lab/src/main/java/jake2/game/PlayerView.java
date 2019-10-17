@@ -44,15 +44,12 @@ public class PlayerView {
      * SV_CalcRoll.
      */
     public static float SV_CalcRoll(float[] angles, float[] velocity) {
-        float sign;
-        float side;
-        float value;
 
-        side = Math3D.DotProduct(velocity, right);
-        sign = side < 0 ? -1 : 1;
+        float side = Math3D.DotProduct(velocity, right);
+        float sign = side < 0 ? -1 : 1;
         side = Math.abs(side);
 
-        value = GameBase.sv_rollangle.value;
+        float value = GameBase.sv_rollangle.value;
 
         if (side < GameBase.sv_rollspeed.value)
             side = side * value / GameBase.sv_rollspeed.value;
@@ -71,16 +68,14 @@ public class PlayerView {
      */
 
     public static void P_DamageFeedback(edict_t player) {
-        gclient_t client;
         float side;
-        float realcount, count, kick;
         float[] v = { 0, 0, 0 };
         int r, l;
         float[] power_color = { 0.0f, 1.0f, 0.0f };
         float[] acolor = { 1.0f, 1.0f, 1.0f };
         float[] bcolor = { 1.0f, 0.0f, 0.0f };
 
-        client = player.client;
+        gclient_t client = player.client;
 
         
         client.ps.stats[Defines.STAT_FLASHES] = 0;
@@ -91,8 +86,8 @@ public class PlayerView {
                 && (client.invincible_framenum <= GameBase.level.framenum))
             client.ps.stats[Defines.STAT_FLASHES] |= 2;
 
-        
-        count = (client.damage_blood + client.damage_armor + client.damage_parmor);
+
+        float count = (client.damage_blood + client.damage_armor + client.damage_parmor);
 
         if (count == 0)
             return; 
@@ -124,7 +119,7 @@ public class PlayerView {
             }
         }
 
-        realcount = count;
+        float realcount = count;
         if (count < 10)
             count = 10; 
 
@@ -174,10 +169,8 @@ public class PlayerView {
                     v);
         Math3D.VectorCopy(v, client.damage_blend);
 
-        
-        
-        
-        kick = Math.abs(client.damage_knockback);
+
+        float kick = Math.abs(client.damage_knockback);
         if (kick != 0 && player.health > 0) 
                                             
         {
@@ -219,14 +212,12 @@ public class PlayerView {
      * damage = deltavelocity*deltavelocity * 0.0001
      */
     public static void SV_CalcViewOffset(edict_t ent) {
-        float[] angles = {0, 0, 0};
-        float bob;
         float ratio;
         float delta;
         float[] v = { 0, 0, 0 };
 
-        
-        angles = ent.client.ps.kick_angles;
+
+        float[] angles = ent.client.ps.kick_angles;
 
         
         if (ent.deadflag != 0) {
@@ -291,8 +282,8 @@ public class PlayerView {
             ratio = 0;
         v[2] -= ratio * ent.client.fall_value * 0.4;
 
-        
-        bob = bobfracsin * xyspeed * GameBase.bob_up.value;
+
+        float bob = bobfracsin * xyspeed * GameBase.bob_up.value;
         if (bob > 6)
             bob = 6;
         
@@ -372,12 +363,11 @@ public class PlayerView {
      */
     public static void SV_AddBlend(float r, float g, float b, float a,
                                    float[] v_blend) {
-        float a2, a3;
 
         if (a <= 0)
             return;
-        a2 = v_blend[3] + (1 - v_blend[3]) * a; 
-        a3 = v_blend[3] / a2; 
+        float a2 = v_blend[3] + (1 - v_blend[3]) * a;
+        float a3 = v_blend[3] / a2;
 
         v_blend[0] = v_blend[0] * a3 + r * (1 - a3);
         v_blend[1] = v_blend[1] * a3 + g * (1 - a3);
@@ -389,7 +379,6 @@ public class PlayerView {
      * Calculates the blending color according to the players environment.
      */
     public static void SV_CalcBlend(edict_t ent) {
-        int contents;
         float[] vieworg = { 0, 0, 0 };
         int remaining;
 
@@ -397,7 +386,7 @@ public class PlayerView {
 
         
         Math3D.VectorAdd(ent.s.origin, ent.client.ps.viewoffset, vieworg);
-        contents = GameBase.gi.pointcontents.pointcontents(vieworg);
+        int contents = GameBase.gi.pointcontents.pointcontents(vieworg);
         if ((contents & (Defines.CONTENTS_LAVA | Defines.CONTENTS_SLIME | Defines.CONTENTS_WATER)) != 0)
             ent.client.ps.rdflags |= Defines.RDF_UNDERWATER;
         else
@@ -539,9 +528,6 @@ public class PlayerView {
      * General effect handling for a player.
      */
     public static void P_WorldEffects() {
-        boolean breather;
-        boolean envirosuit;
-        int waterlevel, old_waterlevel;
 
         if (current_player.movetype == Defines.MOVETYPE_NOCLIP) {
             current_player.air_finished = GameBase.level.time + 12; 
@@ -549,12 +535,12 @@ public class PlayerView {
             return;
         }
 
-        waterlevel = current_player.waterlevel;
-        old_waterlevel = current_client.old_waterlevel;
+        int waterlevel = current_player.waterlevel;
+        int old_waterlevel = current_client.old_waterlevel;
         current_client.old_waterlevel = waterlevel;
 
-        breather = current_client.breather_framenum > GameBase.level.framenum;
-        envirosuit = current_client.enviro_framenum > GameBase.level.framenum;
+        boolean breather = current_client.breather_framenum > GameBase.level.framenum;
+        boolean envirosuit = current_client.enviro_framenum > GameBase.level.framenum;
 
         
         
@@ -834,16 +820,14 @@ public class PlayerView {
      * ===============
      */
     public static void G_SetClientFrame(edict_t ent) {
-        gclient_t client;
-        boolean duck, run;
 
         if (ent.s.modelindex != 255)
-            return; 
+            return;
 
-        client = ent.client;
+        gclient_t client = ent.client;
 
-        duck = (client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0;
-        run = xyspeed != 0;
+        boolean duck = (client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0;
+        boolean run = xyspeed != 0;
 
         boolean skip = false;
         
@@ -917,7 +901,6 @@ public class PlayerView {
      * spawning.
      */
     public static void ClientEndServerFrame(edict_t ent) {
-        float bobtime;
         int i;
 
         current_player = ent;
@@ -985,7 +968,7 @@ public class PlayerView {
                 bobmove = 0.0625f;
         }
 
-        bobtime = (current_client.bobtime += bobmove);
+        float bobtime = (current_client.bobtime += bobmove);
 
         if ((current_client.ps.pmove.pm_flags & pmove_t.PMF_DUCKED) != 0)
             bobtime *= 4;

@@ -33,14 +33,12 @@ public class ShowTokenString {
 		
 
 		Parser w = new Word().ok();
-		w.put(new IAssembler() {
-			public void accept(Assembly a) {
-				if (a.getStack().isEmpty()) {
-					a.push(new Integer(1));
-				} else {
-					Integer i = (Integer) a.pop();
-					a.push(new Integer(i.intValue() + 1));
-				}
+		w.put((IAssembler) a -> {
+			if (a.getStack().isEmpty()) {
+				a.push(new Integer(1));
+			} else {
+				Integer i = (Integer) a.pop();
+				a.push(new Integer(i.intValue() + 1));
 			}
 		});
 

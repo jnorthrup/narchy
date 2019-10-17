@@ -366,8 +366,7 @@ public final class AudioUtils {
      * @return a URL if successful, null otherwise.
      */
     private static URL urlFromString(String s) {
-        URL url = null;
-        url = ClassLoader.getSystemResource(s);
+        URL url = ClassLoader.getSystemResource(s);
         if (url != null) {
             return url;
         }

@@ -101,10 +101,10 @@ public class Curve2 {
         if ((x < this.xs[0]) || (x > this.xs[size - 1])) return -1;
 
         
-        int idxHi, idxLo, idxMid;
+        int idxMid;
 
-        idxLo = 0;
-        idxHi = size - 1;
+        int idxLo = 0;
+        int idxHi = size - 1;
         while ((idxHi - idxLo) > 1) {
             idxMid = (idxHi + idxLo) >> 1;
             if (x >= this.xs[idxMid]) idxLo = idxMid;
@@ -258,26 +258,21 @@ public class Curve2 {
 
     private float linear(float x, int idxLo) {
 
-        int idxHi;
-        float h, b, a;
-
-        idxHi = idxLo + 1;
-        h = this.xs[idxHi] - this.xs[idxLo];
-        a = (this.xs[idxHi] - x) / h;
-        b = 1.0f - a;
+        int idxHi = idxLo + 1;
+        float h = this.xs[idxHi] - this.xs[idxLo];
+        float a = (this.xs[idxHi] - x) / h;
+        float b = 1.0f - a;
 
         return (a * this.ys[idxLo] + b * this.ys[idxHi]);
     }
 
     
     private float spline(float x, int idxLo) {
-        int idxHi;
-        float h, b, a;
 
-        idxHi = idxLo + 1;
-        h = this.xs[idxHi] - this.xs[idxLo];
-        a = (this.xs[idxHi] - x) / h;
-        b = 1.0f - a; 
+        int idxHi = idxLo + 1;
+        float h = this.xs[idxHi] - this.xs[idxLo];
+        float a = (this.xs[idxHi] - x) / h;
+        float b = 1.0f - a;
 
         return (a * this.ys[idxLo] + b * this.ys[idxHi] +
                 ((a * a * a - a) * yDrv[idxLo] + (b * b * b - b) * yDrv[idxHi]) * (h * h) / 6.0f);

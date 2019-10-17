@@ -81,13 +81,11 @@ public class MJRules {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddRules() {
-		MJTools mjT;
-		Vector vLines;
-		int i = -1, iGame = -1;
+        int i = -1, iGame = -1;
 		String sBff, sNam, sDef;
 
-		vLines = new Vector();
-		mjT = new MJTools();
+        Vector vLines = new Vector();
+        MJTools mjT = new MJTools();
 		if (mjT.LoadResTextFile("rul.txt", vLines)) 
 		{
 			for (i = 0; i < vLines.size(); i++) {
@@ -229,9 +227,9 @@ public class MJRules {
 	
 	public String GetRuleDef(String sGameName, String sRuleName) {
 		String sRuleDef = "";
-		int i, iGame;
+		int i;
 
-		iGame = GetGameIndex(sGameName);
+        int iGame = GetGameIndex(sGameName);
 		if (iGame >= 0) {
 			for (i = 0; i < Rules[iGame].size(); i++) {
 				if (sRuleName
@@ -249,9 +247,9 @@ public class MJRules {
 	
 	public String GetRuleName(String sGameName, String sRuleDef) {
 		String sRuleName = "";
-		int i, iGame = -1;
+		int i;
 
-		iGame = GetGameIndex(sGameName);
+        int iGame = GetGameIndex(sGameName);
 		if (iGame >= 0) {
 			for (i = 0; i < Rules[iGame].size(); i++) {
 				if (sRuleDef

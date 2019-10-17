@@ -706,17 +706,15 @@ public class M_Insane {
         public String getID() { return "insane_pain"; }
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
-            int l, r;
+            int l;
 
-            
-            
 
             if (GameBase.level.time < self.pain_debounce_time)
                 return;
 
             self.pain_debounce_time = GameBase.level.time + 3;
 
-            r = 1 + (Lib.rand() & 1);
+            int r = 1 + (Lib.rand() & 1);
             if (self.health < 25)
                 l = 25;
             else if (self.health < 50)

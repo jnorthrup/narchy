@@ -149,20 +149,14 @@ public class a extends GamePanel {
 			int b_fatigue = 0;
 			int b_exhaustion = 0;
 			int b_push = 0;
-			double b_x = 0;
-			double b_y = 0;
-			boolean[] inventory = new boolean[3];
+            boolean[] inventory = new boolean[3];
 			int bullets = 6;
 			int jacket_hp = 5;
 
 			
 			int v_cooldown = 0;
 			int v_dmg = 0;
-			double v_x = 0;
-			double v_y = 0;
-			double v_b_x = 0;
-			double v_b_y = 0;
-			int[][] v_map = new int[T_H][T_W];
+            int[][] v_map = new int[T_H][T_W];
 			int vantage_index = 0;
 			boolean v_seen = false;
 
@@ -207,13 +201,13 @@ public class a extends GamePanel {
 			
 			
 			int off = r.nextInt(8) + 1;
-			b_y = Y_VANTAGES[off] + 0.5;
-			b_x = X_VANTAGES[off] + 0.5;
-			v_b_y = b_y;
-			v_b_x = b_x;
+            double b_y = Y_VANTAGES[off] + 0.5;
+            double b_x = X_VANTAGES[off] + 0.5;
+            double v_b_y = b_y;
+            double v_b_x = b_x;
 			off += r.nextBoolean() ? -1 : 1;
-			v_y = Y_VANTAGES[off];
-			v_x = X_VANTAGES[off];
+            double v_y = Y_VANTAGES[off];
+            double v_x = X_VANTAGES[off];
 			
 			while (true) {
 				if (!playing) {

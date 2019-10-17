@@ -231,10 +231,9 @@ public class HMM implements Serializable{
 	 * @return probability that sequence o belongs to this hmm
 	 */
 	public double getProbability(int[] o) {
-		double prob;
-		double[][] forward = this.forwardProc(o);
+        double[][] forward = this.forwardProc(o);
 
-        prob = Arrays.stream(forward).mapToDouble(doubles -> doubles[doubles.length - 1]).sum();
+        double prob = Arrays.stream(forward).mapToDouble(doubles -> doubles[doubles.length - 1]).sum();
 		return prob;
 	}
 	

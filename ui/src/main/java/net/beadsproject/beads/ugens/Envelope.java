@@ -306,10 +306,9 @@ public class Envelope extends UGen {
                     iChanged = true;
                 } else {
                     iChanged = true;
-                    float ratio;
-                    
-                    
-                    ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
+
+
+                    float ratio = currentSegment.curvature != 1.0f ? (float) Math.pow((double) currentTime / currentSegment.duration, currentSegment.curvature) : (float) currentTime / currentSegment.duration;
                     currentValue = (1f - ratio) * currentStartValue + ratio * currentSegment.endValue;
                     currentTime++;
                     if (currentTime > currentSegment.duration) getNextSegment();

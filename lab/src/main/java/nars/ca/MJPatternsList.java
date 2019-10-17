@@ -52,13 +52,11 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	private void AddPatterns() {
-		MJTools mjT;
-		Vector vLines;
-		int i = -1, iGame = -1;
+        int i = -1, iGame = -1;
 		String sBff;
 
-		vLines = new Vector();
-		mjT = new MJTools();
+        Vector vLines = new Vector();
+        MJTools mjT = new MJTools();
 		if (mjT.LoadResTextFile("pat.txt", vLines)) // load the file with pattern names
 		{
 			for (i = 0; i < vLines.size(); i++) {
@@ -82,12 +80,12 @@ public class MJPatternsList extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitList() {
-		int i, iGame;
-		sRuleName = mjUI.cmbRules.getSelectedItem();
+		int i;
+        sRuleName = mjUI.cmbRules.getSelectedItem();
 		sGameName = mjUI.cmbGames.getSelectedItem();
 
 		LstFiles.clear();
-		iGame = mjUI.mjr.GetGameIndex(sGameName);
+        int iGame = mjUI.mjr.GetGameIndex(sGameName);
 		if (mjUI.mjr.IsGameIdxValid(iGame))
 			for (i = 0; i < vPatterns[iGame].size(); i++)
 				if (((String) vPatterns[iGame].elementAt(i))

@@ -59,13 +59,11 @@ public class Follow1DTwoPoint implements RLEnvironment {
             g.fillRect(
                     0, 0, getWidth(), getHeight());
 
-            int prevY, prevX, i;
-
             final int margin = 10;
-            
-            prevX = 0;
-            prevY = 0;
-            i = 0;
+
+            int prevX = 0;
+            int prevY = 0;
+            int i = 0;
 
             g.setColor(Color.green);
             for (double _y : _targets) {

@@ -136,9 +136,9 @@ public abstract class KeyCode_FileBased {
 
                 } else if (fc == 'c') {
                     StringTokenizer st = new StringTokenizer(line);
-                    String s = st.nextToken();
+                    st.nextToken();
 
-                    s = st.nextToken();
+                    String s = st.nextToken();
                     mapCode = Integer.decode(s);
                     mapCodeSet = true;
                 }
@@ -245,11 +245,9 @@ public abstract class KeyCode_FileBased {
 
         String up = "" + ((char) UP);
         String down = "" + ((char) DOWN);
-        String quietup = up;
-        String quietdown = down;
 
-        quietup = "" + ((char) QUIETUP);
-        quietdown = "" + ((char) QUIETDOWN);
+        String quietup = "" + ((char) QUIETUP);
+        String quietdown = "" + ((char) QUIETDOWN);
 
         if (state[SHIFT][BEFORE] != state[SHIFT][AFTER]) {
             if (state[SHIFT][BEFORE])
@@ -502,13 +500,12 @@ public abstract class KeyCode_FileBased {
      * send to server
      */
     public String getKeyStrokes(KeyEvent e) {
-        String codes = "";
         MapDef d = getDef(e);
 
         if (d == null)
             return "";
 
-        codes = stateChanges(e, d);
+        String codes = stateChanges(e, d);
 
         String type = "";
 

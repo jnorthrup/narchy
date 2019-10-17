@@ -694,15 +694,13 @@ abstract public class ArrayBag<X, Y extends Prioritizable> extends Bag<X, Y> {
 
         X key = key(x);
 
-        long l;
-
         Map<X, Y> map = table.map;
 //        if (map instanceof ConcurrentMap) {
 //            //check map first, and elide acquiring a lock if merge can be performed and doesnt affect priority
 //        } else {
         //l = lock.readLock();
 //        }
-        l = lock.writeLock();
+        long l = lock.writeLock();
 
         Y existing = map.get(key);
 

@@ -186,13 +186,12 @@ public class RectLongND implements HyperRegion, Serializable, Comparable<RectLon
         if (min.equals(max)) {
             return min.toString();
         } else {
-            final StringBuilder sb = new StringBuilder();
-            sb.append('(');
-            sb.append(min);
-            sb.append(',');
-            sb.append(max);
-            sb.append(')');
-            return sb.toString();
+            String sb = "(" +
+                    min +
+                    ',' +
+                    max +
+                    ')';
+            return sb;
         }
     }
 

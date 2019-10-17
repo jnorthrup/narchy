@@ -28,18 +28,14 @@ public class ShowNewTerminals {
 
 		
 
-		variable.put(new IAssembler() {
-			public void accept(Assembly a) {
-				Object o = a.pop();
-				a.push("VAR(" + o + ')');
-			}
+		variable.put((IAssembler) a -> {
+			Object o = a.pop();
+			a.push("VAR(" + o + ')');
 		});
 
-		known.put(new IAssembler() {
-			public void accept(Assembly a) {
-				Object o = a.pop();
-				a.push("KNOWN(" + o + ')');
-			}
+		known.put((IAssembler) a -> {
+			Object o = a.pop();
+			a.push("KNOWN(" + o + ')');
 		});
 
 		

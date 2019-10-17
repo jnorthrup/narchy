@@ -154,9 +154,8 @@ public class BasicPath<N, E> extends AbstractPath<N, E> {
     @Override
     public int count(N n) {
         if (n == null) return 0;
-        int cnt;
         int s = nodeCount();
-        cnt = (int) IntStream.range(0, s).filter(ni -> n.equals(node(ni))).count();
+        int cnt = (int) IntStream.range(0, s).filter(ni -> n.equals(node(ni))).count();
 
         return cnt;
     }

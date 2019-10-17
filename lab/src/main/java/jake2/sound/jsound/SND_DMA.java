@@ -146,11 +146,10 @@ public class SND_DMA extends SND_MIX {
      * ================ S_Init ================
      */
     public static void Init() {
-        cvar_t cv;
 
         Com.Printf("\n------- sound initialization -------\n");
 
-        cv = Cvar.Get("s_initsound", "0", 0);
+        cvar_t cv = Cvar.Get("s_initsound", "0", 0);
         if (cv.value == 0.0f)
             Com.Printf("not initializing.\n");
         else {
@@ -249,7 +248,6 @@ public class SND_DMA extends SND_MIX {
      */
     static sfx_t FindName(String name, boolean create) {
         int i;
-        sfx_t sfx = null;
 
         if (name == null)
             Com.Error(ERR_FATAL, "S_FindName: NULL\n");
@@ -280,7 +278,7 @@ public class SND_DMA extends SND_MIX {
             num_sfx++;
         }
 
-        sfx = known_sfx[i];
+        sfx_t sfx = known_sfx[i];
         
         sfx.clear();
         sfx.name = name;
@@ -295,8 +293,7 @@ public class SND_DMA extends SND_MIX {
      * ==================
      */
     static sfx_t AliasName(String aliasname, String truename) {
-        sfx_t sfx = null;
-        
+
         int i;
 
         
@@ -313,7 +310,7 @@ public class SND_DMA extends SND_MIX {
             num_sfx++;
         }
 
-        sfx = known_sfx[i];
+        sfx_t sfx = known_sfx[i];
         
         
         sfx.name = aliasname;
@@ -339,12 +336,11 @@ public class SND_DMA extends SND_MIX {
      * ==================
      */
     public static sfx_t RegisterSound(String name) {
-        sfx_t sfx = null;
 
         if (!sound_started)
             return null;
 
-        sfx = FindName(name, true);
+        sfx_t sfx = FindName(name, true);
         sfx.registration_sequence = s_registration_sequence;
 
         if (!s_registering)
@@ -403,16 +399,13 @@ public class SND_DMA extends SND_MIX {
      */
     static channel_t PickChannel(int entnum, int entchannel) {
         int ch_idx;
-        int first_to_die;
-        int life_left;
-        channel_t ch;
 
         if (entchannel < 0)
             Com.Error(ERR_DROP, "S_PickChannel: entchannel<0");
 
-        
-        first_to_die = -1;
-        life_left = 0x7fffffff;
+
+        int first_to_die = -1;
+        int life_left = 0x7fffffff;
         for (ch_idx = 0; ch_idx < MAX_CHANNELS; ch_idx++) {
             if (entchannel != 0 
                     && channels[ch_idx].entnum == entnum
@@ -440,7 +433,7 @@ public class SND_DMA extends SND_MIX {
         if (first_to_die == -1)
             return null;
 
-        ch = channels[first_to_die];
+        channel_t ch = channels[first_to_die];
         
         ch.clear();
 
@@ -454,9 +447,8 @@ public class SND_DMA extends SND_MIX {
      */
     static void SpatializeOrigin(float[] origin, float master_vol,
             float dist_mult, channel_t ch) {
-        float dot;
         float dist;
-        float lscale, rscale, scale;
+        float lscale, rscale;
         float[] source_vec = { 0, 0, 0 };
 
         if (cls.state != ca_active) {
@@ -471,9 +463,9 @@ public class SND_DMA extends SND_MIX {
         dist -= SOUND_FULLVOLUME;
         if (dist < 0)
             dist = 0; 
-        dist *= dist_mult; 
+        dist *= dist_mult;
 
-        dot = Math3D.DotProduct(listener_right, source_vec);
+        float dot = Math3D.DotProduct(listener_right, source_vec);
 
         if (dma.channels == 1 || dist_mult == 0.0f) { 
                                                       
@@ -484,8 +476,8 @@ public class SND_DMA extends SND_MIX {
             lscale = 0.5f * (1.0f - dot);
         }
 
-        
-        scale = (1.0f - dist) * rscale;
+
+        float scale = (1.0f - dist) * rscale;
         ch.rightvol = (int) (master_vol * scale);
         if (ch.rightvol < 0)
             ch.rightvol = 0;
@@ -521,9 +513,8 @@ public class SND_DMA extends SND_MIX {
      * ================= S_AllocPlaysound =================
      */
     static playsound_t AllocPlaysound() {
-        playsound_t ps;
 
-        ps = s_freeplays.next;
+        playsound_t ps = s_freeplays.next;
         if (ps == s_freeplays)
             return null; 
 
@@ -556,13 +547,11 @@ public class SND_DMA extends SND_MIX {
      * directly by S_Play*, but only by the update loop. ===============
      */
     static void IssuePlaysound(playsound_t ps) {
-        channel_t ch;
-        sfxcache_t sc;
 
         if (s_show.value != 0.0f)
             Com.Printf("Issue " + ps.begin + '\n');
-        
-        ch = PickChannel(ps.entnum, ps.entchannel);
+
+        channel_t ch = PickChannel(ps.entnum, ps.entchannel);
         if (ch == null) {
             FreePlaysound(ps);
             return;
@@ -583,7 +572,7 @@ public class SND_DMA extends SND_MIX {
         Spatialize(ch);
 
         ch.pos = 0;
-        sc = WaveLoader.LoadSound(ch.sfx);
+        sfxcache_t sc = WaveLoader.LoadSound(ch.sfx);
         ch.end = paintedtime + sc.length;
 
         
@@ -591,9 +580,8 @@ public class SND_DMA extends SND_MIX {
     }
 
     static sfx_t RegisterSexedSound(entity_state_t ent, String base) {
-        sfx_t sfx = null;
 
-        
+
         String model = "male";
         int n = CS_PLAYERSKINS + ent.number - 1;
         if (cl.configstrings[n] != null) {
@@ -613,9 +601,9 @@ public class SND_DMA extends SND_MIX {
 
         
         String sexedFilename = "#players/" + model + '/' + base.substring(1);
-        
-        
-        sfx = FindName(sexedFilename, false);
+
+
+        sfx_t sfx = FindName(sexedFilename, false);
 
         if (sfx == null) {
             
@@ -724,12 +712,11 @@ public class SND_DMA extends SND_MIX {
      * ================== S_StartLocalSound ==================
      */
     public static void StartLocalSound(String sound) {
-        sfx_t sfx;
 
         if (!sound_started)
             return;
 
-        sfx = RegisterSound(sound);
+        sfx_t sfx = RegisterSound(sound);
         if (sfx == null) {
             Com.Printf("S_StartLocalSound: can't cache " + sound + '\n');
             return;
@@ -887,14 +874,13 @@ public class SND_DMA extends SND_MIX {
         
         int i;
         int src, dst;
-        float scale;
 
         if (!sound_started)
             return;
 
         if (s_rawend < paintedtime)
             s_rawend = paintedtime;
-        scale = (float) rate / dma.speed;
+        float scale = (float) rate / dma.speed;
 
         
         if (channels == 2 && width == 2) {
@@ -1042,16 +1028,12 @@ public class SND_DMA extends SND_MIX {
     static int oldsamplepos;
 
     static void GetSoundtime() {
-        int samplepos;
-        
-        
-        int fullsamples;
 
-        fullsamples = dma.samples / dma.channels;
 
-        
-        
-        samplepos = SNDDMA_GetDMAPos();
+        int fullsamples = dma.samples / dma.channels;
+
+
+        int samplepos = SNDDMA_GetDMAPos();
 
         if (samplepos < oldsamplepos) {
             buffers++; 
@@ -1070,7 +1052,6 @@ public class SND_DMA extends SND_MIX {
 
     static void Update_() {
         int endtime;
-        int samps;
 
         if (!sound_started)
             return;
@@ -1096,7 +1077,7 @@ public class SND_DMA extends SND_MIX {
         
         endtime = (endtime + dma.submission_chunk - 1)
                 & ~(dma.submission_chunk - 1);
-        samps = dma.samples >> (dma.channels - 1);
+        int samps = dma.samples >> (dma.channels - 1);
         if (endtime - soundtime > samps)
             endtime = soundtime + samps;
 
@@ -1114,11 +1095,10 @@ public class SND_DMA extends SND_MIX {
      */
 
     static void Play() {
-        int i;
         String name;
         sfx_t sfx;
 
-        i = 1;
+        int i = 1;
         while (i < Cmd.Argc()) {
             name = Cmd.Argv(i);
             if (name.indexOf('.') == -1)
@@ -1134,9 +1114,9 @@ public class SND_DMA extends SND_MIX {
         int i;
         sfx_t sfx;
         sfxcache_t sc;
-        int size, total;
+        int size;
 
-        total = 0;
+        int total = 0;
         for (i = 0; i < num_sfx; i++) {
             sfx = known_sfx[i];
             if (sfx.registration_sequence == 0)

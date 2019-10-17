@@ -33,9 +33,7 @@ public class GameChase {
 
     public static void UpdateChaseCam(edict_t ent) {
         float[] o = { 0, 0, 0 }, ownerv = { 0, 0, 0 }, goal = { 0, 0, 0 };
-        edict_t targ;
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-        trace_t trace;
         int i;
         float[] oldgoal = { 0, 0, 0 };
         float[] angles = { 0, 0, 0 };
@@ -51,8 +49,8 @@ public class GameChase {
                 return;
             }
         }
-    
-        targ = ent.client.chase_target;
+
+        edict_t targ = ent.client.chase_target;
     
         Math3D.VectorCopy(targ.s.origin, ownerv);
         Math3D.VectorCopy(ent.s.origin, oldgoal);
@@ -72,8 +70,8 @@ public class GameChase {
         
         if (targ.groundentity == null)
             o[2] += 16;
-    
-        trace = game_import_t.trace(ownerv, Globals.vec3_origin,
+
+        trace_t trace = game_import_t.trace(ownerv, Globals.vec3_origin,
                 Globals.vec3_origin, o, targ, Defines.MASK_SOLID);
     
         Math3D.VectorCopy(trace.endpos, goal);
@@ -125,13 +123,12 @@ public class GameChase {
     }
 
     public static void ChaseNext(edict_t ent) {
-        int i;
         edict_t e;
     
         if (null == ent.client.chase_target)
             return;
-    
-        i = ent.client.chase_target.index;
+
+        int i = ent.client.chase_target.index;
         do {
             i++;
             if (i > GameBase.maxclients.value)
@@ -149,13 +146,12 @@ public class GameChase {
     }
 
     public static void ChasePrev(edict_t ent) {
-        int i;
         edict_t e;
     
         if (ent.client.chase_target == null)
             return;
-    
-        i = ent.client.chase_target.index;
+
+        int i = ent.client.chase_target.index;
         do {
             i--;
             if (i < 1)

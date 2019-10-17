@@ -259,11 +259,9 @@ public abstract class RdesktopCanvas extends Canvas {
      */
     public int[] getImage(int x, int y, int cx, int cy) {
 
-        int[] data = new int[cx * cy];
+        int[] data = backstore.getRGB(x, y, cx, cy, null,
 
-        data = backstore.getRGB(x, y, cx, cy, null, 
-                
-                0, 
+                0,
                 cx);
 
         return data;
@@ -957,11 +955,10 @@ public abstract class RdesktopCanvas extends Canvas {
     public void drawGlyph(int mixmode, int x, int y, int cx, int cy,
                           byte[] data, int bgcolor, int fgcolor) {
 
-        int pdata = 0;
         int index = 0x80;
 
         int bytes_per_row = (cx - 1) / 8 + 1;
-        int newx, newy, newcx, newcy;
+        int newx;
 
         int Bpp = Options.Bpp;
 
@@ -989,7 +986,7 @@ public abstract class RdesktopCanvas extends Canvas {
             newx = this.left;
         else
             newx = x;
-        newcx = clipright - x + 1; 
+        int newcx = clipright - x + 1;
 
         int clipbottom = y + cy - 1;
         if (clipbottom > this.bottom)
@@ -997,13 +994,12 @@ public abstract class RdesktopCanvas extends Canvas {
         int top = this.top;
 
 
+        int newy = y;
 
-        newy = y;
-
-        newcy = clipbottom - newy + 1;
+        int newcy = clipbottom - newy + 1;
 
         int pbackstore = (newy * this.width) + x;
-        pdata = bytes_per_row * (newy - y); 
+        int pdata = bytes_per_row * (newy - y);
 
         if (mixmode == MIX_TRANSPARENT) { 
             for (int i = 0; i < newcy; i++) {
@@ -1073,16 +1069,15 @@ public abstract class RdesktopCanvas extends Canvas {
      */
     public Cursor createCursor(int cache_idx, int x, int y, int w, int h, byte[] andmask,
                                byte[] xormask, int bpp) {
-        byte[] cursor, mask;
         Point p = new Point(x, y);
         int pmask = 0, pcursor = 0, pandmask = 0;
-        int scanline, offset, delta;
+        int delta;
         int i, j, k = 0;
-        scanline = (w + 7) / 8;
-        offset = scanline * h;
+        int scanline = (w + 7) / 8;
+        int offset = scanline * h;
 
-        cursor = new byte[offset];
-        mask = new byte[offset];
+        byte[] cursor = new byte[offset];
+        byte[] mask = new byte[offset];
 
         if (bpp == 1) {
             offset = 0;

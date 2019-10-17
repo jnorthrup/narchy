@@ -99,16 +99,15 @@ public class BagLab {
     public static void main(String[] arg) {
 
         int capacity = 512;
-        BagLab bagLab;
-        bagLab = new BagLab(
+        BagLab bagLab = new BagLab(
                 new PLinkArrayBag(
                         //PriMerge.plus,
                         PriMerge.or,
                         capacity
-                      )
+                )
 
                 //new DefaultHijackBag<>(avg,capacity,4)
-                
+
         );
 
 

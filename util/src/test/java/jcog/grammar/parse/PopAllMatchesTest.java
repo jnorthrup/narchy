@@ -104,11 +104,9 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
     void sequenceOfRepetition() {
-		Parser rep = new Repetition(new Word()).put(new IAssembler() {
-			public void accept(Assembly a) {
-				List<Object> list = a.popAllMatches();
-				a.push(list);
-			}
+		Parser rep = new Repetition(new Word()).put((IAssembler) a -> {
+			List<Object> list = a.popAllMatches();
+			a.push(list);
 		});
 		parser = new Seq().get(new Symbol("(")).get(rep).get(new Symbol(")"));
 		result = bestMatch("(a b c d)");
@@ -120,16 +118,8 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
     void stackManipulatedByAssemblers() {
-		Consumer<Assembly> deleteAssembler = new IAssembler() {
-			public void accept(Assembly a) {
-				a.pop();
-			}
-		};
-		Consumer<Assembly> changeToStringAssembler = new IAssembler() {
-			public void accept(Assembly a) {
-				a.push(((Token) a.pop()).sval());
-			}
-		};
+		Consumer<Assembly> deleteAssembler = (IAssembler) Assembly::pop;
+		Consumer<Assembly> changeToStringAssembler = (IAssembler) a -> a.push(((Token) a.pop()).sval());
 		parser = new Seq().get(new Literal("abc").put(deleteAssembler)).get(new Word().put(changeToStringAssembler)).get(new Symbol(",").ok());
 		result = bestMatch("abc hello,");
 		List<Object> allMatches = result.popAllMatches();
@@ -140,11 +130,7 @@ public class PopAllMatchesTest extends AbstractParsingTest {
 
 	@Test
     void commaSeparatedListInBrackets() {
-		Consumer<Assembly> changeToStringAssembler = new IAssembler() {
-			public void accept(Assembly a) {
-				a.push(((Token) a.pop()).sval());
-			}
-		};
+		Consumer<Assembly> changeToStringAssembler = (IAssembler) a -> a.push(((Token) a.pop()).sval());
 		Seq commaList = (Seq) new Seq().get(new Word().put(changeToStringAssembler));
 		Parser commaTerm = new Seq().get(new Symbol(",").ok()).get(new Word().put(changeToStringAssembler));
 		commaList.get(new Repetition(commaTerm));

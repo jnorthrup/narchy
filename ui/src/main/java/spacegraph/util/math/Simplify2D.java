@@ -138,10 +138,10 @@ public class Simplify2D {
 					"areaTolerance: must be equal to or greater then zero.");
 		}
 		FasterList<v2> result = new FasterList<>();
-		jcog.math.v2 v1, v2, v3;
+		jcog.math.v2 v3;
 		float old1, old2, new1;
-		v1 = vertices.get(vertices.size() - 2);
-		v2 = vertices.get(vertices.size() - 1);
+        v2 v1 = vertices.get(vertices.size() - 2);
+        v2 v2 = vertices.get(vertices.size() - 1);
 		areaTolerance *= 2;
 		for (int index = 0; index < vertices.size(); ++index, v2 = v3) {
 			if (index == vertices.size() - 1) {

@@ -232,12 +232,11 @@ public class GameSave {
      */
     public static void WriteGame(String filename, boolean autosave) {
         try {
-            QuakeFile f;
 
             if (!autosave)
                 PlayerClient.SaveClientData();
 
-            f = new QuakeFile(filename, "rw");
+            QuakeFile f = new QuakeFile(filename, "rw");
 
             if (f == null)
                 game_import_t.error("Couldn't write to " + filename);
@@ -286,9 +285,8 @@ public class GameSave {
         try {
             int i;
             edict_t ent;
-            QuakeFile f;
 
-            f = new QuakeFile(filename, "rw");
+            QuakeFile f = new QuakeFile(filename, "rw");
             if (f == null)
                 game_import_t.error("Couldn't open for writing: " + filename);
 

@@ -252,9 +252,8 @@ public class World implements java.io.Serializable {
 
     public void draw(GraphicsHandler g, int x, int y, int screenWidth, int screenHeight,
                      float cameraX, float cameraY, int tileSize) {
-        Int2 pos;
 
-        pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth, screenHeight,
+        Int2 pos = StockMethods.computeDrawLocationInPlace(cameraX, cameraY, screenWidth, screenHeight,
                 tileSize, 0, height / 2);
         g.setColor(Color.darkGray);
         g.fillRect(pos.x, pos.y, width * tileSize, height * tileSize / 2);

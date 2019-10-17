@@ -132,7 +132,6 @@ public abstract class Warp extends Model {
         float frac;
         float s, t;
         float[] total = { 0, 0, 0 };
-        float total_s, total_t;
 
         if (numverts > 60)
             Com.Error(Defines.ERR_DROP, "numverts = " + numverts);
@@ -201,8 +200,8 @@ public abstract class Warp extends Model {
         poly.next = warpface.polys;
         warpface.polys = poly;
         Math3D.VectorClear(total);
-        total_s = 0;
-        total_t = 0;
+        float total_s = 0;
+        float total_t = 0;
         for (i = 0; i < numverts; i++) {
             poly.x(i + 1, verts[i][0]);
             poly.y(i + 1, verts[i][1]);
@@ -429,7 +428,6 @@ public abstract class Warp extends Model {
     final float[][][][] newv = new float[6][2][MAX_CLIP_VERTS][3];
 
     void ClipSkyPolygon(int nump, float[][] vecs, int stage) {
-        float[] norm;
         float[] v;
         boolean front, back;
         float d, e;
@@ -444,7 +442,7 @@ public abstract class Warp extends Model {
         }
 
         front = back = false;
-        norm = skyclip[stage];
+        float[] norm = skyclip[stage];
         for (i = 0; i < nump; i++) {
             d = Math3D.DotProduct(vecs[i], norm);
             if (d > ON_EPSILON) {

@@ -284,11 +284,10 @@ public class Utils {
         char[] cc = charset.toSortedArray();
         
         char start;
-        char old;
         char first = cc[0];
         char last = cc[cc.length-1];
 
-        old = start = first;
+        char old = start = first;
 
         for (int i = 1; i < cc.length; i++) {
             char c = cc[i];

@@ -1384,9 +1384,8 @@ public enum Util {
 	}
 
 	public static <X> int sum(ToIntFunction<X> value, int from, int to, X... xx) {
-		int y;
-		int len = to - from;
-        y = IntStream.range(from, len).map(i -> value.applyAsInt(xx[i])).sum();
+        int len = to - from;
+        int y = IntStream.range(from, len).map(i -> value.applyAsInt(xx[i])).sum();
 		return y;
 	}
 

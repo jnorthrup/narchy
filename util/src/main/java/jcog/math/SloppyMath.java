@@ -83,8 +83,7 @@ public final class SloppyMath {
 	 * Returns the minimum of three int values.
 	 */
   public static int max(int a, int b, int c) {
-    int ma;
-    ma = a;
+      int ma = a;
     if (b > ma) {
       ma = b;
     }
@@ -99,9 +98,8 @@ public final class SloppyMath {
 	 * Returns the minimum of three int values.
 	 */
   public static int min(int a, int b, int c) {
-    int mi;
 
-    mi = a;
+      int mi = a;
     if (b < mi) {
       mi = b;
     }

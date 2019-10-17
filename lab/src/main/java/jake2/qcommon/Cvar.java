@@ -54,10 +54,9 @@ public class Cvar extends Globals {
     static final xcommand_t Set_f = new xcommand_t() {
         @Override
         public void execute() {
-            int c;
             int flags;
 
-            c = Cmd.Argc();
+            int c = Cmd.Argc();
             if (c != 3 && c != 4) {
                 Com.Printf("usage: setAt <variable> <value> [u / s]\n");
                 return;
@@ -89,9 +88,8 @@ public class Cvar extends Globals {
         @Override
         public void execute() {
             cvar_t var;
-            int i;
 
-            i = 0;
+            int i = 0;
             for (var = Globals.cvar_vars; var != null; var = var.next, i++) {
                 if ((var.flags & Defines.CVAR_ARCHIVE) != 0)
                     Com.Printf("*");
@@ -124,7 +122,6 @@ public class Cvar extends Globals {
      * @return
      */
     public static cvar_t Get(String var_name, String var_value, int flags) {
-        cvar_t var;
 
         if ((flags & (Defines.CVAR_USERINFO | Defines.CVAR_SERVERINFO)) != 0) {
             if (!Cvar.InfoValidate(var_name)) {
@@ -133,7 +130,7 @@ public class Cvar extends Globals {
             }
         }
 
-        var = FindVar(var_name);
+        cvar_t var = FindVar(var_name);
         if (var != null) {
             var.flags |= flags;
             return var;
@@ -168,8 +165,7 @@ public class Cvar extends Globals {
     }
 
     public static String VariableString(String var_name) {
-        cvar_t var;
-        var = Cvar.FindVar(var_name);
+        cvar_t var = Cvar.FindVar(var_name);
         return (var == null) ? "" : var.string;
     }
 
@@ -188,9 +184,8 @@ public class Cvar extends Globals {
      * Creates a variable if not found and sets their value, the parsed float value and their flags.
      */
     public static cvar_t FullSet(String var_name, String value, int flags) {
-        cvar_t var;
 
-        var = FindVar(var_name);
+        cvar_t var = FindVar(var_name);
         if (null == var) {
             return Get(var_name, value, flags);
         }
@@ -326,10 +321,9 @@ public class Cvar extends Globals {
      * Handles variable inspection and changing from the console.
      */
     public static boolean Command() {
-        cvar_t v;
 
 
-        v = FindVar(Cmd.Argv(0));
+        cvar_t v = FindVar(Cmd.Argv(0));
         if (v == null)
             return false;
 
@@ -344,10 +338,9 @@ public class Cvar extends Globals {
     }
 
     public static String BitInfo(int bit) {
-        String info;
         cvar_t var;
 
-        info = "";
+        String info = "";
 
         for (var = Globals.cvar_vars; var != null; var = var.next) {
             if ((var.flags & bit) != 0)
@@ -397,10 +390,9 @@ public class Cvar extends Globals {
 
     public static void WriteVariables(String path) {
         cvar_t var;
-        RandomAccessFile f;
         String buffer;
 
-        f = Lib.fopen(path, "rw");
+        RandomAccessFile f = Lib.fopen(path, "rw");
         if (f == null)
             return;
 

@@ -125,11 +125,10 @@ public final class V extends Globals {
      * =====================
      */
     static void AddLight(float[] org, float intensity, float r, float g, float b) {
-        dlight_t dl;
 
         if (r_numdlights >= MAX_DLIGHTS)
             return;
-        dl = r_dlights[r_numdlights++];
+        dlight_t dl = r_dlights[r_numdlights++];
         Math3D.VectorCopy(org, dl.origin);
         dl.intensity = intensity;
         dl.color[0] = r;
@@ -143,11 +142,10 @@ public final class V extends Globals {
      * =====================
      */
     static void AddLightStyle(int style, float r, float g, float b) {
-        lightstyle_t ls;
 
         if (style < 0 || style > MAX_LIGHTSTYLES)
             Com.Error(ERR_DROP, "Bad light style " + style);
-        ls = r_lightstyles[style];
+        lightstyle_t ls = r_lightstyles[style];
 
         ls.white = r + g + b;
         ls.rgb[0] = r;

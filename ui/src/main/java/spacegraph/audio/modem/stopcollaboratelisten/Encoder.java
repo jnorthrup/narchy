@@ -123,11 +123,10 @@ public class Encoder implements Constants {
      * @return audio samples for a duration of the hail frequency, Constants.kSOSFrequency
      */
     private static byte[] getSOSSequence() {
-        double[] signal;
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kSOSFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
+        double[] signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
         return getByteArrayFromDoubleArray(smoothWindow(signal, 0.3));
     }
 
@@ -135,11 +134,10 @@ public class Encoder implements Constants {
      * @return audio samples for a duration of the hail frequency, Constants.kHailFrequency
      */
     private static byte[] getHailSequence() {
-        double[] signal;
         //add a sinusoid of the hail frequency, amplitude kAmplitude and duration kDuration
         double innerMultiplier = Constants.kHailFrequency * (1 / kSamplingFrequency) * 2 * Math.PI;
         /*kAmplitude **/
-        signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
+        double[] signal = IntStream.range(0, kSamplesPerDuration).mapToDouble(l -> Math.cos(innerMultiplier * l)).toArray();
         return getByteArrayFromDoubleArray(smoothWindow(signal, 0.3));
     }
 

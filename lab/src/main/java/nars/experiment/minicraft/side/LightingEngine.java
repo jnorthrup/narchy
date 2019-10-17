@@ -266,13 +266,7 @@ public class LightingEngine implements Serializable {
     public static class LightValueComparator implements Comparator<LightingPoint> {
         @Override
         public int compare(LightingPoint arg0, LightingPoint arg1) {
-            if (arg0.lightValue < arg1.lightValue) {
-                return 1;
-            }
-            if (arg0.lightValue > arg1.lightValue) {
-                return -1;
-            }
-            return 0;
+            return Integer.compare(arg1.lightValue, arg0.lightValue);
         }
     }
 

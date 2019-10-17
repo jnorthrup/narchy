@@ -42,7 +42,6 @@ public final class SV {
 
     
     public static edict_t[] SV_TestEntityPosition(edict_t ent) {
-        trace_t trace;
         int mask;
 
         if (ent.clipmask != 0)
@@ -50,7 +49,7 @@ public final class SV {
         else
             mask = Defines.MASK_SOLID;
 
-        trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
+        trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs,
                 ent.s.origin, ent, mask);
 
         if (trace.startsolid)
@@ -78,9 +77,8 @@ public final class SV {
      * Runs thinking code for this frame if necessary.
      */
     public static boolean SV_RunThink(edict_t ent) {
-        float thinktime;
 
-        thinktime = ent.nextthink;
+        float thinktime = ent.nextthink;
         if (thinktime <= 0)
             return true;
         if (thinktime > GameBase.level.time + 0.001)
@@ -100,9 +98,8 @@ public final class SV {
      * Two entities have touched, so run their touch functions.
      */
     public static void SV_Impact(edict_t e1, trace_t trace) {
-        edict_t e2;
 
-        e2 = trace.ent;
+        edict_t e2 = trace.ent;
 
         if (e1.touch != null && e1.solid != Defines.SOLID_NOT)
             e1.touch.touch(e1, e2, trace.plane, trace.surface);
@@ -122,10 +119,9 @@ public final class SV {
 
     public static int SV_FlyMove(edict_t ent, float time, int mask) {
         edict_t hit;
-        int bumpcount, numbumps;
+        int bumpcount;
         float[] dir = { 0.0f, 0.0f, 0.0f };
         float d;
-        int numplanes;
         float[][] planes = new float[MAX_CLIP_PLANES][3];
         float[] primal_velocity = { 0.0f, 0.0f, 0.0f };
         float[] original_velocity = { 0.0f, 0.0f, 0.0f };
@@ -133,17 +129,15 @@ public final class SV {
         int i, j;
         trace_t trace;
         float[] end = { 0.0f, 0.0f, 0.0f };
-        float time_left;
-        int blocked;
 
-        numbumps = 4;
+        int numbumps = 4;
 
-        blocked = 0;
+        int blocked = 0;
         Math3D.VectorCopy(ent.velocity, original_velocity);
         Math3D.VectorCopy(ent.velocity, primal_velocity);
-        numplanes = 0;
+        int numplanes = 0;
 
-        time_left = time;
+        float time_left = time;
 
         ent.groundentity = null;
         for (bumpcount = 0; bumpcount < numbumps; bumpcount++) {
@@ -541,12 +535,9 @@ public final class SV {
      */
     public static void SV_Physics_Toss(edict_t ent) {
 
-        trace_t trace;
         float[] move = { 0, 0, 0 };
         float backoff;
         edict_t slave;
-        boolean wasinwater;
-        boolean isinwater;
         float[] old_origin = { 0, 0, 0 };
 
         
@@ -583,7 +574,7 @@ public final class SV {
 
         
         Math3D.VectorScale(ent.velocity, Defines.FRAMETIME, move);
-        trace = SV_PushEntity(ent, move);
+        trace_t trace = SV_PushEntity(ent, move);
         if (!ent.inuse)
             return;
 
@@ -611,10 +602,10 @@ public final class SV {
             
         }
 
-        
-        wasinwater = (ent.watertype & Defines.MASK_WATER) != 0;
+
+        boolean wasinwater = (ent.watertype & Defines.MASK_WATER) != 0;
         ent.watertype = GameBase.gi.pointcontents.pointcontents(ent.s.origin);
-        isinwater = (ent.watertype & Defines.MASK_WATER) != 0;
+        boolean isinwater = (ent.watertype & Defines.MASK_WATER) != 0;
 
         if (isinwater)
             ent.waterlevel = 1;
@@ -639,11 +630,10 @@ public final class SV {
     
     public static void SV_AddRotationalFriction(edict_t ent) {
         int n;
-        float adjustment;
 
         Math3D.VectorMA(ent.s.angles, Defines.FRAMETIME, ent.avelocity,
                 ent.s.angles);
-        adjustment = Defines.FRAMETIME * Defines.sv_stopspeed
+        float adjustment = Defines.FRAMETIME * Defines.sv_stopspeed
                 * Defines.sv_friction;
         for (n = 0; n < 3; n++) {
             if (ent.avelocity[n] > 0) {
@@ -668,23 +658,21 @@ public final class SV {
      */
 
     public static void SV_Physics_Step(edict_t ent) {
-        boolean wasonground;
         boolean hitsound = false;
         float[] vel;
         float speed, newspeed, control;
         float friction;
-        edict_t groundentity;
         int mask;
 
         
         if (ent.groundentity == null)
             M.M_CheckGround(ent);
 
-        groundentity = ent.groundentity;
+        edict_t groundentity = ent.groundentity;
 
         SV_CheckVelocity(ent);
 
-        wasonground = groundentity != null;
+        boolean wasonground = groundentity != null;
 
         if (IntStream.of(0, 1, 2).anyMatch(v -> ent.avelocity[v] != 0))
             SV_AddRotationalFriction(ent);
@@ -993,20 +981,19 @@ public final class SV {
     }
 
     public static void SV_NewChaseDir(edict_t actor, edict_t enemy, float dist) {
-        float deltax, deltay;
         float[] d = {0, 0, 0};
-        float tdir, olddir, turnaround;
+        float tdir;
 
-        
+
         if (enemy == null) {
             Com.DPrintf("SV_NewChaseDir without enemy!\n");
             return;
         }
-        olddir = Math3D.anglemod((int) (actor.ideal_yaw / 45) * 45);
-        turnaround = Math3D.anglemod(olddir - 180);
+        float olddir = Math3D.anglemod((int) (actor.ideal_yaw / 45) * 45);
+        float turnaround = Math3D.anglemod(olddir - 180);
 
-        deltax = enemy.s.origin[0] - actor.s.origin[0];
-        deltay = enemy.s.origin[1] - actor.s.origin[1];
+        float deltax = enemy.s.origin[0] - actor.s.origin[0];
+        float deltay = enemy.s.origin[1] - actor.s.origin[1];
         if (deltax > 10)
             d[1] = 0;
         else if (deltax < -10)

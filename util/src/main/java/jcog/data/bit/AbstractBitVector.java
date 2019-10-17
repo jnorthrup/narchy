@@ -644,9 +644,8 @@ public abstract class AbstractBitVector implements BitVector {
 	 */
 	
 	public String toString() {
-		String s;
-		long size = size64();
-        s = LongStream.range(0, size).mapToObj(i -> String.valueOf(getInt(i))).collect(Collectors.joining());
+        long size = size64();
+        String s = LongStream.range(0, size).mapToObj(i -> String.valueOf(getInt(i))).collect(Collectors.joining());
 		return s;
 	}
 

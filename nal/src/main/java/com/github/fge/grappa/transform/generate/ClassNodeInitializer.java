@@ -72,7 +72,7 @@ public final class ClassNodeInitializer
         try (Closer closer = Closer.create()) {
             ClassReader reader;
             InputStream in;
-            while (!Object.class.equals(ownerClass)) {
+            while (Object.class != ownerClass) {
                 annotations.removeAll(CLASS_FLAGS_CLEAR);
 
 

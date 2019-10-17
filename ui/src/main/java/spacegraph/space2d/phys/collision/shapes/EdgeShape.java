@@ -128,17 +128,14 @@ public class EdgeShape extends Shape {
     @Override
     public boolean raycast(RayCastOutput output, RayCastInput input, Transform xf, int childIndex) {
 
-        float tempx, tempy;
         final v2 v1 = m_vertex1;
         final v2 v2 = m_vertex2;
         final Rot xfq = xf;
         final jcog.math.v2 xfp = xf.pos;
 
-        
-        
-        
-        tempx = input.p1.x - xfp.x;
-        tempy = input.p1.y - xfp.y;
+
+        float tempx = input.p1.x - xfp.x;
+        float tempy = input.p1.y - xfp.y;
         final float p1x = xfq.c * tempx + xfq.s * tempy;
         final float p1y = -xfq.s * tempx + xfq.c * tempy;
 

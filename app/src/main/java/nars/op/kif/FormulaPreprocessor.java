@@ -229,8 +229,6 @@ public class FormulaPreprocessor {
                 Collection<String> quantifiedVariables = collectVariables(f.getArgument(1));
 
 
-                boolean addSortals;
-
                 HashMap<String, HashSet<String>> varDomainTypes = computeVariableTypes(f, kb);
                 Map<String, HashSet<String>> varExplicitTypes = findExplicitTypesClassesInAntecedent(kb, f);
 
@@ -241,7 +239,7 @@ public class FormulaPreprocessor {
                         varmap.remove(v);
                 }
 
-                addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(types -> types != null && !types.isEmpty());
+                boolean addSortals = quantifiedVariables.stream().map(varmap::get).anyMatch(types -> types != null && !types.isEmpty());
                 if (addSortals) {
                     if (carstr.equals(Formula.EQUANT)) sb.append("(and ");
                     else if (carstr.equals(Formula.UQUANT)) sb.append("(=> (and ");
@@ -776,10 +774,8 @@ public class FormulaPreprocessor {
      */
     private static boolean isOkForInference(Formula f, boolean query, KB kb) {
 
-        boolean pass = false;
 
-
-        pass = !(
+        boolean pass = !(
                 StringUtil.containsNonAsciiChars(f.theFormula)
 
 

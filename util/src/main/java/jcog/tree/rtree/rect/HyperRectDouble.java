@@ -122,9 +122,8 @@ public class HyperRectDouble implements HyperRegion, Serializable {
 
     @Override
     public double cost() {
-        double sigma;
         int dim = dim();
-        sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
+        double sigma = IntStream.range(0, dim).mapToDouble(i -> rangeIfFinite(i, 1 /* an infinite dimension can not be compared, so just ignore it */)).reduce(1f, (a, b) -> a * b);
         return sigma;
     }
 
@@ -203,7 +202,7 @@ public class HyperRectDouble implements HyperRegion, Serializable {
         if (min.equals(max)) {
             return min.toString();
         } else {
-            return new StringBuilder().append('(').append(min).append(',').append(max).append(')').toString();
+            return "(" + min + ',' + max + ')';
         }
     }
 

@@ -37,14 +37,12 @@ public class MJOpen {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public boolean OpenFile(String sFileName) {
-		String sBff, sFilePath;
-		MJTools mjT;
-		Vector vLines;
-		boolean fOk = false;
+		String sBff;
+        boolean fOk = false;
 		int i;
 
 		m_vCells = new Vector();
-		vLines = new Vector();
+        Vector vLines = new Vector();
 		m_vDescr = new Vector(); 
 		m_vDiv = new Vector(); 
 
@@ -60,10 +58,10 @@ public class MJOpen {
 		m_dMclVsn = 0; 
 
 		sFileName = CorrectFileName(sFileName);
-		sFilePath = mjUI.sBaseURL + "p/" + sFileName;
-		
+        String sFilePath = mjUI.sBaseURL + "p/" + sFileName;
 
-		mjT = new MJTools();
+
+        MJTools mjT = new MJTools();
 		if (mjT.LoadTextFile(sFilePath, vLines)) 
 		{
 			if (!vLines.isEmpty()) 
@@ -129,8 +127,8 @@ public class MJOpen {
 	
 	private void AddPattern() {
 		int minX, maxX, minY, maxY;
-		int x, y, sizeX, sizeY, dx, dy;
-		int i, state;
+		int x, y;
+        int i, state;
 		CACell cell = new CACell();
 
 		
@@ -139,8 +137,8 @@ public class MJOpen {
 
 		
 		CalcMinRectangle();
-		sizeX = m_rectMaxX - m_rectMinX;
-		sizeY = m_rectMaxY - m_rectMinY;
+        int sizeX = m_rectMaxX - m_rectMinX;
+        int sizeY = m_rectMaxY - m_rectMinY;
 		if ((m_BSizeX > 0) && (m_BSizeY > 0)) 
 		{
 			mjb.SetBoardSize(m_BSizeX, m_BSizeY);
@@ -157,8 +155,8 @@ public class MJOpen {
 
 		
 		mjb.Clear(false);
-		dx = mjb.UnivSize.x / 2 - (m_rectMaxX + m_rectMinX) / 2 - 1;
-		dy = mjb.GameType == MJRules.GAMTYP_2D ? mjb.UnivSize.y / 2 - (m_rectMaxY + m_rectMinY) / 2 - 1 : 0;
+        int dx = mjb.UnivSize.x / 2 - (m_rectMaxX + m_rectMinX) / 2 - 1;
+        int dy = mjb.GameType == MJRules.GAMTYP_2D ? mjb.UnivSize.y / 2 - (m_rectMaxY + m_rectMinY) / 2 - 1 : 0;
 		for (i = 0; i < m_vCells.size(); i++) {
 			cell = m_vCells.get(i);
 			x = cell.x + dx;
@@ -341,8 +339,7 @@ public class MJOpen {
 	private int iNumMCL; 
 
 	private boolean ReadMCL(Vector vLines) {
-		String bff;
-		int i;
+        int i;
 		boolean fOk = false;
 
 		iColMCL = 0;
@@ -350,8 +347,8 @@ public class MJOpen {
 		iNumMCL = 0;
 		iIniColMCL = 0;
 
-		
-		bff = (String) vLines.elementAt(0);
+
+        String bff = (String) vLines.elementAt(0);
 		if (bff.startsWith("#MCLife ")) 
 		{
 			bff = bff.substring(8);

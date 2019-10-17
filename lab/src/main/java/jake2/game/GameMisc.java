@@ -662,7 +662,6 @@ public class GameMisc {
      * object.
      */
     public static void SP_misc_teleporter(edict_t ent) {
-        edict_t trig;
 
         if (ent.target == null) {
             game_import_t.dprintf("teleporter without a target.\n");
@@ -680,7 +679,7 @@ public class GameMisc {
         Math3D.VectorSet(ent.maxs, 32, 32, -16);
         game_import_t.linkentity(ent);
 
-        trig = GameUtil.G_Spawn();
+        edict_t trig = GameUtil.G_Spawn();
         trig.touch = teleporter_touch;
         trig.solid = Defines.SOLID_TRIGGER;
         trig.target = ent.target;
@@ -727,14 +726,13 @@ public class GameMisc {
 
     public static void ThrowGib(edict_t self, String gibname, int damage,
             int type) {
-        edict_t gib;
-    
+
         float[] vd = { 0, 0, 0 };
         float[] origin = { 0, 0, 0 };
         float[] size = { 0, 0, 0 };
         float vscale;
-    
-        gib = GameUtil.G_Spawn();
+
+        edict_t gib = GameUtil.G_Spawn();
     
         Math3D.VectorScale(self.size, 0.5f, size);
         Math3D.VectorAdd(self.absmin, size, origin);
@@ -857,10 +855,9 @@ public class GameMisc {
 
     public static void ThrowDebris(edict_t self, String modelname, float speed,
             float[] origin) {
-        edict_t chunk;
         float[] v = { 0, 0, 0 };
-    
-        chunk = GameUtil.G_Spawn();
+
+        edict_t chunk = GameUtil.G_Spawn();
         Math3D.VectorCopy(origin, chunk.s.origin);
         game_import_t.setmodel(chunk, modelname);
         v[0] = 100 * Lib.crandom();
@@ -948,9 +945,8 @@ public class GameMisc {
                 return;
 
             if (self.pathtarget != null) {
-                String savetarget;
 
-                savetarget = self.target;
+                String savetarget = self.target;
                 self.target = self.pathtarget;
                 GameUtil.G_UseTargets(self, other);
                 self.target = savetarget;
@@ -1031,9 +1027,8 @@ public class GameMisc {
             }
 
             if (self.pathtarget != null) {
-                String savetarget;
 
-                savetarget = self.target;
+                String savetarget = self.target;
                 self.target = self.pathtarget;
                 if (other.enemy != null && other.enemy.client != null)
                     activator = other.enemy;
@@ -1195,9 +1190,8 @@ public class GameMisc {
             float[] chunkorigin = { 0, 0, 0 };
             float[] size = { 0, 0, 0 };
             int count;
-            int mass;
 
-            
+
             Math3D.VectorScale(self.size, 0.5f, size);
             Math3D.VectorAdd(self.absmin, size, origin);
             Math3D.VectorCopy(origin, self.s.origin);
@@ -1216,7 +1210,7 @@ public class GameMisc {
             
             Math3D.VectorScale(size, 0.5f, size);
 
-            mass = self.mass;
+            int mass = self.mass;
             if (0 == mass)
                 mass = 75;
 
@@ -1289,13 +1283,12 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            float ratio;
             float[] v = { 0, 0, 0 };
 
             if ((null == other.groundentity) || (other.groundentity == self))
                 return;
 
-            ratio = (float) other.mass / self.mass;
+            float ratio = (float) other.mass / self.mass;
             Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
             M.M_walkmove(self, Math3D.vectoyaw(v), 20 * ratio
                     * Defines.FRAMETIME);
@@ -1309,7 +1302,6 @@ public class GameMisc {
         public boolean think(edict_t self) {
 
             float[] org = { 0, 0, 0 };
-            float spd;
             float[] save = { 0, 0, 0 };
 
             GameCombat.T_RadiusDamage(self, self.activator, self.dmg, null,
@@ -1318,8 +1310,8 @@ public class GameMisc {
             Math3D.VectorCopy(self.s.origin, save);
             Math3D.VectorMA(self.absmin, 0.5f, self.size, self.s.origin);
 
-            
-            spd = 1.5f * self.dmg / 200.0f;
+
+            float spd = 1.5f * self.dmg / 200.0f;
             org[0] = self.s.origin[0] + Lib.crandom() * self.size[0];
             org[1] = self.s.origin[1] + Lib.crandom() * self.size[1];
             org[2] = self.s.origin[2] + Lib.crandom() * self.size[2];
@@ -1644,11 +1636,10 @@ public class GameMisc {
         public boolean think(edict_t self) {
 
             float[] v = { 0, 0, 0 };
-            float diff;
 
             self.groundentity = null;
 
-            diff = self.timestamp - GameBase.level.time;
+            float diff = self.timestamp - GameBase.level.time;
             if (diff < -1.0)
                 diff = -1.0f;
 
@@ -1749,10 +1740,10 @@ public class GameMisc {
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
             edict_t e;
-            int n, l;
+            int n;
             char c;
 
-            l = self.message.length();
+            int l = self.message.length();
             for (e = self.teammaster; e != null; e = e.teamchain) {
                 if (e.count == 0)
                     continue;
@@ -1832,11 +1823,9 @@ public class GameMisc {
             if (((self.spawnflags & 1) != 0 && (self.health > self.wait))
                     || ((self.spawnflags & 2) != 0 && (self.health < self.wait))) {
                 if (self.pathtarget != null) {
-                    String savetarget;
-                    String savemessage;
 
-                    savetarget = self.target;
-                    savemessage = self.message;
+                    String savetarget = self.target;
+                    String savemessage = self.message;
                     self.target = self.pathtarget;
                     self.message = null;
                     GameUtil.G_UseTargets(self, self.activator);
@@ -1881,14 +1870,13 @@ public class GameMisc {
         @Override
         public void touch(edict_t self, edict_t other, cplane_t plane,
                           csurface_t surf) {
-            edict_t dest;
             int i;
 
             if (other.client == null)
                 return;
 
             EdictIterator es = null;
-            dest = GameBase.G_Find(null, GameBase.findByTarget, self.target).o;
+            edict_t dest = GameBase.G_Find(null, GameBase.findByTarget, self.target).o;
 
             if (dest == null) {
                 game_import_t.dprintf("Couldn't find destination\n");

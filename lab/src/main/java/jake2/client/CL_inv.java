@@ -74,19 +74,16 @@ public class CL_inv {
 
 	static void DrawInventory() {
 		int i, j;
-		int num, selected_num, item;
+		int item;
 		int[] index = new int[Defines.MAX_ITEMS];
 		String string;
-		int x, y;
-		String binding;
+        String binding;
 		String bind;
-		int selected;
-		int top;
 
-		selected = Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
+        int selected = Globals.cl.frame.playerstate.stats[Defines.STAT_SELECTED_ITEM];
 
-		num = 0;
-		selected_num = 0;
+        int num = 0;
+        int selected_num = 0;
 		for (i = 0; i < Defines.MAX_ITEMS; i++) {
 			if (i == selected)
 				selected_num = num;
@@ -96,15 +93,15 @@ public class CL_inv {
 			}
 		}
 
-		
-		top = selected_num - DISPLAY_ITEMS / 2;
+
+        int top = selected_num - DISPLAY_ITEMS / 2;
 		if (num - top < DISPLAY_ITEMS)
 			top = num - DISPLAY_ITEMS;
 		if (top < 0)
 			top = 0;
 
-		x = (Globals.viddef.getWidth() - 256) / 2;
-		y = (Globals.viddef.getHeight() - 240) / 2;
+        int x = (Globals.viddef.getWidth() - 256) / 2;
+        int y = (Globals.viddef.getHeight() - 240) / 2;
 
 		
 		SCR.DirtyScreen();

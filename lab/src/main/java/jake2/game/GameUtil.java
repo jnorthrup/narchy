@@ -244,12 +244,11 @@ public class GameUtil {
      * with respect to rteam_by_model and team_by_skin. 
      */
     static String ClientTeam(edict_t ent) {
-        String value;
 
         if (ent.client == null)
             return "";
 
-        value = Info.Info_ValueForKey(ent.client.pers.userinfo, "skin");
+        String value = Info.Info_ValueForKey(ent.client.pers.userinfo, "skin");
 
         int p = value.indexOf('/');
 
@@ -264,9 +263,8 @@ public class GameUtil {
     }
 
     static void ValidateSelectedItem(edict_t ent) {
-        gclient_t cl;
 
-        cl = ent.client;
+        gclient_t cl = ent.client;
 
         if (cl.pers.inventory[cl.pers.selected_item] != 0)
             return; 
@@ -282,10 +280,9 @@ public class GameUtil {
      */
     public static int range(edict_t self, edict_t other) {
         float[] v = { 0, 0, 0 };
-        float len;
 
         Math3D.VectorSubtract(self.s.origin, other.s.origin, v);
-        len = Math3D.VectorLength(v);
+        float len = Math3D.VectorLength(v);
         if (len < Defines.MELEE_DISTANCE)
             return Defines.RANGE_MELEE;
         if (len < 500)
@@ -304,13 +301,12 @@ public class GameUtil {
      */
     public static boolean infront(edict_t self, edict_t other) {
         float[] vec = { 0, 0, 0 };
-        float dot;
         float[] forward = { 0, 0, 0 };
 
         Math3D.AngleVectors(self.s.angles, forward, null, null);
         Math3D.VectorSubtract(other.s.origin, self.s.origin, vec);
         Math3D.VectorNormalize(vec);
-        dot = Math3D.DotProduct(vec, forward);
+        float dot = Math3D.DotProduct(vec, forward);
 
         return dot > 0.3;
     }
@@ -321,13 +317,12 @@ public class GameUtil {
     public static boolean visible(edict_t self, edict_t other) {
         float[] spot1 = { 0, 0, 0 };
         float[] spot2 = { 0, 0, 0 };
-        trace_t trace;
 
         Math3D.VectorCopy(self.s.origin, spot1);
         spot1[2] += self.viewheight;
         Math3D.VectorCopy(other.s.origin, spot2);
         spot2[2] += other.viewheight;
-        trace = game_import_t.trace(spot1, Globals.vec3_origin,
+        trace_t trace = game_import_t.trace(spot1, Globals.vec3_origin,
                 Globals.vec3_origin, spot2, self, Defines.MASK_OPAQUE);
 
         return trace.fraction == 1.0;
@@ -350,7 +345,6 @@ public class GameUtil {
      */
     static boolean FindTarget(edict_t self) {
         edict_t client;
-        boolean heardit;
         int r;
 
         if ((self.monsterinfo.aiflags & Defines.AI_GOOD_GUY) != 0) {
@@ -368,13 +362,8 @@ public class GameUtil {
         if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0)
             return false;
 
-        
-        
-        
-        
-        
 
-        heardit = false;
+        boolean heardit = false;
         if ((GameBase.level.sight_entity_framenum >= (GameBase.level.framenum - 1))
                 && 0 == (self.spawnflags & 1)) {
             client = GameBase.level.sight_entity;           

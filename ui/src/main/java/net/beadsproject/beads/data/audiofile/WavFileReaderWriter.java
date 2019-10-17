@@ -126,12 +126,8 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
         this.file = new File(filename);
 
 
-
-
-        float[][] data = null;
-
         readHeader();
-        data = readData();
+        float[][] data = readData();
         close();
 
 
@@ -187,8 +183,7 @@ public class WavFileReaderWriter implements AudioFileReader, AudioFileWriter {
 
         
         long dataChunkSize = blockAlign * numFrames;
-        int formatDataSize;
-        formatDataSize = compressionCode == WAVE_FORMAT_PCM ? 16 : 18;
+        int formatDataSize = compressionCode == WAVE_FORMAT_PCM ? 16 : 18;
         long mainChunkSize = 4 +    
                 8 +                    
                 formatDataSize +    

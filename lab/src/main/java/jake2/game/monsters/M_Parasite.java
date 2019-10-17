@@ -623,7 +623,6 @@ public class M_Parasite {
         public boolean think(edict_t self) {
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, f = { 0, 0, 0 }, r = {
                     0, 0, 0 }, end = { 0, 0, 0 }, dir = { 0, 0, 0 };
-            trace_t tr;
             int damage;
 
             Math3D.AngleVectors(self.s.angles, f, r, null);
@@ -641,7 +640,7 @@ public class M_Parasite {
             }
             Math3D.VectorCopy(self.enemy.s.origin, end);
 
-            tr = game_import_t.trace(start, null, null, end, self,
+            trace_t tr = game_import_t.trace(start, null, null, end, self,
                     Defines.MASK_SHOT);
             if (tr.ent != self.enemy)
                 return true;

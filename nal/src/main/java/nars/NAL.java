@@ -439,12 +439,9 @@ public abstract class NAL<W> extends Thing<W, Term> implements Timed {
 
         //assert (dur > 0 && dt > 0);
 
-        double e;
-
-
 
         //quadratic decay: integral finite from to infinity, see: https://en.wikipedia.org/wiki/List_of_definite_integrals
-        e = (evi / (1.0 + Util.sqr(((double)dt) / dur)));
+        double e = (evi / (1.0 + Util.sqr(((double) dt) / dur)));
 
 
         //linear decay WARNING - not finite integral

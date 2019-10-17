@@ -84,8 +84,7 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 		ConvexShape convexShape = (ConvexShape) convexObj.shape();
 		StaticPlaneShape planeShape = (StaticPlaneShape) planeObj.shape();
 
-		boolean hasCollision = false;
-		v3 planeNormal = planeShape.getPlaneNormal(new v3());
+        v3 planeNormal = planeShape.getPlaneNormal(new v3());
 		float planeConstant = planeShape.getPlaneConstant();
 
 		Transform planeInConvex = new Transform();
@@ -115,7 +114,7 @@ public class ConvexPlaneCollisionAlgorithm extends CollisionAlgorithm {
 		planeObj.getWorldTransform(tmpTrans).transform(vtxInPlaneWorld);
 
 		float breakingThresh = manifoldPtr.getContactBreakingThreshold();
-		hasCollision = distance < breakingThresh;
+        boolean hasCollision = distance < breakingThresh;
 		resultOut.setPersistentManifold(manifoldPtr);
 		if (hasCollision) {
 			

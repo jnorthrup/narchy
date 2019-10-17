@@ -116,11 +116,10 @@ public class HiddenLayer {
 
 	private double[] calculateHiddenLayerGradinets() {
 		int n = neurons();
-		double[] hiddenLayerGradients;
-		double[] g = this.neurons.grad;
+        double[] g = this.neurons.grad;
 		double[] v = this.neurons.value;
 		IDifferentiableFunction a = this.activation;
-        hiddenLayerGradients = IntStream.range(0, n).mapToDouble(i -> a.derivative(g[i], v[i])).toArray();
+        double[] hiddenLayerGradients = IntStream.range(0, n).mapToDouble(i -> a.derivative(g[i], v[i])).toArray();
 		return hiddenLayerGradients;
 	}
 

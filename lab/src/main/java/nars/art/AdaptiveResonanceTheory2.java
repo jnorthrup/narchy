@@ -20,9 +20,8 @@ public class AdaptiveResonanceTheory2
              * \param prot it is some prototype
              **/
     private static float countScore(DynamicVector<Float> prototype, DynamicVector<Float> instance) {
-        float score;
         int i;
-        score = 0.0f;
+        float score = 0.0f;
         for (i = 0;i < prototype.array.length;i++)
         {
             score += instance.get___idx(i) * prototype.get___idx(i);
@@ -41,11 +40,10 @@ public class AdaptiveResonanceTheory2
              * */
     private static void addInstance(DynamicVector<Float> instance, DynamicVector<Float> prototype, float beta) {
         DynamicVector<Float> temp;
-        float norm;
         int i;
-        
-        
-        norm = 0.0f;
+
+
+        float norm = 0.0f;
         
         try {
             temp = new DynamicVector<>(prototype.array.length);
@@ -101,13 +99,11 @@ public class AdaptiveResonanceTheory2
         }
         else
         {
-            
-            float score;
-            
-            
+
+
             prot.set(iprot, sample.get(seq.get(iprot).get(0)));
-            
-            score = countScore(sample.get(seq.get(iprot).get(0)), sample.get(seq.get(iprot).get(0)));
+
+            float score = countScore(sample.get(seq.get(iprot).get(0)), sample.get(seq.get(iprot).get(0)));
             if (score < vigilance)
             {
                 float tmpv = vigilance;
@@ -135,10 +131,8 @@ public class AdaptiveResonanceTheory2
              * \param vigilance it is set by an user
              * */
     private static void createPrototype(ArrayList<DynamicVector<Float>> inst, int iinst, ArrayList<DynamicVector<Float>> prot, ArrayList<ArrayList<Integer>> prot_seq, float vigilance) {
-        float score;
-        ArrayList<Integer> new_seq = new ArrayList<>();
-        
-        score = countScore(inst.get(iinst), inst.get(iinst));
+
+        float score = countScore(inst.get(iinst), inst.get(iinst));
         if (score < vigilance)
         {
             float tmpv;
@@ -160,8 +154,8 @@ public class AdaptiveResonanceTheory2
         
         
         prot.add(inst.get(iinst));
-        
-        new_seq = new ArrayList<>();
+
+        ArrayList<Integer> new_seq = new ArrayList<>();
         new_seq.add(iinst);
         prot_seq.add(new_seq);
     }
@@ -175,27 +169,21 @@ public class AdaptiveResonanceTheory2
              * @param used set of already tested prototypes
              **/
     private DynamicVector<Float> bestPrototype2A(DynamicVector<Float> inst, ArrayList<DynamicVector<Float>> prot, ArrayList<DynamicVector<Float>> used) {
-        
-        ArrayList<DynamicVector<Float>> sameScore = new ArrayList<>();
-        DynamicVector<Float> empty;
-        int usize;
-        int psize;
-        float[] score;
+
         int i, j;
-        float higher;
-        sameScore = new ArrayList<>();
-        empty = new DynamicVector<>(0);
-        
-        usize = used.size();
-        psize = prot.size();
+        ArrayList<DynamicVector<Float>> sameScore = new ArrayList<>();
+        DynamicVector<Float> empty = new DynamicVector<>(0);
+
+        int usize = used.size();
+        int psize = prot.size();
         
         
         if (used.size() == prot.size())
         {
             return empty;
         }
-         
-        score = new float[psize];
+
+        float[] score = new float[psize];
         for (i = 0;i < psize;i++)
         {
             
@@ -203,10 +191,8 @@ public class AdaptiveResonanceTheory2
         }
         for (i = 0;i < psize;i++)
         {
-            
-            boolean usedb;
-            
-            usedb = false;
+
+            boolean usedb = false;
             for (j = 0;j < usize;j++)
             {
                 if (prot.get(i).equals(used.get(j)))
@@ -226,8 +212,8 @@ public class AdaptiveResonanceTheory2
                 score[i] = countScore(prot.get(i), inst);
             } 
         }
-        
-        higher = Float.MIN_VALUE;
+
+        float higher = Float.MIN_VALUE;
         for (i = 0;i < psize;i++)
         {
             if (score[i] == higher)
@@ -257,10 +243,8 @@ public class AdaptiveResonanceTheory2
         }
         else
         {
-            
-            int index;
-            
-            index = random.nextInt(sameScore.size());
+
+            int index = random.nextInt(sameScore.size());
             return sameScore.get(index);
         }  
     }
@@ -372,41 +356,29 @@ public class AdaptiveResonanceTheory2
     public void art2A(ArrayList<DynamicVector<Float>> sample, in_param param, Clust results) {
         
         DynamicVector<Float> P;
-        
-        ArrayList<DynamicVector<Float>> prot = new ArrayList<>();
-        
-        ArrayList<DynamicVector<Float>> prot_best = new ArrayList<>();
-        
-        
-        
-        ArrayList<ArrayList<Integer>> prot_seq = new ArrayList<>();
-        
-        ArrayList<ArrayList<Integer>> prot_seq_best = new ArrayList<>();
-        
+
+
         ArrayList<DynamicVector<Float>> used = new ArrayList<>();
-        used = new ArrayList<>();
-        prot = new ArrayList<>();
-        prot_seq = new ArrayList<>();
-        prot_best = new ArrayList<>();
-        prot_seq_best = new ArrayList<>();
+        ArrayList<DynamicVector<Float>> prot = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> prot_seq = new ArrayList<>();
+        ArrayList<DynamicVector<Float>> prot_best = new ArrayList<>();
+        ArrayList<ArrayList<Integer>> prot_seq_best = new ArrayList<>();
         float fluctuation = 100.0f;
         
         
         float fluctuation_best = 120.0f;
         
         int pass = 0;
-        
-        ArrayList<Boolean> changed = new ArrayList<>();
+
         int i, j;
-        changed = new ArrayList<>();
+        ArrayList<Boolean> changed = new ArrayList<>();
         for (i = 0;i < sample.size();i++)
         {
             changed.add(true);
         }
         while ((pass < param.pass) && (fluctuation > param.error))
         {
-            
-            int number_changed;
+
             for (i = 0;i < sample.size();i++)
             {
                 
@@ -419,16 +391,13 @@ public class AdaptiveResonanceTheory2
                 used.clear();
                 do
                 {
-                    float score;
-                    float alphaSum;
-                    
+
                     P = bestPrototype2A(sample.get(i), prot, used);
                     
                     if (P.array.length == 0)
                     {
-                        int prototypeIndex;
-                        
-                        prototypeIndex = Common.instanceInSequence(prot_seq, i);
+
+                        int prototypeIndex = Common.instanceInSequence(prot_seq, i);
                         if (prototypeIndex != -1)
                         {
                             
@@ -442,9 +411,9 @@ public class AdaptiveResonanceTheory2
                      
                     
                     used.add(P);
-                    
-                    score = countScore(P, sample.get(i));
-                    alphaSum = 0.0f;
+
+                    float score = countScore(P, sample.get(i));
+                    float alphaSum = 0.0f;
                     for (j = 0;j < sample.get(i).array.length;j++)
                     {
                         alphaSum += param.alpha * sample.get(i).get___idx(j);
@@ -454,10 +423,8 @@ public class AdaptiveResonanceTheory2
                     {
                         if (score >= param.vigilance)
                         {
-                            int prot_index;
-                            int Pindex;
-                            
-                            prot_index = Common.instanceInSequence(prot_seq, i);
+
+                            int prot_index = Common.instanceInSequence(prot_seq, i);
                             if (prot_index != -1)
                             {
                                 
@@ -471,9 +438,9 @@ public class AdaptiveResonanceTheory2
                                     removeInstance(sample, i, prot, prot_index, prot_seq, param.beta, param.vigilance);
                                 } 
                             }
-                             
-                            
-                            Pindex = Common.findItem(prot, P, true);
+
+
+                            int Pindex = Common.findItem(prot, P, true);
                             
                             addInstance(sample.get(i), prot.get(Pindex), param.beta);
                             prot_seq.get(Pindex).add(i);
@@ -486,12 +453,9 @@ public class AdaptiveResonanceTheory2
                     }
                     else
                     {
-                        
-                        
-                        int prot_index;
-                        
-                        
-                        prot_index = Common.instanceInSequence(prot_seq, i);
+
+
+                        int prot_index = Common.instanceInSequence(prot_seq, i);
                         if (prot_index != -1)
                         {
                             
@@ -505,9 +469,9 @@ public class AdaptiveResonanceTheory2
                 }
                 while (prot.size() != sample.size());
             }
-            
-            
-            number_changed = 0;
+
+
+            int number_changed = 0;
             for (j = 0;j < changed.size();j++)
             {
                 if (changed.get(j))

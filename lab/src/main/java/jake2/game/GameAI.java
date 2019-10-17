@@ -55,9 +55,8 @@ public class GameAI {
      */
 
     public static boolean FacingIdeal(edict_t self) {
-        float delta;
 
-        delta = Math3D.anglemod(self.s.angles[Defines.YAW] - self.ideal_yaw);
+        float delta = Math3D.anglemod(self.s.angles[Defines.YAW] - self.ideal_yaw);
         return !(delta > 45 && delta < 315);
     }
 
@@ -134,9 +133,7 @@ public class GameAI {
     public static boolean ai_checkattack(edict_t self, float dist) {
         float[] temp = {0, 0, 0};
 
-        boolean hesDeadJim;
 
-        
         if (self.goalentity != null) {
             if ((self.monsterinfo.aiflags & Defines.AI_COMBAT_POINT) != 0)
                 return false;
@@ -160,8 +157,8 @@ public class GameAI {
 
         enemy_vis = false;
 
-        
-        hesDeadJim = false;
+
+        boolean hesDeadJim = false;
         if ((null == self.enemy) || (!self.enemy.inuse)) {
             hesDeadJim = true;
         } else if ((self.monsterinfo.aiflags & Defines.AI_MEDIC) != 0) {
@@ -268,14 +265,14 @@ public class GameAI {
      */
     static void AI_SetSightClient() {
         edict_t ent;
-        int start, check;
-    
+        int start;
+
         if (GameBase.level.sight_client == null)
             start = 1;
         else
             start = GameBase.level.sight_client.index;
-    
-        check = start;
+
+        int check = start;
         while (true) {
             check++;
             if (check > GameBase.game.maxclients)
@@ -570,11 +567,8 @@ public class GameAI {
         public void ai(edict_t self, float dist) {
             float[] v = { 0, 0, 0 };
 
-            edict_t tempgoal;
-            edict_t save;
-            boolean new1;
             edict_t marker;
-            float d1, d2;
+            float d2;
             trace_t tr; 
             float[] v_forward = { 0, 0, 0 }, v_right = { 0, 0, 0 };
             float left, center, right;
@@ -640,11 +634,11 @@ public class GameAI {
                 return;
             }
 
-            save = self.goalentity;
-            tempgoal = GameUtil.G_Spawn();
+            edict_t save = self.goalentity;
+            edict_t tempgoal = GameUtil.G_Spawn();
             self.goalentity = tempgoal;
 
-            new1 = false;
+            boolean new1 = false;
 
             if (0 == (self.monsterinfo.aiflags & Defines.AI_LOST_SIGHT)) {
                 
@@ -696,7 +690,7 @@ public class GameAI {
             }
 
             Math3D.VectorSubtract(self.s.origin, self.monsterinfo.last_sighting, v);
-            d1 = Math3D.VectorLength(v);
+            float d1 = Math3D.VectorLength(v);
             if (d1 <= dist) {
                 self.monsterinfo.aiflags |= Defines.AI_PURSUE_NEXT;
                 dist = d1;

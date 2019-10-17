@@ -525,9 +525,8 @@ public class KB implements Serializable {
      */
     public Set<String> instances(String term) {
 
-        Set<String> result;
         ArrayList<Formula> forms = askWithRestriction(2, term, 0, "instance");
-        result = forms.stream().map(f -> f.getArgument(1)).collect(Collectors.toSet());
+        Set<String> result = forms.stream().map(f -> f.getArgument(1)).collect(Collectors.toSet());
         return result;
     }
 
@@ -1070,7 +1069,6 @@ public class KB implements Serializable {
             msg = ("Error in KB.ask(), Strings are not indexed.  No results for " + term);
             errors.add(msg);
         }
-        ArrayList<Formula> tmp = null;
         String key = null;
         if (kind.equals("arg"))
             key = kind + '-' + argnum + '-' + term;
@@ -1078,7 +1076,7 @@ public class KB implements Serializable {
             key = kind + '-' + term;
         ArrayList<String> alstr = formulas.get(key);
 
-        tmp = stringsToFormulas(alstr);
+        ArrayList<Formula> tmp = stringsToFormulas(alstr);
         if (tmp != null)
             result.addAll(tmp);
         return result;
@@ -2087,8 +2085,7 @@ public class KB implements Serializable {
             al = arrayListWithBlanks(1);
         else
             al = arrayListWithBlanks(2 * k);
-        Object[] t;
-        t = getTerms().toArray();
+        Object[] t = getTerms().toArray();
         int i = 0;
         while (i < t.length - 1 && ((String) t[i]).compareTo(term) < 0)
             i++;

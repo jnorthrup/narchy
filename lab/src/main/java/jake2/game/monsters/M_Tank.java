@@ -1053,9 +1053,8 @@ public class M_Tank {
             float[] vec = { 0, 0, 0 };
             float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            int flash_number;
 
-            flash_number = Defines.MZ2_TANK_MACHINEGUN_1
+            int flash_number = Defines.MZ2_TANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak406);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);
@@ -1351,8 +1350,6 @@ public class M_Tank {
         @Override
         public boolean think(edict_t self) {
             float[] vec = { 0, 0, 0 };
-            float range;
-            float r;
 
             if (self.enemy.health < 0) {
                 self.monsterinfo.currentmove = tank_move_attack_strike;
@@ -1361,9 +1358,9 @@ public class M_Tank {
             }
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
-            r = Lib.random();
+            float r = Lib.random();
 
             if (range <= 125) {
                 if (r < 0.4)

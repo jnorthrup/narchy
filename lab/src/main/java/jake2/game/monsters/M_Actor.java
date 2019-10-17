@@ -1202,8 +1202,6 @@ public class M_Actor {
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
 
-            int n;
-
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
 
@@ -1217,8 +1215,6 @@ public class M_Actor {
             if ((other.client != null) && (Lib.random() < 0.4)) {
                 float[] v = {0, 0, 0};
 
-                String name;
-
                 Math3D.VectorSubtract(other.s.origin, self.s.origin, v);
                 self.ideal_yaw = Math3D.vectoyaw(v);
                 if (Lib.random() < 0.5f)
@@ -1226,15 +1222,15 @@ public class M_Actor {
                 else
                     self.monsterinfo.currentmove = actor_move_taunt;
 
-                
-                name = actor_names[(self.index) % MAX_ACTOR_NAMES];
+
+                String name = actor_names[(self.index) % MAX_ACTOR_NAMES];
 
                 game_import_t.cprintf(other, Defines.PRINT_CHAT, name + ": "
                         + messages[Lib.rand() % 3] + "!\n");
                 return;
             }
 
-            n = Lib.rand() % 3;
+            int n = Lib.rand() % 3;
             if (n == 0)
                 self.monsterinfo.currentmove = actor_move_pain1;
             else if (n == 1)
@@ -1360,10 +1356,9 @@ public class M_Actor {
         public String getID() { return "actor_attack";}
         @Override
         public boolean think(edict_t self) {
-            int n;
 
             self.monsterinfo.currentmove = actor_move_attack;
-            n = (Lib.rand() & 15) + 3 + 7;
+            int n = (Lib.rand() & 15) + 3 + 7;
             self.monsterinfo.pausetime = GameBase.level.time + n
                     * Defines.FRAMETIME;
 
@@ -1476,9 +1471,8 @@ public class M_Actor {
             }
 
             if (0 != (self.spawnflags & 6) && (self.pathtarget != null)) {
-                String savetarget;
 
-                savetarget = self.target;
+                String savetarget = self.target;
                 self.target = self.pathtarget;
                 GameUtil.G_UseTargets(self, other);
                 self.target = savetarget;

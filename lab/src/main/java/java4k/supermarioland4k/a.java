@@ -196,8 +196,7 @@ public class a extends JPanel implements Runnable {
     int fadeIntensity = 255;    
     int[][] map = null;
     int[][] enemies = null;
-    Graphics2D g2 = null;
-    Random random = null;
+      Random random = null;
     float[] mario = null;
     
     int[] pixels = new int[64];
@@ -235,9 +234,9 @@ public class a extends JPanel implements Runnable {
       }
     }
 
-    
-    g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_0]
-        .getGraphics();
+
+      Graphics2D g2 = (Graphics2D) sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_0]
+              .getGraphics();
     g2.drawImage(sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_HEAD], 3, -6, null);
     g2 = (Graphics2D)sprites[ORIENTATION_ORIGINAL][SPRITE_MARIO_1]
         .getGraphics();

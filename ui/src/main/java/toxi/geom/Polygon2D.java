@@ -492,14 +492,13 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
                                        float x3, float y3, float distance, Vec2D out) {
 
         float c1 = x2, d1 = y2, c2 = x2, d2 = y2;
-        float dx1, dy1, dist1, dx2, dy2, dist2, insetX, insetY;
 
-        dx1 = x2 - x1;
-        dy1 = y2 - y1;
-        dist1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
-        dx2 = x3 - x2;
-        dy2 = y3 - y2;
-        dist2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
+        float dx1 = x2 - x1;
+        float dy1 = y2 - y1;
+        float dist1 = (float) Math.sqrt(dx1 * dx1 + dy1 * dy1);
+        float dx2 = x3 - x2;
+        float dy2 = y3 - y2;
+        float dist2 = (float) Math.sqrt(dx2 * dx2 + dy2 * dy2);
 
         if (dist1 < MathUtils.EPS || dist2 < MathUtils.EPS) {
             return;
@@ -507,8 +506,8 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         dist1 = distance / dist1;
         dist2 = distance / dist2;
 
-        insetX = dy1 * dist1;
-        insetY = -dx1 * dist1;
+        float insetX = dy1 * dist1;
+        float insetY = -dx1 * dist1;
         x1 += insetX;
         c1 += insetX;
         y1 += insetY;
@@ -747,7 +746,6 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         float[] segAngles = new float[maxSegs];
         Vec2D start = vertices.get(0).copy();
         float lastAngle = MathUtils.PI;
-        float a, b, c, d, e, f;
         double angleDif, bestAngleDif;
         int i, j = corners - 1, segs = 0;
 
@@ -807,12 +805,12 @@ public class Polygon2D implements Shape2D, Iterable<Vec2D> {
         }
 
         // 4. Build the perimeter polygon.
-        c = start.x;
-        d = start.y;
-        a = c - 1;
-        b = d;
-        e = 0;
-        f = 0;
+        float c = start.x;
+        float d = start.y;
+        float a = c - 1;
+        float b = d;
+        float e = 0;
+        float f = 0;
         newVerts.add(new Vec2D(c, d));
         corners = 1;
         while (true) {

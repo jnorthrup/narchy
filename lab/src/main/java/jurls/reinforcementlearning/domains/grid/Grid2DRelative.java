@@ -186,13 +186,12 @@ public class Grid2DRelative implements World {
             positionY = height - 1;
         }
 
-        double match = 0;
         double energyCost = 0;
 
         double dx = (positionX - focusPositionX);
         double dy = (positionY - focusPositionY);
         double dist = Math.sqrt(dx * dx + dy * dy);
-        match = 1.0 / (1.0 + dist);
+        double match = 1.0 / (1.0 + dist);
 
         double reward = REWARD_MAGNITUDE * ((MATCH_REWARD_FACTOR * match) - (energyCost * ENERGY_COST_FACTOR)) - 0.5;
 

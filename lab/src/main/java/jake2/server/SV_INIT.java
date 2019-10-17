@@ -116,7 +116,6 @@ public class SV_INIT {
      */
     public static void SV_CheckForSavegame() {
 
-        String name;
         RandomAccessFile f;
 
         int i;
@@ -127,7 +126,7 @@ public class SV_INIT {
         if (Cvar.VariableValue("deathmatch") != 0)
             return;
 
-        name = FS.Gamedir() + "/save/current/" + sv.name + ".sav";
+        String name = FS.Gamedir() + "/save/current/" + sv.name + ".sav";
         try {
             f = new RandomAccessFile(name, "r");
         }
@@ -147,16 +146,10 @@ public class SV_INIT {
         
         SV_CCMDS.SV_ReadLevelFile();
 
-        if (!sv.loadgame) { 
-            
-            
+        if (!sv.loadgame) {
 
-            
-            
-            
-            int previousState; 
 
-            previousState = sv.state; 
+            int previousState = sv.state;
             sv.state = Defines.ss_loading; 
             for (i = 0; i < 100; i++)
                 GameBase.G_RunFrame();
@@ -294,8 +287,6 @@ public class SV_INIT {
     public static void SV_InitGame() {
         int i;
         edict_t ent;
-        
-        String idmaster;
 
         if (svs.initialized) {
             
@@ -362,8 +353,8 @@ public class SV_INIT {
         NET.Config((SV_MAIN.maxclients.value > 1));
 
         
-        svs.last_heartbeat = -99999; 
-        idmaster = "192.246.40.37:" + Defines.PORT_MASTER;
+        svs.last_heartbeat = -99999;
+        String idmaster = "192.246.40.37:" + Defines.PORT_MASTER;
         NET.StringToAdr(idmaster, SV_MAIN.master_adr[0]);
 
         
@@ -394,16 +385,15 @@ public class SV_INIT {
      */
     public static void SV_Map(boolean attractloop, String levelstring, boolean loadgame) {
 
-        int l;
-        String level, ch, spawnpoint;
+        String ch, spawnpoint;
 
         sv.loadgame = loadgame;
         sv.attractloop = attractloop;
 
         if (sv.state == Defines.ss_dead && !sv.loadgame)
-            SV_InitGame(); 
+            SV_InitGame();
 
-        level = levelstring; 
+        String level = levelstring;
 
         
 
@@ -442,7 +432,7 @@ public class SV_INIT {
         if (level.charAt(0) == '*')
             level = level.substring(1);
 
-        l = level.length();
+        int l = level.length();
         if (l > 4 && level.endsWith(".cin")) {
             SCR.BeginLoadingPlaque(); 
             SV_SEND.SV_BroadcastCommand("changing\n");

@@ -332,10 +332,8 @@ public final class JOALSoundImpl implements Sound {
 	
 	sfx_t RegisterSexedSound(entity_state_t ent, String base) {
 
-		sfx_t sfx = null;
 
-		
-		String model = null;
+        String model = null;
 		int n = Defines.CS_PLAYERSKINS + ent.number - 1;
 		if (Globals.cl.configstrings[n] != null) {
 			int p = Globals.cl.configstrings[n].indexOf('\\');
@@ -354,8 +352,8 @@ public final class JOALSoundImpl implements Sound {
 
 		
 		String sexedFilename = "#players/" + model + '/' + base.substring(1);
-		
-		sfx = FindName(sexedFilename, false);
+
+        sfx_t sfx = FindName(sexedFilename, false);
 
 		if (sfx != null) return sfx;
 		
@@ -387,9 +385,8 @@ public final class JOALSoundImpl implements Sound {
 
 	sfx_t FindName(String name, boolean create) {
 		int i;
-		sfx_t sfx = null;
 
-		if (name == null)
+        if (name == null)
 			Com.Error(Defines.ERR_FATAL, "S_FindName: NULL\n");
 		if (name.length() == 0)
 			Com.Error(Defines.ERR_FATAL, "S_FindName: empty name\n");
@@ -418,7 +415,7 @@ public final class JOALSoundImpl implements Sound {
 			num_sfx++;
 		}
 
-		sfx = known_sfx[i];
+        sfx_t sfx = known_sfx[i];
 		sfx.clear();
 		sfx.name = name;
 		sfx.registration_sequence = s_registration_sequence;
@@ -435,11 +432,9 @@ public final class JOALSoundImpl implements Sound {
 	*/
 	sfx_t AliasName(String aliasname, String truename)
 	{
-		sfx_t sfx = null;
-		String s;
-		int i;
+        int i;
 
-		s = truename;
+        String s = truename;
 
 		
 		for (i=0 ; i < num_sfx ; i++)
@@ -452,8 +447,8 @@ public final class JOALSoundImpl implements Sound {
 				Com.Error(Defines.ERR_FATAL, "S_FindName: out of sfx_t");
 			num_sfx++;
 		}
-	
-		sfx = known_sfx[i];
+
+        sfx_t sfx = known_sfx[i];
 		sfx.clear();
 		sfx.name = aliasname;
 		sfx.registration_sequence = s_registration_sequence;
@@ -557,9 +552,9 @@ public final class JOALSoundImpl implements Sound {
 		int i;
 		sfx_t sfx;
 		sfxcache_t sc;
-		int size, total;
+		int size;
 
-		total = 0;
+        int total = 0;
 		for (i = 0; i < num_sfx; i++) {
 			sfx = known_sfx[i];
 			if (sfx.registration_sequence == 0)

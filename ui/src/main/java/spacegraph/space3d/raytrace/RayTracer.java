@@ -89,15 +89,13 @@ final class RayTracer extends JPanel {
     }
 
     private static RayTracer raytracer() {
-        Input input;
-        RayTracer rayTracer;
 
         JFrame frame = new JFrame();
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
         frame.setLocationByPlatform(true);
         frame.setSize(640, 480);
 
-        input = new Input();
+        Input input = new Input();
         input.newSize = frame.getSize();
 
 
@@ -160,7 +158,7 @@ final class RayTracer extends JPanel {
             e.printStackTrace();
             System.exit(1);
         }
-        rayTracer = new RayTracer(scene, input);
+        RayTracer rayTracer = new RayTracer(scene, input);
 
         frame.add(rayTracer);
         frame.setVisible(true);

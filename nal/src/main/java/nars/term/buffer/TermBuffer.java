@@ -329,10 +329,9 @@ public class TermBuffer {
     }
 
     private int dt(byte[] ii, int[] range) {
-        int dt;
         int p = range[0];
         range[0] += 4;
-        dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
+        int dt = Ints.fromBytes(ii[p++], ii[p++], ii[p++], ii[p/*++*/]);
         return dt;
     }
 

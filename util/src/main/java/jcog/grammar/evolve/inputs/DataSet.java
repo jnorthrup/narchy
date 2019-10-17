@@ -151,16 +151,15 @@ public class DataSet implements Serializable {
     
     
     public String getStatsString(){
-        StringBuilder stats = new StringBuilder();
-        stats.append("DataSet ").append(this.name).append(" stats:\n")
-        .append("number examples: ").append(this.getNumberExamples())
-        .append("\noverall chars in dataset: ").append(this.getNumberOfChars())
-        .append("\nnumber matches: ").append(this.getNumberMatches())
-        .append("\ncharacters in matches: ").append(this.getNumberMatchedChars())
-        .append("\nnumber unmatches: ").append(this.getNumberUnmatches())
-        .append("\ncharacters in unmatches: ").append(this.getNumberUnmatchedChars())
-        .append("\nunannotated chars: ").append(this.getNumberUnannotatedChars());
-        return stats.toString();
+        String stats = "DataSet " + this.name + " stats:\n" +
+                "number examples: " + this.getNumberExamples() +
+                "\noverall chars in dataset: " + this.getNumberOfChars() +
+                "\nnumber matches: " + this.getNumberMatches() +
+                "\ncharacters in matches: " + this.getNumberMatchedChars() +
+                "\nnumber unmatches: " + this.getNumberUnmatches() +
+                "\ncharacters in unmatches: " + this.getNumberUnmatchedChars() +
+                "\nunannotated chars: " + this.getNumberUnannotatedChars();
+        return stats;
     }
     
     public void randomize() {

@@ -180,10 +180,9 @@ public class SND_MIX extends SND_JAVA {
 
     static void TransferStereo16(ByteBuffer pbuf, int endtime) {
         int lpos;
-        int lpaintedtime;
 
         snd_p = paintbuffer;
-        lpaintedtime = paintedtime;
+        int lpaintedtime = paintedtime;
 
         while (lpaintedtime < endtime) {
             
@@ -230,10 +229,9 @@ public class SND_MIX extends SND_JAVA {
 
         if (SND_DMA.s_testsound.value != 0.0f) {
             int i;
-            int count2;
 
-            
-            count2 = (endtime - paintedtime) * 2;
+
+            int count2 = (endtime - paintedtime) * 2;
             int v;
             for (i = 0; i < count2; i += 2) {
                 v = (int) (Math.sin((paintedtime + i) * 0.1) * 20000 * 256);
@@ -330,9 +328,8 @@ public class SND_MIX extends SND_JAVA {
                 
             } else { 
                 int s;
-                int stop;
 
-                stop = (end < s_rawend) ? end : s_rawend;
+                int stop = (end < s_rawend) ? end : s_rawend;
 
                 for (i = paintedtime; i < stop; i++) {
                     s = i & (MAX_RAW_SAMPLES - 1);
@@ -424,9 +421,6 @@ public class SND_MIX extends SND_JAVA {
     static void PaintChannelFrom8(channel_t ch, sfxcache_t sc, int count,
             int offset) {
         int data;
-        int[] lscale;
-        int[] rscale;
-        int sfx;
         int i;
         portable_samplepair_t samp;
 
@@ -435,11 +429,10 @@ public class SND_MIX extends SND_JAVA {
         if (ch.rightvol > 255)
             ch.rightvol = 255;
 
-        
-        
-        lscale = snd_scaletable[ch.leftvol >> 3];
-        rscale = snd_scaletable[ch.rightvol >> 3];
-        sfx = ch.pos;
+
+        int[] lscale = snd_scaletable[ch.leftvol >> 3];
+        int[] rscale = snd_scaletable[ch.rightvol >> 3];
+        int sfx = ch.pos;
 
         
 
@@ -462,17 +455,15 @@ public class SND_MIX extends SND_JAVA {
             int offset) {
         int data;
         int left, right;
-        int leftvol, rightvol;
-        int sfx;
         int i;
         portable_samplepair_t samp;
 
-        leftvol = ch.leftvol * snd_vol;
-        rightvol = ch.rightvol * snd_vol;
+        int leftvol = ch.leftvol * snd_vol;
+        int rightvol = ch.rightvol * snd_vol;
         ByteBuffer bb = ByteBuffer.wrap(sc.data);
         bb.order(ByteOrder.LITTLE_ENDIAN);
         ShortBuffer sb = bb.asShortBuffer();
-        sfx = ch.pos;
+        int sfx = ch.pos;
 
         
         for (i = 0; i < count; i++, offset++) {

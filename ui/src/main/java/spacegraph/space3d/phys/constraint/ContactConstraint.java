@@ -121,8 +121,7 @@ public class ContactConstraint {
 				body2.getLinearVelocity(new v3()),
 				tmp2);
 
-		float a;
-		a = jacDiagABInv;
+        float a = jacDiagABInv;
 
 
 		rel_vel = normal.dot(vel);
@@ -166,8 +165,7 @@ public class ContactConstraint {
 		v3 vel = new v3();
 		vel.sub(vel1, vel2);
 
-		float rel_vel;
-		rel_vel = normal.dot(vel);
+        float rel_vel = normal.dot(vel);
 
 		float Kfps = 1f / solverInfo.timeStep;
 
@@ -250,9 +248,9 @@ public class ContactConstraint {
 			v3 vel = new v3();
 			vel.sub(vel1, vel2);
 
-			float j1, j2;
+			float j1;
 
-			{
+            {
 				float vrel = cpd.frictionWorldTangential0.dot(vel);
 
 				
@@ -268,8 +266,8 @@ public class ContactConstraint {
 
             float vrel = cpd.frictionWorldTangential1.dot(vel);
 
-            
-            j2 = -vrel * cpd.jacDiagABInvTangent1;
+
+            float j2 = -vrel * cpd.jacDiagABInvTangent1;
             float oldTangentImpulse = cpd.accumulatedTangentImpulse1;
             cpd.accumulatedTangentImpulse1 = oldTangentImpulse + j2;
 
@@ -329,8 +327,7 @@ public class ContactConstraint {
 		v3 vel = new v3();
 		vel.sub(vel1, vel2);
 
-		float rel_vel;
-		rel_vel = normal.dot(vel);
+        float rel_vel = normal.dot(vel);
 
 		float Kfps = 1f / solverInfo.timeStep;
 

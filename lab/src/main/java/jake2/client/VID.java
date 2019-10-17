@@ -187,11 +187,9 @@ public class VID extends Globals {
 		}
 
 		Com.Printf( "------- Loading " + name + " -------\n");
-		
-		boolean found;
-		
-		String[] driverNames = Renderer.getDriverNames();
-        found = Arrays.stream(driverNames).anyMatch(driverName -> driverName.equals(name));
+
+        String[] driverNames = Renderer.getDriverNames();
+        boolean found = Arrays.stream(driverNames).anyMatch(driverName -> driverName.equals(name));
 
 		if (!found) {
 			Com.Printf( "LoadLibrary(\"" + name +"\") failed\n");

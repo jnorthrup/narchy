@@ -98,9 +98,8 @@ public class HyperIterator<X>  {
     private void bfsRoundRobin(Predicate whle, Random random) {
         int leaves = plan.size(); //assert(leaves > 0);
         int[] remain = new int[leaves];
-        int n;
         Object[] pp = plan.items;
-        n = IntStream.range(0, leaves).map(i -> (remain[i] = ((RLeaf) pp[i]).size)).sum();
+        int n = IntStream.range(0, leaves).map(i -> (remain[i] = ((RLeaf) pp[i]).size)).sum();
         int c = 0;
         int k = 0;
         int o = random.nextInt(n * leaves); //shuffles the inner-leaf visiting order

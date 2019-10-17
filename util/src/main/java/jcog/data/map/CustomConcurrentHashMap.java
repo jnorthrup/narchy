@@ -1082,10 +1082,9 @@ public class CustomConcurrentHashMap<K, V> extends AbstractMap<K, V>
      */
     @Override
     public final int size() {
-        long sum;
         MetalAtomicReferenceArray<Segment> segs = this.segments;
         int ss = segs.length();
-        sum = IntStream.range(0, ss).mapToObj(segs::getFast).filter(Objects::nonNull).mapToLong(seg -> seg.count.getOpaque()).sum();
+        long sum = IntStream.range(0, ss).mapToObj(segs::getFast).filter(Objects::nonNull).mapToLong(seg -> seg.count.getOpaque()).sum();
         return (sum >= Integer.MAX_VALUE) ? Integer.MAX_VALUE : (int) sum;
     }
 

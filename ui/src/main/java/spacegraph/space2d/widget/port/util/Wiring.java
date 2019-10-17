@@ -125,7 +125,7 @@ public class Wiring extends Dragging {
                 //apply type checking and auto-conversion if necessary
                 Class ta = ((TypedPort) start).type;
                 Class tb = ((TypedPort) end).type;
-                if (!ta.equals(tb) /* TODO && direct ancestor comparison */ ) {
+                if (ta != tb /* TODO && direct ancestor comparison */ ) {
                     Class aa = ta, bb = tb;
 
                     List<Function> ab = CAST.applicable(aa, bb), ba = CAST.applicable(bb, aa);

@@ -77,11 +77,11 @@ public class ObjectPropertiesUI extends JPanel {
 			for (LevelObject obj : selection) {
 				try {
 					Field field = getFields()[rowIndex];
-					if (field.getType().equals(float.class)) {
+					if (field.getType() == float.class) {
 						field.setFloat(obj, Float.parseFloat("" + aValue));
-					} else if (field.getType().equals(int.class)) {
+					} else if (field.getType() == int.class) {
 						field.setInt(obj, Integer.parseInt("" + aValue));
-					} else if (field.getType().equals(boolean.class)) {
+					} else if (field.getType() == boolean.class) {
 						field.setBoolean(obj, Boolean.parseBoolean("" + aValue));
 					}
 					System.out.println("setValueAt " + rowIndex + " " + aValue);

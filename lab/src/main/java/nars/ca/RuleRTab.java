@@ -136,13 +136,11 @@ public class RuleRTab {
 		short bOldVal, bNewVal;
 		int modCnt = 0;
 		int i, j, iCnt;
-		int[] lurd = new int[4]; 
-		int rtMask;
-		boolean fMoore = (iNghTyp == MJRules.NGHTYP_MOOR); 
-															
-															
+		int[] lurd = new int[4];
+        boolean fMoore = (iNghTyp == MJRules.NGHTYP_MOOR);
 
-		rtMask = fAll1Fire ? 1 : 0xFF;
+
+        int rtMask = fAll1Fire ? 1 : 0xFF;
 
 		for (i = 0; i < sizX; ++i) {
 			

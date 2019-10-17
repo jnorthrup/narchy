@@ -52,9 +52,8 @@ public final class SZ {
 
 	/** Ask for the pointer using sizebuf_t.cursize (RST) */
 	public static int GetSpace(sizebuf_t buf, int length) {
-		int oldsize;
-	
-		if (buf.cursize + length > buf.maxsize) {
+
+        if (buf.cursize + length > buf.maxsize) {
 			if (!buf.allowoverflow)
 				Com.Error(Defines.ERR_FATAL, "SZ_GetSpace: overflow without allowoverflow setAt");
 	
@@ -65,8 +64,8 @@ public final class SZ {
 			Clear(buf);
 			buf.overflowed = true;
 		}
-	
-		oldsize = buf.cursize;
+
+        int oldsize = buf.cursize;
 		buf.cursize += length;
 	
 		return oldsize;

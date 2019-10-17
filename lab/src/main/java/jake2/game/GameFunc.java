@@ -79,8 +79,6 @@ public class GameFunc {
     }
 
     static void plat_CalcAcceleratedMove(moveinfo_t moveinfo) {
-        float accel_dist;
-        float decel_dist;
 
         moveinfo.move_speed = moveinfo.speed;
 
@@ -89,13 +87,12 @@ public class GameFunc {
             return;
         }
 
-        accel_dist = AccelerationDistance(moveinfo.speed, moveinfo.accel);
-        decel_dist = AccelerationDistance(moveinfo.speed, moveinfo.decel);
+        float accel_dist = AccelerationDistance(moveinfo.speed, moveinfo.accel);
+        float decel_dist = AccelerationDistance(moveinfo.speed, moveinfo.decel);
 
         if ((moveinfo.remaining_distance - accel_dist - decel_dist) < 0) {
-            float f;
 
-            f = (moveinfo.accel + moveinfo.decel)
+            float f = (moveinfo.accel + moveinfo.decel)
                     / (moveinfo.accel * moveinfo.decel);
             moveinfo.move_speed = (float) ((-2 + Math.sqrt(4 - 4 * f
                     * (-2 * moveinfo.remaining_distance))) / (2 * f));
@@ -124,15 +121,12 @@ public class GameFunc {
         
         if (moveinfo.current_speed == moveinfo.move_speed)
             if ((moveinfo.remaining_distance - moveinfo.current_speed) < moveinfo.decel_distance) {
-                float p1_distance;
-                float p2_distance;
-                float distance;
 
-                p1_distance = moveinfo.remaining_distance
+                float p1_distance = moveinfo.remaining_distance
                         - moveinfo.decel_distance;
-                p2_distance = moveinfo.move_speed
+                float p2_distance = moveinfo.move_speed
                         * (1.0f - (p1_distance / moveinfo.move_speed));
-                distance = p1_distance + p2_distance;
+                float distance = p1_distance + p2_distance;
                 moveinfo.current_speed = moveinfo.move_speed;
                 moveinfo.next_speed = moveinfo.move_speed - moveinfo.decel
                         * (p2_distance / distance);
@@ -141,13 +135,8 @@ public class GameFunc {
 
         
         if (moveinfo.current_speed < moveinfo.speed) {
-            float old_speed;
-            float p1_distance;
-            float p1_speed;
-            float p2_distance;
-            float distance;
 
-            old_speed = moveinfo.current_speed;
+            float old_speed = moveinfo.current_speed;
 
             
             moveinfo.current_speed += moveinfo.accel;
@@ -158,16 +147,12 @@ public class GameFunc {
             if ((moveinfo.remaining_distance - moveinfo.current_speed) >= moveinfo.decel_distance)
                 return;
 
-            
-            
-            
-            
-            
-            p1_distance = moveinfo.remaining_distance - moveinfo.decel_distance;
-            p1_speed = (old_speed + moveinfo.move_speed) / 2.0f;
-            p2_distance = moveinfo.move_speed
+
+            float p1_distance = moveinfo.remaining_distance - moveinfo.decel_distance;
+            float p1_speed = (old_speed + moveinfo.move_speed) / 2.0f;
+            float p2_distance = moveinfo.move_speed
                     * (1.0f - (p1_distance / p1_speed));
-            distance = p1_distance + p2_distance;
+            float distance = p1_distance + p2_distance;
             moveinfo.current_speed = (p1_speed * (p1_distance / distance))
                     + (moveinfo.move_speed * (p2_distance / distance));
             moveinfo.next_speed = moveinfo.move_speed - moveinfo.decel
@@ -191,13 +176,10 @@ public class GameFunc {
     }
 
     static void plat_spawn_inside_trigger(edict_t ent) {
-        edict_t trigger;
         float[] tmin = { 0, 0, 0 }, tmax = { 0, 0, 0 };
 
-        
-        
-        
-        trigger = GameUtil.G_Spawn();
+
+        edict_t trigger = GameUtil.G_Spawn();
         trigger.touch = Touch_Plat_Center;
         trigger.movetype = Defines.MOVETYPE_NONE;
         trigger.solid = Defines.SOLID_TRIGGER;
@@ -470,10 +452,9 @@ public class GameFunc {
     }
 
     static void train_resume(edict_t self) {
-        edict_t ent;
         float[] dest = { 0, 0, 0 };
 
-        ent = self.target_ent;
+        edict_t ent = self.target_ent;
 
         Math3D.VectorSubtract(ent.s.origin, self.mins, dest);
         self.moveinfo.state = STATE_TOP;
@@ -629,15 +610,13 @@ public class GameFunc {
         @Override
         public boolean think(edict_t ent) {
 
-            float frames;
-
             if ((ent.moveinfo.speed * Defines.FRAMETIME) >= ent.moveinfo.remaining_distance) {
                 Move_Final.think(ent);
                 return true;
             }
             Math3D.VectorScale(ent.moveinfo.dir, ent.moveinfo.speed,
                     ent.velocity);
-            frames = (float) Math
+            float frames = (float) Math
                     .floor((ent.moveinfo.remaining_distance / ent.moveinfo.speed)
                             / Defines.FRAMETIME);
             ent.moveinfo.remaining_distance -= frames * ent.moveinfo.speed
@@ -696,11 +675,8 @@ public class GameFunc {
         @Override
         public boolean think(edict_t ent) {
             float[] destdelta = { 0, 0, 0 };
-            float len;
-            float traveltime;
-            float frames;
 
-            
+
             if (ent.moveinfo.state == STATE_UP)
                 Math3D.VectorSubtract(ent.moveinfo.end_angles, ent.s.angles,
                         destdelta);
@@ -708,18 +684,18 @@ public class GameFunc {
                 Math3D.VectorSubtract(ent.moveinfo.start_angles, ent.s.angles,
                         destdelta);
 
-            
-            len = Math3D.VectorLength(destdelta);
 
-            
-            traveltime = len / ent.moveinfo.speed;
+            float len = Math3D.VectorLength(destdelta);
+
+
+            float traveltime = len / ent.moveinfo.speed;
 
             if (traveltime < Defines.FRAMETIME) {
                 AngleMove_Final.think(ent);
                 return true;
             }
 
-            frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
+            float frames = (float) (Math.floor(traveltime / Defines.FRAMETIME));
 
             
             
@@ -1122,7 +1098,6 @@ public class GameFunc {
         @Override
         public boolean think(edict_t ent) {
             float[] abs_movedir = { 0, 0, 0 };
-            float dist;
 
             GameBase.G_SetMovedir(ent.s.angles, ent.movedir);
             ent.movetype = Defines.MOVETYPE_STOP;
@@ -1149,7 +1124,7 @@ public class GameFunc {
             abs_movedir[0] = Math.abs(ent.movedir[0]);
             abs_movedir[1] = Math.abs(ent.movedir[1]);
             abs_movedir[2] = Math.abs(ent.movedir[2]);
-            dist = abs_movedir[0] * ent.size[0] + abs_movedir[1] * ent.size[1]
+            float dist = abs_movedir[0] * ent.size[0] + abs_movedir[1] * ent.size[1]
                     + abs_movedir[2] * ent.size[2] - GameBase.st.lip;
             Math3D.VectorMA(ent.pos1, dist, ent.movedir, ent.pos2);
 
@@ -1310,24 +1285,22 @@ public class GameFunc {
         @Override
         public boolean think(edict_t self) {
             edict_t ent;
-            float min;
-            float time;
             float newspeed;
             float ratio;
             float dist;
 
             if ((self.flags & Defines.FL_TEAMSLAVE) != 0)
-                return true; 
+                return true;
 
-            
-            min = Math.abs(self.moveinfo.distance);
+
+            float min = Math.abs(self.moveinfo.distance);
             for (ent = self.teamchain; ent != null; ent = ent.teamchain) {
                 dist = Math.abs(ent.moveinfo.distance);
                 if (dist < min)
                     min = dist;
             }
 
-            time = min / self.moveinfo.speed;
+            float time = min / self.moveinfo.speed;
 
             
             for (ent = self; ent != null; ent = ent.teamchain) {
@@ -1754,11 +1727,9 @@ public class GameFunc {
         @Override
         public boolean think(edict_t self) {
             if (self.target_ent.pathtarget != null) {
-                String savetarget;
-                edict_t ent;
 
-                ent = self.target_ent;
-                savetarget = ent.target;
+                edict_t ent = self.target_ent;
+                String savetarget = ent.target;
                 ent.target = ent.pathtarget;
                 GameUtil.G_UseTargets(ent, self.activator);
                 ent.target = savetarget;
@@ -1801,9 +1772,8 @@ public class GameFunc {
         public boolean think(edict_t self) {
             edict_t ent = null;
             float[] dest = { 0, 0, 0 };
-            boolean first;
 
-            first = true;
+            boolean first = true;
 
             boolean dogoto = true;
             while (dogoto) {
@@ -1866,13 +1836,12 @@ public class GameFunc {
         public String getID() { return "func_train_find";}
         @Override
         public boolean think(edict_t self) {
-            edict_t ent;
 
             if (null == self.target) {
                 game_import_t.dprintf("train_find: no target\n");
                 return true;
             }
-            ent = GameBase.G_PickTarget(self.target);
+            edict_t ent = GameBase.G_PickTarget(self.target);
             if (null == ent) {
                 game_import_t.dprintf("train_find: target " + self.target
                         + " not found\n");
@@ -1927,7 +1896,6 @@ public class GameFunc {
 
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            edict_t target;
 
             if (0 != self.movetarget.nextthink) {
                 
@@ -1939,7 +1907,7 @@ public class GameFunc {
                 return;
             }
 
-            target = GameBase.G_PickTarget(other.pathtarget);
+            edict_t target = GameBase.G_PickTarget(other.pathtarget);
             if (null == target) {
                 game_import_t.dprintf("elevator used with bad pathtarget: "
                         + other.pathtarget + '\n');
@@ -2242,9 +2210,7 @@ public class GameFunc {
         @Override
         public boolean think(edict_t ent) {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
-            float side;
             float width;
-            float length;
 
             ent.moveinfo.sound_start = game_import_t
                     .soundindex("doors/dr1_strt.wav");
@@ -2278,12 +2244,12 @@ public class GameFunc {
             
             Math3D.AngleVectors(ent.s.angles, forward, right, up);
             Math3D.VectorClear(ent.s.angles);
-            side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);
+            float side = 1.0f - (ent.spawnflags & SECRET_1ST_LEFT);
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
                 width = Math.abs(Math3D.DotProduct(up, ent.size));
             else
                 width = Math.abs(Math3D.DotProduct(right, ent.size));
-            length = Math.abs(Math3D.DotProduct(forward, ent.size));
+            float length = Math.abs(Math3D.DotProduct(forward, ent.size));
             if ((ent.spawnflags & SECRET_1ST_DOWN) != 0)
                 Math3D.VectorMA(ent.s.origin, -1 * width, up, ent.pos1);
             else

@@ -89,10 +89,7 @@ class PstCache {
     private static boolean pstcache_load_bitmap(int cache_id, int cache_idx)
             throws IOException, RdesktopException {
         logger.info("PstCache.pstcache_load_bitmap");
-        byte[] celldata = null;
-        FileInputStream fd;
-        
-        Bitmap bitmap;
+
         byte[] cellHead = null;
 
         if (!Options.persistent_bitmap_caching)
@@ -101,21 +98,18 @@ class PstCache {
         if (!IS_PERSISTENT(cache_id) || cache_idx >= Rdp.BMPCACHE2_NUM_PSTCELLS)
             return false;
 
-        fd = new FileInputStream(g_pstcache_fd[cache_id]);
+        FileInputStream fd = new FileInputStream(g_pstcache_fd[cache_id]);
         int offset = cache_idx
                 * (g_pstcache_Bpp * MAX_CELL_SIZE + CELLHEADER.size());
         fd.read(cellHead, offset, CELLHEADER.size());
         CELLHEADER c = new CELLHEADER(cellHead);
-        
-        
-        
-        
-        
-        celldata = new byte[c.length];
+
+
+        byte[] celldata = new byte[c.length];
         fd.read(celldata);
         logger.debug("Loading bitmap from disk ({}" + ':' + "{})\n", cache_id, cache_idx);
 
-        bitmap = new Bitmap(celldata, c.width, c.height, 0, 0, Options.Bpp);
+        Bitmap bitmap = new Bitmap(celldata, c.width, c.height, 0, 0, Options.Bpp);
         
         Orders.cache.putBitmap(cache_id, cache_idx, bitmap, c.stamp);
 
@@ -128,7 +122,6 @@ class PstCache {
                                        byte[] bitmap_id, int width, int height, int length, byte[] data)
             throws IOException {
         logger.info("PstCache.pstcache_put_bitmap");
-        FileOutputStream fd;
         CELLHEADER cellhdr = new CELLHEADER();
 
         if (!IS_PERSISTENT(cache_id) || cache_idx >= Rdp.BMPCACHE2_NUM_PSTCELLS)
@@ -142,7 +135,7 @@ class PstCache {
         cellhdr.length = length;
         cellhdr.stamp = 0;
 
-        fd = new FileOutputStream(g_pstcache_fd[cache_id]);
+        FileOutputStream fd = new FileOutputStream(g_pstcache_fd[cache_id]);
         int offset = cache_idx
                 * (Options.Bpp * MAX_CELL_SIZE + CELLHEADER.size());
         fd.write(CELLHEADER.toBytes(), offset, CELLHEADER.size());
@@ -218,8 +211,6 @@ class PstCache {
 
     /* initialise the persistent bitmap cache */
     static boolean pstcache_init(int cache_id) {
-        
-        String filename;
 
         if (g_pstcache_enumerated)
             return true;
@@ -230,7 +221,7 @@ class PstCache {
             return false;
 
         g_pstcache_Bpp = Options.Bpp;
-        filename = "./cache/pstcache_" + cache_id + '_' + g_pstcache_Bpp;
+        String filename = "./cache/pstcache_" + cache_id + '_' + g_pstcache_Bpp;
         logger.debug("persistent bitmap cache file: {}", filename);
 
         File cacheDir = new File("./cache/");

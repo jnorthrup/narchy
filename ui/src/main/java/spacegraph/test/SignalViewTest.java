@@ -302,8 +302,7 @@ public class SignalViewTest {
             };
 
 
-            HttpServer tcp;
-            tcp = new HttpServer(udp.addr(), h);
+            HttpServer tcp = new HttpServer(udp.addr(), h);
 
 
             this.tcp = tcp;
@@ -476,7 +475,6 @@ public class SignalViewTest {
 
                 float[] f = dft.apply(a).floatArray();
 
-                Surface p;
                 float fRMS = (float) rms;
                 BitmapMatrixView pp = new BitmapMatrixView(1, freqs,
                         //arrayRendererY(dft.apply(a).floatArray())
@@ -504,7 +502,7 @@ public class SignalViewTest {
                 //pp.update();
                 //p.add(ff);
 
-                p = pp; //new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));
+                Surface p = pp; //new ScaleXY(pp, 1, Util.lerp((float)Math.sqrt(rms), 0.8f, 1f));
 
 
                 //p.add(new FreqSpectrogram( 8, 1).set(a));

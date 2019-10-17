@@ -48,10 +48,8 @@ public final class Cbuf {
 
     public static void InsertText(String text) {
 
-        int templen = 0;
 
-        
-        templen = Globals.cmd_text.cursize;
+        int templen = Globals.cmd_text.cursize;
         if (templen != 0) {
             System.arraycopy(Globals.cmd_text.data, 0, tmp, 0, templen);
             SZ.Clear(Globals.cmd_text);
@@ -92,9 +90,8 @@ public final class Cbuf {
     static boolean AddLateCommands() {
         int i;
         int j;
-        boolean ret = false;
 
-        
+
         int s = 0;
         int argc = Com.Argc();
         for (i = 1; i < argc; i++) {
@@ -125,7 +122,7 @@ public final class Cbuf {
             }
         }
 
-        ret = (build.length() != 0);
+        boolean ret = (build.length() != 0);
         if (ret)
             Cbuf.AddText(build);
 

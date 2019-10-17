@@ -224,19 +224,15 @@ public abstract class Entity implements java.io.Serializable {
     }
 
     public boolean collidesWith(Entity entity, int tileSize) {
-        float left1, left2;
-        float right1, right2;
-        float top1, top2;
-        float bottom1, bottom2;
 
-        left1 = this.x;
-        left2 = entity.x;
-        right1 = this.getRight(tileSize);
-        right2 = entity.getRight(tileSize);
-        top1 = this.y;
-        top2 = entity.y;
-        bottom1 = this.getBottom(tileSize);
-        bottom2 = entity.getBottom(tileSize);
+        float left1 = this.x;
+        float left2 = entity.x;
+        float right1 = this.getRight(tileSize);
+        float right2 = entity.getRight(tileSize);
+        float top1 = this.y;
+        float top2 = entity.y;
+        float bottom1 = this.getBottom(tileSize);
+        float bottom2 = entity.getBottom(tileSize);
 
         return !(bottom1 < top2 || top1 > bottom2 || right1 < left2 || left1 > right2);
     }

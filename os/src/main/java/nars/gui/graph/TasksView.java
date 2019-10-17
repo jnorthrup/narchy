@@ -50,10 +50,9 @@ public class TasksView implements Timeline2D.EventBuffer<Task> {
     }
 
     public static Timeline2D timeline(Iterable<Task> tasks) {
-        long start, end;
         //TODO
-        start = 0;
-        end = 10;
+        long start = 0;
+        long end = 10;
         return new Timeline2D(start, end).addEvents(new TasksView(tasks), TaskRenderer, new Timeline2DEvents.LaneTimelineUpdater());
     }
 

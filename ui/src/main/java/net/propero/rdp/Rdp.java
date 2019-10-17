@@ -241,10 +241,10 @@ public class Rdp {
      * @param data Packet containing capability set data at current read position
      */
     private static void processGeneralCaps(RdpPacket_Localised data) {
-        int pad2octetsB; /* rdp5 flags? */
 
-        data.incrementPosition(10); 
-        pad2octetsB = data.getLittleEndian16(); 
+        data.incrementPosition(10);
+        /* rdp5 flags? */
+        int pad2octetsB = data.getLittleEndian16();
 
         if (pad2octetsB != 0)
             Options.use_rdp5 = false;
@@ -256,13 +256,12 @@ public class Rdp {
      * @param data Packet containing capability set data at current read position
      */
     private static void processBitmapCaps(RdpPacket_Localised data) {
-        int width, height, bpp;
 
-        bpp = data.getLittleEndian16(); 
-        data.incrementPosition(6); 
+        int bpp = data.getLittleEndian16();
+        data.incrementPosition(6);
 
-        width = data.getLittleEndian16(); 
-        height = data.getLittleEndian16(); 
+        int width = data.getLittleEndian16();
+        int height = data.getLittleEndian16();
 
 
 
@@ -292,12 +291,12 @@ public class Rdp {
      */
     static void processServerCaps(RdpPacket_Localised data, int length) {
         int n;
-        int next, start;
-        int ncapsets, capset_type, capset_length;
+        int next;
+        int capset_type, capset_length;
 
-        start = data.getPosition();
+        int start = data.getPosition();
 
-        ncapsets = data.getLittleEndian16(); 
+        int ncapsets = data.getLittleEndian16();
         data.incrementPosition(2); 
 
         for (n = 0; n < ncapsets; n++) {
@@ -333,12 +332,11 @@ public class Rdp {
             if ((fieldsPresent & LOGON_EX_AUTORECONNECTCOOKIE) != 0) {
                 data.getLittleEndian32();
                 int len = data.getLittleEndian32();
-                int version = 0;
                 if (len != 28) {
                     logger.warn("Invalid length in Auto-Reconnect packet\n");
                     return;
                 }
-                version = data.getLittleEndian32();
+                int version = data.getLittleEndian32();
                 if (version != 1) {
                     logger.warn("Unsupported version of Auto-Reconnect packet\n");
                     return;
@@ -578,9 +576,8 @@ public class Rdp {
      * @throws RdesktopException
      */
     private RdpPacket_Localised initData(int size) throws RdesktopException {
-        RdpPacket_Localised buffer = null;
 
-        buffer = SecureLayer.init(
+        RdpPacket_Localised buffer = SecureLayer.init(
                 Constants.encryption ? Secure.SEC_ENCRYPT : 0, size + 18);
         buffer.pushLayer(RdpPacket.RDP_HEADER, 18);
         
@@ -603,10 +600,8 @@ public class Rdp {
 
         CommunicationMonitor.lock(this);
 
-        int length;
-
         data.setPosition(data.getHeader(RdpPacket.RDP_HEADER));
-        length = data.getEnd() - data.getPosition();
+        int length = data.getEnd() - data.getPosition();
 
         data.setLittleEndian16(length);
         data.setLittleEndian16(RDP_PDU_DATA | 0x10);
@@ -637,7 +632,6 @@ public class Rdp {
      */
     private RdpPacket_Localised receive(int[] type) throws IOException,
             RdesktopException, CryptoException, OrderException {
-        int length = 0;
         if ((this.stream == null) || (this.next_packet >= this.stream.getEnd())) {
             this.stream = SecureLayer.receive();
             if (stream == null)
@@ -646,7 +640,7 @@ public class Rdp {
         } else {
             this.stream.setPosition(this.next_packet);
         }
-        length = this.stream.getLittleEndian16();
+        int length = this.stream.getLittleEndian16();
 
         /* 32k packets are really 8, keepalive fix - rdesktop 1.2.0 */
         if (length == 0x8000) {
@@ -1035,13 +1029,12 @@ public class Rdp {
      */
     private boolean processData(RdpPacket_Localised data, int[] ext_disc_reason)
             throws RdesktopException, OrderException {
-        int data_type, ctype, clen, len, roff, rlen;
-        data_type = 0;
+        int clen, roff, rlen;
 
-        data.incrementPosition(6); 
-        len = data.getLittleEndian16();
-        data_type = data.get8();
-        ctype = data.get8(); 
+        data.incrementPosition(6);
+        int len = data.getLittleEndian16();
+        int data_type = data.get8();
+        int ctype = data.get8();
         clen = data.getLittleEndian16(); 
         clen -= 18;
 
@@ -1094,9 +1087,8 @@ public class Rdp {
 
     private void processUpdate(RdpPacket_Localised data) throws OrderException,
             RdesktopException {
-        int update_type = 0;
 
-        update_type = data.getLittleEndian16();
+        int update_type = data.getLittleEndian16();
 
         switch (update_type) {
 
@@ -1278,10 +1270,9 @@ public class Rdp {
 
     private void processPointer(RdpPacket_Localised data)
             throws RdesktopException {
-        int message_type = 0;
         int x = 0, y = 0;
 
-        message_type = data.getLittleEndian16();
+        int message_type = data.getLittleEndian16();
         data.incrementPosition(2);
         switch (message_type) {
 
@@ -1336,19 +1327,18 @@ public class Rdp {
 
     protected void processBitmapUpdates(RdpPacket_Localised data)
             throws RdesktopException {
-        
-        int n_updates = 0;
+
         int left = 0, top = 0, right = 0, bottom = 0, width = 0, height = 0;
         int cx = 0, cy = 0, bitsperpixel = 0, compression = 0, buffersize = 0, size = 0;
         byte[] pixel = null;
 
-        int minX, minY, maxX, maxY;
+        int maxX, maxY;
 
         maxX = maxY = 0;
-        minX = surface.getWidth();
-        minY = surface.getHeight();
+        int minX = surface.getWidth();
+        int minY = surface.getHeight();
 
-        n_updates = data.getLittleEndian16();
+        int n_updates = data.getLittleEndian16();
 
         ByteBuffer bb = data.bb;
 
@@ -1448,22 +1438,16 @@ public class Rdp {
     }
 
     protected void processPalette(RdpPacket_Localised data) {
-        int n_colors = 0;
-        IndexColorModel cm = null;
-        byte[] palette = null;
 
-        byte[] red = null;
-        byte[] green = null;
-        byte[] blue = null;
         int j = 0;
 
-        data.incrementPosition(2); 
-        n_colors = data.getLittleEndian16(); 
-        data.incrementPosition(2); 
-        palette = new byte[n_colors * 3];
-        red = new byte[n_colors];
-        green = new byte[n_colors];
-        blue = new byte[n_colors];
+        data.incrementPosition(2);
+        int n_colors = data.getLittleEndian16();
+        data.incrementPosition(2);
+        byte[] palette = new byte[n_colors * 3];
+        byte[] red = new byte[n_colors];
+        byte[] green = new byte[n_colors];
+        byte[] blue = new byte[n_colors];
         data.copyToByteArray(palette, 0, data.getPosition(), palette.length);
         data.incrementPosition(palette.length);
         for (int i = 0; i < n_colors; i++) {
@@ -1471,7 +1455,7 @@ public class Rdp {
             green[i] = palette[j++];
             blue[i] = palette[j++];
         }
-        cm = new IndexColorModel(8, n_colors, red, green, blue);
+        IndexColorModel cm = new IndexColorModel(8, n_colors, red, green, blue);
         surface.registerPalette(cm);
     }
 
@@ -1492,24 +1476,21 @@ public class Rdp {
 
     private void process_colour_pointer_common(RdpPacket_Localised data, int bpp) throws RdesktopException {
         logger.debug("Rdp.RDP_POINTER_COLOR");
-        int x = 0, y = 0, width = 0, height = 0, cache_idx = 0, masklen = 0, datalen = 0;
-        byte[] mask = null, pixel = null;
-        Cursor cursor = null;
 
-        cache_idx = data.getLittleEndian16();
-        x = data.getLittleEndian16();
-        y = data.getLittleEndian16();
-        width = data.getLittleEndian16();
-        height = data.getLittleEndian16();
-        masklen = data.getLittleEndian16();
-        datalen = data.getLittleEndian16();
-        mask = new byte[masklen];
-        pixel = new byte[datalen];
+        int cache_idx = data.getLittleEndian16();
+        int x = data.getLittleEndian16();
+        int y = data.getLittleEndian16();
+        int width = data.getLittleEndian16();
+        int height = data.getLittleEndian16();
+        int masklen = data.getLittleEndian16();
+        int datalen = data.getLittleEndian16();
+        byte[] mask = new byte[masklen];
+        byte[] pixel = new byte[datalen];
         data.copyToByteArray(pixel, 0, data.getPosition(), datalen);
         data.incrementPosition(datalen);
         data.copyToByteArray(mask, 0, data.getPosition(), masklen);
         data.incrementPosition(masklen);
-        cursor = surface.createCursor(cache_idx, x, y, width, height, mask, pixel, bpp);
+        Cursor cursor = surface.createCursor(cache_idx, x, y, width, height, mask, pixel, bpp);
         
         surface.setCursor(cursor);
         cache.putCursor(cache_idx, cursor);

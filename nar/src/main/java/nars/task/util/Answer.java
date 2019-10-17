@@ -319,10 +319,9 @@ public final class Answer implements Timed, Predicate<Task> {
         if (numTasks == 0)
             return null;
 
-        long s, e;
-//        if (start!=ETERNAL && start!=TIMELESS && Util.or((Task t) -> t.intersects(start, end), 0, tasks.size(), tasks.items)) {
-            s = start;
-            e = end;
+        //        if (start!=ETERNAL && start!=TIMELESS && Util.or((Task t) -> t.intersects(start, end), 0, tasks.size(), tasks.items)) {
+        long s = start;
+        long e = end;
 //        } else {
 //            s = e = TIMELESS;
 //        }

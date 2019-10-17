@@ -98,14 +98,13 @@ public class GameWeapon {
             
             
             if (ent.enemy != null) {
-                float points = 0;
                 float[] v = { 0, 0, 0 };
                 float[] dir = { 0, 0, 0 };
     
                 Math3D.VectorAdd(ent.enemy.mins, ent.enemy.maxs, v);
                 Math3D.VectorMA(ent.enemy.s.origin, 0.5f, v, v);
                 Math3D.VectorSubtract(ent.s.origin, v, v);
-                points = ent.dmg - 0.5f * Math3D.VectorLength(v);
+                float points = ent.dmg - 0.5f * Math3D.VectorLength(v);
                 Math3D.VectorSubtract(ent.enemy.s.origin, ent.s.origin, dir);
                 if ((ent.spawnflags & 1) != 0)
                     mod = Defines.MOD_HANDGRENADE;
@@ -457,7 +456,6 @@ public class GameWeapon {
     static void check_dodge(edict_t self, float[] start, float[] dir, int speed) {
         float[] end = { 0, 0, 0 };
         float[] v = { 0, 0, 0 };
-        trace_t tr;
         float eta;
     
         
@@ -466,7 +464,7 @@ public class GameWeapon {
                 return;
         }
         Math3D.VectorMA(start, 8192, dir, end);
-        tr = game_import_t.trace(start, null, null, end, self, Defines.MASK_SHOT);
+        trace_t tr = game_import_t.trace(start, null, null, end, self, Defines.MASK_SHOT);
         if ((tr.ent != null) && (tr.ent.svflags & Defines.SVF_MONSTER) != 0
                 && (tr.ent.health > 0) && (null != tr.ent.monsterinfo.dodge)
                 && GameUtil.infront(tr.ent, self)) {
@@ -485,16 +483,14 @@ public class GameWeapon {
      */
     public static boolean fire_hit(edict_t self, float[] aim, int damage,
             int kick) {
-        trace_t tr;
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
         float[] v = { 0, 0, 0 };
         float[] point = { 0, 0, 0 };
-        float range;
         float[] dir = { 0, 0, 0 };
     
         
         Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, dir);
-        range = Math3D.VectorLength(dir);
+        float range = Math3D.VectorLength(dir);
         if (range > aim[0])
             return false;
     
@@ -512,8 +508,8 @@ public class GameWeapon {
         }
     
         Math3D.VectorMA(self.s.origin, range, dir, point);
-    
-        tr = game_import_t.trace(self.s.origin, null, null, point, self,
+
+        trace_t tr = game_import_t.trace(self.s.origin, null, null, point, self,
                 Defines.MASK_SHOT);
         if (tr.fraction < 1) {
             if (0 == tr.ent.takedamage)
@@ -559,7 +555,6 @@ public class GameWeapon {
     public static void fire_lead(edict_t self, float[] start, float[] aimdir,
             int damage, int kick, int te_impact, int hspread, int vspread,
             int mod) {
-        trace_t tr;
         float[] dir = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
         float[] end = { 0, 0, 0 };
@@ -568,8 +563,8 @@ public class GameWeapon {
         float[] water_start = { 0, 0, 0 };
         boolean water = false;
         int content_mask = Defines.MASK_SHOT | Defines.MASK_WATER;
-    
-        tr = game_import_t.trace(self.s.origin, null, null, start, self,
+
+        trace_t tr = game_import_t.trace(self.s.origin, null, null, start, self,
                 Defines.MASK_SHOT);
         if (!(tr.fraction < 1.0)) {
             Math3D.vectoangles(aimdir, dir);
@@ -723,12 +718,10 @@ public class GameWeapon {
 
     public static void fire_blaster(edict_t self, float[] start, float[] dir,
             int damage, int speed, int effect, boolean hyper) {
-        edict_t bolt;
-        trace_t tr;
-    
+
         Math3D.VectorNormalize(dir);
-    
-        bolt = GameUtil.G_Spawn();
+
+        edict_t bolt = GameUtil.G_Spawn();
         bolt.svflags = Defines.SVF_DEADMONSTER;
         
         
@@ -761,8 +754,8 @@ public class GameWeapon {
     
         if (self.client != null)
             check_dodge(self, bolt.s.origin, dir, speed);
-    
-        tr = game_import_t.trace(self.s.origin, null, null, bolt.s.origin, bolt,
+
+        trace_t tr = game_import_t.trace(self.s.origin, null, null, bolt.s.origin, bolt,
                 Defines.MASK_SHOT);
         if (tr.fraction < 1.0) {
             Math3D.VectorMA(bolt.s.origin, -10, dir, bolt.s.origin);
@@ -773,14 +766,13 @@ public class GameWeapon {
     public static void fire_grenade(edict_t self, float[] start,
             float[] aimdir, int damage, int speed, float timer,
             float damage_radius) {
-        edict_t grenade;
         float[] dir = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
     
         Math3D.vectoangles(aimdir, dir);
         Math3D.AngleVectors(dir, forward, right, up);
-    
-        grenade = GameUtil.G_Spawn();
+
+        edict_t grenade = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, grenade.s.origin);
         Math3D.VectorScale(aimdir, speed, grenade.velocity);
         Math3D.VectorMA(grenade.velocity, 200f + Lib.crandom() * 10.0f, up,
@@ -810,14 +802,13 @@ public class GameWeapon {
     public static void fire_grenade2(edict_t self, float[] start,
             float[] aimdir, int damage, int speed, float timer,
             float damage_radius, boolean held) {
-        edict_t grenade;
         float[] dir = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
     
         Math3D.vectoangles(aimdir, dir);
         Math3D.AngleVectors(dir, forward, right, up);
-    
-        grenade = GameUtil.G_Spawn();
+
+        edict_t grenade = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, grenade.s.origin);
         Math3D.VectorScale(aimdir, speed, grenade.velocity);
         Math3D.VectorMA(grenade.velocity, 200f + Lib.crandom() * 10.0f, up,
@@ -858,9 +849,8 @@ public class GameWeapon {
 
     public static void fire_rocket(edict_t self, float[] start, float[] dir,
             int damage, int speed, float damage_radius, int radius_damage) {
-        edict_t rocket;
-    
-        rocket = GameUtil.G_Spawn();
+
+        edict_t rocket = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, rocket.s.origin);
         Math3D.VectorCopy(dir, rocket.movedir);
         Math3D.vectoangles(dir, rocket.s.angles);
@@ -899,15 +889,12 @@ public class GameWeapon {
         float[] from = { 0, 0, 0 };
         float[] end = { 0, 0, 0 };
         trace_t tr = null;
-        edict_t ignore;
-        int mask;
-        boolean water;
-    
+
         Math3D.VectorMA(start, 8192f, aimdir, end);
         Math3D.VectorCopy(start, from);
-        ignore = self;
-        water = false;
-        mask = Defines.MASK_SHOT | Defines.CONTENTS_SLIME
+        edict_t ignore = self;
+        boolean water = false;
+        int mask = Defines.MASK_SHOT | Defines.CONTENTS_SLIME
                 | Defines.CONTENTS_LAVA;
         while (ignore != null) {
             tr = game_import_t.trace(from, null, null, end, ignore, mask);
@@ -955,9 +942,8 @@ public class GameWeapon {
 
     public static void fire_bfg(edict_t self, float[] start, float[] dir,
             int damage, int speed, float damage_radius) {
-        edict_t bfg;
-    
-        bfg = GameUtil.G_Spawn();
+
+        edict_t bfg = GameUtil.G_Spawn();
         Math3D.VectorCopy(start, bfg.s.origin);
         Math3D.VectorCopy(dir, bfg.movedir);
         Math3D.vectoangles(dir, bfg.s.angles);

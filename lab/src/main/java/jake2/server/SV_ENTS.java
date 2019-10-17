@@ -56,7 +56,6 @@ public class SV_ENTS {
     static void SV_EmitPacketEntities(client_frame_t from, client_frame_t to,
             sizebuf_t msg) {
         entity_state_t oldent = null, newent = null;
-        int oldindex, newindex;
         int oldnum, newnum;
         int from_num_entities;
         int bits;
@@ -68,8 +67,8 @@ public class SV_ENTS {
         else
             from_num_entities = from.num_entities;
 
-        newindex = 0;
-        oldindex = 0;
+        int newindex = 0;
+        int oldindex = 0;
         while (newindex < to.num_entities || oldindex < from_num_entities) {
             if (newindex >= to.num_entities)
                 newnum = 9999;
@@ -139,11 +138,11 @@ public class SV_ENTS {
     static void SV_WritePlayerstateToClient(client_frame_t from,
             client_frame_t to, sizebuf_t msg) {
         
-        player_state_t ps, ops;
+        player_state_t ops;
         
         player_state_t dummy;
 
-        ps = to.ps;
+        player_state_t ps = to.ps;
         if (from == null) {
             
             dummy = new player_state_t();
@@ -304,13 +303,11 @@ public class SV_ENTS {
      */
     public static void SV_WriteFrameToClient(client_t client, sizebuf_t msg) {
         
-        client_frame_t frame, oldframe;
+        client_frame_t oldframe;
         int lastframe;
 
-        
-        
-        
-        frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
+
+        client_frame_t frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
         if (client.lastframe <= 0) { 
             oldframe = null;
             lastframe = -1;
@@ -348,8 +345,7 @@ public class SV_ENTS {
      */
     public static void SV_FatPVS(float[] org) {
         int[] leafs = new int[64];
-        int i, j, count;
-        int longs;
+        int i, j;
         byte[] src;
         float[] mins = { 0, 0, 0 }, maxs = { 0, 0, 0 };
 
@@ -358,12 +354,12 @@ public class SV_ENTS {
             maxs[i] = org[i] + 8;
         }
 
-        count = CM.CM_BoxLeafnums(mins, maxs, leafs, 64, null);
+        int count = CM.CM_BoxLeafnums(mins, maxs, leafs, 64, null);
 
         if (count < 1)
             Com.Error(Defines.ERR_FATAL, "SV_FatPVS: count < 1");
 
-        longs = (CM.CM_NumClusters() + 31) >> 5;
+        int longs = (CM.CM_NumClusters() + 31) >> 5;
 
         
         for (i = 0; i < count; i++)
@@ -401,22 +397,16 @@ public class SV_ENTS {
         int e, i;
         float[] org = { 0, 0, 0 };
         edict_t ent;
-        edict_t clent;
-        client_frame_t frame;
         entity_state_t state;
         int l;
-        int clientarea, clientcluster;
-        int leafnum;
-        int c_fullsend;
-        byte[] clientphs;
         byte[] bitvector;
 
-        clent = client.edict;
+        edict_t clent = client.edict;
         if (clent.client == null)
-            return; 
+            return;
 
-        
-        frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
+
+        client_frame_t frame = client.frames[SV_INIT.sv.framenum & Defines.UPDATE_MASK];
 
         frame.senttime = SV_INIT.svs.realtime; 
 
@@ -425,9 +415,9 @@ public class SV_ENTS {
             org[i] = clent.client.ps.pmove.origin[i] * 0.125f
                     + clent.client.ps.viewoffset[i];
 
-        leafnum = CM.CM_PointLeafnum(org);
-        clientarea = CM.CM_LeafArea(leafnum);
-        clientcluster = CM.CM_LeafCluster(leafnum);
+        int leafnum = CM.CM_PointLeafnum(org);
+        int clientarea = CM.CM_LeafArea(leafnum);
+        int clientcluster = CM.CM_LeafCluster(leafnum);
 
         
         frame.areabytes = CM.CM_WriteAreaBits(frame.areabits, clientarea);
@@ -436,13 +426,13 @@ public class SV_ENTS {
         frame.ps.set(clent.client.ps);
 
         SV_FatPVS(org);
-        clientphs = CM.CM_ClusterPHS(clientcluster);
+        byte[] clientphs = CM.CM_ClusterPHS(clientcluster);
 
         
         frame.num_entities = 0;
         frame.first_entity = SV_INIT.svs.next_client_entities;
 
-        c_fullsend = 0;
+        int c_fullsend = 0;
 
         for (e = 1; e < GameBase.num_edicts; e++) {
             ent = GameBase.g_edicts[e];
@@ -497,10 +487,9 @@ public class SV_ENTS {
                     if (ent.s.modelindex == 0) { 
                                                  
                         float[] delta = { 0, 0, 0 };
-                        float len;
 
                         Math3D.VectorSubtract(org, ent.s.origin, delta);
-                        len = Math3D.VectorLength(delta);
+                        float len = Math3D.VectorLength(delta);
                         if (len > 400)
                             continue;
                     }

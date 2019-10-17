@@ -105,9 +105,7 @@ public class TheoJansen {
             motorJoint = (RevoluteJoint) world.addJoint(jd);
         }
 
-        v2 wheelAnchor;
-
-        wheelAnchor = pivot.addToNew(new v2(scale * 0.0f, scale * -0.8f));
+        v2 wheelAnchor = pivot.addToNew(new v2(scale * 0.0f, scale * -0.8f));
 
         createLeg(-scale, wheelAnchor);
         createLeg(scale, wheelAnchor);

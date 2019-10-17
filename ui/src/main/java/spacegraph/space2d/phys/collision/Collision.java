@@ -643,15 +643,9 @@ public class Collision {
         float sideOffset1 = -(tangent.x * v11.x + tangent.y * v11.y) + totalRadius;
         float sideOffset2 = tangent.x * v12.x + tangent.y * v12.y + totalRadius;
 
-        
-        
-        
-        int np;
 
-        
-        
         tangent.negated();
-        np = clipSegmentToLine(clipPoints1, incidentEdge, tangent, sideOffset1, iv1);
+        int np = clipSegmentToLine(clipPoints1, incidentEdge, tangent, sideOffset1, iv1);
         tangent.negated();
 
         if (np < 2) {
@@ -1183,11 +1177,8 @@ public class Collision {
             rf.sideOffset1 = v2.dot(rf.sideNormal1, rf.v1);
             rf.sideOffset2 = v2.dot(rf.sideNormal2, rf.v2);
 
-            
-            int np;
 
-            
-            np = clipSegmentToLine(clipPoints1, ie, rf.sideNormal1, rf.sideOffset1, rf.i1);
+            int np = clipSegmentToLine(clipPoints1, ie, rf.sideNormal1, rf.sideOffset1, rf.i1);
 
             if (np < Settings.maxManifoldPoints) {
                 return;
@@ -1211,9 +1202,8 @@ public class Collision {
 
             int pointCount = 0;
             for (int i = 0; i < Settings.maxManifoldPoints; ++i) {
-                float separation;
 
-                separation = v2.dot(rf.normal, temp.set(clipPoints2[i].v).subbed(rf.v1));
+                float separation = v2.dot(rf.normal, temp.set(clipPoints2[i].v).subbed(rf.v1));
 
                 if (separation <= m_radius) {
                     ManifoldPoint cp = manifold.points[pointCount];

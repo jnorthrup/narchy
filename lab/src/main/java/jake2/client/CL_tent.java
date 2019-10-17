@@ -332,8 +332,6 @@ public class CL_tent {
      */
     static explosion_t AllocExplosion() {
         int i;
-        int time;
-        int index;
 
         for (i = 0; i < MAX_EXPLOSIONS; i++) {
             if (cl_explosions[i].type == ex_free) {
@@ -342,9 +340,9 @@ public class CL_tent {
                 return cl_explosions[i];
             }
         }
-        
-        time = Globals.cl.time;
-        index = 0;
+
+        int time = Globals.cl.time;
+        int index = 0;
 
         for (i = 0; i < MAX_EXPLOSIONS; i++)
             if (cl_explosions[i].start < time) {
@@ -360,9 +358,8 @@ public class CL_tent {
      * ================= CL_SmokeAndFlash =================
      */
     static void SmokeAndFlash(float[] origin) {
-        explosion_t ex;
 
-        ex = AllocExplosion();
+        explosion_t ex = AllocExplosion();
         Math3D.VectorCopy(origin, ex.ent.origin);
         ex.type = ex_misc;
         ex.frames = 4;
@@ -385,19 +382,17 @@ public class CL_tent {
      * =================
      */
     static int ParseBeam(model_t model) {
-        int ent;
         float[] start = new float[3];
         float[] end = new float[3];
-        beam_t[] b;
         int i;
 
-        ent = MSG.ReadShort(Globals.net_message);
+        int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
-        
-        b = cl_beams;
+
+        beam_t[] b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
                 b[i].entity = ent;
@@ -430,23 +425,19 @@ public class CL_tent {
      * ================= CL_ParseBeam2 =================
      */
     static int ParseBeam2(model_t model) {
-        int ent;
         float[] start = new float[3];
         float[] end = new float[3];
         float[] offset = new float[3];
-        beam_t[] b;
         int i;
 
-        ent = MSG.ReadShort(Globals.net_message);
+        int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
         MSG.ReadPos(Globals.net_message, offset);
 
-        
 
-        
-        b = cl_beams;
+        beam_t[] b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == ent) {
                 b[i].entity = ent;
@@ -481,14 +472,12 @@ public class CL_tent {
      * instead of the cl_beams array =================
      */
     static int ParsePlayerBeam(model_t model) {
-        int ent;
         float[] start = new float[3];
         float[] end = new float[3];
         float[] offset = new float[3];
-        beam_t[] b;
         int i;
 
-        ent = MSG.ReadShort(Globals.net_message);
+        int ent = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
@@ -501,11 +490,8 @@ public class CL_tent {
         } else
             MSG.ReadPos(Globals.net_message, offset);
 
-        
 
-        
-        
-        b = cl_playerbeams;
+        beam_t[] b = cl_playerbeams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].entity == ent) {
                 b[i].entity = ent;
@@ -546,18 +532,16 @@ public class CL_tent {
      * ================= CL_ParseLightning =================
      */
     static int ParseLightning(model_t model) {
-        int srcEnt, destEnt;
-        beam_t[] b;
         int i;
 
-        srcEnt = MSG.ReadShort(Globals.net_message);
-        destEnt = MSG.ReadShort(Globals.net_message);
+        int srcEnt = MSG.ReadShort(Globals.net_message);
+        int destEnt = MSG.ReadShort(Globals.net_message);
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
-        
-        b = cl_beams;
+
+        beam_t[] b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++)
             if (b[i].entity == srcEnt && b[i].dest_entity == destEnt) {
                 
@@ -597,13 +581,12 @@ public class CL_tent {
      * ================= CL_ParseLaser =================
      */
     static void ParseLaser(int colors) {
-        laser_t[] l;
         int i;
 
         MSG.ReadPos(Globals.net_message, start);
         MSG.ReadPos(Globals.net_message, end);
 
-        l = cl_lasers;
+        laser_t[] l = cl_lasers;
         for (i = 0; i < MAX_LASERS; i++) {
             if (l[i].endtime < Globals.cl.time) {
                 l[i].ent.flags = Defines.RF_TRANSLUCENT | Defines.RF_BEAM;
@@ -625,7 +608,7 @@ public class CL_tent {
     
     
     static void ParseSteam() {
-        int id, i;
+        int i;
         int r;
         int cnt;
         int color;
@@ -633,7 +616,7 @@ public class CL_tent {
         cl_sustain_t[] s;
         cl_sustain_t free_sustain;
 
-        id = MSG.ReadShort(Globals.net_message); 
+        int id = MSG.ReadShort(Globals.net_message);
                                                  
         if (id != -1) 
         {
@@ -691,14 +674,12 @@ public class CL_tent {
     
     
     static void ParseWidow() {
-        int id, i;
-        cl_sustain_t[] s;
-        cl_sustain_t free_sustain;
+        int i;
 
-        id = MSG.ReadShort(Globals.net_message);
+        int id = MSG.ReadShort(Globals.net_message);
 
-        free_sustain = null;
-        s = cl_sustains;
+        cl_sustain_t free_sustain = null;
+        cl_sustain_t[] s = cl_sustains;
         for (i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id == 0) {
                 free_sustain = s[i];
@@ -728,11 +709,9 @@ public class CL_tent {
     
     static void ParseNuke() {
         int i;
-        cl_sustain_t[] s;
-        cl_sustain_t free_sustain;
 
-        free_sustain = null;
-        s = cl_sustains;
+        cl_sustain_t free_sustain = null;
+        cl_sustain_t[] s = cl_sustains;
         for (i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id == 0) {
                 free_sustain = s[i];
@@ -770,7 +749,6 @@ public class CL_tent {
     private static final float[] pos2 = {0, 0, 0};
 
     static void ParseTEnt() {
-        int type;
         explosion_t ex;
         int cnt;
         int color;
@@ -778,7 +756,7 @@ public class CL_tent {
         int ent;
         int magnitude;
 
-        type = MSG.ReadByte(Globals.net_message);
+        int type = MSG.ReadByte(Globals.net_message);
 
         switch (type) {
         case Defines.TE_BLOOD: 
@@ -1303,15 +1281,14 @@ public class CL_tent {
      */
     static void AddBeams() {
         int i, j;
-        beam_t[] b;
         float d;
         float yaw, pitch;
         float forward;
         float len, steps;
         float model_length;
 
-        
-        b = cl_beams;
+
+        beam_t[] b = cl_beams;
         for (i = 0; i < MAX_BEAMS; i++) {
             if (b[i].model == null || b[i].endtime < Globals.cl.time)
                 continue;
@@ -1656,15 +1633,13 @@ public class CL_tent {
      * ================= CL_AddExplosions =================
      */
     static void AddExplosions() {
-        entity_t ent;
         int i;
-        explosion_t[] ex;
         float frac;
         int f;
 
-        
-        ent = null;
-        ex = cl_explosions;
+
+        entity_t ent = null;
+        explosion_t[] ex = cl_explosions;
         for (i = 0; i < MAX_EXPLOSIONS; i++) {
             if (ex[i].type == ex_free)
                 continue;
@@ -1748,10 +1723,9 @@ public class CL_tent {
      * ================= CL_AddLasers =================
      */
     static void AddLasers() {
-        laser_t[] l;
         int i;
 
-        l = cl_lasers;
+        laser_t[] l = cl_lasers;
         for (i = 0; i < MAX_LASERS; i++) {
             if (l[i].endtime >= Globals.cl.time)
                 V.AddEntity(l[i].ent);
@@ -1760,10 +1734,9 @@ public class CL_tent {
 
     /* PMM - CL_Sustains */
     static void ProcessSustain() {
-        cl_sustain_t[] s;
         int i;
 
-        s = cl_sustains;
+        cl_sustain_t[] s = cl_sustains;
         for (i = 0; i < MAX_SUSTAINS; i++) {
             if (s[i].id != 0)
                 if ((s[i].endtime >= Globals.cl.time)

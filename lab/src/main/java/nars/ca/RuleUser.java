@@ -35,9 +35,8 @@ public class RuleUser {
 	
 	
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		int i;
 		ResetToDefaults();
 		if (sStr.length() < 3)
@@ -63,7 +62,7 @@ public class RuleUser {
 		else if (sStr.startsWith("GRH"))
 			RuleIdx = RIDX_GRH;
 
-		st = new StringTokenizer(sStr, " ,", true);
+        StringTokenizer st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			if (sTok.length() > 0 && sTok.charAt(0) == 'I')
@@ -195,28 +194,26 @@ public class RuleUser {
 					case RIDX_GRH : 
 						int r = 0,
 						d = 0;
-						int prevState;
 
-						prevState = (bOldVal >> 2) & 3; 
+                        int prevState = (bOldVal >> 2) & 3;
 														
 						bOldVal = (short) (bOldVal & 3); 
 															
 
 						switch (bOldVal) {
-							case 0 : 
-								int i4Sum = 0;
-								i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
-										? 1
-										: 0)
-										+ (((crrState[i][lurd[1]] & 3) == 1)
-												? 1
-												: 0)
-										+ (((crrState[i][lurd[3]] & 3) == 1)
-												? 1
-												: 0)
-										+ (((crrState[lurd[2]][j] & 3) == 1)
-												? 1
-												: 0);
+							case 0 :
+                                int i4Sum = (((crrState[lurd[0]][j] & 3) == 1)
+                                        ? 1
+                                        : 0)
+                                        + (((crrState[i][lurd[1]] & 3) == 1)
+                                        ? 1
+                                        : 0)
+                                        + (((crrState[i][lurd[3]] & 3) == 1)
+                                        ? 1
+                                        : 0)
+                                        + (((crrState[lurd[2]][j] & 3) == 1)
+                                        ? 1
+                                        : 0);
 								r = 0;
 								d = (i4Sum > 0) ? 1 : 0;
 								break;

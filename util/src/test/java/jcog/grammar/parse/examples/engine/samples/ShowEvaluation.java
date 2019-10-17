@@ -21,8 +21,7 @@ public class ShowEvaluation {
 		Variable youAndBaby = new Variable("YouAndBaby");
 		Variable baby = new Variable("Baby");
 
-		ArithmeticOperator diff;
-		diff = new ArithmeticOperator('-', youAndBaby, you);
+        ArithmeticOperator diff = new ArithmeticOperator('-', youAndBaby, you);
 
 		Evaluation e = new Evaluation(baby, diff);
 		System.out.println("Before weighing:");

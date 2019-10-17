@@ -74,8 +74,7 @@ public class Dropout {
                     hiddenLayers[i].forward(layer_input, layer_output);
 
                     if(dropout) {
-                        double[] mask;
-                        mask = hiddenLayers[i].dropout(layer_output.length, p_dropout, rng);
+                        double[] mask = hiddenLayers[i].dropout(layer_output.length, p_dropout, rng);
                         for(int j=0; j<layer_output.length; j++) layer_output[j] *= mask[j];
 
                         dropout_masks.add(mask.clone());
@@ -84,9 +83,7 @@ public class Dropout {
                 }
 
 
-                
-                double[] logistic_layer_dy; 
-                logistic_layer_dy = logisticLayer.train(layer_output, train_Y[n], lr); 
+                double[] logistic_layer_dy = logisticLayer.train(layer_output, train_Y[n], lr);
                 layer_inputs.add(layer_output.clone());
 
                 

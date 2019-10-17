@@ -111,12 +111,9 @@ public class ClipChannel extends VChannel implements ClipInterface,
     public void process(RdpPacket data) throws RdesktopException, IOException,
             CryptoException {
 
-        int type, status;
-        int length;
-
-        type = data.getLittleEndian16();
-        status = data.getLittleEndian16();
-        length = data.getLittleEndian32();
+        int type = data.getLittleEndian16();
+        int status = data.getLittleEndian16();
+        int length = data.getLittleEndian32();
 
         if (status == CLIPRDR_ERROR) {
             if (type == CLIPRDR_FORMAT_ACK) {
@@ -151,9 +148,8 @@ public class ClipChannel extends VChannel implements ClipInterface,
 
     @Override
     public void send_null(int type, int status) {
-        RdpPacket_Localised s;
 
-        s = new RdpPacket_Localised(12);
+        RdpPacket_Localised s = new RdpPacket_Localised(12);
         s.setLittleEndian16(type);
         s.setLittleEndian16(status);
         s.setLittleEndian32(0);

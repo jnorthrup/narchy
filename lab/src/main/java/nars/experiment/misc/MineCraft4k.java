@@ -43,10 +43,9 @@ public class MineCraft4k extends JFrame implements Runnable, KeyListener, MouseL
 			Random localRandom = new Random();
 			BufferedImage localBufferedImage = new BufferedImage(214, 120, 1);
 			int[] arrayOfInt1 = ((DataBufferInt)localBufferedImage.getRaster().getDataBuffer()).getData();
-			int[] arrayOfInt2;
-			localRandom.setSeed((long)rand.nextInt(50) + 1L);
+            localRandom.setSeed((long)rand.nextInt(50) + 1L);
 
-            arrayOfInt2 = IntStream.range(0, 262144).map(i -> i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0).toArray();
+            int[] arrayOfInt2 = IntStream.range(0, 262144).map(i -> i / 64 % 64 > 32 + localRandom.nextInt(8) ? localRandom.nextInt(8) + 1 : 0).toArray();
 
 			int[] arrayOfInt3 = new int[12288];
 

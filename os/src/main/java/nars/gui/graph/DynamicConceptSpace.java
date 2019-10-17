@@ -142,8 +142,7 @@ public class DynamicConceptSpace extends DynamicListSpace<Concept> {
 
         if (updated.get()) {
 
-                    List<ConceptWidget> w;
-                w = next.write();
+            List<ConceptWidget> w = next.write();
                 w.clear();
 
                 concepts.forEach((clink) -> {

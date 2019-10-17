@@ -145,7 +145,7 @@ public class TypeCastTest {
         
         int co = 0;
         for( Class c : tcast.nodeIDs() ) {
-            if( c.equals(clsFrom) )
+            if(c == clsFrom)
                 co++;
         }
         

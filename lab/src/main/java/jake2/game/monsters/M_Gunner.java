@@ -928,9 +928,8 @@ public class M_Gunner {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
             float[] target = { 0, 0, 0 };
             float[] aim = { 0, 0, 0 };
-            int flash_number;
 
-            flash_number = Defines.MZ2_GUNNER_MACHINEGUN_1
+            int flash_number = Defines.MZ2_GUNNER_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak216);
 
             Math3D.AngleVectors(self.s.angles, forward, right, null);

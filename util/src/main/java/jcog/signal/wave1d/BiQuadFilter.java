@@ -59,9 +59,8 @@ public class BiQuadFilter {
 	}
 	
 	public void doFiltering(float[] in, float[] tmp){
-		  double mir;
-		  /* mirroring */
-		  mir = 2*in[0];
+        /* mirroring */
+        double mir = 2 * in[0];
 		  i1 = mir - in[2];
 		  i2 = mir - in[1];
 		  /* apply filtering */

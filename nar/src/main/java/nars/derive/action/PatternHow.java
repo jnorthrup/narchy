@@ -823,10 +823,8 @@ public class PatternHow extends CondHow {
             if (B.varPattern() > T.varPattern()) return +1;
 
             //first which is smaller
-            if (T.volume() > B.volume()) return -1;
-            if (B.volume() > T.volume()) return +1;
+            return Integer.compare(B.volume(), T.volume());
 
-            return 0;
         }
 
 

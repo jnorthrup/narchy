@@ -671,10 +671,9 @@ public class Huffman {
             longTreeId = 0;
             nodeId = 0;
             while (trees.size() > 1) {
-                HuffmanTree hn, hf1, hf2;
-                hf1 = nextTree();
-                hf2 = nextTree();
-                hn = new HuffmanNode(hf1, hf2, nextNodeID());
+                HuffmanTree hf1 = nextTree();
+                HuffmanTree hf2 = nextTree();
+                HuffmanTree hn = new HuffmanNode(hf1, hf2, nextNodeID());
                 trees.add(hn);
                 if (longTreeId == 0 || hf1.id == longTreeId || hf2.id == longTreeId) {
                     longTreeId = hn.id;
@@ -710,9 +709,8 @@ public class Huffman {
     }
 
     private Huffman.HuffmanTree nextTree() {
-        Weight w1;
         HuffmanTree hf1;
-        w1 = trees.poll();
+        Weight w1 = trees.poll();
         if (w1 instanceof TmpNode) {
             hf1 = new HuffmanLeaf(w1.getWeight(), ((TmpNode) w1).key, nextNodeID());
         } else {
@@ -737,7 +735,7 @@ public class Huffman {
     //curCode first byte= num of bits used so far
     private void populateLUTNCodes(HuffmanTree objectTree, byte[] curCode) {
         if (objectTree instanceof HuffmanNode) {
-            byte[] leftCode, rightCode;
+            byte[] leftCode;
             if (++curCode[0] > (curCode.length - 1) * 8) {
                 leftCode = new byte[curCode.length + 1];
                 System.arraycopy(curCode, 0, leftCode, 0, curCode.length);
@@ -745,7 +743,7 @@ public class Huffman {
                 leftCode = curCode;
             }
             curCode = null;
-            rightCode = Arrays.copyOf(leftCode, leftCode.length);
+            byte[] rightCode = Arrays.copyOf(leftCode, leftCode.length);
             int bitIdx;
             if ((rightCode[0] & 7) == 0) bitIdx = 7;
             else bitIdx = (rightCode[0] & 7) - 1;
@@ -989,11 +987,10 @@ public class Huffman {
         public void run() {
 
             workQueue.forEach(dV -> {
-                int VLen;
                 Integer weight, oldWeight;
                 byte[] symbol;
                 ByteAry ba;
-                VLen = dV.length;
+                int VLen = dV.length;
                 for (int i = 0; i < VLen; i += maxSymbolLength) {
                     for (int j = i; j < VLen && j < i + maxSymbolLength; j++) {
                         symbol = Arrays.copyOfRange(dV, i, j + 1);

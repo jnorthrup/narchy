@@ -544,13 +544,12 @@ public abstract class Mesh extends Light {
             }
         }
 
-        if ((currententity.flags & Defines.RF_GLOW) != 0) { 
-            
-            
-            float scale;
+        if ((currententity.flags & Defines.RF_GLOW) != 0) {
+
+
             float min;
 
-            scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
+            float scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
             for (i = 0; i < 3; i++) {
                 min = shadelight[i] * 0.8f;
                 shadelight[i] += scale;

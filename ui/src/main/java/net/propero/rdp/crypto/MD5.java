@@ -238,12 +238,11 @@ public final class MD5 extends BlockMessageDigest implements Cloneable {
     }
 
     private void transform(int[] M) {
-        int a, b, c, d;
 
-        a = digest[0];
-        b = digest[1];
-        c = digest[2];
-        d = digest[3];
+        int a = digest[0];
+        int b = digest[1];
+        int c = digest[2];
+        int d = digest[3];
 
         a = FF(a, b, c, d, M[0], 7, 0xd76aa478);
         d = FF(d, a, b, c, M[1], 12, 0xe8c7b756);

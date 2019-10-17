@@ -70,13 +70,12 @@ public class RuleNeumBin {
 	
 	
 	public String GetAsString() {
-		String sBff;
 
-		
-		Validate();
 
-		
-		sBff = String.valueOf(iClo);
+        Validate();
+
+
+        String sBff = String.valueOf(iClo);
 		for (int i = 0; i < iClo; i++)
 			for (int j = 0; j < iClo; j++)
 				for (int k = 0; k < iClo; k++)

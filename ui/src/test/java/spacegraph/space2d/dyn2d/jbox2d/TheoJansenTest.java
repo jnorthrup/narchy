@@ -144,9 +144,7 @@ public class TheoJansenTest implements Consumer<Dynamics2D> {
             m_motorJoint = (RevoluteJoint) w.addJoint(jd);
         }
 
-        v2 wheelAnchor;
-
-        wheelAnchor = pivot.addToNew(new Position(0.0f, -0.8f));
+        v2 wheelAnchor = pivot.addToNew(new Position(0.0f, -0.8f));
 
         createLeg(-1.0f, wheelAnchor);
         createLeg(1.0f, wheelAnchor);

@@ -101,8 +101,6 @@ public class BitFont {
 
     float[] decodeBitFont(byte[] bytes) {
 
-        float[] tex;
-
 
         int w = byteArrayToInt(new byte[]{bytes[0], bytes[1]});
 
@@ -115,7 +113,7 @@ public class BitFont {
 
         int c = byteArrayToInt(new byte[]{bytes[6], bytes[7]});
 
-        tex = new float[w * h];
+        float[] tex = new float[w * h];
         textureWidth = w;
         textureHeight = h;
 

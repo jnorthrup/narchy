@@ -29,11 +29,9 @@ public class ShowElementsAbove {
 
 		Parser list = new Seq().get(new Symbol('{')).get(new Repetition(new Word())).get(new Symbol('}').ok());
 
-		list.put(new IAssembler() {
-			public void accept(Assembly a) {
-				Token fence = new Token('{');
-				System.out.println(AssemblerHelper.elementsAbove(a, fence));
-			}
+		list.put((IAssembler) a -> {
+			Token fence = new Token('{');
+			System.out.println(AssemblerHelper.elementsAbove(a, fence));
 		});
 
 		list.bestMatch(new TokenAssembly("{ Washington Adams Jefferson }"));

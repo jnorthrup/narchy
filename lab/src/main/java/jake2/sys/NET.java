@@ -104,23 +104,21 @@ public final class NET {
      * Returns a string holding ip address and port like "ip0.ip1.ip2.ip3:port".
      */
     public static String AdrToString(netadr_t a) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(a.ip[0] & 0xFF).append('.').append(a.ip[1] & 0xFF);
-        sb.append('.');
-        sb.append(a.ip[2] & 0xFF).append('.').append(a.ip[3] & 0xFF);
-        sb.append(':').append(a.port);
-        return sb.toString();
+        String sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
+                '.' +
+                (a.ip[2] & 0xFF) + '.' + (a.ip[3] & 0xFF) +
+                ':' + a.port;
+        return sb;
     }
 
     /**
      * Returns IP address without the port as string.
      */
     public static String BaseAdrToString(netadr_t a) {
-        StringBuilder sb = new StringBuilder();
-        sb.append(a.ip[0] & 0xFF).append('.').append(a.ip[1] & 0xFF);
-        sb.append('.');
-        sb.append(a.ip[2] & 0xFF).append('.').append(a.ip[3] & 0xFF);
-        return sb.toString();
+        String sb = String.valueOf(a.ip[0] & 0xFF) + '.' + (a.ip[1] & 0xFF) +
+                '.' +
+                (a.ip[2] & 0xFF) + '.' + (a.ip[3] & 0xFF);
+        return sb;
     }
 
     /**
@@ -190,13 +188,11 @@ public final class NET {
      */
     public static void SendLoopPacket(int sock, int length, byte[] data,
             netadr_t to) {
-        int i;
-        loopback_t loop;
 
-        loop = loopbacks[sock ^ 1];
+        loopback_t loop = loopbacks[sock ^ 1];
 
-        
-        i = loop.send & (MAX_LOOPBACK - 1);
+
+        int i = loop.send & (MAX_LOOPBACK - 1);
         loop.send++;
 
         System.arraycopy(data, 0, loop.msgs[i].data, 0, length);
@@ -277,11 +273,10 @@ public final class NET {
      * OpenIP, creates the network sockets. 
      */
     public static void OpenIP() {
-        cvar_t port, ip, clientport;
 
-        port = Cvar.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
-        ip = Cvar.Get("ip", "localhost", Defines.CVAR_NOSET);
-        clientport = Cvar.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
+        cvar_t port = Cvar.Get("port", "" + Defines.PORT_SERVER, Defines.CVAR_NOSET);
+        cvar_t ip = Cvar.Get("ip", "localhost", Defines.CVAR_NOSET);
+        cvar_t clientport = Cvar.Get("clientport", "" + Defines.PORT_CLIENT, Defines.CVAR_NOSET);
         
         if (ip_sockets[Defines.NS_SERVER] == null)
             ip_sockets[Defines.NS_SERVER] = Socket(Defines.NS_SERVER,

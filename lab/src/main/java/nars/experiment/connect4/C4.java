@@ -111,9 +111,8 @@ public class C4 {
                 IntHashSet tried = new IntHashSet();
                 while (triesRemain-- > 0 && play.game.moving() == play.player) {
 
-                    int which;
                     float max = Float.NEGATIVE_INFINITY;
-                    which = -1;
+                    int which = -1;
 
                     for (int i = 0; i < play.game.cols; i++) {
                         if (tried.contains(i))

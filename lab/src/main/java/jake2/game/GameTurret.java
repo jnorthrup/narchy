@@ -66,16 +66,14 @@ public class GameTurret {
     public static void turret_breach_fire(edict_t self) {
         float[] f = { 0, 0, 0 }, r = { 0, 0, 0 }, u = { 0, 0, 0 };
         float[] start = { 0, 0, 0 };
-        int damage;
-        int speed;
 
         Math3D.AngleVectors(self.s.angles, f, r, u);
         Math3D.VectorMA(self.s.origin, self.move_origin[0], f, start);
         Math3D.VectorMA(start, self.move_origin[1], r, start);
         Math3D.VectorMA(start, self.move_origin[2], u, start);
 
-        damage = (int) (100 + Lib.random() * 50);
-        speed = (int) (550 + 50 * GameBase.skill.value);
+        int damage = (int) (100 + Lib.random() * 50);
+        int speed = (int) (550 + 50 * GameBase.skill.value);
         GameWeapon.fire_rocket(self.teammaster.owner, start, f, damage, speed, 150,
                 damage);
         game_import_t.positioned_sound(start, self, Defines.CHAN_WEAPON,
@@ -219,15 +217,14 @@ public class GameTurret {
 
             if ((self.move_angles[Defines.YAW] < self.pos1[Defines.YAW])
                     || (self.move_angles[Defines.YAW] > self.pos2[Defines.YAW])) {
-                float dmin, dmax;
 
-                dmin = Math.abs(self.pos1[Defines.YAW]
+                float dmin = Math.abs(self.pos1[Defines.YAW]
                         - self.move_angles[Defines.YAW]);
                 if (dmin < -180)
                     dmin += 360;
                 else if (dmin > 180)
                     dmin -= 360;
-                dmax = Math.abs(self.pos2[Defines.YAW]
+                float dmax = Math.abs(self.pos2[Defines.YAW]
                         - self.move_angles[Defines.YAW]);
                 if (dmax < -180)
                     dmax += 360;
@@ -269,8 +266,6 @@ public class GameTurret {
             
             if (self.owner != null) {
                 float angle;
-                float target_z;
-                float diff;
                 float[] target = { 0, 0, 0 };
                 float[] dir = { 0, 0, 0 };
 
@@ -293,10 +288,10 @@ public class GameTurret {
 
                 
                 angle = self.s.angles[Defines.PITCH] * (float) (Math.PI * 2f / 360f);
-                target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
-                                + self.owner.move_origin[0] * Math.tan(angle) + self.owner.move_origin[2]));
+                float target_z = GameTurret.SnapToEights((float) (self.s.origin[2]
+                        + self.owner.move_origin[0] * Math.tan(angle) + self.owner.move_origin[2]));
 
-                diff = target_z - self.owner.s.origin[2];
+                float diff = target_z - self.owner.s.origin[2];
                 self.owner.velocity[2] = diff * 1.0f / Defines.FRAMETIME;
 
                 if ((self.spawnflags & 65536) != 0) {
@@ -371,7 +366,6 @@ public class GameTurret {
 
             float[] target = { 0, 0, 0 };
             float[] dir = { 0, 0, 0 };
-            float reaction_time;
 
             self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
@@ -406,7 +400,7 @@ public class GameTurret {
             if (GameBase.level.time < self.monsterinfo.attack_finished)
                 return true;
 
-            reaction_time = (3 - GameBase.skill.value) * 1.0f;
+            float reaction_time = (3 - GameBase.skill.value) * 1.0f;
             if ((GameBase.level.time - self.monsterinfo.trail_time) < reaction_time)
                 return true;
 

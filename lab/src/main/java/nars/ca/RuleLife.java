@@ -28,15 +28,14 @@ public class RuleLife {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		int i, iNum = 1;
 		char cChar;
 		int iCharVal;
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",/", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",/", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken();
 			if ((sTok.compareTo("/") == 0) || (sTok.compareTo(",") == 0)) {

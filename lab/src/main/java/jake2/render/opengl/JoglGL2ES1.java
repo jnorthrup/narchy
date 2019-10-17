@@ -269,11 +269,10 @@ public class JoglGL2ES1 implements QGL {
     @Override
     public String glGetString(int name) {
         if( GL.GL_EXTENSIONS == name ) {
-            StringBuilder sb = new StringBuilder();
-            sb.append(gl.glGetString(GL.GL_EXTENSIONS));
-            sb.append(" GL_ARB_multitexture");
-            sb.append(' ').append(GL_EXT_point_parameters);
-            return sb.toString();
+            String sb = gl.glGetString(GL.GL_EXTENSIONS) +
+                    " GL_ARB_multitexture" +
+                    ' ' + GL_EXT_point_parameters;
+            return sb;
         }
         return gl.glGetString(name);
     }

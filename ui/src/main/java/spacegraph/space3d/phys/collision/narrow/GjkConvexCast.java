@@ -75,8 +75,7 @@ public class GjkConvexCast extends ConvexCast {
 
 		v3 n = new v3();
 		n.set(0f, 0f, 0f);
-		boolean hasResult = false;
-		v3 c = new v3();
+        v3 c = new v3();
 		v3 r = new v3();
 		r.sub(linVelA, linVelB);
 
@@ -103,12 +102,11 @@ public class GjkConvexCast extends ConvexCast {
 		input.transformB.set(fromB);
 		gjk.getClosestPoints(input, pointCollector);
 
-		hasResult = pointCollector.hasResult;
+        boolean hasResult = pointCollector.hasResult;
 		c.set(pointCollector.pointInWorld);
 
 		if (hasResult) {
-            float dist;
-            dist = pointCollector.distance;
+            float dist = pointCollector.distance;
             n.set(pointCollector.normalOnBInWorld);
 
             
@@ -117,11 +115,10 @@ public class GjkConvexCast extends ConvexCast {
                 if (numIter > maxIter) {
                     return false; 
                 }
-                float dLambda = 0f;
 
                 float projectedLinearVelocity = r.dot(n);
 
-                dLambda = dist / (projectedLinearVelocity);
+                float dLambda = dist / (projectedLinearVelocity);
 
                 lambda = lambda - dLambda;
 

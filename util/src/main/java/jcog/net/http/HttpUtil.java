@@ -271,10 +271,9 @@ public final class HttpUtil
         
         public static File findDirectoryIndex(File dir)
         {
-                File ret;
-                assert dir.isDirectory();
+            assert dir.isDirectory();
 
-                ret = new File(dir.getPath() + File.separator + "index.html");
+            File ret = new File(dir.getPath() + File.separator + "index.html");
                 if (ret.isFile())
                 {
                         return ret;

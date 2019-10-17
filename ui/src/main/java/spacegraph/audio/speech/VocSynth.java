@@ -188,12 +188,10 @@ class CPanel extends Panel
 // display all buttons
 {
 	public CPanel(ActionListener par) {
-		Label l;
-		l = new Label("Presets:");
+        Label l = new Label("Presets:");
 		add(l);
-		Button b = null;
-		//add presetbuttons
-		b = new Button("AH");
+        //add presetbuttons
+        Button b = new Button("AH");
 		b.setActionCommand("AH");
 		b.addActionListener(par);
 		add(b);
@@ -253,8 +251,7 @@ class WPanel extends Panel
 	public WPanel(double input[], int lenin, double output[], int lenout) {
 		inw = new WaveDraw(this, 200, 64, input, lenin);
 		outw = new WaveDraw(this, 200, 64, output, lenout);
-		Label l;
-		l = new Label("Input:");
+        Label l = new Label("Input:");
 		add(l);
 		add(inw);
 		l = new Label("Output:");
@@ -417,8 +414,7 @@ class VocSynthApplet extends Applet implements ActionListener {
 				outwave[k] = lo[tlength];
 			}
 		// smooth start and end of array
-		double dif;
-		dif = outwave[length - 1] - outwave[0];
+        double dif = outwave[length - 1] - outwave[0];
 		outwave[1] += dif * 0.2;
 		outwave[length - 2] -= dif * 0.2;
 		outwave[0] += dif * 0.4;

@@ -327,8 +327,7 @@ public class A extends GamePanel {
 		int nbEnemiesToPop = 0;
 		int i = 0;
 		int j = 0;
-		int k = 0;
-		int l = 0;
+        int l = 0;
 		int frustumX = 0;
 		int frustumZ = 0;
 		int playerLife = 0;
@@ -350,8 +349,8 @@ public class A extends GamePanel {
 			requestFocus();
 		}
 
-		
-		k = LIGHT_DISTANCE;
+
+        int k = LIGHT_DISTANCE;
 		char[] c = STRING_COLORS.toCharArray();
 		for (i = 0; i < c.length; i += 3) {
 			for (j = LIGHT_DISTANCE - 1; j >= 0; j--) {

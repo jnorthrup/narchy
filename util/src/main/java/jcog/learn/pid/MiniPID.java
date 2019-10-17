@@ -315,12 +315,6 @@ public class MiniPID {
      */
     public double out(double actual) {
 
-        double output;
-        double Poutput;
-        double Ioutput;
-        double Doutput;
-        double Foutput;
-
         if (setpointRange != 0) {
             setpoint = Util.clamp(setpoint, actual - setpointRange, actual + setpointRange);
         }
@@ -329,10 +323,10 @@ public class MiniPID {
         double error = setpoint - actual;
 
 
-        Foutput = f() * setpoint;
+        double Foutput = f() * setpoint;
 
 
-        Poutput = p() * error;
+        double Poutput = p() * error;
 
 
         boolean initialIter = (this.actual != this.actual);
@@ -342,17 +336,17 @@ public class MiniPID {
         }
 
 
-        Doutput = -d() * (actual - this.actual);
+        double Doutput = -d() * (actual - this.actual);
         this.actual = actual;
 
 
-        Ioutput = i() * errSum;
+        double Ioutput = i() * errSum;
         if (maxIOutput != 0) {
             Ioutput = Util.clamp(Ioutput, -maxIOutput, maxIOutput);
         }
 
 
-        output = Foutput + Poutput + Ioutput + Doutput;
+        double output = Foutput + Poutput + Ioutput + Doutput;
 
 
         if (!Util.equals(outMin, outMax) && !isInclusive(output, outMin, outMax)) {

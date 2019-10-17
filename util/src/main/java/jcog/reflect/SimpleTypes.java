@@ -197,76 +197,76 @@ public class SimpleTypes {
 
     public static boolean isNullable(Class c) {
         if (c == null) throw new IllegalArgumentException("c==null");
-        if (c.equals(cBool2)) return true;
-        if (c.equals(cByte2)) return true;
-        if (c.equals(cChar2)) return true;
-        if (c.equals(cDouble2)) return true;
-        if (c.equals(cFloat2)) return true;
-        if (c.equals(cInteger2)) return true;
-        if (c.equals(cLong2)) return true;
-        return c.equals(cShort2);
+        if (c == cBool2) return true;
+        if (c == cByte2) return true;
+        if (c == cChar2) return true;
+        if (c == cDouble2) return true;
+        if (c == cFloat2) return true;
+        if (c == cInteger2) return true;
+        if (c == cLong2) return true;
+        return c == cShort2;
     }
 
     public static boolean isVoid(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cVoid2.equals(c) || cVoid1.equals(c);
+        return cVoid2 == c || cVoid1 == c;
     }
 
     public static boolean isBoolean(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cBool1.equals(c) || cBool2.equals(c);
+        return cBool1 == c || cBool2 == c;
     }
 
     public static boolean isByte(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cByte1.equals(c) || cByte2.equals(c);
+        return cByte1 == c || cByte2 == c;
     }
 
     public static boolean isChar(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cChar1.equals(c) || cChar2.equals(c);
+        return cChar1 == c || cChar2 == c;
     }
 
     public static boolean isDouble(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cDouble1.equals(c) || cDouble2.equals(c);
+        return cDouble1 == c || cDouble2 == c;
     }
 
     public static boolean isFloat(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cFloat1.equals(c) || cFloat2.equals(c);
+        return cFloat1 == c || cFloat2 == c;
     }
 
     public static boolean isInt(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cInteger1.equals(c) || cInteger2.equals(c);
+        return cInteger1 == c || cInteger2 == c;
     }
 
     public static boolean isLong(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cLong1.equals(c) || cLong2.equals(c);
+        return cLong1 == c || cLong2 == c;
     }
 
     public static boolean isShort(Class c) {
         if (c == null) {
             throw new IllegalArgumentException("c == null");
         }
-        return cShort1.equals(c) || cShort2.equals(c);
+        return cShort1 == c || cShort2 == c;
     }
 }

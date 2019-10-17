@@ -393,9 +393,8 @@ public class KIF implements Iterable<Task> {
                 if (forVar.startsWith("(")) {
                     forVar = forVar.substring(1, forVar.length() - 1); 
                 }
-                boolean missingAParamVar;
                 String[] forVars = forVar.split(" ");
-                missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
+                boolean missingAParamVar = Arrays.stream(forVars).anyMatch(vv -> !sargs.get(1).contains(vv));
                 if (!missingAParamVar) {
                     y = args.get(1); 
                 } else {

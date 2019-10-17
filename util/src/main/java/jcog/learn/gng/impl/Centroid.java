@@ -102,9 +102,8 @@ public class Centroid extends ArrayRealVector {
 
 
     public static double distanceCartesianSq(double[] x, double[] y) {
-        double s;
         int l = y.length;
-        s = IntStream.range(0, l).mapToDouble(i -> y[i] - x[i]).map(d -> d * d).sum();
+        double s = IntStream.range(0, l).mapToDouble(i -> y[i] - x[i]).map(d -> d * d).sum();
         return s;
     }
 
@@ -146,15 +145,13 @@ public class Centroid extends ArrayRealVector {
          * avoid needing to calculate sqrt() this can be used in a comparison
          */
         static double distanceCartesianSq(double[] x, double[] y) {
-            double s;
             int l = y.length;
-            s = IntStream.range(0, l).mapToDouble(i -> (y[i] - x[i])).map(d -> d * d).sum();
+            double s = IntStream.range(0, l).mapToDouble(i -> (y[i] - x[i])).map(d -> d * d).sum();
             return s;
         }
         static double distanceCartesianManhattan(double[] x, double[] y) {
-            double s;
             int l = y.length;
-            s = IntStream.range(0, l).mapToDouble(i -> Math.abs(y[i] - x[i])).sum();
+            double s = IntStream.range(0, l).mapToDouble(i -> Math.abs(y[i] - x[i])).sum();
             return s;
         }
 

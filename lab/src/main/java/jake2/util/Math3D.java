@@ -328,10 +328,9 @@ public class Math3D {
 		assert(emins.length == 3 && emaxs.length == 3) : "vec3_t bug";
 
 		float dist1, dist2;
-		int sides;
 
-		
-		byte ptype = p.type;
+
+        byte ptype = p.type;
 		float pDist = p.dist;
 		if (ptype < 3) {
 			if (pDist <= emins[ptype])
@@ -391,7 +390,7 @@ public class Math3D {
 				break;
 		}
 
-		sides = 0;
+        int sides = 0;
 		if (dist1 >= pDist)
 			sides = 1;
 		if (dist2 < pDist)

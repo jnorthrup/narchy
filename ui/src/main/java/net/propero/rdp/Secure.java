@@ -400,10 +400,10 @@ public class Secure {
     public void processMcsData(RdpPacket_Localised mcs_data)
             throws RdesktopException, CryptoException {
         logger.debug("Secure.processMcsData");
-        int tag = 0, len = 0, length = 0, nexttag = 0;
+        int tag = 0, length = 0, nexttag = 0;
 
-        mcs_data.incrementPosition(21); 
-        len = mcs_data.get8();
+        mcs_data.incrementPosition(21);
+        int len = mcs_data.get8();
 
         if ((len & 0x00000080) != 0) {
             len = mcs_data.get8();
@@ -471,9 +471,8 @@ public class Secure {
 
     private void processCryptInfo(RdpPacket_Localised data)
             throws RdesktopException, CryptoException {
-        int rc4_key_size = 0;
 
-        rc4_key_size = this.parseCryptInfo(data);
+        int rc4_key_size = this.parseCryptInfo(data);
         if (rc4_key_size == 0) {
             return;
         }
@@ -523,14 +522,13 @@ public class Secure {
      */
     public RdpPacket_Localised init(int flags, int length) throws RdesktopException {
         int headerlength = 0;
-        RdpPacket_Localised buffer;
 
         if (!this.licenceIssued)
             headerlength = ((flags & SEC_ENCRYPT) != 0) ? 12 : 4;
         else
             headerlength = ((flags & SEC_ENCRYPT) != 0) ? 12 : 0;
 
-        buffer = MCS.init(length + headerlength);
+        RdpPacket_Localised buffer = MCS.init(length + headerlength);
         buffer.pushLayer(RdpPacket.SECURE_HEADER, headerlength);
         
         
@@ -655,7 +653,6 @@ public class Secure {
      */
     private byte[] encrypt(byte[] data, int length) throws CryptoException {
         synchronized (rc4_enc_lock) {
-            byte[] buffer = null;
             if (this.enc_count == 4096) {
                 sec_encrypt_key = this.update(this.sec_encrypt_key,
                         this.sec_encrypt_update_key);
@@ -665,8 +662,8 @@ public class Secure {
                 
                 this.enc_count = 0;
             }
-            
-            buffer = this.rc4_enc.crypt(data, 0, length);
+
+            byte[] buffer = this.rc4_enc.crypt(data, 0, length);
             this.enc_count++;
             return buffer;
         }
@@ -681,7 +678,6 @@ public class Secure {
      */
     public byte[] encrypt(byte[] data) throws CryptoException {
         synchronized (rc4_enc_lock) {
-            byte[] buffer = null;
             if (this.enc_count == 4096) {
                 sec_encrypt_key = this.update(this.sec_encrypt_key,
                         this.sec_encrypt_update_key);
@@ -691,9 +687,9 @@ public class Secure {
                 
                 this.enc_count = 0;
             }
-            
 
-            buffer = this.rc4_enc.crypt(data);
+
+            byte[] buffer = this.rc4_enc.crypt(data);
             this.enc_count++;
             return buffer;
         }
@@ -709,7 +705,6 @@ public class Secure {
      */
     public byte[] decrypt(byte[] data, int length) throws CryptoException {
         synchronized (rc4_dec_lock) {
-            byte[] buffer = null;
             if (this.dec_count == 4096) {
                 sec_decrypt_key = this.update(this.sec_decrypt_key,
                         this.sec_decrypt_update_key);
@@ -719,8 +714,8 @@ public class Secure {
                 
                 this.dec_count = 0;
             }
-            
-            buffer = this.rc4_dec.crypt(data, 0, length);
+
+            byte[] buffer = this.rc4_dec.crypt(data, 0, length);
             this.dec_count++;
             return buffer;
         }
@@ -735,7 +730,6 @@ public class Secure {
      */
     public byte[] decrypt(byte[] data) throws CryptoException {
         synchronized (rc4_dec_lock) {
-            byte[] buffer = null;
             if (this.dec_count == 4096) {
                 sec_decrypt_key = this.update(this.sec_decrypt_key,
                         this.sec_decrypt_update_key);
@@ -745,9 +739,9 @@ public class Secure {
                 
                 this.dec_count = 0;
             }
-            
 
-            buffer = this.rc4_dec.crypt(data);
+
+            byte[] buffer = this.rc4_dec.crypt(data);
             this.dec_count++;
             return buffer;
         }
@@ -764,19 +758,17 @@ public class Secure {
     private int parseCryptInfo(RdpPacket_Localised data)
             throws RdesktopException {
         logger.debug("Secure.parseCryptInfo");
-        int encryption_level = 0, random_length = 0, RSA_info_length = 0;
         int tag = 0, length = 0;
-        int next_tag = 0, end = 0;
-        int rc4_key_size = 0;
+        int next_tag = 0;
 
-        rc4_key_size = data.getLittleEndian32(); 
-        encryption_level = data.getLittleEndian32(); 
+        int rc4_key_size = data.getLittleEndian32();
+        int encryption_level = data.getLittleEndian32();
         
         if (encryption_level == 0) { 
             return 0;
         }
-        random_length = data.getLittleEndian32();
-        RSA_info_length = data.getLittleEndian32();
+        int random_length = data.getLittleEndian32();
+        int RSA_info_length = data.getLittleEndian32();
 
         if (random_length != SEC_RANDOM_SIZE) {
             throw new RdesktopException("Wrong Size of Random! Got"
@@ -787,7 +779,7 @@ public class Secure {
                 random_length);
         data.incrementPosition(random_length);
 
-        end = data.getPosition() + RSA_info_length;
+        int end = data.getPosition() + RSA_info_length;
 
         if (end > data.getEnd()) {
             logger.debug("Reached end of crypt info prematurely ");
@@ -958,16 +950,15 @@ public class Secure {
      */
     private boolean parsePublicKey(RdpPacket_Localised data)
             throws RdesktopException {
-        int magic = 0, modulus_length = 0;
 
-        magic = data.getLittleEndian32();
+        int magic = data.getLittleEndian32();
 
         if (magic != SEC_RSA_MAGIC) {
             throw new RdesktopException("Wrong magic! Expected" + SEC_RSA_MAGIC
                     + "got:" + magic);
         }
 
-        modulus_length = data.getLittleEndian32() - SEC_PADDING_SIZE;
+        int modulus_length = data.getLittleEndian32() - SEC_PADDING_SIZE;
 
         if (modulus_length < 64 || modulus_length > SEC_MAX_MODULUS_SIZE) {
             throw new RdesktopException("Bad server public key size ("
@@ -1131,16 +1122,14 @@ public class Secure {
      * @throws CryptoException
      */
     private void generate_keys(int rc4_key_size) throws CryptoException {
-        byte[] session_key = new byte[48];
-        byte[] temp_hash = new byte[48];
         byte[] input = new byte[48];
 
         System.arraycopy(this.client_random, 0, input, 0, 24);
         System.arraycopy(this.server_random, 0, input, 24, 24);
 
-        temp_hash = this.hash48(input, this.client_random, this.server_random,
+        byte[] temp_hash = this.hash48(input, this.client_random, this.server_random,
                 65);
-        session_key = this.hash48(temp_hash, this.client_random,
+        byte[] session_key = this.hash48(temp_hash, this.client_random,
                 this.server_random, 88);
 
         System.arraycopy(session_key, 0, this.sec_sign_key, 0, 16);

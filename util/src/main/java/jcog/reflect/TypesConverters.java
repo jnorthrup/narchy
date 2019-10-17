@@ -56,7 +56,7 @@ public class TypesConverters
         ToStringConverters convs = (ToStringConverters) toString;
         if (convs == null) return null;
 
-        return convs.entrySet().stream().filter(classToStringConverterEntry -> classToStringConverterEntry.getKey() != null).filter(classToStringConverterEntry -> classToStringConverterEntry.getKey().equals(c)).findFirst().map(Map.Entry::getValue).orElse(null);
+        return convs.entrySet().stream().filter(classToStringConverterEntry -> classToStringConverterEntry.getKey() != null).filter(classToStringConverterEntry -> classToStringConverterEntry.getKey() == c).findFirst().map(Map.Entry::getValue).orElse(null);
 
     }
 
@@ -74,7 +74,7 @@ public class TypesConverters
         Map<Class, Function<String, Object>> convs = toValues;
         if (convs == null) return null;
 
-        return convs.entrySet().stream().filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey() != null).filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey().equals(c)).findFirst().map(Map.Entry::getValue).orElse(null);
+        return convs.entrySet().stream().filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey() != null).filter(classToValueConvertorEntry -> classToValueConvertorEntry.getKey() == c).findFirst().map(Map.Entry::getValue).orElse(null);
 
     }
 }

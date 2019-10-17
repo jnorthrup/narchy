@@ -479,8 +479,7 @@ public class PrintfFormat {
 		}
 		while (cPos != -1 && cPos < fmtArg.length()) {
 			for (ePos = cPos + 1; ePos < fmtArg.length(); ePos++) {
-				char c = 0;
-				c = fmtArg.charAt(ePos);
+                char c = fmtArg.charAt(ePos);
 				if (c == 'i')
 					break;
 				if (c == 'd')
@@ -1347,8 +1346,8 @@ public class PrintfFormat {
 		 */
 		private String fFormatString(double x) {
 			boolean noDigits = false;
-			char[] ca6, ca7;
-			if (Double.isInfinite(x)) {
+			char[] ca6;
+            if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
 					if (leadingSign)
 						ca6 = "+Inf".toCharArray();
@@ -1369,7 +1368,7 @@ public class PrintfFormat {
 				noDigits = true;
 			} else
 				ca6 = fFormatDigits(x);
-			ca7 = applyFloatPadding(ca6, false);
+            char[] ca7 = applyFloatPadding(ca6, false);
 			return new String(ca7);
 		}
 		/**
@@ -1409,7 +1408,7 @@ public class PrintfFormat {
 			int i, j, k, p;
 			int n1In, n2In;
 			int expon = 0;
-			int ePos, rPos, eSize;
+			int eSize;
 			boolean minusSign = false;
 			if (x > 0.0)
 				sx = Double.toString(x);
@@ -1423,10 +1422,10 @@ public class PrintfFormat {
 					sx = sx.substring(1);
 				}
 			}
-			ePos = sx.indexOf('E');
+            int ePos = sx.indexOf('E');
 			if (ePos == -1)
 				ePos = sx.indexOf('e');
-			rPos = sx.indexOf('.');
+            int rPos = sx.indexOf('.');
 			if (rPos != -1)
 				n1In = rPos;
 			else if (ePos != -1)
@@ -1801,8 +1800,8 @@ public class PrintfFormat {
 		 */
 		private String eFormatString(double x, char eChar) {
 			boolean noDigits = false;
-			char[] ca4, ca5;
-			if (Double.isInfinite(x)) {
+			char[] ca4;
+            if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
 					if (leadingSign)
 						ca4 = "+Inf".toCharArray();
@@ -1823,7 +1822,7 @@ public class PrintfFormat {
 				noDigits = true;
 			} else
 				ca4 = eFormatDigits(x, eChar);
-			ca5 = applyFloatPadding(ca4, false);
+            char[] ca5 = applyFloatPadding(ca4, false);
 			return new String(ca5);
 		}
 		/**
@@ -1925,8 +1924,8 @@ public class PrintfFormat {
 			String sx, sy, sz, ret;
 			int savePrecision = precision;
 			int i;
-			char[] ca4, ca5;
-			boolean noDigits = false;
+			char[] ca4;
+            boolean noDigits = false;
 			if (Double.isInfinite(x)) {
 				if (x == Double.POSITIVE_INFINITY) {
 					if (leadingSign)
@@ -2013,8 +2012,8 @@ public class PrintfFormat {
 						ret = ' ' + ret;
 				ca4 = ret.toCharArray();
 			}
-			
-			ca5 = applyFloatPadding(ca4, false);
+
+            char[] ca5 = applyFloatPadding(ca4, false);
 			precision = savePrecision;
 			return new String(ca5);
 		}

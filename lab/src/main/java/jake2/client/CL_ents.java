@@ -58,11 +58,11 @@ public class CL_ents {
 	 * Returns the entity number and the header bits =================
 	 */
 	public static int ParseEntityBits(int[] bits) {
-		int b, total;
-		int i;
+		int b;
+        int i;
 		int number;
 
-		total = MSG.ReadByte(Globals.net_message);
+        int total = MSG.ReadByte(Globals.net_message);
 		if ((total & Defines.U_MOREBITS1) != 0) {
 		    
 			b = MSG.ReadByte(Globals.net_message);
@@ -181,12 +181,10 @@ public class CL_ents {
 	 * current frame ==================
 	 */
 	public static void DeltaEntity(frame_t frame, int newnum, entity_state_t old, int bits) {
-		centity_t ent;
-		entity_state_t state;
 
-		ent = Globals.cl_entities[newnum];
+        centity_t ent = Globals.cl_entities[newnum];
 
-		state = Globals.cl_parse_entities[Globals.cl.parse_entities & (Defines.MAX_PARSE_ENTITIES - 1)];
+        entity_state_t state = Globals.cl_parse_entities[Globals.cl.parse_entities & (Defines.MAX_PARSE_ENTITIES - 1)];
 		Globals.cl.parse_entities++;
 		frame.num_entities++;
 
@@ -356,12 +354,9 @@ public class CL_ents {
 	 * =================== CL_ParsePlayerstate ===================
 	 */
 	public static void ParsePlayerstate(frame_t oldframe, frame_t newframe) {
-		int flags;
-		player_state_t state;
-		int i;
-		int statbits;
+        int i;
 
-		state = newframe.playerstate;
+        player_state_t state = newframe.playerstate;
 
 		
 		if (oldframe != null)
@@ -370,7 +365,7 @@ public class CL_ents {
 			
 			state.clear();
 
-		flags = MSG.ReadShort(Globals.net_message);
+        int flags = MSG.ReadShort(Globals.net_message);
 
 		
 		
@@ -459,8 +454,8 @@ public class CL_ents {
 		if ((flags & Defines.PS_RDFLAGS) != 0)
 			state.rdflags = MSG.ReadByte(Globals.net_message);
 
-		
-		statbits = MSG.ReadLong(Globals.net_message);
+
+        int statbits = MSG.ReadLong(Globals.net_message);
 		for (i = 0; i < Defines.MAX_STATS; i++)
 			if ((statbits & (1 << i)) != 0)
 				state.stats[i] = MSG.ReadShort(Globals.net_message);
@@ -491,9 +486,7 @@ public class CL_ents {
 	 * ================ CL_ParseFrame ================
 	 */
 	public static void ParseFrame() {
-		int cmd;
-		int len;
-		frame_t old;
+        frame_t old;
 
 		
 		Globals.cl.frame.reset();
@@ -541,12 +534,12 @@ public class CL_ents {
 		else if (Globals.cl.time < Globals.cl.frame.servertime - 100)
 			Globals.cl.time = Globals.cl.frame.servertime - 100;
 
-		
-		len = MSG.ReadByte(Globals.net_message);
+
+        int len = MSG.ReadByte(Globals.net_message);
 		MSG.ReadData(Globals.net_message, Globals.cl.frame.areabits, len);
 
-		
-		cmd = MSG.ReadByte(Globals.net_message);
+
+        int cmd = MSG.ReadByte(Globals.net_message);
 		CL_parse.SHOWNET(CL_parse.svc_strings[cmd]);
 		if (cmd != Defines.svc_playerinfo)
 			Com.Error(Defines.ERR_DROP, "CL_ParseFrame: not playerinfo");
@@ -602,19 +595,17 @@ public class CL_ents {
 	 */
 	static void AddPacketEntities(frame_t frame) {
 		entity_state_t s1;
-		float autorotate;
-		int i;
+        int i;
 		int pnum;
 		centity_t cent;
-		int autoanim;
-		clientinfo_t ci;
+        clientinfo_t ci;
 		int effects, renderfx;
 
-		
-		autorotate = Math3D.anglemod(Globals.cl.time / 10f);
 
-		
-		autoanim = 2 * Globals.cl.time / 1000;
+        float autorotate = Math3D.anglemod(Globals.cl.time / 10f);
+
+
+        int autoanim = 2 * Globals.cl.time / 1000;
 
 		
 		ent.clear();
@@ -978,9 +969,8 @@ public class CL_ents {
 					V.AddLight(ent.origin, 225, 1.0f, 1.0f, 0.0f);
 				} else if ((effects & Defines.EF_TRACKERTRAIL) != 0) {
 					if ((effects & Defines.EF_TRACKER) != 0) {
-						float intensity;
 
-						intensity = (float) (50 + (500 * (Math.sin(Globals.cl.time / 500.0) + 1.0)));
+                        float intensity = (float) (50 + (500 * (Math.sin(Globals.cl.time / 500.0) + 1.0)));
 						
 						if (Globals.vidref_val == Defines.VIDREF_GL)
 							V.AddLight(ent.origin, intensity, -1.0f, -1.0f, -1.0f);
@@ -1083,44 +1073,39 @@ public class CL_ents {
 	 * Sets cl.refdef view values ===============
 	 */
 	static void CalcViewValues() {
-		int i;
-		float lerp, backlerp;
-		frame_t oldframe;
-		player_state_t ps, ops;
+        float backlerp;
 
-		
-		ps = Globals.cl.frame.playerstate;
 
-		i = (Globals.cl.frame.serverframe - 1) & Defines.UPDATE_MASK;
-		oldframe = Globals.cl.frames[i];
+        player_state_t ps = Globals.cl.frame.playerstate;
+
+        int i = (Globals.cl.frame.serverframe - 1) & Defines.UPDATE_MASK;
+        frame_t oldframe = Globals.cl.frames[i];
 
 		if (oldframe.serverframe != Globals.cl.frame.serverframe - 1 || !oldframe.valid)
-			oldframe = Globals.cl.frame; 
-										 
-		ops = oldframe.playerstate;
+			oldframe = Globals.cl.frame;
+
+        player_state_t ops = oldframe.playerstate;
 
 		
 		if (Math.abs(ops.pmove.origin[0] - ps.pmove.origin[0]) > 256 * 8
 				|| Math.abs(ops.pmove.origin[1] - ps.pmove.origin[1]) > 256 * 8
 				|| Math.abs(ops.pmove.origin[2] - ps.pmove.origin[2]) > 256 * 8)
-			ops = ps; 
+			ops = ps;
 
-		lerp = Globals.cl.lerpfrac;
+        float lerp = Globals.cl.lerpfrac;
 
 		
-		if ((Globals.cl_predict.value != 0) && 0 == (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION)) { 
-																																 
-																																 
-			int delta;
+		if ((Globals.cl_predict.value != 0) && 0 == (Globals.cl.frame.playerstate.pmove.pm_flags & pmove_t.PMF_NO_PREDICTION)) {
 
-			backlerp = 1.0f - lerp;
+
+            backlerp = 1.0f - lerp;
 			for (i = 0; i < 3; i++) {
 				Globals.cl.refdef.vieworg[i] = Globals.cl.predicted_origin[i] + ops.viewoffset[i] + Globals.cl.lerpfrac
 						* (ps.viewoffset[i] - ops.viewoffset[i]) - backlerp * Globals.cl.prediction_error[i];
 			}
 
-			
-			delta = Globals.cls.realtime - Globals.cl.predicted_step_time;
+
+            int delta = Globals.cls.realtime - Globals.cl.predicted_step_time;
 			if (delta < 100)
 				Globals.cl.refdef.vieworg[2] -= Globals.cl.predicted_step * (100 - delta) * 0.01;
 		} else { 
@@ -1204,11 +1189,10 @@ public class CL_ents {
 	 * Called to get the sound spatialization origin ===============
 	 */
 	public static void GetEntitySoundOrigin(int ent, float[] org) {
-		centity_t old;
 
-		if (ent < 0 || ent >= Defines.MAX_EDICTS)
+        if (ent < 0 || ent >= Defines.MAX_EDICTS)
 			Com.Error(Defines.ERR_DROP, "CL_GetEntitySoundOrigin: bad ent");
-		old = Globals.cl_entities[ent];
+        centity_t old = Globals.cl_entities[ent];
 		Math3D.VectorCopy(old.lerp_origin, org);
 
 		

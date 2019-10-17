@@ -403,8 +403,8 @@ public enum LongArrays {
             swap(x, b++, c--);
         }
         
-        int s, n = to;
-        s = Math.min(a - from, b - a);
+        int n = to;
+        int s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);
@@ -488,8 +488,8 @@ public enum LongArrays {
             swap(x, b++, c--);
         }
         
-        int s, n = to;
-        s = Math.min(a - from, b - a);
+        int n = to;
+        int s = Math.min(a - from, b - a);
         vecSwap(x, from, b - s, s);
         s = Math.min(d - c, n - d - 1);
         vecSwap(x, b, n - s, s);

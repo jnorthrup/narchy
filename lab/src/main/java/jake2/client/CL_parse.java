@@ -130,14 +130,13 @@ public class CL_parse {
     public static final xcommand_t Download_f = new xcommand_t() {
         @Override
         public void execute() {
-            String filename;
 
             if (Cmd.Argc() != 2) {
                 Com.Printf("Usage: download <filename>\n");
                 return;
             }
 
-            filename = Cmd.Argv(1);
+            String filename = Cmd.Argv(1);
 
             if (filename.contains("..")) {
                 Com.Printf("Refusing to download a path with ..\n");

@@ -448,11 +448,11 @@ class MJCellUI extends Frame {
 	
 	
 	public void InitRules() {
-		int i, iGame;
-		String sGameName = cmbGames.getSelectedItem();
+		int i;
+        String sGameName = cmbGames.getSelectedItem();
 
 		cmbRules.removeAll();
-		iGame = mjr.GetGameIndex(sGameName);
+        int iGame = mjr.GetGameIndex(sGameName);
 		if (iGame >= 0) {
 			for (i = 0; i < mjr.Rules[iGame].size(); i++)
 				cmbRules.addItem(((CARule) mjr.Rules[iGame].elementAt(i)).name);
@@ -483,14 +483,13 @@ class MJCellUI extends Frame {
 	
 	
 	public void SendActiveRule() {
-		int i, iGame;
-		String sRuleName = cmbRules.getSelectedItem();
+		int i;
+        String sRuleName = cmbRules.getSelectedItem();
 		String sGameName = cmbGames.getSelectedItem();
-		String sRuleDef = "No rule";
 
-		mjb.stop();
-		iGame = mjr.GetGameIndex(sGameName);
-		sRuleDef = mjr.GetRuleDef(sGameName, sRuleName);
+        mjb.stop();
+        int iGame = mjr.GetGameIndex(sGameName);
+        String sRuleDef = mjr.GetRuleDef(sGameName, sRuleName);
 		SendRule(iGame, sRuleName, sRuleDef);
 
 		PatDlg.InitList(); 

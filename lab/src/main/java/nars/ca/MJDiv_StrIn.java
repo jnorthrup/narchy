@@ -27,13 +27,11 @@ public class MJDiv_StrIn {
 	private void SetStr(String sStr) {
 		String sTok, sBff;
 		int i, iPos, iCnt;
-		
-		StringTokenizer st;
 
-		m_Str = sStr;
+        m_Str = sStr;
 
 		m_Pos = 0;
-		st = new StringTokenizer(sStr, ",", false);
+        StringTokenizer st = new StringTokenizer(sStr, ",", false);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken();
 			sTok = sTok.trim();
@@ -70,15 +68,13 @@ public class MJDiv_StrIn {
 	
 	
 	public void SetFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		String sBff;
-		int iPos;
 
-		Reset(); 
+        Reset();
 
-		st = new StringTokenizer(sStr, ",", false);
+        StringTokenizer st = new StringTokenizer(sStr, ",", false);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			
@@ -92,7 +88,7 @@ public class MJDiv_StrIn {
 				m_Y = Integer.valueOf(sTok.substring(2));
 		}
 
-		iPos = sStr.indexOf("str=");
+        int iPos = sStr.indexOf("str=");
 		if (iPos >= 0) {
 			sBff = sStr.substring(iPos + 4);
 			SetStr(sBff);

@@ -102,7 +102,6 @@ public class SyntaxTree {
                     itemTerminated = true;
                     break;
                 case '{':
-                    int least;
                     boolean deterministicLength = false;
                     StringBuilder sb = new StringBuilder();
                     for (char next = r.charAt(index++); ; ) {
@@ -115,7 +114,7 @@ public class SyntaxTree {
                             break;
                         }
                     }
-                    least = Texts.i(sb.toString());
+                    int least = Texts.i(sb.toString());
                     
 
                     int most = -1;

@@ -105,8 +105,8 @@ public class TrackXY  {
             @Override
             public void accept(TrackXY t) {
                 float targetSpeed = t.targetSpeed.floatValue();
-                float tx, ty;
-                tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.W - 1);
+                float ty;
+                float tx = Util.clamp(t.tx + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.W - 1);
                 if (t.H > 1) {
                     ty = Util.clamp(t.ty + 2 * targetSpeed * (t.random().nextFloat() - 0.5f), 0, t.H - 1);
                 } else {

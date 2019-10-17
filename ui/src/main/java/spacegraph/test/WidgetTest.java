@@ -165,13 +165,12 @@ public class WidgetTest {
     }
 
     private static Surface wiringDemo(Consumer<GraphEdit2D> o) {
-        GraphEdit2D g;
-        g = new GraphEdit2D() {
+        GraphEdit2D g = new GraphEdit2D() {
             @Override
             protected void starting() {
                 super.starting();
-                pos(((Surface)parent).bounds); //HACK
-                Exe.runLater(()->{
+                pos(((Surface) parent).bounds); //HACK
+                Exe.runLater(() -> {
                     physics.invokeLater(() -> o.accept(this)); //() -> {
                 });
             }

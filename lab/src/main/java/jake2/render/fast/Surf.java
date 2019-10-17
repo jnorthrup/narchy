@@ -258,11 +258,9 @@ public abstract class Surf extends Draw {
 
         if (is_dynamic) {
             if (((fa.styles[maps] & 0xFF) >= 32 || fa.styles[maps] == 0) && (fa.dlightframe != r_framecount)) {
-                
-                int smax, tmax;
 
-                smax = (fa.extents[0] >> 4) + 1;
-                tmax = (fa.extents[1] >> 4) + 1;
+                int smax = (fa.extents[0] >> 4) + 1;
+                int tmax = (fa.extents[1] >> 4) + 1;
 
                 R_BuildLightMap(fa, temp2, smax);
                 R_SetCacheState(fa);
@@ -469,9 +467,8 @@ public abstract class Surf extends Draw {
             
             
             if ((surf.texinfo.flags & Defines.SURF_FLOWING) != 0) {
-                float scroll;
 
-                scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
+                float scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
                 if (scroll == 0.0f)
                     scroll = -64.0f;
 
@@ -496,9 +493,8 @@ public abstract class Surf extends Draw {
             
             
             if ((surf.texinfo.flags & Defines.SURF_FLOWING) != 0) {
-                float scroll;
 
-                scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
+                float scroll = -64 * ((r_newrefdef.time / 40.0f) - (int) (r_newrefdef.time / 40.0f));
                 if (scroll == 0.0)
                     scroll = -64.0f;
 

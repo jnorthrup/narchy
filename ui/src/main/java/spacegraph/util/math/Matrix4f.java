@@ -1833,11 +1833,10 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
         
         {
             int j;
-            int rs;
             double temp;
 
             int ptr = 0;
-            rs = 0;
+            int rs = 0;
 
             
             int i = 4;
@@ -2326,10 +2325,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param angle the angle to rotate about the X axis in radians
      */
     public final void rotX(float angle) {
-        float cosAngle;
 
         float sinAngle = (float) Math.sin(angle);
-        cosAngle = (float) Math.cos(angle);
+        float cosAngle = (float) Math.cos(angle);
 
         this.m00 = 1.0f;
         this.m01 = 0.0f;
@@ -2359,10 +2357,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param angle the angle to rotate about the Y axis in radians
      */
     public final void rotY(float angle) {
-        float cosAngle;
 
         float sinAngle = (float) Math.sin(angle);
-        cosAngle = (float) Math.cos(angle);
+        float cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = 0.0f;
@@ -2392,10 +2389,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param angle the angle to rotate about the Z axis in radians
      */
     public final void rotZ(float angle) {
-        float cosAngle;
 
         float sinAngle = (float) Math.sin(angle);
-        cosAngle = (float) Math.cos(angle);
+        float cosAngle = (float) Math.cos(angle);
 
         this.m00 = cosAngle;
         this.m01 = -sinAngle;
@@ -2475,42 +2471,41 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param m1 the other matrix
      */
     public final void mul(Matrix4f m1) {
-        float m01, m02, m03, m11, m12, m13, m21, m22, m23, m31, m32, m33;  
 
         float m00 = this.m00 * m1.m00 + this.m01 * m1.m10 +
                 this.m02 * m1.m20 + this.m03 * m1.m30;
-        m01 = this.m00 * m1.m01 + this.m01 * m1.m11 +
+        float m01 = this.m00 * m1.m01 + this.m01 * m1.m11 +
                 this.m02 * m1.m21 + this.m03 * m1.m31;
-        m02 = this.m00 * m1.m02 + this.m01 * m1.m12 +
+        float m02 = this.m00 * m1.m02 + this.m01 * m1.m12 +
                 this.m02 * m1.m22 + this.m03 * m1.m32;
-        m03 = this.m00 * m1.m03 + this.m01 * m1.m13 +
+        float m03 = this.m00 * m1.m03 + this.m01 * m1.m13 +
                 this.m02 * m1.m23 + this.m03 * m1.m33;
 
         float m10 = this.m10 * m1.m00 + this.m11 * m1.m10 +
                 this.m12 * m1.m20 + this.m13 * m1.m30;
-        m11 = this.m10 * m1.m01 + this.m11 * m1.m11 +
+        float m11 = this.m10 * m1.m01 + this.m11 * m1.m11 +
                 this.m12 * m1.m21 + this.m13 * m1.m31;
-        m12 = this.m10 * m1.m02 + this.m11 * m1.m12 +
+        float m12 = this.m10 * m1.m02 + this.m11 * m1.m12 +
                 this.m12 * m1.m22 + this.m13 * m1.m32;
-        m13 = this.m10 * m1.m03 + this.m11 * m1.m13 +
+        float m13 = this.m10 * m1.m03 + this.m11 * m1.m13 +
                 this.m12 * m1.m23 + this.m13 * m1.m33;
 
         float m20 = this.m20 * m1.m00 + this.m21 * m1.m10 +
                 this.m22 * m1.m20 + this.m23 * m1.m30;
-        m21 = this.m20 * m1.m01 + this.m21 * m1.m11 +
+        float m21 = this.m20 * m1.m01 + this.m21 * m1.m11 +
                 this.m22 * m1.m21 + this.m23 * m1.m31;
-        m22 = this.m20 * m1.m02 + this.m21 * m1.m12 +
+        float m22 = this.m20 * m1.m02 + this.m21 * m1.m12 +
                 this.m22 * m1.m22 + this.m23 * m1.m32;
-        m23 = this.m20 * m1.m03 + this.m21 * m1.m13 +
+        float m23 = this.m20 * m1.m03 + this.m21 * m1.m13 +
                 this.m22 * m1.m23 + this.m23 * m1.m33;
 
         float m30 = this.m30 * m1.m00 + this.m31 * m1.m10 +
                 this.m32 * m1.m20 + this.m33 * m1.m30;
-        m31 = this.m30 * m1.m01 + this.m31 * m1.m11 +
+        float m31 = this.m30 * m1.m01 + this.m31 * m1.m11 +
                 this.m32 * m1.m21 + this.m33 * m1.m31;
-        m32 = this.m30 * m1.m02 + this.m31 * m1.m12 +
+        float m32 = this.m30 * m1.m02 + this.m31 * m1.m12 +
                 this.m32 * m1.m22 + this.m33 * m1.m32;
-        m33 = this.m30 * m1.m03 + this.m31 * m1.m13 +
+        float m33 = this.m30 * m1.m03 + this.m31 * m1.m13 +
                 this.m32 * m1.m23 + this.m33 * m1.m33;
 
         this.m00 = m00;
@@ -2577,26 +2572,25 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 +
                     m1.m32 * m2.m23 + m1.m33 * m2.m33;
         } else {
-            float m01, m02, m03, m11, m12, m13, m21, m22, m23, m31, m32, m33;  
             float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m10 + m1.m02 * m2.m20 + m1.m03 * m2.m30;
-            m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31;
-            m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32;
-            m03 = m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33;
+            float m01 = m1.m00 * m2.m01 + m1.m01 * m2.m11 + m1.m02 * m2.m21 + m1.m03 * m2.m31;
+            float m02 = m1.m00 * m2.m02 + m1.m01 * m2.m12 + m1.m02 * m2.m22 + m1.m03 * m2.m32;
+            float m03 = m1.m00 * m2.m03 + m1.m01 * m2.m13 + m1.m02 * m2.m23 + m1.m03 * m2.m33;
 
             float m10 = m1.m10 * m2.m00 + m1.m11 * m2.m10 + m1.m12 * m2.m20 + m1.m13 * m2.m30;
-            m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
-            m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32;
-            m13 = m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33;
+            float m11 = m1.m10 * m2.m01 + m1.m11 * m2.m11 + m1.m12 * m2.m21 + m1.m13 * m2.m31;
+            float m12 = m1.m10 * m2.m02 + m1.m11 * m2.m12 + m1.m12 * m2.m22 + m1.m13 * m2.m32;
+            float m13 = m1.m10 * m2.m03 + m1.m11 * m2.m13 + m1.m12 * m2.m23 + m1.m13 * m2.m33;
 
             float m20 = m1.m20 * m2.m00 + m1.m21 * m2.m10 + m1.m22 * m2.m20 + m1.m23 * m2.m30;
-            m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
-            m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32;
-            m23 = m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33;
+            float m21 = m1.m20 * m2.m01 + m1.m21 * m2.m11 + m1.m22 * m2.m21 + m1.m23 * m2.m31;
+            float m22 = m1.m20 * m2.m02 + m1.m21 * m2.m12 + m1.m22 * m2.m22 + m1.m23 * m2.m32;
+            float m23 = m1.m20 * m2.m03 + m1.m21 * m2.m13 + m1.m22 * m2.m23 + m1.m23 * m2.m33;
 
             float m30 = m1.m30 * m2.m00 + m1.m31 * m2.m10 + m1.m32 * m2.m20 + m1.m33 * m2.m30;
-            m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
-            m32 = m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32;
-            m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33;
+            float m31 = m1.m30 * m2.m01 + m1.m31 * m2.m11 + m1.m32 * m2.m21 + m1.m33 * m2.m31;
+            float m32 = m1.m30 * m2.m02 + m1.m31 * m2.m12 + m1.m32 * m2.m22 + m1.m33 * m2.m32;
+            float m33 = m1.m30 * m2.m03 + m1.m31 * m2.m13 + m1.m32 * m2.m23 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2646,28 +2640,26 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m32 = m1.m03 * m2.m20 + m1.m13 * m2.m21 + m1.m23 * m2.m22 + m1.m33 * m2.m23;
             this.m33 = m1.m03 * m2.m30 + m1.m13 * m2.m31 + m1.m23 * m2.m32 + m1.m33 * m2.m33;
         } else {
-            float m01, m02, m03, m11, m12, m13, m21, m22, m23  
-                    , m31, m32, m33;
 
             float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m01 + m1.m20 * m2.m02 + m1.m30 * m2.m03;
-            m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12 + m1.m30 * m2.m13;
-            m02 = m1.m00 * m2.m20 + m1.m10 * m2.m21 + m1.m20 * m2.m22 + m1.m30 * m2.m23;
-            m03 = m1.m00 * m2.m30 + m1.m10 * m2.m31 + m1.m20 * m2.m32 + m1.m30 * m2.m33;
+            float m01 = m1.m00 * m2.m10 + m1.m10 * m2.m11 + m1.m20 * m2.m12 + m1.m30 * m2.m13;
+            float m02 = m1.m00 * m2.m20 + m1.m10 * m2.m21 + m1.m20 * m2.m22 + m1.m30 * m2.m23;
+            float m03 = m1.m00 * m2.m30 + m1.m10 * m2.m31 + m1.m20 * m2.m32 + m1.m30 * m2.m33;
 
             float m10 = m1.m01 * m2.m00 + m1.m11 * m2.m01 + m1.m21 * m2.m02 + m1.m31 * m2.m03;
-            m11 = m1.m01 * m2.m10 + m1.m11 * m2.m11 + m1.m21 * m2.m12 + m1.m31 * m2.m13;
-            m12 = m1.m01 * m2.m20 + m1.m11 * m2.m21 + m1.m21 * m2.m22 + m1.m31 * m2.m23;
-            m13 = m1.m01 * m2.m30 + m1.m11 * m2.m31 + m1.m21 * m2.m32 + m1.m31 * m2.m33;
+            float m11 = m1.m01 * m2.m10 + m1.m11 * m2.m11 + m1.m21 * m2.m12 + m1.m31 * m2.m13;
+            float m12 = m1.m01 * m2.m20 + m1.m11 * m2.m21 + m1.m21 * m2.m22 + m1.m31 * m2.m23;
+            float m13 = m1.m01 * m2.m30 + m1.m11 * m2.m31 + m1.m21 * m2.m32 + m1.m31 * m2.m33;
 
             float m20 = m1.m02 * m2.m00 + m1.m12 * m2.m01 + m1.m22 * m2.m02 + m1.m32 * m2.m03;
-            m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12 + m1.m32 * m2.m13;
-            m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22 + m1.m32 * m2.m23;
-            m23 = m1.m02 * m2.m30 + m1.m12 * m2.m31 + m1.m22 * m2.m32 + m1.m32 * m2.m33;
+            float m21 = m1.m02 * m2.m10 + m1.m12 * m2.m11 + m1.m22 * m2.m12 + m1.m32 * m2.m13;
+            float m22 = m1.m02 * m2.m20 + m1.m12 * m2.m21 + m1.m22 * m2.m22 + m1.m32 * m2.m23;
+            float m23 = m1.m02 * m2.m30 + m1.m12 * m2.m31 + m1.m22 * m2.m32 + m1.m32 * m2.m33;
 
             float m30 = m1.m03 * m2.m00 + m1.m13 * m2.m01 + m1.m23 * m2.m02 + m1.m33 * m2.m03;
-            m31 = m1.m03 * m2.m10 + m1.m13 * m2.m11 + m1.m23 * m2.m12 + m1.m33 * m2.m13;
-            m32 = m1.m03 * m2.m20 + m1.m13 * m2.m21 + m1.m23 * m2.m22 + m1.m33 * m2.m23;
-            m33 = m1.m03 * m2.m30 + m1.m13 * m2.m31 + m1.m23 * m2.m32 + m1.m33 * m2.m33;
+            float m31 = m1.m03 * m2.m10 + m1.m13 * m2.m11 + m1.m23 * m2.m12 + m1.m33 * m2.m13;
+            float m32 = m1.m03 * m2.m20 + m1.m13 * m2.m21 + m1.m23 * m2.m22 + m1.m33 * m2.m23;
+            float m33 = m1.m03 * m2.m30 + m1.m13 * m2.m31 + m1.m23 * m2.m32 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2718,28 +2710,26 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m32 = m1.m30 * m2.m20 + m1.m31 * m2.m21 + m1.m32 * m2.m22 + m1.m33 * m2.m23;
             this.m33 = m1.m30 * m2.m30 + m1.m31 * m2.m31 + m1.m32 * m2.m32 + m1.m33 * m2.m33;
         } else {
-            float m01, m02, m03, m11, m12, m13, m21, m22, m23  
-                    , m31, m32, m33;
 
             float m00 = m1.m00 * m2.m00 + m1.m01 * m2.m01 + m1.m02 * m2.m02 + m1.m03 * m2.m03;
-            m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12 + m1.m03 * m2.m13;
-            m02 = m1.m00 * m2.m20 + m1.m01 * m2.m21 + m1.m02 * m2.m22 + m1.m03 * m2.m23;
-            m03 = m1.m00 * m2.m30 + m1.m01 * m2.m31 + m1.m02 * m2.m32 + m1.m03 * m2.m33;
+            float m01 = m1.m00 * m2.m10 + m1.m01 * m2.m11 + m1.m02 * m2.m12 + m1.m03 * m2.m13;
+            float m02 = m1.m00 * m2.m20 + m1.m01 * m2.m21 + m1.m02 * m2.m22 + m1.m03 * m2.m23;
+            float m03 = m1.m00 * m2.m30 + m1.m01 * m2.m31 + m1.m02 * m2.m32 + m1.m03 * m2.m33;
 
             float m10 = m1.m10 * m2.m00 + m1.m11 * m2.m01 + m1.m12 * m2.m02 + m1.m13 * m2.m03;
-            m11 = m1.m10 * m2.m10 + m1.m11 * m2.m11 + m1.m12 * m2.m12 + m1.m13 * m2.m13;
-            m12 = m1.m10 * m2.m20 + m1.m11 * m2.m21 + m1.m12 * m2.m22 + m1.m13 * m2.m23;
-            m13 = m1.m10 * m2.m30 + m1.m11 * m2.m31 + m1.m12 * m2.m32 + m1.m13 * m2.m33;
+            float m11 = m1.m10 * m2.m10 + m1.m11 * m2.m11 + m1.m12 * m2.m12 + m1.m13 * m2.m13;
+            float m12 = m1.m10 * m2.m20 + m1.m11 * m2.m21 + m1.m12 * m2.m22 + m1.m13 * m2.m23;
+            float m13 = m1.m10 * m2.m30 + m1.m11 * m2.m31 + m1.m12 * m2.m32 + m1.m13 * m2.m33;
 
             float m20 = m1.m20 * m2.m00 + m1.m21 * m2.m01 + m1.m22 * m2.m02 + m1.m23 * m2.m03;
-            m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12 + m1.m23 * m2.m13;
-            m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22 + m1.m23 * m2.m23;
-            m23 = m1.m20 * m2.m30 + m1.m21 * m2.m31 + m1.m22 * m2.m32 + m1.m23 * m2.m33;
+            float m21 = m1.m20 * m2.m10 + m1.m21 * m2.m11 + m1.m22 * m2.m12 + m1.m23 * m2.m13;
+            float m22 = m1.m20 * m2.m20 + m1.m21 * m2.m21 + m1.m22 * m2.m22 + m1.m23 * m2.m23;
+            float m23 = m1.m20 * m2.m30 + m1.m21 * m2.m31 + m1.m22 * m2.m32 + m1.m23 * m2.m33;
 
             float m30 = m1.m30 * m2.m00 + m1.m31 * m2.m01 + m1.m32 * m2.m02 + m1.m33 * m2.m03;
-            m31 = m1.m30 * m2.m10 + m1.m31 * m2.m11 + m1.m32 * m2.m12 + m1.m33 * m2.m13;
-            m32 = m1.m30 * m2.m20 + m1.m31 * m2.m21 + m1.m32 * m2.m22 + m1.m33 * m2.m23;
-            m33 = m1.m30 * m2.m30 + m1.m31 * m2.m31 + m1.m32 * m2.m32 + m1.m33 * m2.m33;
+            float m31 = m1.m30 * m2.m10 + m1.m31 * m2.m11 + m1.m32 * m2.m12 + m1.m33 * m2.m13;
+            float m32 = m1.m30 * m2.m20 + m1.m31 * m2.m21 + m1.m32 * m2.m22 + m1.m33 * m2.m23;
+            float m33 = m1.m30 * m2.m30 + m1.m31 * m2.m31 + m1.m32 * m2.m32 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2791,29 +2781,27 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
             this.m32 = m1.m03 * m2.m02 + m1.m13 * m2.m12 + m1.m23 * m2.m22 + m1.m33 * m2.m32;
             this.m33 = m1.m03 * m2.m03 + m1.m13 * m2.m13 + m1.m23 * m2.m23 + m1.m33 * m2.m33;
         } else {
-            float m01, m02, m03, m11, m12, m13, m21, m22, m23  
-                    , m31, m32, m33;
 
 
             float m00 = m1.m00 * m2.m00 + m1.m10 * m2.m10 + m1.m20 * m2.m20 + m1.m30 * m2.m30;
-            m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21 + m1.m30 * m2.m31;
-            m02 = m1.m00 * m2.m02 + m1.m10 * m2.m12 + m1.m20 * m2.m22 + m1.m30 * m2.m32;
-            m03 = m1.m00 * m2.m03 + m1.m10 * m2.m13 + m1.m20 * m2.m23 + m1.m30 * m2.m33;
+            float m01 = m1.m00 * m2.m01 + m1.m10 * m2.m11 + m1.m20 * m2.m21 + m1.m30 * m2.m31;
+            float m02 = m1.m00 * m2.m02 + m1.m10 * m2.m12 + m1.m20 * m2.m22 + m1.m30 * m2.m32;
+            float m03 = m1.m00 * m2.m03 + m1.m10 * m2.m13 + m1.m20 * m2.m23 + m1.m30 * m2.m33;
 
             float m10 = m1.m01 * m2.m00 + m1.m11 * m2.m10 + m1.m21 * m2.m20 + m1.m31 * m2.m30;
-            m11 = m1.m01 * m2.m01 + m1.m11 * m2.m11 + m1.m21 * m2.m21 + m1.m31 * m2.m31;
-            m12 = m1.m01 * m2.m02 + m1.m11 * m2.m12 + m1.m21 * m2.m22 + m1.m31 * m2.m32;
-            m13 = m1.m01 * m2.m03 + m1.m11 * m2.m13 + m1.m21 * m2.m23 + m1.m31 * m2.m33;
+            float m11 = m1.m01 * m2.m01 + m1.m11 * m2.m11 + m1.m21 * m2.m21 + m1.m31 * m2.m31;
+            float m12 = m1.m01 * m2.m02 + m1.m11 * m2.m12 + m1.m21 * m2.m22 + m1.m31 * m2.m32;
+            float m13 = m1.m01 * m2.m03 + m1.m11 * m2.m13 + m1.m21 * m2.m23 + m1.m31 * m2.m33;
 
             float m20 = m1.m02 * m2.m00 + m1.m12 * m2.m10 + m1.m22 * m2.m20 + m1.m32 * m2.m30;
-            m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21 + m1.m32 * m2.m31;
-            m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22 + m1.m32 * m2.m32;
-            m23 = m1.m02 * m2.m03 + m1.m12 * m2.m13 + m1.m22 * m2.m23 + m1.m32 * m2.m33;
+            float m21 = m1.m02 * m2.m01 + m1.m12 * m2.m11 + m1.m22 * m2.m21 + m1.m32 * m2.m31;
+            float m22 = m1.m02 * m2.m02 + m1.m12 * m2.m12 + m1.m22 * m2.m22 + m1.m32 * m2.m32;
+            float m23 = m1.m02 * m2.m03 + m1.m12 * m2.m13 + m1.m22 * m2.m23 + m1.m32 * m2.m33;
 
             float m30 = m1.m03 * m2.m00 + m1.m13 * m2.m10 + m1.m23 * m2.m20 + m1.m33 * m2.m30;
-            m31 = m1.m03 * m2.m01 + m1.m13 * m2.m11 + m1.m23 * m2.m21 + m1.m33 * m2.m31;
-            m32 = m1.m03 * m2.m02 + m1.m13 * m2.m12 + m1.m23 * m2.m22 + m1.m33 * m2.m32;
-            m33 = m1.m03 * m2.m03 + m1.m13 * m2.m13 + m1.m23 * m2.m23 + m1.m33 * m2.m33;
+            float m31 = m1.m03 * m2.m01 + m1.m13 * m2.m11 + m1.m23 * m2.m21 + m1.m33 * m2.m31;
+            float m32 = m1.m03 * m2.m02 + m1.m13 * m2.m12 + m1.m23 * m2.m22 + m1.m33 * m2.m32;
+            float m33 = m1.m03 * m2.m03 + m1.m13 * m2.m13 + m1.m23 * m2.m23 + m1.m33 * m2.m33;
 
             this.m00 = m00;
             this.m01 = m01;
@@ -2957,12 +2945,11 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param vecOut the vector into which the transformed values are placed
      */
     public final void transform(Tuple4f vec, Tuple4f vecOut) {
-        float y, z;
         float x = m00 * vec.x + m01 * vec.y
                 + m02 * vec.z + m03 * vec.w;
-        y = m10 * vec.x + m11 * vec.y
+        float y = m10 * vec.x + m11 * vec.y
                 + m12 * vec.z + m13 * vec.w;
-        z = m20 * vec.x + m21 * vec.y
+        float z = m20 * vec.x + m21 * vec.y
                 + m22 * vec.z + m23 * vec.w;
         vecOut.w = m30 * vec.x + m31 * vec.y
                 + m32 * vec.z + m33 * vec.w;
@@ -2979,13 +2966,12 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param vec the single precision vector to be transformed
      */
     public final void transform(Tuple4f vec) {
-        float y, z;
 
         float x = m00 * vec.x + m01 * vec.y
                 + m02 * vec.z + m03 * vec.w;
-        y = m10 * vec.x + m11 * vec.y
+        float y = m10 * vec.x + m11 * vec.y
                 + m12 * vec.z + m13 * vec.w;
-        z = m20 * vec.x + m21 * vec.y
+        float z = m20 * vec.x + m21 * vec.y
                 + m22 * vec.z + m23 * vec.w;
         vec.w = m30 * vec.x + m31 * vec.y
                 + m32 * vec.z + m33 * vec.w;
@@ -3037,9 +3023,8 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param normalOut the transformed normal
      */
     public final void transform(v3 normal, v3 normalOut) {
-        float y;
         float x = m00 * normal.x + m01 * normal.y + m02 * normal.z;
-        y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
+        float y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
         normalOut.z = m20 * normal.x + m21 * normal.y + m22 * normal.z;
         normalOut.x = x;
         normalOut.y = y;
@@ -3053,10 +3038,9 @@ public class Matrix4f implements java.io.Serializable, Cloneable {
      * @param normal the input normal to be transformed.
      */
     public final void transform(v3 normal) {
-        float y;
 
         float x = m00 * normal.x + m01 * normal.y + m02 * normal.z;
-        y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
+        float y = m10 * normal.x + m11 * normal.y + m12 * normal.z;
         normal.z = m20 * normal.x + m21 * normal.y + m22 * normal.z;
         normal.x = x;
         normal.y = y;

@@ -83,9 +83,8 @@ public class DTMatrix<E> {
 	 * @return Il valore associato a first e second 
 	 */
 	protected double getValue(E first, E second){
-		int i,j;
-		i = index(first);
-		j = index(second);
+        int i = index(first);
+        int j = index(second);
 
 		if (i < j) {
 			int tmp = i;

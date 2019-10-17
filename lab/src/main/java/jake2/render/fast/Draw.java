@@ -133,10 +133,8 @@ public abstract class Draw extends Image {
 	*/
 	@Override
     public void Draw_StretchPic (int x, int y, int w, int h, String pic) {
-		
-		image_t image;
 
-		image = Draw_FindPic(pic);
+        image_t image = Draw_FindPic(pic);
 		if (image == null)
 		{
 			VID.Printf (Defines.PRINT_ALL, "Can't find pic: " + pic +'\n');
@@ -174,9 +172,8 @@ public abstract class Draw extends Image {
 	@Override
     public void Draw_Pic(int x, int y, String pic)
 	{
-		image_t image;
 
-		image = Draw_FindPic(pic);
+        image_t image = Draw_FindPic(pic);
 		if (image == null)
 		{
 			VID.Printf(Defines.PRINT_ALL, "Can't find pic: " +pic + '\n');
@@ -215,9 +212,8 @@ public abstract class Draw extends Image {
 	*/
 	@Override
     public void Draw_TileClear(int x, int y, int w, int h, String pic) {
-		image_t	image;
 
-		image = Draw_FindPic(pic);
+        image_t image = Draw_FindPic(pic);
 		if (image == null)
 		{
 			VID.Printf(Defines.PRINT_ALL, "Can't find pic: " + pic + '\n');
@@ -324,9 +320,8 @@ public abstract class Draw extends Image {
 		int frac, fracstep;
 		float hscale;
 		int row;
-		float t;
 
-		GL_Bind(0);
+        GL_Bind(0);
 
 		if (rows<=256)
 		{
@@ -338,7 +333,7 @@ public abstract class Draw extends Image {
 			hscale = rows/256.0f;
 			trows = 256;
 		}
-		t = rows*hscale / 256;
+        float t = rows * hscale / 256;
 
 		if ( !qglColorTableEXT )
 		{

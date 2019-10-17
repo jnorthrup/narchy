@@ -129,13 +129,12 @@ public class SV_MAIN {
      */
     public static String SV_StatusString() {
         String player;
-        String status = "";
         int i;
         client_t cl;
         int statusLength;
         int playerLength;
 
-        status = Cvar.Serverinfo() + '\n';
+        String status = Cvar.Serverinfo() + '\n';
 
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
@@ -179,12 +178,11 @@ public class SV_MAIN {
     public static void SVC_Info() {
         String string;
         int i, count;
-        int version;
 
         if (SV_MAIN.maxclients.value == 1)
-            return; 
+            return;
 
-        version = Lib.atoi(Cmd.Argv(1));
+        int version = Lib.atoi(Cmd.Argv(1));
 
         if (version != Defines.PROTOCOL_VERSION)
             string = SV_MAIN.hostname.string + ": wrong version\n";
@@ -217,11 +215,9 @@ public class SV_MAIN {
      */
     public static void SVC_GetChallenge() {
         int i;
-        int oldest;
-        int oldestTime;
 
-        oldest = 0;
-        oldestTime = 0x7fffffff;
+        int oldest = 0;
+        int oldestTime = 0x7fffffff;
 
         
         for (i = 0; i < Defines.MAX_CHALLENGES; i++) {
@@ -252,18 +248,14 @@ public class SV_MAIN {
      */
     public static void SVC_DirectConnect() {
         String userinfo;
-        netadr_t adr;
         int i;
         client_t cl;
 
-        int version;
-        int qport;
-
-        adr = Globals.net_from;
+        netadr_t adr = Globals.net_from;
 
         Com.DPrintf("SVC_DirectConnect ()\n");
 
-        version = Lib.atoi(Cmd.Argv(1));
+        int version = Lib.atoi(Cmd.Argv(1));
         if (version != Defines.PROTOCOL_VERSION) {
             Netchan.OutOfBandPrint(Defines.NS_SERVER, adr,
                     "print\nServer is version " + Globals.VERSION + '\n');
@@ -271,7 +263,7 @@ public class SV_MAIN {
             return;
         }
 
-        qport = Lib.atoi(Cmd.Argv(2));
+        int qport = Lib.atoi(Cmd.Argv(2));
         int challenge = Lib.atoi(Cmd.Argv(3));
         userinfo = Cmd.Argv(4);
 
@@ -422,10 +414,9 @@ public class SV_MAIN {
      * all printfs fromt hte server to the client.
      */
     public static void SVC_RemoteCommand() {
-        int i;
         String remaining;
 
-        i = Rcon_Validate();
+        int i = Rcon_Validate();
 
         String msg = Lib.CtoJava(Globals.net_message.data, 4, 1024);
 
@@ -466,17 +457,15 @@ public class SV_MAIN {
      * connectionless packets. It is used also by rcon commands.
      */
     public static void SV_ConnectionlessPacket() {
-        String s;
-        String c;
 
         MSG.BeginReading(Globals.net_message);
-        MSG.ReadLong(Globals.net_message); 
+        MSG.ReadLong(Globals.net_message);
 
-        s = MSG.ReadStringLine(Globals.net_message);
+        String s = MSG.ReadStringLine(Globals.net_message);
 
         Cmd.TokenizeString(s.toCharArray(), false);
 
-        c = Cmd.Argv(0);
+        String c = Cmd.Argv(0);
         
         
         
@@ -621,11 +610,9 @@ public class SV_MAIN {
     public static void SV_CheckTimeouts() {
         int i;
         client_t cl;
-        int droppoint;
-        int zombiepoint;
 
-        droppoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.timeout.value);
-        zombiepoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.zombietime.value);
+        int droppoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.timeout.value);
+        int zombiepoint = (int) (SV_INIT.svs.realtime - 1000 * SV_MAIN.zombietime.value);
 
         for (i = 0; i < SV_MAIN.maxclients.value; i++) {
             cl = SV_INIT.svs.clients[i];
@@ -757,7 +744,6 @@ public class SV_MAIN {
     }
 
     public static void Master_Heartbeat() {
-        String string;
         int i;
 
         
@@ -777,8 +763,8 @@ public class SV_MAIN {
 
         SV_INIT.svs.last_heartbeat = SV_INIT.svs.realtime;
 
-        
-        string = SV_StatusString();
+
+        String string = SV_StatusString();
 
         
         for (i = 0; i < Defines.MAX_MASTERS; i++)
@@ -822,7 +808,6 @@ public class SV_MAIN {
      * freindly form.
      */
     public static void SV_UserinfoChanged(client_t cl) {
-        String val;
         int i;
 
         
@@ -831,13 +816,8 @@ public class SV_MAIN {
         
         cl.name = Info.Info_ValueForKey(cl.userinfo, "name");
 
-        
-        
-        
-        
 
-        
-        val = Info.Info_ValueForKey(cl.userinfo, "rate");
+        String val = Info.Info_ValueForKey(cl.userinfo, "rate");
         if (val.length() > 0) {
             i = Lib.atoi(val);
             cl.rate = i;

@@ -118,7 +118,7 @@ final class GenericGFPoly {
     }
 
     GenericGFPoly addOrSubtract(GenericGFPoly other) {
-        if (!field.equals(other.field)) {
+        if (field != other.field) {
             throw new IllegalArgumentException("GenericGFPolys do not have same GenericGF field");
         }
         if (isZero()) {
@@ -148,7 +148,7 @@ final class GenericGFPoly {
     }
 
     GenericGFPoly multiply(GenericGFPoly other) {
-        if (!field.equals(other.field)) {
+        if (field != other.field) {
             throw new IllegalArgumentException("GenericGFPolys do not have same GenericGF field");
         }
         if (isZero() || other.isZero()) {
@@ -197,7 +197,7 @@ final class GenericGFPoly {
     }
 
     GenericGFPoly[] divide(GenericGFPoly other) {
-        if (!field.equals(other.field)) {
+        if (field != other.field) {
             throw new IllegalArgumentException("GenericGFPolys do not have same GenericGF field");
         }
         if (other.isZero()) {

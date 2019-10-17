@@ -366,8 +366,6 @@ public class Clausifier  {
      */
     protected Formula toOpenQueryForNegatedDualForm() {
 
-        Formula result = thisFormula;
-        
         Formula qF = new Formula();
         Formula temp = new Formula();
         temp.theFormula = thisFormula.theFormula;
@@ -387,7 +385,7 @@ public class Clausifier  {
         Formula queryF = new Formula();
         queryF.read(normalizeVariables(canonNegF.theFormula,
                                        true));
-        result = queryF;
+        Formula result = queryF;
         return result;
     }
 
@@ -414,9 +412,7 @@ public class Clausifier  {
      */
     protected Formula toCanonicalKifSpecialForm(boolean preserveSharedVariables) {
 
-        Formula result = thisFormula;
-        
-        
+
         String flist = thisFormula.theFormula;
         String vpref = Formula.V_PREF;
         String rpref = Formula.R_PREF;
@@ -461,7 +457,7 @@ public class Clausifier  {
         flist = normalizeVariables(flist);
         Formula canonSF = new Formula();
         canonSF.read(flist);
-        result = canonSF;
+        Formula result = canonSF;
         return result;
     }
 
@@ -514,10 +510,9 @@ public class Clausifier  {
      */
     protected static String normalizeVariables(String input, boolean replaceSkolemTerms) {
 
-        String result = input;
         int[] idxs = {1, 1};
         Map vmap = new HashMap();
-        result = normalizeVariables_1(input, idxs, vmap, replaceSkolemTerms);
+        String result = normalizeVariables_1(input, idxs, vmap, replaceSkolemTerms);
         return result;
     }
 
@@ -541,7 +536,6 @@ public class Clausifier  {
     protected static String normalizeVariables_1(String input,int[] idxs, 
                                                  Map vmap, boolean replaceSkolemTerms) {
 
-        String result = "";
         String vbase = Formula.VVAR;
         String rvbase = (Formula.RVAR + "VAR");
         StringBuilder sb = new StringBuilder();
@@ -575,8 +569,8 @@ public class Clausifier  {
             }
         }
         else 
-            sb.append(flist);            
-        result = sb.toString();
+            sb.append(flist);
+        String result = sb.toString();
         return result;
     }
 

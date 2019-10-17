@@ -21,26 +21,23 @@ public class Taxonomy<E> implements Iterable<E>{
     
     
     public void setSpecificity(E subConcept, E concept, double specificity){
-    	int i,j;
-    	i = concepts.indexOf(subConcept);
-    	j = concepts.indexOf(concept);
+        int i = concepts.indexOf(subConcept);
+        int j = concepts.indexOf(concept);
     	relations[i][j] = specificity;
     }
     
     public double getSpecificity(E subConcept, E concept){
-    	int i,j;
-    	i = concepts.indexOf(subConcept);
-    	j = concepts.indexOf(concept);
+        int i = concepts.indexOf(subConcept);
+        int j = concepts.indexOf(concept);
     	return relations[i][j];
     }
 
     public void taxonomyPruning(){
-        double[][] distance;
-    	int bigNum = 10000;
+        int bigNum = 10000;
     	int i,j,k;
     	double sumDist;
     	int numConcepts = concepts.size();
-    	distance = new double[numConcepts][numConcepts];
+        double[][] distance = new double[numConcepts][numConcepts];
     	
     	/* conservo solo le relazioni più forti:
     	 * ovvero la relazione più alta fra rel(i,j) e rel(j,i)

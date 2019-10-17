@@ -370,9 +370,9 @@ public abstract class HijackBag<K, V> extends Bag<K, V> {
         }
 
         if (toAdd!=null || toRemove!=null) {
-            int size = -1; //only used if toAdd!=null
             int dSize = (toAdd != null ? +1 : 0) + (toRemove != null ? -1 : 0);
-            size = SIZE.addAndGet(this, dSize);
+            //only used if toAdd!=null
+            int size = SIZE.addAndGet(this, dSize);
 
             if (toAdd != null) {
                 _onAdded(toAdd);

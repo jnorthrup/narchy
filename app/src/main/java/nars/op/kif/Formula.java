@@ -2435,11 +2435,9 @@ public class Formula implements Comparable, Serializable {
      */
     public static boolean isQuery(String query, String formula) {
 
-        boolean result = false;
-
         Formula f = new Formula();
         f.read(formula);
-        result = f.equals(query);
+        boolean result = f.equals(query);
         return result;
     }
 
@@ -2483,7 +2481,6 @@ public class Formula implements Comparable, Serializable {
 
         if (theFormula == null)
             return "";
-        String result = theFormula;
         if (!StringUtil.emptyString(theFormula))
             theFormula = theFormula.trim();
         if (atom())
@@ -2598,7 +2595,7 @@ public class Formula implements Comparable, Serializable {
             else
                 formatted.append(token);
         }
-        result = formatted.toString();
+        String result = formatted.toString();
         return result;
     }
 
@@ -2641,9 +2638,8 @@ public class Formula implements Comparable, Serializable {
      */
     public String htmlFormat(KB kb, String href) {
 
-        String fKbHref = "";
         String kbHref = (href + "/sigma/Browse.jsp?kb=" + kb.name);
-        fKbHref = format(kbHref,"&nbsp;&nbsp;&nbsp;&nbsp;","<br>\n");
+        String fKbHref = format(kbHref, "&nbsp;&nbsp;&nbsp;&nbsp;", "<br>\n");
         return fKbHref;
     }
 

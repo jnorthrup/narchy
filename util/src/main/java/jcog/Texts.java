@@ -630,9 +630,8 @@ public enum Texts {
 	 * prints an array of numbers separated by tab, suitable for a TSV line
 	 */
 	public static String n2(byte... v) {
-		String sb;
-		int s = v.length;
-        sb = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
+        int s = v.length;
+        String sb = IntStream.range(0, s).mapToObj(i -> Integer.toHexString(Byte.toUnsignedInt(v[i])) + ' ').collect(Collectors.joining());
 		return sb;
 	}
 
@@ -701,9 +700,7 @@ public enum Texts {
 			}
 		}
 
-		StringBuilder ret = new StringBuilder();
-		ret.append(s.repeat(Math.max(0, n)));
-		return ret.toString();
+        return s.repeat(Math.max(0, n));
 	}
 
 	/**

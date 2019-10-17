@@ -4,7 +4,6 @@ import java.awt.*;
 
 public class Debris extends VectorSprite {
     public Debris(double x, double y) {
-        double a;
 
         shape = new Polygon();
         shape.addPoint(1, 1);
@@ -21,7 +20,7 @@ public class Debris extends VectorSprite {
         xposition = x;
         yposition = y;
 
-        a = Math.random() * 2 * Math.PI;
+        double a = Math.random() * 2 * Math.PI;
         angle = a;
 
         THRUST = Math.random() * 5 + 5;

@@ -118,14 +118,12 @@ public class GameSVCmds {
      * SV_FilterPacket.
      */
     static boolean SV_FilterPacket(String from) {
-        int i;
-        int in;
         int[] m = {0, 0, 0, 0};
 
         int p = 0;
         char c;
 
-        i = 0;
+        int i = 0;
 
         while (p < from.length() && i < 4) {
             m[i] = 0;
@@ -142,7 +140,7 @@ public class GameSVCmds {
             p++;
         }
 
-        in = (m[0] & 0xff) | ((m[1] & 0xff) << 8) | ((m[2] & 0xff) << 16)
+        int in = (m[0] & 0xff) | ((m[1] & 0xff) << 8) | ((m[2] & 0xff) << 16)
                 | ((m[3] & 0xff) << 24);
 
         for (i = 0; i < numipfilters; i++)
@@ -230,15 +228,13 @@ public class GameSVCmds {
      * SV_WriteIP_f.
      */
     static void SVCmd_WriteIP_f() {
-        RandomAccessFile f;
-        
+
         String name;
         byte[] b;
 
         int i;
-        cvar_t game;
 
-        game = game_import_t.cvar("game", "", 0);
+        cvar_t game = game_import_t.cvar("game", "", 0);
 
         if (game.string == null)
             name = Defines.GAMEVERSION + "/listip.cfg";
@@ -247,7 +243,7 @@ public class GameSVCmds {
 
         game_import_t.cprintf(null, Defines.PRINT_HIGH, "Writing " + name + ".\n");
 
-        f = Lib.fopen(name, "rw");
+        RandomAccessFile f = Lib.fopen(name, "rw");
         if (f == null) {
             game_import_t.cprintf(null, Defines.PRINT_HIGH, "Couldn't open "
                     + name + '\n');
@@ -278,9 +274,8 @@ public class GameSVCmds {
      * issue gi.argc() / gi.argv() commands to get the rest of the parameters
      */
     public static void ServerCommand() {
-        String cmd;
 
-        cmd = game_import_t.argv(1);
+        String cmd = game_import_t.argv(1);
         if (Lib.Q_stricmp(cmd, "test") == 0)
             Svcmd_Test_f();
         else if (Lib.Q_stricmp(cmd, "addip") == 0)

@@ -39,13 +39,12 @@ public class Rule1DTotal {
 	
 	
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		int iTmp;
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			
@@ -102,16 +101,15 @@ public class Rule1DTotal {
 	
 	
 	public String GetAsString() {
-		String sBff;
-		int i, ih;
+        int i;
 
-		
-		Validate();
-		
-		sBff = 'R' + String.valueOf(iRng);
 
-		
-		ih = isHist ? iClo : 0;
+        Validate();
+
+        String sBff = 'R' + String.valueOf(iRng);
+
+
+        int ih = isHist ? iClo : 0;
 		sBff = sBff + ",C" + ih;
 
 		
@@ -152,18 +150,14 @@ public class Rule1DTotal {
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i, iCnt;
-		short[] OneRow;
-		int[] xVector = new int[21]; 
-		int ary1DOfs; 
-		int ic;
+        int i, iCnt;
+        int[] xVector = new int[21];
+        int ic;
 
-		ary1DOfs = iRng;
-		OneRow = new short[sizX + 1 + 2 * ary1DOfs];
-		int i1DNextRow; 
-		
-		i1DNextRow = mjb.i1DLastRow + 1;
+        int ary1DOfs = iRng;
+        short[] OneRow = new short[sizX + 1 + 2 * ary1DOfs];
+
+        int i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
@@ -255,9 +249,9 @@ public class Rule1DTotal {
 				}
 			}
 			tmpState[ic][i1DNextRow] = bNewVal;
-		} 
+		}
 
-		modCnt = 1; 
+        int modCnt = 1;
 		mjb.i1DLastRow = i1DNextRow; 
 
 		return modCnt;

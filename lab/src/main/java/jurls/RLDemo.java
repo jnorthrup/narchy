@@ -375,13 +375,7 @@ public class RLDemo extends javax.swing.JFrame {
 
 
         /* Create and display the form */
-        java.awt.EventQueue.invokeLater(new Runnable() {
-            public void run() {
-
-
-                new RLDemo().setVisible(true);
-            }
-        });
+        java.awt.EventQueue.invokeLater(() -> new RLDemo().setVisible(true));
     }
 
     

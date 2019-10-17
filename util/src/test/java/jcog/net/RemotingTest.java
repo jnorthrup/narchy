@@ -31,14 +31,10 @@ public class RemotingTest {
         // two stars match any node name
 
         // let our node to say hello
-        cloud.node(ALL_NODES).exec(new Callable<Void>() {
-
-            @Override
-            public Void call() throws Exception {
-                String jvmName = ManagementFactory.getRuntimeMXBean().getName();
-                System.out.println("My name is '" + jvmName + "'. Hello!");
-                return null;
-            }
+        cloud.node(ALL_NODES).exec((Callable<Void>) () -> {
+            String jvmName = ManagementFactory.getRuntimeMXBean().getName();
+            System.out.println("My name is '" + jvmName + "'. Hello!");
+            return null;
         });
     }
 //    @Test void test2() {

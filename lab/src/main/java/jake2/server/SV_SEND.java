@@ -140,10 +140,9 @@ public class SV_SEND {
         byte[] mask;
 		int leafnum, cluster;
 		int j;
-		boolean reliable;
-		int area1, area2;
+        int area1, area2;
 
-		reliable = false;
+        boolean reliable = false;
 
 		if (to != Defines.MULTICAST_ALL_R && to != Defines.MULTICAST_ALL) {
 			leafnum = CM.CM_PointLeafnum(origin);
@@ -254,11 +253,8 @@ public class SV_SEND {
 		float volume,
 		float attenuation,
 		float timeofs) {
-		int sendchan;
-		int flags;
-		int i;
-		int ent;
-		boolean use_phs;
+        int i;
+        boolean use_phs;
 
 		if (volume < 0 || volume > 1.0)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: volume = " + volume);
@@ -272,7 +268,7 @@ public class SV_SEND {
 		if (timeofs < 0 || timeofs > 0.255)
 			Com.Error(Defines.ERR_FATAL, "SV_StartSound: timeofs = " + timeofs);
 
-		ent = entity.index;
+        int ent = entity.index;
 
 		
 		if ((channel & 8) != 0) {
@@ -282,9 +278,9 @@ public class SV_SEND {
 		else
 			use_phs = true;
 
-		sendchan = (ent << 3) | (channel & 7);
+        int sendchan = (ent << 3) | (channel & 7);
 
-		flags = 0;
+        int flags = 0;
 		if (volume != Defines.DEFAULT_SOUND_PACKET_VOLUME)
 			flags |= Defines.SND_VOLUME;
 		if (attenuation != Defines.DEFAULT_SOUND_PACKET_ATTENUATION)
@@ -423,14 +419,13 @@ public class SV_SEND {
 	=======================
 	*/
 	public static boolean SV_RateDrop(client_t c) {
-		int total;
-		int i;
+        int i;
 
 		
 		if (c.netchan.remote_address.type == Defines.NA_LOOPBACK)
 			return false;
 
-		total = 0;
+        int total = 0;
 
 		for (i = 0; i < Defines.RATE_MESSAGES; i++) {
 			total += c.message_size[i];
@@ -455,10 +450,9 @@ public class SV_SEND {
 	public static void SV_SendClientMessages() {
 		int i;
 		client_t c;
-		int msglen;
-		int r;
+        int r;
 
-		msglen = 0;
+        int msglen = 0;
 
 		
 		if (SV_INIT.sv.state == Defines.ss_demo && SV_INIT.sv.demofile != null) {

@@ -209,9 +209,6 @@ public class CM {
     public static cmodel_t CM_LoadMap(String name, boolean clientload,
                                       int[] checksum) {
         Com.DPrintf("CM_LoadMap(" + name + ")...\n");
-        byte[] buf;
-        qfiles.dheader_t header;
-        int length;
 
         map_noareas = Cvar.Get("map_noareas", "0", 0);
 
@@ -245,22 +242,20 @@ public class CM {
             
         }
 
-        
-        
-        
-        buf = FS.LoadFile(name);
+
+        byte[] buf = FS.LoadFile(name);
 
         if (buf == null)
             Com.Error(Defines.ERR_DROP, "Couldn't load " + name);
 
-        length = buf.length;
+        int length = buf.length;
 
         ByteBuffer bbuf = ByteBuffer.wrap(buf);
 
         last_checksum = MD4.Com_BlockChecksum(buf, length);
         checksum[0] = last_checksum;
 
-        header = new qfiles.dheader_t(bbuf.slice());
+        qfiles.dheader_t header = new qfiles.dheader_t(bbuf.slice());
 
         if (header.version != Defines.BSPVERSION)
             Com.Error(Defines.ERR_DROP, "CMod_LoadBrushModel: " + name
@@ -302,12 +297,12 @@ public class CM {
         Com.DPrintf("CMod_LoadSubmodels()\n");
         qfiles.dmodel_t in;
         cmodel_t out;
-        int i, j, count;
+        int i, j;
 
         if ((l.filelen % qfiles.dmodel_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "CMod_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dmodel_t.SIZE;
+        int count = l.filelen / qfiles.dmodel_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no models");
@@ -349,12 +344,11 @@ public class CM {
         Com.DPrintf("CMod_LoadSurfaces()\n");
         texinfo_t in;
         mapsurface_t out;
-        int count;
 
         if ((l.filelen % texinfo_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / texinfo_t.SIZE;
+        int count = l.filelen / texinfo_t.SIZE;
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no surfaces");
         if (count > Defines.MAX_MAP_TEXINFO)
@@ -372,10 +366,8 @@ public class CM {
     }
 
     private static void CMod_LoadSurfaces(lump_t l, int i) {
-        mapsurface_t out;
-        texinfo_t in;
-        out = map_surfaces[i] = new mapsurface_t();
-        in = new texinfo_t(cmod_base, l.fileofs + i * texinfo_t.SIZE,
+        mapsurface_t out = map_surfaces[i] = new mapsurface_t();
+        texinfo_t in = new texinfo_t(cmod_base, l.fileofs + i * texinfo_t.SIZE,
                 texinfo_t.SIZE);
 
         out.c.name = in.texture;
@@ -396,12 +388,12 @@ public class CM {
         qfiles.dnode_t in;
         int child;
 
-        int j, count;
+        int j;
 
         if ((l.filelen % qfiles.dnode_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size:"
                     + l.fileofs + ',' + qfiles.dnode_t.SIZE);
-        count = l.filelen / qfiles.dnode_t.SIZE;
+        int count = l.filelen / qfiles.dnode_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map has no nodes");
@@ -422,10 +414,9 @@ public class CM {
     }
 
     private static void loadNode(lump_t l, int i) {
-        qfiles.dnode_t in;
         int j;
         int child;
-        in = new qfiles.dnode_t(ByteBuffer.wrap(cmod_base,
+        qfiles.dnode_t in = new qfiles.dnode_t(ByteBuffer.wrap(cmod_base,
                 qfiles.dnode_t.SIZE * i + l.fileofs, qfiles.dnode_t.SIZE));
 
         cnode_t out = map_nodes[i];
@@ -445,12 +436,11 @@ public class CM {
     public static void CMod_LoadBrushes(lump_t l) {
         Com.DPrintf("CMod_LoadBrushes()\n");
         qfiles.dbrush_t in;
-        int count;
 
         if ((l.filelen % qfiles.dbrush_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dbrush_t.SIZE;
+        int count = l.filelen / qfiles.dbrush_t.SIZE;
 
         if (count > Defines.MAX_MAP_BRUSHES)
             Com.Error(Defines.ERR_DROP, "Map has too many brushes");
@@ -489,12 +479,11 @@ public class CM {
         int i;
         cleaf_t out;
         qfiles.dleaf_t in;
-        int count;
 
         if ((l.filelen % qfiles.dleaf_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dleaf_t.SIZE;
+        int count = l.filelen / qfiles.dleaf_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no leafs");
@@ -557,13 +546,12 @@ public class CM {
         int i, j;
         cplane_t out;
         qfiles.dplane_t in;
-        int count;
         int bits;
 
         if ((l.filelen % qfiles.dplane_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.dplane_t.SIZE;
+        int count = l.filelen / qfiles.dplane_t.SIZE;
 
         if (count < 1)
             Com.Error(Defines.ERR_DROP, "Map with no planes");
@@ -649,12 +637,11 @@ public class CM {
         int i, j;
         cbrushside_t out;
         qfiles.dbrushside_t in;
-        int count;
         int num;
 
         if ((l.filelen % qfiles.dbrushside_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
-        count = l.filelen / qfiles.dbrushside_t.SIZE;
+        int count = l.filelen / qfiles.dbrushside_t.SIZE;
 
         
         if (count > Defines.MAX_MAP_BRUSHSIDES)
@@ -702,12 +689,11 @@ public class CM {
         int i;
         carea_t out;
         qfiles.darea_t in;
-        int count;
 
         if ((l.filelen % qfiles.darea_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
 
-        count = l.filelen / qfiles.darea_t.SIZE;
+        int count = l.filelen / qfiles.darea_t.SIZE;
 
         if (count > Defines.MAX_MAP_AREAS)
             Com.Error(Defines.ERR_DROP, "Map has too many areas");
@@ -742,11 +728,10 @@ public class CM {
         int i;
         qfiles.dareaportal_t out;
         qfiles.dareaportal_t in;
-        int count;
 
         if ((l.filelen % qfiles.dareaportal_t.SIZE) != 0)
             Com.Error(Defines.ERR_DROP, "MOD_LoadBmodel: funny lump size");
-        count = l.filelen / qfiles.dareaportal_t.SIZE;
+        int count = l.filelen / qfiles.dareaportal_t.SIZE;
 
         if (count > Defines.MAX_MAP_AREAS)
             Com.Error(Defines.ERR_DROP, "Map has too many areas");
@@ -1058,12 +1043,11 @@ public class CM {
 
     /** Returns a tag that describes the content of the point. */
     public static int PointContents(float[] p, int headnode) {
-        int l;
 
         if (numnodes == 0) 
             return 0;
 
-        l = CM_PointLeafnum_r(p, headnode);
+        int l = CM_PointLeafnum_r(p, headnode);
 
         return map_leafs[l].contents;
     }
@@ -1079,9 +1063,8 @@ public class CM {
         float[] p_l = { 0, 0, 0 };
         float[] temp = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
-        int l;
 
-        
+
         Math3D.VectorSubtract(p, origin, p_l);
 
         
@@ -1095,7 +1078,7 @@ public class CM {
             p_l[2] = Math3D.DotProduct(temp, up);
         }
 
-        l = CM_PointLeafnum_r(p_l, headnode);
+        int l = CM_PointLeafnum_r(p_l, headnode);
 
         return map_leafs[l].contents;
     }
@@ -1131,27 +1114,25 @@ public class CM {
     public static void CM_ClipBoxToBrush(float[] mins, float[] maxs,
             float[] p1, float[] p2, trace_t trace, cbrush_t brush) {
         int i, j;
-        cplane_t plane, clipplane;
+        cplane_t plane;
         float dist;
-        float enterfrac, leavefrac;
         float[] ofs = { 0, 0, 0 };
         float d1, d2;
-        boolean getout, startout;
         float f;
-        cbrushside_t side, leadside;
+        cbrushside_t side;
 
-        enterfrac = -1;
-        leavefrac = 1;
-        clipplane = null;
+        float enterfrac = -1;
+        float leavefrac = 1;
+        cplane_t clipplane = null;
 
         if (brush.numsides == 0)
             return;
 
         Globals.c_brush_traces++;
 
-        getout = false;
-        startout = false;
-        leadside = null;
+        boolean getout = false;
+        boolean startout = false;
+        cbrushside_t leadside = null;
 
         for (i = 0; i < brush.numsides; i++) {
             side = map_brushsides[brush.firstbrushside + i];
@@ -1278,10 +1259,9 @@ public class CM {
     public static void CM_TraceToLeaf(int leafnum) {
         int k;
         int brushnum;
-        cleaf_t leaf;
         cbrush_t b;
 
-        leaf = map_leafs[leafnum];
+        cleaf_t leaf = map_leafs[leafnum];
         if (0 == (leaf.contents & trace_contents))
             return;
 
@@ -1310,10 +1290,9 @@ public class CM {
     public static void CM_TestInLeaf(int leafnum) {
         int k;
         int brushnum;
-        cleaf_t leaf;
         cbrush_t b;
 
-        leaf = map_leafs[leafnum];
+        cleaf_t leaf = map_leafs[leafnum];
         if (0 == (leaf.contents & trace_contents))
             return;
         
@@ -1339,14 +1318,11 @@ public class CM {
      */
     public static void CM_RecursiveHullCheck(int num, float p1f, float p2f,
             float[] p1, float[] p2) {
-        cnode_t node;
-        cplane_t plane;
         float t1, t2, offset;
         float frac, frac2;
         float idist;
         int i;
         int side;
-        float midf;
 
         if (trace_trace.fraction <= p1f)
             return; 
@@ -1357,12 +1333,9 @@ public class CM {
             return;
         }
 
-        
-        
-        
-        
-        node = map_nodes[num];
-        plane = node.plane;
+
+        cnode_t node = map_nodes[num];
+        cplane_t plane = node.plane;
 
         if (plane.type < 3) {
             t1 = p1[plane.type] - plane.dist;
@@ -1412,7 +1385,7 @@ public class CM {
         if (frac > 1)
             frac = 1;
 
-        midf = p1f + (p2f - p1f) * frac;
+        float midf = p1f + (p2f - p1f) * frac;
         float[] mid = Vec3Cache.get();
 
         for (i = 0; i < 3; i++)
@@ -1472,7 +1445,7 @@ public class CM {
         if (start[0] == end[0] && start[1] == end[1] && start[2] == end[2]) {
 
             int[] leafs = new int[1024];
-            int i, numleafs;
+            int i;
             float[] c1 = { 0, 0, 0 }, c2 = { 0, 0, 0 };
             int topnode = 0;
 
@@ -1486,7 +1459,7 @@ public class CM {
 
             int[] tn = {topnode};
 
-            numleafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode,
+            int numleafs = CM_BoxLeafnums_headnode(c1, c2, leafs, 1024, headnode,
                     tn);
             topnode = tn[0];
             for (i = 0; i < numleafs; i++) {
@@ -1534,19 +1507,17 @@ public class CM {
     public static trace_t TransformedBoxTrace(float[] start, float[] end,
             float[] mins, float[] maxs, int headnode, int brushmask,
             float[] origin, float[] angles) {
-        trace_t trace;
         float[] start_l = { 0, 0, 0 }, end_l = { 0, 0, 0 };
         float[] a = { 0, 0, 0 };
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 }, up = { 0, 0, 0 };
         float[] temp = { 0, 0, 0 };
-        boolean rotated;
 
-        
+
         Math3D.VectorSubtract(start, origin, start_l);
         Math3D.VectorSubtract(end, origin, end_l);
 
-        
-        rotated = headnode != box_headnode
+
+        boolean rotated = headnode != box_headnode
                 && (IntStream.of(0, 1, 2).anyMatch(i -> angles[i] != 0));
 
         if (rotated) {
@@ -1563,8 +1534,8 @@ public class CM {
             end_l[2] = Math3D.DotProduct(temp, up);
         }
 
-        
-        trace = BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask);
+
+        trace_t trace = BoxTrace(start_l, end_l, mins, maxs, headnode, brushmask);
 
         if (rotated && trace.fraction != 1.0) {
             
@@ -1596,9 +1567,7 @@ public class CM {
     public static void CM_DecompressVis(byte[] in, int offset, byte[] out) {
         int c;
 
-        int row;
-
-        row = (numclusters + 7) >> 3;
+        int row = (numclusters + 7) >> 3;
         int outp = 0;
         int inp = offset;
 
@@ -1687,11 +1656,10 @@ public class CM {
 
         int i;
         carea_t area;
-        int floodnum;
 
-        
+
         floodvalid++;
-        floodnum = 0;
+        int floodnum = 0;
 
         
         for (i = 1; i < numareas; i++) {
@@ -1740,9 +1708,8 @@ public class CM {
     public static int CM_WriteAreaBits(byte[] buffer, int area) {
         int i;
         int floodnum;
-        int bytes;
 
-        bytes = (numareas + 7) >> 3;
+        int bytes = (numareas + 7) >> 3;
 
         if (map_noareas.value != 0) { 
             

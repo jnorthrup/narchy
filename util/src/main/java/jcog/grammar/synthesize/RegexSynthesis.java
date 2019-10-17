@@ -24,7 +24,7 @@ import java.util.function.Predicate;
 
 public class RegexSynthesis {
     public static Node getNode(String example, Predicate<String> oracle) {
-        return getNode(new NodeData(example, Context.EMPTY), oracle, new NodeType[]{NodeType.REPETITION, NodeType.ALTERNATION}, true);
+        return getNode(new NodeData(example, Context.EMPTY), oracle, NodeType.values(), true);
     }
 
     private static Iterable<String> getAlternationChecks(String first, String second) {

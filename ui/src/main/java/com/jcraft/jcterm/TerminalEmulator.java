@@ -337,15 +337,13 @@ public abstract class TerminalEmulator {
 
     void draw_text() throws IOException {
 
-        int rx;
-        int ry;
         int w;
         int h;
 
         check_region();
 
-        rx = x;
-        ry = y;
+        int rx = x;
+        int ry = y;
 
         byte b = getChar();
         term.draw_cursor();

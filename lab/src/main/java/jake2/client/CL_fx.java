@@ -160,12 +160,11 @@ public class CL_fx {
 	}
 
 	static void SetLightstyle(int i) {
-		String s;
-		int j, k;
+        int k;
 
-		s = Globals.cl.configstrings[i + Defines.CS_LIGHTS];
+        String s = Globals.cl.configstrings[i + Defines.CS_LIGHTS];
 
-		j = s.length();
+        int j = s.length();
 		if (j >= Defines.MAX_QPATH)
 			Com.Error(Defines.ERR_DROP, "svc_lightstyle length=" + j);
 
@@ -1313,16 +1312,14 @@ public class CL_fx {
 	 * ===============
 	 */
 	static void BlasterTrail(float[] start, float[] end) {
-		float len;
-		int j;
+        int j;
 		cparticle_t p;
-		int dec;
 
-		Math3D.VectorCopy(start, move);
+        Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-		dec = 5;
+        int dec = 5;
 		Math3D.VectorScale(vec, 5, vec);
 
 		
@@ -1360,16 +1357,14 @@ public class CL_fx {
 	 * ===============
 	 */
 	static void FlagTrail(float[] start, float[] end, float color) {
-		float len;
-		int j;
+        int j;
 		cparticle_t p;
-		int dec;
 
-		Math3D.VectorCopy(start, move);
+        Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-		dec = 5;
+        int dec = 5;
 		Math3D.VectorScale(vec, 5, vec);
 
 		while (len > 0) {
@@ -1491,20 +1486,18 @@ public class CL_fx {
 	 * ===============
 	 */
 	static void RocketTrail(float[] start, float[] end, centity_t old) {
-		float len;
-		int j;
+        int j;
 		cparticle_t p;
-		float dec;
 
-		
-		DiminishingTrail(start, end, old, Defines.EF_ROCKET);
+
+        DiminishingTrail(start, end, old, Defines.EF_ROCKET);
 
 		
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-		dec = 1;
+        float dec = 1;
 		Math3D.VectorScale(vec, dec, vec);
 
 		while (len > 0) {
@@ -1543,11 +1536,9 @@ public class CL_fx {
 	 * ===============
 	 */
 	static void RailTrail(float[] start, float[] end) {
-		float len;
-		int j;
+        int j;
 		cparticle_t p;
-		float dec;
-		float[] right = new float[3];
+        float[] right = new float[3];
 		float[] up = new float[3];
 		int i;
 		float d, c, s;
@@ -1556,7 +1547,7 @@ public class CL_fx {
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
 		Math3D.MakeNormalVectors(vec, right, up);
 
@@ -1590,7 +1581,7 @@ public class CL_fx {
 			Math3D.VectorAdd(move, vec, move);
 		}
 
-		dec = 0.75f;
+        float dec = 0.75f;
 		Math3D.VectorScale(vec, dec, vec);
 		Math3D.VectorCopy(start, move);
 
@@ -1627,17 +1618,15 @@ public class CL_fx {
 	 * =============== CL_IonripperTrail ===============
 	 */
 	static void IonripperTrail(float[] start, float[] ent) {
-		float len;
-		int j;
+        int j;
 		cparticle_t p;
-		int dec;
-		int left = 0;
+        int left = 0;
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(ent, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-		dec = 5;
+        int dec = 5;
 		Math3D.VectorScale(vec, 5, vec);
 
 		while (len > 0) {
@@ -1683,16 +1672,14 @@ public class CL_fx {
 	 * ===============
 	 */
 	static void BubbleTrail(float[] start, float[] end) {
-		float len;
-		int i, j;
+        int i, j;
 		cparticle_t p;
-		float dec;
 
-		Math3D.VectorCopy(start, move);
+        Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-		dec = 32;
+        float dec = 32;
 		Math3D.VectorScale(vec, dec, vec);
 
 		for (i = 0; i < len; i += dec) {
@@ -1731,9 +1718,8 @@ public class CL_fx {
 		float angle;
 		float sp, sy, cp, cy;
 		float dist = 64;
-		float ltime;
 
-		if (count > Defines.NUMVERTEXNORMALS)
+        if (count > Defines.NUMVERTEXNORMALS)
 			count = Defines.NUMVERTEXNORMALS;
 
 		if (avelocities[0][0] == 0.0f) {
@@ -1744,7 +1730,7 @@ public class CL_fx {
 			}
 		}
 
-		ltime = Globals.cl.time / 1000.0f;
+        float ltime = Globals.cl.time / 1000.0f;
 		for (i = 0; i < count; i += 2) {
 			angle = ltime * avelocities[i][0];
 			sy = (float) Math.sin(angle);
@@ -1784,8 +1770,7 @@ public class CL_fx {
 	}
 
 	static void FlyEffect(centity_t ent, float[] origin) {
-		int n;
-		int count;
+        int count;
 		int starttime;
 
 		if (ent.fly_stoptime < Globals.cl.time) {
@@ -1795,7 +1780,7 @@ public class CL_fx {
 			starttime = ent.fly_stoptime - 60000;
 		}
 
-		n = Globals.cl.time - starttime;
+        int n = Globals.cl.time - starttime;
 		if (n < 20000)
 			count = (int) ((n * 162) / 20000.0);
 		else {
@@ -1822,9 +1807,8 @@ public class CL_fx {
 		float angle;
 		float sp, sy, cp, cy;
 		float dist = 64;
-		float ltime;
 
-		if (avelocities[0][0] == 0.0f) {
+        if (avelocities[0][0] == 0.0f) {
 			for (i = 0; i < Defines.NUMVERTEXNORMALS; i++) {
 				avelocities[i][0] = (Lib.rand() & 255) * 0.01f;
 				avelocities[i][1] = (Lib.rand() & 255) * 0.01f;
@@ -1832,7 +1816,7 @@ public class CL_fx {
 			}
 		}
 
-		ltime = Globals.cl.time / 1000.0f;
+        float ltime = Globals.cl.time / 1000.0f;
 		for (i = 0; i < Defines.NUMVERTEXNORMALS; i++) {
 			angle = ltime * avelocities[i][0];
 			sy = (float) Math.sin(angle);
@@ -1882,21 +1866,19 @@ public class CL_fx {
 	 */
 	
 	static void TrapParticles(entity_t ent) {
-		float len;
-		int j;
+        int j;
 		cparticle_t p;
-		int dec;
 
-		ent.origin[2] -= 14;
+        ent.origin[2] -= 14;
 		Math3D.VectorCopy(ent.origin, start);
 		Math3D.VectorCopy(ent.origin, end);
 		end[2] += 64;
 
 		Math3D.VectorCopy(start, move);
 		Math3D.VectorSubtract(end, start, vec);
-		len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-		dec = 5;
+        int dec = 5;
 		Math3D.VectorScale(vec, 5, vec);
 
 		
@@ -2059,10 +2041,9 @@ public class CL_fx {
 		float time = 0.0f;
 		float time2;
 		int color;
-		cparticle_t active, tail;
 
-		active = null;
-		tail = null;
+        cparticle_t active = null;
+        cparticle_t tail = null;
 
 		for (p = active_particles; p != null; p = next) {
 			next = p.next;

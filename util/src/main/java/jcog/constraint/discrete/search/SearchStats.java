@@ -9,11 +9,10 @@ public class SearchStats {
 
     @Override
     public String toString() {
-        StringBuilder bf = new StringBuilder();
-        bf.append(completed ? "Complete search\n" : "Incomplete search\n");
-        bf.append("#solutions  : ").append(nSolutions).append('\n');
-        bf.append("#nodes      : ").append(nNodes).append('\n');
-        bf.append("#fails      : ").append(nFails).append('\n');
-        return bf.toString();
+        String bf = (completed ? "Complete search\n" : "Incomplete search\n") +
+                "#solutions  : " + nSolutions + '\n' +
+                "#nodes      : " + nNodes + '\n' +
+                "#fails      : " + nFails + '\n';
+        return bf;
     }
 }

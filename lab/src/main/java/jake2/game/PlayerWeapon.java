@@ -153,9 +153,8 @@ public class PlayerWeapon {
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
             float[] start = { 0, 0, 0 };
             int damage = 120;
-            float radius;
 
-            radius = damage + 40;
+            float radius = damage + 40;
             if (is_quad)
                 damage *= 4;
 
@@ -218,13 +217,10 @@ public class PlayerWeapon {
 
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            int damage;
-            float damage_radius;
-            int radius_damage;
 
-            damage = 100 + (int) (Lib.random() * 20.0);
-            radius_damage = 120;
-            damage_radius = 120;
+            int damage = 100 + (int) (Lib.random() * 20.0);
+            int radius_damage = 120;
+            float damage_radius = 120;
             if (is_quad) {
                 damage *= 4;
                 radius_damage *= 4;
@@ -808,12 +804,11 @@ public class PlayerWeapon {
         public String getID() { return "Drop_Weapon"; }
         @Override
         public void drop(edict_t ent, gitem_t item) {
-            int index;
 
             if (0 != ((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY))
                 return;
 
-            index = GameItems.ITEM_INDEX(item);
+            int index = GameItems.ITEM_INDEX(item);
             
             if (((item == ent.client.pers.weapon) || (item == ent.client.newweapon))
                     && (ent.client.pers.inventory[index] == 1)) {
@@ -1063,10 +1058,9 @@ public class PlayerWeapon {
         public String getID() { return "Pickup_Weapon"; }
         @Override
         public boolean interact(edict_t ent, edict_t other) {
-            int index;
             gitem_t ammo;
-    
-            index = GameItems.ITEM_INDEX(ent.item);
+
+            int index = GameItems.ITEM_INDEX(ent.item);
     
             if ((((int) (GameBase.dmflags.value) & Defines.DF_WEAPONS_STAY) != 0 || GameBase.coop.value != 0)
                     && 0 != other.client.pers.inventory[index]) {
@@ -1408,11 +1402,8 @@ public class PlayerWeapon {
         float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
         float[] start = { 0, 0, 0 };
         int damage = 125;
-        float timer;
-        int speed;
-        float radius;
 
-        radius = damage + 40;
+        float radius = damage + 40;
         if (is_quad)
             damage *= 4;
 
@@ -1420,8 +1411,8 @@ public class PlayerWeapon {
         Math3D.AngleVectors(ent.client.v_angle, forward, right, null);
         P_ProjectSource(ent.client, ent.s.origin, offset, forward, right, start);
 
-        timer = ent.client.grenade_time - GameBase.level.time;
-        speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
+        float timer = ent.client.grenade_time - GameBase.level.time;
+        int speed = (int) (Defines.GRENADE_MINSPEED + (Defines.GRENADE_TIMER - timer)
                 * ((Defines.GRENADE_MAXSPEED - Defines.GRENADE_MINSPEED) / Defines.GRENADE_TIMER));
         GameWeapon.fire_grenade2(ent, start, forward, damage, speed, timer, radius,
                 held);

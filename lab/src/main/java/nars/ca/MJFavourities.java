@@ -47,14 +47,12 @@ public class MJFavourities extends Dialog implements ActionListener {
 	
 	@SuppressWarnings("HardcodedFileSeparator")
 	public void InitList() {
-		MJTools mjT;
-		Vector vLines;
-		int i, iGame;
+        int i, iGame;
 
-		LstFiles.clear(); 
+		LstFiles.clear();
 
-		vLines = new Vector();
-		mjT = new MJTools();
+        Vector vLines = new Vector();
+        MJTools mjT = new MJTools();
 		if (mjT.LoadResTextFile("fav.txt", vLines)) {
 			for (i = 0; i < vLines.size(); i++) {
 				if (!((String) vLines.elementAt(i)).startsWith("//"))

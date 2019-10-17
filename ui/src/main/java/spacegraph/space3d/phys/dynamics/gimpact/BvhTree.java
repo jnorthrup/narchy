@@ -85,10 +85,8 @@ class BvhTree {
 		int splitIndex = startIndex;
 		int numIndices = endIndex - startIndex;
 
-		
-		float splitValue = 0.0f;
 
-		v3 means = new v3();
+        v3 means = new v3();
 		means.set(0f, 0f, 0f);
 
 		v3 center = new v3();
@@ -98,7 +96,7 @@ class BvhTree {
 
 		mean(primitive_boxes, startIndex, endIndex, means, numIndices, center, tmp1, tmp2);
 
-		splitValue = VectorUtil.coord(means, splitAxis);
+        float splitValue = VectorUtil.coord(means, splitAxis);
 
 		
 		for (int i = startIndex; i < endIndex; i++) {

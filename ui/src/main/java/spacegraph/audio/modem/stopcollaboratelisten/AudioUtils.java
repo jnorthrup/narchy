@@ -460,8 +460,7 @@ public class AudioUtils {
          * @return the current size of the buffer
          */
         public synchronized int size() {
-            int size = 0;
-            size = baos.size();
+            int size = baos.size();
             return size;
         }
     }

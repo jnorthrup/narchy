@@ -41,13 +41,12 @@ public class RuleWLife {
 	
 	
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		int i;
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, " ,", true);
+        StringTokenizer st = new StringTokenizer(sStr, " ,", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			
@@ -99,18 +98,17 @@ public class RuleWLife {
 	
 	
 	public String GetAsString() {
-		String sBff = "";
-		int i, ih;
+        int i;
 
-		
-		Validate();
 
-		ih = isHist ? iClo : 0;
+        Validate();
 
-		sBff = "NW" + wgtAry[1] + ",NN" + wgtAry[2] + ",NE" + wgtAry[3] + ",WW"
-				+ wgtAry[4] + ",ME" + wgtAry[5] + ",EE" + wgtAry[6] + ",SW"
-				+ wgtAry[7] + ",SS" + wgtAry[8] + ",SE" + wgtAry[9] + ",HI"
-				+ ih;
+        int ih = isHist ? iClo : 0;
+
+        String sBff = "NW" + wgtAry[1] + ",NN" + wgtAry[2] + ",NE" + wgtAry[3] + ",WW"
+                + wgtAry[4] + ",ME" + wgtAry[5] + ",EE" + wgtAry[6] + ",SW"
+                + wgtAry[7] + ",SS" + wgtAry[8] + ",SE" + wgtAry[9] + ",HI"
+                + ih;
 
 		for (i = 0; i < IMAXWLIFERUL; i++)
 			if (rulesS[i])

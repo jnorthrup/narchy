@@ -83,7 +83,7 @@ final class Memoizer0 implements InvocationHandler {
     public Object invoke(final Object proxy, 
                          final Method method, 
                          final Object[] args) throws Throwable {
-        if (method.getReturnType().equals(Void.TYPE)) {
+        if (method.getReturnType() == Void.TYPE) {
             
             return invoke(method, args);
         } else {

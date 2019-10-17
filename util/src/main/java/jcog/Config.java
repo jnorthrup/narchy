@@ -39,13 +39,12 @@ public enum Config { ;
    public static String get2(@NotNull String configKey, @Nullable String defaultVal, boolean quiet) {
       //Intrinsics.checkParameterIsNotNull(configKey, "configKey");
       boolean var5 = false;
-      String y = null;
-      //Intrinsics.checkExpressionValueIsNotNull(var10000, "(this as java.lang.String).toLowerCase()");
+       //Intrinsics.checkExpressionValueIsNotNull(var10000, "(this as java.lang.String).toLowerCase()");
       String javapropname = configKey.toLowerCase().replace('_', '.');//, false, 4, (Object)null);
 
-      y = System.getenv(configKey); //HACK
+       String y = System.getenv(configKey); //HACK
 
-      if (y == null) {
+       if (y == null) {
          y = System.getProperty(javapropname);
          if (y == null) {
             y = System.getenv(javapropname);

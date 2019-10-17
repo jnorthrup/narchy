@@ -1074,7 +1074,6 @@ public class M_Brain {
         public String getID() { return "brain_pain"; }
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
-            float r;
 
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
@@ -1084,9 +1083,9 @@ public class M_Brain {
 
             self.pain_debounce_time = GameBase.level.time + 3;
             if (GameBase.skill.value == 3)
-                return; 
+                return;
 
-            r = Lib.random();
+            float r = Lib.random();
             if (r < 0.33) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

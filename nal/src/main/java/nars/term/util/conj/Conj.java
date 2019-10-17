@@ -517,7 +517,6 @@ public enum Conj {
 //                return include; //not found
 //            }
 //        } else {
-            MetalBitSet y;
             Predicate<Term> p;
             if (exclude.op() == CONJ && exclude.dt() != XTERNAL) {
                 assert (exclude.dt() == DTERNAL);
@@ -532,7 +531,7 @@ public enum Conj {
                     :
                     t -> !t.equals(exclude);
             }
-            y = incSubs.indicesOfBits(p);
+            MetalBitSet y = incSubs.indicesOfBits(p);
             int yCardinality = y.cardinality();
             if (yCardinality == 0)
                 return True; //all removed

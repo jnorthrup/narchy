@@ -99,9 +99,8 @@ public class PlaySound {
     }
     
     static PlaySound nextPlayableSound() {
-        PlaySound ps = null;
-        
-            ps = playableList.next;
+
+        PlaySound ps = playableList.next;
             if (ps == playableList || ps.beginTime > Globals.cl.time)
                 return null;
             PlaySound.release(ps);

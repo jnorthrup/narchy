@@ -13,9 +13,8 @@ public enum Interpolator {
   LINEAR {
     @Override
     protected double[] newCurve(int divOfNum) {
-      double[] result;
-      double gain = 1.0 / divOfNum;
-        result = IntStream.range(0, divOfNum).mapToDouble(i -> gain).toArray();
+        double gain = 1.0 / divOfNum;
+        double[] result = IntStream.range(0, divOfNum).mapToDouble(i -> gain).toArray();
       return result;
     }
   },

@@ -148,19 +148,16 @@ public class GameCombat {
 
     static int CheckPowerArmor(edict_t ent, float[] point, float[] normal,
             int damage, int dflags) {
-        gclient_t client;
-        int save;
         int power_armor_type;
         int index = 0;
         int damagePerCell;
         int pa_te_type;
         int power = 0;
-        int power_used;
-    
+
         if (damage == 0)
             return 0;
-    
-        client = ent.client;
+
+        gclient_t client = ent.client;
     
         if ((dflags & Defines.DAMAGE_NO_ARMOR) != 0)
             return 0;
@@ -184,14 +181,13 @@ public class GameCombat {
     
         if (power_armor_type == Defines.POWER_ARMOR_SCREEN) {
             float[] vec = { 0, 0, 0 };
-            float dot;
             float[] forward = { 0, 0, 0 };
     
             
             Math3D.AngleVectors(ent.s.angles, forward, null, null);
             Math3D.VectorSubtract(point, ent.s.origin, vec);
             Math3D.VectorNormalize(vec);
-            dot = Math3D.DotProduct(vec, forward);
+            float dot = Math3D.DotProduct(vec, forward);
             if (dot <= 0.3)
                 return 0;
     
@@ -203,8 +199,8 @@ public class GameCombat {
             pa_te_type = Defines.TE_SHIELD_SPARKS;
             damage = (2 * damage) / 3;
         }
-    
-        save = power * damagePerCell;
+
+        int save = power * damagePerCell;
     
         if (save == 0)
             return 0;
@@ -213,8 +209,8 @@ public class GameCombat {
     
         SpawnDamage(pa_te_type, point, normal, save);
         ent.powerarmor_time = GameBase.level.time + 0.2f;
-    
-        power_used = save / damagePerCell;
+
+        int power_used = save / damagePerCell;
     
         if (client != null)
             client.pers.inventory[index] -= power_used;
@@ -225,28 +221,25 @@ public class GameCombat {
 
     static int CheckArmor(edict_t ent, float[] point, float[] normal,
             int damage, int te_sparks, int dflags) {
-        gclient_t client;
         int save;
-        int index;
-        gitem_t armor;
-    
+
         if (damage == 0)
             return 0;
-    
-        client = ent.client;
+
+        gclient_t client = ent.client;
     
         if (client == null)
             return 0;
     
         if ((dflags & Defines.DAMAGE_NO_ARMOR) != 0)
             return 0;
-    
-        index = GameItems.ArmorIndex(ent);
+
+        int index = GameItems.ArmorIndex(ent);
     
         if (index == 0)
             return 0;
-    
-        armor = GameItems.GetItemByIndex(index);
+
+        gitem_t armor = GameItems.GetItemByIndex(index);
         gitem_armor_t garmor = armor.info;
     
         if (0 != (dflags & Defines.DAMAGE_ENERGY))
@@ -385,11 +378,6 @@ public class GameCombat {
     public static void T_Damage(edict_t targ, edict_t inflictor,
             edict_t attacker, float[] dir, float[] point, float[] normal,
             int damage, int knockback, int dflags, int mod) {
-        gclient_t client;
-        int take;
-        int save;
-        int asave;
-        int psave;
         int te_sparks;
     
         if (targ.takedamage == 0)
@@ -416,8 +404,8 @@ public class GameCombat {
             if (damage == 0)
                 damage = 1;
         }
-    
-        client = targ.client;
+
+        gclient_t client = targ.client;
     
         if ((dflags & Defines.DAMAGE_BULLET) != 0)
             te_sparks = Defines.TE_BULLET_SPARKS;
@@ -461,9 +449,9 @@ public class GameCombat {
                 Math3D.VectorAdd(targ.velocity, kvel, targ.velocity);
             }
         }
-    
-        take = damage;
-        save = 0;
+
+        int take = damage;
+        int save = 0;
     
         
         if ((targ.flags & Defines.FL_GODMODE) != 0
@@ -485,11 +473,11 @@ public class GameCombat {
             take = 0;
             save = damage;
         }
-    
-        psave = CheckPowerArmor(targ, point, normal, take, dflags);
+
+        int psave = CheckPowerArmor(targ, point, normal, take, dflags);
         take -= psave;
-    
-        asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
+
+        int asave = CheckArmor(targ, point, normal, take, te_sparks, dflags);
         take -= asave;
     
         

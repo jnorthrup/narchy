@@ -491,7 +491,7 @@ public class OptimizedBvh implements Serializable {
 		}
 		
 
-		int splitAxis, splitIndex, i;
+		int i;
 		int numIndices = endIndex - startIndex;
 		int curIndex = curNodeIndex;
 
@@ -509,11 +509,11 @@ public class OptimizedBvh implements Serializable {
 			curNodeIndex++;
 			return;
 		}
-		
 
-		splitAxis = calcSplittingAxis(startIndex, endIndex);
 
-		splitIndex = sortAndCalcSplittingIndex(startIndex, endIndex, splitAxis);
+        int splitAxis = calcSplittingAxis(startIndex, endIndex);
+
+        int splitIndex = sortAndCalcSplittingIndex(startIndex, endIndex, splitAxis);
 
 		int internalNodeIndex = curNodeIndex;
 
@@ -622,9 +622,8 @@ public class OptimizedBvh implements Serializable {
 		int i;
 		int splitIndex = startIndex;
 		int numIndices = endIndex - startIndex;
-		float splitValue;
 
-		v3 means = new v3();
+        v3 means = new v3();
 		means.set(0f, 0f, 0f);
 		v3 center = new v3();
 		for (i = startIndex; i < endIndex; i++) {
@@ -634,7 +633,7 @@ public class OptimizedBvh implements Serializable {
 		}
 		means.scaled(1f / numIndices);
 
-		splitValue = VectorUtil.coord(means, splitAxis);
+        float splitValue = VectorUtil.coord(means, splitAxis);
 
 		
 		for (i = startIndex; i < endIndex; i++) {
@@ -706,11 +705,9 @@ public class OptimizedBvh implements Serializable {
 		
 
 		if (useQuantization) {
-			
-			long quantizedQueryAabbMin;
-			long quantizedQueryAabbMax;
-			quantizedQueryAabbMin = quantizeWithClamp(aabbMin);
-			quantizedQueryAabbMax = quantizeWithClamp(aabbMax);
+
+            long quantizedQueryAabbMin = quantizeWithClamp(aabbMin);
+            long quantizedQueryAabbMax = quantizeWithClamp(aabbMax);
 
 			
 			switch (traversalMode) {
@@ -788,11 +785,8 @@ public class OptimizedBvh implements Serializable {
 	private void walkRecursiveQuantizedTreeAgainstQueryAabb(QuantizedBvhNodes currentNodes, int currentNodeId, NodeOverlapCallback nodeCallback, long quantizedQueryAabbMin, long quantizedQueryAabbMax) {
 		assert (useQuantization);
 
-		boolean isLeafNode;
-		boolean aabbOverlap;
-
-		aabbOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, currentNodes.getQuantizedAabbMin(currentNodeId), currentNodes.getQuantizedAabbMax(currentNodeId));
-		isLeafNode = currentNodes.isLeafNode(currentNodeId);
+        boolean aabbOverlap = testQuantizedAabbAgainstQuantizedAabb(quantizedQueryAabbMin, quantizedQueryAabbMax, currentNodes.getQuantizedAabbMin(currentNodeId), currentNodes.getQuantizedAabbMax(currentNodeId));
+        boolean isLeafNode = currentNodes.isLeafNode(currentNodeId);
 
 		if (aabbOverlap) {
 			if (isLeafNode) {
@@ -826,14 +820,12 @@ public class OptimizedBvh implements Serializable {
 		boolean boxBoxOverlap = false;
 		boolean rayBoxOverlap = false;
 
-		float lambda_max = 1f;
-		
-		
-		v3 rayFrom = new v3(raySource);
+
+        v3 rayFrom = new v3(raySource);
 		v3 rayDirection = new v3();
 		tmp.sub(rayTarget, raySource);
 		rayDirection.normalize(tmp);
-		lambda_max = rayDirection.dot(tmp);
+        float lambda_max = rayDirection.dot(tmp);
 		rayDirection.x = 1f / rayDirection.x;
 		rayDirection.y = 1f / rayDirection.y;
 		rayDirection.z = 1f / rayDirection.z;
@@ -852,10 +844,8 @@ public class OptimizedBvh implements Serializable {
 		rayAabbMin.add(aabbMin);
 		rayAabbMax.add(aabbMax);
 
-		long quantizedQueryAabbMin;
-		long quantizedQueryAabbMax;
-		quantizedQueryAabbMin = quantizeWithClamp(rayAabbMin);
-		quantizedQueryAabbMax = quantizeWithClamp(rayAabbMax);
+        long quantizedQueryAabbMin = quantizeWithClamp(rayAabbMin);
+        long quantizedQueryAabbMax = quantizeWithClamp(rayAabbMax);
 
 		v3 bounds_0 = new v3();
 		v3 bounds_1 = new v3();

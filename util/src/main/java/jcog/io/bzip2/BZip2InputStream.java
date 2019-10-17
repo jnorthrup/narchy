@@ -234,9 +234,8 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void initialize() {
-        char magic3, magic4;
-        magic3 = bsGetUChar();
-        magic4 = bsGetUChar();
+        char magic3 = bsGetUChar();
+        char magic4 = bsGetUChar();
         if (magic3 != 'h' || magic4 < '1' || magic4 > '9') {
             bsFinishedWithStream();
             streamEnd = true;
@@ -248,14 +247,12 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private void initBlock() {
-        char magic1, magic2, magic3, magic4;
-        char magic5, magic6;
-        magic1 = bsGetUChar();
-        magic2 = bsGetUChar();
-        magic3 = bsGetUChar();
-        magic4 = bsGetUChar();
-        magic5 = bsGetUChar();
-        magic6 = bsGetUChar();
+        char magic1 = bsGetUChar();
+        char magic2 = bsGetUChar();
+        char magic3 = bsGetUChar();
+        char magic4 = bsGetUChar();
+        char magic5 = bsGetUChar();
+        char magic6 = bsGetUChar();
         if (magic1 == 0x17 && magic2 == 0x72 && magic3 == 0x45
                 && magic4 == 0x38 && magic5 == 0x50 && magic6 == 0x90) {
             complete();
@@ -334,9 +331,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     }
 
     private int bsR(int n) {
-        int v;
         while (bsLive < n) {
-            int zzi;
             char thech = 0;
             try {
                 thech = (char) bsStream.read();
@@ -345,13 +340,12 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
             }
 
 
-
-            zzi = thech;
+            int zzi = thech;
             bsBuff = (bsBuff << 8) | (zzi & 0xff);
             bsLive += 8;
         }
 
-        v = (bsBuff >> (bsLive - n)) & ((1 << n) - 1);
+        int v = (bsBuff >> (bsLive - n)) & ((1 << n) - 1);
         bsLive -= n;
         return v;
     }
@@ -380,9 +374,9 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
     private static void hbCreateDecodeTables(int[] limit, int[] base,
                                              int[] perm, char[] length,
                                              int minLen, int maxLen, int alphaSize) {
-        int pp, i, j, vec;
+        int i, j;
 
-        pp = 0;
+        int pp = 0;
         for (i = minLen; i <= maxLen; i++) {
             for (j = 0; j < alphaSize; j++) {
                 if (length[j] == i) {
@@ -405,7 +399,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         for (i = 0; i < MAX_CODE_LEN; i++) {
             limit[i] = 0;
         }
-        vec = 0;
+        int vec = 0;
 
         for (i = minLen; i <= maxLen; i++) {
             vec += (base[i + 1] - base[i]);
@@ -419,7 +413,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void recvDecodingTables() {
         char[][] len = new char[N_GROUPS][MAX_ALPHA_SIZE];
-        int i, j, t, nGroups, nSelectors, alphaSize;
+        int i, j, t;
         int minLen, maxLen;
         boolean[] inUse16 = new boolean[16];
 
@@ -441,11 +435,11 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         }
 
         makeMaps();
-        alphaSize = nInUse + 2;
+        int alphaSize = nInUse + 2;
 
         /* Now the selectors */
-        nGroups = bsR(3);
-        nSelectors = bsR(15);
+        int nGroups = bsR(3);
+        int nSelectors = bsR(15);
         for (i = 0; i < nSelectors; i++) {
             j = 0;
             while (bsR(1) == 1) {
@@ -509,16 +503,15 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
     private void getAndMoveToFrontDecode() {
         char[] yy = new char[256];
-        int i, j, nextSym, limitLast;
-        int EOB, groupNo, groupPos;
+        int i, j, nextSym;
 
-        limitLast = baseBlockSize * blockSize100k;
+        int limitLast = baseBlockSize * blockSize100k;
         origPtr = bsGetIntVS(24);
 
         recvDecodingTables();
-        EOB = nInUse + 1;
-        groupNo = -1;
-        groupPos = 0;
+        int EOB = nInUse + 1;
+        int groupNo = -1;
+        int groupPos = 0;
 
         /*
           Setting up the unzftab entries here is not strictly
@@ -537,21 +530,20 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         last = -1;
 
         {
-            int zt, zn, zvec, zj;
+            int zj;
             if (groupPos == 0) {
                 groupNo++;
                 groupPos = G_SIZE;
             }
             groupPos--;
-            zt = selector[groupNo];
-            zn = minLens[zt];
-            zvec = bsR(zn);
+            int zt = selector[groupNo];
+            int zn = minLens[zt];
+            int zvec = bsR(zn);
             while (zvec > limit[zt][zn]) {
                 zn++;
                 {
                     {
                         while (bsLive < 1) {
-                            int zzi;
                             char thech = 0;
                             try {
                                 thech = (char) bsStream.read();
@@ -561,7 +553,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                             if (thech == -1) {
                                 compressedStreamEOF();
                             }
-                            zzi = thech;
+                            int zzi = thech;
                             bsBuff = (bsBuff << 8) | (zzi & 0xff);
                             bsLive += 8;
                         }
@@ -577,7 +569,6 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
         while (nextSym != EOB) {
 
             if (nextSym == RUNA || nextSym == RUNB) {
-                char ch;
                 int s = -1;
                 int N = 1;
                 do {
@@ -588,21 +579,20 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                     }
                     N = N * 2;
                     {
-                        int zt, zn, zvec, zj;
+                        int zj;
                         if (groupPos == 0) {
                             groupNo++;
                             groupPos = G_SIZE;
                         }
                         groupPos--;
-                        zt = selector[groupNo];
-                        zn = minLens[zt];
-                        zvec = bsR(zn);
+                        int zt = selector[groupNo];
+                        int zn = minLens[zt];
+                        int zvec = bsR(zn);
                         while (zvec > limit[zt][zn]) {
                             zn++;
                             {
                                 {
                                     while (bsLive < 1) {
-                                        int zzi;
                                         char thech = 0;
                                         try {
                                             thech = (char) bsStream.read();
@@ -612,7 +602,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                                         if (thech == -1) {
                                             compressedStreamEOF();
                                         }
-                                        zzi = thech;
+                                        int zzi = thech;
                                         bsBuff = (bsBuff << 8) | (zzi & 0xff);
                                         bsLive += 8;
                                     }
@@ -627,7 +617,7 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                 } while (nextSym == RUNA || nextSym == RUNB);
 
                 s++;
-                ch = seqToUnseq[yy[0]];
+                char ch = seqToUnseq[yy[0]];
                 unzftab[ch] += s;
 
                 while (s > 0) {
@@ -640,13 +630,12 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
                     blockOverrun();
                 }
             } else {
-                char tmp;
                 last++;
                 if (last >= limitLast) {
                     blockOverrun();
                 }
 
-                tmp = yy[nextSym - 1];
+                char tmp = yy[nextSym - 1];
                 unzftab[seqToUnseq[tmp]]++;
                 ll8[last] = seqToUnseq[tmp];
 
@@ -670,28 +659,27 @@ public class BZip2InputStream extends InputStream implements BZip2Constants {
 
                 yy[0] = tmp;
                 {
-                    int zt, zn, zvec, zj;
+                    int zj;
                     if (groupPos == 0) {
                         groupNo++;
                         groupPos = G_SIZE;
                     }
                     groupPos--;
-                    zt = selector[groupNo];
-                    zn = minLens[zt];
-                    zvec = bsR(zn);
+                    int zt = selector[groupNo];
+                    int zn = minLens[zt];
+                    int zvec = bsR(zn);
                     while (zvec > limit[zt][zn]) {
                         zn++;
                         {
                             {
                                 while (bsLive < 1) {
-                                    int zzi;
                                     char thech = 0;
                                     try {
                                         thech = (char) bsStream.read();
                                     } catch (IOException e) {
                                         compressedStreamEOF();
                                     }
-                                    zzi = thech;
+                                    int zzi = thech;
                                     bsBuff = (bsBuff << 8) | (zzi & 0xff);
                                     bsLive += 8;
                                 }

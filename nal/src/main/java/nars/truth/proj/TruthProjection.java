@@ -158,7 +158,7 @@ abstract public class TruthProjection extends TaskList {
 
 	private boolean update(int i) {
 		Task t = items[i];
-		return valid(evi[i] = evi(t));
+		return sane(evi[i] = evi(t));
 	}
 
 	private double evi(Task t) {
@@ -232,7 +232,7 @@ abstract public class TruthProjection extends TaskList {
 		if (s == 0)
 			return 0;
 		double[] evi = this.evi;
-		int y = (int) IntStream.range(0, s).filter(i -> valid(evi[i])).count();
+		int y = (int) IntStream.range(0, s).filter(i -> sane(evi[i])).count();
         return y;
 	}
 
@@ -309,7 +309,7 @@ abstract public class TruthProjection extends TaskList {
 		for (int i = 0; i < ss - 1; i++) { //descending
 
 			double ie = evi[i];
-			if (!valid(ie))
+			if (!sane(ie))
 				continue;
 			Task ii = items[i];
 
@@ -318,7 +318,7 @@ abstract public class TruthProjection extends TaskList {
 			double eviConflict = 0;
 			for (int j = ss - 1; j > i; j--) { //ascending, j will be weaker
 				double je = evi[j];
-				if (!valid(je))
+				if (!sane(je))
 					continue;
 				if (Stamp.overlap(ii, items[j])) {
 					conflict.setFast(j);
@@ -551,7 +551,7 @@ abstract public class TruthProjection extends TaskList {
 		int sizeAfter = 0;
 		//verify that all zero evidence slots also have null tasks, if not then nullify the corresponding task slot
 		for (int i = 0; i < sizeBefore; i++) {
-			if (valid(evi[i]) && items[i] != null) {
+			if (sane(evi[i]) && items[i] != null) {
 				sizeAfter++;
 			} else {
 				items[i] = null;
@@ -597,9 +597,8 @@ abstract public class TruthProjection extends TaskList {
 
 
 	private double eviSum(@Nullable IntPredicate each) {
-		double e;
 		int n = size;
-        e = IntStream.range(0, n).filter(i -> each == null || each.test(i)).mapToDouble(i -> evi[i]).filter(TruthProjection::valid).sum();
+		double e = IntStream.range(0, n).filter(i -> each == null || each.test(i)).mapToDouble(i -> evi[i]).filter(TruthProjection::sane).sum();
 		return e;
 	}
 
@@ -619,13 +618,15 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	private int firstValidIndex(int after) {
-		return indexOf(after, (IntPredicate) i -> valid(i));
+
+
+		return indexOf(after, (IntPredicate) this::valid);
 	}
 
 	private int firstValidOrNonNullIndex(int after) {
 		return indexOf(after,
 			evi != null ?
-				(IntPredicate) (i -> valid(i)) :
+				(IntPredicate) (this::valid) :
 				(IntPredicate) (i -> items[i] != null) /* first non-null */);
 	}
 
@@ -635,13 +636,13 @@ abstract public class TruthProjection extends TaskList {
 	}
 
 	public final boolean valid(int i) {
-		return nonNull(i) && valid(evi[i]);
+		return nonNull(i) && sane(evi[i]);
 	}
 
 	/**
 	 * test for whether an amount of evidence is valid
 	 */
-	public static boolean valid(double e) {
+	public static boolean sane(double e) {
 		return e > Double.MIN_NORMAL;
 	}
 

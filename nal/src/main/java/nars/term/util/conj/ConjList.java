@@ -250,9 +250,8 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
     @Override
     public int eventCount(long w) {
         int s = size;
-        int c;
         long[] when = this.when;
-        c = (int) IntStream.range(0, s).filter(i -> when[i] == w).count();
+        int c = (int) IntStream.range(0, s).filter(i -> when[i] == w).count();
         return c;
     }
 
@@ -574,10 +573,9 @@ public class ConjList extends LongObjectArraySet<Term> implements ConjBuilder {
 
     boolean removeAllAt(int f, ConjList x) {
         int xn = x.size;
-        boolean removed;
         long[] ww = x.when;
         Term[] ii = x.items;
-        removed = IntStream.range(0, xn).mapToObj(i -> remove(ww[i] + f, ii[i])).reduce(false, (a, b) -> a || b);
+        boolean removed = IntStream.range(0, xn).mapToObj(i -> remove(ww[i] + f, ii[i])).reduce(false, (a, b) -> a || b);
         return removed;
     }
 

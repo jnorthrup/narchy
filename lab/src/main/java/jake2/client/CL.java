@@ -100,15 +100,13 @@ public final class CL {
         public void execute() {
             try {
 
-                int len;
-
                 if (!Globals.cls.demorecording) {
                     Com.Printf("Not recording a demo.\n");
                     return;
                 }
 
-                
-                len = -1;
+
+                int len = -1;
                 Globals.cls.demofile.writeInt(EndianHandler.swapInt(len));
                 Globals.cls.demofile.close();
                 Globals.cls.demofile = null;
@@ -131,7 +129,6 @@ public final class CL {
         @Override
         public void execute() {
             try {
-                String name;
                 byte[] buf_data = new byte[Defines.MAX_MSGLEN];
                 sizebuf_t buf = new sizebuf_t();
                 int i;
@@ -152,10 +149,8 @@ public final class CL {
                     return;
                 }
 
-                
-                
-                
-                name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
+
+                String name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
 
                 Com.Printf("recording to " + name + ".\n");
                 FS.CreatePath(name);
@@ -291,7 +286,6 @@ public final class CL {
     static final xcommand_t Connect_f = new xcommand_t() {
         @Override
         public void execute() {
-            String server;
 
             if (Cmd.Argc() != 2) {
                 Com.Printf("usage: connect <server>\n");
@@ -305,7 +299,7 @@ public final class CL {
                 Disconnect();
             }
 
-            server = Cmd.Argv(1);
+            String server = Cmd.Argv(1);
 
             NET.Config(true); 
 
@@ -448,15 +442,13 @@ public final class CL {
             
             String name;
             String adrstring;
-            cvar_t noudp;
-            cvar_t noipx;
 
             NET.Config(true); 
 
             
             Com.Printf("pinging broadcast...\n");
 
-            noudp = Cvar.Get("noudp", "0", Defines.CVAR_NOSET);
+            cvar_t noudp = Cvar.Get("noudp", "0", Defines.CVAR_NOSET);
             if (noudp.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST;
                 adr.port = Defines.PORT_SERVER;
@@ -465,8 +457,8 @@ public final class CL {
                         + Defines.PROTOCOL_VERSION);
             }
 
-            
-            noipx = Cvar.Get("noipx", "1", Defines.CVAR_NOSET);
+
+            cvar_t noipx = Cvar.Get("noipx", "1", Defines.CVAR_NOSET);
             if (noipx.value == 0.0f) {
                 adr.type = Defines.NA_BROADCAST_IPX;
                 
@@ -601,10 +593,9 @@ public final class CL {
      * Dumps the current net message, prefixed by the length
      */
     static void WriteDemoMessage() {
-        int swlen;
 
-        
-        swlen = Globals.net_message.cursize - 8;
+
+        int swlen = Globals.net_message.cursize - 8;
 
         try {
             Globals.cls.demofile.writeInt(EndianHandler.swapInt(swlen));
@@ -621,7 +612,6 @@ public final class CL {
      */
     static void SendConnectPacket() {
         netadr_t adr = new netadr_t();
-        int port;
 
         if (!NET.StringToAdr(Globals.cls.servername, adr)) {
             Com.Printf("Bad server address\n");
@@ -630,9 +620,9 @@ public final class CL {
         }
         if (adr.port == 0)
             adr.port = Defines.PORT_SERVER;
-        
 
-        port = (int) Cvar.VariableValue("qport");
+
+        int port = (int) Cvar.VariableValue("qport");
         Globals.userinfo_modified = false;
 
         Netchan.OutOfBandPrint(Defines.NS_CLIENT, adr, "connect "
@@ -709,15 +699,12 @@ public final class CL {
      */
     static void Disconnect() {
 
-        String fin;
-
         if (Globals.cls.state == Defines.ca_disconnected)
             return;
 
         if (Globals.cl_timedemo != null && Globals.cl_timedemo.value != 0.0f) {
-            int time;
 
-            time = Timer.Milliseconds() - Globals.cl.timedemo_start;
+            int time = Timer.Milliseconds() - Globals.cl.timedemo_start;
             if (time > 0)
                 Com.Printf("%i frames, %3.1f seconds: %3.1f fps\n",
                         new Vargs(3).add(Globals.cl.timedemo_frames).add(
@@ -738,8 +725,8 @@ public final class CL {
         if (Globals.cls.demorecording)
             Stop_f.execute();
 
-        
-        fin = (char) Defines.clc_stringcmd + "disconnect";
+
+        String fin = (char) Defines.clc_stringcmd + "disconnect";
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
         Netchan.Transmit(Globals.cls.netchan, fin.length(), Lib.stringToBytes(fin));
@@ -761,9 +748,8 @@ public final class CL {
      * Handle a reply from a ping.
      */
     static void ParseStatusMessage() {
-        String s;
 
-        s = MSG.ReadString(Globals.net_message);
+        String s = MSG.ReadString(Globals.net_message);
 
         Com.Printf(s + '\n');
         Menu.AddToServerList(Globals.net_from, s);
@@ -775,17 +761,15 @@ public final class CL {
      * Responses to broadcasts, etc
      */
     static void ConnectionlessPacket() {
-        String s;
-        String c;
 
         MSG.BeginReading(Globals.net_message);
-        MSG.ReadLong(Globals.net_message); 
+        MSG.ReadLong(Globals.net_message);
 
-        s = MSG.ReadStringLine(Globals.net_message);
+        String s = MSG.ReadStringLine(Globals.net_message);
 
         Cmd.TokenizeString(s.toCharArray(), false);
 
-        c = Cmd.Argv(0);
+        String c = Cmd.Argv(0);
         
         Com.Println(Globals.net_from + ": " + c);
 
@@ -1084,13 +1068,9 @@ public final class CL {
                 while (CL.precache_check < Defines.CS_PLAYERSKINS
                         + Defines.MAX_CLIENTS * CL.PLAYER_MULT) {
 
-                    int i, n;
-                    
-                    String model, skin;
-
-                    i = (CL.precache_check - Defines.CS_PLAYERSKINS)
+                    int i = (CL.precache_check - Defines.CS_PLAYERSKINS)
                             / CL.PLAYER_MULT;
-                    n = (CL.precache_check - Defines.CS_PLAYERSKINS)
+                    int n = (CL.precache_check - Defines.CS_PLAYERSKINS)
                             % CL.PLAYER_MULT;
 
                     if (Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
@@ -1111,12 +1091,12 @@ public final class CL {
                     
                     if (pos2 == -1)
                         pos2 = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].indexOf('/', pos);
-                    
-                    
-                    model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
+
+
+                    String model = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i]
                             .substring(pos, pos2);
-                                        
-                    skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
+
+                    String skin = Globals.cl.configstrings[Defines.CS_PLAYERSKINS + i].substring(pos2 + 1);
                     
                     switch (n) {
                     case 0: 
@@ -1408,14 +1388,10 @@ public final class CL {
      * Writes key bindings and archived cvars to config.cfg.
      */
     public static void WriteConfiguration() {
-        RandomAccessFile f;
-        String path;
 
 
-
-
-        path = FS.Gamedir() + "/config.cfg";
-        f = Lib.fopen(path, "rw");
+        String path = FS.Gamedir() + "/config.cfg";
+        RandomAccessFile f = Lib.fopen(path, "rw");
         if (f == null) {
             Com.Printf("Couldn't write config.cfg.\n");
             return;

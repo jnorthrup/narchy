@@ -163,14 +163,10 @@ public abstract class Mesh extends Light {
      */
     void GL_DrawAliasFrameLerp(qfiles.dmdl_t paliashdr, float backlerp) {
         float l;
-        qfiles.daliasframe_t frame, oldframe;
-        int[] v, ov;
 
-        int[] order;
         int orderIndex = 0;
         int count;
 
-        float frontlerp;
         float alpha;
 
         float[] move = { 0, 0, 0 }; 
@@ -183,17 +179,17 @@ public abstract class Mesh extends Light {
 
         int i;
         int index_xyz;
-        
 
-        frame = paliashdr.aliasFrames[currententity.frame];
 
-        v = frame.verts;
+        qfiles.daliasframe_t frame = paliashdr.aliasFrames[currententity.frame];
 
-        oldframe = paliashdr.aliasFrames[currententity.oldframe];
+        int[] v = frame.verts;
 
-        ov = oldframe.verts;
+        qfiles.daliasframe_t oldframe = paliashdr.aliasFrames[currententity.oldframe];
 
-        order = paliashdr.glCmds;
+        int[] ov = oldframe.verts;
+
+        int[] order = paliashdr.glCmds;
 
         if ((currententity.flags & Defines.RF_TRANSLUCENT) != 0)
             alpha = currententity.alpha;
@@ -206,7 +202,7 @@ public abstract class Mesh extends Light {
                 | Defines.RF_SHELL_DOUBLE | Defines.RF_SHELL_HALF_DAM)) != 0)
             gl.glDisable(GL_TEXTURE_2D);
 
-        frontlerp = 1.0f - backlerp;
+        float frontlerp = 1.0f - backlerp;
 
         
         Math3D.VectorSubtract(currententity.oldorigin, currententity.origin,
@@ -434,18 +430,15 @@ public abstract class Mesh extends Light {
         float[] mins = { 0, 0, 0 };
         float[] maxs = { 0, 0, 0 };
 
-        qfiles.dmdl_t paliashdr;
-
         float[][] vectors = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
 
         float[] thismins = { 0, 0, 0 };
         float[] oldmins = { 0, 0, 0 };
         float[] thismaxs = { 0, 0, 0 };
         float[] oldmaxs = { 0, 0, 0 };
-        qfiles.daliasframe_t pframe, poldframe;
         float[] angles = { 0, 0, 0 };
 
-        paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
+        qfiles.dmdl_t paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
         if ((e.frame >= paliashdr.num_frames) || (e.frame < 0)) {
             VID.Printf(Defines.PRINT_ALL, "R_CullAliasModel "
@@ -459,8 +452,8 @@ public abstract class Mesh extends Light {
             e.oldframe = 0;
         }
 
-        pframe = paliashdr.aliasFrames[e.frame];
-        poldframe = paliashdr.aliasFrames[e.oldframe];
+        qfiles.daliasframe_t pframe = paliashdr.aliasFrames[e.frame];
+        qfiles.daliasframe_t poldframe = paliashdr.aliasFrames[e.oldframe];
 
         /*
          * * compute axially aligned mins and maxs
@@ -562,10 +555,8 @@ public abstract class Mesh extends Light {
     @Override
     void R_DrawAliasModel(entity_t e) {
         int i;
-        qfiles.dmdl_t paliashdr;
-        float an;
 
-        
+
         float[][] bbox = { { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 },
                 { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 }, { 0, 0, 0 } };
         image_t skin;
@@ -580,7 +571,7 @@ public abstract class Mesh extends Light {
                 return;
         }
 
-        paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
+        qfiles.dmdl_t paliashdr = (qfiles.dmdl_t) currentmodel.extradata;
 
         
         
@@ -659,12 +650,11 @@ public abstract class Mesh extends Light {
             }
         }
 
-        if ((currententity.flags & Defines.RF_GLOW) != 0) { 
-                                                            
-            float scale;
+        if ((currententity.flags & Defines.RF_GLOW) != 0) {
+
             float min;
 
-            scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
+            float scale = (float) (0.1f * Math.sin(r_newrefdef.time * 7));
             for (i = 0; i < 3; i++) {
                 min = shadelight[i] * 0.8f;
                 shadelight[i] += scale;
@@ -687,7 +677,7 @@ public abstract class Mesh extends Light {
         shadedots = r_avertexnormal_dots[((int) (currententity.angles[1] * (SHADEDOT_QUANT / 360.0)))
                 & (SHADEDOT_QUANT - 1)];
 
-        an = (float) (currententity.angles[1] / 180 * Math.PI);
+        float an = (float) (currententity.angles[1] / 180 * Math.PI);
         shadevector[0] = (float) Math.cos(-an);
         shadevector[1] = (float) Math.sin(-an);
         shadevector[2] = 1;

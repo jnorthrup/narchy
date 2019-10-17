@@ -176,13 +176,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
         if (contactConstraint.penetration < solverInfo.splitImpulsePenetrationThreshold) {
             BulletStats.gNumSplitImpulseRecoveries++;
-            float normalImpulse;
 
-            
-            
-            
-            
-            
 
             float vel1Dotn = contactConstraint.contactNormal.dot(body1.pushVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.turnVelocity);
             float vel2Dotn = contactConstraint.contactNormal.dot(body2.pushVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.turnVelocity);
@@ -196,7 +190,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
             float penetrationImpulse = positionalError * contactConstraint.jacDiagABInv;
             float velocityImpulse = velocityError * contactConstraint.jacDiagABInv;
-            normalImpulse = penetrationImpulse + velocityImpulse;
+            float normalImpulse = penetrationImpulse + velocityImpulse;
 
             
             float oldNormalImpulse = contactConstraint.appliedPushImpulse;
@@ -227,19 +221,11 @@ public class SequentialImpulseConstrainer implements Constrainer {
             SolverConstraint contactConstraint,
             ContactSolverInfo solverInfo) {
 
-        float normalImpulse;
 
-        
-        
-        
-        
-        
-
-        float rel_vel;
         float vel1Dotn = contactConstraint.contactNormal.dot(body1.linearVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.angularVelocity);
         float vel2Dotn = contactConstraint.contactNormal.dot(body2.linearVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.angularVelocity);
 
-        rel_vel = vel1Dotn - vel2Dotn;
+        float rel_vel = vel1Dotn - vel2Dotn;
 
         float positionalError = 0.f;
         if (!solverInfo.splitImpulse || (contactConstraint.penetration > solverInfo.splitImpulsePenetrationThreshold)) {
@@ -250,7 +236,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
         float penetrationImpulse = positionalError * contactConstraint.jacDiagABInv;
         float velocityImpulse = velocityError * contactConstraint.jacDiagABInv;
-        normalImpulse = penetrationImpulse + velocityImpulse;
+        float normalImpulse = penetrationImpulse + velocityImpulse;
 
 
         
@@ -286,15 +272,12 @@ public class SequentialImpulseConstrainer implements Constrainer {
         if (appliedNormalImpulse > 0f) 
         {
 
-            float j1;
-
-            float rel_vel;
             float vel1Dotn = contactConstraint.contactNormal.dot(body1.linearVelocity) + contactConstraint.relpos1CrossNormal.dot(body1.angularVelocity);
             float vel2Dotn = contactConstraint.contactNormal.dot(body2.linearVelocity) + contactConstraint.relpos2CrossNormal.dot(body2.angularVelocity);
-            rel_vel = vel1Dotn - vel2Dotn;
+            float rel_vel = vel1Dotn - vel2Dotn;
 
-            
-            j1 = -rel_vel * contactConstraint.jacDiagABInv;
+
+            float j1 = -rel_vel * contactConstraint.jacDiagABInv;
             
             
             float oldTangentImpulse = contactConstraint.appliedImpulse;
@@ -548,7 +531,6 @@ public class SequentialImpulseConstrainer implements Constrainer {
                             rel_pos2.sub(pos2, colObj1.transform);
 
                             relaxation = 1f;
-                            float rel_vel;
 
                             int frictionIndex = tmpSolverConstraintPool.size();
 
@@ -618,7 +600,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
 
                             vel.sub(vel1, vel2);
 
-                            rel_vel = cp.normalWorldOnB.dot(vel);
+                            float rel_vel = cp.normalWorldOnB.dot(vel);
 
                             solverConstraint.penetration = Math.min(cp.distance1 + infoGlobal.linearSlop, 0f);
                             
@@ -1091,8 +1073,7 @@ public class SequentialImpulseConstrainer implements Constrainer {
                 body1.getVelocityInLocalPoint(rel_pos2, vel2);
                 vel.sub(vel1, vel2);
 
-                float rel_vel;
-                rel_vel = cp.normalWorldOnB.dot(vel);
+                float rel_vel = cp.normalWorldOnB.dot(vel);
 
                 float combinedRestitution = cp.combinedRestitution;
 

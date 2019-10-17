@@ -126,11 +126,7 @@ public class LogikusMediator implements ActionListener, Runnable {
 		
 		
 
-		Runnable r = new Runnable() {
-			public void run() {
-				resultsArea.append(s);
-			}
-		};
+		Runnable r = () -> resultsArea.append(s);
 		try {
 			SwingUtilities.invokeAndWait(r);
 		} catch (Exception e) {
@@ -158,9 +154,8 @@ public class LogikusMediator implements ActionListener, Runnable {
 	 */
     private void parseProgramAndQuery() {
 
-		boolean programChanged = false;
-		String programText = programArea.getText();
-		programChanged = (lastProgramText == null) || (!lastProgramText.equals(programText));
+        String programText = programArea.getText();
+        boolean programChanged = (lastProgramText == null) || (!lastProgramText.equals(programText));
 		if (programChanged) {
 			program = LogikusFacade.program(programText);
 		}

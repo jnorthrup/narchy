@@ -39,7 +39,6 @@ public final class M {
 
     public static void M_CheckGround(edict_t ent) {
         float[] point = { 0, 0, 0 };
-        trace_t trace;
 
         if ((ent.flags & (Defines.FL_SWIM | Defines.FL_FLY)) != 0)
             return;
@@ -55,7 +54,7 @@ public final class M {
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] - 0.25f;
 
-        trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, point, ent,
+        trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, point, ent,
                 Defines.MASK_MONSTERSOLID);
 
         
@@ -158,19 +157,15 @@ public final class M {
      * M_ChangeYaw.
      */
     public static void M_ChangeYaw(edict_t ent) {
-        float ideal;
-        float current;
-        float move;
-        float speed;
 
-        current = Math3D.anglemod(ent.s.angles[Defines.YAW]);
-        ideal = ent.ideal_yaw;
+        float current = Math3D.anglemod(ent.s.angles[Defines.YAW]);
+        float ideal = ent.ideal_yaw;
 
         if (current == ideal)
             return;
 
-        move = ideal - current;
-        speed = ent.yaw_speed;
+        float move = ideal - current;
+        float speed = ent.yaw_speed;
         if (ideal > current) {
             if (move >= 180)
                 move = move - 360;
@@ -232,15 +227,12 @@ public final class M {
 
     public static void M_CatagorizePosition(edict_t ent) {
         float[] point = { 0, 0, 0 };
-        int cont;
 
-        
-        
-        
+
         point[0] = ent.s.origin[0];
         point[1] = ent.s.origin[1];
         point[2] = ent.s.origin[2] + ent.mins[2] + 1;
-        cont = GameBase.gi.pointcontents.pointcontents(point);
+        int cont = GameBase.gi.pointcontents.pointcontents(point);
 
         if (0 == (cont & Defines.MASK_WATER)) {
             ent.waterlevel = 0;
@@ -366,13 +358,12 @@ public final class M {
         @Override
         public boolean think(edict_t ent) {
             float[] end = { 0, 0, 0 };
-            trace_t trace;
 
             ent.s.origin[2] += 1;
             Math3D.VectorCopy(ent.s.origin, end);
             end[2] -= 256;
 
-            trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
+            trace_t trace = game_import_t.trace(ent.s.origin, ent.mins, ent.maxs, end,
                     ent, Defines.MASK_MONSTERSOLID);
 
             if (trace.fraction == 1 || trace.allsolid)
@@ -411,10 +402,8 @@ public final class M {
 
     
     public static void M_MoveFrame(edict_t self) {
-        mmove_t move; 
-        int index;
 
-        move = self.monsterinfo.currentmove;
+        mmove_t move = self.monsterinfo.currentmove;
         self.nextthink = GameBase.level.time + Defines.FRAMETIME;
 
         if ((self.monsterinfo.nextframe != 0)
@@ -448,7 +437,7 @@ public final class M {
             }
         }
 
-        index = self.s.frame - move.firstframe;
+        int index = self.s.frame - move.firstframe;
         if (move.frame[index].ai != null)
             if (0 == (self.monsterinfo.aiflags & Defines.AI_HOLD_FRAME))
                 move.frame[index].ai.ai(self, move.frame[index].dist

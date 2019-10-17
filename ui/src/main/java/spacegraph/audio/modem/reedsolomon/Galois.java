@@ -53,10 +53,10 @@ public class Galois implements Settings {
 
     static void init_exp_table() {
         int i, z;
-        int pinit, p1, p2, p3, p4, p5, p6, p7, p8;
+        int pinit, p2, p3, p4, p5, p6, p7, p8;
 
         pinit = p2 = p3 = p4 = p5 = p6 = p7 = p8 = 0;
-        p1 = 1;
+        int p1 = 1;
 
         gexp[0] = 1;
         gexp[255] = gexp[0];
@@ -88,11 +88,10 @@ public class Galois implements Settings {
 
     /* multiplication using logarithms */
     static int gmult(int a, int b) {
-        int i, j;
         if (a == 0 || b == 0)
             return (0);
-        i = glog[a];
-        j = glog[b];
+        int i = glog[a];
+        int j = glog[b];
         return (gexp[i + j]);
     }
 

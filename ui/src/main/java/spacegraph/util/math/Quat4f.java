@@ -172,11 +172,10 @@ public class Quat4f extends Tuple4f {
             this.y = q1.w * q2.y + q2.w * q1.y - q1.x * q2.z + q1.z * q2.x;
             this.z = q1.w * q2.z + q2.w * q1.z + q1.x * q2.y - q1.y * q2.x;
         } else {
-            float y, w;
 
-            w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
+            float w = q1.w * q2.w - q1.x * q2.x - q1.y * q2.y - q1.z * q2.z;
             float x = q1.w * q2.x + q2.w * q1.x + q1.y * q2.z - q1.z * q2.y;
-            y = q1.w * q2.y + q2.w * q1.y - q1.x * q2.z + q1.z * q2.x;
+            float y = q1.w * q2.y + q2.w * q1.y - q1.x * q2.z + q1.z * q2.x;
             this.z = q1.w * q2.z + q2.w * q1.z + q1.x * q2.y - q1.y * q2.x;
             this.w = w;
             this.x = x;
@@ -192,11 +191,10 @@ public class Quat4f extends Tuple4f {
      * @param q1 the other quaternion
      */
     public final void mul(Quat4f q1) {
-        float y, w;
 
-        w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z;
+        float w = this.w * q1.w - this.x * q1.x - this.y * q1.y - this.z * q1.z;
         float x = this.w * q1.x + q1.w * this.x + this.y * q1.z - this.z * q1.y;
-        y = this.w * q1.y + q1.w * this.y - this.x * q1.z + this.z * q1.x;
+        float y = this.w * q1.y + q1.w * this.y - this.x * q1.z + this.z * q1.x;
         this.z = this.w * q1.z + q1.w * this.z + this.x * q1.y - this.y * q1.x;
         this.w = w;
         this.x = x;
@@ -554,8 +552,7 @@ public class Quat4f extends Tuple4f {
     }
 
     public void setAngle(float ax, float ay, float az, float angle) {
-        float amag;
-        amag = (ax * ax + ay * ay + az * az);
+        float amag = (ax * ax + ay * ay + az * az);
         if (amag < EPS*EPS) {
             this.x = this.y = this.z = this.w = 0.0f;
         } else {

@@ -268,17 +268,12 @@ public abstract class Main extends Base {
 		float alpha = 1.0F;
 		float[] point = { 0, 0, 0 };
 
-		qfiles.dsprframe_t frame;
-		qfiles.dsprite_t psprite;
 
-		
-		
-
-		psprite = (qfiles.dsprite_t) currentmodel.extradata;
+        qfiles.dsprite_t psprite = (qfiles.dsprite_t) currentmodel.extradata;
 
 		e.frame %= psprite.numframes;
 
-		frame = psprite.frames[e.frame];
+        qfiles.dsprframe_t frame = psprite.frames[e.frame];
 
 		if ((e.flags & Defines.RF_TRANSLUCENT) != 0)
 			alpha = e.alpha;
@@ -689,13 +684,13 @@ public abstract class Main extends Base {
 	}
 
 	void MYgluPerspective(double fovy, double aspect, double zNear, double zFar) {
-		double xmin, xmax, ymin, ymax;
+		double xmin;
 
-		ymax = zNear * Math.tan(fovy * Math.PI / 360.0);
-		ymin = -ymax;
+		double ymax = zNear * Math.tan(fovy * Math.PI / 360.0);
+		double ymin = -ymax;
 
 		xmin = ymin * aspect;
-		xmax = ymax * aspect;
+		double xmax = ymax * aspect;
 
 		xmin += - (2 * gl_state.camera_separation) / zNear;
 		xmax += - (2 * gl_state.camera_separation) / zNear;
@@ -709,26 +704,20 @@ public abstract class Main extends Base {
 	=============
 	*/
 	void R_SetupGL() {
-		float screenaspect;
-		int x, x2, y2, y, w, h;
 
-		
-		
-		
-		x = (int) Math.floor(r_newrefdef.x * vid.getWidth() / vid.getWidth());
-		x2 = (int) Math.ceil((r_newrefdef.x + r_newrefdef.width) * vid.getWidth() / vid.getWidth());
-		y = (int) Math.floor(vid.getHeight() - r_newrefdef.y * vid.getHeight() / vid.getHeight());
-		y2 = (int) Math.ceil(vid.getHeight() - (r_newrefdef.y + r_newrefdef.height) * vid.getHeight() / vid.getHeight());
 
-		w = x2 - x;
-		h = y - y2;
+        int x = (int) Math.floor(r_newrefdef.x * vid.getWidth() / vid.getWidth());
+        int x2 = (int) Math.ceil((r_newrefdef.x + r_newrefdef.width) * vid.getWidth() / vid.getWidth());
+        int y = (int) Math.floor(vid.getHeight() - r_newrefdef.y * vid.getHeight() / vid.getHeight());
+        int y2 = (int) Math.ceil(vid.getHeight() - (r_newrefdef.y + r_newrefdef.height) * vid.getHeight() / vid.getHeight());
+
+        int w = x2 - x;
+        int h = y - y2;
 
 		gl.glViewport(x, y2, w, h);
 
-		
-		
-		
-		screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
+
+        float screenaspect = (float) r_newrefdef.width / r_newrefdef.height;
 		gl.glMatrixMode(GL_PROJECTION);
 		gl.glLoadIdentity();
 		MYgluPerspective(r_newrefdef.fov_y, screenaspect, 4, 4096);
@@ -1026,16 +1015,10 @@ public abstract class Main extends Base {
 	*/
 	protected boolean R_SetMode() {
 
-		int err; 
-		boolean fullscreen;
+		int err;
 
 
-
-
-
-
-
-		fullscreen = (vid_fullscreen.value > 0.0f);
+        boolean fullscreen = (vid_fullscreen.value > 0.0f);
 
 		vid_fullscreen.modified = false;
 		gl_mode.modified = false;
@@ -1370,10 +1353,8 @@ public abstract class Main extends Base {
 		** change modes if necessary
 		*/
 		if (gl_mode.modified || vid_fullscreen.modified) {
-			
-			cvar_t ref;
 
-			ref = Cvar.Get("vid_ref", "lwjgl", 0);
+            cvar_t ref = Cvar.Get("vid_ref", "lwjgl", 0);
 			ref.modified = true;
 		}
 
@@ -1522,9 +1503,8 @@ public abstract class Main extends Base {
 	void R_DrawBeam(entity_t e) {
 
 		int i;
-		float r, g, b;
 
-		float[] perpvec = { 0, 0, 0 }; 
+        float[] perpvec = { 0, 0, 0 };
 		float[] direction = { 0, 0, 0 }; 
 		float[] normalized_direction = { 0, 0, 0 }; 
 
@@ -1564,9 +1544,9 @@ public abstract class Main extends Base {
 		gl.glEnable(GL_BLEND);
 		gl.glDepthMask(false);
 
-		r = (d_8to24table[e.skinnum & 0xFF]) & 0xFF;
-		g = (d_8to24table[e.skinnum & 0xFF] >> 8) & 0xFF;
-		b = (d_8to24table[e.skinnum & 0xFF] >> 16) & 0xFF;
+        float r = (d_8to24table[e.skinnum & 0xFF]) & 0xFF;
+        float g = (d_8to24table[e.skinnum & 0xFF] >> 8) & 0xFF;
+        float b = (d_8to24table[e.skinnum & 0xFF] >> 16) & 0xFF;
 
 		r *= 1 / 255.0f;
 		g *= 1 / 255.0f;

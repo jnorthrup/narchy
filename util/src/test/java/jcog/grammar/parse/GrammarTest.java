@@ -73,11 +73,7 @@ class GrammarTest {
         final MyTarget target = new MyTarget();
         assertNull(grammar.getRule("mystart"));
         grammar.addRule("mystart", new Empty());
-        grammar.addAssembler("mystart", new IAssembler() {
-            public void accept(Assembly a) {
-                a.setTarget(target);
-            }
-        });
+        grammar.addAssembler("mystart", (IAssembler) a -> a.setTarget(target));
 
         assertSame(target, grammar.parse("").getTarget());
     }
@@ -86,9 +82,7 @@ class GrammarTest {
     @Test
     void assemblersCanOnlyBeAddedToExistingRules() {
         assertThrows(GrammarException.class, () -> {
-            grammar.addAssembler("mystart", new IAssembler() {
-                public void accept(Assembly a) {
-                }
+            grammar.addAssembler("mystart", (IAssembler) a -> {
             });
         });
     }

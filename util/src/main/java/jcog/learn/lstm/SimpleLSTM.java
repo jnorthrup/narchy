@@ -190,9 +190,8 @@ public class SimpleLSTM  {
 		
 		for (int k = 0; k < output_dimension; k++)
 		{
-			double s;
             double[] wk = weightsOut[k];
-            s = IntStream.range(0, cell_blocks + 1).mapToDouble(j -> wk[j] * full_hidden[j]).sum();
+            double s = IntStream.range(0, cell_blocks + 1).mapToDouble(j -> wk[j] * full_hidden[j]).sum();
 
 			out[k] = s; 
 		}

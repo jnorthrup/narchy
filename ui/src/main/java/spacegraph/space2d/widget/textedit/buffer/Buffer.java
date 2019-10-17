@@ -200,10 +200,9 @@ public class Buffer {
 
     @Override
     public String toString() {
-        StringBuilder buf = new StringBuilder();
-        buf.append(text());
-        buf.append(String.format("Caret:[%d,%d]", currentCursor.getCol(), currentCursor.getRow()));
-        return buf.toString();
+        String buf = text() +
+                String.format("Caret:[%d,%d]", currentCursor.getCol(), currentCursor.getRow());
+        return buf;
     }
 
     public CursorPosition cursor() {

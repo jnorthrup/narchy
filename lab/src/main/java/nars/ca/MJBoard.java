@@ -470,9 +470,8 @@ class MJBoard extends Panel implements Runnable {
 	
 	public boolean RecalcLayout() {
 		boolean retVal = true;
-		int wdt, hgt, iTmp;
-		wdt = getSize().width; 
-		hgt = getSize().height;
+        int wdt = getSize().width;
+        int hgt = getSize().height;
 		LastPanelSize.x = wdt;
 		LastPanelSize.y = hgt;
 
@@ -480,7 +479,7 @@ class MJBoard extends Panel implements Runnable {
 		pnlBotm.reshape(0, hgt - sbarWidth, wdt, sbarWidth);
 		btnZoomIn.reshape(0, 0, sbarWidth, sbarWidth);
 		btnZoomOut.reshape(sbarWidth + 1, 0, sbarWidth, sbarWidth);
-		iTmp = btnZoomIn.getSize().width + btnZoomOut.getSize().width;
+        int iTmp = btnZoomIn.getSize().width + btnZoomOut.getSize().width;
 		hSbar.reshape(iTmp + 1, 0, wdt - sbarWidth - iTmp - 1, sbarWidth);
 		btnFit.reshape(wdt - sbarWidth, 0, sbarWidth, sbarWidth);
 		vSbar.reshape(wdt - sbarWidth, 0, sbarWidth, hgt - sbarWidth);
@@ -1049,15 +1048,13 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void DrawLine(int x1, int y1, int x2, int y2) {
-		int shortDiff, longDiff; 
-		int xDiff, yDiff;
-		int xRight, yDown;
-		int x, y;
+		int shortDiff, longDiff;
+        int x, y;
 		boolean across; 
-		int wrap, i, j;
+		int i;
 
-		xDiff = Math.abs(x2 - x1);
-		yDiff = Math.abs(y2 - y1);
+        int xDiff = Math.abs(x2 - x1);
+        int yDiff = Math.abs(y2 - y1);
 
 		if (xDiff > yDiff) {
 			across = true;
@@ -1069,11 +1066,11 @@ class MJBoard extends Panel implements Runnable {
 			longDiff = yDiff;
 		}
 
-		xRight = x2 > x1 ? 1 : -1;
-		yDown = y2 > y1 ? 1 : -1;
+        int xRight = x2 > x1 ? 1 : -1;
+        int yDown = y2 > y1 ? 1 : -1;
 
-		j = 0;
-		wrap = 0;
+        int j = 0;
+        int wrap = 0;
 
 		for (i = 0; i < longDiff; i++) {
 			if (across) {
@@ -1128,9 +1125,8 @@ class MJBoard extends Panel implements Runnable {
 	
 	
 	public void Randomize(String sHow, int what) {
-		int i, j, minX, maxX, minY, maxY;
-		double maxVal = 0.25;
-		boolean fOldRun = (caThread != null);
+		int j, minX, maxX, minY, maxY;
+        boolean fOldRun = (caThread != null);
 		stop();
 		try {
 			Thread.sleep(300);
@@ -1152,9 +1148,9 @@ class MJBoard extends Panel implements Runnable {
 			maxY = UnivSize.y - 1;
 			break;
 		}
-		sHow = sHow.substring(0, sHow.length() - 1); 
-		i = Integer.parseInt(sHow.trim());
-		maxVal = i / 100.0;
+		sHow = sHow.substring(0, sHow.length() - 1);
+        int i = Integer.parseInt(sHow.trim());
+        double maxVal = i / 100.0;
 		if (!mjUI.chkAdd.getState()) 
 		{
 			Clear(false);
@@ -1181,8 +1177,7 @@ class MJBoard extends Panel implements Runnable {
 	
 	public void Seed(String sHow) {
 		int i, j;
-		int ctrX, ctrY;
-		boolean fOldRun = caThread != null;
+        boolean fOldRun = caThread != null;
 		stop();
 		try {
 			Thread.sleep(300);
@@ -1193,9 +1188,9 @@ class MJBoard extends Panel implements Runnable {
 		{
 			Clear(false);
 		}
-		
-		ctrX = UnivSize.x / 2;
-		ctrY = UnivSize.y / 2;
+
+        int ctrX = UnivSize.x / 2;
+        int ctrY = UnivSize.y / 2;
 		if (sHow.startsWith("BLK")) 
 		{
 			sHow = sHow.substring(3).trim();

@@ -107,9 +107,8 @@ public class CL_input {
 
 	static void KeyDown(kbutton_t b) {
 		int k;
-		String c;
 
-		c = Cmd.Argv(1);
+        String c = Cmd.Argv(1);
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else
@@ -141,10 +140,8 @@ public class CL_input {
 
 	static void KeyUp(kbutton_t b) {
 		int k;
-		String c;
-		int uptime;
 
-		c = Cmd.Argv(1);
+        String c = Cmd.Argv(1);
 		if (c.length() > 0)
 			k = Lib.atoi(c);
 		else {
@@ -169,7 +166,7 @@ public class CL_input {
 
 		
 		c = Cmd.Argv(2);
-		uptime = Lib.atoi(c);
+        int uptime = Lib.atoi(c);
 		if (uptime != 0)
 			b.msec += uptime - b.downtime;
 		else
@@ -309,12 +306,10 @@ public class CL_input {
 	 * Returns the fraction of the frame that the key was down ===============
 	 */
 	static float KeyState(kbutton_t key) {
-		float val;
-		long msec;
 
-		key.state &= 1; 
+        key.state &= 1;
 
-		msec = key.msec;
+        long msec = key.msec;
 		key.msec = 0;
 
 		if (key.state != 0) {
@@ -323,7 +318,7 @@ public class CL_input {
 			key.downtime = Globals.sys_frame_time;
 		}
 
-		val = (float) msec / frame_msec;
+        float val = (float) msec / frame_msec;
 		if (val < 0)
 			val = 0;
 		if (val > 1)
@@ -341,9 +336,8 @@ public class CL_input {
 	 */
 	static void AdjustAngles() {
 		float speed;
-		float up, down;
 
-		if ((in_speed.state & 1) != 0)
+        if ((in_speed.state & 1) != 0)
 			speed = Globals.cls.frametime * Globals.cl_anglespeedkey.value;
 		else
 			speed = Globals.cls.frametime;
@@ -357,8 +351,8 @@ public class CL_input {
 			Globals.cl.viewangles[Defines.PITCH] += speed * Globals.cl_pitchspeed.value * KeyState(in_back);
 		}
 
-		up = KeyState(in_lookup);
-		down = KeyState(in_lookdown);
+        float up = KeyState(in_lookup);
+        float down = KeyState(in_lookdown);
 
 		Globals.cl.viewangles[Defines.PITCH] -= speed * Globals.cl_pitchspeed.value * up;
 		Globals.cl.viewangles[Defines.PITCH] += speed * Globals.cl_pitchspeed.value * down;
@@ -405,9 +399,7 @@ public class CL_input {
 
 	static void ClampPitch() {
 
-		float pitch;
-
-		pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
+        float pitch = Math3D.SHORT2ANGLE(Globals.cl.frame.playerstate.pmove.delta_angles[Defines.PITCH]);
 		if (pitch > 180)
 			pitch -= 360;
 
@@ -426,8 +418,7 @@ public class CL_input {
 	 * ============== CL_FinishMove ==============
 	 */
 	static void FinishMove(usercmd_t cmd) {
-		int ms;
-		int i;
+        int i;
 
 		
 		
@@ -443,8 +434,8 @@ public class CL_input {
 		if (Key.anykeydown != 0 && Globals.cls.key_dest == Defines.key_game)
 			cmd.buttons |= Defines.BUTTON_ANY;
 
-		
-		ms = (int) (Globals.cls.frametime * 1000);
+
+        int ms = (int) (Globals.cls.frametime * 1000);
 		if (ms > 250)
 			ms = 100; 
 		cmd.msec = (byte) ms;
@@ -693,15 +684,10 @@ public class CL_input {
 	 * ================= CL_SendCmd =================
 	 */
 	static void SendCmd() {
-		int i;
-		usercmd_t cmd, oldcmd;
-		int checksumIndex;
 
-		
 
-		
-		i = Globals.cls.netchan.outgoing_sequence & (Defines.CMD_BACKUP - 1);
-		cmd = Globals.cl.cmds[i];
+        int i = Globals.cls.netchan.outgoing_sequence & (Defines.CMD_BACKUP - 1);
+        usercmd_t cmd = Globals.cl.cmds[i];
 		Globals.cl.cmd_time[i] = Globals.cls.realtime; 
 															 
 
@@ -742,8 +728,8 @@ public class CL_input {
 		
 		MSG.WriteByte(buf, Defines.clc_move);
 
-		
-		checksumIndex = buf.cursize;
+
+        int checksumIndex = buf.cursize;
 		MSG.WriteByte(buf, 0);
 
 		
@@ -761,7 +747,7 @@ public class CL_input {
 		nullcmd.clear();
 
 		MSG.WriteDeltaUsercmd(buf, nullcmd, cmd);
-		oldcmd = cmd;
+        usercmd_t oldcmd = cmd;
 
 		i = (Globals.cls.netchan.outgoing_sequence - 1) & (Defines.CMD_BACKUP - 1);
 		cmd = Globals.cl.cmds[i];

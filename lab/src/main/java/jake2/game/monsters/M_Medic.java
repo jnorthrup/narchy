@@ -566,12 +566,11 @@ public class M_Medic {
         public String getID(){ return "medic_idle"; }
         @Override
         public boolean think(edict_t self) {
-            edict_t ent;
 
             game_import_t.sound(self, Defines.CHAN_VOICE, sound_idle1, 1,
                     Defines.ATTN_IDLE, 0);
 
-            ent = medic_FindDeadMonster(self);
+            edict_t ent = medic_FindDeadMonster(self);
             if (ent != null) {
                 self.enemy = ent;
                 self.enemy.owner = self;
@@ -766,9 +765,8 @@ public class M_Medic {
         @Override
         public boolean think(edict_t self) {
             if (0 == (self.monsterinfo.aiflags & Defines.AI_MEDIC)) {
-                edict_t ent;
 
-                ent = medic_FindDeadMonster(self);
+                edict_t ent = medic_FindDeadMonster(self);
                 if (ent != null) {
                     self.oldenemy = self.enemy;
                     self.enemy = ent;
@@ -1137,9 +1135,7 @@ public class M_Medic {
         public boolean think(edict_t self) {
             float[] offset = { 0, 0, 0 }, start = { 0, 0, 0 }, end = { 0, 0, 0 }, f = {
                     0, 0, 0 }, r = { 0, 0, 0 };
-            trace_t tr;
             float[] dir = { 0, 0, 0 }, angles = { 0, 0, 0 };
-            float distance;
 
             if (!self.enemy.inuse)
                 return true;
@@ -1151,7 +1147,7 @@ public class M_Medic {
 
             
             Math3D.VectorSubtract(start, self.enemy.s.origin, dir);
-            distance = Math3D.VectorLength(dir);
+            float distance = Math3D.VectorLength(dir);
             if (distance > 256)
                 return true;
 
@@ -1162,7 +1158,7 @@ public class M_Medic {
             if (Math.abs(angles[0]) > 45)
                 return true;
 
-            tr = game_import_t.trace(start, null, null, self.enemy.s.origin,
+            trace_t tr = game_import_t.trace(start, null, null, self.enemy.s.origin,
                     self, Defines.MASK_SHOT);
             if (tr.fraction != 1.0 && tr.ent != self.enemy)
                 return true;

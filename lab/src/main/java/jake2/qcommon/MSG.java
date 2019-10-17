@@ -119,12 +119,9 @@ public class MSG extends Globals {
 
     public static void WriteDeltaUsercmd(sizebuf_t buf, usercmd_t from,
             usercmd_t cmd) {
-        int bits;
 
-        
-        
-        
-        bits = 0;
+
+        int bits = 0;
         if (cmd.angles[0] != from.angles[0])
             bits |= CM_ANGLE1;
         if (cmd.angles[1] != from.angles[1])
@@ -169,16 +166,16 @@ public class MSG extends Globals {
 
     
     public static void WriteDir(sizebuf_t sb, float[] dir) {
-        int i, best;
-        float d, bestd;
+        int i;
+        float d;
 
         if (dir == null) {
             WriteByte(sb, 0);
             return;
         }
 
-        bestd = 0;
-        best = 0;
+        float bestd = 0;
+        int best = 0;
         for (i = 0; i < NUMVERTEXNORMALS; i++) {
             d = Math3D.DotProduct(dir, bytedirs[i]);
             if (d > bestd) {
@@ -191,9 +188,8 @@ public class MSG extends Globals {
 
     
     public static void ReadDir(sizebuf_t sb, float[] dir) {
-        int b;
 
-        b = ReadByte(sb);
+        int b = ReadByte(sb);
         if (b >= NUMVERTEXNORMALS)
             Com.Error(ERR_DROP, "MSF_ReadDir: out of range");
         Math3D.VectorCopy(bytedirs[b], dir);
@@ -207,15 +203,14 @@ public class MSG extends Globals {
      */
     public static void WriteDeltaEntity(entity_state_t from, entity_state_t to,
             sizebuf_t msg, boolean force, boolean newentity) {
-        int bits;
 
         if (0 == to.number)
             Com.Error(ERR_FATAL, "Unset entity number");
         if (to.number >= MAX_EDICTS)
             Com.Error(ERR_FATAL, "Entity number >= MAX_EDICTS");
 
-        
-        bits = 0;
+
+        int bits = 0;
 
         if (to.number >= 256)
             bits |= U_NUMBER16; 
@@ -489,10 +484,9 @@ public class MSG extends Globals {
 
     public static String ReadStringLine(sizebuf_t msg_read) {
 
-        int l;
         byte c;
 
-        l = 0;
+        int l = 0;
         do {
             c = (byte) ReadChar(msg_read);
             if (c == -1 || c == 0 || c == 0x0a)
@@ -527,12 +521,10 @@ public class MSG extends Globals {
 
     public static void ReadDeltaUsercmd(sizebuf_t msg_read, usercmd_t from,
             usercmd_t move) {
-        int bits;
 
-        
-        
+
         move.set(from);
-        bits = ReadByte(msg_read);
+        int bits = ReadByte(msg_read);
 
         
         if ((bits & CM_ANGLE1) != 0)

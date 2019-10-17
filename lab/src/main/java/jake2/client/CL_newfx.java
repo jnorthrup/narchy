@@ -38,9 +38,8 @@ import jake2.util.Math3D;
 public class CL_newfx {
 
     static void Flashlight(int ent, float[] pos) {
-        CL_fx.cdlight_t dl;
 
-        dl = CL_fx.AllocDlight(ent);
+        CL_fx.cdlight_t dl = CL_fx.AllocDlight(ent);
         Math3D.VectorCopy(pos, dl.origin);
         dl.radius = 400;
         dl.minlight = 250;
@@ -55,7 +54,6 @@ public class CL_newfx {
      */
     static void ColorFlash(float[] pos, int ent, int intensity, float r,
             float g, float b) {
-        CL_fx.cdlight_t dl;
 
         if ((Globals.vidref_val == Defines.VIDREF_SOFT)
                 && ((r < 0) || (g < 0) || (b < 0))) {
@@ -65,7 +63,7 @@ public class CL_newfx {
             b = -b;
         }
 
-        dl = CL_fx.AllocDlight(ent);
+        CL_fx.cdlight_t dl = CL_fx.AllocDlight(ent);
         Math3D.VectorCopy(pos, dl.origin);
         dl.radius = intensity;
         dl.minlight = 250;
@@ -84,25 +82,18 @@ public class CL_newfx {
      * ====== CL_DebugTrail ======
      */
     static void DebugTrail(float[] start, float[] end) {
-        float len;
-        
+
         cparticle_t p;
-        float dec;
-        
-        
-        
+
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
         Math3D.MakeNormalVectors(vec, right, up);
 
-        
 
-        
-        
-        dec = 3;
+        float dec = 3;
         Math3D.VectorScale(vec, dec, vec);
         Math3D.VectorCopy(start, move);
 
@@ -136,13 +127,12 @@ public class CL_newfx {
   	
     
     static void ForceWall(float[] start, float[] end, int color) {
-        float len;
         int j;
         cparticle_t p;
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
         Math3D.VectorScale(vec, 4, vec);
 
@@ -187,16 +177,14 @@ public class CL_newfx {
      * ===============
      */
     static void BubbleTrail2(float[] start, float[] end, int dist) {
-        float len;
         int i, j;
         cparticle_t p;
-        float dec;
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-        dec = dist;
+        float dec = dist;
         Math3D.VectorScale(vec, dec, vec);
 
         for (i = 0; i < len; i += dec) {
@@ -232,14 +220,11 @@ public class CL_newfx {
     private static final float[] end = {0, 0, 0};
     
     static void Heatbeam(float[] start, float[] forward) {
-        float len;
         int j;
         cparticle_t p;
         int i;
         float c, s;
-        float ltime;
-        float step = 32.0f, rstep;
-        float start_pt;
+        float step = 32.0f;
         float rot;
         float variance;
 
@@ -247,7 +232,7 @@ public class CL_newfx {
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
         
         
@@ -257,16 +242,16 @@ public class CL_newfx {
             Math3D.VectorMA(move, -0.5f, right, move);
             Math3D.VectorMA(move, -0.5f, up, move);
         }
-        
 
-        ltime = (float) Globals.cl.time / 1000.0f;
-        start_pt = ltime * 96.0f % step;
+
+        float ltime = (float) Globals.cl.time / 1000.0f;
+        float start_pt = ltime * 96.0f % step;
         Math3D.VectorMA(move, start_pt, vec, move);
 
         Math3D.VectorScale(vec, step, vec);
 
-        
-        rstep = (float) (Math.PI / 10.0);
+
+        float rstep = (float) (Math.PI / 10.0);
         float M_PI2 = (float) (Math.PI * 2.0);
         for (i = (int) start_pt; i < len; i += step) {
             if (i > step * 5) 
@@ -418,20 +403,18 @@ public class CL_newfx {
      * =============== CL_TrackerTrail ===============
      */
     static void TrackerTrail(float[] start, float[] end, int particleColor) {
-        float len;
         cparticle_t p;
-        int dec;
         float dist;
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
         Math3D.VectorCopy(vec, forward);
         Math3D.vectoangles(forward, angle_dir);
         Math3D.AngleVectors(angle_dir, forward, right, up);
 
-        dec = 3;
+        int dec = 3;
         Math3D.VectorScale(vec, 3, vec);
 
         
@@ -531,9 +514,7 @@ public class CL_newfx {
         int i;
         cparticle_t p;
 
-        float ratio;
-
-        ratio = 1.0f - (((float) self.endtime - (float) Globals.cl.time) / 2100.0f);
+        float ratio = 1.0f - (((float) self.endtime - (float) Globals.cl.time) / 2100.0f);
 
         for (i = 0; i < 300; i++) {
             if (CL_fx.free_particles == null)
@@ -569,9 +550,7 @@ public class CL_newfx {
         int i;
         cparticle_t p;
 
-        float ratio;
-
-        ratio = 1.0f - (((float) self.endtime - (float) Globals.cl.time) / 1000.0f);
+        float ratio = 1.0f - (((float) self.endtime - (float) Globals.cl.time) / 1000.0f);
 
         for (i = 0; i < 700; i++) {
             if (CL_fx.free_particles == null)
@@ -641,16 +620,14 @@ public class CL_newfx {
      * ===============
      */
     static void TagTrail(float[] start, float[] end, float color) {
-        float len;
         int j;
         cparticle_t p;
-        int dec;
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-        dec = 5;
+        int dec = 5;
         Math3D.VectorScale(vec, 5, vec);
 
         while (len >= 0) {
@@ -761,9 +738,8 @@ public class CL_newfx {
         int i, j;
         cparticle_t p;
         float d;
-        int count;
 
-        count = 40;
+        int count = 40;
         for (i = 0; i < count; i++) {
             if (CL_fx.free_particles == null)
                 return;
@@ -797,16 +773,14 @@ public class CL_newfx {
      * Green! ===============
      */
     static void BlasterTrail2(float[] start, float[] end) {
-        float len;
         int j;
         cparticle_t p;
-        int dec;
 
         Math3D.VectorCopy(start, move);
         Math3D.VectorSubtract(end, start, vec);
-        len = Math3D.VectorNormalize(vec);
+        float len = Math3D.VectorNormalize(vec);
 
-        dec = 5;
+        int dec = 5;
         Math3D.VectorScale(vec, 5, vec);
 
         

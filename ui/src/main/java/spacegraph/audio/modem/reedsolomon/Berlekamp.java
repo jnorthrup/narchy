@@ -63,7 +63,7 @@ public class Berlekamp implements Settings {
      * From Cain, Clark, "Error-Correction Coding For Digital Communications", pp. 216.
      */
     static void Modified_Berlekamp_Massey(RS rs) {
-        int n, L, L2, k, d, i;
+        int n, L2, d, i;
         int[] psi = new int[Settings.kMaxDeg];
         int[] psi2 = new int[Settings.kMaxDeg];
         int[] D = new int[Settings.kMaxDeg];
@@ -77,8 +77,8 @@ public class Berlekamp implements Settings {
         mul_z_poly(D);
 
         copy_poly(psi, gamma);
-        k = -1;
-        L = NErasures;
+        int k = -1;
+        int L = NErasures;
 
         for (n = NErasures; n < Settings.kParityBytes; n++) {
 
@@ -287,11 +287,10 @@ public class Berlekamp implements Settings {
             }
 
             for (r = 0; r < NErrors; r++) {
-                int num, denom;
                 i = ErrorLocs[r];
                 /* evaluate Omega at alpha^(-i) */
 
-                num = 0;
+                int num = 0;
                 for (j = 0; j < Settings.kMaxDeg; j++)
                     num ^= Galois.gmult(Omega[j],
                             Galois.gexp[((255 - i) * j) % 255]);
@@ -300,7 +299,7 @@ public class Berlekamp implements Settings {
                  * evaluate Lambda' (derivative) at alpha^(-i) ; all odd powers
                  * disappear
                  */
-                denom = 0;
+                int denom = 0;
                 for (j = 1; j < Settings.kMaxDeg; j += 2) {
                     denom ^= Galois.gmult(Lambda[j],
                             Galois.gexp[((255 - i) * (j - 1)) % 255]);

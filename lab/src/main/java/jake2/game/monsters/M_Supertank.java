@@ -806,9 +806,8 @@ public class M_Supertank {
             float[] vec = { 0, 0, 0 };
             float[] start = { 0, 0, 0 };
             float[] forward = { 0, 0, 0 }, right = { 0, 0, 0 };
-            int flash_number;
 
-            flash_number = Defines.MZ2_SUPERTANK_MACHINEGUN_1
+            int flash_number = Defines.MZ2_SUPERTANK_MACHINEGUN_1
                     + (self.s.frame - FRAME_attak1_1);
 
             
@@ -842,11 +841,10 @@ public class M_Supertank {
         @Override
         public boolean think(edict_t self) {
             float[] vec = { 0, 0, 0 };
-            float range;
-            
+
 
             Math3D.VectorSubtract(self.enemy.s.origin, self.s.origin, vec);
-            range = Math3D.VectorLength(vec);
+            float range = Math3D.VectorLength(vec);
 
             
 

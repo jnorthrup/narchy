@@ -76,9 +76,8 @@ public class CapsuleShape extends ConvexInternalShape {
 		}
 
 		v3 vtx = new v3();
-		float newDot;
 
-		float radius = getRadius();
+        float radius = getRadius();
 
 		v3 tmp1 = new v3();
 		v3 tmp2 = new v3();
@@ -92,7 +91,7 @@ public class CapsuleShape extends ConvexInternalShape {
         tmp2.scale(getMargin(), vec);
         vtx.add(pos, tmp1);
         vtx.sub(tmp2);
-        newDot = vec.dot(vtx);
+        float newDot = vec.dot(vtx);
         if (newDot > maxDot) {
             maxDot = newDot;
             supVec.set(vtx);

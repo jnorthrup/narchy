@@ -162,8 +162,7 @@ class Licence {
      */
     public void process(RdpPacket_Localised data) throws RdesktopException,
             IOException, CryptoException {
-        int tag = 0;
-        tag = data.get8();
+        int tag = data.get8();
         data.incrementPosition(3); 
 
         switch (tag) {
@@ -257,11 +256,9 @@ class Licence {
     private boolean parse_authreq(RdpPacket_Localised data)
             throws RdesktopException {
 
-        int tokenlen = 0;
+        data.incrementPosition(6);
 
-        data.incrementPosition(6); 
-
-        tokenlen = data.getLittleEndian16();
+        int tokenlen = data.getLittleEndian16();
 
         if (tokenlen != LICENCE_TOKEN_SIZE) {
             throw new RdesktopException("Wrong Tokenlength!");
@@ -292,9 +289,8 @@ class Licence {
             throws RdesktopException, IOException, CryptoException {
         int sec_flags = Secure.SEC_LICENCE_NEG;
         int length = 58;
-        RdpPacket_Localised data = null;
 
-        data = secure.init(sec_flags, length + 2);
+        RdpPacket_Localised data = secure.init(sec_flags, length + 2);
 
         data.set8(LICENCE_TAG_AUTHRESP);
         data.set8(2); 
@@ -398,9 +394,7 @@ class Licence {
 
         byte[] crypt_hwid = new byte[LICENCE_HWID_SIZE];
         byte[] sealed_buffer = new byte[LICENCE_TOKEN_SIZE + LICENCE_HWID_SIZE];
-        byte[] out_sig = new byte[LICENCE_SIGNATURE_SIZE];
         RC4 rc4_licence = new RC4();
-        byte[] crypt_key = null;
 
         /* parse incoming packet and save encrypted token */
         if (parse_authreq(data) != true) {
@@ -409,7 +403,7 @@ class Licence {
         System.arraycopy(this.in_token, 0, out_token, 0, LICENCE_TOKEN_SIZE);
 
         /* decrypt token. It should read TEST in Unicode */
-        crypt_key = new byte[this.licence_key.length];
+        byte[] crypt_key = new byte[this.licence_key.length];
         System.arraycopy(this.licence_key, 0, crypt_key, 0,
                 this.licence_key.length);
         rc4_licence.engineInitDecrypt(crypt_key);
@@ -426,7 +420,7 @@ class Licence {
         System.arraycopy(hwid, 0, sealed_buffer, LICENCE_TOKEN_SIZE,
                 LICENCE_HWID_SIZE);
 
-        out_sig = secure.sign(this.licence_sign_key, 16, 16, sealed_buffer,
+        byte[] out_sig = secure.sign(this.licence_sign_key, 16, 16, sealed_buffer,
                 sealed_buffer.length);
 
         /* deliberately break signature if licencing disabled */
@@ -451,14 +445,12 @@ class Licence {
      * @throws CryptoException
      */
     private void process_issue(RdpPacket_Localised data) throws CryptoException {
-        int length = 0;
-        int check = 0;
         RC4 rc4_licence = new RC4();
         byte[] key = new byte[this.licence_key.length];
         System.arraycopy(this.licence_key, 0, key, 0, this.licence_key.length);
 
-        data.incrementPosition(2); 
-        length = data.getLittleEndian16();
+        data.incrementPosition(2);
+        int length = data.getLittleEndian16();
 
         if (data.getPosition() + length > data.getEnd()) {
             return;
@@ -470,7 +462,7 @@ class Licence {
         rc4_licence.crypt(buffer, 0, length, buffer, 0);
         data.copyFromByteArray(buffer, 0, data.getPosition(), length);
 
-        check = data.getLittleEndian16();
+        int check = data.getLittleEndian16();
         if (check != 0) {
             
         }
@@ -578,11 +570,9 @@ class Licence {
      */
     private void generate_keys(byte[] client_key, byte[] server_key,
                                byte[] client_rsa) {
-        byte[] session_key = new byte[48];
-        byte[] temp_hash = new byte[48];
 
-        temp_hash = secure.hash48(client_rsa, client_key, server_key, 65);
-        session_key = secure.hash48(temp_hash, server_key, client_key, 65);
+        byte[] temp_hash = secure.hash48(client_rsa, client_key, server_key, 65);
+        byte[] session_key = secure.hash48(temp_hash, server_key, client_key, 65);
 
         System.arraycopy(session_key, 0, this.licence_sign_key, 0, 16);
 

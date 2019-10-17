@@ -63,9 +63,8 @@ public abstract class Light extends Warp {
         int i, j;
         float a;
         float[] v = { 0, 0, 0 };
-        float rad;
 
-        rad = light.intensity * 0.35f;
+        float rad = light.intensity * 0.35f;
 
         Math3D.VectorSubtract(light.origin, r_origin, v);
 
@@ -130,8 +129,6 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_MarkLights(dlight_t light, int bit, mnode_t node) {
-        cplane_t splitplane;
-        float dist;
         msurface_t surf;
         int i;
         int sidebit;
@@ -139,8 +136,8 @@ public abstract class Light extends Warp {
         if (node.contents != -1)
             return;
 
-        splitplane = node.plane;
-        dist = Math3D.DotProduct(light.origin, splitplane.normal)
+        cplane_t splitplane = node.plane;
+        float dist = Math3D.DotProduct(light.origin, splitplane.normal)
                 - splitplane.dist;
 
         if (dist > light.intensity - DLIGHT_CUTOFF) {
@@ -381,15 +378,13 @@ public abstract class Light extends Warp {
         float[] local = { 0, 0, 0 };
         int s, t;
         int i;
-        int smax, tmax;
-        mtexinfo_t tex;
         dlight_t dl;
         float[] pfBL;
         float fsacc, ftacc;
 
-        smax = (surf.extents[0] >> 4) + 1;
-        tmax = (surf.extents[1] >> 4) + 1;
-        tex = surf.texinfo;
+        int smax = (surf.extents[0] >> 4) + 1;
+        int tmax = (surf.extents[1] >> 4) + 1;
+        mtexinfo_t tex = surf.texinfo;
 
         for (lnum = 0; lnum < r_newrefdef.num_dlights; lnum++) {
             if ((surf.dlightbits & (1 << lnum)) == 0)
@@ -465,23 +460,21 @@ public abstract class Light extends Warp {
      */
     @Override
     void R_BuildLightMap(msurface_t surf, IntBuffer dest, int stride) {
-        int smax, tmax;
         int r, g, b, a, max;
-        int i, j, size;
+        int i, j;
         ByteBuffer lightmap;
         float[] scale = { 0, 0, 0, 0 };
         int nummaps;
         float[] bl;
-        int monolightmap;
 
         if ((surf.texinfo.flags & (Defines.SURF_SKY | Defines.SURF_TRANS33
                 | Defines.SURF_TRANS66 | Defines.SURF_WARP)) != 0)
             Com.Error(Defines.ERR_DROP,
                     "R_BuildLightMap called for non-lit surface");
 
-        smax = (surf.extents[0] >> 4) + 1;
-        tmax = (surf.extents[1] >> 4) + 1;
-        size = smax * tmax;
+        int smax = (surf.extents[0] >> 4) + 1;
+        int tmax = (surf.extents[1] >> 4) + 1;
+        int size = smax * tmax;
         if (size > ((s_blocklights.length * Defines.SIZE_OF_FLOAT) >> 4))
             Com.Error(Defines.ERR_DROP, "Bad s_blocklights size");
 
@@ -589,7 +582,7 @@ public abstract class Light extends Warp {
         bl = s_blocklights;
         int blp = 0;
 
-        monolightmap = gl_monolightmap.string.charAt(0);
+        int monolightmap = gl_monolightmap.string.charAt(0);
 
         int destp = 0;
 

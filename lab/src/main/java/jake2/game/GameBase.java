@@ -131,17 +131,16 @@ public class GameBase {
      */
     public static int ClipVelocity(float[] in, float[] normal, float[] out,
             float overbounce) {
-        float backoff;
         float change;
-        int i, blocked;
+        int i;
 
-        blocked = 0;
+        int blocked = 0;
         if (normal[2] > 0)
             blocked |= 1; 
         if (normal[2] == 0.0f)
-            blocked |= 2; 
+            blocked |= 2;
 
-        backoff = Math3D.DotProduct(in, normal) * overbounce;
+        float backoff = Math3D.DotProduct(in, normal) * overbounce;
 
         for (i = 0; i < 3; i++) {
             change = normal[i] * backoff;
@@ -296,7 +295,7 @@ public class GameBase {
     static final edict_t[] touch = new edict_t[Defines.MAX_EDICTS];
 
     public static void G_TouchTriggers(edict_t ent) {
-        int i, num;
+        int i;
         edict_t hit;
 
         
@@ -304,7 +303,7 @@ public class GameBase {
                 && (ent.health <= 0))
             return;
 
-        num = game_import_t.BoxEdicts(ent.absmin, ent.absmax, touch, Defines.MAX_EDICTS,
+        int num = game_import_t.BoxEdicts(ent.absmin, ent.absmax, touch, Defines.MAX_EDICTS,
                 Defines.AREA_TRIGGERS);
 
         
@@ -429,9 +428,8 @@ public class GameBase {
      * Returns the created target changelevel.
      */
     public static edict_t CreateTargetChangeLevel(String map) {
-        edict_t ent;
 
-        ent = GameUtil.G_Spawn();
+        edict_t ent = GameUtil.G_Spawn();
         ent.classname = "target_changelevel";
         level.nextmap = map;
         ent.map = level.nextmap;

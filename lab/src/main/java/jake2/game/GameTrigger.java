@@ -335,14 +335,13 @@ public class GameTrigger {
         public String getID(){ return "trigger_key_use"; }
         @Override
         public void use(edict_t self, edict_t other, edict_t activator) {
-            int index;
 
             if (self.item == null)
                 return;
             if (activator.client == null)
                 return;
 
-            index = GameItems.ITEM_INDEX(self.item);
+            int index = GameItems.ITEM_INDEX(self.item);
             if (activator.client.pers.inventory[index] == 0) {
                 if (GameBase.level.time < self.touch_debounce_time)
                     return;

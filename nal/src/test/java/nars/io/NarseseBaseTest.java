@@ -287,9 +287,8 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testOperationEquivalence() throws Narsese.NarseseException {
-        Term a, b;
-        a = term("a(b,c)");
-        b = term("((b,c) --> a)");
+        Term a = term("a(b,c)");
+        Term b = term("((b,c) --> a)");
         assertEquals(a.op(), b.op());
         assertEquals(a.getClass(), b.getClass());
         assertEquals(a, b);
@@ -297,8 +296,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testOperationEquivalenceWithOper() throws Narsese.NarseseException {
-        Term a;
-        a = term("a(b,c)");
+        Term a = term("a(b,c)");
         Compound b = term("((b,c) --> a)");
 
         assertEquals(a, b);
@@ -357,8 +355,7 @@ class NarseseBaseTest extends NarseseTest {
 
     @Test
     void testVariables() throws Narsese.NarseseException {
-        Variable v;
-        v = testVar(Op.VAR_DEP.ch);
+        Variable v = testVar(Op.VAR_DEP.ch);
         assertTrue(v.hasVarDep());
 
         v = testVar(Op.VAR_INDEP.ch);

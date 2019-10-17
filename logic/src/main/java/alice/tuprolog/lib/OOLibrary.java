@@ -739,16 +739,16 @@ public class OOLibrary extends PrologLib {
             Field field = cl.getField(fieldName);
             Class<?> fc = field.getType();
             field.setAccessible(true);
-            if (fc.equals(Integer.TYPE) || fc.equals(Byte.TYPE)) {
+            if (fc == Integer.TYPE || fc == Byte.TYPE) {
                 int value = field.getInt(obj);
                 return unify(what, new NumberTerm.Int(value));
-            } else if (fc.equals(java.lang.Long.TYPE)) {
+            } else if (fc == Long.TYPE) {
                 long value = field.getLong(obj);
                 return unify(what, new NumberTerm.Long(value));
-            } else if (fc.equals(java.lang.Float.TYPE)) {
+            } else if (fc == Float.TYPE) {
                 float value = field.getFloat(obj);
                 return unify(what, new NumberTerm.Float(value));
-            } else if (fc.equals(java.lang.Double.TYPE)) {
+            } else if (fc == Double.TYPE) {
                 double value = field.getDouble(obj);
                 return unify(what, new NumberTerm.Double(value));
             } else {
@@ -1816,8 +1816,8 @@ public class OOLibrary extends PrologLib {
         if (assignable) {
             return true;
         } else {
-            return mclass.equals(Long.TYPE)
-                    && (pclass.equals(Integer.TYPE));
+            return mclass == Long.TYPE
+                    && (pclass == Integer.TYPE);
         }
     }
 
@@ -1903,21 +1903,20 @@ public class OOLibrary extends PrologLib {
             for (int i = 0; i != mclasses.length; i++) {
                 boolean assignable = mclasses[i].isAssignableFrom(pclasses[i]);
                 if (assignable
-                        || (mclasses[i].equals(java.lang.Long.TYPE) && pclasses[i]
-                                .equals(java.lang.Integer.TYPE))) {
+                        || (mclasses[i] == Long.TYPE && pclasses[i] == Integer.TYPE)) {
                     newvalues[i] = values[i];
-                } else if (mclasses[i].equals(java.lang.Float.TYPE)
-                        && pclasses[i].equals(java.lang.Double.TYPE)) {
+                } else if (mclasses[i] == Float.TYPE
+                        && pclasses[i] == Double.TYPE) {
                     
                     
                     newvalues[i] = ((Double) values[i]).floatValue();
-                } else if (mclasses[i].equals(java.lang.Float.TYPE)
-                        && pclasses[i].equals(java.lang.Integer.TYPE)) {
+                } else if (mclasses[i] == Float.TYPE
+                        && pclasses[i] == Integer.TYPE) {
                     
                     
                     newvalues[i] = (float) (Integer) values[i];
-                } else if (mclasses[i].equals(java.lang.Double.TYPE)
-                        && pclasses[i].equals(java.lang.Integer.TYPE)) {
+                } else if (mclasses[i] == Double.TYPE
+                        && pclasses[i] == Integer.TYPE) {
                     
                     
                     newvalues[i] = ((Integer) values[i]).doubleValue();

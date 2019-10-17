@@ -25,9 +25,7 @@ public class Level {
 
     public List<Entity> entities = new ArrayList<>();
     private final Comparator<Entity> spriteSorter = (e0, e1) -> {
-        if (e1.y < e0.y) return +1;
-        if (e1.y > e0.y) return -1;
-        return 0;
+        return Integer.compare(e0.y, e1.y);
     };
 
     @SuppressWarnings("unchecked")

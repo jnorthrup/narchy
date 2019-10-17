@@ -34,11 +34,10 @@ package jcog.signal.anomaly.adwin;
 
         int cutPointsChecked = 0;
         for (Bucket bucket : iterable) {
-            double bucketTotal, bucketVariance, bucketSize, bucketMean;
-            bucketTotal = bucket.sum();
-            bucketVariance = bucket.variance();
-            bucketSize = bucket.size();
-            bucketMean = bucket.mean();
+            double bucketTotal = bucket.sum();
+            double bucketVariance = bucket.variance();
+            double bucketSize = bucket.size();
+            double bucketMean = bucket.mean();
 
             keepTotal -= bucketTotal;
             keepVariance -= bucketVariance + keepSize * bucketSize * Math.pow(keepTotal / keepSize - bucketMean, 2) / (keepSize + bucketSize);

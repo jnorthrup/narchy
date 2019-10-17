@@ -1175,10 +1175,8 @@ public class WordNet {
      */
     private static String removePunctuation(String sentence) {
 
-        Matcher m;
 
-        
-        m = regexPatterns[19].matcher(sentence);
+        Matcher m = regexPatterns[19].matcher(sentence);
         while (m.find()) {
             
             String group = m.group(1);
@@ -1383,10 +1381,9 @@ public class WordNet {
         String synset;
         String documentation = "";
         String sumoEquivalent = "";
-        int listLength;
         String[] synsetList = splitSynsets(synsetBlock);
 
-        listLength = synsetList != null ? synsetList.length : 0;
+        int listLength = synsetList != null ? synsetList.length : 0;
         result.append("<i>According to WordNet, the ").append(type).append('"').append(word).append("\" has ");
         result.append(listLength).append(" sense(s).</i><P>\n\n");
 
@@ -1502,10 +1499,9 @@ public class WordNet {
      */
     private String processNoun(String sumokbname, String mixedCase, String input, String synset) {
 
-        String regular;
         String synsetBlock;
 
-        regular = nounRootForm(mixedCase, input);
+        String regular = nounRootForm(mixedCase, input);
         if (regular != null) {
             synsetBlock = (String) nounSynsetHash.get(regular);
             return sumoDisplay(synsetBlock, mixedCase, "noun", sumokbname, synset);
@@ -1580,10 +1576,9 @@ public class WordNet {
      */
     private String processVerb(String sumokbname, String mixedCase, String input, String synset) {
 
-        String regular;
         String synsetBlock;
 
-        regular = verbRootForm(mixedCase, input);
+        String regular = verbRootForm(mixedCase, input);
         if (regular != null) {
             synsetBlock = (String) verbSynsetHash.get(regular);
             return sumoDisplay(synsetBlock, mixedCase, "verb", sumokbname, synset);
@@ -1600,9 +1595,8 @@ public class WordNet {
     private String processAdverb(String sumokbname, String mixedCase, String input, String synset) {
 
         StringBuilder result = new StringBuilder();
-        String synsetBlock;
 
-        synsetBlock = (String) adverbSynsetHash.get(input);
+        String synsetBlock = (String) adverbSynsetHash.get(input);
         result.append(sumoDisplay(synsetBlock, mixedCase, "adverb", sumokbname, synset));
 
         return (result.toString());
@@ -1616,9 +1610,8 @@ public class WordNet {
     private String processAdjective(String sumokbname, String mixedCase, String input, String synset) {
 
         StringBuilder result = new StringBuilder();
-        String synsetBlock;
 
-        synsetBlock = (String) adjectiveSynsetHash.get(input);
+        String synsetBlock = (String) adjectiveSynsetHash.get(input);
         result.append(sumoDisplay(synsetBlock, mixedCase, "adjective", sumokbname, synset));
 
         return (result.toString());
@@ -2154,16 +2147,14 @@ public class WordNet {
                         instance = true;
                     }
                     if (mapping == '=') {
-                        ArrayList al;
-                        al = kb.instancesOf(bareSumoTerm);
+                        ArrayList al = kb.instancesOf(bareSumoTerm);
                         if (!al.isEmpty()) {
                             instance = true;
                         }
                     }
                     if (instance && uppercase) {
                         ArrayList al = kb.askWithRestriction(1, bareSumoTerm, 0, "instance");
-                        String parentTerm;
-                        parentTerm = al != null && !al.isEmpty() ? ((Formula) al.get(0)).getArgument(2) : bareSumoTerm;
+                        String parentTerm = al != null && !al.isEmpty() ? ((Formula) al.get(0)).getArgument(2) : bareSumoTerm;
                         pw.println("proper_noun_in_lexicon(" + word + ',' + type + ", neuter, singular, '"
                                 + parentTerm + "','" + bareSumoTerm + "',1" + synset + ").");
                     } else {
@@ -2266,8 +2257,7 @@ public class WordNet {
         String result = word;
         int start = 0;
         while (result.indexOf('\'', start) > -1) {
-            int i;
-            i = result.indexOf('\'', start);
+            int i = result.indexOf('\'', start);
             
             result = i == 0 ? "''" + result.substring(i + 1) : result.substring(0, i) + "\\'" + result.substring(i + 1);
             start = i + 2;
@@ -2364,8 +2354,7 @@ public class WordNet {
 
         int start = 0;
         while (doc.indexOf('\'', start) > -1) {
-            int i;
-            i = doc.indexOf('\'', start);
+            int i = doc.indexOf('\'', start);
             
             doc = i == 0 ? "''" + doc.substring(i + 1) : doc.substring(0, i) + "''" + doc.substring(i + 1);
             start = i + 2;

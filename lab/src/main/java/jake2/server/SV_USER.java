@@ -69,9 +69,8 @@ public class SV_USER {
      * ================== SV_BeginDemoServer ==================
      */
     public static void SV_BeginDemoserver() {
-        String name;
 
-        name = "demos/" + SV_INIT.sv.name;
+        String name = "demos/" + SV_INIT.sv.name;
         try {
             SV_INIT.sv.demofile = FS.FOpenFile(name);
         } catch (IOException e) {
@@ -89,7 +88,6 @@ public class SV_USER {
      * ================
      */
     public static void SV_New_f() {
-        String gamedir;
         int playernum;
         edict_t ent;
 
@@ -106,11 +104,8 @@ public class SV_USER {
             return;
         }
 
-        
-        
-        
-        
-        gamedir = Cvar.VariableString("gamedir");
+
+        String gamedir = Cvar.VariableString("gamedir");
 
         
         MSG.WriteByte(SV_MAIN.sv_client.netchan.message,
@@ -160,7 +155,6 @@ public class SV_USER {
      * ================== SV_Configstrings_f ==================
      */
     public static void SV_Configstrings_f() {
-        int start;
 
         Com.DPrintf("Configstrings() from " + SV_MAIN.sv_client.name + '\n');
 
@@ -176,7 +170,7 @@ public class SV_USER {
             return;
         }
 
-        start = Lib.atoi(Cmd.Argv(2));
+        int start = Lib.atoi(Cmd.Argv(2));
 
         
 
@@ -213,8 +207,6 @@ public class SV_USER {
      * ================== SV_Baselines_f ==================
      */
     public static void SV_Baselines_f() {
-        int start;
-        entity_state_t nullstate;
         entity_state_t base;
 
         Com.DPrintf("Baselines() from " + SV_MAIN.sv_client.name + '\n');
@@ -231,10 +223,10 @@ public class SV_USER {
             return;
         }
 
-        start = Lib.atoi(Cmd.Argv(2));
+        int start = Lib.atoi(Cmd.Argv(2));
 
-        
-        nullstate = new entity_state_t(null);
+
+        entity_state_t nullstate = new entity_state_t(null);
 
         
 
@@ -292,14 +284,11 @@ public class SV_USER {
      * ================== SV_NextDownload_f ==================
      */
     public static void SV_NextDownload_f() {
-        int r;
-        int percent;
-        int size;
 
         if (SV_MAIN.sv_client.download == null)
             return;
 
-        r = SV_MAIN.sv_client.downloadsize - SV_MAIN.sv_client.downloadcount;
+        int r = SV_MAIN.sv_client.downloadsize - SV_MAIN.sv_client.downloadcount;
         if (r > 1024)
             r = 1024;
 
@@ -307,10 +296,10 @@ public class SV_USER {
         MSG.WriteShort(SV_MAIN.sv_client.netchan.message, r);
 
         SV_MAIN.sv_client.downloadcount += r;
-        size = SV_MAIN.sv_client.downloadsize;
+        int size = SV_MAIN.sv_client.downloadsize;
         if (size == 0)
             size = 1;
-        percent = SV_MAIN.sv_client.downloadcount * 100 / size;
+        int percent = SV_MAIN.sv_client.downloadcount * 100 / size;
         MSG.WriteByte(SV_MAIN.sv_client.netchan.message, percent);
         SZ.Write(SV_MAIN.sv_client.netchan.message, SV_MAIN.sv_client.download,
                 SV_MAIN.sv_client.downloadcount - r, r);
@@ -326,10 +315,9 @@ public class SV_USER {
      * ================== SV_BeginDownload_f ==================
      */
     public static void SV_BeginDownload_f() {
-        String name;
         int offset = 0;
 
-        name = Cmd.Argv(1);
+        String name = Cmd.Argv(1);
 
         if (Cmd.Argc() > 2)
             offset = Lib.atoi(Cmd.Argv(2)); 
@@ -425,16 +413,15 @@ public class SV_USER {
     }
 
     public static void SV_Nextserver() {
-        String v;
 
-        
+
         if (SV_INIT.sv.state == Defines.ss_game
                 || (SV_INIT.sv.state == Defines.ss_pic && 
                         0 == Cvar.VariableValue("coop")))
             return; 
 
-        SV_INIT.svs.spawncount++; 
-        v = Cvar.VariableString("nextserver");
+        SV_INIT.svs.spawncount++;
+        String v = Cvar.VariableString("nextserver");
         
         if (v.length() == 0)
             Cbuf.AddText("killserver\n");
@@ -523,18 +510,16 @@ public class SV_USER {
         usercmd_t nullcmd = new usercmd_t();
         usercmd_t oldest = new usercmd_t(), oldcmd = new usercmd_t(), newcmd = new usercmd_t();
         int net_drop;
-        int stringCmdCount;
         int checksum, calculatedChecksum;
         int checksumIndex;
-        boolean move_issued;
         int lastframe;
 
         SV_MAIN.sv_client = cl;
         SV_USER.sv_player = SV_MAIN.sv_client.edict;
 
-        
-        move_issued = false;
-        stringCmdCount = 0;
+
+        boolean move_issued = false;
+        int stringCmdCount = 0;
 
         while (true) {
             if (Globals.net_message.readcount > Globals.net_message.cursize) {

@@ -35,11 +35,11 @@ public class RuleMarg {
 		String sTok, sSwaps;
 		int i, iNum, iVal;
 		
-		StringTokenizer st, std;
+		StringTokenizer std;
 
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken();
 			if (sTok.length() > 0 && sTok.charAt(0) == 'M') 
@@ -134,14 +134,13 @@ public class RuleMarg {
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		int modCnt = 0;
-		int i, j, ic;
+		int j, ic;
 		int c1, c2, r1, r2;
 		int[] mgCells = new int[4]; 
-		int[] mgCellsOld = new int[4]; 
-		boolean isOdd; 
+		int[] mgCellsOld = new int[4];
 
-		isOdd = ((mjb.Cycle % 2) != 0);
-		i = 0;
+        boolean isOdd = ((mjb.Cycle % 2) != 0);
+        int i = 0;
 		if (isOdd)
 			i--; 
 		while (i < sizX) {

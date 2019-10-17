@@ -98,11 +98,10 @@ public class SV_WORLD {
      */
     public static areanode_t SV_CreateAreaNode(int depth, float[] mins,
             float[] maxs) {
-        areanode_t anode;
         float[] size = { 0, 0, 0 };
         float[] mins1 = { 0, 0, 0 }, maxs1 = { 0, 0, 0 }, mins2 = { 0, 0, 0 }, maxs2 = {
                 0, 0, 0 };
-        anode = SV_WORLD.sv_areanodes[SV_WORLD.sv_numareanodes];
+        areanode_t anode = SV_WORLD.sv_areanodes[SV_WORLD.sv_numareanodes];
         
 
 
@@ -162,8 +161,6 @@ public class SV_WORLD {
     }
 
     public static void SV_LinkEdict(edict_t ent) {
-        areanode_t node;
-        int num_leafs;
         int j, k;
         int area;
         int topnode = 0;
@@ -205,8 +202,8 @@ public class SV_WORLD {
         if (ent.solid == Defines.SOLID_BSP
                 && (IntStream.of(0, 1, 2).anyMatch(i1 -> ent.s.angles[i1] != 0))) {
             
-            float max, v;
-            max = 0;
+            float v;
+            float max = 0;
             for (int i = 0; i < 3; i++) {
                 v = Math.abs(ent.mins[i]);
                 if (v > max)
@@ -239,7 +236,7 @@ public class SV_WORLD {
         ent.areanum2 = 0;
 
         int[] iw = {topnode};
-        num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
+        int num_leafs = CM.CM_BoxLeafnums(ent.absmin, ent.absmax, SV_WORLD.leafs,
                 SV_WORLD.MAX_TOTAL_ENT_LEAFS, iw);
         topnode = iw[0];
         
@@ -290,8 +287,8 @@ public class SV_WORLD {
         ent.linkcount++;
         if (ent.solid == Defines.SOLID_NOT)
             return;
-        
-        node = SV_WORLD.sv_areanodes[0];
+
+        areanode_t node = SV_WORLD.sv_areanodes[0];
         while (true) {
             if (node.axis == -1)
                 break;
@@ -370,13 +367,13 @@ public class SV_WORLD {
      */
     public static int SV_PointContents(float[] p) {
         edict_t hit;
-        int i, num;
-        int contents, c2;
+        int i;
+        int c2;
         int headnode;
-        
-        contents = CM.PointContents(p, SV_INIT.sv.models[1].headnode);
-        
-        num = SV_AreaEdicts(p, p, SV_WORLD.touch, Defines.MAX_EDICTS,
+
+        int contents = CM.PointContents(p, SV_INIT.sv.models[1].headnode);
+
+        int num = SV_AreaEdicts(p, p, SV_WORLD.touch, Defines.MAX_EDICTS,
                 Defines.AREA_SOLID);
         for (i = 0; i < num; i++) {
             hit = SV_WORLD.touch[i];
@@ -415,12 +412,12 @@ public class SV_WORLD {
     }
 
     public static void SV_ClipMoveToEntities(moveclip_t clip) {
-        int i, num;
+        int i;
         edict_t touch;
         trace_t trace;
         int headnode;
         float[] angles;
-        num = SV_AreaEdicts(clip.boxmins, clip.boxmaxs, SV_WORLD.touchlist,
+        int num = SV_AreaEdicts(clip.boxmins, clip.boxmaxs, SV_WORLD.touchlist,
                 Defines.MAX_EDICTS, Defines.AREA_SOLID);
         
         

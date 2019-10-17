@@ -168,16 +168,15 @@ public final class SCR extends Globals {
      * ============== SCR_DrawDebugGraph ==============
      */
     static void DrawDebugGraph() {
-        int a, x, y, w, i, h;
+        int a, i, h;
         float v;
         int color;
 
-        
 
-        w = scr_vrect.width;
+        int w = scr_vrect.width;
 
-        x = scr_vrect.x;
-        y = scr_vrect.y + scr_vrect.height;
+        int x = scr_vrect.x;
+        int y = scr_vrect.y + scr_vrect.height;
         re.DrawFill(x, (int) (y - scr_graphheight.value), w,
                 (int) scr_graphheight.value, 8);
 
@@ -221,8 +220,7 @@ public final class SCR extends Globals {
      * screen for a few moments ==============
      */
     static void CenterPrint(String str) {
-        
-        int s;
+
         StringBuilder line = new StringBuilder(64);
         int i, j, l;
 
@@ -233,7 +231,7 @@ public final class SCR extends Globals {
 
         
         scr_center_lines = 1;
-        s = 0;
+        int s = 0;
         while (s < str.length()) {
             if (str.charAt(s) == '\n')
                 scr_center_lines++;
@@ -279,21 +277,19 @@ public final class SCR extends Globals {
 
     static void DrawCenterString() {
         String cs = scr_centerstring + '\0';
-        int start;
         int l;
         int j;
         int x, y;
-        int remaining;
 
         if (cs.length() == 0) {
             return;
         }
 
-        
-        remaining = 9999;
+
+        int remaining = 9999;
 
         scr_erase_center = 0;
-        start = 0;
+        int start = 0;
 
         if (scr_center_lines <= 4)
             y = (int) (viddef.getHeight() * 0.35);
@@ -344,15 +340,14 @@ public final class SCR extends Globals {
      * Sets scr_vrect, the coordinates of the rendered window =================
      */
     static void CalcVrect() {
-        int size;
 
-        
+
         if (scr_viewsize.value < 40)
             Cvar.Set("viewsize", "40");
         if (scr_viewsize.value > 100)
             Cvar.Set("viewsize", "100");
 
-        size = (int) scr_viewsize.value;
+        int size = (int) scr_viewsize.value;
 
         scr_vrect.width = viddef.getWidth() * size / 100;
         scr_vrect.width &= ~7;
@@ -615,13 +610,11 @@ public final class SCR extends Globals {
      */
     static void TimeRefresh_f() {
         int i;
-        int start, stop;
-        float time;
 
         if (cls.state != ca_active)
             return;
 
-        start = Timer.Milliseconds();
+        int start = Timer.Milliseconds();
 
         if (Cmd.Argc() == 2) { 
             if ( re.BeginFrame(0) ) {
@@ -642,8 +635,8 @@ public final class SCR extends Globals {
             }
         }
 
-        stop = Timer.Milliseconds();
-        time = (stop - start) / 1000.0f;
+        int stop = Timer.Milliseconds();
+        float time = (stop - start) / 1000.0f;
         Com.Printf("%f seconds (%f fps)\n", new Vargs(2).add(time).add(
                 128.0f / time));
     }
@@ -664,7 +657,6 @@ public final class SCR extends Globals {
 
     static void TileClear() {
         int i;
-        int top, bottom, left, right;
         clear.clear();
 
         if (scr_drawall.value != 0)
@@ -699,8 +691,8 @@ public final class SCR extends Globals {
         scr_dirty.y1 = 9999;
         scr_dirty.y2 = -9999;
 
-        
-        top = (int) (scr_con_current * viddef.getHeight());
+
+        int top = (int) (scr_con_current * viddef.getHeight());
         if (top >= clear.y1)
             clear.y1 = top;
 
@@ -708,9 +700,9 @@ public final class SCR extends Globals {
             return; 
 
         top = scr_vrect.y;
-        bottom = top + scr_vrect.height - 1;
-        left = scr_vrect.x;
-        right = left + scr_vrect.width - 1;
+        int bottom = top + scr_vrect.height - 1;
+        int left = scr_vrect.x;
+        int right = left + scr_vrect.width - 1;
 
         if (clear.y1 < top) { 
             i = clear.y2 < top - 1 ? clear.y2 : top - 1;
@@ -757,12 +749,11 @@ public final class SCR extends Globals {
      * Allow embedded \n in the string ================
      */
     static void SizeHUDString(String string, Dimension dim) {
-        int lines, width, current;
 
-        lines = 1;
-        width = 0;
+        int lines = 1;
+        int width = 0;
 
-        current = 0;
+        int current = 0;
         for (int i = 0; i < string.length(); i++) {
             if (string.charAt(i) == '\n') {
                 lines++;
@@ -781,12 +772,11 @@ public final class SCR extends Globals {
 
     static void DrawHUDString(String string, int x, int y, int centerwidth,
             int xor) {
-        int margin;
-        
+
         StringBuffer line = new StringBuffer(1024);
         int i;
 
-        margin = x;
+        int margin = x;
 
         for (int l = 0; l < string.length();) {
             
@@ -816,9 +806,6 @@ public final class SCR extends Globals {
      * ============== SCR_DrawField ==============
      */
     static void DrawField(int x, int y, int color, int width, int value) {
-        char ptr;
-        String num;
-        int l;
         int frame;
 
         if (width < 1)
@@ -831,13 +818,13 @@ public final class SCR extends Globals {
         AddDirtyPoint(x, y);
         AddDirtyPoint(x + width * CHAR_WIDTH + 2, y + 23);
 
-        num = String.valueOf(value);
-        l = num.length();
+        String num = String.valueOf(value);
+        int l = num.length();
         if (l > width)
             l = width;
         x += 2 + CHAR_WIDTH * (width - l);
 
-        ptr = num.charAt(0);
+        char ptr = num.charAt(0);
 
         for (int i = 0; i < l; i++) {
             ptr = num.charAt(i);
@@ -946,8 +933,7 @@ public final class SCR extends Globals {
                 continue;
             }
 
-            if (parser.tokenEquals("client")) { 
-                int score, ping, time;
+            if (parser.tokenEquals("client")) {
 
                 parser.next();
                 x = viddef.getWidth() / 2 - 160 + parser.tokenAsInt();
@@ -963,13 +949,13 @@ public final class SCR extends Globals {
                 clientinfo_t ci = cl.clientinfo[value];
 
                 parser.next();
-                score = parser.tokenAsInt();
+                int score = parser.tokenAsInt();
 
                 parser.next();
-                ping = parser.tokenAsInt();
+                int ping = parser.tokenAsInt();
 
                 parser.next();
-                time = parser.tokenAsInt();
+                int time = parser.tokenAsInt();
 
                 Console.DrawAltString(x + 32, y, ci.name);
                 Console.DrawString(x + 32, y + 8, "Score: ");
@@ -983,8 +969,7 @@ public final class SCR extends Globals {
                 continue;
             }
 
-            if (parser.tokenEquals("ctf")) { 
-                int score, ping;
+            if (parser.tokenEquals("ctf")) {
 
                 parser.next();
                 x = viddef.getWidth() / 2 - 160 + parser.tokenAsInt();
@@ -1000,10 +985,10 @@ public final class SCR extends Globals {
                 clientinfo_t ci = cl.clientinfo[value];
 
                 parser.next();
-                score = parser.tokenAsInt();
+                int score = parser.tokenAsInt();
 
                 parser.next();
-                ping = parser.tokenAsInt();
+                int ping = parser.tokenAsInt();
                 if (ping > 999)
                     ping = 999;
 
@@ -1073,15 +1058,14 @@ public final class SCR extends Globals {
                 continue;
             }
 
-            if (parser.tokenEquals("rnum")) { 
-                int color;
+            if (parser.tokenEquals("rnum")) {
 
                 width = 3;
                 value = cl.frame.playerstate.stats[STAT_ARMOR];
                 if (value < 1)
                     continue;
 
-                color = 0; 
+                int color = 0;
 
                 if ((cl.frame.playerstate.stats[STAT_FLASHES] & 2) != 0)
                     re.DrawPic(x, y, "field_3");
@@ -1403,9 +1387,8 @@ public final class SCR extends Globals {
      * LoadPCX
      */
     static int LoadPCX(String filename, byte[] palette, cinematics_t cin) {
-        qfiles.pcx_t pcx;
 
-        
+
         ByteBuffer raw = FS.LoadMappedFile(filename);
 
         if (raw == null) {
@@ -1414,8 +1397,8 @@ public final class SCR extends Globals {
             return 0;
         }
 
-        
-        pcx = new qfiles.pcx_t(raw);
+
+        qfiles.pcx_t pcx = new qfiles.pcx_t(raw);
 
         if (pcx.manufacturer != 0x0a || pcx.version != 5 || pcx.encoding != 1
                 || pcx.bits_per_pixel != 8 || pcx.xmax >= 640

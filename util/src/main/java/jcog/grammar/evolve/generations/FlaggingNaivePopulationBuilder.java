@@ -79,12 +79,11 @@ public class FlaggingNaivePopulationBuilder implements InitialPopulationBuilder 
     }
     
     private List<Node> setup(Configuration configuration, DataSet usedTrainingDataset) {
-        Set<String> phrases;
         List<Node> newPopulation = new LinkedList<>();
         DataSet dataSet = usedTrainingDataset;
 
 
-        phrases = dataSet.getExamples().stream().filter(example -> !example.match.isEmpty()).map(Example::getString).collect(Collectors.toSet());
+        Set<String> phrases = dataSet.getExamples().stream().filter(example -> !example.match.isEmpty()).map(Example::getString).collect(Collectors.toSet());
 
         int examples = Math.min(configuration.getEvolutionParameters().getPopulationSize() / 3, phrases.size());
 

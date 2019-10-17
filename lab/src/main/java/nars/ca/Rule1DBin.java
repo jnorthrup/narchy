@@ -29,13 +29,12 @@ public class Rule1DBin {
 	
 	
 	public void InitFromString(String sStr) {
-		
-		StringTokenizer st;
-		String sTok;
+
+        String sTok;
 		int iTmp;
 		ResetToDefaults();
 
-		st = new StringTokenizer(sStr, ",", true);
+        StringTokenizer st = new StringTokenizer(sStr, ",", true);
 		while (st.hasMoreTokens()) {
 			sTok = st.nextToken().toUpperCase();
 			
@@ -95,13 +94,12 @@ public class Rule1DBin {
 	
 	
 	private void SetArray() {
-		String sBinStr;
-		int i, iCnt;
+        int i;
 
-		Validate(); 
+        Validate();
 
-		sBinStr = CvtHexStr2BinStr(sHex);
-		iCnt = 1;
+        String sBinStr = CvtHexStr2BinStr(sHex);
+        int iCnt = 1;
 
 		
 		for (i = 1; i <= 2 * iRng + 1; i++)
@@ -116,8 +114,8 @@ public class Rule1DBin {
 	
 	
 	private String LPad(String sStr, int num, char chPad) {
-		int i, iLen;
-		iLen = sStr.length();
+		int i;
+        int iLen = sStr.length();
 		if (iLen < num) {
 			for (i = 1; i <= num - iLen; i++)
 				sStr = chPad + sStr;
@@ -128,14 +126,14 @@ public class Rule1DBin {
 	
 	
 	private String CvtBinStr2HexStr(String sBin) {
-		int i, iVal;
-		String sTok, sHexStr;
+		int iVal;
+		String sTok;
 
-		i = sBin.length();
+        int i = sBin.length();
 		if ((i % 4) != 0)
 			LPad(sBin, 4 - (i % 4), '0');
 
-		sHexStr = "";
+        String sHexStr = "";
 		for (i = 1; i <= (sBin.length() / 4); i++) {
 			sTok = sBin.substring(sBin.length() - i * 4, sBin.length() - i * 4
 					+ 3);
@@ -158,10 +156,9 @@ public class Rule1DBin {
 	
 	
 	private String CvtHexStr2BinStr(String sHex) {
-		String sBinBff;
-		int i;
+        int i;
 
-		sBinBff = "";
+        String sBinBff = "";
 		sHex.toUpperCase();
 		for (i = 0; i < sHex.length(); i++) {
 			switch (sHex.charAt(i)) {
@@ -233,20 +230,15 @@ public class Rule1DBin {
 	public int OnePass(int sizX, int sizY, boolean isWrap, int ColoringMethod,
 			short[][] crrState, short[][] tmpState, MJBoard mjb) {
 		short bOldVal, bNewVal;
-		int modCnt = 0;
-		int i;
-		short[] OneRow;
-		int[] xVector;
-		int ary1DOfs; 
-		int ic, iPow, iIdx;
+        int i;
+        int ic, iPow, iIdx;
 		int iClo = mjb.StatesCount;
 
-		ary1DOfs = iRng;
-		OneRow = new short[sizX + 1 + 2 * ary1DOfs];
-		xVector = new int[21]; 
+        int ary1DOfs = iRng;
+        short[] OneRow = new short[sizX + 1 + 2 * ary1DOfs];
+        int[] xVector = new int[21];
 
-		int i1DNextRow; 
-		i1DNextRow = mjb.i1DLastRow + 1;
+        int i1DNextRow = mjb.i1DLastRow + 1;
 		if (i1DNextRow >= sizY)
 			i1DNextRow = 0;
 
@@ -280,9 +272,9 @@ public class Rule1DBin {
 					bNewVal = (short) (mjb.Cycle % (iClo - 1) + 1); 
 
 			tmpState[ic][i1DNextRow] = bNewVal;
-		} 
+		}
 
-		modCnt = 1; 
+        int modCnt = 1;
 		mjb.i1DLastRow = i1DNextRow; 
 
 		return modCnt;

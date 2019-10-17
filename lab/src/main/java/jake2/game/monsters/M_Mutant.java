@@ -366,8 +366,7 @@ public class M_Mutant {
         public String getID(){ return "mutant_step"; }
         @Override
         public boolean think(edict_t self) {
-            int n;
-            n = (Lib.rand() + 1) % 3;
+            int n = (Lib.rand() + 1) % 3;
             if (n == 0)
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_step1, 1,
                         Defines.ATTN_NORM, 0);
@@ -718,12 +717,11 @@ public class M_Mutant {
                 if (Math3D.VectorLength(self.velocity) > 400) {
                     float[] point = { 0, 0, 0 };
                     float[] normal = { 0, 0, 0 };
-                    int damage;
 
                     Math3D.VectorCopy(self.velocity, normal);
                     Math3D.VectorNormalize(normal);
                     Math3D.VectorMA(self.s.origin, self.maxs[0], normal, point);
-                    damage = (int) (40 + 10 * Lib.random());
+                    int damage = (int) (40 + 10 * Lib.random());
                     GameCombat.T_Damage(other, self, self, self.velocity, point,
                             normal, damage, damage, 0, Defines.MOD_UNKNOWN);
                 }
@@ -828,7 +826,6 @@ public class M_Mutant {
         public boolean think(edict_t self) {
 
             float[] v = { 0, 0, 0 };
-            float distance;
 
             if (self.absmin[2] > (self.enemy.absmin[2] + 0.75 * self.enemy.size[2]))
                 return false;
@@ -839,7 +836,7 @@ public class M_Mutant {
             v[0] = self.s.origin[0] - self.enemy.s.origin[0];
             v[1] = self.s.origin[1] - self.enemy.s.origin[1];
             v[2] = 0;
-            distance = Math3D.VectorLength(v);
+            float distance = Math3D.VectorLength(v);
 
             if (distance < 100)
                 return false;
@@ -921,7 +918,6 @@ public class M_Mutant {
         public String getID(){ return "mutant_pain"; }
         @Override
         public void pain(edict_t self, edict_t other, float kick, int damage) {
-            float r;
 
             if (self.health < (self.max_health / 2))
                 self.s.skinnum = 1;
@@ -932,9 +928,9 @@ public class M_Mutant {
             self.pain_debounce_time = GameBase.level.time + 3;
 
             if (GameBase.skill.value == 3)
-                return; 
+                return;
 
-            r = Lib.random();
+            float r = Lib.random();
             if (r < 0.33) {
                 game_import_t.sound(self, Defines.CHAN_VOICE, sound_pain1, 1,
                         Defines.ATTN_NORM, 0);

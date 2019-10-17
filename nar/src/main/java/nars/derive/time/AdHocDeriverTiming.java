@@ -21,8 +21,7 @@ public class AdHocDeriverTiming implements TriFunction<What, Task, Term, long[]>
 //        if (task.isEternal())
 //            return new long[] { ETERNAL, ETERNAL };
 
-        long[] tt;
-//        switch (rng.nextInt(2)) {
+        //        switch (rng.nextInt(2)) {
 //
 //            case 0:
 //                tt = taskTime(task); break;
@@ -79,7 +78,7 @@ public class AdHocDeriverTiming implements TriFunction<What, Task, Term, long[]>
 //            }
 ////        }
 
-        tt = result;
+        long[] tt = result;
 //                break;
 //            }
 //            default:

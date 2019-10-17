@@ -303,8 +303,7 @@ public class ConeTwistConstraint extends TypedConstraint {
 				v3 normal = jac[i].linearJointAxis;
                 float jacDiagABInv = 1f / jac[i].Adiag;
 
-				float rel_vel;
-				rel_vel = normal.dot(vel);
+                float rel_vel = normal.dot(vel);
 				
 				tmp.sub(pivotAInW, pivotBInW);
 				float depth = -(tmp).dot(normal); 

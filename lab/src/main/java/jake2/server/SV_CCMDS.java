@@ -59,10 +59,10 @@ public class SV_CCMDS {
 	====================
 	*/
 	public static void SV_SetMaster_f() {
-		int i, slot;
+		int i;
 
-		
-		if (Globals.dedicated.value == 0) {
+
+        if (Globals.dedicated.value == 0) {
 			Com.Printf("Only dedicated servers use masters.\n");
 			return;
 		}
@@ -73,7 +73,7 @@ public class SV_CCMDS {
 		for (i = 1; i < Defines.MAX_MASTERS; i++)
 			SV_MAIN.master_adr[i] = new netadr_t();
 
-		slot = 1; 
+        int slot = 1;
 		for (i = 1; i < Cmd.Argc(); i++) {
 			if (slot == Defines.MAX_MASTERS)
 				break;
@@ -106,12 +106,11 @@ public class SV_CCMDS {
 		client_t cl;
 		int i;
 		int idnum;
-		String s;
 
-		if (Cmd.Argc() < 2)
+        if (Cmd.Argc() < 2)
 			return false;
 
-		s = Cmd.Argv(1);
+        String s = Cmd.Argv(1);
 
 		
 		if (s.charAt(0) >= '0' && s.charAt(0) <= '9') {
@@ -306,12 +305,11 @@ public class SV_CCMDS {
 	*/
 	public static void SV_WriteLevelFile() {
 
-		String name;
-		QuakeFile f;
+        QuakeFile f;
 
 		Com.DPrintf("SV_WriteLevelFile()\n");
 
-		name = FS.Gamedir() + "/save/current/" + SV_INIT.sv.name + ".sv2";
+        String name = FS.Gamedir() + "/save/current/" + SV_INIT.sv.name + ".sv2";
 
 		try {
 			f = new QuakeFile(name, "rw");
@@ -337,13 +335,12 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_ReadLevelFile() {
-		
-		String name;
-		QuakeFile f;
+
+        QuakeFile f;
 
 		Com.DPrintf("SV_ReadLevelFile()\n");
 
-		name = FS.Gamedir() + "/save/current/" + SV_INIT.sv.name + ".sv2";
+        String name = FS.Gamedir() + "/save/current/" + SV_INIT.sv.name + ".sv2";
 		try {
 			f = new QuakeFile(name, "r");
 
@@ -372,11 +369,11 @@ public class SV_CCMDS {
 		QuakeFile f;
 		cvar_t var;
 
-		String filename, name, string, comment;
+		String name, string, comment;
 
 		Com.DPrintf("SV_WriteServerFile(" + (autosave ? "true" : "false") + ")\n");
 
-		filename = FS.Gamedir() + "/save/current/server.ssv";
+        String filename = FS.Gamedir() + "/save/current/server.ssv";
 		try {
 			f = new QuakeFile(filename, "rw");
 
@@ -441,15 +438,14 @@ public class SV_CCMDS {
 	public static void SV_ReadServerFile() {
 		String filename="", name = "", string, mapcmd;
 		try {
-			QuakeFile f;
 
-			mapcmd = "";
+            mapcmd = "";
 
 			Com.DPrintf("SV_ReadServerFile()\n");
 
 			filename = FS.Gamedir() + "/save/current/server.ssv";
 
-			f = new QuakeFile(filename, "r");
+            QuakeFile f = new QuakeFile(filename, "r");
 
 			
 			f.readString();
@@ -578,12 +574,11 @@ public class SV_CCMDS {
 	==================
 	*/
 	public static void SV_Map_f() {
-		String map;
-		
-		String expanded;
 
-		
-		map = Cmd.Argv(1);
+        String expanded;
+
+
+        String map = Cmd.Argv(1);
 		if (!map.contains(".")) {
 			expanded = "maps/" + map + ".bsp";
 			if (FS.LoadFile(expanded) == null) {
@@ -658,9 +653,8 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_Savegame_f() {
-		String dir;
 
-		if (SV_INIT.sv.state != Defines.ss_game) {
+        if (SV_INIT.sv.state != Defines.ss_game) {
 			Com.Printf("You must be in a game to save.\n");
 			return;
 		}
@@ -685,7 +679,7 @@ public class SV_CCMDS {
 			return;
 		}
 
-		dir = Cmd.Argv(1);
+        String dir = Cmd.Argv(1);
 		if (Stream.of("..", "/", "\\").anyMatch(dir::contains)) {
 			Com.Printf("Bad savedir.\n");
 		}
@@ -800,14 +794,12 @@ public class SV_CCMDS {
 	public static void SV_ConSay_f() {
 		client_t client;
 		int j;
-		String p;
-		String text; 
 
-		if (Cmd.Argc() < 2)
+        if (Cmd.Argc() < 2)
 			return;
 
-		text = "console: ";
-		p = Cmd.Args();
+        String text = "console: ";
+        String p = Cmd.Args();
 
 		if (p.charAt(0) == '"') {
 			p = p.substring(1, p.length() - 1);
@@ -871,12 +863,10 @@ public class SV_CCMDS {
 	==============
 	*/
 	public static void SV_ServerRecord_f() {
-		
-		String name;
+
         byte[] buf_data = new byte[32768];
 		sizebuf_t buf = new sizebuf_t();
-		int len;
-		int i;
+        int i;
 
 		if (Cmd.Argc() != 2) {
 			Com.Printf("serverrecord <demoname>\n");
@@ -893,10 +883,8 @@ public class SV_CCMDS {
 			return;
 		}
 
-		
-		
-		
-		name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
+
+        String name = FS.Gamedir() + "/demos/" + Cmd.Argv(1) + ".dm2";
 
 		Com.Printf("recording to " + name + ".\n");
 		FS.CreatePath(name);
@@ -940,7 +928,7 @@ public class SV_CCMDS {
 
 		
 		Com.DPrintf("signon message length: " + buf.cursize + '\n');
-		len = EndianHandler.swapInt(buf.cursize);
+        int len = EndianHandler.swapInt(buf.cursize);
 		
 		
 		try {

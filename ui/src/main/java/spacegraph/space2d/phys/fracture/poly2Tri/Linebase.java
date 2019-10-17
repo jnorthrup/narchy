@@ -102,17 +102,16 @@ public class Linebase implements SplayTreeItem {
     }
 
     public String toString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("Linebase(");
-        sb.append("ID = ").append(_id);
-        sb.append(", ").append(Poly2TriUtils.typeToString(_type));
-        sb.append(", [");
-        sb.append(_endp[0]);
-        sb.append(", ");
-        sb.append(_endp[1]);
-        sb.append("], type = ").append(_type);
-        sb.append(", keyValue =").append(keyValue());
-        return sb.toString();
+        String sb = "Linebase(" +
+                "ID = " + _id +
+                ", " + Poly2TriUtils.typeToString(_type) +
+                ", [" +
+                _endp[0] +
+                ", " +
+                _endp[1] +
+                "], type = " + _type +
+                ", keyValue =" + keyValue();
+        return sb;
     }
 
     /**

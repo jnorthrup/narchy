@@ -231,18 +231,12 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     public void init() {
 
-        Connective tmpConnective;
-        ArrayList<Connective> connectiveVec;
-
-        Axiom tmpAxiom;
-        ArrayList<Axiom> axiomVec;
-
         userTheorems = new ArrayList<Axiom>();
         currentFamily = PROP_CALC;
         currentState = new State();
         undoStack = new Stack<State>();
         redoStack = new Stack<State>();
-        connectiveVec = new ArrayList<Connective>();
+        ArrayList<Connective> connectiveVec = new ArrayList<Connective>();
 
         // A future version could parse this from a file?
 
@@ -252,7 +246,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         // Labels are same as in Metamath set.mm
 
         // Implication
-        tmpConnective = new Connective("wi", "wff", 2, "( $1 -> $2 )");
+        Connective tmpConnective = new Connective("wi", "wff", 2, "( $1 -> $2 )");
         tmpConnective.setArgtype(0, "wff");
         tmpConnective.setArgtype(1, "wff");
         connectiveVec.add(tmpConnective);
@@ -409,7 +403,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         // ************ Propositional calculus
 
-        axiomVec = new ArrayList<Axiom>();
+        ArrayList<Axiom> axiomVec = new ArrayList<Axiom>();
 
         // ax-1 $a |- ( P -> ( Q -> P ) ) $.
         // We define a new variable (ax_1Axiom) for the axiom if
@@ -427,7 +421,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         axiomVec.add(ax_2Axiom);
 
         // ax-3 $a |- ( ( -. P -> -. Q ) -> ( Q -> P ) ) $.
-        tmpAxiom = new Axiom("ax-3", "wi wi wn $1 wn $2 wi $2 $1",
+        Axiom tmpAxiom = new Axiom("ax-3", "wi wi wn $1 wn $2 wi $2 $1",
                 "Axiom of contraposition (propositional calculus)");
         axiomVec.add(tmpAxiom);
 
@@ -1550,13 +1544,12 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
         } else if (e.getItemSelectable() == axiom_choices) {
 
-            int choice;
             // Lookup what the choice corresponds to
-            choice = axiomChoiceVec.get(
-                axiom_choices.getSelectedIndex()
+            int choice = axiomChoiceVec.get(
+                    axiom_choices.getSelectedIndex()
           /* 11-Nov-2015 nm - Subtract 1 to account for dummy menu item
              called "Select axiom:" at top of list. */
-                    - 1
+                            - 1
             );
 
             /* [sound] */ // Sound effects
@@ -1840,9 +1833,6 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
 
     public void paint(Graphics g) {
 
-        String token;
-        FontMetrics fm;
-
         // validate makes an added Component show up in the display
         // (not documented in Java spec?)
         this.validate();
@@ -1861,7 +1851,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         g.setFont(new Font("Dialog", Font.PLAIN, FONT_SIZE));
         // Apply watermark to background
         // \u00a9 = copyright symbol
-        token = "Metamath Solitaire \u00a9 2003 (GPL) Norman Megill nm" +
+        String token = "Metamath Solitaire \u00a9 2003 (GPL) Norman Megill nm" +
                 "@" +
                 "alum.mit.edu";
         if (axiomInfoModeFlag) {
@@ -1869,7 +1859,7 @@ public class MetaMath extends /*@Deprecated */ JPanel  implements ActionListener
         } else {
             g.setColor(Color.cyan);
         }
-        fm = g.getFontMetrics();
+        FontMetrics fm = g.getFontMetrics();
         g.drawString(token, (r.width - fm.stringWidth(token)) / 2, r.height - 10);
 
         // Display type colors
@@ -2370,8 +2360,6 @@ final class DrawSymbols {
 
     static void drawFormula(Graphics wg, int wcurrentY, String formula) {
         String token;
-        int position0;
-        int position;
         short varNum;
         short varType;
         int p2;
@@ -2386,8 +2374,8 @@ final class DrawSymbols {
         //   as $var:type
 
         formula = formula + " ";
-        position0 = 0;
-        position = formula.indexOf(' ');
+        int position0 = 0;
+        int position = formula.indexOf(' ');
         while (position != -1) {
             token = formula.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
@@ -2706,8 +2694,6 @@ class Axiom {
     // Connectives are negative, variables are positive
     private static String englToNumStr(String englRPN) {
         String token;
-        int position0;
-        int position;
         short varNum;
         short connNum;
         int i;
@@ -2715,8 +2701,8 @@ class Axiom {
 
         englRPN = englRPN + " ";
         numRPNbuf.ensureCapacity(englRPN.length() / 2);
-        position0 = 0;
-        position = englRPN.indexOf(' ');
+        int position0 = 0;
+        int position = englRPN.indexOf(' ');
         while (position != -1) {
             token = englRPN.substring(position0, position);
             if (token.charAt(0) == '$') { // Variable
@@ -2976,8 +2962,7 @@ class Substitution {
 
     // Makes a substitution into a formula
     static String makeSubst(String formula, Substitution subst) {
-        int i;
-        i = -1;
+        int i = -1;
         while (true) {
             i = formula.indexOf(subst.substVar, i + 1);
             if (i < 0) break;
@@ -3021,16 +3006,13 @@ final class Unification {
         short substVar;
         String substStr;
         Substitution subst;
-        int currentStateStackSize;
-        int axiomHypSize;
-        State newState;
         String axiomHyp;
         String stateHyp;
 
         substVec = new ArrayList<Substitution>();
-        currentStateStackSize = currentState.assertionVec.size();
+        int currentStateStackSize = currentState.assertionVec.size();
         if (testAxiom == null) return null; // To allow for sloppy axiom array
-        axiomHypSize = testAxiom.axiomHypothesisVec.size();
+        int axiomHypSize = testAxiom.axiomHypothesisVec.size();
 
         // See if stack has enough entries
         if (currentStateStackSize < axiomHypSize) {
@@ -3102,7 +3084,7 @@ final class Unification {
         }
 
         // Build new State to return to caller
-        newState = new State();
+        State newState = new State();
         // Build new assertion stack
         newState.assertionVec = new ArrayList<String>();
 

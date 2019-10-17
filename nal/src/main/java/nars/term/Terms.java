@@ -265,17 +265,14 @@ public enum Terms {
 
 	public static void printRecursive(Term x, int level, Consumer<String> c) {
 
-		StringBuilder line = new StringBuilder(level * 2 + 32);
-		line.append("  ".repeat(Math.max(0, level)));
 
-		line.append(x);
-
-
-		for (Term z : x.subterms())
+        for (Term z : x.subterms())
 			printRecursive(z, level + 1, c);
 
 
-		c.accept(line.toString());
+        String line = "  ".repeat(Math.max(0, level)) +
+                x;
+        c.accept(line);
 	}
 
 

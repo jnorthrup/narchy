@@ -87,22 +87,19 @@ public final class Console extends Globals {
 
 	    int l, x;
 	    int line;
-	    RandomAccessFile f;
-	    byte[] buffer = new byte[1024];
-	    String name;
+		byte[] buffer = new byte[1024];
 
-	    if (Cmd.Argc() != 2) {
+		if (Cmd.Argc() != 2) {
 		Com.Printf("usage: condump <filename>\n");
 		return;
 	    }
 
-	    
-	    
-	    name = FS.Gamedir() + '/' + Cmd.Argv(1) + ".txt";
+
+		String name = FS.Gamedir() + '/' + Cmd.Argv(1) + ".txt";
 
 	    Com.Printf("Dumped console text to " + name + ".\n");
 	    FS.CreatePath(name);
-	    f = Lib.fopen(name, "rw");
+		RandomAccessFile f = Lib.fopen(name, "rw");
 	    if (f == null) {
 		Com.Printf("ERROR: couldn't open.\n");
 		return;
@@ -405,15 +402,14 @@ public final class Console extends Globals {
      */
     static void DrawInput() {
 	int i;
-	byte[] text;
-	int start = 0;
+		int start = 0;
 
 	if (cls.key_dest == key_menu)
 	    return;
 	if (cls.key_dest != key_console && cls.state == ca_active)
-	    return; 
+	    return;
 
-	text = key_lines[edit_line];
+		byte[] text = key_lines[edit_line];
 
 	
 	text[key_linepos] = (byte) (10 + (cls.realtime >> 8 & 1));
@@ -443,14 +439,14 @@ public final class Console extends Globals {
      * ================
      */
     static void DrawNotify() {
-	int x, v;
-	int text;
+	int x;
+		int text;
 	int i;
 	int time;
 	String s;
 	int skip;
 
-	v = 0;
+		int v = 0;
 	for (i = con.current - NUM_CON_TIMES + 1; i <= con.current; i++) {
 	    if (i < 0)
 		continue;

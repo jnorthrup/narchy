@@ -360,15 +360,14 @@ public final class FS extends Globals {
         RandomAccessFile file;
 
         byte[] buf = null;
-        int len = 0;
 
-        
+
         int index = path.indexOf('\0');
         if (index != -1)
             path = path.substring(0, index);
 
-        
-        len = FileLength(path);
+
+        int len = FileLength(path);
 
         if (len < 1)
             return null;
@@ -531,9 +530,8 @@ public final class FS extends Globals {
         HashMap newfiles;
         RandomAccessFile file;
         int numpackfiles = 0;
-        pack_t pack = null;
-        
-        
+
+
         try {
         	file = new RandomAccessFile(packfile, "r");
         	FileChannel fc = file.getChannel();
@@ -582,7 +580,7 @@ public final class FS extends Globals {
             return null;
         }
 
-        pack = new pack_t();
+        pack_t pack = new pack_t();
         pack.filename = packfile;
         pack.handle = file;
         pack.numfiles = numpackfiles;
@@ -602,16 +600,13 @@ public final class FS extends Globals {
      */
     static void AddGameDirectory(String dir) {
         int i;
-        searchpath_t search;
         pack_t pak;
         String pakfile;
 
         fs_gamedir = dir;
 
-        
-        
-        
-        search = new searchpath_t();
+
+        searchpath_t search = new searchpath_t();
         search.filename = dir;
         if (fs_searchpaths != null) {
             search.next = fs_searchpaths.next;
@@ -864,12 +859,11 @@ public final class FS extends Globals {
      */
     public static String NextPath(String prevpath) {
         searchpath_t s;
-        String prev;
 
         if (prevpath == null || prevpath.length() == 0)
             return fs_gamedir;
 
-        prev = fs_gamedir;
+        String prev = fs_gamedir;
         for (s = fs_searchpaths; s != null; s = s.next) {
             if (s.pack != null)
                 continue;

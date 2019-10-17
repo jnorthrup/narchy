@@ -211,14 +211,12 @@ public class TinySpeech {
     }
 
     private float resonator(float f0, int s) {
-        float x;
-        x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
+        float x = sawtooth(s * (f0 * PI_2 / SAMPLE_FREQUENCY));
         return x;
     }
 
     private float noise() {
-        float x;
-        x = (rng.nextFloat() - 0.5f);
+        float x = (rng.nextFloat() - 0.5f);
         return x;
     }
 

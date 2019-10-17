@@ -230,8 +230,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 //        if (from == null) throw new IllegalArgumentException("from==null");
 //        if (to == null) throw new IllegalArgumentException("to==null");
 
-        PathFinder<Class, Function> pfinder;
-//        pfinder = new PathFinder<>(
+        //        pfinder = new PathFinder<>(
 //            this, from, Path.Direction.AB, (Edge<Class, Function> from1) -> {
 //                Object edge = from1.getEdge();
 //                if( edge instanceof GetWeight )
@@ -239,7 +238,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
 //                return (double)1;
 //            });
 
-        pfinder = new PathFinder(
+        PathFinder<Class, Function> pfinder = new PathFinder(
                 PATH_CAPACITY,
                 this,
                 from,
@@ -253,7 +252,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
             if (path == null) break;
             Class lastnode = path.node(-1);
             //assert(!lastnode.equals(to));
-            if (lastnode != null && lastnode.equals(to)) {
+            if (lastnode != null && lastnode == to) {
                 if (!filter.test(path))
                     return false;
             }
@@ -318,7 +317,7 @@ public class CastGraph extends jcog.data.graph.MapNodeGraph<Class, Function> {
         if (value == null) throw new IllegalArgumentException("value==null");
         if (targetType == null) throw new IllegalArgumentException("targetType==null");
         Class c = value.getClass();
-        if (c.equals(targetType)) return (TARGET) value;
+        if (c == targetType) return (TARGET) value;
         return (TARGET) cast(value, targetType, null, null);
     }
 
